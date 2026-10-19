@@ -106,6 +106,10 @@ def sec_2d(a2, L, plots):
                  f"{sci(ctl.get('doubled_median'))} (ok: **{ctl.get('doubled_ok')}**). Subjects: {len(subj)}; usable: "
                  f"{sum(1 for v in subj.values() if v['usable'])}; timing-job qualified: {sum(1 for v in subj.values() if v['qualified'])}; "
                  f"worst identity vs accuracy run: {sci(max([v['identity_rel'] for v in subj.values() if v.get('identity_rel') is not None] or [None]) if any(v.get('identity_rel') is not None for v in subj.values()) else None)}.\n")
+        bad = [k for k, v in subj.items() if v.get('identity_label') and not v.get('injected_control')]
+        sqb = [k for k in bad if k.split('|')[1][1:] == k.split('|')[2][1:]]
+        L.append(f"Identity failures (excluding the injected control): {len(bad)}, of which {len(sqb)} are square (M = r) cells, "
+                 'which also fail Q1 (non-certified steps), so their rollouts are not reproducible across jobs.\n')
         rows = sorted([[k, sci(v['c']), v['usable'], v['qualified'], v.get('identity_label') or 'ok'] for k, v in subj.items()])
         L.append(table(['subject', 'cost c', 'usable', 'qualified', 'identity'], rows) + '\n')
         exp['costs_2d'] = co
@@ -116,7 +120,7 @@ def sec_2d(a2, L, plots):
     if a2.get('elasticity'):
         e = a2['elasticity']
         if e['status'] == 'ok':
-            L.append(f"\nElasticities of the full-query cost (descriptive, {e.get('label', '')}): "
+            L.append(f"\nElasticities of the full-query cost ({e.get('label', '')}): "
                      f"β_r = {e['beta'][1]:.3g} [{e['interval'][0][1]:.3g}, {e['interval'][1][1]:.3g}], "
                      f"β_M = {e['beta'][2]:.3g} [{e['interval'][0][2]:.3g}, {e['interval'][1][2]:.3g}], "
                      f"β_m = {e['beta'][3]:.3g} [{e['interval'][0][3]:.3g}, {e['interval'][1][3]:.3g}].\n")
@@ -158,11 +162,27 @@ def sec_2d(a2, L, plots):
         ax.set_xscale('log', base=2)
         ax.set_xlabel('test-space ratio M / r')
         ax.set_ylabel('median E0 error (%)')
-        ax.set_title('2D, LSPG-CN-R, gauss256: error against M / r', color=INK, loc='left')
+        ax.set_title('2D, LSPG-CN-R, gauss256: error against M / r (M = r cells fail Q1; descriptive)', color=INK, loc='left', fontsize=10)
         ax.legend(frameon=False)
         fig.tight_layout()
         fig.savefig(PLOTS / 'b6_2d_kappa.png', dpi=160)
         plt.close(fig)
+        co = a2.get('costs') or {}
+        if co:
+            fig, ax = plt.subplots(figsize=(6.4, 3.6))
+            for i, r in enumerate(Rs):
+                pts = sorted((int(k.split('|')[3][5:]) ** 2, v['c']) for k, v in co.items() if not k.startswith('_') and v['usable']
+                             and k.split('|')[1] == f'R{r}' and k.split('|')[2] == f'M{4 * r}' and k.endswith('|LSPG|CNR|1') and v['c'])
+                if pts:
+                    ax.plot([x for x, _ in pts], [y for _, y in pts], '-o', color=SERIES[i], lw=2, ms=4, label=f'r = {r}, M = {4 * r}')
+            ax.set_xscale('log', base=2)
+            ax.set_xlabel('quadrature points m')
+            ax.set_ylabel('cost c (relative to reference A)')
+            ax.set_title('2D, LSPG-CN-R: online cost against m (t2, usable subjects)', color=INK, loc='left')
+            ax.legend(frameon=False)
+            fig.tight_layout()
+            fig.savefig(PLOTS / 'cost_2d_m.png', dpi=160)
+            plt.close(fig)
     return exp
 
 
@@ -186,8 +206,14 @@ def sec_3d(a3, L):
     exp['coverage'] = {w: len(v) for w, v in a3['coverage'].items()}
     if a3.get('h2q'):
         L.append('\n## Qualified 3D re-timing (H2q; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM — K2 already fired)\n')
-        rows = [[c, v.get('comparator'), v.get('comparator_q2'), v.get('winner'), sci(v.get('S')), v.get('verdict')] for c, v in a3['h2q'].items()]
-        L.append(table(['comparator', 'configuration', 'its Q2', 'qualified winner', 'S', 'verdict'], rows) + '\n')
+        rows = [[c, v.get('comparator'), v.get('comparator_q2'), v.get('comparator_label'), v.get('winner'), v.get('n_matching'), sci(v.get('S')), v.get('verdict')]
+                for c, v in a3['h2q'].items()]
+        L.append(table(['comparator', 'configuration', 'its Q2', 'label', 'qualified winner', 'n tie-or-beat', 'S', 'verdict'], rows) + '\n')
+        if a3.get('h2q_Cq'):
+            L.append('Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration of width $w$ at its smallest qualified rule.\n')
+            L.append(table(['width', 'C^q_w', 'winner', 'S (confirmation)', 'S (screening)', 'verdict'],
+                           [[w, v['Cq'], v['result'].get('winner'), sci(v['result'].get('S')), sci(v['result'].get('S_screen')), v['result'].get('verdict')]
+                            for w, v in a3['h2q_Cq'].items()]) + '\n')
         exp['h2q'] = a3['h2q']
     L.append('\n## B6 (3D, W512) and A3 (3D)\n')
     for k, v in a3['B6'].items():
@@ -203,6 +229,11 @@ def sec_3d(a3, L):
         L.append('\n## B3 (3D, W512 κ = 4, fs-CN)\n')
         L.append(table(['family', 'family m*'], [[k, v['family']['outcome']] for k, v in sorted(fam['mstar'].items())]) + '\n')
         L.append(table(['comparison', 'verdict'], sorted(fam['point_efficiency'].items())) + '\n')
+        g3 = fam.get('gates', {})
+        if g3:
+            L.append(table(['family, draw', 'cross-family gate', 'worst distance to the gl64 target'],
+                           [[k, v['gate'] if v.get('gate') else f"control fired: {v.get('fired')}", sci(v.get('worst_dist_to_target'))]
+                            for k, v in sorted(g3.items())]) + '\n')
     exp['B6_3d'], exp['A3_3d'], exp['families_3d'] = a3['B6'], a3['A3'], fam
     return exp
 
@@ -289,11 +320,22 @@ def key_outcomes(a2, a3):
             L.append(f"- **B3 (2D) {cell}**: " + '; '.join(f"{k}: {v['family']['outcome']}" for k, v in sorted(f['mstar'].items()))
                      + f" — {len(dec)} of {len(pe)} pairwise comparisons decided.")
         lm = a2.get('LMF', {})
-        L.append(f"- **B6-LMF**: {lm.get('outcome') or 'see section'}.")
+        if lm.get('outcome'):
+            L.append(f"- **B6-LMF**: {lm['outcome']}.")
+        else:
+            L.append('- **B6-LMF** (stability checks passed): ' + '; '.join(f"{f}: {lm[f]['efficiency']}" for f in ('gauss', 'smolyak') if f in lm)
+                     + (f"; accuracy at gauss256: {lm['accuracy_gauss256']['label']}" if lm.get('accuracy_gauss256') else '') + '.')
+        co = a2.get('costs') or {}
+        if co.get('_controls'):
+            sub = {k: v for k, v in co.items() if not k.startswith('_')}
+            L.append(f"- **2D timing (`t2`)**: controls passed ({co['_controls']['injected_fault_caught']}, {co['_controls']['doubled_ok']}); "
+                     f"{sum(v['usable'] for v in sub.values())} of {len(sub)} subjects usable, {sum(v['qualified'] for v in sub.values())} "
+                     'timing-job qualified.')
     if a3:
         L.append('- **A4 (3D) coverage**: ' + ', '.join(f'{w}: {len(v)} qualified' for w, v in a3['coverage'].items()) + '.')
         for c, v in (a3.get('h2q') or {}).items():
-            L.append(f"- **H2q vs {c}**: {v.get('verdict')}" + (f" (S = {v['S']:.3g})" if v.get('S') else '') + '.')
+            L.append(f"- **H2q vs {c}**: {v.get('verdict')}" + (f" (S = {v['S']:.3g})" if v.get('S') else '')
+                     + f" — {v.get('comparator_label')}; winner {v.get('winner')}.")
         if not a3.get('h2q'):
             L.append('- **H2q**: not yet available (timing jobs pending).')
     return '\n'.join(L) + '\n'

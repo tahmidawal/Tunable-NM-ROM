@@ -27,11 +27,16 @@
 | q3r8 | None | RELEASED | 0 |
 | q3r8 | None | RELEASED | 0 |
 | q3r8 | 5920129 | COMPLETED | 0.0928 |
-| t3s | 6056422 | SUBMITTED | — |
-| t2 | 6056624 | SUBMITTED | — |
-| f2l | 6057843 | SUBMITTED | — |
+| t3s | 6056422 | COMPLETED | 0.549 |
+| t2 | 6056624 | COMPLETED | 3.89 |
+| f2l | 6057843 | TIMEOUT | 0.341 |
+| b3m | 6065773 | CANCELLED | 0 |
+| t3c | 6071041 | COMPLETED | 0.0975 |
+| b3m | 6072828 | COMPLETED | 1.03 |
+| f2lr1 | 6073880 | COMPLETED | 0.108 |
+| b2m | 6075594 | COMPLETED | 0.581 |
 
-Spent **28.6** of 55 GPU-h.
+Spent **35.2** of 55 GPU-h.
 
 ## Key outcomes (every verdict below is generated from the analysis files)
 
@@ -39,11 +44,14 @@ Spent **28.6** of 55 GPU-h.
 - **A3 (2D) fixed (M=2048, gauss256)**: range **not monotone** (improves; improves; does not improve).
 - **A3 (2D) fixed m gauss256, M=4r**: range **not monotone** (improves; improves; does not improve).
 - **B6 (2D)**: M = r control status across cells: unavailable (unqualified cell) — test-space verdicts blocked.
-- **B3 (2D) R128M512**: fib: m* = 4181 (stable) (all 5 draws); gauss: m* = 9216 (stable); halton: none (within the candidate list); mc: not reached (incomplete ladder); smolyak: m* = 24577 (stable); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
-- **B3 (2D) R384M1536**: fib: m* = 28657 (stable) (all 5 draws); gauss: m* = 16384 (stable); halton: none (within the candidate list); mc: not reached (incomplete ladder); smolyak: none (within the candidate list); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
-- **B6-LMF**: unstable test space (no verdict).
+- **B3 (2D) R128M512**: fib: m* = 4181 (stable) (all 5 draws); gauss: m* = 9216 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: m* = 24577 (stable); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
+- **B3 (2D) R384M1536**: fib: m* = 28657 (stable) (all 5 draws); gauss: m* = 16384 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: none (within the candidate list); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
+- **B6-LMF** (stability checks passed): gauss: default needs fewer points; smolyak: neither qualifies; accuracy at gauss256: inconclusive (resolution).
+- **2D timing (`t2`)**: controls passed (True, True); 275 of 299 subjects usable, 208 timing-job qualified.
 - **A4 (3D) coverage**: M2_512: 18 qualified, W256: 25 qualified, W512: 32 qualified, W768: 6 qualified, W1024: 2 qualified.
-- **H2q**: not yet available (timing jobs pending).
+- **H2q vs C_old**: fail (the selected candidate failed confirmation) (S = 1.15) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4.
+- **H2q vs C_W768**: pass (S = 2.95) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4.
+- **H2q vs C_W1024**: pass (S = 9.87) — qualified configuration vs the deployed (unqualified) comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4.
 
 
 ## A4 (2D): smallest qualifying Gauss rule $m^\*(r,M)$, LSPG-CN-R $\Delta t_0$, $1024^2$
@@ -87,7 +95,7 @@ Spent **28.6** of 55 GPU-h.
 | fib | m* = 4181 (stable) (all 5 draws) | 4181.0 / [4181, 4181] / 0 |
 | gauss | m* = 9216 (stable) | — / — / — |
 | halton | none (within the candidate list) | > top candidate / None / 5 |
-| mc | not reached (incomplete ladder) | > top candidate / None / 5 |
+| mc | none (within the candidate list) | > top candidate / None / 5 |
 | smolyak | m* = 24577 (stable) | — / — / — |
 | sobol | none (within the candidate list) | 32768.0 / [16384, 32768] / 0 |
 
@@ -95,18 +103,18 @@ Spent **28.6** of 55 GPU-h.
 |---|---|
 | fib vs gauss | fib needs fewer points |
 | fib vs halton | inconclusive (gate flagged or unavailable) |
-| fib vs mc | inconclusive (not reached) |
+| fib vs mc | inconclusive (gate flagged or unavailable) |
 | fib vs smolyak | fib needs fewer points |
 | fib vs sobol | fib qualifies, sobol does not (within its list) |
 | gauss vs halton | inconclusive (gate flagged or unavailable) |
-| gauss vs mc | inconclusive (not reached) |
+| gauss vs mc | inconclusive (gate flagged or unavailable) |
 | gauss vs smolyak | gauss needs fewer points |
 | gauss vs sobol | gauss qualifies, sobol does not (within its list) |
-| halton vs mc | inconclusive (not reached) |
+| halton vs mc | inconclusive (gate flagged or unavailable) |
 | halton vs smolyak | inconclusive (gate flagged or unavailable) |
 | halton vs sobol | inconclusive (gate flagged or unavailable) |
-| mc vs smolyak | inconclusive (not reached) |
-| mc vs sobol | inconclusive (not reached) |
+| mc vs smolyak | inconclusive (gate flagged or unavailable) |
+| mc vs sobol | inconclusive (gate flagged or unavailable) |
 | smolyak vs sobol | smolyak qualifies, sobol does not (within its list) |
 
 | family, draw | cross-family gate | worst distance to gauss384 |
@@ -123,11 +131,11 @@ Spent **28.6** of 55 GPU-h.
 | halton\|s2 | flagged | 0.000499 |
 | halton\|s3 | flagged | 0.000298 |
 | halton\|s4 | flagged | 0.000379 |
-| mc\|s0 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s1 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s2 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s3 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s4 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s0 | flagged | 0.0239 |
+| mc\|s1 | flagged | 0.0178 |
+| mc\|s2 | flagged | 0.0161 |
+| mc\|s3 | flagged | 0.0107 |
+| mc\|s4 | flagged | 0.0195 |
 | smolyak\|s0 | pass | 1.19e-06 |
 | sobol\|s0 | pass | 1.55e-05 |
 | sobol\|s1 | pass | 4.53e-05 |
@@ -142,7 +150,7 @@ Spent **28.6** of 55 GPU-h.
 | fib | m* = 28657 (stable) (all 5 draws) | 17711.0 / [17711, 28657] / 0 |
 | gauss | m* = 16384 (stable) | — / — / — |
 | halton | none (within the candidate list) | > top candidate / None / 5 |
-| mc | not reached (incomplete ladder) | > top candidate / None / 5 |
+| mc | none (within the candidate list) | > top candidate / None / 5 |
 | smolyak | none (within the candidate list) | — / — / — |
 | sobol | none (within the candidate list) | > top candidate / None / 5 |
 
@@ -150,18 +158,18 @@ Spent **28.6** of 55 GPU-h.
 |---|---|
 | fib vs gauss | gauss needs fewer points |
 | fib vs halton | inconclusive (gate flagged or unavailable) |
-| fib vs mc | inconclusive (not reached) |
+| fib vs mc | inconclusive (gate flagged or unavailable) |
 | fib vs smolyak | fib qualifies, smolyak does not (within its list) |
 | fib vs sobol | fib qualifies, sobol does not (within its list) |
 | gauss vs halton | inconclusive (gate flagged or unavailable) |
-| gauss vs mc | inconclusive (not reached) |
+| gauss vs mc | inconclusive (gate flagged or unavailable) |
 | gauss vs smolyak | gauss qualifies, smolyak does not (within its list) |
 | gauss vs sobol | gauss qualifies, sobol does not (within its list) |
-| halton vs mc | inconclusive (not reached) |
+| halton vs mc | inconclusive (gate flagged or unavailable) |
 | halton vs smolyak | inconclusive (gate flagged or unavailable) |
 | halton vs sobol | inconclusive (gate flagged or unavailable) |
-| mc vs smolyak | inconclusive (not reached) |
-| mc vs sobol | inconclusive (not reached) |
+| mc vs smolyak | inconclusive (gate flagged or unavailable) |
+| mc vs sobol | inconclusive (gate flagged or unavailable) |
 | smolyak vs sobol | neither qualifies |
 
 | family, draw | cross-family gate | worst distance to gauss384 |
@@ -178,11 +186,11 @@ Spent **28.6** of 55 GPU-h.
 | halton\|s2 | flagged | 0.000652 |
 | halton\|s3 | flagged | 0.000528 |
 | halton\|s4 | flagged | 0.000682 |
-| mc\|s0 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s1 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s2 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s3 | gate unavailable (missing: no in-job fixgate evidence) | inf |
-| mc\|s4 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s0 | flagged | 0.023 |
+| mc\|s1 | flagged | 0.0187 |
+| mc\|s2 | flagged | 0.0164 |
+| mc\|s3 | flagged | 0.0128 |
+| mc\|s4 | flagged | 0.0234 |
 | smolyak\|s0 | pass | 1.23e-05 |
 | sobol\|s0 | pass | 6.39e-05 |
 | sobol\|s1 | pass | 0.000114 |
@@ -272,11 +280,323 @@ Why the M = r control is unavailable: 0 of 108 square (M = r) configurations pas
 Every B6 transition is therefore *blocked* by the registered rule; the raw paired labels are shown for description only and carry no verdict.
 
 
+## 2D timing panel `t2` (H200, full-field contract, cost relative to the reference A)
+
+Controls: injected identity fault caught: **True**; doubled-work median ratio 1.99 (ok: **True**). Subjects: 299; usable: 275; timing-job qualified: 208; worst identity vs accuracy run: 41.6.
+
+Identity failures (excluding the injected control): 23, of which 23 are square (M = r) cells, which also fail Q1 (non-certified steps), so their rollouts are not reproducible across jobs.
+
+| subject | cost c | usable | qualified | identity |
+|---|---|---|---|---|
+| 1024\|R128\|M1024\|gauss128\|LSPG\|CNR\|1 | 0.403 | True | True | ok |
+| 1024\|R128\|M1024\|gauss160\|LSPG\|CNR\|1 | 0.51 | True | True | ok |
+| 1024\|R128\|M1024\|gauss192\|LSPG\|CNR\|1 | 0.651 | True | True | ok |
+| 1024\|R128\|M1024\|gauss256\|GAL\|CN\|1 | 1.24 | True | True | ok |
+| 1024\|R128\|M1024\|gauss256\|LSPG\|BE\|1 | 1 | True | True | ok |
+| 1024\|R128\|M1024\|gauss256\|LSPG\|CNR\|1 | 1 | True | True | ok |
+| 1024\|R128\|M1024\|gauss256\|LSPG\|CN\|1 | 0.987 | True | True | ok |
+| 1024\|R128\|M1024\|gauss320\|LSPG\|CNR\|1 | 1.42 | True | False | ok |
+| 1024\|R128\|M1024\|gauss384\|LSPG\|CNR\|1 | 1.98 | True | False | ok |
+| 1024\|R128\|M1024\|gauss64\|LSPG\|CNR\|1 | 0.291 | True | True | ok |
+| 1024\|R128\|M1024\|gauss96\|GAL\|CN\|1 | 0.405 | True | True | ok |
+| 1024\|R128\|M1024\|gauss96\|LSPG\|CNR\|1 | 0.315 | True | True | ok |
+| 1024\|R128\|M1024\|gauss96\|LSPG\|CN\|1 | 0.31 | True | True | ok |
+| 1024\|R128\|M128\|gauss128\|LSPG\|CNR\|1 | 0.332 | True | False | ok |
+| 1024\|R128\|M128\|gauss160\|LSPG\|CNR\|1 | 0.376 | True | False | ok |
+| 1024\|R128\|M128\|gauss192\|LSPG\|CNR\|1 | 0.444 | True | False | ok |
+| 1024\|R128\|M128\|gauss256\|GAL\|CN\|1 | 0.587 | True | False | ok |
+| 1024\|R128\|M128\|gauss256\|LSPG\|BE\|1 | 0.582 | True | False | ok |
+| 1024\|R128\|M128\|gauss256\|LSPG\|CNR\|1 | 0.572 | True | False | ok |
+| 1024\|R128\|M128\|gauss256\|LSPG\|CN\|1 | 0.575 | True | False | ok |
+| 1024\|R128\|M128\|gauss320\|LSPG\|CNR\|1 | 0.721 | True | False | ok |
+| 1024\|R128\|M128\|gauss384\|LSPG\|CNR\|1 | 0.921 | True | False | ok |
+| 1024\|R128\|M128\|gauss64\|LSPG\|CNR\|1 | 0.24 | True | False | ok |
+| 1024\|R128\|M128\|gauss96\|LSPG\|CNR\|1 | 0.281 | True | False | ok |
+| 1024\|R128\|M1536\|gauss128\|LSPG\|CNR\|1 | 0.49 | True | True | ok |
+| 1024\|R128\|M1536\|gauss160\|LSPG\|CNR\|1 | 0.647 | True | True | ok |
+| 1024\|R128\|M1536\|gauss192\|LSPG\|CNR\|1 | 0.832 | True | True | ok |
+| 1024\|R128\|M1536\|gauss256\|LSPG\|CNR\|1 | 1.32 | True | True | ok |
+| 1024\|R128\|M1536\|gauss320\|LSPG\|CNR\|1 | 1.96 | True | False | ok |
+| 1024\|R128\|M1536\|gauss384\|LSPG\|CNR\|1 | 2.7 | True | False | ok |
+| 1024\|R128\|M1536\|gauss64\|LSPG\|CNR\|1 | 0.295 | True | True | ok |
+| 1024\|R128\|M1536\|gauss96\|LSPG\|CNR\|1 | 0.364 | True | True | ok |
+| 1024\|R128\|M2048\|gauss128\|LSPG\|CNR\|1 | 0.565 | True | True | ok |
+| 1024\|R128\|M2048\|gauss160\|LSPG\|CNR\|1 | 0.773 | True | True | ok |
+| 1024\|R128\|M2048\|gauss192\|LSPG\|CNR\|1 | 1.01 | True | True | ok |
+| 1024\|R128\|M2048\|gauss256\|LSPG\|CNR\|1 | 1.65 | True | True | ok |
+| 1024\|R128\|M2048\|gauss320\|LSPG\|CNR\|1 | 2.47 | True | False | ok |
+| 1024\|R128\|M2048\|gauss384\|LSPG\|CNR\|1 | 3.4 | True | False | ok |
+| 1024\|R128\|M2048\|gauss64\|LSPG\|CNR\|1 | 0.316 | True | True | ok |
+| 1024\|R128\|M2048\|gauss96\|LSPG\|CNR\|1 | 0.419 | True | True | ok |
+| 1024\|R128\|M256\|gauss128\|LSPG\|CNR\|1 | 0.273 | True | True | ok |
+| 1024\|R128\|M256\|gauss160\|LSPG\|CNR\|1 | 0.313 | True | True | ok |
+| 1024\|R128\|M256\|gauss192\|LSPG\|CNR\|1 | 0.372 | True | True | ok |
+| 1024\|R128\|M256\|gauss256\|GAL\|CN\|1 | 0.647 | True | True | ok |
+| 1024\|R128\|M256\|gauss256\|LSPG\|BE\|1 | 0.508 | True | True | ok |
+| 1024\|R128\|M256\|gauss256\|LSPG\|CNR\|1 | 0.507 | True | True | ok |
+| 1024\|R128\|M256\|gauss256\|LSPG\|CN\|1 | 0.508 | True | True | ok |
+| 1024\|R128\|M256\|gauss320\|LSPG\|CNR\|1 | 0.68 | True | False | ok |
+| 1024\|R128\|M256\|gauss384\|LSPG\|CNR\|1 | 0.885 | True | False | ok |
+| 1024\|R128\|M256\|gauss64\|LSPG\|CNR\|1 | 0.189 | True | True | ok |
+| 1024\|R128\|M256\|gauss96\|GAL\|CN\|1 | 0.299 | True | True | ok |
+| 1024\|R128\|M256\|gauss96\|LSPG\|CNR\|1 | 0.227 | True | True | ok |
+| 1024\|R128\|M256\|gauss96\|LSPG\|CN\|1 | 0.224 | True | True | ok |
+| 1024\|R128\|M384\|gauss128\|LSPG\|CNR\|1 | 0.297 | True | True | ok |
+| 1024\|R128\|M384\|gauss160\|LSPG\|CNR\|1 | 0.351 | True | True | ok |
+| 1024\|R128\|M384\|gauss192\|LSPG\|CNR\|1 | 0.42 | True | True | ok |
+| 1024\|R128\|M384\|gauss256\|GAL\|CN\|1 | 0.744 | True | True | ok |
+| 1024\|R128\|M384\|gauss256\|LSPG\|BE\|1 | 0.593 | True | True | ok |
+| 1024\|R128\|M384\|gauss256\|LSPG\|CNR\|1 | 0.59 | True | True | ok |
+| 1024\|R128\|M384\|gauss256\|LSPG\|CN\|1 | 0.586 | True | True | ok |
+| 1024\|R128\|M384\|gauss320\|LSPG\|CNR\|1 | 0.812 | True | False | ok |
+| 1024\|R128\|M384\|gauss384\|LSPG\|CNR\|1 | 1.06 | True | False | ok |
+| 1024\|R128\|M384\|gauss64\|LSPG\|CNR\|1 | 0.225 | True | True | ok |
+| 1024\|R128\|M384\|gauss96\|GAL\|CN\|1 | 0.327 | True | True | ok |
+| 1024\|R128\|M384\|gauss96\|LSPG\|CNR\|1 | 0.242 | True | True | ok |
+| 1024\|R128\|M384\|gauss96\|LSPG\|CN\|1 | 0.24 | True | True | ok |
+| 1024\|R128\|M512\|gauss128\|LSPG\|CNR\|1 | 0.314 | True | True | ok |
+| 1024\|R128\|M512\|gauss160\|LSPG\|CNR\|1 | 0.386 | True | True | ok |
+| 1024\|R128\|M512\|gauss192\|LSPG\|CNR\|1 | 0.466 | True | True | ok |
+| 1024\|R128\|M512\|gauss256\|GAL\|CN\|1 | 0.842 | True | True | ok |
+| 1024\|R128\|M512\|gauss256\|LSPG\|BE\|1 | 0.665 | True | True | ok |
+| 1024\|R128\|M512\|gauss256\|LSPG\|CNR\|1 | 0.667 | True | True | ok |
+| 1024\|R128\|M512\|gauss256\|LSPG\|CN\|1 | 0.662 | True | True | ok |
+| 1024\|R128\|M512\|gauss320\|LSPG\|CNR\|1 | 0.92 | True | False | ok |
+| 1024\|R128\|M512\|gauss384\|LSPG\|CNR\|1 | 1.25 | True | False | ok |
+| 1024\|R128\|M512\|gauss64\|LSPG\|CNR\|1 | 0.231 | True | True | ok |
+| 1024\|R128\|M512\|gauss72\|LSPG\|CNR\|1 | — | False | False | unusable (identity: hash) |
+| 1024\|R128\|M512\|gauss96\|GAL\|CN\|1 | 0.339 | True | True | ok |
+| 1024\|R128\|M512\|gauss96\|LSPG\|CNR\|1 | 0.255 | True | True | ok |
+| 1024\|R128\|M512\|gauss96\|LSPG\|CN\|1 | 0.255 | True | True | ok |
+| 1024\|R256\|M1024\|gauss128\|GAL\|CN\|1 | 0.767 | True | True | ok |
+| 1024\|R256\|M1024\|gauss128\|LSPG\|CNR\|1 | 0.591 | True | True | ok |
+| 1024\|R256\|M1024\|gauss128\|LSPG\|CN\|1 | 0.587 | True | True | ok |
+| 1024\|R256\|M1024\|gauss160\|LSPG\|CNR\|1 | 0.771 | True | True | ok |
+| 1024\|R256\|M1024\|gauss192\|LSPG\|CNR\|1 | 0.988 | True | True | ok |
+| 1024\|R256\|M1024\|gauss256\|GAL\|CN\|1 | 1.96 | True | True | ok |
+| 1024\|R256\|M1024\|gauss256\|LSPG\|BE\|1 | 1.56 | True | True | ok |
+| 1024\|R256\|M1024\|gauss256\|LSPG\|CNR\|1 | 1.56 | True | True | ok |
+| 1024\|R256\|M1024\|gauss256\|LSPG\|CN\|1 | 1.55 | True | True | ok |
+| 1024\|R256\|M1024\|gauss320\|LSPG\|CNR\|1 | 2.29 | True | False | ok |
+| 1024\|R256\|M1024\|gauss384\|LSPG\|CNR\|1 | 3.19 | True | False | ok |
+| 1024\|R256\|M1024\|gauss64\|LSPG\|CNR\|1 | 0.396 | True | True | ok |
+| 1024\|R256\|M1024\|gauss96\|LSPG\|CNR\|1 | 0.449 | True | True | ok |
+| 1024\|R256\|M1536\|gauss128\|LSPG\|CNR\|1 | 0.729 | True | True | ok |
+| 1024\|R256\|M1536\|gauss160\|LSPG\|CNR\|1 | 0.976 | True | True | ok |
+| 1024\|R256\|M1536\|gauss192\|LSPG\|CNR\|1 | 1.28 | True | True | ok |
+| 1024\|R256\|M1536\|gauss256\|LSPG\|CNR\|1 | 2.09 | True | True | ok |
+| 1024\|R256\|M1536\|gauss320\|LSPG\|CNR\|1 | 3.13 | True | False | ok |
+| 1024\|R256\|M1536\|gauss384\|LSPG\|CNR\|1 | 4.4 | True | False | ok |
+| 1024\|R256\|M1536\|gauss64\|LSPG\|CNR\|1 | 0.404 | True | True | ok |
+| 1024\|R256\|M1536\|gauss96\|LSPG\|CNR\|1 | 0.529 | True | True | ok |
+| 1024\|R256\|M2048\|gauss128\|GAL\|CN\|1 | 1.11 | True | True | ok |
+| 1024\|R256\|M2048\|gauss128\|LSPG\|CNR\|1 | 0.85 | True | True | ok |
+| 1024\|R256\|M2048\|gauss160\|LSPG\|CNR\|1 | 1.17 | True | True | ok |
+| 1024\|R256\|M2048\|gauss192\|LSPG\|CNR\|1 | 1.57 | True | True | ok |
+| 1024\|R256\|M2048\|gauss256\|GAL\|CN\|1 | 3.3 | True | True | ok |
+| 1024\|R256\|M2048\|gauss256\|LSPG\|BE\|1 | 2.63 | True | True | ok |
+| 1024\|R256\|M2048\|gauss256\|LSPG\|CNR\|1 | 2.62 | True | True | ok |
+| 1024\|R256\|M2048\|gauss256\|LSPG\|CN\|1 | 2.61 | True | True | ok |
+| 1024\|R256\|M2048\|gauss320\|LSPG\|CNR\|1 | 3.95 | True | False | ok |
+| 1024\|R256\|M2048\|gauss384\|LSPG\|CNR\|1 | 5.57 | True | False | ok |
+| 1024\|R256\|M2048\|gauss64\|LSPG\|CNR\|1 | 0.436 | True | True | ok |
+| 1024\|R256\|M2048\|gauss96\|LSPG\|CNR\|1 | 0.599 | True | True | ok |
+| 1024\|R256\|M2048\|gauss96\|LSPG\|CN\|1 | 0.596 | True | True | ok |
+| 1024\|R256\|M256\|gauss128\|LSPG\|CNR\|1 | 0.704 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss160\|LSPG\|CNR\|1 | 0.759 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss192\|LSPG\|CNR\|1 | 0.901 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss256\|GAL\|CN\|1 | 1.36 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss256\|LSPG\|BE\|1 | 1.22 | True | False | ok |
+| 1024\|R256\|M256\|gauss256\|LSPG\|CNR\|1 | 1.24 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss256\|LSPG\|CN\|1 | 1.36 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss320\|LSPG\|CNR\|1 | 1.69 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss384\|LSPG\|CNR\|1 | 2.21 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M256\|gauss64\|LSPG\|CNR\|1 | 0.492 | True | False | ok |
+| 1024\|R256\|M256\|gauss96\|LSPG\|CNR\|1 | 25.8 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R256\|M512\|gauss128\|GAL\|CN\|1 | 0.601 | True | True | ok |
+| 1024\|R256\|M512\|gauss128\|LSPG\|CNR\|1 | 0.46 | True | True | ok |
+| 1024\|R256\|M512\|gauss160\|LSPG\|CNR\|1 | 0.571 | True | True | ok |
+| 1024\|R256\|M512\|gauss160\|LSPG\|CN\|1 | 0.576 | True | True | ok |
+| 1024\|R256\|M512\|gauss192\|LSPG\|CNR\|1 | 0.705 | True | True | ok |
+| 1024\|R256\|M512\|gauss256\|GAL\|CN\|1 | 1.32 | True | True | ok |
+| 1024\|R256\|M512\|gauss256\|LSPG\|BE\|1 | 1.04 | True | True | ok |
+| 1024\|R256\|M512\|gauss256\|LSPG\|CNR\|1 | 1.04 | True | True | ok |
+| 1024\|R256\|M512\|gauss256\|LSPG\|CN\|1 | 1.04 | True | True | ok |
+| 1024\|R256\|M512\|gauss320\|LSPG\|CNR\|1 | 1.48 | True | False | ok |
+| 1024\|R256\|M512\|gauss384\|LSPG\|CNR\|1 | 2.02 | True | False | ok |
+| 1024\|R256\|M512\|gauss64\|LSPG\|CNR\|1 | 0.315 | True | True | ok |
+| 1024\|R256\|M512\|gauss96\|LSPG\|CNR\|1 | 0.371 | True | True | ok |
+| 1024\|R256\|M768\|gauss128\|GAL\|CN\|1 | 0.69 | True | True | ok |
+| 1024\|R256\|M768\|gauss128\|LSPG\|CNR\|1 | 0.529 | True | True | ok |
+| 1024\|R256\|M768\|gauss128\|LSPG\|CN\|1 | 0.534 | True | True | ok |
+| 1024\|R256\|M768\|gauss160\|LSPG\|CNR\|1 | 0.676 | True | True | ok |
+| 1024\|R256\|M768\|gauss192\|LSPG\|CNR\|1 | 0.849 | True | True | ok |
+| 1024\|R256\|M768\|gauss256\|GAL\|CN\|1 | 1.63 | True | True | ok |
+| 1024\|R256\|M768\|gauss256\|LSPG\|BE\|1 | 1.3 | True | True | ok |
+| 1024\|R256\|M768\|gauss256\|LSPG\|CNR\|1 | 1.3 | True | True | ok |
+| 1024\|R256\|M768\|gauss256\|LSPG\|CN\|1 | 1.3 | True | True | ok |
+| 1024\|R256\|M768\|gauss320\|LSPG\|CNR\|1 | 1.88 | True | False | ok |
+| 1024\|R256\|M768\|gauss384\|LSPG\|CNR\|1 | 2.6 | True | False | ok |
+| 1024\|R256\|M768\|gauss64\|LSPG\|CNR\|1 | 0.345 | True | True | ok |
+| 1024\|R256\|M768\|gauss96\|LSPG\|CNR\|1 | 0.411 | True | True | ok |
+| 1024\|R384\|M1024\|gauss128\|LSPG\|CNR\|1 | 0.777 | True | True | ok |
+| 1024\|R384\|M1024\|gauss160\|LSPG\|CNR\|1 | 1.03 | True | True | ok |
+| 1024\|R384\|M1024\|gauss192\|LSPG\|CNR\|1 | 1.33 | True | True | ok |
+| 1024\|R384\|M1024\|gauss256\|LSPG\|CNR\|1 | 2.11 | True | True | ok |
+| 1024\|R384\|M1024\|gauss320\|LSPG\|CNR\|1 | 3.14 | True | False | ok |
+| 1024\|R384\|M1024\|gauss384\|LSPG\|CNR\|1 | 4.4 | True | False | ok |
+| 1024\|R384\|M1024\|gauss64\|LSPG\|CNR\|1 | 0.485 | True | True | ok |
+| 1024\|R384\|M1024\|gauss96\|LSPG\|CNR\|1 | 0.584 | True | True | ok |
+| 1024\|R384\|M1152\|gauss128\|LSPG\|CNR\|1 | 0.866 | True | True | ok |
+| 1024\|R384\|M1152\|gauss128\|LSPG\|CN\|1 | 0.866 | True | True | ok |
+| 1024\|R384\|M1152\|gauss160\|LSPG\|CNR\|1 | 1.13 | True | True | ok |
+| 1024\|R384\|M1152\|gauss192\|LSPG\|CNR\|1 | 1.49 | True | True | ok |
+| 1024\|R384\|M1152\|gauss256\|GAL\|CN\|1 | 3.06 | True | True | ok |
+| 1024\|R384\|M1152\|gauss256\|LSPG\|BE\|1 | 2.41 | True | True | ok |
+| 1024\|R384\|M1152\|gauss256\|LSPG\|CNR\|1 | 2.4 | True | True | ok |
+| 1024\|R384\|M1152\|gauss256\|LSPG\|CN\|1 | 2.41 | True | True | ok |
+| 1024\|R384\|M1152\|gauss320\|LSPG\|CNR\|1 | 3.61 | True | False | ok |
+| 1024\|R384\|M1152\|gauss384\|LSPG\|CNR\|1 | 5.07 | True | False | ok |
+| 1024\|R384\|M1152\|gauss64\|LSPG\|CNR\|1 | 0.497 | True | True | ok |
+| 1024\|R384\|M1152\|gauss96\|GAL\|CN\|1 | 0.842 | True | True | ok |
+| 1024\|R384\|M1152\|gauss96\|LSPG\|CNR\|1 | 0.63 | True | True | ok |
+| 1024\|R384\|M1536\|gauss128\|LSPG\|CNR\|1 | 1.01 | True | True | ok |
+| 1024\|R384\|M1536\|gauss128\|LSPG\|CN\|1 | 1.01 | True | True | ok |
+| 1024\|R384\|M1536\|gauss160\|LSPG\|CNR\|1 | 1.39 | True | True | ok |
+| 1024\|R384\|M1536\|gauss192\|LSPG\|CNR\|1 | 1.86 | True | True | ok |
+| 1024\|R384\|M1536\|gauss256\|GAL\|CN\|1 | 3.93 | True | True | ok |
+| 1024\|R384\|M1536\|gauss256\|LSPG\|BE\|1 | 3.1 | True | True | ok |
+| 1024\|R384\|M1536\|gauss256\|LSPG\|CNR\|1 | 3.09 | True | True | ok |
+| 1024\|R384\|M1536\|gauss256\|LSPG\|CN\|1 | 3.1 | True | True | ok |
+| 1024\|R384\|M1536\|gauss320\|LSPG\|CNR\|1 | 4.65 | True | False | ok |
+| 1024\|R384\|M1536\|gauss384\|LSPG\|CNR\|1 | 6.57 | True | False | ok |
+| 1024\|R384\|M1536\|gauss64\|LSPG\|CNR\|1 | 0.527 | True | True | ok |
+| 1024\|R384\|M1536\|gauss96\|GAL\|CN\|1 | 0.953 | True | True | ok |
+| 1024\|R384\|M1536\|gauss96\|LSPG\|CNR\|1 | 0.718 | True | True | ok |
+| 1024\|R384\|M2048\|gauss128\|LSPG\|CNR\|1 | 1.13 | True | True | ok |
+| 1024\|R384\|M2048\|gauss160\|LSPG\|CNR\|1 | 1.58 | True | True | ok |
+| 1024\|R384\|M2048\|gauss192\|LSPG\|CNR\|1 | 2.12 | True | True | ok |
+| 1024\|R384\|M2048\|gauss256\|LSPG\|CNR\|1 | 3.58 | True | True | ok |
+| 1024\|R384\|M2048\|gauss320\|LSPG\|CNR\|1 | 5.5 | True | False | ok |
+| 1024\|R384\|M2048\|gauss384\|LSPG\|CNR\|1 | 7.7 | True | False | ok |
+| 1024\|R384\|M2048\|gauss64\|LSPG\|CNR\|1 | 0.563 | True | True | ok |
+| 1024\|R384\|M2048\|gauss96\|LSPG\|CNR\|1 | 0.788 | True | True | ok |
+| 1024\|R384\|M3072\|gauss128\|LSPG\|CNR\|1 | 1.64 | True | True | ok |
+| 1024\|R384\|M3072\|gauss160\|LSPG\|CNR\|1 | 2.38 | True | True | ok |
+| 1024\|R384\|M3072\|gauss192\|LSPG\|CNR\|1 | 3.28 | True | True | ok |
+| 1024\|R384\|M3072\|gauss256\|GAL\|CN\|1 | 7.1 | True | True | ok |
+| 1024\|R384\|M3072\|gauss256\|LSPG\|BE\|1 | 5.63 | True | True | ok |
+| 1024\|R384\|M3072\|gauss256\|LSPG\|CNR\|1 | 5.62 | True | True | ok |
+| 1024\|R384\|M3072\|gauss256\|LSPG\|CN\|1 | 5.64 | True | True | ok |
+| 1024\|R384\|M3072\|gauss320\|LSPG\|CNR\|1 | 8.64 | True | False | ok |
+| 1024\|R384\|M3072\|gauss384\|LSPG\|CNR\|1 | 13 | True | False | ok |
+| 1024\|R384\|M3072\|gauss64\|LSPG\|CNR\|1 | 0.69 | True | True | ok |
+| 1024\|R384\|M3072\|gauss96\|GAL\|CN\|1 | 1.4 | True | True | ok |
+| 1024\|R384\|M3072\|gauss96\|LSPG\|CNR\|1 | 1.08 | True | True | ok |
+| 1024\|R384\|M3072\|gauss96\|LSPG\|CN\|1 | 1.08 | True | True | ok |
+| 1024\|R384\|M384\|gauss128\|LSPG\|CNR\|1 | 0.811 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss160\|LSPG\|CNR\|1 | 0.997 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss192\|LSPG\|CNR\|1 | 1.23 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss256\|GAL\|CN\|1 | 1.88 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss256\|LSPG\|BE\|1 | 1.83 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss256\|LSPG\|CNR\|1 | 1.8 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss256\|LSPG\|CN\|1 | 1.85 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss320\|LSPG\|CNR\|1 | 2.55 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss384\|LSPG\|CNR\|1 | 3.46 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss64\|LSPG\|CNR\|1 | 1.81 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M384\|gauss96\|LSPG\|CNR\|1 | 0.668 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R384\|M512\|gauss128\|LSPG\|CNR\|1 | 0.603 | True | True | ok |
+| 1024\|R384\|M512\|gauss160\|LSPG\|CNR\|1 | 0.753 | True | True | ok |
+| 1024\|R384\|M512\|gauss192\|LSPG\|CNR\|1 | 0.937 | True | True | ok |
+| 1024\|R384\|M512\|gauss256\|LSPG\|CNR\|1 | 1.42 | True | True | ok |
+| 1024\|R384\|M512\|gauss320\|LSPG\|CNR\|1 | 2.02 | True | False | ok |
+| 1024\|R384\|M512\|gauss384\|LSPG\|CNR\|1 | 2.78 | True | False | ok |
+| 1024\|R384\|M512\|gauss64\|LSPG\|CNR\|1 | 0.392 | True | False | ok |
+| 1024\|R384\|M512\|gauss96\|LSPG\|CNR\|1 | 0.475 | True | True | ok |
+| 1024\|R384\|M768\|gauss128\|GAL\|CN\|1 | 0.93 | True | True | ok |
+| 1024\|R384\|M768\|gauss128\|LSPG\|CNR\|1 | 0.711 | True | True | ok |
+| 1024\|R384\|M768\|gauss160\|LSPG\|CNR\|1 | 0.93 | True | True | ok |
+| 1024\|R384\|M768\|gauss192\|LSPG\|CNR\|1 | 1.2 | True | True | ok |
+| 1024\|R384\|M768\|gauss192\|LSPG\|CN\|1 | 1.21 | True | True | ok |
+| 1024\|R384\|M768\|gauss256\|GAL\|CN\|1 | 2.38 | True | True | ok |
+| 1024\|R384\|M768\|gauss256\|LSPG\|BE\|1 | 1.89 | True | True | ok |
+| 1024\|R384\|M768\|gauss256\|LSPG\|CNR\|1 | 1.88 | True | True | ok |
+| 1024\|R384\|M768\|gauss256\|LSPG\|CN\|1 | 1.89 | True | True | ok |
+| 1024\|R384\|M768\|gauss320\|LSPG\|CNR\|1 | 2.77 | True | False | ok |
+| 1024\|R384\|M768\|gauss384\|LSPG\|CNR\|1 | 3.86 | True | False | ok |
+| 1024\|R384\|M768\|gauss64\|LSPG\|CNR\|1 | 0.437 | True | True | ok |
+| 1024\|R384\|M768\|gauss96\|LSPG\|CNR\|1 | 0.544 | True | True | ok |
+| 1024\|R512\|M1024\|gauss128\|LSPG\|CNR\|1 | 0.945 | True | True | ok |
+| 1024\|R512\|M1024\|gauss160\|LSPG\|CNR\|1 | 1.26 | True | True | ok |
+| 1024\|R512\|M1024\|gauss192\|LSPG\|CNR\|1 | 1.65 | True | True | ok |
+| 1024\|R512\|M1024\|gauss256\|GAL\|CN\|1 | 3.38 | True | True | ok |
+| 1024\|R512\|M1024\|gauss256\|LSPG\|BE\|1 | 2.67 | True | True | ok |
+| 1024\|R512\|M1024\|gauss256\|LSPG\|CNR\|1 | 2.65 | True | True | ok |
+| 1024\|R512\|M1024\|gauss256\|LSPG\|CN\|1 | 2.66 | True | True | ok |
+| 1024\|R512\|M1024\|gauss320\|LSPG\|CNR\|1 | 3.96 | True | False | ok |
+| 1024\|R512\|M1024\|gauss384\|LSPG\|CNR\|1 | 5.69 | True | False | ok |
+| 1024\|R512\|M1024\|gauss64\|LSPG\|CNR\|1 | 0.569 | True | True | ok |
+| 1024\|R512\|M1024\|gauss96\|LSPG\|CNR\|1 | 0.7 | True | True | ok |
+| 1024\|R512\|M1536\|gauss128\|LSPG\|CNR\|1 | 1.18 | True | True | ok |
+| 1024\|R512\|M1536\|gauss160\|LSPG\|CNR\|1 | 1.62 | True | True | ok |
+| 1024\|R512\|M1536\|gauss192\|GAL\|CN\|1 | 2.78 | True | True | ok |
+| 1024\|R512\|M1536\|gauss192\|LSPG\|CNR\|1 | 2.16 | True | True | ok |
+| 1024\|R512\|M1536\|gauss192\|LSPG\|CN\|1 | 2.17 | True | True | ok |
+| 1024\|R512\|M1536\|gauss256\|GAL\|CN\|1 | 4.55 | True | True | ok |
+| 1024\|R512\|M1536\|gauss256\|LSPG\|BE\|1 | 3.6 | True | True | ok |
+| 1024\|R512\|M1536\|gauss256\|LSPG\|CNR\|1 | 3.59 | True | True | ok |
+| 1024\|R512\|M1536\|gauss256\|LSPG\|CN\|1 | 3.59 | True | True | ok |
+| 1024\|R512\|M1536\|gauss320\|LSPG\|CNR\|1 | 5.43 | True | False | ok |
+| 1024\|R512\|M1536\|gauss384\|LSPG\|CNR\|1 | 7.77 | True | False | ok |
+| 1024\|R512\|M1536\|gauss64\|LSPG\|CNR\|1 | 0.62 | True | True | ok |
+| 1024\|R512\|M1536\|gauss96\|LSPG\|CNR\|1 | 0.831 | True | True | ok |
+| 1024\|R512\|M2048\|gauss128\|LSPG\|CNR\|1 | 1.39 | True | True | ok |
+| 1024\|R512\|M2048\|gauss160\|GAL\|CN\|1 | 2.5 | True | True | ok |
+| 1024\|R512\|M2048\|gauss160\|LSPG\|CNR\|1 | 1.95 | True | True | ok |
+| 1024\|R512\|M2048\|gauss192\|LSPG\|CNR\|1 | 2.66 | True | True | ok |
+| 1024\|R512\|M2048\|gauss192\|LSPG\|CN\|1 | 2.69 | True | True | ok |
+| 1024\|R512\|M2048\|gauss256\|GAL\|CN\|1 | 5.68 | True | True | ok |
+| 1024\|R512\|M2048\|gauss256\|LSPG\|BE\|1 | 4.5 | True | True | ok |
+| 1024\|R512\|M2048\|gauss256\|LSPG\|CNR\|1 | 4.48 | True | True | ok |
+| 1024\|R512\|M2048\|gauss256\|LSPG\|CN\|1 | 4.56 | True | True | ok |
+| 1024\|R512\|M2048\|gauss320\|LSPG\|CNR\|1 | 6.86 | True | False | ok |
+| 1024\|R512\|M2048\|gauss384\|LSPG\|CNR\|1 | 9.95 | True | False | ok |
+| 1024\|R512\|M2048\|gauss64\|LSPG\|CNR\|1 | 0.667 | True | True | ok |
+| 1024\|R512\|M2048\|gauss96\|LSPG\|CNR\|1 | 0.956 | True | True | ok |
+| 1024\|R512\|M4096\|gauss128\|GAL\|CN\|1 | 2.95 | True | True | ok |
+| 1024\|R512\|M4096\|gauss128\|LSPG\|CNR\|1 | 2.23 | True | True | ok |
+| 1024\|R512\|M4096\|gauss128\|LSPG\|CN\|1 | 2.3 | True | True | ok |
+| 1024\|R512\|M4096\|gauss160\|LSPG\|CNR\|1 | 3.25 | True | True | ok |
+| 1024\|R512\|M4096\|gauss192\|LSPG\|CNR\|1 | 4.53 | True | True | ok |
+| 1024\|R512\|M4096\|gauss256\|GAL\|CN\|1 | 10.4 | True | True | ok |
+| 1024\|R512\|M4096\|gauss256\|LSPG\|BE\|1 | 7.82 | True | True | ok |
+| 1024\|R512\|M4096\|gauss256\|LSPG\|CNR\|1 | 7.8 | True | True | ok |
+| 1024\|R512\|M4096\|gauss256\|LSPG\|CN\|1 | 8.08 | True | True | ok |
+| 1024\|R512\|M4096\|gauss320\|LSPG\|CNR\|1 | 14.7 | True | False | ok |
+| 1024\|R512\|M4096\|gauss384\|LSPG\|CNR\|1 | 21 | True | False | ok |
+| 1024\|R512\|M4096\|gauss64\|LSPG\|CNR\|1 | 0.885 | True | False | ok |
+| 1024\|R512\|M4096\|gauss96\|LSPG\|CNR\|1 | 1.43 | True | True | ok |
+| 1024\|R512\|M512\|gauss128\|LSPG\|CNR\|1 | 0.982 | True | False | ok |
+| 1024\|R512\|M512\|gauss160\|LSPG\|CNR\|1 | 1.24 | True | False | ok |
+| 1024\|R512\|M512\|gauss192\|LSPG\|CNR\|1 | 1.54 | True | False | ok |
+| 1024\|R512\|M512\|gauss256\|GAL\|CN\|1 | 2.4 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R512\|M512\|gauss256\|LSPG\|BE\|1 | 2.38 | True | False | ok |
+| 1024\|R512\|M512\|gauss256\|LSPG\|CNR\|1 | 2.33 | True | False | ok |
+| 1024\|R512\|M512\|gauss256\|LSPG\|CN\|1 | 2.36 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R512\|M512\|gauss320\|LSPG\|CNR\|1 | 3.33 | True | False | ok |
+| 1024\|R512\|M512\|gauss384\|LSPG\|CNR\|1 | 4.6 | True | False | ok |
+| 1024\|R512\|M512\|gauss64\|LSPG\|CNR\|1 | 0.67 | False | False | unusable (identity: > 1e-10 vs accuracy run) |
+| 1024\|R512\|M512\|gauss96\|LSPG\|CNR\|1 | 0.789 | True | False | ok |
+
+
 ## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$
 
 - **fixed (M=2048, gauss256)**: R128M2048gauss256 → R256M2048gauss256: improves; R256M2048gauss256 → R384M2048gauss256: improves; R384M2048gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
 
 - **fixed m gauss256, M=4r**: R128M512gauss256 → R256M1024gauss256: improves; R256M1024gauss256 → R384M1536gauss256: improves; R384M1536gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
+
+
+Elasticities of the full-query cost (descriptive full-query elasticities (beta_r, beta_M, beta_m), not kernel exponents): β_r = 0.654 [0.642, 0.671], β_M = 0.528 [0.522, 0.532], β_m = 0.653 [0.652, 0.655].
 
 
 ### Deployed-path decomposition (Shapley; selection-conditioned description, not a decomposition of the error norm)
@@ -290,7 +610,13 @@ Every B6 transition is therefore *blocked* by the registered rule; the raw paire
 
 ## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at (384, 1536)
 
-Stability checks: {'rank_ok': False, 'cond_ok': False, 'all_runs_valid': False, 'q1_gauss256': False, 'passed': False}. Outcome: unstable test space (no verdict).
+Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1_gauss256': True, 'passed': True}. 
+
+- gauss: LMF m* = 65536 (stable) vs default m* = 16384 (stable) → **default needs fewer points**
+
+- smolyak: LMF none (within the candidate list) vs default none (within the candidate list) → **neither qualifies**
+
+- accuracy at gauss256: **inconclusive (resolution)**
 
 ## A4 (3D): front completion and per-width $m^\*$
 
@@ -389,11 +715,28 @@ Stability checks: {'rank_ok': False, 'cond_ok': False, 'all_runs_valid': False, 
 | W1024 | 2 | W1024\|gl40\|fs\|BE\|0.01\|K1, W1024\|gl48\|fs\|BE\|0.01\|K1 |
 
 
+## Qualified 3D re-timing (H2q; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM — K2 already fired)
+
+| comparator | configuration | its Q2 | label | qualified winner | n tie-or-beat | S | verdict |
+|---|---|---|---|---|---|---|---|
+| C_old | M2_512\|gl32\|fs\|BE\|0.01\|K1 | pass | qualified vs qualified comparator | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 11 | 1.15 | fail (the selected candidate failed confirmation) |
+| C_W768 | W768\|lat32768\|fs\|BE\|0.01\|K1 | pass | qualified vs qualified comparator | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 18 | 2.95 | pass |
+| C_W1024 | W1024\|lat65536\|fs\|BE\|0.01\|K1 | fail | qualified configuration vs the deployed (unqualified) comparator | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 8 | 9.87 | pass |
+
+Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration of width $w$ at its smallest qualified rule.
+
+| width | C^q_w | winner | S (confirmation) | S (screening) | verdict |
+|---|---|---|---|---|---|
+| M2_512 | M2_512\|gl32\|fs\|BE\|0.01\|K1 | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 1.15 | 1.19 | fail (the selected candidate failed confirmation) |
+| W768 | W768\|lat32768\|fs\|BE\|0.01\|K1 | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 2.93 | 2.98 | pass |
+| W1024 | W1024\|gl40\|fs\|BE\|0.01\|K1 | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 9.67 | 9.46 | pass |
+
+
 ## B6 (3D, W512) and A3 (3D)
 
-- **W512|LSPG-CN adaptive**: control unavailable (unqualified cell); 1->2: blocked (M = r control: unavailable (unqualified cell)); 2->3: blocked (M = r control: unavailable (unqualified cell)); 3->4: blocked (M = r control: unavailable (unqualified cell)); 4->8: blocked (M = r control: unavailable (unqualified cell)); range 2–4: blocked (control unavailable)
+- **W512|LSPG-CN adaptive**: control unavailable (unqualified cell) (kappa = 1: explicit lowest-512 list (shell-breaking control, DESIGN 2.3 (3B))); 1->2: blocked (M = r control: unavailable (unqualified cell)); 2->3: blocked (M = r control: unavailable (unqualified cell)); 3->4: blocked (M = r control: unavailable (unqualified cell)); 4->8: blocked (M = r control: unavailable (unqualified cell)); range 2–4: blocked (control unavailable)
 
-- **W512|GAL-CN adaptive**: control unavailable (unqualified cell); 1->2: blocked (M = r control: unavailable (unqualified cell)); 2->3: blocked (M = r control: unavailable (unqualified cell)); 3->4: blocked (M = r control: unavailable (unqualified cell)); 4->8: blocked (M = r control: unavailable (unqualified cell)); range 2–4: blocked (control unavailable)
+- **W512|GAL-CN adaptive**: control unavailable (unqualified cell) (kappa = 1: explicit lowest-512 list (shell-breaking control, DESIGN 2.3 (3B))); 1->2: blocked (M = r control: unavailable (unqualified cell)); 2->3: blocked (M = r control: unavailable (unqualified cell)); 3->4: blocked (M = r control: unavailable (unqualified cell)); 4->8: blocked (M = r control: unavailable (unqualified cell)); range 2–4: blocked (control unavailable)
 
 - **W512|fs-CN (control from the adaptive LSPG form)**: control unavailable (unqualified cell); 2->3: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: improves; 3->4: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: improves; 4->8: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: inconclusive (resolution); range 2–4: blocked or not demonstrated
 
@@ -409,34 +752,60 @@ Stability checks: {'rank_ok': False, 'cond_ok': False, 'all_runs_valid': False, 
 | family | family m* |
 |---|---|
 | gauss | m* = 32768 (stable) |
-| hal | not reached (incomplete ladder) |
+| hal | none (within the candidate list) |
 | lattice | m* = 32768 (stable) (all 5 draws) |
-| mc | not reached (incomplete ladder) |
+| mc | none (within the candidate list) |
 | smolyak | none (within the candidate list) |
 | sobol | none (within the candidate list) |
 
 | comparison | verdict |
 |---|---|
-| gauss vs hal | inconclusive (not reached) |
+| gauss vs hal | inconclusive (gate flagged or unavailable) |
 | gauss vs lattice | comparable |
-| gauss vs mc | inconclusive (not reached) |
+| gauss vs mc | inconclusive (gate flagged or unavailable) |
 | gauss vs smolyak | inconclusive (gate flagged or unavailable) |
 | gauss vs sobol | inconclusive (gate flagged or unavailable) |
-| hal vs lattice | inconclusive (not reached) |
-| hal vs mc | inconclusive (not reached) |
-| hal vs smolyak | inconclusive (not reached) |
-| hal vs sobol | inconclusive (not reached) |
-| lattice vs mc | inconclusive (not reached) |
+| hal vs lattice | inconclusive (gate flagged or unavailable) |
+| hal vs mc | inconclusive (gate flagged or unavailable) |
+| hal vs smolyak | inconclusive (gate flagged or unavailable) |
+| hal vs sobol | inconclusive (gate flagged or unavailable) |
+| lattice vs mc | inconclusive (gate flagged or unavailable) |
 | lattice vs smolyak | inconclusive (gate flagged or unavailable) |
 | lattice vs sobol | inconclusive (gate flagged or unavailable) |
-| mc vs smolyak | inconclusive (not reached) |
-| mc vs sobol | inconclusive (not reached) |
+| mc vs smolyak | inconclusive (gate flagged or unavailable) |
+| mc vs sobol | inconclusive (gate flagged or unavailable) |
 | smolyak vs sobol | inconclusive (gate flagged or unavailable) |
+
+| family, draw | cross-family gate | worst distance to the gl64 target |
+|---|---|---|
+| badlat262144 (control) | control fired: True | — |
+| gauss\|s0 | pass | 0 |
+| hal\|s0 | flagged | 0.00172 |
+| hal\|s1 | flagged | 0.00222 |
+| hal\|s2 | flagged | 0.00204 |
+| hal\|s3 | flagged | 0.00215 |
+| hal\|s4 | flagged | 0.00185 |
+| lattice\|s0 | pass | 8.3e-07 |
+| lattice\|s1 | pass | 1.01e-06 |
+| lattice\|s2 | pass | 1e-06 |
+| lattice\|s3 | pass | 9.3e-07 |
+| lattice\|s4 | pass | 1.04e-06 |
+| mc\|s0 | flagged | 0.0231 |
+| mc\|s1 | flagged | 0.0276 |
+| mc\|s2 | flagged | 0.0206 |
+| mc\|s3 | flagged | 0.0255 |
+| mc\|s4 | flagged | 0.0228 |
+| smolyak\|s0 | gate unavailable (rollout part) | inf |
+| sobol\|s0 | flagged | 0.000866 |
+| sobol\|s1 | flagged | 0.000988 |
+| sobol\|s2 | flagged | 0.00175 |
+| sobol\|s3 | flagged | 0.000616 |
+| sobol\|s4 | flagged | 0.00073 |
 
 
 ## Deferred and not reached
 
-- `b3m` (3D B3 stage (ii): Monte Carlo and Halton3 families) — **deferred (budget)** (DESIGN A15); the 3D mc/hal family rows read "not reached".
+- Deferred (budget): none. The deferrable items `f2l` (LMF), `b2m` and `b3m` (B3 stage (ii)) were funded (DESIGN A15, A15.1); `f2l` timed out once and its missing setting was rerun as `f2lr1` (A16).
 
 - 3D square (κ = 1) adaptive cells did not pass Q1, so every 3D B6 transition is blocked (registered rule), as in 2D.
 

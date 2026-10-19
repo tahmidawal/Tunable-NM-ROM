@@ -879,3 +879,11 @@ priority, so `b3m` is funded rather than deferred.
 **A15.2 (2026-10-19)** To keep `t3c`'s priority with the lane at 3/3 and H200s scarce, the still-pending `b3m` (6065773,
 never started, 0 GPU-h) was cancelled and its remote directory removed; `t3c` was submitted (6071041); `b3m` is
 resubmitted unchanged (same staged commit) when a lane slot frees.
+
+## Amendment A16 (2026-10-19, production; `f2l` timeout)
+
+`f2l` (6057843) hit its 0.25 h limit after 14 of its 15 settings (the certificate's 0.1464 h projection underpriced the
+LMF ladder roughly twofold). The 14 completed arms were collected as a partial archive (checksummed outputs); the remote
+directory was removed after verification. Per A7.1/A9.3 the retry `f2lr1` carries only the missing setting
+(`R384M1536lmfsmolyak14`), same code path, inputs and GPU type; its time limit is set to 0.5 h (above 1.5 × its 0.017 h
+projection, given the observed underpricing). No verdict depends on which attempt an arm came from.

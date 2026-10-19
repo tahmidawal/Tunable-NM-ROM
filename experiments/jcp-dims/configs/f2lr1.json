@@ -1,0 +1,33 @@
+{
+ "attempt": "f2lr1",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R384M1536lmfsmolyak14",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak14",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  }
+ ],
+ "blocks": [],
+ "retry_of": "f2l",
+ "note": "settings without archived evidence in any collected attempt of f2l"
+}

@@ -25,10 +25,6 @@
   {
    "item": "B8 3D (fine route at 127^3, C-A / C-E in 3D)",
    "reason": "defer item 2, recorded in A4 (implementation scope)"
-  },
-  {
-   "item": "B7 T=1.0: E0 tight base retry for val32 cases 1, 2, 3 (non-rankable after A14)",
-   "reason": "about 3.5 GPU-h each and a separate promotion path; the T=1.0 population (10 cases) already exceeds the minimum (A14.1)"
   }
  ],
  "corrections": [
@@ -43,7 +39,7 @@
   "E0's tight re-solve of a failing base triple costs about 22x a production solve at T = 1.0 and did not certify dev6 case 1; ref2t1 was cancelled after dev6 case 5 and the val32 cases rerun without that retry (ref2t1w): such cases are terminal and non-rankable (A14).",
   "Two analysis caches were defeated by eager dict.setdefault arguments (a QR per case); the first local B7/B8 analyses were also terminated under memory pressure on the shared box and rerun one at a time (A12.2); performance only, identical values.",
   "jcp-qualify's raw archives were moved to the cluster during the analysis (COMMON-BRIEF 16); G-B3 / G-L1 read hash-verified cached copies (A12).",
-  "A14 stated that the measured tight retry at T=1.0 did not certify its case; dev6 case 5's retry then did (A14.1), so the A14 rule may have made up to three val32 cases non-rankable that E0's procedure could have certified."
+  "A14.1 suggested the A14 rule might have cost rankable cases; it did not: a case certified by the tight retry has no production-tolerance level to match E0 or the T = 0.5 reference, so it is non-rankable under the registered G-R2 / prefix rules anyway (A14.2)."
  ],
  "audits": [
   {

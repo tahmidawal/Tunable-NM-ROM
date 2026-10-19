@@ -932,3 +932,12 @@ tight retries (about 3.5 GPU-h each, and a separate promotion path because the n
 is listed as deferred. `ref2t1` was cancelled at 04:21 UTC right after dev6 case 5 (the val32 step had started 62 s
 earlier and wrote no case file); partial collection, promotion (12 files) and the burgers-archive copy are verified.
 Ledger after all production: 25.9 of 45 GPU-h.
+
+**A14.2 (2026-10-19 04:45 UTC; correction to A14.1).** `anaref` over all references shows that a case certified by the
+tight base retry is **non-rankable anyway** under the registered matching rules (A1.5): its final triple is at tight
+tolerance, E0 and the $T=0.5$ references hold production-tolerance levels, so G-R2 is "not evaluable" and the $T=1.0$
+prefix check has no matched level (dev6 1 and dev6 5: `G_R2_not_evaluable`, `prefix_T1` rows empty). So the A14 rule
+removed **no** rankable case: val32 1–3 with the retry would have been non-rankable for the same reason. The deferred
+item of A14.1 is withdrawn. The $T=1.0$ B7 population is dev6 0, 2, 4 and val32 4–9 (**9 cases**, above the minimum 8).
+Cross-check tier at $T=1.0$: W1 and W2 validated (val32 0 and 19 PASS); **W3 unvalidated** — val32 case 0's FD
+reference failed the order check at $T=1.0$ ('FD-INVALID'), so W3 results are provisional with no verdicts (A2.3).

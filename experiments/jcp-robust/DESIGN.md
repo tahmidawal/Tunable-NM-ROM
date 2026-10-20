@@ -925,3 +925,6 @@ CORRECT. Fixes:
 - **A13.6** e13d (6081491) completed in 54.5 min against its 1 h limit. The supplementary configurations c and d took
   about 1,000 s each, far above the A11.3 estimate of 2 x W256. The registered a and b took about 900 s together. The
   certificate projection was therefore an underestimate, which this note records.
+- **A13.7 (job re-audit e2q-2 #2)** The aggregate `range_256_1024` of a selected-rule H-acc-r row now keeps the A2.5
+  label, stored in `h_acc_r_qualifiers` and carried by `quals_3d`. So do the transitions that return "unavailable (no
+  rule)" or "not reached" when either slot is target-unverified.

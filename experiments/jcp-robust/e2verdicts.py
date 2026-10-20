@@ -103,6 +103,8 @@ def quals_3d(r):
         for tr, x in (v.items() if isinstance(v, dict) else []):
             if isinstance(x, dict) and x.get('qualifier'):
                 out[f'H-acc-r|{k}|{tr}'] = x['qualifier']
+    for k, q in (r.get('h_acc_r_qualifiers') or {}).items():
+        out[f'H-acc-r|{k}'] = q                       # aggregate range verdicts (re-audit e2q-2 #2)
     for k, v in r['configurations'].items():
         if v.get('qualifier'):
             out[f'Q1Q2|{k}'] = v['qualifier']

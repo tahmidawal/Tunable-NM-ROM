@@ -244,14 +244,16 @@ def main():
             out = {}
             for lo, hi in ((256, 512), (512, 768), (768, 1024)):
                 sa, sb = slot_of.get((lo, spec, fam)), slot_of.get((hi, spec, fam))
+                unv_ = any(s_ is not None and s_['outcome'] != 'selected' and s_.get('target_certified') is not True
+                           for s_ in (sa, sb))                         # a target-unverified slot on either side (A2.5)
                 if not (sa and sb and sa['rule'] and sb['rule']):
-                    out[f'{lo}->{hi}'] = dict(outcome='unavailable (no rule)')
+                    out[f'{lo}->{hi}'] = dict(outcome='unavailable (no rule)', **({'qualifier': QUAL} if unv_ else {}))
                     continue
                 ka, kb = f"W{lo}|{sa['rule']}|{spec}", f"W{hi}|{sb['rule']}|{spec}"
                 ca = rep['configurations'][f'slot|W{lo}|{spec}|{fam}']
                 cb = rep['configurations'][f'slot|W{hi}|{spec}|{fam}']
                 if ka not in scores or kb not in scores or ca['qualified'] is None or cb['qualified'] is None:
-                    out[f'{lo}->{hi}'] = dict(outcome='not reached (missing)')
+                    out[f'{lo}->{hi}'] = dict(outcome='not reached (missing)', **({'qualifier': QUAL} if unv_ else {}))
                     continue
                 ea, eb, ela, elb, ep = E_(ka), E_(kb), EL(ka), EL(kb), EP(ka)
                 cs = [c for c in sorted(ea) if c in eb and ela[c] and elb[c]]
@@ -259,11 +261,13 @@ def main():
                                           [bool(ca['qualified'])] * len(cs), [bool(cb['qualified'])] * len(cs))
                 tr['median_paired_change'] = float(np.median([eb[c] - ea[c] for c in cs])) if cs else None
                 tr['rules'] = [sa['rule'], sb['rule']]
-                if 'qualifier' in ca or 'qualifier' in cb:
+                if 'qualifier' in ca or 'qualifier' in cb or unv_:
                     tr['qualifier'] = QUAL
                 out[f'{lo}->{hi}'] = tr
             out['range_256_1024'] = S.h_acc_r_range([v['outcome'] for v in out.values() if isinstance(v, dict) and 'outcome' in v])
             rep['h_acc_r'][f'sel-{fam}|{spec}'] = out
+            if any(isinstance(v, dict) and v.get('qualifier') for v in out.values()):   # the aggregate keeps the A2.5 label
+                rep.setdefault('h_acc_r_qualifiers', {})[f'sel-{fam}|{spec}|range_256_1024'] = QUAL     # (re-audit e2q-2 #2)
     for f in FIXED:
         st, rl, *sp = f.split('|')
         spec = '|'.join(sp)

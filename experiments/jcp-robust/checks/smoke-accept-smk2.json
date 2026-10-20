@@ -1,0 +1,299 @@
+{
+ "smoke": "smk2",
+ "source": "runs/smk2/archive/output",
+ "checks": {
+  "incumbent-through-swap job complete on gpu": {
+   "ok": true,
+   "evidence": null
+  },
+  "swap path loaded the incumbent files": {
+   "ok": true,
+   "evidence": {
+    "ck": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+    "bank": {
+     "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "ckpt_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+     "rotation": "vendor/quad2d/inputs/rotation_R512.npz",
+     "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+     "seed": 0,
+     "note": "incumbent files through the retrained-bank code path (swap-neutrality gate)"
+    }
+   }
+  },
+  "G-E2.3 smoke replay R128 LSPG_BE_1 (swap-neutral, dev6)": {
+   "ok": true,
+   "evidence": {
+    "passed": true,
+    "worst": 1.6441259986832005e-15,
+    "n": 6,
+    "files": [
+     {
+      "src": [
+       "p1",
+       "acc1024",
+       "R_R128_BE.npz"
+      ],
+      "sha256": "42d5c60021f7a44550c8f0076df989c55fee97e53e0e34b0beffb74685cd9d4d"
+     }
+    ]
+   }
+  },
+  "G-E2.3 smoke replay R128 LSPG_CNR_1 (swap-neutral, dev6)": {
+   "ok": true,
+   "evidence": {
+    "passed": true,
+    "worst": 1.867527478950916e-15,
+    "n": 6,
+    "files": [
+     {
+      "src": [
+       "p1",
+       "acc1024",
+       "R_R128_CNR.npz"
+      ],
+      "sha256": "842fd683c3579b9801d6efa6fe206ee56d4d3f74483d447a9c9e39b6180fd179"
+     }
+    ]
+   }
+  },
+  "G-E2.3 smoke replay R384 LSPG_BE_1 (swap-neutral, dev6)": {
+   "ok": true,
+   "evidence": {
+    "passed": true,
+    "worst": 1.2014773870034044e-15,
+    "n": 6,
+    "files": [
+     {
+      "src": [
+       "p1",
+       "acc1024",
+       "R_R384_BE.npz"
+      ],
+      "sha256": "2c3d7c9cb57608c1ec5b0309d69872aeac20ac0c452bbc2160cd6450711c8b3c"
+     }
+    ]
+   }
+  },
+  "G-E2.3 smoke replay R384 LSPG_CNR_1 (swap-neutral, dev6)": {
+   "ok": true,
+   "evidence": {
+    "passed": true,
+    "worst": 2.2746187224188228e-15,
+    "n": 6,
+    "files": [
+     {
+      "src": [
+       "p1",
+       "acc1024",
+       "R_R384_CNR.npz"
+      ],
+      "sha256": "89d5063dc67f9b4f14a8d2b576e97ffe4554b2ae0a406986d6115cee457846f2"
+     }
+    ]
+   }
+  },
+  "train2d smoke SEED-COMPLETE": {
+   "ok": true,
+   "evidence": null
+  },
+  "train2d smoke record (steps, rotation inverse check, device)": {
+   "ok": true,
+   "evidence": {
+    "seed": 1,
+    "mode": "smoke",
+    "device": [
+     "NVIDIA A100 80GB PCIe, GPU-c166dee7-f138-fc72-533f-4bfaee778a5c, 81920 MiB, 575.57.08",
+     "jax_backend=gpu"
+    ],
+    "stageA": {
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "steps_done": 3000,
+     "seconds": 228.451242685318,
+     "recon_rel_l2_mean": 0.13161920569544572,
+     "R2a": [],
+     "data_R0": true,
+     "bank_sha256": "32a15d4cde160e9b5feb61b6a664d5a268db5c8c05c2d30caa9f0fa99203d37f"
+    },
+    "stageB_mid": {
+     "seed": 1,
+     "steps": 2000,
+     "steps_done": 2000,
+     "seconds": 8.606961727142334,
+     "time_cap_s": 1500,
+     "time_cap_fired": false,
+     "final_loss": 0.048034474815141254,
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "extraction_gates": {
+      "gram_identity_rel_dev_max": 9.372070132655178e-14,
+      "gram_identity_rel_dev_mean": 4.8098652216833356e-15,
+      "gram_identity_rows": 64,
+      "gram_identity_implied_field_rel": 5.630347869567848e-15,
+      "span_floor_direct_vs_gram_rel_dev": 2.5939471504429824e-16
+     },
+     "note": "time_cap_fired=True is a recipe deviation for this seed (DESIGN A2.10)"
+    },
+    "rotation": {
+     "L_times_T_identity_deviation": 4.400928218002065e-13,
+     "orthonormality": 5.194098722457354e-13,
+     "R_G_condition_number": 1816.6998569147606,
+     "file_sha256": "f49f4bfa6f2ba162becd349e743ac9cefadb7a8d3fa5a27fea5d508121ed1c7b",
+     "checkpoint_sha256": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7"
+    },
+    "stage_seconds": {
+     "stageA": 382,
+     "stageB": 1027,
+     "rotation": 20
+    }
+   }
+  },
+  "smk2t complete on gpu, bank runtime-hashed": {
+   "ok": true,
+   "evidence": {
+    "bank": {
+     "ckpt": "../../output/train2d_s1/stageB/sep_hfit_dense_mid_N256_dense.pkl",
+     "ckpt_sha256": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7",
+     "rotation": "../../output/train2d_s1/rotation/rotation_R512.npz",
+     "rotation_sha256": "f49f4bfa6f2ba162becd349e743ac9cefadb7a8d3fa5a27fea5d508121ed1c7b",
+     "seed": 1,
+     "note": "smoke-trained (truncated steps); never a result",
+     "runtime_hashed": true
+    },
+    "ck": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7"
+   }
+  },
+  "smk2t ran on the trained (not the incumbent) bank": {
+   "ok": true,
+   "evidence": null
+  },
+  "smk2t LSPG_BE_1 analysis integrity": {
+   "ok": true,
+   "evidence": {
+    "ids_ok": true,
+    "mismatches": [],
+    "gcert_fail": 0,
+    "missing": [],
+    "ok": true
+   }
+  },
+  "smk2t LSPG_BE_1 own-family labels computed": {
+   "ok": true,
+   "evidence": {
+    "fib4181": [
+     "ok",
+     true
+    ],
+    "gauss96": [
+     "ok",
+     true
+    ]
+   }
+  },
+  "smk2t LSPG_CNR_1 analysis integrity": {
+   "ok": true,
+   "evidence": {
+    "ids_ok": true,
+    "mismatches": [],
+    "gcert_fail": 0,
+    "missing": [],
+    "ok": true
+   }
+  },
+  "smk2t LSPG_CNR_1 own-family labels computed": {
+   "ok": true,
+   "evidence": {
+    "fib4181": [
+     "ok",
+     true
+    ],
+    "gauss96": [
+     "ok",
+     true
+    ]
+   }
+  },
+  "smk2u complete on gpu, bank runtime-hashed": {
+   "ok": true,
+   "evidence": {
+    "bank": {
+     "ckpt": "../../output/train2d_s1/stageB/sep_hfit_dense_mid_N256_dense.pkl",
+     "ckpt_sha256": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7",
+     "rotation": "../../output/train2d_s1/rotation/rotation_R512.npz",
+     "rotation_sha256": "f49f4bfa6f2ba162becd349e743ac9cefadb7a8d3fa5a27fea5d508121ed1c7b",
+     "seed": 1,
+     "note": "smoke-trained (truncated steps); never a result",
+     "runtime_hashed": true
+    },
+    "ck": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7"
+   }
+  },
+  "smk2u ran on the trained (not the incumbent) bank": {
+   "ok": true,
+   "evidence": null
+  },
+  "smk2u LSPG_BE_1 analysis integrity": {
+   "ok": true,
+   "evidence": {
+    "ids_ok": true,
+    "mismatches": [],
+    "gcert_fail": 0,
+    "missing": [],
+    "ok": true
+   }
+  },
+  "smk2u LSPG_BE_1 own-family labels computed": {
+   "ok": true,
+   "evidence": {
+    "sel": [
+     "target not certified",
+     true
+    ]
+   }
+  },
+  "select2d (smoke contract) runs on the trained bank and returns a defined outcome": {
+   "ok": true,
+   "evidence": {
+    "outcome": "selected",
+    "rule": "fib4181",
+    "log": "128 {'rule': 'fib4181', 'outcome': 'selected', 'smoke': True, 'target_certified': True, 'deployed': 'fib4181', 'equals_deployed': True}\n"
+   }
+  },
+  "selection result drives the H-acc-N rows (selected rule evaluated -> two-mesh outcome; else verdict not reached)": {
+   "ok": true,
+   "evidence": {
+    "pick": "fib4181",
+    "evaluated": "fib4181",
+    "outcome": "two-mesh evidence, registered three-mesh verdict not reached"
+   }
+  },
+  "smoke resource contract (registered spec, regenerated inventories, reservation <= 2 GPU-h)": {
+   "ok": true,
+   "evidence": {
+    "reservation_identity": {
+     "attempt": true,
+     "commit": true,
+     "gpu": true,
+     "gpus": true,
+     "groups": true,
+     "time_limit": true
+    },
+    "configs/smk2r.json": {
+     "n": 144,
+     "same": true
+    },
+    "train2d/run_seed.sh": {
+     "same": true
+    },
+    "configs/smk2t.json": {
+     "n": 120,
+     "same": true
+    },
+    "configs/smk2u.json": {
+     "n": 24,
+     "same": true
+    }
+   }
+  }
+ },
+ "ALL": true,
+ "label": "smoke acceptance (plumbing and controls at real size); never a verdict"
+}

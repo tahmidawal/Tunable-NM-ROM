@@ -1,0 +1,251 @@
+{
+ "gpus": [
+  "NVIDIA H200"
+ ],
+ "one_gpu_type": true,
+ "meshes": {
+  "4096": {
+   "job": "5380338",
+   "gpu": "NVIDIA H200",
+   "panel_ok": true,
+   "veto": [
+    "CTRL-ID|fd|CC|L256|0.01|t2"
+   ],
+   "gates": {
+    "G-RR": true,
+    "A-valid": true,
+    "G-FR": true
+   },
+   "controls": {
+    "T-dbl": true,
+    "T-fault": true,
+    "T-id": true
+   },
+   "frozen_selection_sha256": "428efedfada1d2db7bd1f92806627be1314764046ca839fbb0f94a57f67efd18",
+   "stage0": {
+    "fd|CC|L256|0.01|t2": 0.03498955490067601,
+    "fd|UB|L512|0.005|t2": 0.08725503832101822,
+    "ps|N32|0.01": 0.012107954360544682,
+    "ps|N256|0.0005": 0.14430746110156178
+   },
+   "prep": {
+    "fd|CC|L256|0.01|t2": {
+     "median": 0.0009729368612170219,
+     "max": 0.020504041574895382,
+     "shared_key": [
+      "fd",
+      256
+     ]
+    },
+    "fd|UB|L512|0.005|t2": {
+     "median": 0.0030090673826634884,
+     "max": 0.020649530924856663,
+     "shared_key": [
+      "fd",
+      512
+     ]
+    },
+    "ps|N32|0.01": {
+     "median": 0.005716545972973108,
+     "max": 0.022086327895522118,
+     "shared_key": [
+      "ps",
+      32
+     ]
+    },
+    "ps|N256|0.0005": {
+     "median": 0.040851674508303404,
+     "max": 0.061033145524561405,
+     "shared_key": [
+      "ps",
+      256
+     ]
+    }
+   }
+  }
+ },
+ "cells": {
+  "4096|smk|CC|joint": {
+   "target": "smk",
+   "group": "smk|CC|joint",
+   "family": "CC",
+   "criterion": "joint",
+   "selected": "fd|CC|L256|0.01|t2",
+   "labels": {},
+   "status": "ok",
+   "n": 6,
+   "cases": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ],
+   "S": 1.4127221774739651,
+   "lo": 1.309401251378627,
+   "hi": 1.8353644467592494,
+   "cost_rom": 0.2586736468765838,
+   "cost_fom": 0.36543399767061896,
+   "faster": "ROM faster",
+   "two_x_class": "ROM < 2x",
+   "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+   "selected_labels": {}
+  },
+  "4096|smk|union|joint": {
+   "target": "smk",
+   "group": "smk|union|joint",
+   "family": "union",
+   "criterion": "joint",
+   "selected": "ps|N32|0.01",
+   "labels": {},
+   "status": "ok",
+   "n": 6,
+   "cases": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ],
+   "S": 0.4670434188112311,
+   "lo": 0.4565752080071135,
+   "hi": 0.47718574508277406,
+   "cost_rom": 0.2586736468765838,
+   "cost_fom": 0.12081182439360882,
+   "faster": "FOM faster",
+   "two_x_class": "ROM < 2x",
+   "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+   "selected_labels": {}
+  }
+ },
+ "hcomp": {},
+ "k2": {
+  "verdict": "inconclusive (no complete qualification manifest; front members only)",
+  "members": {
+   "smk": {
+    "S": 0.4670434188112311,
+    "lo": 0.4565752080071135,
+    "hi": 0.47718574508277406,
+    "status": "ok",
+    "two_x_class": "ROM < 2x",
+    "two_x": "fail under the registered dev6 descriptive-bootstrap rule"
+   }
+  },
+  "universe_complete": false
+ },
+ "crossover": {
+  "dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod": {
+   "UB|joint": {
+    "sequence": [
+     [
+      4096,
+      "no cell",
+      "no cell"
+     ]
+    ],
+    "other_statuses": [
+     "no cell"
+    ],
+    "bracket_1x": "no timed cell (no cell)",
+    "bracket_2x": "no timed cell (no cell)"
+   },
+   "UB|same_mesh": {
+    "sequence": [
+     [
+      4096,
+      "no cell",
+      "no cell"
+     ]
+    ],
+    "other_statuses": [
+     "no cell"
+    ],
+    "bracket_1x": "no timed cell (no cell)",
+    "bracket_2x": "no timed cell (no cell)"
+   },
+   "CC|joint": {
+    "sequence": [
+     [
+      4096,
+      "ROM faster",
+      "ROM < 2x"
+     ]
+    ],
+    "other_statuses": [],
+    "bracket_1x": "point only (4096^2: ROM faster)",
+    "bracket_2x": "point only (4096^2)"
+   },
+   "CC|same_mesh": {
+    "sequence": [
+     [
+      4096,
+      "no cell",
+      "no cell"
+     ]
+    ],
+    "other_statuses": [
+     "no cell"
+    ],
+    "bracket_1x": "no timed cell (no cell)",
+    "bracket_2x": "no timed cell (no cell)"
+   },
+   "PS|joint": {
+    "sequence": [
+     [
+      4096,
+      "no cell",
+      "no cell"
+     ]
+    ],
+    "other_statuses": [
+     "no cell"
+    ],
+    "bracket_1x": "no timed cell (no cell)",
+    "bracket_2x": "no timed cell (no cell)"
+   },
+   "PS|same_mesh": {
+    "sequence": [
+     [
+      4096,
+      "no cell",
+      "no cell"
+     ]
+    ],
+    "other_statuses": [
+     "no cell"
+    ],
+    "bracket_1x": "no timed cell (no cell)",
+    "bracket_2x": "no timed cell (no cell)"
+   },
+   "union|joint": {
+    "sequence": [
+     [
+      4096,
+      "FOM faster",
+      "ROM < 2x"
+     ]
+    ],
+    "other_statuses": [],
+    "bracket_1x": "point only (4096^2: FOM faster)",
+    "bracket_2x": "point only (4096^2)"
+   },
+   "union|same_mesh": {
+    "sequence": [
+     [
+      4096,
+      "no cell",
+      "no cell"
+     ]
+    ],
+    "other_statuses": [
+     "no cell"
+    ],
+    "bracket_1x": "no timed cell (no cell)",
+    "bracket_2x": "no timed cell (no cell)"
+   }
+  }
+ },
+ "label": "conditional on the dev6 timing workload; prepared-input latencies; every matched speed-up is an upper bound on the claimed ROM speed-up (finite ladder, screening-selected comparator)"
+}

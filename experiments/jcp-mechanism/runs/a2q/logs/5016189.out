@@ -1,0 +1,41 @@
+host=pax008 source_commit=025b11f99cfb8831265d508b2f3023c2898936a8
+NVIDIA H200, GPU-3011fd20-5985-c4ea-f6bf-649a67b8d28b, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  998G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[10.1s] 3D R512 M2052: targets done; check worst fixed 7.3e-08, own65 1.0e-08, own129 1.2e-08, own257 1.3e-08
+[13.6s] 3D n33 R512: fixed median gaps upwind 2.69e-01, central 2.12e-02, nodes 6.70e-05
+[21.4s] 3D n65 R512: fixed median gaps upwind 1.37e-01, central 5.37e-03, nodes 3.97e-06
+[36.4s] 3D n129 R512: fixed median gaps upwind 6.91e-02, central 1.35e-03, nodes 2.45e-07
+[144.3s] 3D n257 R512: fixed median gaps upwind 3.46e-02, central 3.37e-04, nodes 1.52e-08
+[150.8s] 3D R256 M1027: targets done; check worst fixed 1.2e-08, own65 2.9e-09, own129 3.2e-09, own257 3.7e-09
+[152.7s] 3D n33 R256: fixed median gaps upwind 2.70e-01, central 2.10e-02, nodes 4.94e-05
+[158.0s] 3D n65 R256: fixed median gaps upwind 1.37e-01, central 5.32e-03, nodes 2.99e-06
+[172.1s] 3D n129 R256: fixed median gaps upwind 6.91e-02, central 1.33e-03, nodes 1.84e-07
+[278.3s] 3D n257 R256: fixed median gaps upwind 3.47e-02, central 3.34e-04, nodes 1.14e-08
+[295.8s] 3D manufactured n33: {'h': 0.03125, 'upwind': 0.17252380187734956, 'central': 0.007886490119542813, 'nodes': 0.0001421673780937276, 'central101': 0.009157499578151476, 'neg_a': 0.010000000000000002, 'upwind_vs_lead': 0.04587788181171424, 'central_vs_lead': 0.018832791983539127}
+[296.8s] 3D manufactured n65: {'h': 0.015625, 'upwind': 0.08610820380680623, 'central': 0.00198000709758179, 'nodes': 8.044128508261285e-06, 'central101': 0.009167802189394201, 'neg_a': 0.010000000000000002, 'upwind_vs_lead': 0.023025095662611732, 'central_vs_lead': 0.004328202046418846}
+[298.6s] 3D manufactured n129: {'h': 0.0078125, 'upwind': 0.043000097387378075, 'central': 0.000495545064956113, 'nodes': 4.90969652694174e-07, 'central101': 0.0097600916675007, 'neg_a': 0.010000000000000002, 'upwind_vs_lead': 0.011530554994450049, 'central_vs_lead': 0.0010609292723992082}
+[300.5s] 3D manufactured n257: {'h': 0.00390625, 'upwind': 0.02148459761227736, 'central': 0.00012392046887532923, 'nodes': 3.0506189796525107e-08, 'central101': 0.00993819248923731, 'neg_a': 0.010000000000000002, 'upwind_vs_lead': 0.005769266496331953, 'central_vs_lead': 0.0002639492663100452}
+[315.4s] 2D acc: targets done; check worst fixed 4.3e-08, own256 1.2e-08, own1024 1.4e-08, own4096 1.7e-08
+[322.4s] 2D L128 acc: fixed median gaps upwind 6.85e-02, central 2.04e-03, nodes 3.49e-04
+[332.2s] 2D L256 acc: fixed median gaps upwind 3.44e-02, central 5.12e-04, nodes 1.04e-04
+[339.2s] 2D L512 acc: fixed median gaps upwind 1.72e-02, central 1.28e-04, nodes 9.61e-06
+[353.8s] 2D L1024 acc: fixed median gaps upwind 8.62e-03, central 3.20e-05, nodes 2.49e-07
+[379.6s] 2D L2048 acc: fixed median gaps upwind 4.31e-03, central 8.00e-06, nodes 1.88e-09
+[542.6s] 2D L4096 acc: fixed median gaps upwind 2.16e-03, central 2.00e-06, nodes 1.36e-10
+[550.9s] 2D fast: targets done; check worst fixed 3.2e-08, own256 9.6e-09, own1024 1.1e-08, own4096 1.1e-08
+[553.6s] 2D L128 fast: fixed median gaps upwind 6.86e-02, central 2.05e-03, nodes 2.93e-04
+[557.1s] 2D L256 fast: fixed median gaps upwind 3.44e-02, central 5.13e-04, nodes 1.16e-04
+[561.4s] 2D L512 fast: fixed median gaps upwind 1.72e-02, central 1.28e-04, nodes 6.97e-06
+[571.1s] 2D L1024 fast: fixed median gaps upwind 8.62e-03, central 3.20e-05, nodes 2.11e-07
+[591.7s] 2D L2048 fast: fixed median gaps upwind 4.31e-03, central 8.01e-06, nodes 2.28e-09
+[717.0s] 2D L4096 fast: fixed median gaps upwind 2.16e-03, central 2.00e-06, nodes 2.22e-10
+[766.9s] 2D manufactured L128: {'h': 0.0078125, 'upwind': 0.04022842142404018, 'central': 0.0006258629527632503, 'nodes': 2.515391991099496e-06, 'central101': 0.009634384877857938, 'neg_a': 0.010000000000000004, 'upwind_vs_lead': 0.015566034472075633, 'central_vs_lead': 0.00403408426299243}
+[768.5s] 2D manufactured L256: {'h': 0.00390625, 'upwind': 0.020105672001865707, 'central': 0.00015650820733286542, 'nodes': 1.50508976796549e-07, 'central101': 0.009906061382453351, 'neg_a': 0.010000000000000004, 'upwind_vs_lead': 0.007786189595955534, 'central_vs_lead': 0.0009662351719373702}
+[770.1s] 2D manufactured L512: {'h': 0.001953125, 'upwind': 0.01005039224347321, 'central': 3.912976620927846e-05, 'nodes': 9.306965987608597e-09, 'central101': 0.009976362268360699, 'neg_a': 0.010000000000000004, 'upwind_vs_lead': 0.00389381301580811, 'central_vs_lead': 0.00023903986034335984}
+[771.7s] 2D manufactured L1024: {'h': 0.0009765625, 'upwind': 0.005024546557040496, 'central': 9.782612053941931e-06, 'nodes': 5.801445652585779e-10, 'central101': 0.009994081081712089, 'neg_a': 0.010000000000000004, 'upwind_vs_lead': 0.0019470754734210467, 'central_vs_lead': 5.9604348941949934e-05}
+[774.4s] 2D manufactured L2048: {'h': 0.00048828125, 'upwind': 0.002512106060240233, 'central': 2.4456636935050367e-06, 'nodes': 3.623605848261877e-11, 'central101': 0.009998519678847467, 'neg_a': 0.010000000000000004, 'upwind_vs_lead': 0.0009735786260166783, 'central_vs_lead': 1.4891266919871961e-05}
+[775.9s] 2D manufactured L4096: {'h': 0.000244140625, 'upwind': 0.0012560106222400632, 'central': 6.114166018824376e-07, 'nodes': 2.265573215605733e-12, 'central101': 0.00999962988273927, 'neg_a': 0.010000000000000004, 'upwind_vs_lead': 0.0004867993729877021, 'central_vs_lead': 3.7219581539576815e-06}
+A2 COMPLETE
+ALL-DONE

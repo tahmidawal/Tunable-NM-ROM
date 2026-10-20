@@ -1,0 +1,49 @@
+{
+ "seed": 3,
+ "mode": "production",
+ "device": [
+  "NVIDIA A100 80GB PCIe, GPU-93ae5f8d-299a-28bc-9b53-07a050aa9da5, 81920 MiB, 575.57.08",
+  "NVIDIA A100 80GB PCIe, GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033, 81920 MiB, 575.57.08",
+  "NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB, 575.57.08",
+  "jax_backend=gpu"
+ ],
+ "stageA": {
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "steps_done": 300000,
+  "seconds": 9759.836563587189,
+  "recon_rel_l2_mean": 0.006775472117760162,
+  "R2a": [],
+  "data_R0": true,
+  "bank_sha256": "efb5b56089b3cad4643d28d0dce3463259bafbceb184c90a2e00d78421836dc4"
+ },
+ "stageB_mid": {
+  "seed": 3,
+  "steps": 200000,
+  "steps_done": 200000,
+  "seconds": 338.0378155708313,
+  "time_cap_s": 1500,
+  "time_cap_fired": false,
+  "final_loss": 6.27598011585749e-05,
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "extraction_gates": {
+   "gram_identity_rel_dev_max": 3.182778844876546e-14,
+   "gram_identity_rel_dev_mean": 1.4052571217924616e-15,
+   "gram_identity_rows": 64,
+   "gram_identity_implied_field_rel": 1.6392552716440039e-15,
+   "span_floor_direct_vs_gram_rel_dev": 2.7925188840415017e-16
+  },
+  "note": "time_cap_fired=True is a recipe deviation for this seed (DESIGN A2.10)"
+ },
+ "rotation": {
+  "L_times_T_identity_deviation": 9.959125779934955e-12,
+  "orthonormality": 1.0673919776105254e-11,
+  "R_G_condition_number": 22794.567352537215,
+  "file_sha256": "fb9e79f2e304a8e7ff90ce77056e465fae7f5426a309453106c46ce7e0cb639a",
+  "checkpoint_sha256": "af877976023c6cf686f7dcf18d49aefe4faacef079e5ae84752a9bbb53709b11"
+ },
+ "stage_seconds": {
+  "stageA": 9913,
+  "stageB": 3586,
+  "rotation": 19
+ }
+}

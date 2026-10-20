@@ -1,0 +1,99 @@
+{
+ "rules": {
+  "lat2048": {
+   "family": "cbc_lattice",
+   "m": 2048,
+   "weight_sum": 1.0,
+   "w_min": 0.00048828125,
+   "sha256": "8bf910d3b83d2c335e1b21041303bd756f2026984c60b9a96f3c11ad11dd2a60",
+   "z": [
+    1,
+    791,
+    213
+   ],
+   "p2": 0.0020337141700890182,
+   "p2_check": 0.0020337141700890182,
+   "shift_seed": 0
+  },
+  "lat65536": {
+   "family": "cbc_lattice",
+   "m": 65536,
+   "weight_sum": 1.0,
+   "w_min": 1.52587890625e-05,
+   "sha256": "d26cb2e992a421f59a7991cb22fd8ae7f6b9bdf8021ff6c3a2512925dd805bf9",
+   "z": [
+    1,
+    19463,
+    8279
+   ],
+   "p2": 4.445856711887686e-06,
+   "p2_check": 4.445856711887686e-06,
+   "shift_seed": 0
+  },
+  "lat131072": {
+   "family": "cbc_lattice",
+   "m": 131072,
+   "weight_sum": 1.0,
+   "w_min": 7.62939453125e-06,
+   "sha256": "3abf8abe59a57294f99b30cefd717600efad7ad59caedd260f2ddf4554b9e6d4",
+   "z": [
+    1,
+    38399,
+    13781
+   ],
+   "p2": 1.378145776387285e-06,
+   "p2_check": 1.378145776387285e-06,
+   "shift_seed": 0
+  },
+  "gl12": {
+   "family": "gauss_tensor",
+   "m": 1728,
+   "weight_sum": 1.0000000000000004,
+   "w_min": 1.312366179567244e-05,
+   "sha256": "48754e1d65d4b998ef55036f096b7c181243b08f42df01ed13b9684a6ff70067",
+   "p": 12
+  },
+  "gl20": {
+   "family": "gauss_tensor",
+   "m": 8000,
+   "weight_sum": 0.9999999999999994,
+   "w_min": 6.831003645471605e-07,
+   "sha256": "bc8ba8602aabc3855ed5de2d1c074cb2c89c0403250cd023477a67e4ad491193",
+   "p": 20
+  },
+  "gl40": {
+   "family": "gauss_tensor",
+   "m": 64000,
+   "weight_sum": 1.0,
+   "w_min": 1.155296312747746e-08,
+   "sha256": "66e504eef258bd504b2fb4d7ed16d715caec0785a2825fa85ab098c885f891b9",
+   "p": 40
+  },
+  "gl48": {
+   "family": "gauss_tensor",
+   "m": 110592,
+   "weight_sum": 1.0000000000000002,
+   "w_min": 3.919448056552514e-09,
+   "sha256": "c3a30b5ae04f4af7c8d1cded8886b89d74eb7887caa422ab8a57663f8adb58cc",
+   "p": 48
+  },
+  "gl56": {
+   "family": "gauss_tensor",
+   "m": 175616,
+   "weight_sum": 1.0000000000000004,
+   "w_min": 1.5686906292405673e-09,
+   "sha256": "6ba4f8eb9de4c754a4c286a948e924dbdc9db42b0d9e9066597c41b0c8d65417",
+   "p": 56
+  },
+  "gl64": {
+   "family": "gauss_tensor",
+   "m": 262144,
+   "weight_sum": 1.0000000000000002,
+   "w_min": 7.088741782879149e-10,
+   "sha256": "437607f465aad35a4dbd746b0d0206be9224fe6e8cb09721c5426cba8a825670",
+   "p": 64
+  }
+ },
+ "npz_sha256": "8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf",
+ "generator": "vendor/quad3d/rules.py (unchanged)"
+}

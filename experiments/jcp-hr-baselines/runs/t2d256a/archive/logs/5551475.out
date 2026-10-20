@@ -1,0 +1,304 @@
+host=pax007 source_commit=13fbab1d645b2b9f376cf02634ea9d77c61f12c2
+NVIDIA A100 80GB PCIe, GPU-aafad47a-9358-af08-cda9-1eacee35afea, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  1.1T  3.6T  23% /cluster/tufts/paralab
+jax_backend=gpu
+[     0.4s] jax_backend=gpu devices=[CudaDevice(id=0)]
+[     0.7s] OK   refs (0.3s)
+[    41.5s]    oursP1: L=256 settings ['R128', 'R256', 'R384', 'R384nom'] in 39.8s
+[    46.9s]    ours 256|R128|BE: G-ours=True (2.05e-14) 0:0.0293s 1:0.0303s 2:0.0302s 3:0.0296s 4:0.0289s 5:0.0297s
+[    48.0s]    ours 256|R128|CNR: G-ours=True (3.48e-14) 0:0.0293s 1:0.0305s 2:0.0302s 3:0.0295s 4:0.0283s 5:0.0297s
+[    54.2s]    ours 256|R256|BE: G-ours=True (1.69e-14) 0:0.1146s 1:0.1132s 2:0.1114s 3:0.1137s 4:0.1111s 5:0.1109s
+[    56.3s]    ours 256|R256|CNR: G-ours=True (9.96e-14) 0:0.1124s 1:0.1141s 2:0.1117s 3:0.1125s 4:0.1106s 5:0.1099s
+[    63.9s]    ours 256|R384|BE: G-ours=True (3.23e-14) 0:0.2069s 1:0.2043s 2:0.2006s 3:0.2089s 4:0.2010s 5:0.1987s
+[    67.3s]    ours 256|R384|CNR: G-ours=True (8.66e-14) 0:0.2076s 1:0.2057s 2:0.2006s 3:0.2071s 4:0.2010s 5:0.1996s
+[    70.7s]    ours 256|R384nom|BE: G-ours=True (5.48e-14) 0:0.2066s 1:0.2045s 2:0.2024s 3:0.2080s 4:0.2017s 5:0.1990s
+[    74.0s]    ours 256|R384nom|CNR: G-ours=True (1.01e-13) 0:0.2077s 1:0.2046s 2:0.2013s 3:0.2080s 4:0.1999s 5:0.1995s
+[    74.0s] OK   ours_pass (73.3s)
+[    75.9s]    snapshots 1/576 worst rel residual 3.32e-11 [1s]
+[    84.3s]    snapshots 65/576 worst rel residual 9.94e-11 [10s]
+[    92.0s]    snapshots 129/576 worst rel residual 1.00e-10 [18s]
+[    99.7s]    snapshots 193/576 worst rel residual 1.00e-10 [25s]
+[   108.2s]    snapshots 257/576 worst rel residual 1.00e-10 [34s]
+[   116.2s]    snapshots 321/576 worst rel residual 1.00e-10 [42s]
+[   124.4s]    snapshots 385/576 worst rel residual 1.00e-10 [50s]
+[   132.8s]    snapshots 449/576 worst rel residual 1.00e-10 [58s]
+[   141.5s]    snapshots 513/576 worst rel residual 1.00e-10 [67s]
+[   149.3s]    snapshots 576/576 worst rel residual 1.00e-10 [75s]
+[   204.9s]    basis[central]: n_snap 6912 rank 4106 orth 3.1e-15 optimal True
+[   204.9s] OK   basis (130.9s)
+[   705.9s]    basis[allstep]: n_snap 29376 rank 15236 orth 3.2e-15 optimal True
+[   744.0s] OK   saturation (538.5s)
+[   758.6s] OK   adequacy (13.8s)
+[   784.8s]    advection POD: p_max 2048 numerical rank 4408 orth 1.3e-14
+[   784.8s] OK   adv_pod (26.2s)
+[   785.8s]    snapshots 1/576 worst rel residual 4.07e-11 [1s]
+[   796.1s]    snapshots 65/576 worst rel residual 9.97e-11 [11s]
+[   805.2s]    snapshots 129/576 worst rel residual 9.97e-11 [20s]
+[   814.4s]    snapshots 193/576 worst rel residual 9.97e-11 [30s]
+[   824.6s]    snapshots 257/576 worst rel residual 9.97e-11 [40s]
+[   834.1s]    snapshots 321/576 worst rel residual 9.97e-11 [49s]
+[   843.8s]    snapshots 385/576 worst rel residual 9.97e-11 [59s]
+[   854.0s]    snapshots 449/576 worst rel residual 9.98e-11 [69s]
+[   864.3s]    snapshots 513/576 worst rel residual 1.00e-10 [80s]
+[   873.7s]    snapshots 576/576 worst rel residual 1.00e-10 [89s]
+[   877.0s]    basis[upwind]: n_snap 6912 rank 4043 orth 2.9e-15 optimal True
+[   877.4s] OK   generator_probe_basis (92.7s)
+[   883.0s] OK   ecsw_states (5.5s)
+[   896.8s] OK   ecsw_r32 (13.8s)
+[   916.5s] OK   ecsw_r64 (19.7s)
+[   955.8s] OK   ecsw_r128 (39.3s)
+[  1054.7s] OK   ecsw_r256 (98.9s)
+[  1296.0s] OK   ecsw_r384 (241.3s)
+[  1300.1s]    ecsw|32|k2|BE|0.005|native|central: q1=True W=0.6866 t=0.03024s timing_ok=True
+[  1302.4s]    ecsw|32|k2|BE|0.005|common|central: q1=True W=0.6866 t=0.01188s timing_ok=True
+[  1302.4s] OK   A|ecsw|32|k2|BE|0.005 (5.9s)
+[  1304.4s]    ecsw|32|k2|CNR|0.005|native|central: q1=True W=0.6921 t=0.03026s timing_ok=True
+[  1305.5s]    ecsw|32|k2|CNR|0.005|common|central: q1=True W=0.6921 t=0.01246s timing_ok=True
+[  1305.5s] OK   A|ecsw|32|k2|CNR|0.005 (3.1s)
+[  1309.3s]    ecsw|32|k4|BE|0.005|native|central: q1=True W=0.2114 t=0.03718s timing_ok=True
+[  1311.7s]    ecsw|32|k4|BE|0.005|common|central: q1=True W=0.2114 t=0.009557s timing_ok=True
+[  1311.7s] OK   A|ecsw|32|k4|BE|0.005 (5.8s)
+[  1313.9s]    ecsw|32|k4|CNR|0.005|native|central: q1=True W=0.1992 t=0.03736s timing_ok=True
+[  1315.0s]    ecsw|32|k4|CNR|0.005|common|central: q1=True W=0.1992 t=0.009539s timing_ok=True
+[  1315.0s] OK   A|ecsw|32|k4|CNR|0.005 (3.2s)
+[  1319.3s]    ecsw|32|k8|BE|0.005|native|central: q1=True W=0.2 t=0.03094s timing_ok=True
+[  1321.9s]    ecsw|32|k8|BE|0.005|common|central: q1=True W=0.2 t=0.009625s timing_ok=True
+[  1321.9s] OK   A|ecsw|32|k8|BE|0.005 (6.5s)
+[  1324.2s]    ecsw|32|k8|CNR|0.005|native|central: q1=True W=0.1908 t=0.03099s timing_ok=True
+[  1325.5s]    ecsw|32|k8|CNR|0.005|common|central: q1=True W=0.1908 t=0.009683s timing_ok=True
+[  1325.6s] OK   A|ecsw|32|k8|CNR|0.005 (3.6s)
+[  1332.7s]    qdeim|32|32|BE|0.005|native|central: q1=True W=0.2025 t=0.03795s timing_ok=True
+[  1335.7s]    qdeim|32|32|BE|0.005|common|central: q1=True W=0.2025 t=0.01018s timing_ok=True
+[  1335.8s] OK   A|qdeim|32|32|BE|0.005 (7.1s)
+[  1338.4s]    qdeim|32|32|CNR|0.005|native|central: q1=True W=0.2103 t=0.03809s timing_ok=True
+[  1339.8s]    qdeim|32|32|CNR|0.005|common|central: q1=True W=0.2103 t=0.0101s timing_ok=True
+[  1339.9s] OK   A|qdeim|32|32|CNR|0.005 (4.1s)
+[  1347.6s]    qdeim|32|64|BE|0.005|native|central: q1=True W=0.1983 t=0.03857s timing_ok=True
+[  1350.2s]    qdeim|32|64|BE|0.005|common|central: q1=True W=0.1983 t=0.009976s timing_ok=True
+[  1350.3s] OK   A|qdeim|32|64|BE|0.005 (7.6s)
+[  1353.2s]    qdeim|32|64|CNR|0.005|native|central: q1=True W=0.1892 t=0.03856s timing_ok=True
+[  1354.6s]    qdeim|32|64|CNR|0.005|common|central: q1=True W=0.1892 t=0.01002s timing_ok=True
+[  1354.7s] OK   A|qdeim|32|64|CNR|0.005 (4.3s)
+[  1362.8s]    qdeim|32|128|BE|0.005|native|central: q1=True W=0.1996 t=0.03361s timing_ok=True
+[  1366.0s]    qdeim|32|128|BE|0.005|common|central: q1=True W=0.1997 t=0.01099s timing_ok=True
+[  1366.1s] OK   A|qdeim|32|128|BE|0.005 (8.5s)
+[  1369.2s]    qdeim|32|128|CNR|0.005|native|central: q1=True W=0.1904 t=0.03349s timing_ok=True
+[  1370.7s]    qdeim|32|128|CNR|0.005|common|central: q1=True W=0.1904 t=0.01082s timing_ok=True
+[  1370.8s] OK   A|qdeim|32|128|CNR|0.005 (4.6s)
+[  1376.4s]    ecsw|64|k2|BE|0.005|native|central: q1=True W=0.8231 t=0.06008s timing_ok=True
+[  1379.4s]    ecsw|64|k2|BE|0.005|common|central: q1=True W=0.823 t=0.01322s timing_ok=True
+[  1379.5s] OK   A|ecsw|64|k2|BE|0.005 (8.4s)
+[  1383.5s]    ecsw|64|k2|CNR|0.005|native|central: q1=True W=1.023 t=0.06007s timing_ok=True
+[  1385.1s]    ecsw|64|k2|CNR|0.005|common|central: q1=True W=1.023 t=0.01411s timing_ok=True
+[  1385.2s] OK   A|ecsw|64|k2|CNR|0.005 (5.6s)
+[  1390.4s]    ecsw|64|k4|BE|0.005|native|central: q1=True W=0.1214 t=0.04508s timing_ok=True
+[  1393.5s]    ecsw|64|k4|BE|0.005|common|central: q1=True W=0.1214 t=0.01155s timing_ok=True
+[  1393.6s] OK   A|ecsw|64|k4|BE|0.005 (8.2s)
+[  1397.4s]    ecsw|64|k4|CNR|0.005|native|central: q1=True W=0.1153 t=0.04538s timing_ok=True
+[  1399.1s]    ecsw|64|k4|CNR|0.005|common|central: q1=True W=0.1153 t=0.01211s timing_ok=True
+[  1399.2s] OK   A|ecsw|64|k4|CNR|0.005 (5.5s)
+[  1405.5s]    ecsw|64|k8|BE|0.005|native|central: q1=True W=0.09827 t=0.0526s timing_ok=True
+[  1408.8s]    ecsw|64|k8|BE|0.005|common|central: q1=True W=0.09826 t=0.01177s timing_ok=True
+[  1408.9s] OK   A|ecsw|64|k8|BE|0.005 (9.1s)
+[  1413.2s]    ecsw|64|k8|CNR|0.005|native|central: q1=True W=0.09244 t=0.05265s timing_ok=True
+[  1415.0s]    ecsw|64|k8|CNR|0.005|common|central: q1=True W=0.09244 t=0.01214s timing_ok=True
+[  1415.1s] OK   A|ecsw|64|k8|CNR|0.005 (6.1s)
+[  1422.7s]    qdeim|64|64|BE|0.005|native|central: q1=True W=0.1048 t=0.04768s timing_ok=True
+[  1426.7s]    qdeim|64|64|BE|0.005|common|central: q1=True W=0.1048 t=0.01199s timing_ok=True
+[  1426.8s] OK   A|qdeim|64|64|BE|0.005 (10.3s)
+[  1431.1s]    qdeim|64|64|CNR|0.005|native|central: q1=True W=0.1104 t=0.04776s timing_ok=True
+[  1433.1s]    qdeim|64|64|CNR|0.005|common|central: q1=True W=0.1103 t=0.01235s timing_ok=True
+[  1433.2s] OK   A|qdeim|64|64|CNR|0.005 (6.2s)
+[  1442.1s]    qdeim|64|128|BE|0.005|native|central: q1=True W=0.09587 t=0.04836s timing_ok=True
+[  1445.7s]    qdeim|64|128|BE|0.005|common|central: q1=True W=0.09587 t=0.01281s timing_ok=True
+[  1445.9s] OK   A|qdeim|64|128|BE|0.005 (10.5s)
+[  1450.4s]    qdeim|64|128|CNR|0.005|native|central: q1=True W=0.08929 t=0.04853s timing_ok=True
+[  1452.4s]    qdeim|64|128|CNR|0.005|common|central: q1=True W=0.08929 t=0.01329s timing_ok=True
+[  1452.6s] OK   A|qdeim|64|128|CNR|0.005 (6.5s)
+[  1463.0s]    qdeim|64|256|BE|0.005|native|central: q1=True W=0.09852 t=0.05459s timing_ok=True
+[  1467.0s]    qdeim|64|256|BE|0.005|common|central: q1=True W=0.09852 t=0.0128s timing_ok=True
+[  1467.1s] OK   A|qdeim|64|256|BE|0.005 (11.4s)
+[  1472.3s]    qdeim|64|256|CNR|0.005|native|central: q1=True W=0.09257 t=0.05449s timing_ok=True
+[  1474.5s]    qdeim|64|256|CNR|0.005|common|central: q1=True W=0.09256 t=0.01323s timing_ok=True
+[  1474.6s] OK   A|qdeim|64|256|CNR|0.005 (7.3s)
+[  1481.7s]    ecsw|128|k2|BE|0.005|native|central: q1=True W=1.82 t=0.07238s timing_ok=True
+[  1485.9s]    ecsw|128|k2|BE|0.005|common|central: q1=False W=1.819 t=0.01792s timing_ok=True
+[  1486.0s] OK   A|ecsw|128|k2|BE|0.005 (11.0s)
+[  1491.6s]    ecsw|128|k2|CNR|0.005|native|central: q1=True W=2.325 t=0.07177s timing_ok=True
+[  1494.1s]    ecsw|128|k2|CNR|0.005|common|central: q1=False W=2.324 t=0.02022s timing_ok=True
+[  1494.3s] OK   A|ecsw|128|k2|CNR|0.005 (8.0s)
+[  1501.9s]    ecsw|128|k4|BE|0.005|native|central: q1=True W=0.03559 t=0.08822s timing_ok=True
+[  1505.4s]    ecsw|128|k4|BE|0.005|common|central: q1=True W=0.03559 t=0.01404s timing_ok=True
+[  1505.6s] OK   A|ecsw|128|k4|BE|0.005 (11.0s)
+[  1511.7s]    ecsw|128|k4|CNR|0.005|native|central: q1=True W=0.03422 t=0.08771s timing_ok=True
+[  1514.1s]    ecsw|128|k4|CNR|0.005|common|central: q1=True W=0.03422 t=0.01522s timing_ok=True
+[  1514.3s] OK   A|ecsw|128|k4|CNR|0.005 (8.5s)
+[  1523.3s]    ecsw|128|k8|BE|0.005|native|central: q1=True W=0.03283 t=0.1086s timing_ok=True
+[  1527.4s]    ecsw|128|k8|BE|0.005|common|central: q1=True W=0.03284 t=0.01505s timing_ok=True
+[  1527.6s] OK   A|ecsw|128|k8|BE|0.005 (12.7s)
+[  1534.4s]    ecsw|128|k8|CNR|0.005|native|central: q1=True W=0.03084 t=0.1085s timing_ok=True
+[  1536.8s]    ecsw|128|k8|CNR|0.005|common|central: q1=True W=0.03084 t=0.01604s timing_ok=True
+[  1537.1s] OK   A|ecsw|128|k8|CNR|0.005 (9.2s)
+[  1548.5s]    qdeim|128|128|BE|0.005|native|central: q1=True W=0.04823 t=0.08818s timing_ok=True
+[  1554.0s]    qdeim|128|128|BE|0.005|common|central: q1=True W=0.04823 t=0.0161s timing_ok=True
+[  1554.3s] OK   A|qdeim|128|128|BE|0.005 (15.6s)
+[  1560.8s]    qdeim|128|128|CNR|0.005|native|central: q1=True W=0.05001 t=0.0883s timing_ok=True
+[  1563.4s]    qdeim|128|128|CNR|0.005|common|central: q1=True W=0.05004 t=0.01699s timing_ok=True
+[  1563.7s] OK   A|qdeim|128|128|CNR|0.005 (9.2s)
+[  1574.6s]    qdeim|128|256|BE|0.005|native|central: q1=True W=0.03308 t=0.09083s timing_ok=True
+[  1579.2s]    qdeim|128|256|BE|0.005|common|central: q1=True W=0.03309 t=0.0158s timing_ok=True
+[  1579.4s] OK   A|qdeim|128|256|BE|0.005 (13.7s)
+[  1586.3s]    qdeim|128|256|CNR|0.005|native|central: q1=True W=0.03079 t=0.09095s timing_ok=True
+[  1589.0s]    qdeim|128|256|CNR|0.005|common|central: q1=True W=0.03079 t=0.01699s timing_ok=True
+[  1589.2s] OK   A|qdeim|128|256|CNR|0.005 (9.6s)
+[  1602.5s]    qdeim|128|512|BE|0.005|native|central: q1=True W=0.03287 t=0.1008s timing_ok=True
+[  1607.5s]    qdeim|128|512|BE|0.005|common|central: q1=True W=0.03287 t=0.01675s timing_ok=True
+[  1607.8s] OK   A|qdeim|128|512|BE|0.005 (14.8s)
+[  1615.3s]    qdeim|128|512|CNR|0.005|native|central: q1=True W=0.03066 t=0.1007s timing_ok=True
+[  1618.1s]    qdeim|128|512|CNR|0.005|common|central: q1=True W=0.03066 t=0.01816s timing_ok=True
+[  1618.4s] OK   A|qdeim|128|512|CNR|0.005 (10.3s)
+[  1631.4s]    ecsw|256|k2|BE|0.005|native|central: q1=False W=32.15 t=0.1773s timing_ok=True
+[  1636.8s]    ecsw|256|k2|BE|0.005|common|central: q1=False W=31.85 t=0.05544s timing_ok=True
+[  1637.1s] OK   A|ecsw|256|k2|BE|0.005 (18.2s)
+[  1647.9s]    ecsw|256|k2|CNR|0.005|native|central: q1=False W=1124 t=0.1752s timing_ok=True
+[  1654.7s]    ecsw|256|k2|CNR|0.005|common|central: q1=False W=78.15 t=0.06689s timing_ok=True
+[  1655.0s] OK   A|ecsw|256|k2|CNR|0.005 (17.6s)
+[  1667.4s]    ecsw|256|k4|BE|0.005|native|central: q1=True W=0.02001 t=0.2288s timing_ok=True
+[  1672.0s]    ecsw|256|k4|BE|0.005|common|central: q1=True W=0.02001 t=0.02142s timing_ok=True
+[  1672.3s] OK   A|ecsw|256|k4|BE|0.005 (16.9s)
+[  1682.9s]    ecsw|256|k4|CNR|0.005|native|central: q1=True W=0.01652 t=0.2278s timing_ok=True
+[  1686.0s]    ecsw|256|k4|CNR|0.005|common|central: q1=True W=0.01652 t=0.02291s timing_ok=True
+[  1686.3s] OK   A|ecsw|256|k4|CNR|0.005 (13.6s)
+[  1700.5s]    ecsw|256|k8|BE|0.005|native|central: q1=True W=0.02 t=0.288s timing_ok=True
+[  1705.5s]    ecsw|256|k8|BE|0.005|common|central: q1=True W=0.02 t=0.02535s timing_ok=True
+[  1705.8s] OK   A|ecsw|256|k8|BE|0.005 (18.8s)
+[  1717.8s]    ecsw|256|k8|CNR|0.005|native|central: q1=True W=0.007596 t=0.2868s timing_ok=True
+[  1721.1s]    ecsw|256|k8|CNR|0.005|common|central: q1=True W=0.007598 t=0.02742s timing_ok=True
+[  1721.4s] OK   A|ecsw|256|k8|CNR|0.005 (15.2s)
+[  1735.6s]    qdeim|256|256|BE|0.005|native|central: q1=True W=0.02761 t=0.201s timing_ok=True
+[  1741.6s]    qdeim|256|256|BE|0.005|common|central: q1=True W=0.02761 t=0.02277s timing_ok=True
+[  1741.9s] OK   A|qdeim|256|256|BE|0.005 (18.7s)
+[  1752.3s]    qdeim|256|256|CNR|0.005|native|central: q1=True W=0.02336 t=0.201s timing_ok=True
+[  1755.6s]    qdeim|256|256|CNR|0.005|common|central: q1=True W=0.02336 t=0.02423s timing_ok=True
+[  1755.9s] OK   A|qdeim|256|256|CNR|0.005 (13.7s)
+[  1771.8s]    qdeim|256|512|BE|0.005|native|central: q1=True W=0.02 t=0.2332s timing_ok=True
+[  1777.1s]    qdeim|256|512|BE|0.005|common|central: q1=True W=0.02 t=0.02668s timing_ok=True
+[  1777.4s] OK   A|qdeim|256|512|BE|0.005 (19.2s)
+[  1788.8s]    qdeim|256|512|CNR|0.005|native|central: q1=True W=0.007716 t=0.2334s timing_ok=True
+[  1792.2s]    qdeim|256|512|CNR|0.005|common|central: q1=True W=0.007721 t=0.02866s timing_ok=True
+[  1792.6s] OK   A|qdeim|256|512|CNR|0.005 (14.8s)
+[  1812.1s]    qdeim|256|1024|BE|0.005|native|central: q1=True W=0.02 t=0.2595s timing_ok=True
+[  1818.3s]    qdeim|256|1024|BE|0.005|common|central: q1=True W=0.02 t=0.03329s timing_ok=True
+[  1818.6s] OK   A|qdeim|256|1024|BE|0.005 (20.8s)
+[  1830.8s]    qdeim|256|1024|CNR|0.005|native|central: q1=True W=0.007594 t=0.2582s timing_ok=True
+[  1834.4s]    qdeim|256|1024|CNR|0.005|common|central: q1=True W=0.007595 t=0.03551s timing_ok=True
+[  1834.7s] OK   A|qdeim|256|1024|CNR|0.005 (15.8s)
+[  1852.7s]    ecsw|384|k2|BE|0.005|native|central: q1=False W=18.89 t=0.2867s timing_ok=True
+[  1862.4s]    ecsw|384|k2|BE|0.005|common|central: q1=False W=18.85 t=0.1062s timing_ok=True
+[  1862.7s] OK   A|ecsw|384|k2|BE|0.005 (27.0s)
+[  1880.4s]    ecsw|384|k2|CNR|0.005|native|central: q1=False W=1175 t=0.2826s timing_ok=True
+[  1897.1s]    ecsw|384|k2|CNR|0.005|common|central: q1=False W=172.8 t=0.2087s timing_ok=True
+[  1897.5s] OK   A|ecsw|384|k2|CNR|0.005 (34.4s)
+[  1916.9s]    ecsw|384|k4|BE|0.005|native|central: q1=True W=0.01995 t=0.3724s timing_ok=True
+[  1922.1s]    ecsw|384|k4|BE|0.005|common|central: q1=True W=0.01995 t=0.03239s timing_ok=True
+[  1922.5s] OK   A|ecsw|384|k4|BE|0.005 (23.7s)
+[  1937.6s]    ecsw|384|k4|CNR|0.005|native|central: q1=True W=0.00541 t=0.372s timing_ok=True
+[  1941.9s]    ecsw|384|k4|CNR|0.005|common|central: q1=True W=0.005413 t=0.03349s timing_ok=True
+[  1942.3s] OK   A|ecsw|384|k4|CNR|0.005 (19.4s)
+[  1963.2s]    ecsw|384|k8|BE|0.005|native|central: q1=True W=0.01994 t=0.4926s timing_ok=True
+[  1969.0s]    ecsw|384|k8|BE|0.005|common|central: q1=True W=0.01994 t=0.0415s timing_ok=True
+[  1969.4s] OK   A|ecsw|384|k8|BE|0.005 (26.0s)
+[  1987.1s]    ecsw|384|k8|CNR|0.005|native|central: q1=True W=0.003717 t=0.4925s timing_ok=True
+[  1991.1s]    ecsw|384|k8|CNR|0.005|common|central: q1=True W=0.003726 t=0.04254s timing_ok=True
+[  1991.5s] OK   A|ecsw|384|k8|CNR|0.005 (21.7s)
+[  2013.3s]    qdeim|384|384|BE|0.005|native|central: q1=True W=0.02081 t=0.3552s timing_ok=True
+[  2020.1s]    qdeim|384|384|BE|0.005|common|central: q1=True W=0.02081 t=0.0356s timing_ok=True
+[  2020.5s] OK   A|qdeim|384|384|BE|0.005 (24.6s)
+[  2035.7s]    qdeim|384|384|CNR|0.005|native|central: q1=True W=0.007147 t=0.355s timing_ok=True
+[  2039.7s]    qdeim|384|384|CNR|0.005|common|central: q1=True W=0.007149 t=0.03645s timing_ok=True
+[  2040.1s] OK   A|qdeim|384|384|CNR|0.005 (19.2s)
+[  2062.7s]    qdeim|384|768|BE|0.005|native|central: q1=True W=0.01994 t=0.3829s timing_ok=True
+[  2068.8s]    qdeim|384|768|BE|0.005|common|central: q1=True W=0.01994 t=0.04147s timing_ok=True
+[  2069.2s] OK   A|qdeim|384|768|BE|0.005 (24.8s)
+[  2085.3s]    qdeim|384|768|CNR|0.005|native|central: q1=True W=0.003707 t=0.3804s timing_ok=True
+[  2089.5s]    qdeim|384|768|CNR|0.005|common|central: q1=True W=0.003715 t=0.04248s timing_ok=True
+[  2089.9s] OK   A|qdeim|384|768|CNR|0.005 (20.3s)
+[  2118.5s]    qdeim|384|1536|BE|0.005|native|central: q1=True W=0.01994 t=0.5027s timing_ok=True
+[  2125.6s]    qdeim|384|1536|BE|0.005|common|central: q1=True W=0.01994 t=0.05973s timing_ok=True
+[  2126.0s] OK   A|qdeim|384|1536|BE|0.005 (28.5s)
+[  2144.8s]    qdeim|384|1536|CNR|0.005|native|central: q1=True W=0.003714 t=0.5029s timing_ok=True
+[  2149.4s]    qdeim|384|1536|CNR|0.005|common|central: q1=True W=0.003723 t=0.06111s timing_ok=True
+[  2149.8s] OK   A|qdeim|384|1536|CNR|0.005 (23.4s)
+[  2167.2s]    none|32|-|BE|0.005|native|central: q1=True W=0.1999 t=0.3519s timing_ok=True
+[  2172.7s]    none|32|-|BE|0.005|common|central: q1=True W=0.1999 t=0.02115s timing_ok=True
+[  2173.1s] OK   A|none|32|-|BE|0.005 (22.9s)
+[  2188.6s]    none|32|-|CNR|0.005|native|central: q1=True W=0.1907 t=0.3518s timing_ok=True
+[  2192.8s]    none|32|-|CNR|0.005|common|central: q1=True W=0.1907 t=0.02112s timing_ok=True
+[  2193.2s] OK   A|none|32|-|CNR|0.005 (19.7s)
+[  2221.6s]    none|64|-|BE|0.005|native|central: q1=True W=0.09845 t=0.7786s timing_ok=True
+[  2227.6s]    none|64|-|BE|0.005|common|central: q1=True W=0.09845 t=0.03306s timing_ok=True
+[  2228.1s] OK   A|none|64|-|BE|0.005 (34.4s)
+[  2252.6s]    none|64|-|CNR|0.005|native|central: q1=True W=0.09259 t=0.778s timing_ok=True
+[  2257.0s]    none|64|-|CNR|0.005|common|central: q1=True W=0.09259 t=0.03423s timing_ok=True
+[  2257.4s] OK   A|none|64|-|CNR|0.005 (28.9s)
+[  2300.1s]    none|128|-|BE|0.005|native|central: q1=True W=0.03278 t=1.441s timing_ok=True
+[  2306.6s]    none|128|-|BE|0.005|common|central: q1=True W=0.03278 t=0.05516s timing_ok=True
+[  2307.0s] OK   A|none|128|-|BE|0.005 (49.1s)
+[  2345.8s]    none|128|-|CNR|0.005|native|central: q1=True W=0.03077 t=1.442s timing_ok=True
+[  2350.6s]    none|128|-|CNR|0.005|common|central: q1=True W=0.03077 t=0.05945s timing_ok=True
+[  2351.1s] OK   A|none|128|-|CNR|0.005 (43.6s)
+[  2426.8s]    none|256|-|BE|0.005|native|central: q1=True W=0.02 t=2.975s timing_ok=True
+[  2434.3s]    none|256|-|BE|0.005|common|central: q1=True W=0.02 t=0.1142s timing_ok=True
+[  2434.8s] OK   A|none|256|-|BE|0.005 (83.2s)
+[  2505.8s]    none|256|-|CNR|0.005|native|central: q1=True W=0.007594 t=2.961s timing_ok=True
+[  2511.6s]    none|256|-|CNR|0.005|common|central: q1=True W=0.007596 t=0.1227s timing_ok=True
+[  2512.0s] OK   A|none|256|-|CNR|0.005 (76.8s)
+[  2621.9s]    none|384|-|BE|0.005|native|central: q1=True W=0.01994 t=4.592s timing_ok=True
+[  2630.6s]    none|384|-|BE|0.005|common|central: q1=True W=0.01994 t=0.1901s timing_ok=True
+[  2631.1s] OK   A|none|384|-|BE|0.005 (118.5s)
+[  2735.9s]    none|384|-|CNR|0.005|native|central: q1=True W=0.003715 t=4.583s timing_ok=True
+[  2742.7s]    none|384|-|CNR|0.005|common|central: q1=True W=0.003724 t=0.1951s timing_ok=True
+[  2743.2s] OK   A|none|384|-|CNR|0.005 (111.7s)
+[  2796.0s] OK   fom_limiting (52.3s)
+[  2959.4s] OK   generator_probe_runs (162.8s)
+[  2976.9s]    ecsw|128|k16|BE|0.005|native|central: q1=True W=0.03278 t=0.1301s timing_ok=True
+[  2984.3s]    ecsw|128|k16|BE|0.005|common|central: q1=True W=0.03278 t=0.01569s timing_ok=True
+[  2985.0s] OK   EXT|ecsw|128|k16|BE|0.005 (23.5s)
+[  2999.0s]    ecsw|128|k16|CNR|0.005|native|central: q1=True W=0.03077 t=0.1299s timing_ok=True
+[  3004.2s]    ecsw|128|k16|CNR|0.005|common|central: q1=True W=0.03077 t=0.01696s timing_ok=True
+[  3004.9s] OK   EXT|ecsw|128|k16|CNR|0.005 (19.3s)
+[  3026.7s]    ecsw|256|k16|BE|0.005|native|central: q1=True W=0.02 t=0.3649s timing_ok=True
+[  3034.2s]    ecsw|256|k16|BE|0.005|common|central: q1=True W=0.02 t=0.03098s timing_ok=True
+[  3034.8s] OK   EXT|ecsw|256|k16|BE|0.005 (28.8s)
+[  3054.1s]    ecsw|256|k16|CNR|0.005|native|central: q1=True W=0.007594 t=0.3631s timing_ok=True
+[  3059.7s]    ecsw|256|k16|CNR|0.005|common|central: q1=True W=0.007596 t=0.03313s timing_ok=True
+[  3060.4s] OK   EXT|ecsw|256|k16|CNR|0.005 (24.9s)
+[  3074.5s]    ecsw|32|k16|BE|0.005|native|central: q1=True W=0.1999 t=0.03587s timing_ok=True
+[  3081.2s]    ecsw|32|k16|BE|0.005|common|central: q1=True W=0.1999 t=0.01026s timing_ok=True
+[  3081.8s] OK   EXT|ecsw|32|k16|BE|0.005 (20.7s)
+[  3094.3s]    ecsw|32|k16|CNR|0.005|native|central: q1=True W=0.1907 t=0.0359s timing_ok=True
+[  3099.7s]    ecsw|32|k16|CNR|0.005|common|central: q1=True W=0.1907 t=0.01016s timing_ok=True
+[  3100.3s] OK   EXT|ecsw|32|k16|CNR|0.005 (17.8s)
+[  3543.8s] OK   ecsw_r512 (442.8s)
+[  3570.5s]    ecsw|512|k4|BE|0.005|native|central: q1=True W=0.01994 t=0.5338s timing_ok=True
+[  3579.0s]    ecsw|512|k4|BE|0.005|common|central: q1=True W=0.01994 t=0.04768s timing_ok=True
+[  3579.7s] OK   EXT|ecsw|512|k4|BE|0.005 (35.0s)
+[  3603.4s]    ecsw|512|k4|CNR|0.005|native|central: q1=True W=0.006789 t=0.534s timing_ok=True
+[  3609.9s]    ecsw|512|k4|CNR|0.005|common|central: q1=True W=0.006784 t=0.04731s timing_ok=True
+[  3610.6s] OK   EXT|ecsw|512|k4|CNR|0.005 (30.2s)
+[  3643.8s]    qdeim|512|1024|BE|0.005|native|central: q1=True W=0.01993 t=0.5643s timing_ok=True
+[  3652.9s]    qdeim|512|1024|BE|0.005|common|central: q1=True W=0.01993 t=0.0645s timing_ok=True
+[  3653.7s] OK   EXT|qdeim|512|1024|BE|0.005 (39.6s)
+[  3678.5s]    qdeim|512|1024|CNR|0.005|native|central: q1=True W=0.003614 t=0.5645s timing_ok=True
+[  3685.0s]    qdeim|512|1024|CNR|0.005|common|central: q1=True W=0.003614 t=0.06413s timing_ok=True
+[  3685.7s] OK   EXT|qdeim|512|1024|CNR|0.005 (31.3s)
+[  3701.2s]    ecsw|64|k16|BE|0.005|native|central: q1=True W=0.09845 t=0.06345s timing_ok=True
+[  3709.0s]    ecsw|64|k16|BE|0.005|common|central: q1=True W=0.09845 t=0.01178s timing_ok=True
+[  3709.7s] OK   EXT|ecsw|64|k16|BE|0.005 (23.2s)
+[  3723.5s]    ecsw|64|k16|CNR|0.005|native|central: q1=True W=0.09259 t=0.06348s timing_ok=True
+[  3729.2s]    ecsw|64|k16|CNR|0.005|common|central: q1=True W=0.09259 t=0.01233s timing_ok=True
+[  3729.9s] OK   EXT|ecsw|64|k16|CNR|0.005 (19.5s)
+[  3730.6s] OK   extension (770.6s)
+[  3732.0s] done {'not_run': 0, 'construction_failed': 0, 'run_failed': 0, 'complete': 164, 'deferred': 0}
+driver_exit=0
+ALL-DONE

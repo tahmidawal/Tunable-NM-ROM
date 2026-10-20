@@ -1,0 +1,26 @@
+{
+ "attempt": "kern2d",
+ "projection_hours": 0.201,
+ "time_limit_hours": 0.5,
+ "detail": {
+  "smoke_seconds": 80.7
+ },
+ "pilot": {
+  "run_ratio_4096_over_1024": 1.266576077243615,
+  "fused_seconds": {
+   "1024": 0.09179430361837149,
+   "256": 0.09458922874182463,
+   "4096": 0.11626446899026632
+  }
+ },
+ "smoke": [
+  "runs/smkA/archive/output",
+  "runs/smkB/archive/output"
+ ],
+ "runs": [
+  "p1kern:configs/kern2d.json"
+ ],
+ "configs": {
+  "configs/kern2d.json": "8612bda0176d1232c3726f526cc63160a1fa5bf9fad795bc55b0b8601652c83e"
+ }
+}

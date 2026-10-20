@@ -1,0 +1,257 @@
+{
+ "attempt": "k3",
+ "driver": "d3run",
+ "mode": "k3",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "W512k1",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 512
+  },
+  {
+   "name": "W512k2",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 1027
+  },
+  {
+   "name": "W512k3",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 1538
+  },
+  {
+   "name": "W512k4",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 2052
+  },
+  {
+   "name": "W512k8",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 4097
+  },
+  {
+   "name": "W256M2052",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 2052
+  },
+  {
+   "name": "W768M2052",
+   "bank": "W1024",
+   "Rp": 768,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 2052
+  },
+  {
+   "name": "W1024M2052",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 2052
+  }
+ ],
+ "extra_rules": [
+  "lat131072",
+  "lat16384",
+  "lat262144",
+  "lat32768",
+  "lat65536",
+  "lat8192"
+ ],
+ "blocks": [
+  {
+   "kind": "adaptive",
+   "setting": "W512k1",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512k2",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512k2",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512k3",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512k3",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512k4",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512k8",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512k8",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W256M2052",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W768M2052",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024M2052",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  }
+ ]
+}

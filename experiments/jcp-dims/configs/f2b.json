@@ -1,0 +1,764 @@
+{
+ "attempt": "f2b",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R512M512gauss64",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R512M512gauss96",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R512M512gauss128",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R512M512gauss160",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R512M512gauss192",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R512M512gauss256",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R512M512gauss320",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R512M512gauss384",
+   "Rp": 512,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R512M1024gauss64",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R512M1024gauss96",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R512M1024gauss128",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R512M1024gauss160",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R512M1024gauss192",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R512M1024gauss256",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R512M1024gauss320",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R512M1024gauss384",
+   "Rp": 512,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R512M1536gauss64",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R512M1536gauss96",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R512M1536gauss128",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R512M1536gauss160",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R512M1536gauss192",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R512M1536gauss256",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R512M1536gauss320",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R512M1536gauss384",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R512M2048gauss64",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R512M2048gauss96",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R512M2048gauss128",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R512M2048gauss160",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R512M2048gauss192",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R512M2048gauss256",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R512M2048gauss320",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R512M2048gauss384",
+   "Rp": 512,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R512M4096gauss64",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R512M4096gauss96",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R512M4096gauss128",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R512M4096gauss160",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R512M4096gauss192",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R512M4096gauss256",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R512M4096gauss320",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R512M4096gauss384",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  }
+ ],
+ "blocks": []
+}

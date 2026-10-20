@@ -1,0 +1,32 @@
+host=pax011 source_commit=51730ce187217ccfdeba155824b908d9e52e484e
+NVIDIA H200, GPU-3dd61a63-f64b-8d49-7857-b2e355e808cf, 143771 MiB
+10.235.106.23:/projects/paralab  4.6T 1021G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(1024, 250047)] 4.4s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 8.0s
+SETUP 19.6
+RUN W1024 lat65536 fs|CN|0.01|K1 40.8s eligible True 2 / 1600 64.6
+RUN W1024 lat65536 fs|BE|0.01|K1 20.4s eligible True 1 / 800 85.0
+RUN W1024 lat65536 ad|LSPG|BE|0.01|tight 36.5s eligible True 0 / 800 121.5
+RUN W1024 lat65536 ad|GAL|BE|0.01|tight 38.7s eligible True 0 / 800 160.2
+RUN W1024 lat65536 fs|BDF2|0.00125|K1 120.4s eligible True 0 / 6400 280.6
+RUN W1024 lat65536 ad|LSPG|BE|0.005|tight 58.3s eligible True 0 / 1600 338.9
+RUN W1024 lat65536 ad|LSPG|BDF2|0.00125|tight 177.2s eligible True 0 / 6400 516.1
+RUN W1024 lat65536 ad|LSPG|CN|0.01|tight 33.2s eligible True 0 / 800 549.4
+RUN W1024 lat65536 ad|GAL|CN|0.01|tight 36.2s eligible True 0 / 800 585.6
+RUN W1024 lat65536 ad|LSPG|CN|0.005|tight 56.8s eligible True 0 / 1600 642.4
+RUN W1024 lat65536 fs|CN|0.025|K1 12.5s eligible False 135 / 320 654.9
+RUN W1024 lat65536 ad|LSPG|CN|0.025|tight 17.9s eligible True 0 / 320 672.7
+RUN W1024 lat65536 ad|GAL|CN|0.025|tight 19.8s eligible True 0 / 320 692.5
+RUN W1024 lat65536 ad|LSPG|CN|0.0125|tight 27.9s eligible True 0 / 640 720.4
+RUN W1024 lat65536 ad|GAL|BDF2|0.00125|tight 210.8s eligible True 0 / 6400 931.2
+RUN W1024 gl80 fs|CN|0.01|K1 256.9s eligible True 2 / 1600 1191.0
+RUN W1024 gl80 fs|BE|0.01|K1 127.4s eligible True 1 / 800 1318.3
+RUN W1024 gl80 fs|BDF2|0.00125|K1 882.2s eligible True 0 / 6400 2200.5
+RUN W1024 gl80 fs|CN|0.025|K1 76.2s eligible False 135 / 320 2276.7
+RUN W1024 gl80 ad|GAL|BDF2|0.00125|tight 1575.7s eligible True 0 / 6400 3852.4
+RUN W1024 gl80 ad|GAL|BDF2|0.000625|tight 2721.1s eligible True 0 / 12800 6573.5
+RUN W1024 gl80 ad|GAL|BDF2|0.00125|tighter 1871.9s eligible True 0 / 6400 8445.4
+RUN W1024 gl80 ad|GAL|BDF2|0.000625|tighter 3139.1s eligible True 0 / 12800 11584.6
+RUN W1024 gl80 ad|LSPG|BDF2|0.00125|tight 1337.0s eligible True 0 / 6400 12921.5

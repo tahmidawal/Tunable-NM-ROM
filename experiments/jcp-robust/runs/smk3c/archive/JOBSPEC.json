@@ -1,0 +1,17 @@
+{
+ "attempt": "smk3c",
+ "gpu": "h200",
+ "gpus": 1,
+ "hours": 1.0,
+ "mem": "200G",
+ "cpus": 8,
+ "production": false,
+ "groups": [
+  [
+   {
+    "driver": "e2run3d",
+    "config": "configs/smk3c.json"
+   }
+  ]
+ ]
+}

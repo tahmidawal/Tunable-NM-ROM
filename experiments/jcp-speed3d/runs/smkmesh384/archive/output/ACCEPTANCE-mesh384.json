@@ -1,0 +1,83 @@
+{
+ "verdict": "PASS",
+ "failing": [],
+ "n_gates": 15,
+ "gates": {
+  "smkmesh384: config identical": {
+   "result": "pass"
+  },
+  "smkmesh384: bound to job 5299848 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299848",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "smkmesh384: complete": {
+   "result": "pass"
+  },
+  "smkmesh384 G5/K7 M2|512 recomputed": {
+   "result": "pass"
+  },
+  "smkmesh384 G5/K7 W1024|256 recomputed": {
+   "result": "pass"
+  },
+  "smkmesh384 G5/K7 W1024|1024 recomputed": {
+   "result": "pass"
+  },
+  "smkmesh384 L384: present": {
+   "result": "pass"
+  },
+  "smkmesh384 L384 ROM qnCN: complete, ADT valid, tight/tighter <= 2.5e-5": {
+   "result": "pass",
+   "info": null,
+   "tables": {
+    "M": 2052,
+    "seconds_A": 22.678682926110923,
+    "kxyz_sha": "188d64fcc99cb0314ba04c96eebad46ca5adf915b1df2ec445f0339a439863d5"
+   },
+   "adt_tt": 2.7675230710663083e-08
+  },
+  "smkmesh384 L384 ROM W1024qn: complete, ADT valid, tight/tighter <= 2.5e-5": {
+   "result": "pass",
+   "info": null,
+   "tables": {
+    "M": 4097,
+    "seconds_A": 42.07740137260407,
+    "kxyz_sha": "52fc83d235baa42b56249b35519b932f3b21ab3a5debd8f61ab7c24c789c3926"
+   },
+   "adt_tt": 4.0049798633439845e-09
+  },
+  "smkmesh384 L384 FOM UB 0.01: converged + scored on exactly the cases": {
+   "result": "pass",
+   "info": "qualified"
+  },
+  "smkmesh384 L384 FOM CC 0.01: converged + scored on exactly the cases": {
+   "result": "pass",
+   "info": "qualified"
+  },
+  "smkmesh384 L384 matched ps|N32|0.01: converged + scored on exactly the timing cases": {
+   "result": "pass"
+  },
+  "smkmesh384 L384 matched fd|CC|L128|0.0125|t1: converged + scored on exactly the timing cases": {
+   "result": "pass"
+  },
+  "smkmesh384 L384 panel qnCN": {
+   "result": "pass",
+   "why": []
+  },
+  "smkmesh384 L384 panel W1024qn": {
+   "result": "pass",
+   "why": []
+  }
+ },
+ "offline_after_collection": [
+  "K4 (score3.py on smkgrid)",
+  "K9 (analyze.k9 on smkgrid)"
+ ],
+ "deferred_A4_5": [
+  "K10 (FOM matcher)",
+  "G3",
+  "H3.2/K5 qualification verdict"
+ ]
+}

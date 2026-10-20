@@ -1,0 +1,21 @@
+**Overall verdict: NOT CLEAN.** A2 resolves much of r1, but the manufactured-output schedule and mutation audit remain blockers. No files modified.
+
+**8. RESOLVED — Anchor.** Normalization, per-case eligibility, solve sensitivity, and the G2a/G2b distinction are corrected. The explicit “uncertainty indicator” qualification is appropriate.
+
+**9. RESOLVED — Reproduction.** Coefficient/field tolerances, preserved BE arithmetic, and diagnosis before threshold changes address r1. Passing remains an implementation requirement, not an algebraic guarantee.
+
+**10. STILL-WRONG — Manufactured gate is operationally inconsistent.** For the prescribed timesteps, the stride to output every \(0.05\) is \(64/5,\ 128/5,\ 256/5\): none is integral. The production integer-stride loop cannot produce those oracle comparison times. **Fix:** use \(h=0.05/2^k\), or explicitly restrict this test to common endpoints. Also freeze the RNG implementation/draw order, verify oracle refinement, and specify the oracle-error rejection threshold for m1/m4. An in-memory endpoint probe using NumPy’s `default_rng` found the intended order bands plausible; it does not validate the incompatible output schedule.
+
+**11. RESOLVED — Replay coverage and failed solves.** Every order trajectory now gets a tighter replay; failed verification invalidates its triples, and both trajectories contribute sensitivity. However, \(s_h\) remains a **solve-sensitivity indicator**, not an error bound: two verified solves can share a bias and give \(s_h=0\). Avoid claiming certified solver-error separation.
+
+**12. NEEDS-RESTATEMENT — “Finest” is still ambiguous.** A2 names one finest triple, then adds a finer GAL-CN/BDF2 triple without explicitly assigning which drives the claim. **Fix:** enumerate the primary and adjacent triples per scheme, define the adjacent-check denominator, and report when no adjacent triple is resolved instead of treating that check as passed.
+
+**14. NEEDS-RESTATEMENT — Alternation fixed; ringing attribution remains unsupported.** The amplitude-qualified repeated-event test closes r1’s counterexample. But physical oscillation plus ordinary discretization error can satisfy “alternating + accuracy degradation against ST.” That does not establish numerical ringing, and the degradation comparator is unspecified. **Fix:** retain “alternating” unless a resolved finer trajectory establishes spurious oscillation; define the comparator and degradation threshold.
+
+**15. RESOLVED — Timing.** Synchronization, persisted paired samples, median/IQR, outlier counts, and drift reporting address r1. These describe timing variability; they do not establish confidence in a selected winner.
+
+**18. RESOLVED — Selection.** Baseline retention, failed-comparator handling, deterministic ties, and eligibility gates are explicit. With a verified comparator, an eligible outcome still always exists **by design**; that is no longer presented as improvement. H1/H2 can genuinely fail.
+
+**21. NEEDS-RESTATEMENT — Calibration has an uncovered outcome.** Per-configuration calibration and final-residual acceptance are corrected, including successful last-iteration convergence. But no action is defined when the verified \(10^{-10}\) reference exists and **none** of the three candidate tolerances meets the discrepancy test. **Fix:** predeclare either a timed \(10^{-10}\) fallback or exclusion of that configuration; also define the field-discrepancy metric explicitly.
+
+**22. STILL-WRONG — Mutation sensitivity is not audit rejection.** “Each mutation must change reconstructed errors” can pass even when the auditor accepts every corrupted result. Consistently permuting fields and references can also preserve aggregate errors while corrupting case identity. **Fix:** require an unmutated acceptance test and explicit rejection of each corrupted artifact against independently pinned case IDs, timestamps, reference type/hashes, and per-case metrics, with numerical tolerances. Higher-quadrature coverage itself is resolved.

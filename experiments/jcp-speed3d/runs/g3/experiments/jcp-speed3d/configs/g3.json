@@ -1,0 +1,32 @@
+{
+ "attempt": "g3",
+ "driver": "s3run",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "dts": [
+  0.01,
+  0.0125,
+  0.016666666666666666,
+  0.025
+ ],
+ "mode": "grid",
+ "settings": [
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat65536",
+   "reduced": [
+    "lat32768"
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 4,
+  "reps": 2,
+  "burn": 0.1,
+  "seed": 20261014
+ }
+}

@@ -1,0 +1,184 @@
+{
+ "mesh": 1024,
+ "edges": [
+  0,
+  4,
+  8,
+  16,
+  32,
+  64,
+  128,
+  256,
+  384,
+  512
+ ],
+ "arms": [
+  {
+   "name": "Hinc",
+   "kind": "head",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "rule": "gauss32",
+   "qp": "gauss48",
+   "qpp": "gauss64",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "all38",
+   "q2_cases": "sub16"
+  },
+  {
+   "name": "Hk4",
+   "kind": "head",
+   "head": "/cluster/tufts/paralab/tawal01/jcp-heads/smk1/output/htrain_smk1train/head_smk_k4_s0.npz",
+   "rule": "gauss32",
+   "qp": "gauss48",
+   "qpp": "gauss64",
+   "schemes": [
+    "BE"
+   ],
+   "cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ],
+   "q2_cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ]
+  },
+  {
+   "name": "Hk32",
+   "kind": "head",
+   "head": "/cluster/tufts/paralab/tawal01/jcp-heads/smk1/output/htrain_smk1train/head_smk_k32_s0.npz",
+   "rule": "gauss32",
+   "qp": "gauss48",
+   "qpp": "gauss64",
+   "schemes": [
+    "BE"
+   ],
+   "cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ],
+   "q2_cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ]
+  },
+  {
+   "name": "L4",
+   "kind": "lin",
+   "Rp": 4,
+   "rule": "gauss24",
+   "qp": "gauss32",
+   "qpp": "gauss48",
+   "schemes": [
+    "BE"
+   ],
+   "cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ],
+   "q2_cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ]
+  },
+  {
+   "name": "L384",
+   "kind": "lin",
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "schemes": [
+    "BE"
+   ],
+   "cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ],
+   "q2_cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ]
+  }
+ ],
+ "blocks": [
+  {
+   "kind": "controls",
+   "arm": "Hinc",
+   "repro_head": {
+    "gauss32": {
+     "dev6|0": "inputs/repro/head_gauss32_dev60.npz",
+     "dev6|2": "inputs/repro/head_gauss32_dev62.npz"
+    },
+    "gauss64": {
+     "dev6|0": "inputs/repro/head_gauss64_dev60.npz",
+     "dev6|2": "inputs/repro/head_gauss64_dev62.npz"
+    }
+   },
+   "under_resolved": [
+    "gauss8",
+    "gauss16",
+    "gauss24"
+   ],
+   "repro_lin": {
+    "Rp": 384,
+    "rule": "gauss128",
+    "fixtures": {
+     "BE": "inputs/repro/lin_R384_gauss128_BE_dev6.npz",
+     "CNR": "inputs/repro/lin_R384_gauss128_CNR_dev6.npz"
+    }
+   }
+  }
+ ]
+}

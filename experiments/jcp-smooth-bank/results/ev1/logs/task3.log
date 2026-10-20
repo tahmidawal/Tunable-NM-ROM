@@ -1,0 +1,29 @@
+E1008 22:23:13.590771 3613307 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA A100-PCIE-40GB
+CONTROLS {"C2": true, "C3": true, "C5b": true}
+VARIANT sob01
+sob01 acc ROLLOUT gref 270
+sob01 acc ROLLOUT lat64 297
+sob01 acc ROLLOUT gauss32 327
+sob01 acc ROLLOUT gauss48 352
+sob01 acc ROLLOUT gauss64 369
+sob01 acc ROLLOUT gauss96 388
+sob01 acc ROLLOUT fib1597 408
+sob01 acc ROLLOUT fib4181 431
+sob01 acc ROLLOUT fib6765 452
+sob01 acc PROJ value S med/max 0.0001502222935682473 0.010148255349817194 grad 0.013024451159393616
+sob01 acc RHO done {'gref|G|0.116': 3136, 'gref|G|0.06': 3136, 'gref|G|0.01': 9216} 910
+sob01 acc SPECTRA {'u|n_1e-04': {'median': 48.0, 'max': 191, 'unresolved': 1}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 47, 'inconclusive': 17, 'unresolved': 0}, 'f|n_1e-04': {'median': 75.5, 'max': 192, 'unresolved': 24}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 2, 'algebraic': 40, 'inconclusive': 22, 'unresolved': 0}} 931
+sob01 fast ROLLOUT gref 980
+sob01 fast ROLLOUT lat64 993
+sob01 fast ROLLOUT gauss32 1005
+sob01 fast ROLLOUT gauss48 1015
+sob01 fast ROLLOUT gauss64 1028
+sob01 fast ROLLOUT gauss96 1041
+sob01 fast ROLLOUT fib1597 1053
+sob01 fast ROLLOUT fib4181 1066
+sob01 fast ROLLOUT fib6765 1078
+sob01 fast PROJ value S med/max 0.003187340735956356 0.07427840669515422 grad 0.026158476485076465
+sob01 fast RHO done {'gref|G|0.116': 1600, 'gref|G|0.06': 1600, 'gref|G|0.01': 6400} 1346
+sob01 fast SPECTRA {'u|n_1e-04': {'median': 60.5, 'max': 181, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 57, 'inconclusive': 7, 'unresolved': 0}, 'f|n_1e-04': {'median': 123.0, 'max': 218, 'unresolved': 23}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 1, 'algebraic': 46, 'inconclusive': 17, 'unresolved': 0}} 1356
+BANKEVAL COMPLETE

@@ -1,0 +1,25 @@
+host=pax010 source_commit=605f2f9b3d4e863f16eece9c9a0c081052f504cc
+NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534, 143771 MiB
+10.235.106.29:/projects/paralab  4.6T 1001G  3.6T  22% /cluster/tufts/paralab
+/usr/bin/openssl
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[     50.1s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a3=True, G43=True, G3b3=True, G3c3=True
+[     71.5s]   PS val64 c5 N128_dt0_a0 umax=1.604 finite=True checks=True 18s peak=3316798208
+[    130.6s]   PS val64 c5 N192_dt0_a0 umax=1.604 finite=True checks=True 59s peak=3316798208
+[    270.8s]   PS val64 c5 N256_dt0_a0 umax=1.604 finite=True checks=True 140s peak=7784706048
+[    544.1s]   PS val64 c5 N256_dt1_a0 umax=1.604 finite=True checks=True 273s peak=7784770048
+[    560.8s]   PS val64 c33 N128_dt0_a0 umax=1.471 finite=True checks=True 17s peak=7784770048
+[    616.1s]   PS val64 c33 N192_dt0_a0 umax=1.471 finite=True checks=True 55s peak=7784770048
+[    753.2s]   PS val64 c33 N256_dt0_a0 umax=1.471 finite=True checks=True 137s peak=7784770048
+[   1025.8s]   PS val64 c33 N256_dt1_a0 umax=1.471 finite=True checks=True 273s peak=7784770048
+[   1042.8s]   PS val64 c43 N128_dt0_a0 umax=1.799 finite=True checks=True 17s peak=7784770048
+[   1098.4s]   PS val64 c43 N192_dt0_a0 umax=1.799 finite=True checks=True 56s peak=7784770048
+[   1236.0s]   PS val64 c43 N256_dt0_a0 umax=1.799 finite=True checks=True 138s peak=7784770048
+[   1509.3s]   PS val64 c43 N256_dt1_a0 umax=1.799 finite=True checks=True 273s peak=7784770048
+[   1526.2s]   PS val64 c47 N128_dt0_a0 umax=0.717 finite=True checks=True 17s peak=7784770048
+[   1581.6s]   PS val64 c47 N192_dt0_a0 umax=0.717 finite=True checks=True 55s peak=7784770048
+[   1719.0s]   PS val64 c47 N256_dt0_a0 umax=0.717 finite=True checks=True 137s peak=7784770048
+[   1991.9s]   PS val64 c47 N256_dt1_a0 umax=0.717 finite=True checks=True 273s peak=7784770048
+JOB COMPLETE
+ALL-DONE

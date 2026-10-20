@@ -1,0 +1,23 @@
+{
+ "attempt": "ps3",
+ "runs": [
+  "ref/refrun:configs/ps3.json"
+ ],
+ "configs": {
+  "configs/ps3.json": "41a8e515a5f8e1a3ca4b08785ab0a6a46bbfef43630b9c8292fb804650da9511"
+ },
+ "gpu": "h200",
+ "projection_hours": 2.29,
+ "memory": {
+  "ref/refrun:configs/ps3.json": {
+   "E0_measured_peak_GiB_T025": 7.250132083892822,
+   "horizon_note": "the PS state is the coefficient array; the horizon adds only lattice outputs (11 x the lattice)",
+   "device_GiB": 128.6171875
+  }
+ },
+ "time_limit_hours": 3.5,
+ "detail": {
+  "ref/refrun:configs/ps3.json": 2.29
+ },
+ "label": "estimate from the smokes (not a bound)"
+}

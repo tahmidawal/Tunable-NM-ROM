@@ -1,0 +1,16 @@
+{
+ "attempt": "smk2",
+ "gpu": "h200",
+ "time_limit_hours": 2.0,
+ "runs": [
+  [
+   "qacc",
+   "configs/smk1-rom.json"
+  ],
+  [
+   "fverify",
+   "configs/smk1-fverify.json"
+  ]
+ ],
+ "commit": "8f8c083fa7a2958f41fb283115d6bffc6c3bfc68"
+}

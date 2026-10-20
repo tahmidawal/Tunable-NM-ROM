@@ -1,0 +1,20 @@
+{
+ "attempt": "smk2",
+ "gpu": "h200",
+ "time_limit_hours": 2.0,
+ "runs": [
+  [
+   "ref/refrun",
+   "configs/smk2_ref.json"
+  ],
+  [
+   "ref/refrun",
+   "configs/smk2_x1.json"
+  ],
+  [
+   "b3run",
+   "configs/smk2_b3.json"
+  ]
+ ],
+ "commit": "0f7fb2d10778985ba2d5a2cfb8f4255d9ee60ec4"
+}

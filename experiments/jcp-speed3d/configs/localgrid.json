@@ -1,0 +1,35 @@
+{
+ "attempt": "localgrid",
+ "driver": "s3run",
+ "mode": "grid",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "case_subset": [
+  0,
+  5,
+  7
+ ],
+ "allow_cpu_smoke": true,
+ "dts": [
+  0.025
+ ],
+ "trust_fraction": 0.05,
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "gl24",
+   "reduced": [
+    "gl20"
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 2,
+  "reps": 1,
+  "burn": 0.05,
+  "seed": 1
+ }
+}

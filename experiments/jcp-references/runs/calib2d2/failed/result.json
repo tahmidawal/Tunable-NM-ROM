@@ -1,0 +1,270 @@
+{
+ "config": {
+  "mode": "calib",
+  "dim": 2
+ },
+ "job": {
+  "job_id": "5209713",
+  "commit": "84b66688ed3bd80f475d1d78ad4d0b94a41f1559",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": false,
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "calib": [
+  {
+   "case": 0,
+   "kind": "ST",
+   "L": 2048,
+   "dt": 0.00125,
+   "prod_vs_tight": 3.4390143890037316e-13,
+   "tight_vs_tighter": 8.621872926361834e-15,
+   "records": {
+    "prod": {
+     "purpose": "prod",
+     "L": 2048,
+     "dt": 0.00125,
+     "scheme": "cnr",
+     "adv": "central",
+     "ntol": 1e-11,
+     "ltol": 1e-09,
+     "max_newton": 20,
+     "stages": 202,
+     "expected_stages": 202,
+     "steps_ok": true,
+     "max_res": 7.1087601295360914e-12,
+     "tau": 2.2301682493023093e-10,
+     "newton_total": 406,
+     "newton_max": 3,
+     "umax_running": 1.0820378965477981,
+     "lattice_finite": true,
+     "seconds": 6.552298135124147,
+     "ic_seconds": 0.07881519803777337,
+     "compile_seconds": 1.0492609799839556,
+     "solve_seconds": 5.308993652928621,
+     "peak_bytes": 939287808
+    },
+    "tight": {
+     "purpose": "tight",
+     "L": 2048,
+     "dt": 0.00125,
+     "scheme": "cnr",
+     "adv": "central",
+     "ntol": 1e-13,
+     "ltol": 1e-12,
+     "max_newton": 40,
+     "stages": 202,
+     "expected_stages": 202,
+     "steps_ok": true,
+     "max_res": 7.207475058870787e-14,
+     "tau": 7.47255906004235e-11,
+     "newton_total": 412,
+     "newton_max": 3,
+     "umax_running": 1.0820378965477981,
+     "lattice_finite": true,
+     "seconds": 7.3789680623449385,
+     "ic_seconds": 0.07950492296367884,
+     "compile_seconds": 0.7767919227480888,
+     "solve_seconds": 6.518362792674452,
+     "peak_bytes": 972809728
+    },
+    "tighter": {
+     "purpose": "tighter",
+     "L": 2048,
+     "dt": 0.00125,
+     "scheme": "cnr",
+     "adv": "central",
+     "ntol": 3e-14,
+     "ltol": 1e-12,
+     "max_newton": 60,
+     "stages": 202,
+     "expected_stages": 202,
+     "steps_ok": true,
+     "max_res": 3.7952926691112894e-14,
+     "tau": 7.40173585554324e-11,
+     "newton_total": 12120,
+     "newton_max": 60,
+     "umax_running": 1.0820378965477981,
+     "lattice_finite": true,
+     "seconds": 232.77948257001117,
+     "ic_seconds": 0.08040046133100986,
+     "compile_seconds": 0.8339328221045434,
+     "solve_seconds": 231.86110650282353,
+     "peak_bytes": 1006331648
+    }
+   },
+   "all_solves_ok": true,
+   "proxy_ok": true,
+   "ratio_prod": 0.001542042574626197,
+   "ratio_tight": 0.00011538045878372718
+  }
+ ],
+ "d1": [],
+ "x1": [],
+ "x4": null,
+ "attempt_records": {
+  "ST_c0_L2048_prod": {
+   "purpose": "prod",
+   "L": 2048,
+   "dt": 0.00125,
+   "scheme": "cnr",
+   "adv": "central",
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "max_newton": 20,
+   "stages": 202,
+   "expected_stages": 202,
+   "steps_ok": true,
+   "max_res": 7.1087601295360914e-12,
+   "tau": 2.2301682493023093e-10,
+   "newton_total": 406,
+   "newton_max": 3,
+   "umax_running": 1.0820378965477981,
+   "lattice_finite": true,
+   "seconds": 6.552298135124147,
+   "ic_seconds": 0.07881519803777337,
+   "compile_seconds": 1.0492609799839556,
+   "solve_seconds": 5.308993652928621,
+   "peak_bytes": 939287808
+  },
+  "ST_c0_L2048_tight": {
+   "purpose": "tight",
+   "L": 2048,
+   "dt": 0.00125,
+   "scheme": "cnr",
+   "adv": "central",
+   "ntol": 1e-13,
+   "ltol": 1e-12,
+   "max_newton": 40,
+   "stages": 202,
+   "expected_stages": 202,
+   "steps_ok": true,
+   "max_res": 7.207475058870787e-14,
+   "tau": 7.47255906004235e-11,
+   "newton_total": 412,
+   "newton_max": 3,
+   "umax_running": 1.0820378965477981,
+   "lattice_finite": true,
+   "seconds": 7.3789680623449385,
+   "ic_seconds": 0.07950492296367884,
+   "compile_seconds": 0.7767919227480888,
+   "solve_seconds": 6.518362792674452,
+   "peak_bytes": 972809728
+  },
+  "ST_c0_L2048_tighter": {
+   "purpose": "tighter",
+   "L": 2048,
+   "dt": 0.00125,
+   "scheme": "cnr",
+   "adv": "central",
+   "ntol": 3e-14,
+   "ltol": 1e-12,
+   "max_newton": 60,
+   "stages": 202,
+   "expected_stages": 202,
+   "steps_ok": true,
+   "max_res": 3.7952926691112894e-14,
+   "tau": 7.40173585554324e-11,
+   "newton_total": 12120,
+   "newton_max": 60,
+   "umax_running": 1.0820378965477981,
+   "lattice_finite": true,
+   "seconds": 232.77948257001117,
+   "ic_seconds": 0.08040046133100986,
+   "compile_seconds": 0.8339328221045434,
+   "solve_seconds": 231.86110650282353,
+   "peak_bytes": 1006331648
+  }
+ }
+}

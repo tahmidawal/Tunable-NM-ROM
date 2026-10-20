@@ -1,0 +1,106 @@
+{
+ "attempt": "e2v0a",
+ "driver": "r2acc",
+ "mesh": 256,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "all38",
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  }
+ ],
+ "selection": {
+  "file": "checks/select2d-0.json",
+  "sha256": "18b972196da37d95e9d5b8fcc433a1384fda96b868a5b85b7ac7a3a835661e58"
+ }
+}

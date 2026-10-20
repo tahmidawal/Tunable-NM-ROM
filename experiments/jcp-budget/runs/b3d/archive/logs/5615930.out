@@ -1,0 +1,137 @@
+host=pax010 source_commit=538cee4cf386e18ca13306582c8793bb5d98ea87
+NVIDIA H200, GPU-64b76fb8-65c0-ee22-c559-6d9549c2d207, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T  1.1T  3.5T  24% /cluster/tufts/paralab
+jax_backend=gpu
+STEP b3run configs/b3d.json 2026-10-18T16:59:08Z
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 3.8s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.3s
+[mesh 65] bank rows [(256, 250047), (256, 250047), (512, 250047)] 5.4s
+[mesh 65] Gram cond 1.0000, A (2052, 1024) 8.4s
+SETUP 23.6
+MEM setup {'in_use': 4321432832, 'peak': 9514140672, 'limit': 138101653504}
+RUN W256#star ad|GAL|BDF2|0.00125|tight 35.8s valid True nonst 0 / 0 66.3
+RUN W256#star#check ad|GAL|BDF2|0.00125|tight 14.7s valid True nonst 0 / 0 82.8
+RUN W256#star16 ad|GAL|BDF2|0.000625|tight 55.7s valid True nonst 0 / 0 138.5
+RUN W256#star16#check ad|GAL|BDF2|0.000625|tight 21.3s valid True nonst 0 / 0 159.8
+RUN W256#starx ad|GAL|BDF2|0.00125|tighter 38.3s valid True nonst 0 / 0 198.0
+RUN W256#starx#check ad|GAL|BDF2|0.00125|tighter 15.2s valid True nonst 0 / 0 213.2
+RUN W256#star16x ad|GAL|BDF2|0.000625|tighter 62.7s valid True nonst 0 / 0 275.9
+RUN W256#star16x#check ad|GAL|BDF2|0.000625|tighter 23.8s valid True nonst 0 / 0 299.7
+RUN W512#star ad|GAL|BDF2|0.00125|tight 87.9s valid True nonst 0 / 0 392.4
+RUN W512#star#check ad|GAL|BDF2|0.00125|tight 34.3s valid True nonst 0 / 0 428.4
+RUN W512#star16 ad|GAL|BDF2|0.000625|tight 140.9s valid True nonst 0 / 0 569.3
+RUN W512#star16#check ad|GAL|BDF2|0.000625|tight 53.5s valid True nonst 0 / 0 622.9
+RUN W512#starx ad|GAL|BDF2|0.00125|tighter 98.0s valid True nonst 0 / 0 720.9
+RUN W512#starx#check ad|GAL|BDF2|0.00125|tighter 38.3s valid True nonst 0 / 0 759.2
+RUN W512#star16x ad|GAL|BDF2|0.000625|tighter 165.1s valid True nonst 0 / 0 924.3
+RUN W512#star16x#check ad|GAL|BDF2|0.000625|tighter 62.2s valid True nonst 0 / 0 986.5
+RUN W256|gl24|fs|CN|0.0125|K1#0 fs|CN|0.0125|K1 5.8s valid True nonst 0 / 320 995.4
+RUN W256|gl24|fs|CN|0.0125|K1#Q fs|CN|0.0125|K1 6.8s valid True nonst 0 / 320 1002.2
+RUN W256|gl24|fs|CN|0.0125|K1#T fs|BDF2|0.00125|K1 4.8s valid True nonst 0 / 3200 1007.0
+RUN W256|gl24|fs|CN|0.0125|K1#S ad|LSPG|CN|0.0125|tight 2.8s valid True nonst 0 / 0 1009.8
+RUN W256|gl24|fs|CN|0.0125|K1#QT fs|BDF2|0.00125|K1 26.7s valid True nonst 0 / 3200 1036.5
+RUN W256|gl24|fs|CN|0.0125|K1#QS ad|LSPG|CN|0.0125|tight 5.2s valid True nonst 0 / 0 1041.7
+RUN W256|gl24|fs|CN|0.0125|K1#TS ad|LSPG|BDF2|0.00125|tight 4.4s valid True nonst 0 / 0 1046.1
+RUN W256|gl24|fs|CN|0.0125|K1#QTS ad|LSPG|BDF2|0.00125|tight 28.2s valid True nonst 0 / 0 1074.3
+RUN W256|gl24|fs|CN|0.0125|K1#F|S ad|GAL|CN|0.0125|tight 1.7s valid True nonst 0 / 0 1076.0
+RUN W256|gl24|fs|CN|0.0125|K1#F|QS ad|GAL|CN|0.0125|tight 5.4s valid True nonst 0 / 0 1081.4
+RUN W256|gl24|fs|CN|0.0125|K1#F|TS ad|GAL|BDF2|0.00125|tight 5.0s valid True nonst 0 / 0 1086.4
+RUN W256|gl24|fs|CN|0.0125|K1#F|QTS ad|GAL|BDF2|0.00125|tight 31.1s valid True nonst 0 / 0 1117.4
+RUN W256|gl24|fs|CN|0.0125|K1#Q#check fs|CN|0.0125|K1 5.2s valid True nonst 0 / 80 1122.6
+RUN W256|gl24|fs|CN|0.0125|K1#QT#check fs|BDF2|0.00125|K1 11.0s valid True nonst 0 / 800 1133.6
+RUN W256|gl24|fs|CN|0.0125|K1#QS#check ad|LSPG|CN|0.0125|tight 2.6s valid True nonst 0 / 0 1136.2
+RUN W256|gl24|fs|CN|0.0125|K1#QTS#check ad|LSPG|BDF2|0.00125|tight 11.1s valid True nonst 0 / 0 1147.3
+RUN W256|gl24|fs|CN|0.0125|K1#F|QS#check ad|GAL|CN|0.0125|tight 2.7s valid True nonst 0 / 0 1150.0
+RUN W256|gl24|fs|CN|0.0125|K1#F|QTS#check ad|GAL|BDF2|0.00125|tight 11.4s valid True nonst 0 / 0 1161.3
+MEM b2|W256|gl24|fs|CN|0.0125|K1 {'in_use': 23488202752, 'peak': 30766538752, 'limit': 138101653504}
+RUN W256|gl24|fs|CN|0.01|K1#0 fs|CN|0.01|K1 5.3s valid True nonst 0 / 400 1166.9
+RUN W256|gl24|fs|CN|0.01|K1#Q fs|CN|0.01|K1 8.4s valid True nonst 0 / 400 1175.3
+RUN W256|gl24|fs|CN|0.01|K1#T fs|BDF2|0.00125|K1 3.0s valid True nonst 0 / 3200 1178.3
+RUN W256|gl24|fs|CN|0.01|K1#S ad|LSPG|CN|0.01|tight 1.7s valid True nonst 0 / 0 1180.0
+RUN W256|gl24|fs|CN|0.01|K1#QT fs|BDF2|0.00125|K1 25.2s valid True nonst 0 / 3200 1205.1
+RUN W256|gl24|fs|CN|0.01|K1#QS ad|LSPG|CN|0.01|tight 6.0s valid True nonst 0 / 0 1211.2
+RUN W256|gl24|fs|CN|0.01|K1#TS ad|LSPG|BDF2|0.00125|tight 3.3s valid True nonst 0 / 0 1214.5
+RUN W256|gl24|fs|CN|0.01|K1#QTS ad|LSPG|BDF2|0.00125|tight 27.2s valid True nonst 0 / 0 1241.7
+RUN W256|gl24|fs|CN|0.01|K1#F|S ad|GAL|CN|0.01|tight 1.8s valid True nonst 0 / 0 1243.4
+RUN W256|gl24|fs|CN|0.01|K1#F|QS ad|GAL|CN|0.01|tight 6.2s valid True nonst 0 / 0 1249.7
+RUN W256|gl24|fs|CN|0.01|K1#F|TS ad|GAL|BDF2|0.00125|tight 4.0s valid True nonst 0 / 0 1253.6
+RUN W256|gl24|fs|CN|0.01|K1#F|QTS ad|GAL|BDF2|0.00125|tight 31.1s valid True nonst 0 / 0 1284.7
+RUN W256|gl24|fs|CN|0.01|K1#Q#check fs|CN|0.01|K1 6.2s valid True nonst 0 / 100 1290.9
+RUN W256|gl24|fs|CN|0.01|K1#QT#check fs|BDF2|0.00125|K1 9.4s valid True nonst 0 / 800 1300.3
+RUN W256|gl24|fs|CN|0.01|K1#QS#check ad|LSPG|CN|0.01|tight 2.8s valid True nonst 0 / 0 1303.1
+RUN W256|gl24|fs|CN|0.01|K1#QTS#check ad|LSPG|BDF2|0.00125|tight 10.0s valid True nonst 0 / 0 1313.1
+RUN W256|gl24|fs|CN|0.01|K1#F|QS#check ad|GAL|CN|0.01|tight 3.1s valid True nonst 0 / 0 1316.2
+RUN W256|gl24|fs|CN|0.01|K1#F|QTS#check ad|GAL|BDF2|0.00125|tight 11.4s valid True nonst 0 / 0 1327.6
+MEM b2|W256|gl24|fs|CN|0.01|K1 {'in_use': 23488206848, 'peak': 30766538752, 'limit': 138101653504}
+RUN W256|lat8192|qn|BDF2|0.025|k4#0 qn|BDF2|0.025|k4 3.9s valid True nonst 0 / 160 1335.0
+RUN W256|lat8192|qn|BDF2|0.025|k4#Q qn|BDF2|0.025|k4 3.9s valid True nonst 0 / 160 1338.9
+RUN W256|lat8192|qn|BDF2|0.025|k4#T qn|BDF2|0.00125|k4 4.4s valid True nonst 0 / 3200 1343.3
+RUN W256|lat8192|qn|BDF2|0.025|k4#S ad|LSPG|BDF2|0.025|tight 2.3s valid True nonst 0 / 0 1345.7
+RUN W256|lat8192|qn|BDF2|0.025|k4#QT qn|BDF2|0.00125|k4 27.3s valid True nonst 0 / 3200 1373.0
+RUN W256|lat8192|qn|BDF2|0.025|k4#QS ad|LSPG|BDF2|0.025|tight 3.5s valid True nonst 0 / 0 1376.5
+RUN W256|lat8192|qn|BDF2|0.025|k4#TS ad|LSPG|BDF2|0.00125|tight 3.4s valid True nonst 0 / 0 1379.9
+RUN W256|lat8192|qn|BDF2|0.025|k4#QTS ad|LSPG|BDF2|0.00125|tight 27.2s valid True nonst 0 / 0 1407.1
+RUN W256|lat8192|qn|BDF2|0.025|k4#F|S ad|GAL|BDF2|0.025|tight 1.3s valid True nonst 0 / 0 1408.5
+RUN W256|lat8192|qn|BDF2|0.025|k4#F|QS ad|GAL|BDF2|0.025|tight 3.8s valid True nonst 0 / 0 1412.3
+RUN W256|lat8192|qn|BDF2|0.025|k4#F|TS ad|GAL|BDF2|0.00125|tight 4.0s valid True nonst 0 / 0 1416.3
+RUN W256|lat8192|qn|BDF2|0.025|k4#F|QTS ad|GAL|BDF2|0.00125|tight 31.1s valid True nonst 0 / 0 1447.4
+RUN W256|lat8192|qn|BDF2|0.025|k4#Q#check qn|BDF2|0.025|k4 2.8s valid True nonst 0 / 40 1450.2
+RUN W256|lat8192|qn|BDF2|0.025|k4#QT#check qn|BDF2|0.00125|k4 11.4s valid True nonst 0 / 800 1461.5
+RUN W256|lat8192|qn|BDF2|0.025|k4#QS#check ad|LSPG|BDF2|0.025|tight 2.2s valid True nonst 0 / 0 1463.7
+RUN W256|lat8192|qn|BDF2|0.025|k4#QTS#check ad|LSPG|BDF2|0.00125|tight 10.0s valid True nonst 0 / 0 1473.7
+RUN W256|lat8192|qn|BDF2|0.025|k4#F|QS#check ad|GAL|BDF2|0.025|tight 2.3s valid True nonst 0 / 0 1475.9
+RUN W256|lat8192|qn|BDF2|0.025|k4#F|QTS#check ad|GAL|BDF2|0.00125|tight 11.4s valid True nonst 0 / 0 1487.3
+MEM b2|W256|lat8192|qn|BDF2|0.025|k4 {'in_use': 23655547648, 'peak': 30766538752, 'limit': 138101653504}
+RUN W512|lat16384|qn|BDF2|0.025|k4#0 qn|BDF2|0.025|k4 3.9s valid True nonst 0 / 160 1494.7
+RUN W512|lat16384|qn|BDF2|0.025|k4#Q qn|BDF2|0.025|k4 6.4s valid True nonst 0 / 160 1501.1
+RUN W512|lat16384|qn|BDF2|0.025|k4#T qn|BDF2|0.00125|k4 8.8s valid True nonst 0 / 3200 1509.8
+RUN W512|lat16384|qn|BDF2|0.025|k4#S ad|LSPG|BDF2|0.025|tight 3.4s valid True nonst 0 / 0 1513.3
+RUN W512|lat16384|qn|BDF2|0.025|k4#QT qn|BDF2|0.00125|k4 62.4s valid True nonst 0 / 3200 1575.7
+RUN W512|lat16384|qn|BDF2|0.025|k4#QS ad|LSPG|BDF2|0.025|tight 7.8s valid True nonst 0 / 0 1583.5
+RUN W512|lat16384|qn|BDF2|0.025|k4#TS ad|LSPG|BDF2|0.00125|tight 9.1s valid True nonst 0 / 0 1592.5
+RUN W512|lat16384|qn|BDF2|0.025|k4#QTS ad|LSPG|BDF2|0.00125|tight 70.1s valid True nonst 0 / 0 1662.7
+RUN W512|lat16384|qn|BDF2|0.025|k4#F|S ad|GAL|BDF2|0.025|tight 3.0s valid True nonst 0 / 0 1665.6
+RUN W512|lat16384|qn|BDF2|0.025|k4#F|QS ad|GAL|BDF2|0.025|tight 8.2s valid True nonst 0 / 0 1673.9
+RUN W512|lat16384|qn|BDF2|0.025|k4#F|TS ad|GAL|BDF2|0.00125|tight 10.3s valid True nonst 0 / 0 1684.2
+RUN W512|lat16384|qn|BDF2|0.025|k4#F|QTS ad|GAL|BDF2|0.00125|tight 82.2s valid True nonst 0 / 0 1766.4
+RUN W512|lat16384|qn|BDF2|0.025|k4#Q#check qn|BDF2|0.025|k4 3.6s valid True nonst 0 / 40 1770.0
+RUN W512|lat16384|qn|BDF2|0.025|k4#QT#check qn|BDF2|0.00125|k4 24.8s valid True nonst 0 / 800 1794.8
+RUN W512|lat16384|qn|BDF2|0.025|k4#QS#check ad|LSPG|BDF2|0.025|tight 3.7s valid True nonst 0 / 0 1798.5
+RUN W512|lat16384|qn|BDF2|0.025|k4#QTS#check ad|LSPG|BDF2|0.00125|tight 26.9s valid True nonst 0 / 0 1825.4
+RUN W512|lat16384|qn|BDF2|0.025|k4#F|QS#check ad|GAL|BDF2|0.025|tight 3.9s valid True nonst 0 / 0 1829.3
+RUN W512|lat16384|qn|BDF2|0.025|k4#F|QTS#check ad|GAL|BDF2|0.00125|tight 30.8s valid True nonst 0 / 0 1860.0
+MEM b2|W512|lat16384|qn|BDF2|0.025|k4 {'in_use': 24209267968, 'peak': 30766538752, 'limit': 138101653504}
+RUN CTRL#Q#ctrl fs|CN|0.01|K1 5.6s valid True nonst 0 / 100 1870.2
+RUN CTRL#Q#qinf fs|CN|0.01|K1 0.9s valid True nonst 0 / 100 1871.1
+RUN CTRL#T#be fs|BE|0.01|K1 4.3s valid True nonst 0 / 100 1875.4
+RUN CTRL#T#bdf2 fs|BDF2|0.00125|K1 0.8s valid True nonst 0 / 800 1876.2
+RUN CTRL#S#q0 qn|BDF2|0.025|k4|q0 1.7s valid True nonst 40 / 40 1877.8
+RUN CTRL#S#tight ad|LSPG|BDF2|0.025|tight 0.1s valid True nonst 0 / 0 1877.9
+MEM controls {'in_use': 24216114944, 'peak': 30766538752, 'limit': 138101653504}
+RUN W256|gl24|fs|CN|0.0125|K1#B7T0.5#prod fs|CN|0.0125|K1 10.8s valid True nonst 0 / 640 1890.6
+RUN W256|gl24|fs|CN|0.0125|K1#B7T0.5#tight ad|LSPG|CN|0.0125|tight 2.1s valid True nonst 0 / 0 1892.7
+RUN W256|gl24|fs|CN|0.0125|K1#B7T0.5#tighter ad|LSPG|CN|0.0125|tighter 1.5s valid True nonst 0 / 0 1894.3
+RUN W256|gl24|fs|CN|0.0125|K1#B7T0.5#qp fs|CN|0.0125|K1 10.4s valid True nonst 0 / 320 1906.3
+RUN W256|gl24|fs|CN|0.0125|K1#B7T0.5#qpp fs|CN|0.0125|K1 10.2s valid True nonst 0 / 160 1920.2
+MEM b7|W256|gl24|fs|CN|0.0125|K1 {'in_use': 25664668416, 'peak': 30766538752, 'limit': 138101653504}
+RUN W256|gl24|fs|CN|0.01|K1#B7T0.5#prod fs|CN|0.01|K1 12.4s valid True nonst 0 / 800 1934.0
+RUN W256|gl24|fs|CN|0.01|K1#B7T0.5#tight ad|LSPG|CN|0.01|tight 2.3s valid True nonst 0 / 0 1936.3
+RUN W256|gl24|fs|CN|0.01|K1#B7T0.5#tighter ad|LSPG|CN|0.01|tighter 1.6s valid True nonst 0 / 0 1937.8
+RUN W256|gl24|fs|CN|0.01|K1#B7T0.5#qp fs|CN|0.01|K1 11.8s valid True nonst 0 / 400 1949.7
+RUN W256|gl24|fs|CN|0.01|K1#B7T0.5#qpp fs|CN|0.01|K1 10.8s valid True nonst 0 / 200 1960.5
+MEM b7|W256|gl24|fs|CN|0.01|K1 {'in_use': 25664672512, 'peak': 30766538752, 'limit': 138101653504}
+RUN W256|lat8192|qn|BDF2|0.025|k4#B7T0.5#prod qn|BDF2|0.025|k4 2.2s valid True nonst 0 / 320 1963.5
+RUN W256|lat8192|qn|BDF2|0.025|k4#B7T0.5#tight ad|LSPG|BDF2|0.025|tight 1.5s valid True nonst 0 / 0 1964.9
+RUN W256|lat8192|qn|BDF2|0.025|k4#B7T0.5#tighter ad|LSPG|BDF2|0.025|tighter 1.1s valid True nonst 0 / 0 1966.0
+RUN W256|lat8192|qn|BDF2|0.025|k4#B7T0.5#qp qn|BDF2|0.025|k4 2.8s valid True nonst 0 / 160 1970.8
+RUN W256|lat8192|qn|BDF2|0.025|k4#B7T0.5#qpp qn|BDF2|0.025|k4 2.0s valid True nonst 0 / 80 1973.0
+MEM b7|W256|lat8192|qn|BDF2|0.025|k4 {'in_use': 26462670592, 'peak': 30766538752, 'limit': 138101653504}
+RUN W512|lat16384|qn|BDF2|0.025|k4#B7T0.5#prod qn|BDF2|0.025|k4 2.7s valid True nonst 0 / 320 1977.1
+RUN W512|lat16384|qn|BDF2|0.025|k4#B7T0.5#tight ad|LSPG|BDF2|0.025|tight 3.4s valid True nonst 0 / 0 1980.5
+RUN W512|lat16384|qn|BDF2|0.025|k4#B7T0.5#tighter ad|LSPG|BDF2|0.025|tighter 1.6s valid True nonst 0 / 0 1982.1
+RUN W512|lat16384|qn|BDF2|0.025|k4#B7T0.5#qp qn|BDF2|0.025|k4 3.3s valid True nonst 0 / 160 1986.7
+RUN W512|lat16384|qn|BDF2|0.025|k4#B7T0.5#qpp qn|BDF2|0.025|k4 3.6s valid True nonst 0 / 80 1992.0
+MEM b7|W512|lat16384|qn|BDF2|0.025|k4 {'in_use': 29561004288, 'peak': 31306917376, 'limit': 138101653504}
+B3RUN COMPLETE 1996.9
+ALL-DONE

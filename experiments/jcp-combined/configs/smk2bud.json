@@ -1,0 +1,97 @@
+{
+ "attempt": "smk2bud",
+ "driver": "c2bud",
+ "mesh": 1024,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "settings": [
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "f": 1,
+     "role": "baseline"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BDF2",
+     "f": 2,
+     "role": "test-selected",
+     "selected": true
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "f": 1,
+     "role": "diagnostic"
+    }
+   ]
+  },
+  {
+   "name": "fast",
+   "Rp": 128,
+   "rule": "fib1597",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "f": 1,
+     "role": "baseline"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BDF2",
+     "f": 2,
+     "role": "test-selected",
+     "selected": true
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "f": 1,
+     "role": "diagnostic"
+    }
+   ]
+  }
+ ],
+ "refs": "REFS_DIR",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "case_subset": {
+  "dev6": [
+   0,
+   2
+  ],
+  "val32": [
+   0
+  ]
+ },
+ "conv_rule": "gauss320",
+ "check_rule": "gauss640",
+ "successor_check": "gauss768",
+ "control_rule": "gauss8",
+ "conv_bar": 2.5e-05,
+ "check_val32": 1,
+ "smoke": true
+}

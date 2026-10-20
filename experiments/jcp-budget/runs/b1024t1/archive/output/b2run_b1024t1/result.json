@@ -1,0 +1,416 @@
+{
+ "config": {
+  "attempt": "b1024t1",
+  "mesh": 1024,
+  "edges": [
+   0,
+   128,
+   256,
+   384
+  ],
+  "cases": "sub16",
+  "members": [
+   {
+    "name": "1024|R128|LSPG|BE|2.5",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 2.5,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R128|GAL|CN|5",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 5.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R128|GAL|CN|2",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R128|LSPG|BE|1",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R256|LSPG|CNR|2.5",
+    "Rp": 256,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 2.5,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R128|GAL|CN|1",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R256|GAL|CN|2",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R384|LSPG|CNR|2",
+    "Rp": 384,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 2.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R256|GAL|CN|1",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R384|LSPG|CNR|1",
+    "Rp": 384,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R384|GAL|CN|1",
+    "Rp": 384,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   }
+  ],
+  "b7": {
+   "horizon": 1.0,
+   "q2_cases": "sub16",
+   "tighter_cases": "dev6"
+  }
+ },
+ "commit": "3e276a1a80f00b114f036a40b16dcafac982e442",
+ "job_id": "5873633",
+ "backend": "gpu",
+ "gpu": "NVIDIA H200",
+ "nvidia_smi": [
+  "NVIDIA H200, GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec, 143771 MiB"
+ ],
+ "jax_version": "0.10.2",
+ "mesh": 1024,
+ "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+ "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "cohorts": {
+  "dev6": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "val32": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70"
+ },
+ "setup": {
+  "bank": {
+   "edges": [
+    0,
+    128,
+    256,
+    384
+   ],
+   "seconds": 6.962712862994522,
+   "bytes": 3214937088,
+   "mem": {
+    "in_use": 3233977600,
+    "peak": 15134769920,
+    "limit": 138101653504
+   }
+  }
+ },
+ "b2": {},
+ "b7": {
+  "R128|LSPG|BE|2.5": {
+   "member": {
+    "name": "1024|R128|LSPG|BE|2.5",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 2.5,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 1280,
+   "seconds": 14.444483791012317
+  },
+  "R128|GAL|CN|5": {
+   "member": {
+    "name": "1024|R128|GAL|CN|5",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 5.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 640,
+   "seconds": 10.072582434862852
+  },
+  "R128|GAL|CN|2": {
+   "member": {
+    "name": "1024|R128|GAL|CN|2",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 1600,
+   "seconds": 10.21505120396614
+  },
+  "R128|LSPG|BE|1": {
+   "member": {
+    "name": "1024|R128|LSPG|BE|1",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 3200,
+   "seconds": 6.831893458031118
+  },
+  "R128|GAL|CN|1": {
+   "member": {
+    "name": "1024|R128|GAL|CN|1",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 3200,
+   "seconds": 18.095992719754577
+  },
+  "R256|LSPG|CNR|2.5": {
+   "member": {
+    "name": "1024|R256|LSPG|CNR|2.5",
+    "Rp": 256,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 2.5,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 1280,
+   "seconds": 19.43819206021726
+  },
+  "R256|GAL|CN|2": {
+   "member": {
+    "name": "1024|R256|GAL|CN|2",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 1600,
+   "seconds": 30.070100369863212
+  },
+  "R256|GAL|CN|1": {
+   "member": {
+    "name": "1024|R256|GAL|CN|1",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 3200,
+   "seconds": 48.530116896145046
+  },
+  "R384|LSPG|CNR|2": {
+   "member": {
+    "name": "1024|R384|LSPG|CNR|2",
+    "Rp": 384,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 2.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 1600,
+   "seconds": 28.2492199158296
+  },
+  "R384|LSPG|CNR|1": {
+   "member": {
+    "name": "1024|R384|LSPG|CNR|1",
+    "Rp": 384,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 3200,
+   "seconds": 28.873941782861948
+  },
+  "R384|GAL|CN|1": {
+   "member": {
+    "name": "1024|R384|GAL|CN|1",
+    "Rp": 384,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   "horizon": 1.0,
+   "n": 16,
+   "valid": 16,
+   "noncert": 0,
+   "steps": 3200,
+   "seconds": 91.94972484419122
+  }
+ },
+ "b8": {},
+ "controls": {},
+ "memory": {
+  "R128": {
+   "in_use": 3434053888,
+   "peak": 15134769920,
+   "limit": 138101653504
+  },
+  "R256": {
+   "in_use": 3723281920,
+   "peak": 15134769920,
+   "limit": 138101653504
+  },
+  "R384": {
+   "in_use": 3820307200,
+   "peak": 15134769920,
+   "limit": 138101653504
+  },
+  "end": {
+   "in_use": 3502800128,
+   "peak": 15134769920,
+   "limit": 138101653504
+  }
+ },
+ "elapsed": {
+  "R128": 81.40685942722484,
+  "R256": 111.26872754190117,
+  "R384": 158.57099918229505
+ },
+ "complete": true,
+ "elapsed_seconds": 361.2
+}

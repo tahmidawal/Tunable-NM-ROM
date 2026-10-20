@@ -1,0 +1,15 @@
+{
+ "attempt": "tr2",
+ "purpose": "round-2 training (DESIGN 3.3 as amended by A1.5): lambda ladder completion (sob001, sob1), coarse-data control (129 nodes), seed-variance control base_s1",
+ "gpus": 4,
+ "hours": 7,
+ "mem": "320G",
+ "cpus": 8,
+ "tasks": [
+  {"gpu": 0, "cmd": "smoothtrain.py --arm sob001  --sigma 4 --lam 0.01 --nodes 256 --out OUT/sob001"},
+  {"gpu": 1, "cmd": "smoothtrain.py --arm sob1    --sigma 4 --lam 1    --nodes 256 --out OUT/sob1"},
+  {"gpu": 2, "cmd": "smoothtrain.py --arm coarse  --sigma 4 --lam 0    --nodes 129 --out OUT/coarse"},
+  {"gpu": 3, "cmd": "smoothtrain.py --arm base_s1 --sigma 4 --lam 0    --nodes 256 --seed 1 --out OUT/base_s1"}
+ ],
+ "expect": ["sob001/train.json", "sob1/train.json", "coarse/train.json", "base_s1/train.json"]
+}

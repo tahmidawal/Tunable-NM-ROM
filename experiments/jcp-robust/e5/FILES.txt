@@ -1,0 +1,57 @@
+# jcp-robust E5: repo-relative files a cluster job dir needs for e5time.py (run from experiments/jcp-robust/).
+# Derived from an import trace of e5time.py (CPU) plus the data files read at run time (qcore: checkpoint, rotation,
+# EQ rule). Every e5/PROVENANCE.json entry is required (e5time.py refuses to start if one is missing or differs).
+# The analysis (e5analyze.py) additionally needs e5/p1stats.py and e5/c2analyze.py (listed) and runs on CPU.
+# Environment: JAX_ENABLE_X64=true, JAX_DEFAULT_MATMUL_PRECISION=highest; JCPREF_STORE = the E0 store on the cluster
+# (default taken from the config: /cluster/tufts/paralab/tawal01/jcp-ref/store); JCPREF_META defaults to
+# experiments/jcp-robust/e5/e0meta. cluster/stage.py already stages every committed lane file plus INCUMBENT (the last
+# four lines below), so nothing extra is needed in extra_files.
+experiments/jcp-robust/configs/e5prod_a100.json
+experiments/jcp-robust/configs/e5prod_h200.json
+experiments/jcp-robust/configs/e5smk4.json
+experiments/jcp-robust/e5/FROZEN-SELECTION-1024.json
+experiments/jcp-robust/e5/PROVENANCE.json
+experiments/jcp-robust/e5/c21024.json
+experiments/jcp-robust/e5/c2analyze.py
+experiments/jcp-robust/e5/c2time.py
+experiments/jcp-robust/e5/cohorts.py
+experiments/jcp-robust/e5/e0meta/MANIFEST.sha256
+experiments/jcp-robust/e5/e0meta/STATUS.json
+experiments/jcp-robust/e5/fomrun2.py
+experiments/jcp-robust/e5/make_c2configs.py
+experiments/jcp-robust/e5/p1_time.json
+experiments/jcp-robust/e5/p1common.py
+experiments/jcp-robust/e5/p1comp.py
+experiments/jcp-robust/e5/p1stats.py
+experiments/jcp-robust/e5/p1time.py
+experiments/jcp-robust/e5/pscore.py
+experiments/jcp-robust/e5/psjax2d.py
+experiments/jcp-robust/e5/refcore.py
+experiments/jcp-robust/e5/refstore.py
+experiments/jcp-robust/e5/verdict.py
+experiments/jcp-robust/e5common.py
+experiments/jcp-robust/e5time.py
+experiments/jcp-robust/p1core.py
+experiments/jcp-robust/vendor/quad2d/audit_qs.py
+experiments/jcp-robust/vendor/quad2d/calib_gauss.py
+experiments/jcp-robust/vendor/quad2d/inputs/rotation_R512.npz
+experiments/jcp-robust/vendor/quad2d/inputs/rule_q0_m1024_qrg304_reachable.npz
+experiments/jcp-robust/vendor/quad2d/make_configs.py
+experiments/jcp-robust/vendor/quad2d/npbank.py
+experiments/jcp-robust/vendor/quad2d/qcore.py
+experiments/jcp-robust/vendor/quad2d/qstudy.py
+experiments/jcp-robust/vendor/quad2d/ref_summary.py
+experiments/jcp-robust/vendor/quad2d/refjob.py
+experiments/jcp-robust/vendor/quad2d/select_rule.py
+experiments/jcp-robust/vendor/quad2d/smoke.py
+experiments/jcp-robust/vendor/quad2d/vendor/arms.py
+experiments/jcp-robust/vendor/quad2d/vendor/bkfast.py
+experiments/jcp-robust/vendor/quad2d/vendor/hari_quadrature.py
+experiments/jcp-robust/vendor/quad2d/vendor/hfast.py
+experiments/jcp-robust/vendor/quad2d/vendor/hops.py
+experiments/jcp-robust/vendor/quad3d/vendor/burgers3d-span/common.py
+experiments/jcp-robust/vendor/quad3d/vendor/paper-b3d/vendor/b3d_common.py
+experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl
+experiments/separable-decoder/sep_common.py
+experiments/mr-burgers2d/engines.py
+experiments/mr-burgers2d/iterative_paths.py

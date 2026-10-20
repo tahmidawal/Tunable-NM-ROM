@@ -1,0 +1,257 @@
+{
+ "attempt": "smkA",
+ "driver": "qacc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    }
+   ]
+  },
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192",
+   "qp": "gauss256",
+   "qpp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev6",
+     "q2_cases": "dev6"
+    }
+   ]
+  }
+ ],
+ "blocks": [
+  {
+   "setting": "R384",
+   "kind": "order",
+   "cases": [
+    [
+     "dev6",
+     0
+    ]
+   ],
+   "finest": 0.25,
+   "anchor": 0.015625,
+   "anchor2": 0.0078125,
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factors": [
+      2.5,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factors": [
+      2.5,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factors": [
+      5.0,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "GAL",
+     "scheme": "TH06",
+     "factors": [
+      2,
+      1,
+      0.5,
+      0.25
+     ],
+     "cases": "dev6"
+    }
+   ]
+  },
+  {
+   "setting": "R384",
+   "kind": "controls",
+   "cases": "dev6",
+   "under_resolved": "gauss32",
+   "under_resolved_successor": "gauss64",
+   "b0_cases": "dev6"
+  }
+ ]
+}

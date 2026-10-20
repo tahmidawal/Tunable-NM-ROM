@@ -1,0 +1,8 @@
+{"note": "lane job ledger: attempts that produced no result (results of completed jobs are read from their result/training JSONs)",
+ "no_result": [
+  {"attempt": "j3", "slurm_id": 5012802, "outcome": "failed after 12 s, exit 127: /usr/bin/time absent on the compute node; nothing ran", "evidence": "audits/codex-job-j3.md"},
+  {"attempt": "s2", "slurm_id": 5018586, "outcome": "stopped at gate G1 (2nd-order FD truncation at corner Gauss points); see DESIGN A6", "evidence": "runs/s2/failed_logs/"},
+  {"attempt": "s2b", "slurm_id": 5019665, "outcome": "cancelled before start (H200 queue saturated; re-routed to H100 as s2c)", "evidence": "audits/codex-job-s2.md"},
+  {"attempt": "s4", "slurm_id": 5019404, "outcome": "cancelled before start (code superseded by A6)", "evidence": "audits/codex-job-s4.md"},
+  {"attempt": "s4b", "slurm_id": 5019667, "outcome": "cancelled before start (code superseded by A7)", "evidence": "audits/codex-job-s4.md"},
+  {"attempt": "s4c", "slurm_id": 5021224, "outcome": "cancelled before start (re-routed to H100 as s4d)", "evidence": "audits/codex-job-s4d.md"}]}

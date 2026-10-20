@@ -1,0 +1,164 @@
+{
+ "cell": "dry2d",
+ "flags": {
+  "adequate": true,
+  "saturation_256": false,
+  "basis_used": "all-step (A1.3 saturation failed; 1024^2 cell labelled snapshot-limited)",
+  "restrictions": [
+   "saturation check failed (A1.3)"
+  ],
+  "tune_unfinished": [],
+  "tune_construction_failed": [],
+  "tune_deferred": [],
+  "missing_members": {},
+  "ecsw_not_complete": [],
+  "ecsw_quality_limited": [],
+  "accounting": {
+   "T_hours": 0.14844589058652571,
+   "V_hours_tuning": 0.06117727851029486,
+   "V_hours_stageB": 0.14265672505432223,
+   "limiting_comparator_hours": 0.009149649022729136,
+   "tuning_finished": true,
+   "stageB_finished": true,
+   "active_phase": {
+    "tuning": null,
+    "stageB": null
+   },
+   "V_hours": 0.2038340035646171,
+   "V_is_lower_bound": false,
+   "allocation_hours": {
+    "tuning": null,
+    "stageB": null
+   },
+   "V_upper_bound_hours": null
+  },
+  "allocation_hours": null,
+  "budget_note": "dimension-level V ratio and band wording are applied by make_report.py (A4.3)"
+ },
+ "eligible_cases": [
+  "dev6|0",
+  "dev6|1",
+  "dev6|2"
+ ],
+ "X": {
+  "256|R128|BE": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.03015328755637587,
+   "med_X": 0.01334540541611259,
+   "roles": {
+    "B_acc": {
+     "label": "no baseline in role [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]"
+    },
+    "B_cost": {
+     "id": "ecsw|24|k4|CNR|0.005|common|central",
+     "quality": "ok",
+     "T": 0.009174461895718886,
+     "W": 0.18022460675244786,
+     "med": 0.1574333696792751,
+     "time": {
+      "median": 0.009174461895718886,
+      "per_case": {
+       "0": 0.009174461895718886,
+       "1": 0.010677167940512001,
+       "2": 0.00915170367034812
+      },
+      "ci95": [
+       0.00915170367034812,
+       0.010677167940512001
+      ],
+      "ci90_log": [
+       -4.693815223545893,
+       -4.539647654724322
+      ],
+      "n_cases": 3,
+      "n_values": 9
+     },
+     "envX": {
+      "worst": [
+       0.030145979076534088,
+       0.03016059603621765
+      ],
+      "median": [
+       0.013340351249421243,
+       0.013350459582803937
+      ],
+      "worst_point": 0.03015328755637587,
+      "median_point": 0.01334540541611259
+     },
+     "envB": {
+      "worst": [
+       0.18021729827260607,
+       0.18023191523228965
+      ],
+      "median": [
+       0.15743207173787768,
+       0.1574346676206725
+      ],
+      "worst_point": 0.18022460675244786,
+      "median_point": 0.1574333696792751
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "neither dominates (withheld: saturation check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.14844589058652571,
+      "ecsw_path": 0.007541194276935938
+     }
+    }
+   },
+   "exploratory": {},
+   "front": [
+    "ecsw|16|k4|CNR|0.005|common|central",
+    "ecsw|16|k8|CNR|0.005|common|central",
+    "ecsw|24|k4|CNR|0.005|common|central",
+    "ecsw|8|k16|BE|0.005|common|central",
+    "ecsw|8|k4|BE|0.005|common|central",
+    "ecsw|8|k8|BE|0.005|common|central",
+    "qdeim|16|16|CNR|0.005|common|central",
+    "qdeim|16|32|CNR|0.005|common|central"
+   ],
+   "pairs": {
+    "ecsw|16|k16|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|16|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|16|k4|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|16|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|16|k4|CNR|0.005|native|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|16|k8|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|16|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|24|k4|CNR|0.005|common|central": "B_cost: neither dominates (withheld: saturation check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|24|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|8|k16|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|8|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|8|k4|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|8|k4|BE|0.005|native|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|8|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|8|k4|CNR|0.005|native|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|8|k8|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|16|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|16|BE|0.005|native|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|16|CNR|0.005|native|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|32|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|32|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|64|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|16|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|24|24|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|24|48|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|8|16|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|8|16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|8|16|CNR|0.005|native|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|8|32|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|8|8|BE|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|8|8|BE|0.005|native|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|8|8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 1,
+   "n_not_assessed": 32,
+   "cell_line": "no observed domination among the 1 pairs assessed (withheld: saturation check failed (A1.3)) [developmental, in-sample, unadjusted]"
+  }
+ },
+ "stageb_sha256": "13b46ac449ec7bdf1caa88a23b6f22dbc510f886850eb1cecfbf4136aef0827e",
+ "tune_sha256": "79fdc04636bda27751138627878ff1a267a7e8c0e659d01c0dbb2a1288ed4e33",
+ "frozen_sha256": "a6fc3af4681e8d7fb436f33bda4a817e5b9ccc496ccae1a29edf86668b859a8f"
+}

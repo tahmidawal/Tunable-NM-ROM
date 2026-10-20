@@ -1,0 +1,11 @@
+1. **WRONG — exact Git-blob equality.** All **63 manifest entries** match their hashes, with no missing or extra payload files. However, only **59/60 provenance files** equal their blobs at `c9cc52fad8ad4c015fe6d1433c63649126de6592`. The staged config adds `commit`; its SHA256 is `3af5b5ea…`, versus source `81339f89…`. This is intentional in `cluster/stage.py:72–75`, but contradicts the requested exact equality.
+
+2. **WRONG — literal config identity.** Bundle payload differences are `stageb.py` **and the config’s injected commit**, changing `0ce8cf761…` → `c9cc52fad…`. All other config values match. Frozen membership and its `.sha256` are byte-identical; membership hash remains `e463836bf8d0d309295e6ed1ac099743323e914f7578a0a0a3eaaeae5637c7b9`. Audit **31 was NOT READY**; audit **32 was READY** after A42.1 fixes.
+
+3. **CORRECT.** `run.sbatch` requests `gpu`, one H200, `200G`, `03:30:00`, matching `wall_hours=3.5`; invokes `stageb.py`; uses attempt-specific paralab paths, the prescribed venv, `highest`, x64, GPU preflight exit **42**, and `JCPREF_STORE`. Driver timeout is **206 minutes**, with a further **30-second** kill allowance inside the wall; internal budget is **195 minutes**.
+
+4. **WRONG — staging-output evidence not available.** No preserved staging output was found to establish that historical check directly. **Current remote verification passes:** all **73/73 frozen dependencies** match. `/cluster/tufts/paralab/tawal01/jcp-hrb/t2d1024a/output` still contains both `artifacts/` and `arrays/`; local archive offloading did not remove those dependencies.
+
+5. **CORRECT.** Ledger contains exactly one unbound **3.5-hour** reservation for `s2d1024b`. `s2d1024a` is reconciled at **2.1294 GPU-h**, consistent with archived `sacct` elapsed **02:07:46**, one GPU. Total is **22.878 ≤ 30 GPU-h**, including `t3d64b`’s **12-hour** reservation.
+
+**DO-NOT-SUBMIT-s2d1024b** — under the exact evidence requirements stated; the config discrepancy is intentional provenance injection, not a numerical configuration change.

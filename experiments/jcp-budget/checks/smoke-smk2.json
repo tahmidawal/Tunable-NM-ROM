@@ -1,0 +1,405 @@
+{
+ "attempt": "smk2",
+ "all_passed": true,
+ "rows": [
+  {
+   "name": "jax_backend=gpu",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "ALL-DONE",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "no captured-constants warning (stdout and stderr)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "no Traceback / OOM / Killed in either stream",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "every step COMPLETE",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "G-R2 (final triple, first six outputs vs E0)",
+   "kind": "gate",
+   "passed": true,
+   "detail": [
+    {
+     "t0_bitwise": true,
+     "pairs": [
+      {
+       "new": "a0_L128",
+       "e0": "a0_L128",
+       "matched": true,
+       "d_t": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        1e-08,
+        1e-08,
+        1e-08,
+        1e-08
+       ],
+       "t0_bitwise": true,
+       "passed": true
+      },
+      {
+       "new": "a1_L256",
+       "e0": "a1_L256",
+       "matched": true,
+       "d_t": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        1e-08,
+        1e-08,
+        1e-08,
+        1e-08
+       ],
+       "t0_bitwise": true,
+       "passed": true
+      },
+      {
+       "new": "a2_L512",
+       "e0": "a2_L512",
+       "matched": true,
+       "d_t": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        1e-08,
+        1e-08,
+        1e-08,
+        1e-08
+       ],
+       "t0_bitwise": true,
+       "passed": true
+      }
+     ],
+     "evaluable": true,
+     "passed": true,
+     "e0_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+    }
+   ]
+  },
+  {
+   "name": "G-R3 (fine vs lattice shared nodes; flag and LOCAL recomputation for every case)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "judge recomputed offline agrees (whole run and windows)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "C-R1 (first-order ladder fails order, prerequisites true)",
+   "kind": "control",
+   "passed": true,
+   "detail": [
+    {
+     "dim": 3,
+     "case": 0,
+     "outcome": "order-fail",
+     "p": [
+      0.8928370308668009,
+      0.8459892163111146,
+      0.8131337575183424,
+      0.7864080888784335,
+      0.7681922378415631,
+      0.7634182825990377,
+      0.7709209528223554,
+      0.7852830441396975,
+      0.8010486766811072,
+      0.8152025044274946
+     ],
+     "fired": true,
+     "evaluable": true
+    }
+   ]
+  },
+  {
+   "name": "3D B2 and B7 produced for every CONFIGURED member",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "configured": [
+     "W256|gl24|fs|CN|0.0125|K1",
+     "W256|gl24|fs|CN|0.01|K1",
+     "W512|lat16384|qn|BDF2|0.025|k4"
+    ],
+    "b2_missing": [],
+    "b7_missing": [],
+    "inventory_problems": [],
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B0 (3D)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "worst": 9.232808271577022e-12,
+    "n": 390,
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B2 (3D)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "worst": 1.0228026630734948e-16,
+    "n": 6,
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B3 (3D)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "worst": 9.546469608524668e-16,
+    "n": 6,
+    "missing": 0,
+    "expected": 6,
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B4 (3D, every Q corner type and the u_star family)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "W256|gl24|fs|CN|0.0125|K1": {
+     "failed": [],
+     "star": {
+      "worst": 8.222630629699321e-10,
+      "passed": true
+     }
+    },
+    "W256|gl24|fs|CN|0.01|K1": {
+     "failed": [],
+     "star": {
+      "worst": 8.222630629699321e-10,
+      "passed": true
+     }
+    },
+    "W512|lat16384|qn|BDF2|0.025|k4": {
+     "failed": [],
+     "star": {
+      "worst": 1.6384582224054514e-09,
+      "passed": true
+     }
+    }
+   }
+  },
+  {
+   "name": "G-L1 (3D)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "W256|gl24|fs|CN|0.0125|K1": {
+     "worst": 7.572696001835498e-16,
+     "n": 2,
+     "expected": 2,
+     "sources": [
+      "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d3/archive/output/q3run_q3d3/W_q2.npz"
+     ],
+     "passed": true
+    },
+    "W256|gl24|fs|CN|0.01|K1": {
+     "worst": 6.22036926952211e-16,
+     "n": 2,
+     "expected": 2,
+     "sources": [
+      "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d2/archive/output/q3run_q3d2/W_q2.npz"
+     ],
+     "passed": true
+    },
+    "W512|lat16384|qn|BDF2|0.025|k4": {
+     "worst": 9.546469608524668e-16,
+     "n": 2,
+     "expected": 2,
+     "sources": [
+      "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d3/archive/output/q3run_q3d3/W_q2.npz"
+     ],
+     "passed": true
+    }
+   }
+  },
+  {
+   "name": "C-Q (3D, >= 1)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "dist": [
+     0.19749966298668,
+     0.0947789922897365
+    ],
+    "fired": true
+   }
+  },
+  {
+   "name": "C-T (3D, >= 1)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "dist": [
+     0.020645130443781887,
+     0.019738289693080533
+    ],
+    "fired": true,
+    "fired_any": true
+   }
+  },
+  {
+   "name": "C-S (3D, >= 1)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "dist": [
+     0.16047140837094442,
+     0.05890058315497094
+    ],
+    "fired": true,
+    "fired_any": true
+   }
+  },
+  {
+   "name": "C-F (3D)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "n": 6,
+    "fired": true,
+    "labels": [
+     "e_P"
+    ]
+   }
+  },
+  {
+   "name": "C-score (3D)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "raised": {
+     "case_swap": true,
+     "time_shift": true
+    },
+    "fired": true
+   }
+  },
+  {
+   "name": "G-Q (3D q0 certifier)",
+   "kind": "control",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "3D peak device memory recorded and <= 120 GiB",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "peak_GiB": 28.62905716896057
+   }
+  },
+  {
+   "name": "3D B7 Q1/Q2 at T (reported)",
+   "kind": "report",
+   "passed": true,
+   "detail": {
+    "W256|gl24|fs|CN|0.0125|K1": {
+     "Q1": {
+      "all_valid": true,
+      "nonstationary_fraction": 0.0,
+      "worst_dist_tight": 5.1382501560627175e-05,
+      "worst_tt": 2.4168643287222515e-09,
+      "pass": true
+     },
+     "Q2": {
+      "population": 2,
+      "worst_dist_qp": 4.529747306158632e-05,
+      "rho_max": 0.002035187269713879,
+      "rho_nonfinite": 0,
+      "rho_trivial": 0,
+      "worst_qp_qpp": 1.7139367264104699e-06,
+      "label": "pass"
+     }
+    },
+    "W256|gl24|fs|CN|0.01|K1": {
+     "Q1": {
+      "all_valid": true,
+      "nonstationary_fraction": 0.0,
+      "worst_dist_tight": 8.417955526833658e-06,
+      "worst_tt": 1.3254785932673553e-09,
+      "pass": true
+     },
+     "Q2": {
+      "population": 2,
+      "worst_dist_qp": 4.5818991725372336e-05,
+      "rho_max": 0.002054544215738107,
+      "rho_nonfinite": 0,
+      "rho_trivial": 0,
+      "worst_qp_qpp": 1.7301358084539826e-06,
+      "label": "pass"
+     }
+    },
+    "W512|lat16384|qn|BDF2|0.025|k4": {
+     "Q1": {
+      "all_valid": true,
+      "nonstationary_fraction": 0.0,
+      "worst_dist_tight": 4.9269775901049125e-05,
+      "worst_tt": 9.480404109585113e-09,
+      "pass": true
+     },
+     "Q2": {
+      "population": 2,
+      "worst_dist_qp": 0.00011853655003026902,
+      "rho_max": 0.004328792656347806,
+      "rho_nonfinite": 0,
+      "rho_trivial": 0,
+      "worst_qp_qpp": 5.120601364970477e-06,
+      "label": "pass"
+     }
+    }
+   }
+  }
+ ]
+}

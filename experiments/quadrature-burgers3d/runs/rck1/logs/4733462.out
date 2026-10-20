@@ -1,0 +1,12 @@
+host=pax063 source_commit=837d6a25a50753f53f273e2f58e66d23fc91aa67
+NVIDIA H100 PCIe, GPU-a081608c-ebad-fca5-530a-972ce021379f, 81559 MiB
+10.235.106.22:/projects/paralab  4.6T  997G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[6.3s] lean FOM gate {'fields': 0.0, 'newton_equal': True, 'residuals': 0.0}
+[135.5s] recheck case 1: {'seconds': 120.73583412310109, 'max_newton': 3, 'total_newton': 204, 'max_rel_residual': 7.678158679079783e-11, 'finite': True, 'accepted': True, 'case': 1, 'lattice_diff_vs_reference': 6.187360170272017e-06}
+[272.2s] recheck case 2: {'seconds': 133.66656112717465, 'max_newton': 2, 'total_newton': 200, 'max_rel_residual': 6.872807949632502e-12, 'finite': True, 'accepted': True, 'case': 2, 'lattice_diff_vs_reference': 6.575558721097779e-06}
+[398.9s] recheck case 3: {'seconds': 123.65298188477755, 'max_newton': 2, 'total_newton': 200, 'max_rel_residual': 4.387470457427347e-13, 'finite': True, 'accepted': True, 'case': 3, 'lattice_diff_vs_reference': 1.021677700770284e-05}
+[515.9s] recheck case 4: {'seconds': 113.95379005931318, 'max_newton': 2, 'total_newton': 200, 'max_rel_residual': 6.165990525410187e-11, 'finite': True, 'accepted': True, 'case': 4, 'lattice_diff_vs_reference': 6.319570177914173e-06}
+REF COMPLETE
+ALL-DONE

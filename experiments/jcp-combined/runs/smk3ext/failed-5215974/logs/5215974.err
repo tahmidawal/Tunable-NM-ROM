@@ -1,0 +1,42 @@
+W1013 21:14:01.251384 2823350 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 42.88GiB (rounded to 46047920128)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1013 21:14:01.252086 2823350 bfc_allocator.cc:525] ****______________****************************************************______________________________
+W1013 21:14:11.452310 2823350 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 42.88GiB (rounded to 46047920128)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1013 21:14:11.452422 2823350 bfc_allocator.cc:525] ****______________****************************************************______________________________
+E1013 21:14:11.465154 2823350 gpu_hlo_schedule.cc:968] The byte size of input/output arguments (138143760384) exceeds the base limit (135100628992). This indicates an error in the calculation!
+W1013 21:14:21.512287 2823350 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 42.88GiB (rounded to 46047920128)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1013 21:14:21.512438 2823350 bfc_allocator.cc:525] ****______________****************************************************______________________________
+W1013 21:14:31.513632 2823350 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 42.88GiB (rounded to 46047920128)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1013 21:14:31.513748 2823350 bfc_allocator.cc:525] ****______________****************************************************______________________________
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/smk3ext/experiments/jcp-combined/c3run.py", line 568, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/smk3ext/experiments/jcp-combined/c3run.py", line 314, in main
+    res_ = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)
+                                      ~~~~~~~^^^^^^
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/smk3ext/experiments/jcp-combined/c3run.py", line 273, in prep_of
+    _preps[rule] = C3.prepare(_tb.rule_data(_Rp, X, w))
+                              ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/smk3ext/experiments/jcp-combined/c3common.py", line 137, in rule_data
+    om = OM.offmesh_tables(self.n, self.bank['params'], self.bank['T'][:, :Rp], X, w, self.kx[:M])
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/smk3ext/experiments/jcp-combined/vendor/quad3d/offmesh.py", line 75, in offmesh_tables
+    P = jax.block_until_ready(test_block(n, X, w, kxyz))
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2509, in block_until_ready
+    try_to_block(arrays[0])
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2492, in try_to_block
+    return x.block_until_ready()
+           ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 42.88GiB. [executable_name='jit_multiply'] [tf-allocator-allocation-error='']

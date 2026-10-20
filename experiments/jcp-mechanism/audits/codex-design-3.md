@@ -1,0 +1,8 @@
+- **A2-1 — CORRECT.** Yes: the ordered procedure partitions complete, finite cohorts; passing X0 guarantees a nonempty retained set, and R/N cannot overlap. **Fix:** report the bootstrap bound as “N/A” when undefined for X/X0.
+- **A2-2 — CORRECT.** Both normalized C-pos expansions now have the correct signs, coefficients and remainder orders. **Fix:** none mathematically; finite-window agreement remains an empirical gate.
+- **A2-3 — NEEDS-RESTATEMENT.** The fixed-population screen is coherent, but “two independent families as well as Gauss” lists only one additional family per dimension, with no validation threshold. **Fix:** correct the wording and prescribe what independent-check discrepancy invalidates the target or slope.
+- **A2-4 — NEEDS-RESTATEMENT.** Historical field/error comparisons are now distinguished, but “never zero” does not address near-zero reference arrays. **Fix:** specify absolute-plus-relative tolerances for G1–G3.
+- **A2-5 — NEEDS-RESTATEMENT.** Reporting reason-0 counts still allows nonstationary solves to determine R/N; limited sensitivity checks do not validate unchecked configurations. **Fix:** prescribe stationarity/sensitivity acceptance limits and force X, or explicitly provisional labels, where unverified.
+- **A2-6 — CORRECT.** Timeouts now mean incomplete results with missing cases disclosed, without retrospective subset selection. **Fix:** none.
+
+Remaining WRONG: none

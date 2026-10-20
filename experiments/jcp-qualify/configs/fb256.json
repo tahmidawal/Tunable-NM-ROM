@@ -1,0 +1,50 @@
+{
+ "attempt": "fb256",
+ "driver": "qacc",
+ "mesh": 256,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128fb",
+   "Rp": 128,
+   "rule": "fib6765",
+   "qp": "fib10946",
+   "qpp": "fib17711",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  },
+  {
+   "name": "R384fb",
+   "Rp": 384,
+   "rule": "gauss160",
+   "qp": "gauss192",
+   "qpp": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  }
+ ],
+ "fallback_of": [
+  "256|R128|LSPG|CNR|2.5",
+  "256|R384|LSPG|CNR|2.5"
+ ]
+}

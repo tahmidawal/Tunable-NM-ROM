@@ -1,0 +1,149 @@
+{
+ "attempt": "e2v3c",
+ "driver": "r2acc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "all38",
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  }
+ ],
+ "selection": {
+  "file": "checks/select2d-3.json",
+  "sha256": "748dd780dce4e50dfa6bcb09362d622c165f3b33f1c3bfe6b986ab59629e2a14"
+ },
+ "bank": {
+  "ckpt": "inputs/banks/s3/ckpt.pkl",
+  "ckpt_sha256": "af877976023c6cf686f7dcf18d49aefe4faacef079e5ae84752a9bbb53709b11",
+  "rotation": "inputs/banks/s3/rotation_R512.npz",
+  "rotation_sha256": "fb9e79f2e304a8e7ff90ce77056e465fae7f5426a309453106c46ce7e0cb639a",
+  "seed": 3
+ }
+}

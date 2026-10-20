@@ -1,0 +1,211 @@
+{
+ "runs": [
+  "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk2/archive/output"
+ ],
+ "G_R1": [],
+ "cases": [
+  {
+   "dim": 3,
+   "cohort": "val64",
+   "case": 0,
+   "horizon": 0.5,
+   "outcome": "accepted",
+   "fine_requested": true,
+   "refined": false,
+   "tight": false,
+   "G_R3_flag": true,
+   "G_R3_local": true,
+   "judge": {
+    "outcome": "accepted",
+    "eps_ref": 5.538264626118644e-05,
+    "agree": true,
+    "windows": {
+     "W1": {
+      "outcome": "accepted",
+      "eps": 4.181332047166529e-05,
+      "stored_eps": 4.181332047166529e-05,
+      "stored_outcome": "accepted",
+      "agree": true
+     },
+     "W2": {
+      "outcome": "accepted",
+      "eps": 5.538264626118644e-05,
+      "stored_eps": 5.538264626118644e-05,
+      "stored_outcome": "accepted",
+      "agree": true
+     }
+    }
+   },
+   "fine_windows": {
+    "W1": "accepted",
+    "W2": "accepted"
+   },
+   "fine_eps": {
+    "W1": 4.181437212331123e-05,
+    "W2": 5.5382626214673946e-05
+   },
+   "seconds": 270.3963697850704,
+   "gpu": "NVIDIA H200",
+   "G_R2": {
+    "t0_bitwise": true,
+    "pairs": [
+     {
+      "new": "a0_L128",
+      "e0": "a0_L128",
+      "matched": true,
+      "d_t": [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "bars": [
+       0.0,
+       1e-08,
+       1e-08,
+       1e-08,
+       1e-08,
+       1e-08
+      ],
+      "t0_bitwise": true,
+      "passed": true
+     },
+     {
+      "new": "a1_L256",
+      "e0": "a1_L256",
+      "matched": true,
+      "d_t": [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "bars": [
+       0.0,
+       1e-08,
+       1e-08,
+       1e-08,
+       1e-08,
+       1e-08
+      ],
+      "t0_bitwise": true,
+      "passed": true
+     },
+     {
+      "new": "a2_L512",
+      "e0": "a2_L512",
+      "matched": true,
+      "d_t": [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "bars": [
+       0.0,
+       1e-08,
+       1e-08,
+       1e-08,
+       1e-08,
+       1e-08
+      ],
+      "t0_bitwise": true,
+      "passed": true
+     }
+    ],
+    "evaluable": true,
+    "passed": true,
+    "e0_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+   },
+   "final": [
+    "a0_L128",
+    "a1_L256",
+    "a2_L512"
+   ],
+   "sha256": {
+    ".json": "fd979419349af4114ff34e4d68deef2d16f8ee9e21852a01ac7b7262c0570be0",
+    ".npz": "1062c75aadd92e92a3507a0e0b670295353172db6dfaad8460954a04d8c236fe"
+   },
+   "eligibility": {
+    "W1": {
+     "accepted": true,
+     "G_R2": true,
+     "designated": true,
+     "crosscheck": "MISSING",
+     "prefix": true,
+     "G_R3": true,
+     "tier": "unvalidated (no cross-check)",
+     "eligible": false,
+     "sha256": {
+      ".json": "fd979419349af4114ff34e4d68deef2d16f8ee9e21852a01ac7b7262c0570be0",
+      ".npz": "1062c75aadd92e92a3507a0e0b670295353172db6dfaad8460954a04d8c236fe"
+     },
+     "final": [
+      "a0_L128",
+      "a1_L256",
+      "a2_L512"
+     ]
+    },
+    "W2": {
+     "accepted": true,
+     "G_R2": true,
+     "designated": true,
+     "crosscheck": "MISSING",
+     "prefix": true,
+     "G_R3": true,
+     "tier": "unvalidated (no cross-check)",
+     "eligible": false,
+     "sha256": {
+      ".json": "fd979419349af4114ff34e4d68deef2d16f8ee9e21852a01ac7b7262c0570be0",
+      ".npz": "1062c75aadd92e92a3507a0e0b670295353172db6dfaad8460954a04d8c236fe"
+     },
+     "final": [
+      "a0_L128",
+      "a1_L256",
+      "a2_L512"
+     ]
+    }
+   }
+  }
+ ],
+ "x1": [
+  {
+   "dim": 3,
+   "case": 0,
+   "outcome": "order-fail",
+   "p": [
+    0.8928370308668009,
+    0.8459892163111146,
+    0.8131337575183424,
+    0.7864080888784335,
+    0.7681922378415631,
+    0.7634182825990377,
+    0.7709209528223554,
+    0.7852830441396975,
+    0.8010486766811072,
+    0.8152025044274946
+   ],
+   "fired": true,
+   "evaluable": true
+  }
+ ],
+ "ps": [],
+ "tiers": {},
+ "prefix_T1": [],
+ "summary": {
+  "G_R1": null,
+  "G_R2": true,
+  "G_R3": true,
+  "G_R3_local_all": true,
+  "judge_agree": true,
+  "C_R1": true,
+  "prefix_T1": null,
+  "tiers": {}
+ }
+}

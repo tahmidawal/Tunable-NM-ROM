@@ -1,0 +1,25 @@
+host=pax105 source_commit=605f2f9b3d4e863f16eece9c9a0c081052f504cc
+NVIDIA A100 80GB PCIe, GPU-e1155fbe-2d60-1685-178c-9d7f9cbab295, 81920 MiB
+10.235.106.29:/projects/paralab  4.6T  999G  3.6T  22% /cluster/tufts/paralab
+/usr/bin/openssl
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[     40.4s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     86.8s]   PS val32 c0 N1024_dt0_a0 umax=0.918 finite=True checks=True 46s peak=905612800
+[    179.9s]   PS val32 c0 N1536_dt0_a0 umax=0.918 finite=True checks=True 93s peak=905612800
+[    341.0s]   PS val32 c0 N2048_dt0_a0 umax=0.918 finite=True checks=True 161s peak=1558687232
+[    656.3s]   PS val32 c0 N2048_dt1_a0 umax=0.918 finite=True checks=True 315s peak=1560773120
+[    698.6s]   PS val32 c1 N1024_dt0_a0 umax=0.764 finite=True checks=True 42s peak=1560773120
+[    787.7s]   PS val32 c1 N1536_dt0_a0 umax=0.764 finite=True checks=True 89s peak=1560773120
+[    946.1s]   PS val32 c1 N2048_dt0_a0 umax=0.764 finite=True checks=True 158s peak=1560773120
+[   1260.2s]   PS val32 c1 N2048_dt1_a0 umax=0.764 finite=True checks=True 314s peak=1560773120
+[   1302.5s]   PS val32 c2 N1024_dt0_a0 umax=0.958 finite=True checks=True 42s peak=1560773120
+[   1391.7s]   PS val32 c2 N1536_dt0_a0 umax=0.957 finite=True checks=True 89s peak=1560773120
+[   1550.0s]   PS val32 c2 N2048_dt0_a0 umax=0.957 finite=True checks=True 158s peak=1560773120
+[   1864.1s]   PS val32 c2 N2048_dt1_a0 umax=0.957 finite=True checks=True 314s peak=1560773120
+[   1906.3s]   PS val32 c3 N1024_dt0_a0 umax=0.865 finite=True checks=True 42s peak=1560773120
+[   1995.4s]   PS val32 c3 N1536_dt0_a0 umax=0.865 finite=True checks=True 89s peak=1560773120
+[   2153.7s]   PS val32 c3 N2048_dt0_a0 umax=0.865 finite=True checks=True 158s peak=1560773120
+[   2467.6s]   PS val32 c3 N2048_dt1_a0 umax=0.865 finite=True checks=True 314s peak=1560773120
+JOB COMPLETE
+ALL-DONE

@@ -1,0 +1,82 @@
+{
+ "driver": "s3run",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "smoke": true,
+ "allow_cpu_smoke": true,
+ "case_subset": [
+  0,
+  5
+ ],
+ "timing": {
+  "cases": 1,
+  "reps": 1,
+  "burn": 0.01,
+  "seed": 1
+ },
+ "attempt": "localprof",
+ "mode": "prof",
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "gl24"
+  }
+ ],
+ "extra_rules": [
+  "gl12",
+  "gl32",
+  "gl20"
+ ],
+ "prof": {
+  "configs": [
+   {
+    "label": "a",
+    "setting": "M2_512",
+    "rule": "gl24",
+    "spec": "fs|BE|0.01|K1"
+   },
+   {
+    "label": "b",
+    "setting": "M2_512",
+    "rule": "gl24",
+    "spec": "qn|CN|0.025|k4"
+   }
+  ],
+  "mf": [
+   "b"
+  ],
+  "k5_rule": "gl12",
+  "profile": [
+   "a",
+   "b"
+  ],
+  "batch": {
+   "labels": [
+    "a",
+    "b"
+   ],
+   "sizes": [
+    1,
+    2
+   ]
+  },
+  "confirm": [
+   [
+    "a",
+    "b"
+   ]
+  ],
+  "confirm_cases": 1,
+  "confirm_reps": 1,
+  "conv": {
+   "b": "gl20"
+  },
+  "reduced_adt": [
+   "b"
+  ]
+ }
+}

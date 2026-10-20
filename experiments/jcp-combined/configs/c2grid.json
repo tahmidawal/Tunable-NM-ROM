@@ -1,0 +1,134 @@
+{
+ "attempt": "c2grid",
+ "driver": "c2grid",
+ "mesh": 1024,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "settings": [
+  {
+   "name": "fast",
+   "Rp": 128,
+   "rule": "fib1597"
+  },
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181"
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss96"
+  },
+  {
+   "name": "acc",
+   "Rp": 384,
+   "rule": "gauss96"
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128"
+  },
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192"
+  }
+ ],
+ "grid": {
+  "forms_schemes": [
+   [
+    "LSPG",
+    "BE"
+   ],
+   [
+    "LSPG",
+    "CN"
+   ],
+   [
+    "LSPG",
+    "CNR"
+   ],
+   [
+    "LSPG",
+    "BDF2"
+   ],
+   [
+    "GAL",
+    "CN"
+   ]
+  ],
+  "dt_factors": [
+   0.5,
+   1,
+   1.6666666666666667,
+   2,
+   2.5,
+   5,
+   10
+  ],
+  "anchor_factors": [
+   0.125,
+   0.0625
+  ]
+ },
+ "refs": "REFS_DIR",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "fom": {
+  "schemes": [
+   "BE",
+   "CN",
+   "CNR",
+   "BDF2"
+  ],
+  "dt_factors": [
+   0.5,
+   1,
+   2,
+   5
+  ],
+  "ntols": [
+   0.0001,
+   1e-06,
+   1e-08
+  ],
+  "order_cases": [
+   [
+    "dev6",
+    0
+   ],
+   [
+    "dev6",
+    2
+   ]
+  ]
+ },
+ "common_baseline": "acc",
+ "timing": {
+  "cohort": "dev6",
+  "cases": 6,
+  "reps": 3,
+  "burn": 0.1,
+  "seed": 20261013,
+  "common_seed": 20261013
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "attempt": "b3d65",
+ "job_id": "5020049",
+ "commit": "b2507d81717d570fbabc8f966bfbb01c16cad30a",
+ "checks": {
+  "inventory": true,
+  "rescored": true,
+  "mandatory_metrics": true,
+  "vendor_inventory": true,
+  "vendor_rescored": true,
+  "timing": true,
+  "complete": true,
+  "backend_precision": true,
+  "config_authenticated": true,
+  "reference_pinned": true,
+  "model_authenticated": true,
+  "rules_authenticated": true,
+  "G2a_certificate": true,
+  "rejections_fire": true
+ },
+ "info": {
+  "mismatches": [],
+  "missing": [],
+  "vendor_mismatch": [],
+  "unverified": [],
+  "rejections": {
+   "error_perturbed": true,
+   "coefficients_case_swap": true,
+   "verified_flag_flipped": true,
+   "timing_dropped": true,
+   "time_shift": true,
+   "vendor_error_perturbed": true,
+   "timing_hash_disconnected": true,
+   "timing_drift_nan": true
+  }
+ },
+ "all_pass": true,
+ "result_sha256": "aca67502f984a0ca6e4b98505e089a87deb9bc658c0bf38701502d88567ffaf2"
+}

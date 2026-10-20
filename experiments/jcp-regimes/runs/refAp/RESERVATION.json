@@ -1,0 +1,16 @@
+{
+ "attempt": "refAp",
+ "gpu": "h200",
+ "time_limit_hours": 8.75,
+ "runs": [
+  [
+   "refjob",
+   "configs/ref-Ap.json"
+  ],
+  [
+   "refslim",
+   "configs/slim-Ap.json"
+  ]
+ ],
+ "commit": "5c23c82a2cabd7de47f9b131e52744d1973be8bd"
+}

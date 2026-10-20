@@ -1,0 +1,656 @@
+{
+ "attempt": "acc4096",
+ "driver": "qacc",
+ "mesh": 4096,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": [
+      [
+       "val32",
+       10
+      ],
+      [
+       "val32",
+       11
+      ],
+      [
+       "val32",
+       12
+      ],
+      [
+       "val32",
+       13
+      ],
+      [
+       "val32",
+       14
+      ],
+      [
+       "val32",
+       15
+      ],
+      [
+       "val32",
+       16
+      ],
+      [
+       "val32",
+       17
+      ],
+      [
+       "val32",
+       18
+      ],
+      [
+       "val32",
+       19
+      ],
+      [
+       "val32",
+       20
+      ],
+      [
+       "val32",
+       21
+      ],
+      [
+       "val32",
+       22
+      ],
+      [
+       "val32",
+       23
+      ],
+      [
+       "val32",
+       24
+      ],
+      [
+       "val32",
+       25
+      ],
+      [
+       "val32",
+       26
+      ],
+      [
+       "val32",
+       27
+      ],
+      [
+       "val32",
+       28
+      ],
+      [
+       "val32",
+       29
+      ],
+      [
+       "val32",
+       30
+      ],
+      [
+       "val32",
+       31
+      ]
+     ],
+     "q2_cases": [],
+     "tighter": false,
+     "q3": false,
+     "ext22": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": [
+      [
+       "val32",
+       10
+      ],
+      [
+       "val32",
+       11
+      ],
+      [
+       "val32",
+       12
+      ],
+      [
+       "val32",
+       13
+      ],
+      [
+       "val32",
+       14
+      ],
+      [
+       "val32",
+       15
+      ],
+      [
+       "val32",
+       16
+      ],
+      [
+       "val32",
+       17
+      ],
+      [
+       "val32",
+       18
+      ],
+      [
+       "val32",
+       19
+      ],
+      [
+       "val32",
+       20
+      ],
+      [
+       "val32",
+       21
+      ],
+      [
+       "val32",
+       22
+      ],
+      [
+       "val32",
+       23
+      ],
+      [
+       "val32",
+       24
+      ],
+      [
+       "val32",
+       25
+      ],
+      [
+       "val32",
+       26
+      ],
+      [
+       "val32",
+       27
+      ],
+      [
+       "val32",
+       28
+      ],
+      [
+       "val32",
+       29
+      ],
+      [
+       "val32",
+       30
+      ],
+      [
+       "val32",
+       31
+      ]
+     ],
+     "q2_cases": [],
+     "tighter": false,
+     "q3": false,
+     "ext22": true
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": [
+      [
+       "val32",
+       10
+      ],
+      [
+       "val32",
+       11
+      ],
+      [
+       "val32",
+       12
+      ],
+      [
+       "val32",
+       13
+      ],
+      [
+       "val32",
+       14
+      ],
+      [
+       "val32",
+       15
+      ],
+      [
+       "val32",
+       16
+      ],
+      [
+       "val32",
+       17
+      ],
+      [
+       "val32",
+       18
+      ],
+      [
+       "val32",
+       19
+      ],
+      [
+       "val32",
+       20
+      ],
+      [
+       "val32",
+       21
+      ],
+      [
+       "val32",
+       22
+      ],
+      [
+       "val32",
+       23
+      ],
+      [
+       "val32",
+       24
+      ],
+      [
+       "val32",
+       25
+      ],
+      [
+       "val32",
+       26
+      ],
+      [
+       "val32",
+       27
+      ],
+      [
+       "val32",
+       28
+      ],
+      [
+       "val32",
+       29
+      ],
+      [
+       "val32",
+       30
+      ],
+      [
+       "val32",
+       31
+      ]
+     ],
+     "q2_cases": [],
+     "tighter": false,
+     "q3": false,
+     "ext22": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": [
+      [
+       "val32",
+       10
+      ],
+      [
+       "val32",
+       11
+      ],
+      [
+       "val32",
+       12
+      ],
+      [
+       "val32",
+       13
+      ],
+      [
+       "val32",
+       14
+      ],
+      [
+       "val32",
+       15
+      ],
+      [
+       "val32",
+       16
+      ],
+      [
+       "val32",
+       17
+      ],
+      [
+       "val32",
+       18
+      ],
+      [
+       "val32",
+       19
+      ],
+      [
+       "val32",
+       20
+      ],
+      [
+       "val32",
+       21
+      ],
+      [
+       "val32",
+       22
+      ],
+      [
+       "val32",
+       23
+      ],
+      [
+       "val32",
+       24
+      ],
+      [
+       "val32",
+       25
+      ],
+      [
+       "val32",
+       26
+      ],
+      [
+       "val32",
+       27
+      ],
+      [
+       "val32",
+       28
+      ],
+      [
+       "val32",
+       29
+      ],
+      [
+       "val32",
+       30
+      ],
+      [
+       "val32",
+       31
+      ]
+     ],
+     "q2_cases": [],
+     "tighter": false,
+     "q3": false,
+     "ext22": true
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  },
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192",
+   "qp": "gauss256",
+   "qpp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  }
+ ]
+}

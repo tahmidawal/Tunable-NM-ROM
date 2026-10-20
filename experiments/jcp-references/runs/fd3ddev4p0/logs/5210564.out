@@ -1,0 +1,41 @@
+host=pax010 source_commit=698f3d810715fd2da9b9f2d428385dde236f973b
+NVIDIA H200, GPU-4a83be81-02ff-dbdc-5bd9-cc82c722caa3, 143771 MiB
+10.235.106.29:/projects/paralab  4.6T 1000G  3.6T  22% /cluster/tufts/paralab
+/usr/bin/openssl
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[     15.7s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     19.6s]   dev4 c0 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.73e-12 newton=270 compile=1.1s solve=1.5s peak=394609920
+[     34.0s]   dev4 c0 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=4.87e-13 newton=404 compile=1.3s solve=11.6s peak=3336331520
+[    176.2s]   dev4 c0 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=4.14e-15 newton=804 compile=2.0s solve=135.1s peak=26848685568
+[    176.3s] CASE dev4 0 ST: accepted eps=7.893531637447057e-05 p=[1.9921611091372955, 2.0018287758747144, 2.0095199856471546, 2.0111445455521406, 2.0105551452586337] 160s
+[    177.6s]   dev4 c0 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=5.24e-16 newton=150 compile=0.0s solve=1.2s peak=26848685568
+[    187.6s]   dev4 c0 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=2.01e-15 newton=150 compile=0.0s solve=9.7s peak=26848685568
+[    260.5s]   dev4 c0 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=7.95e-15 newton=150 compile=0.0s solve=69.6s peak=27916148480
+[    260.7s] CASE dev4 0 S: accepted eps=6.18628008912252e-05 p=[2.0002689332117494, 2.0037402502558708, 2.0068403276069895, 2.008245207698988, 2.0084511791066] 84s
+[    262.1s]   dev4 c1 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.89e-12 newton=276 compile=0.0s solve=1.3s peak=27916148480
+[    273.8s]   dev4 c1 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=5.64e-13 newton=404 compile=0.0s solve=11.4s peak=27916148480
+[    411.1s]   dev4 c1 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=4.78e-15 newton=804 compile=0.0s solve=133.9s peak=27916148480
+[    411.2s] CASE dev4 1 ST: accepted eps=9.15483998547731e-05 p=[1.992932522174192, 1.9998175228407498, 2.008567638148682, 2.011428512568434, 2.0114581364793755] 150s
+[    412.5s]   dev4 c1 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=5.15e-16 newton=150 compile=0.0s solve=1.3s peak=27916148480
+[    422.7s]   dev4 c1 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=1.98e-15 newton=150 compile=0.0s solve=9.8s peak=27916148480
+[    496.4s]   dev4 c1 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=7.83e-15 newton=150 compile=0.0s solve=70.4s peak=27916148480
+[    496.6s] CASE dev4 1 S: accepted eps=7.039762322895249e-05 p=[1.9999718754301066, 2.002910586655337, 2.0062925097361846, 2.0082710630952905, 2.0090020868892906] 85s
+[    497.2s]   dev4 c2 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=8.29e-14 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[    505.2s]   dev4 c2 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.12e-15 newton=404 compile=0.0s solve=7.7s peak=27916148480
+[    600.3s]   dev4 c2 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.11e-15 newton=804 compile=0.0s solve=91.8s peak=27916148480
+[    600.5s] CASE dev4 2 ST: accepted eps=1.3786132166446832e-05 p=[1.9975675080773962, 1.998927585746864, 1.999393980732113, 1.9995988882720492, 1.9997217756463475] 104s
+[    600.9s]   dev4 c2 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.39e-12 newton=106 compile=0.0s solve=0.4s peak=27916148480
+[    604.6s]   dev4 c2 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.50e-12 newton=106 compile=0.0s solve=3.3s peak=27916148480
+[    631.4s]   dev4 c2 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.53e-12 newton=106 compile=0.0s solve=23.4s peak=27916148480
+[    631.5s] CASE dev4 2 S: accepted eps=1.1602171154463837e-05 p=[1.999603506835843, 2.000042144046581, 2.0002245478540575, 2.000299514602633, 2.000343803273484] 31s
+[    632.2s]   dev4 c3 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.06e-13 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[    639.8s]   dev4 c3 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.60e-15 newton=404 compile=0.0s solve=7.3s peak=27916148480
+[    731.1s]   dev4 c3 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=2.26e-15 newton=804 compile=0.0s solve=87.9s peak=27916148480
+[    731.2s] CASE dev4 3 ST: accepted eps=1.3807144016837256e-05 p=[1.9973761600173556, 1.9985974547894314, 1.9991323123920925, 1.9994034161083114, 1.9995588991854842] 100s
+[    731.7s]   dev4 c3 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.11e-12 newton=108 compile=0.0s solve=0.4s peak=27916148480
+[    735.2s]   dev4 c3 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.16e-12 newton=108 compile=0.0s solve=3.2s peak=27916148480
+[    761.2s]   dev4 c3 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.17e-12 newton=108 compile=0.0s solve=22.6s peak=27916148480
+[    761.3s] CASE dev4 3 S: accepted eps=8.09731741022039e-06 p=[1.9996667799354628, 2.000086639087601, 2.000284919004088, 2.000323022317975, 2.0002911533711067] 30s
+JOB COMPLETE
+ALL-DONE

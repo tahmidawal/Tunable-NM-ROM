@@ -1,0 +1,69 @@
+{
+ "attempt": "b1024b",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384
+ ],
+ "cases": "all38",
+ "members": [
+  {
+   "name": "1024|R384|LSPG|CNR|2",
+   "Rp": 384,
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.0,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "diagnostic": false
+  },
+  {
+   "name": "1024|R384|LSPG|CNR|1",
+   "Rp": 384,
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1.0,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "diagnostic": false
+  },
+  {
+   "name": "1024|R384|GAL|CN|1",
+   "Rp": 384,
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 1.0,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "diagnostic": true
+  }
+ ],
+ "b2": {
+  "qinf": "gauss320",
+  "qcheck": "gauss640",
+  "check_cases": "dev6",
+  "m_ablation": true,
+  "design": "full"
+ },
+ "b8": {
+  "horizon": 0.5,
+  "refs_dir": "/cluster/tufts/paralab/tawal01/jcp-budget/refs",
+  "manifest_file": "REFS-MANIFEST.sha256",
+  "check_cases": "dev6"
+ },
+ "controls": {
+  "Rp": 384,
+  "cases": "dev6",
+  "under_resolved": "gauss32"
+ },
+ "b7": {
+  "horizon": 0.5,
+  "q2_cases": "sub16",
+  "tighter_cases": "dev6"
+ }
+}

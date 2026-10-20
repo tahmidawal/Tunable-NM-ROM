@@ -1,0 +1,100 @@
+host=pax105 source_commit=0c581ba20e53397917ef96961d51a19edd66f526
+NVIDIA A100 80GB PCIe, GPU-c52a7f04-fc38-6157-cf19-5c7ff0945752, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+jax_backend=gpu
+PASS G-seed refuses [0, 1000, 7090702, 20260927, 923801, 5550001, 2147483647]
+PASS G-seed accepts registered 
+PASS G-bounds registered regimes 
+PASS G-bounds refuses injected rows []
+PASS G-train N0 disjoint 
+PASS G-train all regimes disjoint (A2.1) {'single': 88, 'two_bump': 32, 'others': 4710}
+PASS G-train refuses injected duplicate 
+PASS G-pair C1/A- geometry and nu identical, a larger 
+PASS G-train refuses injected training row 
+PASS G-ic single bump == engines.initial 0.0
+PASS G-ic two-bump peak == a 2.220446049250313e-16
+PASS G-ic B2 sign-changing -1.9927361725803154
+PASS G-ic interface shapes 
+PASS G-ic-ps two-bump coefficients == direct quadrature 3.583463616202375e-15
+PASS S-check separating fixture passes {'Ap': True, 'Am': True, 'C1': True, 'C2': True, 'B1': True, 'B2': True}
+PASS S-check non-separating fixture fails 
+PASS S-check refuses < 8 N0 
+PASS S-check refuses C1 with < 8 A- 
+PASS R-order first-order triple rejected ('order-fail', [1.0, 1.0, 1.0, 1.0, 0.9999999999999999])
+PASS R-order second-order triple accepted ('accepted', [2.0000000000000004, 2.0, 1.9999999999999998, 2.0, 2.0000000000000004])
+PASS R-peclet rejected ('peclet-fail', 2.5)
+ALL-PASS
+STEP refjob configs/ref-N0.json 2026-10-19T20:38:11Z
+jax_backend=gpu x64=True precision=highest
+[     21.5s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     30.8s]   N0 c0 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=1.78e-12 newton=406 compile=1.3s solve=6.5s peak=939287808
+[     75.6s]   N0 c0 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=4.09e-12 newton=805 compile=1.3s solve=42.0s peak=3924748544
+[    462.1s]   N0 c0 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=1.24e-12 newton=1605 compile=1.1s solve=383.0s peak=15734205184
+[    462.1s] CASE N0 0 ST: accepted eps=5.560387760983714e-06 p=[1.9982932069840005, 1.9987816236643072, 1.9945155281848759, 1.9902861528360254, 1.9907680554459846] 441s
+[    467.1s]   N0 c1 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=1.30e-14 newton=404 compile=0.0s solve=4.9s peak=15734205184
+[    504.8s]   N0 c1 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=2.59e-14 newton=804 compile=0.0s solve=37.3s peak=15734205184
+[    785.0s]   N0 c1 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=5.17e-14 newton=1604 compile=0.0s solve=279.1s peak=16270945536
+[    785.0s] CASE N0 1 ST: accepted eps=1.476725969039069e-06 p=[1.9982429076972557, 1.9980025356116333, 1.997752261124554, 1.9975593968382808, 1.9974116925801773] 323s
+[    792.2s]   N0 c2 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=4.99e-12 newton=411 compile=0.0s solve=7.1s peak=16270945536
+[    843.5s]   N0 c2 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=7.61e-12 newton=810 compile=0.0s solve=51.0s peak=16270945536
+[   1256.8s]   N0 c2 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.97e-12 newton=1610 compile=0.0s solve=412.2s peak=16270945536
+[   1256.9s] CASE N0 2 ST: accepted eps=3.415554156782508e-06 p=[1.9861315428174557, 1.9953310232730335, 1.9969102681522182, 1.9967185899187536, 1.9961672849707353] 472s
+[   1261.9s]   N0 c3 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=1.30e-13 newton=404 compile=0.0s solve=5.0s peak=16270945536
+[   1299.1s]   N0 c3 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=5.73e-14 newton=804 compile=0.0s solve=36.9s peak=16270945536
+[   1585.7s]   N0 c3 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=5.98e-14 newton=1604 compile=0.0s solve=285.6s peak=16270945536
+[   1585.8s] CASE N0 3 ST: accepted eps=1.9635139650097897e-06 p=[1.9976233224797502, 1.9972076772147351, 1.9968325164973264, 1.9965273156642895, 1.9962750652198824] 329s
+[   1590.9s]   N0 c4 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=1.00e-11 newton=410 compile=0.0s solve=5.1s peak=16270945536
+[   1628.2s]   N0 c4 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=9.47e-12 newton=808 compile=0.0s solve=36.9s peak=16270945536
+[   1920.6s]   N0 c4 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=9.88e-12 newton=1607 compile=0.0s solve=291.3s peak=16270945536
+[   3136.9s]   N0 c4 ST a3_L12288 refine L=12288 dt=2.083e-04 stages=1202 ok=True maxres=6.80e-12 newton=2406 compile=2.0s solve=1210.6s peak=40562322432
+[   3136.9s] CASE N0 4 ST: order-fail eps=1.0558090866768817e-06 p=[1.9707857881397466, 1.7495811851498084, 1.6094583331757235, 1.5005557187612428, 1.4187110327050565] 1551s
+[   3142.1s]   N0 c5 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=4.59e-13 newton=404 compile=0.0s solve=5.1s peak=40562322432
+[   3180.0s]   N0 c5 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=8.62e-14 newton=804 compile=0.0s solve=37.6s peak=40562322432
+[   3493.5s]   N0 c5 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=1.72e-13 newton=1604 compile=0.0s solve=312.4s peak=40562322432
+[   3493.6s] CASE N0 5 ST: accepted eps=5.859142512304197e-06 p=[1.990736173840843, 1.986168636441919, 1.9825716836490432, 1.979795211214471, 1.9776388340241406] 357s
+[   3498.6s]   N0 c6 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=5.56e-13 newton=404 compile=0.0s solve=4.9s peak=40562322432
+[   3537.9s]   N0 c6 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=2.08e-13 newton=804 compile=0.0s solve=39.0s peak=40562322432
+[   3832.2s]   N0 c6 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=1.27e-13 newton=1604 compile=0.0s solve=293.3s peak=40562322432
+[   3832.3s] CASE N0 6 ST: accepted eps=1.9497005887894057e-06 p=[1.9977374948992033, 1.9972733536000604, 1.9968308133026293, 1.9964382820487956, 1.9960497189406103] 339s
+[   3837.4s]   N0 c7 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=4.11e-12 newton=408 compile=0.0s solve=5.0s peak=40562322432
+[   3874.8s]   N0 c7 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=6.92e-12 newton=806 compile=0.0s solve=37.1s peak=40562322432
+[   4162.6s]   N0 c7 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.14e-12 newton=1606 compile=0.0s solve=286.7s peak=40562322432
+[   4162.6s] CASE N0 7 ST: accepted eps=1.296966919443526e-06 p=[1.8159820496688848, 1.8303119558157255, 1.868443498179245, 1.8981239293451502, 1.9211391171954308] 330s
+[   4167.5s]   N0 c8 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=8.18e-12 newton=406 compile=0.0s solve=4.8s peak=40562322432
+[   4201.1s]   N0 c8 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=2.59e-12 newton=806 compile=0.0s solve=33.3s peak=40562322432
+[   4485.1s]   N0 c8 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=4.82e-12 newton=1605 compile=0.0s solve=282.9s peak=40562322432
+[   4485.2s] CASE N0 8 ST: accepted eps=1.2937532856264358e-06 p=[1.9600859206876324, 1.983322604704689, 1.9687405189672669, 1.9597429520836327, 1.9556724576947906] 322s
+[   4490.1s]   N0 c9 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=4.81e-12 newton=408 compile=0.0s solve=4.8s peak=40562322432
+[   4525.4s]   N0 c9 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=8.14e-12 newton=806 compile=0.0s solve=35.1s peak=40562322432
+[   4816.2s]   N0 c9 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.55e-12 newton=1606 compile=0.0s solve=289.6s peak=40562322432
+[   4816.3s] CASE N0 9 ST: accepted eps=2.170888332020049e-06 p=[1.971014784983682, 1.9568727793186247, 1.9477801308894318, 1.9439274549460748, 1.9414622561170738] 331s
+[   4821.3s]   N0 c10 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=6.47e-13 newton=405 compile=0.0s solve=4.9s peak=40562322432
+[   4851.1s]   N0 c10 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=1.97e-13 newton=805 compile=0.0s solve=29.6s peak=40562322432
+[   5130.7s]   N0 c10 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=8.85e-14 newton=1605 compile=0.0s solve=278.5s peak=40562322432
+[   5130.8s] CASE N0 10 ST: accepted eps=4.788083235695e-07 p=[1.9837988113460479, 1.9941166434232986, 1.9982753500385122, 2.00169403624418, 2.0043173772934497] 314s
+[   5134.6s]   N0 c11 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=3.96e-12 newton=405 compile=0.0s solve=3.7s peak=40562322432
+[   5164.4s]   N0 c11 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=1.19e-12 newton=805 compile=0.0s solve=29.5s peak=40562322432
+[   5443.9s]   N0 c11 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=4.76e-13 newton=1605 compile=0.0s solve=278.4s peak=40562322432
+[   5444.0s] CASE N0 11 ST: accepted eps=1.141401982878459e-06 p=[1.9845747326826872, 1.9882162900843006, 1.98572139268858, 1.9838490554697996, 1.9823288412574753] 313s
+[   5448.9s]   N0 c12 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=5.18e-12 newton=406 compile=0.0s solve=4.9s peak=40562322432
+[   5485.2s]   N0 c12 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=7.61e-12 newton=805 compile=0.0s solve=35.9s peak=40562322432
+[   5773.2s]   N0 c12 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.27e-12 newton=1605 compile=0.0s solve=286.9s peak=40562322432
+[   5773.3s] CASE N0 12 ST: accepted eps=2.2834078579037596e-06 p=[2.030464124848625, 2.0229254467811675, 2.014713850900472, 2.0034410555900393, 1.9896272021577885] 329s
+[   5777.8s]   N0 c13 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=7.46e-14 newton=404 compile=0.0s solve=4.4s peak=40562322432
+[   5811.3s]   N0 c13 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=1.19e-13 newton=804 compile=0.0s solve=33.2s peak=40562322432
+[   6099.1s]   N0 c13 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.39e-13 newton=1604 compile=0.0s solve=286.6s peak=40562322432
+[   6099.1s] CASE N0 13 ST: accepted eps=3.6962023564813023e-06 p=[1.9955819636488603, 1.9927554475438465, 1.990007956353757, 1.9875181955356884, 1.9852805974734231] 326s
+[   6105.0s]   N0 c14 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=6.67e-13 newton=404 compile=0.0s solve=5.8s peak=40562322432
+[   6148.6s]   N0 c14 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=4.22e-14 newton=804 compile=0.0s solve=43.4s peak=40562322432
+[   6504.7s]   N0 c14 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=8.35e-14 newton=1604 compile=0.0s solve=355.0s peak=40562322432
+[   6504.8s] CASE N0 14 ST: accepted eps=8.341317673319948e-06 p=[1.9909795172643516, 1.986903355883453, 1.9842548464480048, 1.9823714969567217, 1.9809435900467258] 406s
+[   6510.3s]   N0 c15 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=5.43e-12 newton=411 compile=0.0s solve=5.4s peak=40562322432
+[   6551.9s]   N0 c15 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=9.46e-12 newton=809 compile=0.0s solve=41.3s peak=40562322432
+[   6884.1s]   N0 c15 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.70e-12 newton=1608 compile=0.0s solve=331.0s peak=40562322432
+[   8177.5s]   N0 c15 ST a3_L12288 refine L=12288 dt=2.083e-04 stages=1202 ok=True maxres=6.94e-12 newton=2406 compile=0.0s solve=1290.9s peak=40562322432
+[   8177.5s] CASE N0 15 ST: order-fail eps=2.6061417811321204e-06 p=[1.9985908867609692, 1.8996673253950984, 1.8281177370992103, 1.780347219498906, 1.7498796102376386] 1673s
+JOB COMPLETE
+STEP refslim configs/slim-N0.json 2026-10-19T22:54:31Z
+REFSLIM 16 cases
+STEP end - 2026-10-19T22:54:35Z
+ALL-DONE

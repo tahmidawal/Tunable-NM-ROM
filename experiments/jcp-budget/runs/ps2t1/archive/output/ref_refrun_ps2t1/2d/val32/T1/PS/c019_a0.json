@@ -1,0 +1,104 @@
+{
+ "dim": 2,
+ "cohort": "val32",
+ "case": 19,
+ "horizon": 1.0,
+ "desc": {
+  "cx": 0.2999045225687323,
+  "cy": 0.32115693527064393,
+  "w": 0.15829962532281322,
+  "a": 1.8724500970041322,
+  "nu": 0.010660470610592962
+ },
+ "Ns": [
+  1024,
+  1536,
+  2048
+ ],
+ "dt_base": 3.125e-05,
+ "ladder_attempt": 0,
+ "runs": [
+  {
+   "id": "N1024_dt0_a0",
+   "N": 1024,
+   "dt": 3.125e-05,
+   "attempt": 0,
+   "purpose": "spatial",
+   "umax": 1.8727508745422474,
+   "finite": true,
+   "ic_quad_rel": 5.2700993631003436e-14,
+   "ic_quad_max": 1.92336381196756e-14,
+   "contour_rel": 9.46898809363987e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 71.67960418667644,
+   "peak_bytes": 1474739456
+  },
+  {
+   "id": "N1536_dt0_a0",
+   "N": 1536,
+   "dt": 3.125e-05,
+   "attempt": 0,
+   "purpose": "spatial",
+   "umax": 1.8726497015877692,
+   "finite": true,
+   "ic_quad_rel": 8.277533470307369e-14,
+   "ic_quad_max": 2.2680736954348857e-14,
+   "contour_rel": 9.46898809363987e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 148.51343111880124,
+   "peak_bytes": 1474739456
+  },
+  {
+   "id": "N2048_dt0_a0",
+   "N": 2048,
+   "dt": 3.125e-05,
+   "attempt": 0,
+   "purpose": "spatial",
+   "umax": 1.8725973097294353,
+   "finite": true,
+   "ic_quad_rel": 1.1769499317168557e-13,
+   "ic_quad_max": 2.581847902789411e-14,
+   "contour_rel": 9.46898809363987e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 277.78584871441126,
+   "peak_bytes": 1474739456
+  },
+  {
+   "id": "N2048_dt1_a0",
+   "N": 2048,
+   "dt": 1.5625e-05,
+   "attempt": 0,
+   "purpose": "half",
+   "umax": 1.8725973097294353,
+   "finite": true,
+   "ic_quad_rel": 1.1769499317168557e-13,
+   "ic_quad_max": 2.581847902789411e-14,
+   "contour_rel": 9.468988093624518e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 554.512913913466,
+   "peak_bytes": 1474739456
+  }
+ ],
+ "selected_spatial": [
+  "N1024_dt0_a0",
+  "N1536_dt0_a0",
+  "N2048_dt0_a0"
+ ],
+ "selected_half": "N2048_dt1_a0",
+ "stability_ok": true,
+ "gates_ok": true,
+ "finite": true,
+ "job": {
+  "job_id": "5818780",
+  "commit": "3e276a1a80f00b114f036a40b16dcafac982e442",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ }
+}

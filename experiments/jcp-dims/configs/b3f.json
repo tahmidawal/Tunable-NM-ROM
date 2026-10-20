@@ -1,0 +1,274 @@
+{
+ "attempt": "b3f",
+ "driver": "d3run",
+ "mode": "b3f",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  }
+ ],
+ "extra_rules": [
+  "badlat262144",
+  "gl64",
+  "lat131072",
+  "lat131072s1",
+  "lat131072s2",
+  "lat131072s3",
+  "lat131072s4",
+  "lat16384",
+  "lat16384s1",
+  "lat16384s2",
+  "lat16384s3",
+  "lat16384s4",
+  "lat262144",
+  "lat262144s1",
+  "lat262144s2",
+  "lat262144s3",
+  "lat262144s4",
+  "lat32768",
+  "lat32768s1",
+  "lat32768s2",
+  "lat32768s3",
+  "lat32768s4",
+  "lat65536",
+  "lat65536s1",
+  "lat65536s2",
+  "lat65536s3",
+  "lat65536s4",
+  "lat8192",
+  "lat8192s1",
+  "lat8192s2",
+  "lat8192s3",
+  "lat8192s4",
+  "smolyak10",
+  "smolyak11",
+  "smolyak12",
+  "smolyak13",
+  "smolyak8",
+  "smolyak9",
+  "sob131072s0",
+  "sob131072s1",
+  "sob131072s2",
+  "sob131072s3",
+  "sob131072s4",
+  "sob16384s0",
+  "sob16384s1",
+  "sob16384s2",
+  "sob16384s3",
+  "sob16384s4",
+  "sob262144s0",
+  "sob262144s1",
+  "sob262144s2",
+  "sob262144s3",
+  "sob262144s4",
+  "sob32768s0",
+  "sob32768s1",
+  "sob32768s2",
+  "sob32768s3",
+  "sob32768s4",
+  "sob65536s0",
+  "sob65536s1",
+  "sob65536s2",
+  "sob65536s3",
+  "sob65536s4",
+  "sob8192s0",
+  "sob8192s1",
+  "sob8192s2",
+  "sob8192s3",
+  "sob8192s4"
+ ],
+ "blocks": [
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat8192s1",
+    "lat16384s1",
+    "lat32768s1",
+    "lat65536s1",
+    "lat131072s1",
+    "lat262144s1"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat8192s2",
+    "lat16384s2",
+    "lat32768s2",
+    "lat65536s2",
+    "lat131072s2",
+    "lat262144s2"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat8192s3",
+    "lat16384s3",
+    "lat32768s3",
+    "lat65536s3",
+    "lat131072s3",
+    "lat262144s3"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat8192s4",
+    "lat16384s4",
+    "lat32768s4",
+    "lat65536s4",
+    "lat131072s4",
+    "lat262144s4"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "sob8192s0",
+    "sob16384s0",
+    "sob32768s0",
+    "sob65536s0",
+    "sob131072s0",
+    "sob262144s0"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "sob8192s1",
+    "sob16384s1",
+    "sob32768s1",
+    "sob65536s1",
+    "sob131072s1",
+    "sob262144s1"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "sob8192s2",
+    "sob16384s2",
+    "sob32768s2",
+    "sob65536s2",
+    "sob131072s2",
+    "sob262144s2"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "sob8192s3",
+    "sob16384s3",
+    "sob32768s3",
+    "sob65536s3",
+    "sob131072s3",
+    "sob262144s3"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "sob8192s4",
+    "sob16384s4",
+    "sob32768s4",
+    "sob65536s4",
+    "sob131072s4",
+    "sob262144s4"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "smolyak8",
+    "smolyak9",
+    "smolyak10",
+    "smolyak11",
+    "smolyak12",
+    "smolyak13"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "badlat262144"
+   ]
+  },
+  {
+   "kind": "fixgate",
+   "setting": "W512",
+   "target": "gl64",
+   "rules": [
+    "badlat262144",
+    "lat262144",
+    "lat262144s1",
+    "lat262144s2",
+    "lat262144s3",
+    "lat262144s4",
+    "sob262144s0",
+    "sob262144s1",
+    "sob262144s2",
+    "sob262144s3",
+    "sob262144s4",
+    "smolyak13"
+   ],
+   "fixture": "inputs/fixture3d.npz"
+  }
+ ]
+}

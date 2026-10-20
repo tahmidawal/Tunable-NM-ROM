@@ -1,0 +1,3 @@
+{"source": "smoke s2c, job 5020724, NVIDIA H100 PCIe: one setting (R'=512, kappa 4) with 4 validation + 4 certification cases took 150 s, peak device 21.6 GB",
+ "per_setting_estimate_s": {"compile": "17 arms x ~4.5 s = 77", "rollouts": "88 queries x (sum of warm arm times ~1.6 s at R'=512 k4) = 140", "rho": "600 states vs 100: targets streamed in 64-state batches, <= 6 x 30 s = 180", "timing": "16 cases x 2 reps x 2 phases x 15 arms x ~0.1 s + burns = 200", "total": "~600 s at R'=512 k4; smaller settings less"},
+ "projection_hours": "6 settings x <= 600 s + tables ~ 1.1 h", "requested_hours": 6}

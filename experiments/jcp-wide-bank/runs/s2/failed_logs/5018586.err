@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/jcpwide/s2/experiments/jcp-wide-bank/w3d.py", line 720, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/jcpwide/s2/experiments/jcp-wide-bank/w3d.py", line 306, in main
+    assert g['G1_derivative_vs_fd'] < 1e-6 and g['G2_meshnodes_offmesh_vs_tensor_32col'] < 1e-12, g
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'gram_condition': 1.000000000000512, 'G1_derivative_vs_fd': 1.8677493931803708e-06, 'G2_meshnodes_offmesh_vs_tensor_32col': 1.0643709769948999e-15, 'G4_solver_vs_vendor_fields_32col': 0.0, 'G4_solver_vs_vendor_coefs_32col': 0.0, 'G4_iterations_reasons_equal': True, 'G3_jacobian_vs_jacfwd': 0.0, 'G3_adv_half_Jc': 8.436150706960837e-16}

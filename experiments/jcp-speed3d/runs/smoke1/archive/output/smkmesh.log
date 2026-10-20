@@ -1,0 +1,45 @@
+E1015 20:25:01.781476  160107 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 4.0s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.6s
+[mesh 65] bank rows [(256, 250047), (768, 250047)] 5.5s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 8.6s
+SETUP 24.2
+[bigtables n=65 R=512] slab 0/63 2.6s
+[bigtables n=66 R=512] slab 0/64 2.1s
+G5 M2|512 {'M': 2052, 'M_ref': 2052, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 1.3286348848571252e-15, 'pass': True, 'K7_rel': 0.023529291797851036, 'K7_fires': True, 'gate': True}
+[bigtables n=65 R=256] slab 0/63 2.6s
+[bigtables n=66 R=256] slab 0/64 2.2s
+G5 W1024|256 {'M': 1027, 'M_ref': 1027, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 1.063350602905272e-15, 'pass': True, 'K7_rel': 0.02352893222562748, 'K7_fires': True, 'gate': True}
+[bigtables n=65 R=1024] slab 0/63 1.0s
+[bigtables n=66 R=1024] slab 0/64 0.8s
+G5 W1024|1024 {'M': 4097, 'M_ref': 4097, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 1.7474583125565238e-15, 'pass': True, 'K7_rel': 0.023530926958034718, 'K7_fires': True, 'gate': True}
+RUN M2_512|gl32|mf|n65 qn|CN|0.025|k4 5.5s valid True nonst 0 / 30 47.5
+RUN M2_512|gl32|mf|n65 ad|LSPG|CN|0.025|tight 3.2s valid True nonst 0 / 0 50.8
+RUN M2_512|gl32|mf|n65 ad|LSPG|CN|0.025|tighter 1.5s valid True nonst 0 / 0 52.3
+RUN W1024|lat65536|mf|n65 qn|CN|0.025|k4 6.8s valid True nonst 0 / 30 63.0
+RUN W1024|lat65536|mf|n65 ad|LSPG|CN|0.025|tight 5.1s valid True nonst 0 / 0 68.1
+RUN W1024|lat65536|mf|n65 ad|LSPG|CN|0.025|tighter 3.7s valid True nonst 0 / 0 71.8
+FOM fd|UB|L64|0.01|t1 converged True median e 0.08054167886328163 75.6
+FOM fd|CC|L64|0.01|t1 converged True median e 0.0031598558289603665 77.2
+FOM ps|N32|0.01 converged True median e 0.00013801727391954058 82.2
+FOM fd|CC|L128|0.0125|t1 converged True median e 0.003958365818680049 84.9
+TIMING mesh|L64|qnCN 4 valid True 87.8
+TIMING mesh|L64|W1024qn 4 valid True 91.2
+[bigtables n=129 R=512] slab 0/127 3.1s
+[bigtables n=129 R=512] slab 64/127 3.2s
+RUN M2_512|gl32|mf|n129 qn|CN|0.025|k4 3.6s valid True nonst 0 / 30 100.1
+RUN M2_512|gl32|mf|n129 ad|LSPG|CN|0.025|tight 2.8s valid True nonst 0 / 0 102.9
+RUN M2_512|gl32|mf|n129 ad|LSPG|CN|0.025|tighter 1.6s valid True nonst 0 / 0 104.5
+[bigtables n=129 R=1024] slab 0/127 2.7s
+[bigtables n=129 R=1024] slab 64/127 3.2s
+RUN W1024|lat65536|mf|n129 qn|CN|0.025|k4 2.8s valid True nonst 0 / 30 111.4
+RUN W1024|lat65536|mf|n129 ad|LSPG|CN|0.025|tight 3.7s valid True nonst 0 / 0 115.0
+RUN W1024|lat65536|mf|n129 ad|LSPG|CN|0.025|tighter 3.6s valid True nonst 0 / 0 118.6
+FOM fd|UB|L128|0.01|t1 converged True median e 0.051224382997970885 122.4
+FOM fd|CC|L128|0.01|t1 converged True median e 0.002552695008613513 124.8
+FOM ps|N32|0.01 converged True median e 0.00013801727391954058 129.3
+FOM fd|CC|L128|0.0125|t1 converged True median e 0.003958365818680049 129.7
+TIMING mesh|L128|qnCN 4 valid True 132.9
+TIMING mesh|L128|W1024qn 4 valid True 137.3
+S3RUN COMPLETE

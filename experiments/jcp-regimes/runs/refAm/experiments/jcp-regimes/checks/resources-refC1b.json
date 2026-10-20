@@ -1,0 +1,34 @@
+{
+ "attempt": "refC1b",
+ "projection_hours": 4.6167,
+ "time_limit_hours": 7.0,
+ "gpu": "h200",
+ "configs": {
+  "configs/ref-C1.json": "d3b43430ad7d1e45aeef6a6c6959de2e104e4a26b73c5940e9d335ba61e060fa",
+  "configs/slim-C1.json": "20f5baf6119b9a823b0f56f31ac44ed7b9b6a54fa6014298ded064081adf222e"
+ },
+ "runs": [
+  "refjob:configs/ref-C1.json",
+  "refslim:configs/slim-C1.json"
+ ],
+ "parts": [
+  {
+   "run": "refjob:configs/ref-C1.json",
+   "seconds": 16500.0
+  },
+  {
+   "run": "refslim:configs/slim-C1.json",
+   "seconds": 120.0
+  }
+ ],
+ "basis": {
+  "ordinary": 221.70111935865134,
+  "lownu": 850.0,
+  "lownu_pilot": 350.367016851902,
+  "probe": 40.18424032907933,
+  "rom_per_run": 0.45252525252525255,
+  "fverify_per_field": 0.12121212121212122,
+  "calib_agree": true,
+  "smoke": "runs/smk1"
+ }
+}

@@ -1,0 +1,761 @@
+{
+ "source": "runs/smk1b/archive/output/r2acc_smk1m1024",
+ "mesh": 1024,
+ "commit": "18f54dfb29347bb31c57a7d42be77bcc8810c93b",
+ "job_id": "6072352",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "backend": "gpu",
+ "complete": true,
+ "groups": {
+  "R128": {
+   "arms": {
+    "LSPG_BE_1": {
+     "arm": "LSPG_BE_1",
+     "form": "LSPG",
+     "scheme": "BE",
+     "dt": 0.005,
+     "rules": {
+      "d0": {
+       "rule": "fib4181s0",
+       "succ": "fib6765s0",
+       "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "D": 1.1271022950342642e-05,
+       "prod_failed": false,
+       "rho_tgt_max": 0.023072599208717643,
+       "rho_succ_max": 0.027067144882984756,
+       "tight_max": 1.3696906472469317e-05,
+       "succ_max": 1.1027150861026582e-05,
+       "e": [
+        0.005996050207513982,
+        0.01335329167445655,
+        0.03011430195913659,
+        0.014760013459176536,
+        0.01167585928325391,
+        0.01407823265424655
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "dist_target": [
+        1.8973819936363998e-06,
+        5.249280928712802e-08,
+        1.6919807946840186e-06,
+        1.1271022950342642e-05,
+        2.5393647397224605e-06,
+        1.2140758615931369e-06
+       ]
+      },
+      "d1": {
+       "rule": "fib4181s1",
+       "succ": "fib6765s1",
+       "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "D": 1.1798089057578018e-05,
+       "prod_failed": false,
+       "rho_tgt_max": 0.017647412852711476,
+       "rho_succ_max": 0.0208031510711808,
+       "tight_max": 1.3698581960504936e-05,
+       "succ_max": 1.5662019911158046e-05,
+       "e": [
+        0.005996039044980298,
+        0.013353294335275698,
+        0.03011417012139623,
+        0.014759545536653165,
+        0.011675618826370995,
+        0.014078286696015383
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "dist_target": [
+        2.259715397242777e-06,
+        5.644581057239748e-08,
+        1.4069699880277749e-06,
+        1.1798089057578018e-05,
+        2.6119026472988776e-06,
+        2.6033244589251616e-07
+       ]
+      },
+      "d2": {
+       "rule": "fib4181s2",
+       "succ": "fib6765s2",
+       "rule_sha256": "52cd1e7d354ec20f0e3187aae6ec03913bddf5c1d2086c27828ed2d749cc926c",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "D": 1.4928205861361618e-05,
+       "prod_failed": false,
+       "rho_tgt_max": 0.024222256061362253,
+       "rho_succ_max": 0.02895647472763011,
+       "tight_max": 1.3698267430444851e-05,
+       "succ_max": 1.6964130982803897e-05,
+       "e": [
+        0.005996223358684918,
+        0.01335330096147872,
+        0.03011419505597386,
+        0.014759359201569096,
+        0.011675770013560243,
+        0.014078287001329681
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "dist_target": [
+        1.9533797959526866e-06,
+        5.1803145401445635e-08,
+        1.1896517042415824e-06,
+        1.4928205861361618e-05,
+        1.9103296248857763e-06,
+        2.7225545942759507e-07
+       ]
+      },
+      "bad": {
+       "rule": "badlat4181",
+       "succ": "",
+       "rule_sha256": "7c195093119ce37b0b76b9c1398840ec3a9b5f554532094f665c9c502e018be4",
+       "level": "prod",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "diagnostic (production only)",
+       "nonst_frac": 0.0,
+       "D": 0.49635613017854413,
+       "prod_failed": false,
+       "rho_tgt_max": 9.218886454494477,
+       "rho_succ_max": null,
+       "tight_max": null,
+       "succ_max": null,
+       "e": [
+        0.29001036196972596,
+        0.22318543545698064,
+        0.5056049102151882,
+        0.44027948197341393,
+        0.20877870683112593,
+        0.23704074697898758
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": null,
+       "dist_target": [
+        0.28524556207283575,
+        0.23031255569598535,
+        0.49635613017854413,
+        0.4302168582696293,
+        0.20144214731681914,
+        0.24149081120894578
+       ]
+      }
+     },
+     "diagnostic": false,
+     "target": {
+      "present": true,
+      "certified": true,
+      "all_valid": true,
+      "check_rows": [
+       {
+        "case": "dev6|0",
+        "check_valid": true,
+        "dist": 3.5292990082662106e-09,
+        "dist_job": 3.5292990098204453e-09,
+        "agree": true
+       },
+       {
+        "case": "dev6|1",
+        "check_valid": true,
+        "dist": 7.211852567605977e-10,
+        "dist_job": 7.211852566473781e-10,
+        "agree": true
+       },
+       {
+        "case": "dev6|2",
+        "check_valid": true,
+        "dist": 2.1948801579119993e-09,
+        "dist_job": 2.1948801575350382e-09,
+        "agree": true
+       },
+       {
+        "case": "dev6|3",
+        "check_valid": true,
+        "dist": 1.760249653114567e-07,
+        "dist_job": 1.7602496530660393e-07,
+        "agree": true
+       },
+       {
+        "case": "dev6|4",
+        "check_valid": true,
+        "dist": 1.985144689885146e-09,
+        "dist_job": 1.985144682707036e-09,
+        "agree": true
+       },
+       {
+        "case": "dev6|5",
+        "check_valid": true,
+        "dist": 1.0867718405163756e-08,
+        "dist_job": 1.086771840272849e-08,
+        "agree": true
+       }
+      ],
+      "label": "checked on the registered subset (dev6)",
+      "econv": [
+       0.005996124348228452,
+       0.013353294851681323,
+       0.03011415869097549,
+       0.01475985640410215,
+       0.011675752364082888,
+       0.01407833572152113
+      ]
+     },
+     "smoke": true,
+     "integrity": {
+      "ids_ok": true,
+      "mismatches": [],
+      "gcert_fail": 0,
+      "missing": [],
+      "ok": true
+     },
+     "G-E1.2": {
+      "passed": true,
+      "worst": 1.562665736831506e-15,
+      "n": 6,
+      "files": [
+       {
+        "src": [
+         "p1",
+         "acc1024",
+         "R_R128_BE.npz"
+        ],
+        "sha256": "42d5c60021f7a44550c8f0076df989c55fee97e53e0e34b0beffb74685cd9d4d"
+       }
+      ]
+     }
+    },
+    "LSPG_CNR_1": {
+     "arm": "LSPG_CNR_1",
+     "form": "LSPG",
+     "scheme": "CNR",
+     "dt": 0.005,
+     "rules": {
+      "d0": {
+       "rule": "fib4181s0",
+       "succ": "fib6765s0",
+       "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "D": 1.1100996125980701e-05,
+       "prod_failed": false,
+       "rho_tgt_max": 0.023072599208717643,
+       "rho_succ_max": 0.027067144882984756,
+       "tight_max": 1.2815934069811463e-05,
+       "succ_max": 1.071127499335771e-05,
+       "e": [
+        0.002768834550933531,
+        0.002704207729317228,
+        0.025665990159220158,
+        0.00913754408633568,
+        0.00732817576627257,
+        0.006542746161632453
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "dist_target": [
+        1.974036280138901e-06,
+        5.483509162407966e-08,
+        2.376635002122278e-06,
+        1.1100996125980701e-05,
+        2.6755675800638544e-06,
+        1.214378369276506e-06
+       ]
+      },
+      "d1": {
+       "rule": "fib4181s1",
+       "succ": "fib6765s1",
+       "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "D": 1.193508227578112e-05,
+       "prod_failed": false,
+       "rho_tgt_max": 0.017647412852711476,
+       "rho_succ_max": 0.0208031510711808,
+       "tight_max": 1.2708998325912883e-05,
+       "succ_max": 1.61504282423334e-05,
+       "e": [
+        0.002768134711853307,
+        0.0027042097598568788,
+        0.02566586565553578,
+        0.00913779989917199,
+        0.007327580287081242,
+        0.0065427271435717586
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "dist_target": [
+        2.349215577169646e-06,
+        5.7171516835495844e-08,
+        2.0271707833161032e-06,
+        1.193508227578112e-05,
+        2.83130657765539e-06,
+        2.6745298840675185e-07
+       ]
+      },
+      "d2": {
+       "rule": "fib4181s2",
+       "succ": "fib6765s2",
+       "rule_sha256": "52cd1e7d354ec20f0e3187aae6ec03913bddf5c1d2086c27828ed2d749cc926c",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "D": 1.56190842920595e-05,
+       "prod_failed": false,
+       "rho_tgt_max": 0.024222256061362253,
+       "rho_succ_max": 0.02895647472763011,
+       "tight_max": 1.2728161119511276e-05,
+       "succ_max": 1.7685967012506807e-05,
+       "e": [
+        0.002768241544791024,
+        0.002704216288411167,
+        0.025665922685966465,
+        0.009136342050701764,
+        0.007327852399039575,
+        0.006542725041795657
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "dist_target": [
+        2.0567517301021754e-06,
+        5.4402319946737446e-08,
+        1.6791835421418422e-06,
+        1.56190842920595e-05,
+        2.0275910570974875e-06,
+        2.776188516115664e-07
+       ]
+      },
+      "bad": {
+       "rule": "badlat4181",
+       "succ": "",
+       "rule_sha256": "7c195093119ce37b0b76b9c1398840ec3a9b5f554532094f665c9c502e018be4",
+       "level": "prod",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "diagnostic (production only)",
+       "nonst_frac": 0.0,
+       "D": 0.5041787208034684,
+       "prod_failed": false,
+       "rho_tgt_max": 9.218886454494477,
+       "rho_succ_max": null,
+       "tight_max": null,
+       "succ_max": null,
+       "e": [
+        0.28904030361482935,
+        0.2353235550872742,
+        0.5046781569490538,
+        0.43923901908719853,
+        0.20801430424431683,
+        0.254332106267366
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06,
+        7.308479841780376e-06,
+        3.7132195390691405e-06,
+        3.8383037767517785e-06,
+        4.947585007729046e-06
+       ],
+       "eligible": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+       ],
+       "case_q": null,
+       "dist_target": [
+        0.2888249186057352,
+        0.23675185022093614,
+        0.5041787208034684,
+        0.4389885332217005,
+        0.20712650332352003,
+        0.2550007675850102
+       ]
+      }
+     },
+     "diagnostic": false,
+     "target": {
+      "present": true,
+      "certified": true,
+      "all_valid": true,
+      "check_rows": [
+       {
+        "case": "dev6|0",
+        "check_valid": true,
+        "dist": 3.727874600136603e-09,
+        "dist_job": 3.727874599129374e-09,
+        "agree": true
+       },
+       {
+        "case": "dev6|1",
+        "check_valid": true,
+        "dist": 7.408646124801882e-10,
+        "dist_job": 7.408646134125981e-10,
+        "agree": true
+       },
+       {
+        "case": "dev6|2",
+        "check_valid": true,
+        "dist": 3.2866422950883108e-09,
+        "dist_job": 3.286642294234381e-09,
+        "agree": true
+       },
+       {
+        "case": "dev6|3",
+        "check_valid": true,
+        "dist": 1.8276508216607753e-07,
+        "dist_job": 1.827650821692633e-07,
+        "agree": true
+       },
+       {
+        "case": "dev6|4",
+        "check_valid": true,
+        "dist": 2.035387680948492e-09,
+        "dist_job": 2.035387680347811e-09,
+        "agree": true
+       },
+       {
+        "case": "dev6|5",
+        "check_valid": true,
+        "dist": 1.1172893981915689e-08,
+        "dist_job": 1.1172893981432865e-08,
+        "agree": true
+       }
+      ],
+      "label": "checked on the registered subset (dev6)",
+      "econv": [
+       0.002768485209126669,
+       0.0027042104763101036,
+       0.025665906144823055,
+       0.009138046260645478,
+       0.007327877760670287,
+       0.00654273305328236
+      ]
+     },
+     "smoke": true,
+     "integrity": {
+      "ids_ok": true,
+      "mismatches": [],
+      "gcert_fail": 0,
+      "missing": [],
+      "ok": true
+     },
+     "G-E1.2": {
+      "passed": true,
+      "worst": 1.3916304640861944e-15,
+      "n": 6,
+      "files": [
+       {
+        "src": [
+         "p1",
+         "acc1024",
+         "R_R128_CNR.npz"
+        ],
+        "sha256": "842fd683c3579b9801d6efa6fe206ee56d4d3f74483d447a9c9e39b6180fd179"
+       }
+      ]
+     }
+    }
+   },
+   "controls": {
+    "G-E1.1": {
+     "s0_equals_deployed": true,
+     "job_sha_equals_deployed": true,
+     "s1_pure_shift": true,
+     "s1_differs": true,
+     "passed": true
+    },
+    "G-E1.3": {
+     "label": "d0",
+     "arm": "LSPG_BE_1",
+     "order": [
+      "dev6|5",
+      "dev6|4",
+      "dev6|3",
+      "dev6|2",
+      "dev6|1",
+      "dev6|0"
+     ],
+     "max_rel_dev": 0.0,
+     "per_case": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "passed": true
+    },
+    "C-E1.2": {
+     "raised": true,
+     "message": "rule identity mismatch: role d holds fib4181s1, claimed fib4181",
+     "fired": true,
+     "holder": "fib4181s1",
+     "claimed": "fib4181"
+    },
+    "C-E1.1": {
+     "admitted": true,
+     "fired": true,
+     "agree": true,
+     "flagged": true,
+     "cpu": [
+      2.457788687301929,
+      3.086373658305292,
+      3.1697668849976415,
+      3.167792846529176,
+      3.0994433269877555,
+      2.9815371933876373
+     ],
+     "job": [
+      2.457788687301939,
+      3.0863736583053125,
+      3.1697668849976774,
+      3.1677928465291862,
+      3.0994433269877657,
+      2.9815371933876658
+     ],
+     "deployed_draw_rho_tgt": [
+      0.012936192536141247,
+      9.867383954673843e-05,
+      7.999815413470821e-05,
+      0.0001395732575767675,
+      0.0001872913204228302,
+      0.00020886913342706202
+     ]
+    }
+   }
+  }
+ }
+}

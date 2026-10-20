@@ -1,0 +1,13 @@
+1. **NEEDS-RESTATEMENT — prior audits.** The substantive findings are resolved or explicitly disclosed as unavailable, including compilation, HR/none field distances, and break-even counts. A49 correctly removes the erroneous break-even rationale. The notation correction remains incomplete: report lines 37 and 52 still contain “4096^2” outside LaTeX.
+
+2. **CORRECT — numerical generation and provenance.** Read-only, in-memory regeneration reproduced `report.md` and `EXPORT.json` exactly; verdict checksums and tuning hashes passed. Recomputed supporting statistics match their sources, including Q1 counts, limiting-FOM errors, HR/none error-level comparisons, native/common summaries, projection floors and offline timers. Native/common counts are **76, 34, 351**, with median ratios **7.242964, 7.846281, 9.550747**. Ledger accounting reproduces **21.1783 = 1.512 + 17.520560 + 2.145740 GPU-h**. Ours’ recorded T values match **2.967958 h** and **1.85 h**, with missing components disclosed.
+
+3. **CORRECT — tables and plot meaning.** All **28 Markdown tables** have consistent column counts and escaped delimiters. Plot-generation logic matches the stated quantities; inspected figures distinguish screening evidence, Q1 failures, and diagnostic versus qualified batches. The offline-cost figure’s vertical label is clipped, a minor presentation defect.
+
+4. **CORRECT — restrictions and interpretation.** Restricted neutral conclusions remain withheld. Diagnostic batch 1 is separated from qualified-method conclusions. Report/export conclusion labels carry budget qualifications, and accounting lower-bound markers follow their flags. Median reversals and frequency statements reproduce, including the 1024² tie at **six pairs each** and the recurrent 3D pick at **11 pairs**. Adequacy-passing witness counts are **8/8, 8/8, 7/7**; unchecked 2D rank 512 is correctly distinguished.
+
+5. **CORRECT — requested glossary definitions.** Domination agrees with `stats.pair_label`; schemes agree with `t2core.SCHEMES`; FS/QN and native/common descriptions agree with the code and DESIGN. ECSW correctly includes the early KKT-optimum exception and distinguishes target from actual support.
+
+6. **NEEDS-RESTATEMENT — remaining project-rule compliance.** Convert “every 4096^2 member” and “2D 4096^2” to LaTeX in the source configuration strings consumed by the generator. No prohibited historical comparison or ASCII diagram was found.
+
+Overall: NOT-READY

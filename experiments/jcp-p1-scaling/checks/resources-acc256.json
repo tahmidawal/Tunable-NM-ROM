@@ -1,0 +1,185 @@
+{
+ "attempt": "acc256",
+ "projection_hours": 3.303,
+ "time_limit_hours": 5.0,
+ "detail": {
+  "R128|BE": {
+   "proxy": [
+    128,
+    "fib4181",
+    "BE"
+   ],
+   "factor": 1.6180339631667064,
+   "mesh_factor": 1.0,
+   "seconds": 445.8365472208735
+  },
+  "R128|CNR": {
+   "proxy": [
+    128,
+    "fib4181",
+    "CNR"
+   ],
+   "factor": 1.6180339631667064,
+   "mesh_factor": 1.0,
+   "seconds": 59.801327642673726
+  },
+  "R256|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "R256|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.0,
+   "seconds": 139.07183619303396
+  },
+  "R384|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "R384|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.0,
+   "seconds": 139.07183619303396
+  },
+  "R384nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "R384nom|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.0,
+   "seconds": 139.07183619303396
+  },
+  "H96|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "H96nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "H64|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "H64nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "HF6765|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "HF6765nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "H640|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "H640nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  }
+ },
+ "pilot": {
+  "run_ratio_4096_over_1024": 1.266576077243615,
+  "fused_seconds": {
+   "1024": 0.09179430361837149,
+   "256": 0.09458922874182463,
+   "4096": 0.11626446899026632
+  }
+ },
+ "smoke": [
+  "runs/smkA/archive/output",
+  "runs/smkB/archive/output"
+ ],
+ "runs": [
+  "p1acc:configs/acc256.json"
+ ],
+ "configs": {
+  "configs/acc256.json": "c4f7866e5df2c20569513eb45c455da42edcd924e4968c3f9c2fc1211f0e4f9a"
+ }
+}

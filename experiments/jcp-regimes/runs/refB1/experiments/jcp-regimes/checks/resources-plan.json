@@ -1,0 +1,121 @@
+{
+ "attempts": {
+  "refN0": {
+   "projection_hours": 2.7326,
+   "time_limit_hours": 4.25,
+   "runs": [
+    "refjob:configs/ref-N0.json",
+    "refslim:configs/slim-N0.json"
+   ],
+   "gpu": "a100-80G"
+  },
+  "refN0s": {
+   "projection_hours": 1.408,
+   "time_limit_hours": 2.25,
+   "runs": [
+    "refjob:configs/ref-N0s.json",
+    "refslim:configs/slim-N0s.json"
+   ],
+   "gpu": "a100-80G"
+  },
+  "refAp": {
+   "projection_hours": 5.7657,
+   "time_limit_hours": 8.75,
+   "runs": [
+    "refjob:configs/ref-Ap.json",
+    "refslim:configs/slim-Ap.json"
+   ],
+   "gpu": "h200"
+  },
+  "refAm": {
+   "projection_hours": 4.6167,
+   "time_limit_hours": 7.0,
+   "runs": [
+    "refjob:configs/ref-Am.json",
+    "refslim:configs/slim-Am.json"
+   ],
+   "gpu": "h200"
+  },
+  "refC1b": {
+   "projection_hours": 4.6167,
+   "time_limit_hours": 7.0,
+   "runs": [
+    "refjob:configs/ref-C1.json",
+    "refslim:configs/slim-C1.json"
+   ],
+   "gpu": "h200"
+  },
+  "refC2": {
+   "projection_hours": 4.6167,
+   "time_limit_hours": 7.0,
+   "runs": [
+    "refjob:configs/ref-C2.json",
+    "refslim:configs/slim-C2.json"
+   ],
+   "gpu": "h200"
+  },
+  "refB1": {
+   "projection_hours": 2.7326,
+   "time_limit_hours": 4.25,
+   "runs": [
+    "refjob:configs/ref-B1.json",
+    "refslim:configs/slim-B1.json"
+   ],
+   "gpu": "a100-80G"
+  },
+  "refB2": {
+   "projection_hours": 2.7326,
+   "time_limit_hours": 4.25,
+   "runs": [
+    "refjob:configs/ref-B2.json",
+    "refslim:configs/slim-B2.json"
+   ],
+   "gpu": "a100-80G"
+  },
+  "rom1024": {
+   "projection_hours": 1.9914,
+   "time_limit_hours": 3.0,
+   "runs": [
+    "qacc:configs/rom1024.json",
+    "fverify:configs/fverify-rom1024.json"
+   ],
+   "gpu": "a100-80G"
+  },
+  "ps": {
+   "projection_hours": 1.5167,
+   "time_limit_hours": 2.5,
+   "runs": [
+    "refjob:configs/ps-N0.json",
+    "refjob:configs/ps-Ap.json",
+    "refjob:configs/ps-Am.json",
+    "refjob:configs/ps-C1.json",
+    "refjob:configs/ps-C2.json",
+    "refjob:configs/ps-B1.json",
+    "refjob:configs/ps-B2.json"
+   ],
+   "gpu": "a100-80G"
+  }
+ },
+ "reductions": {
+  "step": 0,
+  "ps": true,
+  "reduce_c2": false,
+  "calib_probes": false,
+  "fom": "deferred (A3.3 step 1)"
+ },
+ "projection_hours": 32.73,
+ "total_time_limit_hours": 50.25,
+ "remaining_reservation_hours": 34.5,
+ "basis": {
+  "ordinary": 221.70111935865134,
+  "lownu": 850.0,
+  "lownu_pilot": 350.367016851902,
+  "probe": 40.18424032907933,
+  "rom_per_run": 0.45252525252525255,
+  "fverify_per_field": 0.12121212121212122,
+  "calib_agree": true,
+  "smoke": "runs/smk1"
+ },
+ "replanned": "A9",
+ "a100_factor": 2.240549828178694
+}

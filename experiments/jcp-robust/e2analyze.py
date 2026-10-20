@@ -1,0 +1,308 @@
+"""jcp-robust E2 2D analysis per bank (DESIGN 3.2, 3.4; A1.8, A1.10, A2.5-A2.7, A3.5, A3.6, A4.2). CPU only.
+
+Per bank b (0 = incumbent, 1..5 = recipe seeds): configuration records from the selection job (1024^2, factor 1) and the
+verdict jobs (256^2, 4096^2 P1 subset, 1024^2 factors 2/2.5): Q1 + own-family Q2 (numerical qualification), per-case E0 ST
+errors; the registered verdicts H-acc-N (P1's p1stats.h_acc_n, unchanged) and H-acc-r (p1stats.h_acc_r_transition /
+range); the 1024^2 front over the slots (r, scheme, factor) from the timing job (dominance among qualified candidates,
+qstats.front, A3.5 states); G-E2.3 (incumbent replay, A3.6). Writes checks/e2-2d-<b>.json.
+
+    JAX_PLATFORMS=cpu python e2analyze.py <bank> --sel <dir> --v256 <dir> --v4096 <dir> --v1024 <dir> --time <dir>
+"""
+import argparse
+import json
+import math
+from pathlib import Path
+
+import numpy as np
+
+import e1analyze as EA
+import e2bank
+import p1stats as S
+import p1score as PS
+from make_configs_e2 import DEPLOYED, RANKS
+
+HERE = Path(__file__).resolve().parent
+MESHES = (256, 1024, 4096)
+
+
+def records(out, want_label_of):
+    """{(r, label_kind, arm): configuration record} from one r2acc output; label_kind 'sel' / 'dep'."""
+    res = json.loads((out / 'result.json').read_text())
+    e2bank.use(res['config'].get('bank'), (res.get('checkpoint_sha256'), res.get('rotation_sha256')))
+    rec = dict(complete=bool(res.get('complete')) and (out / 'COMPLETE').exists(), backend=res['backend'], job_id=res['job_id'],
+               attempt=res['config'].get('attempt'), selection_cfg=res['config'].get('selection'),
+               bank=res['config'].get('bank'), mesh=int(res['mesh']), cfg={})
+    for g in res['config']['groups']:
+        r = int(g['Rp'])
+        for arm in g['arms']:
+            ak = f"{arm['form']}_{arm['scheme']}_{float(arm['factor']):g}"
+            av = EA.analyse_arm(out, res, g, ak, r)
+            for lab, kind in want_label_of(r, [x['label'] for x in g['rules']]):
+                x = av['rules'][lab]
+                rec['cfg'][(r, kind, ak)] = dict(alias_of=lab, rule=x['rule'], qualified=x['own_family_qualified'], status=x['status'],
+                                                  e=dict(zip(EA.expected_ids(res['config'].get('cases', 'all38')), x['e'])),
+                                                  eps=dict(zip(EA.expected_ids(res['config'].get('cases', 'all38')), x['eps'])),
+                                                  eligible=dict(zip(EA.expected_ids(res['config'].get('cases', 'all38')), x['eligible'])),
+                                                  case_q=dict(zip(EA.expected_ids(res['config'].get('cases', 'all38')), x['case_q'] or [])),
+                                                  integrity=av['integrity']['ok'])
+    return rec
+
+
+def h_acc_n(C, r, kind, scheme):
+    e = {m: C[m]['cfg'].get((r, kind, f'LSPG_{scheme}_1')) if C.get(m) else None for m in MESHES}
+    if e[256] is None or e[1024] is None:
+        return dict(outcome='verdict not reached', reason='missing 256^2 or 1024^2 configuration')
+    sub16 = set(PS.case_set('sub16'))
+    ep = e[1024]['eps']
+    pairs = {}
+    for m, tag in ((256, 'P256'), (4096, 'P4096')):
+        if e[m] is None:
+            continue
+        cs = [c for c in e[m]['e'] if c in e[1024]['e'] and e[m]['eligible'][c] and e[1024]['eligible'][c] and (m != 4096 or c in sub16)]
+        pairs[tag] = (np.array([e[m]['e'][c] for c in cs]), np.array([e[1024]['e'][c] for c in cs]), np.array([ep[c] for c in cs]))
+    slopes = None
+    if e[4096] is not None:
+        cs = [c for c in e[4096]['e'] if c in sub16 and all(c in e[m]['e'] and e[m]['eligible'][c] for m in MESHES)]
+        slopes = [np.polyfit(np.log2(MESHES), [e[m]['e'][c] for m in MESHES], 1)[0] for c in cs]
+    qual = all(e[m]['qualified'] is True for m in MESHES if e[m] is not None)
+    out = S.h_acc_n(pairs, slopes, qualified=qual)
+    out['qualified'] = {m: e[m]['qualified'] for m in MESHES if e[m] is not None}
+    out['rule'] = {m: e[m]['rule'] for m in MESHES if e[m] is not None}
+    out['median_e'] = {m: float(np.median(list(e[m]['e'].values()))) for m in MESHES if e[m] is not None}
+    out['worst_e'] = {m: float(np.max(list(e[m]['e'].values()))) for m in MESHES if e[m] is not None}
+    return out
+
+
+def h_acc_r(C, mesh, kind, scheme):
+    out = {}
+    for lo, hi in ((128, 256), (256, 384)):
+        a, b = C[mesh]['cfg'].get((lo, kind, f'LSPG_{scheme}_1')), C[mesh]['cfg'].get((hi, kind, f'LSPG_{scheme}_1'))
+        if a is None or b is None:
+            out[f'{lo}->{hi}'] = dict(outcome='not reached (no rule)')
+            continue
+        cs = [c for c in a['e'] if c in b['e'] and a['eligible'][c] and b['eligible'][c]]
+        out[f'{lo}->{hi}'] = S.h_acc_r_transition([b['e'][c] - a['e'][c] for c in cs], [a['eps'][c] for c in cs],
+                                                  [a['case_q'].get(c, False) for c in cs], [b['case_q'].get(c, False) for c in cs])
+        out[f'{lo}->{hi}']['median_paired_change'] = float(np.median([b['e'][c] - a['e'][c] for c in cs])) if cs else None
+    out['range_128_384'] = S.h_acc_r_range([v['outcome'] for v in out.values() if isinstance(v, dict) and 'outcome' in v])
+    return out
+
+
+def front(C1024, timing):
+    """A3.5 slot states at 1024^2: cost = median B/A of the slot's timed configuration (dtime result), accuracy = median and
+    worst E0 error; dominance among qualified candidates only (qstats.dominates semantics: both no worse, one better)."""
+    if timing is None:
+        return dict(state='missing (no timing job)')
+    tres = json.loads((timing / 'result.json').read_text())
+    import hashlib as _h
+    if tres['config'].get('attempt') != f"e2t{C1024['attempt'][3:]}" or (tres['config'].get('selection') or {}).get('sha256') != \
+            _h.sha256((HERE / 'checks' / f"select2d-{C1024['attempt'][3:]}.json").read_bytes()).hexdigest():
+        return dict(state='missing (timing job is not the registered e2t job of this selection)')
+    if not (tres.get('complete') and (timing / 'COMPLETE').exists() and tres.get('backend') == 'gpu'):
+        return dict(state='missing (timing job incomplete or not on GPU)')
+    bk = lambda b: ((b or {}).get('ckpt_sha256'), (b or {}).get('rotation_sha256'))
+    if bk(tres['config'].get('bank')) != bk(C1024.get('bank')):                       # checkpoint AND rotation
+        return dict(state='missing (timing job ran on another bank)')
+    # code audit 2 #23: a subject's cost exists only if EVERY registered case has >= 2 valid triplets (valid = drift band
+    # and every identity hash, dtime's own predicate); otherwise that subject's cost is missing
+    if tres.get('memory_rejected') or not tres.get('counts_complete'):
+        return dict(state='missing (timing job: memory rejection or incomplete invocation counts)')
+    eq_ok = {}
+    for e in tres.get('equivalence', []):
+        eq_ok.setdefault(e['subject'], []).append(bool(e.get('passed')))
+    id_fail = {inv['B'] for inv in tres.get('invocations', []) if not inv.get('all_hashes_ok')}
+    id_fail |= {f['B'] for f in tres.get('fused', []) if not f.get('hash_ok')}          # fused-path identity too
+    seen, dup = set(), set()
+    reps = range(int(tres['config']['reps']))
+    assert int(tres['config']['reps']) == 3 and tres['config']['cases'] == 'dev6', 'timing job differs from the registered contract'
+    for inv in tres.get('invocations', []):
+        k_ = (inv['B'], inv['case'], inv['rep'])
+        (dup if (k_ in seen or inv['rep'] not in reps or inv['case'] not in [f'dev6|{c}' for c in range(6)]) else seen).add(k_)
+    reps_ok = {}
+    for inv in tres.get('invocations', []):
+        lbv = inv['B']
+        if lbv in id_fail or lbv in {d_[0] for d_ in dup} or eq_ok.get(lbv) != [True]:   # complete equivalence evidence
+            continue
+        if not (np.isfinite(float(inv['ratio'])) and float(inv['ratio']) > 0):
+            continue
+        if inv.get('valid'):
+            reps_ok.setdefault(inv['B'], {}).setdefault(inv['case'], []).append(float(inv['ratio']))
+    want_cases = [f'dev6|{c}' for c in range(6)]
+    ba = {}
+    for lb, per in reps_ok.items():
+        if all(len(per.get(c, [])) >= 2 for c in want_cases) and set(per) == set(want_cases):
+            ba[lb] = [float(np.median(per[c])) for c in want_cases]
+    A_ = tres['config']['A']
+    labA = f"1024|R{A_['Rp']}|M{4 * A_['Rp']}|{A_['rule']}|LSPG|{A_['scheme']}|{float(A_['factor']):g}"
+    slots, fixed = {}, {}
+    for (r, kind, ak), x in C1024['cfg'].items():
+        form, sc, fac = ak.split('_')
+        lab = f"1024|R{r}|M{4 * r}|{x['rule']}|LSPG|{sc}|{float(fac):g}"
+        a_ok = eq_ok.get(labA) == [True] and all(inv.get('all_hashes_ok') for inv in tres.get('invocations', []))
+        cost = (1.0 if a_ok else None) if lab == labA else (float(np.median(ba[lab])) if lab in ba else None)   # B/A = 1 for A
+        rec_ = dict(rule=x['rule'], qualified=x['qualified'], cost=cost, median_e=float(np.median(list(x['e'].values()))),
+                    worst_e=float(np.max(list(x['e'].values()))), eps=float(np.median(list(x['eps'].values()))))
+        if kind == 'dep':                                  # A2.6 / A3.5: fixed deployed configurations, separate table
+            fixed[f'R{r}|{sc}|{fac}'] = rec_
+            continue
+        slots[f'R{r}|{sc}|{fac}'] = rec_
+    front_states(slots, fixed)
+    for r in RANKS:
+        for sc in ('BE', 'CNR'):
+            for fac in ('1', '2', '2.5'):
+                slots.setdefault(f'R{r}|{sc}|{fac}', dict(state='absent', state_worst='absent'))
+    return dict(slots=slots, fixed=fixed, rule='qualify qstats.dominates (5 % cost band, error margin max(2 eps, 2 % e)); '
+                'separate median-error and worst-error fronts (A17)')
+
+
+def front_states(slots, fixed):
+    """A17 (results audit e2-2d-1 #1): qualify's registered dominance (qstats.dominates: cost band 1.05, error margin
+    tau = max(2 max eps, 0.02 max e)) on two SEPARATE fronts, median error (`state`) and worst error (`state_worst`), among
+    the Q1+Q2-qualified candidates only (A3.5); a fixed configuration is dominated if any qualified candidate dominates it"""
+    import qstats as QS
+    q = {k: v for k, v in slots.items() if v['qualified'] is True and v['cost'] is not None}
+    for stat, key in (('median_e', 'state'), ('worst_e', 'state_worst')):
+        pts = {k: dict(c=v['cost'], e=v[stat], eps=v['eps']) for k, v in q.items()}
+        for tbl_, own in ((slots, True), (fixed, False)):
+            for k, v in tbl_.items():
+                if v['qualified'] is None or v['cost'] is None:
+                    v[key] = 'missing'
+                elif v['qualified'] is False:
+                    v[key] = 'unqualified'
+                else:
+                    me = dict(c=v['cost'], e=v[stat], eps=v['eps'])
+                    dom = any(QS.dominates(o, me) for kk, o in pts.items() if not (own and kk == k))
+                    v[key] = 'dominated' if dom else 'member'
+
+
+def g_e23(sel_out, v256_out, pins):
+    """A3.6: incumbent replay. 1024^2 from the selection job (candidates fib4181 / gauss128), 256^2 R128 from verdict job a."""
+    import numpy as _np
+    want = EA.expected_ids('all38')
+    rows = {}
+    for r, lab, arm, nm in ((128, 'fib4181', 'LSPG_BE_1', 'R_R128_BE.npz'), (128, 'fib4181', 'LSPG_CNR_1', 'R_R128_CNR.npz'),
+                            (256, 'gauss128', 'LSPG_BE_1', 'R_R256_BE.npz'), (256, 'gauss128', 'LSPG_CNR_1', 'R_R256_CNR.npz'),
+                            (384, 'gauss128', 'LSPG_BE_1', 'R_R384_BE.npz'), (384, 'gauss128', 'LSPG_CNR_1', 'R_R384_CNR.npz')):
+        z = _np.load(sel_out / f'R_R{r}_{lab}_{arm}.npz')
+        rows[f'1024|R{r}|{arm}'] = EA.reproduce(z['W'], [str(x) for x in z['case_ids']], [('p1', 'acc1024', nm)], None, want)
+        rows[f'1024|R{r}|{arm}']['pinned'] = pins.get(f'acc1024/{nm}') == EA.pinned_sha(('p1', 'acc1024', nm))
+        rows[f'1024|R{r}|{arm}']['passed'] &= rows[f'1024|R{r}|{arm}']['pinned']
+    for arm, nm in (('LSPG_BE_1', 'R_R128_BE.npz'), ('LSPG_CNR_1', 'R_R128_CNR.npz')):
+        lab = 'sel' if (v256_out / f'R_R128_sel_{arm}.npz').exists() and \
+            str(_np.load(v256_out / f'R_R128_sel_{arm}.npz')['rule']) == 'fib4181' else 'dep'
+        z = _np.load(v256_out / f'R_R128_{lab}_{arm}.npz')
+        rows[f'256|R128|{arm}'] = EA.reproduce(z['W'], [str(x) for x in z['case_ids']], [('p1', 'acc256', nm)], None, want)
+        rows[f'256|R128|{arm}']['pinned'] = pins.get(f'acc256/{nm}') == EA.pinned_sha(('p1', 'acc256', nm))
+        rows[f'256|R128|{arm}']['passed'] &= rows[f'256|R128|{arm}']['pinned']
+    return dict(rows=rows, passed=all(v['passed'] for v in rows.values()))
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('bank')
+    for k in ('sel', 'v256', 'v4096', 'v1024', 'time'):
+        ap.add_argument(f'--{k}')
+    a = ap.parse_args()
+    b = int(a.bank)
+    sel = json.loads((HERE / 'checks' / f'select2d-{b}.json').read_text())
+    def sel_labels(r, labels):            # selection job: the candidate equal to the selected / deployed rule
+        out = []
+        pk = sel['selected'][str(r)]['rule']
+        if pk in labels:
+            out.append((pk, 'sel'))
+        if DEPLOYED[r] in labels:          # code audit 2 #25: the deployed identity always exists (alias when equal)
+            out.append((DEPLOYED[r], 'dep'))
+        return out
+    def ver_labels(r, labels):            # verdict jobs: 'sel' and, if the deployed rule differs, 'dep'; else alias
+        out = [(l, 'sel') for l in labels if l == 'sel']
+        if 'dep' in labels:
+            out.append(('dep', 'dep'))
+        elif sel['selected'][str(r)]['rule'] == DEPLOYED[r] and 'sel' in labels:
+            out.append(('sel', 'dep'))
+        return out
+    C = {}
+    C[1024] = records(Path(a.sel), sel_labels)
+    if a.v1024:
+        extra = records(Path(a.v1024), ver_labels)
+        C[1024]['cfg'].update(extra['cfg'])
+        C[1024]['complete'] = C[1024]['complete'] and extra['complete']
+    if a.v256:
+        C[256] = records(Path(a.v256), ver_labels)
+    if a.v4096:
+        C[4096] = records(Path(a.v4096), ver_labels)
+    # code audit 7 #7: every contributing job ran on the requested bank (checkpoint + rotation), seed b
+    want = None if b == 0 else json.loads((HERE / 'inputs' / 'banks' / f's{b}' / 'BANK.json').read_text())
+    wid = (None, None) if want is None else (want['ckpt_sha256'], want['rotation_sha256'])
+    bid = lambda bk: (None, None) if not bk else (bk['ckpt_sha256'], bk['rotation_sha256'])
+    for m, rec_ in list(C.items()) + ([('v1024', extra)] if a.v1024 else []):
+        if bid(rec_['bank']) != wid:
+            raise SystemExit(f'job of mesh {m} ran on another bank than bank {b}: {bid(rec_["bank"])} != {wid}')
+    # code audit 11 #3: every input occupies its registered role (attempt, mesh), verdict jobs were generated from THIS
+    # selection file, and every 'sel' / 'dep' row runs the rule its role requires
+    import hashlib as _h
+    sel_sha = _h.sha256((HERE / 'checks' / f'select2d-{b}.json').read_bytes()).hexdigest()
+    roles = [(C[1024], f'e2s{b}', 1024, False)] + ([(C[256], f'e2v{b}a', 256, True)] if a.v256 else []) + \
+        ([(C[4096], f'e2v{b}b', 4096, True)] if a.v4096 else []) + ([(extra, f'e2v{b}c', 1024, True)] if a.v1024 else [])
+    for rec_, att_, mesh_, is_ver in roles:
+        if rec_['attempt'] != att_ or rec_['mesh'] != mesh_:
+            raise SystemExit(f"input in role {att_}/{mesh_} is job {rec_['attempt']}/{rec_['mesh']}")
+        if is_ver and (rec_['selection_cfg'] or {}).get('sha256') != sel_sha:
+            raise SystemExit(f'verdict job {att_} was generated from another selection file')
+    for m_, rec_ in list(C.items()):
+        for (r_, kind_, ak_), x_ in rec_['cfg'].items():
+            want_rule = sel['selected'][str(r_)]['rule'] if kind_ == 'sel' else DEPLOYED[r_]
+            if x_['rule'] != want_rule:
+                raise SystemExit(f'{m_}|R{r_}|{kind_}|{ak_} runs {x_["rule"]}, its role requires {want_rule}')
+    if str(sel.get('job_id')) != str(C[1024]['job_id']):                         # selection artefact from THIS job
+        raise SystemExit(f"selection file {sel.get('job_id')} is not from the selection job {C[1024]['job_id']}")
+    jobs = {m: dict(job_id=C[m]['job_id'], complete=C[m]['complete'], backend=C[m]['backend']) for m in C}
+    if a.v1024:                                      # every contributing job kept separately (code audit 10 #3)
+        jobs['1024-factors'] = dict(job_id=extra['job_id'], complete=extra['complete'], backend=extra['backend'])
+    if not all(j_['complete'] and j_['backend'] == 'gpu' for j_ in jobs.values()):
+        raise SystemExit(f'a contributing job is incomplete or not on the GPU: {jobs}')
+    rep = dict(bank=b, selection=sel['selected'], jobs=jobs,
+               integrity=all(x['integrity'] for m in C for x in C[m]['cfg'].values()),
+               configurations={f'{m}|R{k[0]}|{k[1]}|{k[2]}': dict(rule=v['rule'], qualified=v['qualified'], status=v['status'],
+                                                                   median_e=float(np.median(list(v['e'].values()))),
+                                                                   worst_e=float(np.max(list(v['e'].values()))))
+                               for m in C for k, v in C[m]['cfg'].items()},
+               h_acc_n={}, h_acc_r={})
+    for kind in ('sel', 'dep'):
+        for r in RANKS:
+            for sc in ('BE', 'CNR'):
+                rep['h_acc_n'][f'{kind}|R{r}|{sc}'] = h_acc_n(C, r, kind, sc)
+        for m in C:
+            for sc in ('BE', 'CNR'):
+                rep['h_acc_r'][f'{kind}|{m}|{sc}'] = h_acc_r(C, m, kind, sc)
+    rep['front_1024'] = front(C[1024], Path(a.time) if a.time else None)
+    # A2.5: a diagnostic pick (target unverified) carries its qualifier onto every downstream row that uses the selected
+    # rule (job audit e2s123-1 #6); the verdicts themselves stay available
+    unv = sorted(int(r) for r, v in sel['selected'].items() if str(v.get('outcome', '')).startswith('diagnostic'))
+    rep['target_unverified_ranks'] = unv
+    Q = 'target unverified (diagnostic pick, A2.5)'
+    for k, v in rep['h_acc_n'].items():
+        if k.startswith('sel|') and int(k.split('|')[1][1:]) in unv and isinstance(v, dict):
+            v['qualifier'] = Q
+    for k, v in rep['h_acc_r'].items():
+        if k.startswith('sel|') and isinstance(v, dict):
+            for tr, x in v.items():              # transitions 'r1->r2' touching an unverified rank
+                if isinstance(x, dict) and any(str(r_) in tr.split('->') for r_ in unv):
+                    x['qualifier'] = Q
+    for k, v in rep['configurations'].items():
+        r_ = int(k.split('|')[1][1:])
+        if r_ in unv and v['rule'] == sel['selected'][str(r_)]['rule']:
+            v['qualifier'] = Q
+    for k, v in ((rep['front_1024'] or {}).get('slots') or {}).items():
+        if isinstance(v, dict) and any(f'R{r_}' in str(k).split('|') or str(k).startswith(f'{r_}|') or str(k).startswith(f'R{r_}|')
+                                       for r_ in unv):
+            v['qualifier'] = Q
+    if b == 0:
+        rep['G-E2.3'] = g_e23(Path(a.sel), Path(a.v256),
+                              json.loads((Path(a.sel) / 'result.json').read_text())['config'].get('replay', {})) if a.v256 else dict(passed=False, reason='256^2 verdict job missing')
+    (HERE / 'checks' / f'e2-2d-{b}.json').write_text(json.dumps(rep, indent=1, default=float) + '\n')
+    print(json.dumps({k: v['outcome'] if isinstance(v, dict) and 'outcome' in v else v.get('range_128_384')
+                      for k, v in {**rep['h_acc_n'], **rep['h_acc_r']}.items()}, default=str))
+
+
+if __name__ == '__main__':
+    main()

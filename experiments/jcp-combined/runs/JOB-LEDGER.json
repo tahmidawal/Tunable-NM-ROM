@@ -1,0 +1,203 @@
+{
+ "namespace": "/cluster/tufts/paralab/tawal01/jcp-comb",
+ "jobs": [
+  {
+   "attempt": "smk2d",
+   "slurm": 5208761,
+   "gpu": "a100-80G",
+   "commit": "c6b4c338c",
+   "submitted": "2026-10-13",
+   "role": "smoke (A4.6)",
+   "status": "collected; all machinery gates passed"
+  },
+  {
+   "attempt": "smk3esc",
+   "slurm": 5208766,
+   "gpu": "h200",
+   "commit": "c6b4c338c",
+   "submitted": "2026-10-13",
+   "role": "smoke (A4.6)",
+   "status": "collected; all machinery gates passed"
+  },
+  {
+   "attempt": "smk3grid",
+   "slurm": 5208768,
+   "gpu": "h200",
+   "commit": "c6b4c338c",
+   "submitted": "2026-10-13",
+   "role": "smoke (A4.6)",
+   "status": "collected; all machinery gates passed"
+  },
+  {
+   "attempt": "c2grid",
+   "slurm": 5209526,
+   "gpu": "a100-80G",
+   "commit": "43d00da63",
+   "submitted": "2026-10-13",
+   "role": "2D grid + anchors + FOM + timing (A1.0)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c3descW1024",
+   "slurm": 5209530,
+   "gpu": "h200",
+   "commit": "43d00da63",
+   "submitted": "2026-10-13",
+   "role": "3D escalation + selection, W1024 (A7.5)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c3descW768",
+   "slurm": 5209535,
+   "gpu": "h200",
+   "commit": "43d00da63",
+   "submitted": "2026-10-13",
+   "role": "3D escalation + selection, W768 (A7.5)",
+   "status": "complete, collected (elapsed 0.96 h)"
+  },
+  {
+   "attempt": "c3descB",
+   "slurm": 5210959,
+   "gpu": "h200",
+   "commit": "9c10d673b",
+   "submitted": "2026-10-13",
+   "role": "3D escalation + selection, M2_512/W256/W512 (A7.5)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "smk3bud",
+   "slurm": 5212781,
+   "gpu": "h200",
+   "commit": "886482410",
+   "submitted": "2026-10-13",
+   "role": "3D budget smoke",
+   "status": "complete, collected; machinery gates passed"
+  },
+  {
+   "attempt": "smk2bud",
+   "slurm": 5213594,
+   "gpu": "a100-80G",
+   "commit": "886482410",
+   "submitted": "2026-10-13",
+   "role": "2D budget smoke",
+   "status": "complete, collected; machinery gates passed"
+  },
+  {
+   "attempt": "smk3ext2",
+   "slurm": 5216909,
+   "gpu": "h200",
+   "commit": "a25bdff09",
+   "submitted": "2026-10-13",
+   "role": "A11.3 extension smoke (gl80, gl96; 2 cases)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c3extW1024",
+   "slurm": 5217010,
+   "gpu": "h200",
+   "commit": "42dfeb454",
+   "submitted": "2026-10-13",
+   "role": "A11 W1024 escalation extension gl80->gl96, 64 cases (POST HOC)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c2budA",
+   "slurm": 5218146,
+   "gpu": "a100-80G",
+   "commit": "0bc851461",
+   "submitted": "2026-10-13",
+   "role": "2D error budget (R512, R256)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c2budB",
+   "slurm": 5218149,
+   "gpu": "a100-80G",
+   "commit": "0bc851461",
+   "submitted": "2026-10-13",
+   "role": "2D error budget (R384, acc)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c3grid",
+   "slurm": 5219449,
+   "gpu": "h200",
+   "commit": "1cf409c9a",
+   "submitted": "2026-10-13",
+   "role": "3D second-order grid + timing, 5 settings, POST HOC rules (A10/A11)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c2budC",
+   "slurm": 5225286,
+   "gpu": "a100-80G",
+   "commit": "29dc2743a",
+   "submitted": "2026-10-14",
+   "role": "2D error budget (fast, R128); resubmission after the cancelled 5218166",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c2fbgrid",
+   "slurm": 5228777,
+   "gpu": "a100-80G",
+   "commit": "91f723746",
+   "submitted": "2026-10-14",
+   "role": "A14 fallback grid: R256 gauss96 vs gauss128 (accuracy + timing)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c2fbbud",
+   "slurm": 5228780,
+   "gpu": "a100-80G",
+   "commit": "91f723746",
+   "submitted": "2026-10-14",
+   "role": "A14 fallback budget: R256fb (gauss128)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c3budA",
+   "slurm": 5231973,
+   "gpu": "h200",
+   "commit": "51730ce18",
+   "submitted": "2026-10-14",
+   "role": "3D error budget, M2_512/W256/W512/W768",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "c3budW1024r",
+   "slurm": 5241089,
+   "gpu": "h200",
+   "commit": "a7711b82c",
+   "submitted": "2026-10-14",
+   "role": "3D error budget, W1024 (rerun after the A16 fix)",
+   "status": "complete, collected (9.5 h)"
+  }
+ ],
+ "failed_attempts": [
+  {
+   "attempt": "smk3esc",
+   "note": "first submission attempt: rsync aborted by login-node connection drop before sbatch; partial staging dir removed; no job created"
+  },
+  {
+   "attempt": "smk3ext",
+   "slurm": 5215974,
+   "gpu": "h200",
+   "commit": "ee068a8a2",
+   "note": "A11 extension smoke: gl96 ran (all four arms, 2 cases); gl112 (1.4M points, R'=1024) OOM in the vendored offmesh_tables test_block (42.9 GiB allocation) -> A11.3 drops gl112; logs and partial result in runs/smk3ext/failed-5215974"
+  },
+  {
+   "attempt": "c2budC",
+   "slurm": 5218166,
+   "gpu": "a100-80G",
+   "commit": "780fadc6a",
+   "note": "cancelled while PENDING (never started) to free a lane slot for c3grid; cluster dir removed; to be re-staged and resubmitted"
+  },
+  {
+   "attempt": "c3budW1024",
+   "slurm": 5231969,
+   "gpu": "h200",
+   "commit": "51730ce18",
+   "note": "OOM (27 GiB) preparing the finer rule Gauss 96^3 after 3.6 h: c3run bud mode kept a local reference to the Gauss 80^3 tables while preparing the next rule; fixed (A16); no result.json was written; logs in runs/c3budW1024/failed-5231969; rerun as c3budW1024r"
+  }
+ ]
+}

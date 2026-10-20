@@ -1,0 +1,23 @@
+{
+ "attempt": "ps2t1",
+ "runs": [
+  "ref/refrun:configs/ps2t1.json"
+ ],
+ "configs": {
+  "configs/ps2t1.json": "f4b9e73a4a5b17acadee32805eb79b835f79c889fad61ae9f934a884cc9362fc"
+ },
+ "gpu": "h200",
+ "projection_hours": 4.33,
+ "memory": {
+  "ref/refrun:configs/ps2t1.json": {
+   "E0_measured_peak_GiB_T025": 1.4535832405090332,
+   "horizon_note": "the PS state is the coefficient array; the horizon adds only lattice outputs (11 x the lattice)",
+   "device_GiB": 128.6171875
+  }
+ },
+ "time_limit_hours": 6.5,
+ "detail": {
+  "ref/refrun:configs/ps2t1.json": 4.33
+ },
+ "label": "estimate from the smokes (not a bound)"
+}

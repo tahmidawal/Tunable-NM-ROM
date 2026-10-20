@@ -1,0 +1,185 @@
+{
+ "attempt": "acc4096",
+ "projection_hours": 3.823,
+ "time_limit_hours": 5.75,
+ "detail": {
+  "R128|BE": {
+   "proxy": [
+    128,
+    "fib4181",
+    "BE"
+   ],
+   "factor": 1.6180339631667064,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 252.1417725730996
+  },
+  "R128|CNR": {
+   "proxy": [
+    128,
+    "fib4181",
+    "CNR"
+   ],
+   "factor": 1.6180339631667064,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 46.27104663994848
+  },
+  "R256|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 502.27289870322033
+  },
+  "R256|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 81.13291411395112
+  },
+  "R384|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "R384|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 172.16583961976258
+  },
+  "R384nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "R384nom|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 172.16583961976258
+  },
+  "H96|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "H96nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "H64|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "H64nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "HF6765|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "HF6765nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "H640|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  },
+  "H640nom|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.266576077243615,
+   "seconds": 1191.8016943855791
+  }
+ },
+ "pilot": {
+  "run_ratio_4096_over_1024": 1.266576077243615,
+  "fused_seconds": {
+   "1024": 0.09179430361837149,
+   "256": 0.09458922874182463,
+   "4096": 0.11626446899026632
+  }
+ },
+ "smoke": [
+  "runs/smkA/archive/output",
+  "runs/smkB/archive/output"
+ ],
+ "runs": [
+  "p1acc:configs/acc4096.json"
+ ],
+ "configs": {
+  "configs/acc4096.json": "f1ecd03c575f71d3f4f39400a7a113e8c8cceea6e28bca62e32d7793903e1558"
+ }
+}

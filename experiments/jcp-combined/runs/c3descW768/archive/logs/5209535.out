@@ -1,0 +1,77 @@
+host=pax008 source_commit=43d00da630149f8660b5af8045e4b0d4730eb072
+NVIDIA H200, GPU-0603978b-01ce-16f6-4753-599dad36006b, 143771 MiB
+10.235.106.24:/projects/paralab  4.6T  999G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(768, 250047), (256, 250047)] 5.7s
+[mesh 65] Gram cond 1.0000, A (3076, 1024) 8.9s
+SETUP 18.2
+RUN W768 gl48 fs|BE|0.01|K1 38.6s eligible True 0 / 1600 62.3
+RUN W768 gl48 fs|CN|0.025|K2 27.6s eligible False 57 / 640 89.9
+RUN W768 gl48 ad|LSPG|BE|0.01|tight 69.4s eligible True 0 / 1600 159.3
+RUN W768 gl48 ad|LSPG|CN|0.025|tight 35.6s eligible True 0 / 640 194.9
+RUN W768 gl56 fs|BE|0.01|K1 56.5s eligible True 0 / 1600 253.8
+RUN W768 gl56 fs|CN|0.025|K2 42.3s eligible False 57 / 640 296.1
+RUN W768 gl56 ad|LSPG|BE|0.01|tight 108.0s eligible True 0 / 1600 404.1
+RUN W768 gl56 ad|LSPG|CN|0.025|tight 56.0s eligible True 0 / 640 460.0
+RUN W768 gl64 fs|BE|0.01|K1 81.4s eligible True 0 / 1600 542.4
+RUN W768 gl64 fs|CN|0.025|K2 61.2s eligible False 57 / 640 603.5
+RUN W768 gl64 ad|LSPG|BE|0.01|tight 159.8s eligible True 0 / 1600 763.3
+RUN W768 gl64 ad|LSPG|CN|0.025|tight 83.3s eligible True 0 / 640 846.6
+RUN W768 gl80 fs|BE|0.01|K1 155.6s eligible True 0 / 1600 1005.8
+RUN W768 gl80 fs|CN|0.025|K2 117.3s eligible False 57 / 640 1123.2
+RUN W768 gl80 ad|LSPG|BE|0.01|tight 309.8s eligible True 0 / 1600 1432.9
+RUN W768 gl80 ad|LSPG|CN|0.025|tight 162.3s eligible True 0 / 640 1595.2
+TIMING family|W768|gl80 8 valid True 1679.8
+RUN W768 lat8192 fs|BE|0.01|K1 7.6s eligible True 0 / 1600 1689.5
+RUN W768 lat8192 fs|CN|0.025|K2 5.5s eligible False 57 / 640 1695.0
+RUN W768 lat8192 ad|LSPG|BE|0.01|tight 9.4s eligible True 0 / 1600 1704.4
+RUN W768 lat8192 ad|LSPG|CN|0.025|tight 4.3s eligible True 0 / 640 1708.7
+TIMING family|W768|lat8192 16 valid True 1801.1
+RUN W768 lat16384 fs|BE|0.01|K1 9.6s eligible True 0 / 1600 1812.9
+RUN W768 lat16384 fs|CN|0.025|K2 7.0s eligible False 57 / 640 1819.8
+RUN W768 lat16384 ad|LSPG|BE|0.01|tight 13.6s eligible True 0 / 1600 1833.4
+RUN W768 lat16384 ad|LSPG|CN|0.025|tight 6.5s eligible True 0 / 640 1839.9
+TIMING family|W768|lat16384 16 valid True 1933.0
+RUN W768 lat32768 fs|BE|0.01|K1 14.6s eligible True 0 / 1600 1948.4
+RUN W768 lat32768 fs|CN|0.025|K2 10.6s eligible False 57 / 640 1958.9
+RUN W768 lat32768 ad|LSPG|BE|0.01|tight 23.7s eligible True 0 / 1600 1982.6
+RUN W768 lat32768 ad|LSPG|CN|0.025|tight 11.6s eligible True 0 / 640 1994.3
+TIMING family|W768|lat32768 16 valid True 2088.8
+RUN W768 lat65536 fs|BE|0.01|K1 24.0s eligible True 0 / 1600 2113.6
+RUN W768 lat65536 fs|CN|0.025|K2 17.7s eligible False 57 / 640 2131.3
+RUN W768 lat65536 ad|LSPG|BE|0.01|tight 43.0s eligible True 0 / 1600 2174.3
+RUN W768 lat65536 ad|LSPG|CN|0.025|tight 21.8s eligible True 0 / 640 2196.1
+TIMING family|W768|lat65536 16 valid True 2293.9
+RUN W768 lat131072 fs|BE|0.01|K1 43.0s eligible True 0 / 1600 2337.7
+RUN W768 lat131072 fs|CN|0.025|K2 32.2s eligible False 57 / 640 2369.9
+RUN W768 lat131072 ad|LSPG|BE|0.01|tight 81.7s eligible True 0 / 1600 2451.5
+RUN W768 lat131072 ad|LSPG|CN|0.025|tight 42.1s eligible True 0 / 640 2493.7
+TIMING family|W768|lat131072 16 valid True 2597.8
+RUN W768 gl24 fs|BE|0.01|K1 9.1s eligible True 0 / 1600 2609.2
+RUN W768 gl24 fs|CN|0.025|K2 6.5s eligible False 52 / 640 2615.7
+RUN W768 gl24 ad|LSPG|BE|0.01|tight 12.9s eligible True 0 / 1600 2628.6
+RUN W768 gl24 ad|LSPG|CN|0.025|tight 6.0s eligible True 0 / 640 2634.6
+TIMING family|W768|gl24 16 valid True 2727.7
+RUN W768 gl32 fs|BE|0.01|K1 10.5s eligible True 0 / 1600 2738.5
+RUN W768 gl32 fs|CN|0.025|K2 8.3s eligible False 57 / 640 2746.8
+RUN W768 gl32 ad|LSPG|BE|0.01|tight 21.3s eligible True 0 / 1600 2768.2
+RUN W768 gl32 ad|LSPG|CN|0.025|tight 11.5s eligible True 0 / 640 2779.7
+TIMING family|W768|gl32 16 valid True 2874.7
+RUN W768 gl40 fs|BE|0.01|K1 23.3s eligible True 0 / 1600 2900.5
+RUN W768 gl40 fs|CN|0.025|K2 17.3s eligible False 57 / 640 2917.8
+RUN W768 gl40 ad|LSPG|BE|0.01|tight 42.1s eligible True 0 / 1600 2959.9
+RUN W768 gl40 ad|LSPG|CN|0.025|tight 21.3s eligible True 0 / 640 2981.2
+TIMING family|W768|gl40 16 valid True 3079.0
+RUN W768 gl48 fs|BE|0.01|K1 32.6s eligible True 0 / 1600 3112.0
+RUN W768 gl48 fs|CN|0.025|K2 25.3s eligible False 57 / 640 3137.3
+RUN W768 gl48 ad|LSPG|BE|0.01|tight 67.2s eligible True 0 / 1600 3204.5
+RUN W768 gl48 ad|LSPG|CN|0.025|tight 35.7s eligible True 0 / 640 3240.2
+TIMING family|W768|gl48 16 valid True 3342.5
+RUN W768 lat256 fs|BE|0.01|K1 5.8s eligible True 0 / 1600 3351.6
+RUN W768 lat256 fs|CN|0.025|K2 4.2s eligible False 95 / 640 3355.8
+RUN W768 lat256 ad|LSPG|BE|0.01|tight 6.2s eligible True 0 / 1600 3361.9
+RUN W768 lat256 ad|LSPG|CN|0.025|tight 6.4s eligible True 0 / 640 3368.4
+TIMING family|W768|lat256 16 valid True 3460.4
+C3RUN COMPLETE
+ALL-DONE

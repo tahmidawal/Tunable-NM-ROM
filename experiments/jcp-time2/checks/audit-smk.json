@@ -1,0 +1,96 @@
+{
+ "attempt": "smk",
+ "job_id": "5012794",
+ "commit": "5918498c197e0999044c2d71c524e48767dc4c6c",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "checks": {
+  "complete": true,
+  "backend_gpu": true,
+  "cohort_values_dev6": true,
+  "cohort_hash_matches_reference_manifest_dev6": true,
+  "references_pinned": true,
+  "precision_highest_logged": true,
+  "config_authenticated": true,
+  "G2a_certificate": true,
+  "full_case_coverage": true,
+  "inventory_runs_fast": true,
+  "inventory_cases_fast": true,
+  "shapes_fast": true,
+  "inventory_rows_fast": true,
+  "mandatory_metrics_fast": true,
+  "all_finite_fast": true,
+  "metrics_reconstructed_fast": true,
+  "G1a_inventory_fast": true,
+  "output_times_fast": true,
+  "G1a_fast": true,
+  "G4_inventory_fast": true,
+  "G4_timed_outputs_match_fast": true,
+  "G4_no_recompile_fast": true,
+  "inventory_runs_acc": true,
+  "inventory_cases_acc": true,
+  "shapes_acc": true,
+  "inventory_rows_acc": true,
+  "mandatory_metrics_acc": true,
+  "all_finite_acc": true,
+  "metrics_reconstructed_acc": true,
+  "G1a_inventory_acc": true,
+  "output_times_acc": true,
+  "G1a_acc": true,
+  "G4_inventory_acc": true,
+  "G4_timed_outputs_match_acc": true,
+  "G4_no_recompile_acc": true,
+  "all_rejections_fire": true
+ },
+ "info": {
+  "missing_metrics_fast": [],
+  "metric_mismatches_fast": [],
+  "G1a_fast": {
+   "W_rel_max": 0.0,
+   "w0_rel_max": 0.0,
+   "field_rel_max": 0.0,
+   "it_diff": [
+    0,
+    0
+   ]
+  },
+  "G1b_fast": {
+   "cases": 2,
+   "max_abs_diff": 1.43982048506075e-16,
+   "tol": 1e-06,
+   "passed": true
+  },
+  "unverified_fast": [],
+  "nonfinite_fast": [],
+  "missing_metrics_acc": [],
+  "metric_mismatches_acc": [],
+  "G1a_acc": {
+   "W_rel_max": 0.0,
+   "w0_rel_max": 0.0,
+   "field_rel_max": 0.0,
+   "it_diff": [
+    0,
+    0
+   ]
+  },
+  "G1b_acc": {
+   "cases": 2,
+   "max_abs_diff": 3.3371742869103826e-16,
+   "tol": 1e-06,
+   "passed": true
+  },
+  "unverified_acc": [],
+  "nonfinite_acc": []
+ },
+ "rejections": {
+  "fast_case_swap": true,
+  "fast_time_shift": true,
+  "fast_ST_S_swap": true,
+  "fast_metric_perturbed": true,
+  "acc_case_swap": true,
+  "acc_time_shift": true,
+  "acc_ST_S_swap": true,
+  "acc_metric_perturbed": true,
+  "reference_corrupted": true
+ },
+ "all_pass": true
+}

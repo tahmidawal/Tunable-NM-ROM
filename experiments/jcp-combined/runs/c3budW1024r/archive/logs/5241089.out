@@ -1,0 +1,44 @@
+host=pax008 source_commit=a7711b82c28bb535541f8a23667ce11232bd6644
+NVIDIA H200, GPU-3011fd20-5985-c4ea-f6bf-649a67b8d28b, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T 1020G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(1024, 250047)] 4.3s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 7.8s
+SETUP 20.0
+RUN W1024 lat65536 fs|CN|0.01|K1 41.0s eligible True 2 / 1600 65.5
+RUN W1024 lat65536 fs|BE|0.01|K1 21.1s eligible True 1 / 800 86.6
+RUN W1024 lat65536 ad|LSPG|BE|0.01|tight 36.7s eligible True 0 / 800 123.3
+RUN W1024 lat65536 ad|GAL|BE|0.01|tight 39.4s eligible True 0 / 800 162.7
+RUN W1024 lat65536 fs|BDF2|0.00125|K1 122.0s eligible True 0 / 6400 284.6
+RUN W1024 lat65536 ad|LSPG|BE|0.005|tight 59.2s eligible True 0 / 1600 343.8
+RUN W1024 lat65536 ad|LSPG|BDF2|0.00125|tight 180.2s eligible True 0 / 6400 524.0
+RUN W1024 lat65536 ad|LSPG|CN|0.01|tight 33.7s eligible True 0 / 800 557.7
+RUN W1024 lat65536 ad|GAL|CN|0.01|tight 36.8s eligible True 0 / 800 594.5
+RUN W1024 lat65536 ad|LSPG|CN|0.005|tight 57.7s eligible True 0 / 1600 652.1
+RUN W1024 lat65536 fs|CN|0.025|K1 12.6s eligible False 135 / 320 664.7
+RUN W1024 lat65536 ad|LSPG|CN|0.025|tight 18.1s eligible True 0 / 320 682.8
+RUN W1024 lat65536 ad|GAL|CN|0.025|tight 20.1s eligible True 0 / 320 702.9
+RUN W1024 lat65536 ad|LSPG|CN|0.0125|tight 28.3s eligible True 0 / 640 731.2
+RUN W1024 lat65536 ad|GAL|BDF2|0.00125|tight 214.1s eligible True 0 / 6400 945.3
+RUN W1024 gl80 fs|CN|0.01|K1 260.5s eligible True 2 / 1600 1208.6
+RUN W1024 gl80 fs|BE|0.01|K1 129.3s eligible True 1 / 800 1337.9
+RUN W1024 gl80 fs|BDF2|0.00125|K1 894.0s eligible True 0 / 6400 2231.9
+RUN W1024 gl80 fs|CN|0.025|K1 77.5s eligible False 135 / 320 2309.3
+RUN W1024 gl80 ad|GAL|BDF2|0.00125|tight 1601.4s eligible True 0 / 6400 3910.8
+RUN W1024 gl80 ad|GAL|BDF2|0.000625|tight 2768.8s eligible True 0 / 12800 6679.6
+RUN W1024 gl80 ad|GAL|BDF2|0.00125|tighter 1903.9s eligible True 0 / 6400 8583.4
+RUN W1024 gl80 ad|GAL|BDF2|0.000625|tighter 3191.2s eligible True 0 / 12800 11774.6
+RUN W1024 gl80 ad|LSPG|BDF2|0.00125|tight 1360.3s eligible True 0 / 6400 13134.9
+RUN W1024 gl96 fs|CN|0.01|K1 445.4s eligible True 2 / 1600 13582.0
+RUN W1024 gl96 fs|BE|0.01|K1 219.9s eligible True 1 / 800 13801.9
+RUN W1024 gl96 fs|BDF2|0.00125|K1 1541.3s eligible True 0 / 6400 15343.2
+RUN W1024 gl96 fs|CN|0.025|K1 130.9s eligible False 135 / 320 15474.2
+RUN W1024 gl96 ad|GAL|BDF2|0.00125|tight 2763.8s eligible True 0 / 6400 18238.0
+RUN W1024 gl96 ad|GAL|BDF2|0.000625|tight 4779.7s eligible True 0 / 12800 23017.7
+RUN W1024 gl96 ad|GAL|BDF2|0.00125|tighter 3282.0s eligible True 0 / 6400 26299.7
+RUN W1024 gl96 ad|GAL|BDF2|0.000625|tighter 5515.6s eligible True 0 / 12800 31815.3
+RUN W1024 gl96 ad|LSPG|BDF2|0.00125|tight 2349.1s eligible True 0 / 6400 34164.4
+RUN W1024 lat256 fs|BE|0.01|K1 5.4s eligible True 0 / 800 34208.3
+C3RUN COMPLETE
+ALL-DONE

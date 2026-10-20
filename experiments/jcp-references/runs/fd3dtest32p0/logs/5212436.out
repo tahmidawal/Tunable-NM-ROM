@@ -1,0 +1,265 @@
+host=pax011 source_commit=698f3d810715fd2da9b9f2d428385dde236f973b
+NVIDIA H200, GPU-3dd61a63-f64b-8d49-7857-b2e355e808cf, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T 1004G  3.6T  22% /cluster/tufts/paralab
+/usr/bin/openssl
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[     16.3s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     21.0s]   test32 c0 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=6.59e-13 newton=204 compile=1.1s solve=0.8s peak=394609920
+[     31.3s]   test32 c0 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=8.72e-15 newton=404 compile=1.3s solve=7.7s peak=3336331520
+[    129.1s]   test32 c0 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=2.25e-15 newton=804 compile=1.4s solve=91.4s peak=26848685568
+[    129.2s] CASE test32 0 ST: accepted eps=1.4326847215660052e-05 p=[1.9972662484331218, 1.9984549971111802, 1.9989360443505093, 1.9991865017520685, 1.999362612937766] 111s
+[    129.7s]   test32 c0 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.09e-12 newton=110 compile=0.0s solve=0.4s peak=26848685568
+[    133.4s]   test32 c0 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.13e-12 newton=110 compile=0.0s solve=3.3s peak=26848685568
+[    160.4s]   test32 c0 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.14e-12 newton=110 compile=0.0s solve=23.6s peak=27916148480
+[    160.5s] CASE test32 0 S: accepted eps=7.921790594907983e-06 p=[1.9998371055685369, 2.000203154916658, 2.0003230559720526, 2.000331903729335, 2.000322427013755] 31s
+[    161.4s]   test32 c1 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.15e-12 newton=205 compile=0.0s solve=0.8s peak=27916148480
+[    170.9s]   test32 c1 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.69e-13 newton=404 compile=0.0s solve=9.2s peak=27916148480
+[    288.6s]   test32 c1 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=2.49e-15 newton=804 compile=0.0s solve=114.3s peak=27916148480
+[    288.8s] CASE test32 1 ST: accepted eps=3.5739429999285085e-05 p=[1.9923480639356053, 1.9953669638251814, 1.9964345719050103, 1.9968051742788926, 1.9970544668662693] 128s
+[    289.6s]   test32 c1 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.93e-12 newton=135 compile=0.0s solve=0.8s peak=27916148480
+[    296.1s]   test32 c1 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.98e-12 newton=135 compile=0.0s solve=6.1s peak=27916148480
+[    342.8s]   test32 c1 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.99e-12 newton=135 compile=0.0s solve=43.4s peak=27916148480
+[    342.9s] CASE test32 1 S: accepted eps=2.0300713015276706e-05 p=[2.0000686332284023, 2.000634027137509, 2.0009147100395186, 2.001045965899659, 2.0011949781306586] 54s
+[    343.6s]   test32 c2 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=2.50e-15 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[    351.9s]   test32 c2 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.65e-16 newton=404 compile=0.0s solve=7.9s peak=27916148480
+[    451.5s]   test32 c2 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=5.00e-16 newton=804 compile=0.0s solve=96.2s peak=27916148480
+[    451.6s] CASE test32 2 ST: accepted eps=2.298946662445291e-05 p=[1.9982556798835074, 1.998948892907939, 1.999331925391485, 1.9998783853749977, 2.0005335493845293] 109s
+[    452.1s]   test32 c2 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=1.51e-12 newton=100 compile=0.0s solve=0.5s peak=27916148480
+[    456.1s]   test32 c2 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=1.52e-12 newton=100 compile=0.0s solve=3.6s peak=27916148480
+[    485.3s]   test32 c2 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=1.52e-12 newton=100 compile=0.0s solve=25.9s peak=27916148480
+[    485.5s] CASE test32 2 S: accepted eps=2.126412419507544e-05 p=[1.99939257813246, 1.9996174526421513, 1.9999172729042551, 2.000348305185591, 2.0008469785195997] 34s
+[    486.2s]   test32 c3 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.35e-12 newton=204 compile=0.0s solve=0.7s peak=27916148480
+[    495.1s]   test32 c3 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.48e-14 newton=404 compile=0.0s solve=8.5s peak=27916148480
+[    607.2s]   test32 c3 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.21e-15 newton=804 compile=0.0s solve=108.8s peak=27916148480
+[    607.3s] CASE test32 3 ST: accepted eps=2.6546439578229254e-05 p=[1.994371426822907, 1.9972370050440926, 1.9984394062740682, 1.9990210603511935, 1.9993429298092846] 122s
+[    608.0s]   test32 c3 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.38e-12 newton=121 compile=0.0s solve=0.7s peak=27916148480
+[    613.4s]   test32 c3 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.42e-12 newton=121 compile=0.0s solve=5.0s peak=27916148480
+[    653.0s]   test32 c3 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.43e-12 newton=121 compile=0.0s solve=36.2s peak=27916148480
+[    653.1s] CASE test32 3 S: accepted eps=2.0828404147046844e-05 p=[1.999585891436517, 2.0000765834296685, 2.000487743906473, 2.0007760737042655, 2.000988254995594] 46s
+[    653.7s]   test32 c4 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=7.08e-12 newton=207 compile=0.0s solve=0.5s peak=27916148480
+[    660.8s]   test32 c4 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=3.39e-13 newton=404 compile=0.0s solve=6.8s peak=27916148480
+[    751.8s]   test32 c4 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=4.85e-15 newton=804 compile=0.0s solve=87.7s peak=27916148480
+[    752.0s] CASE test32 4 ST: accepted eps=3.511368420533035e-05 p=[1.9947891329229852, 1.9953033267481983, 1.9954681138393442, 1.995666325596195, 1.9958363169364106] 99s
+[    752.4s]   test32 c4 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=7.94e-12 newton=118 compile=0.0s solve=0.4s peak=27916148480
+[    755.9s]   test32 c4 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=7.97e-12 newton=118 compile=0.0s solve=3.1s peak=27916148480
+[    781.5s]   test32 c4 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=7.97e-12 newton=118 compile=0.0s solve=22.3s peak=27916148480
+[    781.6s] CASE test32 4 S: accepted eps=1.62079105839161e-05 p=[2.000188511805831, 2.0005586594044926, 2.0007515382533607, 2.0007044999391823, 2.000525797752274] 30s
+[    782.4s]   test32 c5 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.18e-13 newton=204 compile=0.0s solve=0.7s peak=27916148480
+[    790.8s]   test32 c5 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.31e-15 newton=404 compile=0.0s solve=8.1s peak=27916148480
+[    900.9s]   test32 c5 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.21e-15 newton=804 compile=0.0s solve=106.7s peak=27916148480
+[    901.0s] CASE test32 5 ST: accepted eps=1.7718481628657365e-05 p=[1.9961849769588726, 1.9980207460810455, 1.998878080315901, 1.9993666766281102, 1.9996432174407244] 119s
+[    901.6s]   test32 c5 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.04e-12 newton=112 compile=0.0s solve=0.6s peak=27916148480
+[    906.3s]   test32 c5 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.09e-12 newton=112 compile=0.0s solve=4.3s peak=27916148480
+[    940.8s]   test32 c5 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.10e-12 newton=112 compile=0.0s solve=31.1s peak=27916148480
+[    940.9s] CASE test32 5 S: accepted eps=1.4791311037624026e-05 p=[1.9996432704692877, 1.999943363083744, 2.000223809775707, 2.0004380270154525, 2.0005816965625725] 40s
+[    941.6s]   test32 c6 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=4.88e-13 newton=204 compile=0.0s solve=0.7s peak=27916148480
+[    950.3s]   test32 c6 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=5.15e-15 newton=404 compile=0.0s solve=8.3s peak=27916148480
+[   1060.2s]   test32 c6 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.46e-15 newton=804 compile=0.0s solve=106.6s peak=27916148480
+[   1060.4s] CASE test32 6 ST: accepted eps=1.9287708006767316e-05 p=[1.995070561569423, 1.9973571214879693, 1.9983636710430819, 1.9989284363631614, 1.999293989659812] 119s
+[   1061.0s]   test32 c6 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.80e-12 newton=117 compile=0.0s solve=0.6s peak=27916148480
+[   1065.9s]   test32 c6 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.83e-12 newton=117 compile=0.0s solve=4.5s peak=27916148480
+[   1101.7s]   test32 c6 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.84e-12 newton=117 compile=0.0s solve=32.5s peak=27916148480
+[   1101.9s] CASE test32 6 S: accepted eps=1.4533556793647815e-05 p=[1.9996441626644794, 1.9999819439916153, 2.0003099649232388, 2.0005653654233897, 2.0007248042657237] 41s
+[   1102.5s]   test32 c7 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.31e-12 newton=204 compile=0.0s solve=0.5s peak=27916148480
+[   1109.7s]   test32 c7 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.77e-14 newton=404 compile=0.0s solve=6.9s peak=27916148480
+[   1200.1s]   test32 c7 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=2.73e-15 newton=804 compile=0.0s solve=87.0s peak=27916148480
+[   1200.2s] CASE test32 7 ST: accepted eps=1.8856435595857372e-05 p=[1.9972699296132996, 1.9978603925232996, 1.9980257797398737, 1.9981423997413084, 1.9982642189135809] 98s
+[   1200.7s]   test32 c7 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.09e-12 newton=112 compile=0.0s solve=0.4s peak=27916148480
+[   1204.0s]   test32 c7 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.12e-12 newton=112 compile=0.0s solve=3.0s peak=27916148480
+[   1229.0s]   test32 c7 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.13e-12 newton=112 compile=0.0s solve=21.6s peak=27916148480
+[   1229.1s] CASE test32 7 S: accepted eps=9.029370860006131e-06 p=[2.0000272063355093, 2.0002625143084707, 2.0003318353446367, 2.0003730660245824, 2.0004078296347676] 29s
+[   1229.9s]   test32 c8 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.32e-13 newton=204 compile=0.0s solve=0.7s peak=27916148480
+[   1239.2s]   test32 c8 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.27e-15 newton=404 compile=0.0s solve=9.0s peak=27916148480
+[   1355.8s]   test32 c8 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=5.35e-16 newton=804 compile=0.0s solve=113.2s peak=27916148480
+[   1355.9s] CASE test32 8 ST: accepted eps=4.2369476234398305e-05 p=[1.9962214632373585, 1.998335529498802, 2.0001463415752703, 2.001373571246719, 2.002028842422631] 127s
+[   1356.7s]   test32 c8 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.57e-12 newton=133 compile=0.0s solve=0.8s peak=27916148480
+[   1363.2s]   test32 c8 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.71e-12 newton=133 compile=0.0s solve=6.1s peak=27916148480
+[   1410.5s]   test32 c8 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.74e-12 newton=133 compile=0.0s solve=43.9s peak=27916148480
+[   1410.6s] CASE test32 8 S: accepted eps=3.642224472662685e-05 p=[1.9993843369159012, 2.0002624496072734, 2.00120331550324, 2.001902448054582, 2.0023163010566924] 55s
+[   1411.4s]   test32 c9 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.14e-13 newton=204 compile=0.0s solve=0.8s peak=27916148480
+[   1421.2s]   test32 c9 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=9.06e-15 newton=404 compile=0.0s solve=9.4s peak=27916148480
+[   1537.7s]   test32 c9 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=8.67e-16 newton=804 compile=0.0s solve=113.2s peak=27916148480
+[   1537.8s] CASE test32 9 ST: accepted eps=3.910910445911872e-05 p=[1.9944548436107223, 1.9977917390263826, 2.000385123671619, 2.001693080734365, 2.0016076115070187] 127s
+[   1538.8s]   test32 c9 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.85e-12 newton=144 compile=0.0s solve=0.9s peak=27916148480
+[   1546.0s]   test32 c9 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.87e-12 newton=144 compile=0.0s solve=6.9s peak=27916148480
+[   1599.1s]   test32 c9 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.88e-12 newton=144 compile=0.0s solve=49.7s peak=27916148480
+[   1599.2s] CASE test32 9 S: accepted eps=3.064359534575434e-05 p=[1.9996112810519475, 2.0006846095034057, 2.0019210483561354, 2.0024835262414835, 2.0021400626465584] 61s
+[   1600.0s]   test32 c10 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=2.04e-14 newton=204 compile=0.0s solve=0.7s peak=27916148480
+[   1608.2s]   test32 c10 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=3.10e-16 newton=404 compile=0.0s solve=7.9s peak=27916148480
+[   1724.8s]   test32 c10 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=4.65e-16 newton=804 compile=0.0s solve=113.2s peak=27916148480
+[   1724.9s] CASE test32 10 ST: accepted eps=3.228467647860666e-05 p=[1.9970122126937966, 1.9982273794701537, 1.998870680181746, 1.9996616927713993, 2.0007805845155997] 126s
+[   1725.6s]   test32 c10 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.59e-12 newton=104 compile=0.0s solve=0.6s peak=27916148480
+[   1730.2s]   test32 c10 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.69e-12 newton=104 compile=0.0s solve=4.3s peak=27916148480
+[   1764.6s]   test32 c10 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.71e-12 newton=104 compile=0.0s solve=31.0s peak=27916148480
+[   1764.7s] CASE test32 10 S: accepted eps=2.8660284577156927e-05 p=[1.9991775208787594, 1.9994287577144165, 1.9997998715992538, 2.000388829138814, 2.001264400808518] 40s
+[   1765.6s]   test32 c11 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.60e-12 newton=204 compile=0.0s solve=0.8s peak=27916148480
+[   1775.6s]   test32 c11 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.62e-14 newton=404 compile=0.0s solve=9.7s peak=27916148480
+[   1892.2s]   test32 c11 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.44e-15 newton=804 compile=0.0s solve=113.2s peak=27916148480
+[   1892.3s] CASE test32 11 ST: accepted eps=2.8462569049226224e-05 p=[1.9937035103342882, 1.9968876331016987, 1.998830740099249, 1.9999490929293844, 2.0002971932947604] 127s
+[   1893.3s]   test32 c11 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.93e-12 newton=144 compile=0.0s solve=0.9s peak=27916148480
+[   1900.5s]   test32 c11 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.94e-12 newton=144 compile=0.0s solve=6.9s peak=27916148480
+[   1953.6s]   test32 c11 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.94e-12 newton=144 compile=0.0s solve=49.7s peak=27916148480
+[   1953.7s] CASE test32 11 S: accepted eps=2.0756990724097144e-05 p=[1.9999055339259002, 2.0006856284302152, 2.001368989460596, 2.0018485288391568, 2.001695127521684] 61s
+[   1954.3s]   test32 c12 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=2.53e-14 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   1962.2s]   test32 c12 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=6.92e-16 newton=404 compile=0.0s solve=7.5s peak=27916148480
+[   2055.1s]   test32 c12 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.27e-15 newton=804 compile=0.0s solve=89.6s peak=27916148480
+[   2055.3s] CASE test32 12 ST: accepted eps=1.3471393816974867e-05 p=[1.9975278550002085, 1.9987469638793889, 1.9992409661823443, 1.999513163092068, 1.999673497335311] 101s
+[   2055.7s]   test32 c12 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.49e-12 newton=104 compile=0.0s solve=0.4s peak=27916148480
+[   2059.2s]   test32 c12 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.56e-12 newton=104 compile=0.0s solve=3.1s peak=27916148480
+[   2084.9s]   test32 c12 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.58e-12 newton=104 compile=0.0s solve=22.4s peak=27916148480
+[   2085.1s] CASE test32 12 S: accepted eps=1.1263342320374004e-05 p=[1.9995979345831458, 1.9998195023111773, 2.000007271933345, 2.000143967492438, 2.000234578328375] 30s
+[   2085.9s]   test32 c13 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.41e-12 newton=204 compile=0.0s solve=0.8s peak=27916148480
+[   2095.7s]   test32 c13 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.43e-14 newton=404 compile=0.0s solve=9.5s peak=27916148480
+[   2212.4s]   test32 c13 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.08e-15 newton=804 compile=0.0s solve=113.2s peak=27916148480
+[   2212.5s] CASE test32 13 ST: accepted eps=3.127838530247275e-05 p=[1.9947382670849476, 1.9983941101229643, 1.9999225060362777, 2.000445588680658, 2.0008315085788646] 127s
+[   2213.4s]   test32 c13 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.37e-12 newton=142 compile=0.0s solve=0.9s peak=27916148480
+[   2220.5s]   test32 c13 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.40e-12 newton=142 compile=0.0s solve=6.7s peak=27916148480
+[   2271.6s]   test32 c13 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.40e-12 newton=142 compile=0.0s solve=47.7s peak=27916148480
+[   2271.7s] CASE test32 13 S: accepted eps=2.4879198964955297e-05 p=[2.000059641466604, 2.001108635156789, 2.001630403776132, 2.0018516163870235, 2.0020838715207656] 59s
+[   2272.9s]   test32 c14 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.81e-12 newton=249 compile=0.0s solve=1.2s peak=27916148480
+[   2284.4s]   test32 c14 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.09e-13 newton=404 compile=0.0s solve=11.1s peak=27916148480
+[   2416.2s]   test32 c14 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.97e-15 newton=804 compile=0.0s solve=128.4s peak=27916148480
+[   2416.3s] CASE test32 14 ST: accepted eps=6.256398737873833e-05 p=[1.993470055882159, 1.9976273779844225, 2.004147681063943, 2.004398222008881, 2.0073650912301044] 144s
+[   2417.6s]   test32 c14 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.59e-16 newton=150 compile=0.0s solve=1.2s peak=27916148480
+[   2427.2s]   test32 c14 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=3.35e-15 newton=150 compile=0.0s solve=9.3s peak=27916148480
+[   2497.2s]   test32 c14 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=1.33e-14 newton=150 compile=0.0s solve=66.5s peak=27916148480
+[   2497.3s] CASE test32 14 S: accepted eps=5.3663515461945565e-05 p=[1.9998375981355583, 2.001852974652452, 2.004000434449296, 2.00351974181292, 2.00645588163753] 81s
+[   2498.0s]   test32 c15 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.19e-15 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   2506.3s]   test32 c15 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=4.66e-16 newton=404 compile=0.0s solve=7.9s peak=27916148480
+[   2619.8s]   test32 c15 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=9.02e-16 newton=804 compile=0.0s solve=110.2s peak=27916148480
+[   2619.9s] CASE test32 15 ST: accepted eps=1.7677116014119905e-05 p=[1.997791408659869, 1.998724806708214, 1.999375545909154, 1.9998865746016206, 2.0002550726775663] 123s
+[   2620.5s]   test32 c15 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.08e-12 newton=100 compile=0.0s solve=0.5s peak=27916148480
+[   2624.7s]   test32 c15 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.17e-12 newton=100 compile=0.0s solve=3.8s peak=27916148480
+[   2655.5s]   test32 c15 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.20e-12 newton=100 compile=0.0s solve=27.4s peak=27916148480
+[   2655.6s] CASE test32 15 S: accepted eps=1.56575358071691e-05 p=[1.9994653901984842, 1.999835670719808, 2.000189312017033, 2.0004850910415124, 2.0007040148943753] 36s
+[   2656.5s]   test32 c16 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=2.69e-12 newton=204 compile=0.0s solve=0.8s peak=27916148480
+[   2667.1s]   test32 c16 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.37e-14 newton=404 compile=0.0s solve=10.2s peak=27916148480
+[   2791.7s]   test32 c16 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=5.50e-16 newton=804 compile=0.0s solve=121.2s peak=27916148480
+[   2791.9s] CASE test32 16 ST: accepted eps=7.061327565358314e-05 p=[1.994175396941634, 1.9984170751085173, 2.0029275209526927, 2.0051273672377037, 2.0056723462955524] 136s
+[   2793.0s]   test32 c16 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=5.22e-16 newton=150 compile=0.0s solve=1.0s peak=27916148480
+[   2801.5s]   test32 c16 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=2.00e-15 newton=150 compile=0.0s solve=8.2s peak=27916148480
+[   2863.7s]   test32 c16 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=7.93e-15 newton=150 compile=0.0s solve=58.8s peak=27916148480
+[   2863.9s] CASE test32 16 S: accepted eps=5.7228547789629116e-05 p=[1.999651256686276, 2.001431617068002, 2.003459699340314, 2.0047491290141886, 2.005271228701898] 72s
+[   2864.6s]   test32 c17 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=3.68e-15 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   2872.8s]   test32 c17 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=3.52e-16 newton=404 compile=0.0s solve=7.9s peak=27916148480
+[   2975.1s]   test32 c17 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=6.73e-16 newton=804 compile=0.0s solve=98.9s peak=27916148480
+[   2975.3s] CASE test32 17 ST: accepted eps=1.7611815055542343e-05 p=[1.997739394112548, 1.9987853241900213, 1.9994482492900345, 2.0000109048657055, 2.000439952662508] 111s
+[   2975.8s]   test32 c17 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=3.48e-12 newton=100 compile=0.0s solve=0.5s peak=27916148480
+[   2979.7s]   test32 c17 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=3.52e-12 newton=100 compile=0.0s solve=3.6s peak=27916148480
+[   3008.7s]   test32 c17 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=3.53e-12 newton=100 compile=0.0s solve=25.6s peak=27916148480
+[   3008.8s] CASE test32 17 S: accepted eps=1.6134808663928265e-05 p=[1.9994121717637854, 1.9997271701193666, 2.0000967505912026, 2.0004521095683745, 2.0007375735415365] 33s
+[   3010.1s]   test32 c18 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.52e-12 newton=263 compile=0.0s solve=1.3s peak=27916148480
+[   3021.7s]   test32 c18 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=4.29e-13 newton=404 compile=0.0s solve=11.2s peak=27916148480
+[   3155.6s]   test32 c18 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=3.71e-15 newton=804 compile=0.0s solve=130.6s peak=27916148480
+[   3155.8s] CASE test32 18 ST: accepted eps=7.659492078418427e-05 p=[1.9906017076318911, 2.0007347358314007, 2.0049791787825986, 2.0054278947249857, 2.0048714205619396] 147s
+[   3157.0s]   test32 c18 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=7.11e-16 newton=150 compile=0.0s solve=1.2s peak=27916148480
+[   3166.4s]   test32 c18 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=2.67e-15 newton=150 compile=0.0s solve=9.1s peak=27916148480
+[   3234.7s]   test32 c18 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=1.06e-14 newton=150 compile=0.0s solve=65.0s peak=27916148480
+[   3234.9s] CASE test32 18 S: accepted eps=5.6190866945517805e-05 p=[2.000813989559756, 2.0035921626230753, 2.00550445149408, 2.005460321402596, 2.004951157170108] 79s
+[   3235.6s]   test32 c19 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.69e-12 newton=204 compile=0.0s solve=0.7s peak=27916148480
+[   3244.3s]   test32 c19 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.95e-14 newton=404 compile=0.0s solve=8.4s peak=27916148480
+[   3353.8s]   test32 c19 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.79e-15 newton=804 compile=0.0s solve=106.1s peak=27916148480
+[   3353.9s] CASE test32 19 ST: accepted eps=2.377785037372908e-05 p=[1.994581275174318, 1.9968608632251126, 1.9976850752139714, 1.9980125654005136, 1.9981268983044917] 119s
+[   3354.6s]   test32 c19 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.36e-12 newton=120 compile=0.0s solve=0.6s peak=27916148480
+[   3359.7s]   test32 c19 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.38e-12 newton=120 compile=0.0s solve=4.7s peak=27916148480
+[   3396.7s]   test32 c19 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.39e-12 newton=120 compile=0.0s solve=33.6s peak=27916148480
+[   3396.8s] CASE test32 19 S: accepted eps=1.4579804564767373e-05 p=[1.9998462479267407, 2.0002515946995225, 2.0004721515023025, 2.000574349108101, 2.0006008118494787] 43s
+[   3398.3s]   test32 c20 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=9.76e-12 newton=287 compile=0.0s solve=1.4s peak=27916148480
+[   3410.6s]   test32 c20 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.35e-12 newton=404 compile=0.0s solve=11.9s peak=27916148480
+[   3552.9s]   test32 c20 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.15e-14 newton=804 compile=0.0s solve=138.9s peak=27916148480
+[   3553.0s] CASE test32 20 ST: accepted eps=0.00010263902247620538 p=[1.991502691764375, 2.0006659170218613, 2.0105743006429626, 2.012760917416754, 2.0120219735184546] 156s
+[   3554.4s]   test32 c20 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=5.82e-16 newton=150 compile=0.0s solve=1.3s peak=27916148480
+[   3564.9s]   test32 c20 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=2.04e-15 newton=150 compile=0.0s solve=10.2s peak=27916148480
+[   3641.6s]   test32 c20 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.07e-15 newton=150 compile=0.0s solve=73.3s peak=27916148480
+[   3641.7s] CASE test32 20 S: accepted eps=7.427924061740734e-05 p=[2.000118737383878, 2.0035818601516016, 2.0073162185465847, 2.009250747065325, 2.0096773600886477] 89s
+[   3642.3s]   test32 c21 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.67e-13 newton=204 compile=0.0s solve=0.5s peak=27916148480
+[   3649.6s]   test32 c21 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.11e-15 newton=404 compile=0.0s solve=6.9s peak=27916148480
+[   3739.1s]   test32 c21 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.96e-15 newton=804 compile=0.0s solve=86.2s peak=27916148480
+[   3739.3s] CASE test32 21 ST: accepted eps=1.6583460653792713e-05 p=[1.9974524566572958, 1.9986526959503725, 1.9990550004891683, 1.9992269025209348, 1.999317310163791] 97s
+[   3739.7s]   test32 c21 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.30e-12 newton=109 compile=0.0s solve=0.4s peak=27916148480
+[   3743.1s]   test32 c21 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.35e-12 newton=109 compile=0.0s solve=3.0s peak=27916148480
+[   3768.1s]   test32 c21 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.36e-12 newton=109 compile=0.0s solve=21.6s peak=27916148480
+[   3768.2s] CASE test32 21 S: accepted eps=1.0209473637436717e-05 p=[1.9997485758927027, 2.0000261761923945, 2.0001737800329704, 2.000254051685569, 2.00030756687657] 29s
+[   3768.9s]   test32 c22 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.88e-12 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   3776.4s]   test32 c22 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.32e-14 newton=404 compile=0.0s solve=7.2s peak=27916148480
+[   3870.0s]   test32 c22 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=4.24e-15 newton=804 compile=0.0s solve=90.2s peak=27916148480
+[   3870.1s] CASE test32 22 ST: accepted eps=1.7871565101374774e-05 p=[1.9953179291388903, 1.9960371992695496, 1.9962330313799208, 1.9964176231646853, 1.9967616206239325] 102s
+[   3870.6s]   test32 c22 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.08e-12 newton=115 compile=0.0s solve=0.5s peak=27916148480
+[   3874.4s]   test32 c22 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.10e-12 newton=115 compile=0.0s solve=3.4s peak=27916148480
+[   3902.2s]   test32 c22 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.11e-12 newton=115 compile=0.0s solve=24.5s peak=27916148480
+[   3902.3s] CASE test32 22 S: accepted eps=6.006420037756544e-06 p=[1.999986493437738, 2.000181070094626, 2.000186964231096, 2.0002254871044682, 2.000284900088069] 32s
+[   3902.9s]   test32 c23 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=7.72e-14 newton=204 compile=0.0s solve=0.5s peak=27916148480
+[   3909.7s]   test32 c23 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=1.56e-15 newton=404 compile=0.0s solve=6.5s peak=27916148480
+[   3994.9s]   test32 c23 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=2.62e-15 newton=804 compile=0.0s solve=81.9s peak=27916148480
+[   3995.0s] CASE test32 23 ST: accepted eps=1.4153830311364436e-05 p=[1.9982021203035545, 1.999029791806745, 1.999374722578684, 1.9995450455315005, 1.999641362141982] 93s
+[   3995.4s]   test32 c23 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.79e-12 newton=106 compile=0.0s solve=0.3s peak=27916148480
+[   3998.4s]   test32 c23 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.84e-12 newton=106 compile=0.0s solve=2.6s peak=27916148480
+[   4020.4s]   test32 c23 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.85e-12 newton=106 compile=0.0s solve=18.7s peak=27916148480
+[   4020.5s] CASE test32 23 S: accepted eps=7.149082392115793e-06 p=[1.9997585087553373, 2.0000992494836023, 2.0002778885716324, 2.000330860825537, 2.000317693864072] 25s
+[   4021.0s]   test32 c24 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.63e-12 newton=204 compile=0.0s solve=0.5s peak=27916148480
+[   4027.4s]   test32 c24 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.49e-14 newton=404 compile=0.0s solve=6.0s peak=27916148480
+[   4112.2s]   test32 c24 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=3.69e-15 newton=804 compile=0.0s solve=81.5s peak=27916148480
+[   4112.3s] CASE test32 24 ST: accepted eps=2.104794465103227e-05 p=[1.9995539735994008, 1.999817549667326, 1.9997453070422326, 1.999528380642848, 1.9993383755503757] 92s
+[   4112.7s]   test32 c24 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.57e-12 newton=109 compile=0.0s solve=0.3s peak=27916148480
+[   4115.4s]   test32 c24 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.61e-12 newton=109 compile=0.0s solve=2.4s peak=27916148480
+[   4136.0s]   test32 c24 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.62e-12 newton=109 compile=0.0s solve=17.2s peak=27916148480
+[   4136.2s] CASE test32 24 S: accepted eps=8.422125964286898e-06 p=[2.0002035224880443, 2.0003220125146988, 2.0003699528888914, 2.000380437040031, 2.000361141937082] 24s
+[   4136.9s]   test32 c25 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=7.00e-12 newton=204 compile=0.0s solve=0.7s peak=27916148480
+[   4145.6s]   test32 c25 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=9.63e-14 newton=404 compile=0.0s solve=8.4s peak=27916148480
+[   4254.1s]   test32 c25 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=2.17e-15 newton=804 compile=0.0s solve=105.1s peak=27916148480
+[   4254.2s] CASE test32 25 ST: accepted eps=2.22185149759749e-05 p=[1.993306585636688, 1.9954941654652574, 1.9965134097312764, 1.997147241555917, 1.997594499041121] 118s
+[   4254.8s]   test32 c25 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.78e-12 newton=119 compile=0.0s solve=0.6s peak=27916148480
+[   4259.6s]   test32 c25 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.80e-12 newton=119 compile=0.0s solve=4.4s peak=27916148480
+[   4294.1s]   test32 c25 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.80e-12 newton=119 compile=0.0s solve=31.2s peak=27916148480
+[   4294.2s] CASE test32 25 S: accepted eps=1.1645290789118634e-05 p=[1.9999542255211418, 2.000269187018815, 2.000454199886921, 2.00056963826748, 2.000585810296072] 40s
+[   4294.8s]   test32 c26 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.84e-12 newton=204 compile=0.0s solve=0.5s peak=27916148480
+[   4301.5s]   test32 c26 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.45e-14 newton=404 compile=0.0s solve=6.4s peak=27916148480
+[   4388.9s]   test32 c26 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=4.22e-15 newton=804 compile=0.0s solve=84.1s peak=27916148480
+[   4389.1s] CASE test32 26 ST: accepted eps=2.0839801669843876e-05 p=[1.9975150123859595, 1.997637412253098, 1.9976264332300375, 1.997709723997459, 1.9979313155332439] 95s
+[   4389.5s]   test32 c26 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.77e-12 newton=113 compile=0.0s solve=0.4s peak=27916148480
+[   4392.6s]   test32 c26 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.79e-12 newton=113 compile=0.0s solve=2.7s peak=27916148480
+[   4415.3s]   test32 c26 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.80e-12 newton=113 compile=0.0s solve=19.4s peak=27916148480
+[   4415.5s] CASE test32 26 S: accepted eps=7.354012280974314e-06 p=[2.000061661230586, 2.000254302285421, 2.000310997020565, 2.0003329039306674, 2.000333983088786] 26s
+[   4416.1s]   test32 c27 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=3.43e-14 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   4423.8s]   test32 c27 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=7.43e-16 newton=404 compile=0.0s solve=7.4s peak=27916148480
+[   4515.2s]   test32 c27 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=1.31e-15 newton=804 compile=0.0s solve=88.0s peak=27916148480
+[   4515.3s] CASE test32 27 ST: accepted eps=1.1564493211156649e-05 p=[1.997588614556326, 1.9987547898306792, 1.999223063932327, 1.9994709016881176, 1.9996099166664534] 100s
+[   4515.8s]   test32 c27 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=9.81e-12 newton=104 compile=0.0s solve=0.4s peak=27916148480
+[   4519.1s]   test32 c27 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=9.89e-12 newton=104 compile=0.0s solve=3.0s peak=27916148480
+[   4544.3s]   test32 c27 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=9.91e-12 newton=104 compile=0.0s solve=21.8s peak=27916148480
+[   4544.4s] CASE test32 27 S: accepted eps=9.231487738012998e-06 p=[1.999548467740868, 1.9998308551159563, 2.000022747238248, 2.0001506910592854, 2.000229213068384] 29s
+[   4545.1s]   test32 c28 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=3.45e-15 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   4553.3s]   test32 c28 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=2.83e-16 newton=404 compile=0.0s solve=7.9s peak=27916148480
+[   4652.9s]   test32 c28 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=5.32e-16 newton=804 compile=0.0s solve=96.2s peak=27916148480
+[   4653.1s] CASE test32 28 ST: accepted eps=2.213731881679542e-05 p=[1.9978538365085263, 1.998744282989917, 1.9991819825207293, 1.999654495447046, 2.000137996435882] 109s
+[   4653.6s]   test32 c28 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=3.31e-12 newton=100 compile=0.0s solve=0.5s peak=27916148480
+[   4657.4s]   test32 c28 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=3.34e-12 newton=100 compile=0.0s solve=3.5s peak=27916148480
+[   4685.9s]   test32 c28 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=3.35e-12 newton=100 compile=0.0s solve=25.1s peak=27916148480
+[   4686.0s] CASE test32 28 S: accepted eps=2.0100235924442736e-05 p=[1.9993971390191083, 1.99960209424554, 1.9998555074608504, 2.000178359330122, 2.000519102173111] 33s
+[   4686.7s]   test32 c29 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=1.21e-14 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   4695.0s]   test32 c29 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=4.70e-16 newton=404 compile=0.0s solve=7.9s peak=27916148480
+[   4796.7s]   test32 c29 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=8.84e-16 newton=804 compile=0.0s solve=98.4s peak=27916148480
+[   4797.1s] CASE test32 29 ST: accepted eps=1.7003860284908875e-05 p=[1.9977577617366005, 1.9988412018574833, 1.999411810394237, 1.9998132304512914, 2.000101846779715] 111s
+[   4797.7s]   test32 c29 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.72e-12 newton=101 compile=0.0s solve=0.4s peak=27916148480
+[   4801.4s]   test32 c29 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.82e-12 newton=101 compile=0.0s solve=3.4s peak=27916148480
+[   4828.9s]   test32 c29 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.85e-12 newton=101 compile=0.0s solve=24.1s peak=27916148480
+[   4829.3s] CASE test32 29 S: accepted eps=1.5438884314579995e-05 p=[1.9994572289633106, 1.9997688881206905, 2.0000711690895567, 2.00032824575129, 2.000530519478292] 32s
+[   4829.9s]   test32 c30 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=3.87e-13 newton=204 compile=0.0s solve=0.6s peak=27916148480
+[   4837.5s]   test32 c30 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=4.74e-15 newton=404 compile=0.0s solve=7.2s peak=27916148480
+[   4930.0s]   test32 c30 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=2.65e-15 newton=804 compile=0.0s solve=89.1s peak=27916148480
+[   4930.2s] CASE test32 30 ST: accepted eps=1.642160610082136e-05 p=[1.996743674546895, 1.9977076997340655, 1.998053807658025, 1.9982563912778688, 1.998413886559379] 101s
+[   4930.7s]   test32 c30 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.12e-12 newton=112 compile=0.0s solve=0.4s peak=27916148480
+[   4934.2s]   test32 c30 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=8.15e-12 newton=112 compile=0.0s solve=3.2s peak=27916148480
+[   4960.7s]   test32 c30 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=8.16e-12 newton=112 compile=0.0s solve=23.1s peak=27916148480
+[   4960.8s] CASE test32 30 S: accepted eps=8.152246214691099e-06 p=[1.999827094066606, 2.000041497885496, 2.000177965758283, 2.0002936446947897, 2.000377151115143] 31s
+[   4961.8s]   test32 c31 ST a0_L128 prod L=128 dt=2.500e-03 stages=102 ok=True maxres=6.92e-12 newton=204 compile=0.0s solve=0.9s peak=27916148480
+[   4972.8s]   test32 c31 ST a1_L256 prod L=256 dt=1.250e-03 stages=202 ok=True maxres=6.13e-14 newton=404 compile=0.0s solve=10.7s peak=27916148480
+[   5101.2s]   test32 c31 ST a2_L512 prod L=512 dt=6.250e-04 stages=402 ok=True maxres=9.57e-16 newton=804 compile=0.0s solve=125.0s peak=27916148480
+[   5101.3s] CASE test32 31 ST: accepted eps=4.700243798276628e-05 p=[1.9925480805885278, 1.9984872758478358, 2.0026850346527643, 2.004771258084059, 2.0047584854240434] 140s
+[   5102.5s]   test32 c31 S a0_L128 prod L=128 dt=5.000e-03 stages=50 ok=True maxres=8.13e-16 newton=150 compile=0.0s solve=1.1s peak=27916148480
+[   5111.3s]   test32 c31 S a1_L256 prod L=256 dt=5.000e-03 stages=50 ok=True maxres=3.17e-15 newton=150 compile=0.0s solve=8.5s peak=27916148480
+[   5176.0s]   test32 c31 S a2_L512 prod L=512 dt=5.000e-03 stages=50 ok=True maxres=1.26e-14 newton=150 compile=0.0s solve=61.2s peak=27916148480
+[   5176.2s] CASE test32 31 S: accepted eps=3.5238591225892026e-05 p=[1.9999945500129517, 2.0018531878981896, 2.0035309295417663, 2.004636765902674, 2.0044026343854946] 75s
+JOB COMPLETE
+ALL-DONE

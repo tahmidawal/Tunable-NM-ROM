@@ -1,0 +1,25 @@
+{
+ "attempt": "ref3b",
+ "runs": [
+  "ref/refrun:configs/ref3b.json"
+ ],
+ "configs": {
+  "configs/ref3b.json": "ae2b1b09d054a076d7b44015abcbd45159780066673ec8297890131f13cdf54d"
+ },
+ "gpu": "h200",
+ "projection_hours": 4.263472109321356,
+ "memory": {
+  "ref/refrun:configs/ref3b.json": {
+   "measured_peak_GiB_L512": 30.959400177001953,
+   "refinement_estimate_GiB": 104.48797559738159,
+   "note": "cubic scaling of the measured L512 peak to the L768 refinement level (output buffer alone 37 GiB); E0 refined 0 of 200 3D case-kinds",
+   "device_GiB": 128.6171875
+  }
+ },
+ "time_limit_hours": 6.5,
+ "detail": {
+  "ref/refrun:configs/ref3b.json": 1.4435384128739437,
+  "worst_path_reserve": 2.819933696447412
+ },
+ "label": "estimate from the smokes (not a bound)"
+}

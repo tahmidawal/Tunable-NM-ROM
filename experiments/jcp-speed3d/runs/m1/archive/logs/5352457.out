@@ -1,0 +1,161 @@
+host=pax009 source_commit=b4b2cfe4b92f8aaaef25b883ff0c9f46b44b45ae
+NVIDIA H200, GPU-9fe6d31e-a7b8-0037-da75-63ba6cc6b86f, 143771 MiB
+10.235.106.23:/projects/paralab  4.6T  1.1T  3.6T  23% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 4.0s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.8s
+[mesh 65] bank rows [(256, 250047), (768, 250047)] 5.9s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 8.8s
+SETUP 26.0
+[bigtables n=65 R=512] slab 0/63 2.6s
+[bigtables n=66 R=512] slab 0/64 2.2s
+G5 M2|512 {'M': 2052, 'M_ref': 2052, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 1.3286348848571252e-15, 'pass': True, 'K7_rel': 0.023529291797851036, 'K7_fires': True, 'gate': True}
+[bigtables n=65 R=256] slab 0/63 2.6s
+[bigtables n=66 R=256] slab 0/64 2.2s
+G5 W1024|256 {'M': 1027, 'M_ref': 1027, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 1.063350602905272e-15, 'pass': True, 'K7_rel': 0.02352893222562748, 'K7_fires': True, 'gate': True}
+[bigtables n=65 R=1024] slab 0/63 0.9s
+[bigtables n=66 R=1024] slab 0/64 0.7s
+G5 W1024|1024 {'M': 4097, 'M_ref': 4097, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 1.7474583125565238e-15, 'pass': True, 'K7_rel': 0.023530926958034715, 'K7_fires': True, 'gate': True}
+RUN W1024|lat65536|mf|n65 fs|BE|0.01|K1 61.3s valid True nonst 2 / 1600 105.3
+RUN W1024|lat65536|mf|n65 ad|LSPG|BE|0.01|tight 68.5s valid True nonst 0 / 0 173.8
+RUN W1024|lat65536|mf|n65 ad|LSPG|BE|0.01|tighter 10.0s valid True nonst 0 / 0 183.9
+RUN M2_512|gl32|mf|n65 fs|BE|0.01|K1 13.7s valid True nonst 1 / 1600 202.1
+RUN M2_512|gl32|mf|n65 ad|LSPG|BE|0.01|tight 12.3s valid True nonst 0 / 0 214.4
+RUN M2_512|gl32|mf|n65 ad|LSPG|BE|0.01|tighter 2.4s valid True nonst 0 / 0 216.8
+RUN M2_512|gl24|mf|n65 qn|CN|0.016666667|k4 6.6s valid True nonst 0 / 960 227.0
+RUN M2_512|gl24|mf|n65 ad|LSPG|CN|0.016666667|tight 5.8s valid True nonst 0 / 0 232.8
+RUN M2_512|gl24|mf|n65 ad|LSPG|CN|0.016666667|tighter 1.5s valid True nonst 0 / 0 234.4
+RUN M2_512|gl24|mf|n65 fs|BDF2|0.0125|K1 6.9s valid True nonst 6 / 1280 241.8
+RUN M2_512|gl24|mf|n65 ad|LSPG|BDF2|0.0125|tight 5.3s valid True nonst 0 / 0 247.1
+RUN M2_512|gl24|mf|n65 ad|LSPG|BDF2|0.0125|tighter 1.6s valid True nonst 0 / 0 248.7
+FOM fd|UB|L64|0.01|t1 converged True median e 0.06433140640610882 254.2
+FOM fd|CC|L64|0.01|t1 converged True median e 0.00490540653807983 256.9
+FOM fd|CC|L64|0.0125|t1 converged True median e 0.0045685226508328895 257.3
+FOM ps|N16|0.025 converged True median e 0.0005144545624710883 262.7
+FOM fd|CC|L64|0.01|t1 converged True median e 0.0033043977755768165 263.1
+RUN W1024|lat65536 fs|BE|0.01|K1 7.3s valid True nonst 0 / 100 270.3
+TIMING match|C_W1024 16 valid True 297.3
+RUN M2_512|gl32 fs|BE|0.01|K1 6.1s valid True nonst 0 / 100 303.4
+TIMING match|C_old 16 valid True 312.7
+RUN M2_512|gl24 qn|CN|0.016666667|k4 1.9s valid True nonst 0 / 60 314.6
+TIMING match|W_C_W768 16 valid True 322.7
+RUN M2_512|gl24 fs|BDF2|0.0125|K1 3.9s valid True nonst 2 / 80 326.6
+TIMING match|W_C_old 16 valid True 334.9
+TIMING mesh|L64|C_W1024 32 valid True 384.8
+TIMING mesh|L64|C_old 32 valid True 403.4
+TIMING mesh|L64|W_C_W768 32 valid True 419.7
+TIMING mesh|L64|W_C_old 32 valid True 436.1
+[bigtables n=129 R=1024] slab 0/127 4.1s
+[bigtables n=129 R=1024] slab 64/127 4.5s
+RUN W1024|lat65536|mf|n129 fs|BE|0.01|K1 57.0s valid True nonst 2 / 1600 499.2
+RUN W1024|lat65536|mf|n129 ad|LSPG|BE|0.01|tight 67.8s valid True nonst 0 / 0 567.0
+RUN W1024|lat65536|mf|n129 ad|LSPG|BE|0.01|tighter 10.0s valid True nonst 0 / 0 577.0
+[bigtables n=129 R=512] slab 0/127 2.8s
+[bigtables n=129 R=512] slab 64/127 2.9s
+RUN M2_512|gl32|mf|n129 fs|BE|0.01|K1 12.8s valid True nonst 1 / 1600 595.5
+RUN M2_512|gl32|mf|n129 ad|LSPG|BE|0.01|tight 12.3s valid True nonst 0 / 0 607.8
+RUN M2_512|gl32|mf|n129 ad|LSPG|BE|0.01|tighter 2.3s valid True nonst 0 / 0 610.1
+[bigtables n=129 R=512] slab 0/127 0.7s
+[bigtables n=129 R=512] slab 64/127 0.8s
+RUN M2_512|gl24|mf|n129 qn|CN|0.016666667|k4 5.5s valid True nonst 0 / 960 618.2
+RUN M2_512|gl24|mf|n129 ad|LSPG|CN|0.016666667|tight 6.2s valid True nonst 0 / 0 624.4
+RUN M2_512|gl24|mf|n129 ad|LSPG|CN|0.016666667|tighter 1.7s valid True nonst 0 / 0 626.1
+[bigtables n=129 R=512] slab 0/127 0.7s
+[bigtables n=129 R=512] slab 64/127 0.8s
+RUN M2_512|gl24|mf|n129 fs|BDF2|0.0125|K1 6.8s valid True nonst 6 / 1280 635.2
+RUN M2_512|gl24|mf|n129 ad|LSPG|BDF2|0.0125|tight 5.5s valid True nonst 0 / 0 640.7
+RUN M2_512|gl24|mf|n129 ad|LSPG|BDF2|0.0125|tighter 1.7s valid True nonst 0 / 0 642.4
+FOM fd|UB|L128|0.01|t1 converged True median e 0.0413395850313546 653.5
+FOM fd|CC|L128|0.01|t1 converged True median e 0.0042187905580332715 660.2
+FOM fd|CC|L64|0.0125|t1 converged True median e 0.0045685226508328895 661.8
+FOM ps|N16|0.025 converged True median e 0.0005144545624710883 666.4
+FOM fd|CC|L64|0.01|t1 converged True median e 0.0033043977755768165 666.7
+TIMING mesh|L128|C_W1024 40 valid True 733.6
+TIMING mesh|L128|C_old 40 valid True 762.0
+TIMING mesh|L128|W_C_W768 40 valid True 787.3
+TIMING mesh|L128|W_C_old 40 valid True 812.8
+[bigtables n=257 R=1024] slab 0/255 5.7s
+[bigtables n=257 R=1024] slab 64/255 7.7s
+[bigtables n=257 R=1024] slab 128/255 9.8s
+[bigtables n=257 R=1024] slab 192/255 11.9s
+RUN W1024|lat65536|mf|n257 fs|BE|0.01|K1 57.0s valid True nonst 2 / 1600 885.6
+RUN W1024|lat65536|mf|n257 ad|LSPG|BE|0.01|tight 67.1s valid True nonst 0 / 0 952.7
+RUN W1024|lat65536|mf|n257 ad|LSPG|BE|0.01|tighter 10.0s valid True nonst 0 / 0 962.6
+[bigtables n=257 R=512] slab 0/255 5.3s
+[bigtables n=257 R=512] slab 64/255 5.8s
+[bigtables n=257 R=512] slab 128/255 6.5s
+[bigtables n=257 R=512] slab 192/255 7.1s
+RUN M2_512|gl32|mf|n257 fs|BE|0.01|K1 10.3s valid True nonst 1 / 1600 982.3
+RUN M2_512|gl32|mf|n257 ad|LSPG|BE|0.01|tight 10.7s valid True nonst 0 / 0 993.0
+RUN M2_512|gl32|mf|n257 ad|LSPG|BE|0.01|tighter 2.4s valid True nonst 0 / 0 995.5
+[bigtables n=257 R=512] slab 0/255 2.9s
+[bigtables n=257 R=512] slab 64/255 3.5s
+[bigtables n=257 R=512] slab 128/255 4.1s
+[bigtables n=257 R=512] slab 192/255 4.7s
+RUN M2_512|gl24|mf|n257 qn|CN|0.016666667|k4 3.9s valid True nonst 0 / 960 1006.5
+RUN M2_512|gl24|mf|n257 ad|LSPG|CN|0.016666667|tight 4.6s valid True nonst 0 / 0 1011.1
+RUN M2_512|gl24|mf|n257 ad|LSPG|CN|0.016666667|tighter 1.5s valid True nonst 0 / 0 1012.6
+[bigtables n=257 R=512] slab 0/255 2.9s
+[bigtables n=257 R=512] slab 64/255 3.5s
+[bigtables n=257 R=512] slab 128/255 4.1s
+[bigtables n=257 R=512] slab 192/255 4.7s
+RUN M2_512|gl24|mf|n257 fs|BDF2|0.0125|K1 6.4s valid True nonst 6 / 1280 1026.2
+RUN M2_512|gl24|mf|n257 ad|LSPG|BDF2|0.0125|tight 5.4s valid True nonst 0 / 0 1031.6
+RUN M2_512|gl24|mf|n257 ad|LSPG|BDF2|0.0125|tighter 1.8s valid True nonst 0 / 0 1033.4
+FOM fd|UB|L256|0.01|t1 converged True median e 0.029458326526884744 1095.0
+FOM fd|CC|L256|0.01|t1 converged True median e 0.004059817063425531 1141.4
+FOM fd|CC|L64|0.0125|t1 converged True median e 0.0045685226508328895 1143.2
+FOM ps|N16|0.025 converged True median e 0.0005144545624710883 1147.9
+FOM fd|CC|L64|0.01|t1 converged True median e 0.0033043977755768165 1148.2
+TIMING mesh|L256|C_W1024 40 valid True 1258.0
+TIMING mesh|L256|C_old 40 valid True 1328.8
+TIMING mesh|L256|W_C_W768 40 valid True 1397.1
+TIMING mesh|L256|W_C_old 40 valid True 1465.2
+[bigtables n=385 R=1024] slab 0/383 12.5s
+[bigtables n=385 R=1024] slab 64/383 17.1s
+[bigtables n=385 R=1024] slab 128/383 21.9s
+[bigtables n=385 R=1024] slab 192/383 26.6s
+[bigtables n=385 R=1024] slab 256/383 31.4s
+[bigtables n=385 R=1024] slab 320/383 36.2s
+RUN W1024|lat65536|mf|n385 fs|BE|0.01|K1 57.0s valid True nonst 2 / 1600 1565.2
+RUN W1024|lat65536|mf|n385 ad|LSPG|BE|0.01|tight 67.3s valid True nonst 0 / 0 1632.5
+RUN W1024|lat65536|mf|n385 ad|LSPG|BE|0.01|tighter 10.0s valid True nonst 0 / 0 1642.5
+[bigtables n=385 R=512] slab 0/383 12.4s
+[bigtables n=385 R=512] slab 64/383 13.8s
+[bigtables n=385 R=512] slab 128/383 15.2s
+[bigtables n=385 R=512] slab 192/383 16.6s
+[bigtables n=385 R=512] slab 256/383 18.0s
+[bigtables n=385 R=512] slab 320/383 19.4s
+RUN M2_512|gl32|mf|n385 fs|BE|0.01|K1 10.4s valid True nonst 1 / 1600 1676.0
+RUN M2_512|gl32|mf|n385 ad|LSPG|BE|0.01|tight 10.7s valid True nonst 0 / 0 1686.7
+RUN M2_512|gl32|mf|n385 ad|LSPG|BE|0.01|tighter 2.3s valid True nonst 0 / 0 1689.0
+[bigtables n=385 R=512] slab 0/383 9.5s
+[bigtables n=385 R=512] slab 64/383 10.9s
+[bigtables n=385 R=512] slab 128/383 12.3s
+[bigtables n=385 R=512] slab 192/383 13.7s
+[bigtables n=385 R=512] slab 256/383 15.1s
+[bigtables n=385 R=512] slab 320/383 16.5s
+RUN M2_512|gl24|mf|n385 qn|CN|0.016666667|k4 4.3s valid True nonst 0 / 960 1713.6
+RUN M2_512|gl24|mf|n385 ad|LSPG|CN|0.016666667|tight 4.5s valid True nonst 0 / 0 1718.1
+RUN M2_512|gl24|mf|n385 ad|LSPG|CN|0.016666667|tighter 1.5s valid True nonst 0 / 0 1719.7
+[bigtables n=385 R=512] slab 0/383 9.5s
+[bigtables n=385 R=512] slab 64/383 10.9s
+[bigtables n=385 R=512] slab 128/383 12.2s
+[bigtables n=385 R=512] slab 192/383 13.7s
+[bigtables n=385 R=512] slab 256/383 15.1s
+[bigtables n=385 R=512] slab 320/383 16.5s
+RUN M2_512|gl24|mf|n385 fs|BDF2|0.0125|K1 6.5s valid True nonst 6 / 1280 1746.6
+RUN M2_512|gl24|mf|n385 ad|LSPG|BDF2|0.0125|tight 5.8s valid True nonst 0 / 0 1752.4
+RUN M2_512|gl24|mf|n385 ad|LSPG|BDF2|0.0125|tighter 1.6s valid True nonst 0 / 0 1754.1
+FOM fd|UB|L384|0.01|t1 converged True median e 0.025544317347990977 1999.8
+FOM fd|CC|L384|0.01|t1 converged True median e 0.004031068213586684 2187.8
+FOM fd|CC|L64|0.0125|t1 converged True median e 0.0045685226508328895 2189.7
+FOM ps|N16|0.025 converged True median e 0.0005144545624710883 2194.6
+FOM fd|CC|L64|0.01|t1 converged True median e 0.0033043977755768165 2195.0
+TIMING mesh|L384|C_W1024 40 valid True 2467.9
+TIMING mesh|L384|C_old 40 valid True 2701.9
+TIMING mesh|L384|W_C_W768 40 valid True 2933.2
+TIMING mesh|L384|W_C_old 40 valid True 3164.5
+S3RUN COMPLETE
+ALL-DONE

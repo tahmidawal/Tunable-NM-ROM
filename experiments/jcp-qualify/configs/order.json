@@ -1,0 +1,128 @@
+{
+ "attempt": "order",
+ "driver": "qacc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "arms": []
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": []
+  }
+ ],
+ "blocks": [
+  {
+   "setting": "R128",
+   "kind": "order",
+   "cases": "dev6",
+   "finest": 0.25,
+   "anchor": 0.015625,
+   "anchor2": 0.0078125,
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factors": [
+      2.5,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factors": [
+      2.5,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factors": [
+      5.0,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    }
+   ]
+  },
+  {
+   "setting": "R384",
+   "kind": "order",
+   "cases": "dev6",
+   "finest": 0.25,
+   "anchor": 0.015625,
+   "anchor2": 0.0078125,
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factors": [
+      2.5,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factors": [
+      2.5,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factors": [
+      5.0,
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    },
+    {
+     "form": "GAL",
+     "scheme": "TH06",
+     "factors": [
+      2,
+      1,
+      0.5,
+      0.25
+     ]
+    }
+   ]
+  }
+ ]
+}

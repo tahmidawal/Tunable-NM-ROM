@@ -1,0 +1,115 @@
+host=pax009 source_commit=2c86213a6e345fe72b77ae723c73732a1b12f3f8
+NVIDIA H200, GPU-76abdc51-4b38-33b9-ba8a-e20f47d62ed8, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  988G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[5.3s] [mesh 65] bank rows [(256, 250047), (256, 250047)] 4.2s
+[8.1s] [mesh 65] Gram cond 1.0000, A (2052, 512) 7.0s
+[14.2s] [mesh 65] tensor (2052, 512, 512) 13.1s
+[17.2s] tables done; gates {'gram_condition': 1.000000000000512, 'tensor_vs_direct': 2.7053616460477073e-16}
+[38.5s] off-mesh tables built
+[48.8s] evaluator gates {'gram_condition': 1.000000000000512, 'tensor_vs_direct': 2.7053616460477073e-16, 'G1_derivative_vs_fd': 1.318580370885292e-07, 'G2_meshnodes_offmesh_vs_tensor': 7.95252248386576e-16, 'G3_jacobian_vs_jacfwd': 0.0, 'G3_adv_half_Jc': 1.0515025779005894e-15}
+[75.3s] G4 0.00e+00
+[99.5s] RHO R512: check 3.62e-08; tensor c1.95e-01 m1.80e-05; dense_upwind c1.95e-01 m0.00e+00; lat4096 c8.30e-02 m2.04e-01; lat8192 c1.02e-02 m1.93e-01; lat16384 c1.14e-03 m1.93e-01; lat32768 c8.62e-05 m1.93e-01; kor16381 c1.71e-03 m1.93e-01; gl16 c6.19e-01 m6.37e-01; gl24 c1.00e-02 m1.93e-01; gl32 c4.70e-04 m1.93e-01; sob16384 c1.45e-01 m2.49e-01; lat256 c3.16e+00 m3.40e+00; smol8 c4.34e+01 m4.37e+01
+[122.9s] RHO R256: check 1.54e-08; tensor c1.94e-01 m1.91e-04; dense_upwind c1.94e-01 m0.00e+00; lat4096 c2.37e-02 m1.92e-01; lat8192 c2.19e-03 m1.92e-01; lat16384 c1.92e-04 m1.92e-01; lat32768 c2.91e-05 m1.92e-01; kor16381 c5.95e-04 m1.92e-01; gl16 c1.92e-01 m2.73e-01; gl24 c2.11e-03 m1.92e-01; gl32 c8.32e-05 m1.92e-01; sob16384 c9.14e-02 m2.26e-01; lat256 c2.18e+00 m2.36e+00; smol8 c2.43e+01 m2.45e+01
+[140.5s] same-grid references done, worst residual 9.90e-11
+[146.4s] ARM tensor_R512: same-grid worst 1.3724% median 0.7219% its 28 reasons {'0': 2, '1': 0, '2': 0, '3': 0, '4': 1598}
+[157.4s] ARM lat4096_R512: same-grid worst 9.5539% median 3.4562% its 27 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[167.4s] ARM lat8192_R512: same-grid worst 9.5760% median 3.4563% its 27 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[178.3s] ARM lat16384_R512: same-grid worst 9.5711% median 3.4564% its 27 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[188.8s] ARM lat32768_R512: same-grid worst 9.5710% median 3.4564% its 27 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[198.0s] ARM kor16381_R512: same-grid worst 9.5708% median 3.4564% its 27 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[204.7s] ARM gl16_R512: same-grid worst 9.2926% median 3.4203% its 26 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[213.2s] ARM gl24_R512: same-grid worst 9.5689% median 3.4564% its 27 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[222.2s] ARM gl32_R512: same-grid worst 9.5712% median 3.4564% its 27 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[229.7s] ARM sob16384_R512: same-grid worst 9.5439% median 3.4760% its 26 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[237.3s] ARM lat256_R512: same-grid worst 41.6171% median 12.1209% its 28 reasons {'0': 1, '1': 0, '2': 0, '3': 0, '4': 1599}
+[245.2s] ARM smol8_R512: same-grid worst 40.1574% median 22.5881% its 35 reasons {'0': 121, '1': 0, '2': 0, '3': 0, '4': 1479}
+[327.9s] ARM dense_R512: same-grid worst 1.3724% median 0.7219% its 28 reasons {'0': 2, '1': 0, '2': 0, '3': 0, '4': 1598}
+[329.8s] ARM tensor_R256: same-grid worst 2.2607% median 0.8399% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[337.0s] ARM lat4096_R256: same-grid worst 9.6852% median 3.4572% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[343.8s] ARM lat8192_R256: same-grid worst 9.6837% median 3.4574% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[351.1s] ARM lat16384_R256: same-grid worst 9.6834% median 3.4574% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[359.3s] ARM lat32768_R256: same-grid worst 9.6833% median 3.4574% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[365.8s] ARM kor16381_R256: same-grid worst 9.6823% median 3.4574% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[371.6s] ARM gl16_R256: same-grid worst 9.6061% median 3.4529% its 26 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[378.9s] ARM gl24_R256: same-grid worst 9.6836% median 3.4574% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[386.1s] ARM gl32_R256: same-grid worst 9.6833% median 3.4574% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[392.6s] ARM sob16384_R256: same-grid worst 9.8223% median 3.4711% its 26 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[399.8s] ARM lat256_R256: same-grid worst 30.5147% median 10.8617% its 26 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[406.4s] ARM smol8_R256: same-grid worst 45.8379% median 19.5234% its 33 reasons {'0': 192, '1': 0, '2': 0, '3': 0, '4': 1408}
+[448.6s] ARM dense_R256: same-grid worst 2.2606% median 0.8399% its 27 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[455.2s] FOM fom_dt0.005_nt0.01_lt0.1: same-grid worst 20.4796%
+[460.8s] FOM fom_dt0.005_nt0.001_lt0.1: same-grid worst 0.8146%
+[465.5s] FOM fom_dt0.01_nt0.01_lt0.1: same-grid worst 1.2155%
+[470.3s] FOM fom_dt0.01_nt0.001_lt0.1: same-grid worst 1.3771%
+[474.9s] FOM fom_dt0.025_nt0.01_lt0.1: same-grid worst 4.9144%
+[479.4s] FOM fom_dt0.025_nt0.001_lt0.1: same-grid worst 4.9115%
+[514.0s] timing phase A1 done (1152 invocations)
+[519.6s] timing phase B done (288 invocations)
+[552.6s] timing phase A2 done (1152 invocations)
+[552.6s] timing gates drift 1.024 neighbour 1.0167971164360254 / 0.997864297952311 determinism 0.00e+00
+[555.1s] TIME tensor_R512: 47.83 ms (Ju 1.049 ms)
+[555.1s] TIME lat4096_R512: 19.85 ms (Ju 0.268 ms)
+[555.1s] TIME lat8192_R512: 25.62 ms (Ju 0.434 ms)
+[555.1s] TIME lat16384_R512: 36.72 ms (Ju 0.778 ms)
+[555.1s] TIME lat32768_R512: 59.14 ms (Ju 1.469 ms)
+[555.1s] TIME kor16381_R512: 38.41 ms (Ju 0.934 ms)
+[555.1s] TIME gl16_R512: 19.55 ms (Ju 0.278 ms)
+[555.1s] TIME gl24_R512: 33.21 ms (Ju 0.670 ms)
+[555.1s] TIME gl32_R512: 59.12 ms (Ju 1.491 ms)
+[555.1s] TIME sob16384_R512: 36.49 ms (Ju 0.830 ms)
+[555.1s] TIME lat256_R512: 14.99 ms (Ju 0.114 ms)
+[555.1s] TIME smol8_R512: 23.02 ms (Ju 0.208 ms)
+[555.1s] TIME tensor_R256: 12.08 ms (Ju 0.209 ms)
+[555.1s] TIME lat4096_R256: 10.69 ms (Ju 0.179 ms)
+[555.1s] TIME lat8192_R256: 13.04 ms (Ju 0.247 ms)
+[555.1s] TIME lat16384_R256: 17.69 ms (Ju 0.385 ms)
+[555.1s] TIME lat32768_R256: 26.30 ms (Ju 0.653 ms)
+[555.1s] TIME kor16381_R256: 18.60 ms (Ju 0.462 ms)
+[555.1s] TIME gl16_R256: 10.65 ms (Ju 0.181 ms)
+[555.1s] TIME gl24_R256: 16.19 ms (Ju 0.344 ms)
+[555.1s] TIME gl32_R256: 26.49 ms (Ju 0.651 ms)
+[555.1s] TIME sob16384_R256: 17.61 ms (Ju 0.387 ms)
+[555.1s] TIME lat256_R256: 7.22 ms (Ju 0.100 ms)
+[555.1s] TIME smol8_R256: 12.03 ms (Ju 0.153 ms)
+[555.1s] TIME fom_dt0.005_nt0.01_lt0.1: 15.29 ms
+[555.1s] TIME fom_dt0.005_nt0.001_lt0.1: 19.14 ms
+[555.1s] TIME fom_dt0.01_nt0.01_lt0.1: 7.71 ms
+[555.1s] TIME fom_dt0.01_nt0.001_lt0.1: 13.11 ms
+[555.1s] TIME fom_dt0.025_nt0.01_lt0.1: 3.89 ms
+[555.1s] TIME fom_dt0.025_nt0.001_lt0.1: 6.78 ms
+[4247.1s] REFINED tensor_R512: worst 10.2186% median 3.3842%
+[4247.1s] REFINED lat4096_R512: worst 3.0234% median 1.1185%
+[4247.1s] REFINED lat8192_R512: worst 3.2029% median 1.1169%
+[4247.1s] REFINED lat16384_R512: worst 3.1606% median 1.1175%
+[4247.1s] REFINED lat32768_R512: worst 3.1650% median 1.1175%
+[4247.1s] REFINED kor16381_R512: worst 3.1696% median 1.1173%
+[4247.1s] REFINED gl16_R512: worst 3.2034% median 1.3022%
+[4247.1s] REFINED gl24_R512: worst 3.1641% median 1.1174%
+[4247.1s] REFINED gl32_R512: worst 3.1655% median 1.1175%
+[4247.1s] REFINED sob16384_R512: worst 3.2254% median 1.2312%
+[4247.1s] REFINED lat256_R512: worst 47.6763% median 13.2673%
+[4247.1s] REFINED smol8_R512: worst 46.9751% median 24.3955%
+[4247.1s] REFINED dense_R512: worst 10.2186% median 3.3842%
+[4247.1s] REFINED tensor_R256: worst 10.4381% median 3.4018%
+[4247.1s] REFINED lat4096_R256: worst 4.7121% median 1.2513%
+[4247.1s] REFINED lat8192_R256: worst 4.6974% median 1.2514%
+[4247.1s] REFINED lat16384_R256: worst 4.7029% median 1.2513%
+[4247.1s] REFINED lat32768_R256: worst 4.7026% median 1.2513%
+[4247.1s] REFINED kor16381_R256: worst 4.7015% median 1.2513%
+[4247.1s] REFINED gl16_R256: worst 4.6951% median 1.2666%
+[4247.1s] REFINED gl24_R256: worst 4.7025% median 1.2512%
+[4247.1s] REFINED gl32_R256: worst 4.7027% median 1.2513%
+[4247.1s] REFINED sob16384_R256: worst 4.7463% median 1.3289%
+[4247.1s] REFINED lat256_R256: worst 34.7673% median 10.7598%
+[4247.1s] REFINED smol8_R256: worst 49.6666% median 21.5095%
+[4247.1s] REFINED dense_R256: worst 10.4382% median 3.4018%
+[4247.1s] REFINED fom_dt0.005_nt0.01_lt0.1: worst 20.2860%
+[4247.1s] REFINED fom_dt0.005_nt0.001_lt0.1: worst 9.6542%
+[4247.1s] REFINED fom_dt0.01_nt0.01_lt0.1: worst 9.9450%
+[4247.1s] REFINED fom_dt0.01_nt0.001_lt0.1: worst 10.1872%
+[4247.1s] REFINED fom_dt0.025_nt0.01_lt0.1: worst 11.9002%
+[4247.1s] REFINED fom_dt0.025_nt0.001_lt0.1: worst 11.9580%
+PANEL COMPLETE
+ALL-DONE

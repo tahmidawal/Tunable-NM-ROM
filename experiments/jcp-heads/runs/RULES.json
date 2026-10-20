@@ -1,0 +1,766 @@
+{
+ "source": {
+  "job": "5581241",
+  "commit": "74a042add28d2745cc870304561df97a01c853d0",
+  "gpu": "NVIDIA A100 80GB PCIe"
+ },
+ "groups": {
+  "H4": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss48",
+    "qp": "gauss64",
+    "qpp": "gauss96",
+    "passing_arms": [
+     "H4s0",
+     "H4s1",
+     "H4s2"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 3,
+     "min_pass": 2
+    }
+   ]
+  },
+  "H8": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "H8s1",
+     "H8s2"
+    ],
+    "failing_arms": [
+     "H8s0"
+    ]
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 2,
+     "min_pass": 2
+    }
+   ]
+  },
+  "H16": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "H16s0",
+     "H16s1",
+     "H16s2"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 3,
+     "min_pass": 2
+    }
+   ]
+  },
+  "H32": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "H32s1",
+     "H32s2"
+    ],
+    "failing_arms": [
+     "H32s0"
+    ]
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 2,
+     "min_pass": 2
+    }
+   ]
+  },
+  "H4m128": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss48",
+    "qp": "gauss64",
+    "qpp": "gauss96",
+    "passing_arms": [
+     "H4s1m128",
+     "H4s2m128"
+    ],
+    "failing_arms": [
+     "H4s0m128"
+    ]
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 2,
+     "min_pass": 2
+    }
+   ]
+  },
+  "H8m128": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "H8s0m128",
+     "H8s1m128",
+     "H8s2m128"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 3,
+     "min_pass": 2
+    }
+   ]
+  },
+  "H16m128": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "H16s0m128",
+     "H16s1m128",
+     "H16s2m128"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 2
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 3,
+     "min_pass": 2
+    }
+   ]
+  },
+  "Hinc": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "Hinc"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L4": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss24",
+    "qp": "gauss32",
+    "qpp": "gauss48",
+    "passing_arms": [
+     "L4"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L8": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss24",
+    "qp": "gauss32",
+    "qpp": "gauss48",
+    "passing_arms": [
+     "L8"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L16": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss48",
+    "qp": "gauss64",
+    "qpp": "gauss96",
+    "passing_arms": [
+     "L16"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L32": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss48",
+    "qp": "gauss64",
+    "qpp": "gauss96",
+    "passing_arms": [
+     "L32"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L64": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss48",
+    "qp": "gauss64",
+    "qpp": "gauss96",
+    "passing_arms": [
+     "L64"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L128": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "L128"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L256": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "L256"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L384": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "L384"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss64",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss96",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L4m128": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss24",
+    "qp": "gauss32",
+    "qpp": "gauss48",
+    "passing_arms": [
+     "L4m128"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L8m128": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss24",
+    "qp": "gauss32",
+    "qpp": "gauss48",
+    "passing_arms": [
+     "L8m128"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  },
+  "L16m128": {
+   "status": "selected",
+   "chosen": {
+    "main": "gauss48",
+    "qp": "gauss64",
+    "qpp": "gauss96",
+    "passing_arms": [
+     "L16m128"
+    ],
+    "failing_arms": []
+   },
+   "trail": [
+    {
+     "rule": "gauss16",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss24",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss32",
+     "n_pass": 0,
+     "min_pass": 1
+    },
+    {
+     "rule": "gauss48",
+     "n_pass": 1,
+     "min_pass": 1
+    }
+   ]
+  }
+ },
+ "verification": {
+  "structure": {
+   "H4": true,
+   "H8": true,
+   "H16": true,
+   "H32": true,
+   "H4m128": true,
+   "H8m128": true,
+   "H16m128": true,
+   "Hinc": true,
+   "L4": true,
+   "L8": true,
+   "L16": true,
+   "L32": true,
+   "L64": true,
+   "L128": true,
+   "L256": true,
+   "L384": true,
+   "L4m128": true,
+   "L8m128": true,
+   "L16m128": true
+  },
+  "recomputed": {
+   "H4": "gauss48",
+   "H8": "gauss96",
+   "H16": "gauss96",
+   "H32": "gauss96",
+   "H4m128": "gauss48",
+   "H8m128": "gauss96",
+   "H16m128": "gauss96",
+   "Hinc": "gauss96",
+   "L4": "gauss24",
+   "L8": "gauss24",
+   "L16": "gauss48",
+   "L32": "gauss48",
+   "L64": "gauss48",
+   "L128": "gauss96",
+   "L256": "gauss96",
+   "L384": "gauss96",
+   "L4m128": "gauss24",
+   "L8m128": "gauss24",
+   "L16m128": "gauss48"
+  }
+ }
+}

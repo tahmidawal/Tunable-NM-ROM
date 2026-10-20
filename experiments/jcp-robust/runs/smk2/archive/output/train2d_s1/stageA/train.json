@@ -1,0 +1,176 @@
+{
+ "arm": "base",
+ "sigma": 4.0,
+ "lam_sob": 0.0,
+ "nodes": 256,
+ "seed": 1,
+ "steps": 3000,
+ "recipe": {
+  "K": 16,
+  "R": 512,
+  "steps": 300000,
+  "lr": 0.001,
+  "p_sub": 4096,
+  "wd": 1e-05,
+  "ema_decay": 0.999,
+  "full_last": 10000,
+  "lam_orth": 0.0001,
+  "max_snaps": 16384,
+  "t_early": 5,
+  "seed": 0,
+  "arch": {
+   "n_ff": 128,
+   "g_hidden": 1024,
+   "h_hidden": 256
+  }
+ },
+ "commit": "39c00e1e37c9a0b2f3c220711c8dcd7b90ee958e",
+ "job_id": "6072695",
+ "backend": "gpu",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "jax_version": "0.10.2",
+ "precision": "highest",
+ "generator_sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+ "sep_common_sha256": "1f1c27961967189a9c58d50e855ab245e668cf309baf500d8b4b120d0313b97f",
+ "complete": true,
+ "data": {
+  "n_traj": 576,
+  "T": 51,
+  "n_states": 16384,
+  "n_points": 64516,
+  "max_fom_rel_residual": 9.998217878495552e-13,
+  "fingerprint": {
+   "sum": 200814620.48749176,
+   "sumsq": 102201588.76752055,
+   "shape": [
+    576,
+    51,
+    65536
+   ]
+  },
+  "pick_sha256": "61615ea74184eca03c78e07c444d188e9bcb9f770e311e6c66483baa6a08b5dc",
+  "data_sha256": "fb95690ba87e81427ff657aa71a0a878368038d87a81590dc4ac3e40c47d8d3d",
+  "seconds": 120.94571471214294,
+  "R0_fingerprint_matches_r3a": true,
+  "fd_target_uncertainty": {
+   "median": 0.0003816813460779617,
+   "p90": 0.001606813072586792,
+   "max": 0.4636345655004941
+  }
+ },
+ "R2a_checked": false,
+ "train": {
+  "final_rel_mse": 0.010010975348764915,
+  "final_grad_rel_mse": 0.0,
+  "steps": 3000,
+  "steps_done": 3000,
+  "lr": 0.001,
+  "lam_orth": 0.0001,
+  "weight_decay": 1e-05,
+  "p_sub": 4096,
+  "ema_decay": 0.999,
+  "full_last": 500,
+  "used_ema": false,
+  "recon_raw_mean": 0.13161920569544572,
+  "recon_ema_mean": 0.24739424802458293,
+  "seconds": 228.451242685318,
+  "recon_rel_l2_mean": 0.13161920569544572,
+  "recon_rel_l2_max": 1.1751580397788493,
+  "n_snapshots": 16384,
+  "n_points": 64516,
+  "lam_sob": 0.0,
+  "sob_states": 2048,
+  "grad_norm_ms": 0.0,
+  "history": [
+   {
+    "step": 1,
+    "rel_mse": 2.577755021857576,
+    "grad_rel_mse": 0.0,
+    "seconds": 13.16881251335144
+   },
+   {
+    "step": 500,
+    "rel_mse": 0.07764873277762588,
+    "grad_rel_mse": 0.0,
+    "seconds": 24.935181379318237
+   },
+   {
+    "step": 1000,
+    "rel_mse": 0.02536248412285566,
+    "grad_rel_mse": 0.0,
+    "seconds": 36.76076936721802
+   },
+   {
+    "step": 1500,
+    "rel_mse": 0.015139562083826946,
+    "grad_rel_mse": 0.0,
+    "seconds": 48.60712718963623
+   },
+   {
+    "step": 2000,
+    "rel_mse": 0.011568875942158004,
+    "grad_rel_mse": 0.0,
+    "seconds": 60.46730709075928
+   },
+   {
+    "step": 2500,
+    "rel_mse": 0.010363477956008038,
+    "grad_rel_mse": 0.0,
+    "seconds": 72.34471607208252
+   },
+   {
+    "step": 3000,
+    "rel_mse": 0.010010975348764915,
+    "grad_rel_mse": 0.0,
+    "seconds": 224.5351185798645
+   }
+  ],
+  "B_init": {
+   "0": 0.736521699736142,
+   "0.25": 3.4342325613322298,
+   "0.5": 4.857128899359605,
+   "0.75": 6.511643485214111,
+   "0.9": 8.065919194468304,
+   "1": 10.940457899252266
+  },
+  "B_final": {
+   "0": 0.7464428386901748,
+   "0.25": 3.394466931091916,
+   "0.5": 4.801399561502521,
+   "0.75": 6.466575036433542,
+   "0.9": 7.981421838646805,
+   "1": 10.896503049655204
+  },
+  "R2a": []
+ },
+ "bank_sha256": "32a15d4cde160e9b5feb61b6a664d5a268db5c8c05c2d30caa9f0fa99203d37f",
+ "rotation": {
+  "construction": "make_rotation (burgers-bank-knob) with h(z_i) replaced by the least-squares coefficients of the training states on the training-mesh interior; per-row normalised",
+  "train_mesh_nodes": 256,
+  "training_states": 16384,
+  "R_G_condition_number": 1816.7001477501547,
+  "L_times_T_identity_deviation": 4.728070264963966e-13,
+  "rotated_bank_orthonormality_deviation_at_train_mesh": 4.552346842261636e-13,
+  "cumulative_training_energy": {
+   "32": 0.993467740215812,
+   "64": 0.9992420014829531,
+   "128": 0.9999650082334572,
+   "256": 0.9999996540179107,
+   "384": 0.999999994444911,
+   "512": 1.0000000000000004
+  },
+  "train_ls_floor": {
+   "mean": 0.020566954588370934,
+   "median": 0.015092815457488352,
+   "max": 0.19149530586429472
+  },
+  "trust_radius": {
+   "128": 1.5430192113968557,
+   "384": 1.543073210443443
+  },
+  "T_sha256": "d049ac1b6d18fd803cf6df89d460a76058563a373996e3666caa58350dbdd0b8",
+  "L_sha256": "1fdeeb8e74dc2339ead6face510a2122ee6e09a356b087dae8bfa09a3da598a4",
+  "file_sha256": "6854efa79ce47597a388343d7a7b19c0e19b11dd974769a338096e194764397d"
+ },
+ "seconds_total": 378.4452362060547
+}

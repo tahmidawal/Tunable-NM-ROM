@@ -1,0 +1,1024 @@
+{
+ "dimension": {
+  "2D": {
+   "C_E1_1": {
+    "admitted": true,
+    "fired": true,
+    "agree": true,
+    "flagged": true,
+    "cpu": [
+     2.457788687301929,
+     3.086373658305292,
+     3.1697668849976415,
+     3.167792846529176,
+     3.0994433269877555,
+     2.9815371933876373
+    ],
+    "job": [
+     2.457788687301939,
+     3.0863736583053125,
+     3.1697668849976774,
+     3.1677928465291862,
+     3.0994433269877657,
+     2.9815371933876658
+    ],
+    "deployed_draw_rho_tgt": [
+     0.012936192536141247,
+     9.867383954673843e-05,
+     7.999815413470821e-05,
+     0.0001395732575767675,
+     0.0001872913204228302,
+     0.00020886913342706202
+    ]
+   },
+   "C_E1_2": {
+    "raised": true,
+    "message": "rule identity mismatch: role d holds fib4181s1, claimed fib4181",
+    "fired": true,
+    "holder": "fib4181s1",
+    "claimed": "fib4181"
+   },
+   "G_E1_3": [
+    true,
+    true,
+    true
+   ],
+   "G_E1_1": [
+    true,
+    true,
+    true
+   ]
+  },
+  "3D": {
+   "C_E1_1": {
+    "admitted": true,
+    "fired": true,
+    "agree": true,
+    "flagged": true,
+    "M_job": 1027,
+    "M_cpu": 1027
+   },
+   "C_E1_2": {
+    "raised": true,
+    "fired": true,
+    "message": "rule identity mismatch: table lat8192s1 claimed as lat8192",
+    "true_claim_passes": true
+   },
+   "G_E1_3": {
+    "rule": "lat8192s0",
+    "max_rel_dev": 0.0,
+    "passed": true
+   }
+  }
+ },
+ "rows": [
+  {
+   "dim": "2D",
+   "mesh": 256,
+   "config": "R128|fib4181|LSPG_BE_1",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "inconclusive",
+    "failures": 1,
+    "n": 16,
+    "cp_upper_all": 0.2639573972885685,
+    "cp_upper_fresh": 0.2793961936128765,
+    "failed_draws": [
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      5,
+      5,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 256,
+   "config": "R128|fib4181|LSPG_BE_2",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "fragile",
+    "failures": 2,
+    "n": 16,
+    "cp_upper_all": 0.34382519922958943,
+    "cp_upper_fresh": 0.36344176554140206,
+    "failed_draws": [
+     4,
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      6,
+      6,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 256,
+   "config": "R128|fib4181|LSPG_BE_2.5",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "fragile",
+    "failures": 3,
+    "n": 16,
+    "cp_upper_all": 0.4165722807061528,
+    "cp_upper_fresh": 0.43978443598155603,
+    "failed_draws": [
+     3,
+     4,
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      6,
+      6,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 256,
+   "config": "R128|fib4181|LSPG_CNR_1",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "inconclusive",
+    "failures": 1,
+    "n": 16,
+    "cp_upper_all": 0.2639573972885685,
+    "cp_upper_fresh": 0.2793961936128765,
+    "failed_draws": [
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      4,
+      4,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 256,
+   "config": "R128|fib4181|GAL_CN_1",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 256,
+   "config": "R128|fib4181|GAL_CN_2",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 256,
+   "config": "R128|fib4181|GAL_CN_5",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 1024,
+   "config": "R128|fib4181|LSPG_BE_1",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "inconclusive",
+    "failures": 1,
+    "n": 16,
+    "cp_upper_all": 0.2639573972885685,
+    "cp_upper_fresh": 0.2793961936128765,
+    "failed_draws": [
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      5,
+      5,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 1024,
+   "config": "R128|fib4181|LSPG_BE_2",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "fragile",
+    "failures": 2,
+    "n": 16,
+    "cp_upper_all": 0.34382519922958943,
+    "cp_upper_fresh": 0.36344176554140206,
+    "failed_draws": [
+     4,
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      6,
+      6,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 1024,
+   "config": "R128|fib4181|LSPG_BE_2.5",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "fragile",
+    "failures": 2,
+    "n": 16,
+    "cp_upper_all": 0.34382519922958943,
+    "cp_upper_fresh": 0.36344176554140206,
+    "failed_draws": [
+     4,
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      6,
+      6,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 1024,
+   "config": "R128|fib4181|LSPG_CNR_1",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "inconclusive",
+    "failures": 1,
+    "n": 16,
+    "cp_upper_all": 0.2639573972885685,
+    "cp_upper_fresh": 0.2793961936128765,
+    "failed_draws": [
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      3,
+      3,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 1024,
+   "config": "R128|fib4181|GAL_CN_1",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 1024,
+   "config": "R128|fib4181|GAL_CN_2",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 1024,
+   "config": "R128|fib4181|GAL_CN_5",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 4096,
+   "config": "R128|fib4181|LSPG_BE_1",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "inconclusive",
+    "failures": 1,
+    "n": 16,
+    "cp_upper_all": 0.2639573972885685,
+    "cp_upper_fresh": 0.2793961936128765,
+    "failed_draws": [
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      5,
+      5,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 4096,
+   "config": "R128|fib4181|LSPG_BE_2",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "fragile",
+    "failures": 2,
+    "n": 16,
+    "cp_upper_all": 0.34382519922958943,
+    "cp_upper_fresh": 0.36344176554140206,
+    "failed_draws": [
+     4,
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      6,
+      6,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 4096,
+   "config": "R128|fib4181|LSPG_BE_2.5",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "fragile",
+    "failures": 3,
+    "n": 16,
+    "cp_upper_all": 0.4165722807061528,
+    "cp_upper_fresh": 0.43978443598155603,
+    "failed_draws": [
+     3,
+     4,
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      6,
+      6,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 4096,
+   "config": "R128|fib4181|LSPG_CNR_1",
+   "label": "verdict",
+   "H_E1a": {
+    "label": "inconclusive",
+    "failures": 1,
+    "n": 16,
+    "cp_upper_all": 0.2639573972885685,
+    "cp_upper_fresh": 0.2793961936128765,
+    "failed_draws": [
+     6
+    ]
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      3,
+      3,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 1.9039104879771983e-05
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 38,
+    "outside": [],
+    "margin_fallback_cases": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 38
+  },
+  {
+   "dim": "2D",
+   "mesh": 4096,
+   "config": "R128|fib4181|GAL_CN_1",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 4096,
+   "config": "R128|fib4181|GAL_CN_2",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "2D",
+   "mesh": 4096,
+   "config": "R128|fib4181|GAL_CN_5",
+   "label": "diagnostic (GAL-CN): no verdict",
+   "H_E1": null,
+   "descriptive": "diagnostic (GAL-CN): no verdict"
+  },
+  {
+   "dim": "3D",
+   "config": "E1-3D-a|W256|qn|BDF2|0.025|k4",
+   "supplementary": false,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      9,
+      9,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
+  },
+  {
+   "dim": "3D",
+   "config": "E1-3D-b|W512|qn|BDF2|0.025|k4",
+   "supplementary": false,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "atypically unfavourable",
+    "stats": {
+     "D": [
+      16,
+      16,
+      "unfavourable"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
+  },
+  {
+   "dim": "3D",
+   "config": "E1-3D-c|W512|qn|CN|0.025|k4",
+   "supplementary": true,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      9,
+      9,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
+  },
+  {
+   "dim": "3D",
+   "config": "E1-3D-d|M2_512|qn|BDF2|0.025|k4",
+   "supplementary": true,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      10,
+      10,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
+  }
+ ]
+}

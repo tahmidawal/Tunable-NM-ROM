@@ -1,0 +1,21 @@
+jax_backend=cpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 5.0s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 9.8s
+SETUP 74.7
+[bigtables n=65 R=512] slab 0/63 0.3s
+[bigtables n=66 R=512] slab 0/64 0.2s
+G5 M2|512 {'M': 2052, 'M_ref': 2052, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 2.155722419759169e-15, 'pass': True, 'K7_rel': 0.02352929179785104, 'K7_fires': True}
+RUN M2_512|gl24|mf|n65 qn|CN|0.025|k4 5.2s valid True nonst 0 / 20 93.7
+RUN M2_512|gl24|mf|n65 ad|LSPG|CN|0.025|tight 9.6s valid True nonst 0 / 0 103.4
+RUN M2_512|gl24|mf|n65 ad|LSPG|CN|0.025|tighter 10.0s valid True nonst 0 / 0 113.4
+FOM fd|UB|L64|0.01|t1 converged True median e 0.08054167886328163 141.4
+FOM ps|N16|0.01 converged True median e 0.005334157115029891 142.5
+TIMING mesh|L64|b 2 valid True 163.2
+[bigtables n=129 R=512] slab 0/127 0.4s
+[bigtables n=129 R=512] slab 64/127 21.2s
+RUN M2_512|gl24|mf|n129 qn|CN|0.025|k4 5.1s valid True nonst 0 / 20 214.5
+RUN M2_512|gl24|mf|n129 ad|LSPG|CN|0.025|tight 9.6s valid True nonst 0 / 0 224.1
+RUN M2_512|gl24|mf|n129 ad|LSPG|CN|0.025|tighter 10.1s valid True nonst 0 / 0 234.2
+FOM fd|UB|L128|0.01|t1 converged True median e 0.05122438299797089 509.1
+TIMING mesh|L128|b 1 valid True 648.1
+S3RUN COMPLETE

@@ -1,0 +1,21 @@
+host=pax011 source_commit=997ed439c562fe79e5b5489bb9b4a74d9f865d40
+0, NVIDIA H200, GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2, 575.57.08, 143771 MiB, 345 MHz, 3201 MHz, 700.00 W
+10.235.106.22:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+allocated CUDA_VISIBLE_DEVICES=0
+jax_backend=gpu gpu_index=0
+STEP r2acc configs/e2v2b.json 2026-10-20T06:48:42Z
+jax_backend=gpu x64=True precision=highest
+RULE R128 sel LSPG_BE_1 72.7
+RULE R128 sel LSPG_CNR_1 92.0
+RULE R128 dep LSPG_BE_1 120.0
+RULE R128 dep LSPG_CNR_1 139.1
+RULE R256 sel LSPG_BE_1 181.2
+RULE R256 sel LSPG_CNR_1 202.2
+RULE R256 dep LSPG_BE_1 231.4
+RULE R256 dep LSPG_CNR_1 253.3
+RULE R384 sel LSPG_BE_1 302.6
+RULE R384 sel LSPG_CNR_1 330.2
+RULE R384 dep LSPG_BE_1 362.9
+RULE R384 dep LSPG_CNR_1 388.1
+R2ACC COMPLETE 388.3
+ALL-DONE

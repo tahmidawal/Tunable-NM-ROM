@@ -1,0 +1,24 @@
+{
+ "attempt": "smk1",
+ "gpu": "h200",
+ "gpus": 1,
+ "time_limit": 2.0,
+ "time_limit_hours": 2.0,
+ "groups": [
+  [
+   {
+    "driver": "r2acc",
+    "config": "configs/smk1m1024.json"
+   },
+   {
+    "driver": "e1run3d",
+    "config": "configs/smk13d.json"
+   },
+   {
+    "driver": "e5time",
+    "config": "configs/e5smk1.json"
+   }
+  ]
+ ],
+ "commit": "4680fe2026dca8c28f5b56777fa9c9c5f986c003"
+}

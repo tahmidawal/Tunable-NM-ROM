@@ -1,0 +1,43 @@
+{
+ "mesh": 129,
+ "job_id": "4737005",
+ "checks": {
+  "restricted16_errors_max_abs_diff": 2.220446049250313e-16,
+  "decode16_max_rel": 9.655716317098183e-15,
+  "refined_in_job_vs_numpy": 2.220446049250313e-16,
+  "refined_in_job_present": true,
+  "refined_in_job_compared": 968,
+  "rho_R512": {
+   "offmesh_rule_rel": 6.691482338744229e-16,
+   "continuum_gl64_vs_saved_gl80_rel": 2.1967583171909917e-08,
+   "mesh_target_rel": 1.9419481081786737e-16,
+   "rho_cont_states_numpy_max": 0.06927314476561314,
+   "rho_cont_recorded_worst": 0.10497738773788536,
+   "rho_numpy_le_recorded_worst": true
+  },
+  "rho_R256": {
+   "offmesh_rule_rel": 1.4342481696171259e-15,
+   "continuum_gl64_vs_saved_gl80_rel": 8.348016357998247e-09,
+   "mesh_target_rel": 3.8863239368715937e-16,
+   "rho_cont_states_numpy_max": 0.015470214556558682,
+   "rho_cont_recorded_worst": 0.028705111678550957,
+   "rho_numpy_le_recorded_worst": true
+  },
+  "rho_worst_reproduced_R512_max_rel": 5.914727805607057e-13,
+  "rho_worst_reproduced_R256_max_rel": 6.810156141526876e-12,
+  "control_swapped_reference_diff": 0.7134600045955978,
+  "control_perturbed_diff": 4.683941192770713e-05
+ },
+ "ok": {
+  "restricted16": true,
+  "decode16": true,
+  "refined": true,
+  "rho_R512": true,
+  "rho_R256": true,
+  "rho_worst_reproduced_R512": true,
+  "rho_worst_reproduced_R256": true,
+  "control_swapped_detected": true,
+  "control_perturbed_detected": true
+ },
+ "all_pass": true
+}

@@ -1,0 +1,32 @@
+{
+ "attempt": "ref2a",
+ "runs": [
+  "ref/refrun:configs/ref2a_dev6.json",
+  "ref/refrun:configs/ref2a_val32.json"
+ ],
+ "configs": {
+  "configs/ref2a_dev6.json": "f1017ace8e5a60776c3b4cb4cd939628d2acddc2e1c55fe935023f04460d4460",
+  "configs/ref2a_val32.json": "5741cdc2929444a095ded3e334b8dd88e41a643674429ccecd6dacb8dd441942"
+ },
+ "gpu": "h200",
+ "projection_hours": 3.5322315584367847,
+ "memory": {
+  "ref/refrun:configs/ref2a_dev6.json": {
+   "measured_peak_GiB_L8192": 17.62118935585022,
+   "refinement_estimate_GiB": 39.647676050662994,
+   "device_GiB": 128.6171875
+  },
+  "ref/refrun:configs/ref2a_val32.json": {
+   "measured_peak_GiB_L8192": 17.62118935585022,
+   "refinement_estimate_GiB": 39.647676050662994,
+   "device_GiB": 128.6171875
+  }
+ },
+ "time_limit_hours": 5.5,
+ "detail": {
+  "ref/refrun:configs/ref2a_dev6.json": 0.6301855362237742,
+  "ref/refrun:configs/ref2a_val32.json": 0.7074386811499588,
+  "worst_path_reserve": 2.194607341063052
+ },
+ "label": "estimate from the smokes (not a bound)"
+}

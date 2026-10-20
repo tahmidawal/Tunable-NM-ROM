@@ -1,0 +1,78 @@
+host=pax007 source_commit=0cb714d186a870c6622fb19fd8c28e6353c4d1d9
+NVIDIA A100 80GB PCIe, GPU-ef0906da-ee15-780e-c19b-39842e183c5c, 81920 MiB
+10.235.106.36:/projects/paralab  4.6T  1.2T  3.4T  27% /cluster/tufts/paralab
+jax_backend=gpu
+[     0.4s] jax_backend=gpu devices=[CudaDevice(id=0)]
+[    31.2s]    oursP1: L=256 settings ['R128'] in 24.3s
+[    35.5s]    ours 256|R128|BE: complete G-ours=True
+[    37.7s]    oursP1: L=256 settings ['R128'] in 2.3s
+[    38.3s]    ours 256|R128|CNR: complete G-ours=True
+[    44.9s]    oursP1: L=256 settings ['R256'] in 6.6s
+[    50.0s]    ours 256|R256|BE: complete G-ours=True
+[    52.2s]    oursP1: L=256 settings ['R256'] in 2.2s
+[    53.2s]    ours 256|R256|CNR: complete G-ours=True
+[    59.7s]    oursP1: L=256 settings ['R384'] in 6.5s
+[    65.7s]    ours 256|R384|BE: complete G-ours=True
+[    68.0s]    oursP1: L=256 settings ['R384'] in 2.3s
+[    69.8s]    ours 256|R384|CNR: complete G-ours=True
+[    72.0s]    oursP1: L=256 settings ['R384nom'] in 2.3s
+[    73.6s]    ours 256|R384nom|BE: complete G-ours=True
+[    75.8s]    oursP1: L=256 settings ['R384nom'] in 2.2s
+[    77.5s]    ours 256|R384nom|CNR: complete G-ours=True
+[    89.2s]    ecsw|128|k16|BE|0.005|common|central: q1=True W=0.07431 replay=0.0e+00
+[    96.4s]    ecsw|128|k16|CNR|0.005|common|central: q1=True W=0.07031 replay=0.0e+00
+[   105.3s]    ecsw|128|k4|BE|0.005|common|central: q1=True W=0.1065 replay=0.0e+00
+[   115.7s]    ecsw|128|k8|BE|0.005|common|central: q1=True W=0.0741 replay=0.0e+00
+[   122.5s]    ecsw|128|k8|CNR|0.005|common|central: q1=True W=0.07014 replay=0.0e+00
+[   146.6s]    ecsw|256|k16|CNR|0.005|common|central: q1=True W=0.02741 replay=5.6e-15
+[   162.9s]    ecsw|256|k4|BE|0.005|common|central: q1=True W=0.03589 replay=1.9e-13
+[   176.1s]    ecsw|256|k4|CNR|0.005|common|central: q1=True W=0.03261 replay=8.5e-15
+[   196.1s]    ecsw|256|k8|CNR|0.005|common|central: q1=True W=0.0274 replay=5.7e-15
+[   204.4s]    ecsw|32|k16|BE|0.005|common|central: q1=True W=0.2944 replay=0.0e+00
+[   209.3s]    ecsw|32|k16|CNR|0.005|common|central: q1=True W=0.291 replay=0.0e+00
+[   218.1s]    ecsw|32|k4|BE|0.005|common|central: q1=True W=0.3051 replay=0.0e+00
+[   223.3s]    ecsw|32|k4|CNR|0.005|common|central: q1=False W=0.3015 replay=0.0e+00
+[   231.7s]    ecsw|32|k8|BE|0.005|common|central: q1=True W=0.2952 replay=3.5e-14
+[   236.8s]    ecsw|32|k8|CNR|0.005|common|central: q1=True W=0.2918 replay=2.2e-14
+[   262.4s]    ecsw|384|k4|BE|0.005|common|central: q1=True W=0.02953 replay=3.9e-14
+[   283.8s]    ecsw|384|k4|CNR|0.005|common|central: q1=True W=0.01499 replay=9.1e-15
+[   299.9s]    ecsw|384|k4|CNR|0.005|native|central: q1=True W=0.01499 replay=8.6e-15
+[   332.5s]    ecsw|384|k8|CNR|0.005|common|central: q1=True W=0.01341 replay=6.7e-15
+[   353.7s]    ecsw|384|k8|CNR|0.005|native|central: q1=True W=0.0134 replay=4.6e-15
+[   388.7s]    ecsw|512|k4|CNR|0.005|common|central: q1=True W=0.03242 replay=1.6e-14
+[   401.1s]    ecsw|64|k16|BE|0.005|common|central: q1=True W=0.1623 replay=1.5e-14
+[   412.3s]    ecsw|64|k4|BE|0.005|common|central: q1=True W=0.1742 replay=5.0e-14
+[   420.6s]    ecsw|64|k4|CNR|0.005|common|central: q1=True W=0.1727 replay=9.0e-14
+[   432.5s]    ecsw|64|k8|BE|0.005|common|central: q1=True W=0.1626 replay=1.9e-14
+[   441.4s]    ecsw|64|k8|CNR|0.005|common|central: q1=True W=0.1608 replay=8.9e-15
+[   667.5s]    none|384|-|CNR|0.005|common|central: q1=True W=0.01341 replay=4.6e-16
+[   684.1s]    qdeim|128|256|CNR|0.005|common|central: q1=True W=0.08061 replay=5.2e-16
+[   701.1s]    qdeim|128|512|CNR|0.005|common|central: q1=True W=0.07006 replay=0.0e+00
+[   726.5s]    qdeim|256|1024|CNR|0.005|common|central: q1=True W=0.02731 replay=3.5e-16
+[   750.6s]    qdeim|256|512|CNR|0.005|common|central: q1=True W=0.03006 replay=4.1e-16
+[   764.4s]    qdeim|32|128|BE|0.005|common|central: q1=True W=0.2948 replay=0.0e+00
+[   774.2s]    qdeim|32|128|CNR|0.005|common|central: q1=True W=0.2914 replay=0.0e+00
+[   788.1s]    qdeim|32|32|BE|0.005|common|central: q1=True W=0.3967 replay=2.0e-15
+[   798.2s]    qdeim|32|32|CNR|0.005|common|central: q1=False W=0.4527 replay=1.2e-15
+[   812.6s]    qdeim|32|64|BE|0.005|common|central: q1=True W=0.3019 replay=0.0e+00
+[   823.0s]    qdeim|32|64|CNR|0.005|common|central: q1=True W=0.2989 replay=2.9e-15
+[   861.6s]    qdeim|384|1536|CNR|0.005|common|central: q1=True W=0.01341 replay=8.1e-16
+[   884.8s]    qdeim|384|1536|CNR|0.005|native|central: q1=True W=0.01341 replay=2.3e-16
+[   917.1s]    qdeim|384|384|CNR|0.005|common|central: q1=True W=0.04975 replay=3.5e-16
+[   950.9s]    qdeim|384|768|CNR|0.005|common|central: q1=True W=0.01405 replay=2.3e-16
+[   969.5s]    qdeim|384|768|CNR|0.005|native|central: q1=True W=0.01404 replay=3.5e-16
+[  1012.7s]    qdeim|512|1024|CNR|0.005|common|central: q1=True W=0.008379 replay=1.7e-16
+[  1038.5s]    qdeim|512|1024|CNR|0.005|native|central: q1=True W=0.008374 replay=0.0e+00
+[  1056.1s]    qdeim|64|128|CNR|0.005|common|central: q1=True W=0.1713 replay=2.2e-15
+[  1073.8s]    qdeim|64|64|BE|0.005|common|central: q1=True W=0.2021 replay=1.1e-15
+[  1089.7s]    oursP1: L=256 settings ['R128'] in 2.3s
+[  1631.9s]    oursP1: L=256 settings ['R128'] in 2.3s
+[  2174.9s]    oursP1: L=256 settings ['R256'] in 2.3s
+[  2868.8s]    oursP1: L=256 settings ['R256'] in 2.3s
+[  3561.8s]    oursP1: L=256 settings ['R384'] in 2.5s
+[  4434.7s]    oursP1: L=256 settings ['R384'] in 2.4s
+[  5307.0s]    oursP1: L=256 settings ['R384nom'] in 2.3s
+[  6180.9s]    oursP1: L=256 settings ['R384nom'] in 2.3s
+[  7058.4s] done
+driver_exit=0
+ALL-DONE

@@ -1,0 +1,166 @@
+{
+ "attempt": "m3a",
+ "driver": "d3run",
+ "mode": "m3a",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W256",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  }
+ ],
+ "extra_rules": [
+  "gl16",
+  "gl20",
+  "gl24",
+  "gl32",
+  "gl40",
+  "gl48",
+  "gl56",
+  "gl64",
+  "lat131072",
+  "lat16384",
+  "lat262144",
+  "lat32768",
+  "lat65536",
+  "lat8192"
+ ],
+ "blocks": [
+  {
+   "kind": "ladder",
+   "setting": "M2_512",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "gl16",
+    "gl20",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "gl56",
+    "gl64"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "M2_512",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W256",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "gl16",
+    "gl20",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "gl56",
+    "gl64"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W256",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "gl16",
+    "gl20",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "gl56",
+    "gl64"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  }
+ ]
+}

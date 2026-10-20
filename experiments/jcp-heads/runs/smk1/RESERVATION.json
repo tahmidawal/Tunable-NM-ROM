@@ -1,0 +1,20 @@
+{
+ "attempt": "smk1",
+ "gpu": "a100-80G",
+ "time_limit_hours": 2.0,
+ "runs": [
+  [
+   "htrain",
+   "configs/smk1train.json"
+  ],
+  [
+   "hacc",
+   "configs/smk1acc.json"
+  ],
+  [
+   "hrule",
+   "configs/smk1rule.json"
+  ]
+ ],
+ "commit": "0b6e6fc8fa5227d1c58a77ea86bd4946b0230116"
+}

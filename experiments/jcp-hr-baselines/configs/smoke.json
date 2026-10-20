@@ -1,0 +1,87 @@
+{
+ "wall_seconds": 3300,
+ "cells": [
+  {
+   "d": 2,
+   "L": 1024,
+   "n_traj": 192,
+   "rmax": 512,
+   "ranks": [
+    128,
+    512
+   ],
+   "pmax": 2048,
+   "rs": 128,
+   "ps": 256,
+   "kappas": [
+    2,
+    4
+   ],
+   "kappa_run": 4,
+   "cases": [
+    0,
+    1
+   ],
+   "under_fixtures": [
+    2,
+    3
+   ],
+   "n_adequacy": 8,
+   "n_probe": 4,
+   "options": [
+    [
+     "BE",
+     0.005
+    ],
+    [
+     "CNR",
+     0.005
+    ]
+   ],
+   "pilot_support": 1024
+  },
+  {
+   "d": 3,
+   "L": 64,
+   "n_traj": 342,
+   "rmax": 1024,
+   "ranks": [
+    256,
+    1024
+   ],
+   "pmax": 4096,
+   "rs": 256,
+   "ps": 512,
+   "kappas": [
+    2,
+    4
+   ],
+   "kappa_run": 4,
+   "cases": [
+    0,
+    1
+   ],
+   "under_fixtures": [
+    5,
+    0
+   ],
+   "n_adequacy": 8,
+   "n_probe": 4,
+   "options": [
+    [
+     "BE",
+     0.01
+    ],
+    [
+     "CN",
+     0.01
+    ],
+    [
+     "BDF2",
+     0.025
+    ]
+   ],
+   "pilot_support": 1024
+  }
+ ]
+}

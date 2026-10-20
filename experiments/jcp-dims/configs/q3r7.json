@@ -1,0 +1,122 @@
+{
+ "attempt": "q3r7",
+ "driver": "d3run",
+ "mode": "q3r7",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W256",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W768",
+   "bank": "W1024",
+   "Rp": 768,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  }
+ ],
+ "extra_rules": [
+  "gl16",
+  "gl20",
+  "gl24",
+  "gl32",
+  "gl40",
+  "gl48",
+  "gl56",
+  "gl64",
+  "gl80",
+  "lat131072",
+  "lat16384",
+  "lat262144",
+  "lat32768",
+  "lat65536",
+  "lat8192"
+ ],
+ "blocks": [
+  {
+   "kind": "rounds",
+   "members": [
+    {
+     "key": "M2_512|gl32|qn|BDF2|0.025|kinf",
+     "qp": "gl40",
+     "qpp": "gl48"
+    },
+    {
+     "key": "M2_512|gl24|qn|BDF2|0.01|k4",
+     "qp": "gl32",
+     "qpp": "gl40"
+    },
+    {
+     "key": "M2_512|gl24|qn|BE|0.01|k4",
+     "qp": "gl32",
+     "qpp": "gl40"
+    },
+    {
+     "key": "W512|lat32768|qn|CN|0.016666667|k4",
+     "qp": "lat65536",
+     "qpp": "lat131072"
+    },
+    {
+     "key": "M2_512|lat16384|fs|CN|0.0125|K2",
+     "qp": "lat32768",
+     "qpp": "lat65536"
+    },
+    {
+     "key": "W768|lat32768|fs|CN|0.0125|K2",
+     "qp": "lat65536",
+     "qpp": "lat131072"
+    },
+    {
+     "key": "W1024|lat32768|fs|CN|0.0125|K2",
+     "qp": "lat65536",
+     "qpp": "lat131072"
+    }
+   ],
+   "control": {
+    "key": "W512|lat8192|fs|BE|0.01|K1",
+    "qp": "lat16384",
+    "qpp": null
+   }
+  }
+ ]
+}

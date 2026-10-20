@@ -1,0 +1,7 @@
+STEP sh train3d/run_seed.sh  pilot /cluster/tufts/paralab/tawal01/jcp-robust/smk3/output/train3d_pilot 2026-10-19T18:46:51Z
+[train3d pilot 2026-10-19T14:46:51-04:00] host=pax008 config=/cluster/tufts/paralab/tawal01/jcp-robust/smk3/experiments/jcp-robust/train3d/configs/train_r1024_pilot.json jobroot=/cluster/tufts/paralab/tawal01/jcp-robust/smk3 commit=e4419e67b29917ecaae06cc5aaaaf24b31635234
+NVIDIA H200, GPU-d115e0d0-3aa6-50ba-f7e0-cd2c2b54a5ae, 143771 MiB, 575.57.08
+jax_backend=gpu
+PROVENANCE sha256 OK
+config differs from the incumbent only in ['bank_steps', 'model_seed', 'subset_seed', 'warmup']
+[train3d pilot 2026-10-19T14:46:52-04:00] train2w.py (via memwrap.py: unchanged script, device peak recorded)

@@ -1,0 +1,510 @@
+{
+ "mode": "single-job smoke (no cross-type pooling)",
+ "job": "runs/smk4/archive/output/e5time_e5smk4",
+ "type": "A100-80G",
+ "checks": {
+  "GPU type is the expected A100-80G (job, contract)": {
+   "ok": true,
+   "detail": {
+    "job": "A100-80G",
+    "contract": "A100-80G"
+   }
+  },
+  "job status ok (complete, GPU type, backend, sources, contract, populations, identities, equivalence, gates)": {
+   "ok": true,
+   "detail": {
+    "status": "ok",
+    "reasons": []
+   }
+  },
+  "registered triplet populations complete (P-cost, P-cross)": {
+   "ok": true,
+   "detail": {
+    "pcost_triplets": {
+     "required": 40,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": [],
+     "ok": true
+    },
+    "pcross_triplets": {
+     "required": 50,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": [],
+     "ok": true,
+     "pinned_ok": true
+    },
+    "equivalence": {
+     "required": 4,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": [],
+     "ok": true,
+     "failed": []
+    }
+   }
+  },
+  "C-E5.1 doubled/single case-median in [1.6, 2.4] for every doubled subject": {
+   "ok": true,
+   "detail": {
+    "subjects": {
+     "1024|R128|fib4181|frozen|BE": {
+      "case_medians": {
+       "dev6|0": 1.9717288855577135,
+       "dev6|1": 1.9577250287918964,
+       "dev6|2": 1.9693289167140589,
+       "dev6|3": 1.9728007111540142,
+       "dev6|4": 1.9719439189982797
+      },
+      "median": 1.9717288855577135,
+      "fires": true,
+      "n_cases": 5
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "case_medians": {
+       "dev6|0": 2.0199855829780704,
+       "dev6|1": 2.0085336578021042,
+       "dev6|2": 2.0035169639363923,
+       "dev6|3": 2.018257276452929,
+       "dev6|4": 2.0142373332629435
+      },
+      "median": 2.0142373332629435,
+      "fires": true,
+      "n_cases": 5
+     }
+    },
+    "fires": true,
+    "complete": true,
+    "population": {
+     "required": 20,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": []
+    },
+    "invalid_rows": []
+   }
+  },
+  "executing device resolved; telemetry complete (start, between-panels, end)": {
+   "ok": true,
+   "detail": {
+    "uuid": "GPU-74d9bc51-9598-c873-88b7-cf67f1886e14",
+    "problems": {
+     "start": [],
+     "between-panels": [],
+     "end": [],
+     "pcross-after-warm": []
+    }
+   }
+  },
+  "P-cost: >= 5 cases with >= 2 valid reps for both subjects at 256^2 and 1024^2": {
+   "ok": true,
+   "detail": {
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4"
+    ]
+   }
+  },
+  "P-cross: >= 5 cases with >= 2 valid reps for both ROMs and every pinned comparator": {
+   "ok": true,
+   "detail": {
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4"
+    ],
+    "subjects": [
+     "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "fd|CC|L1024|0.005|t1",
+     "fd|CC|L1024|0.0125|t2",
+     "ps|N96|0.0125"
+    ]
+   }
+  },
+  "fixture q1: injected x1.5 hardware-dependent, null consistent [1, 1]": {
+   "ok": true,
+   "detail": {
+    "injected": {
+     "phi": 1.5,
+     "lo": 1.5,
+     "hi": 1.5000000000000002,
+     "label": "hardware-dependent",
+     "q_num": 0.22666022593458135,
+     "q_den": 0.1511068172897209
+    },
+    "null": {
+     "phi": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "label": "hardware-consistent",
+     "q_num": 0.1511068172897209,
+     "q_den": 0.1511068172897209
+    },
+    "reason": null
+   }
+  },
+  "fixture q2: injected x1.5 hardware-dependent, null consistent [1, 1]": {
+   "ok": true,
+   "detail": {
+    "injected": {
+     "phi": 1.5,
+     "lo": 1.5,
+     "hi": 1.5000000000000002,
+     "label": "hardware-dependent",
+     "q_num": 1.5,
+     "q_den": 1.0
+    },
+    "null": {
+     "phi": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "label": "hardware-consistent",
+     "q_num": 1.0,
+     "q_den": 1.0
+    },
+    "reason": null
+   }
+  },
+  "fixture q3: injected x1.5 hardware-dependent, null consistent [1, 1]": {
+   "ok": true,
+   "detail": {
+    "injected": {
+     "phi": 1.5000000000000004,
+     "lo": 1.4999999999999998,
+     "hi": 1.5000000000000004,
+     "label": "hardware-dependent",
+     "q_num": 0.35162569303296076,
+     "q_den": 0.23441712868864045
+    },
+    "null": {
+     "phi": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "label": "hardware-consistent",
+     "q_num": 0.23441712868864045,
+     "q_den": 0.23441712868864045
+    },
+    "reason": null
+   }
+  },
+  "G-E5.1 reproduction of P1c (complete registered set, <= 1e-10)": {
+   "ok": true,
+   "detail": {
+    "passed": true,
+    "rows": {
+     "1024|R128|fib4181|frozen|BE": {
+      "file": "S_1024_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 5,
+      "max_rel": 1.4786073680915814e-15,
+      "ref_sha256": "ed306ef0e2e0af5795460920dde4340f0b7d912a8365f92574d463b3e5a4d43b",
+      "bitwise": false
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "file": "S_1024_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 5,
+      "max_rel": 1.6235755518298014e-15,
+      "ref_sha256": "2528646547d99755b975a0a1a3058feb2b18fd934bd48478abad3807165c7f10",
+      "bitwise": false
+     },
+     "256|R128|fib4181|frozen|BE": {
+      "file": "S_256_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 5,
+      "max_rel": 1.0582578096411893e-15,
+      "ref_sha256": "5c539f6f92d9de178ee4b98b9999001b93a8f37b17e24a118b8a071e691f2653",
+      "bitwise": false
+     },
+     "256|R384|gauss128|frozen|CNR": {
+      "file": "S_256_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 5,
+      "max_rel": 1.3916772643173524e-15,
+      "ref_sha256": "98d002f8f38e9a7923daa6a3c379e8da3694ed440ef21ee00e70ab29377cfe27",
+      "bitwise": false
+     }
+    },
+    "tol": 1e-10,
+    "subjects": [
+     "1024|R128|fib4181|frozen|BE",
+     "1024|R384|gauss128|frozen|CNR",
+     "256|R128|fib4181|frozen|BE",
+     "256|R384|gauss128|frozen|CNR"
+    ],
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4"
+    ]
+   }
+  },
+  "P-cross gate G-RR": {
+   "ok": true,
+   "detail": true
+  },
+  "P-cross gate G-FR": {
+   "ok": true,
+   "detail": true
+  },
+  "P-cross gate A-valid": {
+   "ok": true,
+   "detail": true
+  }
+ },
+ "ALL": true,
+ "per_job": {
+  "status": "ok",
+  "h_cost_n2": {
+   "R128|fib4181|frozen|BE": {
+    "two_mesh": {
+     "R": 1.0174199744671033,
+     "medians": {
+      "256": 0.15373909418871307,
+      "1024": 0.1511068172897209
+     },
+     "undefined_fraction": 0.0,
+     "invalid_fraction": [
+      0.0,
+      0.0
+     ],
+     "ci": [
+      1.000200746814899,
+      1.0348226759601136
+     ],
+     "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+     "procedure_outcome": "pass"
+    },
+    "label": "pass"
+   },
+   "R384|gauss128|frozen|CNR": {
+    "two_mesh": {
+     "R": 1.0015009908734636,
+     "medians": {
+      "256": 1.0014810117008752,
+      "1024": 1.0029842255593853
+     },
+     "undefined_fraction": 0.0,
+     "invalid_fraction": [
+      0.0,
+      0.0
+     ],
+     "ci": [
+      1.0000105715150818,
+      1.0041737683618952
+     ],
+     "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+     "procedure_outcome": "pass"
+    },
+    "label": "pass"
+   }
+  },
+  "q1": {
+   "R384|gauss128|frozen|CNR|256": 1.0014810117008752,
+   "R128|fib4181|frozen|BE|256": 0.15373909418871307,
+   "R128|fib4181|frozen|BE|1024": 0.1511068172897209,
+   "R384|gauss128|frozen|CNR|1024": 1.0029842255593853
+  },
+  "q2": {
+   "R128|fib4181|frozen|BE": 1.0174199744671033,
+   "R384|gauss128|frozen|CNR": 1.0015009908734636
+  },
+  "S": {
+   "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+    "status": "ok",
+    "n": 5,
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4"
+    ],
+    "S": 0.23441712868864045,
+    "lo": 0.22468872285471864,
+    "hi": 0.24128954395365812,
+    "cost_rom": 0.1507235448710141,
+    "cost_fom": 0.03533218061443659,
+    "faster": "FOM faster",
+    "two_x_class": "ROM < 2x",
+    "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+    "label": "fail",
+    "suffix": "|H|union|joint"
+   },
+   "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+    "status": "ok",
+    "n": 5,
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4"
+    ],
+    "S": 5.994923735626016,
+    "lo": 4.829755254840539,
+    "hi": 9.565526934980968,
+    "cost_rom": 0.1507235448710141,
+    "cost_fom": 0.9035761566649354,
+    "faster": "ROM faster",
+    "two_x_class": "ROM >= 2x",
+    "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+    "label": "pass",
+    "suffix": "|H|CC|same_mesh"
+   },
+   "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+    "status": "ok",
+    "n": 5,
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4"
+    ],
+    "S": 0.035364778749486396,
+    "lo": 0.034977376050485606,
+    "hi": 0.036350120037362085,
+    "cost_rom": 0.9990782316134161,
+    "cost_fom": 0.03533218061443659,
+    "faster": "FOM faster",
+    "two_x_class": "ROM < 2x",
+    "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+    "label": "fail",
+    "suffix": "|H|union|joint"
+   },
+   "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+    "status": "ok",
+    "n": 5,
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4"
+    ],
+    "S": 2.0627667260504228,
+    "lo": 1.7659450138461652,
+    "hi": 3.0859908890406786,
+    "cost_rom": 0.9990782316134161,
+    "cost_fom": 2.0608653328934525,
+    "faster": "ROM faster",
+    "two_x_class": "unresolved",
+    "two_x": "inconclusive",
+    "label": "inconclusive",
+    "suffix": "|H|CC|same_mesh"
+   }
+  },
+  "seconds_evolve": {
+   "256|R384|gauss128|frozen|CNR": 0.21217210600025282,
+   "256|R128|fib4181|frozen|BE": 0.032347576500797004,
+   "1024|R128|fib4181|frozen|BE": 0.032072891000098025,
+   "1024|R384|gauss128|frozen|CNR": 0.21240444100021705
+  },
+  "seconds_B_cross": {
+   "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": 0.03224066799975844,
+   "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": 0.21449010650030687,
+   "fd|CC|L1024|0.0125|t2": 0.19479299549948337,
+   "fd|CC|L1024|0.005|t1": 0.43929572549950535,
+   "ps|N96|0.0125": 0.007558107500699407
+  },
+  "c_e5_1": {
+   "subjects": {
+    "1024|R128|fib4181|frozen|BE": {
+     "case_medians": {
+      "dev6|0": 1.9717288855577135,
+      "dev6|1": 1.9577250287918964,
+      "dev6|2": 1.9693289167140589,
+      "dev6|3": 1.9728007111540142,
+      "dev6|4": 1.9719439189982797
+     },
+     "median": 1.9717288855577135,
+     "fires": true,
+     "n_cases": 5
+    },
+    "1024|R384|gauss128|frozen|CNR": {
+     "case_medians": {
+      "dev6|0": 2.0199855829780704,
+      "dev6|1": 2.0085336578021042,
+      "dev6|2": 2.0035169639363923,
+      "dev6|3": 2.018257276452929,
+      "dev6|4": 2.0142373332629435
+     },
+     "median": 2.0142373332629435,
+     "fires": true,
+     "n_cases": 5
+    }
+   },
+   "fires": true,
+   "complete": true,
+   "population": {
+    "required": 20,
+    "missing": [],
+    "n_missing": 0,
+    "duplicates": [],
+    "extra": []
+   },
+   "invalid_rows": []
+  },
+  "cross_gates": {
+   "G-RR": true,
+   "A-valid": true,
+   "G-FR": true,
+   "scope": "repro checked on the dev6 cases (fom2d target_e / ladder_e exist for dev6 only)"
+  }
+ },
+ "g_e5_2_descriptive": {
+  "role": "descriptive (not an acceptance veto)",
+  "result": {
+   "cells": {
+    "R384|gauss128|frozen|CNR|256": {
+     "job": 1.0014810117008752,
+     "p1": 1.0061323585478967,
+     "p1_lo": 1.0017357647363556,
+     "p1_hi": 1.0097035905392837,
+     "within": false
+    },
+    "R128|fib4181|frozen|BE|256": {
+     "job": 0.15373909418871307,
+     "p1": 0.25425783996719864,
+     "p1_lo": 0.25189725500453375,
+     "p1_hi": 0.2600899375215786,
+     "within": false
+    },
+    "R128|fib4181|frozen|BE|1024": {
+     "job": 0.1511068172897209,
+     "p1": 0.2521039888059275,
+     "p1_lo": 0.24936628179747833,
+     "p1_hi": 0.2588679709652619,
+     "within": false
+    },
+    "R384|gauss128|frozen|CNR|1024": {
+     "job": 1.0029842255593853,
+     "p1": 1.015766327881908,
+     "p1_lo": 1.000204970666511,
+     "p1_hi": 1.0292983412751515,
+     "within": true
+    }
+   },
+   "p1_job_id": "5352971",
+   "p1_gpu": "NVIDIA H200"
+  }
+ }
+}

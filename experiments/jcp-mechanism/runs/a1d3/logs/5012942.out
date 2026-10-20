@@ -1,0 +1,53 @@
+host=pax010 source_commit=719ecef5248fead2c55d76ddc0b6c993ee113284
+NVIDIA H200, GPU-4a83be81-02ff-dbdc-5bd9-cc82c722caa3, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T 1000G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[6.1s] [mesh 65] bank rows [(256, 250047), (256, 250047)] 4.5s
+[9.3s] [mesh 65] Gram cond 1.0000, A (2052, 512) 7.7s
+[15.3s] [mesh 65] tensor (2052, 512, 512) 13.8s
+[17.6s] tables done; gates {'gram_condition': 1.000000000000512, 'tensor_vs_direct': 2.6879416094824603e-16}
+[28.2s] rules built; G1 2.10e-08
+[52.3s] R512 M2052 nodes gates G2a_nodes_B_vs_mesh_bank_R512 0.00e+00, G2b_nodes_P_vs_Phi_R512 6.99e-15, G2c_nodes_value_gemm_vs_dst_R512 1.95e-15, G2c_nodes_jacobian_gemm_vs_dst_R512 1.28e-14, G3_nodes_jacobian_vs_jvp_R512 0.00e+00, G3_nodes_adv_half_Jc_R512 2.63e-16
+[77.0s] RHO R512: check 3.62e-08; G4a 5.13e-13; dense_upwind c1.95e-01/1.29e-01 m0.00e+00; tensor c1.95e-01/1.29e-01 m1.80e-05; gl24 c1.00e-02/1.19e-03 m1.93e-01; lat4096 c8.30e-02/7.83e-03 m2.04e-01; lat32768 c8.62e-05/1.99e-06 m1.93e-01; nodes c1.79e-04/2.70e-06 m1.93e-01
+[81.1s] ARM tensor_R512: refined worst 10.2186% median 3.3842%; same-grid65 worst 1.3724%; its 28; 4s
+[88.0s] ARM gl24_R512: refined worst 3.1641% median 1.1174%; same-grid65 worst 9.5689%; its 27; 7s
+[94.0s] ARM lat4096_R512: refined worst 3.0234% median 1.1185%; same-grid65 worst 9.5539%; its 27; 6s
+[102.3s] ARM lat32768_R512: refined worst 3.1650% median 1.1175%; same-grid65 worst 9.5710%; its 27; 8s
+[130.0s] ARM nodes_R512: refined worst 3.1656% median 1.1175%; same-grid65 worst 9.5711%; its 27; 28s
+[138.7s] RHO nodes-reached R512: dense_upwind c2.19e-01; tensor c2.19e-01; gl24 c2.58e-02; lat4096 c1.83e-01; lat32768 c1.05e-03; nodes c2.80e-04
+[149.2s] ADAPTIVE R512: tensor 1.53e-15; lat32768 2.10e-15; nodes 1.34e-15
+[159.5s] R256 M1027 nodes gates G2a_nodes_B_vs_mesh_bank_R256 0.00e+00, G2b_nodes_P_vs_Phi_R256 6.36e-15, G2c_nodes_value_gemm_vs_dst_R256 1.31e-15, G2c_nodes_jacobian_gemm_vs_dst_R256 3.67e-15, G3_nodes_jacobian_vs_jvp_R256 0.00e+00, G3_nodes_adv_half_Jc_R256 2.28e-16
+[182.7s] RHO R256: check 1.54e-08; G4a 2.05e-12; dense_upwind c1.94e-01/1.29e-01 m0.00e+00; tensor c1.94e-01/1.29e-01 m1.91e-04; gl24 c2.11e-03/3.34e-04 m1.92e-01; lat4096 c2.37e-02/1.27e-03 m1.92e-01; lat32768 c2.91e-05/7.08e-07 m1.92e-01; nodes c8.82e-05/1.98e-06 m1.92e-01
+[184.1s] ARM tensor_R256: refined worst 10.4381% median 3.4018%; same-grid65 worst 2.2607%; its 27; 1s
+[189.8s] ARM gl24_R256: refined worst 4.7025% median 1.2512%; same-grid65 worst 9.6836%; its 27; 6s
+[195.0s] ARM lat4096_R256: refined worst 4.7121% median 1.2513%; same-grid65 worst 9.6852%; its 27; 5s
+[202.2s] ARM lat32768_R256: refined worst 4.7026% median 1.2513%; same-grid65 worst 9.6833%; its 27; 7s
+[219.5s] ARM nodes_R256: refined worst 4.7027% median 1.2513%; same-grid65 worst 9.6834%; its 27; 17s
+[228.6s] RHO nodes-reached R256: dense_upwind c2.12e-01; tensor c2.12e-01; gl24 c2.30e-03; lat4096 c2.82e-02; lat32768 c1.56e-04; nodes c1.43e-04
+[236.9s] ADAPTIVE R256: tensor 8.95e-16; lat32768 9.68e-16; nodes 1.46e-15
+A1-3D COMPLETE
+jax_backend=gpu x64=True precision=highest
+[5.5s] [mesh 129] bank rows [(256, 2048383), (256, 2048383)] 4.4s
+[10.4s] [mesh 129] Gram cond 1.0011, A (2049, 512) 9.3s
+[42.8s] [mesh 129] tensor (2049, 512, 512) 41.7s
+[45.3s] tables done; gates {'gram_condition': 1.0022780264609925, 'tensor_vs_direct': 2.399440380765301e-16}
+[57.8s] rules built; G1 2.28e-08
+[83.2s] R512 M2049 nodes gates G2a_nodes_B_vs_mesh_bank_R512 0.00e+00, G2b_nodes_P_vs_Phi_R512 7.08e-15, G2c_nodes_value_gemm_vs_dst_R512 1.80e-15, G2c_nodes_jacobian_gemm_vs_dst_R512 1.94e-15, G3_nodes_jacobian_vs_jvp_R512 0.00e+00, G3_nodes_adv_half_Jc_R512 2.17e-16
+[110.7s] RHO R512: check 8.01e-08; G4a 2.31e-13; dense_upwind c9.77e-02/6.59e-02 m0.00e+00; tensor c9.77e-02/6.59e-02 m1.69e-05; gl24 c1.27e-02/1.34e-03 m1.01e-01; lat4096 c1.05e-01/8.88e-03 m1.49e-01; lat32768 c1.41e-04/2.03e-06 m1.01e-01; nodes c1.55e-05/1.64e-07 m1.01e-01
+[115.1s] ARM tensor_R512: refined worst 6.1051% median 1.9773%; same-grid65 worst 1.8600%; its 27; 4s
+[122.6s] ARM gl24_R512: refined worst 3.1198% median 1.1243%; same-grid65 worst 5.2788%; its 27; 7s
+[129.1s] ARM lat4096_R512: refined worst 3.0085% median 1.1250%; same-grid65 worst 5.2231%; its 27; 7s
+[138.5s] ARM lat32768_R512: refined worst 3.1208% median 1.1242%; same-grid65 worst 5.2788%; its 27; 9s
+[300.1s] ARM nodes_R512: refined worst 3.1215% median 1.1242%; same-grid65 worst 5.2782%; its 27; 162s
+[310.2s] RHO nodes-reached R512: dense_upwind c1.12e-01; tensor c1.12e-01; gl24 c2.45e-02; lat4096 c1.81e-01; lat32768 c1.05e-03; nodes c1.66e-05
+[323.6s] R256 M1024 nodes gates G2a_nodes_B_vs_mesh_bank_R256 0.00e+00, G2b_nodes_P_vs_Phi_R256 6.83e-15, G2c_nodes_value_gemm_vs_dst_R256 1.03e-15, G2c_nodes_jacobian_gemm_vs_dst_R256 1.59e-15, G3_nodes_jacobian_vs_jvp_R256 0.00e+00, G3_nodes_adv_half_Jc_R256 2.49e-16
+[345.6s] RHO R256: check 2.04e-08; G4a 1.95e-13; dense_upwind c9.72e-02/6.58e-02 m0.00e+00; tensor c9.72e-02/6.58e-02 m1.87e-04; gl24 c2.46e-03/3.53e-04 m1.02e-01; lat4096 c2.87e-02/1.34e-03 m1.06e-01; lat32768 c3.64e-05/7.10e-07 m1.02e-01; nodes c6.98e-06/1.21e-07 m1.02e-01
+[347.8s] ARM tensor_R256: refined worst 6.6888% median 1.9893%; same-grid65 worst 3.1292%; its 27; 2s
+[353.6s] ARM gl24_R256: refined worst 4.6915% median 1.2502%; same-grid65 worst 5.9120%; its 27; 6s
+[358.9s] ARM lat4096_R256: refined worst 4.7010% median 1.2500%; same-grid65 worst 5.9363%; its 27; 5s
+[364.9s] ARM lat32768_R256: refined worst 4.6916% median 1.2502%; same-grid65 worst 5.9106%; its 27; 6s
+[448.1s] ARM nodes_R256: refined worst 4.6916% median 1.2502%; same-grid65 worst 5.9106%; its 27; 83s
+[456.9s] RHO nodes-reached R256: dense_upwind c1.09e-01; tensor c1.09e-01; gl24 c2.27e-03; lat4096 c2.82e-02; lat32768 c1.55e-04; nodes c8.49e-06
+A1-3D COMPLETE
+ALL-DONE

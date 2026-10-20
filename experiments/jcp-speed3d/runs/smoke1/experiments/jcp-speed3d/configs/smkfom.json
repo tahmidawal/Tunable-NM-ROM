@@ -1,0 +1,74 @@
+{
+ "attempt": "smkfom",
+ "driver": "s3run",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "dts": [
+  0.01,
+  0.0125,
+  0.016666666666666666,
+  0.025
+ ],
+ "smoke": true,
+ "case_subset": [
+  0,
+  5,
+  7
+ ],
+ "timing": {
+  "cases": 2,
+  "reps": 1,
+  "burn": 0.05,
+  "seed": 1
+ },
+ "mode": "fom",
+ "settings": [],
+ "fom": {
+  "fd": [
+   [
+    "UB",
+    64,
+    [
+     0.01
+    ]
+   ],
+   [
+    "UC",
+    64,
+    [
+     0.0125
+    ]
+   ],
+   [
+    "CC",
+    64,
+    [
+     0.0125
+    ]
+   ],
+   [
+    "UB",
+    128,
+    [
+     0.01
+    ]
+   ]
+  ],
+  "ps": {
+   "Ns": [
+    32
+   ],
+   "dts": [
+    0.01
+   ]
+  },
+  "calib_cases": [
+   0,
+   5
+  ],
+  "save_cases": [
+   0
+  ]
+ }
+}

@@ -1,0 +1,127 @@
+{
+ "job": "5012763",
+ "commit": "97add8fc5a12b6e3ffbb5fe92a91b55de1852367",
+ "checks": {
+  "A1": {
+   "passed": true
+  },
+  "A2": {
+   "compared": 1824,
+   "worst_relative": 7.657168005573479e-16,
+   "passed": true
+  },
+  "A5": {
+   "swapped_reference_worst": 206.99718145258575,
+   "perturbed_field_worst": 24.711041491859955,
+   "swapped_detected": true,
+   "perturbed_detected": true,
+   "passed": true
+  },
+  "A4": {
+   "mismatches": [],
+   "passed": true
+  },
+  "A6": {
+   "conv": {
+    "converged_R512_M2048": true,
+    "converged_R512_M1536": true,
+    "converged_R512_M1024": true,
+    "converged_R384_M1536": true,
+    "converged_R384_M1152": true,
+    "converged_R384_M768": true,
+    "converged_R256_M1024": true,
+    "converged_R256_M768": true,
+    "converged_R256_M512": true,
+    "converged_R128_M512": true,
+    "converged_R128_M384": true,
+    "converged_R128_M256": true
+   },
+   "target": {
+    "continuum_target_R512_M2048": true,
+    "continuum_target_R512_M1536": true,
+    "continuum_target_R512_M1024": true,
+    "continuum_target_R384_M1536": true,
+    "continuum_target_R384_M1152": true,
+    "continuum_target_R384_M768": true,
+    "continuum_target_R256_M1024": true,
+    "continuum_target_R256_M768": true,
+    "continuum_target_R256_M512": true,
+    "continuum_target_R128_M512": true,
+    "continuum_target_R128_M384": true,
+    "continuum_target_R128_M256": true
+   },
+   "controls": {
+    "controls_R512_M2048": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R512_M1536": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R512_M1024": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R384_M1536": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R384_M1152": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R384_M768": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R256_M1024": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R256_M768": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R256_M512": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R128_M512": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R128_M384": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R128_M256": {
+     "primary": true,
+     "secondary": true
+    }
+   },
+   "floors": {
+    "R512": true,
+    "R384": true,
+    "R256": true,
+    "R128": true
+   },
+   "timing": {
+    "R512_M2048": true,
+    "R512_M1536": true,
+    "R512_M1024": true,
+    "R384_M1536": true,
+    "R384_M1152": true,
+    "R384_M768": true,
+    "R256_M1024": true,
+    "R256_M768": true,
+    "R256_M512": true,
+    "R128_M512": true,
+    "R128_M384": true,
+    "R128_M256": true
+   },
+   "timing_valid_jobwide": true
+  }
+ },
+ "accepted": true
+}

@@ -1,0 +1,308 @@
+{
+ "tau": 0.00025,
+ "families": {
+  "lattice": [
+   "lat8192",
+   "lat16384",
+   "lat32768",
+   "lat65536",
+   "lat131072"
+  ],
+  "gauss": [
+   "gl24",
+   "gl32",
+   "gl40",
+   "gl48"
+  ]
+ },
+ "control": "lat256",
+ "selection_arms": [
+  "fs|BE|0.01|K1",
+  "fs|CN|0.025|K2"
+ ],
+ "timed_arms": [
+  "fs|BE|0.01|K1",
+  "fs|CN|0.025|K2"
+ ],
+ "posthoc": false,
+ "label": "pre-registered",
+ "inputs": [
+  {
+   "path": "runs/c3descW1024/archive/output",
+   "job_id": "5209530",
+   "gpu": "NVIDIA H200",
+   "result_sha256": "b3c3917045089c66638a02b76ec0ca43045e0791647491ce455029512a952593"
+  }
+ ],
+ "settings": {
+  "W1024": {
+   "bank": "W1024",
+   "Rp": 1024,
+   "escalation_status": "unresolved",
+   "converged": null,
+   "pairs": {
+    "gl48|gl56": {
+     "selection": "unresolved",
+     "adaptive": "fail",
+     "worst": {
+      "fs|BE|0.01|K1": 0.00017164869370230441,
+      "fs|CN|0.025|K2": 0.00018317757591458417,
+      "ad|LSPG|BE|0.01|tight": 0.00017033375927389747,
+      "ad|LSPG|CN|0.025|tight": 0.0003589263756244809
+     }
+    },
+    "gl56|gl64": {
+     "selection": "unresolved",
+     "adaptive": "fail",
+     "worst": {
+      "fs|BE|0.01|K1": 0.00011143310460008367,
+      "fs|CN|0.025|K2": 0.00011883986713584989,
+      "ad|LSPG|BE|0.01|tight": 0.00011061915352930069,
+      "ad|LSPG|CN|0.025|tight": 0.00023303052976777656
+     }
+    },
+    "gl64|gl80": {
+     "selection": "unresolved",
+     "adaptive": "fail",
+     "worst": {
+      "fs|BE|0.01|K1": 2.694246575820481e-05,
+      "fs|CN|0.025|K2": 2.8865293912617974e-05,
+      "ad|LSPG|BE|0.01|tight": 2.673904861365059e-05,
+      "ad|LSPG|CN|0.025|tight": 5.641906299104824e-05
+     }
+    }
+   },
+   "operator_check": {
+    "gl48|gl64": {
+     "worst": 0.0004523878561264849,
+     "median": 1.0659472435917798e-06,
+     "states": 320,
+     "undefined": 0,
+     "nonfinite_states_dropped": 0
+    },
+    "gl56|gl64": {
+     "worst": 0.000931788888728315,
+     "median": 7.55647829329052e-08,
+     "states": 320,
+     "undefined": 0,
+     "nonfinite_states_dropped": 0
+    },
+    "gl80|gl64": {
+     "worst": 0.0002206252827580752,
+     "median": 7.046401644185472e-09,
+     "states": 320,
+     "undefined": 0,
+     "nonfinite_states_dropped": 0
+    }
+   },
+   "fixed_vs_adaptive": {
+    "gl48|fs|BE|0.01|K1|vs|ad|LSPG|BE|0.01|tight": 3.001331656585047e-05,
+    "gl48|fs|CN|0.025|K2|vs|ad|LSPG|CN|0.025|tight": 0.23582904016403639,
+    "gl56|fs|BE|0.01|K1|vs|ad|LSPG|BE|0.01|tight": 2.970546863837273e-05,
+    "gl56|fs|CN|0.025|K2|vs|ad|LSPG|CN|0.025|tight": 0.23582894535206803,
+    "gl64|fs|BE|0.01|K1|vs|ad|LSPG|BE|0.01|tight": 2.9886389687157222e-05,
+    "gl64|fs|CN|0.025|K2|vs|ad|LSPG|CN|0.025|tight": 0.2358289290754746,
+    "gl80|fs|BE|0.01|K1|vs|ad|LSPG|BE|0.01|tight": 2.9837403299961914e-05,
+    "gl80|fs|CN|0.025|K2|vs|ad|LSPG|CN|0.025|tight": 0.2358289278689966
+   },
+   "rules": {
+    "lat8192": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 5.643943559676786e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 0.0229819133807094,
+      "within_tau": false
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23622427046805122,
+      "nonstationary": 61,
+      "steps": 640,
+      "dist_to_conv": 0.12242378372742461,
+      "within_tau": false
+     },
+     "qualifies": false
+    },
+    "lat16384": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 3.171030845038308e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 0.001613334331126333,
+      "within_tau": false
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23582383189776435,
+      "nonstationary": 60,
+      "steps": 640,
+      "dist_to_conv": 0.06630166438862758,
+      "within_tau": false
+     },
+     "qualifies": false
+    },
+    "lat32768": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 3.043922703828949e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 0.00017561555899949004,
+      "within_tau": true
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23583037329718234,
+      "nonstationary": 60,
+      "steps": 640,
+      "dist_to_conv": 0.0003391782333435646,
+      "within_tau": false
+     },
+     "qualifies": false
+    },
+    "lat65536": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 2.9701644706747893e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 7.394777178726528e-05,
+      "within_tau": true
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23582894180030733,
+      "nonstationary": 60,
+      "steps": 640,
+      "dist_to_conv": 4.323785894258004e-05,
+      "within_tau": true
+     },
+     "qualifies": false
+    },
+    "lat131072": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 2.961397002762253e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 0.00040205327124919377,
+      "within_tau": false
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23582844675100703,
+      "nonstationary": 60,
+      "steps": 640,
+      "dist_to_conv": 0.06607286537806097,
+      "within_tau": false
+     },
+     "qualifies": false
+    },
+    "gl24": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 4.001326875666509e-05,
+      "nonstationary": 0,
+      "steps": 1600,
+      "dist_to_conv": 0.01796275103555524,
+      "within_tau": false
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23394798240193798,
+      "nonstationary": 51,
+      "steps": 640,
+      "dist_to_conv": 0.06864199338904296,
+      "within_tau": false
+     },
+     "qualifies": false
+    },
+    "gl32": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 2.9805741719014407e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 0.0011526884934341198,
+      "within_tau": false
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23566448661960857,
+      "nonstationary": 60,
+      "steps": 640,
+      "dist_to_conv": 0.0015282060206551473,
+      "within_tau": false
+     },
+     "qualifies": false
+    },
+    "gl40": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 2.960235421141128e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 0.0001449704519511382,
+      "within_tau": true
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23582878998862794,
+      "nonstationary": 60,
+      "steps": 640,
+      "dist_to_conv": 0.00015551627772844898,
+      "within_tau": true
+     },
+     "qualifies": false
+    },
+    "gl48": {
+     "fs|BE|0.01|K1": {
+      "eligible": true,
+      "solver_distance": 3.001331656585047e-05,
+      "nonstationary": 2,
+      "steps": 1600,
+      "dist_to_conv": 8.762959928195685e-05,
+      "within_tau": true
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.23582904016403639,
+      "nonstationary": 60,
+      "steps": 640,
+      "dist_to_conv": 9.32896487639319e-05,
+      "within_tau": true
+     },
+     "qualifies": false
+    },
+    "lat256": {
+     "fs|BE|0.01|K1": {
+      "eligible": false,
+      "solver_distance": 0.022474038049908367,
+      "nonstationary": 0,
+      "steps": 1600,
+      "dist_to_conv": 0.5424732298580066,
+      "within_tau": false
+     },
+     "fs|CN|0.025|K2": {
+      "eligible": false,
+      "solver_distance": 0.1238236814526687,
+      "nonstationary": 134,
+      "steps": 640,
+      "dist_to_conv": 0.60336627311513,
+      "within_tau": false
+     },
+     "qualifies": false
+    }
+   },
+   "ladder_baseline": {
+    "rule": "gl80",
+    "diagnostic_only": true
+   },
+   "status": "unavailable (no converged rule)",
+   "deployed": null
+  }
+ }
+}

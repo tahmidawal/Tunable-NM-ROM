@@ -1,0 +1,16 @@
+{
+ "attempt": "refB1",
+ "gpu": "a100-80G",
+ "time_limit_hours": 4.25,
+ "runs": [
+  [
+   "refjob",
+   "configs/ref-B1.json"
+  ],
+  [
+   "refslim",
+   "configs/slim-B1.json"
+  ]
+ ],
+ "commit": "0c581ba20e53397917ef96961d51a19edd66f526"
+}

@@ -1,0 +1,102 @@
+{
+ "jobs": [
+  {
+   "attempt": "smoke1",
+   "slurm_id": "5299842",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 24,
+   "commit": "9f8093d64",
+   "role": "cluster smoke bundle (A4.1): test_s3 x2, test_fom, smkgrid, smkfom, smkprof, smkmesh, acceptance",
+   "submitted": "2026-10-15",
+   "status": "complete, collected; acceptance PASS (336 gates; pilot 15 gates); K4, K9 fire offline"
+  },
+  {
+   "attempt": "smkmesh384",
+   "slurm_id": "5299848",
+   "gpu": "h200",
+   "mem": "240G",
+   "hours": 24,
+   "commit": "9f8093d64",
+   "role": "L=384 pilot (A1.9), separate job",
+   "submitted": "2026-10-15",
+   "status": "complete, collected; acceptance PASS (336 gates; pilot 15 gates); K4, K9 fire offline"
+  },
+  {
+   "attempt": "g2",
+   "slurm_id": "5301264",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 24,
+   "commit": "6f61b238a",
+   "role": "grid W512 + W768",
+   "status": "complete (sacct COMPLETED), collected 2026-10-17 by resumed lane agent; OUTPUTS.sha256 verified; jax_backend=gpu in log"
+  },
+  {
+   "attempt": "g3",
+   "slurm_id": "5301270",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 24,
+   "commit": "6f61b238a",
+   "role": "grid W1024",
+   "status": "complete (sacct COMPLETED), collected 2026-10-17 by resumed lane agent; OUTPUTS.sha256 verified; jax_backend=gpu in log; stderr: JAX UserWarning \"large amount of constants captured during lowering (3.26GB)\" - no crash, recorded as a caveat"
+  },
+  {
+   "attempt": "f1",
+   "slurm_id": "5301274",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 12,
+   "commit": "6f61b238a",
+   "role": "FOM accuracy ladder",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "g1",
+   "slurm_id": "5301580",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 24,
+   "commit": "6f61b238a",
+   "role": "grid M2_512 + W256",
+   "status": "complete (sacct COMPLETED), collected 2026-10-17 by resumed lane agent; OUTPUTS.sha256 verified; jax_backend=gpu in log"
+  },
+  {
+   "attempt": "p1",
+   "slurm_id": "5352455",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 24,
+   "commit": "b4b2cfe4b",
+   "role": "profile, mesh-free + K5, batching + G4/K6, A1.5 confirmation panels (31 pairs), conv-rule sensitivity, reduced-rule ADT",
+   "submitted": "2026-10-18 (UTC)",
+   "audit": "audits/codex-job-p1m1-1.md, -2.md (SUBMIT)",
+   "status": "complete (sacct COMPLETED, 2849 s), collected 2026-10-18; OUTPUTS.sha256 verified; jax_backend=gpu"
+  },
+  {
+   "attempt": "m1",
+   "slurm_id": "5352457",
+   "gpu": "h200",
+   "mem": "240G",
+   "hours": 24,
+   "commit": "b4b2cfe4b",
+   "role": "route 4: tables n=65..385 (G5/K7), ROM mf + ADT per mesh, same-mesh FOM calibration/accuracy/timing, A6 match panels",
+   "submitted": "2026-10-18 (UTC)",
+   "audit": "audits/codex-job-p1m1-1.md, -2.md (SUBMIT)",
+   "status": "complete (sacct COMPLETED, 3189 s), collected 2026-10-18; OUTPUTS.sha256 verified; jax_backend=gpu"
+  },
+  {
+   "attempt": "r1",
+   "slurm_id": "5353792",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 12,
+   "commit": "c79a3e0b8",
+   "role": "A1.11 replication on 923901 (E0 test32): 52 frozen ROM configs (+4 mf paths), 3 matched FOMs, 3 comparator panels",
+   "submitted": "2026-10-18 (UTC)",
+   "audit": "audits/codex-job-r1-1.md (DO NOT SUBMIT), -2.md (SUBMIT)",
+   "status": "complete (sacct COMPLETED, 996 s), collected 2026-10-18; OUTPUTS.sha256 verified; jax_backend=gpu"
+  }
+ ]
+}

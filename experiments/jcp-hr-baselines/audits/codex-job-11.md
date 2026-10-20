@@ -1,0 +1,7 @@
+1. **WRONG — A43.4’s broader budget/defer-order argument.** The reservation protects **5917329’s current attempt**: 16.163 + 8.5 + 4 = **28.663 ≤ 30 GPU-h**. It does not protect a retry needed to complete higher-priority work. Counterexample: the 3D attempt fails after 4 h, while s2d256a consumes 4 h; an 8.5 h 3D retry then totals **32.663 h**, versus **28.663 h** if s2d256a had waited. Dropping the already-consumed 256² cell cannot recover its expenditure. A30.1 requires cell deferral **before submission**; A28.5/A34.2 charge retries separately. Thus A43.4’s final sentence does not preserve the claimed defer order.
+
+2. **CORRECT — Bundle unchanged since audit 10.** All **63 manifest entries** match; no unexpected files. Manifest, provenance, batch script and commit marker match pre-audit commit `1257f45fe` byte-for-byte. Manifest SHA256: `8d4041f4117c6b30dddd11fe7e07eed5be68d8369363c4e73a759f5569f2324c`.
+
+3. **CORRECT — Audit 10 items 1–5 still hold.** All **60 provenance entries** match their committed sources, allowing the injected config commit. Unchanged frozen evidence preserves audit 10’s membership/qualification findings. Projection remains **3.577421 ≤ 3.933333 h**, with unchanged passing memory bounds and batch settings. Fresh read-only remote verification matched **all 83 dependencies**, including `tune.json`. Numerical findings are carried forward from audit 10 through verified unchanged evidence.
+
+**DO-NOT-SUBMIT-s2d256a**

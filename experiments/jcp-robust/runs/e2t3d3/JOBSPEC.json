@@ -1,0 +1,24 @@
+{
+ "attempt": "e2t3d3",
+ "gpu": "h200",
+ "gpus": 1,
+ "hours": 4.0,
+ "mem": "420G",
+ "cpus": 8,
+ "production": true,
+ "mem_fraction": "0.90",
+ "groups": [
+  [
+   {
+    "sh": "train3d/run_seed.sh",
+    "args": [
+     "3",
+     "OUT/train3d_s3"
+    ],
+    "complete": "OUT/train3d_s3/SEED-COMPLETE",
+    "projection_hours": 2.6,
+    "projection_basis": "incumbent W1024 job j3b 5012847: 6,660 s on H200 x 1.4 (smk3: data generation 1.4x slower) (bank fit 4,104 s); smk3 pilot data generation measured"
+   }
+  ]
+ ]
+}

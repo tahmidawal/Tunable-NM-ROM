@@ -1,0 +1,52 @@
+/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/verdict.py:31: RuntimeWarning: overflow encountered in square
+  return np.sqrt(np.sum(a.reshape(a.shape[0], -1) ** 2, axis=1))
+acceptance {'smoke_accepted': True, 'ladders_complete': True, 'ladders_accepted': True, 'store_versions_equal': True, 'offline_agrees': True, 'calibration_agrees': True, 'controls_all_fire': True} ok
+dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L512|0.0025|t1'), 'CC': ('matched', 'fd|CC|L64|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L512|0.005|t2'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L512|0.0025|t1'), 'CC': ('matched', 'fd|CC|L64|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L512|0.005|t2'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L512|0.005|t2'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L512|0.005|t2'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|CNR|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L1024|0.00125|t1'), 'CC': ('matched', 'fd|CC|L64|0.01|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|CNR|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L512|0.00125|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|CNR|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L1024|0.00125|t1'), 'CC': ('matched', 'fd|CC|L64|0.01|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|CNR|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L512|0.00125|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|CNR|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L512|0.00125|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R128|fib4181|frozen|CNR|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L512|0.00125|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|BE|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L512|0.00125|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|BE|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L512|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|BE|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L512|0.00125|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|BE|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L512|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|BE|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L512|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|BE|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L512|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|CNR|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|CNR|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|CNR|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|CNR|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|CNR|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R256|gauss128|frozen|CNR|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|BE|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|BE|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|BE|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|BE|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|BE|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|BE|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|CNR|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|CNR|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|CNR|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|CNR|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|CNR|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|frozen|CNR|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|BE|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|BE|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|BE|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|BE|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L1024|0.0025|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|CNR|0.005|LSPG|prod@256|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|CNR|0.005|LSPG|prod@256|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|CNR|0.005|LSPG|prod@4096|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R384|gauss128|nominal|CNR|0.005|LSPG|prod@4096|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R512|gauss192|frozen|BE|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L512|0.000625|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R512|gauss192|frozen|BE|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L512|0.000625|t1'), 'CC': ('matched', 'fd|CC|L256|0.0125|t2'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R512|gauss192|frozen|CNR|0.005|LSPG|prod@1024|H {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+dn256b|R512|gauss192|frozen|CNR|0.005|LSPG|prod@1024|X {'UB': ('matched', 'fd|UB|L2048|0.000625|t1'), 'CC': ('matched', 'fd|CC|L128|0.005|t1'), 'PS': ('matched', 'ps|N48|0.0125')} union PS
+extension trigger {'UB': False, 'CC': False, 'PS': False}

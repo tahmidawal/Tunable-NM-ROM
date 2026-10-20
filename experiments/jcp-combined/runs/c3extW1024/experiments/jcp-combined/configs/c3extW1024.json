@@ -1,0 +1,32 @@
+{
+ "attempt": "c3extW1024",
+ "driver": "c3run",
+ "mode": "esc",
+ "mesh": 65,
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "refined_ref": "/cluster/tufts/paralab/tawal01/jcp-comb/c3extW1024/refs/ref_923801.npz",
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "conv_bar": 2.5e-05,
+ "settings": [
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "ext_rules": [
+    "gl80",
+    "gl96"
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 0,
+  "reps": 0,
+  "burn": 0.1,
+  "seed": 20261013
+ },
+ "common_baseline": "W512",
+ "common_baseline_fallback": "M2_512"
+}

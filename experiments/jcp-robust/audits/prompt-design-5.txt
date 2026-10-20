@@ -1,0 +1,7 @@
+You are an adversarial auditor. READ-ONLY: make no file changes anywhere, submit no jobs, run no cluster commands, never write to LAB-LOG.md or to main or any other worktree. Do not copy large arrays; if you need scratch, use at most 2 GB under /tmp/jcp-robust-audit-scratch/ and reuse it.
+
+Fifth round of the design audit of experiments/jcp-robust/DESIGN.md (lane jcp-robust: E1 randomised rules, E2 full-recipe seeds, E5 hardware). Previous rounds: audits/codex-design-1.md .. codex-design-4.md; the lane answered with Amendments A1..A4 at the end of DESIGN.md (later amendments govern). Round 4 left exactly one BLOCKING item (single-job fallback vs the every-job case intersection, prior items 19/34); A4.1 answers it and A4.2 records implementation notes.
+
+Tasks: (1) say whether A4.1 resolves the blocking item (RESOLVED / NOT RESOLVED with reason); (2) check that A4 introduces no new contradiction with the body or A1-A3 and no undefined or unattainable outcome; (3) list any remaining BLOCKING issue anywhere in the design (the design cannot answer its registered question, or a rule is undefined/contradictory). Classify everything else as IMPLEMENTATION-NOTE. Binding context: /home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-17-full-experiment-plan/campaign/briefs/COMMON-BRIEF.md and briefs/jcp-robust.md.
+
+Output: numbered items, each CORRECT / WRONG / NEEDS-RESTATEMENT with BLOCKING or IMPLEMENTATION-NOTE, file:line evidence, fix. End with an overall verdict line: READY (no BLOCKING item) or NEEDS-RESTATEMENT.

@@ -1,0 +1,90 @@
+**The design needs amendments before implementation.** The core residual algebra is sound, but several gates are underspecified, the timing protocol cannot support all advertised speed-ups, and Route 4 does not yet answer the equal-accuracy question at every mesh.
+
+This was strictly read-only. I checked the requested code and records, ran small CPU-only record/hash checks, and changed no files. All files listed in `INHERITED.json` match their recorded hashes.
+
+1. **Section 1 mathematics and cost claims — NEEDS-RESTATEMENT.**
+
+   The residual, simplified Jacobian, and matrix-free adjoint formula are correct. Because advection is homogeneous quadratic,
+   \[
+   \tfrac12J_u(c)c=P^\mathsf T[(Bc)\odot(Dc)].
+   \]
+   The quoted \(2m(M+2R')\) flops describes the adjoint product **when \(Bc,Dc\) are already available**; it excludes their construction, residual evaluation, and products with \(A\). Its formation-to-product ratio is \(MR'/(M+2R')\), approximately \(2R'/3\) when \(M=4R'\), rather than \(R'/2\). Dense formation plausibly dominates arithmetic, but GEMM versus bandwidth-bound matrix-vector performance prevents inferring its wall-time share from flop counts. The startup description is also inaccurate: [`fs3.py`](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/fs3.py) uses \(a_{\rm eff}=\lceil a\Delta t_0/\Delta t\rceil\), so startup step count decreases. In the stored W1024 CN runs, median startup **iterations** are 9 at 0.01 and 10 at 0.025; each adaptive step additionally constructs an initial and returned-state Jacobian. Source-level contraction counts, including \(J_0\), are therefore about 22 and 17 for startup, not nine. **Fix:** separate iteration counts, contraction calls, arithmetic estimates, and measured time; make Jacobian dominance an explicitly unverified hypothesis and profile it directly.
+
+2. **QN-k convergence and implementation — WRONG.**
+
+   An exact gradient with an invertible positive-definite preconditioner has the same stationary-point equation \(g=0\). It does **not** guarantee convergence, uniqueness, or convergence to ADT’s stationary point: the least-squares objective is nonlinear and generally nonconvex. The frozen-norm stopping test is mathematically definable but can stop prematurely when \(\|\widetilde J\|_F\) overestimates the current norm. Independent certification resolves that without circularity, provided failed certification rejects the configuration rather than silently repairing the timed trajectory. Implementation remains ambiguous about initial/carried/reset damping, accepted-step damping changes, acceptance predicate, retry counting, refresh state, periodic refresh after an emergency refresh, factorization after changing \(\mu\), singular factors, and zero residuals. Eligibility can still permit wrong intermediate states: it tolerates pooled failures and checks distance only at five outputs. **Fix:** replace the convergence assertion with conditional stationary-point equivalence and empirical trajectory agreement; specify executable pseudocode for every branch and counter, and explicitly limit the conclusion to the certified tolerance/output times.
+
+3. **FSP-K1 predictor and G1 — NEEDS-RESTATEMENT.**
+
+   The stated least-squares problem is correct when the coefficients are those of the **current stage** and \(F_n=\operatorname{adv}(c_n)+\nu\lambda\odot Ac_n\). Scaling makes its coefficient matrix exactly \(A\), so one QR per setting/mesh suffices. For CN, retaining the exact \(F_n\) history is essential; for BDF2’s first step, use BE coefficients. Missing history is unspecified for both advection extrapolation and cubic extrapolation, particularly because QN has no adaptive startup. Calling the predictor “second-order” uniformly is misleading: its BE specialization is not a second-order time integrator. G1 is achievable by a static disabled-candidate path that executes the original FS implementation; merely preserving algebra does not guarantee bitwise equality after changing contraction order. **Fix:** give explicit first-step/history fallbacks, candidate activation indices and tie ordering; retain the original disabled path and distinguish predictor extrapolation order from scheme order.
+
+4. **Certification, G2, eligibility and ties — WRONG.**
+
+   The proposed eligibility is **not Step 2 A6.2**. [A6.2](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/DESIGN.md:780) explicitly replaced pooled stationarity eligibility with validity plus adaptive-solve distance; it retained a stricter anchor-relative distance condition for H4. This lane may deliberately introduce a 1% certification requirement, but must disclose it as a new requirement and recompute comparator eligibility. G2 also needs an absolute tolerance near zero: FS caches/extrapolates Jacobians, so fresh recomputation need not agree to a pure relative \(10^{-9}\) at nearly stationary states. The endpoint-propagated median/worst comparison is implementable and consistent with the inherited uncertainty convention, but establishes “not resolved as worse,” not proven equal accuracy. **Fix:** distinguish inherited and new criteria, require ADT validity and a tight-versus-tighter agreement gate, define denominator regularization/nonfinite handling and mixed absolute-relative G2 tolerances. Pin the E0 manifest/status and require reference eligibility. Explicitly use `field='finest'`: [`refstore.py`](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/refstore.py:113) assigns no uncertainty to its diagnostic Richardson-extrapolated field.
+
+5. **Comparators, common baseline and T1 — WRONG.**
+
+   Ratios to C_old measured in different jobs are not automatically valid paired speed-ups against C_W768/C_W1024. Cancellation requires hardware/job effects to act as the same multiplicative factor on all workloads—unsupported when widths and arithmetic intensity differ. Also, a ratio of median ratios is generally not the median of directly paired comparator/winner ratios. H200-only allocation removes one source of variation, not this problem. T1 is useful as a gross timing control but says nothing about cross-job comparability. **Fix:** use common-baseline costs for screening, then remeasure every claimed winner against its actual comparator in one job on one physical GPU with matched cases/repetitions. Implement T1 as two separately dispatched, synchronized calls whose outputs are consumed; a single jitted expression containing duplicate calls could be optimized.
+
+6. **H1.1 classification E1–E4 — NEEDS-RESTATEMENT.**
+
+   The indicators are not causal explanations. QN-1 uses a different predictor and frozen within-step curvature, so three QN iterations do not demonstrate that FS needed three full-Jacobian sweeps. Independently evolved QN and ADT trajectories also have different histories at the same nominal step. An active trust clip or large damping can be correlated with difficulty without causing failure. Cases failing distance or validity without non-stationary steps leave the “half the steps” denominator undefined; “case fails eligibility” also conflicts with pooled eligibility. **Fix:** define the selected cases and empty-set outcome, label E1–E3 descriptive indicators, and replay each problematic step with identical saved history and initial candidate. If causal attribution is intended, add controlled extra-sweep, trust-radius and damping interventions. Record within-step events, not only final damping.
+
+7. **H1.2–H1.4, H2 and decomposition — NEEDS-RESTATEMENT.**
+
+   The numerical bars are explicit, and validation-only selection is appropriate. H1.4 nevertheless becomes unavailable precisely where QN rescues an ineligible FS-K2 arm; that outcome must be reported separately rather than treated as failure or omitted. “Cheapest” needs a fixed timing population, repetitions, tie-breaker and missing/invalid-panel policy. The decomposition is algebraically completed by
+   \[
+   S_{\rm scheme}=\frac{S_C}{S_{\rm solver}}
+   =\frac{\operatorname{cost}(B^*)}{\operatorname{cost}(W^*)},
+   \]
+   where \(B^*\) is the best eligible matching BE configuration. However, \(S_{\rm solver}\) includes bank, quadrature and step changes; the remaining factor likewise need not isolate scheme choice. **Fix:** call these “best-BE improvement” and “additional improvement allowing second-order schemes,” or hold other factors fixed for a causal decomposition. Define unavailable outcomes when either matching set is empty.
+
+8. **Route 3, G3–G4 and K5–K6 — WRONG.**
+
+   G3 is a reasonable consistency check, but separately compiled components measure a decomposition with different fusion/dispatch behavior. It cannot establish Jacobian dominance without timing Jacobian construction, normal-matrix formation/factorization, and cheap iterations separately. H3.2’s aggregate error bar permits individual cases to deteriorate and changes initialization, so it does not establish trajectory equivalence or preserve solver eligibility automatically. K5 is particularly problematic: lat256 has at most 256 rows, making \(B^\mathsf TW B\) singular for every \(R'>256\); it may merely test an invalid inverse. K6 is meaningful **only if viscosities are permuted while case-specific initial conditions and expected outputs remain fixed**. Permuting complete queries and restoring their order should pass. **Fix:** define H3.2 as aggregate accuracy noninferiority or add per-case trajectory limits; recertify with ADT initialized identically; use a stable projection solve with rank checks and a deliberately inaccurate but full-rank control. Define K6 as a wrong-viscosity association, and add a positive whole-query permutation-equivariance test. Make G4’s \(10^{-8}\)/\(2.5\times10^{-5}\) outcomes explicit rather than an ambiguous exception.
+
+9. **Route 4, FOM matching, mesh tables and feasibility — WRONG.**
+
+   The families are useful, and F-CC sharing E0’s scheme is acceptable with the stated caveat and independent PS comparison. The current specification nevertheless has several blocking inconsistencies:
+
+   - **Missing runs:** H4.2 asks for F-CC at \(\Delta t_0=0.01\), absent from its registered ladder, including the large-mesh ladder.
+   - **Unanswered large-mesh question:** eight-case diagnostic FOM runs cannot establish a 64-case matched-accuracy result at 256³ or 384³. H4.3 also does not say whether FOM selection is restricted to the ROM’s mesh or allowed across the entire ladder.
+   - **Undefined qualification:** “loosest qualified tolerance” has no qualification rule. Require finite output, successful stage residuals, and a measured tolerance-sensitivity criterion. Failed/under-solved FOMs must not enter the frontier merely because their aggregate error happens to match.
+   - **Upper-bound scope:** the fastest matching configuration from any finite ladder gives an upper bound on the speed-up against an unrestricted, optimally tuned FOM family. The boundary case identified in the design is especially obvious, but not the only source of this limitation.
+   - **PS port is not jit-compatible unchanged:** [`pscore.py`](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/pscore.py:142) performs `np.asarray`, `np.stack`, `float` and `bool` conversions inside its returned `run`. Wrapping it directly in `jax.jit` fails. Its NumPy eigenvalue construction also requires handling traced viscosity. A separate pure-JAX timed entry point and parity gate are needed.
+   - **Large tables:** at \(L=384\), one scalar interior field occupies about **0.449 GB**, whereas the full \(R'=1024\) bank occupies **460.24 GB**, before temporaries. Slab processing can avoid full-bank storage, but the inherited builder concatenates chunks. Specify a genuinely streaming/separable accumulation algorithm for \(A\), Gram matrices and mode selection; “slab-wise” alone does not establish runtime feasibility. Define G5 per quantity, including mode ordering, normalization and eigenvalues.
+   - **FD memory:** scalar BiCGStab is not ruled out by the bank-sized allocation above. Its actual feasibility depends on simultaneously live vectors, six retained fields, padded stencil arrays, DST/FFT buffers and compiler workspaces. Require a peak-memory/time certificate from a staged pilot, not a blanket feasible/infeasible assertion.
+   - **Scoring lattice:** **correct for all FD/ROM meshes listed**: 64, 128, 256 and 384 are multiples of 64, giving strides 1, 2, 4 and 6. It is not a subset of every PS grid; PS must synthesize directly on the common lattice.
+
+   **Fix:** resolve those specifications and distinguish same-mesh speed, cross-resolution matched accuracy, and diagnostic large-mesh results. Measure H4.1’s meshes in one job/GPU with identical timing populations, and retain eligibility and accuracy alongside flat cost.
+
+10. **Controls K1–K8 and T1 — NEEDS-RESTATEMENT.**
+
+    K1 is supported by inherited failures; K2 and K3 are plausible but not guaranteed discriminating on arbitrary smoke cases. K4 needs fixed nontrivial swaps/shifts and a stated comparison norm. K5 is confounded by rank deficiency, and K6 requires the association semantics above. K7 can detect mesh dependence, but an array-shape mismatch alone is not a useful numerical test. K8 distinguishes discretizations but does not test matched-accuracy selection; G6 must separately compare upwind-BE against the vendor and each matching FD mode against E0. Two unspecified smoke cases cannot be assumed to activate all controls. **Fix:** preregister control settings/case IDs and failure predicates. Add a Gram-distance threshold control using perturbations just below and above the bar; add a matching control where an artificially cheap, inaccurate or invalid FOM is rejected. A failed control must block the affected claim rather than permit post-data case hunting.
+
+11. **Cohorts, freezing and POST HOC labels — WRONG.**
+
+    The stated validation/replication separation and prohibition on sealed/OOD access are correct. The execution graph contradicts them: it freezes after H1/H2, then puts mesh-free qualification, batching and replication together in `p1`; FOM matching occurs later in `m1`. Thus the advertised freeze cannot include all H1–H3 selections and FOM matches. Historical 923901 results are replication, not an untouched test set. The deployed-rule POST HOC label is explicit, while dropping CN-R and choosing reduced-rule candidates should also be clearly identified as Step-2-data-informed choices. **Fix:** complete all validation-based decisions, create one final immutable selection manifest, then run replication in a separate phase/job. Label the study prospectively specified **conditional on prior Step 2 exploration**.
+
+12. **GPU-hour estimate and job plan — NEEDS-RESTATEMENT.**
+
+    The arithmetic is approximately right: 28 planned hours plus 20% is 33.6. Evidence is insufficient to validate the allocations. The inherited c3grid job took about **4.41 hours** on an H200, making the ROM allocations conceivable, but this lane adds many rule/solver combinations and untimed full-Jacobian certification. The small-mesh FOM ladder alone contains 3,456 FD and 960 PS accuracy runs before timing, compilation, qualification and replication. Large-mesh table construction has no cost model. No listed job intentionally mixes GPU types, but same-type cross-job comparisons remain invalid as discussed above. **Fix:** produce a complete run inventory and pilot-based projections covering compilation, ADT, certification, controls, timing repetitions, setup and large meshes. Define resource-based stop outcomes and keep H200-only timing mandatory on resubmission.
+
+13. **Additional threats to answerability — NEEDS-RESTATEMENT.**
+
+    Timing boundaries are incomplete. ROM projection and decode appear included, but FOM initial-field generation and PS coefficient initialization may be outside the timer; these choices can materially change a cheap-query comparison. H3.3 measures throughput, whereas the primary question concerns query speed—batch throughput cannot be substituted for single-query latency. Reduced quadrature can also improve reference error through cancellation while accurately solving a different reduced objective; ADT agreement at the same reduced rule does not demonstrate quadrature fidelity. **Fix:** define a common query input/output contract and account consistently for query-dependent initialization, transfers and decoding; report offline setup and amortization separately. Keep latency and throughput claims distinct. Either require a converged-rule distance check for finalists or label the reduced rules empirically validated surrogates without a quadrature-equivalence claim.
+
+**Overall verdict: NOT READY. Required amendments:**
+
+1. Correct startup/contraction accounting and qualify the Jacobian-dominance claim.
+2. Fully specify QN and remove the guarantee of convergence to ADT’s stationary point.
+3. Specify predictor startup/history handling and the exact G1 fallback path.
+4. Correct the A6.2 attribution; define certification tolerances, ADT verification and reference pinning.
+5. Require direct same-job winner/comparator timing for claimed speed-ups.
+6. Repair H1.1 classifications and explicitly define unavailable hypotheses and selection ties.
+7. Define and rename the speed decomposition.
+8. Repair mesh-free projection qualification, K5 and batching controls.
+9. Resolve FOM ladder/matching scope, tolerance qualification, PS porting and large-mesh feasibility.
+10. Add discriminating distance and FOM-matching controls with fixed smoke cases.
+11. Move replication after a freeze covering every validation-selected decision.
+12. Register complete timing boundaries, run inventory, resource projections and finite-ladder claim limits.

@@ -1,0 +1,415 @@
+{
+ "attempt": "smk3",
+ "driver": "d3run",
+ "mode": "smk3",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W256",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W768",
+   "bank": "W1024",
+   "Rp": 768,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W512M1027",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 1027
+  },
+  {
+   "name": "W512k1",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 512
+  },
+  {
+   "name": "W512k8",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 4097
+  }
+ ],
+ "extra_rules": [
+  "badlat262144",
+  "gl16",
+  "gl20",
+  "gl24",
+  "gl32",
+  "gl40",
+  "gl48",
+  "gl56",
+  "gl64",
+  "gl80",
+  "lat131072",
+  "lat16384",
+  "lat262144",
+  "lat32768",
+  "lat65536",
+  "lat8192",
+  "smolyak13",
+  "sob262144s0"
+ ],
+ "blocks": [
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "gl48",
+    "gl56",
+    "gl64"
+   ],
+   "cases": [
+    0
+   ],
+   "tighter_cases": [
+    0
+   ],
+   "tag_prefix": "pilot|"
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat131072",
+    "lat262144"
+   ],
+   "cases": [
+    0
+   ],
+   "tighter_cases": [
+    0
+   ],
+   "tag_prefix": "pilot|"
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512k8",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat131072",
+    "lat262144"
+   ],
+   "cases": [
+    0
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "override",
+   "setting_default": "W512",
+   "setting_override": "W512M1027",
+   "rule": "lat16384",
+   "fixture": "inputs/fixture3d.npz"
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "M2_512",
+   "specs": [
+    "fs|BDF2|0.0125|K1"
+   ],
+   "rungs": [
+    "gl24"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat8192",
+    "lat16384"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "tighter_cases": [
+    0
+   ],
+   "tag_prefix": "lad|"
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "gl64"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "M2_512",
+   "specs": [
+    "fs|BE|0.01|K1"
+   ],
+   "rungs": [
+    "gl32"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat262144"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512k1",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536",
+    "lat131072"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "rounds",
+   "members": [
+    {
+     "key": "W1024|lat65536|fs|CN|0.01|K1",
+     "qp": "lat131072",
+     "qpp": "lat262144"
+    }
+   ],
+   "control": {
+    "key": "W512|lat8192|fs|BE|0.01|K1",
+    "qp": "lat16384",
+    "qpp": null
+   }
+  },
+  {
+   "kind": "fixgate",
+   "setting": "W512",
+   "target": "gl64",
+   "rules": [
+    "badlat262144",
+    "lat262144",
+    "sob262144s0",
+    "smolyak13",
+    "gl64"
+   ],
+   "fixture": "inputs/fixture3d.npz"
+  },
+  {
+   "kind": "panel",
+   "label": "smoke",
+   "A": {
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "W512",
+     "rule": "lat16384",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W512",
+     "rule": "lat65536",
+     "spec": "ad|GAL|CN|0.01|prod"
+    },
+    {
+     "setting": "W1024",
+     "rule": "lat262144",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W1024",
+     "rule": "gl64",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "M2_512",
+     "rule": "gl32",
+     "spec": "fs|BE|0.01|K1",
+     "double": true
+    }
+   ],
+   "cases": 2,
+   "reps": 1,
+   "seed": 7
+  },
+  {
+   "kind": "panel",
+   "label": "smoke-uncertified",
+   "A": {
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "W256",
+     "rule": "gl24",
+     "spec": "fs|CN|0.01|K1"
+    }
+   ],
+   "cases": 1,
+   "reps": 1,
+   "seed": 8
+  }
+ ]
+}

@@ -1,0 +1,143 @@
+host=pax009 source_commit=6c9a7f67d4e4cbf9ced0ab05e76a1065b9431ebb
+NVIDIA H200, GPU-5c9e4e12-197d-1189-3d08-ae3e874f6e1f, 143771 MiB
+10.235.106.36:/projects/paralab  4.6T 1006G  3.6T  22% /cluster/tufts/paralab
+/usr/bin/openssl
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[     19.8s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     23.5s]   val32 c16 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=5.59e-13 newton=404 compile=1.2s solve=2.2s peak=939287296
+[     39.0s]   val32 c16 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=2.33e-13 newton=804 compile=1.4s solve=13.5s peak=3924748544
+[    161.7s]   val32 c16 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.70e-13 newton=1604 compile=1.4s solve=114.7s peak=15734205184
+[    161.8s] CASE val32 16 ST: accepted eps=2.287611214985765e-06 p=[1.9983546489660418, 1.9974125863905103, 1.9963733190542137, 1.9955007110739087, 1.9947948617403897] 142s
+[    162.5s]   val32 c16 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=8.56e-12 newton=108 compile=0.0s solve=0.7s peak=15734205184
+[    166.1s]   val32 c16 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=8.79e-12 newton=108 compile=0.0s solve=3.0s peak=15734205184
+[    186.8s]   val32 c16 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.48e-12 newton=110 compile=0.0s solve=14.7s peak=16270945536
+[    186.8s] CASE val32 16 S: accepted eps=4.402317096016917e-08 p=[1.9999820529199257, 1.9999926217326716, 1.9999957300160145, 1.9999971216469485, 1.9999976188993713] 25s
+[    189.5s]   val32 c17 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=4.41e-12 newton=410 compile=0.0s solve=2.6s peak=16270945536
+[    208.6s]   val32 c17 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=8.96e-12 newton=809 compile=0.0s solve=18.8s peak=16270945536
+[    374.7s]   val32 c17 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=3.76e-12 newton=1608 compile=0.0s solve=158.8s peak=16270945536
+[    374.8s] CASE val32 17 ST: accepted eps=4.1053263007605225e-06 p=[2.0140654700197462, 2.0036395857704203, 1.9939535675315392, 1.9916502085256564, 1.9909064846108007] 188s
+[    376.7s]   val32 c17 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=1.00e-11 newton=147 compile=0.0s solve=1.8s peak=16270945536
+[    385.9s]   val32 c17 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.12e-12 newton=148 compile=0.0s solve=8.0s peak=16270945536
+[    431.1s]   val32 c17 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.81e-12 newton=148 compile=0.0s solve=38.5s peak=16270945536
+[    431.1s] CASE val32 17 S: accepted eps=4.503904894861768e-07 p=[2.0000523014187874, 2.0000688658619183, 2.000070551190886, 2.0000629602446978, 2.0000541535562006] 56s
+[    433.9s]   val32 c18 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=7.47e-12 newton=406 compile=0.0s solve=2.6s peak=16270945536
+[    453.1s]   val32 c18 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=2.56e-12 newton=806 compile=0.0s solve=18.7s peak=16270945536
+[    624.1s]   val32 c18 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=5.09e-12 newton=1605 compile=0.0s solve=163.9s peak=16270945536
+[    624.1s] CASE val32 18 ST: accepted eps=5.035167345209522e-06 p=[1.998709570918133, 2.0018596209408206, 1.9978206162442576, 1.9952950856680869, 1.9942744678467461] 193s
+[    626.2s]   val32 c18 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.77e-12 newton=149 compile=0.0s solve=2.0s peak=16270945536
+[    636.3s]   val32 c18 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.80e-12 newton=149 compile=0.0s solve=8.6s peak=16270945536
+[    683.7s]   val32 c18 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=3.25e-12 newton=150 compile=0.0s solve=41.5s peak=16270945536
+[    683.7s] CASE val32 18 S: accepted eps=4.057210971214823e-07 p=[2.000003519080542, 2.0000118913733704, 2.0000397685113356, 2.0000593437507797, 2.000061529104781] 60s
+[    687.9s]   val32 c19 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=9.98e-12 newton=489 compile=0.0s solve=4.1s peak=16270945536
+[    711.4s]   val32 c19 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=3.50e-12 newton=806 compile=0.0s solve=23.0s peak=16270945536
+[    898.6s]   val32 c19 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=5.43e-12 newton=1605 compile=0.0s solve=181.4s peak=16270945536
+[    898.7s] CASE val32 19 ST: accepted eps=6.015167685685166e-06 p=[2.00111084900346, 2.0000012392312043, 1.9991071718241593, 1.998710603874969, 1.9978988372584545] 215s
+[    901.9s]   val32 c19 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=1.21e-13 newton=150 compile=0.0s solve=3.0s peak=16270945536
+[    916.1s]   val32 c19 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=4.07e-13 newton=150 compile=0.0s solve=13.0s peak=16270945536
+[    985.1s]   val32 c19 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=1.62e-12 newton=150 compile=0.0s solve=62.7s peak=16270945536
+[    985.2s] CASE val32 19 S: accepted eps=4.865374975132531e-07 p=[1.9999156205911064, 2.000000286476265, 2.000038913619222, 2.000066897456467, 2.0000830057212746] 86s
+[    987.4s]   val32 c20 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=4.51e-12 newton=406 compile=0.0s solve=2.1s peak=16270945536
+[   1003.8s]   val32 c20 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=1.55e-12 newton=806 compile=0.0s solve=15.3s peak=16270945536
+[   1133.5s]   val32 c20 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=3.05e-12 newton=1605 compile=0.0s solve=122.7s peak=16270945536
+[   1133.6s] CASE val32 20 ST: accepted eps=2.9769202527618265e-06 p=[2.015180131043721, 1.9869698763221197, 1.9713431118378535, 1.9722682962348277, 1.9733405047742618] 148s
+[   1134.7s]   val32 c20 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.75e-12 newton=119 compile=0.0s solve=1.0s peak=16270945536
+[   1140.4s]   val32 c20 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.85e-12 newton=119 compile=0.0s solve=4.4s peak=16270945536
+[   1169.1s]   val32 c20 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.87e-12 newton=122 compile=0.0s solve=21.5s peak=16270945536
+[   1169.1s] CASE val32 20 S: accepted eps=1.4618269815391438e-07 p=[1.9999925800332858, 1.9999966769398687, 2.000000355603086, 2.000004259853974, 2.0000052819039524] 36s
+[   1171.0s]   val32 c21 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=1.30e-12 newton=405 compile=0.0s solve=1.8s peak=16270945536
+[   1185.1s]   val32 c21 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=4.34e-13 newton=805 compile=0.0s solve=12.6s peak=16270945536
+[   1306.3s]   val32 c21 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=4.23e-13 newton=1605 compile=0.0s solve=114.2s peak=16270945536
+[   1306.4s] CASE val32 21 ST: accepted eps=1.5013171770359371e-06 p=[2.01809268465634, 2.019833109553888, 2.020941691078154, 2.0203061378684453, 2.017845591740959] 137s
+[   1307.1s]   val32 c21 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=8.88e-12 newton=103 compile=0.0s solve=0.7s peak=16270945536
+[   1310.9s]   val32 c21 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.42e-12 newton=103 compile=0.0s solve=2.9s peak=16270945536
+[   1427.8s]   val32 c21 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=1.34e-11 newton=1000 compile=0.0s solve=110.4s peak=16270945536
+[   1443.7s]   val32 c21 S a3_L2048 tight L=2048 dt=5.000e-03 stages=50 ok=True maxres=8.35e-13 newton=2000 compile=0.9s solve=15.0s peak=16270945536
+[   1509.3s]   val32 c21 S a4_L4096 tight L=4096 dt=5.000e-03 stages=50 ok=True maxres=3.34e-12 newton=2000 compile=0.9s solve=63.0s peak=16270945536
+[   1813.2s]   val32 c21 S a5_L8192 tight L=8192 dt=5.000e-03 stages=50 ok=True maxres=1.34e-11 newton=2000 compile=0.9s solve=296.6s peak=16438619648
+[   1813.3s] CASE val32 21 S: unresolved-floor eps=1.612463111723465e-08 p=[1.999998087888807, 2.000000299852221, 2.000000759443168, 2.000000369910526, 2.000000160196751] 507s
+[   1815.3s]   val32 c22 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=2.18e-13 newton=404 compile=0.0s solve=1.9s peak=16438619648
+[   1830.5s]   val32 c22 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=9.39e-14 newton=804 compile=0.0s solve=13.9s peak=16438619648
+[   1957.8s]   val32 c22 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=1.88e-13 newton=1604 compile=0.0s solve=120.3s peak=16975360000
+[   1957.9s] CASE val32 22 ST: accepted eps=4.607608153947277e-06 p=[1.993288533915341, 1.9889456647780013, 1.9849432483927871, 1.9815794019382313, 1.9789092329462112] 145s
+[   1958.9s]   val32 c22 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=7.83e-12 newton=118 compile=0.0s solve=0.9s peak=16975360000
+[   1964.1s]   val32 c22 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=7.95e-12 newton=118 compile=0.0s solve=3.8s peak=16975360000
+[   1988.4s]   val32 c22 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.60e-12 newton=118 compile=0.0s solve=18.0s peak=16975360000
+[   1988.5s] CASE val32 22 S: accepted eps=1.2277925615709948e-07 p=[2.0000017521611677, 2.000003729074888, 2.0000038918130154, 2.0000036102835144, 2.0000031966209892] 31s
+[   1990.7s]   val32 c23 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=3.03e-12 newton=408 compile=0.0s solve=2.1s peak=16975360000
+[   2006.5s]   val32 c23 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=5.10e-12 newton=806 compile=0.0s solve=15.2s peak=16975360000
+[   2130.2s]   val32 c23 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=9.62e-12 newton=1605 compile=0.0s solve=117.3s peak=16975360000
+[   2130.3s] CASE val32 23 ST: accepted eps=1.1719108594962182e-06 p=[1.896590782308614, 1.9785164471623191, 2.0278965506872666, 2.0354306047976882, 2.0261005353430455] 142s
+[   2131.7s]   val32 c23 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=6.08e-12 newton=105 compile=0.0s solve=0.9s peak=16975360000
+[   2137.4s]   val32 c23 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=6.12e-12 newton=105 compile=0.0s solve=3.9s peak=16975360000
+[   2162.6s]   val32 c23 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=6.76e-12 newton=105 compile=0.0s solve=18.6s peak=16975360000
+[   2162.6s] CASE val32 23 S: accepted eps=1.406772181701518e-07 p=[1.999966904490614, 1.9999968614552224, 2.000006790027332, 2.000011618345684, 2.00001485409005] 32s
+[   2164.6s]   val32 c24 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=4.73e-12 newton=405 compile=0.0s solve=1.9s peak=16975360000
+[   2179.1s]   val32 c24 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=1.47e-12 newton=805 compile=0.0s solve=13.9s peak=16975360000
+[   2304.2s]   val32 c24 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=6.31e-13 newton=1605 compile=0.0s solve=119.7s peak=16975360000
+[   2304.3s] CASE val32 24 ST: accepted eps=3.856309544047115e-06 p=[1.9955568568689304, 1.986385187805264, 1.981162564247891, 1.9785734922869855, 1.976345304785248] 142s
+[   2305.2s]   val32 c24 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.90e-12 newton=119 compile=0.0s solve=0.9s peak=16975360000
+[   2309.4s]   val32 c24 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.09e-12 newton=120 compile=0.0s solve=3.8s peak=16975360000
+[   2432.5s]   val32 c24 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=1.49e-11 newton=1000 compile=0.0s solve=118.2s peak=16975360000
+[   2448.5s]   val32 c24 S a3_L2048 tight L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.29e-13 newton=2000 compile=0.0s solve=15.9s peak=16975360000
+[   2516.1s]   val32 c24 S a4_L4096 tight L=4096 dt=5.000e-03 stages=50 ok=True maxres=3.72e-12 newton=2000 compile=0.0s solve=67.3s peak=16975360000
+[   2839.8s]   val32 c24 S a5_L8192 tight L=8192 dt=5.000e-03 stages=50 ok=True maxres=1.49e-11 newton=2000 compile=0.0s solve=316.8s peak=16975360000
+[   2839.9s] CASE val32 24 S: unresolved-floor eps=4.171930731774371e-08 p=[1.9999999241554618, 2.0000002330387066, 2.0000008236097804, 2.0000012956362703, 2.0000016142578527] 536s
+[   2842.4s]   val32 c25 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=3.33e-13 newton=404 compile=0.0s solve=2.3s peak=16975360000
+[   2860.9s]   val32 c25 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=1.39e-13 newton=804 compile=0.0s solve=17.2s peak=16975360000
+[   3012.5s]   val32 c25 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=1.56e-13 newton=1604 compile=0.0s solve=144.6s peak=16975360000
+[   3012.5s] CASE val32 25 ST: accepted eps=5.686258687448249e-06 p=[1.994446956918996, 1.9918343262433276, 1.9900457886573641, 1.9884899822226165, 1.9873166921729009] 173s
+[   3014.1s]   val32 c25 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=8.48e-12 newton=133 compile=0.0s solve=1.4s peak=16975360000
+[   3021.4s]   val32 c25 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=8.56e-12 newton=133 compile=0.0s solve=6.1s peak=16975360000
+[   3057.7s]   val32 c25 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.73e-12 newton=133 compile=0.0s solve=29.3s peak=16975360000
+[   3057.7s] CASE val32 25 S: accepted eps=1.333272806079248e-07 p=[2.000000577484005, 2.0000045837560387, 2.000008057233685, 2.000009102149895, 2.000005605271752] 45s
+[   3060.2s]   val32 c26 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=9.59e-13 newton=404 compile=0.0s solve=2.4s peak=16975360000
+[   3079.0s]   val32 c26 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=3.82e-14 newton=804 compile=0.0s solve=17.6s peak=16975360000
+[   3229.2s]   val32 c26 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=7.38e-14 newton=1604 compile=0.0s solve=143.5s peak=16975360000
+[   3229.3s] CASE val32 26 ST: accepted eps=8.752556247904624e-06 p=[1.9900388652636625, 1.9857134189959964, 1.9829250281776232, 1.9809545467149277, 1.9794810514259242] 172s
+[   3230.8s]   val32 c26 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.26e-12 newton=133 compile=0.0s solve=1.4s peak=16975360000
+[   3237.2s]   val32 c26 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.28e-12 newton=133 compile=0.0s solve=6.1s peak=16975360000
+[   3272.3s]   val32 c26 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.54e-12 newton=133 compile=0.0s solve=29.2s peak=16975360000
+[   3272.3s] CASE val32 26 S: accepted eps=3.762507446357151e-07 p=[2.000008193539902, 2.0000176427685554, 2.0000194900366752, 2.000018915145492, 2.000017752909663] 43s
+[   3274.0s]   val32 c27 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=1.58e-12 newton=404 compile=0.0s solve=1.6s peak=16975360000
+[   3287.0s]   val32 c27 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=1.37e-13 newton=804 compile=0.0s solve=12.6s peak=16975360000
+[   3407.8s]   val32 c27 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.73e-13 newton=1604 compile=0.0s solve=115.4s peak=16975360000
+[   3407.9s] CASE val32 27 ST: accepted eps=5.034969870283584e-06 p=[1.993281010494466, 1.9849085254821663, 1.977913030295184, 1.968627964152601, 1.956806605304533] 136s
+[   3408.6s]   val32 c27 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=7.94e-12 newton=112 compile=0.0s solve=0.6s peak=16975360000
+[   3411.4s]   val32 c27 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=8.19e-12 newton=112 compile=0.0s solve=2.6s peak=16975360000
+[   3429.3s]   val32 c27 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.85e-12 newton=113 compile=0.0s solve=12.4s peak=16975360000
+[   3429.4s] CASE val32 27 S: accepted eps=1.1017598703795893e-07 p=[2.000008593540327, 2.000004726829715, 2.000002874646167, 2.00000223375762, 2.000001947885433] 21s
+[   3431.9s]   val32 c28 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=3.27e-12 newton=406 compile=0.0s solve=2.1s peak=16975360000
+[   3448.3s]   val32 c28 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=5.04e-12 newton=805 compile=0.0s solve=14.9s peak=16975360000
+[   3569.6s]   val32 c28 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=1.50e-12 newton=1605 compile=0.0s solve=114.4s peak=16975360000
+[   3569.6s] CASE val32 28 ST: accepted eps=1.1328835199243095e-06 p=[2.0414678219280478, 2.02614002228111, 2.0209883548129373, 2.016585076687864, 2.0117299734198846] 140s
+[   3570.5s]   val32 c28 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=8.23e-12 newton=105 compile=0.0s solve=0.9s peak=16975360000
+[   3575.3s]   val32 c28 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=8.31e-12 newton=105 compile=0.0s solve=3.7s peak=16975360000
+[   3598.7s]   val32 c28 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.51e-12 newton=105 compile=0.0s solve=17.6s peak=16975360000
+[   3598.8s] CASE val32 28 S: accepted eps=4.255731279833075e-08 p=[1.9999737599658753, 1.999988697471877, 1.9999964318775179, 1.9999997210037113, 2.0000011609936323] 29s
+[   3600.9s]   val32 c29 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=6.98e-14 newton=405 compile=0.0s solve=2.1s peak=16975360000
+[   3618.1s]   val32 c29 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=3.93e-12 newton=804 compile=0.0s solve=16.1s peak=16975360000
+[   3746.3s]   val32 c29 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=1.32e-12 newton=1604 compile=0.0s solve=122.8s peak=16975360000
+[   3746.4s] CASE val32 29 ST: accepted eps=2.1840347653894484e-06 p=[1.997531800160639, 1.9972478122890878, 1.9969042558071906, 1.9964769518072731, 1.9960612233268575] 148s
+[   3747.5s]   val32 c29 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.83e-12 newton=111 compile=0.0s solve=1.0s peak=16975360000
+[   3752.1s]   val32 c29 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.98e-12 newton=111 compile=0.0s solve=4.3s peak=16975360000
+[   3778.9s]   val32 c29 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.56e-12 newton=114 compile=0.0s solve=21.4s peak=16975360000
+[   3779.0s] CASE val32 29 S: accepted eps=4.722606175852995e-08 p=[1.9999987666873413, 1.9999739106559382, 1.9999821552539134, 1.9999872343172669, 1.9999905541757594] 33s
+[   3781.2s]   val32 c30 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=1.32e-12 newton=405 compile=0.0s solve=2.2s peak=16975360000
+[   3798.2s]   val32 c30 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=4.07e-13 newton=805 compile=0.0s solve=16.7s peak=16975360000
+[   3934.1s]   val32 c30 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.52e-13 newton=1605 compile=0.0s solve=129.6s peak=16975360000
+[   3934.2s] CASE val32 30 ST: accepted eps=2.749642504382437e-06 p=[1.998734530627953, 1.9985555679651252, 1.998312002005959, 1.9980123725585963, 1.9976497295252338] 155s
+[   3935.4s]   val32 c30 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.76e-12 newton=120 compile=0.0s solve=1.2s peak=16975360000
+[   3941.1s]   val32 c30 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.91e-12 newton=120 compile=0.0s solve=5.0s peak=16975360000
+[   3972.3s]   val32 c30 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.56e-12 newton=124 compile=0.0s solve=24.9s peak=16975360000
+[   3972.4s] CASE val32 30 S: accepted eps=5.479469534583984e-08 p=[1.9999981488926242, 2.000000498989766, 1.9999794265927557, 1.9999851353603064, 1.9999887961485736] 38s
+[   3974.4s]   val32 c31 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=3.85e-12 newton=408 compile=0.0s solve=2.0s peak=16975360000
+[   3988.0s]   val32 c31 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=5.57e-12 newton=806 compile=0.0s solve=12.9s peak=16975360000
+[   4109.9s]   val32 c31 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=8.62e-12 newton=1605 compile=0.0s solve=115.6s peak=16975360000
+[   4109.9s] CASE val32 31 ST: accepted eps=1.433862696966263e-06 p=[2.1110736368765455, 2.027082521709671, 1.9576404646762764, 1.9000997827866768, 1.8514421686420526] 137s
+[   4110.8s]   val32 c31 S a0_L2048 prod L=2048 dt=5.000e-03 stages=50 ok=True maxres=9.02e-12 newton=109 compile=0.0s solve=0.8s peak=16975360000
+[   4114.8s]   val32 c31 S a1_L4096 prod L=4096 dt=5.000e-03 stages=50 ok=True maxres=9.18e-12 newton=109 compile=0.0s solve=3.4s peak=16975360000
+[   4137.3s]   val32 c31 S a2_L8192 prod L=8192 dt=5.000e-03 stages=50 ok=True maxres=9.46e-12 newton=110 compile=0.0s solve=16.2s peak=16975360000
+[   4137.3s] CASE val32 31 S: accepted eps=4.6837708334379165e-08 p=[1.9999600158845938, 1.9999699248409086, 1.9999794209963533, 1.9999842128770131, 1.9999865005697128] 27s
+JOB COMPLETE
+ALL-DONE

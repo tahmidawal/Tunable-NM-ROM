@@ -1,0 +1,36 @@
+{
+ "attempt": "ps",
+ "gpu": "a100-80G",
+ "time_limit_hours": 2.5,
+ "runs": [
+  [
+   "refjob",
+   "configs/ps-N0.json"
+  ],
+  [
+   "refjob",
+   "configs/ps-Ap.json"
+  ],
+  [
+   "refjob",
+   "configs/ps-Am.json"
+  ],
+  [
+   "refjob",
+   "configs/ps-C1.json"
+  ],
+  [
+   "refjob",
+   "configs/ps-C2.json"
+  ],
+  [
+   "refjob",
+   "configs/ps-B1.json"
+  ],
+  [
+   "refjob",
+   "configs/ps-B2.json"
+  ]
+ ],
+ "commit": "0c581ba20e53397917ef96961d51a19edd66f526"
+}

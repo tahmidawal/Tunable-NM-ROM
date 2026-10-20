@@ -1,0 +1,174 @@
+{
+ "config": {
+  "attempt": "ev2r",
+  "purpose": "round-2 evaluation (DESIGN 3.3, A1.5, A1.7/A2.6): base (re-evaluated as in-job comparator), base_s1, sob001, sob1, coarse (+ FOM comparators at 129/257 nodes) at 1024^2; then paired timing; resubmission of ev2 (Slurm 5037554 failed the GPU preflight on pax007), pax007 excluded",
+  "gpus": 5,
+  "hours": 10,
+  "mem": "300G",
+  "cpus": 12,
+  "mesh": 1024,
+  "cohorts": [
+   "dev6",
+   "val32"
+  ],
+  "refs": "refs",
+  "extra_files": [
+   "bankeval.py",
+   "banktime.py",
+   "vendor/quad2d/qcore.py",
+   "vendor/quad2d/qstudy.py",
+   "vendor/quad2d/vendor/arms.py",
+   "vendor/quad2d/vendor/hops.py",
+   "vendor/quad2d/vendor/hfast.py",
+   "vendor/quad2d/vendor/bkfast.py",
+   "vendor/quad2d/vendor/hari_quadrature.py",
+   "vendor/quad2d/inputs/rotation_R512.npz",
+   "vendor/quad2d/inputs/rule_q0_m1024_qrg304_reachable.npz"
+  ],
+  "extra_repo_files": [
+   "experiments/mr-burgers2d/engines.py",
+   "experiments/mr-burgers2d/iterative_paths.py",
+   "experiments/separable-decoder/sep_common.py"
+  ],
+  "data": [
+   {
+    "src": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output",
+    "dest": "refs"
+   },
+   {
+    "src": "runs/tr1b/archive/output/base",
+    "dest": "banks/base"
+   },
+   {
+    "src": "runs/tr2/archive/output/base_s1",
+    "dest": "banks/base_s1"
+   },
+   {
+    "src": "runs/tr2/archive/output/sob001",
+    "dest": "banks/sob001"
+   },
+   {
+    "src": "runs/tr2/archive/output/sob1",
+    "dest": "banks/sob1"
+   },
+   {
+    "src": "runs/tr2/archive/output/coarse",
+    "dest": "banks/coarse"
+   }
+  ],
+  "tasks": [
+   {
+    "gpu": 0,
+    "cmd": "bankeval.py --config jobs/ev2.json --task 0 --out OUT/eval",
+    "variants": [
+     {
+      "label": "base",
+      "ckpt": "banks/base/bank.pkl",
+      "rotation": "banks/base/rotation.npz"
+     }
+    ]
+   },
+   {
+    "gpu": 1,
+    "cmd": "bankeval.py --config jobs/ev2.json --task 1 --out OUT/eval",
+    "variants": [
+     {
+      "label": "base_s1",
+      "ckpt": "banks/base_s1/bank.pkl",
+      "rotation": "banks/base_s1/rotation.npz"
+     }
+    ]
+   },
+   {
+    "gpu": 2,
+    "cmd": "bankeval.py --config jobs/ev2.json --task 2 --out OUT/eval",
+    "variants": [
+     {
+      "label": "sob001",
+      "ckpt": "banks/sob001/bank.pkl",
+      "rotation": "banks/sob001/rotation.npz"
+     }
+    ]
+   },
+   {
+    "gpu": 3,
+    "cmd": "bankeval.py --config jobs/ev2.json --task 3 --out OUT/eval",
+    "variants": [
+     {
+      "label": "sob1",
+      "ckpt": "banks/sob1/bank.pkl",
+      "rotation": "banks/sob1/rotation.npz"
+     }
+    ]
+   },
+   {
+    "gpu": 4,
+    "cmd": "bankeval.py --config jobs/ev2.json --task 4 --out OUT/eval",
+    "variants": [
+     {
+      "label": "coarse",
+      "ckpt": "banks/coarse/bank.pkl",
+      "rotation": "banks/coarse/rotation.npz"
+     }
+    ],
+    "fom_comparators": true
+   }
+  ],
+  "post": [
+   "banktime.py --config jobs/ev2.json --evals OUT/eval --out OUT/timing"
+  ],
+  "expect": [
+   "eval/eval_base.json",
+   "eval/eval_base_s1.json",
+   "eval/eval_sob001.json",
+   "eval/eval_sob1.json",
+   "eval/eval_coarse.json",
+   "timing/timing.json"
+  ],
+  "exclude": "pax007"
+ },
+ "task": 0,
+ "commit": "2ff4bbde99bbff1a0d9fa0e7306a56d88c4626ce",
+ "job_id": "5037650",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "backend": "gpu",
+ "jax_version": "0.10.2",
+ "cohort_sha256": {
+  "dev6": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "val32": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70"
+ },
+ "references": {
+  "dir": "refs",
+  "job_id": "4734273",
+  "commit": "b3edf9080d92e9319e94601cdb1f33c4d101cabf"
+ },
+ "cases": 38,
+ "controls": {
+  "C2": {
+   "n8_w02": 20,
+   "n8_w005": 64,
+   "class_w02": "geometric",
+   "class_w005": "geometric",
+   "passed": true
+  },
+  "C3": {
+   "class_kink": {
+    "kind": "algebraic",
+    "blocks": 127,
+    "window": [
+     5.5,
+     509.5
+    ],
+    "rss_geometric": 103.06268114829068,
+    "rss_algebraic": 1.7150528683759707,
+    "geometric_rate": 1.0119143922252685,
+    "algebraic_exponent": 2.150481325269784
+   },
+   "passed": true
+  },
+  "C5b": {
+   "max_abs_error": 1.687538997430238e-13,
+   "passed": true
+  }
+ }
+}

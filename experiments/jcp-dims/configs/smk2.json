@@ -1,0 +1,662 @@
+{
+ "attempt": "smk2",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R384M1536gauss128",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev6",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "dev6",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev6",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ]
+  },
+  {
+   "name": "R128M512fib4181",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib4181",
+   "qp": "fib6765",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev6",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "dev6",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ]
+  },
+  {
+   "name": "R512M4096gauss256",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "qp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ]
+  },
+  {
+   "name": "R512M4096gauss320",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "qp": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ]
+  },
+  {
+   "name": "R512M4096gauss384",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M128gauss64",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "qp": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ]
+  },
+  {
+   "name": "R384M384gauss256",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "qp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ]
+  },
+  {
+   "name": "R128M512ffib2584s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib2584s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "fib4181s1"
+  },
+  {
+   "name": "R128M512ffib4181s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib4181s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "fib6765s1"
+  },
+  {
+   "name": "R128M512ffib2584s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib2584s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "fib4181s2"
+  },
+  {
+   "name": "R128M512ffib4181s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib4181s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "fib6765s2"
+  },
+  {
+   "name": "R128M512fsobol2048s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "sobol2048s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "sobol4096s1"
+  },
+  {
+   "name": "R128M512fsobol4096s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "sobol4096s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "sobol8192s1"
+  },
+  {
+   "name": "R128M512fsobol2048s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "sobol2048s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "sobol4096s2"
+  },
+  {
+   "name": "R128M512fsobol4096s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "sobol4096s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "sobol8192s2"
+  },
+  {
+   "name": "R128M512fhalton2048s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton2048s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton4096s1"
+  },
+  {
+   "name": "R128M512fhalton4096s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton4096s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton8192s1"
+  },
+  {
+   "name": "R128M512fhalton2048s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton2048s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton4096s2"
+  },
+  {
+   "name": "R128M512fhalton4096s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton4096s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton8192s2"
+  },
+  {
+   "name": "R128M512fmc2048s0",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc2048s0",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc4096s0"
+  },
+  {
+   "name": "R128M512fmc4096s0",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc4096s0",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc8192s0"
+  },
+  {
+   "name": "R128M512fmc2048s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc2048s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc4096s1"
+  },
+  {
+   "name": "R128M512fmc4096s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc4096s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc8192s1"
+  },
+  {
+   "name": "R128M512fsmolyak8",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "smolyak8",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak9"
+  },
+  {
+   "name": "R128M512fsmolyak9",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "smolyak9",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak10"
+  },
+  {
+   "name": "R128M512fbadlat2584",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "badlat2584",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M1536lmfgauss256",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss256",
+   "qp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ]
+  },
+  {
+   "name": "R384M1536gauss256",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "qp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ]
+  }
+ ],
+ "blocks": [
+  {
+   "setting": "R384M1536gauss128",
+   "kind": "controls",
+   "cases": "dev6",
+   "under_resolved": "gauss32",
+   "under_resolved_successor": "gauss64",
+   "b0_cases": "dev6"
+  },
+  {
+   "kind": "fixgate",
+   "r": 384,
+   "M": 1536,
+   "target": "gauss384",
+   "rules": [
+    "badlat121393",
+    "gauss384",
+    "fib121393"
+   ],
+   "fixture": "inputs/fixture2d.npz"
+  },
+  {
+   "kind": "fixgate",
+   "r": 128,
+   "M": 512,
+   "target": "gauss384",
+   "rules": [
+    "badlat121393"
+   ],
+   "fixture": "inputs/fixture2d.npz"
+  }
+ ]
+}

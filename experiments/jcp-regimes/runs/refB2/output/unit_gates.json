@@ -1,0 +1,110 @@
+{
+ "all_pass": true,
+ "gates": [
+  {
+   "gate": "G-seed refuses",
+   "pass_": true,
+   "detail": "[0, 1000, 7090702, 20260927, 923801, 5550001, 2147483647]"
+  },
+  {
+   "gate": "G-seed accepts registered",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "G-bounds registered regimes",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "G-bounds refuses injected rows",
+   "pass_": true,
+   "detail": "[]"
+  },
+  {
+   "gate": "G-train N0 disjoint",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "G-train all regimes disjoint (A2.1)",
+   "pass_": true,
+   "detail": "{'single': 88, 'two_bump': 32, 'others': 4710}"
+  },
+  {
+   "gate": "G-train refuses injected duplicate",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "G-pair C1/A- geometry and nu identical, a larger",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "G-train refuses injected training row",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "G-ic single bump == engines.initial",
+   "pass_": true,
+   "detail": "0.0"
+  },
+  {
+   "gate": "G-ic two-bump peak == a",
+   "pass_": true,
+   "detail": "2.220446049250313e-16"
+  },
+  {
+   "gate": "G-ic B2 sign-changing",
+   "pass_": true,
+   "detail": "-1.9927361725803154"
+  },
+  {
+   "gate": "G-ic interface shapes",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "G-ic-ps two-bump coefficients == direct quadrature",
+   "pass_": true,
+   "detail": "3.583463616202375e-15"
+  },
+  {
+   "gate": "S-check separating fixture passes",
+   "pass_": true,
+   "detail": "{'Ap': True, 'Am': True, 'C1': True, 'C2': True, 'B1': True, 'B2': True}"
+  },
+  {
+   "gate": "S-check non-separating fixture fails",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "S-check refuses < 8 N0",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "S-check refuses C1 with < 8 A-",
+   "pass_": true,
+   "detail": ""
+  },
+  {
+   "gate": "R-order first-order triple rejected",
+   "pass_": true,
+   "detail": "('order-fail', [1.0, 1.0, 1.0, 1.0, 0.9999999999999999])"
+  },
+  {
+   "gate": "R-order second-order triple accepted",
+   "pass_": true,
+   "detail": "('accepted', [2.0000000000000004, 2.0, 1.9999999999999998, 2.0, 2.0000000000000004])"
+  },
+  {
+   "gate": "R-peclet rejected",
+   "pass_": true,
+   "detail": "('peclet-fail', 2.5)"
+  }
+ ]
+}

@@ -1,0 +1,3164 @@
+{
+ "attempt": "f2a",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128M128gauss64",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M128gauss96",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M128gauss128",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M128gauss160",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M128gauss192",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M128gauss256",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M128gauss320",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M128gauss384",
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M256gauss64",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M256gauss96",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M256gauss128",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M256gauss160",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M256gauss192",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M256gauss256",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M256gauss320",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M256gauss384",
+   "Rp": 128,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M384gauss64",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M384gauss96",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M384gauss128",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M384gauss160",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M384gauss192",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M384gauss256",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M384gauss320",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M384gauss384",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M512gauss64",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M512gauss96",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M512gauss128",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M512gauss160",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M512gauss192",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M512gauss256",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M512gauss320",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M512gauss384",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M1024gauss64",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M1024gauss96",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M1024gauss128",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M1024gauss160",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M1024gauss192",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M1024gauss256",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M1024gauss320",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M1024gauss384",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M1536gauss64",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M1536gauss96",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M1536gauss128",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M1536gauss160",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M1536gauss192",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M1536gauss256",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M1536gauss320",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M1536gauss384",
+   "Rp": 128,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M2048gauss64",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M2048gauss96",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M2048gauss128",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M2048gauss160",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M2048gauss192",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M2048gauss256",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M2048gauss320",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M2048gauss384",
+   "Rp": 128,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M256gauss64",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M256gauss96",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M256gauss128",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M256gauss160",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M256gauss192",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M256gauss256",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M256gauss320",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M256gauss384",
+   "Rp": 256,
+   "M": 256,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M512gauss64",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M512gauss96",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M512gauss128",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M512gauss160",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M512gauss192",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M512gauss256",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M512gauss320",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M512gauss384",
+   "Rp": 256,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M768gauss64",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M768gauss96",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M768gauss128",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M768gauss160",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M768gauss192",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M768gauss256",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M768gauss320",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M768gauss384",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M1024gauss64",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M1024gauss96",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M1024gauss128",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M1024gauss160",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M1024gauss192",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M1024gauss256",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M1024gauss320",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M1024gauss384",
+   "Rp": 256,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M1536gauss64",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M1536gauss96",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M1536gauss128",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M1536gauss160",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M1536gauss192",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M1536gauss256",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M1536gauss320",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M1536gauss384",
+   "Rp": 256,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M2048gauss64",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M2048gauss96",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M2048gauss128",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M2048gauss160",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M2048gauss192",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M2048gauss256",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M2048gauss320",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M2048gauss384",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M384gauss64",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M384gauss96",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M384gauss128",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M384gauss160",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M384gauss192",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M384gauss256",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M384gauss320",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M384gauss384",
+   "Rp": 384,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M512gauss64",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M512gauss96",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M512gauss128",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M512gauss160",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M512gauss192",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M512gauss256",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M512gauss320",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M512gauss384",
+   "Rp": 384,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M768gauss64",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M768gauss96",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M768gauss128",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M768gauss160",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M768gauss192",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M768gauss256",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M768gauss320",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M768gauss384",
+   "Rp": 384,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M1024gauss64",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M1024gauss96",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M1024gauss128",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M1024gauss160",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M1024gauss192",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M1024gauss256",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M1024gauss320",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M1024gauss384",
+   "Rp": 384,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M1152gauss64",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M1152gauss96",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M1152gauss128",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M1152gauss160",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M1152gauss192",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M1152gauss256",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M1152gauss320",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M1152gauss384",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M1536gauss64",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M1536gauss96",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M1536gauss128",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M1536gauss160",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M1536gauss192",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M1536gauss256",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M1536gauss320",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M1536gauss384",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M2048gauss64",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M2048gauss96",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M2048gauss128",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M2048gauss160",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M2048gauss192",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M2048gauss256",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M2048gauss320",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M2048gauss384",
+   "Rp": 384,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M3072gauss64",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M3072gauss96",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M3072gauss128",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M3072gauss160",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M3072gauss192",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M3072gauss256",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M3072gauss320",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M3072gauss384",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  }
+ ],
+ "blocks": []
+}

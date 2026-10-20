@@ -1,0 +1,191 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "val32",
+  "cases": [
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "horizon": 0.5,
+  "fine": true,
+  "allow_refine": true
+ },
+ "job": {
+  "job_id": "5557492",
+  "commit": "9a7f8d28a1eefe6626023f10c690fe8470401011",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": false,
+ "manifest": [
+  {
+   "file": "2d/val32/T0.5/c007_fine.npz",
+   "sha256": "1eedc795929fb46fc8a20bff697010a07dd4af4419ddb15fe768669c3b326487"
+  },
+  {
+   "file": "2d/val32/T0.5/c007.npz",
+   "sha256": "04c8000ec97b1ef39870f2c4b3dd3499067adc3eb6d1cdf587ad5c430591f7a0"
+  },
+  {
+   "file": "2d/val32/T0.5/c007.json",
+   "sha256": "8132068b5e29ef1de1ee570126e7edd02bcfad06099f05efadb880995646d03a"
+  },
+  {
+   "file": "2d/val32/T0.5/c008_fine.npz",
+   "sha256": "4d21223297999dad8ecdf7b4900c3dfa0a15112f41b48c71bcb2c73bbeeaccfd"
+  },
+  {
+   "file": "2d/val32/T0.5/c008.npz",
+   "sha256": "56d3766730a27283190547454de92ec4c84b0b70500fa6ae28c0539df1fd1b76"
+  },
+  {
+   "file": "2d/val32/T0.5/c008.json",
+   "sha256": "ac20a22b38adc5274763071bfa9c3386f01cdc15c32631bad11b816e7de0c40e"
+  },
+  {
+   "file": "2d/val32/T0.5/c009_fine.npz",
+   "sha256": "51ca4df8d069cdbf33919c5596360b0c601320420888f236de8799ebf23cf8e8"
+  },
+  {
+   "file": "2d/val32/T0.5/c009.npz",
+   "sha256": "bc2fb4ec56930f8273644d2f1810081a9ca20b383655dca729877d851ca7486a"
+  },
+  {
+   "file": "2d/val32/T0.5/c009.json",
+   "sha256": "5a408f9a823f8169996a766c753c63c0917ca77e0420b9ec4ed2309ce302705f"
+  }
+ ],
+ "cases": [
+  {
+   "case": 7,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.836043592354563e-06,
+   "eps_fine": 3.834673637391822e-06,
+   "G_R3": true,
+   "seconds": 379.2174744810909
+  },
+  {
+   "case": 8,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 6.811831031449402e-06,
+   "eps_fine": 6.811797997484312e-06,
+   "G_R3": true,
+   "seconds": 314.2580223828554
+  },
+  {
+   "case": 9,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.809805969990621e-06,
+   "eps_fine": 3.8096698141982677e-06,
+   "G_R3": true,
+   "seconds": 291.1401543393731
+  }
+ ],
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "cohort": {
+  "name": "val32",
+  "n": 32,
+  "sha256": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70"
+ }
+}

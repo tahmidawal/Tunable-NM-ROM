@@ -1,0 +1,121 @@
+{
+ "namespace": "/cluster/tufts/paralab/tawal01/jcp-hrb",
+ "cap_gpu_hours": 30,
+ "jobs": [
+  {
+   "attempt": "smk1",
+   "slurm": 5354834,
+   "gpu": "h200",
+   "commit": "e1c614afc50e4a6405e810c831bf5f07c6a69052",
+   "role": "phase-I real-size smoke (A5.4)",
+   "submitted": "2026-10-18T05:15:34.347766+00:00",
+   "requested_hours": 1.0,
+   "measured_gpu_hours": 0.878,
+   "status": "COMPLETED 00:52:42; collected, checksums OK; ACCEPTANCE ALL=false (A14/A15)",
+   "collected": true
+  },
+  {
+   "attempt": "smk2",
+   "slurm": 5422908,
+   "gpu": "h200",
+   "commit": "b4371eda55c97ae9be8ea3f1cd1787eeea17877c",
+   "role": "second phase-I smoke (released by coordinator 2026-10-18, A19)",
+   "submitted": "2026-10-18T09:12:48.857807+00:00",
+   "requested_hours": 1.0,
+   "measured_gpu_hours": 0.634,
+   "status": "COMPLETED 00:38:02; collected, verified; staged ALL=false (ecsw-smoke-rank only), A23 ALL=true",
+   "collected": true
+  },
+  {
+   "attempt": "t3d64a",
+   "slurm": 5508653,
+   "gpu": "h200",
+   "commit": "40fd986bafde069c063bc97744aabd993053bef7",
+   "role": "tune configs/tune_3d64.json",
+   "requested_hours": 12.0,
+   "measured_gpu_hours": 0.8875,
+   "status": "CANCELLED; collected"
+  },
+  {
+   "attempt": "t2d1024a",
+   "slurm": 5508660,
+   "gpu": "h200",
+   "commit": "40fd986bafde069c063bc97744aabd993053bef7",
+   "role": "tune configs/tune_2d1024.json",
+   "requested_hours": 5.0,
+   "measured_gpu_hours": 1.8058,
+   "status": "COMPLETED; collected"
+  },
+  {
+   "attempt": "t3d64b",
+   "slurm": 5542231,
+   "gpu": "h200",
+   "commit": "dd65560426af6334af8b2e962af54c7c6f9d177e",
+   "role": "tune configs/tune_3d64.json",
+   "requested_hours": 12.0,
+   "measured_gpu_hours": 7.5028,
+   "status": "COMPLETED; collected"
+  },
+  {
+   "attempt": "t2d256a",
+   "slurm": 5551475,
+   "gpu": "a100-80G",
+   "commit": "13fbab1d645b2b9f376cf02634ea9d77c61f12c2",
+   "role": "tune configs/tune_2d256.json",
+   "requested_hours": 2.0,
+   "measured_gpu_hours": 1.0433,
+   "status": "COMPLETED; collected"
+  },
+  {
+   "attempt": "s2d1024a",
+   "slurm": 5674029,
+   "gpu": "h200",
+   "commit": "0ce8cf761dd7578618840afa97dc9370422e0b17",
+   "role": "stageb configs/stageb_c2d1024.json",
+   "requested_hours": 3.5,
+   "measured_gpu_hours": 2.1294,
+   "status": "CANCELLED; collected"
+  },
+  {
+   "attempt": "s2d1024b",
+   "slurm": 5840961,
+   "gpu": "h200",
+   "commit": "c9cc52fad8ad4c015fe6d1433c63649126de6592",
+   "role": "stageb configs/stageb_c2d1024.json",
+   "requested_hours": 3.5,
+   "measured_gpu_hours": 1.2822,
+   "status": "COMPLETED; collected"
+  },
+  {
+   "attempt": "s3d64a",
+   "slurm": 5917329,
+   "gpu": "h200",
+   "commit": "8ad7e649f4a308e03e1c122d3bc80ebfe748b1d3",
+   "role": "stageb configs/stageb_c3d64.json",
+   "requested_hours": 8.5,
+   "measured_gpu_hours": 0.2239,
+   "status": "CANCELLED; collected"
+  },
+  {
+   "attempt": "s2d256a",
+   "slurm": 6003086,
+   "gpu": "a100-80G",
+   "commit": "0cb714d186a870c6622fb19fd8c28e6353c4d1d9",
+   "role": "stageb configs/stageb_c2d256.json",
+   "requested_hours": 4.0,
+   "measured_gpu_hours": 1.9661,
+   "status": "COMPLETED; collected"
+  },
+  {
+   "attempt": "s3d64b",
+   "slurm": 5932490,
+   "gpu": "h200",
+   "commit": "6def627da1ad5848f01f9e1f63793177f06d0c6e",
+   "role": "stageb configs/stageb_c3d64.json",
+   "requested_hours": 8.5,
+   "measured_gpu_hours": 2.8253,
+   "status": "COMPLETED; collected"
+  }
+ ],
+ "spent_gpu_hours": 21.1783
+}

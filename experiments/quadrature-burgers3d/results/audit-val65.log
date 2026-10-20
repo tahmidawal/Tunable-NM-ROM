@@ -1,0 +1,25 @@
+{
+ "ok": {
+  "restricted16": true,
+  "decode16": true,
+  "refined": true,
+  "rho_R512": true,
+  "rho_R256": true,
+  "rho_worst_reproduced_R512": true,
+  "rho_worst_reproduced_R256": true,
+  "selection": true,
+  "control_swapped_detected": true,
+  "control_perturbed_detected": true
+ },
+ "checks": {
+  "restricted16_errors_max_abs_diff": 3.3306690738754696e-16,
+  "decode16_max_rel": 7.827219685822706e-15,
+  "refined_in_job_vs_numpy": 2.7755575615628914e-16,
+  "refined_in_job_present": true,
+  "refined_in_job_compared": 2048,
+  "rho_worst_reproduced_R512_max_rel": 2.4518762222061297e-12,
+  "rho_worst_reproduced_R256_max_rel": 5.331707653749182e-12,
+  "control_swapped_reference_diff": 0.8238099127245077,
+  "control_perturbed_diff": 7.396668555289913e-05
+ }
+}

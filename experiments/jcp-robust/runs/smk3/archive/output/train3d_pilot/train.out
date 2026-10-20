@@ -1,0 +1,8 @@
+jax_backend=gpu x64=True precision=highest (training)
+tables 99.7s
+data n=33 rows=1536 steps=12 points=29791 worst residual 9.99e-09 102.9s
+data n=33 rows=96 steps=12 points=29791 worst residual 9.74e-09 7.6s
+data n=65 rows=1536 steps=12 points=250047 worst residual 9.94e-09 240.1s
+data n=65 rows=96 steps=12 points=250047 worst residual 9.95e-09 17.4s
+data n=129 rows=1536 steps=12 points=250047 worst residual 1.00e-08 1687.1s
+data n=129 rows=96 steps=12 points=250047 worst residual 9.85e-09 177.8s

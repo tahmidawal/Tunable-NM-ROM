@@ -1,0 +1,32 @@
+host=pax105 source_commit=c6b4c338cb41f61be26d4762e5863974ec54cfb9
+NVIDIA A100 80GB PCIe, GPU-662eb49d-1d4d-a693-a62c-7fbfef041e73, 81920 MiB
+10.235.106.21:/projects/paralab  4.6T  997G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+CASES 2 REFS 4 2.9
+BANK 14.0
+CASE fast 0 dev6 0 32.6
+CASE fast 1 dev6 2 34.4
+CASE R128 0 dev6 0 48.7
+CASE R128 1 dev6 2 51.0
+CASE R256 0 dev6 0 73.8
+CASE R256 1 dev6 2 79.3
+CASE acc 0 dev6 0 103.9
+CASE acc 1 dev6 2 114.0
+CASE R384 0 dev6 0 138.0
+CASE R384 1 dev6 2 153.9
+CASE R512 0 dev6 0 220.5
+CASE R512 1 dev6 2 274.5
+FOM ORDER 293.8
+FOM CALIBRATION 329.1
+FOM EVAL 0 331.7
+FOM EVAL 1 335.8
+TIMING setting|fast 40 360.3
+TIMING setting|R128 40 383.2
+TIMING setting|R256 40 413.3
+TIMING setting|acc 40 452.9
+TIMING setting|R384 40 504.8
+TIMING setting|R512 40 639.6
+TIMING common 254 921.2
+C2GRID COMPLETE
+ALL-DONE

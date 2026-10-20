@@ -1,0 +1,127 @@
+{
+ "smoke": "smk3c",
+ "source": "runs/smk3c/archive/output",
+ "checks": {
+  "e2run3d smoke complete on gpu": {
+   "ok": true,
+   "evidence": null
+  },
+  "heaviest cell (W1024 gl64 + gl80) under the 120 GB device bar": {
+   "ok": true,
+   "evidence": {
+    "peak": 79177555456,
+    "rejected": null
+   }
+  },
+  "ladder rung W1024|gl64|fs|CN|0.01|K1 ran valid with ADT anchors on its 4 cases": {
+   "ok": true,
+   "evidence": {
+    "valid": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "dist_adt": [
+     7.5840885996648e-06,
+     1.1751780809257218e-06,
+     6.641142488989516e-07,
+     1.2373647615520224e-06
+    ]
+   }
+  },
+  "ladder rung W1024|gl80|fs|CN|0.01|K1 ran valid with ADT anchors on its 4 cases": {
+   "ok": true,
+   "evidence": {
+    "valid": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "dist_adt": [
+     7.584088610730078e-06,
+     1.1751780829838848e-06,
+     6.641142505071115e-07,
+     1.2373647288040295e-06
+    ]
+   }
+  },
+  "ladder rung W256|lat8192|qn|BDF2|0.025|k4 ran valid with ADT anchors on its 8 cases": {
+   "ok": true,
+   "evidence": {
+    "valid": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "dist_adt": [
+     2.4683447173128845e-05,
+     1.206945524474925e-05,
+     1.7453024188625558e-06,
+     3.660505724533511e-06,
+     2.4605529607910284e-05,
+     0.00010014570522450946,
+     8.61213843683576e-05,
+     5.264844013693867e-05
+    ]
+   }
+  },
+  "ladder rung W256|lat16384|qn|BDF2|0.025|k4 ran valid with ADT anchors on its 8 cases": {
+   "ok": true,
+   "evidence": {
+    "valid": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "dist_adt": [
+     2.4755974598161732e-05,
+     1.2039981911130803e-05,
+     1.745400651016509e-06,
+     3.66067660185388e-06,
+     2.4671205680809713e-05,
+     0.00010182451621386871,
+     8.61239088008161e-05,
+     5.27050522166394e-05
+    ]
+   }
+  },
+  "G-E2.3 smoke replay W256 lat8192 qn BDF2 (cases 0-7) <= 1e-10, archive hash pinned, finite": {
+   "ok": true,
+   "evidence": {
+    "worst": 1.0601075273438399e-15,
+    "pin_ok": true
+   }
+  },
+  "smoke resource contract (registered spec, regenerated inventories, reservation <= 2 GPU-h)": {
+   "ok": true,
+   "evidence": {
+    "reservation_identity": {
+     "attempt": true,
+     "commit": true,
+     "gpu": true,
+     "gpus": true,
+     "groups": true,
+     "time_limit": true
+    },
+    "configs/smk3c.json": {
+     "n": 72,
+     "same": true
+    }
+   }
+  }
+ },
+ "ALL": true,
+ "label": "smoke acceptance (plumbing and controls at real size); never a verdict"
+}

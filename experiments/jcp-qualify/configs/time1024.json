@@ -1,0 +1,417 @@
+{
+ "attempt": "time1024",
+ "driver": "qtime",
+ "meshes": {
+  "1024": {
+   "edges": [
+    0,
+    128,
+    256,
+    384,
+    512
+   ]
+  }
+ },
+ "cases": "dev6",
+ "reps": 3,
+ "burn": 0.1,
+ "seed": 20261018,
+ "A": {
+  "mesh": 1024,
+  "Rp": 384,
+  "rule": "gauss128",
+  "form": "LSPG",
+  "scheme": "CNR",
+  "factor": 1,
+  "qp": "gauss160",
+  "qpp": "gauss192"
+ },
+ "subjects": [
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 1,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2.5,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 1,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 2,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 5.0,
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2.5,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 2,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 5.0,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2.5,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 2,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 5.0,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 1,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "LSPG",
+   "scheme": "BE",
+   "factor": 2.5,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 1,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 2,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 5.0,
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib6765",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "fib10946",
+   "qpp": "fib17711"
+  }
+ ],
+ "fallback_subjects": [
+  "1024|R128|LSPG|CNR|2.5"
+ ],
+ "doubled": [
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "cases": "dev6"
+  }
+ ]
+}

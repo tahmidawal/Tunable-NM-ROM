@@ -1,0 +1,16 @@
+{
+ "cells": [
+  {"cell": "c2d256", "d": 2, "L": 256, "tune_attempt": "t2d256a", "stageb_attempt": "s2d256a"},
+  {"cell": "c2d1024", "d": 2, "L": 1024, "tune_attempt": "t2d1024a", "stageb_attempt": "s2d1024b",
+   "tune_json": "inputs/tuning_json/t2d1024a.tune.json"},
+  {"cell": "c3d64", "d": 3, "L": 64, "tune_attempt": "t3d64b", "stageb_attempt": "s3d64b"}
+ ],
+ "cancelled": {
+  "t3d64a": "NNLS column deletion (one Givens copy per rotation) made the r = 256 ECSW path take 1,447 s and threatened completion of the tuning job; replaced by blocked windowed deletion with a per-path time budget (A38-A40) and re-run as t3d64b",
+  "s2d1024a": "repeated whole-file rewrites of the 57 MB result JSON dominated the timing phase; replaced by throttled saves plus an append-only evidence log (A42) and re-run as s2d1024b",
+  "s3d64a": "member identifiers printed the step 1/60 with 8 significant digits, which failed the exact-step schedule check; the step is now recovered exactly as 0.05/k (A44.1) and the job re-run as s3d64b"
+ },
+ "front2d_members": ["256|R128|BE", "256|R384|CNR", "1024|R128|BE", "1024|R384|CNR"],
+ "front2d_excluded": "FRONT-2D v1 members outside the registered baseline options are not assessed: Galerkin (GAL) members, members at steps other than 0.005, and every $4096^2$ member (mesh outside C3-minimal) (A21.1, A27)",
+ "deferred_scope": "2D $4096^2$ and 3D meshes finer than 64 intervals are deferred to C3-full (section 2, section 12)"
+}

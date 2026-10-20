@@ -1,0 +1,28 @@
+{
+ "attempt": "smk1",
+ "gpu": "h200",
+ "time_limit_hours": 2.0,
+ "runs": [
+  [
+   "ref/refrun",
+   "configs/smk1_e0repro.json"
+  ],
+  [
+   "ref/refrun",
+   "configs/smk1_ref.json"
+  ],
+  [
+   "ref/refrun",
+   "configs/smk1_x1.json"
+  ],
+  [
+   "b2run",
+   "configs/smk1_b1024.json"
+  ],
+  [
+   "b2run",
+   "configs/smk1_pilot4096.json"
+  ]
+ ],
+ "commit": "50b5daf705d67c8360916554a22dbc7cd27a5c89"
+}

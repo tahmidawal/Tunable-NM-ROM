@@ -1,0 +1,32 @@
+**ACCEPT-WITH-CORRECTIONS**
+
+The checked scientific verdicts follow the amended decision rules. Required corrections concern incomplete-work reporting, missing scope labels, and stale LMF summary fields—not the reproduced H2q outcomes.
+
+Paths below are relative to `experiments/jcp-dims/`. Recomputations used slim coefficient arrays, archived `result.json` records and per-case scoring evidence, without calling the verdict functions.
+
+| Question / finding | File:line | Independent recomputation and verdict |
+|---|---|---|
+| **A4-2D Gauss ladders — correct** | `checks/analysis-2d.json:40884`; `DESIGN.md:251` | At R384, M1536, gauss96 fails rollout distance: **2.605212e−4 > 2.5e−4**. Gauss128 passes: distance **1.424514e−4**, ρ **0.0539464**, finer check **1.292393e−6**. Larger candidates pass: **m*=16,384, stable**. Distances independently decoded from slim coefficients. |
+| **B3-2D gates — correct** | `checks/analysis-2d.json:59628`; `analyze2d.py:583` | R128 Halton’s finest draw-0 distance to Gauss is **4.224018e−4**, independently reproduced: correctly flagged and excluded from point-efficiency conclusions. Bad-vector maxima are **3.164281** (R128) and **4.158827** (R384), well above **0.116**; state-gate precedence correctly catches them regardless of rollout qualification. |
+| **B6-2D square failure is real; blocking correct** | `checks/analysis-2d.json:295`; `checks/analysis-2d.json:60011` | R128=M128, gauss256, CNR: independently decoded tight distance **0.0294298222**; archived step counts sum to **27/1,900 = 1.4211%**, exceeding 1%. Tight/tighter distance **3.155e−13** passes. Thus certificate and distance failures are real. The control is **unavailable**, not “fired by failure.” |
+| **B6-2D transitions — correct precedence** | `checks/analysis-2d.json:60011` | R128 κ2→3: **36 improve, 1 worsen, 1 tie**, median change **−4.038862e−4** across 38 cases. Favorable raw evidence correctly remains **blocked** by the unavailable square control. |
+| **GAL-vs-LSPG — correctly blocked** | `checks/analysis-2d.json:60447` | R128 κ2, same CN scheme: **16 favor GAL, 17 favor LSPG, 5 ties**; median GAL−LSPG **+2.032691e−6**. Square-form maximum distance independently reproduces as **0.0526851297**. Agreement is descriptive, not a gate, under A1.2. |
+| **A3-2D — correct** | `checks/analysis-2d.json:59908` | Fixed M2048, gauss256, R128→256: **38/38 improve**, median change **−0.002625337705**. The later non-improving transition correctly makes the range **not monotone**. Timing remains unavailable; `costs` is empty. |
+| **B6-LMF verdict — correct** | `checks/analysis-2d.json:62204` | Archived singular values give rank **384**, condition **5.369439**, versus default **9.558898**; all **570/570** collected runs valid. Gauss192 fails ρ **1.067646**; gauss256 passes ρ **0.003305785**: **65,536 versus 16,384 points**. Accuracy: **18/38 resolved**, below 50%, so **inconclusive**, despite 14 favorable cases. |
+| **A4-3D rounds — correct selection** | `make_round.py:40`; `checks/analysis-3d.json:16473` | Independently reconstructed the fronts and cost ordering: rounds 4–8 exactly match **16, 13, 17, 7, 4** selected members. Example round-4 W256/gl16/BDF2 fails distance **0.009493605** and ρ **0.262843**. |
+| **A4-3D width ladders and coverage — correct** | `checks/analysis-3d.json:16473`; `checks/analysis-3d.json:18120` | W512 lattice at 16,384 fails the accurate spec’s distance **3.727930e−4**. At 32,768 all three registered specs pass; accurate distance **3.477667e−5**, ρ **3.236172e−4**. Width m*=**32,768**. Coverage counts are **18/25/32/6/2** for M2_512/W256/W512/W768/W1024; coverage does not imply a common width m* exists. |
+| **3D B6/A3 — correct blocking and populations** | `checks/analysis-3d.json:17623`; `checks/analysis-3d.json:17919` | Square adaptive LSPG arrays yield **1,203/1,600 = 75.1875%** uncertified steps, tight distance **32.55936**, tight/tighter **21.92598**. B6 must remain blocked. Fixed-M A3 W256→W512 independently gives **63 improve / 1 worsen**, median **−0.003466123495**, correctly “improves.” |
+| **H2q — correct selection, timing and scope** | `checks/analysis-3d.json:17985`; `analyze3d.py`, `after_screen` | Recomputed matching populations **11/18/8** and the same winner for all comparators: `M2_512|gl32|qn|BDF2|0.016666667|k4`. From raw A–B–A times, 24 invocations each: **1.149138× fail**, **2.952802× pass**, **9.874135× pass**. Hash checks pass; screening doubled-work median **1.991006**. Only C_W1024 is labelled an **unqualified comparator**. FOM exclusion is explicit. |
+
+Corrections required before final hand-back:
+
+| Finding | File:line | Required correction |
+|---|---|---|
+| **LMF configuration summaries are stale after scoring** | `analyze2d.py:660`; `checks/analysis-2d.json:28033` | Scoring updates `C`, but exported configuration summaries still show `median: null`, `worst: null`, `n_eligible: 0`. Gauss256 actually has **38 eligible**, median **0.001941658027**, worst **0.01562692331**. Refresh those summaries after the stability gate and scoring. |
+| **2D MC is also unfinished** | `checks/analysis-2d.json:59384`; `DESIGN.md:869` | All five MC draws remain “not reached”; no collected `b2m` result or ledger job exists. A15 funded it. Therefore “2D complete except t2” is inaccurate: explicitly retain **B3-2D stage(ii) pending**, or document its disposition. |
+| **Shell-breaking scope label missing from results** | `checks/analysis-3d.json:17623`; `DESIGN.md:481` | Label the κ1 W512 control **explicit lowest-512, shell-breaking**, as registered. The design contains this qualification; the analysis/report does not carry it alongside the results. |
+| **Generated report is stale** | `report.md:35`; `report.md:44`; `report.md:46` | It still reports **28.6 GPU-h**, LMF “unstable,” and H2q pending. Current ledger totals **30.7501 GPU-h**; LMF stability passes and confirmation exists. Regenerate before publication. |
+
+E0’s conditional Richardson qualification and inherited post-hoc labels are present. The 3D front remains explicitly a **qualified subset**, with **2 open candidates**, never complete. Pending `t2` and the acknowledged `b3m` scoring lag are not accepted as completed evidence.
+
+I found no additional undeclared post-data decision-rule change. A6/A9 explicitly disclose the certificate relaxation and reduced independent ρ coverage. This was read-only: no files changed, no jobs submitted, and no arrays copied.

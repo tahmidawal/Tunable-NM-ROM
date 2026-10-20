@@ -1,0 +1,38 @@
+{
+ "attempt": "smk2",
+ "gpu": "a100-80G",
+ "gpus": 1,
+ "hours": 2.0,
+ "mem": "160G",
+ "cpus": 8,
+ "production": false,
+ "groups": [
+  [
+   {
+    "driver": "r2acc",
+    "config": "configs/smk2r.json"
+   },
+   {
+    "sh": "train2d/run_seed.sh",
+    "args": [
+     "1",
+     "OUT/train2d_s1"
+    ],
+    "env": {
+     "TRAIN2D_SMOKE": "1"
+    },
+    "complete": "OUT/train2d_s1/SEED-COMPLETE",
+    "projection_hours": 1.2,
+    "projection_basis": "smoke"
+   },
+   {
+    "driver": "r2acc",
+    "config": "configs/smk2t.json"
+   },
+   {
+    "driver": "r2acc",
+    "config": "configs/smk2u.json"
+   }
+  ]
+ ]
+}

@@ -1,0 +1,246 @@
+{
+ "attempt": "acc1024",
+ "driver": "qacc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  },
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192",
+   "qp": "gauss256",
+   "qpp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5.0,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  }
+ ]
+}

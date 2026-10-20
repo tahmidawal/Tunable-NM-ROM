@@ -1,0 +1,38 @@
+{
+ "d": 2,
+ "L": 1024,
+ "ranks": [
+  32,
+  64,
+  128,
+  256,
+  384
+ ],
+ "options": [
+  [
+   "BE",
+   0.005
+  ],
+  [
+   "CNR",
+   0.005
+  ]
+ ],
+ "saturation": false,
+ "ours": [
+  "1024|R128|BE",
+  "1024|R128|CNR",
+  "1024|R256|BE",
+  "1024|R256|CNR",
+  "1024|R384|BE",
+  "1024|R384|CNR",
+  "1024|R512|BE",
+  "1024|R512|CNR"
+ ],
+ "n_traj": null,
+ "ext_rank": 512,
+ "search_allocation_hours": 1.9797222222222222,
+ "wall_hours": 5,
+ "budget_hours": 4.75,
+ "ecsw_path_seconds": 2700
+}

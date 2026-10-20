@@ -1,0 +1,30 @@
+{
+ "job": "5020855",
+ "result": "runs/j2/archive/output/result_A7.json",
+ "checks": {
+  "B1": {
+   "passed": true
+  },
+  "B2": {
+   "compared": 6144,
+   "worst_relative": 1.1419438027868771e-14,
+   "passed": true
+  },
+  "B3": {
+   "compared": 5760,
+   "worst_relative": 2.304175127222498e-15,
+   "passed": true,
+   "note": "65-node meshes only (mesh interior = lattice)"
+  },
+  "B5": {
+   "swapped_worst": 206.43687783620544,
+   "perturbed_worst": 0.4027534392956986,
+   "passed": true
+  },
+  "B4": {
+   "mismatches": [],
+   "passed": true
+  }
+ },
+ "accepted": true
+}

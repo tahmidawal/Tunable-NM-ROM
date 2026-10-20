@@ -1,0 +1,217 @@
+{
+ "attempt": "e2s0",
+ "driver": "r2acc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "all38",
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "fib4181",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    },
+    {
+     "label": "fib6765",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "gauss96",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "fib10946",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "gauss128",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    },
+    {
+     "label": "gauss160",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "gauss192",
+     "rule": "gauss192",
+     "succ": "gauss256",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "fib4181",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    },
+    {
+     "label": "fib6765",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "gauss96",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "fib10946",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "gauss128",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    },
+    {
+     "label": "gauss160",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "gauss192",
+     "rule": "gauss192",
+     "succ": "gauss256",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "fib4181",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    },
+    {
+     "label": "fib6765",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "gauss96",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "fib10946",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "gauss128",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    },
+    {
+     "label": "gauss160",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "gauss192",
+     "rule": "gauss192",
+     "succ": "gauss256",
+     "level": "full"
+    }
+   ]
+  }
+ ],
+ "replay": {
+  "acc1024/R_R128_BE.npz": "42d5c60021f7a44550c8f0076df989c55fee97e53e0e34b0beffb74685cd9d4d",
+  "acc1024/R_R128_CNR.npz": "842fd683c3579b9801d6efa6fe206ee56d4d3f74483d447a9c9e39b6180fd179",
+  "acc1024/R_R256_BE.npz": "2893188d7877862a87de89dd098399e9d4b62c60ee5a2ba704ab3426af406268",
+  "acc1024/R_R256_CNR.npz": "fc379ec798b1fce7f85c881394538ae0f2a0d32d2c6eb3980e30588923f89968",
+  "acc1024/R_R384_BE.npz": "2c3d7c9cb57608c1ec5b0309d69872aeac20ac0c452bbc2160cd6450711c8b3c",
+  "acc1024/R_R384_CNR.npz": "89d5063dc67f9b4f14a8d2b576e97ffe4554b2ae0a406986d6115cee457846f2",
+  "acc256/R_R128_BE.npz": "8b34ce7ad242ea30a02e4cefd024c0a711bb9acdbe4b7650f67aad3b75c1ae12",
+  "acc256/R_R128_CNR.npz": "817ac7f24dcd9b2db2f3d25079fb874be53fa10c744856898222ea1d417811b7"
+ }
+}

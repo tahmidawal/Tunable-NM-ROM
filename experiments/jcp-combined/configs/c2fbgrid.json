@@ -1,0 +1,74 @@
+{
+ "attempt": "c2fbgrid",
+ "driver": "c2grid",
+ "mesh": 1024,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "settings": [
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss96"
+  },
+  {
+   "name": "R256fb",
+   "Rp": 256,
+   "rule": "gauss128"
+  }
+ ],
+ "grid": {
+  "forms_schemes": [
+   [
+    "LSPG",
+    "BE"
+   ],
+   [
+    "LSPG",
+    "CNR"
+   ]
+  ],
+  "dt_factors": [
+   1,
+   2
+  ],
+  "anchor_factors": [
+   0.125,
+   0.0625
+  ]
+ },
+ "refs": "REFS_DIR",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "fom": {
+  "schemes": [],
+  "dt_factors": [],
+  "ntols": [],
+  "order_cases": []
+ },
+ "common_baseline": "R256",
+ "timing": {
+  "cohort": "dev6",
+  "cases": 6,
+  "reps": 3,
+  "burn": 0.1,
+  "seed": 20261013,
+  "common_seed": 20261013
+ }
+}

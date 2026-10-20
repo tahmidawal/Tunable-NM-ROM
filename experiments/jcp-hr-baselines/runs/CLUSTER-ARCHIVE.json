@@ -1,0 +1,16 @@
+{
+ "note": "Finished Slurm job directories moved (same filesystem, file counts verified) from the lane namespace to the campaign archive per COMMON-BRIEF section 16; paths named in runs/<job>/REMOTE-ONLY.txt and REMOTE.sha256 under /cluster/tufts/paralab/tawal01/jcp-hrb/<job>/ now live under the 'remote' path below (same relative layout). smk1, smk2, t2d1024a and t3d64a also have offloaded local archives at burgers-archive/jcp-hr-baselines/<job>/ (outside jobdir/).",
+ "moved_utc": "2026-10-19T05:45:16Z",
+ "jobs": {
+  "s2d1024a": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/s2d1024a/jobdir",
+  "s2d1024b": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/s2d1024b/jobdir",
+  "s2d256a": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/s2d256a/jobdir",
+  "s3d64a": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/s3d64a/jobdir",
+  "s3d64b": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/s3d64b/jobdir",
+  "t2d1024a": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t2d1024a/jobdir",
+  "t2d256a": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t2d256a/jobdir",
+  "t3d64a": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64a/jobdir",
+  "t3d64b": "tufts-login:/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64b/jobdir"
+ },
+ "archive_total": "37G (du, 2026-10-19)"
+}

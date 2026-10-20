@@ -1,0 +1,111 @@
+{
+ "meshes": {
+  "4096": {
+   "edges": [
+    0,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
+    384,
+    512
+   ]
+  },
+  "1024": {
+   "edges": [
+    0,
+    128,
+    256,
+    384
+   ]
+  }
+ },
+ "A": {
+  "mesh": 1024,
+  "name": "A_R384",
+  "kind": "lin",
+  "Rp": 384,
+  "rule": "gauss128",
+  "scheme": "CNR"
+ },
+ "subjects": [
+  {
+   "name": "H4s0",
+   "kind": "head",
+   "head": "heads/head_mid_k4_s0.npz",
+   "rule": "gauss48",
+   "qp": "gauss64",
+   "qpp": "gauss96",
+   "mesh": 4096,
+   "scheme": "BE"
+  },
+  {
+   "name": "H8s0",
+   "kind": "head",
+   "head": "heads/head_mid_k8_s0.npz",
+   "rule": "gauss96",
+   "qp": "gauss128",
+   "qpp": "gauss160",
+   "mesh": 4096,
+   "scheme": "BE"
+  },
+  {
+   "name": "H16s0",
+   "kind": "head",
+   "head": "heads/head_mid_k16_s0.npz",
+   "rule": "gauss96",
+   "qp": "gauss128",
+   "qpp": "gauss160",
+   "mesh": 4096,
+   "scheme": "BE"
+  },
+  {
+   "name": "H32s0",
+   "kind": "head",
+   "head": "heads/head_mid_k32_s0.npz",
+   "rule": "gauss96",
+   "qp": "gauss128",
+   "qpp": "gauss160",
+   "mesh": 4096,
+   "scheme": "BE"
+  },
+  {
+   "name": "Hinc",
+   "kind": "head",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "rule": "gauss96",
+   "qp": "gauss128",
+   "qpp": "gauss160",
+   "mesh": 4096,
+   "scheme": "BE"
+  }
+ ],
+ "cases": "dev6",
+ "cert_cases": "dev6",
+ "reps": {
+  "dev6": 3
+ },
+ "burn": 0.1,
+ "seed": 20265114,
+ "doubled": [
+  {
+   "name": "H4s0",
+   "kind": "head",
+   "head": "heads/head_mid_k4_s0.npz",
+   "rule": "gauss48",
+   "qp": "gauss64",
+   "qpp": "gauss96",
+   "mesh": 4096,
+   "scheme": "BE",
+   "cases": [
+    [
+     "dev6",
+     0
+    ]
+   ]
+  }
+ ]
+}

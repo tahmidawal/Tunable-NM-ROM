@@ -1,0 +1,595 @@
+# jcp-qualify — which 2D/3D reduced-model configurations are numerically qualified, and what is the qualified error–cost front? (pre-registration)
+
+**Status:** pre-registration, 2026-10-18, written before any code or data of this lane. Amendments are appended at the
+end, dated; nothing above them is rewritten. Every accuracy number of this lane is scored against the E0 second-order
+reference $R_{ST}$, whose per-case uncertainty $\varepsilon_{\rm ref}$ is a **conditional Richardson estimate** (not a
+rigorous bound; the E0 cross-check rule was amended after data, E0 A10). Post-hoc labels carry forward unchanged: E0 A10;
+combined A10, A11 and the retracted A15.
+
+Governing documents (later supersedes earlier): `reports/2026-10-17-full-experiment-plan/PLAN-v2.md` (Group Q, B1, B4,
+B5), `PLAN-v3-amendments.md` (V3-1, V3-4, V3-5), `PLAN-v4-amendments.md` (V4-1, V4-2, V4-5, V4-6);
+`campaign/P1-RESTATEMENT.md` + `campaign/P1-RESTATEMENT-AMENDMENTS.md` (AM-1 … AM-8: the Q1/Q2 and statistics contracts
+inherited here); `campaign/briefs/COMMON-BRIEF.md` (binding); `campaign/briefs/jcp-qualify.md` (lane brief, wins on
+conflict); `reports/2026-10-08-jcp-lane-agent-rules.md`.
+
+Lane: worktree `worktrees/2026-10-18-jcp-qualify`, branch `exp/2026-10-18-jcp-qualify` (fork `21c175a1b`, setup
+`775eef470`), lane dir `experiments/jcp-qualify` (here), cluster namespace `/cluster/tufts/paralab/tawal01/jcp-qualify/`,
+lane job cap 3 (campaign cap 8, checked on the account before every submit), GPU-hour cap **35** including contingency,
+with time-limit reservations.
+
+Lanes built on (read, cited, code copied with provenance; their certified results are **cited, not re-run**):
+`jcp-p1-scaling` (P1, `worktrees/2026-10-17-jcp-p1-scaling`, final, 1.91 GPU-h, results+report audit 4 confirmed);
+`jcp-combined` (2D grid of schemes × Δt, finalist table); `jcp-speed3d` (3D grid, Q1 certificates, screening front;
+final, report audit READY); `jcp-time2` (temporal-order machinery; LSPG-CN is not established second order).
+
+## 0. Questions and outcomes
+
+| item | question | outcome labels |
+|---|---|---|
+| **Q1–Q3 (2D)** | for every 2D configuration that can enter the B5 front or the C1/C2 comparison: is it numerically qualified (solver Q1 + quadrature Q2), and how is it conditioned (Q3)? | per configuration: Q1 pass/fail; Q2 pass / fail / unverified; numerically qualified yes/no; Q3 numbers |
+| **Q2-3D** | are speed3d's 3D front members and H2 winners quadrature-qualified on their own reached states? | per configuration: Q2 pass / fail / unverified |
+| **B1** | error against $r$ and $N$ for every qualified 2D configuration; H-acc-N and H-acc-r (AM-4/AM-7 rules) applied to the new (scheme, Δt) families | H-acc-N pass / fail / inconclusive; H-acc-r per transition improves / does not improve / inconclusive, range monotone / not monotone / inconclusive |
+| **B4** | observed temporal order of each scheme against a same-form converged anchor, with solver and quadrature contributions verified smaller | per (scheme, r): observed order $\hat p$, interpretable yes/no, integer-order label or "no order label" |
+| **B5** | the qualified Pareto front of error (median and worst, E0 ST) against online cost (paired A–B–A timing, one job per mesh) parameterised by $r$, at each 2D mesh; the 3D front assembled from speed3d's audited outputs | front membership per configuration and mesh; failed/unqualified configurations shown separately |
+
+Three labels are kept separate everywhere (V4-2): (1) **numerical qualification** (Q1 + Q2), (2) **role qualification**
+(§5.4, pre-declared criteria), (3) **frontier usefulness** (not dominated, §6). The front need not be monotone in $r$.
+
+## 1. The reduced model (unchanged from P1 §1)
+
+Bank coefficients $c\in\mathbb R^{r}$, $u=\hat G_r(x)\,c$ (frozen checkpoint `dn256b`, $R=512$, $K=16$, rotation
+`rotation_R512`, ordered nested prefixes). Test space $M=4r$ discrete sine modes, $A=\Phi^{\mathsf T}\hat G_r$,
+$\Lambda$ the discrete eigenvalues; tested advection by an off-mesh point rule $(x_q,w_q)_{q=1}^m$:
+$$N(c)=\Psi^{\mathsf T}\big[(G_qc)\odot(G_sc)\big].$$
+Two-step LMM residual (combined `t2core.py`, P1 `p1core.py`):
+$$\mathcal R_n(c)=A(\alpha_0c+\alpha_1c_n+\alpha_2c_{n-1})+\Delta t\,(\beta_0F(c)+\beta_1F(c_n)),\qquad F(c)=N(c)+\nu\Lambda Ac.$$
+- **LSPG** minimises $\lVert D\mathcal R_n\rVert$, $D=(\alpha_0+\beta_0\Delta t\,\nu\Lambda)^{-1}$; tolerances
+  $(g_{\rm tol},{\rm tol}_f)$: prod $(10^{-3},10^{-9})$, tight $(10^{-7},0)$, tighter $(10^{-8},0)$.
+- **GAL** solves $Q^{\mathsf T}\mathcal R_n(c)=0$ ($A=QR_m$, thin QR): the same LMM on the Galerkin ODE; tolerances
+  ${\rm tol}_f$ (relative to $\lVert Ac_n\rVert$): prod $10^{-10}$, tight $10^{-13}$, tighter $10^{-15}$ (`c2common.tol_of`).
+- Adaptive Levenberg–Marquardt (fused LM, Cholesky, clipped step, damping carried, quadratic predictor), budget 600.
+- Initialisation contract (V4-4, kept): "full-field input sampled at quadrature points; full-field decode".
+- Horizon 0.25; outputs at $t=0,0.05,\dots,0.25$; every step size divides 0.05 exactly (asserted).
+
+Code: P1's `p1core.py` / `p1common.py` are copied unchanged (provenance: P1 commit and sha256 in `PROVENANCE.json`);
+this lane's changes live in new files (§10). The only new solver-side code is the Galerkin certifier (§4.1b), the
+Galerkin conditioning Jacobian (§4.3) and the generalisation of the drivers to arbitrary $\Delta t$ and form.
+
+## 2. Configurations (frozen before data)
+
+### 2.1 The 2D matrix
+
+A configuration is the P1 tuple (bank + rotation sha256, $r$, ordered mode identities and hash, rule name / $m$ /
+generator identity, mesh, scheme, form, $\Delta t$, tolerance level, budget, initialisation, weighting, output times,
+metric; P1 §2.1, A6.2). The registered matrix:
+
+| axis | values |
+|---|---|
+| $r$ (bank width) | 128, 256, 384, 512 |
+| frozen rule per $r$ (V4-3, P1 §2.2) | R128 `fib4181` (seed-0 shift, one frozen realisation); R256 `gauss128`; R384 `gauss128`; R512 `gauss192` |
+| mode list | frozen $F_{4r}$ = `modes_lean(1024, 4r)` reused at every mesh (V4-1; P1 §2.3) |
+| bank construction | full R512 bank, edges $[0,128,256,384,512]$, at every mesh (P1 A6.3: 4096² pilot peak 113 GB < 120 GB) |
+| schemes | **LSPG-BE**; **LSPG-CN-R** (CN with two BE start-up steps); **GAL-CN** (Galerkin CN, no start-up; *diagnostic* scheme per the brief, fully qualified and eligible for the front) |
+| step $\Delta t$ | $\Delta t_0=0.005$; $2\Delta t_0=0.01$; one larger step per scheme $L_s$ (§2.2) |
+| meshes $N$ | $256^2$, $1024^2$, $4096^2$ |
+| cases | **all 38** (dev6 + val32) at every mesh for every configuration (front and B1 population) |
+
+$4\times3\times3\times3=108$ configurations. **Inherited from P1 (cited, not re-run):** (R128, R256, R384) × (BE, CN-R) ×
+$\Delta t_0$ × three meshes, and R512 × (BE, CN-R) × $\Delta t_0$ × $1024^2$ — 20 configurations, each Q1+Q2 qualified in
+P1 (`p1-scaling/checks/analysis.json` `configurations`). For R128 and R256 at $4096^2$ P1 ran only the 16-case subset;
+this lane runs the **remaining 22 cases** of those four configurations (prod + tight, recorded and certified in-job),
+so that every front configuration has the 38-case population. Their Q1 is then judged on the union (P1's 16 rows + 22
+new rows: all predicates of §4.1 on the pooled population, P1's tight/tighter subset unchanged); their Q2 is P1's
+(population sub16 unchanged). Equality of the numerical configuration with P1's is checked by manifest (P1 AM-1 rule:
+numerical fields equal; provenance recorded). **New:** 88 configurations.
+
+### 2.2 The larger step per scheme (rule frozen now, from combined's grid; no lane data seen)
+
+Rule: per scheme, the **largest** factor $f\in\{2.5, 5, 10\}$ of combined's $1024^2$ grid (`c2grid`, E0 analysis
+`checks/analysis-c2grid-2d_e0.json`) at which the R384 (`gauss128`, the frozen R384 configuration) arm's **median** E0
+$R_{ST}$ error is at most the **worst** E0 error of the deployed LSPG-BE R384 arm at $\Delta t_0$ (3.01 %). Read from that
+file before any lane job:
+
+| scheme (combined key) | $f=2.5$ median | $f=5$ median | $f=10$ median | $L_s$ |
+|---|---|---|---|---|
+| LSPG-BE (`R384|LSPG|BE`) | 2.29 % | 4.16 % | 7.19 % | **2.5** ($\Delta t=0.0125$) |
+| LSPG-CN-R (`R384|LSPG|CNR`) | 1.10 % | 3.79 % | 7.14 % | **2.5** ($\Delta t=0.0125$) |
+| GAL-CN (`R384|GAL|CN`) | 0.36 % | 1.95 % | 5.23 % | **5** ($\Delta t=0.025$) |
+
+(The table is regenerated by `make_configs.py` from that file and must equal these choices; a mismatch stops the lane.)
+
+### 2.3 Rule ladders, successors and the registered fallback
+
+Successor $q^+$ and check $q^{++}$ (P1 §2.2): R128 `fib4181`→`fib6765`→`fib10946`; R256/R384
+`gauss128`→`gauss160`→`gauss192`; R512 `gauss192`→`gauss256`→`gauss320`.
+
+**Registered fallback (one level, pre-declared):** a configuration whose Q2 label is not "pass" is re-run once as the
+**fallback configuration** with main rule $q^+$ (successor $q^{++}$, check $q^{+++}$: `fib17711`, `gauss256`, `gauss384`
+respectively), everything else equal, in a follow-up job, with the full Q1/Q2/Q3 treatment and all 38 cases. The original
+configuration stays reported as failed/unverified; the fallback is a new configuration (named with suffix `fb`) and
+enters the front only on its own qualification. A fallback that is not qualified is reported; there is no second level.
+Fallback timing enters the per-mesh timing jobs only if the fallback is known before they are submitted; otherwise a
+dedicated fallback timing job for that mesh runs with the same A and protocol (§7), and the fallback's front membership
+is computed against the other configurations' timings **from the original job** through the common reference A
+(labelled "cross-job, A-normalised").
+
+### 2.4 3D: Q2 for speed3d's front members and winners
+
+**3D front (for Q2 selection), frozen now from speed3d's audited outputs** (`jcp-speed3d/checks/analysis-grid.json`,
+eligible configurations with a valid screening panel; screening cost = ratio × $t_A$, speed3d's own plot axis), using
+the dominance rule of §6 with that file's per-case $\eta$ as $\varepsilon_{\rm ref}$. Union of the median and worst
+fronts, plus the two H2 winners (speed3d `EXPORT.json` `H2`):
+
+| # | configuration (setting\|rule\|solver spec) | front | rule → $q^+$ → $q^{++}$ |
+|---|---|---|---|
+| 1 | W256\|gl16\|fs\|BE\|0.016666667\|K1 | median, worst | gl16 → gl20 → gl24 |
+| 2 | W256\|gl16\|fs\|BDF2\|0.025\|K2 | worst | gl16 → gl20 → gl24 |
+| 3 | W256\|gl16\|fs\|CN\|0.0125\|K1 | median | gl16 → gl20 → gl24 |
+| 4 | W256\|gl20\|fs\|CN\|0.0125\|K1 | median | gl20 → gl24 → gl32 |
+| 5 | W256\|gl20\|fs\|CN\|0.01\|K1 | median | gl20 → gl24 → gl32 |
+| 6 | W256\|lat8192\|fs\|CN\|0.01\|K1 | median | lat8192 → lat16384 → lat32768 |
+| 7 | W512\|gl24\|qn\|CN\|0.025\|k4 | median | gl24 → gl32 → gl40 |
+| 8 | M2_512\|gl24\|qn\|BDF2\|0.025\|k4 | worst | gl24 → gl32 → gl40 |
+| 9 | W512\|lat16384\|qn\|CN\|0.025\|k4 | median | lat16384 → lat32768 → lat65536 |
+| 10 | W512\|gl24\|qn\|CN\|0.016666667\|k4 | median | gl24 → gl32 → gl40 |
+| 11 | M2_512\|gl24\|fs\|BDF2\|0.0125\|K1 | worst; **H2 winner W_C_old / W_C_W1024** | gl24 → gl32 → gl40 |
+| 12 | M2_512\|gl24\|qn\|BDF2\|0.016666667\|k4 | worst | gl24 → gl32 → gl40 |
+| 13 | M2_512\|gl24\|fs\|CN\|0.01\|K1 | median | gl24 → gl32 → gl40 |
+| 14 | W512\|gl24\|fs\|CN\|0.01\|K1 | median | gl24 → gl32 → gl40 |
+| 15 | W768\|lat16384\|fs\|CN\|0.01\|K1 | median | lat16384 → lat32768 → lat65536 |
+| 16 | W1024\|lat32768\|fs\|CN\|0.01\|K1 | median | lat32768 → lat65536 → lat131072 |
+| 17 | M2_512\|gl24\|qn\|CN\|0.016666667\|k4 | **H2 winner W_C_W768** (dominated in the screening front) | gl24 → gl32 → gl40 |
+
+(Regenerated by `front3d.py` from the speed3d file; a mismatch stops the lane.) Successors are the next entry of the
+speed3d rule ladders (Gauss gl12, gl16, gl20, gl24, gl32, gl40, gl48, gl56, gl64, gl80; lattice lat2048 … lat131072;
+`rules.npz` + `rules_extra.npz`, sha256 pinned by speed3d `s3common.RULE_FILES`).
+
+**Q2-3D predicate** (AM-2 transposed to 3D, speed3d A2.3 lattice metric): population = cohort 923801, all 64 cases (the
+cohort speed3d selected on). (a) rollout bar: replay of the configuration with $q^+$ (same setting, solver spec,
+$\Delta t$, $K$, initialisation, everything else equal); lattice distance $\max_k\lVert u_k-u^{+}_k\rVert/\lVert u_0\rVert$
+on the $63^3$ scoring lattice ≤ $2.5\times10^{-4}$ on every case; (b) ρ bar: on the configuration's own six output states
+of every case, $\rho=\lVert N_q(c)-N_{q^+}(c)\rVert/\lVert N_{q^+}(c)\rVert$ of the tested advection (`c3common.nl3`),
+$\rho_{\max}\le0.116$; (c) finer-rule convergence on cases 0–7: $q^+$ vs $q^{++}$ meets the rollout bar, else "unverified
+(finer rule not converged)". Edge cases as P1 A1.13 / A2.4. A reproduction gate first: the lane's rerun with rule $q$
+must reproduce speed3d's archived coefficients of the same configuration (`runs/g{1,2,3}/archive`) to
+$\le10^{-10}$ relative on every case (both H200); a failing gate blocks that configuration's Q2 label.
+3D Q1 is speed3d's (eligibility E-a/E-b/E-c + ADT gate; `EXPORT.json` `q1`), cited.
+
+### 2.5 Cohorts, references and scoring (common brief §2; P1 §3)
+
+dev6 and val32 only in 2D (training disjointness asserted); 3D 923801 only. No test64/923901 run, no sealed/OOD access;
+`sealed/` and `custody/` never touched. Scoring offline on CPU through `refstore` (E0 store version pinned in the
+manifest): $e=\max_{k=1..5}\lVert u(t_k)-R(t_k)\rVert/\lVert R(t_0)\rVert$ on the $257^2$ lattice; eligibility per
+case-kind read from the store at scoring time; $R_S$ only for LSPG-BE at $\Delta t_0$ (labelled), every other S use
+"unmatched diagnostic"; ties $|\Delta e|\le2\varepsilon_{\rm ref}$; every scored record asserts its identity (cohort,
+case, time tag, reference kind, reference sha256, store version, metric id). Cases are the statistical unit.
+
+## 3. B1: error against $r$ and $N$ (H-acc-N, H-acc-r on the new families)
+
+Families = (scheme, $\Delta t$) — 9 families; P1 owns (BE, $\Delta t_0$) and (CN-R, $\Delta t_0$) for $r\le384$ and
+R512 at $1024^2$; its verdicts are cited.
+
+- **H-acc-N** per (r, family), procedure exactly P1 §4.3 + A1.9 (AM-4): P256 = $256^2$ vs $1024^2$ on the 38 cases
+  eligible at both; P4096 = $4096^2$ vs $1024^2$ on the **16-case subset** (registered population, identical to P1); trend
+  on the 16-case subset; $\delta_i=\max(2\varepsilon_{{\rm ref},i},0.1\,e_i(1024^2),10^{-12})$; TOST = two one-sided
+  Wilcoxon tests at α = 0.05; pass / fail / inconclusive as AM-4; "inconclusive (unqualified configuration)" if any of the
+  three configurations is not numerically qualified. Sensitivity (reported, no verdict): P4096 on all 38 cases.
+  New families: every (r, family) except P1's.
+- **H-acc-r** per (mesh, family), procedure exactly P1 §4.4 / AM-7 with precedence: transitions 128→256, 256→384,
+  384→512 at **every** mesh (R512 now runs at every mesh); range verdicts over 128–384 (primary, as P1) and 128–512.
+  For P1's two Δt₀ families the new transitions are 384→512 at $256^2$ and $4096^2$ (and the 128–512 range there).
+  Every transition reported with improve / worsen / tie / unqualified counts, median paired change, worst change.
+- Tables and plots: median and worst error against $r$ per mesh and family; against $N$ per $r$ and family.
+
+## 4. Qualification
+
+### 4.1 Q1 — solver qualification, certified in-job at every step with a fresh Jacobian (V4-2; P1 §5.1, A1.3, A1.4)
+
+Every production rollout records its internal trajectory $c_0,\dots,c_S$ ($S=0.25/\Delta t$). Configuration-level Q1:
+1. every run valid: finite outputs, no non-finite step, no damping-saturation exit (reason 3); budget exits counted and
+   judged by the certificate (A1.4);
+2. per-step certificate, non-certified steps ≤ 1 % **pooled over all steps of all cases** (4.1a, 4.1b);
+3. scoring-lattice relative distance to the adaptive **tight** solve of the same configuration ≤ $2.5\times10^{-4}$ on
+   **every** case (tight anchors on every case; an invalid tight anchor makes the case unqualified);
+4. tight/tighter agreement ≤ $2.5\times10^{-5}$ on dev6 (tighter on dev6 cases 0–5);
+5. G-cert: the in-job certificate agrees with the solver's own recorded per-step quantity (tolerances below); offline
+   recomputation of every distance agrees with the in-job value (A1.3: $10^{-9}$ relative + $10^{-13}$).
+
+**4.1a LSPG** (exactly P1): $\gamma_n=\lVert J^{\mathsf T}r\rVert/(\lVert J\rVert_F\lVert r\rVert+10^{-300})$ from the
+rebuilt LSPG residual and a **forward-mode autodiff** Jacobian (not the solver's analytic `nlJ`); non-stationary if
+$\gamma_n>10^{-3}$ or non-finite; G-cert $|\gamma_{\rm cert}-\gamma_{\rm rec}|\le10^{-7}\gamma_{\rm rec}+10^{-12}$.
+
+**4.1b GAL (form-appropriate certificate; deviation from the literal brief, stated):** a Galerkin step is a root of the
+square system $Q^{\mathsf T}\mathcal R_n(c)=0$; the brief's least-squares stationarity ratio is not a convergence measure
+for a root (at a converged root it is a ratio of round-off quantities and is $\ge\sigma_{\min}(J)/\lVert J\rVert_F$
+whenever $r\neq0$, so it cannot certify anything). The GAL certificate is therefore the **relative Galerkin residual**
+rebuilt from the saved states (scheme coefficients, history $Ac_n$, $Ac_{n-1}$, $F(c_n)$), with $Q$ the thin-QR factor of
+$A$:
+$$\eta_n=\frac{\lVert Q^{\mathsf T}\mathcal R_n(c_{n+1})\rVert}{\lVert Ac_n\rVert},$$
+non-converged if $\eta_n>10^{-8}$ (100 × the production tolerance $10^{-10}$, margin for recomputation round-off) or
+non-finite; ≤ 1 % pooled (predicate 2). The Jacobian $J_G=\partial(Q^{\mathsf T}\mathcal R_n)/\partial c$ is formed by
+autodiff at every step and its condition number recorded (a singular step Jacobian would make the root ill-posed; reported
+with Q3). G-cert: $|\eta_{\rm cert}-\eta_{\rm rec}|\le10^{-6}\eta_{\rm rec}+10^{-13}$ with
+$\eta_{\rm rec}=$ (recorded tolerance ratio) × ${\rm tol}_f$. The literal $\gamma_n$ is also computed and reported for
+GAL, without a verdict. Independence: $\lVert Q^{\mathsf T}x\rVert=\lVert P_{\mathrm{range}(A)}x\rVert$ does not depend on
+the QR sign convention, so the offline NumPy check (`npcheck`, own QR) is basis-independent.
+
+### 4.2 Q2 — quadrature qualification (AM-2; P1 §5.2, A1.13, A2.4)
+
+Population: dev6 + val32[0:10] (16 cases) per configuration at every mesh. Rollout bar: replay with $q^+$, max over the
+five evolved outputs of the scoring-lattice relative distance ≤ $2.5\times10^{-4}$ on all 16 cases. ρ bar: own reached
+states (6 outputs × 16 cases), $\rho_{\max}\le0.116$ (borrowed threshold, quadrature-study `DESIGN.md:234`; a
+successor-rule / output-state check). Finer-rule convergence on dev6: $q^+$ vs $q^{++}$ rollout bar, else "unverified
+(finer rule not converged)". Labels pass / fail / unverified; the other 22 cases are never described as individually
+Q2-tested. **Numerically qualified** = Q1 pass and Q2 pass.
+
+### 4.3 Q3 — conditioning (P1 §5.3)
+
+Per configuration: singular values of $A$ (per $r$, mesh); at output indices 1, 3, 5 of each dev6 trajectory, the
+singular values of the step Jacobian of the scheme's own solve — LSPG: $J=A+\beta_0\Delta t\,S\,\partial N(c)$ (history-
+free, autodiff, P1 `make_jac`), so $\mathrm{cond}(J^{\mathsf T}J)=\mathrm{cond}(J)^2$; GAL: $J_G=\alpha_0R_m+\beta_0\Delta
+t\,(Q^{\mathsf T}\partial N+\nu Q^{\mathsf T}\Lambda A)$. Median and max condition number and rank at $10^{-13}$
+relative. No fix (orthogonalisation, regularisation) is applied; Q3 is descriptive.
+
+### 4.4 Role qualification (pre-declared, descriptive; never merged with the other labels)
+
+For each numerically qualified configuration $X$ at mesh $N$, against the deployed LSPG-BE at $\Delta t_0$ with the same
+$r$ and mesh ($B_r$), from the same timing job: **fast-equal-accuracy** iff cost ratio $c_X/c_{B_r}\le0.6$ and $X$ ties
+or beats $B_r$ on both median and worst error (ties within $2\varepsilon_{\rm ref}$ of the case that defines each
+statistic); **accurate-equal-cost** iff $c_X/c_{B_r}\le1.1$ and the median error is lower by more than the tie margin.
+Configurations meeting neither are "no role" (not a failure).
+
+## 5. B4: observed temporal order per scheme (AM-7 rule; P1 §6 CN-R row with A1.7)
+
+Fixture: $1024^2$, $r\in\{128,384\}$ (frozen rules), schemes LSPG-BE, LSPG-CN-R, GAL-CN, dev6 cases 0–5, **tight**
+tolerance. Step factors $h/\Delta t_0\in\{L_s, 2, 1, \tfrac12, \tfrac14\}$, same-form anchor $h_a=\Delta t_0/64$, anchor
+check $\Delta t_0/128$ (one anchor rule for all schemes, so the anchor is not chosen by the scheme's name). Error
+$e(h)=\max_k\lVert u_h(t_k)-u_{h_a}(t_k)\rVert/\lVert u_0\rVert$ (scoring lattice). Per case: observed order $\hat p$ =
+least-squares slope of $\log e$ against $\log h$ over $\{1,\tfrac12,\tfrac14\}$; pairwise orders reported over the whole
+ladder (the large steps are pre-asymptotic context, no verdict). Per case the estimate is **interpretable** iff
+(i) asymptotic: the two pairwise orders on $\{1,\tfrac12,\tfrac14\}$ differ by ≤ 0.3; (ii) anchor:
+$d(h_a,h_a/2)\le0.1\,e(\tfrac14)$; (iii) solver: $d({\rm tight},{\rm tighter})$ at $\tfrac14$ ≤ $0.1\,(e(\tfrac12)-e(\tfrac14))$;
+(iv) quadrature (A1.7): $\max_k\lVert(u_q(\tfrac14)-u_q(h_a))_k-(u_{q^+}(\tfrac14)-u_{q^+}(h_a))_k\rVert/\lVert u_0\rVert\le
+0.1\,(e(\tfrac12)-e(\tfrac14))$ and $d(u_{q^+}(\tfrac14),u_{q^{++}}(\tfrac14))\le2.5\times10^{-4}$; (v) every run valid.
+**Label per (scheme, r):** if ≥ 5 of 6 cases are interpretable, $\hat p$ = median over interpretable cases (range
+reported); the integer label "order 1" / "order 2" is awarded iff **every** interpretable $\hat p$ lies in
+$[0.8,1.2]$ / $[1.8,2.2]$; otherwise "observed order $\hat p$, no integer label". With < 5 interpretable cases:
+"order not established (not interpretable)". Never awarded by name.
+
+Controls for B4: **positive gate** (CPU, independent oracle): the manufactured LMM test (`test_lmm.py`, copied from
+jcp-time2, SciPy oracle) on the lane's `p1core` copy: GAL-CN and GAL-CN-R order ∈ [1.8, 2.2], GAL-BE ∈ [0.8, 1.2].
+**Must-fail control (real data):** GAL-TH06 (θ = 0.6, first order; `SCHEMES['TH06']`) through the same B4 procedure at
+R384 on dev6 must **not** receive the "order 2" label (expected observed order ≈ 1). If it does, B4 is blocked.
+
+## 6. B5: the qualified front
+
+**2D cost.** One timing job per mesh (H200), A–B–A with P1's reference A (r = 384, $1024^2$, LSPG-CN-R, $\Delta t_0$,
+frozen list, `gauss128`) on dev6 × 3 repeats, triplet order randomised; P1 protocol (§7 of P1 + A1.10, A3.2, A4.1):
+split triplet (A evolve | B init | B evolve | B decode | A evolve, each burned and synchronised; drift band
+$[1/1.1,1.1]$, ≤ 2 retries) and fused triplet (A | B fused query | A); every timed execution reproduces its scoring run's
+identity hash (W, every internal state, per-step exit reasons and iteration counts). Subjects: all 36 configurations of
+the mesh. Cost of a configuration: **primary** $c$ = median over its valid fused triplets of $t_{\rm fused}/\bar t_A$
+("online cost, full-field contract": input sampling, evolution, full-field decode); secondary $c_{\rm ev}$ = median
+evolution / $\bar t_A$; absolute seconds reported. A configuration's timing is usable iff ≤ 1/3 of its triplets are
+invalid and it has no identity failure (P1 A4.1).
+
+**Timing-job qualification (P1 A2.3/A3.2):** each subject's untimed scoring run is the recording program, certified
+in-job (§4.1), with tight, tighter, $q^+$, $q^{++}$ replays and own-state ρ on its six dev6 cases. A configuration is a
+front **candidate** at mesh $N$ iff its accuracy-job label (38/16 populations) **and** its timing-job label (dev6) are
+both "numerically qualified" and its timing is usable.
+
+**Dominance (frozen):** for two candidates $X\ne Y$ at the same mesh with costs $c$ and error statistic $e$ (median, or
+worst, of $e_i$ over the 38 cases), with $\tau_{XY}=\max\big(2\max(\bar\varepsilon_X,\bar\varepsilon_Y),\,0.02\max(e_X,e_Y)\big)$
+($\bar\varepsilon$ = median over cases of $\varepsilon_{{\rm ref},i}$):
+$$X\succ Y\iff c_X\le1.05\,c_Y\ \wedge\ e_X\le e_Y+\tau_{XY}\ \wedge\ \big(c_X<c_Y/1.05\ \vee\ e_X<e_Y-\tau_{XY}\big).$$
+(Symmetric margins: no pair dominates each other.) The **median front** $F_{\rm med}(N)$ and **worst front**
+$F_{\rm worst}(N)$ are the candidates not dominated by any candidate. Front members are reported with their (r, scheme,
+Δt) — the front is parameterised by $r$ and need not be monotone in $r$. **Failed or unqualified** configurations are
+plotted in a separate panel with their failing label, never on the headline front. Secondary fronts on $c_{\rm ev}$ are
+reported.
+
+**`runs/FRONT-2D.json` (deliverable for jcp-fom2d).** Written only after the 2D results audit passes, then frozen
+(sha256 recorded in `runs/FRONT-2D.sha256`; any later change is a new versioned file with a dated amendment). Per mesh
+and per member of $F_{\rm med}\cup F_{\rm worst}$: the full configuration manifest (r, M, mode-list hash, rule, m,
+generator identity, scheme, form, Δt, tolerance level and values, budget, trust, initialisation contract, weighting,
+output times, metric id, bank checkpoint/rotation sha256, bank edges, code commit and sha256 of `p1core.py`/
+`p1common.py`), the three labels, per-case E0 ST errors and $\varepsilon_{\rm ref}$ (38 cases, case ids), median and
+worst, timing (cost $c$, $c_{\rm ev}$, absolute medians, A's identity, GPU type, job id), and which front(s). The
+non-member qualified configurations and the unqualified ones are listed too (with labels), so jcp-fom2d can see the
+whole candidate set.
+
+**3D front (B5-3D), assembled, no new timing.** From speed3d's audited `analysis-grid.json`: the same dominance rule on
+eligible configurations with a valid screening panel; cost = screening ratio × $t_A$ ("speed3d screening contract:
+full-field 65³ mesh-path rollout; ratios from separate jobs against C_old, not paired in one job" — the brief's
+"mesh-free" wording does not describe the grid's contract; speed3d's mesh-free m1 path covers only four configurations
+and is cited separately). Reported: the 3D front of §2.4, each member's Q2-3D label; and the **qualified 3D front** =
+the same rule restricted to configurations with Q1 (speed3d) and Q2-3D pass, plus the speed3d configurations whose rule
+is the setting's deployed or post-hoc converged rule (cited as "not Q2-tested here"). Failed members in a separate
+panel.
+
+## 7. Controls (each with fixture, predicate, and the claim it blocks)
+
+Every control is shown to behave as registered in the real-size smoke (synthetic ones in CPU tests) before any verdict
+is read; a misbehaving control blocks its listed claim until fixed and re-audited. Inherited P1 controls are re-run
+where the lane's code differs from P1's (drivers), and cited otherwise.
+
+| control | kind | fixture and predicate | blocks |
+|---|---|---|---|
+| under-resolved rule (2D) | negative | P1 A1.1 fixture (R384 `gauss32` → `gauss64`, LSPG-BE $\Delta t_0$, $1024^2$, dev6, independent evidence `p1-scaling/checks/ctrl-fixture-under-resolved.json`): the lane's Q2 code must return **fail** (rollout > 2.5e-4 on ≥ 1 case, ρ_max > 0.116) | Q2, all fronts |
+| under-resolved rule (3D) | negative | W512 `lat8192` → `lat16384`, FS-K1 BE $\Delta t=0.01$ ($a=6$), 923801: independent evidence from combined `SELECTION-3D-POSTHOC.json` (W512 fs\|BE\|0.01\|K1 worst distance to the converged rule: lat8192 4.21e-3, lat16384 2.01e-4, same population, so by the triangle inequality $d(8192,16384)\ge4.0\times10^{-3}$ on the worst case of lat8192): the lane's Q2-3D must return **fail** | Q2-3D |
+| Q1 negative, LSPG | negative | P1 A1.6: R384 `gauss128` CN-R $1024^2$ $\Delta t_0$, LM budget 0, dev6, 300 pooled steps; independent NumPy γ > 1e-3 on > 3 steps before use; the lane's Q1 must report pooled > 1 % | Q1 (LSPG) |
+| Q1 negative, GAL | negative | GAL-CN R384 `gauss128` $1024^2$ $\Delta t_0$, LM budget 0 (returns the selected predictor), dev6, 300 pooled steps; an independent NumPy Galerkin residual (own QR) must give $\eta_n>10^{-8}$ on > 3 steps before use; the lane's GAL Q1 must report pooled > 1 % and agree per step with NumPy (A1.3) | Q1 (GAL) |
+| zero-update | negative | P1: $c_{n+1}=c_n$ on dev6\|0 R384 CN-R (motion of the verified tight trajectory > 100 × 2.5e-4); Q1 distance must exceed 2.5e-4; and the same for GAL-CN | Q1 |
+| larger-step solver probe | probe | at $L_s$ the budget-exit and certificate counts per configuration are reported (no required outcome) | — |
+| wrong-mesh table | negative | P1: a $256^2$ table fed to the $1024^2$ query must raise | all |
+| case / time / reference-kind swap | negative | P1 (CPU, real records): a swapped record must raise; plus a **Δt swap**: a record whose stored $\Delta t$ differs from its configuration key must raise | all accuracy |
+| reproduction gate (2D) | positive | the lane's driver at $\Delta t_0$, R384 `gauss128` CN-R and BE, $1024^2$, dev6: coefficients equal P1's `acc1024` archive to ≤ 1e-10 (same numerical configuration; A100) — shows the generalised driver is P1's arithmetic | inherited P1 labels, every new configuration |
+| reproduction gate (Δt, form) | positive | combined `c2grid` archives hold prod runs of R128 `fib4181`, R384 `gauss128`, R512 `gauss192` (not R256: archive rule `gauss96`) for LSPG-BE, LSPG-CN-R, GAL-CN at every factor of §2.2 on all 38 cases at $1024^2$ (`W_R128/R384/R512.npz`, keys `<form>|<scheme>|<dt>|prod`). Preliminary in the smoke (dev6, R128 and R512); registered in `acc1024`: **every** new $1024^2$ configuration with $r\in\{128,384,512\}$ equals its archive run to ≤ 1e-10 relative ($\max_k\lVert\Delta W_k\rVert/\lVert W_0^{\rm arch}\rVert$) on all 38 cases, after numerical-manifest equality (P1 `manifest_equal` generalised to Δt and form; A100, the archive's GPU type) | every new Δt / GAL configuration (R256 configurations have no archive gate; they rely on the R128/R384/R512 gates of the same code path) |
+| reproduction gate (3D) | positive | §2.4: rerun at rule $q$ equals speed3d's archive ≤ 1e-10 | Q2-3D |
+| split = fused, timed = scored, identity, drift | positive / negative | P1 A2.3, A3.2, A4.1 (injected wrong identity hash makes every triplet of that subject invalid) | B5 cost |
+| doubled work | negative | P1 AM-8: two separately dispatched, synchronised evolutions of one subject (R384 CN-R $1024^2$) give B/A ∈ [1.8, 2.2] with identical iteration counts | B5 cost |
+| front dominance | negative / positive | CPU synthetic: a candidate 10 % costlier and 10 % less accurate than another must be dominated; a pair within both tie bands must both stay; an unqualified configuration that would dominate must be excluded from the headline front | B5 |
+| H-acc-N / H-acc-r | negative | P1 CPU synthetics (trend → fail; equal → pass; precedence cases) re-run on the lane's copy | B1 |
+| B4 order | positive / negative | §5: manufactured oracle (CPU) and GAL-TH06 must-fail | B4 |
+| rank-deficient fixture | negative | P1: duplicated column → Q3 reports rank deficit and cond > 1e12 (CPU) | Q3 |
+
+## 8. Jobs, inventory, resources
+
+| job | GPU | content |
+|---|---|---|
+| `smkA` | a100-80G | real-size smoke at $1024^2$: generalised accuracy driver on dev2 for one configuration per (scheme, Δt) at R128 and R512 (all Q1/Q2/Q3 paths), both reproduction gates (dev6), every 2D numerical control (under-resolved, Q1-LSPG, Q1-GAL, zero-update, wrong-mesh), B4 mini (one case, both r, all three schemes + TH06), cost probe of the 38-case blocks |
+| `smkB` | h200 | timing smoke at $1024^2$ (A + 6 subjects covering every scheme and Δt, dev2, 2 reps; doubled work; injected identity fault) and the $4096^2$ memory pilot (full bank, R512 tables `gauss192/256/320/384`, the $1024^2$ bank for A, one rollout per scheme at R512; peak ≤ 120 GB decimal, else the R512 $4096^2$ configurations use the prefix-retaining builder is **not** available for R512 → they are reported "not reached (memory)") |
+| `smk3` | h200 | 3D smoke: speed3d context with W512 and W1024, reproduction gate and Q2-3D on cases 0–3 for configurations 14 and 16, the 3D under-resolved control (all 64 cases: cheap), memory pilot with W1024 `lat131072` |
+| `acc256`, `acc1024` | a100-80G | 2D accuracy + Q1/Q2/Q3, all new configurations at the mesh (38 cases) |
+| `acc4096` | h200 | same at $4096^2$, plus the 22 extra cases of P1's R128/R256 Δt₀ configurations |
+| `time256`, `time1024`, `time4096` | h200 | per-mesh timing (36 subjects) with timing-job certification |
+| `order` | a100-80G | B4 (§5) |
+| `q3d` | h200 | Q2-3D for the 17 configurations of §2.4 (+ the 3D control) |
+| `fb<mesh>` | per mesh | registered fallbacks (§2.3), only if needed |
+
+**Budget.** Hard cap 35 GPU-h including contingency; P1's `ledger.py` pattern: a job is submitted only if spent +
+Σ time limits of queued/running lane jobs + this job's time limit ≤ 35 (A1.11, A2.6), the lane has < 3 jobs
+queued/running, and `squeue -u tawal01 -h | wc -l` < 8. Time limit = 1.5 × a smoke-derived projection (P1
+`resources.py` pattern; projections are estimates, the scheduler limit is the enforced bound). A-priori estimate
+(re-priced by the certificate): smokes 1.5, acc256 1.5, acc1024 1.5, acc4096 2, time ×3 2.5, order 0.5, q3d 1.5,
+fallbacks 2 ≈ 13 GPU-h.
+
+**Defer order** (brief; first dropped first): $4096^2$ larger-step arms → GAL-CN diagnostic → 3D Q2 for non-winner front
+members → $256^2$ larger-step arms. **Never dropped:** the front at $1024^2$ and $4096^2$ for $\Delta t_0$/$2\Delta t_0$
+CN-R and BE. Deferred items are reported, never silently omitted.
+
+## 9. Analysis and deliverables
+
+`qscore.py` (CPU): E0 scoring with identity assertions (incl. Δt), offline recomputation of every Q1/Q2 quantity with the
+independent NumPy decode, configuration labels (generalised P1 `p1score.qualify`). `qstats.py`: P1 `p1stats` copy
+(H-acc-N/H-acc-r, TOST, bootstrap) + the dominance function. `analyze.py` → `runs/EXPORT.json` (every label, verdict,
+front, key number; `contract` field on every cost number). `make_report.py` → `report.md` + PNG plots: per-mesh front
+(median and worst), failed/unqualified panel, error vs $r$ per mesh and family, error vs $N$ per $r$, observed orders,
+conditioning vs $r$, 3D front with Q2-3D labels. `runs/FRONT-2D.json` as §6. `runs/GPU-LEDGER.json`. No hand-typed
+number; Codex audits at every gated step (design, code, each job, results, report).
+
+## 10. Code (copy, then edit in the lane; `vendor/` untouched)
+
+Copied unchanged from P1 (`exp/2026-10-17-jcp-p1-scaling` @ `5942f63ef`; sha256 in `PROVENANCE.json`): `p1core.py`,
+`p1common.py`, `p1stats.py`, `npcheck.py`, `ledger.py` (cap and namespace edited), `cluster/{stage,submit,collect}`
+(namespace, job-name prefix `jq_`, cap edited), `make_fixtures`-style helpers as needed. New: `qcert.py` (Galerkin
+certifier and Galerkin Jacobian), `qacc.py` (generalised accuracy driver: any Δt, LSPG and GAL, 38 cases, controls,
+B4 blocks), `qtime.py` (generalised per-mesh timing driver), `qscore.py`, `qstats.py` (dominance), `front3d.py`,
+`q3d/` (copies of the speed3d modules needed for the 3D replays — `c3common`, `s3common`, `s3ctx`, `fs3`, `fs3p`, `qn3`,
+`t2core`, `timing`, `replay`, rule files — with provenance from `exp/2026-10-14-jcp-speed3d` @ `691465d88`, plus the
+new `q3run.py`), `test_q.py` (CPU controls), `test_lmm.py` (jcp-time2 copy), `manifest.py`, `resources.py`,
+`analyze.py`, `make_report.py`, `make_configs.py`.
+
+## 11. Integrity rules carried
+
+Never quote a pre-September Burgers speed-up; never mention the heat POD-128 comparison; retractions stated plainly.
+Every GPU number from the cluster; local GB10 only for CPU analysis (`JAX_PLATFORMS=cpu`) and at most one `jaxrun`.
+Codex audits: read-only prompts, no large copies (≤ 2 GB scratch under `/tmp/jcp-qualify-audit-scratch/`, deleted after
+each round), `df -h /home` ≥ 60 GB before each audit. Waits on PIDs with an overall deadline.
+
+---
+
+## Amendment A1 (2026-10-18, before any lane job; answers `audits/codex-design-1.md`, NEEDS-RESTATEMENT)
+
+Supersedes the text above wherever they differ. Numbered by the audit's ranked blockers, then its other items.
+
+**A1.1 3D front: no uncertified member, defined candidate universe (blocker 1; audit item 10).** The exception
+admitting deployed / post-hoc-rule configurations to the qualified 3D front without their own Q2 is **withdrawn**. The
+candidate universe is speed3d's 436 eligible configurations with a valid screening panel. Qualification proceeds in
+registered rounds: round 1 = the 17 configurations of §2.4. After each round the front (§6 rule, computed against every
+remaining candidate) is recomputed with all Q2-failed or unverified configurations removed; configurations that become
+front members and have not been Q2-tested are tested in the next round (same predicate, job `q3dN`). At most three rounds
+in total. The result is reported as the **qualified 3D front** if the last round exposes no untested member, otherwise
+as the **"qualified subset of the screened candidates (round limit reached)"**, with the untested exposed members listed.
+Every 3D front member shown on the headline panel has Q1 (speed3d) and its own Q2-3D pass.
+
+**A1.2 Fallback timing inside the paired panel (blocker 2; audit item 7).** The "cross-job, A-normalised" fallback path
+is withdrawn. Sequence: all accuracy jobs (and any registered fallback accuracy jobs, §2.3) complete and their Q labels
+are computed **before** the per-mesh timing jobs are staged; every fallback configuration known by then is a subject of
+its mesh's timing job. If a fallback becomes known only after a mesh's timing job ran, that mesh's whole timing panel is
+re-run in one new job (all subjects), and the earlier panel is reported as superseded. A front is always built from one
+timing job per mesh.
+
+**A1.3 GAL Q1 restated as a governing-contract amendment (blocker 3; audit items 4, 5, 17).** For the GAL form the
+contract's stationarity predicate (common brief §3 / V4-2, $\gamma>10^{-3}$) is **replaced** by the registered residual
+predicate: step non-converged iff $\eta_n>10^{-8}$ or non-finite; ≤ 1 % pooled. $10^{-8}$ is a **registered threshold**
+(100 × the production tolerance), not a derived round-off requirement. The earlier sentence "the literal ratio cannot
+certify anything" is withdrawn and restated: for a square Galerkin system the least-squares ratio does not decrease with
+the residual magnitude (it is bounded below by about $\sigma_{\min}(J)/\lVert J\rVert_F$ for any $r\ne0$, up to the
+$10^{-300}$ regulariser, and equals 0 only at an exact zero residual), so it is not a convergence measure for a root; it
+is computed and reported for GAL without a verdict. Exceptional cases: $\lVert Ac_n\rVert=0$ → the step is certified iff
+$\lVert Q^{\mathsf T}\mathcal R_n\rVert=0$, else non-converged; G-cert for such a step compares the raw residual norms.
+**Positive fixtures:** (i) every GAL production configuration of the smoke must pass the predicate (a certificate that
+rejects everything fails here); (ii) CPU boundary test of the classifier: $\eta=0.99\times10^{-8}$ certified,
+$1.01\times10^{-8}$ not, NaN not. **GAL zero-update** gets the same independent establishment as LSPG: the verified tight
+GAL trajectory of dev6|0 (R384, $1024^2$, $\Delta t_0$) must move by $\lVert u_5^{\rm tight}-u_0\rVert/\lVert u_0\rVert>100
+\times2.5\times10^{-4}$ before the zero-update control is read.
+
+**A1.4 B4 controls non-vacuous; classifier validated; step buffers sized (blocker 4; audit items 12, 13).**
+- TH06 control: GAL-TH06 at R384 on dev6 must be interpretable on ≥ 5 of 6 cases **and** receive the "order 1" label
+  (every interpretable $\hat p\in[0.8,1.2]$); otherwise the control is "unavailable" or "failed" and **every** B4 label is
+  blocked.
+- Classifier fixtures (CPU, through the actual §5 code): synthetic per-case trajectories with $e(h)=C h^{p}(1+0.001z)$,
+  $p=1$ and $p=2$, anchors consistent → labels "order 1" / "order 2"; a pre-asymptotic sequence (pairwise orders 2.0 and
+  1.5) → not interpretable; an anchor-contaminated sequence → not interpretable.
+- Every rollout's per-step evidence buffer and recording length is sized to its schedule ($S+1$ entries; 3,200 and 6,400
+  steps at $\Delta t_0/64$ and $/128$), asserted in the driver.
+- Label wording: "order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$)" — never a statement about
+  asymptotic order (time2 A1.2 predicts asymptotic order 1 for the LSPG-CN family).
+
+**A1.5 B1 populations (blocker 5; audit item 11).** New explicit H-acc-N tests: R512 × {BE, CN-R} × $\Delta t_0$ over the
+three meshes (P1 ran R512 only at $1024^2$), plus every (r, family) of the seven new families. H-acc-r at $4096^2$ is
+computed on the **38-case** population for every transition and family (all configurations now have 38 cases there);
+P1's 16-case $4096^2$ transitions are cited beside it, labelled "P1, 16-case subset"; no range verdict splices the two
+populations. At $256^2$ and $1024^2$ P1's transitions 128→256→384 for its two families are cited (same populations), the
+new 384→512 transitions and 128–512 ranges are computed here.
+
+**A1.6 FRONT-2D replayability, memory failure policy (blocker 6; audit items 16, 18).**
+- FRONT-2D.json adds per member: the explicit ordered mode list ($k_x,k_y$ arrays, or the path of the committed
+  `inputs/modes_F2048.json` with its sha256 and the prefix length $M$), rule content hash (points+weights sha256 as
+  computed in the job, and the generator-code sha256), E0 store version, metric id, per-case eligibility and
+  $\varepsilon_{\rm ref}$, the entry point that rebuilds the configuration (`p1common.Setting` arguments and
+  `qacc.run` call), and per-case timed-output identity hashes (scoring-run identity hash per dev6 case, plus the timing
+  job's per-triplet `hashes_ok`). The freezing commit is recorded in the heartbeat notes and the hand-back.
+- Memory: if the `smkB` pilot exceeds 120 GB, `acc4096` is split into two jobs (R512 alone; the others), and roles are
+  built one at a time and dropped after use; if R512 at $4096^2$ is still infeasible, the outcome is **"core incomplete
+  (R512 at 4096², memory)"** — never a silent drop.
+
+**A1.7 Dominance computation and fixtures (audit item 15).** Dominance of each candidate is tested against **every
+original candidate** of its mesh (no incremental pruning). CPU fixtures through the actual function: (a) cost-only:
+equal error, 10 % cheaper → dominates; (b) error-only: equal cost, error lower by more than the tie margin → dominates;
+(c) tie boundary: cost within 5 % and error within the margin → both stay; (d) a non-transitive chain (three points each
+4 % costlier and > 2 % + margin more accurate than the previous) → recorded exactly as the pairwise rule says (the third
+is not dominated by the first); (e) an unqualified configuration that would dominate is excluded from the candidate set.
+
+**A1.8 Other corrections.** §2.2 table: CN-R at $f=10$ is 7.13 % (7.1348 %), not 7.14 %; the baseline worst error is
+3.008 %; the larger-step rule is "frozen before this lane's data, conditional on combined's historical exploration".
+The 3D under-resolved control also blocks B5-3D. §8 a-priori estimate is 13.5 GPU-h (an estimate, not a certificate;
+the certificate comes from the smokes, including the $/128$ anchors).
+
+---
+
+## Amendment A2 (2026-10-18, before any lane job; answers `audits/codex-design-2.md`, NEEDS-RESTATEMENT)
+
+**A2.1 3D: never a completeness claim (blocker 1).** A1.1's "qualified 3D front" label is withdrawn. The 3D result is
+always the **qualified subset of the tested candidates**: the §6 front computed only among configurations with Q1
+(speed3d) and their own Q2-3D pass. Beside it the analysis lists the **open candidates** = untested configurations of
+the 436-candidate universe that are **not dominated by any Q2-passed configuration** (each could belong to the true
+qualified front). The A1.1 rounds remain (≤ 3 rounds; a round tests the current open candidates that are front members
+of the untested-plus-passed set, ranked by screening cost, at most 20 per round), but they only shrink the open list;
+the label never changes to "complete". Candidates whose registered ladder lacks $q^+$ or $q^{++}$ (e.g.
+`W1024|lat65536|…`: $q^+$ = `lat131072`, no $q^{++}$ registered) receive Q2 "unverified (no registered check rule)" and
+are not qualified; this is reported, not repaired.
+
+**A2.2 Mesh-local sequencing and core budget reservation (blocker 2).** A1.2 is restated per mesh: the timing job of
+mesh $N$ is staged when the accuracy job(s) of mesh $N$ and any registered fallback accuracy job of mesh $N$ have reached
+a terminal state (complete, or "deferred" by the defer order — a deferred arm is a terminal state "deferred (budget)"
+and is simply not a timing subject). Other meshes never gate it. **Core reservation:** before any submission, the ledger
+check is spent + Σ time limits of queued/running jobs + this job's time limit + **the projected time limits of the
+not-yet-submitted core jobs** (acc1024, acc4096, time1024, time4096 and any core fallback) ≤ 35; optional work (GAL, larger
+steps, $256^2$, 3D rounds 2–3) is submitted only under this reservation, and dropped in the defer order otherwise.
+
+**A2.3 Positive controls separated from scientific outcomes (blocker 4).** The A1.3 requirement "every GAL production
+configuration of the smoke must pass" is withdrawn (an arm may legitimately fail qualification). The designated positive
+GAL fixture is **GAL-CN, R384 `gauss128`, $1024^2$, $\Delta t_0$, dev6**, whose convergence is independently evidenced by
+combined's budget (GAL/CN/1 at R384: every one of 38 runs verified, $\delta_{\rm solve}$ median $8.3\times10^{-11}$,
+worst $3.05\times10^{-10}$; `jcp-combined/report.md` 2D budget tables): its GAL certificate must pass (≤ 1 % pooled
+non-converged steps, G-cert, valid) in the smoke; a failure means the certifier is wrong and blocks GAL Q1. The **full**
+TH06 control (6 dev6 cases, R384) runs in the `order` job, before any B4 label is read; the smoke runs a one-case path
+test only.
+
+**A2.4 Timing memory (blocker 5).** `smkB`'s $4096^2$ pilot builds the full `time4096` footprint: the $4096^2$ bank, the
+$1024^2$ bank (for A), the four settings' main tables and, one setting at a time, their $q^+$/$q^{++}$ tables (as the job
+does them), plus the R512 fallback rule tables; peak recorded. `qtime.py` builds each subject's $q^+$/$q^{++}$ tables only
+for its certification phase and drops them before the timed phase (the timed phase needs only main tables). If the
+footprint still exceeds 120 GB the outcome is "core incomplete (time4096, memory)".
+
+**A2.5 GAL mathematics and exceptional steps (blocker 6).** A1.3's sentence is corrected: for a **nonsingular** square
+step Jacobian the least-squares ratio is bounded below by about $\sigma_{\min}(J)/\lVert J\rVert_F$ for any $r\ne0$; it
+can be 0 at a non-root only when $J$ is singular ($J^{\mathsf T}r=0$ with $r\in\ker J^{\mathsf T}$), which is why it
+cannot serve as a Galerkin convergence measure. The in-job GAL certifier returns the raw residual norm $\lVert
+Q^{\mathsf T}\mathcal R_n\rVert$ and the scale $\lVert Ac_n\rVert$ beside $\eta_n$. The recorded quantity is recovered as
+$\eta_{\rm rec}=\text{tolratio}\times{\rm tol}_f$ when the scale is positive; a zero-scale step (never expected, $c_n=0$)
+is recorded as "exceptional", certified iff its raw residual is exactly 0, and G-cert compares raw norms
+($\lvert\Delta\rvert\le10^{-6}\times$raw$+10^{-15}$). CPU boundary fixtures: $\eta=10^{-8}$ exactly → certified (the
+predicate is $\eta\le10^{-8}$); $0.99\times$ / $1.01\times$; NaN; zero scale with zero / non-zero residual.
+
+---
+
+## Amendment A3 (2026-10-18, before any lane job; answers `audits/codex-design-3.md`, NEEDS-RESTATEMENT)
+
+**A3.1 Defer list exact; reservation accounting (blocker 1).** A2.2's "optional work" is restated to be exactly the
+brief's defer list, in its order: (1) $4096^2$ larger-step arms; (2) GAL-CN (all meshes); (3) 3D Q2 rounds and members
+other than the two H2 winners; (4) $256^2$ larger-step arms. Everything else (all $\Delta t_0$/$2\Delta t_0$ LSPG-BE and
+LSPG-CN-R configurations at every mesh, their timing panels, the order job, 3D Q2 of the two winners) is non-deferrable;
+the brief's never-dropped core (front at $1024^2$ and $4096^2$ for $\Delta t_0$/$2\Delta t_0$ CN-R and BE) is its subset.
+Reservation check at a submission: spent + Σ time limits of queued/running jobs + this job's time limit + Σ projected
+time limits of the **other** not-yet-submitted non-deferrable jobs + a fallback allowance of 2 GPU-h per mesh whose Q2
+labels are not yet known (released when they are) ≤ 35. When the check fails for a deferrable job, that job (or the
+deferrable arms inside a job) is dropped in the defer order and recorded "deferred (budget)". Limitation stated: the
+timing job of a mesh waits for that mesh's deferrable accuracy arms (one final panel per mesh), so the deferrable work of
+a mesh can delay that mesh's core panel; it never delays another mesh's.
+
+**A3.2 Zero-scale G-cert comparator (blocker 2).** The solver records `tolratio` $=r_n/({\rm tol}+10^{-300})$; at zero
+scale ${\rm tol}=0$, so the solver's raw residual is recovered as `tolratio`$\times10^{-300}$ when `tolratio` is finite;
+an infinite `tolratio` (overflow, $r_n\gtrsim1.8\times10^{8}$) makes the step "exceptional, unrecoverable": G-cert fails
+for that step and the configuration is flagged. The comparison is solver-recovered raw vs certifier raw
+(`qcert.gcert_gal`; offline in `qscore.gcert_ok`, reimplemented without the in-job code).
+
+**A3.3 Positive GAL fixture evidence (blocker 3).** The evidence is combined's `c2grid` run of the same numerical
+configuration (R384 `gauss128`, $1024^2$, GAL-CN, $\Delta t_0$, prod): `checks/analysis-c2grid-2d_e0.json`,
+arm `R384|GAL|CN|0.005|prod`, `verified` = 38 of 38 cases, where `verified` means the solver's own per-step convergence
+test passed on every step (`stats.nfail == 0`, residual ≤ tolerance with a non-budget, non-damping exit; `c2grid.py:130`)
+and the coefficients are finite. A failure of the positive fixture blocks GAL Q1 and opens a diagnosis (certifier,
+driver, solver, provenance); no attribution is claimed in advance.
+
+**A3.4 Full TH06 control in the smoke (blocker 4).** `smkA`'s B4 block runs GAL-TH06 at R384 on all six dev6 cases (the
+full A1.4 control), so the control is shown before any production job; the other B4 arms stay one-case path tests in the
+smoke. The `order` job repeats TH06 (reported beside, must agree in label).
+
+**A3.5 B4 undefined cases.** A case is "not interpretable" if any $e(h)$ on the fitted ladder is $\le0$ or non-finite,
+if $e(\tfrac12)-e(\tfrac14)\le0$ (checks (iii)/(iv) have no positive denominator), or if the fit is undefined. CPU
+fixture: a zero-error sequence → not interpretable.
+
+---
+
+## Amendment A4 (2026-10-18, before any lane job; answers `audits/codex-design-4.md`, NEEDS-RESTATEMENT)
+
+**A4.1 Fallback reservation lifecycle.** When a mesh's Q2 labels become known, its 2 GPU-h fallback allowance is
+**atomically replaced** (one ledger transaction) by the projected time limits of the fallback accuracy job(s) actually
+required and, if A1.2 applies, of the repeated timing panel of that mesh. A fallback configuration inherits the defer
+priority of its parent arm (a fallback of a deferrable arm is deferrable at the same position; of a non-deferrable arm,
+non-deferrable). If a **non-deferrable** submission fails the reservation check after every permitted deferral has been
+applied, it is not submitted and the outcome is **"core incomplete (budget)"** with the shortfall in GPU-h reported;
+no verdict that depends on it is read.
+
+**A4.2 TH06 ladder.** The TH06 control uses the step factors $\{2,1,\tfrac12,\tfrac14\}$ (no $L_s$ is registered for
+TH06; the contextual large-step point is omitted). Its fitted order and interpretability use the same three steps
+$\{1,\tfrac12,\tfrac14\}$, anchors and checks as every scheme.
+
+---
+
+## Amendment A5 (2026-10-18, before any lane job; answers `audits/codex-design-5.md`, NEEDS-RESTATEMENT)
+
+**A5.1 First timing panel enlarged in the same transaction.** The A4.1 transaction also replaces the projected time limit
+of the mesh's **not-yet-submitted** timing job by its projection with every retained fallback subject added (no
+separate repeat reservation in that case, so nothing is counted twice); a repeat reservation applies only when that
+mesh's timing job has already been submitted. Audit 5 found no other open item; this amendment closes the design.
+
+---
+
+## Amendment A6 (2026-10-18, before any production job; implementation notes from the code and job audits)
+
+**A6.1 Cost certificates are estimates** (as P1 A5.3): `resources.py` scales the smokes' measured wall times with stated
+upper-envelope choices (order: the whole smoke B4 block charged to its six TH06 cases; Q2-3D: the most expensive smoke
+member; accuracy: the next larger measured r, rule-size ratio for fallbacks, ×2 at $4096^2$). They are not established
+bounds; the scheduler time limit (1.5 × projection) is the enforced bound. A job that times out or fails is resubmitted
+once as a new attempt with twice the limit (P1 A5.2), the failed attempt's hours staying spent and its reservation
+re-pended.
+**A6.2 Ledger.** `ledger.py` enforces A3.1/A4.1/A5.1 mechanically: a numeric pending inventory (whitelisted keys,
+certificate floors), fallback allowances until a mesh's Q2 state is recorded by `ledger.py fbstate <m> '<inventory>'`,
+which derives the failing configurations from `checks/analysis.json` (complete for the mesh, labels from completed
+accuracy attempts only) and requires the re-certified timing config to contain the fallback subjects; `cluster/stage.py`
+and the reservation refuse a timing panel lacking them.
+**A6.3 Smoke outcome.** `checks/smoke-accept.json`: 85 of 85 required controls behave as registered (smkA 5366480,
+smkB 5366483, smk3 5366486); the $4096^2$ footprint pilot peaked at 96.6 GB (< 120 GB): the full bank is used.

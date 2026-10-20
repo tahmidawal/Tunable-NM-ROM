@@ -1,0 +1,106 @@
+{
+ "attempt": "a1kwide",
+ "mesh": 1024,
+ "settings": [
+  "wide"
+ ],
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "rules": {
+  "wide": {
+   "main": {
+    "kind": "point",
+    "rule": "gauss128"
+   },
+   "hq": {
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   "old": {
+    "kind": "mesh",
+    "rule": "lat64"
+   }
+  }
+ },
+ "grid": {
+  "dt_factors": [
+   0.125,
+   0.25,
+   0.5,
+   1,
+   2,
+   5,
+   10
+  ],
+  "dyadic_factors": [
+   0.125,
+   0.25,
+   0.5,
+   1,
+   2
+  ],
+  "tighter_factors": [
+   0.125,
+   0.25,
+   0.5,
+   1,
+   2
+  ],
+  "forms": [
+   "LSPG",
+   "GAL"
+  ],
+  "schemes": [
+   "BE",
+   "CN",
+   "CNR",
+   "BDF2"
+  ],
+  "control_schemes": [
+   "TH06"
+  ],
+  "anchor_schemes": [
+   "BDF2",
+   "CN"
+  ],
+  "anchor": "BDF2",
+  "old_schemes": [
+   "BE",
+   "CN",
+   "BDF2"
+  ],
+  "old_dt_factors": [
+   0.5,
+   1,
+   2,
+   5
+  ]
+ },
+ "refs": "REFS_DIR",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "timing": {
+  "cohort": "dev6",
+  "cases": 6,
+  "reps": 3,
+  "burn": 0.1,
+  "seed": 20261008
+ }
+}

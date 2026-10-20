@@ -1,0 +1,7 @@
+1. **MAJOR — CORRECT: round-13 item 3 is resolved.** `smoke_accept.py:240–248` independently enforces the registered candidate count, strict >1% retry trigger, frozen threshold metadata, 20,000-iteration bound, required attempt inventory, and valid iteration/banned counts. Selection is recomputed at lines 259–269. CPU mutation probes rejected altered thresholds/bounds and missing or spurious retries. **Fix:** none required; preserve these rejection cases as regression tests.
+
+2. **MAJOR — CORRECT: round-13 item 4 is resolved.** `smoke_accept.py:253–258` validates one-dimensional, equal-length arrays; finite strictly positive weights; unique integer nodes within bounds; support counts; and finite nonnegative checkpoint residuals for both attempts. Lines 270–272 reconcile selected support sizes **and residuals** with `ecsw_rs`. Missing or malformed evidence fails closed at lines 275–276. Probes rejected invalid weights, nodes, residuals, inconsistent selected summaries, and invalid unselected-attempt evidence. **Fix:** none required; retain regression coverage.
+
+**Overall: READY for smoke `smk2` within this targeted audit of commit `ee5485250`.** All 27 in-memory CPU acceptance probes behaved as expected. No remaining blockers from round-13 items 3–4. This does not recertify unchanged phase-I code or constitute smoke acceptance.
+
+Phase II still needs extension-only κ=16 enforcement, coverage/banning-quality labels, and construction/validation accounting. No files changed or jobs submitted.

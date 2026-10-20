@@ -1,0 +1,172 @@
+{
+ "attempt": "e1m256",
+ "driver": "r2acc",
+ "mesh": 256,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "all38",
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 2.5
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 2
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 5
+    }
+   ],
+   "rules": [
+    {
+     "label": "d0",
+     "rule": "fib4181s0",
+     "succ": "fib6765s0",
+     "level": "full"
+    },
+    {
+     "label": "d1",
+     "rule": "fib4181s1",
+     "succ": "fib6765s1",
+     "level": "full"
+    },
+    {
+     "label": "d2",
+     "rule": "fib4181s2",
+     "succ": "fib6765s2",
+     "level": "full"
+    },
+    {
+     "label": "d3",
+     "rule": "fib4181s3",
+     "succ": "fib6765s3",
+     "level": "full"
+    },
+    {
+     "label": "d4",
+     "rule": "fib4181s4",
+     "succ": "fib6765s4",
+     "level": "full"
+    },
+    {
+     "label": "d5",
+     "rule": "fib4181s5",
+     "succ": "fib6765s5",
+     "level": "full"
+    },
+    {
+     "label": "d6",
+     "rule": "fib4181s6",
+     "succ": "fib6765s6",
+     "level": "full"
+    },
+    {
+     "label": "d7",
+     "rule": "fib4181s7",
+     "succ": "fib6765s7",
+     "level": "full"
+    },
+    {
+     "label": "d8",
+     "rule": "fib4181s8",
+     "succ": "fib6765s8",
+     "level": "full"
+    },
+    {
+     "label": "d9",
+     "rule": "fib4181s9",
+     "succ": "fib6765s9",
+     "level": "full"
+    },
+    {
+     "label": "d10",
+     "rule": "fib4181s10",
+     "succ": "fib6765s10",
+     "level": "full"
+    },
+    {
+     "label": "d11",
+     "rule": "fib4181s11",
+     "succ": "fib6765s11",
+     "level": "full"
+    },
+    {
+     "label": "d12",
+     "rule": "fib4181s12",
+     "succ": "fib6765s12",
+     "level": "full"
+    },
+    {
+     "label": "d13",
+     "rule": "fib4181s13",
+     "succ": "fib6765s13",
+     "level": "full"
+    },
+    {
+     "label": "d14",
+     "rule": "fib4181s14",
+     "succ": "fib6765s14",
+     "level": "full"
+    },
+    {
+     "label": "d15",
+     "rule": "fib4181s15",
+     "succ": "fib6765s15",
+     "level": "full"
+    },
+    {
+     "label": "bad",
+     "rule": "badlat4181",
+     "succ": null,
+     "level": "prod"
+    }
+   ],
+   "permute": {
+    "label": "d0",
+    "arm": 0
+   },
+   "identity": {
+    "label_s1": "d1",
+    "claimed": "fib4181"
+   }
+  }
+ ]
+}

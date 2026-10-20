@@ -1,0 +1,190 @@
+{
+ "attempt": "rom1024",
+ "driver": "qacc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cohorts": [
+  "dev6",
+  "val32",
+  "N0",
+  "N0s",
+  "Ap",
+  "Am",
+  "C1",
+  "C2",
+  "B1",
+  "B2"
+ ],
+ "frozen": {
+  "front_sha256": "a51ac1a250f00d4b0006a84f2434ab3c96407b1f575f4ffff7a3eb25b7a8b77d",
+  "settings": {
+   "R128": {
+    "L": 1024,
+    "M": 512,
+    "Rp": 128,
+    "fingerprint": "a4bfc03084761b765c6593ceb50ab15b9e7224f92a5238e802c552c0f5f52518",
+    "m": 4181,
+    "mesh_hash": "fef02424157f106b48d04276276c15ebba9c516e6024d4f82ea2f648af3e09c8",
+    "mode_hash": "7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533",
+    "policy": "frozen",
+    "rule": "fib4181",
+    "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277"
+   },
+   "R256": {
+    "L": 1024,
+    "M": 1024,
+    "Rp": 256,
+    "fingerprint": "ff3dcccffe13128af9c03592d476018a4bc5d5ac23143d586d23b1a54b2610c5",
+    "m": 16384,
+    "mesh_hash": "fef02424157f106b48d04276276c15ebba9c516e6024d4f82ea2f648af3e09c8",
+    "mode_hash": "8aad19a0afb78445aaae34abbe29d20eef202f5bb994148757f554c925841868",
+    "policy": "frozen",
+    "rule": "gauss128",
+    "rule_sha256": "3304bb94fc5c8c6e8b31ee493a508faf4541adc34477c2f54506a56746b18f04"
+   },
+   "R384": {
+    "L": 1024,
+    "M": 1536,
+    "Rp": 384,
+    "fingerprint": "b99660f20473faa2b3a56ca05088d14a7677d68e62c0d43ae56d174e4c684165",
+    "m": 16384,
+    "mesh_hash": "fef02424157f106b48d04276276c15ebba9c516e6024d4f82ea2f648af3e09c8",
+    "mode_hash": "2a926a643dbedd4175ab682d382367149a1fc9e3a822e89cbccc480e3d399f65",
+    "policy": "frozen",
+    "rule": "gauss128",
+    "rule_sha256": "3304bb94fc5c8c6e8b31ee493a508faf4541adc34477c2f54506a56746b18f04"
+   },
+   "R512": {
+    "L": 1024,
+    "M": 2048,
+    "Rp": 512,
+    "fingerprint": "306ee753af928f1f331bb00d94e0ec87a900336d1da1202a06c9aa07610a716b",
+    "m": 36864,
+    "mesh_hash": "fef02424157f106b48d04276276c15ebba9c516e6024d4f82ea2f648af3e09c8",
+    "mode_hash": "736650b77496bf936236da104a847af88247d683ba609aa60902de14d6cbd3e4",
+    "policy": "frozen",
+    "rule": "gauss192",
+    "rule_sha256": "d5a010e7f8d01059c248d2f464c6104c50ef13de140f5391de9587e30df9b14c"
+   }
+  },
+  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772"
+ },
+ "settings": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    }
+   ]
+  },
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192",
+   "qp": "gauss256",
+   "qpp": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all",
+     "q2_cases": "all",
+     "tighter_cases": "sub"
+    }
+   ]
+  }
+ ],
+ "blocks": []
+}

@@ -1,0 +1,191 @@
+{
+ "refs": "checks/refs-all.json",
+ "budget2d": {
+  "256": [
+   "checks/budget2d-b256-256.json"
+  ],
+  "1024": [
+   "checks/budget2d-b1024a-1024.json",
+   "checks/budget2d-b1024b-1024.json"
+  ],
+  "4096": [
+   "checks/budget2d-b4096-4096.json"
+  ]
+ },
+ "meshcmp": "checks/meshcmp.json",
+ "b7b8": {
+  "256": "checks/b7b8-256.json",
+  "1024": "checks/b7b8-1024.json",
+  "4096": "checks/b7b8-4096.json"
+ },
+ "b7b8_t1": "checks/b7b8-1024-T1.json",
+ "b3": "checks/b3-b3d.json",
+ "ledger": "runs/GPU-LEDGER.json",
+ "deferred": [
+  {
+   "item": "B8 3D (fine route at 127^3, C-A / C-E in 3D)",
+   "reason": "defer item 2, recorded in A4 (implementation scope)"
+  }
+ ],
+ "corrections": [
+  "The registered G-B2 bar (relative to $\\lVert u_{\\rm all}-u_\\varnothing\\rVert$) was too tight for a 32-term M\u00f6bius sum; it was restated relative to the largest corner norm (A6), found on the smoke.",
+  "Offline reference identity compares case descriptors, not the cohort hash, because the last bit of `np.exp` differs across NumPy versions (A6).",
+  "The first resource certificates under-priced the reference retry path and the pseudo-spectral cross-check; they were repriced before submission (A7, job audits refs2d-1..3).",
+  "E0's tight re-solve of a refined triple at the round-off floor was far more expensive per level than the production solve (per-level timings in DESIGN A9); `ref2b` and `ref2c` were cancelled, their completed cases kept, and the reruns (`ref2r`, `ref3b`) skip that re-solve: such cases are terminal 'unresolved-floor' and non-rankable (A9).",
+  "The first A9 eligibility rule was per window only, so an A9-terminal case with an accepted W2 window would have been rankable; fixed so every window of such a case is ineligible (A9.1, audit codex-job-a9-1).",
+  "Job reservations were priced at the certificate time limits, which proved conservative; the table 'Certificates against elapsed time' compares each certificate's projection with the Slurm elapsed time.",
+  "At $T=1.0$ the first eligibility code let a failed whole-case reference keep an accepted window and took W2 eligibility from the wrong horizon; fixed before submission (A11.1, audit codex-job-t1-1).",
+  "G-R2 on 3D val64 case 43 failed only because E0's own saved IC array differs in the last bit from the initial rows of E0's own levels; the shared-IC requirement was restated level-wise (A13).",
+  "At $T=1.0$, E0's tight re-solve of a failing base triple was far more expensive per level than the production solve (per-level timings in DESIGN A14); `ref2t1` was cancelled after dev6 case 5 and the val32 cases rerun without that retry (`ref2t1w`): such cases are terminal and non-rankable (A14). Of the two measured retries, dev6 1 stayed unresolved and dev6 5 was certified (A14.1).",
+  "A14.1 suggested the A14 rule might have cost rankable cases; it did not: a case certified by the tight retry has no production-tolerance level to match E0 or the $T=0.5$ reference, so it is non-rankable under the registered G-R2 / prefix rules anyway (A14.2). The A14 / A14.1 times quoted as case durations were cumulative log timestamps (A14.3).",
+  "Two analysis caches were defeated by eager `dict.setdefault` arguments (a QR per case; performance only, identical values). The first local B7/B8 analyses were terminated without output on the shared machine (no OOM record; high load) and rerun one at a time (A12.2).",
+  "jcp-qualify's raw archives were moved to the cluster during the analysis (COMMON-BRIEF 16); G-B3 / G-L1 read hash-verified cached copies (A12).",
+  "The results audit found that the dominance rule compared the largest candidate only with the second largest; it now compares with every resolved candidate (two counts changed, no label; A14.3, audit codex-results-1)."
+ ],
+ "audits": [
+  {
+   "file": "audits/codex-design-1.md",
+   "verdict": "NEEDS-FIX (fixed in A1-A3)"
+  },
+  {
+   "file": "audits/codex-design-2.md",
+   "verdict": "NEEDS-FIX (fixed in A1-A3)"
+  },
+  {
+   "file": "audits/codex-design-3.md",
+   "verdict": "NEEDS-FIX (fixed in A1-A3)"
+  },
+  {
+   "file": "audits/codex-design-4.md",
+   "verdict": "READY"
+  },
+  {
+   "file": "audits/codex-code-1.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-2.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-3.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-4.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-5.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-6.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-7.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-8.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-9.md",
+   "verdict": "READY-FOR-SMOKE"
+  },
+  {
+   "file": "audits/codex-job-smk1-1.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-smk1-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-smk2-1.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-smk2-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-refs2d-1.md",
+   "verdict": "FIX-FIRST (A7 repricing)"
+  },
+  {
+   "file": "audits/codex-job-refs2d-2.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-refs2d-3.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-b2d-1.md",
+   "verdict": "FIX-FIRST (b1024 only)"
+  },
+  {
+   "file": "audits/codex-job-b2d-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-3d-1.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-3d-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-a9-1.md",
+   "verdict": "FIX-FIRST (A9.1)"
+  },
+  {
+   "file": "audits/codex-job-a9-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-t1-1.md",
+   "verdict": "FIX-FIRST (A11.1)"
+  },
+  {
+   "file": "audits/codex-job-t1-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-t1w-1.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-results-1.md",
+   "verdict": "NOT-READY (tie rule, T=1 caption, wording; fixed)"
+  },
+  {
+   "file": "audits/codex-results-2.md",
+   "verdict": "READY-FOR-REPORT"
+  },
+  {
+   "file": "audits/codex-report-1.md",
+   "verdict": "NOT-READY (fixed)"
+  },
+  {
+   "file": "audits/codex-report-2.md",
+   "verdict": "NOT-READY (fixed)"
+  },
+  {
+   "file": "audits/codex-report-3.md",
+   "verdict": "NOT-READY (fixed)"
+  },
+  {
+   "file": "audits/codex-report-4.md",
+   "verdict": "READY"
+  }
+ ],
+ "smokes": [
+  "checks/smoke-smk1.json",
+  "checks/smoke-smk2.json"
+ ]
+}

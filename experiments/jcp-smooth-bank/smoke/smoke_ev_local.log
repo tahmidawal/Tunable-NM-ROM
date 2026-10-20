@@ -1,0 +1,54 @@
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA GB10
+CONTROLS {"C2": true, "C3": true, "C5b": true}
+VARIANT frozen_deployed
+frozen_deployed acc ROLLOUT gref 386
+frozen_deployed acc ROLLOUT lat64 406
+frozen_deployed acc ROLLOUT gauss32 423
+frozen_deployed acc ROLLOUT gauss48 444
+frozen_deployed acc ROLLOUT gauss64 461
+frozen_deployed acc ROLLOUT gauss96 481
+frozen_deployed acc ROLLOUT fib1597 510
+frozen_deployed acc ROLLOUT fib4181 535
+frozen_deployed acc ROLLOUT fib6765 566
+frozen_deployed acc PROJ value S med/max 9.218947867624047e-05 0.00048013638104663656 grad 0.011989833209357967
+frozen_deployed acc RHO done {'gref|G|0.116': 1600, 'gref|G|0.06': 2304, 'gref|G|0.01': 2304} 1558
+frozen_deployed acc SPECTRA {'u|n_1e-04': {'median': 35.0, 'max': 89, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'u|class': {'geometric': 0, 'algebraic': 46, 'inconclusive': 4, 'unresolved': 0}, 'f|n_1e-04': {'median': 167.0, 'max': 193, 'unresolved': 7}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'f|class': {'geometric': 0, 'algebraic': 0, 'inconclusive': 50, 'unresolved': 0}} 1597
+frozen_deployed fast ROLLOUT gref 1657
+frozen_deployed fast ROLLOUT lat64 1664
+frozen_deployed fast ROLLOUT gauss32 1669
+frozen_deployed fast ROLLOUT gauss48 1673
+frozen_deployed fast ROLLOUT gauss64 1679
+frozen_deployed fast ROLLOUT gauss96 1685
+frozen_deployed fast ROLLOUT fib1597 1690
+frozen_deployed fast ROLLOUT fib4181 1696
+frozen_deployed fast ROLLOUT fib6765 1702
+frozen_deployed fast PROJ value S med/max 0.001233682171549194 0.009756494934604343 grad 0.0181653308407476
+frozen_deployed fast RHO done {'gref|G|0.116': 1024, 'gref|G|0.06': 1024, 'gref|G|0.01': 3136} 2036
+frozen_deployed fast SPECTRA {'u|n_1e-04': {'median': 48.0, 'max': 140, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'u|class': {'geometric': 0, 'algebraic': 12, 'inconclusive': 38, 'unresolved': 0}, 'f|n_1e-04': {'median': 169.0, 'max': 196, 'unresolved': 37}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'f|class': {'geometric': 3, 'algebraic': 0, 'inconclusive': 47, 'unresolved': 0}} 2053
+VARIANT frozen_lane_smokerot
+frozen_lane_smokerot acc ROLLOUT gref 134
+frozen_lane_smokerot acc ROLLOUT lat64 137
+frozen_lane_smokerot acc ROLLOUT gauss32 139
+frozen_lane_smokerot acc ROLLOUT gauss48 141
+frozen_lane_smokerot acc ROLLOUT gauss64 144
+frozen_lane_smokerot acc ROLLOUT gauss96 148
+frozen_lane_smokerot acc ROLLOUT fib1597 150
+frozen_lane_smokerot acc ROLLOUT fib4181 152
+frozen_lane_smokerot acc ROLLOUT fib6765 156
+frozen_lane_smokerot acc PROJ value S med/max 0.0002784626789970004 0.010252567992304062 grad 0.017709290538918895
+frozen_lane_smokerot acc RHO done {'gref|G|0.116': 1600, 'gref|G|0.06': 2304, 'gref|G|0.01': 3136} 589
+frozen_lane_smokerot acc SPECTRA {'u|n_1e-04': {'median': 48.0, 'max': 139, 'unresolved': 1}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'u|class': {'geometric': 0, 'algebraic': 41, 'inconclusive': 9, 'unresolved': 0}, 'f|n_1e-04': {'median': 156.5, 'max': 189, 'unresolved': 24}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'f|class': {'geometric': 1, 'algebraic': 0, 'inconclusive': 49, 'unresolved': 0}} 603
+frozen_lane_smokerot fast ROLLOUT gref 638
+frozen_lane_smokerot fast ROLLOUT lat64 641
+frozen_lane_smokerot fast ROLLOUT gauss32 643
+frozen_lane_smokerot fast ROLLOUT gauss48 645
+frozen_lane_smokerot fast ROLLOUT gauss64 647
+frozen_lane_smokerot fast ROLLOUT gauss96 650
+frozen_lane_smokerot fast ROLLOUT fib1597 652
+frozen_lane_smokerot fast ROLLOUT fib4181 654
+frozen_lane_smokerot fast ROLLOUT fib6765 657
+frozen_lane_smokerot fast PROJ value S med/max 0.004693583258684542 0.024683278129074775 grad 0.07075865390662738
+frozen_lane_smokerot fast RHO done {'gref|G|0.116': 1024, 'gref|G|0.06': 1024, 'gref|G|0.01': 1600} 801
+frozen_lane_smokerot fast SPECTRA {'u|n_1e-04': {'median': 156.0, 'max': 172, 'unresolved': 1}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'u|class': {'geometric': 0, 'algebraic': 8, 'inconclusive': 42, 'unresolved': 0}, 'f|n_1e-04': {'median': None, 'max': None, 'unresolved': 50}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 50}, 'f|class': {'geometric': 24, 'algebraic': 0, 'inconclusive': 26, 'unresolved': 0}} 809
+BANKEVAL COMPLETE
+SMOKE-FINISHED

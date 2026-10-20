@@ -1,0 +1,122 @@
+{
+ "attempt": "c2budA",
+ "driver": "c2bud",
+ "mesh": 1024,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "settings": [
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "f": 1,
+     "role": "baseline"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "f": 1,
+     "role": "diagnostic"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "f": 1,
+     "role": "accurate_equal_cost",
+     "selected": true,
+     "fallback_rules": [
+      "gauss256",
+      "gauss320",
+      "unavailable"
+     ]
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "f": 2,
+     "role": "fast_equal_accuracy",
+     "selected": true,
+     "fallback_rules": [
+      "gauss256",
+      "gauss320",
+      "unavailable"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "f": 1,
+     "role": "baseline"
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "f": 1,
+     "role": "diagnostic"
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "f": 1,
+     "role": "accurate_equal_cost",
+     "selected": true,
+     "fallback_rules": [
+      "gauss128",
+      "gauss192",
+      "unavailable"
+     ]
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "f": 2,
+     "role": "fast_equal_accuracy",
+     "selected": true,
+     "fallback_rules": [
+      "gauss128",
+      "gauss192",
+      "unavailable"
+     ]
+    }
+   ]
+  }
+ ],
+ "refs": "/cluster/tufts/paralab/tawal01/jcp-comb/c2budA/refs",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "conv_rule": "gauss320",
+ "check_rule": "gauss640",
+ "successor_check": "gauss768",
+ "control_rule": "gauss8",
+ "conv_bar": 2.5e-05,
+ "check_val32": 10,
+ "frozen_sha256": "c3db2d0db3033c49c02bcae98db767225170d60f83e8d92fd79daea30e9c9303"
+}

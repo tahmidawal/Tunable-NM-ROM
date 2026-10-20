@@ -1,0 +1,13 @@
+**Overall: NO-GO — missing mandatory pre-submission R2b evidence.** No files modified or jobs submitted.
+
+1. **CORRECT — provenance and dependencies.** All seven staged source/input files match git HEAD `6dd1bed0b39a7b360a21599173497148c8e3b627` byte-for-byte; every MANIFEST hash and PROVENANCE size/hash/commit checks out. Repository runtime dependencies are present under `deps/`. The `--frozen` path resolves correctly from the specified working directory, with checkpoint SHA-256 `18f0266a…`. Third-party packages rely on the cluster venv.
+
+2. **CORRECT — batch configuration.** `gpu`, `a100-80G`, four GPUs on one node, `320G`, seven hours, x64 and highest precision are set. Each inherited device receives its own preflight; failure exits 42. Children use those same device mappings, individual PIDs are waited, and child/checksum failures propagate. Outputs, logs and temporary files use the requested paralab directory. Bash syntax passes. Host training arrays total **31.50 GiB** across four processes; 320G provides substantial generation/temporary-array headroom, though peak memory and seven-hour completion remain unmeasured.
+
+3. **CORRECT — round-one arms.** `base=(4,0)` with `--frozen`, `sob01=(4,0.1)`, `sig2=(2,0)`, `sig1=(1,0)`. Committed defaults supply seed **0**, **300,000** steps; all explicitly use **256 nodes**.
+
+4. **CORRECT — training artifacts for subsequent evaluation.** Each arm writes its checkpoint, lane rotation and training metadata; base additionally writes the frozen bank’s lane rotation. Saved coefficients, T/L, conditioning, trust radii and hashes support the registered evaluation. That later job must separately stage the deployed frozen rotation and references and enforce evaluation gates; training completion alone establishes no scientific verdict.
+
+5. **WRONG — pre-submission gate incomplete.** [DESIGN.md, A4](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-08-jcp-smooth-bank/experiments/jcp-smooth-bank/DESIGN.md) explicitly requires a local **R2b pass recorded in `audits/` before submission**. No such record exists. The corrected test’s presence is insufficient, and submission does not enforce this prerequisite. Otherwise, data are regenerated using the pinned generator; R0 explicitly aborts on fingerprint mismatch; base’s R2a step-one mismatch aborts. Step-5000 disagreement is recorded rather than fatal, as A2 permits.
+
+**To clear the blocker:** run the corrected R2b test and record its passing evidence before submitting.

@@ -1,0 +1,24 @@
+{
+ "ok": {
+  "restricted16": true,
+  "decode16": true,
+  "refined": true,
+  "rho_R512": true,
+  "rho_R256": true,
+  "rho_worst_reproduced_R512": true,
+  "rho_worst_reproduced_R256": true,
+  "control_swapped_detected": true,
+  "control_perturbed_detected": true
+ },
+ "checks": {
+  "restricted16_errors_max_abs_diff": 2.220446049250313e-16,
+  "decode16_max_rel": 9.75525893353897e-15,
+  "refined_in_job_vs_numpy": 2.220446049250313e-16,
+  "refined_in_job_present": true,
+  "refined_in_job_compared": 1024,
+  "rho_worst_reproduced_R512_max_rel": 2.0094974259088683e-12,
+  "rho_worst_reproduced_R256_max_rel": 5.998008280400206e-12,
+  "control_swapped_reference_diff": 0.7134598954986,
+  "control_perturbed_diff": 4.699279932119261e-05
+ }
+}

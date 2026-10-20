@@ -1,0 +1,214 @@
+{
+ "attempt": "e2s3",
+ "driver": "r2acc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "all38",
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "fib4181",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    },
+    {
+     "label": "fib6765",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "gauss96",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "fib10946",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "gauss128",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    },
+    {
+     "label": "gauss160",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "gauss192",
+     "rule": "gauss192",
+     "succ": "gauss256",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "fib4181",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    },
+    {
+     "label": "fib6765",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "gauss96",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "fib10946",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "gauss128",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    },
+    {
+     "label": "gauss160",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "gauss192",
+     "rule": "gauss192",
+     "succ": "gauss256",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "fib4181",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    },
+    {
+     "label": "fib6765",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "gauss96",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "fib10946",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "gauss128",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    },
+    {
+     "label": "gauss160",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "gauss192",
+     "rule": "gauss192",
+     "succ": "gauss256",
+     "level": "full"
+    }
+   ]
+  }
+ ],
+ "bank": {
+  "ckpt": "inputs/banks/s3/ckpt.pkl",
+  "ckpt_sha256": "af877976023c6cf686f7dcf18d49aefe4faacef079e5ae84752a9bbb53709b11",
+  "rotation": "inputs/banks/s3/rotation_R512.npz",
+  "rotation_sha256": "fb9e79f2e304a8e7ff90ce77056e465fae7f5426a309453106c46ce7e0cb639a",
+  "seed": 3
+ }
+}

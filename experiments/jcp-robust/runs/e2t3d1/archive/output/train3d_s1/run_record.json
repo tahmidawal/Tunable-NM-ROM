@@ -1,0 +1,23 @@
+{
+ "which": "1",
+ "config": "/cluster/tufts/paralab/tawal01/jcp-robust/e2t3d1/experiments/jcp-robust/train3d/configs/train_r1024_s1.json",
+ "model_seed": 924715,
+ "subset_seed": 924002,
+ "bank_steps": 12000,
+ "selected_step": 7000,
+ "selection_rule": "lowest worst bank-validation projection error over the three groups (train2w.train_bank); incumbent j3b selected 11000",
+ "validation_worst_over_groups": 0.013177742052532023,
+ "condition_65": 8661.874367521365,
+ "ordering_inverse_check": 5.367346673470142e-12,
+ "gpu": "NVIDIA H200",
+ "backend": "gpu",
+ "seconds": 5240.614419281948,
+ "device_peak_GiB": 71.40011143684387,
+ "device_bytes_limit": 135100628992,
+ "process_maxrss_kB": 286863948,
+ "device": [
+  "NVIDIA H200, GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec, 143771 MiB, 575.57.08",
+  "jax_backend=gpu"
+ ],
+ "note": "host MaxRSS of the job: sacct -j $SLURM_JOB_ID --format=JobID,MaxRSS,ReqMem,Elapsed"
+}

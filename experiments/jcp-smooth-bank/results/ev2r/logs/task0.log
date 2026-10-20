@@ -1,0 +1,28 @@
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA A100 80GB PCIe
+CONTROLS {"C2": true, "C3": true, "C5b": true}
+VARIANT base
+base acc ROLLOUT gref 233
+base acc ROLLOUT lat64 248
+base acc ROLLOUT gauss32 264
+base acc ROLLOUT gauss48 282
+base acc ROLLOUT gauss64 295
+base acc ROLLOUT gauss96 308
+base acc ROLLOUT fib1597 321
+base acc ROLLOUT fib4181 338
+base acc ROLLOUT fib6765 356
+base acc PROJ value S med/max 0.00024310510613066895 0.01114625843250612 grad 0.014946263332842838
+base acc RHO done {'gref|G|0.116': 3136, 'gref|G|0.06': 3136, 'gref|G|0.01': 6400} 688
+base acc SPECTRA {'u|n_1e-04': {'median': 49.0, 'max': 188, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 52, 'inconclusive': 12, 'unresolved': 0}, 'f|n_1e-04': {'median': 112.0, 'max': 184, 'unresolved': 19}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 3, 'algebraic': 37, 'inconclusive': 24, 'unresolved': 0}} 709
+base fast ROLLOUT gref 754
+base fast ROLLOUT lat64 761
+base fast ROLLOUT gauss32 767
+base fast ROLLOUT gauss48 774
+base fast ROLLOUT gauss64 781
+base fast ROLLOUT gauss96 788
+base fast ROLLOUT fib1597 796
+base fast ROLLOUT fib4181 805
+base fast ROLLOUT fib6765 814
+base fast PROJ value S med/max 0.003189146240985142 0.0742999891466147 grad 0.0311805298765835
+base fast RHO done {'gref|G|0.116': 1600, 'gref|G|0.06': 3136, 'gref|G|0.01': 6400} 999
+base fast SPECTRA {'u|n_1e-04': {'median': 51.5, 'max': 139, 'unresolved': 2}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 49, 'inconclusive': 15, 'unresolved': 0}, 'f|n_1e-04': {'median': 129.0, 'max': 200, 'unresolved': 23}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 4, 'algebraic': 39, 'inconclusive': 21, 'unresolved': 0}} 1018
+BANKEVAL COMPLETE

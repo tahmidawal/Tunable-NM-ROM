@@ -1,0 +1,98 @@
+{
+ "lane": "jcp-speed3d",
+ "cap_gpu_hours": 34,
+ "cap_source": "DESIGN.md \u00a79 estimate (about 34 GPU-hours incl. 20% reruns), adopted as the hard cap in amendment A7",
+ "jobs": [
+  {
+   "slurm_id": "5299842",
+   "attempt": "smoke1",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 2830,
+   "gpu_hours": 0.7861,
+   "cumulative_gpu_hours": 0.7861,
+   "source": "sacct ElapsedRaw, 2026-10-17"
+  },
+  {
+   "slurm_id": "5299848",
+   "attempt": "smkmesh384",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 370,
+   "gpu_hours": 0.1028,
+   "cumulative_gpu_hours": 0.8889,
+   "source": "sacct ElapsedRaw, 2026-10-17"
+  },
+  {
+   "slurm_id": "5301264",
+   "attempt": "g2",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 8673,
+   "gpu_hours": 2.4092,
+   "cumulative_gpu_hours": 3.2981,
+   "source": "sacct ElapsedRaw, 2026-10-17"
+  },
+  {
+   "slurm_id": "5301270",
+   "attempt": "g3",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 13066,
+   "gpu_hours": 3.6294,
+   "cumulative_gpu_hours": 6.9275,
+   "source": "sacct ElapsedRaw, 2026-10-17"
+  },
+  {
+   "slurm_id": "5301274",
+   "attempt": "f1",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 832,
+   "gpu_hours": 0.2311,
+   "cumulative_gpu_hours": 7.1586,
+   "source": "sacct ElapsedRaw, 2026-10-17"
+  },
+  {
+   "slurm_id": "5301580",
+   "attempt": "g1",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 6290,
+   "gpu_hours": 1.7472,
+   "cumulative_gpu_hours": 8.9058,
+   "source": "sacct ElapsedRaw, 2026-10-17"
+  },
+  {
+   "slurm_id": "5352455",
+   "attempt": "p1",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 2849,
+   "gpu_hours": 0.7914,
+   "cumulative_gpu_hours": 9.6972,
+   "source": "sacct ElapsedRaw, 2026-10-18"
+  },
+  {
+   "slurm_id": "5352457",
+   "attempt": "m1",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 3189,
+   "gpu_hours": 0.8858,
+   "cumulative_gpu_hours": 10.583,
+   "source": "sacct ElapsedRaw, 2026-10-18"
+  },
+  {
+   "slurm_id": "5353792",
+   "attempt": "r1",
+   "gpu": "h200",
+   "gpus": 1,
+   "elapsed_s": 996,
+   "gpu_hours": 0.2767,
+   "cumulative_gpu_hours": 10.8597,
+   "source": "sacct ElapsedRaw, 2026-10-18"
+  }
+ ],
+ "spent_gpu_hours": 10.8597
+}

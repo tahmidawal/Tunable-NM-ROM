@@ -1,0 +1,352 @@
+"""jcp-heads offline scoring and qualification (DESIGN 3, 4, A1.3, A1.4; CPU only, no JAX).
+
+  * E0 scoring through qualify's qscore.score_config (identity assertions incl. dt; S only for LSPG-BE at dt0);
+  * configuration-level Q1 / Q2 from the saved arrays of an ACCURACY record (hacc R_*.npz; timing records S_*.npz carry
+    the dev6 certification arrays in a different layout and are labelled by analyze.timing_labels), every
+    distance recomputed with an independent NumPy decode (nphead for heads: h~(z) by hand; npcheck.decode257),
+    every rho recomputed with independent NumPy rule tables (npcheck.tables, numpy Gauss-Legendre);
+  * anchor verification and the head initial-fit veto (A1.3) recomputed from the saved per-step certificates, budget
+    exits and initial-fit exit reasons (the certificates themselves are the in-job autodiff values; the saved internal
+    trajectories allow their recomputation, which analyze.py spot-checks with nphead.gammas);
+  * Q3 flags (rank-deficient / degenerate step Jacobian, A1.3, A2.6).
+"""
+from __future__ import annotations
+
+import numpy as np
+
+import npcheck as NC
+import nphead as NH
+import qscore as QS_
+from p1score import agree, dmax, finite
+
+BAR_Q1, BAR_TT, BAR_Q2, BAR_RHO, GAMMA = 2.5e-4, 2.5e-5, 2.5e-4, .116, 1e-3
+ANCHOR_T, ANCHOR_TT = 1e-6, 1e-7
+TABLES = {}
+
+
+def modes(M):
+    import p1common as P            # frozen 1024^2 list (the same builder the jobs use)
+    kx, ky = P.mode_list('frozen', 1024)
+    return kx[:M], ky[:M]
+
+
+def tables(rule, dim, M, L):
+    key = (rule, dim, M, L)
+    if key not in TABLES:
+        assert rule.startswith('gauss'), f'only Gauss rules are used in this lane (A1.4): {rule}'
+        X, w = NC.gauss_rule(int(rule[5:]))
+        kx, ky = modes(M)
+        TABLES[key] = NC.tables(X, w, dim, kx, ky, L)
+    return TABLES[key]
+
+
+def q3_flag(s):
+    """A1.3 / A2.6 classifier of one step Jacobian's singular values: 'degenerate' (all-zero or non-finite),
+    'rank-deficient step Jacobian' (sigma_min / sigma_max < 1e-10), else None."""
+    s = np.asarray(s, float)
+    if not np.isfinite(s).all() or s.max() <= 0:
+        return 'degenerate'
+    if s.min() / s.max() < 1e-10:
+        return 'rank-deficient step Jacobian'
+    return None
+
+
+def coef_fn(R, head=None):
+    if str(R['kind']) == 'head':
+        assert head is not None, 'a head record needs its head (nphead.Head) for the independent decode'
+        return lambda W: np.array([head.c(w) for w in np.asarray(W)]), 512
+    return lambda W: np.asarray(W), int(R['dim'])
+
+
+def qualify(R, rows, head=None, qp_rule=None, qpp=True):
+    """R: an accuracy record (hacc R_*.npz); rows: its in-job rows. Returns per-case values, Q1, Q2, Q3 and labels."""
+    coef, dim = coef_fn(R, head)
+    dec = lambda W: NC.decode257(coef(W), dim)
+    ids = [str(x) for x in R['case_ids']]
+    ix = {c: j for j, c in enumerate(ids)}
+    rowby = {r_['case']: r_ for r_ in rows}
+    out = dict(per_case={}, disagreements=[])
+    is_head = str(R['kind']) == 'head'
+
+    def cmp(cid, key, off):
+        r_ = rowby.get(cid)
+        if r_ is None or r_.get(key) is None:
+            out['disagreements'].append((cid, key, 'missing in-job value'))
+        elif not agree(off, r_[key]):
+            out['disagreements'].append((cid, key, off, r_[key]))
+
+    cert = np.asarray(R['cert'], float)
+    rec = np.asarray(R['rec'], float)
+    gcert = bool(cert.size and np.all(np.isfinite(cert) & np.isfinite(rec) & (np.abs(cert - rec) <= 1e-7 * np.abs(rec) + 1e-12)))
+    nonc = int(np.sum(~(cert <= GAMMA)))
+    out.update(pooled_noncertified=nonc, pooled_steps=int(cert.size), gcert_all=gcert,
+               budget_exit_steps=int(np.sum(np.asarray(R['reason']) == 0)))
+    for j, cid in enumerate(ids):
+        n0 = float(R['n0'][j])
+        assert np.isfinite(n0) and n0 > 0
+        C = coef(R['W'][j])
+        fp = NC.decode257(C, dim)
+        dec_err = float(np.max(np.abs(fp - R['f257'][j])) / np.max(np.abs(R['f257'][j])))
+        coef_err = float(np.max(np.abs(C - R['C'][j])) / np.max(np.abs(C)))
+        d_t = NC.fdist(fp, dec(R['W_tight'][j]), n0)
+        ic_ok = (not is_head) or int(R['ic'][j][0]) in (1, 4)
+        valid = bool(finite(R['W'][j], R['w0'][j], R['states'][j], R['f257'][j]) and not np.any(np.asarray(R['reason'][j]) == 3)
+                     and bool(R['valid'][j]) and ic_ok)
+        ct = np.asarray(R['cert_tight'][j], float)
+        ver_t = bool(R['valid_tight'][j] and finite(R['W_tight'][j]) and int(R['budget_exits_tight'][j]) == 0
+                     and np.all(np.isfinite(ct) & (ct <= ANCHOR_T)) and ((not is_head) or int(R['ic_tight'][j][0]) == 4))
+        if ver_t != bool(R['verified_tight'][j]):
+            out['disagreements'].append((cid, 'verified_tight', ver_t, bool(R['verified_tight'][j])))
+        out['per_case'][cid] = dict(valid=valid, ic_ok=ic_ok, tight_verified=ver_t, dist_tight=d_t, decode_rel=dec_err,
+                                    coef_rel=coef_err)
+        if not (dec_err <= 1e-9 and coef_err <= 1e-9):
+            out['disagreements'].append((cid, 'decode', dec_err, coef_err))
+        cmp(cid, 'dist_tight', d_t)
+    devc = [str(x) for x in R['dev_case_ids']]
+    tt = []
+    for k, cid in enumerate(devc):
+        j = ix[cid]
+        d_tt = NC.fdist(dec(R['W_tight'][j]), dec(R['W_tighter'][k]), float(R['n0'][j]))
+        ctt = np.asarray(R['cert_tighter'][k], float)
+        be = int(R['budget_exits_tighter'][k]) if 'budget_exits_tighter' in R else 0
+        ver_tt = bool(R['valid_tighter'][k] and finite(R['W_tighter'][k]) and be == 0 and np.all(np.isfinite(ctt) & (ctt <= ANCHOR_TT))
+                      and ((not is_head) or int(R['ic_tighter'][k][0]) == 4))
+        out['per_case'][cid].update(dist_tight_tighter=d_tt, tighter_verified=ver_tt)
+        cmp(cid, 'dist_tight_tighter', d_tt)
+        tt.append(d_tt)
+    q2case = [str(x) for x in R['q2_case_ids']]
+    q2 = None
+    if q2case:
+        rule = str(R['rule'])
+        M = int(R['M'])
+        L = int(R['mesh'])
+        t_q, t_qp = tables(rule, dim, M, L), tables(qp_rule, dim, M, L)
+        dq, vq, conv, vqq, rho_off = [], [], [], [], []
+        rho_job = np.asarray(R['rho'], float)
+        for k, cid in enumerate(q2case):
+            j = ix[cid]
+            d = NC.fdist(dec(R['W'][j]), dec(R['W_qp'][k]), float(R['n0'][j]))
+            dq.append(d)
+            out['per_case'][cid]['dist_qp'] = d
+            cmp(cid, 'dist_qp', d)
+            vq.append(bool(R['valid_qp'][k] and finite(R['W_qp'][k])))
+            C = coef(R['W'][j])
+            for kk in range(6):
+                off = NC.rho(C[kk], t_q, t_qp)
+                rho_off.append(off)
+                if not (np.isnan(off) and np.isnan(rho_job[k, kk])) and not agree(off, rho_job[k, kk], rel=1e-6, ab=1e-12):
+                    out['disagreements'].append((cid, f'rho[{kk}]', off, float(rho_job[k, kk])))
+        if qpp:
+            for k, cid in enumerate(devc):
+                if cid not in q2case:
+                    continue
+                kq, j = q2case.index(cid), ix[cid]
+                c_ = NC.fdist(dec(R['W_qp'][kq]), dec(R['W_qpp'][k]), float(R['n0'][j]))
+                conv.append(c_)
+                out['per_case'][cid]['dist_qp_qpp'] = c_
+                cmp(cid, 'dist_qp_qpp', c_)
+                vqq.append(bool(R['valid_qpp'][k] and finite(R['W_qpp'][k])))
+        rho = np.asarray(rho_off, float)
+        rok = rho[~np.isnan(rho)]
+        q2 = dict(population=len(q2case), rollout=bool(dq) and dmax(dq) <= BAR_Q2, worst_dist_qp=dmax(dq),
+                  rho_max=dmax(rok) if rok.size else None, rho=bool(rok.size) and dmax(rok) <= BAR_RHO,
+                  successor_valid=bool(vq) and all(vq), check_valid=(not qpp) or (bool(vqq) and all(vqq)),
+                  convergence=(not qpp) or (bool(conv) and dmax(conv) <= BAR_Q2), worst_dist_qp_qpp=dmax(conv) if conv else None)
+    pc = out['per_case'].values()
+    q1 = dict(all_valid=bool(pc) and all(v['valid'] for v in pc),
+              anchors_verified=bool(pc) and all(v['tight_verified'] for v in pc),
+              certificate=bool(cert.size) and nonc <= .01 * cert.size, gcert=gcert,
+              distance=bool(pc) and dmax(v['dist_tight'] for v in pc) <= BAR_Q1,
+              tight_tighter=bool(tt) and dmax(tt) <= BAR_TT and all(out['per_case'][c]['tighter_verified'] for c in devc))
+    q1['offline_agrees'] = not out['disagreements']
+    q1['pass'] = all(q1.values())
+    out['Q1'] = q1
+    if q2 is None:
+        out['Q2'] = dict(label='not run here')
+    else:
+        q2['label'] = QS_.q2_label(q2, bool(out['disagreements']))
+        out['Q2'] = q2
+    out['numerically_qualified'] = bool(q1['pass'] and out['Q2'].get('label') == 'pass')
+    # Q3 flags
+    sv = np.asarray(R['q3_svals'], float)
+    flags = [q3_flag(sv[k, t_]) for k in range(sv.shape[0]) for t_ in range(sv.shape[1])]
+    flags = [f_ for f_ in flags if f_]
+    finite_sv = sv[np.isfinite(sv).all(axis=2) & (sv.max(axis=2) > 0)]
+    out['Q3'] = dict(cond_median=float(np.median(finite_sv[:, 0] / finite_sv[:, -1])) if finite_sv.size else None,
+                     cond_max=float(np.max(finite_sv[:, 0] / finite_sv[:, -1])) if finite_sv.size else None,
+                     flags=sorted(set(flags)))
+    return out
+
+
+def score(R, kinds=('ST', 'S')):
+    """E0 per case (qualify's qscore.score_config: identity assertions; S only for LSPG-BE at dt0)."""
+    return QS_.score_config(R, float(R['dt']), kinds)
+
+
+# ------------------------------------------------------------------ rule selection (independent) ----
+
+def rule_verify(res, sol_dir, cfg, S=50):
+    """Independent recomputation of hrule's selection (DESIGN A1.4 / A2.5) from the archived solves (SOL_<group>.npz) and
+    rho records: validity from the saved per-solve diagnostics, every distance by the NumPy decode (nphead for heads),
+    rho by NumPy rule tables, the pass predicates, pass counts and the chosen rung. Returns {group: report}."""
+    from pathlib import Path
+    out = {}
+    gcfg = {g['name']: g for g in cfg['groups']}
+    for gname, v in res['groups'].items():
+        g = gcfg[gname]
+        rep = dict(ok=True, problems=[])
+        z = np.load(Path(sol_dir) / f'SOL_{gname}.npz', allow_pickle=True)
+        keys = [str(k) for k in z['keys']]
+        ix = {k: i for i, k in enumerate(keys)}
+        arms = {}
+        for a in g['arms']:
+            M = int(a.get('M') or g.get('M') or 4 * (a['Rp'] if a['kind'] == 'lin' else NH.Head(a['head']).K))
+            if a['kind'] == 'head':
+                h = NH.Head(a['head'])
+                arms[a['name']] = (lambda W, h=h: np.array([h.c(w) for w in np.asarray(W)]), 512, M, True)
+            else:
+                arms[a['name']] = (lambda W: np.asarray(W), int(a['Rp']), M, False)
+
+        def get(arm, rule, case):
+            i = ix[f'{arm}|{rule}|{case}']
+            coef, dim, M, is_head = arms[arm]
+            C = coef(z['W'][i])
+            valid = bool(np.isfinite(z['W'][i]).all() and np.isfinite(np.asarray(z['w0'][i], float)).all()
+                         and bool(z['fields_finite'][i]) and int(z['exits'][i][3]) == 0
+                         and np.isfinite(z['step_gn'][i][:S]).all() and ((not is_head) or int(z['ic_reason'][i]) in (1, 4)))
+            if valid != bool(z['valid'][i]):
+                rep['problems'].append(('validity', arm, rule, case, valid, bool(z['valid'][i])))
+            return C, valid, float(z['n0'][i]), dim, M
+
+        pop, chk = v['population'], v['check_population']
+        npass_first = None
+        for t_ in v['trail']:
+            npass = 0
+            for an, a in t_['arms'].items():
+                coef, dim, M, _ = arms[an]
+                d, vq, vqp = [], [], []
+                for c in pop:
+                    Cq, okq, n0, _, _ = get(an, t_['rule'], c)
+                    Cp, okp, _, _, _ = get(an, t_['successor'], c)
+                    d.append(NC.fdist(NC.decode257(Cq, dim), NC.decode257(Cp, dim), n0))
+                    vq.append(okq)
+                    vqp.append(okp)
+                dj = np.array([np.inf if x is None else float(x) for x in a['dist']])     # JSON null = non-finite
+                d = np.where(np.isfinite(d), d, np.inf)
+                same = (np.isinf(d) & np.isinf(dj)) | (np.isfinite(d) & np.isfinite(dj) & np.isclose(d, dj, rtol=1e-9, atol=1e-13))
+                if len(dj) != len(d) or not same.all():
+                    rep['problems'].append(('dist', an, t_['rule']))
+                roll = bool(all(vq) and all(vqp) and np.isfinite(d).all() and np.max(d) <= BAR_Q2)
+                rho_ok = False
+                if roll:
+                    tq, tp = tables(t_['rule'], dim, M, int(res['mesh'])), tables(t_['successor'], dim, M, int(res['mesh']))
+                    rr = [NC.rho(Ck, tq, tp) for c in pop for Ck in get(an, t_['rule'], c)[0]]
+                    rr = np.asarray(rr, float)
+                    rmax = float(np.max(rr)) if np.isfinite(rr).all() else float('inf')     # the driver's rule
+                    rj = float('inf') if a['rho_max'] is None else float(a['rho_max'])
+                    if not ((np.isinf(rmax) and np.isinf(rj)) or (np.isfinite(rmax) and np.isfinite(rj)
+                                                                   and np.isclose(rmax, rj, rtol=1e-6, atol=1e-12))):
+                        rep['problems'].append(('rho_max', an, t_['rule'], rmax, a['rho_max']))
+                    rho_ok = rmax <= BAR_RHO
+                chk_ok = False
+                if roll and rho_ok:
+                    dc, vpp = [], []
+                    for c in chk:
+                        Cp, _, n0, _, _ = get(an, t_['successor'], c)
+                        Cpp, okpp, _, _, _ = get(an, t_['check'], c)
+                        dc.append(NC.fdist(NC.decode257(Cp, dim), NC.decode257(Cpp, dim), n0))
+                        vpp.append(okpp)
+                    dc = np.asarray(dc, float)
+                    chk_ok = bool(all(vpp) and np.isfinite(dc).all() and dc.max() <= BAR_Q2)
+                passed = bool(roll and rho_ok and chk_ok)
+                if passed != bool(a['passed']):
+                    rep['problems'].append(('passed', an, t_['rule'], passed, a['passed']))
+                npass += int(passed)
+            gp = npass >= int(g['min_pass'])
+            if gp != bool(t_['group_pass']):
+                rep['problems'].append(('group_pass', t_['rule'], gp))
+            if gp and npass_first is None:
+                npass_first = t_['rule']
+        chosen = (v.get('chosen') or {}).get('main')
+        if chosen != npass_first:
+            rep['problems'].append(('chosen', chosen, npass_first))
+        rep['ok'] = not rep['problems']
+        rep['chosen_recomputed'] = npass_first
+        out[gname] = rep
+    return out
+
+
+def qualify_timing(Z, rows, head=None, qp_rule=None, qpp_rule=None, cert_ids=None, S=50):
+    """Timing-job (dev6) Q1 / Q2 labels from a timing record S_*.npz (A1.8), recomputed from the saved arrays: validity
+    and anchor verification from the saved flags, certificates, budget exits and initial-fit records; every distance
+    by the independent NumPy decode; rho by NumPy rule tables. Returns dict(Q1, Q2, label, per_case, disagreements)."""
+    import qscore as QS_
+    R = dict(kind=str(Z['kind']), dim=int(Z['dim']))
+    coef, dim = coef_fn(R, head)
+    dec = lambda W: NC.decode257(coef(W), dim)
+    ids = [str(x) for x in Z['case_ids']]
+    out = dict(per_case={}, disagreements=[])
+    if cert_ids is not None and sorted(ids) != sorted(cert_ids):
+        out['disagreements'].append(('population', ids))
+    is_head = R['kind'] == 'head'
+    rowby = {r_['case']: r_ for r_ in rows}
+    cert = np.asarray(Z['cert'], float)
+    rec = np.asarray(Z['rec'], float)
+    gcert = bool(cert.size and np.all(np.isfinite(cert) & np.isfinite(rec) & (np.abs(cert - rec) <= 1e-7 * np.abs(rec) + 1e-12)))
+    nonc = int(np.sum(~(cert <= GAMMA)))
+    dt_, dtt_, dq_, dqq_, rho_ = [], [], [], [], []
+    has_q2 = qp_rule is not None
+    if has_q2:
+        M = int(Z['A'].shape[0])
+        tq, tp = tables(str(Z['rule']), dim, M, int(Z['mesh'])), tables(qp_rule, dim, M, int(Z['mesh']))
+    for j, cid in enumerate(ids):
+        n0 = float(Z['n0'][j])
+        f = dec(Z['W'][j])
+        ft, ftt = dec(Z['W_tight'][j]), dec(Z['W_tighter'][j])
+        d_t, d_tt = NC.fdist(f, ft, n0), NC.fdist(ft, ftt, n0)
+        ct, ctt = np.asarray(Z['cert_tight'][j], float), np.asarray(Z['cert_tighter'][j], float)
+        icok = (not is_head) or int(Z['ic'][j][0]) in (1, 4)
+        valid = bool(Z['valid'][j] and finite(Z['W'][j], Z['states'][j]) and icok)
+        vt = bool(Z['valid_tight'][j] and int(Z['budget_exits_tight'][j]) == 0 and np.all(np.isfinite(ct) & (ct <= ANCHOR_T))
+                  and ((not is_head) or int(Z['ic_tight'][j][0]) == 4))
+        vtt = bool(Z['valid_tighter'][j] and int(Z['budget_exits_tighter'][j]) == 0 and np.all(np.isfinite(ctt) & (ctt <= ANCHOR_TT))
+                   and ((not is_head) or int(Z['ic_tighter'][j][0]) == 4))
+        pc = dict(valid=valid, tight_verified=vt, tighter_verified=vtt, dist_tight=d_t, dist_tight_tighter=d_tt)
+        r_ = rowby.get(cid, {})
+        for k, off in (('dist_tight', d_t), ('dist_tight_tighter', d_tt)):
+            if r_.get(k) is None or not agree(off, r_[k]):
+                out['disagreements'].append((cid, k, off, r_.get(k)))
+        dt_.append(d_t)
+        dtt_.append(d_tt)
+        if has_q2:
+            fq = dec(Z['W_qp'][j])
+            dq = NC.fdist(f, fq, n0)
+            dqq = NC.fdist(fq, dec(Z['W_qpp'][j]), n0)
+            C = coef(Z['W'][j])
+            rr = [NC.rho(C[k], tq, tp) for k in range(6)]
+            pc.update(dist_qp=dq, dist_qp_qpp=dqq, rho_max=float(np.max(rr)) if np.isfinite(rr).all() else float('inf'))
+            for k, off in (('dist_qp', dq), ('dist_qp_qpp', dqq)):
+                if r_.get(k) is None or not agree(off, r_[k]):
+                    out['disagreements'].append((cid, k, off, r_.get(k)))
+            dq_.append(dq)
+            dqq_.append(dqq)
+            rho_ += rr
+        out['per_case'][cid] = pc
+    pcs = out['per_case'].values()
+    q1 = dict(all_valid=all(v['valid'] for v in pcs), anchors=all(v['tight_verified'] and v['tighter_verified'] for v in pcs),
+              certificate=bool(cert.size) and nonc <= .01 * cert.size, gcert=gcert,
+              distance=dmax(dt_) <= BAR_Q1, tight_tighter=dmax(dtt_) <= BAR_TT, offline_agrees=not out['disagreements'])
+    q1['pass'] = all(q1.values())
+    if has_q2:
+        rr = np.asarray(rho_, float)
+        rok = rr[~np.isnan(rr)]
+        q2 = dict(rollout=dmax(dq_) <= BAR_Q2, rho_max=dmax(rok) if rok.size else None, rho=bool(rok.size) and dmax(rok) <= BAR_RHO,
+                  successor_valid=bool(rows) and all(bool(rowby.get(c, {}).get('qp_valid')) for c in ids),
+                  check_valid=bool(rows) and all(bool(rowby.get(c, {}).get('qpp_valid')) for c in ids),
+                  convergence=dmax(dqq_) <= BAR_Q2)
+        q2['label'] = QS_.q2_label(q2, bool(out['disagreements']))
+    else:
+        q2 = dict(label='not run here')
+    out.update(Q1=q1, Q2=q2, label='pass' if (q1['pass'] and q2['label'] == 'pass') else
+               ('pass (Q1 only; reference subject)' if (q1['pass'] and not has_q2) else 'fail'))
+    return out

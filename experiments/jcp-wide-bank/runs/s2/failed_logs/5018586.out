@@ -1,0 +1,14 @@
+host=pax008 source_commit=6a8179b46783935711da9edde26f8f0cc8a06f72
+NVIDIA H200, GPU-82ad2379-97ca-7878-e8f3-7e960c158cff, 143771 MiB
+10.235.106.34:/projects/paralab  4.6T 1000G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[14.6s] [mesh 65] bank rows [(512, 250047)] 3.8s
+[17.6s] [mesh 65] Gram cond 1.0000, A (2052, 512) 6.8s
+[17.9s] [mesh 65] bank rows [(512, 250047)] 0.3s
+[18.2s] [mesh 65] Gram cond 1.0000, A (2052, 512) 0.5s
+[24.2s] [mesh 65] tensor (2052, 512, 512) 6.6s
+[28.1s] [mesh 65] bank rows [(32, 250047)] 1.5s
+[29.7s] [mesh 65] Gram cond 1.0000, A (133, 32) 3.1s
+[30.4s] [mesh 65] tensor (133, 32, 32) 3.8s
+[49.7s] [65|M2] gates {'gram_condition': 1.000000000000512, 'G1_derivative_vs_fd': 1.8677493931803708e-06, 'G2_meshnodes_offmesh_vs_tensor_32col': 1.0643709769948999e-15, 'G4_solver_vs_vendor_fields_32col': 0.0, 'G4_solver_vs_vendor_coefs_32col': 0.0, 'G4_iterations_reasons_equal': True, 'G3_jacobian_vs_jacfwd': 0.0, 'G3_adv_half_Jc': 8.436150706960837e-16}

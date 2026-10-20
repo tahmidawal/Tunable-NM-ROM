@@ -1,0 +1,34 @@
+{
+ "attempt": "refN0s",
+ "projection_hours": 1.408,
+ "time_limit_hours": 2.25,
+ "gpu": "a100-80G",
+ "configs": {
+  "configs/ref-N0s.json": "ba6055f12159de20140f7d43aed04c4038584710074ed77f8bebb41a28f88c70",
+  "configs/slim-N0s.json": "2b7352ae747ec2672bba51622f6099adf6c4cdd0c6b137265a7eadd55208ed42"
+ },
+ "runs": [
+  "refjob:configs/ref-N0s.json",
+  "refslim:configs/slim-N0s.json"
+ ],
+ "parts": [
+  {
+   "run": "refjob:configs/ref-N0s.json",
+   "seconds": 4948.631086906084
+  },
+  {
+   "run": "refslim:configs/slim-N0s.json",
+   "seconds": 120.0
+  }
+ ],
+ "basis": {
+  "ordinary": 221.70111935865134,
+  "lownu": 850.0,
+  "lownu_pilot": 350.367016851902,
+  "probe": 40.18424032907933,
+  "rom_per_run": 0.45252525252525255,
+  "fverify_per_field": 0.12121212121212122,
+  "calib_agree": true,
+  "smoke": "runs/smk1"
+ }
+}

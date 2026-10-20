@@ -1,0 +1,22 @@
+{
+ "attempt": "e2t3d1",
+ "gpu": "h200",
+ "gpus": 1,
+ "time_limit": 4.0,
+ "time_limit_hours": 4.0,
+ "groups": [
+  [
+   {
+    "sh": "train3d/run_seed.sh",
+    "args": [
+     "1",
+     "OUT/train3d_s1"
+    ],
+    "complete": "OUT/train3d_s1/SEED-COMPLETE",
+    "projection_hours": 2.6,
+    "projection_basis": "incumbent W1024 job j3b 5012847: 6,660 s on H200 x 1.4 (smk3: data generation 1.4x slower) (bank fit 4,104 s); smk3 pilot data generation measured"
+   }
+  ]
+ ],
+ "commit": "5793e01913c61b6f3662ebcf97e4ef02d64e643a"
+}

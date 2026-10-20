@@ -1,0 +1,394 @@
+{
+ "attempt": "e2f1",
+ "driver": "e2run3d",
+ "mode": "e2f1",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "W256",
+   "bank": "W1024s1",
+   "Rp": 256,
+   "a": 6,
+   "rule": "gl24",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W512",
+   "bank": "W1024s1",
+   "Rp": 512,
+   "a": 6,
+   "rule": "gl24",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W768",
+   "bank": "W1024s1",
+   "Rp": 768,
+   "a": 6,
+   "rule": "gl24",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024s1",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "gl24",
+   "reduced": [],
+   "extra": []
+  }
+ ],
+ "extra_rules": [
+  "gl24",
+  "gl32",
+  "gl48",
+  "lat16384",
+  "lat32768",
+  "lat8192"
+ ],
+ "blocks": [
+  {
+   "kind": "ladder",
+   "setting": "W256",
+   "specs": [
+    "fs|CN|0.0125|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "gl24"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W256",
+   "specs": [
+    "fs|CN|0.0125|K1",
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat16384"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W256",
+   "specs": [
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat8192"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "gl32"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat16384"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat32768"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W768",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "gl48"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W768",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat32768"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "panel",
+   "label": "front3d-1",
+   "A": {
+    "setting": "W256",
+    "rule": "gl24",
+    "spec": "fs|CN|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "W256",
+     "rule": "gl24",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W256",
+     "rule": "lat16384",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W256",
+     "rule": "gl24",
+     "spec": "fs|CN|0.0125|K1"
+    },
+    {
+     "setting": "W256",
+     "rule": "lat16384",
+     "spec": "fs|CN|0.0125|K1"
+    },
+    {
+     "setting": "W256",
+     "rule": "gl24",
+     "spec": "qn|BDF2|0.025|k4"
+    },
+    {
+     "setting": "W256",
+     "rule": "lat8192",
+     "spec": "qn|BDF2|0.025|k4"
+    },
+    {
+     "setting": "W512",
+     "rule": "gl32",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W512",
+     "rule": "lat32768",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W512",
+     "rule": "gl32",
+     "spec": "qn|BDF2|0.025|k4"
+    },
+    {
+     "setting": "W512",
+     "rule": "lat16384",
+     "spec": "qn|BDF2|0.025|k4"
+    },
+    {
+     "setting": "W768",
+     "rule": "gl48",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W768",
+     "rule": "lat32768",
+     "spec": "fs|CN|0.01|K1"
+    }
+   ],
+   "cases": 8,
+   "reps": 3,
+   "seed": 20261019
+  }
+ ],
+ "selection": {
+  "file": "checks/select3d-1.json"
+ },
+ "bank_seed": 1,
+ "bank_registry": {
+  "W1024s1": {
+   "path": "inputs/banks3d/s1/bank.pkl",
+   "sha256": "0a4116f5fbca5099163f4122acd30cf5d2530043373968ff05a8385eefc408d5"
+  }
+ },
+ "cluster_inputs": [
+  {
+   "src": "/cluster/tufts/paralab/tawal01/burgers-archive/jcp-robust/e2t3d1/output/train3d_s1/bank.pkl",
+   "dst": "experiments/jcp-robust/inputs/banks3d/s1/bank.pkl",
+   "sha256": "0a4116f5fbca5099163f4122acd30cf5d2530043373968ff05a8385eefc408d5"
+  }
+ ]
+}

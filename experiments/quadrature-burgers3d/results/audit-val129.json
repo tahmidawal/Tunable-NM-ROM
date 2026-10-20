@@ -1,0 +1,56 @@
+{
+ "mesh": 129,
+ "job_id": "4732818",
+ "checks": {
+  "restricted16_errors_max_abs_diff": 3.3306690738754696e-16,
+  "decode16_max_rel": 8.079711539942696e-15,
+  "refined_in_job_vs_numpy": 2.7755575615628914e-16,
+  "refined_in_job_present": true,
+  "refined_in_job_compared": 1928,
+  "rho_R512": {
+   "offmesh_rule_rel": 6.482373515658471e-16,
+   "continuum_gl64_vs_saved_gl80_rel": 2.1967583165102118e-08,
+   "mesh_target_rel": 1.941948108178674e-16,
+   "rho_cont_states_numpy_max": 0.06927314476561314,
+   "rho_cont_recorded_worst": 0.10497738773788536,
+   "rho_numpy_le_recorded_worst": true
+  },
+  "rho_R256": {
+   "offmesh_rule_rel": 1.529864714258268e-15,
+   "continuum_gl64_vs_saved_gl80_rel": 8.34801634966556e-09,
+   "mesh_target_rel": 1.9431619684357968e-16,
+   "rho_cont_states_numpy_max": 0.015470214556558632,
+   "rho_cont_recorded_worst": 0.02870511167855104,
+   "rho_numpy_le_recorded_worst": true
+  },
+  "rho_worst_reproduced_R512_max_rel": 6.284398293457783e-13,
+  "rho_worst_reproduced_R256_max_rel": 6.273635202741212e-12,
+  "selection": {
+   "512": {
+    "numpy": "gl24_R512",
+    "select_q": "gl24_R512",
+    "match": true
+   },
+   "256": {
+    "numpy": "lat4096_R256",
+    "select_q": "lat4096_R256",
+    "match": true
+   }
+  },
+  "control_swapped_reference_diff": 0.823810038836618,
+  "control_perturbed_diff": 8.409085918502542e-05
+ },
+ "ok": {
+  "restricted16": true,
+  "decode16": true,
+  "refined": true,
+  "rho_R512": true,
+  "rho_R256": true,
+  "rho_worst_reproduced_R512": true,
+  "rho_worst_reproduced_R256": true,
+  "selection": true,
+  "control_swapped_detected": true,
+  "control_perturbed_detected": true
+ },
+ "all_pass": true
+}

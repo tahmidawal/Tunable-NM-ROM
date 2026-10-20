@@ -1,0 +1,53 @@
+{
+ "source": "sacct on tufts-login, 2026-10-14",
+ "jobs": [
+  {
+   "job_id": "5209646",
+   "name": "jr_gates1",
+   "state": "FAILED",
+   "elapsed": "00:02:13",
+   "seconds": 133,
+   "reason": "refused at the unit-gate check (A7.1)"
+  },
+  {
+   "job_id": "5209647",
+   "name": "jr_calib2d1",
+   "state": "FAILED",
+   "elapsed": "00:00:28",
+   "seconds": 28,
+   "reason": "refused at the unit-gate check (A7.1)"
+  },
+  {
+   "job_id": "5209648",
+   "name": "jr_calib3d1",
+   "state": "CANCELLED by 34493",
+   "elapsed": "00:00:00",
+   "seconds": 0,
+   "reason": "cancelled before start (A7.1)"
+  },
+  {
+   "job_id": "5209713",
+   "name": "jr_calib2d2",
+   "state": "CANCELLED by 34493",
+   "elapsed": "00:08:53",
+   "seconds": 533,
+   "reason": "cancelled during calibration (A9.1)"
+  },
+  {
+   "job_id": "5217960",
+   "name": "jr_fd2dval32p1",
+   "state": "CANCELLED by 34493",
+   "elapsed": "00:00:00",
+   "seconds": 0,
+   "reason": "cancelled before start; restaged on H200"
+  },
+  {
+   "job_id": "5219092",
+   "name": "jr_fd2dtest64p0",
+   "state": "CANCELLED by 34493",
+   "elapsed": "00:00:00",
+   "seconds": 0,
+   "reason": "cancelled before start; restaged on H200"
+  }
+ ]
+}

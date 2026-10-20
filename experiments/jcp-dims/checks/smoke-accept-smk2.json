@@ -1,0 +1,1281 @@
+{
+ "results": {
+  "CPU decision-rule / generator tests all pass": {
+   "required": true,
+   "passed": true
+  },
+  "bad-vector fixtures admitted (independent CPU establishment)": {
+   "required": true,
+   "passed": true
+  },
+  "smk2 dacc archive present": {
+   "required": true,
+   "passed": true
+  },
+  "smk2 dacc complete": {
+   "required": true,
+   "passed": true
+  },
+  "smk2 dacc memory: no rejection and job peak <= 120 GB": {
+   "required": true,
+   "passed": true,
+   "peak": 29661187072
+  },
+  "smk2 dacc peaks per setting": {
+   "required": false,
+   "peaks": {
+    "start": 77595392,
+    "R384M1536gauss128": 17278585600,
+    "R128M512fib4181": 17278585600,
+    "R512M4096gauss256": 21926846208,
+    "R512M4096gauss320": 29661187072,
+    "R512M4096gauss384": 29661187072,
+    "R128M128gauss64": 29661187072,
+    "R384M384gauss256": 29661187072,
+    "R128M512ffib2584s1": 29661187072,
+    "R128M512ffib4181s1": 29661187072,
+    "R128M512ffib2584s2": 29661187072,
+    "R128M512ffib4181s2": 29661187072,
+    "R128M512fsobol2048s1": 29661187072,
+    "R128M512fsobol4096s1": 29661187072,
+    "R128M512fsobol2048s2": 29661187072,
+    "R128M512fsobol4096s2": 29661187072,
+    "R128M512fhalton2048s1": 29661187072,
+    "R128M512fhalton4096s1": 29661187072,
+    "R128M512fhalton2048s2": 29661187072,
+    "R128M512fhalton4096s2": 29661187072,
+    "R128M512fmc2048s0": 29661187072,
+    "R128M512fmc4096s0": 29661187072,
+    "R128M512fmc2048s1": 29661187072,
+    "R128M512fmc4096s1": 29661187072,
+    "R128M512fsmolyak8": 29661187072,
+    "R128M512fsmolyak9": 29661187072,
+    "R128M512fbadlat2584": 29661187072,
+    "R384M1536lmfgauss256": 29661187072,
+    "R384M1536gauss256": 29661187072,
+    "end": 29661187072
+   }
+  },
+  "G-modes: first 2048 entries of F_4096 equal P1 F_2048": {
+   "required": true,
+   "passed": true
+  },
+  "reproduction R384M1536gauss128 LSPG-CNR vs qualify smkA <= 1e-10": {
+   "required": true,
+   "passed": true,
+   "worst": 1.1706951844232166e-15
+  },
+  "reproduction R384M1536gauss128 LSPG-BE vs qualify smkA <= 1e-10": {
+   "required": true,
+   "passed": true,
+   "worst": 1.5666729530232904e-15
+  },
+  "reproduction R128M512fib4181 LSPG-CNR vs qualify smkA <= 1e-10": {
+   "required": true,
+   "passed": true,
+   "worst": 1.625319739046831e-15
+  },
+  "reproduction R128M512fib4181 LSPG-BE vs qualify smkA <= 1e-10": {
+   "required": true,
+   "passed": true,
+   "worst": 1.1088992047691691e-15
+  },
+  "R384M1536gauss128|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R384M1536gauss128|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 300,
+   "square": false
+  },
+  "R384M1536gauss128|LSPG|CNR: zero-update motion > 100 x 2.5e-4 (establishment)": {
+   "required": true,
+   "passed": true,
+   "motion": 0.5147793738376664
+  },
+  "R384M1536gauss128|LSPG|CNR: zero-update control fires": {
+   "required": true,
+   "passed": true,
+   "dist": 0.5147793738376664
+  },
+  "R384M1536gauss128|LSPG|BE: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R384M1536gauss128|LSPG|BE: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 300,
+   "square": false
+  },
+  "R384M1536gauss128|LSPG|BE: zero-update motion > 100 x 2.5e-4 (establishment)": {
+   "required": true,
+   "passed": true,
+   "motion": 0.5101744855856765
+  },
+  "R384M1536gauss128|LSPG|BE: zero-update control fires": {
+   "required": true,
+   "passed": true,
+   "dist": 0.5101744855856765
+  },
+  "R384M1536gauss128|GAL|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R384M1536gauss128|GAL|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 300,
+   "square": false
+  },
+  "positive GAL fixture (R384 gauss128 GAL-CN dt0 dev6): certificate, G-cert, validity": {
+   "required": true,
+   "passed": true,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   }
+  },
+  "R384M1536gauss128|GAL|CN: zero-update motion > 100 x 2.5e-4 (establishment)": {
+   "required": true,
+   "passed": true,
+   "motion": 0.5149958553874253
+  },
+  "R384M1536gauss128|GAL|CN: zero-update control fires": {
+   "required": true,
+   "passed": true,
+   "dist": 0.5149958553874253
+  },
+  "R128M512fib4181|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fib4181|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 300,
+   "square": false
+  },
+  "R128M512fib4181|LSPG|BE: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fib4181|LSPG|BE: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 300,
+   "square": false
+  },
+  "R512M4096gauss256|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R512M4096gauss256|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R512M4096gauss256|GAL|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R512M4096gauss256|GAL|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R512M4096gauss320|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R512M4096gauss320|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R512M4096gauss320|GAL|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R512M4096gauss320|GAL|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R512M4096gauss320|LSPG|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R512M4096gauss320|LSPG|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R512M4096gauss384|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R512M4096gauss384|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R512M4096gauss384|GAL|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R512M4096gauss384|GAL|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M128gauss64|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M128gauss64|LSPG|CNR: square diagnostics recorded (cond(J), unweighted residual)": {
+   "required": true,
+   "passed": true
+  },
+  "R128M128gauss64|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": true,
+   "jcond_max": 573.0729509924357,
+   "unweighted_max": 1.0102852166782585e-10,
+   "gamma_lit_median": 0.09625834746467107
+  },
+  "R128M128gauss64|LSPG|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M128gauss64|LSPG|CN: square diagnostics recorded (cond(J), unweighted residual)": {
+   "required": true,
+   "passed": true
+  },
+  "R128M128gauss64|LSPG|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": true,
+   "jcond_max": 568.1395608763513,
+   "unweighted_max": 9.94798091487623e-11,
+   "gamma_lit_median": 0.09622551626480674
+  },
+  "R128M128gauss64|GAL|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M128gauss64|GAL|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": true
+  },
+  "R384M384gauss256|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R384M384gauss256|LSPG|CNR: square diagnostics recorded (cond(J), unweighted residual)": {
+   "required": true,
+   "passed": true
+  },
+  "R384M384gauss256|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": true,
+   "jcond_max": 4329.173325664194,
+   "unweighted_max": 1.0305470684094831e-10,
+   "gamma_lit_median": 0.058106732445928094
+  },
+  "R384M384gauss256|GAL|CN: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R384M384gauss256|GAL|CN: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": true
+  },
+  "R128M512ffib2584s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512ffib2584s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512ffib4181s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512ffib4181s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512ffib2584s2|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512ffib2584s2|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512ffib4181s2|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512ffib4181s2|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fsobol2048s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fsobol2048s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fsobol4096s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fsobol4096s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fsobol2048s2|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fsobol2048s2|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fsobol4096s2|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fsobol4096s2|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fhalton2048s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fhalton2048s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fhalton4096s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fhalton4096s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fhalton2048s2|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fhalton2048s2|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fhalton4096s2|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fhalton4096s2|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fmc2048s0|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fmc2048s0|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fmc4096s0|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fmc4096s0|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fmc2048s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fmc2048s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fmc4096s1|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fmc4096s1|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fsmolyak8|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fsmolyak8|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fsmolyak9|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fsmolyak9|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R128M512fbadlat2584|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R128M512fbadlat2584|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R384M1536lmfgauss256|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R384M1536lmfgauss256|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "R384M1536gauss256|LSPG|CNR: offline recomputation agrees with the job": {
+   "required": true,
+   "passed": true,
+   "disagreements": []
+  },
+  "R384M1536gauss256|LSPG|CNR: Q1": {
+   "required": false,
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 100,
+   "square": false
+  },
+  "ladder Q2 path R512 M4096 gauss256 (LSPG-CNR)": {
+   "required": false,
+   "label": "pass",
+   "worst_dist_qp": 2.760480445712991e-08,
+   "rho_max": 6.328993274542168e-05,
+   "rho_trivial": 0,
+   "check": "(True, 3.98507598885959e-09)",
+   "successor_valid": true
+  },
+  "ladder Q2 path R512 M4096 (LSPG) produced a label": {
+   "required": true,
+   "passed": true
+  },
+  "ladder Q2 path R512 M4096 gauss256 (GAL-CN)": {
+   "required": false,
+   "label": "pass",
+   "worst_dist_qp": 3.561310291243201e-08,
+   "rho_max": 6.328993274542168e-05,
+   "rho_trivial": 0,
+   "check": "(True, 6.562747307027513e-09)",
+   "successor_valid": true
+  },
+  "ladder Q2 path R512 M4096 (GAL) produced a label": {
+   "required": true,
+   "passed": true
+  },
+  "under-resolved rule (gauss32 -> gauss64): Q2 fail": {
+   "required": true,
+   "passed": true,
+   "worst": 0.033663845818855134,
+   "rho": 1.5816420465830983
+  },
+  "Q1 negative (LSPG, budget 0): pooled non-certified > 1 %": {
+   "required": true,
+   "passed": true,
+   "pooled": 1.0
+  },
+  "Q1 negative (GAL, budget 0): pooled non-certified > 1 %": {
+   "required": true,
+   "passed": true,
+   "pooled": 1.0
+  },
+  "wrong-mesh table refused": {
+   "required": true,
+   "passed": true
+  },
+  "fixgate blocks ran at both family cells": {
+   "required": true,
+   "passed": true
+  },
+  "fixgate R384 M1536: bad-vector rule flagged by component (b)": {
+   "required": true,
+   "passed": true,
+   "rho_max": 4.158827373878723
+  },
+  "fixgate R384: target against itself gives rho 0": {
+   "required": true,
+   "passed": true
+  },
+  "fixgate R128 M512: bad-vector rule flagged by component (b)": {
+   "required": true,
+   "passed": true,
+   "rho_max": 3.164281138416569
+  },
+  "draws of fib2584 give different tables": {
+   "required": true,
+   "passed": true,
+   "settings": [
+    "R128M512ffib2584s1",
+    "R128M512ffib2584s2"
+   ]
+  },
+  "draws of sobol2048 give different tables": {
+   "required": true,
+   "passed": true,
+   "settings": [
+    "R128M512fsobol2048s1",
+    "R128M512fsobol2048s2"
+   ]
+  },
+  "draws of halton2048 give different tables": {
+   "required": true,
+   "passed": true,
+   "settings": [
+    "R128M512fhalton2048s1",
+    "R128M512fhalton2048s2"
+   ]
+  },
+  "draws of mc2048 give different tables": {
+   "required": true,
+   "passed": true,
+   "settings": [
+    "R128M512fmc2048s0",
+    "R128M512fmc2048s1"
+   ]
+  },
+  "LMF list: rank(A) = r": {
+   "required": true,
+   "passed": true,
+   "rank": 384
+  },
+  "LMF stability: cond(A) ratio LMF / default (bar 10)": {
+   "required": false,
+   "ratio": 0.561721559086184,
+   "lmf": 5.36943917084364,
+   "default": 9.558898148005417
+  },
+  "smk2t dtime archive present": {
+   "required": true,
+   "passed": true
+  },
+  "smk2t complete": {
+   "required": true,
+   "passed": true
+  },
+  "smk2t memory: no rejection, every block released (<= 1 GB over base)": {
+   "required": true,
+   "passed": true
+  },
+  "split = fused (fields 1e-12, iterations equal)": {
+   "required": true,
+   "passed": true
+  },
+  "injected identity fault invalidates every triplet of its subject": {
+   "required": true,
+   "passed": true
+  },
+  "identity holds for every other subject": {
+   "required": true,
+   "passed": true
+  },
+  "doubled work B/A in [1.8, 2.2] with identical iterations and identity": {
+   "required": true,
+   "passed": true,
+   "median": 2.0026651167197027
+  },
+  "invocation counts complete": {
+   "required": true,
+   "passed": true
+  },
+  "1024|R384|M1536|gauss128|LSPG|CNR|1: G-cert holds in the timing job (offline, A6.1 bar)": {
+   "required": true,
+   "passed": true,
+   "in_job_flags": [
+    true,
+    true
+   ]
+  },
+  "1024|R384|M1536|gauss128|LSPG|CNR|1: second certification phase (q++) present": {
+   "required": true,
+   "passed": true
+  },
+  "timing-job certification 1024|R384|M1536|gauss128|LSPG|CNR|1": {
+   "required": false,
+   "rows": [
+    {
+     "case": "dev6|0",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 4.5646277200353345e-07,
+     "dist_qp": 7.74520578300798e-07,
+     "dist_qp_qpp": 4.4522717113127807e-07
+    },
+    {
+     "case": "dev6|1",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 5.115772426529641e-07,
+     "dist_qp": 3.0309993502419623e-08,
+     "dist_qp_qpp": 1.2566390908739688e-08
+    }
+   ]
+  },
+  "1024|R128|M512|gauss96|LSPG|CNR|1: G-cert holds in the timing job (offline, A6.1 bar)": {
+   "required": true,
+   "passed": true,
+   "in_job_flags": [
+    true,
+    true
+   ]
+  },
+  "1024|R128|M512|gauss96|LSPG|CNR|1: second certification phase (q++) present": {
+   "required": true,
+   "passed": true
+  },
+  "timing-job certification 1024|R128|M512|gauss96|LSPG|CNR|1": {
+   "required": false,
+   "rows": [
+    {
+     "case": "dev6|0",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 1.2418016123971152e-05,
+     "dist_qp": 1.5983636181885152e-06,
+     "dist_qp_qpp": 1.7334528721667729e-06
+    },
+    {
+     "case": "dev6|1",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 5.092114823702705e-07,
+     "dist_qp": 3.9302868411965805e-08,
+     "dist_qp_qpp": 4.8535922876765697e-08
+    }
+   ]
+  },
+  "1024|R128|M512|gauss96|GAL|CN|1: G-cert holds in the timing job (offline, A6.1 bar)": {
+   "required": true,
+   "passed": true,
+   "in_job_flags": [
+    false,
+    false
+   ]
+  },
+  "1024|R128|M512|gauss96|GAL|CN|1: second certification phase (q++) present": {
+   "required": true,
+   "passed": true
+  },
+  "timing-job certification 1024|R128|M512|gauss96|GAL|CN|1": {
+   "required": false,
+   "rows": [
+    {
+     "case": "dev6|0",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 2.2810398942800813e-10,
+     "dist_qp": 2.3818507644012075e-06,
+     "dist_qp_qpp": 2.5385691952543596e-06
+    },
+    {
+     "case": "dev6|1",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 5.06980519246996e-11,
+     "dist_qp": 3.8496174024816807e-08,
+     "dist_qp_qpp": 4.844205571140482e-08
+    }
+   ]
+  },
+  "1024|R512|M4096|gauss256|LSPG|CNR|1: G-cert holds in the timing job (offline, A6.1 bar)": {
+   "required": true,
+   "passed": true,
+   "in_job_flags": [
+    true,
+    true
+   ]
+  },
+  "1024|R512|M4096|gauss256|LSPG|CNR|1: second certification phase (q++) present": {
+   "required": true,
+   "passed": true
+  },
+  "timing-job certification 1024|R512|M4096|gauss256|LSPG|CNR|1": {
+   "required": false,
+   "rows": [
+    {
+     "case": "dev6|0",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 2.526524258821987e-06,
+     "dist_qp": 2.7604804452202113e-08,
+     "dist_qp_qpp": 3.985075974769149e-09
+    },
+    {
+     "case": "dev6|1",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 5.117120077369701e-07,
+     "dist_qp": 1.1427440754771213e-09,
+     "dist_qp_qpp": 4.1322026866912544e-10
+    }
+   ]
+  },
+  "1024|R512|M4096|gauss256|GAL|CN|1: G-cert holds in the timing job (offline, A6.1 bar)": {
+   "required": true,
+   "passed": true,
+   "in_job_flags": [
+    true,
+    true
+   ]
+  },
+  "1024|R512|M4096|gauss256|GAL|CN|1: second certification phase (q++) present": {
+   "required": true,
+   "passed": true
+  },
+  "timing-job certification 1024|R512|M4096|gauss256|GAL|CN|1": {
+   "required": false,
+   "rows": [
+    {
+     "case": "dev6|0",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 2.0415198677542432e-10,
+     "dist_qp": 3.5613102881184563e-08,
+     "dist_qp_qpp": 6.562747303095241e-09
+    },
+    {
+     "case": "dev6|1",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 9.70314302264572e-12,
+     "dist_qp": 1.1050898669821651e-09,
+     "dist_qp_qpp": 4.01723212373027e-10
+    }
+   ]
+  },
+  "1024|R512|M4096|gauss256|LSPG|CN|1: G-cert holds in the timing job (offline, A6.1 bar)": {
+   "required": true,
+   "passed": true,
+   "in_job_flags": [
+    true,
+    true
+   ]
+  },
+  "1024|R512|M4096|gauss256|LSPG|CN|1: second certification phase (q++) present": {
+   "required": true,
+   "passed": true
+  },
+  "timing-job certification 1024|R512|M4096|gauss256|LSPG|CN|1": {
+   "required": false,
+   "rows": [
+    {
+     "case": "dev6|0",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 1.9025665001508388e-06,
+     "dist_qp": 3.711299574307219e-08,
+     "dist_qp_qpp": 6.882196414639493e-09
+    },
+    {
+     "case": "dev6|1",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 2.0279422134708396e-06,
+     "dist_qp": 2.841585513505915e-09,
+     "dist_qp_qpp": 7.229463368404364e-10
+    }
+   ]
+  },
+  "1024|R128|M128|gauss96|LSPG|CNR|1: G-cert holds in the timing job (offline, A6.1 bar)": {
+   "required": true,
+   "passed": true,
+   "in_job_flags": [
+    false,
+    false
+   ]
+  },
+  "1024|R128|M128|gauss96|LSPG|CNR|1: second certification phase (q++) present": {
+   "required": true,
+   "passed": true
+  },
+  "timing-job certification 1024|R128|M128|gauss96|LSPG|CNR|1": {
+   "required": false,
+   "rows": [
+    {
+     "case": "dev6|0",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 2.3830369998493646e-10,
+     "dist_qp": 0.00018836895766418486,
+     "dist_qp_qpp": 3.560600006412013e-05
+    },
+    {
+     "case": "dev6|1",
+     "valid": true,
+     "noncertified": 0,
+     "dist_tight": 1.0071744420156453e-10,
+     "dist_qp": 4.771706258020472e-06,
+     "dist_qp_qpp": 1.9606523052168076e-06
+    }
+   ]
+  }
+ },
+ "failures": [],
+ "accepted": true
+}

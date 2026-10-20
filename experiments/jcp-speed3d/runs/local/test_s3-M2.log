@@ -1,0 +1,20 @@
+jax_backend=cpu
+[mesh 65] bank rows [(512, 250047)] 4.8s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 9.6s
+setup 65.6
+G0 [True, True]
+G1 CN 0.025 {'bitwise': True, 'extra_finite': True, 'extra_pred_counts': [2, 2, 0, 0, 16]}
+G2 CN 0.025 0.0
+G1 BDF2 0.0125 {'bitwise': True, 'extra_finite': True, 'extra_pred_counts': [2, 2, 2, 32, 2]}
+G2 BDF2 0.0125 0.0
+fs|CN|0.025|K2 {"dist": [3.577420789459989e-05, 0.015754381298156733], "nonstationary": [0, 8], "valid": [true, true], "seconds_batch": 5.2848028829321265}
+qn|CN|0.025|k1 {"dist": [4.7958142107502886e-05, 8.788177453305485e-05], "nonstationary": [0, 0], "valid": [true, true], "seconds_batch": 9.818539245985448, "n_ref": 20, "q": 39, "q_max_step": 4, "reasons": [0, 0, 0, 0, 20]}
+qn|CN|0.025|k4 {"dist": [2.9714867033782092e-05, 0.00026797648640583814], "nonstationary": [0, 0], "valid": [true, true], "seconds_batch": 10.672247068956494, "n_ref": 6, "q": 62, "q_max_step": 6, "reasons": [0, 0, 0, 0, 20]}
+qn|CN|0.025|kinf {"dist": [4.5986024401587335e-05, 0.0003505858698208667], "nonstationary": [0, 0], "valid": [true, true], "seconds_batch": 12.648942792089656, "n_ref": 2, "q": 89, "q_max_step": 6, "reasons": [0, 0, 0, 0, 20]}
+qn|CN|0.025|k1|q0 {"dist": [0.5287287476295087, 1.149649428790805], "nonstationary": [10, 10], "valid": [true, true], "seconds_batch": 6.47882494982332, "n_ref": 20, "q": 0, "q_max_step": 0, "reasons": [20, 0, 0, 0, 0]}
+qn|CN|0.025|k1|noJuT {"dist": [0.0008042911219820115, 0.007409818019566668], "nonstationary": [10, 10], "valid": [true, true], "seconds_batch": 16.273960531922057, "n_ref": 25, "q": 194, "q_max_step": 12, "reasons": [9, 0, 0, 0, 11]}
+qn|BE|0.01|k1|noJuT {"dist": [0.00045108126447104157, 0.004636343760030774], "nonstationary": [25, 25], "valid": [true, true], "seconds_batch": 50.77769732312299, "n_ref": 67, "q": 407, "q_max_step": 12, "reasons": [18, 0, 0, 0, 32]}
+qn|BE|0.01|k1 {"dist": [4.19513429311168e-06, 4.916176434417836e-06], "nonstationary": [0, 0], "valid": [true, true], "seconds_batch": 20.06433187192306, "n_ref": 50, "q": 53, "q_max_step": 2, "reasons": [0, 0, 0, 0, 50]}
+G4 [7.469167705649838e-15, 7.758222477197469e-15] K6 [0.05344447623106878, 0.06104576094854181]
+mf {'cond': {'cond': 1.1068614098694445, 'm': 13824}, 'dist_to_mesh': [2.0426324998741465e-05, 8.565043103181016e-06], 'w0_dist': [5.250410380110721e-05, 1.7381190266490228e-05]}
+DONE all mandatory gates pass []

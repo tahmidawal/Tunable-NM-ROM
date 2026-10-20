@@ -1,0 +1,45 @@
+{
+ "attempt": "smkgrid",
+ "driver": "s3run",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "dts": [
+  0.01,
+  0.016666666666666666,
+  0.025
+ ],
+ "smoke": true,
+ "case_subset": [
+  0,
+  5,
+  7
+ ],
+ "timing": {
+  "cases": 2,
+  "reps": 1,
+  "burn": 0.05,
+  "seed": 1
+ },
+ "mode": "grid",
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "gl32",
+   "reduced": [
+    "gl24"
+   ]
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat65536",
+   "reduced": []
+  }
+ ]
+}

@@ -1,0 +1,190 @@
+{
+ "attempt": "e2v2b",
+ "driver": "r2acc",
+ "mesh": 4096,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": [
+  [
+   "dev6",
+   0
+  ],
+  [
+   "dev6",
+   1
+  ],
+  [
+   "dev6",
+   2
+  ],
+  [
+   "dev6",
+   3
+  ],
+  [
+   "dev6",
+   4
+  ],
+  [
+   "dev6",
+   5
+  ],
+  [
+   "val32",
+   0
+  ],
+  [
+   "val32",
+   1
+  ],
+  [
+   "val32",
+   2
+  ],
+  [
+   "val32",
+   3
+  ],
+  [
+   "val32",
+   4
+  ],
+  [
+   "val32",
+   5
+  ],
+  [
+   "val32",
+   6
+  ],
+  [
+   "val32",
+   7
+  ],
+  [
+   "val32",
+   8
+  ],
+  [
+   "val32",
+   9
+  ]
+ ],
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  }
+ ],
+ "selection": {
+  "file": "checks/select2d-2.json",
+  "sha256": "6e80e1196045140535ce3f42b4d5616f716a9f0da5ca2a724f57e96ee5a305ac"
+ },
+ "bank": {
+  "ckpt": "inputs/banks/s2/ckpt.pkl",
+  "ckpt_sha256": "bf88ac1f0e2e132dd30d5760807c57716a7da26e92447bf545969a8481db2645",
+  "rotation": "inputs/banks/s2/rotation_R512.npz",
+  "rotation_sha256": "7a36117785e50838892b395d297bb47c871f8363705ad94a074b0889330ad031",
+  "seed": 2
+ }
+}

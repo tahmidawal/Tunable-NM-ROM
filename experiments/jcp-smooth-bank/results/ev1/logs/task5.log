@@ -1,0 +1,29 @@
+E1008 22:23:13.722155 3613363 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA A100-PCIE-40GB
+CONTROLS {"C2": true, "C3": true, "C5b": true}
+VARIANT sig1
+sig1 acc ROLLOUT gref 270
+sig1 acc ROLLOUT lat64 298
+sig1 acc ROLLOUT gauss32 327
+sig1 acc ROLLOUT gauss48 354
+sig1 acc ROLLOUT gauss64 368
+sig1 acc ROLLOUT gauss96 388
+sig1 acc ROLLOUT fib1597 408
+sig1 acc ROLLOUT fib4181 430
+sig1 acc ROLLOUT fib6765 453
+sig1 acc PROJ value S med/max 0.00022412786679559615 0.010256909084318339 grad 0.018097213075688297
+sig1 acc RHO done {'gref|G|0.116': 3136, 'gref|G|0.06': 3136, 'gref|G|0.01': 6400} 915
+sig1 acc SPECTRA {'u|n_1e-04': {'median': 68.0, 'max': 189, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 19, 'algebraic': 1, 'inconclusive': 44, 'unresolved': 0}, 'f|n_1e-04': {'median': 126.5, 'max': 220, 'unresolved': 4}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 22, 'algebraic': 3, 'inconclusive': 39, 'unresolved': 0}} 934
+sig1 fast ROLLOUT gref 983
+sig1 fast ROLLOUT lat64 995
+sig1 fast ROLLOUT gauss32 1008
+sig1 fast ROLLOUT gauss48 1020
+sig1 fast ROLLOUT gauss64 1033
+sig1 fast ROLLOUT gauss96 1047
+sig1 fast ROLLOUT fib1597 1060
+sig1 fast ROLLOUT fib4181 1072
+sig1 fast ROLLOUT fib6765 1083
+sig1 fast PROJ value S med/max 0.0031890134155558476 0.07430306680944963 grad 0.03487193638073854
+sig1 fast RHO done {'gref|G|0.116': 1600, 'gref|G|0.06': 1600, 'gref|G|0.01': 6400} 1351
+sig1 fast SPECTRA {'u|n_1e-04': {'median': 68.0, 'max': 141, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 11, 'algebraic': 1, 'inconclusive': 52, 'unresolved': 0}, 'f|n_1e-04': {'median': 130.0, 'max': 255, 'unresolved': 4}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 17, 'algebraic': 3, 'inconclusive': 44, 'unresolved': 0}} 1360
+BANKEVAL COMPLETE

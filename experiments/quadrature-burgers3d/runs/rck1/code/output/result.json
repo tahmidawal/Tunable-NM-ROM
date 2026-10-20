@@ -1,0 +1,74 @@
+{
+ "config": {
+  "mode": "recheck",
+  "n_ref": 513,
+  "dt_ref": 0.0025,
+  "probe_seed": 923651,
+  "tight": [
+   1e-10,
+   1e-11
+  ],
+  "ref_npz": "/cluster/tufts/paralab/tawal01/quad3d_20261001/ref1/code/output/ref_923801.npz",
+  "cases": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ "job_id": "4733462",
+ "commit": "837d6a25a50753f53f273e2f58e66d23fc91aa67",
+ "gpu": "NVIDIA H100 PCIe",
+ "backend": "gpu",
+ "cohorts": {},
+ "probe": {},
+ "gate_lean_vs_vendor": {
+  "fields": 0.0,
+  "newton_equal": true,
+  "residuals": 0.0
+ },
+ "recheck": [
+  {
+   "seconds": 120.73583412310109,
+   "max_newton": 3,
+   "total_newton": 204,
+   "max_rel_residual": 7.678158679079783e-11,
+   "finite": true,
+   "accepted": true,
+   "case": 1,
+   "lattice_diff_vs_reference": 6.187360170272017e-06
+  },
+  {
+   "seconds": 133.66656112717465,
+   "max_newton": 2,
+   "total_newton": 200,
+   "max_rel_residual": 6.872807949632502e-12,
+   "finite": true,
+   "accepted": true,
+   "case": 2,
+   "lattice_diff_vs_reference": 6.575558721097779e-06
+  },
+  {
+   "seconds": 123.65298188477755,
+   "max_newton": 2,
+   "total_newton": 200,
+   "max_rel_residual": 4.387470457427347e-13,
+   "finite": true,
+   "accepted": true,
+   "case": 3,
+   "lattice_diff_vs_reference": 1.021677700770284e-05
+  },
+  {
+   "seconds": 113.95379005931318,
+   "max_newton": 2,
+   "total_newton": 200,
+   "max_rel_residual": 6.165990525410187e-11,
+   "finite": true,
+   "accepted": true,
+   "case": 4,
+   "lattice_diff_vs_reference": 6.319570177914173e-06
+  }
+ ],
+ "complete": true,
+ "seconds": 515.8615441108122
+}

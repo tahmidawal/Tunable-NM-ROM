@@ -1,0 +1,229 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "dev6",
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "horizon": 1.0,
+  "fine": false,
+  "allow_refine": false,
+  "tight_after_refine": false
+ },
+ "job": {
+  "job_id": "5787200",
+  "commit": "3e276a1a80f00b114f036a40b16dcafac982e442",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "manifest": [
+  {
+   "file": "2d/dev6/T1/c000.npz",
+   "sha256": "8c080522ed001823cc44645f986c90e6d771acf1abb6db5cfb5fbf24c6901f96"
+  },
+  {
+   "file": "2d/dev6/T1/c000.json",
+   "sha256": "aacbc56bf1a96a1baedd58107bd9c26a36756f9582aa1384b201a1fd1dacb302"
+  },
+  {
+   "file": "2d/dev6/T1/c001.npz",
+   "sha256": "257d8d69c96c5f53be418fd9745e29f8973332922d1b352464eba41615405eb3"
+  },
+  {
+   "file": "2d/dev6/T1/c001.json",
+   "sha256": "ea678ea1e82b4b755fbf7cbabc98cfe7b88e0d4a69a3fcfef6d9ba8c47494b8b"
+  },
+  {
+   "file": "2d/dev6/T1/c002.npz",
+   "sha256": "7d7fe871b67fc9f6d27e4fe0ab933889f4959f52b263cb9eaaefd84db8209e80"
+  },
+  {
+   "file": "2d/dev6/T1/c002.json",
+   "sha256": "606980155f00637ef7f9158f3c461374fbcddb6b29a4e33ba19017c142de4ad4"
+  },
+  {
+   "file": "2d/dev6/T1/c003.npz",
+   "sha256": "3261cba51a4e96a594a658462ec6ca91a3554585fd2c6ca58861b022c4dad42a"
+  },
+  {
+   "file": "2d/dev6/T1/c003.json",
+   "sha256": "58caf380f47e19aa434c34b9aa0d55fdf6ffb56473133f675a6c31981a74f9b2"
+  },
+  {
+   "file": "2d/dev6/T1/c004.npz",
+   "sha256": "116a859704399a968003f8becd3bcc6d1bbe430d7748d90441128c58c2298067"
+  },
+  {
+   "file": "2d/dev6/T1/c004.json",
+   "sha256": "8181eeac900a8cd2a91991fecf9344bff094bf9ea3346a4dec0f04161aa99538"
+  },
+  {
+   "file": "2d/dev6/T1/c005.npz",
+   "sha256": "f5950a3c18cf5ff3b753b77344faa94d4c58d3b4a6f264283d25cdd557a68e65"
+  },
+  {
+   "file": "2d/dev6/T1/c005.json",
+   "sha256": "72dbab9b9b386b676e68dd7f54ce68bb4733bcbc0e5b5a765d0e5794996b2be2"
+  }
+ ],
+ "cases": [
+  {
+   "case": 0,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.297941396937812e-06,
+   "eps_fine": null,
+   "G_R3": null,
+   "seconds": 570.572104210034
+  },
+  {
+   "case": 1,
+   "outcome": "unresolved-floor",
+   "refined": false,
+   "tight": true,
+   "eps_ref": 5.054166706592315e-06,
+   "eps_fine": null,
+   "G_R3": null,
+   "seconds": 12915.840449621901
+  },
+  {
+   "case": 2,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 7.308479841697233e-06,
+   "eps_fine": null,
+   "G_R3": null,
+   "seconds": 641.526449939236
+  },
+  {
+   "case": 3,
+   "outcome": "order-fail",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.713219538863713e-06,
+   "eps_fine": null,
+   "G_R3": null,
+   "seconds": 614.4717310070992
+  },
+  {
+   "case": 4,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.838303776132986e-06,
+   "eps_fine": null,
+   "G_R3": null,
+   "seconds": 558.8533675996587
+  },
+  {
+   "case": 5,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": true,
+   "eps_ref": 4.947585024413848e-06,
+   "eps_fine": null,
+   "G_R3": null,
+   "seconds": 12683.05764342472
+  }
+ ],
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "cohort": {
+  "name": "dev6",
+  "n": 6,
+  "sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a"
+ },
+ "seconds": 28004.644816353917,
+ "peak_bytes": 38259864832
+}

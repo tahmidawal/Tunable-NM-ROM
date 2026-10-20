@@ -1,0 +1,25 @@
+{
+ "attempt": "smk1",
+ "gpu": "h200",
+ "gpus": 1,
+ "hours": 2.0,
+ "mem": "200G",
+ "cpus": 8,
+ "production": false,
+ "groups": [
+  [
+   {
+    "driver": "r2acc",
+    "config": "configs/smk1m1024.json"
+   },
+   {
+    "driver": "e1run3d",
+    "config": "configs/smk13d.json"
+   },
+   {
+    "driver": "e5time",
+    "config": "configs/e5smk1.json"
+   }
+  ]
+ ]
+}

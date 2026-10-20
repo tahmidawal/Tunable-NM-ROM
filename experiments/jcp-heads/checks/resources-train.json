@@ -1,0 +1,37 @@
+{
+ "attempt": "train",
+ "runs": [
+  "htrain:configs/train.json"
+ ],
+ "configs": {
+  "configs/train.json": "95be612c77f86f2c77b64e4a90146314a2149fcc790fabd95b96bf435b8f5456"
+ },
+ "projection_hours": 2.4882725483410346,
+ "time_limit_hours": 3.75,
+ "detail": {
+  "htrain:configs/train.json": {
+   "seconds": 8957.781174027725,
+   "per_step": 0.003555969953536987,
+   "k_factor": 1.0004690489254084,
+   "eval_seconds": 20.737398147583008,
+   "setup": 120.0,
+   "per_arm": {
+    "identity": 24.750325202941895,
+    "mid_k4_s0": 731.9313888549805,
+    "mid_k4_s1": 731.9313888549805,
+    "mid_k4_s2": 731.9313888549805,
+    "mid_k8_s0": 731.9313888549805,
+    "mid_k8_s1": 731.9313888549805,
+    "mid_k8_s2": 731.9313888549805,
+    "mid_k16_s0": 732.2649736320787,
+    "mid_k16_s1": 732.2649736320787,
+    "mid_k16_s2": 732.2649736320787,
+    "mid_k32_s0": 732.2649736320787,
+    "mid_k32_s1": 732.2649736320787,
+    "mid_k32_s2": 732.2649736320787,
+    "probe_k16_s0_2000": 27.852673902427966
+   }
+  }
+ },
+ "note": "estimate from smoke archives (resources.py docstring); the scheduler limit is the enforced bound"
+}

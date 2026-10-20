@@ -1,0 +1,211 @@
+{
+ "dim": 2,
+ "cohort": "test64",
+ "case": 11,
+ "kind": "S",
+ "desc": {
+  "cx": 0.5629723724250147,
+  "cy": 0.18786727102635953,
+  "w": 0.06831022090847853,
+  "a": 0.6886397673473506,
+  "nu": 0.03697117382011602
+ },
+ "cohort_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+ "metric_id": "2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1",
+ "lattice": 256,
+ "times": [
+  0.0,
+  0.05,
+  0.1,
+  0.15000000000000002,
+  0.2,
+  0.25
+ ],
+ "t0_sha256": "a3287da2f8e979ed5151d8ddfcdf3eeafc60d806608f949d4a4b1dd5a4b708ac",
+ "scheme": "be",
+ "attempts": [
+  {
+   "purpose": "prod",
+   "L": 2048,
+   "dt": 0.005,
+   "scheme": "be",
+   "adv": "central",
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "max_newton": 20,
+   "stages": 50,
+   "expected_stages": 50,
+   "steps_ok": true,
+   "max_res": 9.30514822328276e-12,
+   "tau": 4.97800365004608e-10,
+   "newton_total": 112,
+   "newton_max": 3,
+   "umax_running": 0.6886386681478791,
+   "lattice_finite": true,
+   "seconds": 0.7727800430729985,
+   "ic_seconds": 0.07147936010733247,
+   "compile_seconds": 0.0,
+   "solve_seconds": 0.6991519653238356,
+   "peak_bytes": 16975360000,
+   "id": "a0_L2048"
+  },
+  {
+   "purpose": "prod",
+   "L": 4096,
+   "dt": 0.005,
+   "scheme": "be",
+   "adv": "central",
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "max_newton": 20,
+   "stages": 50,
+   "expected_stages": 50,
+   "steps_ok": true,
+   "max_res": 9.402305002191733e-12,
+   "tau": 9.356072237259466e-10,
+   "newton_total": 112,
+   "newton_max": 3,
+   "umax_running": 0.6886386681478791,
+   "lattice_finite": true,
+   "seconds": 3.275621281005442,
+   "ic_seconds": 0.30343303829431534,
+   "compile_seconds": 0.0,
+   "solve_seconds": 2.968209793791175,
+   "peak_bytes": 16975360000,
+   "id": "a1_L4096"
+  },
+  {
+   "purpose": "prod",
+   "L": 8192,
+   "dt": 0.005,
+   "scheme": "be",
+   "adv": "central",
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "max_newton": 20,
+   "stages": 50,
+   "expected_stages": 50,
+   "steps_ok": true,
+   "max_res": 8.757747787633682e-12,
+   "tau": 2.8153956781503135e-09,
+   "newton_total": 113,
+   "newton_max": 3,
+   "umax_running": 0.688639748589156,
+   "lattice_finite": true,
+   "seconds": 19.418234411161393,
+   "ic_seconds": 5.0870373719371855,
+   "compile_seconds": 0.0,
+   "solve_seconds": 14.324206811841577,
+   "peak_bytes": 16975360000,
+   "id": "a2_L8192"
+  }
+ ],
+ "final": [
+  "a0_L2048",
+  "a1_L4096",
+  "a2_L8192"
+ ],
+ "history": [
+  {
+   "levels": [
+    "a0_L2048",
+    "a1_L4096",
+    "a2_L8192"
+   ],
+   "outcome": "accepted",
+   "checks": {
+    "solver": true,
+    "peclet": true,
+    "floor": true,
+    "order": true,
+    "direction": true,
+    "t0_shared": true
+   }
+  }
+ ],
+ "judge": {
+  "levels": [
+   2048,
+   4096,
+   8192
+  ],
+  "h": [
+   0.00048828125,
+   0.000244140625,
+   0.0001220703125
+  ],
+  "n0": 21.344199173466862,
+  "t0_dev": 0.0,
+  "d12": [
+   1.303262177496423e-06,
+   1.0336468385406823e-06,
+   7.805250487498234e-07,
+   6.097526210740592e-07,
+   4.94831430957346e-07
+  ],
+  "d23": [
+   3.2581503820840784e-07,
+   2.584113756710616e-07,
+   1.9513096906571538e-07,
+   1.5243798182744797e-07,
+   1.2370776827197086e-07
+  ],
+  "p": [
+   2.0000022412783003,
+   2.000001864500165,
+   2.0000021671852792,
+   2.000001641470332,
+   2.000001043378923
+  ],
+  "eps_t": [
+   1.0860478777406954e-07,
+   8.613697679545007e-08,
+   6.504352607917031e-08,
+   5.0812583524347675e-08,
+   4.123588299408836e-08
+  ],
+  "eps_ref": 1.0860478777406954e-07,
+  "c": [
+   5.468276485519594e-06,
+   5.5974660906764335e-06,
+   5.360836971037109e-06,
+   4.751649036665089e-06,
+   4.150875376298645e-06
+  ],
+  "tau": [
+   4.97800365004608e-10,
+   9.356072237259466e-10,
+   2.8153956781503135e-09
+  ],
+  "peclet": 0.009094905975060718,
+  "umax": [
+   0.6886386681478791,
+   0.6886386681478791,
+   0.688639748589156
+  ],
+  "checks": {
+   "solver": true,
+   "peclet": true,
+   "floor": true,
+   "order": true,
+   "direction": true,
+   "t0_shared": true
+  },
+  "outcome": "accepted"
+ },
+ "outcome": "accepted",
+ "refined": false,
+ "tight_used": false,
+ "floor_stab": 10.0,
+ "job": {
+  "job_id": "5219576",
+  "commit": "6c9a7f67d4e4cbf9ced0ab05e76a1065b9431ebb",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "calib_status": "provisional",
+ "seconds": 23.47356691863388
+}

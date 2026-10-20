@@ -1,0 +1,801 @@
+{
+ "attempt": "smk1",
+ "all_passed": true,
+ "rows": [
+  {
+   "name": "jax_backend=gpu",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "ALL-DONE",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "no captured-constants warning (stdout and stderr)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "no Traceback / OOM / Killed in either stream",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "every step COMPLETE",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "G-R1 (E0 reproduction, T = 0.25)",
+   "kind": "gate",
+   "passed": true,
+   "detail": [
+    {
+     "cohort": "dev6",
+     "case": 0,
+     "gpu": "NVIDIA H200",
+     "e0_gpu": "NVIDIA A100 80GB PCIe",
+     "same_gpu": false,
+     "levels": [
+      {
+       "L": 2048,
+       "e0": "a0_L2048",
+       "d_t": [
+        0.0,
+        2.2524127087743608e-15,
+        2.347238503897874e-15,
+        2.5584718874381778e-15,
+        2.4952813112120007e-15,
+        2.5279895485465107e-15
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        8.999485487840312e-09,
+        6.961313977551921e-09,
+        5.587588838811566e-09,
+        4.436911207974265e-09
+       ],
+       "passed": true
+      },
+      {
+       "L": 4096,
+       "e0": "a1_L4096",
+       "d_t": [
+        0.0,
+        3.4942589671618866e-15,
+        3.7907931966942646e-15,
+        3.6775783077046234e-15,
+        3.5286106837078563e-15,
+        3.313932655358682e-15
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        8.999485487840312e-09,
+        6.961313977551921e-09,
+        5.587588838811566e-09,
+        4.436911207974265e-09
+       ],
+       "passed": true
+      },
+      {
+       "L": 8192,
+       "e0": "a2_L8192",
+       "d_t": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        8.999485487840312e-09,
+        6.961313977551921e-09,
+        5.587588838811566e-09,
+        4.436911207974265e-09
+       ],
+       "passed": true
+      }
+     ],
+     "passed": true
+    }
+   ]
+  },
+  {
+   "name": "G-R2 (final triple, first six outputs vs E0)",
+   "kind": "gate",
+   "passed": true,
+   "detail": [
+    {
+     "t0_bitwise": true,
+     "pairs": [
+      {
+       "new": "a0_L2048",
+       "e0": "a0_L2048",
+       "matched": true,
+       "d_t": [
+        0.0,
+        2.2524127087743608e-15,
+        2.347238503897874e-15,
+        2.5584718874381778e-15,
+        2.4952813112120007e-15,
+        2.5279895485465107e-15
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        8.999485487840312e-09,
+        6.961313977551921e-09,
+        5.587588838811566e-09,
+        4.436911207974265e-09
+       ],
+       "t0_bitwise": true,
+       "passed": true
+      },
+      {
+       "new": "a1_L4096",
+       "e0": "a1_L4096",
+       "matched": true,
+       "d_t": [
+        0.0,
+        3.3395518517247285e-15,
+        3.611226666330788e-15,
+        3.678168044171376e-15,
+        3.431848934761246e-15,
+        3.253464042617428e-15
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        8.999485487840312e-09,
+        6.961313977551921e-09,
+        5.587588838811566e-09,
+        4.436911207974265e-09
+       ],
+       "t0_bitwise": true,
+       "passed": true
+      },
+      {
+       "new": "a2_L8192",
+       "e0": "a2_L8192",
+       "matched": true,
+       "d_t": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+       ],
+       "bars": [
+        0.0,
+        1e-08,
+        8.999485487840312e-09,
+        6.961313977551921e-09,
+        5.587588838811566e-09,
+        4.436911207974265e-09
+       ],
+       "t0_bitwise": true,
+       "passed": true
+      }
+     ],
+     "evaluable": true,
+     "passed": true,
+     "e0_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+    }
+   ]
+  },
+  {
+   "name": "G-R3 (fine vs lattice shared nodes; flag and LOCAL recomputation for every case)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "judge recomputed offline agrees (whole run and windows)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "C-R1 (first-order ladder fails order, prerequisites true)",
+   "kind": "control",
+   "passed": true,
+   "detail": [
+    {
+     "dim": 2,
+     "case": 0,
+     "outcome": "order-fail",
+     "p": [
+      0.9841807575145688,
+      0.9805518966770209,
+      0.9782412172920693,
+      0.9760525828808811,
+      0.9741853689429625,
+      0.9732458751585114,
+      0.9732793936852576,
+      0.9739854247017818,
+      0.9750467677801571,
+      0.9762398643239701
+     ],
+     "fired": true,
+     "evaluable": true
+    }
+   ]
+  },
+  {
+   "name": "G-C1 (budcore nout = 6 bitwise p1core; prefix)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "B2 produced for every CONFIGURED member",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "configured": [
+     "R128|GAL|CN|2",
+     "R128|LSPG|BE|1",
+     "R384|LSPG|CNR|1"
+    ],
+    "missing": [],
+    "extra": [],
+    "star_missing": [],
+    "case_or_corner_inventory_differs": [],
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B0 (floor identity, every corner; n > 0)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "worst": 6.01582306764105e-12,
+    "n": 1170,
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B0 analytic fixtures break",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "G-B0 real-data mismatched normaliser breaks",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "min_defect": 0.3032363608080163,
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B2 (Moebius closure; n > 0)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "worst": 1.060360440181403e-15,
+    "n": 6,
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B3 (every deployed corner reproduces the qualify / P1 archive)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "worst": 1.4917786921075557e-15,
+    "n": 6,
+    "missing": 0,
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B4 (converged rule, every Q corner type and the u_star family)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "R128|GAL|CN|2": {
+     "failed": [],
+     "star": {
+      "worst": 3.646900830159648e-09,
+      "n": 8,
+      "passed": true
+     }
+    },
+    "R128|LSPG|BE|1": {
+     "failed": [],
+     "star": {
+      "worst": 3.646900830159648e-09,
+      "n": 8,
+      "passed": true
+     }
+    },
+    "R384|LSPG|CNR|1": {
+     "failed": [],
+     "star": {
+      "worst": 5.555358532502883e-09,
+      "n": 8,
+      "passed": true
+     }
+    }
+   }
+  },
+  {
+   "name": "G-B5 (LS init accepted)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "LS_R128": true,
+    "LS_R384": true
+   }
+  },
+  {
+   "name": "G-B6 (saved logical tuples of every corner match the configuration)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "members": [
+     {
+      "member": "R128|GAL|CN|2",
+      "n": 38,
+      "passed": true
+     },
+     {
+      "member": "R128|LSPG|BE|1",
+      "n": 38,
+      "passed": true
+     },
+     {
+      "member": "R384|LSPG|CNR|1",
+      "n": 38,
+      "passed": true
+     }
+    ],
+    "passed": true
+   }
+  },
+  {
+   "name": "G-B1 (sham switches bitwise)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "sham_rule_bitwise": true,
+    "prod_rerun_bitwise": true,
+    "offline_bitwise": true,
+    "passed": true
+   }
+  },
+  {
+   "name": "C-Q (>= 1 smoke case, valid comparator)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "dist": [
+     0.0040785676795039826,
+     0.00105191950786463
+    ],
+    "comparator_valid": [
+     true,
+     true
+    ],
+    "fired": true
+   }
+  },
+  {
+   "name": "C-S (>= 1 smoke case, converged comparator)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "dist": [
+     0.5147793738376663,
+     0.7704753715096526
+    ],
+    "comparator_valid": [
+     true,
+     true
+    ],
+    "fired_majority": true,
+    "fired_any": true,
+    "fired": true
+   }
+  },
+  {
+   "name": "C-I",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "rows": [
+     {
+      "got": 0.010001615181315164,
+      "want": 0.010001615181315173,
+      "rel": 8.672216659653055e-16
+     },
+     {
+      "got": 0.009999962463799363,
+      "want": 0.009999962463799366,
+      "rel": 3.469459974988185e-16
+     }
+    ],
+    "fired": true
+   }
+  },
+  {
+   "name": "C-F",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "n": 6,
+    "worst_identity": 1.7192414142689066e-15,
+    "labels": [
+     "e_P"
+    ],
+    "fired": true
+   }
+  },
+  {
+   "name": "C-score (identity errors on the scoring path)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "raised": {
+     "case_swap": true,
+     "time_shift": true,
+     "ST_S_swap": true
+    },
+    "aligned_e": 0.0007967109253089697,
+    "shifted_e": 0.1815617460735484,
+    "fired": true
+   }
+  },
+  {
+   "name": "C-T (>= 1 smoke case)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "values": [
+     0.005929039306836669,
+     0.013321930389231407
+    ],
+    "n_check": 2,
+    "fired": true
+   }
+  },
+  {
+   "name": "G-Q (budget-0 certifier fires; wrong table raises)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "evaluable": true,
+    "fraction_LSPG": 1.0,
+    "fraction_GAL": 1.0,
+    "wrong_table_raised": true,
+    "fired": true
+   }
+  },
+  {
+   "name": "G-L1 (every B7 run reproduces the archive on its first six outputs)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "R128|GAL|CN|2": {
+     "worst": 1.2887526757587771e-15,
+     "n": 2,
+     "expected": 2,
+     "sources": [
+      "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/acc1024/archive/output/qacc_acc1024/R_R128_GAL_CN_2.npz"
+     ],
+     "passed": true
+    },
+    "R128|LSPG|BE|1": {
+     "worst": 1.4317085264013773e-15,
+     "n": 2,
+     "expected": 2,
+     "sources": [
+      "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/acc1024/archive/output/p1acc_acc1024/R_R128_BE.npz"
+     ],
+     "passed": true
+    },
+    "R384|LSPG|CNR|1": {
+     "worst": 1.4917786921075557e-15,
+     "n": 2,
+     "expected": 2,
+     "sources": [
+      "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/acc1024/archive/output/p1acc_acc1024/R_R384_CNR.npz"
+     ],
+     "passed": true
+    }
+   }
+  },
+  {
+   "name": "B7 and B8 produced for every CONFIGURED member",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "per_run": {
+     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk1/archive/output/b2run_smk1_b1024": {
+      "configured": [
+       "R128|GAL|CN|2",
+       "R128|LSPG|BE|1",
+       "R384|LSPG|CNR|1"
+      ],
+      "duplicates": [],
+      "b7_missing": [],
+      "b8_missing": [],
+      "b7_extra": [],
+      "passed": true
+     }
+    },
+    "passed": true,
+    "merged_members": [
+     "R128|GAL|CN|2",
+     "R128|LSPG|BE|1",
+     "R384|LSPG|CNR|1"
+    ]
+   }
+  },
+  {
+   "name": "C-A (alias: raw detection everywhere; production classifier says inconsistent on >= 1 resolved case)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "R128|GAL|CN|2": {
+     "raw": [
+      true,
+      true
+     ],
+     "classifier": [
+      "inconsistent",
+      "inconsistent"
+     ],
+     "resolved": 2,
+     "unresolved": 0,
+     "fired": true
+    },
+    "R128|LSPG|BE|1": {
+     "raw": [
+      true,
+      true
+     ],
+     "classifier": [
+      "inconsistent",
+      "inconsistent"
+     ],
+     "resolved": 2,
+     "unresolved": 0,
+     "fired": true
+    },
+    "R384|LSPG|CNR|1": {
+     "raw": [
+      true,
+      true
+     ],
+     "classifier": [
+      "inconsistent",
+      "inconsistent"
+     ],
+     "resolved": 2,
+     "unresolved": 0,
+     "fired": true
+    }
+   }
+  },
+  {
+   "name": "C-E (balance closed form)",
+   "kind": "control",
+   "passed": true,
+   "detail": {
+    "R128|GAL|CN|2": {
+     "n": 1,
+     "fired": true
+    },
+    "R128|LSPG|BE|1": {
+     "n": 1,
+     "fired": true
+    },
+    "R384|LSPG|CNR|1": {
+     "n": 1,
+     "fired": true
+    }
+   }
+  },
+  {
+   "name": "G-D1 (zero walls, ROM and reference)",
+   "kind": "gate",
+   "passed": true,
+   "detail": null
+  },
+  {
+   "name": "fine-route recomputation offline (1e-9)",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "rows": [
+     {
+      "member": "R128|GAL|CN|2",
+      "case": "dev6|0",
+      "worst_rel": 5.5927612747869606e-14,
+      "per_array": {
+       "n0_fine": 3.1278188945111027e-16,
+       "n0_257": 0.0,
+       "e_fine": 4.572158265718275e-15,
+       "e_257": 4.145598324717397e-15,
+       "E_rom": 2.258662453127944e-16,
+       "D_rom": 1.8266179060851662e-15,
+       "E_ref": 1.617402785474998e-16,
+       "D_ref": 2.1232239660708095e-16,
+       "umax_rom": 1.8390422939174158e-15,
+       "umin_rom": 5.5927612747869606e-14,
+       "umax_ref": 0.0,
+       "umin_ref": 0.0,
+       "wall_max_rom": 0.0,
+       "band_err2": 1.6878356404409745e-15,
+       "all_err2": 8.328386358003629e-15,
+       "e0_ic": 5.837991439457093e-16,
+       "e0_ic_ls": 5.838727772616186e-16,
+       "eP_fine": 1.352024126514293e-14,
+       "alias_efine": 3.973571644145765e-15,
+       "alias_e257": 4.413056281150779e-15,
+       "CE_meas": 1.3947224145589813e-14
+      },
+      "ref_fine_walls_zero": true,
+      "passed": true
+     },
+     {
+      "member": "R128|LSPG|BE|1",
+      "case": "dev6|0",
+      "worst_rel": 6.322838371249756e-14,
+      "per_array": {
+       "n0_fine": 3.1278188945111027e-16,
+       "n0_257": 0.0,
+       "e_fine": 5.841970788007503e-16,
+       "e_257": 2.417032937698829e-15,
+       "E_rom": 2.203629396647491e-16,
+       "D_rom": 1.8266179060851662e-15,
+       "E_ref": 1.617402785474998e-16,
+       "D_ref": 2.1232239660708095e-16,
+       "umax_rom": 1.4514334397679339e-15,
+       "umin_rom": 6.322838371249756e-14,
+       "umax_ref": 0.0,
+       "umin_ref": 0.0,
+       "wall_max_rom": 0.0,
+       "band_err2": 2.013532263774331e-15,
+       "all_err2": 6.768258152598813e-16,
+       "e0_ic": 5.837991439457093e-16,
+       "e0_ic_ls": 5.838727772616186e-16,
+       "eP_fine": 1.352024126514293e-14,
+       "alias_efine": 9.577466707590014e-16,
+       "alias_e257": 2.6029585482910463e-15,
+       "CE_meas": 1.3947224145589813e-14
+      },
+      "ref_fine_walls_zero": true,
+      "passed": true
+     },
+     {
+      "member": "R384|LSPG|CNR|1",
+      "case": "dev6|0",
+      "worst_rel": 9.905277149944481e-14,
+      "per_array": {
+       "n0_fine": 3.1278188945111027e-16,
+       "n0_257": 0.0,
+       "e_fine": 3.4636691028442355e-15,
+       "e_257": 3.405872131008415e-14,
+       "E_rom": 2.0030782461393943e-16,
+       "D_rom": 1.8820758097365417e-15,
+       "E_ref": 1.617402785474998e-16,
+       "D_ref": 2.1232239660708095e-16,
+       "umax_rom": 2.4608152125051226e-15,
+       "umin_rom": 5.300544850124691e-14,
+       "umax_ref": 0.0,
+       "umin_ref": 0.0,
+       "wall_max_rom": 0.0,
+       "band_err2": 1.0665251820119574e-14,
+       "all_err2": 7.647352824783718e-15,
+       "e0_ic": 2.120948209391928e-15,
+       "e0_ic_ls": 7.327960764077577e-16,
+       "eP_fine": 9.905277149944481e-14,
+       "alias_efine": 1.0901964735793507e-14,
+       "alias_e257": 3.405872131008415e-14,
+       "CE_meas": 1.3947224145589813e-14
+      },
+      "ref_fine_walls_zero": true,
+      "passed": true
+     }
+    ],
+    "missing": [],
+    "passed": true
+   }
+  },
+  {
+   "name": "B7 Q1/Q2 at T (reported, no smoke verdict)",
+   "kind": "report",
+   "passed": true,
+   "detail": {
+    "R128|GAL|CN|2": {
+     "Q1": {
+      "all_valid": true,
+      "gcert": true,
+      "noncert_fraction": 0.0,
+      "worst_dist_tight": 1.1403030366574779e-10,
+      "worst_tt": 9.571849522731098e-15,
+      "budget_exits": 0,
+      "inventory_matches_configuration": true,
+      "pass": true
+     },
+     "Q2": {
+      "population": 2,
+      "worst_dist_qp": 4.18812637105867e-06,
+      "rho_max": 0.012718684083852806,
+      "rho_nonfinite": 0,
+      "rho_trivial": 0,
+      "worst_qp_qpp": 5.384040950629351e-07,
+      "label": "pass"
+     }
+    },
+    "R128|LSPG|BE|1": {
+     "Q1": {
+      "all_valid": true,
+      "gcert": true,
+      "noncert_fraction": 0.0,
+      "worst_dist_tight": 1.3576602269107636e-05,
+      "worst_tt": 1.0988444392248824e-09,
+      "budget_exits": 0,
+      "inventory_matches_configuration": true,
+      "pass": true
+     },
+     "Q2": {
+      "population": 2,
+      "worst_dist_qp": 1.9569182402899575e-06,
+      "rho_max": 0.012718684083852806,
+      "rho_nonfinite": 0,
+      "rho_trivial": 0,
+      "worst_qp_qpp": 4.197136246551685e-07,
+      "label": "pass"
+     }
+    },
+    "R384|LSPG|CNR|1": {
+     "Q1": {
+      "all_valid": true,
+      "gcert": true,
+      "noncert_fraction": 0.0,
+      "worst_dist_tight": 5.115772426525799e-07,
+      "worst_tt": 1.8806231307988642e-10,
+      "budget_exits": 0,
+      "inventory_matches_configuration": true,
+      "pass": true
+     },
+     "Q2": {
+      "population": 2,
+      "worst_dist_qp": 7.745205783015799e-07,
+      "rho_max": 0.0030861787402260716,
+      "rho_nonfinite": 0,
+      "rho_trivial": 0,
+      "worst_qp_qpp": 4.4522717113241563e-07,
+      "label": "pass"
+     }
+    }
+   }
+  },
+  {
+   "name": "4096^2 combined-path memory pilot ran and peak <= 120 GiB",
+   "kind": "gate",
+   "passed": true,
+   "detail": {
+    "peak_GiB": 87.45938992500305
+   }
+  }
+ ]
+}

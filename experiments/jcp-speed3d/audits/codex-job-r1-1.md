@@ -1,0 +1,17 @@
+**DO NOT SUBMIT.** One reproducible blocker would make eligibility unavailable for all 44 H1.4 configurations.
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| 1. Freeze/config completeness and consumption | **CORRECT** | Exact equality with all 52 frozen ROMs, including 44 H1.4 members; mesh-free paths exactly match the four qualified labels; all three FOMs and comparator→winner pairs match. Freeze digest and four input digests pass. Every used rule is loaded, including `extra`; mesh-free inputs/data and per-path tight ADT are supplied. Duplicate ADT records cause item 5. |
+| 2. Cohort and references | **CORRECT** | Seed 923901, count 32, no subset. Maps to historical E0 `test32`. On the sbatch’s cluster store, manifest/status hashes match; all 64 test32 ST files pass checksums; cases 0–31 are accepted with reference uncertainties, dimension validated. No sealed/OOD access. Actual `score_fom(..., R1=None)` passes a synthetic check. |
+| 3. Staging/provenance and sbatch | **CORRECT** | All 35 provenance entries byte-match commit `37860512d`; staged manifest passes. Freeze/config are staged and pinned. Sbatch specifies `gpu`, H200, 200G, GPU preflight with exit 42, highest precision and x64; output/cache/tmp paths stay under the specified namespace. This verifies the **local staging**: remote `r1` directory is not yet present. |
+| 4. Resources and large-array closures | **CORRECT** | Independently recomputed **5.467 h**, ×1.5 = **8.201 h**, below 12 h. Projection includes ADT, certification, FOMs, timing warmups/burns and doubled workload terms. Plausible against p1/m1’s 0.79/0.89 h, not a demonstrated bound. p1 already loaded all five settings, with measured GPU peak **78.82 GB**; m1 peaked at **36.45 GB**. No replay-like large-array JIT closure found on the replication path; table arrays are explicit arguments. |
+| 5. Analysis compatibility | **WRONG** | Timing names, A=comparator, FOM keys and ROM tags match. However, repeated ADT rows violate `rows_elig`’s exact case-population check, making all 44 H1.4 eligibility results `null`. |
+
+The blocker is in [s3modes.py:525](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/s3modes.py:525): each ROM independently calls `rollouts` for its tight ADT. Each H1.4 FS/QN pair shares setting, rule, path, scheme and timestep, so its two ADT calls append **64 rows under one tag/spec**, containing each case twice.
+
+[analyze_pm.py:84](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/analyze_pm.py:84) requires the sorted row cases to equal `0…31` exactly. Executing that actual helper with synthetic valid rows reproduced `rows_complete=False`. [analyze_r1.py:46](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/analyze_r1.py:46) consequently sets eligibility to `None`. There are **22 duplicated ADT keys**, affecting **44 configurations**; saved ADT arrays overwrite the shared key while JSON rows accumulate.
+
+Before submission, reuse one ADT result per unique setting/rule/path/scheme/timestep and retain each configuration’s separate distance calculation. Then restage and verify that all 56 configuration/path entries have complete analyzer populations.
+
+No files changed, no jobs submitted, no LAB-LOG/main writes, and no scratch copies created.

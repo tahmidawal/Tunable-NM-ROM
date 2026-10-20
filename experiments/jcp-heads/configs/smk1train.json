@@ -1,0 +1,24 @@
+{
+ "npz": "/cluster/tufts/paralab/tawal01/jcp-heads/data/sep_coeff_N256_K16_R512.npz",
+ "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "arms": [
+  {
+   "name": "identity",
+   "k": 16,
+   "seed": 0,
+   "identity": true
+  },
+  {
+   "name": "smk_k4_s0",
+   "k": 4,
+   "seed": 0,
+   "steps": 2000
+  },
+  {
+   "name": "smk_k32_s0",
+   "k": 32,
+   "seed": 0,
+   "steps": 2000
+  }
+ ]
+}

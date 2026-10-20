@@ -170,7 +170,8 @@ def main():
                             outcome = f'unavailable (evidence for {rl} undetermined)'
                             break
                     rep['cells'][f'{sname}|{spec}|{fam}'] = cells
-                    rep['slots'].append(dict(width=wd, spec=spec, family=fam, rule=pick, outcome=outcome))
+                    rep['slots'].append(dict(width=wd, spec=spec, family=fam, rule=pick, outcome=outcome,
+                                             target_certified=tgt_ok))          # job audit e2q-1 #4
                     print(sname, spec, fam, pick, outcome, flush=True)
     (HERE / 'checks' / f'select3d-{b}.json').write_text(json.dumps(rep, indent=1, default=float) + '\n')
 

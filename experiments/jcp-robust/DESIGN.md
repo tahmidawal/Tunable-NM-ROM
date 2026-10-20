@@ -912,3 +912,16 @@ CORRECT. Fixes:
   GPU type of the measurements. Projections are 1.82 h for e2q<b>a (W256 + W512), with a 2.75 h limit, and 4.80 h for
   e2q<b>b (W768 + W1024), with a 7.25 h limit; the dims job m3b measured 2.84 h for the W768 + W1024 ladders up to
   gl64.
+- **A13.5 (job audit e2q-1)** Codex judged the job definitions, bank binding, timing limits and certificates correct, but
+  returned FIX-FIRST on two downstream findings, both now fixed.
+  - (#4) `select3d.py` records `target_certified` per slot. `e2analyze3d.py` gives a diagnostic-pick slot its
+    own-family qualification, with the A2.5 qualifier attached, rather than the cross-family one. A target-unverified
+    "none within ladder" becomes front state "missing" rather than "absent". `e2verdicts.keys_3d` makes such a selection
+    label non-definitive. `quals_3d` carries the qualifiers into each row's `qualifiers`.
+  - (#5) Following A1.9, `e2analyze3d.py` now also computes the selected-rule H-acc-r rows: per spec and family, across
+    widths, on each width's realised rule, with slot-level qualification. A missing rule gives "unavailable (no rule)".
+    `e2verdicts.py` computes the 3D spread ratios on the gl64 rows. The numerator is the cross-seed spread of the lower
+    width's median E0 error, and the denominator is the median |paired change|.
+- **A13.6** e13d (6081491) completed in 54.5 min against its 1 h limit. The supplementary configurations c and d took
+  about 1,000 s each, far above the A11.3 estimate of 2 x W256. The registered a and b took about 900 s together. The
+  certificate projection was therefore an underestimate, which this note records.

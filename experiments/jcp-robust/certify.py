@@ -221,6 +221,8 @@ def certify(att, timings_path):
                 estimates=sorted({'A10.1 E5 per-execution rate from the smoke' for g in spec['groups'] for st in g if st.get('driver') == 'e5time'}
                                  | {'A10.2 dtime classes derived from measured rollout classes' for g in spec['groups'] for st in g
                                     if st.get('driver') == 'dtime'}
+                                 | {'A13.4 E2 3D per-rule classes from comparable jcp-dims d3run ladders (+ smk3c); gl80 = 2 x gl64 where unmeasured'
+                                    for g in spec['groups'] for st in g if st.get('driver') in ('e2run3d', 'd3run')}
                                  | {'A11.3 E1 3D W512 / M2_512 classes = 2 x the measured W256 class (unmeasured widths)'
                                     for g in spec['groups'] for st in g if st.get('driver') == 'e1run3d'}),
                 timings=timings_path, timings_sha256=hashlib.sha256((HERE / timings_path).read_bytes()).hexdigest())

@@ -225,14 +225,45 @@ def main():
             if k in scores:
                 e = list(E_(k).values())
                 rep['errors'][f'gl64|W{wd}|{spec}'] = dict(median=float(np.median(e)), worst=float(np.max(e)))
+    QUAL = 'target unverified (diagnostic pick, A2.5)'
     for slot in sel['slots']:
         if slot['rule']:
             k = f"W{slot['width']}|{slot['rule']}|{slot['spec']}"
             cell = sel['cells'][f"W{slot['width']}|{slot['spec']}|{slot['family']}"][slot['rule']]
             e = list(E_(k).values()) if k in scores else []
+            diag = slot['outcome'] != 'selected'            # A2.5 (job audit e2q-1 #4): own-family qualification, labelled
             rep['configurations'][f"slot|W{slot['width']}|{slot['spec']}|{slot['family']}"] = dict(
-                rule=slot['rule'], qualified=cell['qualified'], median_e=float(np.median(e)) if e else None,
-                worst_e=float(np.max(e)) if e else None)
+                rule=slot['rule'], qualified=cell['own'] if diag else cell['qualified'],
+                median_e=float(np.median(e)) if e else None, worst_e=float(np.max(e)) if e else None,
+                **({'qualifier': QUAL} if diag else {}))
+    # A1.9 selected-rule H-acc-r rows (job audit e2q-1 #5): per spec and family, widths 256 -> 512 -> 768 -> 1024 on each
+    # width's realised rule; per-case qualification = the slot's (all-case) qualification; no rule -> unavailable
+    slot_of = {(s_['width'], s_['spec'], s_['family']): s_ for s_ in sel['slots']}
+    for spec in sorted({s_['spec'] for s_ in sel['slots']}):
+        for fam in ('gauss', 'lattice'):
+            out = {}
+            for lo, hi in ((256, 512), (512, 768), (768, 1024)):
+                sa, sb = slot_of.get((lo, spec, fam)), slot_of.get((hi, spec, fam))
+                if not (sa and sb and sa['rule'] and sb['rule']):
+                    out[f'{lo}->{hi}'] = dict(outcome='unavailable (no rule)')
+                    continue
+                ka, kb = f"W{lo}|{sa['rule']}|{spec}", f"W{hi}|{sb['rule']}|{spec}"
+                ca = rep['configurations'][f'slot|W{lo}|{spec}|{fam}']
+                cb = rep['configurations'][f'slot|W{hi}|{spec}|{fam}']
+                if ka not in scores or kb not in scores or ca['qualified'] is None or cb['qualified'] is None:
+                    out[f'{lo}->{hi}'] = dict(outcome='not reached (missing)')
+                    continue
+                ea, eb, ela, elb, ep = E_(ka), E_(kb), EL(ka), EL(kb), EP(ka)
+                cs = [c for c in sorted(ea) if c in eb and ela[c] and elb[c]]
+                tr = S.h_acc_r_transition([eb[c] - ea[c] for c in cs], [ep[c] for c in cs],
+                                          [bool(ca['qualified'])] * len(cs), [bool(cb['qualified'])] * len(cs))
+                tr['median_paired_change'] = float(np.median([eb[c] - ea[c] for c in cs])) if cs else None
+                tr['rules'] = [sa['rule'], sb['rule']]
+                if 'qualifier' in ca or 'qualifier' in cb:
+                    tr['qualifier'] = QUAL
+                out[f'{lo}->{hi}'] = tr
+            out['range_256_1024'] = S.h_acc_r_range([v['outcome'] for v in out.values() if isinstance(v, dict) and 'outcome' in v])
+            rep['h_acc_r'][f'sel-{fam}|{spec}'] = out
     for f in FIXED:
         st, rl, *sp = f.split('|')
         spec = '|'.join(sp)
@@ -292,7 +323,8 @@ def main():
                 v['state'] = 'dominated' if dom else 'member'
         for slot in sel['slots']:
             k = f"slot|W{slot['width']}|{slot['spec']}|{slot['family']}"
-            pts.setdefault(k, dict(state='absent' if slot['outcome'] == 'none within ladder' else 'missing'))
+            pts.setdefault(k, dict(state='absent' if (slot['outcome'] == 'none within ladder' and slot.get('target_certified'))
+                                   else 'missing'))                        # target-unverified search: not definitive
         rep['front_65'] = dict(points=pts, timing_valid=tm.get('valid'), label='front of the tested 3D universe (never complete)')
     if b == 0:
         rows = {}

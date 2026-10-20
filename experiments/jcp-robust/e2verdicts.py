@@ -91,6 +91,25 @@ def quals_2d(r):
     return out
 
 
+def quals_3d(r):
+    """A2.5 qualifiers in the 3D report (job audit e2q-1 #4)"""
+    if r is None:
+        return {}
+    out = {}
+    for sl in r['selection']:
+        if sl['outcome'] != 'selected' and sl.get('target_certified') is not True:
+            out[f"selected-rule|W{sl['width']}|{sl['spec']}|{sl['family']}"] = 'target unverified (label not definitive, A2.5)'
+    for k, v in r['h_acc_r'].items():
+        for tr, x in (v.items() if isinstance(v, dict) else []):
+            if isinstance(x, dict) and x.get('qualifier'):
+                out[f'H-acc-r|{k}|{tr}'] = x['qualifier']
+    for k, v in r['configurations'].items():
+        if v.get('qualifier'):
+            out[f'Q1Q2|{k}'] = v['qualifier']
+            out[f'front65|{k}'] = v['qualifier']
+    return out
+
+
 def keys_3d(r):
     out = {}
     if r is None:
@@ -98,7 +117,7 @@ def keys_3d(r):
     for sl in r['selection']:
         k = f"selected-rule|W{sl['width']}|{sl['spec']}|{sl['family']}"
         out[k] = (('rule:' + sl['rule']) if sl['outcome'] == 'selected' else
-                  'absent' if sl['outcome'] == 'none within ladder' else None)                          # A2.5
+                  'absent' if (sl['outcome'] == 'none within ladder' and sl.get('target_certified')) else None)   # A2.5
     for k, v in r['h_acc_r'].items():
         for tr, x in v.items():
             out[f'H-acc-r|{k}|{tr}'] = x.get('outcome') if isinstance(x, dict) else x
@@ -129,7 +148,7 @@ def main():
     kf = keys_2d if dim == '2d' else keys_3d
     K = {b: (kf(r) if ok(r) else {}) for b, r in [(0, inc)] + list(new.items())}
     allk = sorted(set().union(*[set(v) for v in K.values()]))
-    QL = {b: (quals_2d(r) if (dim == '2d' and ok(r)) else {}) for b, r in [(0, inc)] + list(new.items())}
+    QL = {b: ((quals_2d if dim == '2d' else quals_3d)(r) if ok(r) else {}) for b, r in [(0, inc)] + list(new.items())}
     rows = []
     for k in allk:
         lbls = [K[s].get(k) for s in seeds]
@@ -160,8 +179,27 @@ def main():
             for tr, x in v.items():
                 if isinstance(x, dict) and x.get('median_paired_change') is not None:
                     ratios.setdefault(f'{k}|{tr}', {})[b] = x['median_paired_change']
+    if dim == '3d':        # 3D spread ratios (job audit e2q-1 #5): gl64 rows; numerator = cross-seed spread of the lower
+        for b in seeds:    # width's median E0 error, denominator = median |paired change| of the transition over seeds
+            r = new[b]
+            if not ok(r):
+                continue
+            for k, v in r['h_acc_r'].items():
+                if not k.startswith('gl64|'):
+                    continue
+                for tr, x in v.items():
+                    if isinstance(x, dict) and x.get('median_paired_change') is not None:
+                        ratios.setdefault(f'{k}|{tr}', {})[b] = x['median_paired_change']
     sr = {}
-    for kk, v in ratios.items():
+    for kk, v in (ratios.items() if dim == '3d' else []):
+        _, spec_, tr_ = kk.split('|', 1)[0], kk.split('|', 1)[1].rsplit('|', 1)[0], kk.rsplit('|', 1)[1]
+        lo = int(tr_.split('->')[0])
+        meds = [((new[s] or {}).get('errors') or {}).get(f'gl64|W{lo}|{spec_}', {}).get('median') for s in seeds if ok(new[s])]
+        meds = [m_ for m_ in meds if m_ is not None]
+        num = (max(meds) - min(meds)) if len(meds) >= 2 else None
+        den = float(np.median([abs(x) for x in v.values()])) if v else None
+        sr[kk] = None if (num is None or den is None) else (('undefined' if num == 0 else 'inf') if den == 0 else num / den)
+    for kk, v in (ratios.items() if dim == '2d' else []):
         kind, mesh, sc = kk.split('|')[:3]
         lo = int(kk.split('|')[3].split('->')[0])
         meds = [spread.get(f'{mesh}|R{lo}|{kind}|LSPG_{sc}_1', {}).get(s, (None,))[0] for s in seeds]

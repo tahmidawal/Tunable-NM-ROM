@@ -19362,3 +19362,30 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - **CLAUDE.md fork point moved to it** (`93f399faa`). `main` is untouched as the baseline.
 - **Still outside git:** raw arrays over the size limits stay in the lane worktrees (SHA256 manifests) and in `/cluster/tufts/paralab/tawal01/burgers-archive/<lane>/`. Do not delete the lane worktrees or that archive.
 - **Disk:** 31 GB free after the consolidated checkout (about 40 GB).
+
+### Improvement ideation and disk-space plan (side session; nothing launched or deleted)
+- **Ideation:** `reports/2026-10-20-improvement-ideation/report.md` (commit 7cf5021dd). Codex review clean after 4 rounds. The independent Claude reviewer's findings were addressed, but that review was not re-run.
+  - **Main finding:** on the Dirichlet box, no in-method fix is likely to beat the spectral FOM.
+    - About 0.64·r sines match the r=384 bank floor on the median case.
+    - At 4096², the full-field decode (14.3 ms) exceeds the spectral query (11.7 ms).
+    - Against POD-ECSW the per-step gap is 1.74 vs 0.61 ms, dominated by forming the Jacobian twice per step.
+  - **Pursue:**
+    - F1, an exponential/IMEX Galerkin step with the projection premultiplied (est. 5–10× faster stepping);
+    - F11+F16, bank retrains (better data, steeper cases, smooth at the walls);
+    - F2+F3, bank-function tests and fitted continuous weights;
+    - F14b, a multi-mesh full-cost comparison against POD-ECSW.
+  - **Proposed first wave:** about 25–30 GPU-h, with stop rules.
+  - **Caveats:** the floor and spectral-tail analyses use first-order references and need redoing on E0. All gains are estimates.
+- **Disk-space plan:** `reports/2026-10-20-disk-space-plan.md` (commit b0aa155cc). Codex review: 5 rounds; the last uv-check fix was not re-reviewed.
+  - **Safe now: about 1,138 GB.**
+    - Re-sparse 62 worktrees to their own lane folder (1,125 GB; checked-out committed files only, tested safe in no-cone mode).
+    - pip cache: 12 GB.
+  - **Safe after archiving: about 1,406 GB.**
+    - About 696 GB of unique local-only run data, to copy to cluster paralab and verify by sha256 first.
+    - 192 GB of modcp raw tars on main.
+    - /tmp scratch; the uv cache.
+  - **Risks:**
+    - Seven branches have 2026-10-20 commits that are not on GitHub, including ops-all. Push them first (plan procedure A).
+    - `git worktree remove` deletes ignored files, so never use it before archiving.
+    - Two cone-mode worktrees are excluded from re-sparsing.
+  - **Awaiting user approval;** nothing executed.

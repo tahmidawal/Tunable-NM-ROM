@@ -1,0 +1,16 @@
+<section id="cost-mesh" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px">Question</p>
+<p style="font-size:32px;color:#4A5568">Does the solve get slower when the mesh gets bigger?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<p style="font-size:28px;font-weight:600;color:#F7F6F2;background:#2E6B4F;padding:8px 20px;border-radius:8px;white-space:nowrap">No</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:64px;font-weight:600;line-height:1.1;color:#14213D">Solve cost does not depend on the mesh</h2>
+</div>
+<div style="display:flex;gap:48px;align-items:start">
+<img src="/_blob/e5b7ed0df1db35bb0ffcfd5ef2251e3e" alt="Solve time relative to the middle mesh, flat across meshes in 2D and 3D" style="width:1060px;height:500px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
+<ul style="flex:1;font-size:30px;line-height:1.4;color:#4A5568;display:flex;flex-direction:column;gap:18px"><li><b>2D:</b> flat from 256² to 4096², 8 of 8 settings (ratio 1.01–1.02; bar 1.25)</li><li><b>3D:</b> flat from 64³ to 384³, 4 of 4 models (1.01–1.09)</li><li>The full query’s output decode still grows with the mesh</li></ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Lanes p1-scaling, speed3d · 3</p>
+<aside>This is the advisor&#x27;s question. Mesh grew 256 times in 2D; solve time moved by 1 to 2 percent.</aside>
+</section>

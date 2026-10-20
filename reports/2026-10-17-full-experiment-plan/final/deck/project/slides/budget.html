@@ -1,0 +1,14 @@
+<section id="budget" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px">Question</p>
+<p style="font-size:32px;color:#4A5568">Where does the remaining error come from, and is it stable over time?</p>
+</div>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:64px;font-weight:600;line-height:1.1">Time stepping dominates; runs stay stable 4× longer</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E4;border-radius:16px"><p style="font-size:72px;font-weight:600;color:#C8641E">Time</p><p style="font-size:30px;color:#4A5568">is the largest error source at every mesh; quadrature and solver errors are tiny</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E4;border-radius:16px"><p style="font-size:72px;font-weight:600;color:#C8641E">T = 1</p><p style="font-size:30px;color:#4A5568">4× the usual run length: stable, no error growth (provisional)</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E4;border-radius:16px"><p style="font-size:72px;font-weight:600;color:#C8641E">257²</p><p style="font-size:30px;color:#4A5568">scoring grid is fine enough; it doesn’t miss detail</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Lane budget · 13</p>
+<aside>The longer-run verdict is provisional because one reference case failed its own order check.</aside>
+</section>

@@ -8,6 +8,7 @@ file does not exist yet are printed as "pending" (never guessed). CPU only.
 import argparse
 import json
 import math
+import statistics
 import subprocess
 from pathlib import Path
 
@@ -71,7 +72,7 @@ def e1_section(R, X):
                  f"admitted {f(c11.get('admitted'))}, fired {f(c11.get('fired'))}; rule-identity control (C-E1.2) fired "
                  f"{f(c12.get('fired'))}.")
     L.append('')
-    head = ['dim', 'mesh / setting', 'configuration', 'H-E1a (draws failing / n; CP upper)', 'H-E1b (rank of $D_0$)',
+    head = ['dim', 'mesh / setting', 'configuration', 'H-E1a (failing / n; CP upper all, fresh; failed draws)', 'H-E1b (rank of $D_0$)',
             'H-E1c', 'eligible cases']
     rows, X['E1'] = [], []
     for r in v['rows']:
@@ -89,18 +90,75 @@ def e1_section(R, X):
         rk = (b.get('stats') or {}).get('D')
         sup = ' (supplementary)' if r.get('supplementary') else ''
         rows.append([r['dim'], r.get('mesh', ''), r['config'] + sup,
-                     f"**{a.get('label')}** ({a.get('failures', 'n/a')}/{a.get('n', 'n/a')}; {f(a.get('cp_upper_all'))})",
+                     f"**{a.get('label')}** ({a.get('failures', 'n/a')}/{a.get('n', 'n/a')}; {f(a.get('cp_upper_all'))}, "
+                     f"{f(a.get('cp_upper_fresh'))}; {a.get('failed_draws') or 'none'})",
                      f"**{b.get('label')}**" + (f" (rank {rk[0]}–{rk[1]} of 16)" if rk else ''),
                      c.get('label'), r.get('eligible_cases')])
         X['E1'].append(dict(dim=r['dim'], mesh=r.get('mesh'), config=r['config'], supplementary=bool(r.get('supplementary')),
                             H_E1a=a.get('label'), failures=a.get('failures'), n=a.get('n'), cp_upper=a.get('cp_upper_all'),
+                            cp_upper_fresh=a.get('cp_upper_fresh'),
                             failed_draws=a.get('failed_draws'), H_E1b=b.get('label'), D_rank=rk, H_E1c=c.get('label')))
     L += [tbl(head, rows), '']
-    L += ['Reading: in 2D, the failing draws at step factors 2 and 2.5 fail on the draw-matched successor distance '
-          '(`fib6765s<k>`), not on the distance to the cross-family target. The per-draw values are in '
-          '`checks/e1-2d-<mesh>.json`. All E1 numbers are **provisional (results audit pending)**.', '',
+    L += e1_descriptive()
+    L += ['Reading: every failing 2D draw fails only on the draw-matched successor distance (`fib6765s<k>`, tested on '
+          'every case, which is stricter than qualify\'s historical subset test). Every primary draw passes the bar on the '
+          'distance to the independent cross-family target. The fragile labels therefore do not show accuracy '
+          'sensitivity or failure against the independent family, and H-E1c is insensitive in every cell. In 3D, '
+          'E1-3D-b is atypically unfavourable only because its deployed draw has the largest $D$ of the 16 (rank 16/16); '
+          'it still qualifies, and its E0-error ranks are insensitive. The CP column gives the bound over all 16 draws and '
+          'the bound over the 15 fresh draws: draw 0 was the selected rule, so it is selection-conditioned (A1.5). '
+          '$\\varepsilon_{ref}$ is a conditional Richardson estimate (DESIGN §1).', '']
+    L += ['Per-draw values are in `checks/e1-2d-<mesh>.json` and `checks/e1-3d.json`.', '',
           '![E1 draw distributions](plots/e1_draws.png)', '']
     plot_e1()
+    return L
+
+
+def _q(xs):
+    xs = sorted(x for x in xs if x is not None and math.isfinite(x))
+    if not xs:
+        return None
+    qs = statistics.quantiles(xs, n=4, method='inclusive') if len(xs) > 1 else [xs[0]] * 3
+    return dict(median=statistics.median(xs), iqr=qs[2] - qs[0], lo=xs[0], hi=xs[-1])
+
+
+def e1_descriptive():
+    """registered descriptive summaries (A1.5; results audit e1e5-1 #7): per configuration, the draw distribution of D and
+    of the case-median E0 error (median, IQR, min-max) with the deployed draw's value, plus the Sobol diagnostic spread"""
+    rows = []
+    for m in (256, 1024, 4096):
+        d = load(f'e1-2d-{m}.json')
+        for g, gv in (d or {}).get('groups', {}).items():
+            for ak, av in gv['arms'].items():
+                if av.get('diagnostic') or not ak.startswith('LSPG'):
+                    continue
+                ds = {int(k[1:]): x for k, x in av['rules'].items() if k.startswith('d') and k[1:].isdigit()}
+                rows.append((f'2D {m}²', f'{g} {ak}', ds))
+    d3 = load('e1-3d.json')
+    for nm, cv in (d3 or {}).get('configs', {}).items():
+        rows.append(('3D', f"{nm} {cv['setting']}", {int(k): x for k, x in cv['draws'].items()}))
+    out = []
+    for dim, lab, ds in rows:
+        D = _q([x.get('D') for x in ds.values()])
+        E = _q([statistics.median(x['e']) for x in ds.values() if x.get('e')])
+        d0 = ds.get(0, {})
+        if D is None or E is None:
+            continue
+        out.append([dim, lab, f(d0.get('D')), f"{f(D['median'])} ({f(D['iqr'])})", f"{f(D['lo'])}–{f(D['hi'])}",
+                    f(statistics.median(d0['e']), 6) if d0.get('e') else 'n/a', f"{f(E['median'], 6)} ({f(E['iqr'])})",
+                    f"{f(E['lo'], 6)}–{f(E['hi'], 6)}"])
+    L = ['Draw distributions (16 draws per configuration; $D$ = distance to the converged rule; E0 = case-median error):', '',
+         tbl(['dim', 'configuration', '$D_0$ (deployed)', '$D$ median (IQR)', '$D$ min–max', 'E0 deployed',
+              'E0 median (IQR)', 'E0 min–max'], out), '']
+    if d3:
+        for nm, cv in d3['configs'].items():
+            ex = {k: v for k, v in (cv.get('extra') or {}).items() if k.startswith('sob')}
+            if ex:
+                D = _q([v['D'] for v in ex.values()])
+                E = _q([v['median_e'] for v in ex.values()])
+                L += [f"Sobol diagnostic on {nm} ({len(ex)} Owen scrambles of `sob16384`, no verdict): $D$ median "
+                      f"{f(D['median'])}, range {f(D['lo'])}–{f(D['hi'])}; case-median E0 {f(E['median'])}, range "
+                      f"{f(E['lo'])}–{f(E['hi'])}.", '']
     return L
 
 
@@ -128,7 +186,7 @@ def plot_e1():
     for i, (lab, ds) in enumerate(pts):
         for s, x in ds:
             D = x.get('D')
-            me = (sorted(x['e'])[len(x['e']) // 2] if x.get('e') else None)
+            me = statistics.median(x['e']) if x.get('e') else None   # np.median convention (results audit e1e5-1 #6)
             col = 'C3' if s == 0 else ('C0' if x.get('qualified') else 'C7')
             for ax, y in ((axs[0], D), (axs[1], me)):
                 if y is not None and y > 0:
@@ -287,9 +345,30 @@ def e5_section(R, X):
     L += [tbl(['ratio', 'subject', 'φ', '95 % interval', 'label'], rows), '']
     arows = []
     for k, lab in (d.get('agreement') or {}).items():
-        pt = {t: (d['per_type'].get(t, {}).get(k) or {}).get('label') for t in ('A100-80G', 'H200')}
+        pt = {t: f"{(d['per_type'].get(t, {}).get(k) or {}).get('label')} {(d['per_type'].get(t, {}).get(k) or {}).get('per_job')}"
+              for t in ('A100-80G', 'H200')}
         arows.append([k.replace('|', ' '), pt['A100-80G'], pt['H200'], lab])
-    L += ['Per-type verdicts of the registered timing hypotheses and their cross-hardware agreement:', '',
+    g52 = [(j, k, v) for j, gg in d['gates'].items() for k, v in ((gg or {}).get('G-E5.2 (descriptive, H200)') or {}).items()]
+    out_ = [x for x in g52 if not x[2].get('within')]
+    L += ['Scope (results audit e1e5-1 #11): the conclusions are conditional on the four observed physical GPUs (two per '
+          'type). The FOM comparators are frozen H200-selected comparators (fom2d `FROZEN-SELECTION-1024.json`). Only the '
+          'H-cost-N(2) and S2-subset hypotheses are re-tested. $\\phi_1$ compares costs normalised by the reference ROM; '
+          'it is not an absolute H200/A100 run-time ratio. The descriptive timing-anchor check G-E5.2 (H200 jobs against '
+          f"P1's intervals, non-blocking) has {len(out_)} of {len(g52)} cells outside P1's interval:", '',
+          tbl(['job', 'cell', 'job value', 'P1 value', 'P1 interval', 'within'],
+              [[j, k.replace('|', ' '), f(v['job']), f(v['p1']), f"[{f(v['p1_lo'])}, {f(v['p1_hi'])}]", f(v['within'])]
+               for j, k, v in g52]), '']
+    urows = []
+    for t, uv in (d.get('unit_to_unit') or {}).items():
+        for k, v in uv.items():
+            if isinstance(v, dict) and k.startswith('phi'):
+                for kk, x in v.items():
+                    if isinstance(x, dict) and 'phi' in x:
+                        urows.append([t, f'$\\phi_{k[-1]}$', kk.replace('|', ' ').replace('ckpt:18f0266ae6f0 ', ''), f(x['phi']),
+                                      f"[{f(x['lo'])}, {f(x['hi'])}]", x['label']])
+    L += ['Unit-to-unit baseline (job 2 / job 1 within one GPU type; reported, no required outcome):', '',
+          tbl(['type', 'ratio', 'subject', 'φ', '95 % interval', 'label'], urows), '']
+    L += ['Per-type verdicts of the registered timing hypotheses (per-job labels in brackets) and their cross-hardware agreement:', '',
           tbl(['hypothesis', 'A100-80G', 'H200', 'agreement'], arows), '', '![E5 phi](plots/e5_phi.png)', '']
     plot_e5(d)
     return L

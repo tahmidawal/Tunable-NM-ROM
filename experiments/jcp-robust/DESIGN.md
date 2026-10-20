@@ -953,3 +953,16 @@ SSH to tufts-login timed out and then refused authentication for a period; the c
 problem on the login node, and no keys or config were touched. The interrupted submission of e2t3d3 failed before sbatch
 ran, and its reservation was released. After recovery, e2t3's cluster directory was removed, the ledger was reconciled,
 and e2t3d3 was resubmitted (6087959) through the §14 lock.
+
+## A16 (2026-10-20): results audit E1/E5 (round 1)
+
+Codex results audit `audits/codex-results-e1e5-1.md` gave **E1: ACCEPT-WITH-FIXES** and **E5: ACCEPT-WITH-FIXES**. Every
+verdict reproduces: the CPU reruns match to 1e-15, the E1 roll-up matches byte for byte, and an independent
+implementation reproduces the E5 φ values and intervals. All the fixes are in the report:
+- (#6) the plotted median now uses the standard median, as the analyses do;
+- (#7) the E1 tables add the fresh-draw Clopper–Pearson bound, the failed draws, the draw-distribution summaries
+  (median, IQR, min–max, with the deployed value) and the Sobol diagnostic spread, and state that ε_ref is a conditional
+  Richardson estimate;
+- (#11) the E5 section now states its scope: conditional on the observed devices, frozen H200-selected comparators, the
+  re-tested hypotheses only, and φ1 as a normalised rather than absolute ratio. It also adds the per-job labels, the
+  unit-to-unit baseline, and the non-blocking G-E5.2 anchor cells (7 of 12 outside P1's interval).

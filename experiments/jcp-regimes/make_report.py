@@ -24,6 +24,10 @@ import rscore as RS  # noqa: E402
 ROMCFG = json.loads((HERE / 'configs' / 'rom1024.json').read_text())
 MESH = ROMCFG['mesh']
 NCFG = sum(len(st['arms']) for st in ROMCFG['settings'])
+import verdict as VD  # noqa: E402
+_M0 = json.loads(next((HERE / 'store' / '2d' / 'N0' / 'ST').glob('c*.json')).read_text())
+NOUT = len(_M0['times']) - 1                    # output times scored (k >= 1)
+LATN = int(_M0['lattice']) + 1                  # scoring-lattice nodes per axis (incl. walls)
 ALLOW = ', '.join(f'{g} {RG.TIGHT_ALLOWANCE.get(g, 0)}' for g in RG.REGIMES_2D)
 
 
@@ -186,10 +190,13 @@ def main():
           + (f"; relabelled **{AN['regime_labels'][g]}**" if AN['regime_labels'].get(g) else '') + '.')
     labs = [c['cells']['N0s']['label'] for c in prim.values() if 'N0s' in c['cells']]
     rat = [c['cells']['N0s']['ratio_median'] for c in prim.values() if c['cells'].get('N0s', {}).get('ratio_median') is not None]
-    w(f"- **{NAMES['N0s']}** (descriptive): labels { {l: labs.count(l) for l in sorted(set(labs))} }; ratio {num(min(rat))}–{num(max(rat))}: "
+    cv = AN['coverage']['N0s']
+    w(f"- **{NAMES['N0s']}** (descriptive; references eligible {cv['eligible']}/{cv['n']}, {cv.get('unresolved_under_allowance', 0)} "
+      f"unresolved under the allowance): labels { {l: labs.count(l) for l in sorted(set(labs))} }; ratio {num(min(rat))}–{num(max(rat))} ({COND}): "
       'the stiff part of the training box is already far less accurate than the in-range mixture.')
     fl = AN['projection_floor']
-    w('- **Representation floor** (best fit of the reference by the bank span, R384): ' +
+    w('- **Representation floor** (diagnostic; best fit of each eligible reference by the R384 bank span; populations = eligible '
+      'references per cohort as in the coverage table; same selection qualification): ' +
       ', '.join(f"{g} {pct(fl[f'{g}|R384']['median'])}" for g in ('val32', 'N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2')
                 if f'{g}|R384' in fl) + ' (medians).')
     nq_c = {g: sum(1 for c in prim.values() if g in c['cells'] and not c['cells'][g]['qualified']) for g in ('C1', 'C2')}
@@ -284,8 +291,10 @@ def main():
     w('## Paired A−/C1 contrast and distance trends\n')
     w(f'*Numbers in this section: {COND}s, exploratory development evidence; populations as printed.*\n')
     w('Paired: amplitude raised at matched geometry and viscosity (A1.1), not a pure stiffness mechanism; both cohorts\' '
-      'separation labels apply. Trends are descriptive (Spearman, permutation p; OLS slope of log10 error per unit).\n')
-    w(row(['configuration', 'pairs', 'median q = e_C1/e_A− [95 %]', 'Wilcoxon p', 'label', 'A+ vs d_ν', 'A− vs d_ν', 'A−∪C1∪C2 vs log10 s']))
+      'separation labels apply. Trends are descriptive (Spearman, permutation p; OLS slope of $\\log_{10}$ error per unit).\n')
+    aplab = AN['regime_labels'].get('Ap')
+    w(row(['configuration', 'pairs', 'median q = e_C1/e_A− [95 %]', 'Wilcoxon p', 'label',
+           'A+ vs d_ν' + (f' ({aplab})' if aplab else ''), 'A− vs d_ν', 'A−∪C1∪C2 vs log10 s']))
     w('|---|---|---|---|---|---|---|---|')
     fmt = lambda t: '—' if t.get('rho') is None else f"ρ {num(t['rho'])}, p {num(t['p'])}, slope {num(t.get('ols_slope_log10e_per_unit'))}, n {t['n']}"
     for k, c in AN['configs'].items():
@@ -329,14 +338,15 @@ def main():
     w('|---|---|---|---|---|---|---|')
     for coh, v in AN['coverage'].items():
         w(row([coh, v['n'], v['eligible'], v.get('refined', '—'), v.get('tight_used', '—'), v.get('unresolved_under_allowance', '—'),
-               json.dumps(v.get('outcomes', '—'))]))
+               ', '.join(f'{k}: {n}' for k, n in v['outcomes'].items()) if v.get('outcomes') else '—']))
     w('')
     sizes = {coh: v['n'] for coh, v in AN['coverage'].items()}
     w('## Glossary\n')
     for t, d in (('regime', 'a set of freshly drawn development cases differing from the training family in one declared way; '
                   'sizes here: ' + ', '.join(f'{g} {n}' for g, n in sizes.items())),
-                 ('error', 'for one case, the largest over the five output times of the root-mean-square difference between the '
-                  'ROM solution and the reference on the 257 × 257 scoring lattice, divided by the size of the initial field; '
+                 ('error', f'for one case, the largest over the {NOUT} output times of the Euclidean norm of the difference between the '
+                  f'ROM solution and the reference on the {LATN} × {LATN} scoring lattice, divided by the Euclidean norm of the '
+                  'reference initial field on the same lattice (a relative error); tables print it as a percentage, plots as a fraction; '
                   'reported as a percentage; median and worst are over the reference-eligible, valid cases of the cohort'),
                  ('ROM / FOM', 'reduced-order model (the method under test) / full-order model (a conventional grid solver)'),
                  ('LSPG / GAL', 'the two ways the reduced equations are formed: least-squares Petrov–Galerkin (primary) and Galerkin (diagnostic row)'),
@@ -344,11 +354,19 @@ def main():
                  ('IC', 'initial condition, the field at time zero'),
                  ('reference / Richardson estimate', 'a fine-grid solution computed three times at halving grid spacing; the change between '
                   'the finest two levels gives an estimate of its own error, $\\epsilon_{ref}$, which is conditional on the order check'),
-                 ('Péclet number', 'cell size times speed divided by viscosity; the reference requires it below 2 on its coarsest grid'),
+                 ('Péclet number', f'cell size times speed divided by viscosity; the reference requires it below {VD.PECLET_MAX:g} on its coarsest grid'),
                  ('in-range baseline I', 'N0 (fresh in-range cases) plus dev6 and val32 (previously used development/validation cases)'),
                  ('ratio', 'median error in the regime divided by the median error on the baseline; '
                   f'{RS.FACTOR:g} is the pre-registered practical margin'),
-                 ('bootstrap interval', f'the 2.5–97.5 % range of the ratio over {RS.NBOOT} resamplings of the cases'),
+                 ('bootstrap interval', f'the {RS.CI[0]:g}–{RS.CI[1]:g} percentile range of the ratio over {RS.NBOOT} resamplings of the cases'),
+                 ('Q1 fields', 'all_valid = every production and tight run valid; certificate = non-stationary steps within the '
+                  'allowed share; gcert = the recomputed certificate equals the in-job one; distance = production vs tight-tolerance '
+                  'run within its bar on every case; tight_tighter = tight vs tighter-tolerance run within its bar; '
+                  'offline_agrees = every offline recomputation equals the in-job value'),
+                 ('Q2 distances', 'successor (check) distance = the error-metric distance between the production run and the run '
+                  'with the next finer (the next-but-one finer) quadrature rule, normalised like the error'),
+                 ('separation medians', 'median = median σ_a of the regime; median_Am / median_C1 = median σ_a of A− / C1, '
+                  'over eligible cases; the in-range range and 90th percentile come from eligible N0 and N0s cases'),
                  ('worst ratio', 'largest regime error divided by the largest baseline error (descriptive; sample sizes differ)'),
                  ('Q1 / Q2', "solver qualification / quadrature qualification on the regime's own cases (COMMON-BRIEF §3)"),
                  ('certificate', 'a per-step check, recomputed with a fresh Jacobian, that the solver stopped at a stationary point'),

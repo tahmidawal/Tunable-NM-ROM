@@ -27,6 +27,7 @@ DESC_TOL = 1e-13               # A10: cross-machine round-off in the generated d
 DT0 = 0.005                    # the deployed reduced-model step (FRONT-2D configurations, factor 1)
 FACTOR = 2.0                    # DESIGN §7 rule 3
 NBOOT, NPERM = 10000, 10000
+CI = (2.5, 97.5)               # percentile interval of the bootstraps (95 %)
 MIN_ELIG = 8
 UNUSABLE = .10
 BASE = ('N0', 'dev6', 'val32')
@@ -378,7 +379,7 @@ def boot_ratio(num, den, seed=0, n=NBOOT, paired=False):
         reps = a[ok] / b[ok]
     if reps.size == 0:
         return pt, float('nan'), float('nan'), dropped
-    lo, hi = (float(x) for x in np.percentile(reps, [2.5, 97.5]))
+    lo, hi = (float(x) for x in np.percentile(reps, list(CI)))
     return pt, lo, hi, dropped
 
 

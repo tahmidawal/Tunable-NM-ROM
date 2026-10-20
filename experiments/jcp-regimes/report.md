@@ -12,8 +12,8 @@
 - **C2 (lower ν, higher s)** (8 primary configurations; references eligible 16/16, 0 unresolved under the allowance): labels {'NOT QUALIFIED': 8}; numerically qualified on this regime 0/8; median error 12.7 %–25.1 % (conditional E0-style estimate); median-error ratio to the in-range baseline 14.2–131.
 - **B1 (two same-sign bumps)** (8 primary configurations; references eligible 16/16, 0 unresolved under the allowance): labels {'HOLDS': 3, 'INCONCLUSIVE': 5}; numerically qualified on this regime 8/8; median error 0.2 %–1.15 % (conditional E0-style estimate); median-error ratio to the in-range baseline 0.989–1.55.
 - **B2 (signed pair)** (8 primary configurations; references eligible 15/16, 0 unresolved under the allowance): labels {'INCONCLUSIVE': 8}; numerically qualified on this regime 8/8; median error 0.245 %–1.4 % (conditional E0-style estimate); median-error ratio to the in-range baseline 1.11–1.64.
-- **N0s (stiff part of the training box)** (descriptive): labels {'DEGRADES': 8}; ratio 2.97–9.79: the stiff part of the training box is already far less accurate than the in-range mixture.
-- **Representation floor** (best fit of the reference by the bank span, R384): val32 0.0266 %, N0 0.0286 %, N0s 0.881 %, Ap 0.0052 %, Am 0.585 %, C1 3.47 %, C2 9.88 %, B1 0.0519 %, B2 0.0593 % (medians).
+- **N0s (stiff part of the training box)** (descriptive; references eligible 8/8, 0 unresolved under the allowance): labels {'DEGRADES': 8}; ratio 2.97–9.79 (conditional E0-style estimate): the stiff part of the training box is already far less accurate than the in-range mixture.
+- **Representation floor** (diagnostic; best fit of each eligible reference by the R384 bank span; populations = eligible references per cohort as in the coverage table; same selection qualification): val32 0.0266 %, N0 0.0286 %, N0s 0.881 %, Ap 0.0052 %, Am 0.585 %, C1 3.47 %, C2 9.88 %, B1 0.0519 %, B2 0.0593 % (medians).
 - **Plainly:** outside the training range in steepness (C1 and C2, low viscosity with high $s$), the frozen method is **not numerically qualified for any of the 8 primary configurations**: its errors there cannot be certified and it should not be used in that regime. (This is the Q1/Q2 outcome; the formal label FAILS is reserved for invalid runs, which occur only in the GAL diagnostic row on C2.)
 - **Pseudo-spectral cross-check:** 7 of 7 scheduled cases PASS (E0 A10-amended rule, label carried).
 - **Deferred, not run:** the 3D regimes (DESIGN A1.12: they need their own amendment) and the FOM accuracy comparison (A3.3 step 1).
@@ -110,9 +110,9 @@ Rule (DESIGN §7, A1.8): FAILS (an invalid production run) ▸ NOT QUALIFIED (Q1
 
 *Numbers in this section: conditional E0-style estimates, exploratory development evidence; populations as printed.*
 
-Paired: amplitude raised at matched geometry and viscosity (A1.1), not a pure stiffness mechanism; both cohorts' separation labels apply. Trends are descriptive (Spearman, permutation p; OLS slope of log10 error per unit).
+Paired: amplitude raised at matched geometry and viscosity (A1.1), not a pure stiffness mechanism; both cohorts' separation labels apply. Trends are descriptive (Spearman, permutation p; OLS slope of $\log_{10}$ error per unit).
 
-| configuration | pairs | median q = e_C1/e_A− [95 %] | Wilcoxon p | label | A+ vs d_ν | A− vs d_ν | A−∪C1∪C2 vs log10 s |
+| configuration | pairs | median q = e_C1/e_A− [95 %] | Wilcoxon p | label | A+ vs d_ν (viscosity extrapolation confounded with steepness) | A− vs d_ν | A−∪C1∪C2 vs log10 s |
 |---|---|---|---|---|---|---|---|
 | R128\|LSPG_BE_1 | 16 | 2.58 [1.94, 3.85] | 3.05e-05 | INCONCLUSIVE; Am: INCONCLUSIVE, 0 invalid, 0 excluded, 0 unresolved; C1: NOT QUALIFIED, 0 invalid, 0 excluded, 0 unresolved | ρ 0.569, p 0.0336, slope 0.284, n 14 | ρ 0.403, p 0.117, slope 1.2, n 16 | ρ 0.883, p 0.0001, slope 1.08, n 48 |
 | R128\|LSPG_CNR_1 | 16 | 3.06 [2.31, 5.05] | 3.05e-05 | DEGRADES; Am: DEGRADES, 0 invalid, 0 excluded, 0 unresolved; C1: NOT QUALIFIED, 0 invalid, 0 excluded, 0 unresolved | ρ 0.644, p 0.0134, slope 0.184, n 14 | ρ 0.403, p 0.117, slope 1.24, n 16 | ρ 0.898, p 0.0001, slope 1.22, n 48 |
@@ -191,21 +191,21 @@ Paired: amplitude raised at matched geometry and viscosity (A1.1), not a pure st
 
 | cohort | sampled | eligible | refined | tight path used | unresolved under the tight allowance | outcomes |
 |---|---|---|---|---|---|---|
-| dev6 | 6 | 6 | — | — | — | "\u2014" |
-| val32 | 32 | 32 | — | — | — | "\u2014" |
-| N0 | 16 | 14 | 2 | 0 | 0 | {"accepted": 14, "order-fail": 2} |
-| N0s | 8 | 8 | 0 | 0 | 0 | {"accepted": 8} |
-| Ap | 16 | 14 | 2 | 0 | 2 | {"accepted": 14, "unresolved-floor": 2} |
-| Am | 16 | 16 | 0 | 0 | 0 | {"accepted": 16} |
-| C1 | 16 | 16 | 0 | 0 | 0 | {"accepted": 16} |
-| C2 | 16 | 16 | 0 | 0 | 0 | {"accepted": 16} |
-| B1 | 16 | 16 | 0 | 0 | 0 | {"accepted": 16} |
-| B2 | 16 | 15 | 1 | 0 | 0 | {"accepted": 15, "order-fail": 1} |
+| dev6 | 6 | 6 | — | — | — | — |
+| val32 | 32 | 32 | — | — | — | — |
+| N0 | 16 | 14 | 2 | 0 | 0 | accepted: 14, order-fail: 2 |
+| N0s | 8 | 8 | 0 | 0 | 0 | accepted: 8 |
+| Ap | 16 | 14 | 2 | 0 | 2 | accepted: 14, unresolved-floor: 2 |
+| Am | 16 | 16 | 0 | 0 | 0 | accepted: 16 |
+| C1 | 16 | 16 | 0 | 0 | 0 | accepted: 16 |
+| C2 | 16 | 16 | 0 | 0 | 0 | accepted: 16 |
+| B1 | 16 | 16 | 0 | 0 | 0 | accepted: 16 |
+| B2 | 16 | 15 | 1 | 0 | 0 | accepted: 15, order-fail: 1 |
 
 ## Glossary
 
 - **regime**: a set of freshly drawn development cases differing from the training family in one declared way; sizes here: dev6 6, val32 32, N0 16, N0s 8, Ap 16, Am 16, C1 16, C2 16, B1 16, B2 16.
-- **error**: for one case, the largest over the five output times of the root-mean-square difference between the ROM solution and the reference on the 257 × 257 scoring lattice, divided by the size of the initial field; reported as a percentage; median and worst are over the reference-eligible, valid cases of the cohort.
+- **error**: for one case, the largest over the 5 output times of the Euclidean norm of the difference between the ROM solution and the reference on the 257 × 257 scoring lattice, divided by the Euclidean norm of the reference initial field on the same lattice (a relative error); tables print it as a percentage, plots as a fraction; reported as a percentage; median and worst are over the reference-eligible, valid cases of the cohort.
 - **ROM / FOM**: reduced-order model (the method under test) / full-order model (a conventional grid solver).
 - **LSPG / GAL**: the two ways the reduced equations are formed: least-squares Petrov–Galerkin (primary) and Galerkin (diagnostic row).
 - **E0**: the campaign lane that defined the reference method (second-order space–time references with an order check).
@@ -214,7 +214,10 @@ Paired: amplitude raised at matched geometry and viscosity (A1.1), not a pure st
 - **Péclet number**: cell size times speed divided by viscosity; the reference requires it below 2 on its coarsest grid.
 - **in-range baseline I**: N0 (fresh in-range cases) plus dev6 and val32 (previously used development/validation cases).
 - **ratio**: median error in the regime divided by the median error on the baseline; 2 is the pre-registered practical margin.
-- **bootstrap interval**: the 2.5–97.5 % range of the ratio over 10000 resamplings of the cases.
+- **bootstrap interval**: the 2.5–97.5 percentile range of the ratio over 10000 resamplings of the cases.
+- **Q1 fields**: all_valid = every production and tight run valid; certificate = non-stationary steps within the allowed share; gcert = the recomputed certificate equals the in-job one; distance = production vs tight-tolerance run within its bar on every case; tight_tighter = tight vs tighter-tolerance run within its bar; offline_agrees = every offline recomputation equals the in-job value.
+- **Q2 distances**: successor (check) distance = the error-metric distance between the production run and the run with the next finer (the next-but-one finer) quadrature rule, normalised like the error.
+- **separation medians**: median = median σ_a of the regime; median_Am / median_C1 = median σ_a of A− / C1, over eligible cases; the in-range range and 90th percentile come from eligible N0 and N0s cases.
 - **worst ratio**: largest regime error divided by the largest baseline error (descriptive; sample sizes differ).
 - **Q1 / Q2**: solver qualification / quadrature qualification on the regime's own cases (COMMON-BRIEF §3).
 - **certificate**: a per-step check, recomputed with a fresh Jacobian, that the solver stopped at a stationary point.

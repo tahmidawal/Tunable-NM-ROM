@@ -1,0 +1,934 @@
+{
+ "C1_floor_r_gain": {
+  "value": "1.1×",
+  "source": "floor_C1_384 / floor_C1_512"
+ },
+ "N0s_over_val32": {
+  "value": "33×",
+  "source": "floor_N0s_384 / floor_val32_384"
+ },
+ "a4_384_1152": {
+  "value": "16384",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"| 384 | 1152 | m* = 16384 (stable)\")"
+ },
+ "a4_384_1536": {
+  "value": "16384",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"| 384 | 1536 | m* = 16384 (stable)\")"
+ },
+ "a4_384_2048": {
+  "value": "9216",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"| 384 | 2048 | m* = 9216 (stable)\")"
+ },
+ "a4_384_384": {
+  "value": "none",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"| 384 | 384 | none (within the candidate list)\")"
+ },
+ "a4_384_512": {
+  "value": "36864",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"| 384 | 512 | m* = 36864 (stable)\")"
+ },
+ "a4_384_768": {
+  "value": "36864",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"| 384 | 768 | m* = 36864 (stable)\")"
+ },
+ "alarm_Am": {
+  "value": "0.50",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"Am\"]"
+ },
+ "alarm_Ap": {
+  "value": "0.00",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"Ap\"]"
+ },
+ "alarm_B1": {
+  "value": "0.00",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"B1\"]"
+ },
+ "alarm_B2": {
+  "value": "0.07",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"B2\"]"
+ },
+ "alarm_C1": {
+  "value": "1.00",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"C1\"]"
+ },
+ "alarm_C2": {
+  "value": "1.00",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"C2\"]"
+ },
+ "alarm_N0": {
+  "value": "0.07",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"N0\"]"
+ },
+ "alarm_N0s": {
+  "value": "0.88",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"N0s\"]"
+ },
+ "alarm_dev6": {
+  "value": "0.00",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"dev6\"]"
+ },
+ "alarm_val32": {
+  "value": "0.06",
+  "source": "analysis/ood_indicator.json configs[\"R384|LSPG_CNR_1\"].per_regime_dist_qp_alarm_rate[\"val32\"]"
+ },
+ "b6_square": {
+  "value": "0/108",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"0 of 108 square (M = r) configurations pass Q1\")"
+ },
+ "bank128_med": {
+  "value": "0.359 %",
+  "source": "analysis/bank_vs_sine.json summary.bank_128.median"
+ },
+ "bank128_worst": {
+  "value": "4.01 %",
+  "source": "analysis/bank_vs_sine.json summary.bank_128.max"
+ },
+ "bank384_med": {
+  "value": "0.0281 %",
+  "source": "analysis/bank_vs_sine.json summary.bank_384.median"
+ },
+ "bank384_worst": {
+  "value": "1.22 %",
+  "source": "analysis/bank_vs_sine.json summary.bank_384.max"
+ },
+ "bank512_med": {
+  "value": "0.0246 %",
+  "source": "analysis/bank_vs_sine.json summary.bank_512.median"
+ },
+ "bank512_worst": {
+  "value": "1.05 %",
+  "source": "analysis/bank_vs_sine.json summary.bank_512.max"
+ },
+ "bank_fit_h": {
+  "value": "2.97 h",
+  "source": "LAB-LOG.md (text \"ours 2.97 h (R512 bank)\")"
+ },
+ "base_it_step": {
+  "value": "1.00–1.22",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/runs/s2d1024b/archive/output/stageb.json members[\"ecsw|384|k8|CNR|0.005|common|central\"].certs[*].it_sum/steps (range over cases)"
+ },
+ "batch_W768": {
+  "value": "3.94×",
+  "source": "LAB-LOG.md (text \"batching ≥ 2× only for W_C_W768 (3.94×)\")"
+ },
+ "bud_GAL384_T": {
+  "value": "0.026 %",
+  "source": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/checks/budget2d-b256-256.json members[\"R384|GAL|CN|1\"].summary.median_main.T"
+ },
+ "bud_LCNR384_T": {
+  "value": "0.189 %",
+  "source": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/checks/budget2d-b256-256.json members[\"R384|LSPG|CNR|1\"].summary.median_main.T"
+ },
+ "bud_LCNR384_dyn_worst": {
+  "value": "1.54 %",
+  "source": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/checks/budget2d-b256-256.json members[\"R384|LSPG|CNR|1\"].summary.worst_e_dyn_star"
+ },
+ "bud_LCNR384_eP": {
+  "value": "0.0282 %",
+  "source": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/checks/budget2d-b256-256.json members[\"R384|LSPG|CNR|1\"].summary.median_e_P"
+ },
+ "bud_LCNR384_eP_worst": {
+  "value": "1.29 %",
+  "source": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/checks/budget2d-b256-256.json members[\"R384|LSPG|CNR|1\"].summary.worst_e_P"
+ },
+ "bud_T_ratio": {
+  "value": "7.2×",
+  "source": "bud_LCNR384_T / bud_GAL384_T"
+ },
+ "bytes_T_gal_384": {
+  "value": "0.45 GB",
+  "source": "8 r^3 bytes (Galerkin tensor)"
+ },
+ "bytes_T_gal_384_sym": {
+  "value": "0.23 GB",
+  "source": "8 r * r(r+1)/2 bytes (Galerkin tensor, symmetric in the quadratic pair)"
+ },
+ "bytes_T_lspg_128": {
+  "value": "0.067 GB",
+  "source": "8 M r^2 bytes (LSPG tensor)"
+ },
+ "bytes_T_lspg_384": {
+  "value": "1.8 GB",
+  "source": "8 M r^2 bytes (LSPG tensor)"
+ },
+ "bytes_T_lspg_384_sym": {
+  "value": "0.91 GB",
+  "source": "8 M r(r+1)/2 bytes (LSPG tensor, symmetric pair)"
+ },
+ "comp_hist_cn": {
+  "value": "0.193 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json timing.components[R384 CNR].components.hist_cn"
+ },
+ "comp_init": {
+  "value": "0.653 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json timing.components[R384 CNR].components.init"
+ },
+ "comp_it_mean": {
+  "value": "1.12",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json timing.components[R384 CNR].iterations (mean over the 50 steps of dev6|0)"
+ },
+ "comp_iter": {
+  "value": "0.962 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json timing.components[R384 CNR].components.iter"
+ },
+ "comp_pred": {
+  "value": "0.19 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json timing.components[R384 CNR].components.pred"
+ },
+ "condA2_128": {
+  "value": "4.46",
+  "source": "analysis/pod_control.json galerkin_mass[\"128\"].cond_A_squared"
+ },
+ "condA2_384": {
+  "value": "91.4",
+  "source": "analysis/pod_control.json galerkin_mass[\"384\"].cond_A_squared"
+ },
+ "condA2_512": {
+  "value": "235",
+  "source": "analysis/pod_control.json galerkin_mass[\"512\"].cond_A_squared"
+ },
+ "condM_128": {
+  "value": "1.04",
+  "source": "analysis/pod_control.json galerkin_mass[\"128\"].cond_M"
+ },
+ "condM_384": {
+  "value": "2.65",
+  "source": "analysis/pod_control.json galerkin_mass[\"384\"].cond_M"
+ },
+ "condM_512": {
+  "value": "12.2",
+  "source": "analysis/pod_control.json galerkin_mass[\"512\"].cond_M"
+ },
+ "dec_tail_384_4096_max": {
+  "value": "0.237 %",
+  "source": "analysis/decode_spectral.json settings.R384[\"4096\"].max"
+ },
+ "dec_tail_384_4096_med": {
+  "value": "0.0097 %",
+  "source": "analysis/decode_spectral.json settings.R384[\"4096\"].median"
+ },
+ "dta_min_128": {
+  "value": "0.0368",
+  "source": "analysis/explicit_stability.json settings.R128_M512_gauss96.dt_a.min"
+ },
+ "dta_min_384": {
+  "value": "0.0187",
+  "source": "analysis/explicit_stability.json settings.R384_M1536_gauss128.dt_a.min"
+ },
+ "dtd_min_384": {
+  "value": "0.00179",
+  "source": "analysis/explicit_stability.json settings.R384_M1536_gauss128.dt_d_explicit.min"
+ },
+ "est_F3_pts": {
+  "value": "1536–3072",
+  "source": "kappa r for kappa 4, 8 at r = 384 (pts_e384k4, pts_e384k8)"
+ },
+ "est_F3_ratio": {
+  "value": "5.3–11×",
+  "source": "16384 / pts_e384k8 to 16384 / pts_e384k4"
+ },
+ "est_S_etd_gal": {
+  "value": "0.49",
+  "source": "PS N48 time / (est_etd_ev_gal + init + decode), R384"
+ },
+ "est_S_etd_quad": {
+  "value": "0.38",
+  "source": "PS N48 time / (est_etd_ev_quad + init + decode at 4096^2), R384"
+ },
+ "est_S_lat_gal": {
+  "value": "0.54",
+  "source": "ps_N48_cost / (est_etd_ev_gal + init + 256^2 decode)"
+ },
+ "est_S_lat_quad": {
+  "value": "0.3",
+  "source": "ps_N48_cost (lattice contract) / (est_etd_ev_quad + init + 256^2 decode)"
+ },
+ "est_etd_ev_quad": {
+  "value": "16.7 ms",
+  "source": "20 steps (dt 0.0125) x est_etd_step_quad"
+ },
+ "est_etd_gain_gal": {
+  "value": "9.6×",
+  "source": "t_ev_R384 (dt 0.005) / est_etd_ev_gal"
+ },
+ "est_etd_gain_quad": {
+  "value": "5.3×",
+  "source": "t_ev_R384 (dt 0.005) / est_etd_ev_quad"
+ },
+ "est_etd_step_gal": {
+  "value": "0.464 ms",
+  "source": "4 stages x (latency-floor N kernel + latency-floor r x r op): bank-tested Galerkin, m r work per stage"
+ },
+ "est_etd_step_quad": {
+  "value": "0.836 ms",
+  "source": "4 stages x (nominal tested-advection kernel N at R384 + one small r x r op at the latency floor)"
+ },
+ "est_onepass_step": {
+  "value": "1.31 ms",
+  "source": "hist_cn + res + J + JTJ + chol (nominal R384): one Jacobian, one solve, no predictor, no acceptance Jacobian"
+ },
+ "floor_Am_128": {
+  "value": "3.18 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"Am|R128\"].median"
+ },
+ "floor_Am_384": {
+  "value": "0.585 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"Am|R384\"].median"
+ },
+ "floor_Am_512": {
+  "value": "0.436 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"Am|R512\"].median"
+ },
+ "floor_C1_128": {
+  "value": "8.15 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C1|R128\"].median"
+ },
+ "floor_C1_384": {
+  "value": "3.47 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C1|R384\"].median"
+ },
+ "floor_C1_512": {
+  "value": "3.21 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C1|R512\"].median"
+ },
+ "floor_C2_128": {
+  "value": "15.6 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C2|R128\"].median"
+ },
+ "floor_C2_384": {
+  "value": "9.88 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C2|R384\"].median"
+ },
+ "floor_C2_512": {
+  "value": "9.25 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C2|R512\"].median"
+ },
+ "floor_JTJ32": {
+  "value": "0.0529 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json kernels_2d.descriptive.fixedm.JTJ[\"32\"] (latency proxy for an r x r op)"
+ },
+ "floor_N0s_128": {
+  "value": "3.6 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"N0s|R128\"].median"
+ },
+ "floor_N0s_384": {
+  "value": "0.881 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"N0s|R384\"].median"
+ },
+ "floor_N0s_512": {
+  "value": "0.722 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"N0s|R512\"].median"
+ },
+ "floor_N32": {
+  "value": "0.063 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json kernels_2d.descriptive.fixedm.N[\"32\"] (smallest timed kernel; latency proxy)"
+ },
+ "floor_val32_128": {
+  "value": "0.351 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"val32|R128\"].median"
+ },
+ "floor_val32_384": {
+  "value": "0.0266 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"val32|R384\"].median"
+ },
+ "floor_val32_512": {
+  "value": "0.0248 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"val32|R512\"].median"
+ },
+ "flops_J_384": {
+  "value": "1.9e+10",
+  "source": "2 m M r with m = 16384, M = 1536 (dense Psi^T [m x r] product per Jacobian)"
+ },
+ "flops_N_bank_384": {
+  "value": "3.8e+07",
+  "source": "6 m r: two m x r products and an m x r bank-test projection"
+ },
+ "flops_N_bank_a4worst": {
+  "value": "8.5e+07",
+  "source": "6 m r at m = 36864 (largest A4 m* at r = 384)"
+ },
+ "flops_N_pre_384": {
+  "value": "3.8e+07",
+  "source": "precontracted sine-tested Galerkin: P~ = Psi Q R_m^{-T} (m x r) built offline; 6 m r online"
+ },
+ "flops_N_sine_384": {
+  "value": "7.5e+07",
+  "source": "2 m (2r + M): two m x r products and the m x M test projection (r = 384, M = 1536, m = 16384)"
+ },
+ "frac0125_384": {
+  "value": "1",
+  "source": "analysis/explicit_stability.json settings.R384_M1536_gauss128.frac_states_dt_a_ge_0p0125"
+ },
+ "frac025_384": {
+  "value": "0.92",
+  "source": "analysis/explicit_stability.json settings.R384_M1536_gauss128.frac_states_dt_a_ge_0p025"
+ },
+ "head_K16_med": {
+  "value": "1.44 %",
+  "source": "reports/2026-10-17-full-experiment-plan/final/report.md (text \"the K = 16 head (median 1.44 %)\")"
+ },
+ "hrb_R128_base": {
+  "value": "19.4 ms",
+  "source": "... same key, median tB"
+ },
+ "hrb_R128_ours": {
+  "value": "20.6 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/runs/s2d1024b/archive/output/stageb.json timing[\"1024|R128|BE||qdeim|256|512|CNR|0.005|common|central\"] median of (tA1+tA2)/2"
+ },
+ "hrb_R128_ratio": {
+  "value": "0.94",
+  "source": "hrb_base / hrb_ours (own recomputation; the lane reports the paired ratio)"
+ },
+ "hrb_R384_base": {
+  "value": "30.7 ms",
+  "source": "... same key, median tB"
+ },
+ "hrb_R384_base_step": {
+  "value": "0.613 ms",
+  "source": "hrb_R384_base / 50 steps"
+ },
+ "hrb_R384_ours": {
+  "value": "86.8 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/runs/s2d1024b/archive/output/stageb.json timing[\"1024|R384|CNR||ecsw|384|k8|CNR|0.005|common|central\"] median of (tA1+tA2)/2"
+ },
+ "hrb_R384_ours_step": {
+  "value": "1.74 ms",
+  "source": "hrb_R384_ours / 50 steps"
+ },
+ "hrb_R384_ratio": {
+  "value": "0.35",
+  "source": "hrb_base / hrb_ours (own recomputation; the lane reports the paired ratio)"
+ },
+ "hrb_R512_base": {
+  "value": "19.3 ms",
+  "source": "... same key, median tB"
+ },
+ "hrb_R512_ours": {
+  "value": "221 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/runs/s2d1024b/archive/output/stageb.json timing[\"1024|R512|BE||qdeim|256|512|CNR|0.005|common|central\"] median of (tA1+tA2)/2"
+ },
+ "hrb_R512_ratio": {
+  "value": "0.087",
+  "source": "hrb_base / hrb_ours (own recomputation; the lane reports the paired ratio)"
+ },
+ "hrb_build_2d": {
+  "value": "1.45 h",
+  "source": "LAB-LOG.md (text \"Construction cost: baseline 1.45 h (2D)\")"
+ },
+ "hrb_pick_worst_R384": {
+  "value": "1.35 %",
+  "source": "reports/2026-10-17-full-experiment-plan/final/report.md (text \"`1024\\|R384\\|CNR` | 1.78 % | `ecsw\\|384\\|k8\\|CNR\\|0.005\\|common\\|central` | 1.35 %\")"
+ },
+ "hyb512_med": {
+  "value": "0.000439 %",
+  "source": "analysis/bank_vs_sine.json summary.bank384_plus_sine512.median"
+ },
+ "hyb512_worst": {
+  "value": "0.636 %",
+  "source": "analysis/bank_vs_sine.json summary.bank384_plus_sine512.max"
+ },
+ "inspan_C1": {
+  "value": "4.61 %",
+  "source": "analysis/inspan_decomp.json regimes.C1.median_inspan (per-case max over t of ||v - Pu|| / ||u0||, then median)"
+ },
+ "inspan_C2": {
+  "value": "13.6 %",
+  "source": "analysis/inspan_decomp.json regimes.C2.median_inspan (per-case max over t of ||v - Pu|| / ||u0||, then median)"
+ },
+ "inspan_N0s": {
+  "value": "0.755 %",
+  "source": "analysis/inspan_decomp.json regimes.N0s.median_inspan (per-case max over t of ||v - Pu|| / ||u0||, then median)"
+ },
+ "k2_3d_range": {
+  "value": "0.00786–0.158",
+  "source": "reports/2026-10-17-full-experiment-plan/final/report.md (text \"union speed-up 0.00786–0.158 (4 ROMs)\")"
+ },
+ "k2_S_R384CNR001": {
+  "value": "0.194",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json k2.members[...R384|gauss128|frozen|CNR|0.01|...].S"
+ },
+ "k2_S_R384CNR005": {
+  "value": "0.121",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json k2.members[...R384|gauss128|frozen|CNR|0.005|...].S"
+ },
+ "k2_S_R384CNR0125": {
+  "value": "0.222",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json k2.members[...R384|gauss128|frozen|CNR|0.0125|...].S"
+ },
+ "lin_r128_cost": {
+  "value": "0.591×",
+  "source": "same sentence"
+ },
+ "lin_r128_med": {
+  "value": "1.1 %",
+  "source": "reports/2026-10-17-full-experiment-plan/final/report.md (text \"r = 128 reaches 1.1 % at 0.591×\")"
+ },
+ "lmf_gauss": {
+  "value": "65,536 vs 16,384",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md (text \"gauss: LMF m* = 65536 (stable) vs default m* = 16384 (stable)\")"
+ },
+ "loo_bank_128_max": {
+  "value": "4.01 %",
+  "source": "analysis/pod_control.json loo_pod[\"128\"].bank.max"
+ },
+ "loo_bank_128_med": {
+  "value": "0.359 %",
+  "source": "analysis/pod_control.json loo_pod[\"128\"].bank.median"
+ },
+ "loo_pod_128_max": {
+  "value": "9.96 %",
+  "source": "analysis/pod_control.json loo_pod[\"128\"].pod.max"
+ },
+ "loo_pod_128_med": {
+  "value": "0.723 %",
+  "source": "analysis/pod_control.json loo_pod[\"128\"].pod.median"
+ },
+ "loo_sine_128_max": {
+  "value": "13.7 %",
+  "source": "analysis/pod_control.json loo_pod[\"128\"].sine.max"
+ },
+ "loo_sine_128_med": {
+  "value": "0.241 %",
+  "source": "analysis/pod_control.json loo_pod[\"128\"].sine.median"
+ },
+ "mM_1152_vs_1536": {
+  "value": "25%",
+  "source": "1 - (m* M at M = 1152) / (m* M at M = 1536), r = 384, both m* = 16384"
+ },
+ "m_over_M_128": {
+  "value": "8.2",
+  "source": "m / M"
+ },
+ "m_over_M_384": {
+  "value": "11",
+  "source": "m / M"
+ },
+ "m_over_ps48": {
+  "value": "3.3",
+  "source": "m (Gauss 128^2 = 16384) / PS N48 padded-grid interior points (72 intervals -> 71^2 = 5041; fom2d pscore.py:4-8, 3/2 padding)"
+ },
+ "m_over_r_128": {
+  "value": "33",
+  "source": "m / r"
+ },
+ "m_over_r_384": {
+  "value": "43",
+  "source": "m / r"
+ },
+ "maxre_384": {
+  "value": "10.1",
+  "source": "analysis/explicit_stability.json settings.R384_M1536_gauss128.max_re.max"
+ },
+ "model_cur_step": {
+  "value": "2.11 ms",
+  "source": "hist_cn + pred + init + mean_it * iter (P1 component model; the measured step is t_ev_R384/50)"
+ },
+ "nom_J_384": {
+  "value": "0.528 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json kernels_2d.descriptive.nominal.J[\"384\"] (M = 4r, own rule)"
+ },
+ "nom_N_384": {
+  "value": "0.156 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json kernels_2d.descriptive.nominal.N[\"384\"] (M = 4r, own rule)"
+ },
+ "ns3d_pod": {
+  "value": "8–10×",
+  "source": "LAB-LOG.md:88-92 (text \"about 8–10×\")"
+ },
+ "oodA_d_box_auc": {
+  "value": "0.73–0.80",
+  "source": "analysis/ood_indicator.json configs[*].indicators.d_box.A_e_gt_2x_inrange_median.auc (range over 9 configurations)"
+ },
+ "oodA_d_box_detection": {
+  "value": "0.59–0.72",
+  "source": "analysis/ood_indicator.json configs[*].indicators.d_box.A_e_gt_2x_inrange_median.detection (range over 9 configurations)"
+ },
+ "oodA_d_box_false_alarm": {
+  "value": "0.14–0.24",
+  "source": "analysis/ood_indicator.json configs[*].indicators.d_box.A_e_gt_2x_inrange_median.false_alarm (range over 9 configurations)"
+ },
+ "oodA_dist_qp_auc": {
+  "value": "0.90–0.99",
+  "source": "analysis/ood_indicator.json configs[*].indicators.dist_qp.A_e_gt_2x_inrange_median.auc (range over 9 configurations)"
+ },
+ "oodA_dist_qp_detection": {
+  "value": "0.58–0.81",
+  "source": "analysis/ood_indicator.json configs[*].indicators.dist_qp.A_e_gt_2x_inrange_median.detection (range over 9 configurations)"
+ },
+ "oodA_dist_qp_false_alarm": {
+  "value": "0.00–0.10",
+  "source": "analysis/ood_indicator.json configs[*].indicators.dist_qp.A_e_gt_2x_inrange_median.false_alarm (range over 9 configurations)"
+ },
+ "oodA_rho_max_auc": {
+  "value": "0.53–0.77",
+  "source": "analysis/ood_indicator.json configs[*].indicators.rho_max.A_e_gt_2x_inrange_median.auc (range over 9 configurations)"
+ },
+ "oodA_rho_max_detection": {
+  "value": "0.07–0.44",
+  "source": "analysis/ood_indicator.json configs[*].indicators.rho_max.A_e_gt_2x_inrange_median.detection (range over 9 configurations)"
+ },
+ "oodA_rho_max_false_alarm": {
+  "value": "0.07–0.13",
+  "source": "analysis/ood_indicator.json configs[*].indicators.rho_max.A_e_gt_2x_inrange_median.false_alarm (range over 9 configurations)"
+ },
+ "oodA_s_auc": {
+  "value": "0.92–0.99",
+  "source": "analysis/ood_indicator.json configs[*].indicators.s.A_e_gt_2x_inrange_median.auc (range over 9 configurations)"
+ },
+ "oodA_s_detection": {
+  "value": "0.67–0.91",
+  "source": "analysis/ood_indicator.json configs[*].indicators.s.A_e_gt_2x_inrange_median.detection (range over 9 configurations)"
+ },
+ "oodA_s_false_alarm": {
+  "value": "0.00–0.09",
+  "source": "analysis/ood_indicator.json configs[*].indicators.s.A_e_gt_2x_inrange_median.false_alarm (range over 9 configurations)"
+ },
+ "oodB_d_box_auc": {
+  "value": "0.72–0.87",
+  "source": "analysis/ood_indicator.json configs[*].indicators.d_box.B_e_gt_1pct.auc (range over 9 configurations)"
+ },
+ "oodB_d_box_detection": {
+  "value": "0.53–0.82",
+  "source": "analysis/ood_indicator.json configs[*].indicators.d_box.B_e_gt_1pct.detection (range over 9 configurations)"
+ },
+ "oodB_d_box_false_alarm": {
+  "value": "0.07–0.22",
+  "source": "analysis/ood_indicator.json configs[*].indicators.d_box.B_e_gt_1pct.false_alarm (range over 9 configurations)"
+ },
+ "oodB_dist_qp_auc": {
+  "value": "0.70–1.00",
+  "source": "analysis/ood_indicator.json configs[*].indicators.dist_qp.B_e_gt_1pct.auc (range over 9 configurations)"
+ },
+ "oodB_dist_qp_detection": {
+  "value": "0.43–0.98",
+  "source": "analysis/ood_indicator.json configs[*].indicators.dist_qp.B_e_gt_1pct.detection (range over 9 configurations)"
+ },
+ "oodB_dist_qp_false_alarm": {
+  "value": "0.00–0.10",
+  "source": "analysis/ood_indicator.json configs[*].indicators.dist_qp.B_e_gt_1pct.false_alarm (range over 9 configurations)"
+ },
+ "oodB_rho_max_auc": {
+  "value": "0.39–0.83",
+  "source": "analysis/ood_indicator.json configs[*].indicators.rho_max.B_e_gt_1pct.auc (range over 9 configurations)"
+ },
+ "oodB_rho_max_detection": {
+  "value": "0.07–0.54",
+  "source": "analysis/ood_indicator.json configs[*].indicators.rho_max.B_e_gt_1pct.detection (range over 9 configurations)"
+ },
+ "oodB_rho_max_false_alarm": {
+  "value": "0.07–0.19",
+  "source": "analysis/ood_indicator.json configs[*].indicators.rho_max.B_e_gt_1pct.false_alarm (range over 9 configurations)"
+ },
+ "oodB_s_auc": {
+  "value": "0.76–0.99",
+  "source": "analysis/ood_indicator.json configs[*].indicators.s.B_e_gt_1pct.auc (range over 9 configurations)"
+ },
+ "oodB_s_detection": {
+  "value": "0.54–0.98",
+  "source": "analysis/ood_indicator.json configs[*].indicators.s.B_e_gt_1pct.detection (range over 9 configurations)"
+ },
+ "oodB_s_false_alarm": {
+  "value": "0.00–0.12",
+  "source": "analysis/ood_indicator.json configs[*].indicators.s.B_e_gt_1pct.false_alarm (range over 9 configurations)"
+ },
+ "ood_excl": {
+  "value": "Ap|4, Ap|8, B2|7, N0|15, N0|4",
+  "source": "analysis/ood_indicator.json configs[*].excluded_ineligible_reference"
+ },
+ "ood_n": {
+  "value": "153",
+  "source": "analysis/ood_indicator.json configs[\"R128|LSPG_BE_1\"].n (rows per configuration, invalid runs included)"
+ },
+ "ood_n_invalid": {
+  "value": "2",
+  "source": "analysis/ood_indicator.json sum of configs[*].n_invalid"
+ },
+ "ours_worst_R384CNR": {
+  "value": "1.78 %",
+  "source": "same row"
+ },
+ "p1_R128BE_med": {
+  "value": "1.1 %",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json configurations[\"1024|R128|BE\"].e0_median"
+ },
+ "p1_R128BE_worst": {
+  "value": "4.84 %",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json configurations[\"1024|R128|BE\"].e0_worst"
+ },
+ "p1_R384CNR_med": {
+  "value": "0.198 %",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json configurations[\"1024|R384|CNR\"].e0_median"
+ },
+ "p1_R384CNR_worst": {
+  "value": "1.78 %",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json configurations[\"1024|R384|CNR\"].e0_worst"
+ },
+ "ps_N24_med": {
+  "value": "0.0275 %",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N24|0.025].median"
+ },
+ "ps_N24_modes": {
+  "value": "529",
+  "source": "(24-1)^2, same definition"
+ },
+ "ps_N24_worst": {
+  "value": "6.34 %",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N24|0.025].worst"
+ },
+ "ps_N48_cost": {
+  "value": "5.18 ms",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N48|0.0125].cost (screening, lattice output)"
+ },
+ "ps_N48_med": {
+  "value": "0.00178 %",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N48|0.0125].median"
+ },
+ "ps_N48_modes": {
+  "value": "2209",
+  "source": "fom2d glossary: N keeps sine modes 1..N-1 per axis -> (N-1)^2; worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:460-475 (text \"sine\")"
+ },
+ "ps_N48_worst": {
+  "value": "0.845 %",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N48|0.0125].worst"
+ },
+ "pts_e384k4": {
+  "value": "1536",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"ecsw|384|k4|CNR|0.005|common|central\"].hr_points"
+ },
+ "pts_e384k8": {
+  "value": "3072",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"ecsw|384|k8|CNR|0.005|common|central\"].hr_points"
+ },
+ "pts_q256": {
+  "value": "512",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"qdeim|256|512|CNR|0.005|common|central\"].hr_points"
+ },
+ "q_med": {
+  "value": "0.067",
+  "source": "analysis/floor_vs_upwind.json median_q_all"
+ },
+ "q_worst": {
+  "value": "0.34",
+  "source": "analysis/floor_vs_upwind.json worst5_by_floor384[0].q"
+ },
+ "qn_h14": {
+  "value": "2 pass, 20 fail, 3 rescue, 5 unavailable",
+  "source": "LAB-LOG.md (text \"H1.4 (QN ≤ 0.6× FS-K2): 2 pass, 20 fail, 3 rescue, 5 unavailable\")"
+ },
+ "ratio_max_384": {
+  "value": "4.8",
+  "source": "analysis/bank_vs_sine.json summary.ratio_sineK_over_r_384.max"
+ },
+ "ratio_med_128": {
+  "value": "1",
+  "source": "analysis/bank_vs_sine.json summary.ratio_sineK_over_r_128.median"
+ },
+ "ratio_med_384": {
+  "value": "0.64",
+  "source": "analysis/bank_vs_sine.json summary.ratio_sineK_over_r_384.median"
+ },
+ "refdv_off_2d": {
+  "value": "0.35 %",
+  "source": "LAB-LOG.md (text \"Old first-order references were off by:** 3D median about 0.7 %, maximum 2.81 %; 2D maximum 0.35 %\")"
+ },
+ "reg_med_C1": {
+  "value": "5.68 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json configs[\"R384|LSPG_CNR_1\"].cells[\"C1\"].median"
+ },
+ "reg_med_C2": {
+  "value": "16.6 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json configs[\"R384|LSPG_CNR_1\"].cells[\"C2\"].median"
+ },
+ "reg_med_N0s": {
+  "value": "1.22 %",
+  "source": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json configs[\"R384|LSPG_CNR_1\"].cells[\"N0s\"].median"
+ },
+ "reg_ratio_C1": {
+  "value": "1.6",
+  "source": "reg_med_C1 / floor_C1_384 (ratio of medians)"
+ },
+ "reg_ratio_C2": {
+  "value": "1.7",
+  "source": "reg_med_C2 / floor_C2_384 (ratio of medians)"
+ },
+ "reg_ratio_N0s": {
+  "value": "1.4",
+  "source": "reg_med_N0s / floor_N0s_384 (ratio of medians)"
+ },
+ "sineK_worst_128": {
+  "value": "533",
+  "source": "analysis/bank_vs_sine.json summary.sineK_worstcase_match_bank_128"
+ },
+ "sineK_worst_384": {
+  "value": "1308",
+  "source": "analysis/bank_vs_sine.json summary.sineK_worstcase_match_bank_384"
+ },
+ "sine_block24_med": {
+  "value": "0.00221 %",
+  "source": "analysis/sine_floor.json summary.block[\"24\"].median"
+ },
+ "sine_block24_worst": {
+  "value": "4.69 %",
+  "source": "analysis/sine_floor.json summary.block[\"24\"].worst"
+ },
+ "sine_block48_med": {
+  "value": "7.81e-05 %",
+  "source": "analysis/sine_floor.json summary.block[\"48\"].median"
+ },
+ "sine_block48_worst": {
+  "value": "0.691 %",
+  "source": "analysis/sine_floor.json summary.block[\"48\"].worst"
+ },
+ "sine_lap1536_med": {
+  "value": "0.000116 %",
+  "source": "analysis/sine_floor.json summary.lap[\"1536\"].median"
+ },
+ "sine_lap1536_worst": {
+  "value": "0.957 %",
+  "source": "analysis/sine_floor.json summary.lap[\"1536\"].worst"
+ },
+ "sine_lap384_med": {
+  "value": "0.00546 %",
+  "source": "analysis/sine_floor.json summary.lap[\"384\"].median"
+ },
+ "sine_lap384_worst": {
+  "value": "5.64 %",
+  "source": "analysis/sine_floor.json summary.lap[\"384\"].worst"
+ },
+ "sine_lap4096_med": {
+  "value": "1.07e-05 %",
+  "source": "analysis/sine_floor.json summary.lap[\"4096\"].median"
+ },
+ "sine_lap4096_worst": {
+  "value": "0.114 %",
+  "source": "analysis/sine_floor.json summary.lap[\"4096\"].worst"
+ },
+ "smax_R128": {
+  "value": "1.98",
+  "source": "same for R128 BE vs PS N48: t4k_ps48 / (t_dec_R128_4k + t_init R128 at 4096^2)"
+ },
+ "smax_R128_N24": {
+  "value": "1.73",
+  "source": "R128 dt 0.0125 vs its N24 comparator: t4k_ps24 / (t_dec_R128_4k + t_init R128 at 4096^2)"
+ },
+ "smax_R384": {
+  "value": "0.809",
+  "source": "illustrative K2 ceiling with zero evolution cost and the current dense decode: t4k_ps48 / (P1 t_decode + t_init at 4096^2, R384 CN-R); cross-job ratio"
+ },
+ "smooth_floor": {
+  "value": "38.2%",
+  "source": "worktrees/2026-10-08-jcp-smooth-bank/experiments/jcp-smooth-bank/report.md (text \"the median projection floor by 38.2% in `acc`\")"
+ },
+ "smooth_roll": {
+  "value": "+1.7%",
+  "source": "same line: \"rollout error vs S changes by +1.7% (`acc`)\""
+ },
+ "sp_bank_s": {
+  "value": "0.69",
+  "source": "analysis/pod_control.json steepness_control.spearman_bank384_vs_s"
+ },
+ "sp_sine_s": {
+  "value": "0.87",
+  "source": "analysis/pod_control.json steepness_control.spearman_sine384_vs_s"
+ },
+ "step_R128": {
+  "value": "0.441 ms",
+  "source": "t_ev_R128 / 50 steps (dt 0.005, T 0.25)"
+ },
+ "step_R384": {
+  "value": "1.77 ms",
+  "source": "t_ev_R384 / 50 steps"
+ },
+ "t4k_R128": {
+  "value": "24.9 ms",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (R128 LSPG-BE dt 0.005)"
+ },
+ "t4k_R384": {
+  "value": "97.1 ms",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (4096^2 stage-2 table, R384 LSPG-CNR dt 0.005)"
+ },
+ "t4k_ps24": {
+  "value": "10.2 ms",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (PS N=24 dt 0.025)"
+ },
+ "t4k_ps48": {
+  "value": "11.7 ms",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (PS N=48 dt 0.0125, full-field 4096^2)"
+ },
+ "t_dec_R128_4k": {
+  "value": "5.74 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json ...[\"R128|BE|frozen\"].descriptive_seconds.t_decode[\"4096\"]"
+ },
+ "t_dec_R384_4k": {
+  "value": "14.3 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json ...[\"R384|CNR|frozen\"].descriptive_seconds.t_decode[\"4096\"]"
+ },
+ "t_ev_R384": {
+  "value": "88.7 ms",
+  "source": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json timing.h_cost_n[\"R384|CNR|frozen\"].descriptive_seconds.t_evolve[\"1024\"]"
+ },
+ "tensor_34gb": {
+  "value": "34 GB",
+  "source": "LAB-LOG.md (text \"against 34 GB for the tensor\")"
+ },
+ "tensor_bw_3d": {
+  "value": "Jacobian 0.66 vs 1.04 ms despite 29 vs 1.1 GFLOP",
+  "source": "LAB-LOG.md (text \"Jacobian 0.66 vs 1.04 ms despite 29 vs 1.1 GFLOP (GEMM vs bandwidth-bound contraction)\")"
+ },
+ "tq_e128k8": {
+  "value": "12.7 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"ecsw|128|k8|CNR|0.005|common|central\"].t (screening query time, 1024^2)"
+ },
+ "tq_e384k4": {
+  "value": "25.4 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"ecsw|384|k4|CNR|0.005|common|central\"].t (screening query time, 1024^2)"
+ },
+ "tq_e384k8": {
+  "value": "29.4 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"ecsw|384|k8|CNR|0.005|common|central\"].t (screening query time, 1024^2)"
+ },
+ "tq_e512k8": {
+  "value": "38.9 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"ecsw|512|k8|CNR|0.005|common|central\"].t (screening query time, 1024^2)"
+ },
+ "tq_native_e384k8": {
+  "value": "328 ms",
+  "source": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c2d1024.json member_info[\"ecsw|384|k8|CNR|0.005|native|central\"].t"
+ },
+ "tread_T_gal_384": {
+  "value": "0.0944 ms",
+  "source": "bytes_T_gal_384 / 4.8e+12 B/s"
+ },
+ "tread_T_lspg_128": {
+  "value": "0.014 ms",
+  "source": "bytes_T_lspg_128 / 4.8e+12 B/s (assumed H200 bandwidth)"
+ },
+ "tread_T_lspg_384": {
+  "value": "0.377 ms",
+  "source": "bytes_T_lspg_384 / 4.8e+12 B/s (assumed H200 bandwidth)"
+ },
+ "ub256_med": {
+  "value": "1.32 %",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.UB[fd|UB|L256|0.005|t2].median"
+ },
+ "ub256_worst": {
+  "value": "6.51 %",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.UB[fd|UB|L256|0.005|t2].worst"
+ },
+ "wide_floor": {
+  "value": "3.23 → 1.29 %",
+  "source": "LAB-LOG.md (text \"the 3D projection floor falls 3.23 → 1.29 %\")"
+ },
+ "wide_n_cases": {
+  "value": "96",
+  "source": "worktrees/2026-10-08-jcp-wide-bank/experiments/jcp-wide-bank/report.md:113-133 (text \"96 cases × six saved times\")"
+ },
+ "worst_ratio_128": {
+  "value": "4.2",
+  "source": "sineK_worst_128 / 128"
+ },
+ "worst_ratio_384": {
+  "value": "3.4",
+  "source": "sineK_worst_384 / 384"
+ }
+}

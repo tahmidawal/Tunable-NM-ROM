@@ -1055,3 +1055,8 @@ fixes, now made:
 - (#5) The summary carries the generated per-rank deployed-rule failure lists.
 - (#6) The 2D Sobol diagnostic (R128sob at 1024², 16 scrambles, production only) gets a generated spread summary, and
   the empty plot category is removed.
+
+## A22 (2026-10-20): report accepted; final
+
+`audits/codex-report-3.md` returned **ACCEPT**. The report is regenerated with `make_report.py --final`, which changes the
+status lines only. The lane hands back.

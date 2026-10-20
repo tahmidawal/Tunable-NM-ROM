@@ -113,12 +113,13 @@
   },
   {
    "attempt": "refN0s",
-   "state": "SUBMITTED",
+   "state": "COMPLETED",
    "time_limit_hours": 2.25,
    "job_id": "6080533",
-   "sacct_state": "RUNNING",
+   "sacct_state": "COMPLETED",
    "node": "pax049",
-   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1"
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1",
+   "elapsed_hours": 1.0639
   },
   {
    "attempt": "ps",
@@ -130,7 +131,7 @@
    "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1"
   }
  ],
- "spent_gpu_hours": 10.6017,
- "reserved_gpu_hours": 9.0,
- "committed_gpu_hours": 19.6017
+ "spent_gpu_hours": 11.6656,
+ "reserved_gpu_hours": 6.75,
+ "committed_gpu_hours": 18.4156
 }

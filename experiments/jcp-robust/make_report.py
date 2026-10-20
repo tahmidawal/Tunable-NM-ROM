@@ -155,6 +155,20 @@ def e1_descriptive():
     L = ['Draw distributions (16 draws per configuration; $D$ = distance to the converged rule; E0 = case-median error):', '',
          tbl(['dim', 'configuration', '$D_0$ (deployed)', '$D$ median (IQR)', '$D$ min–max', 'E0 deployed',
               'E0 median (IQR)', 'E0 min–max'], out), '']
+    for m in (256, 1024, 4096):
+        d = load(f'e1-2d-{m}.json')
+        for g, gv in (d or {}).get('groups', {}).items():
+            for ak, av in gv['arms'].items():
+                sb = {k: x for k, x in av['rules'].items() if k.startswith('sob')}
+                if not sb:
+                    continue
+                Dt = _q([max(x['dist_target']) for x in sb.values() if x.get('dist_target')])
+                E = _q([statistics.median(x['e']) for x in sb.values() if x.get('e')])
+                rule0 = next(iter(sb.values())).get('rule', '')
+                L += [f"Sobol diagnostic in 2D at {m}² ({g} {ak}; {len(sb)} Owen scrambles of `{rule0.rsplit('s', 1)[0]}`, "
+                      'production runs only, no verdict): distance to the cross-family target, median '
+                      f"{f(Dt['median'])}, range {f(Dt['lo'])}–{f(Dt['hi'])}; case-median E0 {f(E['median'], 6)}, range "
+                      f"{f(E['lo'], 6)}–{f(E['hi'], 6)}." if Dt and E else f'Sobol diagnostic in 2D at {m}²: no usable values.', '']
     if d3:
         for nm, cv in d3['configs'].items():
             ex = {k: v for k, v in (cv.get('extra') or {}).items() if k.startswith('sob')}
@@ -227,7 +241,8 @@ def plot_e1():
                 if av.get('diagnostic') or not ak.startswith('LSPG'):
                     continue
                 ds = [(int(k[1:]), x) for k, x in av['rules'].items() if k.startswith('d') and k[1:].isdigit()]
-                pts.append((f'2D {m}² {g} {ak}', ds))
+                if ds:                                   # report audit 2 #6: no empty (Sobol-only) category
+                    pts.append((f'2D {m}² {g} {ak}', ds))
     d3 = load('e1-3d.json')
     if d3:
         for nm, cv in d3['configs'].items():
@@ -519,9 +534,8 @@ def summary():
     L += ['', 'How to read these counts:',
           '- E1 "fragile" concerns convergence to the draw-matched successor rule, not accuracy: the accuracy-sensitivity '
           'verdict H-E1c is listed beside it. The reading paragraph in the E1 section quantifies this from the data.',
-          '- E2 2D: the selected-rule accuracy verdicts (H-acc-N, H-acc-r) are the seed-robust headline. The selected rule itself, '
-          'and whether the *deployed* rules still qualify on a retrained bank, vary with the seed; see the E2 sections for '
-          'the per-rank lists.',
+          '- E2 2D: the selected-rule accuracy verdicts (H-acc-N, H-acc-r) are the seed-robust headline. The selected rule itself '
+          'varies with the seed, and the deployed rules do not transfer: ' + deployed_sentence(),
           '- E2 3D: the fixed-rule gl64 rows isolate the bank; the selected-rule rows are sparse at W768 and W1024, where most '
           'slots have no certified rule, so most wide-width rows are inconclusive rather than evidence either way.',
           '- E5: the ratios are dimensionless and normalised; the conclusions are conditional on the four observed GPUs, '
@@ -778,9 +792,10 @@ def main():
           '- **IQR**: inter-quartile range (75th minus 25th percentile) over the draws.',
           '**Models, schemes and settings**',
           '- **$r$ / R128…R384**: number of leading bank modes used by the 2D ROM (prefix of the ordered R512 bank). **W256…W1024**: '
-          'width of the 3D W1024 bank used. **M**: number of quadrature points. **M2_512**: a different 3D bank of width 512.',
+          'width of the 3D W1024 bank used. **$m$**: number of quadrature points of a rule; **$m^*$**: the smallest ladder rung that qualifies (the selected rule). **$M$**: number of LSPG test modes. **M2_512**: a different 3D bank of width 512.',
           '- **LSPG / GAL**: least-squares Petrov–Galerkin / Galerkin projection. **BE / CN / CN-R / BDF2**: backward Euler, '
-          'Crank–Nicolson, Crank–Nicolson started with two backward-Euler (Rannacher) steps, BDF2. Factors 1, 2, 2.5 multiply '
+          'Crank–Nicolson, Crank–Nicolson started with two backward-Euler (Rannacher) steps, second-order backward differentiation '
+          'formula. Factors 1, 2, 2.5 multiply '
           'the base time step.',
           '- **3D solver specs** (`<solver>|<scheme>|<dt>|<K>`): `fs` = fixed-sweep LSPG solver with K cached-predictor '
           'Levenberg–Marquardt sweeps per step (K1 = one sweep); `qn` = QN-k solver, quasi-Newton iterations with a frozen '
@@ -814,7 +829,8 @@ def main():
           '**General**',
           '- **E0 error**: per case, the maximum over output times of $\\lVert u - R\\rVert / \\lVert R(t_0)\\rVert$ against the frozen '
           'full-order reference store $R$. **$\\varepsilon_{ref}$**: the reference\'s '
-          'own error, a conditional Richardson estimate.',
+          'own error, estimated by Richardson extrapolation across the reference store\'s refinement levels; "conditional" '
+          'because the estimate is valid only if those levels are in the asymptotic convergence regime.',
           '- **Resource columns**: wall h = elapsed wall-clock hours; GPU-h = GPUs × wall hours over all attempts.',
           '- **Provisional / final**: before / after acceptance by the independent Codex results audits.']
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')

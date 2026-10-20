@@ -1045,3 +1045,13 @@ inconclusive over 129 rows). Bank 3's selection was recomputed from its coeffici
   and `target_certified` per 3D slot.
 - (#12) Plot labels are fixed.
 - (#13) `--final` switches every status line.
+
+## A21 (2026-10-20): report audit round 2 (ACCEPT-WITH-FIXES)
+
+`audits/codex-report-2.md` confirmed the A20 fixes, and every number, table, plot and export regenerates. Remaining
+fixes, now made:
+- (#4) Glossary: $m$ is the number of quadrature points, $m^*$ the selected rung and $M$ the number of LSPG test modes.
+  BDF2 is spelled out, and the conditional Richardson estimate of ε_ref is explained.
+- (#5) The summary carries the generated per-rank deployed-rule failure lists.
+- (#6) The 2D Sobol diagnostic (R128sob at 1024², 16 scrambles, production only) gets a generated spread summary, and
+  the empty plot category is removed.

@@ -292,11 +292,13 @@ def data_hash_sentence():
     for b in (1, 2, 3):
         p = HERE / 'runs' / 'e2t2d' / 'archive' / 'output' / f'train2d_s{b}' / 'stageA' / 'train.json'
         if p.exists():
-            hs[b] = json.loads(p.read_text()).get('data_sha256')
+            hs[b] = (json.loads(p.read_text()).get('data') or {}).get('data_sha256')
     groups = {}
     for b, h in hs.items():
         groups.setdefault(h, []).append(b)
-    if len(groups) <= 1:
+    if len(hs) < 3 or None in groups:
+        return 'the training-data hashes are unavailable for some seed'
+    if len(groups) == 1:
         return 'the generated training data have the same sha256 for every seed'
     parts = ['seed' + ('s ' if len(v) > 1 else ' ') + ', '.join(map(str, v)) + f' (sha256 {k[:12]}…)' for k, v in groups.items()]
     return 'the generated data are not bitwise identical, as their sha256 groups are ' + '; '.join(parts)

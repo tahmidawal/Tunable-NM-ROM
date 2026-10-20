@@ -1,0 +1,20 @@
+{
+ "lane": "final-compilation",
+ "utc": "2026-10-20T01:50:38Z",
+ "step": "awaiting robust/regimes",
+ "waiting_on": {
+  "slurm_jobs": [],
+  "codex_output": null,
+  "codex_pid": null,
+  "local_pid": null,
+  "lanes": [
+   "jcp-robust",
+   "jcp-regimes"
+  ]
+ },
+ "expected_finish_utc": null,
+ "last_commit": null,
+ "gpu_hours_spent": 0,
+ "gpu_hours_cap": 0,
+ "notes": "report built and Codex-audited CLEAN (round 7) with robust/regimes pending; resume to render their EXPORTs, re-run make_final.py and re-audit"
+}

@@ -1,0 +1,18 @@
+You are an adversarial auditor. READ-ONLY: make no file changes anywhere, submit no jobs, never write to LAB-LOG.md or to main, do not commit. Do not copy large arrays; if you need scratch, use at most 2 GB under /tmp/final-audit-scratch/ and reuse it.
+
+Target: the final compiled report of the viscous Burgers 2D/3D JCP campaign:
+- /home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-17-full-experiment-plan/final/make_final.py (generator)
+- .../final/report.md, .../final/PROVENANCE.json, .../final/FINAL-EXPORT.json, .../final/figs/*.png
+The brief it must satisfy: /home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-17-full-experiment-plan/campaign/briefs/final-compilation.md (and COMMON-BRIEF.md in the same folder).
+Lane outputs live under /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/<date>-jcp-<lane>/experiments/jcp-<lane>/ (runs/EXPORT.json, checks/*.json, runs/GPU-LEDGER.json, report.md). The coordinator's record is /home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md (entries from 2026-10-17 on). Two lanes (jcp-robust, jcp-regimes) are still running and must appear only as explicit "pending" blocks with no invented numbers.
+
+Try to break it. Specifically:
+1. Recompute numbers: pick at least 40 numbers from report.md across every section (verdict table, 3.x sections, P1g table, retractions, ledger, lane list) and recompute each from the lane JSON files directly (not via make_final.py). Report any mismatch.
+2. Provenance: check that PROVENANCE.json entries point to the right file and key path, that recorded sha256 values match the files now on disk, and find any number printed in report.md that is NOT generated from data (hand-typed in make_final.py) other than registered design constants (bars, cohort sizes, meshes, steps, design grids).
+3. Verdicts: compare every verdict row against the owning lane's own report.md / EXPORT verdict and the lab log. Flag any verdict that is stronger, weaker, or differently scoped than the lane's own statement (e.g. qualification status, "upper bound", "developmental in-sample", "exploratory", "deployment mode policy", unqualified configurations presented as qualified).
+4. Retractions: check that nothing retracted or withdrawn (speed3d H2 winners' qualification, combined H5 13.6x scope, combined finalist labels, 1024^2 reuse claim, coordinator's 4096^2 mode-list claim, post-data tolerance changes) is presented anywhere as a valid result, and that the retraction list is complete relative to the lab log entries 2026-10-17 onward and the lane reports' retraction sections.
+5. Brief coverage: every required section of final-compilation.md present (hypothesis verdicts incl. H-comp per dimension and FOM family + union, H-base per dimension/mesh, K2 2D and 3D, both readings of k; per-priority plots; P1g; retractions; deferred; ledger; lane list; glossary); LaTeX math; mermaid; glossary covers every term/column used; no mention of the heat POD-128 comparison; no pre-September Burgers speed-up quoted.
+6. Code correctness of make_final.py (counting logic, filters such as primary scope / batch 1 vs batch 2, mislabelled columns, e.g. time ratio direction, union speed-up figure content).
+
+Also: a previous round (audits/codex-final-1.md) found issues; check each of its WRONG and NEEDS-RESTATEMENT items is now fixed, and re-check everything above from scratch (the generator was re-run).
+Give a per-item verdict CORRECT / WRONG / NEEDS-RESTATEMENT with file:line evidence, then an overall verdict line at the top: "OVERALL: CLEAN" or "OVERALL: NOT-CLEAN".

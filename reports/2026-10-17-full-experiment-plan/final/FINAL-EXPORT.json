@@ -1,0 +1,487 @@
+{
+ "compiled_utc": "2026-10-20 01:46 UTC",
+ "label": "E0 R_ST conditional Richardson estimates; development/validation cohorts only; sealed and OOD cohorts unopened",
+ "pending": [
+  "jcp-robust",
+  "jcp-regimes"
+ ],
+ "verdicts": [
+  {
+   "hypothesis": "H-cost-N",
+   "reading": "r (bank width)",
+   "scope": "2D, 256\u00b2\u20134096\u00b2, R128\u2013R384, BE/CN-R, frozen + nominal mode lists; evolution time with internal-state recording (not the full query)",
+   "verdict": "pass",
+   "key_number": "8/8 settings pass; R = 1.01\u20131.02, largest 95 % upper end 1.04 (bar 1.25)",
+   "figure": "figs/summary_cost_vs_mesh.png",
+   "lane": "jcp-p1-scaling"
+  },
+  {
+   "hypothesis": "H-cost-N",
+   "reading": "r (bank width)",
+   "scope": "3D, 64\u00b3\u2013384\u00b3 (H4.1), mesh-free contract, deployment mode policy, 4 ROMs",
+   "verdict": "pass",
+   "key_number": "4/4 ROMs flat, max/min 1.01\u20131.09 (bar 1.25); quadrature check (Q2) of the four ROMs: C_old pass, C_W1024 fail, W_C_old fail, W_C_W768 fail \u2014 not all are qualified configurations",
+   "figure": "figs/summary_cost_vs_mesh.png",
+   "lane": "jcp-speed3d"
+  },
+  {
+   "hypothesis": "H-cost-N",
+   "reading": "K (head latent)",
+   "scope": "2D, 256\u00b2\u20134096\u00b2, seed 0 heads, BE, evolution only",
+   "verdict": "pass (K = 16, incumbent); not reached for K = 4, 8, 32",
+   "key_number": "K = 16: 1.06; incumbent K = 16: 1.03 (bar 1.25)",
+   "figure": "figs/heads_cost_vs_K.png",
+   "lane": "jcp-heads"
+  },
+  {
+   "hypothesis": "H-cost-r",
+   "reading": "r (bank width)",
+   "scope": "2D component kernels at fixed (M, m)",
+   "verdict": "fail",
+   "key_number": "0/4 components follow the declared exponent; fitted p: N 1.17 (declared 1), J 1.08 (declared 1), JTJ 1.92 (declared 2), chol 1.24 (declared 3)",
+   "figure": "figs/p1_kernel_cost_vs_r_2D.png",
+   "lane": "jcp-p1-scaling"
+  },
+  {
+   "hypothesis": "H-cost-r",
+   "reading": "r (bank width)",
+   "scope": "3D component kernels at fixed (M, m)",
+   "verdict": "fail",
+   "key_number": "1/4 components follow the declared exponent; fitted p: N 1.01 (declared 1), J 1.03 (declared 1), JTJ 1.33 (declared 2), chol 1.03 (declared 3)",
+   "figure": "figs/p1_kernel_cost_vs_r_3D.png",
+   "lane": "jcp-p1-scaling"
+  },
+  {
+   "hypothesis": "H-cost-r",
+   "reading": "r (bank width)",
+   "scope": "2D full query, t2 timing panel (descriptive elasticities, no verdict)",
+   "verdict": "descriptive",
+   "key_number": "elasticity of query time in r 0.654, in M 0.528, in m 0.653",
+   "figure": "\u2013",
+   "lane": "jcp-dims"
+  },
+  {
+   "hypothesis": "H-cost-r",
+   "reading": "K (head latent)",
+   "scope": "2D, cost against K = 4\u201332 (descriptive)",
+   "verdict": "inconclusive",
+   "key_number": "exponent identified at 1 of 3 meshes (4096\u00b2: p = 0.119, seed 0 only)",
+   "figure": "figs/heads_cost_vs_K.png",
+   "lane": "jcp-heads"
+  },
+  {
+   "hypothesis": "H-acc-N",
+   "reading": "r (bank width)",
+   "scope": "2D, 256\u00b2 vs 1024\u00b2 (38 cases) and 4096\u00b2 vs 1024\u00b2 (16 cases), P1 settings",
+   "verdict": "pass",
+   "key_number": "8/8 pass (every case within margin); R128 CN-R has a detectable small trend (Wilcoxon p = 0.00629): equivalence within margin, not zero dependence",
+   "figure": "figs/p1_error_vs_r_and_mesh_CNR.png",
+   "lane": "jcp-p1-scaling"
+  },
+  {
+   "hypothesis": "H-acc-N",
+   "reading": "r (bank width)",
+   "scope": "2D, extended scheme / step set (B1, 30 tests)",
+   "verdict": "pass 21/30, inconclusive 9, no fail",
+   "key_number": "inconclusive 4; inconclusive (unqualified configuration) 5; pass 21",
+   "figure": "figs/qualify_error_vs_N.png",
+   "lane": "jcp-qualify"
+  },
+  {
+   "hypothesis": "H-acc-r",
+   "reading": "r (bank width)",
+   "scope": "2D, r = 128 \u2192 256 \u2192 384, P1 cells (256\u00b2, 1024\u00b2, 4096\u00b2 \u00d7 BE, CN-R)",
+   "verdict": "pass",
+   "key_number": "6/6 cells monotone",
+   "figure": "figs/p1_error_vs_r_and_mesh_CNR.png",
+   "lane": "jcp-p1-scaling"
+  },
+  {
+   "hypothesis": "H-acc-r",
+   "reading": "r (bank width)",
+   "scope": "2D, registered range r = 128\u2013512 (1024\u00b2 only)",
+   "verdict": "fail",
+   "key_number": "2/2 cells not monotone (384 \u2192 512 does not improve)",
+   "figure": "figs/p1_error_vs_r_and_mesh_CNR.png",
+   "lane": "jcp-p1-scaling"
+  },
+  {
+   "hypothesis": "H-acc-r",
+   "reading": "r (bank width)",
+   "scope": "2D, extended scheme / step set (B1, 27 cells)",
+   "verdict": "mixed",
+   "key_number": "range 128\u2013384: inconclusive 10, monotone 14, not monotone 3; range 128\u2013512: inconclusive 7, not monotone 20",
+   "figure": "figs/qualify_error_vs_r.png",
+   "lane": "jcp-qualify"
+  },
+  {
+   "hypothesis": "H-acc-r",
+   "reading": "r (bank width)",
+   "scope": "2D, fixed (M, m) = (2048, Gauss 256\u00b2) (A3)",
+   "verdict": "fail",
+   "key_number": "range not monotone",
+   "figure": "\u2013",
+   "lane": "jcp-dims"
+  },
+  {
+   "hypothesis": "H-acc-r",
+   "reading": "K (head latent)",
+   "scope": "2D 1024\u00b2, K = 4 \u2192 8 \u2192 16 \u2192 32 (BE)",
+   "verdict": "inconclusive",
+   "key_number": "too few numerically qualified seeds per K for a pooled verdict",
+   "figure": "figs/heads_error_vs_K.png",
+   "lane": "jcp-heads"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, vs upwind + BE, 21 qualified LSPG configurations",
+   "verdict": "mixed (pass only against the screening-selected comparator)",
+   "key_number": "ROM < 2x \u00d72, ROM >= 2x \u00d716, unresolved \u00d73",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, vs central + CN-R, 21 qualified LSPG configurations",
+   "verdict": "fail or unresolved",
+   "key_number": "ROM < 2x \u00d719, unresolved \u00d72",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, vs sine pseudo-spectral, 21 qualified LSPG configurations",
+   "verdict": "fail",
+   "key_number": "ROM < 2x \u00d721",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, vs union of families, 21 qualified LSPG configurations",
+   "verdict": "fail",
+   "key_number": "ROM < 2x \u00d721",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 4096\u00b2, vs upwind + BE, 21 qualified LSPG configurations",
+   "verdict": "mixed (pass only against the screening-selected comparator)",
+   "key_number": "ROM < 2x \u00d72, ROM >= 2x \u00d716, unresolved \u00d73",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 4096\u00b2, vs central + CN-R, 21 qualified LSPG configurations",
+   "verdict": "fail or unresolved",
+   "key_number": "ROM < 2x \u00d719, unresolved \u00d72",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 4096\u00b2, vs sine pseudo-spectral, 21 qualified LSPG configurations",
+   "verdict": "fail",
+   "key_number": "ROM < 2x \u00d721",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "2D 4096\u00b2, vs union of families, 21 qualified LSPG configurations",
+   "verdict": "fail",
+   "key_number": "ROM < 2x \u00d721",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "K2",
+   "reading": "\u2013",
+   "scope": "2D 4096\u00b2, registered LSPG schemes vs best matched FOM (union)",
+   "verdict": "fires",
+   "key_number": "fires under the registered dev6 workload rule (A3.1); union speed-up 0.0493\u20130.706 over 21 configurations (largest interval end 0.74)",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-fom2d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "3D L = 384, vs upwind + BE, 4 selected ROMs (not all quadrature-qualified)",
+   "verdict": "inconclusive (no ladder member as accurate)",
+   "key_number": "no ladder match \u00d74",
+   "figure": "figs/speed3d_mesh-time.png",
+   "lane": "jcp-speed3d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "3D L = 384, vs upwind + CN-R, 4 selected ROMs (not all quadrature-qualified)",
+   "verdict": "inconclusive (no ladder member as accurate)",
+   "key_number": "no ladder match \u00d74",
+   "figure": "figs/speed3d_mesh-time.png",
+   "lane": "jcp-speed3d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "3D L = 384, vs central + CN-R, 4 selected ROMs (not all quadrature-qualified)",
+   "verdict": "mixed",
+   "key_number": "ROM < 2x \u00d73, ROM >= 2x \u00d71",
+   "figure": "figs/speed3d_mesh-time.png",
+   "lane": "jcp-speed3d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "3D L = 384, vs sine pseudo-spectral, 4 selected ROMs (not all quadrature-qualified)",
+   "verdict": "fail",
+   "key_number": "ROM < 2x \u00d74",
+   "figure": "figs/speed3d_mesh-time.png",
+   "lane": "jcp-speed3d"
+  },
+  {
+   "hypothesis": "H-comp",
+   "reading": "r (bank width)",
+   "scope": "3D L = 384, vs union of families, 4 selected ROMs (not all quadrature-qualified)",
+   "verdict": "fail",
+   "key_number": "ROM < 2x \u00d74",
+   "figure": "figs/speed3d_mesh-time.png",
+   "lane": "jcp-speed3d"
+  },
+  {
+   "hypothesis": "K2",
+   "reading": "\u2013",
+   "scope": "3D L = 384, selected ROMs vs best matched FOM (union)",
+   "verdict": "fires",
+   "key_number": "union speed-up 0.00786\u20130.158 (4 ROMs)",
+   "figure": "figs/summary_union_speedup.png",
+   "lane": "jcp-speed3d"
+  },
+  {
+   "hypothesis": "H-base",
+   "reading": "r (bank width)",
+   "scope": "2D 256\u00b2",
+   "verdict": "fail",
+   "key_number": "8/8 of our configurations dominated (faster and lower worst error) by a registered POD pick; restrictions: saturation check failed (A1.3); budget: budget band unresolved; developmental, in-sample, unadjusted",
+   "figure": "figs/hrb_front-c2d256.png",
+   "lane": "jcp-hr-baselines"
+  },
+  {
+   "hypothesis": "H-base",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2",
+   "verdict": "fail",
+   "key_number": "8/8 of our configurations dominated (faster and lower worst error) by a registered POD pick; restrictions: snapshot-limited check failed (A1.3); budget: budget band unresolved; developmental, in-sample, unadjusted",
+   "figure": "figs/hrb_front-c2d1024.png",
+   "lane": "jcp-hr-baselines"
+  },
+  {
+   "hypothesis": "H-base",
+   "reading": "r (bank width)",
+   "scope": "3D 65\u00b3, qualified subset (batch 2)",
+   "verdict": "fail where assessed; neutral conclusions withheld",
+   "key_number": "2/4 of our configurations dominated (faster and lower worst error) by a registered POD pick; 2 neutral conclusions withheld; restrictions: basis adequacy failed (A2.2); ECSW coverage incomplete (A3.11); budget: unequal-budget, descriptive; developmental, in-sample, unadjusted",
+   "figure": "figs/hrb_front-c3d64.png",
+   "lane": "jcp-hr-baselines"
+  },
+  {
+   "hypothesis": "H-base",
+   "reading": "r (bank width)",
+   "scope": "3D 65\u00b3, diagnostic (batch 1)",
+   "verdict": "fail",
+   "key_number": "5/5 of our configurations dominated (faster and lower worst error) by a registered POD pick; restrictions: basis adequacy failed (A2.2); ECSW coverage incomplete (A3.11); budget: unequal-budget, descriptive; developmental, in-sample, unadjusted",
+   "figure": "figs/hrb_front-c3d64.png",
+   "lane": "jcp-hr-baselines"
+  },
+  {
+   "hypothesis": "H2q",
+   "reading": "\u2013",
+   "scope": "3D, qualified winner vs our earlier configuration C_old (ROM vs ROM; bar 1/0.6); full-field $65^{3}$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); qualified vs qualified comparator",
+   "verdict": "fail (the selected candidate failed confirmation)",
+   "key_number": "S = 1.15 (comparator Q2: pass); the unqualified speed3d winners had 2.01",
+   "figure": "figs/dims_h2q_3d.png",
+   "lane": "jcp-dims"
+  },
+  {
+   "hypothesis": "H2q",
+   "reading": "\u2013",
+   "scope": "3D, qualified winner vs our earlier configuration C_W768 (ROM vs ROM; bar 1/0.6); full-field $65^{3}$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); qualified vs qualified comparator",
+   "verdict": "pass",
+   "key_number": "S = 2.95 (comparator Q2: pass); the unqualified speed3d winners had 5.37",
+   "figure": "figs/dims_h2q_3d.png",
+   "lane": "jcp-dims"
+  },
+  {
+   "hypothesis": "H2q",
+   "reading": "\u2013",
+   "scope": "3D, qualified winner vs our earlier configuration C_W1024 (ROM vs ROM; bar 1/0.6); full-field $65^{3}$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); qualified configuration vs the deployed (unqualified) comparator",
+   "verdict": "pass",
+   "key_number": "S = 9.87 (comparator Q2: fail); the unqualified speed3d winners had 17.2",
+   "figure": "figs/dims_h2q_3d.png",
+   "lane": "jcp-dims"
+  }
+ ],
+ "gpu_hours": {
+  "per_lane": {
+   "jcp-speed3d": {
+    "spent": 10.8597,
+    "cap": 34
+   },
+   "jcp-p1-scaling": {
+    "spent": 1.9133,
+    "cap": 20.0
+   },
+   "jcp-qualify": {
+    "spent": 4.1338,
+    "cap": 35.0
+   },
+   "jcp-fom2d": {
+    "spent": 4.594,
+    "cap": 30.0
+   },
+   "jcp-hr-baselines": {
+    "spent": 21.1783,
+    "cap": 30
+   },
+   "jcp-heads": {
+    "spent": 3.6839,
+    "cap": 35.0
+   },
+   "jcp-dims": {
+    "spent": 35.2237,
+    "cap": 55.0
+   },
+   "jcp-budget": {
+    "spent": 25.9104,
+    "cap": 45.0
+   },
+   "jcp-robust": {
+    "spent": 22.4672,
+    "cap": 75.0
+   },
+   "jcp-regimes": {
+    "spent": 14.865,
+    "cap": 60.0
+   }
+  },
+  "total_finished": 107.4971,
+  "total_all": 144.8293
+ },
+ "lanes": [
+  {
+   "lane": "jcp-speed3d",
+   "branch": "exp/2026-10-14-jcp-speed3d",
+   "head": "691465d88",
+   "mirror": "6c270e6c5",
+   "report": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/report.md"
+  },
+  {
+   "lane": "jcp-p1-scaling",
+   "branch": "exp/2026-10-17-jcp-p1-scaling",
+   "head": "5b782026b",
+   "mirror": "3b589dad5",
+   "report": "worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/report.md"
+  },
+  {
+   "lane": "jcp-qualify",
+   "branch": "exp/2026-10-18-jcp-qualify",
+   "head": "250b20d91",
+   "mirror": "35620c70e",
+   "report": "worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/report.md"
+  },
+  {
+   "lane": "jcp-fom2d",
+   "branch": "exp/2026-10-18-jcp-fom2d",
+   "head": "12103d331",
+   "mirror": "c4089abe6",
+   "report": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md"
+  },
+  {
+   "lane": "jcp-hr-baselines",
+   "branch": "exp/2026-10-06-jcp-hr-baselines",
+   "head": "2e3abac47",
+   "mirror": "2fa5b5967",
+   "report": "worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/report.md"
+  },
+  {
+   "lane": "jcp-heads",
+   "branch": "exp/2026-10-18-jcp-heads",
+   "head": "0ba9a1288",
+   "mirror": "ed3d0c841",
+   "report": "worktrees/2026-10-18-jcp-heads/experiments/jcp-heads/report.md"
+  },
+  {
+   "lane": "jcp-dims",
+   "branch": "exp/2026-10-18-jcp-dims",
+   "head": "a99906fe6",
+   "mirror": "038cce675",
+   "report": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md"
+  },
+  {
+   "lane": "jcp-budget",
+   "branch": "exp/2026-10-18-jcp-budget",
+   "head": "d70608191",
+   "mirror": "9be95f4fb",
+   "report": "worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/report.md"
+  },
+  {
+   "lane": "jcp-robust",
+   "branch": "exp/2026-10-19-jcp-robust",
+   "head": "55a8e68df",
+   "mirror": "d0faa7998",
+   "report": null
+  },
+  {
+   "lane": "jcp-regimes",
+   "branch": "exp/2026-10-19-jcp-regimes",
+   "head": "6ec3a20fb",
+   "mirror": "f1bc8150b",
+   "report": null
+  }
+ ],
+ "figures": [
+  "figs/budget_b2_main_1024.png",
+  "figs/budget_b2_main_3d.png",
+  "figs/budget_b7_error_time_1024.png",
+  "figs/budget_b8_sampling_1024.png",
+  "figs/dims_b6_2d_kappa.png",
+  "figs/dims_family_err_R384M1536.png",
+  "figs/dims_front_3d.png",
+  "figs/dims_h2q_3d.png",
+  "figs/dims_width_mstar_3d.png",
+  "figs/fom2d_fom_pareto.png",
+  "figs/fom2d_speedup_vs_mesh.png",
+  "figs/heads_cost_vs_K.png",
+  "figs/heads_error_cost_1024.png",
+  "figs/heads_error_vs_K.png",
+  "figs/hrb_front-c2d1024.png",
+  "figs/hrb_front-c2d256.png",
+  "figs/hrb_front-c3d64.png",
+  "figs/p1_error_vs_r_and_mesh_BE.png",
+  "figs/p1_error_vs_r_and_mesh_CNR.png",
+  "figs/p1_kernel_cost_vs_r_2D.png",
+  "figs/p1_kernel_cost_vs_r_3D.png",
+  "figs/p1_p1g_frozen_vs_nominal.png",
+  "figs/p1_solve_time_vs_mesh.png",
+  "figs/qualify_error_vs_N.png",
+  "figs/qualify_error_vs_r.png",
+  "figs/qualify_front2d_median.png",
+  "figs/qualify_front2d_worst.png",
+  "figs/qualify_order_b4.png",
+  "figs/speed3d_mesh-time.png",
+  "figs/summary_cost_vs_mesh.png",
+  "figs/summary_family_speedup.png",
+  "figs/summary_gpu_ledger.png",
+  "figs/summary_union_speedup.png"
+ ]
+}

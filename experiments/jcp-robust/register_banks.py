@@ -28,7 +28,14 @@ def main():
     for s in sys.argv[2:]:
         d = arch / 'output' / f'train2d_s{s}'
         assert (d / 'SEED-COMPLETE').exists(), f'seed {s} incomplete'
-        subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=d, check=True)
+        # files > 100 MB stay in the cluster archive (brief 16): verify the rest locally and require every missing file
+        # to be listed with the same sha256 in the archive's LARGE.sha256
+        subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet', '--ignore-missing'], cwd=d, check=True)
+        large = {f.strip(): h for h, f in (l.split(None, 1) for l in (arch / 'LARGE.sha256').read_text().splitlines())}
+        for h, f in (l.split(None, 1) for l in (d / 'OUTPUTS.sha256').read_text().splitlines()):
+            f = f.strip()
+            if not (d / f).exists():
+                assert large.get(f'output/train2d_s{s}/{f}') == h, f'{f}: neither local nor archived with this sha256'
         ck = d / 'stageB' / 'sep_hfit_dense_mid_N256_dense.pkl'
         rot = d / 'rotation' / 'rotation_R512.npz'
         rec = json.loads((d / 'run_record.json').read_text()) if (d / 'run_record.json').exists() else {}

@@ -1,0 +1,101 @@
+{
+ "config": {
+  "pde": "burgers2d",
+  "job": "coeff_extract",
+  "N": 256,
+  "k": 16,
+  "r": 512,
+  "ckpt": "/cluster/tufts/paralab/tawal01/jcp-robust/e2t2d/output/train2d_s1/stageA/bank.pkl",
+  "max_snaps": 131072,
+  "t_early": 5,
+  "n_traj": 4608,
+  "extra_seed": 1000,
+  "extra_traj": 4032,
+  "n_canonical": 576,
+  "n_test": 8,
+  "seed": 0,
+  "data_seed": 0,
+  "test_seed": 1,
+  "num_steps": 50,
+  "dt": 0.005,
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "slurm_job": "6076975",
+  "node": "pax106",
+  "loose": true,
+  "ckpt_cfg": {
+   "pde": "burgers2d",
+   "N": 256,
+   "k": 16,
+   "r": 512,
+   "arch_overrides": {
+    "n_ff": 128,
+    "g_hidden": 1024,
+    "h_hidden": 256,
+    "ff_scale": 4.0
+   },
+   "lam_sob": 0.0,
+   "arm": "base",
+   "seed": 1,
+   "steps": 300000,
+   "lane": "jcp-smooth-bank"
+  }
+ },
+ "gates": {
+  "gram_identity_rel_dev_max": 6.004909646586862e-14,
+  "gram_identity_rel_dev_mean": 1.5320944586240292e-15,
+  "gram_identity_rows": 64,
+  "gram_identity_implied_field_rel": 1.787203685269144e-15,
+  "span_floor_direct_vs_gram_rel_dev": 2.3546169265667717e-16
+ },
+ "complete": true,
+ "span": {
+  "note": "DIAGNOSTIC ONLY -- no SVD/least-squares enters the model",
+  "gram_sv_ratio": {
+   "0": 1.0,
+   "128": 0.068251419552423,
+   "256": 0.008569710376840622,
+   "384": 0.001646790872524642,
+   "511": 4.150494420395805e-05
+  },
+  "numerical_rank_1e8": 512,
+  "cond_G": 24093.515102343797,
+  "chol_jitter_rel": 1e-12
+ },
+ "data": {
+  "n_traj": 4608,
+  "T": 51,
+  "n_i2": 64516,
+  "n_states_trained": 131072,
+  "fingerprint": {
+   "sum": 1679098479.0197716,
+   "sumsq": 886765814.7044308,
+   "shape": [
+    4608,
+    51,
+    65536
+   ]
+  },
+  "max_fom_rel_residual": 9.999692796826327e-13,
+  "max_fom_rel_residual_test": 9.920159155341483e-13
+ },
+ "ckpt_recon": {
+  "mean": 1.6214928887994597,
+  "max": 40.74025041111652,
+  "codes_aligned": false,
+  "note": "NOT COMPARABLE: codes are a recycled stand-in because the state pick does not match the checkpoint's training set"
+ },
+ "train_span_floor": {
+  "mean": 0.000616638186905399,
+  "max": 0.04687582641627469
+ },
+ "test_span_floor": {
+  "mean": 0.00020873371260978253,
+  "max": 0.0031173116355664235,
+  "n_states": 408
+ },
+ "npz": "sep_coeff_N256_K16_R512.npz",
+ "total_seconds": 876.4721536636353
+}

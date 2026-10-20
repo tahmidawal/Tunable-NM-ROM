@@ -1,0 +1,409 @@
+STEP sh train2d/run_seed.sh  3 /cluster/tufts/paralab/tawal01/jcp-robust/e2t2d/output/train2d_s3 2026-10-19T20:59:23Z
+[train2d seed=3 2026-10-19T16:59:23-04:00] mode=production host=pax106 stages=A,B,R jobroot_commit=b0a20fe7d53267436e0d5f14684cb00d802ca916
+NVIDIA A100 80GB PCIe, GPU-93ae5f8d-299a-28bc-9b53-07a050aa9da5, 81920 MiB, 575.57.08
+NVIDIA A100 80GB PCIe, GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033, 81920 MiB, 575.57.08
+NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB, 575.57.08
+jax_backend=gpu
+PROVENANCE sha256 OK
+[train2d seed=3 2026-10-19T16:59:25-04:00] Stage A: smoothtrain --arm base --sigma 4 --lam 0 --seed 3 --nodes 256
+jax_backend=gpu device=NVIDIA A100 80GB PCIe arm=base sigma=4.0 lam=0.0 nodes=256 seed=3 steps=300000
+   gen n=256: trajectories 64/576 worst FOM rel residual 9.95e-13 [16s]
+   gen n=256: trajectories 128/576 worst FOM rel residual 1.00e-12 [29s]
+   gen n=256: trajectories 192/576 worst FOM rel residual 1.00e-12 [41s]
+   gen n=256: trajectories 256/576 worst FOM rel residual 1.00e-12 [54s]
+   gen n=256: trajectories 320/576 worst FOM rel residual 1.00e-12 [66s]
+   gen n=256: trajectories 384/576 worst FOM rel residual 1.00e-12 [77s]
+   gen n=256: trajectories 448/576 worst FOM rel residual 1.00e-12 [88s]
+   gen n=256: trajectories 512/576 worst FOM rel residual 1.00e-12 [102s]
+   gen n=256: trajectories 576/576 worst FOM rel residual 1.00e-12 [113s]
+  data: (16384, 64516) worst residual 1.00e-12 fingerprint {'sum': 200814620.48749176, 'sumsq': 102201588.76752055, 'shape': [576, 51, 65536]} sha fb95690ba87e
+  FD-target uncertainty (D2 vs D4): {'median': 0.0003816813460779617, 'p90': 0.001606813072586792, 'max': 0.4636345655004941}
+   train2[base] step      1/300000  rel-MSE 2.266e+00  grad-rel-MSE 0.000e+00  [8s]
+   train2[base] step   5000/300000  rel-MSE 2.019e-03  grad-rel-MSE 0.000e+00  [127s]
+   train2[base] step  10000/300000  rel-MSE 6.165e-04  grad-rel-MSE 0.000e+00  [247s]
+   train2[base] step  15000/300000  rel-MSE 1.236e-02  grad-rel-MSE 0.000e+00  [367s]
+   train2[base] step  20000/300000  rel-MSE 9.822e-04  grad-rel-MSE 0.000e+00  [487s]
+   train2[base] step  25000/300000  rel-MSE 1.987e-03  grad-rel-MSE 0.000e+00  [607s]
+   train2[base] step  30000/300000  rel-MSE 4.692e-03  grad-rel-MSE 0.000e+00  [726s]
+   train2[base] step  35000/300000  rel-MSE 9.439e-04  grad-rel-MSE 0.000e+00  [846s]
+   train2[base] step  40000/300000  rel-MSE 4.239e-04  grad-rel-MSE 0.000e+00  [966s]
+   train2[base] step  45000/300000  rel-MSE 2.589e-04  grad-rel-MSE 0.000e+00  [1086s]
+   train2[base] step  50000/300000  rel-MSE 2.349e-04  grad-rel-MSE 0.000e+00  [1206s]
+   train2[base] step  55000/300000  rel-MSE 1.247e-04  grad-rel-MSE 0.000e+00  [1326s]
+   train2[base] step  60000/300000  rel-MSE 9.597e-04  grad-rel-MSE 0.000e+00  [1446s]
+   train2[base] step  65000/300000  rel-MSE 1.949e-04  grad-rel-MSE 0.000e+00  [1566s]
+   train2[base] step  70000/300000  rel-MSE 9.383e-05  grad-rel-MSE 0.000e+00  [1686s]
+   train2[base] step  75000/300000  rel-MSE 1.921e-04  grad-rel-MSE 0.000e+00  [1805s]
+   train2[base] step  80000/300000  rel-MSE 1.022e-04  grad-rel-MSE 0.000e+00  [1925s]
+   train2[base] step  85000/300000  rel-MSE 7.012e-05  grad-rel-MSE 0.000e+00  [2045s]
+   train2[base] step  90000/300000  rel-MSE 1.270e-04  grad-rel-MSE 0.000e+00  [2165s]
+   train2[base] step  95000/300000  rel-MSE 6.145e-05  grad-rel-MSE 0.000e+00  [2285s]
+   train2[base] step 100000/300000  rel-MSE 7.289e-05  grad-rel-MSE 0.000e+00  [2405s]
+   train2[base] step 105000/300000  rel-MSE 5.831e-05  grad-rel-MSE 0.000e+00  [2525s]
+   train2[base] step 110000/300000  rel-MSE 6.695e-05  grad-rel-MSE 0.000e+00  [2645s]
+   train2[base] step 115000/300000  rel-MSE 5.315e-05  grad-rel-MSE 0.000e+00  [2765s]
+   train2[base] step 120000/300000  rel-MSE 5.106e-05  grad-rel-MSE 0.000e+00  [2885s]
+   train2[base] step 125000/300000  rel-MSE 5.524e-05  grad-rel-MSE 0.000e+00  [3005s]
+   train2[base] step 130000/300000  rel-MSE 5.130e-05  grad-rel-MSE 0.000e+00  [3125s]
+   train2[base] step 135000/300000  rel-MSE 4.324e-05  grad-rel-MSE 0.000e+00  [3245s]
+   train2[base] step 140000/300000  rel-MSE 4.774e-05  grad-rel-MSE 0.000e+00  [3365s]
+   train2[base] step 145000/300000  rel-MSE 4.428e-05  grad-rel-MSE 0.000e+00  [3485s]
+   train2[base] step 150000/300000  rel-MSE 4.123e-05  grad-rel-MSE 0.000e+00  [3605s]
+   train2[base] step 155000/300000  rel-MSE 4.034e-05  grad-rel-MSE 0.000e+00  [3725s]
+   train2[base] step 160000/300000  rel-MSE 4.149e-05  grad-rel-MSE 0.000e+00  [3845s]
+   train2[base] step 165000/300000  rel-MSE 3.946e-05  grad-rel-MSE 0.000e+00  [3965s]
+   train2[base] step 170000/300000  rel-MSE 4.183e-05  grad-rel-MSE 0.000e+00  [4084s]
+   train2[base] step 175000/300000  rel-MSE 3.739e-05  grad-rel-MSE 0.000e+00  [4204s]
+   train2[base] step 180000/300000  rel-MSE 3.965e-05  grad-rel-MSE 0.000e+00  [4324s]
+   train2[base] step 185000/300000  rel-MSE 3.740e-05  grad-rel-MSE 0.000e+00  [4444s]
+   train2[base] step 190000/300000  rel-MSE 3.690e-05  grad-rel-MSE 0.000e+00  [4564s]
+   train2[base] step 195000/300000  rel-MSE 3.810e-05  grad-rel-MSE 0.000e+00  [4684s]
+   train2[base] step 200000/300000  rel-MSE 3.547e-05  grad-rel-MSE 0.000e+00  [4804s]
+   train2[base] step 205000/300000  rel-MSE 3.516e-05  grad-rel-MSE 0.000e+00  [4924s]
+   train2[base] step 210000/300000  rel-MSE 3.477e-05  grad-rel-MSE 0.000e+00  [5044s]
+   train2[base] step 215000/300000  rel-MSE 3.297e-05  grad-rel-MSE 0.000e+00  [5164s]
+   train2[base] step 220000/300000  rel-MSE 3.984e-05  grad-rel-MSE 0.000e+00  [5284s]
+   train2[base] step 225000/300000  rel-MSE 3.202e-05  grad-rel-MSE 0.000e+00  [5404s]
+   train2[base] step 230000/300000  rel-MSE 3.236e-05  grad-rel-MSE 0.000e+00  [5524s]
+   train2[base] step 235000/300000  rel-MSE 3.176e-05  grad-rel-MSE 0.000e+00  [5644s]
+   train2[base] step 240000/300000  rel-MSE 3.145e-05  grad-rel-MSE 0.000e+00  [5764s]
+   train2[base] step 245000/300000  rel-MSE 3.147e-05  grad-rel-MSE 0.000e+00  [5883s]
+   train2[base] step 250000/300000  rel-MSE 3.145e-05  grad-rel-MSE 0.000e+00  [6003s]
+   train2[base] step 255000/300000  rel-MSE 3.097e-05  grad-rel-MSE 0.000e+00  [6123s]
+   train2[base] step 260000/300000  rel-MSE 3.038e-05  grad-rel-MSE 0.000e+00  [6243s]
+   train2[base] step 265000/300000  rel-MSE 3.019e-05  grad-rel-MSE 0.000e+00  [6363s]
+   train2[base] step 270000/300000  rel-MSE 3.038e-05  grad-rel-MSE 0.000e+00  [6483s]
+   train2[base] step 275000/300000  rel-MSE 3.011e-05  grad-rel-MSE 0.000e+00  [6603s]
+   train2[base] step 280000/300000  rel-MSE 3.010e-05  grad-rel-MSE 0.000e+00  [6723s]
+   train2[base] step 285000/300000  rel-MSE 2.955e-05  grad-rel-MSE 0.000e+00  [6843s]
+   train2[base] step 290000/300000  rel-MSE 2.946e-05  grad-rel-MSE 0.000e+00  [6963s]
+   train2[base] step 295000/300000  rel-MSE 2.951e-05  grad-rel-MSE 0.000e+00  [8366s]
+   train2[base] step 300000/300000  rel-MSE 2.939e-05  grad-rel-MSE 0.000e+00  [9755s]
+   train2[base] done: recon mean 6.775e-03 max 7.436e-02 (used raw) [9760s]
+  rotation: {"R_G_condition_number": 22791.50860560321, "train_ls_floor": {"mean": 0.0004127427818109054, "median": 0.00017779597961682116, "max": 0.008173389288175488}}
+DONE
+Stage A OK: steps_done 300000 recon mean 0.006775472117760162 R2a checked False []
+[train2d seed=3 2026-10-19T19:44:39-04:00] Stage B extraction (data stream SEED0=0)
+jax_backend=gpu device=cuda:0 x64=True EXTRACT N=256 K=16 R=512 ckpt=/cluster/tufts/paralab/tawal01/jcp-robust/e2t2d/output/train2d_s3/stageA/bank.pkl
+  UNALIGNED-CODES MODE: pick 131072 != checkpoint codes 16384: the state pick does not match the checkpoint's training set
+    (expected for a dense-sampling extraction; the identity gate (*) holds for ANY z, so it still tests what it tests, and the checkpoint reconstruction is simply not comparable)
+  bank rank(>1e-8) 512/512  cond(G) 2.279e+04
+  APPENDED 4032 trajectories from seed 1000 to the canonical 576; canonical draw untouched
+   gen+proj: trajectories 64/4608  worst FOM rel residual 9.95e-13  [17s]
+   gen+proj: trajectories 128/4608  worst FOM rel residual 1.00e-12  [31s]
+   gen+proj: trajectories 192/4608  worst FOM rel residual 1.00e-12  [43s]
+   gen+proj: trajectories 256/4608  worst FOM rel residual 1.00e-12  [56s]
+   gen+proj: trajectories 320/4608  worst FOM rel residual 1.00e-12  [68s]
+   gen+proj: trajectories 384/4608  worst FOM rel residual 1.00e-12  [80s]
+   gen+proj: trajectories 448/4608  worst FOM rel residual 1.00e-12  [92s]
+   gen+proj: trajectories 512/4608  worst FOM rel residual 1.00e-12  [106s]
+   gen+proj: trajectories 576/4608  worst FOM rel residual 1.00e-12  [117s]
+   gen+proj: trajectories 640/4608  worst FOM rel residual 1.00e-12  [128s]
+   gen+proj: trajectories 704/4608  worst FOM rel residual 1.00e-12  [140s]
+   gen+proj: trajectories 768/4608  worst FOM rel residual 1.00e-12  [152s]
+   gen+proj: trajectories 832/4608  worst FOM rel residual 1.00e-12  [164s]
+   gen+proj: trajectories 896/4608  worst FOM rel residual 1.00e-12  [176s]
+   gen+proj: trajectories 960/4608  worst FOM rel residual 1.00e-12  [189s]
+   gen+proj: trajectories 1024/4608  worst FOM rel residual 1.00e-12  [202s]
+   gen+proj: trajectories 1088/4608  worst FOM rel residual 1.00e-12  [215s]
+   gen+proj: trajectories 1152/4608  worst FOM rel residual 1.00e-12  [227s]
+   gen+proj: trajectories 1216/4608  worst FOM rel residual 1.00e-12  [238s]
+   gen+proj: trajectories 1280/4608  worst FOM rel residual 1.00e-12  [250s]
+   gen+proj: trajectories 1344/4608  worst FOM rel residual 1.00e-12  [262s]
+   gen+proj: trajectories 1408/4608  worst FOM rel residual 1.00e-12  [272s]
+   gen+proj: trajectories 1472/4608  worst FOM rel residual 1.00e-12  [284s]
+   gen+proj: trajectories 1536/4608  worst FOM rel residual 1.00e-12  [297s]
+   gen+proj: trajectories 1600/4608  worst FOM rel residual 1.00e-12  [310s]
+   gen+proj: trajectories 1664/4608  worst FOM rel residual 1.00e-12  [320s]
+   gen+proj: trajectories 1728/4608  worst FOM rel residual 1.00e-12  [331s]
+   gen+proj: trajectories 1792/4608  worst FOM rel residual 1.00e-12  [342s]
+   gen+proj: trajectories 1856/4608  worst FOM rel residual 1.00e-12  [356s]
+   gen+proj: trajectories 1920/4608  worst FOM rel residual 1.00e-12  [366s]
+   gen+proj: trajectories 1984/4608  worst FOM rel residual 1.00e-12  [379s]
+   gen+proj: trajectories 2048/4608  worst FOM rel residual 1.00e-12  [391s]
+   gen+proj: trajectories 2112/4608  worst FOM rel residual 1.00e-12  [403s]
+   gen+proj: trajectories 2176/4608  worst FOM rel residual 1.00e-12  [413s]
+   gen+proj: trajectories 2240/4608  worst FOM rel residual 1.00e-12  [426s]
+   gen+proj: trajectories 2304/4608  worst FOM rel residual 1.00e-12  [440s]
+   gen+proj: trajectories 2368/4608  worst FOM rel residual 1.00e-12  [452s]
+   gen+proj: trajectories 2432/4608  worst FOM rel residual 1.00e-12  [462s]
+   gen+proj: trajectories 2496/4608  worst FOM rel residual 1.00e-12  [475s]
+   gen+proj: trajectories 2560/4608  worst FOM rel residual 1.00e-12  [487s]
+   gen+proj: trajectories 2624/4608  worst FOM rel residual 1.00e-12  [499s]
+   gen+proj: trajectories 2688/4608  worst FOM rel residual 1.00e-12  [510s]
+   gen+proj: trajectories 2752/4608  worst FOM rel residual 1.00e-12  [523s]
+   gen+proj: trajectories 2816/4608  worst FOM rel residual 1.00e-12  [535s]
+   gen+proj: trajectories 2880/4608  worst FOM rel residual 1.00e-12  [547s]
+   gen+proj: trajectories 2944/4608  worst FOM rel residual 1.00e-12  [560s]
+   gen+proj: trajectories 3008/4608  worst FOM rel residual 1.00e-12  [573s]
+   gen+proj: trajectories 3072/4608  worst FOM rel residual 1.00e-12  [584s]
+   gen+proj: trajectories 3136/4608  worst FOM rel residual 1.00e-12  [596s]
+   gen+proj: trajectories 3200/4608  worst FOM rel residual 1.00e-12  [609s]
+   gen+proj: trajectories 3264/4608  worst FOM rel residual 1.00e-12  [620s]
+   gen+proj: trajectories 3328/4608  worst FOM rel residual 1.00e-12  [632s]
+   gen+proj: trajectories 3392/4608  worst FOM rel residual 1.00e-12  [642s]
+   gen+proj: trajectories 3456/4608  worst FOM rel residual 1.00e-12  [654s]
+   gen+proj: trajectories 3520/4608  worst FOM rel residual 1.00e-12  [665s]
+   gen+proj: trajectories 3584/4608  worst FOM rel residual 1.00e-12  [676s]
+   gen+proj: trajectories 3648/4608  worst FOM rel residual 1.00e-12  [687s]
+   gen+proj: trajectories 3712/4608  worst FOM rel residual 1.00e-12  [700s]
+   gen+proj: trajectories 3776/4608  worst FOM rel residual 1.00e-12  [712s]
+   gen+proj: trajectories 3840/4608  worst FOM rel residual 1.00e-12  [725s]
+   gen+proj: trajectories 3904/4608  worst FOM rel residual 1.00e-12  [738s]
+   gen+proj: trajectories 3968/4608  worst FOM rel residual 1.00e-12  [749s]
+   gen+proj: trajectories 4032/4608  worst FOM rel residual 1.00e-12  [762s]
+   gen+proj: trajectories 4096/4608  worst FOM rel residual 1.00e-12  [771s]
+   gen+proj: trajectories 4160/4608  worst FOM rel residual 1.00e-12  [782s]
+   gen+proj: trajectories 4224/4608  worst FOM rel residual 1.00e-12  [792s]
+   gen+proj: trajectories 4288/4608  worst FOM rel residual 1.00e-12  [803s]
+   gen+proj: trajectories 4352/4608  worst FOM rel residual 1.00e-12  [814s]
+   gen+proj: trajectories 4416/4608  worst FOM rel residual 1.00e-12  [827s]
+   gen+proj: trajectories 4480/4608  worst FOM rel residual 1.00e-12  [839s]
+   gen+proj: trajectories 4544/4608  worst FOM rel residual 1.00e-12  [849s]
+   gen+proj: trajectories 4608/4608  worst FOM rel residual 1.00e-12  [859s]
+  GRAM IDENTITY gate on 64 training states: max rel deviation 3.183e-14 mean 1.405e-15  (full mean 1.166516e+00 vs gram mean 1.166516e+00)
+  span-floor direct-vs-Gram deviation on 64 rows: 2.793e-16  (direct mean 4.704533e-04)
+  checkpoint recon via (*): mean 1.621523e+00  (train span LS floor mean 6.135e-04)
+  fresh test span LS floor: mean 2.151e-04 max 3.174e-03  (test FOM residual 9.92e-13)
+EXTRACT done in 892s -> /cluster/tufts/paralab/tawal01/jcp-robust/e2t2d/output/train2d_s3/stageB/sep_coeff_N256_K16_R512.npz
+[train2d seed=3 2026-10-19T19:59:33-04:00] Stage B head fit (full call, SEED0=3)
+jax_backend=gpu device=cuda:0 x64=True HFIT arms=['mid', 'wide', 'k32'] steps=200000
+  whitening round-trip 1.207e-14   q == L^T h deviation 1.447e-15
+  span LS floor: train 6.1351e-04  fresh test 2.1514e-04  (S=131072, R=512, K_ckpt=16)
+   hfit[mid]       1/200000 loss 1.0151e+00 recon 1.0075e+00 [3s]
+   hfit[mid]    5000/200000 loss 7.2310e-03 recon 7.3360e-02 [12s]
+   hfit[mid]   10000/200000 loss 3.6364e-03 recon 5.1158e-02 [20s]
+   hfit[mid]   15000/200000 loss 2.1147e-03 recon 4.0311e-02 [28s]
+   hfit[mid]   20000/200000 loss 1.5873e-03 recon 3.4297e-02 [36s]
+   hfit[mid]   25000/200000 loss 1.1574e-03 recon 2.9818e-02 [45s]
+   hfit[mid]   30000/200000 loss 9.8144e-04 recon 2.6817e-02 [53s]
+   hfit[mid]   35000/200000 loss 7.5293e-04 recon 2.4264e-02 [61s]
+   hfit[mid]   40000/200000 loss 6.9363e-04 recon 2.2284e-02 [70s]
+   hfit[mid]   45000/200000 loss 5.9551e-04 recon 2.0788e-02 [78s]
+   hfit[mid]   50000/200000 loss 4.9935e-04 recon 1.9422e-02 [87s]
+   hfit[mid]   55000/200000 loss 4.4888e-04 recon 1.8271e-02 [95s]
+   hfit[mid]   60000/200000 loss 3.9710e-04 recon 1.7520e-02 [103s]
+   hfit[mid]   65000/200000 loss 3.5224e-04 recon 1.6281e-02 [112s]
+   hfit[mid]   70000/200000 loss 2.9232e-04 recon 1.5171e-02 [120s]
+   hfit[mid]   75000/200000 loss 2.8625e-04 recon 1.4681e-02 [128s]
+   hfit[mid]   80000/200000 loss 2.5550e-04 recon 1.3884e-02 [137s]
+   hfit[mid]   85000/200000 loss 2.4817e-04 recon 1.3234e-02 [145s]
+   hfit[mid]   90000/200000 loss 1.9587e-04 recon 1.2371e-02 [154s]
+   hfit[mid]   95000/200000 loss 1.8771e-04 recon 1.1876e-02 [162s]
+   hfit[mid]  100000/200000 loss 1.6824e-04 recon 1.1378e-02 [170s]
+   hfit[mid]  105000/200000 loss 1.4992e-04 recon 1.0974e-02 [179s]
+   hfit[mid]  110000/200000 loss 1.4156e-04 recon 1.0440e-02 [187s]
+   hfit[mid]  115000/200000 loss 1.2403e-04 recon 9.8471e-03 [195s]
+   hfit[mid]  120000/200000 loss 1.1185e-04 recon 9.4341e-03 [204s]
+   hfit[mid]  125000/200000 loss 1.0535e-04 recon 9.0098e-03 [212s]
+   hfit[mid]  130000/200000 loss 9.8791e-05 recon 8.6507e-03 [221s]
+   hfit[mid]  135000/200000 loss 9.1144e-05 recon 8.2859e-03 [229s]
+   hfit[mid]  140000/200000 loss 8.4501e-05 recon 8.0085e-03 [237s]
+   hfit[mid]  145000/200000 loss 8.2846e-05 recon 7.6882e-03 [246s]
+   hfit[mid]  150000/200000 loss 7.4649e-05 recon 7.4791e-03 [254s]
+   hfit[mid]  155000/200000 loss 6.8755e-05 recon 7.2773e-03 [263s]
+   hfit[mid]  160000/200000 loss 6.8773e-05 recon 7.0979e-03 [271s]
+   hfit[mid]  165000/200000 loss 7.0957e-05 recon 6.9472e-03 [279s]
+   hfit[mid]  170000/200000 loss 6.0368e-05 recon 6.8269e-03 [288s]
+   hfit[mid]  175000/200000 loss 6.2352e-05 recon 6.7249e-03 [296s]
+   hfit[mid]  180000/200000 loss 6.5353e-05 recon 6.6597e-03 [304s]
+   hfit[mid]  185000/200000 loss 6.6118e-05 recon 6.6026e-03 [313s]
+   hfit[mid]  190000/200000 loss 6.3454e-05 recon 6.5635e-03 [321s]
+   hfit[mid]  195000/200000 loss 6.0595e-05 recon 6.5378e-03 [330s]
+   hfit[mid]  200000/200000 loss 6.2760e-05 recon 6.5180e-03 [338s]
+  ARM mid: recon 6.5180e-03  oracle 4.7802e-03  oracle/floor 22.2x  oracle_nn 4.7800e-03  code-refit gain 1.072x
+  EMITTED refined decoder -> /cluster/tufts/paralab/tawal01/jcp-robust/e2t2d/output/train2d_s3/stageB/sep_hfit_dense_mid_N256_dense.pkl
+   hfit[wide]       1/200000 loss 1.0133e+00 recon 1.0067e+00 [3s]
+   hfit[wide]    5000/200000 loss 7.1554e-03 recon 7.3246e-02 [31s]
+   hfit[wide]   10000/200000 loss 3.3807e-03 recon 4.9009e-02 [59s]
+   hfit[wide]   15000/200000 loss 2.0049e-03 recon 3.9363e-02 [87s]
+   hfit[wide]   20000/200000 loss 1.5230e-03 recon 3.2827e-02 [115s]
+   hfit[wide]   25000/200000 loss 1.1628e-03 recon 2.8929e-02 [143s]
+   hfit[wide]   30000/200000 loss 9.3115e-04 recon 2.6325e-02 [171s]
+   hfit[wide]   35000/200000 loss 7.0087e-04 recon 2.3631e-02 [199s]
+   hfit[wide]   40000/200000 loss 7.8065e-04 recon 2.4204e-02 [227s]
+   hfit[wide]   45000/200000 loss 5.8111e-04 recon 2.1023e-02 [255s]
+   hfit[wide]   50000/200000 loss 5.2172e-04 recon 1.9798e-02 [283s]
+   hfit[wide]   55000/200000 loss 3.9859e-04 recon 1.7308e-02 [311s]
+   hfit[wide]   60000/200000 loss 3.6088e-04 recon 1.7254e-02 [339s]
+   hfit[wide]   65000/200000 loss 3.8062e-04 recon 1.7192e-02 [367s]
+   hfit[wide]   70000/200000 loss 2.8968e-04 recon 1.5076e-02 [395s]
+   hfit[wide]   75000/200000 loss 2.4276e-04 recon 1.3520e-02 [423s]
+   hfit[wide]   80000/200000 loss 2.3018e-04 recon 1.3567e-02 [451s]
+   hfit[wide]   85000/200000 loss 2.0878e-04 recon 1.2446e-02 [479s]
+   hfit[wide]   90000/200000 loss 1.7698e-04 recon 1.2163e-02 [507s]
+   hfit[wide]   95000/200000 loss 1.5341e-04 recon 1.1183e-02 [535s]
+   hfit[wide]  100000/200000 loss 1.3615e-04 recon 1.0614e-02 [563s]
+   hfit[wide]  105000/200000 loss 1.1996e-04 recon 9.7616e-03 [591s]
+   hfit[wide]  110000/200000 loss 1.0589e-04 recon 9.2895e-03 [619s]
+   hfit[wide]  115000/200000 loss 8.9306e-05 recon 8.5013e-03 [647s]
+   hfit[wide]  120000/200000 loss 7.4751e-05 recon 7.9788e-03 [675s]
+   hfit[wide]  125000/200000 loss 6.3740e-05 recon 7.3325e-03 [703s]
+   hfit[wide]  130000/200000 loss 5.8869e-05 recon 6.9886e-03 [731s]
+   hfit[wide]  135000/200000 loss 5.0110e-05 recon 6.4863e-03 [759s]
+   hfit[wide]  140000/200000 loss 4.3250e-05 recon 6.0262e-03 [787s]
+   hfit[wide]  145000/200000 loss 4.0126e-05 recon 5.6906e-03 [815s]
+   hfit[wide]  150000/200000 loss 3.5425e-05 recon 5.4631e-03 [843s]
+   hfit[wide]  155000/200000 loss 3.0447e-05 recon 5.1220e-03 [871s]
+   hfit[wide]  160000/200000 loss 2.9696e-05 recon 4.9086e-03 [899s]
+   hfit[wide]  165000/200000 loss 2.8531e-05 recon 4.6816e-03 [927s]
+   hfit[wide]  170000/200000 loss 2.4596e-05 recon 4.5136e-03 [955s]
+   hfit[wide]  175000/200000 loss 2.3566e-05 recon 4.3980e-03 [983s]
+   hfit[wide]  180000/200000 loss 2.3516e-05 recon 4.3195e-03 [1011s]
+   hfit[wide]  185000/200000 loss 2.3614e-05 recon 4.2612e-03 [1039s]
+   hfit[wide]  190000/200000 loss 2.2818e-05 recon 4.2212e-03 [1067s]
+   hfit[wide]  195000/200000 loss 2.3041e-05 recon 4.1928e-03 [1095s]
+   hfit[wide]  200000/200000 loss 2.2974e-05 recon 4.1758e-03 [1123s]
+  ARM wide: recon 4.1758e-03  oracle 2.8089e-03  oracle/floor 13.1x  oracle_nn 2.7553e-03  code-refit gain 1.144x
+   hfit[k32]       1/200000 loss 1.0242e+00 recon 1.0122e+00 [3s]
+   hfit[k32]    5000/200000 loss 6.7989e-03 recon 7.3392e-02 [31s]
+   hfit[k32]   10000/200000 loss 3.0413e-03 recon 4.6507e-02 [60s]
+   hfit[k32]   15000/200000 loss 1.6088e-03 recon 3.5389e-02 [88s]
+   hfit[k32]   20000/200000 loss 1.3404e-03 recon 3.1045e-02 [117s]
+   hfit[k32]   25000/200000 loss 9.4832e-04 recon 2.6464e-02 [146s]
+   hfit[k32]   30000/200000 loss 7.2961e-04 recon 2.3249e-02 [174s]
+   hfit[k32]   35000/200000 loss 6.0237e-04 recon 2.1848e-02 [203s]
+   hfit[k32]   40000/200000 loss 5.8284e-04 recon 2.1230e-02 [232s]
+   hfit[k32]   45000/200000 loss 4.4503e-04 recon 1.7673e-02 [261s]
+   hfit[k32]   50000/200000 loss 3.8547e-04 recon 1.7398e-02 [289s]
+   hfit[k32]   55000/200000 loss 3.1575e-04 recon 1.5178e-02 [318s]
+   hfit[k32]   60000/200000 loss 2.9892e-04 recon 1.4897e-02 [347s]
+   hfit[k32]   65000/200000 loss 2.6443e-04 recon 1.4410e-02 [375s]
+   hfit[k32]   70000/200000 loss 2.4536e-04 recon 1.3526e-02 [404s]
+   hfit[k32]   75000/200000 loss 2.1957e-04 recon 1.2610e-02 [433s]
+   hfit[k32]   80000/200000 loss 1.7676e-04 recon 1.1705e-02 [462s]
+   hfit[k32]   85000/200000 loss 1.6174e-04 recon 1.0879e-02 [490s]
+   hfit[k32]   90000/200000 loss 1.4053e-04 recon 1.0703e-02 [519s]
+   hfit[k32]   95000/200000 loss 1.1614e-04 recon 9.7009e-03 [548s]
+   hfit[k32]  100000/200000 loss 9.4912e-05 recon 8.8248e-03 [576s]
+   hfit[k32]  105000/200000 loss 8.1470e-05 recon 8.1616e-03 [605s]
+   hfit[k32]  110000/200000 loss 6.4496e-05 recon 7.2074e-03 [634s]
+   hfit[k32]  115000/200000 loss 5.9184e-05 recon 6.8434e-03 [662s]
+   hfit[k32]  120000/200000 loss 5.1685e-05 recon 6.4360e-03 [691s]
+   hfit[k32]  125000/200000 loss 4.1642e-05 recon 6.0245e-03 [720s]
+   hfit[k32]  130000/200000 loss 3.6549e-05 recon 5.6265e-03 [749s]
+   hfit[k32]  135000/200000 loss 3.2913e-05 recon 5.2240e-03 [777s]
+   hfit[k32]  140000/200000 loss 2.6657e-05 recon 4.8178e-03 [806s]
+   hfit[k32]  145000/200000 loss 2.2606e-05 recon 4.4593e-03 [835s]
+   hfit[k32]  150000/200000 loss 1.8267e-05 recon 3.9734e-03 [863s]
+   hfit[k32]  155000/200000 loss 1.6569e-05 recon 3.8483e-03 [892s]
+   hfit[k32]  160000/200000 loss 1.4447e-05 recon 3.5721e-03 [921s]
+   hfit[k32]  165000/200000 loss 1.3760e-05 recon 3.3739e-03 [950s]
+   hfit[k32]  170000/200000 loss 1.1841e-05 recon 3.2867e-03 [978s]
+   hfit[k32]  175000/200000 loss 1.1840e-05 recon 3.1934e-03 [1007s]
+   hfit[k32]  180000/200000 loss 1.1742e-05 recon 3.1278e-03 [1036s]
+   hfit[k32]  185000/200000 loss 1.1385e-05 recon 3.0865e-03 [1065s]
+   hfit[k32]  190000/200000 loss 1.1069e-05 recon 3.0589e-03 [1093s]
+   hfit[k32]  195000/200000 loss 1.0689e-05 recon 3.0389e-03 [1122s]
+   hfit[k32]  200000/200000 loss 1.0908e-05 recon 3.0263e-03 [1151s]
+  ARM k32: recon 3.0263e-03  oracle 1.9862e-03  oracle/floor 9.2x  oracle_nn 1.9738e-03  code-refit gain 1.198x
+HFIT done in 2688s -> /cluster/tufts/paralab/tawal01/jcp-robust/e2t2d/output/train2d_s3/stageB/hfit_full.json
+Stage B OK: {"steps_done": 200000, "steps": 200000, "seconds": 338.0378155708313, "time_cap_fired": false, "gpu": "NVIDIA A100 80GB PCIe"}
+[train2d seed=3 2026-10-19T20:44:26-04:00] Rotation (make_rotation.py, head-based, deployed procedure)
+{
+ "construction": "SVD of A = [(R_G h(z_i))^T / ||R_G h(z_i)||], z_i = every stored training code (ck[\"Z_tr\"]); T = R_G^{-1} V_s, L = V_s^T R_G; per-row normalised as in poisson-bank-knob; training data only",
+ "training_state_norm_range": [
+  2.517300683458919,
+  175.8819147012036
+ ],
+ "diagnostic_unnormalised_head_truncation_error": {
+  "32": {
+   "max": 0.6424467806075276,
+   "p99": 0.3789041364055534,
+   "median": 0.034240594317415364
+  },
+  "64": {
+   "max": 0.4280165246688288,
+   "p99": 0.16649280176887382,
+   "median": 0.010677489966949468
+  },
+  "128": {
+   "max": 0.1979939210641729,
+   "p99": 0.04180325214828766,
+   "median": 0.0030409684379161736
+  },
+  "256": {
+   "max": 0.009851042565655074,
+   "p99": 0.0018075949360482869,
+   "median": 0.0003247345441814446
+  },
+  "384": {
+   "max": 0.000849756505826729,
+   "p99": 0.000187612863720694,
+   "median": 3.090795959859523e-05
+  },
+  "512": {
+   "max": 7.388543685970442e-08,
+   "p99": 4.746414403106844e-08,
+   "median": 0.0
+  }
+ },
+ "checkpoint_sha256": "af877976023c6cf686f7dcf18d49aefe4faacef079e5ae84752a9bbb53709b11",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "train_mesh": 256,
+ "training_codes": 131072,
+ "K": 16,
+ "R": 512,
+ "R_G_condition_number": 22794.567352537215,
+ "L_times_T_identity_deviation": 9.959125779934955e-12,
+ "rotated_bank_orthonormality_deviation_at_train_mesh": 1.0673919776105254e-11,
+ "cumulative_training_energy": {
+  "32": 0.9922009150542855,
+  "64": 0.9988220046524316,
+  "128": 0.9999239273880158,
+  "256": 0.9999997596154411,
+  "384": 0.9999999980360162,
+  "512": 1.0000000000000002
+ },
+ "correction_directions_energy_captured": {
+  "16": {
+   "32": 0.7914888337545828,
+   "64": 0.8906066906613522,
+   "128": 0.9653495103583993,
+   "256": 0.9987005261220517,
+   "384": 0.9998082823552753,
+   "512": 1.0000000000000002
+  },
+  "48": {
+   "32": 0.7620737045282899,
+   "64": 0.8811534997313281,
+   "128": 0.9638803995194494,
+   "256": 0.9985637597118053,
+   "384": 0.999807909192156,
+   "512": 1.0
+  },
+  "112": {
+   "32": 0.7501231306976714,
+   "64": 0.8803392493522069,
+   "128": 0.9649676401018141,
+   "256": 0.9986104941991581,
+   "384": 0.9998289970947137,
+   "512": 1.0000000000000002
+  },
+  "240": {
+   "32": 0.7347516197526339,
+   "64": 0.8673316717031516,
+   "128": 0.9609378973148065,
+   "256": 0.998487893612642,
+   "384": 0.9998129143915615,
+   "512": 1.0000000000000002
+  },
+  "256": {
+   "32": 0.7346372215817623,
+   "64": 0.8668534039323333,
+   "128": 0.9605676260570137,
+   "256": 0.9984779724053142,
+   "384": 0.9998153221127494,
+   "512": 1.0000000000000002
+  }
+ },
+ "T_sha256": "b533d20d3a9b9f8892faab5cd71b14071a1da36476cc38ec85655732a8f06bc6",
+ "L_sha256": "1a43be10ab0aabbc4a41ce28c68e1638b61af3168f36202c03028629d51abe55",
+ "file_sha256": "fb9e79f2e304a8e7ff90ce77056e465fae7f5426a309453106c46ce7e0cb639a",
+ "seconds": 16.453414103016257,
+ "jax_backend": "gpu"
+}
+trunc {"32": {"max": 0.6147930758354281, "p99": 0.3394769976497296, "median": 0.03430529223329024}, "64": {"max": 0.38561929275556867, "p99": 0.13468327461211613, "median": 0.011800960543845869}, "128": {"max": 0.1271269091635956, "p99": 0.03301113316604943, "median": 0.003237059391417581}, "256": {"max": 0.006943937685635581, "p99": 0.0014747874655748083, "median": 0.0003310212241090612}, "384": {"max": 0.0006839686040286866, "p99": 0.00011893901031748207, "median": 3.237814369657657e-05}, "512": {"max": 5.866593028613783e-08, "p99": 3.9424766765007245e-08, "median": 0.0}}
+trunc_unnormalised {"32": {"max": 0.6424467806075276, "p99": 0.3789041364055534, "median": 0.034240594317415364}, "64": {"max": 0.4280165246688288, "p99": 0.16649280176887382, "median": 0.010677489966949468}, "128": {"max": 0.1979939210641729, "p99": 0.04180325214828766, "median": 0.0030409684379161736}, "256": {"max": 0.009851042565655074, "p99": 0.0018075949360482869, "median": 0.0003247345441814446}, "384": {"max": 0.000849756505826729, "p99": 0.000187612863720694, "median": 3.090795959859523e-05}, "512": {"max": 7.388543685970442e-08, "p99": 4.746414403106844e-08, "median": 0.0}}
+Rotation OK: ||LT-I|| = 9.959125779934955e-12  orth dev = 1.0673919776105254e-11  cond(R_G) = 22794.567352537215
+[train2d seed=3 2026-10-19T20:44:47-04:00] SEED-COMPLETE (/cluster/tufts/paralab/tawal01/jcp-robust/e2t2d/output/train2d_s3)

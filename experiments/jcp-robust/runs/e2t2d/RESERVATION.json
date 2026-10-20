@@ -1,0 +1,46 @@
+{
+ "attempt": "e2t2d",
+ "gpu": "a100-80G",
+ "gpus": 3,
+ "time_limit": 6.0,
+ "time_limit_hours": 18.0,
+ "groups": [
+  [
+   {
+    "sh": "train2d/run_seed.sh",
+    "args": [
+     "1",
+     "OUT/train2d_s1"
+    ],
+    "complete": "OUT/train2d_s1/SEED-COMPLETE",
+    "projection_hours": 4.0,
+    "projection_basis": "incumbent dn256b: Stage A 10,685 s (A100), Stage B 2,676 s hfit + extraction (job 2837431); smk2 measured extraction ~900 s on A100-80G"
+   }
+  ],
+  [
+   {
+    "sh": "train2d/run_seed.sh",
+    "args": [
+     "2",
+     "OUT/train2d_s2"
+    ],
+    "complete": "OUT/train2d_s2/SEED-COMPLETE",
+    "projection_hours": 4.0,
+    "projection_basis": "incumbent dn256b: Stage A 10,685 s (A100), Stage B 2,676 s hfit + extraction (job 2837431); smk2 measured extraction ~900 s on A100-80G"
+   }
+  ],
+  [
+   {
+    "sh": "train2d/run_seed.sh",
+    "args": [
+     "3",
+     "OUT/train2d_s3"
+    ],
+    "complete": "OUT/train2d_s3/SEED-COMPLETE",
+    "projection_hours": 4.0,
+    "projection_basis": "incumbent dn256b: Stage A 10,685 s (A100), Stage B 2,676 s hfit + extraction (job 2837431); smk2 measured extraction ~900 s on A100-80G"
+   }
+  ]
+ ],
+ "commit": "b0a20fe7d53267436e0d5f14684cb00d802ca916"
+}

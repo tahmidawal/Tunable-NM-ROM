@@ -946,3 +946,10 @@ free up.
   two seeds. The bank is registered as s2 (sha256 2710fd0f...). The A13.8 diff-check rule now also covers the 3D E2
   jobs: e2q2a/b equal the audited e2q1a/b except for bank identity (`checks/diffcheck-e2q2.json`). Registering a bank
   adds files to the certified tree, so queued certificates are re-issued after each registration.
+
+## A15 (2026-10-19): login-node outage
+
+SSH to tufts-login timed out and then refused authentication for a period; the coordinator confirmed it was a transient
+problem on the login node, and no keys or config were touched. The interrupted submission of e2t3d3 failed before sbatch
+ran, and its reservation was released. After recovery, e2t3's cluster directory was removed, the ledger was reconciled,
+and e2t3d3 was resubmitted (6087959) through the §14 lock.

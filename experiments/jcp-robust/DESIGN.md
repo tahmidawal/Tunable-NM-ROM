@@ -966,3 +966,29 @@ implementation reproduces the E5 φ values and intervals. All the fixes are in t
 - (#11) the E5 section now states its scope: conditional on the observed devices, frozen H200-selected comparators, the
   re-tested hypotheses only, and φ1 as a normalised rather than absolute ratio. It also adds the per-job labels, the
   unit-to-unit baseline, and the non-blocking G-E5.2 anchor cells (7 of 12 outside P1's interval).
+
+## A17 (2026-10-20): results audit E2 2D round 1 (REJECT), front rule corrected
+
+Codex results audit `audits/codex-results-e2-2d-1.md` returned **REJECT**. The 1024² front had been computed with
+exact joint inequalities on cost, median error and worst error, but DESIGN §3.2 and A1.9 register qualify's dominance
+rule: `qstats.dominates`, with a cost band of 1.05 and an error margin of max(2 ε_ref, 2 % e), applied to **separate**
+median-error and worst-error fronts. On seed 2 the wrong rule labelled R256 BE ×1 a member; under the registered rule
+R256 CN-R ×1 dominates it, and once the fronts are recomputed the claimed R256 front seed-dependence disappears.
+**Retraction:** the cross-seed counts reported before this amendment (107 seed-robust / 18 seed-dependent / 22
+inconclusive) and the R256 front seed-dependence are withdrawn.
+- A17.1 `e2analyze.py` and `e2analyze3d.py` now use `qstats.dominates` on the median-error front (`state`) and the
+  worst-error front (`state_worst`) separately, among the Q1+Q2-qualified candidates only. Each configuration's ε is the
+  median ε_ref over its cases. `e2verdicts.py` emits `front1024|…` / `front1024-worst|…` (2D) and `front65|…` /
+  `front65-worst|…` (3D). The 3D fix was made before any 3D front was computed.
+- A17.2 Audit #3: seed 2's training-data sha256 differs from that of seeds 1 and 3, while the generation settings and
+  the Stage-A data fingerprints agree. The report states that the data-generation settings are identical, not that the
+  data are bitwise identical.
+- A17.3 The 3D front-timing triplet class `d3|W<w>|triplet` is the largest measured tA1 + tB + tA2 per width in jcp-dims'
+  H200 panel jobs t3c / t3s (read-only). A width those jobs did not measure takes the largest value overall.
+
+## A18 (2026-10-20): GPU-hour cap raised to 95 (coordinator)
+
+jcp-regimes finished at 14.9 of its 60 GPU-h, and the coordinator has reallocated the unused priority-4 budget: this
+lane's cap rises from **75 to 95 GPU-h**, so the priority-4 total is 15 + 95 = 110 of its 135 allocation. The
+reservation rule is unchanged (`ledger.py` CAP = 95; the ledger's `cap_gpu_hours` = 95). The registered defer order is
+unchanged: E2 3D seed 3 is dropped first, and only if the new cap would still be exceeded.

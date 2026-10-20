@@ -64,9 +64,11 @@ def keys_2d(r):
         out[f'Q1Q2|{k}'] = v['qualified']
     fr = r.get('front_1024') or {}
     for k, v in (fr.get('slots') or {}).items():
-        out[f'front1024|slot|{k}'] = v.get('state')
+        out[f'front1024|slot|{k}'] = v.get('state')                  # median-error front (A17)
+        out[f'front1024-worst|slot|{k}'] = v.get('state_worst')      # worst-error front (A17)
     for k, v in (fr.get('fixed') or {}).items():
         out[f'front1024|fixed|{k}'] = v.get('state')
+        out[f'front1024-worst|fixed|{k}'] = v.get('state_worst')
     return out
 
 
@@ -88,6 +90,7 @@ def quals_2d(r):
     for k, v in ((r.get('front_1024') or {}).get('slots') or {}).items():
         if isinstance(v, dict) and v.get('qualifier'):
             out[f'front1024|slot|{k}'] = v['qualifier']
+            out[f'front1024-worst|slot|{k}'] = v['qualifier']
     return out
 
 
@@ -109,6 +112,7 @@ def quals_3d(r):
         if v.get('qualifier'):
             out[f'Q1Q2|{k}'] = v['qualifier']
             out[f'front65|{k}'] = v['qualifier']
+            out[f'front65-worst|{k}'] = v['qualifier']
     return out
 
 
@@ -127,6 +131,7 @@ def keys_3d(r):
         out[f'Q1Q2|{k}'] = v['qualified']
     for k, v in ((r.get('front_65') or {}).get('points') or {}).items():
         out[f'front65|{k}'] = v.get('state')
+        out[f'front65-worst|{k}'] = v.get('state_worst')
     return out
 
 

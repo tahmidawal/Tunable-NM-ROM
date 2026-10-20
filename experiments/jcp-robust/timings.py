@@ -42,6 +42,7 @@ def main():
     for k in ('smk1b', 'smk2', 'smk3', 'smk4', 'smk5'):
         ap.add_argument(f'--{k}')
     ap.add_argument('--dims3d', nargs='*', default=[], help='comparable d3run ladder outputs (A13.4)')
+    ap.add_argument('--dims3d-panels', nargs='*', default=[], help='comparable d3run panel outputs (A17.3)')
     ap.add_argument('--e1', nargs='*', default=[], help='E1 2D job outputs (r2acc dirs) for the per-execution overhead')
     ap.add_argument('--e1-elapsed', nargs='*', default=[], help='mesh=seconds of an incomplete job (from its log)')
     a = ap.parse_args()
@@ -143,6 +144,20 @@ def main():
     for (st, lev, rl) in list(acc3):
         if rl == 'gl64':
             T.setdefault(f'd3|{st}|{lev}|gl80', 2 * T[f'd3|{st}|{lev}|gl64'])
+    # ---- E2 3D front panel (A17.3): per timed triplet (A, B, A) the measured tA1 + tB + tA2 of comparable dims panel jobs
+    # (t3c, t3s; H200; read-only), max per width setting; widths absent there take the max over all measured widths
+    trip = collections.defaultdict(list)
+    for d_ in a.dims3d_panels:
+        p = Path(d_) / 'result.json'
+        r = json.loads(p.read_text())
+        src[f'3d-panel {p.parent.name}'] = dict(file=str(p), sha256=sha(p), gpu=r.get('gpu'))
+        for v in (r.get('timing') or {}).values():
+            for inv in v.get('invocations', []):
+                trip[inv['B'].split('|')[0]].append(float(inv['tA1']) + float(inv['tB']) + float(inv['tA2']))
+    if trip:
+        top = max(max(v) for v in trip.values())
+        for w_ in ('W256', 'W512', 'W768', 'W1024'):
+            T[f'd3|{w_}|triplet'] = max(trip[w_]) if trip.get(w_) else top
     # ---- r2acc per-execution overhead (A10.3): job wall time not inside the timed queries (device->host transfer of the
     # full-field outputs, restriction, distances, indicator evaluation), per execution, measured on E1 2D jobs per mesh
     el_over = dict(x.split('=') for x in a.e1_elapsed)

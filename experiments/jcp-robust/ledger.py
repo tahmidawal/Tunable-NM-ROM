@@ -2,7 +2,7 @@
 GPU-hour ledger with atomic time-limit reservations (DESIGN 9.1, A1.11, A2.6). runs/GPU-LEDGER.json, guarded by an
 exclusive file lock (runs/GPU-LEDGER.lock) for every read-modify-write.
 
-    python ledger.py reserve <attempt> <hours>    atomically: refuse unless spent + reserved + hours <= 75 (hours = GPUs x time limit) and the attempt
+    python ledger.py reserve <attempt> <hours>    atomically: refuse unless spent + reserved + hours <= 95 (A18; hours = GPUs x time limit) and the attempt
                                                   has no live reservation; then record a PENDING_SUBMIT reservation
     python ledger.py bind <attempt> <jobid>       the reservation is now job <jobid> (state SUBMITTED)
     python ledger.py release <attempt>            submission failed before sbatch returned a job id
@@ -24,7 +24,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 LED = HERE / 'runs' / 'GPU-LEDGER.json'
 LOCK = HERE / 'runs' / 'GPU-LEDGER.lock'
-CAP = 75.
+CAP = 95.   # A18 (2026-10-20, coordinator): raised from 75
 TERMINAL = ('COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY', 'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE',
             'RELEASED')
 

@@ -140,37 +140,39 @@ def front(C1024, timing):
         lab = f"1024|R{r}|M{4 * r}|{x['rule']}|LSPG|{sc}|{float(fac):g}"
         a_ok = eq_ok.get(labA) == [True] and all(inv.get('all_hashes_ok') for inv in tres.get('invocations', []))
         cost = (1.0 if a_ok else None) if lab == labA else (float(np.median(ba[lab])) if lab in ba else None)   # B/A = 1 for A
+        rec_ = dict(rule=x['rule'], qualified=x['qualified'], cost=cost, median_e=float(np.median(list(x['e'].values()))),
+                    worst_e=float(np.max(list(x['e'].values()))), eps=float(np.median(list(x['eps'].values()))))
         if kind == 'dep':                                  # A2.6 / A3.5: fixed deployed configurations, separate table
-            fixed[f'R{r}|{sc}|{fac}'] = dict(rule=x['rule'], qualified=x['qualified'], cost=cost,
-                                             median_e=float(np.median(list(x['e'].values()))), worst_e=float(np.max(list(x['e'].values()))))
-            continue              # median over cases of per-case medians
-        slots[f'R{r}|{sc}|{fac}'] = dict(rule=x['rule'], qualified=x['qualified'], cost=cost,
-                                         median_e=float(np.median(list(x['e'].values()))), worst_e=float(np.max(list(x['e'].values()))))
-    q = {k: v for k, v in slots.items() if v['qualified'] is True and v['cost'] is not None}
-    for k, v in slots.items():
-        if v['qualified'] is None or v['cost'] is None:
-            v['state'] = 'missing'
-        elif v['qualified'] is False:
-            v['state'] = 'unqualified'
-        else:
-            dom = any(o['cost'] <= v['cost'] and o['median_e'] <= v['median_e'] and o['worst_e'] <= v['worst_e'] and
-                      (o['cost'] < v['cost'] or o['median_e'] < v['median_e'] or o['worst_e'] < v['worst_e'])
-                      for kk, o in q.items() if kk != k)
-            v['state'] = 'dominated' if dom else 'member'
+            fixed[f'R{r}|{sc}|{fac}'] = rec_
+            continue
+        slots[f'R{r}|{sc}|{fac}'] = rec_
+    front_states(slots, fixed)
     for r in RANKS:
         for sc in ('BE', 'CNR'):
             for fac in ('1', '2', '2.5'):
-                slots.setdefault(f'R{r}|{sc}|{fac}', dict(state='absent'))
-    for k, v in fixed.items():                            # fixed configuration vs the qualified selected-rule candidates
-        if v['qualified'] is None or v['cost'] is None:
-            v['state'] = 'missing'
-        elif v['qualified'] is False:
-            v['state'] = 'unqualified'
-        else:
-            v['state'] = 'dominated' if any(o['cost'] <= v['cost'] and o['median_e'] <= v['median_e'] and o['worst_e'] <= v['worst_e']
-                                            and (o['cost'] < v['cost'] or o['median_e'] < v['median_e'] or o['worst_e'] < v['worst_e'])
-                                            for o in q.values()) else 'member'
-    return dict(slots=slots, fixed=fixed)
+                slots.setdefault(f'R{r}|{sc}|{fac}', dict(state='absent', state_worst='absent'))
+    return dict(slots=slots, fixed=fixed, rule='qualify qstats.dominates (5 % cost band, error margin max(2 eps, 2 % e)); '
+                'separate median-error and worst-error fronts (A17)')
+
+
+def front_states(slots, fixed):
+    """A17 (results audit e2-2d-1 #1): qualify's registered dominance (qstats.dominates: cost band 1.05, error margin
+    tau = max(2 max eps, 0.02 max e)) on two SEPARATE fronts, median error (`state`) and worst error (`state_worst`), among
+    the Q1+Q2-qualified candidates only (A3.5); a fixed configuration is dominated if any qualified candidate dominates it"""
+    import qstats as QS
+    q = {k: v for k, v in slots.items() if v['qualified'] is True and v['cost'] is not None}
+    for stat, key in (('median_e', 'state'), ('worst_e', 'state_worst')):
+        pts = {k: dict(c=v['cost'], e=v[stat], eps=v['eps']) for k, v in q.items()}
+        for tbl_, own in ((slots, True), (fixed, False)):
+            for k, v in tbl_.items():
+                if v['qualified'] is None or v['cost'] is None:
+                    v[key] = 'missing'
+                elif v['qualified'] is False:
+                    v[key] = 'unqualified'
+                else:
+                    me = dict(c=v['cost'], e=v[stat], eps=v['eps'])
+                    dom = any(QS.dominates(o, me) for kk, o in pts.items() if not (own and kk == k))
+                    v[key] = 'dominated' if dom else 'member'
 
 
 def g_e23(sel_out, v256_out, pins):

@@ -232,9 +232,11 @@ def main():
             cell = sel['cells'][f"W{slot['width']}|{slot['spec']}|{slot['family']}"][slot['rule']]
             e = list(E_(k).values()) if k in scores else []
             diag = slot['outcome'] != 'selected'            # A2.5 (job audit e2q-1 #4): own-family qualification, labelled
+            ep_ = [E.num(v_) for v_ in EP(k).values()] if k in scores else []
             rep['configurations'][f"slot|W{slot['width']}|{slot['spec']}|{slot['family']}"] = dict(
                 rule=slot['rule'], qualified=cell['own'] if diag else cell['qualified'],
                 median_e=float(np.median(e)) if e else None, worst_e=float(np.max(e)) if e else None,
+                eps=float(np.median(ep_)) if ep_ else None,
                 **({'qualifier': QUAL} if diag else {}))
     # A1.9 selected-rule H-acc-r rows (job audit e2q-1 #5): per spec and family, widths 256 -> 512 -> 768 -> 1024 on each
     # width's realised rule; per-case qualification = the slot's (all-case) qualification; no rule -> unavailable
@@ -275,8 +277,10 @@ def main():
         cell = sel['cells'].get(f'{st}|{spec}|{fam}', {}).get(rl)
         k = f'{st}|{rl}|{spec}'
         e = list(E_(k).values()) if k in scores else []
+        ep_ = [E.num(v_) for v_ in EP(k).values()] if k in scores else []
         rep['configurations'][f'fixed|{f}'] = dict(rule=rl, qualified=(cell or {}).get('own'),
-                                                   median_e=float(np.median(e)) if e else None, worst_e=float(np.max(e)) if e else None)
+                                                   median_e=float(np.median(e)) if e else None, worst_e=float(np.max(e)) if e else None,
+                                                   eps=float(np.median(ep_)) if ep_ else None)
     # front
     if a.front:
         fres = json.loads((Path(a.front) / 'result.json').read_text())
@@ -314,21 +318,24 @@ def main():
                 name = k.split('|', 1)[1]
             cost = float(np.median(ba[name])) if name in ba else None
             pts[k] = dict(v, cost=cost)
-        q = {k: v for k, v in pts.items() if v['qualified'] is True and v['cost'] is not None and v['median_e'] is not None}
-        for k, v in pts.items():
-            if v['qualified'] is None or v['cost'] is None or v['median_e'] is None:
-                v['state'] = 'missing'
-            elif v['qualified'] is False:
-                v['state'] = 'unqualified'
-            else:
-                dom = any(o['cost'] <= v['cost'] and o['median_e'] <= v['median_e'] and o['worst_e'] <= v['worst_e'] and
-                          (o['cost'] < v['cost'] or o['median_e'] < v['median_e'] or o['worst_e'] < v['worst_e'])
-                          for kk, o in q.items() if kk != k)
-                v['state'] = 'dominated' if dom else 'member'
+        # A17: qualify's registered dominance (qstats.dominates) on separate median / worst fronts among qualified points
+        import qstats as QS
+        q = {k: v for k, v in pts.items() if v['qualified'] is True and v['cost'] is not None and v['median_e'] is not None
+             and v.get('eps') is not None}
+        for stat, key in (('median_e', 'state'), ('worst_e', 'state_worst')):
+            P_ = {k: dict(c=v['cost'], e=v[stat], eps=v['eps']) for k, v in q.items()}
+            for k, v in pts.items():
+                if v['qualified'] is None or v['cost'] is None or v['median_e'] is None or v.get('eps') is None:
+                    v[key] = 'missing'
+                elif v['qualified'] is False:
+                    v[key] = 'unqualified'
+                else:
+                    me = dict(c=v['cost'], e=v[stat], eps=v['eps'])
+                    v[key] = 'dominated' if any(QS.dominates(o, me) for kk, o in P_.items() if kk != k) else 'member'
         for slot in sel['slots']:
             k = f"slot|W{slot['width']}|{slot['spec']}|{slot['family']}"
-            pts.setdefault(k, dict(state='absent' if (slot['outcome'] == 'none within ladder' and slot.get('target_certified'))
-                                   else 'missing'))                        # target-unverified search: not definitive
+            st_ = 'absent' if (slot['outcome'] == 'none within ladder' and slot.get('target_certified')) else 'missing'
+            pts.setdefault(k, dict(state=st_, state_worst=st_))                # target-unverified search: not definitive
         rep['front_65'] = dict(points=pts, timing_valid=tm.get('valid'), label='front of the tested 3D universe (never complete)')
     if b == 0:
         rows = {}

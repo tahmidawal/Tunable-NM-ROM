@@ -93,6 +93,7 @@
   "d3|W1024|prod|lat32768": 0.21468603568791877,
   "d3|W1024|prod|lat65536": 0.4644711117531794,
   "d3|W1024|prod|lat8192": 0.13008980445253351,
+  "d3|W1024|triplet": 1.090593236964196,
   "d3|W256|adt-tighter|gl16": 0.17260749455696592,
   "d3|W256|adt-tighter|gl20": 0.161029907874763,
   "d3|W256|adt-tighter|gl24": 0.17901515817114463,
@@ -141,6 +142,7 @@
   "d3|W256|prod|lat32768": 0.027455381796850514,
   "d3|W256|prod|lat65536": 0.10164586831039439,
   "d3|W256|prod|lat8192": 0.4733118324074894,
+  "d3|W256|triplet": 0.23312964662909508,
   "d3|W512|adt-tighter|badlat262144": 1.9177383385249414,
   "d3|W512|adt-tighter|gl16": 0.1962400812578077,
   "d3|W512|adt-tighter|gl20": 0.20170212575855354,
@@ -549,6 +551,7 @@
   "d3|W512|prod|sob8192s2": 0.027383430249756202,
   "d3|W512|prod|sob8192s3": 0.02746345053310506,
   "d3|W512|prod|sob8192s4": 0.027484463986183982,
+  "d3|W512|triplet": 0.38578832102939487,
   "d3|W768|adt-tighter|gl16": 0.22653801176541796,
   "d3|W768|adt-tighter|gl20": 0.2446370826025183,
   "d3|W768|adt-tighter|gl24": 0.28340881182036054,
@@ -594,6 +597,7 @@
   "d3|W768|prod|lat32768": 0.12990491775174937,
   "d3|W768|prod|lat65536": 0.2930894600479708,
   "d3|W768|prod|lat8192": 0.09788084819350236,
+  "d3|W768|triplet": 0.6704275580123067,
   "dtime|doubled": 2.0342608518898486,
   "dtime|fused-triplet": 1.6256956389173864,
   "dtime|qp": 0.5437950417399406,
@@ -776,6 +780,16 @@
   "3d e2run3d_smk3c": {
    "file": "runs/smk3c/archive/output/e2run3d_smk3c/result.json",
    "sha256": "d717c7d0d97b3076a2ddc1bdd8daf9bbdeb671eae1ee304408d27988b6e1744d",
+   "gpu": "NVIDIA H200"
+  },
+  "3d-panel d3run_t3c": {
+   "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/runs/t3c/slim/output/d3run_t3c/result.json",
+   "sha256": "c3711bf604d1759ee6df2e41c312776ce2566e730694777a499d6ed6c5f70d54",
+   "gpu": "NVIDIA H200"
+  },
+  "3d-panel d3run_t3s": {
+   "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/runs/t3s/slim/output/d3run_t3s/result.json",
+   "sha256": "be54970ab124ae2adae1310c8cc3dc8ec4e288e6518145b1d39fc4df7a1e6b6c",
    "gpu": "NVIDIA H200"
   },
   "e1 r2acc_e1m256": {

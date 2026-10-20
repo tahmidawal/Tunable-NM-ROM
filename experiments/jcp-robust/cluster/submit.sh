@@ -1,6 +1,6 @@
 #!/bin/bash
 # jcp-robust (copied from jcp-dims; namespace jcp-robust, prefix jr_, reservation = GPUs x time limit): submit ONE staged attempt. Refuses if jr_<attempt> is queued or its remote dir exists, if the lane has
-# >= 3 jobs or the account >= 8 jobs (campaign cap), or if the atomic GPU-hour reservation (DESIGN A1.11, A2.6) fails.
+# >= 6 jobs (A14, 2026-10-19; was 3) or the account >= 8 jobs (campaign cap), or if the atomic GPU-hour reservation (DESIGN A1.11, A2.6) fails.
 # The reserved hours are the sbatch --time limit read from run.sbatch (checked against RESERVATION.json).
 # squeue before and after (duplicate-submit rule).
 set -euo pipefail
@@ -21,7 +21,7 @@ NLANE=$(echo "$Q" | awk '$2 ~ /^jr_/' | grep -c . || true)
 NALL=$(echo "$Q" | grep -c . || true)
 echo "--- squeue before (lane=$NLANE account=$NALL)"; echo "$Q"
 if echo "$Q" | awk '{print $2}' | grep -qx "jr_$A"; then echo "jr_$A already queued: refusing"; exit 3; fi
-[ "$NLANE" -lt 3 ] || { echo "lane cap 3 reached"; exit 4; }
+[ "$NLANE" -lt 6 ] || { echo "lane cap 6 reached (A14)"; exit 4; }
 [ "$NALL" -lt 8 ] || { echo "campaign cap 8 reached"; exit 5; }
 "$PY" "$LANE/ledger.py" reserve "$A" "$HOURS" || { echo "GPU-hour reservation refused"; exit 6; }
 # before sbatch is attempted a failure is unambiguous: release; after, keep the reservation (AMBIGUOUS) until squeue/sacct

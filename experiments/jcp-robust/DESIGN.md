@@ -934,3 +934,10 @@ CORRECT. Fixes:
   certified, that the code is unchanged since the audited commit, and the fresh certificates. It is recorded in
   `checks/diffcheck-bank<b>.json`. Any code change, or any selection path the audit did not see (diagnostic pick,
   none, unavailable), triggers a targeted re-audit.
+
+## A14 (2026-10-19): lane concurrent-job cap raised to 6 (coordinator)
+
+The coordinator raised this lane's concurrent-job cap from 3 to **6**, because jcp-regimes has finished its cluster work.
+The account cap of 8 is still enforced inside the §14 shared sbatch lock, and the GPU-hour cap stays at 75 with
+reservation. `cluster/submit.sh` now refuses at 6 lane jobs. Queued jobs that have been audited are submitted as slots
+free up.

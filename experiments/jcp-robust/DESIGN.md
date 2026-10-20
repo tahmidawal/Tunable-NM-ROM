@@ -1001,3 +1001,8 @@ unchanged: E2 3D seed 3 is dropped first, and only if the new cap would still be
   so the A9.2 gate passed. The trainer selected step 11000, and the config differed from the incumbent only in the
   two seeds. The bank is registered as s3 (sha256 8912c8e3...). e2q3a/b are diff-checked against the audited e2q1a/b
   (`checks/diffcheck-e2q3.json`).
+- **A17.6** Bank-0 3D selection (`checks/select3d-0.json`): W256 and W512 select rules in most slots. W768 fs CN 0.01
+  gives diagnostic picks (gl40 and lat32768, target unverified: the gl56/gl64 check failed). The remaining W768 slots
+  and every W1024 slot have no qualified rule within the ladder. This agrees with jcp-dims' qualified 3D set, which has
+  no W1024 configuration under these specs and only two W768 ones. The front job e2f0 times the 12 subjects (slots
+  plus the four fixed configurations, de-duplicated). Its projection is 0.82 h, so its time limit is 1.5 h.

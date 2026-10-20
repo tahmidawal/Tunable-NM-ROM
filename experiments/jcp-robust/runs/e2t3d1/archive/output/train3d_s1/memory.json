@@ -1,0 +1,28 @@
+{
+ "script": "/cluster/tufts/paralab/tawal01/jcp-robust/e2t3d1/experiments/jcp-robust/train3d/train2w.py",
+ "argv": [
+  "--config",
+  "/cluster/tufts/paralab/tawal01/jcp-robust/e2t3d1/experiments/jcp-robust/train3d/configs/train_r1024_s1.json",
+  "--out",
+  "/cluster/tufts/paralab/tawal01/jcp-robust/e2t3d1/output/train3d_s1"
+ ],
+ "ok": true,
+ "error": null,
+ "seconds": 5242.688289403915,
+ "ru_maxrss_kB": 286863948,
+ "device": "NVIDIA H200",
+ "backend": "gpu",
+ "memory_stats": {
+  "num_allocs": 2902173,
+  "bytes_in_use": 0,
+  "peak_bytes_in_use": 76665285888,
+  "largest_alloc_size": 33560715776,
+  "bytes_limit": 135100628992,
+  "bytes_reserved": 0,
+  "peak_bytes_reserved": 0,
+  "largest_free_block_bytes": 0,
+  "pool_bytes": 135100628992,
+  "peak_pool_bytes": 135100628992
+ },
+ "peak_GiB": 71.40011143684387
+}

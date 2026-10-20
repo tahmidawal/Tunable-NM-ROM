@@ -41,6 +41,7 @@ def main():
     ap.add_argument('--qualify-dir', required=True)
     for k in ('smk1b', 'smk2', 'smk3', 'smk4', 'smk5'):
         ap.add_argument(f'--{k}')
+    ap.add_argument('--dims3d', nargs='*', default=[], help='comparable d3run ladder outputs (A13.4)')
     ap.add_argument('--e1', nargs='*', default=[], help='E1 2D job outputs (r2acc dirs) for the per-execution overhead')
     ap.add_argument('--e1-elapsed', nargs='*', default=[], help='mesh=seconds of an incomplete job (from its log)')
     a = ap.parse_args()
@@ -118,6 +119,30 @@ def main():
                 T[f'{drv}|{st}|{lev}|{fam}'] = max(T.get(f'{drv}|{st}|{lev}|{fam}') or 0., med(v) or 0.)
             T[f'{"e1run3d" if drv == "e1run3d" else "e2run3d"}|setup'] = max(T.get(f'{"e1run3d" if drv == "e1run3d" else "e2run3d"}|setup') or 0.,
                                                                           float(r.get('elapsed_seconds', 0.)) * .25)
+    # ---- E2 3D ladder classes (A13.4): per (setting, level, rule) MEAN seconds over the rows of comparable d3run ladder
+    # jobs (jcp-dims m3a / m3b / b3f / b3m: the same ladders, 64 cases, H200; read-only) and smk3c (max over sources);
+    # gl80 where unmeasured = 2 x gl64 of the same (setting, level) (512,000 vs 262,144 points; cost ~ linear in points,
+    # cf. lat262144 ~ gl64). Per-job setup = max over those jobs of (elapsed - sum of row seconds).
+    srcs3 = list(a.dims3d) + ([str(Path(a.smk3) / 'e2run3d_smk3c')] if a.smk3 else [])
+    acc3 = collections.defaultdict(list)
+    for d_ in srcs3:
+        p = Path(d_) / 'result.json'
+        r = json.loads(p.read_text())
+        src[f'3d {p.parent.name}'] = dict(file=str(p), sha256=sha(p), gpu=r.get('gpu'))
+        per = collections.defaultdict(list)
+        for x in r['rows']:
+            sp = x['spec']
+            lev = 'adt-tight' if sp.endswith('|tight') else 'adt-tighter' if sp.endswith('|tighter') else 'prod'
+            per[(x['setting'], lev, x['rule'])].append(float(x['seconds_first']))
+        for k, v in per.items():
+            acc3[k].append(sum(v) / len(v))
+        el = float(r.get('elapsed_seconds') or 0.)
+        T['e2run3d|setup'] = max(T.get('e2run3d|setup') or 0., el - sum(float(x['seconds_first']) for x in r['rows']))
+    for (st, lev, rl), v in acc3.items():
+        T[f'd3|{st}|{lev}|{rl}'] = max(v)
+    for (st, lev, rl) in list(acc3):
+        if rl == 'gl64':
+            T.setdefault(f'd3|{st}|{lev}|gl80', 2 * T[f'd3|{st}|{lev}|gl64'])
     # ---- r2acc per-execution overhead (A10.3): job wall time not inside the timed queries (device->host transfer of the
     # full-field outputs, restriction, distances, indicator evaluation), per execution, measured on E1 2D jobs per mesh
     el_over = dict(x.split('=') for x in a.e1_elapsed)

@@ -897,3 +897,18 @@ CORRECT. Fixes:
     H-acc-N rows, the H-acc-r transitions touching an unverified rank, the selected-rule configurations and the
     front slots. `e2verdicts.py` carries the annotation per seed in each row's `qualifiers`.
   - Re-running `select2d.py` on bank 0 reproduces checks/select2d-0.json byte for byte.
+- **A13.3 (3D memory pilot passed)** e2t3d1 (6080225, H200) completed in 1 h 28 m against its 4 h limit. Host MaxRSS from
+  sacct was 273.9 GiB, under the 336 GiB threshold. Device peak was 76.7e9 bytes, under 120e9. The A9.2 gate therefore
+  passes (`checks/memgate-e2t3d1.json`), and seeds 2-3 (e2t3d2/3) are released with the identical spec; they differ
+  only in the seed argument. The trainer selected step 7000; the incumbent j3b selected step 11000. The bank is
+  registered (`inputs/banks3d/s1/BANK.json`, sha256 0a4116f5...). It stays in the cluster archive, with a verified
+  local copy kept untracked.
+- **A13.4 (3D E2 timing classes)** The selection ladders of e2q<b>a/b were refused at first: smk3c measured only part of
+  the (width, level, rule) grid, and fills based on upper bounds overstated the cost by about 5x. Certification now uses
+  per-rule classes. Each class is the MEAN row seconds over the comparable d3run ladder jobs of jcp-dims (m3a, m3b, b3f,
+  b3m: the same ladders with 64 cases, on H200, read-only) together with smk3c, taking the maximum over sources. gl80
+  is unmeasured outside W1024, so it is estimated as 2 x gl64 (512,000 vs 262,144 points; cost scales linearly with
+  points). Per-job setup is the largest unexplained elapsed time in those jobs, 2,214 s. The e2q jobs run on H200, the
+  GPU type of the measurements. Projections are 1.82 h for e2q<b>a (W256 + W512), with a 2.75 h limit, and 4.80 h for
+  e2q<b>b (W768 + W1024), with a 7.25 h limit; the dims job m3b measured 2.84 h for the W768 + W1024 ladders up to
+  gl64.

@@ -159,7 +159,7 @@ def klass(driver, k):
         return f"e1run3d|{k[1]}|{k[4]}|{'gl' if k[2].startswith('gl') else 'lat'}"
     if k[4] == 'timed-triplet':
         return f'd3|{k[1]}|triplet'
-    return f"d3|{k[1]}|{k[4]}|{'gl' if k[2].startswith('gl') else 'lat'}"
+    return f"d3|{k[1]}|{k[4]}|{k[2]}"                 # per rule (A13.4)
 
 
 def certify(att, timings_path):

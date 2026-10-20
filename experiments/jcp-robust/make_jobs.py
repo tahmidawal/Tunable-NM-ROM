@@ -65,7 +65,8 @@ def e2run3d(name):
     archive: the config's cluster_inputs (archive path + sha256 from inputs/banks3d/s<b>/BANK.json) are propagated into the
     JOB SPEC, which is what stage.py copies and verifies (job audit 3D-1 #10). Hours are set by certify.py afterwards."""
     c = json.loads((HERE / 'configs' / f'{name}.json').read_text())
-    spec = dict(attempt=name, gpu='a100-80G', gpus=1, hours=1.0, mem='200G', cpus=8, production=True, mem_fraction='0.95',
+    hours = {'a': 2.75, 'b': 7.25}.get(name[-1], 1.0) if name.startswith('e2q') else 1.0   # >= 1.5 x certified projection (A13.4)
+    spec = dict(attempt=name, gpu='h200', gpus=1, hours=hours, mem='240G', cpus=8, production=True, mem_fraction='0.95',
                 groups=[[dict(driver='e2run3d', config=f'configs/{name}.json')]])
     if c.get('cluster_inputs'):
         spec['cluster_inputs'] = c['cluster_inputs']

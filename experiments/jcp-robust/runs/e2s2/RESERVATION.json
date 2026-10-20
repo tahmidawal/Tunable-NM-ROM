@@ -1,0 +1,16 @@
+{
+ "attempt": "e2s2",
+ "gpu": "a100-80G",
+ "gpus": 1,
+ "time_limit": 1.0,
+ "time_limit_hours": 1.0,
+ "groups": [
+  [
+   {
+    "driver": "r2acc",
+    "config": "configs/e2s2.json"
+   }
+  ]
+ ],
+ "commit": "e359ad13d9bcefd97a9c69ed3440871b2dd6ed6a"
+}

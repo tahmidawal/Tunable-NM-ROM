@@ -1010,3 +1010,17 @@ unchanged: E2 3D seed 3 is dropped first, and only if the new cap would still be
   record or a peak above 120e9 bytes (or no recorded peak). Its timing is then reported invalid, and every timed point is
   "missing", so non-definitive. Before this fix a rejected job could still yield front members. Per audit #7, e2f1–3
   need a focused diff check after this fix rather than a full audit.
+
+## A19 (2026-10-20): E2 3D results audit round 1 (ACCEPT-WITH-FIXES); report additions
+
+`audits/codex-results-e2-3d-1.md` returned **ACCEPT-WITH-FIXES**. Every numerical decision reproduced: 480 candidate
+predicates, 96 selection slots, both fronts, and the roll-up byte for byte (45 seed-robust / 17 seed-dependent / 67
+inconclusive over 129 rows). Bank 3's selection was recomputed from its coefficients. The fixes are all in the report
+(`make_report.py`):
+- (#7) the fixed-gl64 H-acc-r table for every bank, with the 3D spread ratios;
+- (#8) the fixed-gl64 median **and worst-case** E0 seed spread with t intervals. Over seeds 1–3 the worst-case error
+  varies far more than the median; the largest max/min ratios are generated in the report;
+- (#9) the non-blocking anchor G-E2.2, comparing the incumbent's 3D picks with jcp-dims' $m^*$ table cell by cell. An
+  agreement on $m$ for a diagnostic pick is labelled as not certified;
+- (#10) the 2D data-hash sentence is labelled as 2D. The report now states which wide-width selections are certified
+  (generated). A target-unverified "none within ladder" is marked in the selection table as not a definitive absence.

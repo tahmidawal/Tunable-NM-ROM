@@ -1,19 +1,17 @@
 {
  "lane": "jcp-robust",
- "utc": "2026-10-20T13:36:05Z",
- "step": "25: all selections done; e2f3 submitted (6109877), the last cluster job",
+ "utc": "2026-10-20T14:03:58Z",
+ "step": "26: production complete (46.4 GPU-h); E2 3D results audit running; then final report + report audit + hand-back",
  "waiting_on": {
-  "slurm_jobs": [
-   "6109877"
-  ],
-  "codex_output": null,
-  "codex_pid": null,
+  "slurm_jobs": [],
+  "codex_output": "audits/codex-results-e2-3d-1.md",
+  "codex_pid": 565833,
   "local": null
  },
  "expected_finish_utc": null,
- "last_commit": "e3dd2bec0",
- "gpu_hours_spent": 46.3037,
- "gpu_hours_reserved": 1.5,
+ "last_commit": "ba63ba43b",
+ "gpu_hours_spent": 46.4076,
+ "gpu_hours_reserved": 0,
  "gpu_hours_cap": 95.0,
  "notes": ""
 }

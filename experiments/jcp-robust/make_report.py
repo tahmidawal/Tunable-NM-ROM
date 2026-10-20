@@ -212,8 +212,8 @@ def e2_section(R, X):
          '**seed-dependent** if two seeds give different definitive labels, and **inconclusive** otherwise. Agreement with '
          'the incumbent bank (seed 0) is reported separately as historical agreement (A2.7). Retrains are not bitwise '
          'reproducible, so seeds and hashes are recorded in `inputs/banks*/s<seed>/BANK.json`. Three seeds support a '
-         'description of agreement, not a population-level robustness claim. The three retrains used identical '
-         'data-generation settings; ' + data_hash_sentence() + ' (A17.2). Accuracy verdicts use the registered validation populations, including the 16-case '
+         'description of agreement, not a population-level robustness claim. The three 2D retrains used identical '
+         'data-generation settings; for the 2D Stage-A training data, ' + data_hash_sentence() + ' (A17.2). Accuracy verdicts use the registered validation populations, including the 16-case '
          '4096² subset, and $\\varepsilon_{ref}$ is a conditional Richardson estimate. The $t$ intervals on the seed '
          'spread concern the mean of $\\log_{10}$ error with $n = 3$ (2 degrees of freedom); they are not prediction '
          'intervals for further seeds.', '',
@@ -246,13 +246,66 @@ def e2_section(R, X):
             row = [f'W{k[0]}', k[1].replace('|', ' '), k[2]]
             for b in range(4):
                 sl = next((x for x in (sel3[b] or {}).get('slots', []) if (x['width'], x['spec'], x['family']) == k), None)
-                row.append('pending' if sl is None else (sl['rule'] or '—') + ('' if sl['outcome'] == 'selected' else
-                                                                                 f" ({sl['outcome']})"))
+                lab_ = sl and (sl['outcome'] if not (sl['outcome'] == 'none within ladder' and sl.get('target_certified') is not True)
+                               else 'none within ladder, target unverified: not a definitive absence')
+                row.append('pending' if sl is None else (sl['rule'] or '—') + ('' if sl['outcome'] == 'selected' else f' ({lab_})'))
             rows.append(row)
+        cert = {w: [b for b in range(4) for x in (sel3[b] or {}).get('slots', []) if x['width'] == w and x['outcome'] == 'selected']
+                for w in (768, 1024)}
         L += ['### 3D rule selection at 65³ (64 cases; first candidate of the ladder qualified against gl64, check gl56)', '',
-              tbl(['width', 'spec', 'family', 'bank 0 (incumbent)', 'seed 1', 'seed 2', 'seed 3'], rows), '']
+              tbl(['width', 'spec', 'family', 'bank 0 (incumbent)', 'seed 1', 'seed 2', 'seed 3'], rows), '',
+              f"Wide widths: certified W768 selections on banks {sorted(set(cert[768])) or 'none'}, certified W1024 "
+              f"selections on banks {sorted(set(cert[1024])) or 'none'}. Every other wide-width pick is a diagnostic pick "
+              '(target unverified) or no qualified rung. The wide-width front and selected-rule rows are therefore sparse, '
+              'and their cross-seed labels are inconclusive rather than seed-dependent.', '']
+        L += g_e22(sel3[0])
         X['E2']['selection_3d'] = {str(b): ([dict(width=x['width'], spec=x['spec'], family=x['family'], rule=x['rule'],
                                                   outcome=x['outcome']) for x in s3['slots']] if s3 else None) for b, s3 in sel3.items()}
+    R3 = {b: load(f'e2-3d-{b}.json') for b in range(4)}
+    if all(R3.values()):
+        rows = []
+        for sp in ('fs|CN|0.01|K1', 'qn|BDF2|0.025|k4'):
+            for tr in ('256->512', '512->768', '768->1024', 'range_256_1024'):
+                cells = []
+                for b in range(4):
+                    x = R3[b]['h_acc_r'].get(f'gl64|{sp}', {}).get(tr)
+                    cells.append(x.get('outcome') if isinstance(x, dict) else x)
+                rows.append([sp.replace('|', ' '), tr, *cells])
+        v3 = load('e2-verdicts-3d.json') or {}
+        sr = v3.get('spread_ratio') or {}
+        L += ['### 3D accuracy vs width on the fixed rule gl64 (H-acc-r, isolates the bank; Q2 against gl80 on cases 0–7)', '',
+              tbl(['spec', 'transition', 'bank 0', 'seed 1', 'seed 2', 'seed 3'], rows), '',
+              'Spread ratio (cross-seed spread of the lower width\'s median E0 error / median |paired change| of the transition; '
+              '< 1 means the seed spread is small against the width step):', '',
+              tbl(['spec', 'transition', 'spread ratio'], [[k.split('|', 1)[1].rsplit('|', 1)[0].replace('|', ' '), k.rsplit('|', 1)[1],
+                                                           f(v) if not isinstance(v, str) else v] for k, v in sorted(sr.items())]), '']
+        from e2verdicts import tint
+        rows = []
+        for sp in ('fs|CN|0.01|K1', 'qn|BDF2|0.025|k4'):
+            for w in (256, 512, 768, 1024):
+                es = [R3[b]['errors'].get(f'gl64|W{w}|{sp}') for b in range(4)]
+                if not all(es):
+                    continue
+                for stat in ('median', 'worst'):
+                    vals = [e[stat] for e in es[1:]]
+                    t = tint(vals)
+                    rows.append([sp.replace('|', ' '), f'W{w}', stat, f(es[0][stat]), f'{f(min(vals))}–{f(max(vals))}',
+                                 f"[{f(t['lo'])}, {f(t['hi'])}]" if t else 'n/a'])
+        span = {}
+        for sp in ('fs|CN|0.01|K1', 'qn|BDF2|0.025|k4'):
+            for w in (256, 512, 768, 1024):
+                es = [R3[b]['errors'].get(f'gl64|W{w}|{sp}') for b in (1, 2, 3)]
+                if all(es):
+                    for stat in ('median', 'worst'):
+                        vs = [e[stat] for e in es]
+                        span.setdefault(stat, []).append((max(vs) / min(vs), f"{sp.split('|')[1]} W{w}"))
+        mx = {k: max(v) for k, v in span.items()}
+        L += ['Seed spread of the E0 error on the fixed rule gl64 (median and worst case over the 64 cases; the $t$ interval is on '
+              'the mean of $\\log_{10}$ error over seeds 1–3, $n = 3$, wide by construction). Largest max/min ratio over seeds 1–3: '
+              f"median error {f(mx['median'][0], 4)} ({mx['median'][1]}), worst-case error {f(mx['worst'][0], 4)} ({mx['worst'][1]}).", '',
+              tbl(['spec', 'width', 'statistic', 'bank 0', 'seeds 1–3 min–max', '95 % t-interval (seeds)'], rows), '']
+        X['E2']['gl64_3d'] = dict(h_acc_r={str(b): R3[b]['h_acc_r'] for b in range(4) if R3[b]},
+                                  errors={str(b): R3[b]['errors'] for b in range(4)}, spread_ratio=sr)
     fr3 = {b: (load(f'e2-3d-{b}.json') or {}).get('front_65') for b in range(4)}
     if any(fr3.values()):
         pk = []
@@ -329,6 +382,33 @@ def e2_section(R, X):
     plot_e2()
     L += ['![E2 seed spread](plots/e2_spread.png)', '']
     return L
+
+
+def g_e22(s0):
+    """G-E2.2 (non-blocking, DESIGN 3.3): the incumbent's 3D picks vs jcp-dims' m* table for the same cells
+    (m = quadrature points: gl n -> n^3, lat N -> N)"""
+    p = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/runs/EXPORT.json')
+    if not (s0 and p.exists()):
+        return ['G-E2.2 (incumbent vs jcp-dims m*): unavailable.', '']
+    W = json.loads(p.read_text()).get('width_mstar_3d') or {}
+    pts = lambda r: (int(r[2:]) ** 3 if r.startswith('gl') else int(r[3:])) if r else None
+    rows, agree, absent = [], [], []
+    for sl in s0['slots']:
+        d = ((W.get(f"W{sl['width']}|{sl['family']}") or {}).get('per_spec') or {}).get(sl['spec'])
+        if d is None:
+            absent.append(f"W{sl['width']} {sl['spec'].replace('|', ' ')} {sl['family']}")
+            continue
+        mine, theirs = pts(sl['rule']), d.get('m')
+        ok = mine == theirs
+        agree.append(ok)
+        lab = ('differs' if not ok else 'agrees on m (pick target-unverified, not a certified agreement)'
+               if sl['outcome'].startswith('diagnostic') else 'agrees')
+        rows.append([f"W{sl['width']}", sl['spec'].replace('|', ' '), sl['family'], f"{sl['rule'] or 'none'} ({sl['outcome']})",
+                     d.get('outcome'), lab])
+    return [f'G-E2.2 (non-blocking anchor): the incumbent\'s picks against jcp-dims\' $m^*$ table for the same cells. '
+            f'{sum(agree)} of {len(agree)} compared cells agree on $m$; cells without a dims entry: '
+            f"{', '.join(absent) if absent else 'none'}.", '',
+            tbl(['width', 'spec', 'family', 'this lane (incumbent)', 'jcp-dims m*', 'G-E2.2'], rows), '']
 
 
 def data_hash_sentence():

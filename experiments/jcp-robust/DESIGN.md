@@ -992,3 +992,8 @@ jcp-regimes finished at 14.9 of its 60 GPU-h, and the coordinator has reallocate
 lane's cap rises from **75 to 95 GPU-h**, so the priority-4 total is 15 + 95 = 110 of its 135 allocation. The
 reservation rule is unchanged (`ledger.py` CAP = 95; the ledger's `cap_gpu_hours` = 95). The registered defer order is
 unchanged: E2 3D seed 3 is dropped first, and only if the new cap would still be exceeded.
+- **A17.4 (results audit E2 2D round 2: ACCEPT-WITH-FIXES)** `audits/codex-results-e2-2d-2.md` found the corrected front
+  rule registered-exact and the analyses reproducible byte for byte (140 / 21 / 22 over 183 rows). It asked for two
+  reporting fixes, both made. First, the data-hash grouping and the deployed-rule failure seeds are now generated from
+  the training records and the per-bank analyses (`make_report.data_hash_sentence`, `deployed_sentence`). Second, the
+  seed-dependent definition now reads "different definitive labels", as in A2.7. E2 2D is accepted.

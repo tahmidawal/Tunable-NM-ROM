@@ -209,12 +209,11 @@ def e2_section(R, X):
          'The full recipe — bank training, ordering/rotation, rule selection — is repeated for the 2D R512 bank '
          '(seeds 1–3, prefixes $r = 128, 256, 384$) and for the 3D W1024 bank (seeds 1–3, widths 256–1024). The key '
          'verdicts are then re-run per seed. A verdict is **seed-robust** if seeds 1–3 give the same definitive label, '
-         '**seed-dependent** if two seeds give opposite definitive labels, and **inconclusive** otherwise. Agreement with '
+         '**seed-dependent** if two seeds give different definitive labels, and **inconclusive** otherwise. Agreement with '
          'the incumbent bank (seed 0) is reported separately as historical agreement (A2.7). Retrains are not bitwise '
          'reproducible, so seeds and hashes are recorded in `inputs/banks*/s<seed>/BANK.json`. Three seeds support a '
          'description of agreement, not a population-level robustness claim. The three retrains used identical '
-         'data-generation settings, but the generated data are not bitwise identical: seed 2\'s data sha256 differs from '
-         'seeds 1 and 3 (A17.2). Accuracy verdicts use the registered validation populations, including the 16-case '
+         'data-generation settings; ' + data_hash_sentence() + ' (A17.2). Accuracy verdicts use the registered validation populations, including the 16-case '
          '4096² subset, and $\\varepsilon_{ref}$ is a conditional Richardson estimate. The $t$ intervals on the seed '
          'spread concern the mean of $\\log_{10}$ error with $n = 3$ (2 degrees of freedom); they are not prediction '
          'intervals for further seeds.', '',
@@ -285,6 +284,42 @@ def e2_section(R, X):
     plot_e2()
     L += ['![E2 seed spread](plots/e2_spread.png)', '']
     return L
+
+
+def data_hash_sentence():
+    """grouping of the Stage-A training-data sha256 over seeds 1-3, read from the training records"""
+    hs = {}
+    for b in (1, 2, 3):
+        p = HERE / 'runs' / 'e2t2d' / 'archive' / 'output' / f'train2d_s{b}' / 'stageA' / 'train.json'
+        if p.exists():
+            hs[b] = json.loads(p.read_text()).get('data_sha256')
+    groups = {}
+    for b, h in hs.items():
+        groups.setdefault(h, []).append(b)
+    if len(groups) <= 1:
+        return 'the generated training data have the same sha256 for every seed'
+    parts = ['seed' + ('s ' if len(v) > 1 else ' ') + ', '.join(map(str, v)) + f' (sha256 {k[:12]}…)' for k, v in groups.items()]
+    return 'the generated data are not bitwise identical, as their sha256 groups are ' + '; '.join(parts)
+
+
+def deployed_sentence():
+    """per deployed rank, the retrained seeds on which the deployed rule fails Q1+Q2 at 1024² (either scheme)"""
+    out = []
+    for r in (128, 256, 384):
+        fails, rule = [], None
+        for b in (1, 2, 3):
+            d = load(f'e2-2d-{b}.json')
+            if not d:
+                continue
+            ks = [k for k in d['configurations'] if k.startswith(f'1024|R{r}|dep|LSPG_') and k.endswith('_1')]
+            rule = rule or (d['configurations'][ks[0]]['rule'] if ks else None)
+            if any(d['configurations'][k]['qualified'] is False for k in ks):
+                fails.append(b)
+        if rule:
+            out.append(f"deployed R{r} `{rule}` fails qualification at 1024² on " +
+                       ('no retrained seed' if not fails else 'seed' + ('s ' if len(fails) > 1 else ' ') + ', '.join(map(str, fails))))
+    s_ = '; '.join(out) + '.'
+    return s_[0].upper() + s_[1:]
 
 
 def plot_e2():
@@ -441,9 +476,8 @@ def main():
           '- **Retracted (A17):** the first E2 2D roll-up computed the 1024² front with exact joint inequalities instead of '
           'qualify\'s registered dominance rule. Its cross-seed counts and its "R256 front membership is seed-dependent" '
           'reading are withdrawn; the counts above come from the corrected rule.',
-          '- On the retrained 2D banks, the deployed rules do not transfer: deployed R128 `fib4181` fails successor-rollout '
-          'qualification on all three retrained banks, and deployed R384 `gauss128` fails on seeds 1 and 2. These are '
-          'qualification failures of the deployed rules; they do not affect the selected-rule accuracy verdicts.', '']
+          '- On the retrained 2D banks, the deployed rules do not transfer. ' + deployed_sentence() +
+          ' These are qualification failures of the deployed rules; they do not affect the selected-rule accuracy verdicts.', '']
     L += ['## Glossary', '',
           '- **Draw $s$**: one random shift (lattice) or scramble (Sobol) of a quadrature rule; $s=0$ is the rule deployed today.',
           '- **$D$**: rollout distance of a draw\'s trajectory to the converged (cross-family) reference rule, relative to the initial state norm.',

@@ -1,0 +1,350 @@
+host=pax011 source_commit=9eadd0829c45c56942fbbd96659e2ee6cf280394
+0, NVIDIA H200, GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2, 575.57.08, 143771 MiB, 405 MHz, 3201 MHz, 700.00 W
+10.235.106.22:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+allocated CUDA_VISIBLE_DEVICES=0
+jax_backend=gpu gpu_index=0
+STEP e2run3d configs/e2q0b.json 2026-10-20T02:29:27Z
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 3.8s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.6s
+[mesh 65] bank rows [(768, 250047), (256, 250047)] 5.6s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 8.7s
+SETUP 24.8
+RUN W768|gl16 fs|CN|0.01|K1 10.5s valid True nonst 0 / 1600 40.0
+RUN W768|gl16 fs|CN|0.0125|K1 6.9s valid True nonst 3 / 1280 46.9
+RUN W768|gl16 qn|BDF2|0.025|k4 4.6s valid True nonst 5 / 640 51.4
+RUN W768|gl16 ad|LSPG|CN|0.01|tight 7.9s valid True nonst 0 / 0 59.4
+RUN W768|gl16 ad|LSPG|CN|0.01|tighter 2.1s valid True nonst 0 / 0 61.5
+RUN W768|gl16 ad|LSPG|CN|0.0125|tight 6.1s valid True nonst 0 / 0 67.9
+RUN W768|gl16 ad|LSPG|CN|0.0125|tighter 1.9s valid True nonst 0 / 0 69.9
+RUN W768|gl16 ad|LSPG|BDF2|0.025|tight 4.3s valid True nonst 0 / 0 74.1
+RUN W768|gl16 ad|LSPG|BDF2|0.025|tighter 1.7s valid True nonst 0 / 0 75.9
+LADDER W768|gl16|fs|CN|0.01|K1 valid True worst dist_adt 0.0026125420740138136 rho 1.0624193868101885 80.2
+LADDER W768|gl16|fs|CN|0.0125|K1 valid True worst dist_adt 0.0035102213775243443 rho 1.0624193868101885 80.5
+LADDER W768|gl16|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0033945391024717436 rho 1.0624193868101885 80.8
+RUN W768|gl20 fs|CN|0.01|K1 10.6s valid True nonst 0 / 1600 92.7
+RUN W768|gl20 fs|CN|0.0125|K1 8.3s valid True nonst 0 / 1280 101.0
+RUN W768|gl20 qn|BDF2|0.025|k4 4.8s valid True nonst 3 / 640 105.8
+RUN W768|gl20 ad|LSPG|CN|0.01|tight 9.5s valid True nonst 0 / 0 115.3
+RUN W768|gl20 ad|LSPG|CN|0.01|tighter 2.3s valid True nonst 0 / 0 117.6
+RUN W768|gl20 ad|LSPG|CN|0.0125|tight 7.3s valid True nonst 0 / 0 124.9
+RUN W768|gl20 ad|LSPG|CN|0.0125|tighter 2.1s valid True nonst 0 / 0 127.0
+RUN W768|gl20 ad|LSPG|BDF2|0.025|tight 4.7s valid True nonst 0 / 0 131.7
+RUN W768|gl20 ad|LSPG|BDF2|0.025|tighter 1.8s valid True nonst 0 / 0 133.6
+LADDER W768|gl20|fs|CN|0.01|K1 valid True worst dist_adt 0.0002592921457568351 rho 0.3222758783346905 137.5
+LADDER W768|gl20|fs|CN|0.0125|K1 valid True worst dist_adt 0.0005575533587351129 rho 0.3204432892314104 137.9
+LADDER W768|gl20|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0004783414840149712 rho 0.312363919376357 138.2
+RUN W768|gl24 fs|CN|0.01|K1 13.1s valid True nonst 0 / 1600 153.8
+RUN W768|gl24 fs|CN|0.0125|K1 10.6s valid True nonst 8 / 1280 164.4
+RUN W768|gl24 qn|BDF2|0.025|k4 5.6s valid True nonst 2 / 640 169.9
+RUN W768|gl24 ad|LSPG|CN|0.01|tight 12.7s valid True nonst 0 / 0 182.7
+RUN W768|gl24 ad|LSPG|CN|0.01|tighter 2.8s valid True nonst 0 / 0 185.4
+RUN W768|gl24 ad|LSPG|CN|0.0125|tight 10.0s valid True nonst 0 / 0 195.4
+RUN W768|gl24 ad|LSPG|CN|0.0125|tighter 2.5s valid True nonst 0 / 0 197.9
+RUN W768|gl24 ad|LSPG|BDF2|0.025|tight 6.2s valid True nonst 0 / 0 204.0
+RUN W768|gl24 ad|LSPG|BDF2|0.025|tighter 1.9s valid True nonst 0 / 0 205.9
+LADDER W768|gl24|fs|CN|0.01|K1 valid True worst dist_adt 0.0001378616953233586 rho 0.1565165054226605 209.8
+LADDER W768|gl24|fs|CN|0.0125|K1 valid True worst dist_adt 0.0003879108900646867 rho 0.14645537640295464 210.2
+LADDER W768|gl24|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0002529337811100703 rho 0.0801445645880326 210.6
+RUN W768|gl32 fs|CN|0.01|K1 22.0s valid True nonst 0 / 1600 236.3
+RUN W768|gl32 fs|CN|0.0125|K1 18.2s valid True nonst 17 / 1280 254.5
+RUN W768|gl32 qn|BDF2|0.025|k4 8.7s valid True nonst 4 / 640 263.2
+RUN W768|gl32 ad|LSPG|CN|0.01|tight 23.6s valid True nonst 0 / 0 286.8
+RUN W768|gl32 ad|LSPG|CN|0.01|tighter 4.3s valid True nonst 0 / 0 291.1
+RUN W768|gl32 ad|LSPG|CN|0.0125|tight 18.9s valid True nonst 0 / 0 310.0
+RUN W768|gl32 ad|LSPG|CN|0.0125|tighter 3.6s valid True nonst 0 / 0 313.6
+RUN W768|gl32 ad|LSPG|BDF2|0.025|tight 11.6s valid True nonst 0 / 0 325.2
+RUN W768|gl32 ad|LSPG|BDF2|0.025|tighter 2.7s valid True nonst 0 / 0 327.9
+LADDER W768|gl32|fs|CN|0.01|K1 valid True worst dist_adt 0.00011990085981414027 rho 0.010414558461309752 332.5
+LADDER W768|gl32|fs|CN|0.0125|K1 valid True worst dist_adt 0.00037516861941151844 rho 0.010064805180086598 333.1
+LADDER W768|gl32|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0020199796479222483 rho 0.005811306260408703 333.6
+RUN W768|gl40 fs|CN|0.01|K1 36.6s valid True nonst 0 / 1600 375.0
+RUN W768|gl40 fs|CN|0.0125|K1 30.1s valid True nonst 17 / 1280 405.0
+RUN W768|gl40 qn|BDF2|0.025|k4 14.1s valid True nonst 4 / 640 419.1
+RUN W768|gl40 ad|LSPG|CN|0.01|tight 41.5s valid True nonst 0 / 0 460.7
+RUN W768|gl40 ad|LSPG|CN|0.01|tighter 6.5s valid True nonst 0 / 0 467.2
+RUN W768|gl40 ad|LSPG|CN|0.0125|tight 33.9s valid True nonst 0 / 0 501.2
+RUN W768|gl40 ad|LSPG|CN|0.0125|tighter 5.8s valid True nonst 0 / 0 506.9
+RUN W768|gl40 ad|LSPG|BDF2|0.025|tight 20.4s valid True nonst 0 / 0 527.3
+RUN W768|gl40 ad|LSPG|BDF2|0.025|tighter 4.0s valid True nonst 0 / 0 531.3
+LADDER W768|gl40|fs|CN|0.01|K1 valid True worst dist_adt 0.00012033491022464382 rho 0.000973269371030941 536.2
+LADDER W768|gl40|fs|CN|0.0125|K1 valid True worst dist_adt 0.00037623623400956434 rho 0.0009759069121064136 537.0
+LADDER W768|gl40|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0020291039916440078 rho 0.000363407180534177 537.8
+RUN W768|gl48 fs|CN|0.01|K1 58.3s valid True nonst 0 / 1600 602.0
+RUN W768|gl48 fs|CN|0.0125|K1 47.6s valid True nonst 17 / 1280 649.6
+RUN W768|gl48 qn|BDF2|0.025|k4 22.2s valid True nonst 4 / 640 671.8
+RUN W768|gl48 ad|LSPG|CN|0.01|tight 68.4s valid True nonst 0 / 0 740.2
+RUN W768|gl48 ad|LSPG|CN|0.01|tighter 10.5s valid True nonst 0 / 0 750.6
+RUN W768|gl48 ad|LSPG|CN|0.0125|tight 56.4s valid True nonst 0 / 0 807.0
+RUN W768|gl48 ad|LSPG|CN|0.0125|tighter 9.0s valid True nonst 0 / 0 816.0
+RUN W768|gl48 ad|LSPG|BDF2|0.025|tight 33.5s valid True nonst 0 / 0 849.5
+RUN W768|gl48 ad|LSPG|BDF2|0.025|tighter 5.9s valid True nonst 0 / 0 855.4
+LADDER W768|gl48|fs|CN|0.01|K1 valid True worst dist_adt 0.00012028262757521772 rho 0.0005819674343317606 860.8
+LADDER W768|gl48|fs|CN|0.0125|K1 valid True worst dist_adt 0.00037609004998005605 rho 0.0006055020297620892 861.9
+LADDER W768|gl48|qn|BDF2|0.025|k4 valid True worst dist_adt 0.002029580301286538 rho 0.00016313770049584478 863.1
+RUN W768|gl56 fs|CN|0.01|K1 88.9s valid True nonst 0 / 1600 959.1
+RUN W768|gl56 fs|CN|0.0125|K1 73.4s valid True nonst 17 / 1280 1032.4
+RUN W768|gl56 qn|BDF2|0.025|k4 33.4s valid True nonst 4 / 640 1065.8
+RUN W768|gl56 ad|LSPG|CN|0.01|tight 106.5s valid True nonst 0 / 0 1172.4
+RUN W768|gl56 ad|LSPG|CN|0.01|tighter 15.4s valid True nonst 0 / 0 1187.8
+RUN W768|gl56 ad|LSPG|CN|0.0125|tight 87.7s valid True nonst 0 / 0 1275.4
+RUN W768|gl56 ad|LSPG|CN|0.0125|tighter 13.4s valid True nonst 0 / 0 1288.9
+RUN W768|gl56 ad|LSPG|BDF2|0.025|tight 51.9s valid True nonst 0 / 0 1340.7
+RUN W768|gl56 ad|LSPG|BDF2|0.025|tighter 8.5s valid True nonst 0 / 0 1349.2
+LADDER W768|gl56|fs|CN|0.01|K1 valid True worst dist_adt 0.00012028360810101751 rho 0.0003976766795244508 1353.6
+LADDER W768|gl56|fs|CN|0.0125|K1 valid True worst dist_adt 0.0003760922389659735 rho 0.0004140148176662684 1355.2
+LADDER W768|gl56|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0020294370025993914 rho 0.00011018458586852804 1356.8
+RUN W768|gl64 fs|CN|0.01|K1 129.7s valid True nonst 0 / 1600 1494.7
+RUN W768|gl64 fs|CN|0.0125|K1 106.4s valid True nonst 17 / 1280 1601.0
+RUN W768|gl64 qn|BDF2|0.025|k4 48.6s valid True nonst 4 / 640 1649.6
+RUN W768|gl64 ad|LSPG|CN|0.01|tight 156.9s valid True nonst 0 / 0 1806.5
+RUN W768|gl64 ad|LSPG|CN|0.01|tighter 22.8s valid True nonst 0 / 0 1829.3
+RUN W768|gl64 ad|LSPG|CN|0.0125|tight 130.1s valid True nonst 0 / 0 1959.4
+RUN W768|gl64 ad|LSPG|CN|0.0125|tighter 19.3s valid True nonst 0 / 0 1978.7
+RUN W768|gl64 ad|LSPG|BDF2|0.025|tight 76.8s valid True nonst 0 / 0 2055.5
+RUN W768|gl64 ad|LSPG|BDF2|0.025|tighter 12.2s valid True nonst 0 / 0 2067.7
+LADDER W768|gl64|fs|CN|0.01|K1 valid True worst dist_adt 0.0001202812723097306 rho 9.416730075228589e-05 2075.4
+LADDER W768|gl64|fs|CN|0.0125|K1 valid True worst dist_adt 0.0003760868244008924 rho 9.805427625954013e-05 2078.1
+LADDER W768|gl64|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0020296488979855538 rho 2.6232739851478607e-05 2080.7
+RUN W768|gl80 fs|CN|0.01|K1 239.7s valid True nonst 0 / 1600 2329.8
+RUN W768|gl80 fs|CN|0.0125|K1 196.9s valid True nonst 17 / 1280 2526.7
+RUN W768|gl80 qn|BDF2|0.025|k4 90.3s valid True nonst 4 / 640 2616.9
+RUN W768|gl80 ad|LSPG|CN|0.01|tight 294.4s valid True nonst 0 / 0 2911.3
+RUN W768|gl80 ad|LSPG|CN|0.01|tighter 41.4s valid True nonst 0 / 0 2952.7
+RUN W768|gl80 ad|LSPG|CN|0.0125|tight 244.7s valid True nonst 0 / 0 3197.4
+RUN W768|gl80 ad|LSPG|CN|0.0125|tighter 35.3s valid True nonst 0 / 0 3232.7
+RUN W768|gl80 ad|LSPG|BDF2|0.025|tight 143.6s valid True nonst 0 / 0 3376.3
+RUN W768|gl80 ad|LSPG|BDF2|0.025|tighter 21.9s valid True nonst 0 / 0 3398.1
+LADDER W768|gl80|fs|CN|0.01|K1 valid True worst dist_adt 0.00012028173962434069 rho None 3398.3
+LADDER W768|gl80|fs|CN|0.0125|K1 valid True worst dist_adt 0.0003760879266287535 rho None 3398.4
+LADDER W768|gl80|qn|BDF2|0.025|k4 valid True worst dist_adt 0.002029604024619672 rho None 3398.5
+RUN W768|lat8192 fs|CN|0.01|K1 10.4s valid True nonst 1 / 1600 3433.0
+RUN W768|lat8192 fs|CN|0.0125|K1 8.3s valid True nonst 30 / 1280 3441.3
+RUN W768|lat8192 qn|BDF2|0.025|k4 5.0s valid True nonst 6 / 640 3446.3
+RUN W768|lat8192 ad|LSPG|CN|0.01|tight 9.3s valid True nonst 0 / 0 3455.6
+RUN W768|lat8192 ad|LSPG|CN|0.01|tighter 2.2s valid True nonst 0 / 0 3457.8
+RUN W768|lat8192 ad|LSPG|CN|0.0125|tight 7.1s valid True nonst 0 / 0 3464.9
+RUN W768|lat8192 ad|LSPG|CN|0.0125|tighter 2.2s valid True nonst 0 / 0 3467.2
+RUN W768|lat8192 ad|LSPG|BDF2|0.025|tight 4.8s valid True nonst 0 / 0 3471.9
+RUN W768|lat8192 ad|LSPG|BDF2|0.025|tighter 1.7s valid True nonst 0 / 0 3473.6
+LADDER W768|lat8192|fs|CN|0.01|K1 valid True worst dist_adt 0.00035819309729004915 rho 0.26847440970487035 3478.0
+LADDER W768|lat8192|fs|CN|0.0125|K1 valid True worst dist_adt 0.0007559724079550618 rho 0.2575464498446563 3478.3
+LADDER W768|lat8192|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0010637149907050483 rho 0.19488451793004152 3478.6
+RUN W768|lat16384 fs|CN|0.01|K1 14.7s valid True nonst 0 / 1600 3505.0
+RUN W768|lat16384 fs|CN|0.0125|K1 11.4s valid True nonst 17 / 1280 3516.4
+RUN W768|lat16384 qn|BDF2|0.025|k4 6.0s valid True nonst 4 / 640 3522.4
+RUN W768|lat16384 ad|LSPG|CN|0.01|tight 13.8s valid True nonst 0 / 0 3536.2
+RUN W768|lat16384 ad|LSPG|CN|0.01|tighter 2.7s valid True nonst 0 / 0 3538.9
+RUN W768|lat16384 ad|LSPG|CN|0.0125|tight 10.9s valid True nonst 0 / 0 3549.8
+RUN W768|lat16384 ad|LSPG|CN|0.0125|tighter 2.5s valid True nonst 0 / 0 3552.4
+RUN W768|lat16384 ad|LSPG|BDF2|0.025|tight 6.9s valid True nonst 0 / 0 3559.3
+RUN W768|lat16384 ad|LSPG|BDF2|0.025|tighter 1.9s valid True nonst 0 / 0 3561.2
+LADDER W768|lat16384|fs|CN|0.01|K1 valid True worst dist_adt 0.00012026638895490625 rho 0.011656699602724748 3561.9
+LADDER W768|lat16384|fs|CN|0.0125|K1 valid True worst dist_adt 0.00037637535998500055 rho 0.011605845013417588 3562.3
+LADDER W768|lat16384|qn|BDF2|0.025|k4 valid True worst dist_adt 0.002025322702382077 rho 0.00829855503227792 3562.7
+RUN W768|lat32768 fs|CN|0.01|K1 16.5s valid True nonst 0 / 1600 3592.0
+RUN W768|lat32768 fs|CN|0.0125|K1 13.9s valid True nonst 17 / 1280 3606.0
+RUN W768|lat32768 qn|BDF2|0.025|k4 6.7s valid True nonst 4 / 640 3612.7
+RUN W768|lat32768 ad|LSPG|CN|0.01|tight 21.2s valid True nonst 0 / 0 3633.8
+RUN W768|lat32768 ad|LSPG|CN|0.01|tighter 2.9s valid True nonst 0 / 0 3636.8
+RUN W768|lat32768 ad|LSPG|CN|0.0125|tight 17.7s valid True nonst 0 / 0 3654.5
+RUN W768|lat32768 ad|LSPG|CN|0.0125|tighter 2.5s valid True nonst 0 / 0 3657.0
+RUN W768|lat32768 ad|LSPG|BDF2|0.025|tight 10.4s valid True nonst 0 / 0 3667.4
+RUN W768|lat32768 ad|LSPG|BDF2|0.025|tighter 1.5s valid True nonst 0 / 0 3668.9
+LADDER W768|lat32768|fs|CN|0.01|K1 valid True worst dist_adt 0.0001204414168036706 rho 0.0017514187392503394 3671.8
+LADDER W768|lat32768|fs|CN|0.0125|K1 valid True worst dist_adt 0.00037640556080884084 rho 0.0017440938335420981 3672.4
+LADDER W768|lat32768|qn|BDF2|0.025|k4 valid True worst dist_adt 0.002028318007359791 rho 0.0010554652165708925 3672.9
+RUN W768|lat65536 fs|CN|0.01|K1 37.5s valid True nonst 0 / 1600 3724.5
+RUN W768|lat65536 fs|CN|0.0125|K1 30.4s valid True nonst 17 / 1280 3754.9
+RUN W768|lat65536 qn|BDF2|0.025|k4 14.6s valid True nonst 4 / 640 3769.5
+RUN W768|lat65536 ad|LSPG|CN|0.01|tight 42.5s valid True nonst 0 / 0 3812.0
+RUN W768|lat65536 ad|LSPG|CN|0.01|tighter 6.8s valid True nonst 0 / 0 3818.8
+RUN W768|lat65536 ad|LSPG|CN|0.0125|tight 34.6s valid True nonst 0 / 0 3853.4
+RUN W768|lat65536 ad|LSPG|CN|0.0125|tighter 5.9s valid True nonst 0 / 0 3859.3
+RUN W768|lat65536 ad|LSPG|BDF2|0.025|tight 20.8s valid True nonst 0 / 0 3880.1
+RUN W768|lat65536 ad|LSPG|BDF2|0.025|tighter 4.1s valid True nonst 0 / 0 3884.2
+LADDER W768|lat65536|fs|CN|0.01|K1 valid True worst dist_adt 0.00012028434081166421 rho 0.003941007879782081 3887.7
+LADDER W768|lat65536|fs|CN|0.0125|K1 valid True worst dist_adt 0.0003760901927844253 rho 0.0038609038075356392 3888.5
+LADDER W768|lat65536|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0020297272859650635 rho 0.0021779229939718836 3889.4
+RUN W768|lat131072 fs|CN|0.01|K1 67.9s valid True nonst 0 / 1600 3972.5
+RUN W768|lat131072 fs|CN|0.0125|K1 55.9s valid True nonst 17 / 1280 4028.4
+RUN W768|lat131072 qn|BDF2|0.025|k4 25.7s valid True nonst 4 / 640 4054.1
+RUN W768|lat131072 ad|LSPG|CN|0.01|tight 80.4s valid True nonst 0 / 0 4134.6
+RUN W768|lat131072 ad|LSPG|CN|0.01|tighter 11.9s valid True nonst 0 / 0 4146.5
+RUN W768|lat131072 ad|LSPG|CN|0.0125|tight 66.5s valid True nonst 0 / 0 4213.0
+RUN W768|lat131072 ad|LSPG|CN|0.0125|tighter 10.2s valid True nonst 0 / 0 4223.2
+RUN W768|lat131072 ad|LSPG|BDF2|0.025|tight 39.4s valid True nonst 0 / 0 4262.6
+RUN W768|lat131072 ad|LSPG|BDF2|0.025|tighter 6.7s valid True nonst 0 / 0 4269.3
+LADDER W768|lat131072|fs|CN|0.01|K1 valid True worst dist_adt 0.00012006869546680226 rho None 4269.4
+LADDER W768|lat131072|fs|CN|0.0125|K1 valid True worst dist_adt 0.0003758528273419803 rho None 4269.5
+LADDER W768|lat131072|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0020425740961226794 rho None 4269.6
+RUN W1024|gl16 fs|CN|0.01|K1 13.6s valid True nonst 30 / 1600 4318.4
+RUN W1024|gl16 fs|CN|0.0125|K1 9.0s valid True nonst 79 / 1280 4327.4
+RUN W1024|gl16 qn|BDF2|0.025|k4 5.8s valid True nonst 7 / 640 4333.1
+RUN W1024|gl16 ad|LSPG|CN|0.01|tight 12.4s valid True nonst 0 / 0 4345.6
+RUN W1024|gl16 ad|LSPG|CN|0.01|tighter 3.1s valid True nonst 0 / 0 4348.7
+RUN W1024|gl16 ad|LSPG|CN|0.0125|tight 10.4s valid True nonst 0 / 0 4359.8
+RUN W1024|gl16 ad|LSPG|CN|0.0125|tighter 3.0s valid True nonst 0 / 0 4362.8
+RUN W1024|gl16 ad|LSPG|BDF2|0.025|tight 6.3s valid True nonst 0 / 0 4369.2
+RUN W1024|gl16 ad|LSPG|BDF2|0.025|tighter 2.2s valid True nonst 0 / 0 4371.4
+LADDER W1024|gl16|fs|CN|0.01|K1 valid True worst dist_adt 0.006379946553738296 rho 1.3517582419947352 4374.6
+LADDER W1024|gl16|fs|CN|0.0125|K1 valid True worst dist_adt 0.012587963609787702 rho 1.3517582419947352 4374.9
+LADDER W1024|gl16|qn|BDF2|0.025|k4 valid True worst dist_adt 0.009357376365371 rho 1.3517582419947352 4375.2
+RUN W1024|gl20 fs|CN|0.01|K1 13.8s valid True nonst 0 / 1600 4406.8
+RUN W1024|gl20 fs|CN|0.0125|K1 11.3s valid True nonst 3 / 1280 4418.1
+RUN W1024|gl20 qn|BDF2|0.025|k4 5.7s valid True nonst 6 / 640 4423.8
+RUN W1024|gl20 ad|LSPG|CN|0.01|tight 14.3s valid True nonst 0 / 0 4438.1
+RUN W1024|gl20 ad|LSPG|CN|0.01|tighter 3.2s valid True nonst 0 / 0 4441.3
+RUN W1024|gl20 ad|LSPG|CN|0.0125|tight 11.5s valid True nonst 0 / 0 4452.8
+RUN W1024|gl20 ad|LSPG|CN|0.0125|tighter 3.0s valid True nonst 0 / 0 4455.8
+RUN W1024|gl20 ad|LSPG|BDF2|0.025|tight 7.4s valid True nonst 0 / 0 4463.2
+RUN W1024|gl20 ad|LSPG|BDF2|0.025|tighter 2.2s valid True nonst 0 / 0 4465.4
+LADDER W1024|gl20|fs|CN|0.01|K1 valid True worst dist_adt 0.0010438800566127547 rho 0.5201924561396525 4468.5
+LADDER W1024|gl20|fs|CN|0.0125|K1 valid True worst dist_adt 0.0012819106067814272 rho 0.5201924561396525 4468.9
+LADDER W1024|gl20|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0018300112531324756 rho 0.5201924561396525 4469.3
+RUN W1024|gl24 fs|CN|0.01|K1 18.4s valid True nonst 0 / 1600 4506.9
+RUN W1024|gl24 fs|CN|0.0125|K1 15.0s valid True nonst 6 / 1280 4522.0
+RUN W1024|gl24 qn|BDF2|0.025|k4 7.4s valid True nonst 5 / 640 4529.4
+RUN W1024|gl24 ad|LSPG|CN|0.01|tight 19.8s valid True nonst 0 / 0 4549.2
+RUN W1024|gl24 ad|LSPG|CN|0.01|tighter 3.7s valid True nonst 0 / 0 4552.9
+RUN W1024|gl24 ad|LSPG|CN|0.0125|tight 15.7s valid True nonst 0 / 0 4568.5
+RUN W1024|gl24 ad|LSPG|CN|0.0125|tighter 3.3s valid True nonst 0 / 0 4571.9
+RUN W1024|gl24 ad|LSPG|BDF2|0.025|tight 9.9s valid True nonst 0 / 0 4581.8
+RUN W1024|gl24 ad|LSPG|BDF2|0.025|tighter 2.5s valid True nonst 0 / 0 4584.3
+LADDER W1024|gl24|fs|CN|0.01|K1 valid True worst dist_adt 0.00022585269696524723 rho 0.18154726219165268 4587.3
+LADDER W1024|gl24|fs|CN|0.0125|K1 valid True worst dist_adt 0.0005431230651953188 rho 0.18060661211738926 4587.8
+LADDER W1024|gl24|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0003859842592410672 rho 0.14164806925800222 4588.3
+RUN W1024|gl32 fs|CN|0.01|K1 33.8s valid True nonst 2 / 1600 4642.9
+RUN W1024|gl32 fs|CN|0.0125|K1 27.7s valid True nonst 35 / 1280 4670.6
+RUN W1024|gl32 qn|BDF2|0.025|k4 12.6s valid True nonst 2 / 640 4683.2
+RUN W1024|gl32 ad|LSPG|CN|0.01|tight 37.8s valid True nonst 0 / 0 4721.0
+RUN W1024|gl32 ad|LSPG|CN|0.01|tighter 6.2s valid True nonst 0 / 0 4727.2
+RUN W1024|gl32 ad|LSPG|CN|0.0125|tight 30.6s valid True nonst 0 / 0 4757.8
+RUN W1024|gl32 ad|LSPG|CN|0.0125|tighter 5.5s valid True nonst 0 / 0 4763.2
+RUN W1024|gl32 ad|LSPG|BDF2|0.025|tight 18.5s valid True nonst 0 / 0 4781.8
+RUN W1024|gl32 ad|LSPG|BDF2|0.025|tighter 3.7s valid True nonst 0 / 0 4785.5
+LADDER W1024|gl32|fs|CN|0.01|K1 valid True worst dist_adt 0.0001371793301009755 rho 0.03149932897503278 4789.3
+LADDER W1024|gl32|fs|CN|0.0125|K1 valid True worst dist_adt 0.0004389519968205929 rho 0.030583244516485843 4790.0
+LADDER W1024|gl32|qn|BDF2|0.025|k4 valid True worst dist_adt 0.003344659767522513 rho 0.01596516961470253 4790.7
+RUN W1024|gl40 fs|CN|0.01|K1 58.6s valid True nonst 2 / 1600 4871.6
+RUN W1024|gl40 fs|CN|0.0125|K1 48.2s valid True nonst 35 / 1280 4919.8
+RUN W1024|gl40 qn|BDF2|0.025|k4 20.8s valid True nonst 2 / 640 4940.7
+RUN W1024|gl40 ad|LSPG|CN|0.01|tight 68.3s valid True nonst 0 / 0 5008.9
+RUN W1024|gl40 ad|LSPG|CN|0.01|tighter 10.3s valid True nonst 0 / 0 5019.2
+RUN W1024|gl40 ad|LSPG|CN|0.0125|tight 55.7s valid True nonst 0 / 0 5074.9
+RUN W1024|gl40 ad|LSPG|CN|0.0125|tighter 9.0s valid True nonst 0 / 0 5083.9
+RUN W1024|gl40 ad|LSPG|BDF2|0.025|tight 33.4s valid True nonst 0 / 0 5117.3
+RUN W1024|gl40 ad|LSPG|BDF2|0.025|tighter 6.0s valid True nonst 0 / 0 5123.3
+LADDER W1024|gl40|fs|CN|0.01|K1 valid True worst dist_adt 0.0001356167123062403 rho 0.0038801996686297314 5127.4
+LADDER W1024|gl40|fs|CN|0.0125|K1 valid True worst dist_adt 0.000436407891209232 rho 0.0038278888089093507 5128.4
+LADDER W1024|gl40|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0035263742796072983 rho 0.0014274374541805132 5129.4
+RUN W1024|gl48 fs|CN|0.01|K1 95.5s valid True nonst 2 / 1600 5248.7
+RUN W1024|gl48 fs|CN|0.0125|K1 78.8s valid True nonst 35 / 1280 5327.5
+RUN W1024|gl48 qn|BDF2|0.025|k4 34.1s valid True nonst 2 / 640 5361.5
+RUN W1024|gl48 ad|LSPG|CN|0.01|tight 113.6s valid True nonst 0 / 0 5475.2
+RUN W1024|gl48 ad|LSPG|CN|0.01|tighter 16.5s valid True nonst 0 / 0 5491.6
+RUN W1024|gl48 ad|LSPG|CN|0.0125|tight 93.4s valid True nonst 0 / 0 5585.1
+RUN W1024|gl48 ad|LSPG|CN|0.0125|tighter 14.3s valid True nonst 0 / 0 5599.4
+RUN W1024|gl48 ad|LSPG|BDF2|0.025|tight 55.5s valid True nonst 0 / 0 5654.9
+RUN W1024|gl48 ad|LSPG|BDF2|0.025|tighter 9.3s valid True nonst 0 / 0 5664.2
+LADDER W1024|gl48|fs|CN|0.01|K1 valid True worst dist_adt 0.00013518099301379737 rho 0.0028036969111939576 5669.1
+LADDER W1024|gl48|fs|CN|0.0125|K1 valid True worst dist_adt 0.00043548953518563323 rho 0.0027926682712327527 5670.6
+LADDER W1024|gl48|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0035293191457355312 rho 0.0008966572047729172 5672.1
+RUN W1024|gl56 fs|CN|0.01|K1 147.2s valid True nonst 2 / 1600 5844.6
+RUN W1024|gl56 fs|CN|0.0125|K1 121.6s valid True nonst 35 / 1280 5966.2
+RUN W1024|gl56 qn|BDF2|0.025|k4 51.3s valid True nonst 2 / 640 6017.5
+RUN W1024|gl56 ad|LSPG|CN|0.01|tight 176.7s valid True nonst 0 / 0 6194.2
+RUN W1024|gl56 ad|LSPG|CN|0.01|tighter 25.2s valid True nonst 0 / 0 6219.4
+RUN W1024|gl56 ad|LSPG|CN|0.0125|tight 146.4s valid True nonst 0 / 0 6365.8
+RUN W1024|gl56 ad|LSPG|CN|0.0125|tighter 21.7s valid True nonst 0 / 0 6387.5
+RUN W1024|gl56 ad|LSPG|BDF2|0.025|tight 86.4s valid True nonst 0 / 0 6473.9
+RUN W1024|gl56 ad|LSPG|BDF2|0.025|tighter 13.6s valid True nonst 0 / 0 6487.5
+LADDER W1024|gl56|fs|CN|0.01|K1 valid True worst dist_adt 0.00013515636156437568 rho 0.0019143008604023614 6492.7
+LADDER W1024|gl56|fs|CN|0.0125|K1 valid True worst dist_adt 0.00043544269113234127 rho 0.0019032516522803132 6494.8
+LADDER W1024|gl56|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0035301875458060307 rho 0.0006011063755093039 6497.0
+RUN W1024|gl64 fs|CN|0.01|K1 216.2s valid True nonst 2 / 1600 6740.2
+RUN W1024|gl64 fs|CN|0.0125|K1 178.4s valid True nonst 35 / 1280 6918.6
+RUN W1024|gl64 qn|BDF2|0.025|k4 75.0s valid True nonst 2 / 640 6993.6
+RUN W1024|gl64 ad|LSPG|CN|0.01|tight 261.3s valid True nonst 0 / 0 7254.9
+RUN W1024|gl64 ad|LSPG|CN|0.01|tighter 36.8s valid True nonst 0 / 0 7291.8
+RUN W1024|gl64 ad|LSPG|CN|0.0125|tight 216.2s valid True nonst 0 / 0 7508.0
+RUN W1024|gl64 ad|LSPG|CN|0.0125|tighter 31.6s valid True nonst 0 / 0 7539.6
+RUN W1024|gl64 ad|LSPG|BDF2|0.025|tight 127.7s valid True nonst 0 / 0 7667.3
+RUN W1024|gl64 ad|LSPG|BDF2|0.025|tighter 19.6s valid True nonst 0 / 0 7686.9
+LADDER W1024|gl64|fs|CN|0.01|K1 valid True worst dist_adt 0.00013514879097389898 rho 0.0004553620030452214 7695.0
+LADDER W1024|gl64|fs|CN|0.0125|K1 valid True worst dist_adt 0.00043543289525312264 rho 0.000453323207135672 7698.6
+LADDER W1024|gl64|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0035301979718620324 rho 0.00014459697614175324 7702.2
+RUN W1024|gl80 fs|CN|0.01|K1 414.5s valid True nonst 2 / 1600 8145.0
+RUN W1024|gl80 fs|CN|0.0125|K1 343.2s valid True nonst 35 / 1280 8488.2
+RUN W1024|gl80 qn|BDF2|0.025|k4 142.5s valid True nonst 2 / 640 8630.7
+RUN W1024|gl80 ad|LSPG|CN|0.01|tight 504.5s valid True nonst 0 / 0 9135.3
+RUN W1024|gl80 ad|LSPG|CN|0.01|tighter 70.2s valid True nonst 0 / 0 9205.4
+RUN W1024|gl80 ad|LSPG|CN|0.0125|tight 418.2s valid True nonst 0 / 0 9623.6
+RUN W1024|gl80 ad|LSPG|CN|0.0125|tighter 60.2s valid True nonst 0 / 0 9683.8
+RUN W1024|gl80 ad|LSPG|BDF2|0.025|tight 246.4s valid True nonst 0 / 0 9930.2
+RUN W1024|gl80 ad|LSPG|BDF2|0.025|tighter 36.7s valid True nonst 0 / 0 9966.9
+LADDER W1024|gl80|fs|CN|0.01|K1 valid True worst dist_adt 0.00013514953251538754 rho None 9967.0
+LADDER W1024|gl80|fs|CN|0.0125|K1 valid True worst dist_adt 0.0004354335062148406 rho None 9967.2
+LADDER W1024|gl80|qn|BDF2|0.025|k4 valid True worst dist_adt 0.003530227339760712 rho None 9967.3
+RUN W1024|lat8192 fs|CN|0.01|K1 14.1s valid True nonst 3 / 1600 10042.9
+RUN W1024|lat8192 fs|CN|0.0125|K1 11.3s valid True nonst 60 / 1280 10054.2
+RUN W1024|lat8192 qn|BDF2|0.025|k4 6.3s valid True nonst 15 / 640 10060.4
+RUN W1024|lat8192 ad|LSPG|CN|0.01|tight 13.8s valid True nonst 0 / 0 10074.2
+RUN W1024|lat8192 ad|LSPG|CN|0.01|tighter 3.0s valid True nonst 0 / 0 10077.2
+RUN W1024|lat8192 ad|LSPG|CN|0.0125|tight 10.8s valid True nonst 0 / 0 10088.0
+RUN W1024|lat8192 ad|LSPG|CN|0.0125|tighter 2.7s valid True nonst 0 / 0 10090.7
+RUN W1024|lat8192 ad|LSPG|BDF2|0.025|tight 6.9s valid True nonst 0 / 0 10097.6
+RUN W1024|lat8192 ad|LSPG|BDF2|0.025|tighter 2.2s valid True nonst 0 / 0 10099.9
+LADDER W1024|lat8192|fs|CN|0.01|K1 valid True worst dist_adt 0.00025073175466796665 rho 0.5778327844281741 10103.1
+LADDER W1024|lat8192|fs|CN|0.0125|K1 valid True worst dist_adt 0.0005160684137810123 rho 0.5385869236572867 10103.4
+LADDER W1024|lat8192|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0019558623952429743 rho 0.30410542902527143 10103.8
+RUN W1024|lat16384 fs|CN|0.01|K1 21.1s valid True nonst 2 / 1600 10156.4
+RUN W1024|lat16384 fs|CN|0.0125|K1 16.7s valid True nonst 35 / 1280 10173.1
+RUN W1024|lat16384 qn|BDF2|0.025|k4 8.3s valid True nonst 3 / 640 10181.4
+RUN W1024|lat16384 ad|LSPG|CN|0.01|tight 21.8s valid True nonst 0 / 0 10203.2
+RUN W1024|lat16384 ad|LSPG|CN|0.01|tighter 3.8s valid True nonst 0 / 0 10207.1
+RUN W1024|lat16384 ad|LSPG|CN|0.0125|tight 17.3s valid True nonst 0 / 0 10224.4
+RUN W1024|lat16384 ad|LSPG|CN|0.0125|tighter 3.5s valid True nonst 0 / 0 10227.9
+RUN W1024|lat16384 ad|LSPG|BDF2|0.025|tight 10.9s valid True nonst 0 / 0 10238.8
+RUN W1024|lat16384 ad|LSPG|BDF2|0.025|tighter 2.7s valid True nonst 0 / 0 10241.5
+LADDER W1024|lat16384|fs|CN|0.01|K1 valid True worst dist_adt 0.0001353015431386212 rho 0.03572103557390911 10242.3
+LADDER W1024|lat16384|fs|CN|0.0125|K1 valid True worst dist_adt 0.0004366763261378885 rho 0.03457926587946364 10242.8
+LADDER W1024|lat16384|qn|BDF2|0.025|k4 valid True worst dist_adt 0.002981258037472649 rho 0.019414072826491446 10243.3
+RUN W1024|lat32768 fs|CN|0.01|K1 28.0s valid True nonst 2 / 1600 10304.3
+RUN W1024|lat32768 fs|CN|0.0125|K1 23.6s valid True nonst 35 / 1280 10327.9
+RUN W1024|lat32768 qn|BDF2|0.025|k4 10.3s valid True nonst 2 / 640 10338.2
+RUN W1024|lat32768 ad|LSPG|CN|0.01|tight 35.2s valid True nonst 0 / 0 10373.4
+RUN W1024|lat32768 ad|LSPG|CN|0.01|tighter 4.8s valid True nonst 0 / 0 10378.2
+RUN W1024|lat32768 ad|LSPG|CN|0.0125|tight 29.2s valid True nonst 0 / 0 10407.5
+RUN W1024|lat32768 ad|LSPG|CN|0.0125|tighter 4.1s valid True nonst 0 / 0 10411.6
+RUN W1024|lat32768 ad|LSPG|BDF2|0.025|tight 17.3s valid True nonst 0 / 0 10428.9
+RUN W1024|lat32768 ad|LSPG|BDF2|0.025|tighter 2.5s valid True nonst 0 / 0 10431.4
+LADDER W1024|lat32768|fs|CN|0.01|K1 valid True worst dist_adt 0.00013472802976567005 rho 0.006372284063471671 10434.4
+LADDER W1024|lat32768|fs|CN|0.0125|K1 valid True worst dist_adt 0.0004341973199979529 rho 0.006257875911750944 10435.1
+LADDER W1024|lat32768|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0035539349296819255 rho 0.0027707662477984268 10435.8
+RUN W1024|lat65536 fs|CN|0.01|K1 59.9s valid True nonst 2 / 1600 10530.2
+RUN W1024|lat65536 fs|CN|0.0125|K1 49.3s valid True nonst 35 / 1280 10579.5
+RUN W1024|lat65536 qn|BDF2|0.025|k4 21.6s valid True nonst 2 / 640 10601.1
+RUN W1024|lat65536 ad|LSPG|CN|0.01|tight 69.7s valid True nonst 0 / 0 10670.8
+RUN W1024|lat65536 ad|LSPG|CN|0.01|tighter 10.5s valid True nonst 0 / 0 10681.3
+RUN W1024|lat65536 ad|LSPG|CN|0.0125|tight 57.0s valid True nonst 0 / 0 10738.3
+RUN W1024|lat65536 ad|LSPG|CN|0.0125|tighter 9.1s valid True nonst 0 / 0 10747.4
+RUN W1024|lat65536 ad|LSPG|BDF2|0.025|tight 34.1s valid True nonst 0 / 0 10781.5
+RUN W1024|lat65536 ad|LSPG|BDF2|0.025|tighter 6.1s valid True nonst 0 / 0 10787.6
+LADDER W1024|lat65536|fs|CN|0.01|K1 valid True worst dist_adt 0.00013516598657128793 rho 0.01192823788956123 10791.2
+LADDER W1024|lat65536|fs|CN|0.0125|K1 valid True worst dist_adt 0.0004354629394270511 rho 0.011668942526888154 10792.3
+LADDER W1024|lat65536|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0035304548934987348 rho 0.004412383643085919 10793.4
+RUN W1024|lat131072 fs|CN|0.01|K1 112.1s valid True nonst 2 / 1600 10941.5
+RUN W1024|lat131072 fs|CN|0.0125|K1 92.4s valid True nonst 35 / 1280 11034.0
+RUN W1024|lat131072 qn|BDF2|0.025|k4 39.3s valid True nonst 2 / 640 11073.2
+RUN W1024|lat131072 ad|LSPG|CN|0.01|tight 133.8s valid True nonst 0 / 0 11207.1
+RUN W1024|lat131072 ad|LSPG|CN|0.01|tighter 19.3s valid True nonst 0 / 0 11226.4
+RUN W1024|lat131072 ad|LSPG|CN|0.0125|tight 110.1s valid True nonst 0 / 0 11336.5
+RUN W1024|lat131072 ad|LSPG|CN|0.0125|tighter 16.6s valid True nonst 0 / 0 11353.1
+RUN W1024|lat131072 ad|LSPG|BDF2|0.025|tight 65.4s valid True nonst 0 / 0 11418.5
+RUN W1024|lat131072 ad|LSPG|BDF2|0.025|tighter 10.6s valid True nonst 0 / 0 11429.1
+LADDER W1024|lat131072|fs|CN|0.01|K1 valid True worst dist_adt 0.00013407238217798173 rho None 11429.3
+LADDER W1024|lat131072|fs|CN|0.0125|K1 valid True worst dist_adt 0.00043333509080437376 rho None 11429.4
+LADDER W1024|lat131072|qn|BDF2|0.025|k4 valid True worst dist_adt 0.0034815359589718065 rho None 11429.5
+D3RUN COMPLETE
+ALL-DONE

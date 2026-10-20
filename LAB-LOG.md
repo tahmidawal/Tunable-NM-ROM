@@ -19305,3 +19305,15 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - **Coordinator:** 3D production for jcp-robust released (it uses dims' qualified 3D set).
 
 - 2026-10-20: the earlier results page (MaZocvqPrsNjGZQYJAPiwF) was no longer accessible; republished at https://claude.ai/artifact/5ixhBcoFQ3grFuUkMrjTGE (priority 3 added). Earlier log references updated to the new link.
+
+### 2026-10-20 — jcp-regimes complete (lane `exp/2026-10-19-jcp-regimes`, last commit 70ce5f0f2, mirror ee52292fe)
+- **What ran.** smk1 6068450 (FAILED at an over-specified check after its reference half), smk2 6074276, refAp 6074945, refC2 6074946, refC1 6074948 (cancelled pending → refC1b 6079232), refAm 6078310, refN0 6076378, refN0s 6080533, refB1 6078337, refB2 6079507, rom1024 6077264, ps 6080698 (H200 and A100-80G). **14.87 of 60 GPU-h.** Raw arrays in `burgers-archive/jcp-regimes/`. Audits: design 1–4 (READY 2D), code 1–6, smoke results accepted, pre-production 1–7 (READY), job audits SUBMIT, results 1 RESULTS-WRONG (budget-exit validity rule not applied) → 2 CONFIRMED, report 1–4 (REPORT-READY).
+- **Found (generated report; exploratory, E0-style conditional).** 8 primary LSPG configurations at 1024², 7 fresh dev regimes:
+  - **C1, C2 (steeper): 8/8 NOT QUALIFIED** (Q1/Q2 fail); median 5.2–11.2 % (C1), 12.7–25.1 % (C2); ratio to in-range baseline 5.8–37 and 14–131. R384 representation floor: 0.03 % in-range, 0.88 % N0s, 3.5 % C1, 9.9 % C2 — the bank cannot represent steep solutions. Spearman ρ(error, steepness) = 0.93 (p ≈ 1e-4). Paired A−/C1, R384 CN-R: C1 4.7× A− (Wilcoxon p = 3e-5), an amplitude/steepness effect.
+  - N0s (stiff in-range corner, descriptive): 8/8 DEGRADES, 2.97–9.79×.
+  - A− (ν below range): 2 DEGRADES (LSPG-CN-R R128, R256), 6 INCONCLUSIVE (ratios 1.63–9.25). A+ (ν above): 1 HOLDS, 1 IMPROVES, 6 INCONCLUSIVE, relabelled "confounded with steepness" (fails the separation check).
+  - B1 (two bumps): 3 HOLDS, 5 INCONCLUSIVE; B2 (signed pair): 8 INCONCLUSIVE (ratios 0.99–1.64).
+  - Pseudo-spectral cross-check 7/7 PASS. Ineligible references: A+ c4, c8 (floor); N0 c4, c15 (order); B2 c7 (order).
+- **Coordinator cross-check.** In-range baseline worst error R128 LSPG-BE 0.04843 = priority 1's R128 BE worst at 1024²; in-range R384 floor 0.029 % ≈ combined e_P 0.028 %.
+- **Retracted / corrected.** A11: budget-exit runs were counted valid against frozen §7.1 → GAL diagnostic on C2 becomes FAILS (no primary cell changed). A7 GPU-float fingerprint and A10 exact descriptor hash relaxed to round-off before results were read. A9 moved ordinary jobs to A100 (no timing claims). Design withdrawals: "clean one-factor attribution" → distributional contrasts; wrong reference acceptance rule; missing low-ν refinement time.
+- **Deferred.** 3D regimes (need their own amendment); FOM accuracy comparison. Open: retraining the bank on a wider steepness range (floors suggest it is the limit).

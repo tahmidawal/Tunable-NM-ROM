@@ -24,3 +24,4 @@ Every coordinator action taken on a watchdog report (resume, kill, re-run, escal
 | 2026-10-18T20:07Z | jcp-hr-baselines | wd1-20261018T200655Z (DEAD, direct: heartbeat 104 min, waiter gone) | lane quiet again after a monitor ended (4th episode; each prior resume recovered) | resume #4 with an instruction to wait only via self-exiting background sacct loops (≤ 20 min) | pending |
 | 2026-10-19T05:46Z | (cluster) | wd1-20261019T054441Z | ssh banner timeout to tufts-login | transient: coordinator ssh+squeue OK moments later, queue empty; no action | — |
 | 2026-10-19T18:30Z | jcp-dims | wd1-20261019T182952Z | job 6057843 TIMEOUT (00:20:29); lane alive | flagged via SendMessage (not a resume) | — |
+| 2026-10-20T02:11Z | jcp-robust | — | ~15 audited jobs queued behind cap 3 while regimes finished cluster work | lane cap raised 3 → 6 (account cap 8 unchanged) | — |

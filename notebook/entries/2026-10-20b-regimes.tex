@@ -1,0 +1,14 @@
+\entry{2026-10-20}{Priority 4: new regimes --- where the frozen model stops working}
+
+Lane \texttt{2026-10-19-jcp-regimes}, last commit \texttt{70ce5f0f2}, mirror \texttt{ee52292fe}. 13 jobs (H200/A100), 14.9 of 60 GPU-h; results audit 2 CONFIRMED, report audit 4 READY. Seven freshly drawn 2D development regimes (seeds disjoint from every cohort; sealed/OOD untouched), new order-verified references, the 8 qualified LSPG configurations at $1024^2$ (+1 GAL diagnostic). Exploratory development evidence; errors are E0-style conditional estimates. Numbers from the generated \path{report.md}.
+
+\begin{itemize}
+\item \textbf{Steeper fronts (C1, C2): not numerically qualified for any of the 8 configurations}; median errors 5.2--11\,\% (C1) and 12.7--25\,\% (C2), 6--131$\times$ the in-range baseline. The bank cannot represent them: the R384 representation floor rises from 0.03\,\% in range to 3.5\,\% (C1) and 9.9\,\% (C2). Error grows with steepness (Spearman $\rho=0.93$).
+\item \textbf{Stiff corner of the training range (N0s):} all 8 degrade, 3--10$\times$.
+\item \textbf{Viscosity below the range (A$-$):} CN-R degrades at R128 and R256; the rest inconclusive. Above the range (A$+$): holds or inconclusive, but confounded with steepness (its fronts are smoother).
+\item \textbf{New initial-condition families (B1, B2):} hold or inconclusive (ratios 0.99--1.64).
+\item Pseudo-spectral cross-check of the new references: 7/7 pass. Coordinator cross-check: the lane's in-range R128 BE worst error equals priority 1's (0.04843).
+\end{itemize}
+\begin{center}\includegraphics[width=0.48\linewidth]{figs/r_median_by_regime.png}\hfill\includegraphics[width=0.48\linewidth]{figs/r_error_vs_s.png}\end{center}
+\subsection*{Corrections}
+\retracted{The scoring first counted runs with solver budget exits as valid, contrary to the frozen rule; fixing it changed only the GAL diagnostic on C2 (now FAILS). An over-specified GPU-float fingerprint in the identity check (A7) and an exact-hash descriptor check across CPU types (A10) were relaxed to round-off before results were read. 3D regimes and the FOM comparison deferred.}

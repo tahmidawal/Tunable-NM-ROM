@@ -45,7 +45,7 @@ LANE_DIR = {l: WT / w / 'experiments' / l for l, w, _, _ in LANES}
 LANE_WT = {l: WT / w for l, w, _, _ in LANES}
 PENDING_LANES = ('jcp-robust', 'jcp-regimes')
 # Lanes the coordinator has not yet declared finished: kept pending even if a partial runs/EXPORT.json exists.
-NOT_HANDED_BACK = {'jcp-robust'}
+NOT_HANDED_BACK = set()  # jcp-robust handed back final 2026-10-20 (commit cbf574373)
 
 
 def finished(lane):
@@ -625,7 +625,7 @@ def main():
       f'configurations at 256² and all {hbase["2D 1024²"][1]} at 1024² (developmental, in-sample, unadjusted; 2D '
       f'tuning budgets {R.prov["hb.budget_2D_V2.short"]["value"]}). The paper therefore cannot claim speed or accuracy advantages over standard '
       'alternatives for viscous Burgers on the box; what remains is mesh-independent cost, mesh-free evaluation and '
-      'memory.' + regimes_headline())
+      'memory.' + regimes_headline() + robust_headline())
     w()
 
     # ---- 2. verdicts
@@ -971,6 +971,8 @@ def main():
             continue
         if lane == 'jcp-regimes':
             render_regimes(ex, V)
+        elif lane == 'jcp-robust':
+            render_robust(ex, V)
         else:
             render_generic(lane, ex)
 
@@ -1102,6 +1104,15 @@ def main():
          'where the quadrature-study lane had picked Gauss 32² post hoc (a policy outcome, not a universal requirement). '
          'A tighter initial-fit tolerance (A9) was set after smk1, before production; the seed-0 K = 16 '
          'retrain equals the incumbent to round-off (a same-seed replay, not a replication).', 'LAB-LOG 2026-10-18'),
+        ('jcp-robust', '**A17 (retracted):** the first E2 2D roll-up computed the 1024² front with exact joint '
+         'inequalities instead of qualify\'s registered dominance rule; its cross-seed counts and its "R256 front '
+         'membership is seed-dependent" reading are withdrawn (the E2 2D results audit round 1 was REJECT). Report fixes '
+         'A19–A21: the resource table double-counted GPUs; a wide-width "inconclusive" statement was broader than the '
+         'verdicts and was restricted to selection verdicts; a data-hash sentence was not labelled as 2D; glossary '
+         'definitions were corrected against the design. Operational: smk3 hit its time limit (A9); e1m4096 was '
+         'cancelled because its certificate ignored transfer overhead (A10.3); a GB/GiB mix-up in a memory note (A12.4); '
+         'the e13d certificate under-estimated the supplementary 3D configurations (A13.6); two transient login-node '
+         'failures before submission (A15).', 'jcp-robust report "Deviations, retractions and corrections"; DESIGN A17–A21; LAB-LOG 2026-10-20'),
         ('jcp-regimes', 'Withdrawn during the design audits: a "clean one-factor attribution" (now distributional '
          'contrasts), a wrong reference acceptance rule (now E0\'s predicates), and a cost model missing the refinement '
          'time at low viscosity. During the lane: the first smoke stopped at an over-specified GPU-float fingerprint, '
@@ -1128,7 +1139,8 @@ def main():
     deferred = [
         ('coordinator', 'C3-full: 2D 4096², 3D meshes finer than 64 intervals, GNAT, POD + exact tensor, best-practice '
          'EQ; per-mesh setup cost for break-even counts', 'C3-minimal already falsified H-base (LAB-LOG 2026-10-19)'),
-        ('coordinator', 'C4', 'excluded from the freeze roster (plan V3-6)'),
+        ('coordinator', 'C4: decoder ablation', 'excluded from the freeze roster (plan V3-6)'),
+        ('jcp-robust', 'E2 extension to five seeds; E5 on L40S; E1 in 3D beyond 16 draws', 'LAB-LOG 2026-10-20 (jcp-robust complete)'),
         ('jcp-regimes', '3D regimes (need their own amendment) and the FOM accuracy comparison on the regimes; '
          'retraining the bank on a wider steepness range (open)', 'jcp-regimes report summary (DESIGN A1.12, A3.3); LAB-LOG 2026-10-20'),
         ('jcp-budget', latexify('; '.join(d['item'] for d in bdef)), '; '.join(d['reason'] for d in bdef)),
@@ -1158,8 +1170,9 @@ def main():
     w('"Spent" is each lane ledger\'s `spent_gpu_hours`, which counts jobs that have reached a terminal state; '
       'jobs still running are not yet included.')
     w()
-    w(f'Total over the {len(fin)} finished lanes: **{g3(done_total)} GPU-h**; including the running lane(s) '
-      f'{", ".join(pend_now) or "none"} at compile time: {g3(all_total)} GPU-h (still growing while they run). speed3d\'s ledger includes its jobs from '
+    w(f'Total over the {len(fin)} finished lanes: **{g3(done_total)} GPU-h**' +
+      (f'; including the running lane(s) {", ".join(pend_now)} at compile time: {g3(all_total)} GPU-h (still growing).'
+       if pend_now else ' (all ten campaign lanes).') + ' speed3d\'s ledger includes its jobs from '
       'before the campaign started.')
     w()
     fig('figs/summary_gpu_ledger.png', 'GPU-hours spent against each lane\'s cap')
@@ -1237,6 +1250,7 @@ CORRECTION_SECTIONS = [  # (lane, heading of the lane report's own correction se
     ('jcp-dims', '## Retractions and corrections during the lane (details in DESIGN.md amendments)'),
     ('jcp-budget', '## What was wrong or corrected'),
     ('jcp-regimes', '## What went wrong during the lane (disclosed)'),
+    ('jcp-robust', '## Deviations, retractions and corrections'),
 ]
 
 
@@ -1403,6 +1417,241 @@ def render_regimes(ex, V):
     fig(copy_fig(lane, 'error_vs_s.png', 'regimes_error_vs_s.png'), 'Error against nominal steepness s (jcp-regimes)')
 
 
+def robust_headline():
+    if not finished('jcp-robust'):
+        return ''
+    ex = E('jcp-robust')
+    rows = R.load(ex)['E2']['2d']['rows']
+    hl = {k: v['label'] for k, v in rows.items() if k.startswith(('H-acc-N|sel', 'H-acc-r|sel'))}
+    sr = {k: v['label'] for k, v in rows.items() if k.startswith('selected-rule')}
+    nrob = R.derived('rb.e2.2d.headline_robust', sum(v == 'seed-robust' for v in hl.values()),
+                     [R.src(ex, ['E2', '2d', 'rows', '*', 'label'], 'keys starting H-acc-N|sel or H-acc-r|sel')], 'count of seed-robust')
+    R.derived('rb.e2.2d.headline_n', len(hl), [R.src(ex, ['E2', '2d', 'rows', '*', 'label'], 'keys starting H-acc-N|sel or H-acc-r|sel')], 'count')
+    nsd = R.derived('rb.e2.2d.selrule_dep', sum(v == 'seed-dependent' for v in sr.values()),
+                    [R.src(ex, ['E2', '2d', 'rows', '*', 'label'], 'keys starting selected-rule')], 'count of seed-dependent')
+    return (f' Repeating the whole recipe with three new training seeds gives the same 2D accuracy verdicts (mesh '
+            f'independence and improvement with r) on all three seeds in {nrob} of {len(hl)} headline rows, but the selected '
+            f'quadrature rule changes with the seed at {nsd} of {len(sr)} bank widths, so rule selection is a per-bank '
+            'step (section 3.11).')
+
+
+def phiname(k):
+    p = k.split('|')
+    if p[0] == 'phi3':
+        fam = 'central FD' if 'fd' in p else 'pseudo-spectral'
+        return f'φ3 {p[2]} {p[5]} vs {fam}'
+    return f'{p[0].replace("phi", "φ")} {p[1]} {p[4]}' + (f' {p[5]}²' if len(p) > 5 else '')
+
+
+def render_robust(ex, V):
+    """jcp-robust (E1 randomised rules, E2 recipe seeds, E5 hardware)."""
+    lane = 'jcp-robust'
+    d = R.load(ex)
+    st = R.get('rb.status', ex, 'status')
+    w(f'Lane status: **{st}**. Errors are conditional E0 estimates. Three retraining seeds support a description of '
+      'agreement, not a population claim.')
+    w()
+    # ---- E1
+    w('**E1 — randomised quadrature rules.** Each qualified front configuration that uses a lattice rule is re-run with '
+      '16 random Cranley–Patterson shifts (draw 0 is the deployed rule) and scored on the full validity / Q1 / Q2 '
+      'contract with draw-matched successor rules.')
+    w()
+    rows = []
+    for dim in ('2D', '3D'):
+        cells = [x for x in d['E1'] if x['dim'] == dim and x.get('supplementary') is False]
+        cnt = {}
+        for h in ('H_E1a', 'H_E1b', 'H_E1c'):
+            c = {}
+            for x in cells:
+                c[x[h]] = c.get(x[h], 0) + 1
+            cnt[h] = c
+        R.derived(f'rb.e1.{dim}.counts', cnt, [R.src(ex, ['E1', '*', h], f'dim == {dim}, supplementary == false')
+                                               for h in ('H_E1a', 'H_E1b', 'H_E1c')], 'counts per hypothesis')
+        fmt = lambda c: ', '.join(f'{k} ×{v}' for k, v in sorted(c.items()))
+        rows.append([dim, len(cells), fmt(cnt['H_E1a']), fmt(cnt['H_E1b']), fmt(cnt['H_E1c'])])
+        V('E1 rule randomisation', 'r (bank width)', f'{dim}, {len(cells)} registered cells, 16 shifted draws each',
+          'H-E1a ' + fmt(cnt['H_E1a']) + '; H-E1c ' + fmt(cnt['H_E1c']),
+          'H-E1b ' + fmt(cnt['H_E1b']) + ('; "fragile" = successor-rule convergence only, see section 3.11' if dim == '2D' else ''),
+          'figs/robust_e1_draws.png', lane)
+    w(table(['dim', 'registered cells', 'H-E1a (failure rate of draws)', 'H-E1b (rank of the deployed draw)',
+             'H-E1c (accuracy sensitivity)'], rows))
+    w()
+    BAR = 2.5e-4
+    fail = succ_only = 0
+    tmax = 0.
+    srcs = []
+    for m in (256, 1024, 4096):
+        pth = LANE_DIR[lane] / 'checks' / f'e1-2d-{m}.json'
+        dd = R.load(pth)
+        srcs.append(R.src(pth, ['groups', '*', 'arms', '*', 'rules', '*', 'D|succ_max|qualified|prod_failed'],
+                          'LSPG arms, non-diagnostic, draws d<k>'))
+        for g, gv in dd.get('groups', {}).items():
+            for ak, av in gv['arms'].items():
+                if av.get('diagnostic') or not ak.startswith('LSPG'):
+                    continue
+                for k, x in av['rules'].items():
+                    if not (k.startswith('d') and k[1:].isdigit()):
+                        continue
+                    tmax = max(tmax, x.get('D') or 0.)
+                    if x.get('qualified') is False:
+                        fail += 1
+                        if (x.get('succ_max') or 0) > BAR and (x.get('D') or 0) <= BAR and not x.get('prod_failed'):
+                            succ_only += 1
+    R.derived('rb.e1.fail', fail, srcs, 'count of non-qualified 2D LSPG draws')
+    R.derived('rb.e1.succ_only', succ_only, srcs, 'of those, successor distance > 2.5e-4 with target distance <= 2.5e-4 and no production failure')
+    R.derived('rb.e1.tmax', tmax, srcs, 'max target distance D over 2D LSPG draws')
+    w(f'**Reading of "fragile".** {succ_only} of the {fail} failing 2D draws fail only on the draw-matched successor '
+      f'distance (above the $2.5\\times10^{{-4}}$ bar), while the distance to the independent cross-family target stays '
+      f'within the bar (largest over all primary 2D draws: {g3(tmax)}). "Fragile" therefore concerns convergence to the '
+      'successor rule, not accuracy: H-E1c (the spread of E0 error over draws) is insensitive in every registered cell. '
+      'In 3D: ' + '; '.join(f'`{x["config"].split("|", 1)[1]}` H-E1a {x["H_E1a"]}, H-E1b {x["H_E1b"]} (rank of the '
+                             f'deployed draw {R.get(f"rb.e1.{i}.D_rank", ex, "E1", i, "D_rank")[0]}–'
+                             f'{x["D_rank"][1]} of {R.get(f"rb.e1.{i}.n", ex, "E1", i, "n")})'
+                             for i, x in enumerate(d['E1']) if x['dim'] == '3D' and x.get('supplementary') is False) +
+      '; an atypically unfavourable deployed draw still qualifies (H-E1a robust).')
+    w()
+    fig(copy_fig(lane, 'e1_draws.png', 'robust_e1_draws.png'), 'E1: distance and error across 16 random rule draws (jcp-robust)')
+    # ---- E2
+    w('**E2 — the full recipe repeated over seeds.** Bank training, ordering/rotation and rule selection are repeated '
+      'with seeds 1–3 for the 2D R512 bank and the 3D W1024 bank, and the key verdicts are re-run per seed: '
+      '**seed-robust** = seeds 1–3 give the same definitive label, **seed-dependent** = different definitive labels, '
+      'otherwise **inconclusive**. The incumbent bank (seed 0) is reported as history.')
+    w()
+    rows = []
+    for dim in ('2d', '3d'):
+        cn = R.get(f'rb.e2.{dim}.counts', ex, 'E2', dim, 'counts')
+        rr = d['E2'][dim]['rows']
+        hl, sr = {}, {}
+        for k, v in rr.items():
+            if k.startswith(('H-acc-N|sel', 'H-acc-r|sel', 'H-acc-r|gl64')):
+                hl[v['label']] = hl.get(v['label'], 0) + 1
+            if k.startswith('selected-rule'):
+                sr[v['label']] = sr.get(v['label'], 0) + 1
+        R.derived(f'rb.e2.{dim}.hl', hl, [R.src(ex, ['E2', dim, 'rows', '*', 'label'],
+                                                'keys starting H-acc-N|sel, H-acc-r|sel or H-acc-r|gl64')], 'count of labels')
+        R.derived(f'rb.e2.{dim}.sr', sr, [R.src(ex, ['E2', dim, 'rows', '*', 'label'], 'keys starting selected-rule')],
+                  'count of labels')
+        R.derived(f'rb.e2.{dim}.n', len(rr), [R.src(ex, ['E2', dim, 'rows'])], 'count of rows')
+        fmt = lambda c: ', '.join(f'{k} ×{v}' for k, v in sorted(c.items()))
+        rows.append([dim.upper(), len(rr), fmt(cn), fmt(hl), fmt(sr)])
+        V('E2 recipe seeds', 'r (bank width)', f'{dim.upper()}, seeds 1–3, {len(rr)} verdict rows',
+          f'seed-robust {cn.get("seed-robust", 0)}/{len(rr)}',
+          f'all rows: {fmt(cn)}; headline accuracy rows: {fmt(hl)}; selected-rule rows: {fmt(sr)}',
+          'figs/robust_e2_spread.png', lane)
+    w(table(['dim', 'verdict rows', 'cross-seed labels', 'headline accuracy rows (H-acc-N / H-acc-r)',
+             'selected-rule rows'], rows))
+    w()
+    sel = d['E2']['selection_2d']
+    srows = [[f'R{r}'] + [R.get(f'rb.sel2d.{b}.{r}', ex, 'E2', 'selection_2d', b, r) for b in ('0', '1', '2', '3')]
+             for r in ('128', '256', '384')]
+    # deployed-rule failures
+    dep = []
+    for r in (128, 256, 384):
+        fails, rule = [], None
+        for b in (1, 2, 3):
+            pth = LANE_DIR[lane] / 'checks' / f'e2-2d-{b}.json'
+            dd = R.load(pth)
+            ks = [k for k in dd['configurations'] if k.startswith(f'1024|R{r}|dep|LSPG_') and k.endswith('_1')]
+            rule = rule or (dd['configurations'][ks[0]]['rule'] if ks else None)
+            if any(dd['configurations'][k]['qualified'] is False for k in ks):
+                fails.append(b)
+        R.derived(f'rb.dep.R{r}', dict(rule=rule, failing_seeds=fails),
+                  [R.src(LANE_DIR[lane] / 'checks' / f'e2-2d-{b}.json', ['configurations', f'1024|R{r}|dep|LSPG_*_1', 'qualified|rule'])
+                   for b in (1, 2, 3)], 'retrained seeds on which the deployed rule fails Q1+Q2 at 1024² (either scheme, step factor 1)')
+        dep.append([f'R{r}', f'`{rule}`', ', '.join(map(str, fails)) or 'none'])
+    w('2D rule selected per bank at 1024² (first candidate qualified under both LSPG schemes), and the deployed rule on '
+      'the retrained banks:')
+    w()
+    w(table(['rank', 'bank 0 (incumbent)', 'seed 1', 'seed 2', 'seed 3'], srows))
+    w()
+    w(table(['rank', 'deployed rule', 'retrained seeds on which it fails qualification at 1024² (step factor 1, either LSPG scheme)'], dep))
+    w()
+    spr = d['E2']['2d']['spread_ratio']
+    big = {k: R.get(f'rb.spread2d.{k}', ex, 'E2', '2d', 'spread_ratio', k) for k in spr if k.startswith('sel|') and spr[k] > 1}
+    w('**Reading (2D).** Mesh independence of accuracy (H-acc-N) and the improvement with r (H-acc-r) for the selected '
+      f'rules are seed-robust in {R.prov["rb.e2.2d.hl"]["value"].get("seed-robust", 0)} of '
+      f'{sum(R.prov["rb.e2.2d.hl"]["value"].values())} headline rows and agree with the incumbent. The selected rule '
+      'changes with the seed, so quadrature-rule selection must be stated as a per-bank step; a deployed rule is not '
+      'guaranteed to transfer to a retrained bank and must be re-qualified on each bank (it fails at step factor 1 '
+      'on the seeds listed above; other step factors are in the lane report). Where the seed spread exceeds the gain of a step (spread ratio above 1), the step '
+      'verdict is still "improves" on every seed (seed-robust), but its size is small against seed-to-seed variation: ' +
+      (', '.join(f'{k.split("|", 1)[1].replace("|", " ")} {g3(v)}' for k, v in big.items()) or 'none') + '.')
+    w()
+    # 3D
+    errs = d['E2']['gl64_3d']['errors']
+    ratios = {}
+    for key in errs['1']:
+        for stat in ('median', 'worst'):
+            vals = [R.get(f'rb.gl64.{b}.{key}.{stat}', ex, 'E2', 'gl64_3d', 'errors', b, key, stat) for b in ('1', '2', '3')]
+            ratios[(key, stat)] = max(vals) / min(vals)
+    wkey = max((k for k in ratios if k[1] == 'worst'), key=lambda k: ratios[k])
+    mkey = max((k for k in ratios if k[1] == 'median'), key=lambda k: ratios[k])
+    R.derived('rb.gl64.worst_ratio_max', [wkey[0], ratios[wkey]], [R.src(ex, ['E2', 'gl64_3d', 'errors', '1|2|3', '*', 'worst'])],
+              'largest max/min over seeds 1–3 of the worst-case error, over (width, spec)')
+    R.derived('rb.gl64.median_ratio_max', [mkey[0], ratios[mkey]], [R.src(ex, ['E2', 'gl64_3d', 'errors', '1|2|3', '*', 'median'])],
+              'largest max/min over seeds 1–3 of the median error, over (width, spec)')
+    rng = {b: R.get(f'rb.gl64.range.{b}', ex, 'E2', 'gl64_3d', 'h_acc_r', b, 'gl64|fs|CN|0.01|K1', 'range_256_1024')
+           if 'range_256_1024' in d['E2']['gl64_3d']['h_acc_r'][b]['gl64|fs|CN|0.01|K1'] else None for b in ('0', '1', '2', '3')}
+    certw = {}
+    for b in ('0', '1', '2', '3'):
+        for x in d['E2']['selection_3d'][b]:
+            if x['width'] in (768, 1024) and x['outcome'] == 'selected' and x.get('target_certified'):
+                certw.setdefault(x['width'], []).append(b)
+    R.derived('rb.sel3d.certified_wide', certw, [R.src(ex, ['E2', 'selection_3d', '*', '*', 'width|outcome|target_certified'])],
+              'banks with a certified (target-verified) selection at W768 / W1024')
+    w('**Reading (3D).** On the fixed rule gl64 (which isolates the bank), the W256 → W1024 range for the fixed-sweep CN '
+      'specification is ' + ', '.join(f'bank {b}: {v}' for b, v in rng.items()) + '. Across seeds 1–3 the median error '
+      f'barely moves (largest max/min {g3(ratios[mkey])}, `{mkey[0]}`) but the worst-case error varies by up to '
+      f'{g3(ratios[wkey])}× (`{wkey[0]}`). Certified wide-width rule selections: W768 on bank(s) '
+      f'{", ".join(certw.get(768, [])) or "none"}, W1024 on {", ".join(certw.get(1024, [])) or "none"}; most wide-width '
+      'selection verdicts are therefore inconclusive, and the 3D front at W768–W1024 is too sparse for claims.')
+    w()
+    fig(copy_fig(lane, 'e2_spread.png', 'robust_e2_spread.png'), 'E2: error spread across retraining seeds (jcp-robust)')
+    # ---- E5
+    phi = d['E5']['phi']
+    pc = {}
+    for k, v in phi.items():
+        pc[v['label']] = pc.get(v['label'], 0) + 1
+    R.derived('rb.e5.phi_counts', pc, [R.src(ex, ['E5', 'phi', '*', 'label'])], 'count of labels')
+    ag = {}
+    for k, v in d['E5']['agreement'].items():
+        ag[v] = ag.get(v, 0) + 1
+    R.derived('rb.e5.agreement', ag, [R.src(ex, ['E5', 'agreement', '*'])], 'count of labels')
+    njobs = R.derived('rb.e5.njobs', len(d['E5']['jobs']), [R.src(ex, ['E5', 'jobs'])], 'count')
+    dep_phi = {k: (R.get(f'rb.e5.{k}.phi', ex, 'E5', 'phi', k, 'phi')) for k, v in phi.items() if v['label'] == 'hardware-dependent'}
+    fmt = lambda c: ', '.join(f'{k} ×{v}' for k, v in sorted(c.items()))
+    anc = d['E5_G_E5_2_anchors']
+    nout = R.derived('rb.e5.anchors_out', sum(not a['within'] for a in anc), [R.src(ex, ['E5_G_E5_2_anchors', '*', 'within'])],
+                     'count of H200 timing anchors outside P1\'s interval')
+    ge = {}
+    for x in d['G_E2_2']:
+        ge[x['label']] = ge.get(x['label'], 0) + 1
+    R.derived('rb.G_E2_2', ge, [R.src(ex, ['G_E2_2', '*', 'label'])], 'count of labels')
+    w(f'Non-blocking anchor G-E2.2 (incumbent 3D picks against jcp-dims\' $m^*$ table, {len(d["G_E2_2"])} cells): ' +
+      ', '.join(f'{k} ×{v}' for k, v in sorted(ge.items())) + '.')
+    w()
+    gpus = {}
+    for jl, _, _ in d['E5']['jobs']:
+        gpus[jl.split('#')[0]] = gpus.get(jl.split('#')[0], 0) + 1
+    R.derived('rb.e5.gpus', gpus, [R.src(ex, ['E5', 'jobs', '*', '0'])], 'count of jobs (one physical GPU each) per GPU type')
+    gtxt = ', '.join(f'{v} {k}' for k, v in gpus.items())
+    w(f'**E5 — hardware.** Paired A–B–A timing in {njobs} jobs, one physical GPU each ({gtxt}); the '
+      'conclusions are conditional on those GPUs, and the FOM comparators are the frozen comparators selected on '
+      'H200 by jcp-fom2d. Only dimensionless ratios are compared: $\\phi$ = H200 value / A100 value of the cost ratio B/A ($\\phi_1$), the mesh-cost ratio '
+      f'($\\phi_2$) and the FOM/ROM speed-up ($\\phi_3$). $\\phi$ intervals: {fmt(pc)}; the hardware-dependent ones are ' +
+      ', '.join(f'{phiname(k)} {g3(v)}' for k, v in dep_phi.items()) +
+      f'. Cross-hardware agreement of the registered timing verdicts (mesh-cost H-cost-N on 256² vs 1024², and the 2× '
+      f'speed-up test against frozen FOM comparators): {fmt(ag)}. Mesh-cost ratios $\\phi_2$: '
+      + ', '.join(f'{phiname(k)} {phi[k]["label"]}' for k in phi if k.startswith('phi2')) +
+      f'. Cost ratios B/A and FOM speed-ups can shift by GPU type, so speed-ups must name the GPU. Descriptive anchor '
+      f'G-E5.2 (non-blocking): {nout} of {len(anc)} H200 timing cells fall outside P1\'s intervals.')
+    w()
+    V('E5 hardware', '–', f'A100-80G vs H200, {njobs} jobs on {njobs} physical GPUs; frozen H200-selected FOM comparators; '
+      'registered timing verdicts', fmt(ag), f'φ intervals: {fmt(pc)}',
+      'figs/robust_e5_phi.png', lane)
+    fig(copy_fig(lane, 'e5_phi.png', 'robust_e5_phi.png'), 'E5: H200/A100 ratios with 95 % intervals (jcp-robust)')
+
+
 def render_generic(lane, ex):
     """Auto-render a priority-4 EXPORT that arrived after this script was written: every scalar leaf whose key path
     names a verdict or label, with provenance. To be tailored when the coordinator resumes the compilation."""
@@ -1525,6 +1774,32 @@ GLOSSARY = [
     ('representation floor', 'error of the best least-squares fit of a reference by the first r bank functions on the '
      'scoring lattice; a lower bound on what any coefficients in that span can achieve.'),
     ('Spearman correlation', 'rank correlation between two quantities; p from a permutation test.'),
+    ('E1, draw, Cranley–Patterson shift', 'E1 re-runs a lattice-rule configuration with 16 randomly shifted copies of '
+     'its rule (a uniform random shift of every point, wrapped into the unit square or cube); draw 0 is the deployed rule.'),
+    ('H-E1a, H-E1b, H-E1c', 'robust / inconclusive / fragile from the number of draws failing Q1+Q2 and a one-sided '
+     'Clopper–Pearson upper bound on the failure rate; where the deployed draw ranks among the 16 (typical or '
+     'atypically favourable / unfavourable); insensitive if at least 90 % of cases keep every draw\'s E0 error within '
+     '$\\max(2\\varepsilon_{\\rm ref}, 0.1\\,e_{\\rm conv})$ of the deployed draw\'s, where $e_{\\rm conv}$ is the '
+     'converged rule\'s error.'),
+    ('C3-full, C4', 'deferred plan items: the full standard-ROM comparison (GNAT, POD + exact tensor, fitted EQ, finer '
+     'meshes) and the decoder ablation (our bank against random Fourier features, SIREN (a neural network with sinusoidal activations), radial basis '
+     'functions (RBF), a fixed sine bank and '
+     'POD + polynomial).'),
+    ('successor distance, target distance', 'rollout distance to the next larger rule of the same family with the same '
+     'draw / to the converged rule of an independent family (Gauss); the Q2 bar is $2.5\\times10^{-4}$.'),
+    ('E2, seed-robust, seed-dependent', 'E2 repeats bank training, ordering and rule selection with seeds 1–3; a verdict '
+     'is seed-robust if all three seeds give the same definitive label, seed-dependent if two give different definitive '
+     'labels, otherwise inconclusive. The incumbent bank is seed 0 (history only).'),
+    ('selected rule, deployed rule, certified selection', 'the rule the registered selection procedure picks on a bank; '
+     'the rule used today (chosen on the incumbent bank); a selection whose independent reference rule could itself be '
+     'certified (otherwise a "target-unverified" diagnostic pick).'),
+    ('spread ratio', 'cross-seed spread of the lower step\'s median error divided by the median paired error change of '
+     'the step; above 1 the seed-to-seed variation exceeds the gain of the step.'),
+    ('E5, φ, hardware-consistent, verdict-robust', 'E5 times the same subjects on A100-80G and H200; φ = H200 value / '
+     'A100 value of a dimensionless ratio (cost ratio B/A, mesh-cost ratio, FOM/ROM speed-up); hardware-consistent if '
+     'the 95 % interval of φ lies in [0.8, 1.25], hardware-dependent if entirely outside; a registered verdict is '
+     'verdict-robust if both GPU types give the same definitive label (pass or fail); otherwise inconclusive, unless '
+     'the definitive labels contradict.'),
     ('TH06', '$\\theta$-method with $\\theta=0.6$, a first-order control scheme in the temporal-order check.'),
     ('C-A, C-E', 'jcp-budget\'s registered must-fire controls for the output-sampling check: an injected sampling alias '
      'and an injected energy drift.'),

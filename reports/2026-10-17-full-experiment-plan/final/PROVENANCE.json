@@ -3923,23 +3923,23 @@
   ]
  },
  "ledger.jcp-robust.spent": {
-  "value": 27.5312,
+  "value": 46.4076,
   "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/GPU-LEDGER.json",
   "key_path": [
    "spent_gpu_hours"
   ],
-  "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
+  "sha256": "26f06f5fd4ad8409051550eea03b87017349a6cb83529561c8dc7c6d0e44986f"
  },
  "ledger.jcp-robust.cap": {
-  "value": 75.0,
+  "value": 95.0,
   "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/GPU-LEDGER.json",
   "key_path": [
    "cap_gpu_hours"
   ],
-  "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
+  "sha256": "26f06f5fd4ad8409051550eea03b87017349a6cb83529561c8dc7c6d0e44986f"
  },
  "ledger.jcp-robust.n_jobs": {
-  "value": 44,
+  "value": 54,
   "derivation": "number of ledger entries",
   "sources": [
    {
@@ -3947,7 +3947,7 @@
     "key_path": [
      "jobs"
     ],
-    "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
+    "sha256": "26f06f5fd4ad8409051550eea03b87017349a6cb83529561c8dc7c6d0e44986f"
    }
   ]
  },
@@ -3981,8 +3981,8 @@
   ]
  },
  "ledger.total_finished": {
-  "value": 122.3621,
-  "derivation": "sum over the 9 finished lanes",
+  "value": 168.7697,
+  "derivation": "sum over the 10 finished lanes",
   "sources": [
    {
     "file": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/runs/GPU-LEDGER.json",
@@ -4041,6 +4041,13 @@
     "sha256": "1a496da4895a0f74de9af07222d55d1674c3172f80c8cb4d6f5a458b50fa9db8"
    },
    {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/GPU-LEDGER.json",
+    "key_path": [
+     "spent_gpu_hours"
+    ],
+    "sha256": "26f06f5fd4ad8409051550eea03b87017349a6cb83529561c8dc7c6d0e44986f"
+   },
+   {
     "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/GPU-LEDGER.json",
     "key_path": [
      "spent_gpu_hours"
@@ -4050,7 +4057,7 @@
   ]
  },
  "ledger.total_all": {
-  "value": 149.8933,
+  "value": 168.7697,
   "derivation": "sum over all ten lanes at compile time",
   "sources": [
    {
@@ -4114,7 +4121,7 @@
     "key_path": [
      "spent_gpu_hours"
     ],
-    "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
+    "sha256": "26f06f5fd4ad8409051550eea03b87017349a6cb83529561c8dc7c6d0e44986f"
    },
    {
     "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/GPU-LEDGER.json",
@@ -4230,6 +4237,60 @@
     ],
     "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
     "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rb.e2.2d.headline_robust": {
+  "value": 24,
+  "derivation": "count of seed-robust",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "2d",
+     "rows",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "keys starting H-acc-N|sel or H-acc-r|sel"
+   }
+  ]
+ },
+ "rb.e2.2d.headline_n": {
+  "value": 24,
+  "derivation": "count",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "2d",
+     "rows",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "keys starting H-acc-N|sel or H-acc-r|sel"
+   }
+  ]
+ },
+ "rb.e2.2d.selrule_dep": {
+  "value": 3,
+  "derivation": "count of seed-dependent",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "2d",
+     "rows",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "keys starting selected-rule"
    }
   ]
  },
@@ -7401,21 +7462,1627 @@
   ],
   "sha256": "12acf7a108fe185fdf3d3214786282b9acb12f2923d6f9d923272614c8717c77"
  },
- "jcp-robust.heartbeat.step": {
-  "value": "15: 6 jobs (e2q0b, e2q1b, e2q0a, e2v2b, e2t2, e2v3a); queued e2v3b/c, e2t3, e2q1a, e2t3d3, e2q2a/b; E1 2D+3D analysed; E5 analysed",
-  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/HEARTBEAT.json",
+ "rb.status": {
+  "value": "final: the Codex results audit accepted the analyses",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
   "key_path": [
-   "step"
+   "status"
   ],
-  "sha256": "5cb50cf9d570f10cb161658d2ff93bfecdfea8ee247ec06a76bd2b93ac7258f6"
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
  },
- "jcp-robust.heartbeat.utc": {
-  "value": "2026-10-20T03:16:04Z",
-  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/HEARTBEAT.json",
-  "key_path": [
-   "utc"
+ "rb.e1.2D.counts": {
+  "value": {
+   "H_E1a": {
+    "inconclusive": 6,
+    "fragile": 6
+   },
+   "H_E1b": {
+    "typical": 12
+   },
+   "H_E1c": {
+    "insensitive": 12
+   }
+  },
+  "derivation": "counts per hypothesis",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E1",
+     "*",
+     "H_E1a"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "dim == 2D, supplementary == false"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E1",
+     "*",
+     "H_E1b"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "dim == 2D, supplementary == false"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E1",
+     "*",
+     "H_E1c"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "dim == 2D, supplementary == false"
+   }
+  ]
+ },
+ "rb.e1.3D.counts": {
+  "value": {
+   "H_E1a": {
+    "robust": 2
+   },
+   "H_E1b": {
+    "typical": 1,
+    "atypically unfavourable": 1
+   },
+   "H_E1c": {
+    "insensitive": 2
+   }
+  },
+  "derivation": "counts per hypothesis",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E1",
+     "*",
+     "H_E1a"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "dim == 3D, supplementary == false"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E1",
+     "*",
+     "H_E1b"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "dim == 3D, supplementary == false"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E1",
+     "*",
+     "H_E1c"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "dim == 3D, supplementary == false"
+   }
+  ]
+ },
+ "rb.e1.fail": {
+  "value": 20,
+  "derivation": "count of non-qualified 2D LSPG draws",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-256.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "a6020db7a537710e07f57e6a4938b2962e79b97434cbb9d14b9f026641bffc10",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-1024.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "074c9edd9c4136f14c0edc8bbb615fae84987eef2b38da5f09f823377de1e9c0",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-4096.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "cf1c9cad7a2d3221ad83c8fc08937e1eca9b79412f149762d8b36cd38b137fec",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   }
+  ]
+ },
+ "rb.e1.succ_only": {
+  "value": 20,
+  "derivation": "of those, successor distance > 2.5e-4 with target distance <= 2.5e-4 and no production failure",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-256.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "a6020db7a537710e07f57e6a4938b2962e79b97434cbb9d14b9f026641bffc10",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-1024.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "074c9edd9c4136f14c0edc8bbb615fae84987eef2b38da5f09f823377de1e9c0",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-4096.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "cf1c9cad7a2d3221ad83c8fc08937e1eca9b79412f149762d8b36cd38b137fec",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   }
+  ]
+ },
+ "rb.e1.tmax": {
+  "value": 0.00020197585865278103,
+  "derivation": "max target distance D over 2D LSPG draws",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-256.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "a6020db7a537710e07f57e6a4938b2962e79b97434cbb9d14b9f026641bffc10",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-1024.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "074c9edd9c4136f14c0edc8bbb615fae84987eef2b38da5f09f823377de1e9c0",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e1-2d-4096.json",
+    "key_path": [
+     "groups",
+     "*",
+     "arms",
+     "*",
+     "rules",
+     "*",
+     "D|succ_max|qualified|prod_failed"
+    ],
+    "sha256": "cf1c9cad7a2d3221ad83c8fc08937e1eca9b79412f149762d8b36cd38b137fec",
+    "filter": "LSPG arms, non-diagnostic, draws d<k>"
+   }
+  ]
+ },
+ "rb.e1.21.D_rank": {
+  "value": [
+   9,
+   9,
+   "typical"
   ],
-  "sha256": "5cb50cf9d570f10cb161658d2ff93bfecdfea8ee247ec06a76bd2b93ac7258f6"
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E1",
+   "21",
+   "D_rank"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e1.21.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E1",
+   "21",
+   "n"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e1.22.D_rank": {
+  "value": [
+   16,
+   16,
+   "unfavourable"
+  ],
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E1",
+   "22",
+   "D_rank"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e1.22.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E1",
+   "22",
+   "n"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "fig:robust_e1_draws.png": {
+  "value": "figs/robust_e1_draws.png",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/plots/e1_draws.png",
+  "key_path": "(copied PNG)",
+  "sha256": "273ec56450379577e87e33f2920a7bfd1a746eb6c850d4889d41e45d9666c235"
+ },
+ "rb.e2.2d.counts": {
+  "value": {
+   "seed-robust": 140,
+   "seed-dependent": 21,
+   "inconclusive": 22
+  },
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "2d",
+   "counts"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e2.2d.hl": {
+  "value": {
+   "seed-robust": 24
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "2d",
+     "rows",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "keys starting H-acc-N|sel, H-acc-r|sel or H-acc-r|gl64"
+   }
+  ]
+ },
+ "rb.e2.2d.sr": {
+  "value": {
+   "seed-dependent": 3
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "2d",
+     "rows",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "keys starting selected-rule"
+   }
+  ]
+ },
+ "rb.e2.2d.n": {
+  "value": 183,
+  "derivation": "count of rows",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "2d",
+     "rows"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.e2.3d.counts": {
+  "value": {
+   "seed-robust": 45,
+   "seed-dependent": 17,
+   "inconclusive": 67
+  },
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "3d",
+   "counts"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e2.3d.hl": {
+  "value": {
+   "seed-robust": 10,
+   "inconclusive": 22
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "3d",
+     "rows",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "keys starting H-acc-N|sel, H-acc-r|sel or H-acc-r|gl64"
+   }
+  ]
+ },
+ "rb.e2.3d.sr": {
+  "value": {
+   "inconclusive": 12,
+   "seed-robust": 10,
+   "seed-dependent": 2
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "3d",
+     "rows",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b",
+    "filter": "keys starting selected-rule"
+   }
+  ]
+ },
+ "rb.e2.3d.n": {
+  "value": 129,
+  "derivation": "count of rows",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "3d",
+     "rows"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.sel2d.0.128": {
+  "value": "fib4181",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "0",
+   "128"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.1.128": {
+  "value": "gauss96",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "1",
+   "128"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.2.128": {
+  "value": "fib6765",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "2",
+   "128"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.3.128": {
+  "value": "fib6765",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "3",
+   "128"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.0.256": {
+  "value": "fib10946",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "0",
+   "256"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.1.256": {
+  "value": "fib10946",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "1",
+   "256"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.2.256": {
+  "value": "gauss96",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "2",
+   "256"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.3.256": {
+  "value": "gauss96",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "3",
+   "256"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.0.384": {
+  "value": "gauss128",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "0",
+   "384"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.1.384": {
+  "value": "gauss160",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "1",
+   "384"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.2.384": {
+  "value": "gauss160",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "2",
+   "384"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel2d.3.384": {
+  "value": "gauss128",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "selection_2d",
+   "3",
+   "384"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.dep.R128": {
+  "value": {
+   "rule": "fib4181",
+   "failing_seeds": [
+    1,
+    2,
+    3
+   ]
+  },
+  "derivation": "retrained seeds on which the deployed rule fails Q1+Q2 at 1024\u00b2 (either scheme, step factor 1)",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-1.json",
+    "key_path": [
+     "configurations",
+     "1024|R128|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "114bd96c1ae68088ff40cda2c3d726b3f2394499e26ed72bc59665946cbb3d56"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-2.json",
+    "key_path": [
+     "configurations",
+     "1024|R128|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "7e25df0b6ad449b0f6bbc8b89d275c5f458a91fa8c57439eca92de0a10b970e4"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-3.json",
+    "key_path": [
+     "configurations",
+     "1024|R128|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "c12c792fbeb01ab99a0e228cff69455d48c7e30705bd74293be8c3b7c4f9f858"
+   }
+  ]
+ },
+ "rb.dep.R256": {
+  "value": {
+   "rule": "gauss128",
+   "failing_seeds": []
+  },
+  "derivation": "retrained seeds on which the deployed rule fails Q1+Q2 at 1024\u00b2 (either scheme, step factor 1)",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-1.json",
+    "key_path": [
+     "configurations",
+     "1024|R256|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "114bd96c1ae68088ff40cda2c3d726b3f2394499e26ed72bc59665946cbb3d56"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-2.json",
+    "key_path": [
+     "configurations",
+     "1024|R256|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "7e25df0b6ad449b0f6bbc8b89d275c5f458a91fa8c57439eca92de0a10b970e4"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-3.json",
+    "key_path": [
+     "configurations",
+     "1024|R256|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "c12c792fbeb01ab99a0e228cff69455d48c7e30705bd74293be8c3b7c4f9f858"
+   }
+  ]
+ },
+ "rb.dep.R384": {
+  "value": {
+   "rule": "gauss128",
+   "failing_seeds": [
+    1,
+    2
+   ]
+  },
+  "derivation": "retrained seeds on which the deployed rule fails Q1+Q2 at 1024\u00b2 (either scheme, step factor 1)",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-1.json",
+    "key_path": [
+     "configurations",
+     "1024|R384|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "114bd96c1ae68088ff40cda2c3d726b3f2394499e26ed72bc59665946cbb3d56"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-2.json",
+    "key_path": [
+     "configurations",
+     "1024|R384|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "7e25df0b6ad449b0f6bbc8b89d275c5f458a91fa8c57439eca92de0a10b970e4"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/e2-2d-3.json",
+    "key_path": [
+     "configurations",
+     "1024|R384|dep|LSPG_*_1",
+     "qualified|rule"
+    ],
+    "sha256": "c12c792fbeb01ab99a0e228cff69455d48c7e30705bd74293be8c3b7c4f9f858"
+   }
+  ]
+ },
+ "rb.spread2d.sel|1024|BE|256->384": {
+  "value": 4.5610413495118225,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "2d",
+   "spread_ratio",
+   "sel|1024|BE|256->384"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.spread2d.sel|256|BE|256->384": {
+  "value": 2.530992298421304,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "2d",
+   "spread_ratio",
+   "sel|256|BE|256->384"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.spread2d.sel|4096|BE|256->384": {
+  "value": 2.5851479013650933,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "2d",
+   "spread_ratio",
+   "sel|4096|BE|256->384"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W256|fs|CN|0.01|K1.median": {
+  "value": 0.005698279681768326,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W256|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W256|fs|CN|0.01|K1.median": {
+  "value": 0.005700713083248314,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W256|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W256|fs|CN|0.01|K1.median": {
+  "value": 0.005701426457367938,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W256|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W256|fs|CN|0.01|K1.worst": {
+  "value": 0.06366754552538462,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W256|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W256|fs|CN|0.01|K1.worst": {
+  "value": 0.06369668771629862,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W256|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W256|fs|CN|0.01|K1.worst": {
+  "value": 0.06364216010773309,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W256|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W512|fs|CN|0.01|K1.median": {
+  "value": 0.002079213520927185,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W512|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W512|fs|CN|0.01|K1.median": {
+  "value": 0.0020752318743034476,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W512|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W512|fs|CN|0.01|K1.median": {
+  "value": 0.0020765719075900245,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W512|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W512|fs|CN|0.01|K1.worst": {
+  "value": 0.057465815791532295,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W512|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W512|fs|CN|0.01|K1.worst": {
+  "value": 0.05783890379718929,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W512|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W512|fs|CN|0.01|K1.worst": {
+  "value": 0.05781123609080024,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W512|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W768|fs|CN|0.01|K1.median": {
+  "value": 0.0015697100460302419,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W768|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W768|fs|CN|0.01|K1.median": {
+  "value": 0.0015783203109130865,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W768|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W768|fs|CN|0.01|K1.median": {
+  "value": 0.001582950602440913,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W768|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W768|fs|CN|0.01|K1.worst": {
+  "value": 0.06513593931760893,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W768|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W768|fs|CN|0.01|K1.worst": {
+  "value": 0.0708160055451386,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W768|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W768|fs|CN|0.01|K1.worst": {
+  "value": 0.07084006817327919,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W768|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W1024|fs|CN|0.01|K1.median": {
+  "value": 0.0012136946145996576,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W1024|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W1024|fs|CN|0.01|K1.median": {
+  "value": 0.0012029794492194553,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W1024|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W1024|fs|CN|0.01|K1.median": {
+  "value": 0.0012134148354747665,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W1024|fs|CN|0.01|K1",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W1024|fs|CN|0.01|K1.worst": {
+  "value": 0.02952966582856626,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W1024|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W1024|fs|CN|0.01|K1.worst": {
+  "value": 0.05526222726701226,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W1024|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W1024|fs|CN|0.01|K1.worst": {
+  "value": 0.0564423017649563,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W1024|fs|CN|0.01|K1",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W256|qn|BDF2|0.025|k4.median": {
+  "value": 0.020788084230330683,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W256|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W256|qn|BDF2|0.025|k4.median": {
+  "value": 0.02078760078533192,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W256|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W256|qn|BDF2|0.025|k4.median": {
+  "value": 0.02078741325278477,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W256|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W256|qn|BDF2|0.025|k4.worst": {
+  "value": 0.05858596109166764,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W256|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W256|qn|BDF2|0.025|k4.worst": {
+  "value": 0.05857817802978151,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W256|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W256|qn|BDF2|0.025|k4.worst": {
+  "value": 0.058582105805446205,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W256|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W512|qn|BDF2|0.025|k4.median": {
+  "value": 0.020383781023465185,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W512|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W512|qn|BDF2|0.025|k4.median": {
+  "value": 0.020383385706755804,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W512|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W512|qn|BDF2|0.025|k4.median": {
+  "value": 0.020383446626785668,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W512|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W512|qn|BDF2|0.025|k4.worst": {
+  "value": 0.04858457202822328,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W512|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W512|qn|BDF2|0.025|k4.worst": {
+  "value": 0.048750837464804936,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W512|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W512|qn|BDF2|0.025|k4.worst": {
+  "value": 0.04873362000864256,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W512|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W768|qn|BDF2|0.025|k4.median": {
+  "value": 0.020376042509446378,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W768|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W768|qn|BDF2|0.025|k4.median": {
+  "value": 0.020375643993900773,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W768|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W768|qn|BDF2|0.025|k4.median": {
+  "value": 0.020375661558279773,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W768|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W768|qn|BDF2|0.025|k4.worst": {
+  "value": 0.047609813433336416,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W768|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W768|qn|BDF2|0.025|k4.worst": {
+  "value": 0.04962033858884856,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W768|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W768|qn|BDF2|0.025|k4.worst": {
+  "value": 0.049467369181262676,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W768|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W1024|qn|BDF2|0.025|k4.median": {
+  "value": 0.020374390744893556,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W1024|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W1024|qn|BDF2|0.025|k4.median": {
+  "value": 0.020373772463617806,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W1024|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W1024|qn|BDF2|0.025|k4.median": {
+  "value": 0.020373873455384363,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W1024|qn|BDF2|0.025|k4",
+   "median"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.1.gl64|W1024|qn|BDF2|0.025|k4.worst": {
+  "value": 0.043130398652303815,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "1",
+   "gl64|W1024|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.2.gl64|W1024|qn|BDF2|0.025|k4.worst": {
+  "value": 0.04346908537818944,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "2",
+   "gl64|W1024|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.3.gl64|W1024|qn|BDF2|0.025|k4.worst": {
+  "value": 0.04435854330374713,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "errors",
+   "3",
+   "gl64|W1024|qn|BDF2|0.025|k4",
+   "worst"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.worst_ratio_max": {
+  "value": [
+   "gl64|W1024|fs|CN|0.01|K1",
+   1.9113762442362427
+  ],
+  "derivation": "largest max/min over seeds 1\u20133 of the worst-case error, over (width, spec)",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "gl64_3d",
+     "errors",
+     "1|2|3",
+     "*",
+     "worst"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.gl64.median_ratio_max": {
+  "value": [
+   "gl64|W1024|fs|CN|0.01|K1",
+   1.0089071890522774
+  ],
+  "derivation": "largest max/min over seeds 1\u20133 of the median error, over (width, spec)",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "gl64_3d",
+     "errors",
+     "1|2|3",
+     "*",
+     "median"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.gl64.range.0": {
+  "value": "monotone",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "h_acc_r",
+   "0",
+   "gl64|fs|CN|0.01|K1",
+   "range_256_1024"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.range.1": {
+  "value": "monotone",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "h_acc_r",
+   "1",
+   "gl64|fs|CN|0.01|K1",
+   "range_256_1024"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.range.2": {
+  "value": "monotone",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "h_acc_r",
+   "2",
+   "gl64|fs|CN|0.01|K1",
+   "range_256_1024"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.gl64.range.3": {
+  "value": "monotone",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E2",
+   "gl64_3d",
+   "h_acc_r",
+   "3",
+   "gl64|fs|CN|0.01|K1",
+   "range_256_1024"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.sel3d.certified_wide": {
+  "value": {
+   "768": [
+    "2"
+   ]
+  },
+  "derivation": "banks with a certified (target-verified) selection at W768 / W1024",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E2",
+     "selection_3d",
+     "*",
+     "*",
+     "width|outcome|target_certified"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "fig:robust_e2_spread.png": {
+  "value": "figs/robust_e2_spread.png",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/plots/e2_spread.png",
+  "key_path": "(copied PNG)",
+  "sha256": "e8b5e62af6411482f74d4131ef8d73f12ca1437fb1f779a3d6b5393ff8b6f2e3"
+ },
+ "rb.e5.phi_counts": {
+  "value": {
+   "hardware-dependent": 4,
+   "hardware-consistent": 6
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E5",
+     "phi",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.e5.agreement": {
+  "value": {
+   "verdict-robust": 5,
+   "inconclusive": 1
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E5",
+     "agreement",
+     "*"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.e5.njobs": {
+  "value": 4,
+  "derivation": "count",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E5",
+     "jobs"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.e5.phi1|R128|fib4181|frozen|BE|256.phi": {
+  "value": 1.643717395322557,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E5",
+   "phi",
+   "phi1|R128|fib4181|frozen|BE|256",
+   "phi"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e5.phi1|R128|fib4181|frozen|BE|1024.phi": {
+  "value": 1.6344867404669385,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E5",
+   "phi",
+   "phi1|R128|fib4181|frozen|BE|1024",
+   "phi"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e5.phi3|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2.phi": {
+  "value": 0.7082790928686997,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E5",
+   "phi",
+   "phi3|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2",
+   "phi"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e5.phi3|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125.phi": {
+  "value": 1.765871362654651,
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+  "key_path": [
+   "E5",
+   "phi",
+   "phi3|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125",
+   "phi"
+  ],
+  "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+ },
+ "rb.e5.anchors_out": {
+  "value": 7,
+  "derivation": "count of H200 timing anchors outside P1's interval",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E5_G_E5_2_anchors",
+     "*",
+     "within"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.G_E2_2": {
+  "value": {
+   "same m (certified)": 8,
+   "same m (pick target-unverified: not a certified agreement)": 1,
+   "differs": 1,
+   "both none (certified absence)": 2,
+   "both none (unverified absence: target not certified)": 4
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "G_E2_2",
+     "*",
+     "label"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "rb.e5.gpus": {
+  "value": {
+   "A100-80G": 2,
+   "H200": 2
+  },
+  "derivation": "count of jobs (one physical GPU each) per GPU type",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/EXPORT.json",
+    "key_path": [
+     "E5",
+     "jobs",
+     "*",
+     "0"
+    ],
+    "sha256": "d8ef21bf6578358d6ee066ed5b7fcbea747e69b2a31dc3c74d2b4fb4eb2d2a0b"
+   }
+  ]
+ },
+ "fig:robust_e5_phi.png": {
+  "value": "figs/robust_e5_phi.png",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/plots/e5_phi.png",
+  "key_path": "(copied PNG)",
+  "sha256": "6011aa111259f85da4d11a623db8fcfca4d28dec87b912d973cd80713c3b1e4a"
  },
  "rg.qualification": {
   "value": "exploratory development evidence, no family-wise control",
@@ -10747,11 +12414,17 @@
   "key_path": "section \"## What went wrong during the lane (disclosed)\"",
   "sha256": "0226282062c2f550b345f9f219c9b96e822788ccf17e6cc1ff3321a3794865c3"
  },
+ "pointer:jcp-robust:## Deviations, retractions and corrections": {
+  "value": "lines 640-649",
+  "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/report.md",
+  "key_path": "section \"## Deviations, retractions and corrections\"",
+  "sha256": "70ddea02db738c079807d0e825d783cf16b00fe70b3a5e1ed2c59fd2b85760f8"
+ },
  "pointer:LAB-LOG": {
-  "value": "lines 19087-19320",
+  "value": "lines 19087-19332",
   "file": "LAB-LOG.md",
   "key_path": "from \"## 2026-10-17\"",
-  "sha256": "758c557925f22fada546a2986cafad1d96ec2944e3ee093fbaf38d68149c4683"
+  "sha256": "2ef514b0837cb044a58f0b0629c0eeb8afa5b964d1a9cda3295312336744dec3"
  },
  "bg.deferred": {
   "value": [
@@ -10863,13 +12536,13 @@
   "sha256": null
  },
  "git.jcp-robust.head": {
-  "value": "c4302872e",
+  "value": "cbf574373",
   "file": "git:worktrees/2026-10-19-jcp-robust",
   "key_path": "rev-parse HEAD",
   "sha256": null
  },
  "git.jcp-robust.mirror": {
-  "value": "510a8f477",
+  "value": "d49bd0085",
   "file": "git:worktrees/2026-10-19-jcp-robust",
   "key_path": "rev-parse refs/remotes/origin/codeonly/exp/2026-10-19-jcp-robust",
   "sha256": null
@@ -10902,7 +12575,7 @@
   "value": "figs/summary_gpu_ledger.png",
   "file": "generated by make_final.py",
   "key_path": "(new plot)",
-  "sha256": "15a83423a01bcb9bbd58a126524d70c190486ff9a88ed2868a147a1212672960"
+  "sha256": "550f88e14f34d3a9302652be30f7fe7eb9e7c60e5282fe292be04a96306b7f89"
  },
  "fig:summary_union_speedup.png": {
   "value": "figs/summary_union_speedup.png",

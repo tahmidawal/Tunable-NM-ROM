@@ -1,9 +1,7 @@
 {
- "compiled_utc": "2026-10-20 04:01 UTC",
+ "compiled_utc": "2026-10-20 14:48 UTC",
  "label": "E0 R_ST conditional Richardson estimates; development/validation cohorts only; sealed and OOD cohorts unopened",
- "pending": [
-  "jcp-robust"
- ],
+ "pending": [],
  "verdicts": [
   {
    "hypothesis": "H-cost-N",
@@ -330,6 +328,51 @@
    "lane": "jcp-dims"
   },
   {
+   "hypothesis": "E1 rule randomisation",
+   "reading": "r (bank width)",
+   "scope": "2D, 12 registered cells, 16 shifted draws each",
+   "verdict": "H-E1a fragile \u00d76, inconclusive \u00d76; H-E1c insensitive \u00d712",
+   "key_number": "H-E1b typical \u00d712; \"fragile\" = successor-rule convergence only, see section 3.11",
+   "figure": "figs/robust_e1_draws.png",
+   "lane": "jcp-robust"
+  },
+  {
+   "hypothesis": "E1 rule randomisation",
+   "reading": "r (bank width)",
+   "scope": "3D, 2 registered cells, 16 shifted draws each",
+   "verdict": "H-E1a robust \u00d72; H-E1c insensitive \u00d72",
+   "key_number": "H-E1b atypically unfavourable \u00d71, typical \u00d71",
+   "figure": "figs/robust_e1_draws.png",
+   "lane": "jcp-robust"
+  },
+  {
+   "hypothesis": "E2 recipe seeds",
+   "reading": "r (bank width)",
+   "scope": "2D, seeds 1\u20133, 183 verdict rows",
+   "verdict": "seed-robust 140/183",
+   "key_number": "all rows: inconclusive \u00d722, seed-dependent \u00d721, seed-robust \u00d7140; headline accuracy rows: seed-robust \u00d724; selected-rule rows: seed-dependent \u00d73",
+   "figure": "figs/robust_e2_spread.png",
+   "lane": "jcp-robust"
+  },
+  {
+   "hypothesis": "E2 recipe seeds",
+   "reading": "r (bank width)",
+   "scope": "3D, seeds 1\u20133, 129 verdict rows",
+   "verdict": "seed-robust 45/129",
+   "key_number": "all rows: inconclusive \u00d767, seed-dependent \u00d717, seed-robust \u00d745; headline accuracy rows: inconclusive \u00d722, seed-robust \u00d710; selected-rule rows: inconclusive \u00d712, seed-dependent \u00d72, seed-robust \u00d710",
+   "figure": "figs/robust_e2_spread.png",
+   "lane": "jcp-robust"
+  },
+  {
+   "hypothesis": "E5 hardware",
+   "reading": "\u2013",
+   "scope": "A100-80G vs H200, 4 jobs on 4 physical GPUs; frozen H200-selected FOM comparators; registered timing verdicts",
+   "verdict": "inconclusive \u00d71, verdict-robust \u00d75",
+   "key_number": "\u03c6 intervals: hardware-consistent \u00d76, hardware-dependent \u00d74",
+   "figure": "figs/robust_e5_phi.png",
+   "lane": "jcp-robust"
+  },
+  {
    "hypothesis": "D1 regime",
    "reading": "r (bank width)",
    "scope": "2D 1024\u00b2, A+ (\u03bd above the training range), 8 primary LSPG configurations; viscosity extrapolation confounded with steepness",
@@ -428,16 +471,16 @@
     "cap": 45.0
    },
    "jcp-robust": {
-    "spent": 27.5312,
-    "cap": 75.0
+    "spent": 46.4076,
+    "cap": 95.0
    },
    "jcp-regimes": {
     "spent": 14.865,
     "cap": 60.0
    }
   },
-  "total_finished": 122.3621,
-  "total_all": 149.8933
+  "total_finished": 168.7697,
+  "total_all": 168.7697
  },
  "lanes": [
   {
@@ -499,9 +542,9 @@
   {
    "lane": "jcp-robust",
    "branch": "exp/2026-10-19-jcp-robust",
-   "head": "c4302872e",
-   "mirror": "510a8f477",
-   "report": null
+   "head": "cbf574373",
+   "mirror": "d49bd0085",
+   "report": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/report.md"
   },
   {
    "lane": "jcp-regimes",
@@ -542,6 +585,9 @@
   "figs/qualify_order_b4.png",
   "figs/regimes_error_vs_s.png",
   "figs/regimes_median_by_regime.png",
+  "figs/robust_e1_draws.png",
+  "figs/robust_e2_spread.png",
+  "figs/robust_e5_phi.png",
   "figs/speed3d_mesh-time.png",
   "figs/summary_cost_vs_mesh.png",
   "figs/summary_family_speedup.png",

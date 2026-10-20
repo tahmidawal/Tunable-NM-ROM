@@ -411,6 +411,45 @@ def g_e22(s0):
             tbl(['width', 'spec', 'family', 'this lane (incumbent)', 'jcp-dims m*', 'G-E2.2'], rows), '']
 
 
+def summary():
+    """headline counts, generated from the verdict files"""
+    import collections
+    D = lambda c: ', '.join(f'{k} {v}' for k, v in c.items())
+    L = ['## Summary', '']
+    v = load('e1-verdicts.json')
+    if v:
+        for d_ in ('2D', '3D'):
+            rs = [r for r in v['rows'] if r['dim'] == d_ and r['label'] == 'verdict' and not r.get('supplementary')]
+            ca = collections.Counter((r['H_E1a']['label'] if isinstance(r['H_E1a'], dict) else r['H_E1a']) for r in rs)
+            cb = collections.Counter((r['H_E1b']['label'] if isinstance(r['H_E1b'], dict) else r['H_E1b']) for r in rs)
+            cc = collections.Counter((r['H_E1c']['label'] if isinstance(r['H_E1c'], dict) else r['H_E1c']) for r in rs)
+            L.append(f"- **E1 {d_}** ({len(rs)} registered verdict cells): H-E1a {D(ca)}; H-E1b {D(cb)}; H-E1c {D(cc)}.")
+    for d_ in ('2d', '3d'):
+        w = load(f'e2-verdicts-{d_}.json')
+        if w:
+            hl = [x for x in w['rows'] if x['key'].startswith(('H-acc-N|sel', 'H-acc-r|sel', 'H-acc-r|gl64'))]
+            ch = collections.Counter(x['label'] for x in hl)
+            sr = [x for x in w['rows'] if x['key'].startswith('selected-rule')]
+            cs = collections.Counter(x['label'] for x in sr)
+            L.append(f"- **E2 {d_.upper()}** ({len(w['rows'])} verdict rows, seeds 1–3): {D(w['counts'])}. Headline accuracy rows "
+                     f"(H-acc-N / H-acc-r): {D(ch)}. Selected-rule rows: {D(cs)}.")
+    e5 = load('e5.json')
+    if e5:
+        cp = collections.Counter(x['label'] for v_ in e5['phi'].values() if isinstance(v_, dict) for x in v_.values())
+        ca = collections.Counter((e5.get('agreement') or {}).values())
+        L.append(f"- **E5** ({len(e5['jobs'])} jobs, A100-80G and H200): φ intervals {D(cp)}; cross-hardware agreement of "
+                 f"the registered verdicts {D(ca)}.")
+    L += ['', 'Per-item tables, qualifications and every number follow; the plain-language glossary is at the end.', '']
+    return L
+
+
+def led_state(att):
+    for j in json.loads((HERE / 'runs' / 'GPU-LEDGER.json').read_text()).get('jobs', []):
+        if j['attempt'] == att:
+            return f"{j.get('state')}, {f(j.get('elapsed_hours'), 3)} h of a {f(j.get('time_limit_hours'), 3)} h limit"
+    return 'not in the ledger'
+
+
 def data_hash_sentence():
     """grouping of the Stage-A training-data sha256 over seeds 1-3, read from the training records"""
     hs = {}
@@ -588,18 +627,33 @@ def main():
          '  S[seeds 1-3]:::trained --> T[bank training + rotation]:::trained --> SEL[rule selection]',
          '  SEL --> VER[verdict ladders 256/1024/4096, 3D widths]', '  VER --> V2[seed-robust / seed-dependent / inconclusive]:::verdict',
          '  HW[A100 x2, H200 x2]:::frozen --> E5[paired A-B-A timing]', '  E5 --> V5[phi intervals vs 0.8-1.25]:::verdict', '```', '']
+    L += summary()
     L += e1_section(None, X)
     L += e2_section(None, X)
     L += e5_section(None, X)
-    L += ['## Resources', '', f"GPU-hours from `runs/GPU-LEDGER.json`: spent {f(spent)} of the cap {f(led.get('cap_gpu_hours'))}. "
-          'Every job and its id are listed in the ledger, with the logs under `runs/<attempt>/archive`.', '']
+    jrows = []
+    for j in led.get('jobs', []):
+        js = HERE / 'runs' / j['attempt'] / 'JOBSPEC.json'
+        gt = json.loads(js.read_text()).get('gpu') if js.exists() else 'n/a'
+        jrows.append([j['attempt'], j['job_id'], gt, j.get('gpus', 1), j.get('state'), f(j.get('elapsed_hours'), 3),
+                      f((j.get('elapsed_hours') or 0) * (j.get('gpus') or 1) + (j.get('prior_elapsed_hours') or 0), 3)])
+    L += ['## Resources', '', f"GPU-hours from `runs/GPU-LEDGER.json`: spent {f(spent)} of the cap {f(led.get('cap_gpu_hours'))} "
+          '(cap raised from 75 by the coordinator, A18). Namespace `/cluster/tufts/paralab/tawal01/jcp-robust/`. Every job '
+          'ran in its own directory; the logs are under `runs/<attempt>/archive`, and raw arrays over 100 MB stay in '
+          '`burgers-archive/jcp-robust/<attempt>/` with sha256 listings.', '',
+          tbl(['attempt', 'job id', 'GPU', 'GPUs', 'state', 'elapsed h', 'GPU-h'], jrows), '']
+    X['jobs'] = [dict(attempt=r[0], job_id=r[1], gpu=r[2], state=r[4]) for r in jrows]
     L += ['## Deviations, retractions and corrections', '',
-          '- smk3 (the 3D smoke) timed out at 2 h during data generation; it was split into smk3c and a training pilot (A9).',
-          '- e1m4096 was cancelled at 42 min: its certificate ignored the per-execution transfer overhead. It was rerun as '
-          'e1m4096b with a measured overhead (A10.3).',
-          '- The A9 memory note mixed GB and GiB. The pilot\'s host RSS was 168.6 GiB, i.e. 40.1 % of the request, not '
-          '"176.8 GB / 42 %" (A12.4).',
-          '- The E1 3D supplementary configurations c and d took about 1,000 s each, far above their A11.3 estimate of 2 × W256 (A13.6).',
+          f"- smk3 (the 3D smoke) hit its time limit ({led_state('smk3')}) during data generation; it was split into smk3c "
+          'and a training pilot (A9).',
+          f"- e1m4096 was cancelled ({led_state('e1m4096')}): its certificate ignored the per-execution transfer overhead. "
+          'It was rerun as e1m4096b with a measured overhead (A10.3).',
+          '- The A9 memory note mixed GB and GiB when quoting the smoke\'s host RSS; A12.4 restates it in GiB against the '
+          '336 GiB acceptance ceiling (420G / 1.25).',
+          f"- The certificate for e13d underestimated the E1 3D supplementary configurations c and d, whose cost was "
+          f"estimated as 2 × W256 (A11.3). The job still finished inside its limit ({led_state('e13d')}) (A13.6).",
+          '- Transient login-node authentication failures interrupted one submission (e2t3d3) and one staging (e2f3). '
+          'Both failed before sbatch with the reservation released, and were resubmitted cleanly (A15).',
           '- **Retracted (A17):** the first E2 2D roll-up computed the 1024² front with exact joint inequalities instead of '
           'qualify\'s registered dominance rule. Its cross-seed counts and its "R256 front membership is seed-dependent" '
           'reading are withdrawn; the counts above come from the corrected rule.',

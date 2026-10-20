@@ -19346,3 +19346,19 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - **Coordinator decisions over the campaign** (all recorded above): gate revisions (priority 3 released before C3; priority-4 2D released before dims, 3D after); budget reallocations (robust 75 → 95 GPU-h from unused regimes budget; lane caps); raw-archive policy (§16); GitHub-mirror-only lane backups; no merges.
 - **Watchdog record:** `campaign/watchdog/INTERVENTIONS.md` (orphan waiters killed, disk recoveries, self-matching and squeue-only waiters fixed, usage-limit resumes, heartbeat reminders). Watchdogs stopped at close.
 - **Retractions over the campaign** (details in each lane entry and the final report): speed3d H2 winners not quadrature-qualified; combined H5 13.6× holds only vs a same-mesh upwind FOM; combined finalist labels for LSPG-CN-R 2Δt₀; "1024² reuse" false for R256; coordinator's "4096² mode lists differ"; robust's first E2 2D roll-up; several post-data tolerance relaxations (labelled).
+
+## 2026-10-20
+
+### Save sweep and consolidated branch (side session, user request: "make sure we are not losing anything")
+- **Committed everything that was uncommitted.**
+  - Lanes: final heartbeats in speed3d and heads; wide-bank j1 run files ≤ 5 MB, plus a SHA256 manifest of the larger raw files, at `runs/j1/LARGE_FILES.sha256`.
+  - Older worktrees: paper-ns3d, ns3d-grok, paper-b3d, codesign, burgers-repanel and coord-decoder (an edited `ARCHITECTURE.md`); operators-all-pdes (11,786 files of `experiments/ops-all`, ≤ 5 MB each, plus `LARGE_FILES.sha256` for the 37 larger files left on disk).
+  - `main`: external watchdog reports and script; slide-deck sources (`reports/2026-10-17-full-experiment-plan/final/deck/`, deck https://claude.ai/artifact/24Arw3ZahBCsfVgzVEc28V). The final PDF was already tracked.
+- **Mirrors.** Every JCP lane's code-only mirror was re-synced and is up to date (speed3d, heads and wide-bank pushed new commits).
+- **Consolidated branch `exp/2026-10-20-jcp-consolidated`** (worktree `worktrees/2026-10-20-jcp-consolidated`):
+  - Built from the fork point `21c175a1b`, with all 19 JCP lanes merged (the quadrature-study pair through robust) and no conflicts.
+  - Checks: every lane tip is an ancestor of the branch; all 16,506 lane-changed files are byte-identical to their lane tips.
+  - Mirror: `origin/codeonly/exp/2026-10-20-jcp-consolidated` at `5a64899fd`. It is a commit whose parents are the 19 lane mirrors; a direct push of the whole tree disconnected.
+  - **CLAUDE.md fork point moved to it** (`93f399faa`). `main` is untouched as the baseline.
+- **Still outside git:** raw arrays over the size limits stay in the lane worktrees (SHA256 manifests) and in `/cluster/tufts/paralab/tawal01/burgers-archive/<lane>/`. Do not delete the lane worktrees or that archive.
+- **Disk:** 31 GB free after the consolidated checkout (about 40 GB).

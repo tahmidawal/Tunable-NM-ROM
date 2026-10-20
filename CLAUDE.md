@@ -82,7 +82,7 @@ genuinely needs a different base (and say which you would pick and why). Never a
 `main` is the frozen baseline and its heat ROM rollout is known broken, so branching from it
 silently discards every correction made since.
 
-**Current fork point (user decision, 2026-10-01):** `exp/2026-10-01-ns3d-coordnet-bank` at
+**Current fork point (user decision, 2026-10-20):** `exp/2026-10-20-jcp-consolidated` at commit `93f399faa`, which is the old fork point `21c175a1b` with all 19 JCP-campaign lanes merged in (see its `experiments/jcp-consolidated/README.md`). Its GitHub mirror is `origin/codeonly/exp/2026-10-20-jcp-consolidated` at `5a64899fd`. New worktrees branch from that commit unless the user says otherwise; in the new lane's `sync_github.sh` set `LOCAL_BASE=93f399faad67f94ea2b56fe25f13003143e64694` and `REMOTE_BASE=5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f`. Previous fork point (2026-10-01):  `exp/2026-10-01-ns3d-coordnet-bank` at
 commit `21c175a1b`. Its GitHub mirror is `origin/codeonly/exp/2026-10-01-ns3d-coordnet-bank` at
 `1716d80de`. New worktrees branch from that commit unless the user says otherwise. In the new
 lane's `sync_github.sh`, set `LOCAL_BASE=21c175a1b…` and `REMOTE_BASE=1716d80de…` (full hashes

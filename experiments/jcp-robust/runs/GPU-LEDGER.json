@@ -391,7 +391,7 @@
    "time_limit_hours": 7.25,
    "state": "RUNNING",
    "gpu": "gres/gpu=1",
-   "elapsed_hours": 1.0997,
+   "elapsed_hours": 1.8783,
    "attempts": 1,
    "node": "pax008",
    "gpus": 1,
@@ -517,9 +517,9 @@
    "attempt": "e2t3d3",
    "job_id": "6087959",
    "time_limit_hours": 4.0,
-   "state": "RUNNING",
+   "state": "COMPLETED",
    "gpu": "gres/gpu=1",
-   "elapsed_hours": 0.7078,
+   "elapsed_hours": 1.4733,
    "attempts": 1,
    "node": "pax011",
    "gpus": 1,
@@ -531,7 +531,7 @@
    "time_limit_hours": 2.75,
    "state": "RUNNING",
    "gpu": "gres/gpu=1",
-   "elapsed_hours": 0.0153,
+   "elapsed_hours": 0.7939,
    "attempts": 1,
    "node": "pax010",
    "gpus": 1,
@@ -541,11 +541,11 @@
    "attempt": "e2q2a",
    "job_id": "6101572",
    "time_limit_hours": 2.75,
-   "state": "PENDING",
-   "gpu": null,
-   "elapsed_hours": 0.0,
+   "state": "RUNNING",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.0097,
    "attempts": 1,
-   "node": "None assigned",
+   "node": "pax011",
    "gpus": 1,
    "prior_elapsed_hours": 0.0
   },
@@ -560,8 +560,24 @@
    "node": "None assigned",
    "gpus": 1,
    "prior_elapsed_hours": 0.0
+  },
+  {
+   "attempt": "e2q3b",
+   "job_id": "6103425",
+   "time_limit_hours": 7.25,
+   "state": "SUBMITTED",
+   "gpu": null,
+   "elapsed_hours": null
+  },
+  {
+   "attempt": "e2q3a",
+   "job_id": "6103434",
+   "time_limit_hours": 2.75,
+   "state": "SUBMITTED",
+   "gpu": null,
+   "elapsed_hours": null
   }
  ],
- "spent_gpu_hours": 31.9251,
- "reserved_gpu_hours": 24.0
+ "spent_gpu_hours": 33.3984,
+ "reserved_gpu_hours": 30.0
 }

@@ -1,0 +1,29 @@
+{
+ "jobs": [
+  "e2q3a",
+  "e2q3b"
+ ],
+ "reference": [
+  "e2q1a",
+  "e2q1b (audited SUBMIT, audits/codex-job-e2q-3.md)"
+ ],
+ "configs_equal_modulo_bank_identity": {
+  "a": true,
+  "job_a": true,
+  "b": true,
+  "job_b": true
+ },
+ "bank": {
+  "W1024s3": {
+   "path": "inputs/banks3d/s3/bank.pkl",
+   "sha256": "8912c8e382f0cf3240fe39d6751c90276f1f7466536e16189655bbf1f18e38e1"
+  }
+ },
+ "bank_matches_BANK_json": true,
+ "bank_source": "e2t3d3 (6087959) archive; register_banks3d.py 3 --fetch",
+ "memgate": {
+  "maxrss_GiB": 273.86,
+  "device_peak_GiB": 71.41,
+  "completed": true
+ }
+}

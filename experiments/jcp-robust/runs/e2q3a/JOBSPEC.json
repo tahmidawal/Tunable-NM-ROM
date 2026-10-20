@@ -1,0 +1,25 @@
+{
+ "attempt": "e2q3a",
+ "gpu": "h200",
+ "gpus": 1,
+ "hours": 2.75,
+ "mem": "240G",
+ "cpus": 8,
+ "production": true,
+ "mem_fraction": "0.95",
+ "groups": [
+  [
+   {
+    "driver": "e2run3d",
+    "config": "configs/e2q3a.json"
+   }
+  ]
+ ],
+ "cluster_inputs": [
+  {
+   "src": "/cluster/tufts/paralab/tawal01/burgers-archive/jcp-robust/e2t3d3/output/train3d_s3/bank.pkl",
+   "dst": "experiments/jcp-robust/inputs/banks3d/s3/bank.pkl",
+   "sha256": "8912c8e382f0cf3240fe39d6751c90276f1f7466536e16189655bbf1f18e38e1"
+  }
+ ]
+}

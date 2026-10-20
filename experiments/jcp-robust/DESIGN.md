@@ -997,3 +997,7 @@ unchanged: E2 3D seed 3 is dropped first, and only if the new cap would still be
   reporting fixes, both made. First, the data-hash grouping and the deployed-rule failure seeds are now generated from
   the training records and the per-bank analyses (`make_report.data_hash_sentence`, `deployed_sentence`). Second, the
   seed-dependent definition now reads "different definitive labels", as in A2.7. E2 2D is accepted.
+- **A17.5** e2t3d3 (6087959, H200) completed in 1 h 28 m. Its sacct MaxRSS was 273.9 GiB and its device peak 71.4 GiB,
+  so the A9.2 gate passed. The trainer selected step 11000, and the config differed from the incumbent only in the
+  two seeds. The bank is registered as s3 (sha256 8912c8e3...). e2q3a/b are diff-checked against the audited e2q1a/b
+  (`checks/diffcheck-e2q3.json`).

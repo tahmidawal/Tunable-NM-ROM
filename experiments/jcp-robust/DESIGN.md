@@ -928,3 +928,9 @@ CORRECT. Fixes:
 - **A13.7 (job re-audit e2q-2 #2)** The aggregate `range_256_1024` of a selected-rule H-acc-r row now keeps the A2.5
   label, stored in `h_acc_r_qualifiers` and carried by `quals_3d`. So do the transitions that return "unavailable (no
   rule)" or "not reached" when either slot is target-unverified.
+- **A13.8** Codex job audit `audits/codex-job-e2v1-1.md` returned SUBMIT for e2v1a/b/c and e2t1. Following its finding #8,
+  the same jobs for banks 2 and 3 get a focused diff check instead of a full re-audit, provided the code is unchanged.
+  The diff check confirms the selection-job identity, that the bank hashes match BANK.json, that the targets are
+  certified, that the code is unchanged since the audited commit, and the fresh certificates. It is recorded in
+  `checks/diffcheck-bank<b>.json`. Any code change, or any selection path the audit did not see (diagnostic pick,
+  none, unavailable), triggers a targeted re-audit.

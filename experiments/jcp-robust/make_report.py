@@ -45,8 +45,18 @@ def f(x, n=3):
 
 def tbl(head, rows):
     out = ['| ' + ' | '.join(head) + ' |', '|' + '---|' * len(head)]
-    out += ['| ' + ' | '.join(str(c) for c in r) + ' |' for r in rows]
+    esc = lambda c: str(c).replace('|', '\\|')                  # report audit 1 #6: no raw pipes inside cells
+    out += ['| ' + ' | '.join(esc(c) for c in r) + ' |' for r in rows]
     return '\n'.join(out)
+
+
+FINAL = [False]
+EXTRA = {}          # report audit 1 #11: material qualifications and key numbers carried into EXPORT.json
+
+
+def STATUS_LINE():
+    return ('**Status: final — accepted by the Codex results audits (see the audits list).**' if FINAL[0] else
+            '**Status: provisional until the Codex results audit has accepted the analysis.**')
 
 
 def git(*a):
@@ -64,7 +74,7 @@ def e1_section(R, X):
           'shifts $u \\mapsto \\{u + \\Delta_s\\}$, $\\Delta_s \\sim U[0,1)^d$, $s = 0,\\dots,15$. Draw $s=0$ is the '
           'deployed rule. Each draw is scored on the full validity / Q1 / Q2 contract with draw-matched successors, and '
           'on E0 error against the frozen references. Verdicts follow DESIGN §2 and A1–A13.', '',
-          '**Status: provisional until the Codex results audit has accepted the analysis.**', '']
+          STATUS_LINE(), '']
     dim = v['dimension']
     for d_, dv in dim.items():
         c11, c12 = dv.get('C_E1_1') or {}, dv.get('C_E1_2') or {}
@@ -100,14 +110,7 @@ def e1_section(R, X):
                             failed_draws=a.get('failed_draws'), H_E1b=b.get('label'), D_rank=rk, H_E1c=c.get('label')))
     L += [tbl(head, rows), '']
     L += e1_descriptive()
-    L += ['Reading: every failing 2D draw fails only on the draw-matched successor distance (`fib6765s<k>`, tested on '
-          'every case, which is stricter than qualify\'s historical subset test). Every primary draw passes the bar on the '
-          'distance to the independent cross-family target. The fragile labels therefore do not show accuracy '
-          'sensitivity or failure against the independent family, and H-E1c is insensitive in every cell. In 3D, '
-          'E1-3D-b is atypically unfavourable only because its deployed draw has the largest $D$ of the 16 (rank 16/16); '
-          'it still qualifies, and its E0-error ranks are insensitive. The CP column gives the bound over all 16 draws and '
-          'the bound over the 15 fresh draws: draw 0 was the selected rule, so it is selection-conditioned (A1.5). '
-          '$\\varepsilon_{ref}$ is a conditional Richardson estimate (DESIGN §1).', '']
+    L += e1_reading()
     L += ['Per-draw values are in `checks/e1-2d-<mesh>.json` and `checks/e1-3d.json`.', '',
           '![E1 draw distributions](plots/e1_draws.png)', '']
     plot_e1()
@@ -147,6 +150,8 @@ def e1_descriptive():
         out.append([dim, lab, f(d0.get('D')), f"{f(D['median'])} ({f(D['iqr'])})", f"{f(D['lo'])}–{f(D['hi'])}",
                     f(statistics.median(d0['e']), 6) if d0.get('e') else 'n/a', f"{f(E['median'], 6)} ({f(E['iqr'])})",
                     f"{f(E['lo'], 6)}–{f(E['hi'], 6)}"])
+    EXTRA['E1_draw_distributions'] = [dict(zip(['dim', 'configuration', 'D0', 'D_median_iqr', 'D_minmax', 'E0_deployed',
+                                                'E0_median_iqr', 'E0_minmax'], r)) for r in out]
     L = ['Draw distributions (16 draws per configuration; $D$ = distance to the converged rule; E0 = case-median error):', '',
          tbl(['dim', 'configuration', '$D_0$ (deployed)', '$D$ median (IQR)', '$D$ min–max', 'E0 deployed',
               'E0 median (IQR)', 'E0 min–max'], out), '']
@@ -160,6 +165,54 @@ def e1_descriptive():
                       f"{f(D['median'])}, range {f(D['lo'])}–{f(D['hi'])}; case-median E0 {f(E['median'])}, range "
                       f"{f(E['lo'])}–{f(E['hi'])}.", '']
     return L
+
+
+def e1_reading():
+    """the E1 reading paragraph, every claim derived from the analysis files (report audit 1 #10)"""
+    BAR = 2.5e-4
+    fail, succ_only, tgt_max = 0, 0, 0.
+    for m in (256, 1024, 4096):
+        d = load(f'e1-2d-{m}.json') or {}
+        for g, gv in d.get('groups', {}).items():
+            for ak, av in gv['arms'].items():
+                if av.get('diagnostic') or not ak.startswith('LSPG'):
+                    continue
+                for k, x in av['rules'].items():
+                    if not (k.startswith('d') and k[1:].isdigit()):
+                        continue
+                    tgt_max = max(tgt_max, x.get('D') or 0.)
+                    if x.get('qualified') is False:
+                        fail += 1
+                        if (x.get('succ_max') or 0) > BAR and (x.get('D') or 0) <= BAR and not x.get('prod_failed'):
+                            succ_only += 1
+    v = load('e1-verdicts.json') or {}
+    lab = lambda r: (r.get('H_E1c') or {}).get('label') if isinstance(r.get('H_E1c'), dict) else r.get('H_E1c')
+    insens = all(lab(r) == 'insensitive' for r in v.get('rows', []) if r['label'] == 'verdict')
+    L = [f"Reading: {succ_only} of the {fail} failing 2D draws fail only on the draw-matched successor distance "
+         f"(above {f(BAR)} while the distance to the independent cross-family target stays within it). The largest "
+         f"target distance over all primary 2D draws is {f(tgt_max)}. The successor test runs on every case, which is "
+         "stricter than qualify's historical subset test. The fragile labels therefore concern successor-rule convergence, "
+         "not accuracy against the independent family; H-E1c is " + ('insensitive in every verdict cell.' if insens else
+                                                                       'not insensitive in every cell (see the table).')]
+    d3 = load('e1-3d.json') or {}
+    for nm, cv in d3.get('configs', {}).items():
+        b_ = (cv.get('verdicts') or {}).get('H_E1b') or {}
+        if isinstance(b_, dict) and str(b_.get('label', '')).startswith('atypically'):
+            st = b_.get('stats', {})
+            q0 = (cv['draws'].get('0') or {}).get('qualified')
+            dr = st.get('D') or ['?', '?']
+            L.append(f"In 3D, {nm} is {b_['label']} through the rank of $D_0$ ({dr[0]}–{dr[1]} of {len(cv['draws'])}); its "
+                     f"E0-error ranks are {(st.get('median_e') or [None, None, '?'])[2]} (median) and "
+                     f"{(st.get('worst_e') or [None, None, '?'])[2]} (worst), and the deployed draw "
+                     f"{'still qualifies' if q0 else 'does not qualify'}.")
+    sup = [c['name'] for c in d3.get('config_supplementary', [])]
+    g12 = {nm: ((cv.get('controls') or {}).get('G-E1.2') or {}).get('passed') for nm, cv in d3.get('configs', {}).items()}
+    L.append('The CP column gives the bound over all 16 draws and over the 15 fresh draws: draw 0 was the selected rule, so it '
+             'is selection-conditioned (A1.5). $\\varepsilon_{ref}$ is a conditional Richardson estimate (DESIGN §1). '
+             f"Supplementary 3D configurations ({', '.join(sup) or 'none'}) have no archived historical run, so their "
+             f"replay gate G-E1.2 is unavailable ({', '.join(f'{k}: {g12.get(k)}' for k in sup)}); they are reported apart "
+             'from the registered population.')
+    return [' '.join(L), '']
 
 
 def plot_e1():
@@ -179,7 +232,8 @@ def plot_e1():
     if d3:
         for nm, cv in d3['configs'].items():
             ds = [(int(k), x) for k, x in cv['draws'].items()]
-            pts.append((f'3D {nm} {cv["setting"]}', ds))
+            sup_ = nm in {c['name'] for c in d3.get('config_supplementary', [])}
+            pts.append((f'3D {nm} {cv["setting"]}' + (' (supplementary)' if sup_ else ''), ds))
     if not pts:
         return
     fig, axs = plt.subplots(2, 1, figsize=(11, 8), sharex=True)
@@ -197,7 +251,7 @@ def plot_e1():
     axs[1].set_ylabel('median E0 error over cases')
     axs[1].set_xticks(range(len(pts)))
     axs[1].set_xticklabels([p[0] for p in pts], rotation=70, ha='right', fontsize=7)
-    axs[0].set_title('E1: 16 random draws per configuration (red diamond = deployed draw s=0; grey = draw not qualified)')
+    axs[0].set_title('E1: random draws per configuration (red diamond = deployed draw s=0; grey = draw not qualified)', fontsize=9)
     fig.tight_layout()
     fig.savefig(PLOTS / 'e1_draws.png', dpi=130)
     plt.close(fig)
@@ -217,7 +271,7 @@ def e2_section(R, X):
          '4096² subset, and $\\varepsilon_{ref}$ is a conditional Richardson estimate. The $t$ intervals on the seed '
          'spread concern the mean of $\\log_{10}$ error with $n = 3$ (2 degrees of freedom); they are not prediction '
          'intervals for further seeds.', '',
-         '**Status: provisional until the Codex results audit has accepted the analysis.**', '']
+         STATUS_LINE(), '']
     X['E2'] = {}
     # 2D selection table
     sel = {b: load(f'select2d-{b}.json') for b in range(4)}
@@ -233,6 +287,14 @@ def e2_section(R, X):
         L += ['### 2D rule selection at 1024² (38 cases; first candidate qualified under both LSPG-BE and LSPG-CN-R)', '',
               tbl(['rank', 'bank 0 (incumbent)', 'seed 1', 'seed 2', 'seed 3', 'deployed rule'], rows), '']
         X['E2']['selection_2d'] = {str(b): ({k: v['rule'] for k, v in s['selected'].items()} if s else None) for b, s in sel.items()}
+        if sel[0]:
+            g21 = {r: v for r, v in sel[0]['selected'].items()}
+            mis = [f"R{r} (selects {v['rule']}, deployed {v['deployed']})" for r, v in g21.items() if not v.get('equals_deployed')]
+            L += ['G-E2.1 (non-blocking anchor, incumbent rule recovery): the procedure recovers the deployed rule at ' +
+                  ', '.join(f'R{r}' for r, v in g21.items() if v.get('equals_deployed')) + '; it does not at ' +
+                  (', '.join(mis) if mis else 'no rank') + '. This anchor never blocks (DESIGN A2.4).', '']
+            X['E2']['G_E2_1'] = {r: dict(selected=v['rule'], deployed=v['deployed'], recovered=bool(v.get('equals_deployed')))
+                                 for r, v in g21.items()}
     sel3 = {b: load(f'select3d-{b}.json') for b in range(4)}
     if any(sel3.values()):
         keys = []
@@ -256,11 +318,13 @@ def e2_section(R, X):
               tbl(['width', 'spec', 'family', 'bank 0 (incumbent)', 'seed 1', 'seed 2', 'seed 3'], rows), '',
               f"Wide widths: certified W768 selections on banks {sorted(set(cert[768])) or 'none'}, certified W1024 "
               f"selections on banks {sorted(set(cert[1024])) or 'none'}. Every other wide-width pick is a diagnostic pick "
-              '(target unverified) or no qualified rung. The wide-width front and selected-rule rows are therefore sparse, '
-              'and their cross-seed labels are inconclusive rather than seed-dependent.', '']
+              '(target unverified) or no qualified rung. The wide-width selected-rule *selection* verdicts are therefore '
+              'inconclusive rather than seed-dependent. Wide-width front rows that do carry a seed-dependent label are built on '
+              'target-unverified picks and keep the † qualifier: they compare diagnostic points, not certified selections.', '']
         L += g_e22(sel3[0])
         X['E2']['selection_3d'] = {str(b): ([dict(width=x['width'], spec=x['spec'], family=x['family'], rule=x['rule'],
-                                                  outcome=x['outcome']) for x in s3['slots']] if s3 else None) for b, s3 in sel3.items()}
+                                                  outcome=x['outcome'], target_certified=x.get('target_certified'))
+                                             for x in s3['slots']] if s3 else None) for b, s3 in sel3.items()}
     R3 = {b: load(f'e2-3d-{b}.json') for b in range(4)}
     if all(R3.values()):
         rows = []
@@ -361,7 +425,7 @@ def e2_section(R, X):
                                 rows={x['key']: dict(label=x['label'], seeds=x['seeds'], incumbent=x['incumbent'],
                                                      historical=x['historical'], qualifiers=x.get('qualifiers'))
                                       for x in v['rows']},
-                                spread_ratio=v.get('spread_ratio'))
+                                spread_ratio=v.get('spread_ratio'), spread=v.get('spread'))
             sp = v.get('spread') or {}
             srows = []
             for k, s in sorted(sp.items()):
@@ -372,7 +436,12 @@ def e2_section(R, X):
             if srows:
                 L += ['Seed spread of the median E0 error (seeds 1–3; the 95 % $t$ interval is on $\\log_{10}$, with '
                       '$n = 3$, so it is wide by construction):', '',
-                      tbl(['configuration', 'bank 0 median', 'seeds 1–3 min–max', '95 % t-interval (seeds)'], srows[:40]), '']
+                      tbl(['configuration', 'bank 0 median', 'seeds 1–3 min–max', '95 % t-interval (seeds)'], srows), '']
+            if dim == '2d' and v.get('spread_ratio'):
+                L += ['2D spread ratio (cross-seed spread of the lower rank\'s median E0 error / median |paired change| of the '
+                      'transition; > 1 means the seed spread exceeds the rank step even where every seed improves):', '',
+                      tbl(['kind · mesh · scheme · transition', 'spread ratio'],
+                          [[k.replace('|', ' · '), f(x) if not isinstance(x, str) else x] for k, x in sorted(v['spread_ratio'].items())]), '']
         for b in have:
             r = banks[b]
             g = r.get('G-E2.3')
@@ -401,12 +470,20 @@ def g_e22(s0):
         mine, theirs = pts(sl['rule']), d.get('m')
         ok = mine == theirs
         agree.append(ok)
-        lab = ('differs' if not ok else 'agrees on m (pick target-unverified, not a certified agreement)'
-               if sl['outcome'].startswith('diagnostic') else 'agrees')
+        unv = sl.get('target_certified') is not True
+        if not ok:
+            lab = 'differs'
+        elif mine is None:
+            lab = 'both none (unverified absence: target not certified)' if unv else 'both none (certified absence)'
+        else:
+            lab = 'same m (pick target-unverified: not a certified agreement)' if unv else 'same m (certified)'
         rows.append([f"W{sl['width']}", sl['spec'].replace('|', ' '), sl['family'], f"{sl['rule'] or 'none'} ({sl['outcome']})",
                      d.get('outcome'), lab])
-    return [f'G-E2.2 (non-blocking anchor): the incumbent\'s picks against jcp-dims\' $m^*$ table for the same cells. '
-            f'{sum(agree)} of {len(agree)} compared cells agree on $m$; cells without a dims entry: '
+    import collections
+    cnt = collections.Counter(r[-1] for r in rows)
+    EXTRA['G_E2_2'] = [dict(zip(['width', 'spec', 'family', 'this_lane', 'dims_mstar', 'label'], r)) for r in rows]
+    return [f'G-E2.2 (non-blocking anchor): the incumbent\'s picks against jcp-dims\' $m^*$ table for the same cells. Of '
+            f"{len(rows)} compared cells: " + ', '.join(f'{k} {v}' for k, v in cnt.items()) + '. Cells without a dims entry: '
             f"{', '.join(absent) if absent else 'none'}.", '',
             tbl(['width', 'spec', 'family', 'this lane (incumbent)', 'jcp-dims m*', 'G-E2.2'], rows), '']
 
@@ -439,7 +516,17 @@ def summary():
         ca = collections.Counter((e5.get('agreement') or {}).values())
         L.append(f"- **E5** ({len(e5['jobs'])} jobs, A100-80G and H200): φ intervals {D(cp)}; cross-hardware agreement of "
                  f"the registered verdicts {D(ca)}.")
-    L += ['', 'Per-item tables, qualifications and every number follow; the plain-language glossary is at the end.', '']
+    L += ['', 'How to read these counts:',
+          '- E1 "fragile" concerns convergence to the draw-matched successor rule, not accuracy: the accuracy-sensitivity '
+          'verdict H-E1c is listed beside it. The reading paragraph in the E1 section quantifies this from the data.',
+          '- E2 2D: the selected-rule accuracy verdicts (H-acc-N, H-acc-r) are the seed-robust headline. The selected rule itself, '
+          'and whether the *deployed* rules still qualify on a retrained bank, vary with the seed; see the E2 sections for '
+          'the per-rank lists.',
+          '- E2 3D: the fixed-rule gl64 rows isolate the bank; the selected-rule rows are sparse at W768 and W1024, where most '
+          'slots have no certified rule, so most wide-width rows are inconclusive rather than evidence either way.',
+          '- E5: the ratios are dimensionless and normalised; the conclusions are conditional on the four observed GPUs, '
+          'the frozen H200-selected comparators and the two re-tested hypotheses.',
+          '', 'Per-item tables, qualifications and every number follow; the plain-language glossary is at the end.', '']
     return L
 
 
@@ -518,7 +605,7 @@ def plot_e2():
     axs[0].set_ylabel('median E0 error (selected rule, 1024²)')
     axs[0].set_title('2D: seed spread per prefix r')
     axs[1].set_xticks(range(8))
-    axs[1].set_xticklabels([f'W{w} {s}' for w in (256, 512, 768, 1024) for s in ('CN', 'BDF2')], fontsize=8)
+    axs[1].set_xticklabels([f'W{w} {s}' for w in (256, 512, 768, 1024) for s in ('CN', 'BDF2')], fontsize=7, rotation=45, ha='right')
     axs[1].set_yscale('log')
     axs[1].set_ylabel('median E0 error (gl64, 65³)')
     axs[1].set_title('3D: seed spread per width')
@@ -541,7 +628,7 @@ def e5_section(R, X):
           '$\\phi_k = q_k(\\mathrm{H200}) / q_k(\\mathrm{A100})$ with a paired case bootstrap (10,000 resamples). A ratio is '
           '**hardware-consistent** if the 95 % interval lies in $[0.8, 1.25]$, **hardware-dependent** if it lies '
           'entirely outside, and inconclusive otherwise.', '',
-          '**Status: provisional until the Codex results audit has accepted the analysis.**', '',
+          STATUS_LINE(), '',
           f"Jobs: {', '.join(j['name'] + ' (' + str(j['job_id']) + ', ' + j['status'] + ')' for j in d['jobs'])}. "
           f"Fixtures (injected ×1.5 must read hardware-dependent; null must read consistent): "
           f"{', '.join(k + ' ' + ('ok' if v.get('ok') else 'FAILED') for k, v in d['fixtures'].items())}.", '']
@@ -577,6 +664,8 @@ def e5_section(R, X):
                     if isinstance(x, dict) and 'phi' in x:
                         urows.append([t, f'$\\phi_{k[-1]}$', kk.replace('|', ' ').replace('ckpt:18f0266ae6f0 ', ''), f(x['phi']),
                                       f"[{f(x['lo'])}, {f(x['hi'])}]", x['label']])
+    EXTRA['E5_unit_to_unit'] = [dict(zip(['type', 'ratio', 'subject', 'phi', 'interval', 'label'], r)) for r in urows]
+    EXTRA['E5_G_E5_2_anchors'] = [dict(v, job_label=j, cell=k) for j, k, v in g52]
     L += ['Unit-to-unit baseline (job 2 / job 1 within one GPU type; reported, no required outcome):', '',
           tbl(['type', 'ratio', 'subject', 'φ', '95 % interval', 'label'], urows), '']
     L += ['Per-type verdicts of the registered timing hypotheses (per-job labels in brackets) and their cross-hardware agreement:', '',
@@ -610,12 +699,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--final', action='store_true')
     a = ap.parse_args()
+    FINAL[0] = bool(a.final)
     X = {}
     led = json.loads((HERE / 'runs' / 'GPU-LEDGER.json').read_text())
     spent = led.get('spent_gpu_hours') if 'spent_gpu_hours' in led else None
     commit = git('rev-parse', 'HEAD')
     status = ('final: the Codex results audit accepted the analyses' if a.final else
-              'provisional: production is complete only where stated, and the Codex results audit is pending')
+              'provisional: production is complete and the results audits accepted with fixes; the final report audit is pending')
     L = ['# jcp-robust — randomised rules, recipe seeds and hardware for the off-mesh quadrature ROM', '',
          f'Covers plan V2 items E1 (randomised lattice rules), E2 (repeating the full bank + rule-selection recipe '
          f'over seeds) and E5 (hardware). **Status: {status}.** Generated by `make_report.py` from the analysis JSONs '
@@ -635,13 +725,15 @@ def main():
     for j in led.get('jobs', []):
         js = HERE / 'runs' / j['attempt'] / 'JOBSPEC.json'
         gt = json.loads(js.read_text()).get('gpu') if js.exists() else 'n/a'
-        jrows.append([j['attempt'], j['job_id'], gt, j.get('gpus', 1), j.get('state'), f(j.get('elapsed_hours'), 3),
-                      f((j.get('elapsed_hours') or 0) * (j.get('gpus') or 1) + (j.get('prior_elapsed_hours') or 0), 3)])
+        gh = j.get('elapsed_hours') or 0.        # the ledger's elapsed_hours are GPU-hours (GPUs x wall, all requeues)
+        jrows.append([j['attempt'], j['job_id'], gt, j.get('gpus', 1), j.get('state'), f(gh / (j.get('gpus') or 1), 3), f(gh, 3)])
     L += ['## Resources', '', f"GPU-hours from `runs/GPU-LEDGER.json`: spent {f(spent)} of the cap {f(led.get('cap_gpu_hours'))} "
           '(cap raised from 75 by the coordinator, A18). Namespace `/cluster/tufts/paralab/tawal01/jcp-robust/`. Every job '
           'ran in its own directory; the logs are under `runs/<attempt>/archive`, and raw arrays over 100 MB stay in '
           '`burgers-archive/jcp-robust/<attempt>/` with sha256 listings.', '',
-          tbl(['attempt', 'job id', 'GPU', 'GPUs', 'state', 'elapsed h', 'GPU-h'], jrows), '']
+          tbl(['attempt', 'job id', 'GPU', 'GPUs', 'state', 'wall h', 'GPU-h'], jrows),
+          '', f"Column sum of GPU-h: {f(sum((j.get('elapsed_hours') or 0.) for j in led.get('jobs', [])), 6)}; ledger spent total: "
+          f"{f(spent, 6)}.", '']
     X['jobs'] = [dict(attempt=r[0], job_id=r[1], gpu=r[2], state=r[4]) for r in jrows]
     L += ['## Deviations, retractions and corrections', '',
           f"- smk3 (the 3D smoke) hit its time limit ({led_state('smk3')}) during data generation; it was split into smk3c "
@@ -660,23 +752,73 @@ def main():
           '- On the retrained 2D banks, the deployed rules do not transfer. ' + deployed_sentence() +
           ' These are qualification failures of the deployed rules; they do not affect the selected-rule accuracy verdicts.', '']
     L += ['## Glossary', '',
-          '- **Draw $s$**: one random shift (lattice) or scramble (Sobol) of a quadrature rule; $s=0$ is the rule deployed today.',
-          '- **$D$**: rollout distance of a draw\'s trajectory to the converged (cross-family) reference rule, relative to the initial state norm.',
-          '- **Q1 / Q2**: the qualification contract. Q1: validity, stationarity and tight-solve agreement. Q2: the distance '
-          'to the next rule in the ladder (successor) $\\le 2.5\\times10^{-4}$ and $\\rho \\le 0.116$.',
-          '- **H-E1a**: robust / inconclusive / fragile, from the number of draws failing qualification and a one-sided Clopper–Pearson (CP) upper bound.',
-          '- **H-E1b**: where the deployed draw ranks among the 16 draws (typical, atypically favourable or unfavourable); ranks are intervals because of ties within $\\delta = 2\\max\\varepsilon_{ref}$.',
-          '- **H-E1c**: whether the E0 error depends on the draw by more than $\\max(2\\varepsilon, 0.1\\,e_{conv})$.',
-          '- **C-E1.1 / C-E1.2**: must-fail controls. C-E1.1: a bad generating vector must be caught by the independent '
-          'Gauss family. C-E1.2: a mislabelled rule must be refused.',
-          '- **E0 error**: error against the frozen full-order reference store, per case.',
-          '- **Bank / seed**: a trained decoder bank. Bank 0 is the incumbent; seeds 1–3 are retrained with the identical recipe.',
-          '- **H-acc-N / H-acc-r**: accuracy is mesh-independent (N) / improves with the prefix size r or the width.',
-          '- **Front**: cost–accuracy non-dominated set of the *tested* configurations (never complete); member / dominated / unqualified.',
-          '- **φ**: H200 value of a dimensionless timing ratio divided by its A100 value.',
-          '- **Provisional**: not yet accepted by the independent Codex results audit.',
-          '- **Target unverified**: the cross-family reference rule could not be certified, so the pick uses own-family qualification only and is labelled.']
+          '**E1**',
+          '- **Draw $s$**: one random Cranley–Patterson shift (lattice) or Owen scramble (Sobol) of a quadrature rule; $s=0$ is '
+          'the rule deployed today. Rule names: `fib<n>` / `lat<n>` are rank-1 lattice rules with $n$ points, `gauss<n>` / `gl<n>` '
+          'tensor Gauss rules ($n$ per dimension in 3D), `sob<n>` Sobol points; the suffix `s<k>` is draw $k$.',
+          '- **$D$**: maximum over cases of the rollout distance between a draw\'s trajectory and the converged cross-family '
+          'reference rule (gauss384 in 2D, gl64 in 3D), relative to the initial-state norm.',
+          '- **Successor distance**: the same distance to the next, larger rule of the same family with the same draw.',
+          '- **$\\rho$**: the tested-advection indicator of a rule against the converged (or successor) rule at the draw\'s own '
+          'reached states (Q2 bar 0.116).',
+          '- **Q1 / Q2**: the qualification contract. Q1: valid, stationary and agreeing with tight solves. Q2: successor '
+          'distance $\\le 2.5\\times10^{-4}$ and $\\rho \\le 0.116$.',
+          '- **H-E1a**: robust / inconclusive / fragile, from the number of draws failing Q1+Q2 and one-sided Clopper–Pearson (CP) '
+          'upper bounds on the failure rate (over all 16 draws, and over the 15 fresh draws excluding the selected draw 0).',
+          '- **H-E1b**: where the deployed draw ranks among the 16. Ranks are intervals because of ties: distances $D$ are ranked '
+          'with tie margin $\\delta = 0$, E0 errors with $\\delta = 2\\max\\varepsilon_{ref}$. Typical, atypically favourable '
+          'or atypically unfavourable.',
+          '- **H-E1c**: per eligible case, $\\Delta_i = \\max_s |e_{s,i} - e_{0,i}|$ (largest departure of any draw\'s E0 error '
+          'from the deployed draw\'s) against the margin $\\max(2\\varepsilon_{ref}, 0.1\\,e_{conv})$, where $e_{conv}$ is '
+          'the converged rule\'s error. Insensitive if at least 90 % of eligible cases are within the margin.',
+          '- **C-E1.1 / C-E1.2**: must-fail controls. C-E1.1: a bad generating vector must be caught by the independent Gauss '
+          'family. C-E1.2: a mislabelled rule must be refused. **G-E1.x**: integrity gates (identity, reproduction of the '
+          'archived deployed run, permuted replay).',
+          '- **Eligible cases**: cases whose case-kind is rankable in the E0 reference store (non-rankable 2D case-kinds are excluded).',
+          '- **IQR**: inter-quartile range (75th minus 25th percentile) over the draws.',
+          '**Models, schemes and settings**',
+          '- **$r$ / R128…R384**: number of leading bank modes used by the 2D ROM (prefix of the ordered R512 bank). **W256…W1024**: '
+          'width of the 3D W1024 bank used. **M**: number of quadrature points. **M2_512**: a different 3D bank of width 512.',
+          '- **LSPG / GAL**: least-squares Petrov–Galerkin / Galerkin projection. **BE / CN / CN-R / BDF2**: backward Euler, '
+          'Crank–Nicolson, Crank–Nicolson started with two backward-Euler (Rannacher) steps, BDF2. Factors 1, 2, 2.5 multiply '
+          'the base time step.',
+          '- **3D solver specs** (`<solver>|<scheme>|<dt>|<K>`): `fs` = fixed-sweep LSPG solver with K cached-predictor '
+          'Levenberg–Marquardt sweeps per step (K1 = one sweep); `qn` = QN-k solver, quasi-Newton iterations with a frozen '
+          'Gauss–Newton matrix (k4 = at most four); `ad` = the adaptive reference solves used for the tight/tighter checks.',
+          '**E2**',
+          '- **Bank / seed**: a trained decoder bank. Bank 0 is the incumbent; seeds 1–3 are retrained with the identical recipe '
+          'and only the model and subset seeds changed.',
+          '- **H-acc-N**: the accuracy at fixed $r$ does not degrade from 256² to 1024² and 4096² (equivalence test). **H-acc-r**: '
+          'accuracy improves with $r$ (2D) or with the width (3D), per transition and over the range.',
+          '- **Selected rule / deployed rule**: the rule the registered selection procedure picks on a bank / the rule deployed '
+          'today (from the incumbent).',
+          '- **Front**: cost–accuracy non-dominated set of the *tested* qualified configurations (never complete), computed '
+          'separately for median and worst-case E0 error with qualify\'s dominance rule (5 % cost band, error margin '
+          '$\\max(2\\varepsilon_{ref}, 0.02\\,e)$). States: member / dominated / unqualified / absent / missing.',
+          '- **Seed-robust / seed-dependent / inconclusive**: seeds 1–3 give the same definitive label / different definitive '
+          'labels / anything else. "vs incumbent" is the separate historical comparison with bank 0.',
+          '- **Spread ratio**: cross-seed spread of the lower step\'s median error divided by the median paired change of the step.',
+          '- **$t$ interval**: 95 % Student-$t$ interval for the mean of $\\log_{10}$ error over the three seeds (2 degrees of freedom).',
+          '- **Target unverified (†)**: the cross-family reference could not be certified (gl56 vs gl64 check failed), so the pick '
+          'uses own-family qualification only and is labelled; a "none" under an unverified target is not a definitive absence.',
+          '- **G-E2.1 / G-E2.2 / G-E2.3**: incumbent anchors: deployed-rule recovery in 2D / agreement with jcp-dims\' $m^*$ in 3D '
+          '(both non-blocking) / replay of the archived incumbent runs (blocking).',
+          '**E5**',
+          '- **FOM**: full-order model. **CC**: the frozen same-mesh central-difference comparator (`fd|CC|L1024|…`); '
+          '**PS**: the frozen sine pseudo-spectral comparator (`ps|N96|…`), both selected on H200 by jcp-fom2d. '
+          '**S**: median FOM time / median ROM time. **S2-subset**: pass iff the lower 95 % bound of $S \\ge 2$, fail iff the '
+          'upper bound is below 2. **H-cost-N(2)**: P1\'s mesh-cost statistic on {256², 1024²} only: pass iff the upper 95 % '
+          'bound of $R = \\max/\\min$ cost is $\\le 1.25$, fail iff the lower bound exceeds 1.25.',
+          '- **$q_1, q_2, q_3$**: B/A cost ratio, mesh-cost ratio, FOM/ROM speed-up. **φ**: H200 value divided by A100 value. '
+          'Bootstrap interval: 95 % paired case bootstrap, 10,000 resamples.',
+          '**General**',
+          '- **E0 error**: per case, the maximum over output times of $\\lVert u - R\\rVert / \\lVert R(t_0)\\rVert$ against the frozen '
+          'full-order reference store $R$. **$\\varepsilon_{ref}$**: the reference\'s '
+          'own error, a conditional Richardson estimate.',
+          '- **Resource columns**: wall h = elapsed wall-clock hours; GPU-h = GPUs × wall hours over all attempts.',
+          '- **Provisional / final**: before / after acceptance by the independent Codex results audits.']
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')
+    X.update(EXTRA)
     X.update(lane='jcp-robust', commit=commit, status=status, ledger=dict(spent_gpu_hours=spent, cap=led.get('cap_gpu_hours')),
              plots=[str(p.relative_to(HERE)) for p in sorted(PLOTS.glob('*.png'))])
     (HERE / 'runs' / 'EXPORT.json').write_text(json.dumps(X, indent=1, default=float) + '\n')

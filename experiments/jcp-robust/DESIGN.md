@@ -1024,3 +1024,24 @@ inconclusive over 129 rows). Bank 3's selection was recomputed from its coeffici
   agreement on $m$ for a diagnostic pick is labelled as not certified;
 - (#10) the 2D data-hash sentence is labelled as 2D. The report now states which wide-width selections are certified
   (generated). A target-unverified "none within ladder" is marked in the selection table as not a definitive absence.
+
+## A20 (2026-10-20): report audit round 1 (ACCEPT-WITH-FIXES)
+
+`audits/codex-report-1.md` returned **ACCEPT-WITH-FIXES**. All fixes are in `make_report.py`:
+- (#3) The resource table no longer double-counts GPUs: the ledger's `elapsed_hours` are already GPU-hours. The table
+  shows wall h and GPU-h, and their sum equals the ledger total.
+- (#4) The wide-width "inconclusive" statement is restricted to selection verdicts. The seed-dependent W768 front rows
+  are named as built on target-unverified picks.
+- (#5) G-E2.2 cells are split into: same m (certified); same m (target unverified); both none (certified absence);
+  both none (unverified absence); differs.
+- (#6) Table cells escape pipes.
+- (#7) The glossary is complete; the H-E1b tie margins (δ = 0 for D) and the H-E1c, E0, eligibility, ρ and solver-spec
+  definitions are corrected against the DESIGN.
+- (#8) The summary carries the reading qualifications.
+- (#9) The report adds the G-E2.1 R256 mismatch, the unavailable G-E1.2 for the supplementary 3D configurations, the
+  full 2D spread table, and the 2D spread ratios.
+- (#10) The E1 reading paragraph is generated from the data.
+- (#11) EXPORT.json gains the E1 draw distributions, the 2D spreads, G-E2.2, the E5 unit-to-unit baseline and anchors,
+  and `target_certified` per 3D slot.
+- (#12) Plot labels are fixed.
+- (#13) `--final` switches every status line.

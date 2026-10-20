@@ -1,0 +1,18 @@
+{
+ "attempt": "e2v1b",
+ "gpu": "h200",
+ "gpus": 1,
+ "hours": 1.0,
+ "mem": "240G",
+ "cpus": 8,
+ "production": true,
+ "mem_fraction": "0.95",
+ "groups": [
+  [
+   {
+    "driver": "r2acc",
+    "config": "configs/e2v1b.json"
+   }
+  ]
+ ]
+}

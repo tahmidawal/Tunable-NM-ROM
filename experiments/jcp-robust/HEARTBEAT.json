@@ -1,20 +1,23 @@
 {
  "lane": "jcp-robust",
- "utc": "2026-10-19T23:37:52Z",
- "step": "7: e2t2d, e1m4096b, e5h1 running; queued e5a2, e5h2; per-seed E2 after e2t2d",
+ "utc": "2026-10-20T02:36:35Z",
+ "step": "14: cap 6 (A14); running/pending e2t3d2, e2v1b, e2t1, e2q0a, e2q0b, e2q1b; queued e2v2*, e2t2, e2v3*, e2t3, e2q1a, e2t3d3; E1 3D analysis local",
  "waiting_on": {
   "slurm_jobs": [
-   "6076975",
-   "6078813",
-   "6080051"
+   "6083517",
+   "6084422",
+   "6084652",
+   "6084659",
+   "6084664",
+   "6084666"
   ],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
  "expected_finish_utc": null,
- "last_commit": "a9e22dc43",
- "gpu_hours_spent": 5.3606,
+ "last_commit": "545d98e61",
+ "gpu_hours_spent": 24.2698,
  "gpu_hours_cap": 75,
  "notes": ""
 }

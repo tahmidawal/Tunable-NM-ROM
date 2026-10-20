@@ -49,7 +49,27 @@
     true
    ]
   },
-  "3D": {}
+  "3D": {
+   "C_E1_1": {
+    "admitted": true,
+    "fired": true,
+    "agree": true,
+    "flagged": true,
+    "M_job": 1027,
+    "M_cpu": 1027
+   },
+   "C_E1_2": {
+    "raised": true,
+    "fired": true,
+    "message": "rule identity mismatch: table lat8192s1 claimed as lat8192",
+    "true_claim_passes": true
+   },
+   "G_E1_3": {
+    "rule": "lat8192s0",
+    "max_rel_dev": 0.0,
+    "passed": true
+   }
+  }
  },
  "rows": [
   {
@@ -794,13 +814,211 @@
   },
   {
    "dim": "3D",
-   "config": "E1-3D-a",
-   "label": "unavailable (no analysis)"
+   "config": "E1-3D-a|W256|qn|BDF2|0.025|k4",
+   "supplementary": false,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      9,
+      9,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
   },
   {
    "dim": "3D",
-   "config": "E1-3D-b",
-   "label": "unavailable (no analysis)"
+   "config": "E1-3D-b|W512|qn|BDF2|0.025|k4",
+   "supplementary": false,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "atypically unfavourable",
+    "stats": {
+     "D": [
+      16,
+      16,
+      "unfavourable"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
+  },
+  {
+   "dim": "3D",
+   "config": "E1-3D-c|W512|qn|CN|0.025|k4",
+   "supplementary": true,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      9,
+      9,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
+  },
+  {
+   "dim": "3D",
+   "config": "E1-3D-d|M2_512|qn|BDF2|0.025|k4",
+   "supplementary": true,
+   "label": "verdict",
+   "H_E1a": {
+    "label": "robust",
+    "failures": 0,
+    "n": 16,
+    "cp_upper_all": 0.1707497229824809,
+    "cp_upper_fresh": 0.18103627252208462,
+    "failed_draws": []
+   },
+   "H_E1b": {
+    "label": "typical",
+    "stats": {
+     "D": [
+      10,
+      10,
+      "typical"
+     ],
+     "median_e": [
+      1,
+      16,
+      "insensitive"
+     ],
+     "worst_e": [
+      1,
+      16,
+      "insensitive"
+     ]
+    },
+    "delta_error": 0.0002317708464587343
+   },
+   "H_E1c": {
+    "label": "insensitive",
+    "fraction_within": 1.0,
+    "n": 64,
+    "outside": []
+   },
+   "indicator": {
+    "tp": 16,
+    "fp": 0,
+    "fn": 0,
+    "tn": 0,
+    "draw0": {
+     "rho_ok": true,
+     "rollout_ok": true
+    }
+   },
+   "eligible_cases": 64
   }
  ]
 }

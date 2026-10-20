@@ -941,3 +941,8 @@ The coordinator raised this lane's concurrent-job cap from 3 to **6**, because j
 The account cap of 8 is still enforced inside the §14 shared sbatch lock, and the GPU-hour cap stays at 75 with
 reservation. `cluster/submit.sh` now refuses at 6 lane jobs. Queued jobs that have been audited are submitted as slots
 free up.
+- **A13.9** e2t3d2 (6083517, H200) completed in 1 h 28 m. Its sacct MaxRSS was 274.5 GiB and its device peak 71.4 GiB,
+  both within the A9.2 gate. The trainer selected step 11000, and the config differed from the incumbent only in the
+  two seeds. The bank is registered as s2 (sha256 2710fd0f...). The A13.8 diff-check rule now also covers the 3D E2
+  jobs: e2q2a/b equal the audited e2q1a/b except for bank identity (`checks/diffcheck-e2q2.json`). Registering a bank
+  adds files to the certified tree, so queued certificates are re-issued after each registration.

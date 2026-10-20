@@ -1,21 +1,19 @@
 {
  "lane": "jcp-robust",
- "utc": "2026-10-20T10:46:09Z",
- "step": "19: bank-1 3D selection done; e2f1 submitted (diff check vs e2f0); e2q2b, e2q3b running",
+ "utc": "2026-10-20T11:45:38Z",
+ "step": "21: e2q2b done -> scoring, select3d 2, e2f2 (local chain); e2q3b running",
  "waiting_on": {
   "slurm_jobs": [
-   "6101684",
-   "6103425",
-   "6106018"
+   "6103425"
   ],
   "codex_output": null,
   "codex_pid": null,
-  "local": null
+  "local": "cq.sh e2q2b + select3d 2 + e2f2 submit"
  },
  "expected_finish_utc": null,
- "last_commit": "dd62bf415",
- "gpu_hours_spent": 39.6445,
- "gpu_hours_reserved": 16.0,
+ "last_commit": "0646dafc8",
+ "gpu_hours_spent": 39.7551,
+ "gpu_hours_reserved": 14.5,
  "gpu_hours_cap": 95.0,
  "notes": ""
 }

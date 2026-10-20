@@ -67,8 +67,8 @@ this floor decays slowly, because translating a sharp local feature is the
 classic worst case for linear subspaces (slow Kolmogorov n-width decay). The
 measured POD sweep at N=256 (`round3/results_2d_N256.json`):
 
-| r | 1 | 4 | 8 | 24 | 64 |
-|---|---|---|---|---|---|
+| r            | 1       | 4       | 8       | 24      | 64      |
+| ------------ | ------- | ------- | ------- | ------- | ------- |
 | POD-r rel-L2 | 5.67e-1 | 2.98e-1 | 1.92e-1 | 7.88e-2 | 2.77e-2 |
 
 Sixty-four optimal linear modes still leave ~2.8% error on a 4-parameter
@@ -82,13 +82,13 @@ degrades (this is the motivating observation recorded in `README.md`). The
 testbed reproduces the mechanism. The grid-tied arm's basis `W` has
 `rank × N²` learned entries — the parameter count is tied to the mesh:
 
-| N | grid-tied params | grid-tied rel-L2 | its own POD-24 floor |
-|---|---|---|---|
-| 16 | 26,393 | 2.45e-1 | 9.83e-2 |
-| 32 | 44,825 | 1.90e-1 | 8.26e-2 |
-| 64 | 118,553 | 1.85e-1 | 7.96e-2 |
-| 128 | 413,465 | 2.17e-1 | 7.90e-2 |
-| 256 | 1,593,113 | 2.42e-1 | 7.88e-2 |
+| N   | grid-tied params | grid-tied rel-L2 | its own POD-24 floor |
+| --- | ---------------- | ---------------- | -------------------- |
+| 16  | 26,393           | 2.45e-1          | 9.83e-2              |
+| 32  | 44,825           | 1.90e-1          | 8.26e-2              |
+| 64  | 118,553          | 1.85e-1          | 7.96e-2              |
+| 128 | 413,465          | 2.17e-1          | 7.90e-2              |
+| 256 | 1,593,113        | 2.42e-1          | 7.88e-2              |
 
 *(all from `round3/results_2d_N*.json`; 80k steps each, identical training
 recipe to the coord-net arm)*
@@ -228,12 +228,12 @@ both dimensions.
 **1D, translated-bump family, N=1024, 40k steps both arms**
 (`results_bump_upgraded.json`):
 
-| model | reduced dim | rel-L2 |
-|---|---|---|
-| POD-3 (optimal linear at equal dim) | 3 | 4.754e-2 |
-| POD-24 (optimal linear) | 24 | 6.671e-5 |
-| grid-tied decoder, rank 24 | 24 | 9.023e-3 |
-| **coord-net decoder** | **3** | **4.473e-3** |
+| model                               | reduced dim | rel-L2             |
+| ----------------------------------- | ----------- | ------------------ |
+| POD-3 (optimal linear at equal dim) | 3           | 4.754e-2           |
+| POD-24 (optimal linear)             | 24          | 6.671e-5           |
+| grid-tied decoder, rank 24          | 24          | 9.023e-3           |
+| **coord-net decoder**         | **3** | **4.473e-3** |
 
 The coord-net with 3 latent variables is **10.6× below** the best any
 3-dimensional linear model can ever do, while the rank-24 grid-tied arm sits
@@ -242,13 +242,13 @@ The coord-net with 3 latent variables is **10.6× below** the best any
 **2D, round 3, 80k steps, one Tufts A100 job per N**
 (`round3/results_2d_N*.json`):
 
-| N | POD-4 (equal dim) | POD-24 | grid-tied (rank 24) | coord-net (4 latent) |
-|---|---|---|---|---|
-| 16 | 3.14e-1 | 9.83e-2 | 2.45e-1 | 1.01e-1 |
-| 32 | 3.01e-1 | 8.26e-2 | 1.90e-1 | 4.04e-2 |
-| 64 | 2.99e-1 | 7.96e-2 | 1.85e-1 | **3.83e-2** |
-| 128 | 2.98e-1 | 7.90e-2 | 2.17e-1 | 4.14e-2 |
-| 256 | 2.98e-1 | 7.88e-2 | 2.42e-1 | **3.89e-2** |
+| N   | POD-4 (equal dim) | POD-24  | grid-tied (rank 24) | coord-net (4 latent) |
+| --- | ----------------- | ------- | ------------------- | -------------------- |
+| 16  | 3.14e-1           | 9.83e-2 | 2.45e-1             | 1.01e-1              |
+| 32  | 3.01e-1           | 8.26e-2 | 1.90e-1             | 4.04e-2              |
+| 64  | 2.99e-1           | 7.96e-2 | 1.85e-1             | **3.83e-2**    |
+| 128 | 2.98e-1           | 7.90e-2 | 2.17e-1             | 4.14e-2              |
+| 256 | 2.98e-1           | 7.88e-2 | 2.42e-1             | **3.89e-2**    |
 
 At N≥32 the coord-net sits **~7.5× below POD-4** and beats POD-24 outright
 with 6× fewer reduced variables. *Cause:* the only thing separating POD-4 from
@@ -279,12 +279,12 @@ evaluated against a common N=512 CG reference —
 `film/film_convergence_fixed.json`, the canonical corrected file):
 
 | train N | data-floor (discretization bound) | FiLM coord-net vs N=512 reference |
-|---|---|---|
-| 16 | 4.74e-2 | 7.21e-2 |
-| 32 | 4.20e-3 | 1.34e-2 |
-| 64 | 9.81e-4 | 9.79e-3 |
-| 128 | 2.46e-4 | 1.09e-2 |
-| 256 | 7.02e-5 | **6.26e-3** |
+| ------- | --------------------------------- | --------------------------------- |
+| 16      | 4.74e-2                           | 7.21e-2                           |
+| 32      | 4.20e-3                           | 1.34e-2                           |
+| 64      | 9.81e-4                           | 9.79e-3                           |
+| 128     | 2.46e-4                           | 1.09e-2                           |
+| 256     | 7.02e-5                           | **6.26e-3**                 |
 
 Error **descends 11.5×** across the sweep (7.21e-2 → 6.26e-3) and never turns
 upward. The regime structure is legible against the data-floor column (the

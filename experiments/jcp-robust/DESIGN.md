@@ -1060,3 +1060,6 @@ fixes, now made:
 
 `audits/codex-report-3.md` returned **ACCEPT**. The report is regenerated with `make_report.py --final`, which changes the
 status lines only. The lane hands back.
+- **A22.1** Namespace cleanup. smk1 never ran (it was cancelled while pending, A7) and its staged directory is removed.
+  The partial output of e1m4096, cancelled at 0.70 h (A10.3) and never used for any verdict, is moved to
+  `burgers-archive/jcp-robust/e1m4096-cancelled-partial`. `/cluster/tufts/paralab/tawal01/jcp-robust/` is empty.

@@ -187,6 +187,9 @@ def main():
       'is recorded per job) and replaced a pending refC1 by refC1b.')
     w('- The first analysis run stopped at an exact-hash identity check: generated descriptors differ by one or two ulps '
       'between node CPU types; A10 compares them to round-off instead. No result had been read.')
+    w('- **Correction after results audit 1 (A11):** the scoring had inherited a validity rule that allows solver budget '
+      'exits, contrary to DESIGN §7.1; corrected, it changes only the GAL-CN diagnostic row on C2 (now FAILS); no primary '
+      'cell changed.')
     w('- Prior related evidence (not re-scored here; see LAB-LOG 2026-09-17, lane b-lowvisc): an earlier low-viscosity '
       'cohort also showed much larger linear-bank representation floors; this lane\'s floors point the same way for the '
       'low-ν regimes.\n')

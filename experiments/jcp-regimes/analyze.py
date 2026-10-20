@@ -78,9 +78,12 @@ def errors_of(R, qual, refs):
         coh, c = cid.split('|')
         ref = refs[(coh, int(c))]
         pc = qual.get(cid, {})
-        valid = bool(pc.get('valid'))
+        # DESIGN 7.1 (A11): a production run with any budget exit (step reason 0) is invalid for the labels, in addition
+        # to the inherited validity (finite, no damping saturation); Q1 keeps qualify's own validity predicate
+        budget_exits = int(np.sum(np.asarray(R['reason'][j]) == 0))
+        valid = bool(pc.get('valid')) and budget_exits == 0
         e = RS.error(NC.decode257(R['W'][j], Rp), ref, R['n0'][j]) if valid else None
-        out[cid] = dict(e=e, valid=valid, eligible=ref['eligible'], eps_ref=ref['eps_ref'],
+        out[cid] = dict(e=e, valid=valid, budget_exits=budget_exits, eligible=ref['eligible'], eps_ref=ref['eps_ref'],
                         n0_rel=abs(float(R['n0'][j]) - ref['n0']) / ref['n0'])
     return out
 

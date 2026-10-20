@@ -699,3 +699,14 @@ stored case: largest relative descriptor difference $1.14\times10^{-15}$ (A+), l
 $6.7\times10^{-16}$ (B1). **Change:** the identity of a scored reference is checked field by field to relative $10^{-13}$
 and $t_0$ to $10^{-14}$ of its maximum (as A5 already did for E0 references), instead of exact hash equality; the ROM–reference
 $n_0$ check ($10^{-12}$) is unchanged. No result was read before this change.
+
+---
+
+## Amendment A11 (2026-10-20, after results audit 1 = RESULTS-WRONG; correction of an implementation deviation)
+
+Results audit 1 found that §7.1 ("an invalid production run: non-finite, damping saturation, **budget exit**") was not
+implemented as frozen: validity was inherited from jcp-qualify's `run_valid`, which allows budget exits. **Correction:**
+for the labels, a production run with any budget exit is invalid (`analyze.errors_of`); Q1 keeps qualify's own validity
+predicate (unchanged). Effect, as reported by the audit: only the GAL-CN diagnostic row on C2 changes (cases c8 and c13 had
+budget exits) — its label becomes FAILS with two invalid runs; no primary LSPG cell changes. The analysis, report and export
+are regenerated.

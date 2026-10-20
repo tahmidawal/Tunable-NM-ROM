@@ -687,3 +687,15 @@ $L=12288$) and of the ROM job (smoke: 17.3 GB) fit an 80 GB A100. `stage.py` ref
 *A9 wording correction (job audit `codex-job-prod-3`):* the decision rules do not depend on hardware, but floating-point
 differences between GPU types could flip a borderline reference-acceptance or qualification decision; identical outcomes
 across hardware are not claimed. Each job's GPU type is recorded with its results.
+
+---
+
+## Amendment A10 (2026-10-20, during analysis, before any result was read)
+
+The first analysis run stopped at the reference identity check: the stored cohort sha256 of N0, N0s, B1 and B2 (references
+computed on A100 nodes) differs from the local generator's, while A−, C1, C2 (H200 nodes) match. Cause: the generator's
+`exp` (ν draws) and the two-bump peak normalisation differ by one or two ulps between node CPU types. Measured over every
+stored case: largest relative descriptor difference $1.14\times10^{-15}$ (A+), largest $|t_0|$ difference
+$6.7\times10^{-16}$ (B1). **Change:** the identity of a scored reference is checked field by field to relative $10^{-13}$
+and $t_0$ to $10^{-14}$ of its maximum (as A5 already did for E0 references), instead of exact hash equality; the ROM–reference
+$n_0$ check ($10^{-12}$) is unchanged. No result was read before this change.

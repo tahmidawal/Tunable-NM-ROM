@@ -1,0 +1,106 @@
+{
+ "dim": 2,
+ "cohort": "Ap",
+ "case": 7,
+ "desc": {
+  "cx": 0.6301612206955224,
+  "cy": 0.7696323959765794,
+  "w": 0.10556659120684492,
+  "a": 1.4590957669322724,
+  "nu": 0.11385268894131279,
+  "s": 12.815646081792472,
+  "d_nu": 0.05634329211922395,
+  "d_s": 0.0
+ },
+ "Ns": [
+  1024,
+  1536,
+  2048
+ ],
+ "dt_base": 3.125e-05,
+ "ladder_attempt": 0,
+ "runs": [
+  {
+   "id": "N1024_dt0_a0",
+   "N": 1024,
+   "dt": 3.125e-05,
+   "attempt": 0,
+   "purpose": "spatial",
+   "umax": 1.4591677157535403,
+   "finite": true,
+   "ic_quad_rel": 7.692140300792586e-14,
+   "ic_quad_max": 1.0117092388595714e-14,
+   "contour_rel": 8.282274607767866e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 44.41439849883318,
+   "peak_bytes": 905612800
+  },
+  {
+   "id": "N1536_dt0_a0",
+   "N": 1536,
+   "dt": 3.125e-05,
+   "attempt": 0,
+   "purpose": "spatial",
+   "umax": 1.4591486316846836,
+   "finite": true,
+   "ic_quad_rel": 1.271325801017859e-13,
+   "ic_quad_max": 1.7734075130295584e-14,
+   "contour_rel": 8.282274607767866e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 91.51213931292295,
+   "peak_bytes": 905612800
+  },
+  {
+   "id": "N2048_dt0_a0",
+   "N": 2048,
+   "dt": 3.125e-05,
+   "attempt": 0,
+   "purpose": "spatial",
+   "umax": 1.4591390434001497,
+   "finite": true,
+   "ic_quad_rel": 1.9238423858720381e-13,
+   "ic_quad_max": 2.6549515895219616e-14,
+   "contour_rel": 8.282274607767866e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 159.01504812948406,
+   "peak_bytes": 1523579392
+  },
+  {
+   "id": "N2048_dt1_a0",
+   "N": 2048,
+   "dt": 1.5625e-05,
+   "attempt": 0,
+   "purpose": "half",
+   "umax": 1.4591390434001497,
+   "finite": true,
+   "ic_quad_rel": 1.9238423858720381e-13,
+   "ic_quad_max": 2.6549515895219616e-14,
+   "contour_rel": 8.282274606236015e-12,
+   "job_gates_ok": true,
+   "checks_ok": true,
+   "seconds": 314.73991120792925,
+   "peak_bytes": 1560772608
+  }
+ ],
+ "selected_spatial": [
+  "N1024_dt0_a0",
+  "N1536_dt0_a0",
+  "N2048_dt0_a0"
+ ],
+ "selected_half": "N2048_dt1_a0",
+ "stability_ok": true,
+ "gates_ok": true,
+ "finite": true,
+ "job": {
+  "job_id": "6080698",
+  "commit": "0c581ba20e53397917ef96961d51a19edd66f526",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ }
+}

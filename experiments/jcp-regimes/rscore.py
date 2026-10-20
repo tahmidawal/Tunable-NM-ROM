@@ -23,6 +23,7 @@ import rcohorts as RG  # noqa: E402
 E0 = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references')
 STORE = HERE / 'store'
 BAR_Q1, BAR_TT, BAR_Q2, BAR_RHO, GAMMA, ETA = 2.5e-4, 2.5e-5, 2.5e-4, .116, 1e-3, 1e-8
+DESC_TOL = 1e-13               # A10: cross-machine round-off in the generated descriptors (observed <= 1.2e-15)
 FACTOR = 2.0                    # DESIGN §7 rule 3
 NBOOT, NPERM = 10000, 10000
 MIN_ELIG = 8
@@ -68,9 +69,8 @@ def ref_lane(regime, case):
     z = np.load(str(stem) + '.npz')
     if (meta['cohort'], meta['case'], meta['kind']) != (regime, case, 'ST'):
         raise IdentityError(f'reference identity {meta["cohort"]}|{meta["case"]} != {regime}|{case}')
-    D = RG.descriptors_2d(regime)
-    if meta['cohort_sha256'] != RG.sha_rows(D):
-        raise IdentityError(f'{regime}: cohort hash differs from the generator')
+    # A10: the cohort hash is not compared across machines (libm exp / s_star differ by <= 1.2e-15 relative between
+    # node CPU types); the descriptor and t0 identity is checked to round-off in reference()
     return np.asarray(z[meta['final'][2]], float), np.asarray(z['t0'], float), meta
 
 
@@ -116,8 +116,12 @@ def reference(cohort, case):
     f, t0, meta = ref_lane(cohort, case)
     jd = meta['judge']
     row = RG.descriptors_2d(cohort)[case]
-    if meta['desc'] != RG.desc_2d(cohort, row) or not np.array_equal(t0, RG.initial_2d(256, cohort, row)):
-        raise IdentityError(f'{cohort}|{case}: reference descriptor / t0 differs from the generator')
+    want = RG.desc_2d(cohort, row)
+    gen = RG.initial_2d(256, cohort, row)
+    desc_ok = set(meta['desc']) == set(want) and all(
+        abs(meta['desc'][k] - want[k]) <= DESC_TOL * max(abs(want[k]), 1e-300) for k in want)
+    if not desc_ok or t0.shape != gen.shape or np.max(np.abs(t0 - gen)) > 1e-14 * max(1., float(np.max(np.abs(gen)))):
+        raise IdentityError(f'{cohort}|{case}: reference descriptor / t0 differs from the generator beyond round-off')
     return dict(field=f, n0=float(np.linalg.norm(t0.ravel())), eligible=meta['outcome'] == 'accepted',
                 eps_ref=jd.get('eps_ref'), outcome=meta['outcome'], sigma=sigma_of(meta), source='lane', meta=meta,
                 t0=t0)

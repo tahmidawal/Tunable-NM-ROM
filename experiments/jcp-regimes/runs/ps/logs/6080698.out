@@ -1,0 +1,84 @@
+host=pax105 source_commit=0c581ba20e53397917ef96961d51a19edd66f526
+NVIDIA A100 80GB PCIe, GPU-c166dee7-f138-fc72-533f-4bfaee778a5c, 81920 MiB
+10.235.106.35:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+jax_backend=gpu
+PASS G-seed refuses [0, 1000, 7090702, 20260927, 923801, 5550001, 2147483647]
+PASS G-seed accepts registered 
+PASS G-bounds registered regimes 
+PASS G-bounds refuses injected rows []
+PASS G-train N0 disjoint 
+PASS G-train all regimes disjoint (A2.1) {'single': 88, 'two_bump': 32, 'others': 4710}
+PASS G-train refuses injected duplicate 
+PASS G-pair C1/A- geometry and nu identical, a larger 
+PASS G-train refuses injected training row 
+PASS G-ic single bump == engines.initial 0.0
+PASS G-ic two-bump peak == a 2.220446049250313e-16
+PASS G-ic B2 sign-changing -1.9927361725803154
+PASS G-ic interface shapes 
+PASS G-ic-ps two-bump coefficients == direct quadrature 3.583463616202375e-15
+PASS S-check separating fixture passes {'Ap': True, 'Am': True, 'C1': True, 'C2': True, 'B1': True, 'B2': True}
+PASS S-check non-separating fixture fails 
+PASS S-check refuses < 8 N0 
+PASS S-check refuses C1 with < 8 A- 
+PASS R-order first-order triple rejected ('order-fail', [1.0, 1.0, 1.0, 1.0, 0.9999999999999999])
+PASS R-order second-order triple accepted ('accepted', [2.0000000000000004, 2.0, 1.9999999999999998, 2.0, 2.0000000000000004])
+PASS R-peclet rejected ('peclet-fail', 2.5)
+ALL-PASS
+STEP refjob configs/ps-N0.json 2026-10-20T00:03:35Z
+jax_backend=gpu x64=True precision=highest
+[     40.7s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     86.8s]   PS N0 c2 N1024_dt0_a0 umax=1.730 finite=True checks=True 46s peak=905612800
+[    180.4s]   PS N0 c2 N1536_dt0_a0 umax=1.730 finite=True checks=True 94s peak=905612800
+[    341.0s]   PS N0 c2 N2048_dt0_a0 umax=1.730 finite=True checks=True 161s peak=1558687232
+[    655.3s]   PS N0 c2 N2048_dt1_a0 umax=1.730 finite=True checks=True 314s peak=1560772608
+JOB COMPLETE
+STEP refjob configs/ps-Ap.json 2026-10-20T00:14:33Z
+jax_backend=gpu x64=True precision=highest
+[     33.0s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     77.4s]   PS Ap c7 N1024_dt0_a0 umax=1.459 finite=True checks=True 44s peak=905612800
+[    169.0s]   PS Ap c7 N1536_dt0_a0 umax=1.459 finite=True checks=True 92s peak=905612800
+[    328.0s]   PS Ap c7 N2048_dt0_a0 umax=1.459 finite=True checks=True 159s peak=1523579392
+[    642.7s]   PS Ap c7 N2048_dt1_a0 umax=1.459 finite=True checks=True 315s peak=1560772608
+JOB COMPLETE
+STEP refjob configs/ps-Am.json 2026-10-20T00:25:19Z
+jax_backend=gpu x64=True precision=highest
+[     32.7s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     77.0s]   PS Am c5 N1024_dt0_a0 umax=0.780 finite=True checks=True 44s peak=905612800
+[    171.7s]   PS Am c5 N1536_dt0_a0 umax=0.780 finite=True checks=True 95s peak=905612800
+[    330.8s]   PS Am c5 N2048_dt0_a0 umax=0.780 finite=True checks=True 159s peak=1558687232
+[    644.9s]   PS Am c5 N2048_dt1_a0 umax=0.780 finite=True checks=True 314s peak=1560772608
+JOB COMPLETE
+STEP refjob configs/ps-C1.json 2026-10-20T00:36:07Z
+jax_backend=gpu x64=True precision=highest
+[     32.8s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     77.1s]   PS C1 c11 N1024_dt0_a0 umax=1.755 finite=True checks=True 44s peak=905612800
+[    168.7s]   PS C1 c11 N1536_dt0_a0 umax=1.755 finite=True checks=True 92s peak=905612800
+[    327.8s]   PS C1 c11 N2048_dt0_a0 umax=1.755 finite=True checks=True 159s peak=1558687232
+[    642.2s]   PS C1 c11 N2048_dt1_a0 umax=1.755 finite=True checks=True 314s peak=1560772608
+JOB COMPLETE
+STEP refjob configs/ps-C2.json 2026-10-20T00:46:53Z
+jax_backend=gpu x64=True precision=highest
+[     32.9s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     77.5s]   PS C2 c9 N1024_dt0_a0 umax=1.681 finite=True checks=True 45s peak=905612800
+[    168.8s]   PS C2 c9 N1536_dt0_a0 umax=1.680 finite=True checks=True 91s peak=905612800
+[    328.1s]   PS C2 c9 N2048_dt0_a0 umax=1.680 finite=True checks=True 159s peak=1558687232
+[    642.3s]   PS C2 c9 N2048_dt1_a0 umax=1.680 finite=True checks=True 314s peak=1560772608
+JOB COMPLETE
+STEP refjob configs/ps-B1.json 2026-10-20T00:57:39Z
+jax_backend=gpu x64=True precision=highest
+[     32.6s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     78.1s]   PS B1 c0 N1024_dt0_a0 umax=1.572 finite=True checks=True 45s peak=905612800
+[    172.9s]   PS B1 c0 N1536_dt0_a0 umax=1.572 finite=True checks=True 95s peak=905612800
+[    333.3s]   PS B1 c0 N2048_dt0_a0 umax=1.572 finite=True checks=True 160s peak=1558687232
+[    649.0s]   PS B1 c0 N2048_dt1_a0 umax=1.572 finite=True checks=True 316s peak=1560772608
+JOB COMPLETE
+STEP refjob configs/ps-B2.json 2026-10-20T01:08:31Z
+jax_backend=gpu x64=True precision=highest
+[     32.6s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     77.9s]   PS B2 c15 N1024_dt0_a0 umax=1.814 finite=True checks=True 45s peak=905612800
+[    170.2s]   PS B2 c15 N1536_dt0_a0 umax=1.814 finite=True checks=True 92s peak=905612800
+[    330.6s]   PS B2 c15 N2048_dt0_a0 umax=1.814 finite=True checks=True 160s peak=1558687232
+[    646.3s]   PS B2 c15 N2048_dt1_a0 umax=1.814 finite=True checks=True 316s peak=1560772608
+JOB COMPLETE
+STEP end - 2026-10-20T01:19:21Z
+ALL-DONE

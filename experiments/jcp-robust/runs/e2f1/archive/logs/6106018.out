@@ -1,0 +1,63 @@
+host=pax010 source_commit=2c819b8772b6db03d1597623971ac5f33ed71e62
+0, NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534, 575.57.08, 143771 MiB, 345 MHz, 3201 MHz, 700.00 W
+10.235.106.22:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+allocated CUDA_VISIBLE_DEVICES=0
+jax_backend=gpu gpu_index=0
+STEP e2run3d configs/e2f1.json 2026-10-20T10:45:25Z
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 4.0s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 7.0s
+[mesh 65] bank rows [(256, 250047), (256, 250047), (256, 250047), (256, 250047)] 4.7s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 7.8s
+SETUP 26.4
+RUN W256|gl24 fs|CN|0.0125|K1 7.1s valid True nonst 0 / 160 37.6
+RUN W256|gl24 fs|CN|0.01|K1 5.5s valid True nonst 0 / 200 43.1
+RUN W256|gl24 qn|BDF2|0.025|k4 2.7s valid True nonst 0 / 80 45.8
+RUN W256|gl24 ad|LSPG|CN|0.0125|tight 2.7s valid True nonst 0 / 0 48.6
+RUN W256|gl24 ad|LSPG|CN|0.0125|tighter 1.5s valid True nonst 0 / 0 50.1
+RUN W256|gl24 ad|LSPG|CN|0.01|tight 1.7s valid True nonst 0 / 0 52.2
+RUN W256|gl24 ad|LSPG|CN|0.01|tighter 1.8s valid True nonst 0 / 0 54.0
+RUN W256|gl24 ad|LSPG|BDF2|0.025|tight 1.3s valid True nonst 0 / 0 55.2
+RUN W256|gl24 ad|LSPG|BDF2|0.025|tighter 1.3s valid True nonst 0 / 0 56.5
+LADDER W256|gl24|fs|CN|0.0125|K1 valid True worst dist_adt 8.251434261465053e-05 rho None 56.5
+LADDER W256|gl24|fs|CN|0.01|K1 valid True worst dist_adt 4.821775299140306e-05 rho None 56.5
+LADDER W256|gl24|qn|BDF2|0.025|k4 valid True worst dist_adt 0.00010193961261244127 rho None 56.5
+RUN W256|lat16384 fs|CN|0.0125|K1 4.8s valid True nonst 0 / 160 64.6
+RUN W256|lat16384 fs|CN|0.01|K1 4.8s valid True nonst 0 / 200 69.4
+RUN W256|lat16384 ad|LSPG|CN|0.0125|tight 2.7s valid True nonst 0 / 0 72.1
+RUN W256|lat16384 ad|LSPG|CN|0.0125|tighter 1.4s valid True nonst 0 / 0 73.6
+RUN W256|lat16384 ad|LSPG|CN|0.01|tight 1.4s valid True nonst 0 / 0 75.0
+RUN W256|lat16384 ad|LSPG|CN|0.01|tighter 1.4s valid True nonst 0 / 0 76.4
+LADDER W256|lat16384|fs|CN|0.0125|K1 valid True worst dist_adt 8.249803365800548e-05 rho None 76.4
+LADDER W256|lat16384|fs|CN|0.01|K1 valid True worst dist_adt 4.821928058062174e-05 rho None 76.4
+RUN W256|lat8192 qn|BDF2|0.025|k4 2.9s valid True nonst 0 / 80 82.7
+RUN W256|lat8192 ad|LSPG|BDF2|0.025|tight 2.4s valid True nonst 0 / 0 85.1
+RUN W256|lat8192 ad|LSPG|BDF2|0.025|tighter 1.2s valid True nonst 0 / 0 86.3
+LADDER W256|lat8192|qn|BDF2|0.025|k4 valid True worst dist_adt 0.00010182311554887856 rho None 86.3
+RUN W512|gl32 fs|CN|0.01|K1 7.4s valid True nonst 0 / 200 98.0
+RUN W512|gl32 qn|BDF2|0.025|k4 3.3s valid True nonst 0 / 80 101.4
+RUN W512|gl32 ad|LSPG|CN|0.01|tight 4.7s valid True nonst 0 / 0 106.0
+RUN W512|gl32 ad|LSPG|CN|0.01|tighter 2.6s valid True nonst 0 / 0 108.6
+RUN W512|gl32 ad|LSPG|BDF2|0.025|tight 1.8s valid True nonst 0 / 0 111.1
+RUN W512|gl32 ad|LSPG|BDF2|0.025|tighter 1.9s valid True nonst 0 / 0 113.0
+LADDER W512|gl32|fs|CN|0.01|K1 valid True worst dist_adt 3.340673351580906e-05 rho None 113.0
+LADDER W512|gl32|qn|BDF2|0.025|k4 valid True worst dist_adt 7.519757202295817e-05 rho None 113.0
+RUN W512|lat16384 qn|BDF2|0.025|k4 3.0s valid True nonst 0 / 80 118.5
+RUN W512|lat16384 ad|LSPG|BDF2|0.025|tight 2.9s valid True nonst 0 / 0 121.5
+RUN W512|lat16384 ad|LSPG|BDF2|0.025|tighter 1.7s valid True nonst 0 / 0 123.1
+LADDER W512|lat16384|qn|BDF2|0.025|k4 valid True worst dist_adt 7.520191024926191e-05 rho None 123.1
+RUN W512|lat32768 fs|CN|0.01|K1 0.9s valid True nonst 0 / 200 124.9
+RUN W512|lat32768 ad|LSPG|CN|0.01|tight 1.3s valid True nonst 0 / 0 126.2
+RUN W512|lat32768 ad|LSPG|CN|0.01|tighter 1.3s valid True nonst 0 / 0 127.5
+LADDER W512|lat32768|fs|CN|0.01|K1 valid True worst dist_adt 3.3438010633252383e-05 rho None 127.5
+RUN W768|gl48 fs|CN|0.01|K1 13.7s valid True nonst 0 / 200 147.1
+RUN W768|gl48 ad|LSPG|CN|0.01|tight 12.4s valid True nonst 0 / 0 159.5
+RUN W768|gl48 ad|LSPG|CN|0.01|tighter 10.2s valid True nonst 0 / 0 169.8
+LADDER W768|gl48|fs|CN|0.01|K1 valid True worst dist_adt 5.230505029392893e-05 rho None 170.4
+RUN W768|lat32768 fs|CN|0.01|K1 7.8s valid True nonst 0 / 200 180.6
+RUN W768|lat32768 ad|LSPG|CN|0.01|tight 5.3s valid True nonst 0 / 0 185.9
+RUN W768|lat32768 ad|LSPG|CN|0.01|tighter 4.0s valid True nonst 0 / 0 189.9
+LADDER W768|lat32768|fs|CN|0.01|K1 valid True worst dist_adt 5.273201752654842e-05 rho None 189.9
+PANEL front3d-1 288 accept {'valid': True, 'hashes_ok': True, 'ratios_finite': True, 'drift_ok': True, 't1_ok': True, 't1_median': None, 'uncertified': [], 'incomplete': []} 377.5
+D3RUN COMPLETE
+ALL-DONE

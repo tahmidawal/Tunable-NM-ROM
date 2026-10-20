@@ -212,7 +212,12 @@ def e2_section(R, X):
          '**seed-dependent** if two seeds give opposite definitive labels, and **inconclusive** otherwise. Agreement with '
          'the incumbent bank (seed 0) is reported separately as historical agreement (A2.7). Retrains are not bitwise '
          'reproducible, so seeds and hashes are recorded in `inputs/banks*/s<seed>/BANK.json`. Three seeds support a '
-         'description of agreement, not a population-level robustness claim.', '',
+         'description of agreement, not a population-level robustness claim. The three retrains used identical '
+         'data-generation settings, but the generated data are not bitwise identical: seed 2\'s data sha256 differs from '
+         'seeds 1 and 3 (A17.2). Accuracy verdicts use the registered validation populations, including the 16-case '
+         '4096² subset, and $\\varepsilon_{ref}$ is a conditional Richardson estimate. The $t$ intervals on the seed '
+         'spread concern the mean of $\\log_{10}$ error with $n = 3$ (2 degrees of freedom); they are not prediction '
+         'intervals for further seeds.', '',
          '**Status: provisional until the Codex results audit has accepted the analysis.**', '']
     X['E2'] = {}
     # 2D selection table
@@ -245,9 +250,14 @@ def e2_section(R, X):
                   f"{c['seed-dependent']}, inconclusive {c['inconclusive']}" +
                   (' — **blocked by G-E2.3**' if v.get('blocked') else '') + '.', '']
             keyrows = [x for x in v['rows'] if x['key'].startswith(('H-acc-N|sel', 'H-acc-r|sel', 'selected-rule'))
-                       and not x['key'].endswith(('|R128->R256', ))]
-            rows = [[x['key'], x['incumbent'], *[x['seeds'].get(s) for s in ('1', '2', '3')], x['label'], x['historical'] or '',
+                       or x['label'] == 'seed-dependent']
+            rows = [[x['key'].replace('|', ' · '), x['incumbent'], *[x['seeds'].get(s) for s in ('1', '2', '3')], x['label'], x['historical'] or '',
                      'yes' if x.get('qualifiers') else ''] for x in keyrows]
+            L += ['The table lists the headline verdicts (selected-rule H-acc-N, H-acc-r and the selected rule itself) and '
+                  'every seed-dependent row; the full set is in `checks/e2-verdicts-' + dim + '.json`. Front rows use qualify\'s '
+                  'registered dominance rule (5 % cost band, error margin $\\max(2\\varepsilon_{ref}, 0.02\\,e)$), applied to '
+                  'separate median-error (`front…`) and worst-error (`front…-worst`) fronts of the *tested* candidates (A17). '
+                  '`Q1Q2|…|dep|…` rows are the deployed rules re-qualified on each retrained bank.', '']
             L += [tbl(['verdict', 'bank 0', 'seed 1', 'seed 2', 'seed 3', 'cross-seed label', 'vs incumbent',
                        'target-unverified qualifier'], rows), '']
             X['E2'][dim] = dict(counts=c, blocked=v.get('blocked'),
@@ -259,7 +269,7 @@ def e2_section(R, X):
             srows = []
             for k, s in sorted(sp.items()):
                 if s.get('median_t'):
-                    srows.append([k, f(s['incumbent'][0]) if s.get('incumbent') else 'n/a',
+                    srows.append([k.replace('|', ' · '), f(s['incumbent'][0]) if s.get('incumbent') else 'n/a',
                                   f"{f(s['median_minmax'][0])}–{f(s['median_minmax'][1])}",
                                   f"[{f(s['median_t']['lo'])}, {f(s['median_t']['hi'])}]"])
             if srows:
@@ -428,9 +438,12 @@ def main():
           '- The A9 memory note mixed GB and GiB. The pilot\'s host RSS was 168.6 GiB, i.e. 40.1 % of the request, not '
           '"176.8 GB / 42 %" (A12.4).',
           '- The E1 3D supplementary configurations c and d took about 1,000 s each, far above their A11.3 estimate of 2 × W256 (A13.6).',
-          '- On the retrained 2D banks, the deployed R128 and R384 rules can fail qualification: for bank 1 the deployed '
-          'H-acc-N rows are "inconclusive (unqualified configuration)". The deployed rules are therefore bank-specific, '
-          'not universal (provisional).', '']
+          '- **Retracted (A17):** the first E2 2D roll-up computed the 1024² front with exact joint inequalities instead of '
+          'qualify\'s registered dominance rule. Its cross-seed counts and its "R256 front membership is seed-dependent" '
+          'reading are withdrawn; the counts above come from the corrected rule.',
+          '- On the retrained 2D banks, the deployed rules do not transfer: deployed R128 `fib4181` fails successor-rollout '
+          'qualification on all three retrained banks, and deployed R384 `gauss128` fails on seeds 1 and 2. These are '
+          'qualification failures of the deployed rules; they do not affect the selected-rule accuracy verdicts.', '']
     L += ['## Glossary', '',
           '- **Draw $s$**: one random shift (lattice) or scramble (Sobol) of a quadrature rule; $s=0$ is the rule deployed today.',
           '- **$D$**: rollout distance of a draw\'s trajectory to the converged (cross-family) reference rule, relative to the initial state norm.',

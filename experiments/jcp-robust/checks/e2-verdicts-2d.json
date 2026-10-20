@@ -1304,8 +1304,440 @@
    "qualifiers": null
   },
   {
-   "key": "front1024|fixed|R128|BE|1",
+   "key": "front1024-worst|fixed|R128|BE|1",
    "incumbent": "member",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R128|BE|2",
+   "incumbent": "member",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R128|BE|2.5",
+   "incumbent": "member",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R128|CNR|1",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R128|CNR|2",
+   "incumbent": "unqualified",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R128|CNR|2.5",
+   "incumbent": "unqualified",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R256|BE|1",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R256|BE|2",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R256|BE|2.5",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R256|CNR|1",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R256|CNR|2",
+   "incumbent": "unqualified",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R256|CNR|2.5",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R384|BE|1",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "unqualified",
+    "3": "dominated"
+   },
+   "label": "seed-dependent",
+   "historical": null,
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R384|BE|2",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R384|BE|2.5",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R384|CNR|1",
+   "incumbent": "member",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "dominated"
+   },
+   "label": "seed-dependent",
+   "historical": null,
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R384|CNR|2",
+   "incumbent": "member",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "dominated"
+   },
+   "label": "seed-dependent",
+   "historical": null,
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|fixed|R384|CNR|2.5",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R128|BE|1",
+   "incumbent": "member",
+   "seeds": {
+    "1": "member",
+    "2": "member",
+    "3": "member"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R128|BE|2",
+   "incumbent": "member",
+   "seeds": {
+    "1": "member",
+    "2": "member",
+    "3": "member"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R128|BE|2.5",
+   "incumbent": "member",
+   "seeds": {
+    "1": "member",
+    "2": "member",
+    "3": "member"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R128|CNR|1",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R128|CNR|2",
+   "incumbent": "unqualified",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R128|CNR|2.5",
+   "incumbent": "unqualified",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R256|BE|1",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R256|BE|2",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R256|BE|2.5",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R256|CNR|1",
+   "incumbent": "member",
+   "seeds": {
+    "1": "member",
+    "2": "member",
+    "3": "member"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R256|CNR|2",
+   "incumbent": "unqualified",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R256|CNR|2.5",
+   "incumbent": "member",
+   "seeds": {
+    "1": "unqualified",
+    "2": "unqualified",
+    "3": "unqualified"
+   },
+   "label": "seed-robust",
+   "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R384|BE|1",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R384|BE|2",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R384|BE|2.5",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R384|CNR|1",
+   "incumbent": "member",
+   "seeds": {
+    "1": "member",
+    "2": "dominated",
+    "3": "dominated"
+   },
+   "label": "seed-dependent",
+   "historical": null,
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R384|CNR|2",
+   "incumbent": "member",
+   "seeds": {
+    "1": "member",
+    "2": "member",
+    "3": "dominated"
+   },
+   "label": "seed-dependent",
+   "historical": null,
+   "qualifiers": null
+  },
+  {
+   "key": "front1024-worst|slot|R384|CNR|2.5",
+   "incumbent": "dominated",
+   "seeds": {
+    "1": "dominated",
+    "2": "dominated",
+    "3": "unqualified"
+   },
+   "label": "seed-dependent",
+   "historical": null,
+   "qualifiers": null
+  },
+  {
+   "key": "front1024|fixed|R128|BE|1",
+   "incumbent": "dominated",
    "seeds": {
     "1": "unqualified",
     "2": "unqualified",
@@ -1416,11 +1848,11 @@
    "incumbent": "dominated",
    "seeds": {
     "1": "dominated",
-    "2": "member",
-    "3": "member"
+    "2": "dominated",
+    "3": "dominated"
    },
-   "label": "seed-dependent",
-   "historical": null,
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
    "qualifiers": null
   },
   {
@@ -1437,7 +1869,7 @@
   },
   {
    "key": "front1024|fixed|R256|CNR|2.5",
-   "incumbent": "member",
+   "incumbent": "dominated",
    "seeds": {
     "1": "unqualified",
     "2": "unqualified",
@@ -1497,7 +1929,7 @@
   },
   {
    "key": "front1024|fixed|R384|CNR|2",
-   "incumbent": "member",
+   "incumbent": "dominated",
    "seeds": {
     "1": "unqualified",
     "2": "unqualified",
@@ -1509,7 +1941,7 @@
   },
   {
    "key": "front1024|fixed|R384|CNR|2.5",
-   "incumbent": "member",
+   "incumbent": "dominated",
    "seeds": {
     "1": "unqualified",
     "2": "unqualified",
@@ -1521,11 +1953,11 @@
   },
   {
    "key": "front1024|slot|R128|BE|1",
-   "incumbent": "member",
+   "incumbent": "dominated",
    "seeds": {
-    "1": "member",
-    "2": "member",
-    "3": "member"
+    "1": "dominated",
+    "2": "dominated",
+    "3": "dominated"
    },
    "label": "seed-robust",
    "historical": "agrees with incumbent",
@@ -1596,11 +2028,11 @@
    "incumbent": "dominated",
    "seeds": {
     "1": "dominated",
-    "2": "member",
+    "2": "dominated",
     "3": "dominated"
    },
-   "label": "seed-dependent",
-   "historical": null,
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
    "qualifiers": null
   },
   {
@@ -1653,7 +2085,7 @@
   },
   {
    "key": "front1024|slot|R256|CNR|2.5",
-   "incumbent": "member",
+   "incumbent": "dominated",
    "seeds": {
     "1": "unqualified",
     "2": "unqualified",
@@ -1713,19 +2145,19 @@
   },
   {
    "key": "front1024|slot|R384|CNR|2",
-   "incumbent": "member",
+   "incumbent": "dominated",
    "seeds": {
-    "1": "member",
-    "2": "member",
+    "1": "dominated",
+    "2": "dominated",
     "3": "dominated"
    },
-   "label": "seed-dependent",
-   "historical": null,
+   "label": "seed-robust",
+   "historical": "agrees with incumbent",
    "qualifiers": null
   },
   {
    "key": "front1024|slot|R384|CNR|2.5",
-   "incumbent": "member",
+   "incumbent": "dominated",
    "seeds": {
     "1": "dominated",
     "2": "dominated",
@@ -4321,8 +4753,8 @@
   "dep|4096|CNR|256->384": 0.12468963910504235
  },
  "counts": {
-  "seed-robust": 107,
-  "seed-dependent": 18,
+  "seed-robust": 140,
+  "seed-dependent": 21,
   "inconclusive": 22
  }
 }

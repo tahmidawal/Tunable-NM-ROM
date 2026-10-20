@@ -413,6 +413,2055 @@
     "256": "gauss96",
     "384": "gauss128"
    }
+  },
+  "2d": {
+   "counts": {
+    "seed-robust": 140,
+    "seed-dependent": 21,
+    "inconclusive": 22
+   },
+   "blocked": false,
+   "rows": {
+    "H-acc-N|dep|R128|BE": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive (unqualified configuration)",
+      "2": "inconclusive (unqualified configuration)",
+      "3": "inconclusive (unqualified configuration)"
+     },
+     "incumbent": "pass",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-N|dep|R128|CNR": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive (unqualified configuration)",
+      "2": "inconclusive (unqualified configuration)",
+      "3": "inconclusive (unqualified configuration)"
+     },
+     "incumbent": "pass",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-N|dep|R256|BE": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-N|dep|R256|CNR": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-N|dep|R384|BE": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive (unqualified configuration)",
+      "2": "inconclusive (unqualified configuration)",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-N|dep|R384|CNR": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive (unqualified configuration)",
+      "2": "inconclusive (unqualified configuration)",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-N|sel|R128|BE": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-N|sel|R128|CNR": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-N|sel|R256|BE": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-N|sel|R256|CNR": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-N|sel|R384|BE": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-N|sel|R384|CNR": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass"
+     },
+     "incumbent": "pass",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|dep|1024|BE|128->256": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|1024|BE|256->384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "improves",
+      "2": "inconclusive",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|1024|BE|range_128_384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "monotone",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|1024|CNR|128->256": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|1024|CNR|256->384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|1024|CNR|range_128_384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "monotone",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|256|BE|128->256": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|256|BE|256->384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|256|BE|range_128_384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "monotone",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|256|CNR|128->256": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|256|CNR|256->384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|256|CNR|range_128_384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "monotone",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|4096|BE|128->256": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|4096|BE|256->384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|4096|BE|range_128_384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "monotone",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|4096|CNR|128->256": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|4096|CNR|256->384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|dep|4096|CNR|range_128_384": {
+     "label": "inconclusive",
+     "seeds": {
+      "1": "inconclusive",
+      "2": "inconclusive",
+      "3": "inconclusive"
+     },
+     "incumbent": "monotone",
+     "historical": null,
+     "qualifiers": null
+    },
+    "H-acc-r|sel|1024|BE|128->256": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|1024|BE|256->384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|1024|BE|range_128_384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "monotone",
+      "2": "monotone",
+      "3": "monotone"
+     },
+     "incumbent": "monotone",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|1024|CNR|128->256": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|1024|CNR|256->384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|1024|CNR|range_128_384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "monotone",
+      "2": "monotone",
+      "3": "monotone"
+     },
+     "incumbent": "monotone",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|256|BE|128->256": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|256|BE|256->384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|256|BE|range_128_384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "monotone",
+      "2": "monotone",
+      "3": "monotone"
+     },
+     "incumbent": "monotone",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|256|CNR|128->256": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|256|CNR|256->384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|256|CNR|range_128_384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "monotone",
+      "2": "monotone",
+      "3": "monotone"
+     },
+     "incumbent": "monotone",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|4096|BE|128->256": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|4096|BE|256->384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|4096|BE|range_128_384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "monotone",
+      "2": "monotone",
+      "3": "monotone"
+     },
+     "incumbent": "monotone",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|4096|CNR|128->256": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|4096|CNR|256->384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "improves",
+      "2": "improves",
+      "3": "improves"
+     },
+     "incumbent": "improves",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "H-acc-r|sel|4096|CNR|range_128_384": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "monotone",
+      "2": "monotone",
+      "3": "monotone"
+     },
+     "incumbent": "monotone",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|dep|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|dep|LSPG_BE_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|dep|LSPG_BE_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|dep|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|dep|LSPG_CNR_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": false,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|dep|LSPG_CNR_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": false,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|sel|LSPG_BE_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|sel|LSPG_BE_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|sel|LSPG_CNR_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": false,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R128|sel|LSPG_CNR_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": false,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|dep|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|dep|LSPG_BE_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|dep|LSPG_BE_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|dep|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|dep|LSPG_CNR_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": false,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|dep|LSPG_CNR_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|sel|LSPG_BE_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|sel|LSPG_BE_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|sel|LSPG_CNR_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": false,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R256|sel|LSPG_CNR_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|dep|LSPG_BE_1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": true,
+      "2": false,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|dep|LSPG_BE_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|dep|LSPG_BE_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|dep|LSPG_CNR_1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|dep|LSPG_CNR_2": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|dep|LSPG_CNR_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|sel|LSPG_BE_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|sel|LSPG_BE_2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|sel|LSPG_CNR_2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|1024|R384|sel|LSPG_CNR_2.5": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|256|R128|dep|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R128|dep|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R128|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R128|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R256|dep|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R256|dep|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R256|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R256|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R384|dep|LSPG_BE_1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|256|R384|dep|LSPG_CNR_1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|256|R384|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|256|R384|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R128|dep|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R128|dep|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": false
+     },
+     "incumbent": true,
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R128|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R128|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R256|dep|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R256|dep|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R256|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R256|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R384|dep|LSPG_BE_1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R384|dep|LSPG_CNR_1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": false,
+      "2": false,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": null,
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R384|sel|LSPG_BE_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "Q1Q2|4096|R384|sel|LSPG_CNR_1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": true,
+      "2": true,
+      "3": true
+     },
+     "incumbent": true,
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R128|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "member",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R128|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "member",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R128|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "member",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R128|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R128|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R128|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R256|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R256|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R256|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R256|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R256|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R256|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R384|BE|1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "dominated",
+      "2": "unqualified",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R384|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R384|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R384|CNR|1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "dominated"
+     },
+     "incumbent": "member",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R384|CNR|2": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "dominated"
+     },
+     "incumbent": "member",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024-worst|fixed|R384|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R128|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R128|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R128|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R128|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R128|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R128|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R256|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R256|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R256|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R256|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R256|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R256|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "member",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R384|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R384|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R384|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R384|CNR|1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "member",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "member",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R384|CNR|2": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "dominated"
+     },
+     "incumbent": "member",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024-worst|slot|R384|CNR|2.5": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024|fixed|R128|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024|fixed|R128|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "member",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024|fixed|R128|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "member",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024|fixed|R128|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "member",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024|fixed|R128|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R128|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R256|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R256|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R256|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R256|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R256|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R256|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024|fixed|R384|BE|1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "dominated",
+      "2": "unqualified",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024|fixed|R384|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R384|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|fixed|R384|CNR|1": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024|fixed|R384|CNR|2": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": null,
+     "qualifiers": null
+    },
+    "front1024|fixed|R384|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024|slot|R128|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R128|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R128|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R128|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R128|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R128|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R256|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R256|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R256|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R256|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R256|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "unqualified",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R256|CNR|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "unqualified",
+      "2": "unqualified",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": "differs from incumbent (recipe/software version, not attributed to the seed)",
+     "qualifiers": null
+    },
+    "front1024|slot|R384|BE|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R384|BE|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R384|BE|2.5": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R384|CNR|1": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "member",
+      "2": "member",
+      "3": "member"
+     },
+     "incumbent": "member",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R384|CNR|2": {
+     "label": "seed-robust",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "dominated"
+     },
+     "incumbent": "dominated",
+     "historical": "agrees with incumbent",
+     "qualifiers": null
+    },
+    "front1024|slot|R384|CNR|2.5": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "dominated",
+      "2": "dominated",
+      "3": "unqualified"
+     },
+     "incumbent": "dominated",
+     "historical": null,
+     "qualifiers": null
+    },
+    "selected-rule|R128": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "rule:gauss96",
+      "2": "rule:fib6765",
+      "3": "rule:fib6765"
+     },
+     "incumbent": "rule:fib4181",
+     "historical": null,
+     "qualifiers": null
+    },
+    "selected-rule|R256": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "rule:fib10946",
+      "2": "rule:gauss96",
+      "3": "rule:gauss96"
+     },
+     "incumbent": "rule:fib10946",
+     "historical": null,
+     "qualifiers": null
+    },
+    "selected-rule|R384": {
+     "label": "seed-dependent",
+     "seeds": {
+      "1": "rule:gauss160",
+      "2": "rule:gauss160",
+      "3": "rule:gauss128"
+     },
+     "incumbent": "rule:gauss128",
+     "historical": null,
+     "qualifiers": null
+    }
+   },
+   "spread_ratio": {
+    "sel|1024|BE|128->256": 0.04010762768382826,
+    "sel|1024|BE|256->384": 4.5610413495118225,
+    "sel|1024|CNR|128->256": 0.0175312152456336,
+    "sel|1024|CNR|256->384": 0.08932305012174094,
+    "sel|256|BE|128->256": 0.0438700852663013,
+    "sel|256|BE|256->384": 2.530992298421304,
+    "sel|256|CNR|128->256": 0.017277503720131468,
+    "sel|256|CNR|256->384": 0.04477488380073404,
+    "sel|4096|BE|128->256": 0.015592233028718549,
+    "sel|4096|BE|256->384": 2.5851479013650933,
+    "sel|4096|CNR|128->256": 0.014138887978956795,
+    "sel|4096|CNR|256->384": 0.12419524132867059,
+    "dep|1024|BE|128->256": 0.04042856149684851,
+    "dep|1024|BE|256->384": 4.722753849204019,
+    "dep|1024|CNR|128->256": 0.017778721433747084,
+    "dep|1024|CNR|256->384": 0.08967292271474339,
+    "dep|256|BE|128->256": 0.0442610285676916,
+    "dep|256|BE|256->384": 2.6180422011787967,
+    "dep|256|CNR|128->256": 0.017470071004741638,
+    "dep|256|CNR|256->384": 0.04449007605851709,
+    "dep|4096|BE|128->256": 0.015500093265741633,
+    "dep|4096|BE|256->384": 2.5777285045601426,
+    "dep|4096|CNR|128->256": 0.014024545519671382,
+    "dep|4096|CNR|256->384": 0.12468963910504235
+   }
   }
  },
  "E5": {
@@ -510,11 +2559,11 @@
   ]
  },
  "lane": "jcp-robust",
- "commit": "c4302872eb30ab68f0ef13592a96487f1ee60e02",
+ "commit": "751a0cc53f75479769192474ef263b8ee59e5df7",
  "status": "provisional: production is complete only where stated, and the Codex results audit is pending",
  "ledger": {
-  "spent_gpu_hours": 27.5312,
-  "cap": 75.0
+  "spent_gpu_hours": 31.9251,
+  "cap": 95.0
  },
  "plots": [
   "plots/e1_draws.png",

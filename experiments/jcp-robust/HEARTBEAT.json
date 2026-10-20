@@ -1,23 +1,20 @@
 {
  "lane": "jcp-robust",
- "utc": "2026-10-20T04:41:31Z",
- "step": "16: waiting on H200 queue (e2q0b running; e2q0a, e2q1b, e2v2b, e2v3b, e2t3d3 pending); E1/E5 results audit ACCEPT-WITH-FIXES, fixed",
+ "utc": "2026-10-20T09:51:54Z",
+ "step": "17: E2 3D production; e2q1b finished and being collected/scored, then select3d bank 1 (local); running e2q2b, e2q3b; next e2f1-3 (diff checks vs audited e2f0). E1, E5, E2-2D results audits accepted",
  "waiting_on": {
   "slurm_jobs": [
-   "6084659",
-   "6084664",
-   "6084666",
-   "6085671",
-   "6086890",
-   "6087959"
+   "6101684",
+   "6103425"
   ],
   "codex_output": null,
   "codex_pid": null,
-  "local_pid": null
+  "local": "background: collect+score e2q1b, select3d.py 1"
  },
  "expected_finish_utc": null,
- "last_commit": "9119376a6",
- "gpu_hours_spent": 27.5312,
- "gpu_hours_cap": 75,
- "notes": ""
+ "last_commit": "bef96507f",
+ "gpu_hours_spent": 39.6445,
+ "gpu_hours_reserved": 14.5,
+ "gpu_hours_cap": 95.0,
+ "notes": "fetched coefficient files are deleted once analysed (local disk; raw arrays stay on the cluster per brief 16)"
 }

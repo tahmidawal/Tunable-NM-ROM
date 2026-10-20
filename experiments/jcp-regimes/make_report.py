@@ -195,7 +195,7 @@ def main():
       f"unresolved under the allowance): labels { {l: labs.count(l) for l in sorted(set(labs))} }; ratio {num(min(rat))}–{num(max(rat))} ({COND}): "
       'the stiff part of the training box is already far less accurate than the in-range mixture.')
     fl = AN['projection_floor']
-    w('- **Representation floor** (diagnostic; best fit of each eligible reference by the R384 bank span; populations = eligible '
+    w(f'- **Representation floor** ({COND}s; diagnostic; best fit of each eligible reference by the R384 bank span; populations = eligible '
       'references per cohort as in the coverage table; same selection qualification): ' +
       ', '.join(f"{g} {pct(fl[f'{g}|R384']['median'])}" for g in ('val32', 'N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2')
                 if f'{g}|R384' in fl) + ' (medians).')
@@ -347,7 +347,7 @@ def main():
                  ('error', f'for one case, the largest over the {NOUT} output times of the Euclidean norm of the difference between the '
                   f'ROM solution and the reference on the {LATN} × {LATN} scoring lattice, divided by the Euclidean norm of the '
                   'reference initial field on the same lattice (a relative error); tables print it as a percentage, plots as a fraction; '
-                  'reported as a percentage; median and worst are over the reference-eligible, valid cases of the cohort'),
+                  'median and worst are over the reference-eligible, valid cases of the cohort'),
                  ('ROM / FOM', 'reduced-order model (the method under test) / full-order model (a conventional grid solver)'),
                  ('LSPG / GAL', 'the two ways the reduced equations are formed: least-squares Petrov–Galerkin (primary) and Galerkin (diagnostic row)'),
                  ('E0', 'the campaign lane that defined the reference method (second-order space–time references with an order check)'),
@@ -363,8 +363,9 @@ def main():
                   'allowed share; gcert = the recomputed certificate equals the in-job one; distance = production vs tight-tolerance '
                   'run within its bar on every case; tight_tighter = tight vs tighter-tolerance run within its bar; '
                   'offline_agrees = every offline recomputation equals the in-job value'),
-                 ('Q2 distances', 'successor (check) distance = the error-metric distance between the production run and the run '
-                  'with the next finer (the next-but-one finer) quadrature rule, normalised like the error'),
+                 ('Q2 distances', 'successor distance = the error-metric distance between the production run and the run with the '
+                  'next finer quadrature rule; check distance = the distance between that successor run and the run with the '
+                  'rule after it (convergence of the replays); both normalised by the reference initial-field norm, like the error'),
                  ('separation medians', 'median = median σ_a of the regime; median_Am / median_C1 = median σ_a of A− / C1, '
                   'over eligible cases; the in-range range and 90th percentile come from eligible N0 and N0s cases'),
                  ('worst ratio', 'largest regime error divided by the largest baseline error (descriptive; sample sizes differ)'),

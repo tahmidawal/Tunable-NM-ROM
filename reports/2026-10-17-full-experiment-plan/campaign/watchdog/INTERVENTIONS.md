@@ -28,3 +28,4 @@ Every coordinator action taken on a watchdog report (resume, kill, re-run, escal
 | 2026-10-20T07:47Z | jcp-robust | — | remaining 3D E2 reservations exceed the 75 GPU-h lane cap | reallocated unused priority-4 budget (regimes used 14.9/60): robust cap 75 → 95; P4 total 110 of 135 allocated | — |
 | 2026-10-20T09:51Z | jcp-robust | wd2-20261020T095033Z (STALLED single) | heartbeat file 5 h stale while the agent is visibly active; e2q1b finished | heartbeat reminder + disk note (78 GB) via SendMessage, not a resume | — |
 | 2026-10-20T14:09Z | (cluster) | wd1-20261020T140817Z | ssh banner timeout; no campaign jobs queued | transient, no action | — |
+| 2026-10-20T14:54Z | all | — | campaign complete | watchdog loops stopped | — |

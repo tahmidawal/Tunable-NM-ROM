@@ -19,6 +19,12 @@ NAMES = dict(N0='N0 (fresh in-range)', N0s='N0s (stiff part of the training box)
              Am='A− (ν below range)', C1='C1 (low ν, high s, paired with A−)', C2='C2 (lower ν, higher s)',
              B1='B1 (two same-sign bumps)', B2='B2 (signed pair)')
 COND = 'conditional E0-style estimate'
+import rcohorts as RG  # noqa: E402
+import rscore as RS  # noqa: E402
+ROMCFG = json.loads((HERE / 'configs' / 'rom1024.json').read_text())
+MESH = ROMCFG['mesh']
+NCFG = sum(len(st['arms']) for st in ROMCFG['settings'])
+ALLOW = ', '.join(f'{g} {RG.TIGHT_ALLOWANCE.get(g, 0)}' for g in RG.REGIMES_2D)
 
 
 def pct(x, d=3):
@@ -53,43 +59,61 @@ def plots():
     out = HERE / 'plots'
     out.mkdir(exist_ok=True)
     cfgs = [k for k, v in AN['configs'].items() if not v['diagnostic']]
-    # per-regime median error per configuration
-    fig, ax = plt.subplots(figsize=(9, 4.5))
+    sub = 'conditional E0-style errors; exploratory; reference-eligible valid cases'
+    # per-regime median error per configuration; unqualified cells drawn hollow
+    fig, ax = plt.subplots(figsize=(9, 4.8))
     regs = ('N0', 'N0s') + REG
     for k in cfgs:
         c = AN['configs'][k]
         ys = [c['baseline']['median'] if g == 'N0' else c['cells'].get(g, {}).get('median') for g in regs]
-        ax.plot(range(len(regs)), [np.nan if y is None else y for y in ys], marker='o', label=k)
-    ax.set_xticks(range(len(regs)), [g if g != 'N0' else 'in-range I' for g in regs])
-    ax.set_ylabel('median error (eligible cases)'); ax.legend(fontsize=7, ncol=2)
-    ax.set_title('Median error by regime (E0-style, conditional)')
+        line, = ax.plot(range(len(regs)), [np.nan if y is None else y for y in ys], label=k)
+        for i, g in enumerate(regs):
+            if ys[i] is None:
+                continue
+            qual = g == 'N0' or c['cells'][g]['qualified']
+            ax.plot(i, ys[i], 'o', color=line.get_color(), mfc=line.get_color() if qual else 'none')
+    ax.set_xticks(range(len(regs)), [('in-range I' if g == 'N0' else g + ('*' if AN['regime_labels'].get(g) else '')) for g in regs])
+    ax.set_ylabel('median error'); ax.legend(fontsize=7, ncol=2)
+    ax.set_title('Median error by regime (hollow = not numerically qualified on that regime; * = relabelled)\n' + sub, fontsize=8)
     finish(fig, ax, out / 'median_by_regime.png')
-    # error vs distance for A+/A-, and vs s for A-/C1/C2
     import rcohorts as RG
-    for key, cohs, xf, xl, fn in (('d_nu', ('Ap', 'Am'), lambda d: d['d_nu'] * (1 if d['nu'] > .1 else -1), 'signed decades outside [0.01, 0.1] (− = below)', 'error_vs_nu.png'),
-                                  ('s', ('N0', 'N0s', 'Am', 'C1', 'C2'), lambda d: d['s'], 's = a/ν', 'error_vs_s.png')):
-        fig, ax = plt.subplots(figsize=(7, 4.5))
+    lo_s, hi_s = RG.S_TRAIN
+    for key, cohs, xf, xl, fn in (('d_nu', ('Ap', 'Am'), lambda d: d['d_nu'] * (1 if d['nu'] > RG.NU_TRAIN[1] else -1),
+                                   'signed decades of viscosity outside the training range (negative = below)', 'error_vs_nu.png'),
+                                  ('s', ('N0', 'N0s', 'Am', 'C1', 'C2'), lambda d: d['s'], 'nominal steepness s = a / viscosity', 'error_vs_s.png')):
+        fig, ax = plt.subplots(figsize=(7.5, 4.8))
         for k in ('R384|LSPG_CNR_1', 'R128|LSPG_BE_1'):
             c = AN['configs'][k]
-            xs, ys = [], []
-            for cid, x in c['per_case'].items():
-                coh, j = cid.split('|')
-                if coh in cohs and x['e'] and x['valid'] and x['eligible']:
-                    xs.append(xf(RG.desc_2d(coh, RG.descriptors_2d(coh)[int(j)]))); ys.append(x['e'])
-            ax.scatter(xs, ys, s=14, label=k)
+            for qual in (True, False):
+                xs, ys = [], []
+                for cid, x in c['per_case'].items():
+                    coh, j = cid.split('|')
+                    if coh in cohs and x['e'] and x['valid'] and x['eligible'] and (coh == 'N0' or c['cells'][coh]['qualified']) == qual:
+                        xs.append(xf(RG.desc_2d(coh, RG.descriptors_2d(coh)[int(j)]))); ys.append(x['e'])
+                if xs:
+                    ax.scatter(xs, ys, s=16, marker='o' if k.startswith('R384') else 's',
+                               facecolors=('C0' if k.startswith('R384') else 'C1') if qual else 'none',
+                               edgecolors='C0' if k.startswith('R384') else 'C1',
+                               label=f"{k} ({'qualified' if qual else 'not qualified on its regime'})")
         ax.set_xlabel(xl); ax.set_ylabel('error')
         if key == 's':
-            ax.axvline(200, color='grey', ls='--', lw=.8)
+            ax.axvline(hi_s, color='grey', ls='--', lw=.8, label=f'training maximum of s ({hi_s:g})')
+            ax.set_title('Error vs steepness (A−, C1, C2 differ from N0/N0s in viscosity too)\n' + sub, fontsize=8)
         else:
-            ax.axvline(0, color='grey', ls='--', lw=.8)
-        ax.legend(fontsize=8)
+            ax.axvline(0, color='grey', ls='--', lw=.8, label='edge of the training viscosity range')
+            ax.set_title('Error vs viscosity distance (A+ is relabelled: confounded with steepness)\n' + sub, fontsize=8)
+        ax.legend(fontsize=7)
         finish(fig, ax, out / fn, logx=(key == 's'))
-    # sigma per regime
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(8, 4.2))
     for i, g in enumerate(('N0', 'N0s') + REG):
-        v = [x['sigma']['sigma'] for x in AN['sigma'].get(g, []) if x['sigma'] and x['sigma']['sigma']]
-        ax.scatter(np.full(len(v), i) + np.random.default_rng(i).uniform(-.15, .15, len(v)), v, s=10)
-    ax.set_xticks(range(8), ('N0', 'N0s') + REG); ax.set_ylabel('σ_a (output-time interior gradient / a)')
+        for elig in (True, False):
+            v = [x['sigma']['sigma'] for x in AN['sigma'].get(g, []) if x['sigma'] and x['sigma'].get('sigma')
+                 and AN['configs'][cfgs[0]]['per_case'].get(f"{g}|{x['case']}", {}).get('eligible', False) == elig]
+            ax.scatter(np.full(len(v), i) + np.random.default_rng(i).uniform(-.15, .15, len(v)), v, s=12,
+                       facecolors='C0' if elig else 'none', edgecolors='C0',
+                       label=('reference-eligible (used by the separation checks)' if elig else 'reference not eligible') if i == 0 else None)
+    ax.set_xticks(range(8), ('N0', 'N0s') + REG); ax.set_ylabel('σ_a (largest interior gradient / amplitude)')
+    ax.set_title('Measured stiffness diagnostic by cohort', fontsize=9); ax.legend(fontsize=7)
     finish(fig, ax, out / 'sigma_by_regime.png')
 
 
@@ -117,7 +141,9 @@ def cell_text(x):
     ua = x.get('unresolved_under_allowance')
     t += f"; {'—' if ua is None else ua} unresolved under the allowance"
     if x['not_usable']:
-        t += '; not usable (median > 10 %)'
+        t += f'; not usable (median > {pct(RS.UNUSABLE)})'
+    if x.get('invalid_runs'):
+        t += f"; {x['invalid_runs']} invalid runs"
     if x.get('regime_label'):
         t += f"; {x['regime_label']}"
     return t
@@ -139,7 +165,7 @@ def main():
         w('**Deferred cases (A3.3):** ' + '; '.join(f'{g}: ' + ', '.join(f'c{c}' for c in v)
                                                for g, v in AN['deferred_cases'].items()) + ' (not run; not part of any label).\n')
     w('**Selection qualification (A3.2):** reference eligibility depends on a tight-path allowance that differs between '
-      'cohorts (A+ 1, others 0); cases unresolved under the allowance are excluded, and the direction of the resulting '
+      f'cohorts ({ALLOW}); cases unresolved under the allowance are excluded, and the direction of the resulting '
       'bias on ROM errors is unknown. Their counts are printed next to every coverage entry.\n')
     if AN.get('separation_note'):
         w(f"**Separation checks:** {AN['separation_note']}.\n")
@@ -152,7 +178,9 @@ def main():
         meds = [c['cells'][g]['median'] for c in prim.values() if c['cells'].get(g, {}).get('median') is not None]
         rat = [c['cells'][g]['ratio_median'] for c in prim.values() if c['cells'].get(g, {}).get('ratio_median') is not None]
         nq = sum(1 for c in prim.values() if g in c['cells'] and not c['cells'][g]['qualified'])
-        w(f"- **{NAMES[g]}** ({len(labs)} primary configurations): labels {cnt}; numerically qualified on this regime "
+        cv = AN['coverage'][g]
+        w(f"- **{NAMES[g]}** ({len(labs)} primary configurations; references eligible {cv['eligible']}/{cv['n']}, "
+          f"{cv.get('unresolved_under_allowance', 0)} unresolved under the allowance): labels {cnt}; numerically qualified on this regime "
           f"{len(labs) - nq}/{len(labs)}; median error {pct(min(meds)) if meds else '—'}–{pct(max(meds)) if meds else '—'} "
           f"({COND}); median-error ratio to the in-range baseline {num(min(rat)) if rat else '—'}–{num(max(rat)) if rat else '—'}"
           + (f"; relabelled **{AN['regime_labels'][g]}**" if AN['regime_labels'].get(g) else '') + '.')
@@ -164,6 +192,12 @@ def main():
     w('- **Representation floor** (best fit of the reference by the bank span, R384): ' +
       ', '.join(f"{g} {pct(fl[f'{g}|R384']['median'])}" for g in ('val32', 'N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2')
                 if f'{g}|R384' in fl) + ' (medians).')
+    nq_c = {g: sum(1 for c in prim.values() if g in c['cells'] and not c['cells'][g]['qualified']) for g in ('C1', 'C2')}
+    if all(nq_c[g] == len(prim) for g in nq_c):
+        w(f"- **Plainly:** outside the training range in steepness (C1 and C2, low viscosity with high $s$), the frozen method "
+          f"is **not numerically qualified for any of the {len(prim)} primary configurations**: its errors there cannot be "
+          "certified and it should not be used in that regime. (This is the Q1/Q2 outcome; the formal label FAILS is reserved "
+          "for invalid runs, which occur only in the GAL diagnostic row on C2.)")
     ps_ok = sum(1 for v in AN.get('ps', {}).values() if v.get('verdict') == 'PASS')
     w(f"- **Pseudo-spectral cross-check:** {ps_ok} of {len(AN.get('ps', {}))} scheduled cases PASS (E0 A10-amended rule, label carried).")
     w('- **Deferred, not run:** the 3D regimes (DESIGN A1.12: they need their own amendment) and the FOM accuracy comparison '
@@ -171,7 +205,7 @@ def main():
     w('```mermaid')
     w('flowchart LR')
     w('  G[regime generator, fresh seeds]:::code --> R[new E0-method references, own store]:::job')
-    w('  G --> Q[frozen ROM at 1024^2: 9 configurations, in-job Q1/Q2]:::job')
+    w(f'  G --> Q[frozen ROM at {MESH}^2: {NCFG} configurations, in-job Q1/Q2]:::job')
     w('  R --> S[CPU scoring: errors, sigma_a, floors, PS cross-check]:::cpu')
     w('  Q --> S')
     w('  S --> L[labels per configuration x regime]:::cpu')
@@ -196,13 +230,15 @@ def main():
     w('## Labels per configuration and regime (primary)\n')
     w('Rule (DESIGN §7, A1.8): FAILS (an invalid production run) ▸ NOT QUALIFIED (Q1 or Q2 fails on that regime\'s cases) ▸ '
       'IMPROVES / HOLDS / INCONCLUSIVE / DEGRADES from the 95 % bootstrap interval of the median-error ratio against the '
-      'in-range baseline $I$ (factor 2), on reference-eligible valid cases.\n')
+      f'in-range baseline $I$ (factor {RS.FACTOR:g}), on reference-eligible valid cases. Every number below is a {COND}; '
+      'exploratory; coverage, invalid runs and unresolved-under-allowance counts are printed in each cell.\n')
     w(row(['configuration'] + [NAMES[g] for g in REG]))
     w('|---|' + '---|' * len(REG))
     for k, c in AN['configs'].items():
         w(row([k + (' (diagnostic)' if c['diagnostic'] else '')] + [cell_text(c['cells'].get(g)) for g in REG]))
     w('')
     w('## Errors: medians, worst cases and ratios\n')
+    w(f'*Numbers in this section: {COND}s, exploratory development evidence; populations as printed.*\n')
     w(row(['configuration', 'baseline I median', 'baseline I worst', 'in-range consistency N0 / (dev6+val32) [95 %]']
           + [f'{g} median / worst / worst ratio' for g in REG + ('N0s',)]))
     w('|---|---|---|---|' + '---|' * (len(REG) + 1))
@@ -218,6 +254,7 @@ def main():
                  if (x := c['cells'].get(g)) else '—' for g in REG + ('N0s',)]))
     w('')
     w('## N0s (stiff part of the training box, descriptive) and the N0-only sensitivity\n')
+    w(f'*Numbers in this section: {COND}s, exploratory development evidence; populations as printed.*\n')
     w(row(['configuration', 'N0s vs I'] + [f'{g} vs N0 alone' for g in REG]))
     w('|---|---|' + '---|' * len(REG))
     for k, c in AN['configs'].items():
@@ -241,10 +278,11 @@ def main():
           + (f"; missing outputs: {', '.join(k for k in pst['expected'] if k not in got_)}" if len(got_) < len(pst['expected']) else '') + '.')
     for k, v in AN.get('ps', {}).items():
         w(f"- Pseudo-spectral cross-check {k}: {v['verdict']}" + (f" ({v.get('reason')})" if v.get('reason') else '')
-          + (f"; x_ps {num(v.get('x_ps'))}, 2 eps_ref {num(2 * v['eps_ref']) if v.get('eps_ref') else '—'}" if v.get('x_ps') is not None else '')
+          + (f"; distance to the reference $x_{{ps}}$ = {num(v.get('x_ps'))}, bound $2\\epsilon_{{ref}}$ = {num(2 * v['eps_ref']) if v.get('eps_ref') else '—'}" if v.get('x_ps') is not None else '')
           + (f"; {v['note']}" if v.get('note') else '') + ' (E0 A10-amended rule, label carried).')
     w('')
     w('## Paired A−/C1 contrast and distance trends\n')
+    w(f'*Numbers in this section: {COND}s, exploratory development evidence; populations as printed.*\n')
     w('Paired: amplitude raised at matched geometry and viscosity (A1.1), not a pure stiffness mechanism; both cohorts\' '
       'separation labels apply. Trends are descriptive (Spearman, permutation p; OLS slope of log10 error per unit).\n')
     w(row(['configuration', 'pairs', 'median q = e_C1/e_A− [95 %]', 'Wilcoxon p', 'label', 'A+ vs d_ν', 'A− vs d_ν', 'A−∪C1∪C2 vs log10 s']))
@@ -261,6 +299,7 @@ def main():
                fmt(tr['Ap|d_nu']), fmt(tr['Am|d_nu']), fmt(tr['Am+C1+C2|log10_s'])]))
     w('')
     w('## Q1 / Q2 per configuration and regime (every sampled case)\n')
+    w(f'*Numbers in this section: {COND}s, exploratory development evidence; populations as printed.*\n')
     w(row(['configuration'] + [NAMES[g] for g in REG + ('N0s',)]))
     w('|---|' + '---|' * (len(REG) + 1))
     for k, c in AN['configs'].items():
@@ -279,6 +318,7 @@ def main():
         w(row([k] + [qtxt(g) for g in REG + ('N0s',)]))
     w('')
     w('## Representation floor (lattice projection on the bank span, diagnostic)\n')
+    w(f'*Numbers in this section: {COND}s, exploratory development evidence; populations as printed.*\n')
     w(row(['cohort | width', 'median', 'max', 'n']))
     w('|---|---|---|---|')
     for k, v in AN['projection_floor'].items():
@@ -295,27 +335,47 @@ def main():
     w('## Glossary\n')
     for t, d in (('regime', 'a set of freshly drawn development cases differing from the training family in one declared way; '
                   'sizes here: ' + ', '.join(f'{g} {n}' for g, n in sizes.items())),
+                 ('error', 'for one case, the largest over the five output times of the root-mean-square difference between the '
+                  'ROM solution and the reference on the 257 × 257 scoring lattice, divided by the size of the initial field; '
+                  'reported as a percentage; median and worst are over the reference-eligible, valid cases of the cohort'),
+                 ('ROM / FOM', 'reduced-order model (the method under test) / full-order model (a conventional grid solver)'),
+                 ('LSPG / GAL', 'the two ways the reduced equations are formed: least-squares Petrov–Galerkin (primary) and Galerkin (diagnostic row)'),
+                 ('E0', 'the campaign lane that defined the reference method (second-order space–time references with an order check)'),
+                 ('IC', 'initial condition, the field at time zero'),
+                 ('reference / Richardson estimate', 'a fine-grid solution computed three times at halving grid spacing; the change between '
+                  'the finest two levels gives an estimate of its own error, $\\epsilon_{ref}$, which is conditional on the order check'),
+                 ('Péclet number', 'cell size times speed divided by viscosity; the reference requires it below 2 on its coarsest grid'),
                  ('in-range baseline I', 'N0 (fresh in-range cases) plus dev6 and val32 (previously used development/validation cases)'),
-                 ('ratio', 'median error in the regime divided by the median error on the baseline; 2 is the pre-registered practical margin'),
-                 ('bootstrap interval', 'the 2.5–97.5 % range of the ratio over 10 000 resamplings of the cases'),
+                 ('ratio', 'median error in the regime divided by the median error on the baseline; '
+                  f'{RS.FACTOR:g} is the pre-registered practical margin'),
+                 ('bootstrap interval', f'the 2.5–97.5 % range of the ratio over {RS.NBOOT} resamplings of the cases'),
                  ('worst ratio', 'largest regime error divided by the largest baseline error (descriptive; sample sizes differ)'),
                  ('Q1 / Q2', "solver qualification / quadrature qualification on the regime's own cases (COMMON-BRIEF §3)"),
+                 ('certificate', 'a per-step check, recomputed with a fresh Jacobian, that the solver stopped at a stationary point'),
+                 ('ρ max', 'the largest relative change of the reduced nonlinear term when the quadrature rule is replaced by the next finer one'),
+                 ('successor / check rule', 'the next finer quadrature rule (Q2 replay) and the one after it (convergence check)'),
+                 ('non-stationary steps', f'time steps whose stationarity ratio exceeds {RS.GAMMA:g} (LSPG) or whose residual '
+                  f'criterion exceeds {RS.ETA:g} (GAL)'),
                  ('eligible', 'a case whose new reference passed the E0 order, Péclet, floor and direction checks'),
-                 ('refined', 'a reference that needed the extra 12288² level because its first three levels failed the order check'),
-                 ('tight allowance', 'the number of cases allowed to rerun at tighter solver tolerances (A+ 1, others 0); cases blocked by it are "unresolved under the allowance"'),
+                 ('invalid run', 'a production run with a non-finite state, damping saturation or a solver budget exit (DESIGN §7.1)'),
+                 ('refined', 'a reference that needed the extra, finer E0 refinement level because its first three levels failed the order check'),
+                 ('tight allowance', f'the number of cases per cohort allowed to rerun at tighter solver tolerances ({ALLOW}); '
+                  'cases blocked by it are "unresolved under the allowance"'),
                  ('σ_a', 'largest interior gradient at the output times divided by the IC amplitude: a diagnostic of front steepness'),
-                 ('s = a/ν', 'nominal steepness (inverse front width once a front forms); training range 5–200'),
-                 ('d_ν', 'decades of viscosity outside the training range [0.01, 0.1]'),
+                 ('separation fields', 'n = eligible cases; frac_in_range = share inside the in-range σ_a range; frac_above_q90 = share '
+                  'above its 90th percentile; passed = the pre-registered threshold met'),
+                 ('$s = a/\\nu$', f'nominal steepness (inverse front width once a front forms); training range {RG.S_TRAIN[0]:g}–{RG.S_TRAIN[1]:g}'),
+                 ('$d_\\nu$', f'decades of viscosity outside the training range [{RG.NU_TRAIN[0]:g}, {RG.NU_TRAIN[1]:g}]'),
                  ('paired contrast', 'C1 case j has the same position, width and viscosity as A− case j, only a larger amplitude'),
                  ('Wilcoxon p', 'two-sided signed-rank test that the paired log error ratio is centred on zero'),
-                 ('Spearman ρ', 'rank correlation between error and distance; p from 10 000 permutations'),
-                 ('representation floor', 'error of the best least-squares fit of the reference by the first R′ bank functions on the scoring lattice'),
+                 ('Spearman ρ', f'rank correlation between error and distance; p from {RS.NPERM} permutations'),
+                 ('OLS slope', 'least-squares slope of $\\log_{10}$(error) against the distance variable'),
+                 ('representation floor', "error of the best least-squares fit of the reference by the first R′ bank functions on "
+                  "the scoring lattice: a diagnostic of what the bank can represent, not a proof of why the ROM degrades"),
                  ('diagnostic', 'a registered row (GAL-CN) reported but not part of the primary labels'),
-                 ('not usable', 'regime median error above 10 %'),
-                 ('OLS slope', 'least-squares slope of log10(error) against the distance variable'),
-                 ('successor / check rule', 'the next finer quadrature rule (Q2 replay) and the one after it (convergence check)'),
-                 ('non-stationary steps', 'time steps whose final stationarity ratio exceeds 1e-3 (LSPG) or whose residual criterion exceeds 1e-8 (GAL)'),
-                 ('configuration id', 'R<width>|<form>_<scheme>_<step factor>: bank width R′, LSPG or GAL, backward Euler (BE), Crank–Nicolson with a Rannacher start (CNR) or Crank–Nicolson (CN), and the step as a multiple of Δt0 = 0.005'),
+                 ('not usable', f'regime median error above {pct(RS.UNUSABLE)}'),
+                 ('configuration id', 'R<width>|<form>_<scheme>_<step factor>: bank width R′, LSPG or GAL, backward Euler (BE), '
+                  f'Crank–Nicolson with a Rannacher start (CNR) or Crank–Nicolson (CN), and the step as a multiple of $\\Delta t_0 = {RS.DT0:g}$'),
                  ('in-range consistency', 'median error on N0 divided by that on dev6+val32: should contain 1 if the fresh references and the E0 references agree')):
         w(f'- **{t}**: {d}.')
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')

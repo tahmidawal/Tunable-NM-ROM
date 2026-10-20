@@ -24,6 +24,7 @@ E0 = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-refer
 STORE = HERE / 'store'
 BAR_Q1, BAR_TT, BAR_Q2, BAR_RHO, GAMMA, ETA = 2.5e-4, 2.5e-5, 2.5e-4, .116, 1e-3, 1e-8
 DESC_TOL = 1e-13               # A10: cross-machine round-off in the generated descriptors (observed <= 1.2e-15)
+DT0 = 0.005                    # the deployed reduced-model step (FRONT-2D configurations, factor 1)
 FACTOR = 2.0                    # DESIGN §7 rule 3
 NBOOT, NPERM = 10000, 10000
 MIN_ELIG = 8
@@ -496,7 +497,7 @@ def expected_populations(cfg, arm):
 def arm_expect(cfg, arm_cfg, setting):
     """Expected qualification inputs from the frozen config (code audit 2, fix 5): populations, form, step count."""
     from fractions import Fraction
-    dt = 0.005 * float(arm_cfg['factor'])
+    dt = DT0 * float(arm_cfg['factor'])
     steps = int(round(0.25 / dt))
     assert abs(steps * dt - 0.25) < 1e-12
     return dict(expected_populations(cfg, arm_cfg), form=arm_cfg['form'], steps=steps, qpp=bool(setting.get('qpp')))

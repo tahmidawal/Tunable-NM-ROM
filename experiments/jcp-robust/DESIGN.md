@@ -1006,3 +1006,7 @@ unchanged: E2 3D seed 3 is dropped first, and only if the new cap would still be
   and every W1024 slot have no qualified rule within the ladder. This agrees with jcp-dims' qualified 3D set, which has
   no W1024 configuration under these specs and only two W768 ones. The front job e2f0 times the 12 subjects (slots
   plus the four fixed configurations, de-duplicated). Its projection is 0.82 h, so its time limit is 1.5 h.
+- **A17.7 (job audit e2f-1 #5)** `e2analyze3d.py` now voids the front timing of any e2f job with a `memory_rejected`
+  record or a peak above 120e9 bytes (or no recorded peak). Its timing is then reported invalid, and every timed point is
+  "missing", so non-definitive. Before this fix a rejected job could still yield front members. Per audit #7, e2f1–3
+  need a focused diff check after this fix rather than a full audit.

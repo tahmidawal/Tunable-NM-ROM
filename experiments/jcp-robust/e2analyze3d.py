@@ -293,6 +293,9 @@ def main():
             raise SystemExit('front job is not the registered e2f job of this selection')
         tm = next(iter(fres['timing'].values()))
         ba = {}
+        mem_rej = bool(fres.get('memory_rejected')) or not (E.num(fres.get('peak_bytes_job')) <= 120e9)
+        if mem_rej:                                     # job audit e2f-1 #5: a 120 GB rejection voids every timed cost
+            tm = dict(tm, valid=False, memory_rejected=fres.get('memory_rejected'), peak_bytes_job=fres.get('peak_bytes_job'))
         if tm.get('valid') is True and fres.get('complete') and fres['backend'] == 'gpu':     # code audit 2 #23: d3run's
             per = {}                                                                          # panel acceptance governs
             seen, bad = set(), set()

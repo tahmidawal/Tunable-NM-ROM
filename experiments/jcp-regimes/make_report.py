@@ -143,6 +143,53 @@ def main():
       'bias on ROM errors is unknown. Their counts are printed next to every coverage entry.\n')
     if AN.get('separation_note'):
         w(f"**Separation checks:** {AN['separation_note']}.\n")
+    # ---- generated summary (counts and ranges read from analysis.json)
+    prim = {k: c for k, c in AN['configs'].items() if not c['diagnostic']}
+    w('## Summary\n')
+    for g in REG:
+        labs = [c['cells'][g]['label'] for c in prim.values() if g in c['cells']]
+        cnt = {l: labs.count(l) for l in sorted(set(labs))}
+        meds = [c['cells'][g]['median'] for c in prim.values() if c['cells'].get(g, {}).get('median') is not None]
+        rat = [c['cells'][g]['ratio_median'] for c in prim.values() if c['cells'].get(g, {}).get('ratio_median') is not None]
+        nq = sum(1 for c in prim.values() if g in c['cells'] and not c['cells'][g]['qualified'])
+        w(f"- **{NAMES[g]}** ({len(labs)} primary configurations): labels {cnt}; numerically qualified on this regime "
+          f"{len(labs) - nq}/{len(labs)}; median error {pct(min(meds)) if meds else '—'}–{pct(max(meds)) if meds else '—'} "
+          f"({COND}); median-error ratio to the in-range baseline {num(min(rat)) if rat else '—'}–{num(max(rat)) if rat else '—'}"
+          + (f"; relabelled **{AN['regime_labels'][g]}**" if AN['regime_labels'].get(g) else '') + '.')
+    labs = [c['cells']['N0s']['label'] for c in prim.values() if 'N0s' in c['cells']]
+    rat = [c['cells']['N0s']['ratio_median'] for c in prim.values() if c['cells'].get('N0s', {}).get('ratio_median') is not None]
+    w(f"- **{NAMES['N0s']}** (descriptive): labels { {l: labs.count(l) for l in sorted(set(labs))} }; ratio {num(min(rat))}–{num(max(rat))}: "
+      'the stiff part of the training box is already far less accurate than the in-range mixture.')
+    fl = AN['projection_floor']
+    w('- **Representation floor** (best fit of the reference by the bank span, R384): ' +
+      ', '.join(f"{g} {pct(fl[f'{g}|R384']['median'])}" for g in ('val32', 'N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2')
+                if f'{g}|R384' in fl) + ' (medians).')
+    ps_ok = sum(1 for v in AN.get('ps', {}).values() if v.get('verdict') == 'PASS')
+    w(f"- **Pseudo-spectral cross-check:** {ps_ok} of {len(AN.get('ps', {}))} scheduled cases PASS (E0 A10-amended rule, label carried).")
+    w('- **Deferred, not run:** the 3D regimes (DESIGN A1.12: they need their own amendment) and the FOM accuracy comparison '
+      '(A3.3 step 1).\n')
+    w('```mermaid')
+    w('flowchart LR')
+    w('  G[regime generator, fresh seeds]:::code --> R[new E0-method references, own store]:::job')
+    w('  G --> Q[frozen ROM at 1024^2: 9 configurations, in-job Q1/Q2]:::job')
+    w('  R --> S[CPU scoring: errors, sigma_a, floors, PS cross-check]:::cpu')
+    w('  Q --> S')
+    w('  S --> L[labels per configuration x regime]:::cpu')
+    w('  classDef code fill:#e5e7eb,stroke:#374151;')
+    w('  classDef job fill:#dbeafe,stroke:#1d4ed8;')
+    w('  classDef cpu fill:#dcfce7,stroke:#15803d;')
+    w('```\n')
+    w('Plots: `plots/median_by_regime.png`, `plots/error_vs_nu.png`, `plots/error_vs_s.png`, `plots/sigma_by_regime.png`.\n')
+    w('## What went wrong during the lane (disclosed)\n')
+    w('- The first smoke (smk1) stopped at an over-specified identity check (a GPU-reduction fingerprint); every other '
+      'field matched; DESIGN A7 split the smoke and dropped that field.')
+    w('- The H200 queue was saturated; A9 moved the ordinary jobs to A100-80G (no timing result is reported; GPU type '
+      'is recorded per job) and replaced a pending refC1 by refC1b.')
+    w('- The first analysis run stopped at an exact-hash identity check: generated descriptors differ by one or two ulps '
+      'between node CPU types; A10 compares them to round-off instead. No result had been read.')
+    w('- Prior related evidence (not re-scored here; see LAB-LOG 2026-09-17, lane b-lowvisc): an earlier low-viscosity '
+      'cohort also showed much larger linear-bank representation floors; this lane\'s floors point the same way for the '
+      'low-ν regimes.\n')
     w('## Labels per configuration and regime (primary)\n')
     w('Rule (DESIGN §7, A1.8): FAILS (an invalid production run) ▸ NOT QUALIFIED (Q1 or Q2 fails on that regime\'s cases) ▸ '
       'IMPROVES / HOLDS / INCONCLUSIVE / DEGRADES from the 95 % bootstrap interval of the median-error ratio against the '

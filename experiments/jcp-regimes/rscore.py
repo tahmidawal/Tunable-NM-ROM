@@ -457,13 +457,18 @@ def separation(sig, regimes):
 def projection_floor(ref_field, Rp):
     """DESIGN §6 diagnostic: max_k ||R - Pi R|| / ||R(t0)|| with Pi the lattice least-squares projection on the first Rp
     bank functions (npcheck's lattice basis, zero walls)."""
-    NC.decode257(np.zeros((1, Rp)), Rp)
-    G = NC._G257[Rp]
+    if Rp not in _QB:                       # one orthonormal basis of the bank span per width (rank-revealing SVD)
+        NC.decode257(np.zeros((1, Rp)), Rp)
+        U, sv, _ = np.linalg.svd(NC._G257[Rp], full_matrices=False)
+        _QB[Rp] = U[:, sv > sv[0] * 1e-13]
+    Qb = _QB[Rp]
     R = np.asarray(ref_field, float).reshape(6, -1)
     n0 = float(np.linalg.norm(R[0]))
-    C, *_ = np.linalg.lstsq(G, R[1:].T, rcond=None)
-    res = R[1:].T - G @ C
+    res = R[1:].T - Qb @ (Qb.T @ R[1:].T)
     return float(np.max(np.linalg.norm(res, axis=0)) / n0)
+
+
+_QB = {}
 
 
 def expected_populations(cfg, arm):

@@ -1,0 +1,430 @@
+{
+ "source": "runs/e2s3/archive/output/r2acc_e2s3",
+ "bank": "3",
+ "job_id": "6083932",
+ "commit": "e727a42603aa202327b273533c5a3978d4e2edc5",
+ "selected": {
+  "128": {
+   "rule": "fib6765",
+   "outcome": "selected",
+   "smoke": false,
+   "target_certified": true,
+   "deployed": "fib4181",
+   "equals_deployed": false
+  },
+  "256": {
+   "rule": "gauss96",
+   "outcome": "selected",
+   "smoke": false,
+   "target_certified": true,
+   "deployed": "gauss128",
+   "equals_deployed": false
+  },
+  "384": {
+   "rule": "gauss128",
+   "outcome": "selected",
+   "smoke": false,
+   "target_certified": true,
+   "deployed": "gauss128",
+   "equals_deployed": true
+  }
+ },
+ "cells": {
+  "128": {
+   "LSPG_BE_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0002072456205815965,
+     "median_e": 0.010909088320267395,
+     "worst_e": 0.048880040027860644
+    },
+    "fib6765": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 9.575416713294897e-05,
+     "median_e": 0.010908823305198647,
+     "worst_e": 0.04888012064061766
+    },
+    "gauss96": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 7.495569657789915e-05,
+     "median_e": 0.01090890668226378,
+     "worst_e": 0.0488795692810768
+    },
+    "fib10946": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 3.0821171857937815e-05,
+     "median_e": 0.010908784957366491,
+     "worst_e": 0.04888025672527538
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 8.170501100249837e-05,
+     "median_e": 0.01090877992833144,
+     "worst_e": 0.0488793286629547
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 5.101453478354034e-05,
+     "median_e": 0.010908765536360228,
+     "worst_e": 0.048879924630749576
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 1.920595278713075e-05,
+     "median_e": 0.01090877388908481,
+     "worst_e": 0.04888019432516705
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   },
+   "LSPG_CNR_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.00025106912829049404,
+     "median_e": 0.004479125727031772,
+     "worst_e": 0.05270246876788318
+    },
+    "fib6765": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 0.00010896900667597338,
+     "median_e": 0.00447918054436488,
+     "worst_e": 0.05270364903831532
+    },
+    "gauss96": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 8.305472252989875e-05,
+     "median_e": 0.0044791476697228294,
+     "worst_e": 0.05270232617721195
+    },
+    "fib10946": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 3.852984197916241e-05,
+     "median_e": 0.004479166038882432,
+     "worst_e": 0.05270405053239963
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 8.416315680426788e-05,
+     "median_e": 0.004478992208740254,
+     "worst_e": 0.052702794703047895
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 5.237865109073008e-05,
+     "median_e": 0.004479059146904798,
+     "worst_e": 0.0527037374777009
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 1.9653252631101297e-05,
+     "median_e": 0.00447912623346178,
+     "worst_e": 0.052704032498273545
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   }
+  },
+  "256": {
+   "LSPG_BE_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0006434685321130308,
+     "median_e": 0.009821905381288269,
+     "worst_e": 0.03272515985217386
+    },
+    "fib6765": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0003260141341028429,
+     "median_e": 0.009821981255170123,
+     "worst_e": 0.032724483571806316
+    },
+    "gauss96": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 0.00011818109574502909,
+     "median_e": 0.009821918471775444,
+     "worst_e": 0.03272495083707464
+    },
+    "fib10946": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 8.881416496335525e-05,
+     "median_e": 0.00982197585519803,
+     "worst_e": 0.03272467930304618
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 3.6795322890812235e-05,
+     "median_e": 0.009821723369707037,
+     "worst_e": 0.03272478921482132
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 2.5534542961342926e-05,
+     "median_e": 0.009821809082077634,
+     "worst_e": 0.03272471124811955
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 8.717936173165549e-06,
+     "median_e": 0.009821902660877024,
+     "worst_e": 0.03272468333169057
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   },
+   "LSPG_CNR_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0006482580196010221,
+     "median_e": 0.0020741129478956356,
+     "worst_e": 0.023633715379366517
+    },
+    "fib6765": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0003765004458479235,
+     "median_e": 0.0020740848035886265,
+     "worst_e": 0.02363619384263045
+    },
+    "gauss96": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 0.00015633529783975426,
+     "median_e": 0.002074064416667568,
+     "worst_e": 0.02363593313957124
+    },
+    "fib10946": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 8.895245157344736e-05,
+     "median_e": 0.0020740593020017193,
+     "worst_e": 0.023637023855973965
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 4.7176516628608516e-05,
+     "median_e": 0.002074064392755405,
+     "worst_e": 0.02363620971518278
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 2.6948915711980845e-05,
+     "median_e": 0.0020740619021167744,
+     "worst_e": 0.023636867739119414
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 9.598689750467307e-06,
+     "median_e": 0.002074060445696615,
+     "worst_e": 0.023637088090998893
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   }
+  },
+  "384": {
+   "LSPG_BE_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0013586364244597066,
+     "median_e": 0.009792413828236073,
+     "worst_e": 0.030090976770788213
+    },
+    "fib6765": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0014149206587687573,
+     "median_e": 0.009792156602882778,
+     "worst_e": 0.030093704683788525
+    },
+    "gauss96": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.00027050565259402557,
+     "median_e": 0.009792236629592797,
+     "worst_e": 0.03009343122425589
+    },
+    "fib10946": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.00024322499389525966,
+     "median_e": 0.009792121123563952,
+     "worst_e": 0.03009294649346968
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 7.299960599966524e-05,
+     "median_e": 0.009792123715041297,
+     "worst_e": 0.030093006915359936
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 6.552207723356148e-05,
+     "median_e": 0.009792108972799422,
+     "worst_e": 0.03009305316080086
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 2.245978315770141e-05,
+     "median_e": 0.009792116683125908,
+     "worst_e": 0.03009310015032839
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   },
+   "LSPG_CNR_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0015931244412239658,
+     "median_e": 0.00200468920847973,
+     "worst_e": 0.02380141466605391
+    },
+    "fib6765": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0014153840011584052,
+     "median_e": 0.0020042934014551555,
+     "worst_e": 0.022613475635635916
+    },
+    "gauss96": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.00041236353086224756,
+     "median_e": 0.0020044345615241287,
+     "worst_e": 0.02358159545163219
+    },
+    "fib10946": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.00031706199178804486,
+     "median_e": 0.0020042970908284493,
+     "worst_e": 0.023917739041161984
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 0.00011550233262916487,
+     "median_e": 0.0020043063383479508,
+     "worst_e": 0.023797132988873364
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 6.912928669218064e-05,
+     "median_e": 0.0020042895074698685,
+     "worst_e": 0.023793212801003077
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 2.1837715019873917e-05,
+     "median_e": 0.0020042964867192864,
+     "worst_e": 0.023757520246340542
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   }
+  }
+ }
+}

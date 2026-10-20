@@ -1,0 +1,3137 @@
+{
+ "label": "conditional on the observed devices (two GPUs per type cannot represent a hardware population); frozen H200-selected comparators; two-mesh P-cost panel (256^2, 1024^2) for every cross-type quantity",
+ "seed": 20261019,
+ "nboot": 10000,
+ "jobs": [
+  {
+   "name": "A100-80G#1",
+   "dir": "runs/e5a1/archive/output/e5time_e5prod_a100",
+   "status": "ok",
+   "reasons": [],
+   "job_id": "6079826",
+   "stage_attempt": "e5a1",
+   "device_uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+   "telemetry": {
+    "start": [],
+    "between-panels": [],
+    "end": [],
+    "pcross-after-warm": []
+   },
+   "meta": {
+    "attempt": "e5prod_a100",
+    "job_id": "6079826",
+    "gpu_type": "A100-80G",
+    "gpu_name": "NVIDIA A100 80GB PCIe 81920 MiB GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+    "gpu_type_ok": true,
+    "backend": "gpu",
+    "device_kind": "NVIDIA A100 80GB PCIe",
+    "jax_version": "0.10.2",
+    "config_sha256": "634c63ece4129262e4cb72493726d1434e1a9ca0b418aa55be355e5a7f2f5c97",
+    "commit": "c1b5daea473544a0415db9ebf3d2249dcb9a0ad7",
+    "elapsed_seconds": 583.1
+   },
+   "records": [
+    {
+     "tag": "start",
+     "device_uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+     "utc": "2026-10-19T23:26:29Z",
+     "host": "pax049",
+     "slurm_job_id": "6079826",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "c1b5daea473544a0415db9ebf3d2249dcb9a0ad7"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1410 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "80.11 W",
+       "temperature.gpu": "38"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "between-panels",
+     "device_uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+     "utc": "2026-10-19T23:31:24Z",
+     "host": "pax049",
+     "slurm_job_id": "6079826",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "c1b5daea473544a0415db9ebf3d2249dcb9a0ad7"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1410 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "89.71 W",
+       "temperature.gpu": "52"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "pcross-after-warm",
+     "device_uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+     "utc": "2026-10-19T23:32:20Z",
+     "host": "pax049",
+     "slurm_job_id": "6079826",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "c1b5daea473544a0415db9ebf3d2249dcb9a0ad7"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1410 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "96.90 W",
+       "temperature.gpu": "54"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "end",
+     "device_uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+     "utc": "2026-10-19T23:36:12Z",
+     "host": "pax049",
+     "slurm_job_id": "6079826",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "c1b5daea473544a0415db9ebf3d2249dcb9a0ad7"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1410 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "90.89 W",
+       "temperature.gpu": "53"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    }
+   ]
+  },
+  {
+   "name": "A100-80G#2",
+   "dir": "runs/e5a2/archive/output/e5time_e5prod_a100",
+   "status": "ok",
+   "reasons": [],
+   "job_id": "6083108",
+   "stage_attempt": "e5a2",
+   "device_uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+   "telemetry": {
+    "start": [],
+    "between-panels": [],
+    "end": [],
+    "pcross-after-warm": []
+   },
+   "meta": {
+    "attempt": "e5prod_a100",
+    "job_id": "6083108",
+    "gpu_type": "A100-80G",
+    "gpu_name": "NVIDIA A100 80GB PCIe 81920 MiB GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+    "gpu_type_ok": true,
+    "backend": "gpu",
+    "device_kind": "NVIDIA A100 80GB PCIe",
+    "jax_version": "0.10.2",
+    "config_sha256": "634c63ece4129262e4cb72493726d1434e1a9ca0b418aa55be355e5a7f2f5c97",
+    "commit": "d7ea7fe5dedaa389a860244cb1a1f121f3b3b97a",
+    "elapsed_seconds": 582.7
+   },
+   "records": [
+    {
+     "tag": "start",
+     "device_uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+     "utc": "2026-10-20T01:11:39Z",
+     "host": "pax050",
+     "slurm_job_id": "6083108",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d7ea7fe5dedaa389a860244cb1a1f121f3b3b97a"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1410 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "78.96 W",
+       "temperature.gpu": "38"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "between-panels",
+     "device_uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+     "utc": "2026-10-20T01:16:34Z",
+     "host": "pax050",
+     "slurm_job_id": "6083108",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d7ea7fe5dedaa389a860244cb1a1f121f3b3b97a"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1410 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "86.66 W",
+       "temperature.gpu": "55"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "pcross-after-warm",
+     "device_uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+     "utc": "2026-10-20T01:17:29Z",
+     "host": "pax050",
+     "slurm_job_id": "6083108",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d7ea7fe5dedaa389a860244cb1a1f121f3b3b97a"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1410 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "128.15 W",
+       "temperature.gpu": "57"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "end",
+     "device_uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+     "utc": "2026-10-20T01:21:22Z",
+     "host": "pax050",
+     "slurm_job_id": "6083108",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5a2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d7ea7fe5dedaa389a860244cb1a1f121f3b3b97a"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:57:00.0",
+       "uuid": "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d",
+       "name": "NVIDIA A100 80GB PCIe",
+       "memory.total": "81920 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1365 MHz",
+       "clocks.mem": "1512 MHz",
+       "clocks.applications.graphics": "1410 MHz",
+       "clocks.applications.memory": "1512 MHz",
+       "power.limit": "300.00 W",
+       "power.draw": "99.64 W",
+       "temperature.gpu": "57"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    }
+   ]
+  },
+  {
+   "name": "H200#1",
+   "dir": "runs/e5h1/archive/output/e5time_e5prod_h200",
+   "status": "ok",
+   "reasons": [],
+   "job_id": "6080051",
+   "stage_attempt": "e5h1",
+   "device_uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+   "telemetry": {
+    "start": [],
+    "between-panels": [],
+    "end": [],
+    "pcross-after-warm": []
+   },
+   "meta": {
+    "attempt": "e5prod_h200",
+    "job_id": "6080051",
+    "gpu_type": "H200",
+    "gpu_name": "NVIDIA H200 143771 MiB GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+    "gpu_type_ok": true,
+    "backend": "gpu",
+    "device_kind": "NVIDIA H200",
+    "jax_version": "0.10.2",
+    "config_sha256": "7f8a135fbdcb946ee59c24f9324c10af79f1ec4c0a0dd4c53b3a23b377e3b4f0",
+    "commit": "d180ebc181997dadf75eec0719d2ebb13ae9d5d9",
+    "elapsed_seconds": 505.0
+   },
+   "records": [
+    {
+     "tag": "start",
+     "device_uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+     "utc": "2026-10-19T23:38:34Z",
+     "host": "pax009",
+     "slurm_job_id": "6080051",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d180ebc181997dadf75eec0719d2ebb13ae9d5d9"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:4C:00.0",
+       "uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1980 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "90.62 W",
+       "temperature.gpu": "41"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "between-panels",
+     "device_uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+     "utc": "2026-10-19T23:44:02Z",
+     "host": "pax009",
+     "slurm_job_id": "6080051",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d180ebc181997dadf75eec0719d2ebb13ae9d5d9"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:4C:00.0",
+       "uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1980 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "242.58 W",
+       "temperature.gpu": "46"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "pcross-after-warm",
+     "device_uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+     "utc": "2026-10-19T23:44:36Z",
+     "host": "pax009",
+     "slurm_job_id": "6080051",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d180ebc181997dadf75eec0719d2ebb13ae9d5d9"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:4C:00.0",
+       "uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1980 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "471.35 W",
+       "temperature.gpu": "51"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "end",
+     "device_uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+     "utc": "2026-10-19T23:46:59Z",
+     "host": "pax009",
+     "slurm_job_id": "6080051",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h1/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "d180ebc181997dadf75eec0719d2ebb13ae9d5d9"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:4C:00.0",
+       "uuid": "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1965 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "416.04 W",
+       "temperature.gpu": "50"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    }
+   ]
+  },
+  {
+   "name": "H200#2",
+   "dir": "runs/e5h2/archive/output/e5time_e5prod_h200",
+   "status": "ok",
+   "reasons": [],
+   "job_id": "6084110",
+   "stage_attempt": "e5h2",
+   "device_uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+   "telemetry": {
+    "start": [],
+    "between-panels": [],
+    "end": [],
+    "pcross-after-warm": []
+   },
+   "meta": {
+    "attempt": "e5prod_h200",
+    "job_id": "6084110",
+    "gpu_type": "H200",
+    "gpu_name": "NVIDIA H200 143771 MiB GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+    "gpu_type_ok": true,
+    "backend": "gpu",
+    "device_kind": "NVIDIA H200",
+    "jax_version": "0.10.2",
+    "config_sha256": "7f8a135fbdcb946ee59c24f9324c10af79f1ec4c0a0dd4c53b3a23b377e3b4f0",
+    "commit": "3548238a40be796f0275041ec94d046c32841cbb",
+    "elapsed_seconds": 509.7
+   },
+   "records": [
+    {
+     "tag": "start",
+     "device_uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+     "utc": "2026-10-20T02:13:55Z",
+     "host": "pax011",
+     "slurm_job_id": "6084110",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "3548238a40be796f0275041ec94d046c32841cbb"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:19:00.0",
+       "uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1980 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "93.75 W",
+       "temperature.gpu": "47"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "between-panels",
+     "device_uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+     "utc": "2026-10-20T02:19:27Z",
+     "host": "pax011",
+     "slurm_job_id": "6084110",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "3548238a40be796f0275041ec94d046c32841cbb"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:19:00.0",
+       "uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1980 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "265.68 W",
+       "temperature.gpu": "57"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "pcross-after-warm",
+     "device_uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+     "utc": "2026-10-20T02:20:01Z",
+     "host": "pax011",
+     "slurm_job_id": "6084110",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "3548238a40be796f0275041ec94d046c32841cbb"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:19:00.0",
+       "uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1980 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "443.31 W",
+       "temperature.gpu": "60"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    },
+    {
+     "tag": "end",
+     "device_uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+     "utc": "2026-10-20T02:22:25Z",
+     "host": "pax011",
+     "slurm_job_id": "6084110",
+     "cuda_visible_devices": "0",
+     "env": {
+      "JAX_ENABLE_X64": "true",
+      "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+      "XLA_FLAGS": null,
+      "XLA_PYTHON_CLIENT_MEM_FRACTION": "0.95",
+      "JAX_PLATFORMS": null,
+      "JCPREF_STORE": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+      "JCPREF_META": "/cluster/tufts/paralab/tawal01/jcp-robust/e5h2/experiments/jcp-robust/e5/e0meta",
+      "SOURCE_COMMIT": "3548238a40be796f0275041ec94d046c32841cbb"
+     },
+     "nvidia_smi": {
+      "row": {
+       "index": "0",
+       "pci.bus_id": "00000000:19:00.0",
+       "uuid": "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2",
+       "name": "NVIDIA H200",
+       "memory.total": "143771 MiB",
+       "driver_version": "575.57.08",
+       "clocks.sm": "1935 MHz",
+       "clocks.mem": "3201 MHz",
+       "clocks.applications.graphics": "1980 MHz",
+       "clocks.applications.memory": "3201 MHz",
+       "power.limit": "700.00 W",
+       "power.draw": "411.13 W",
+       "temperature.gpu": "65"
+      },
+      "error": null,
+      "n_rows": 1,
+      "cuda_driver_version": "12.9"
+     },
+     "versions": {
+      "flax": "0.12.8",
+      "jax": "0.10.2",
+      "jax-cuda12-pjrt": "0.10.2",
+      "jax-cuda12-plugin": "0.10.2",
+      "jax_cuda_pjrt": "jax-cuda12-pjrt==0.10.2",
+      "jax_cuda_plugin": "jax-cuda12-plugin==0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "nvidia-cuda-cccl-cu12": "12.9.27",
+      "nvidia-cuda-cupti-cu12": "12.9.79",
+      "nvidia-cuda-nvcc-cu12": "12.9.86",
+      "nvidia-cuda-nvrtc-cu12": "12.9.86",
+      "nvidia-cuda-runtime-cu12": "12.9.79",
+      "nvidia-cudnn-cu12": "9.24.0.43",
+      "scipy": "1.18.0"
+     }
+    }
+   ]
+  }
+ ],
+ "per_job": {
+  "A100-80G#1": {
+   "status": "ok",
+   "h_cost_n2": {
+    "R128|fib4181|frozen|BE": {
+     "two_mesh": {
+      "R": 1.006108727897872,
+      "medians": {
+       "256": 0.15253323961302934,
+       "1024": 0.15160711301225555
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0005193339649985,
+       1.013131264837436
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass"
+    },
+    "R384|gauss128|frozen|CNR": {
+     "two_mesh": {
+      "R": 1.0033830195499285,
+      "medians": {
+       "256": 1.0023219196019957,
+       "1024": 0.9989424776707814
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0001846362825924,
+       1.0067340598309593
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass"
+    }
+   },
+   "q1": {
+    "R128|fib4181|frozen|BE|256": 0.15253323961302934,
+    "R384|gauss128|frozen|CNR|1024": 0.9989424776707814,
+    "R384|gauss128|frozen|CNR|256": 1.0023219196019957,
+    "R128|fib4181|frozen|BE|1024": 0.15160711301225555
+   },
+   "q2": {
+    "R128|fib4181|frozen|BE": 1.006108727897872,
+    "R384|gauss128|frozen|CNR": 1.0033830195499285
+   },
+   "S": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.23200770336885532,
+     "lo": 0.2286376556104497,
+     "hi": 0.23515876386892257,
+     "cost_rom": 0.14990185235667158,
+     "cost_fom": 0.034778384496008605,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 6.003617511547277,
+     "lo": 5.761221000506308,
+     "hi": 7.888903573193183,
+     "cost_rom": 0.14990185235667158,
+     "cost_fom": 0.899953385821888,
+     "faster": "ROM faster",
+     "two_x_class": "ROM >= 2x",
+     "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+     "label": "pass",
+     "suffix": "|H|CC|same_mesh"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.0347837920737966,
+     "lo": 0.034283721446213236,
+     "hi": 0.03503006121074617,
+     "cost_rom": 0.9998445374277616,
+     "cost_fom": 0.034778384496008605,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 2.0716824588071807,
+     "lo": 1.9693529859270478,
+     "hi": 2.520794635347565,
+     "cost_rom": 0.9998445374277616,
+     "cost_fom": 2.0713603897232735,
+     "faster": "ROM faster",
+     "two_x_class": "unresolved",
+     "two_x": "inconclusive",
+     "label": "inconclusive",
+     "suffix": "|H|CC|same_mesh"
+    }
+   },
+   "seconds_evolve": {
+    "256|R128|fib4181|frozen|BE": 0.03159749299993564,
+    "1024|R384|gauss128|frozen|CNR": 0.2089409540012639,
+    "256|R384|gauss128|frozen|CNR": 0.20920374599973002,
+    "1024|R128|fib4181|frozen|BE": 0.03179027599981055
+   },
+   "seconds_B_cross": {
+    "ps|N96|0.0125": 0.007313793500543397,
+    "fd|CC|L1024|0.0125|t2": 0.19347756649949588,
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": 0.031514754500676645,
+    "fd|CC|L1024|0.005|t1": 0.44002443150020554,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": 0.21106457699988823
+   },
+   "c_e5_1": {
+    "subjects": {
+     "1024|R128|fib4181|frozen|BE": {
+      "case_medians": {
+       "dev6|0": 1.9692621779912787,
+       "dev6|1": 1.9765078185982357,
+       "dev6|2": 1.9843903356745558,
+       "dev6|3": 1.9750648908985715,
+       "dev6|4": 1.9744316742971162,
+       "dev6|5": 1.9750630367061108
+      },
+      "median": 1.975063963802341,
+      "fires": true,
+      "n_cases": 6
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "case_medians": {
+       "dev6|0": 2.0122439072929796,
+       "dev6|1": 2.0243143297964163,
+       "dev6|2": 2.0132050403294186,
+       "dev6|3": 2.015233201631679,
+       "dev6|4": 2.012953687375027,
+       "dev6|5": 2.0050083251310515
+      },
+      "median": 2.013079363852223,
+      "fires": true,
+      "n_cases": 6
+     }
+    },
+    "fires": true,
+    "complete": true,
+    "population": {
+     "required": 36,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": []
+    },
+    "invalid_rows": []
+   },
+   "cross_gates": {
+    "G-RR": true,
+    "A-valid": true,
+    "G-FR": true,
+    "scope": "repro checked on the dev6 cases (fom2d target_e / ladder_e exist for dev6 only)"
+   }
+  },
+  "A100-80G#2": {
+   "status": "ok",
+   "h_cost_n2": {
+    "R128|fib4181|frozen|BE": {
+     "two_mesh": {
+      "R": 1.0117959665768181,
+      "medians": {
+       "256": 0.1512632957877471,
+       "1024": 0.14949980113037228
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.000155094392756,
+       1.017046165480178
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass"
+    },
+    "R384|gauss128|frozen|CNR": {
+     "two_mesh": {
+      "R": 1.0000150220540975,
+      "medians": {
+       "256": 1.000901602635384,
+       "1024": 1.0008865672632252
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0000150220540975,
+       1.002734493254194
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass"
+    }
+   },
+   "q1": {
+    "R128|fib4181|frozen|BE|256": 0.1512632957877471,
+    "R384|gauss128|frozen|CNR|1024": 1.0008865672632252,
+    "R384|gauss128|frozen|CNR|256": 1.000901602635384,
+    "R128|fib4181|frozen|BE|1024": 0.14949980113037228
+   },
+   "q2": {
+    "R128|fib4181|frozen|BE": 1.0117959665768181,
+    "R384|gauss128|frozen|CNR": 1.0000150220540975
+   },
+   "S": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.2241214073342522,
+     "lo": 0.2207809420651884,
+     "hi": 0.22750344113002632,
+     "cost_rom": 0.14931381639844477,
+     "cost_fom": 0.033464422665667584,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 6.192912819022915,
+     "lo": 5.935005264126332,
+     "hi": 8.10464264457028,
+     "cost_rom": 0.14931381639844477,
+     "cost_fom": 0.9246874476311625,
+     "faster": "ROM faster",
+     "two_x_class": "ROM >= 2x",
+     "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+     "label": "pass",
+     "suffix": "|H|CC|same_mesh"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.03352443990983411,
+     "lo": 0.033101847796173485,
+     "hi": 0.03402949708054333,
+     "cost_rom": 0.9982097465512342,
+     "cost_fom": 0.033464422665667584,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 2.1320282869710647,
+     "lo": 2.0302868698478056,
+     "hi": 2.608818103106675,
+     "cost_rom": 0.9982097465512342,
+     "cost_fom": 2.1282114159774483,
+     "faster": "ROM faster",
+     "two_x_class": "ROM >= 2x",
+     "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+     "label": "pass",
+     "suffix": "|H|CC|same_mesh"
+    }
+   },
+   "seconds_evolve": {
+    "256|R128|fib4181|frozen|BE": 0.031197896227240562,
+    "1024|R384|gauss128|frozen|CNR": 0.2096238862723112,
+    "256|R384|gauss128|frozen|CNR": 0.2091407012194395,
+    "1024|R128|fib4181|frozen|BE": 0.03133727330714464
+   },
+   "seconds_B_cross": {
+    "ps|N96|0.0125": 0.007069343235343695,
+    "fd|CC|L1024|0.0125|t2": 0.19889729423448443,
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": 0.03140729246661067,
+    "fd|CC|L1024|0.005|t1": 0.4528461266309023,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": 0.2111582374200225
+   },
+   "c_e5_1": {
+    "subjects": {
+     "1024|R128|fib4181|frozen|BE": {
+      "case_medians": {
+       "dev6|0": 1.9874420391970715,
+       "dev6|1": 1.9893187213789052,
+       "dev6|2": 1.9927809418511093,
+       "dev6|3": 1.988329884079215,
+       "dev6|4": 1.98301402899805,
+       "dev6|5": 1.9884281000666724
+      },
+      "median": 1.9883789920729438,
+      "fires": true,
+      "n_cases": 6
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "case_medians": {
+       "dev6|0": 2.0148817025147263,
+       "dev6|1": 2.0146793253316204,
+       "dev6|2": 2.013352513676569,
+       "dev6|3": 2.0198075409740075,
+       "dev6|4": 2.011057316874368,
+       "dev6|5": 2.00816323726062
+      },
+      "median": 2.0140159195040948,
+      "fires": true,
+      "n_cases": 6
+     }
+    },
+    "fires": true,
+    "complete": true,
+    "population": {
+     "required": 36,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": []
+    },
+    "invalid_rows": []
+   },
+   "cross_gates": {
+    "G-RR": true,
+    "A-valid": true,
+    "G-FR": true,
+    "scope": "repro checked on the dev6 cases (fom2d target_e / ladder_e exist for dev6 only)"
+   }
+  },
+  "H200#1": {
+   "status": "ok",
+   "h_cost_n2": {
+    "R128|fib4181|frozen|BE": {
+     "two_mesh": {
+      "R": 1.0101281759556868,
+      "medians": {
+       "256": 0.24671786254679218,
+       "1024": 0.24424411517218725
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0009905136690773,
+       1.0553732210313795
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass",
+     "three_mesh_h200_only": {
+      "R": 1.0142354513895075,
+      "medians": {
+       "256": 0.24671786254679218,
+       "1024": 0.24424411517218725,
+       "4096": 0.2477210404008942
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0055154742033874,
+       1.0604349902026493
+      ],
+      "outcome": "pass"
+     }
+    },
+    "R384|gauss128|frozen|CNR": {
+     "two_mesh": {
+      "R": 1.0050208888165972,
+      "medians": {
+       "256": 0.9990060876126505,
+       "1024": 1.0040219861056574
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0002083021683559,
+       1.0125931152159506
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass",
+     "three_mesh_h200_only": {
+      "R": 1.0111553120921841,
+      "medians": {
+       "256": 0.9990060876126505,
+       "1024": 1.0040219861056574,
+       "4096": 1.0101503123019615
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0024229796803021,
+       1.015974873392864
+      ],
+      "outcome": "pass"
+     }
+    }
+   },
+   "q1": {
+    "R384|gauss128|frozen|CNR|256": 0.9990060876126505,
+    "R384|gauss128|frozen|CNR|1024": 1.0040219861056574,
+    "R128|fib4181|frozen|BE|1024": 0.24424411517218725,
+    "R384|gauss128|frozen|CNR|4096": 1.0101503123019615,
+    "R128|fib4181|frozen|BE|256": 0.24671786254679218,
+    "R128|fib4181|frozen|BE|4096": 0.2477210404008942
+   },
+   "q2": {
+    "R128|fib4181|frozen|BE": 1.0101281759556868,
+    "R384|gauss128|frozen|CNR": 1.0050208888165972
+   },
+   "S": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.2482168884411323,
+     "lo": 0.24478016190569954,
+     "hi": 0.25253528686456395,
+     "cost_rom": 0.23840280994104446,
+     "cost_fom": 0.0591756036791887,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 4.325794750039142,
+     "lo": 4.11874890976815,
+     "hi": 5.619469288032606,
+     "cost_rom": 0.23840280994104446,
+     "cost_fom": 1.0312816236375495,
+     "faster": "ROM faster",
+     "two_x_class": "ROM >= 2x",
+     "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+     "label": "pass",
+     "suffix": "|H|CC|same_mesh"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.059154784109117224,
+     "lo": 0.0588891279167907,
+     "hi": 0.059702960931285486,
+     "cost_rom": 1.0003519507405025,
+     "cost_fom": 0.0591756036791887,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 2.3439875482759462,
+     "lo": 2.2279669412573355,
+     "hi": 2.861864109075084,
+     "cost_rom": 1.0003519507405025,
+     "cost_fom": 2.3448125164292906,
+     "faster": "ROM faster",
+     "two_x_class": "ROM >= 2x",
+     "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+     "label": "pass",
+     "suffix": "|H|CC|same_mesh"
+    }
+   },
+   "seconds_evolve": {
+    "256|R384|gauss128|frozen|CNR": 0.08701270865276456,
+    "1024|R384|gauss128|frozen|CNR": 0.08705758070573211,
+    "1024|R128|fib4181|frozen|BE": 0.020806788466870785,
+    "4096|R384|gauss128|frozen|CNR": 0.08651896077208221,
+    "256|R128|fib4181|frozen|BE": 0.021149967797100544,
+    "4096|R128|fib4181|frozen|BE": 0.02121576783247292
+   },
+   "seconds_B_cross": {
+    "ps|N96|0.0125": 0.00513176154345274,
+    "fd|CC|L1024|0.0125|t2": 0.09064944763667881,
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": 0.02060677227564156,
+    "fd|CC|L1024|0.005|t1": 0.20531639433465898,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": 0.08658769493922591
+   },
+   "c_e5_1": {
+    "subjects": {
+     "1024|R128|fib4181|frozen|BE": {
+      "case_medians": {
+       "dev6|0": 1.9531296932868514,
+       "dev6|1": 1.963550760951357,
+       "dev6|2": 1.9617694805120578,
+       "dev6|3": 1.964969006027481,
+       "dev6|4": 1.9579078817302282,
+       "dev6|5": 1.9607732377801583
+      },
+      "median": 1.961271359146108,
+      "fires": true,
+      "n_cases": 6
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "case_medians": {
+       "dev6|0": 1.9960698436351856,
+       "dev6|1": 1.978005774347768,
+       "dev6|2": 2.019079844364867,
+       "dev6|3": 1.9923232960261659,
+       "dev6|4": 1.9856027828788574,
+       "dev6|5": 1.9968576775618727
+      },
+      "median": 1.9941965698306756,
+      "fires": true,
+      "n_cases": 6
+     }
+    },
+    "fires": true,
+    "complete": true,
+    "population": {
+     "required": 36,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": []
+    },
+    "invalid_rows": []
+   },
+   "cross_gates": {
+    "G-RR": true,
+    "A-valid": true,
+    "G-FR": true,
+    "scope": "repro checked on the dev6 cases (fom2d target_e / ladder_e exist for dev6 only)"
+   }
+  },
+  "H200#2": {
+   "status": "ok",
+   "h_cost_n2": {
+    "R128|fib4181|frozen|BE": {
+     "two_mesh": {
+      "R": 1.0041420901538054,
+      "medians": {
+       "256": 0.2510508686189087,
+       "1024": 0.2500152827778138
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0004730007019242,
+       1.0370722078757075
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass",
+     "three_mesh_h200_only": {
+      "R": 1.0153329367079413,
+      "medians": {
+       "256": 0.2510508686189087,
+       "1024": 0.2500152827778138,
+       "4096": 0.2538487512846641
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0051940947302527,
+       1.0455353933080245
+      ],
+      "outcome": "pass"
+     }
+    },
+    "R384|gauss128|frozen|CNR": {
+     "two_mesh": {
+      "R": 1.0069794389842295,
+      "medians": {
+       "256": 1.0113104859291004,
+       "1024": 1.0043010281811116
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0004978902613566,
+       1.020784766114498
+      ],
+      "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+      "procedure_outcome": "pass"
+     },
+     "label": "pass",
+     "three_mesh_h200_only": {
+      "R": 1.0107185217954788,
+      "medians": {
+       "256": 1.0113104859291004,
+       "1024": 1.0043010281811116,
+       "4096": 1.0005856864407412
+      },
+      "undefined_fraction": 0.0,
+      "invalid_fraction": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "ci": [
+       1.0025697745331827,
+       1.020785234924124
+      ],
+      "outcome": "pass"
+     }
+    }
+   },
+   "q1": {
+    "R384|gauss128|frozen|CNR|256": 1.0113104859291004,
+    "R384|gauss128|frozen|CNR|1024": 1.0043010281811116,
+    "R128|fib4181|frozen|BE|1024": 0.2500152827778138,
+    "R384|gauss128|frozen|CNR|4096": 1.0005856864407412,
+    "R128|fib4181|frozen|BE|256": 0.2510508686189087,
+    "R128|fib4181|frozen|BE|4096": 0.2538487512846641
+   },
+   "q2": {
+    "R128|fib4181|frozen|BE": 1.0041420901538054,
+    "R384|gauss128|frozen|CNR": 1.0069794389842295
+   },
+   "S": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.253268804873996,
+     "lo": 0.24943487433874506,
+     "hi": 0.25711196528715957,
+     "cost_rom": 0.2404118725000643,
+     "cost_fom": 0.06088882762561079,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 4.320162314415938,
+     "lo": 4.125702423703398,
+     "hi": 5.628309346531754,
+     "cost_rom": 0.2404118725000643,
+     "cost_fom": 1.038618311512947,
+     "faster": "ROM faster",
+     "two_x_class": "ROM >= 2x",
+     "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+     "label": "pass",
+     "suffix": "|H|CC|same_mesh"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 0.061056382469539205,
+     "lo": 0.060072466131283475,
+     "hi": 0.0617894563388488,
+     "cost_rom": 0.9972557358108793,
+     "cost_fom": 0.06088882762561079,
+     "faster": "FOM faster",
+     "two_x_class": "ROM < 2x",
+     "two_x": "fail under the registered dev6 descriptive-bootstrap rule",
+     "label": "fail",
+     "suffix": "|H|union|joint"
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+     "status": "ok",
+     "n": 16,
+     "cases": [
+      "dev6|0",
+      "dev6|1",
+      "dev6|2",
+      "dev6|3",
+      "dev6|4",
+      "dev6|5",
+      "val32|0",
+      "val32|1",
+      "val32|2",
+      "val32|3",
+      "val32|4",
+      "val32|5",
+      "val32|6",
+      "val32|7",
+      "val32|8",
+      "val32|9"
+     ],
+     "S": 2.3813694765495566,
+     "lo": 2.2523688445127723,
+     "hi": 2.8598582513051367,
+     "cost_rom": 0.9972557358108793,
+     "cost_fom": 2.3748343695739966,
+     "faster": "ROM faster",
+     "two_x_class": "ROM >= 2x",
+     "two_x": "pass against the screening-selected comparator (not established against the best validated FOM)",
+     "label": "pass",
+     "suffix": "|H|CC|same_mesh"
+    }
+   },
+   "seconds_evolve": {
+    "256|R384|gauss128|frozen|CNR": 0.08797739446163177,
+    "1024|R384|gauss128|frozen|CNR": 0.0868108063004911,
+    "1024|R128|fib4181|frozen|BE": 0.021610011346638203,
+    "4096|R384|gauss128|frozen|CNR": 0.08663207571953535,
+    "256|R128|fib4181|frozen|BE": 0.021817846689373255,
+    "4096|R128|fib4181|frozen|BE": 0.02165225986391306
+   },
+   "seconds_B_cross": {
+    "ps|N96|0.0125": 0.0052922735922038555,
+    "fd|CC|L1024|0.0125|t2": 0.09181021433323622,
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": 0.020848502404987812,
+    "fd|CC|L1024|0.005|t1": 0.20742940297350287,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": 0.08634008979424834
+   },
+   "c_e5_1": {
+    "subjects": {
+     "1024|R128|fib4181|frozen|BE": {
+      "case_medians": {
+       "dev6|0": 1.958725350989988,
+       "dev6|1": 2.03095061471087,
+       "dev6|2": 1.9644240663319539,
+       "dev6|3": 1.950899044130048,
+       "dev6|4": 1.9452087052581277,
+       "dev6|5": 1.9510905988148373
+      },
+      "median": 1.9549079749024125,
+      "fires": true,
+      "n_cases": 6
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "case_medians": {
+       "dev6|0": 1.9763651828407833,
+       "dev6|1": 2.004848558855976,
+       "dev6|2": 1.9703851258295695,
+       "dev6|3": 1.9848298069072607,
+       "dev6|4": 1.9920171907962811,
+       "dev6|5": 2.03306265017054
+      },
+      "median": 1.988423498851771,
+      "fires": true,
+      "n_cases": 6
+     }
+    },
+    "fires": true,
+    "complete": true,
+    "population": {
+     "required": 36,
+     "missing": [],
+     "n_missing": 0,
+     "duplicates": [],
+     "extra": []
+    },
+    "invalid_rows": []
+   },
+   "cross_gates": {
+    "G-RR": true,
+    "A-valid": true,
+    "G-FR": true,
+    "scope": "repro checked on the dev6 cases (fom2d target_e / ladder_e exist for dev6 only)"
+   }
+  }
+ },
+ "fixtures": {
+  "q1": {
+   "injected": {
+    "phi": 1.4999999999999998,
+    "lo": 1.4999999999999998,
+    "hi": 1.5000000000000002,
+    "label": "hardware-dependent",
+    "q_num": 0.2274106695183833,
+    "q_den": 0.15160711301225555
+   },
+   "null": {
+    "phi": 1.0,
+    "lo": 1.0,
+    "hi": 1.0,
+    "label": "hardware-consistent",
+    "q_num": 0.15160711301225555,
+    "q_den": 0.15160711301225555
+   },
+   "ok": true,
+   "cases": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ]
+  },
+  "q2": {
+   "injected": {
+    "phi": 1.4999999999999998,
+    "lo": 1.4999999999999998,
+    "hi": 1.5000000000000002,
+    "label": "hardware-dependent",
+    "q_num": 1.4999999999999998,
+    "q_den": 1.0
+   },
+   "null": {
+    "phi": 1.0,
+    "lo": 1.0,
+    "hi": 1.0,
+    "label": "hardware-consistent",
+    "q_num": 1.0,
+    "q_den": 1.0
+   },
+   "ok": true,
+   "cases": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ]
+  },
+  "q3": {
+   "injected": {
+    "phi": 1.4999999999999998,
+    "lo": 1.4999999999999998,
+    "hi": 1.5000000000000002,
+    "label": "hardware-dependent",
+    "q_num": 0.3480115550532829,
+    "q_den": 0.23200770336885532
+   },
+   "null": {
+    "phi": 1.0,
+    "lo": 1.0,
+    "hi": 1.0,
+    "label": "hardware-consistent",
+    "q_num": 0.23200770336885532,
+    "q_den": 0.23200770336885532
+   },
+   "ok": true,
+   "cases": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5",
+    "val32|0",
+    "val32|1",
+    "val32|2",
+    "val32|3",
+    "val32|4",
+    "val32|5",
+    "val32|6",
+    "val32|7",
+    "val32|8",
+    "val32|9"
+   ]
+  }
+ },
+ "case_sets": {
+  "requested_cost": [
+   "dev6|0",
+   "dev6|1",
+   "dev6|2",
+   "dev6|3",
+   "dev6|4",
+   "dev6|5"
+  ],
+  "C_cost": [
+   "dev6|0",
+   "dev6|1",
+   "dev6|2",
+   "dev6|3",
+   "dev6|4",
+   "dev6|5"
+  ],
+  "requested_cross": [
+   "dev6|0",
+   "dev6|1",
+   "dev6|2",
+   "dev6|3",
+   "dev6|4",
+   "dev6|5",
+   "val32|0",
+   "val32|1",
+   "val32|2",
+   "val32|3",
+   "val32|4",
+   "val32|5",
+   "val32|6",
+   "val32|7",
+   "val32|8",
+   "val32|9"
+  ],
+  "C_cross": [
+   "dev6|0",
+   "dev6|1",
+   "dev6|2",
+   "dev6|3",
+   "dev6|4",
+   "dev6|5",
+   "val32|0",
+   "val32|1",
+   "val32|2",
+   "val32|3",
+   "val32|4",
+   "val32|5",
+   "val32|6",
+   "val32|7",
+   "val32|8",
+   "val32|9"
+  ],
+  "pairs": [
+   [
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+    "fd|CC|L1024|0.0125|t2"
+   ],
+   [
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+    "ps|N96|0.0125"
+   ],
+   [
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+    "fd|CC|L1024|0.005|t1"
+   ],
+   [
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+    "ps|N96|0.0125"
+   ]
+  ]
+ },
+ "pooled": {
+  "A100-80G": {
+   "q1": {
+    "R128|fib4181|frozen|BE|256": 0.15160294651794587,
+    "R128|fib4181|frozen|BE|1024": 0.15124500599142432,
+    "R384|gauss128|frozen|CNR|256": 1.0011805808520755,
+    "R384|gauss128|frozen|CNR|1024": 1.0003188082185233
+   },
+   "q2": {
+    "R128|fib4181|frozen|BE": 1.002366627077537,
+    "R384|gauss128|frozen|CNR": 1.0008614979809156
+   },
+   "q3": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": 6.096816277054667,
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": 0.22768261314363256,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": 2.0979094697111167,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": 0.03402088180696812
+   }
+  },
+  "H200": {
+   "q1": {
+    "R128|fib4181|frozen|BE|256": 0.24919240037370288,
+    "R128|fib4181|frozen|BE|1024": 0.24720795685482572,
+    "R384|gauss128|frozen|CNR|256": 1.001728609015149,
+    "R384|gauss128|frozen|CNR|1024": 1.004195918281328
+   },
+   "q2": {
+    "R128|fib4181|frozen|BE": 1.0080274257516821,
+    "R384|gauss128|frozen|CNR": 1.0024630516129562
+   },
+   "q3": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": 4.3182475020994024,
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": 0.25060501251520284,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": 2.354620428105127,
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": 0.060076500915183614
+   }
+  }
+ },
+ "phi": {
+  "phi1": {
+   "R128|fib4181|frozen|BE|256": {
+    "phi": 1.643717395322557,
+    "lo": 1.6306874249462242,
+    "hi": 1.650752030496095,
+    "label": "hardware-dependent",
+    "q_num": 0.24919240037370288,
+    "q_den": 0.15160294651794587
+   },
+   "R128|fib4181|frozen|BE|1024": {
+    "phi": 1.6344867404669385,
+    "lo": 1.5918847862716872,
+    "hi": 1.6507884252186442,
+    "label": "hardware-dependent",
+    "q_num": 0.24720795685482572,
+    "q_den": 0.15124500599142432
+   },
+   "R384|gauss128|frozen|CNR|256": {
+    "phi": 1.0005473819344428,
+    "lo": 0.9968771823985008,
+    "hi": 1.0054865503447001,
+    "label": "hardware-consistent",
+    "q_num": 1.001728609015149,
+    "q_den": 1.0011805808520755
+   },
+   "R384|gauss128|frozen|CNR|1024": {
+    "phi": 1.0038758744021914,
+    "lo": 0.9999023671952162,
+    "hi": 1.0063337760333402,
+    "label": "hardware-consistent",
+    "q_num": 1.004195918281328,
+    "q_den": 1.0003188082185233
+   }
+  },
+  "phi2": {
+   "R128|fib4181|frozen|BE": {
+    "phi": 1.0056474333055656,
+    "lo": 0.9902244622393238,
+    "hi": 1.0378712924678404,
+    "label": "hardware-consistent",
+    "q_num": 1.0080274257516821,
+    "q_den": 1.002366627077537
+   },
+   "R384|gauss128|frozen|CNR": {
+    "phi": 1.0016001750844363,
+    "lo": 0.998008964947249,
+    "hi": 1.007062769123235,
+    "label": "hardware-consistent",
+    "q_num": 1.0024630516129562,
+    "q_den": 1.0008614979809156
+   }
+  },
+  "phi3": {
+   "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+    "phi": 0.7082790928686997,
+    "lo": 0.6982431242888636,
+    "hi": 0.7127114917455882,
+    "label": "hardware-dependent",
+    "q_num": 4.3182475020994024,
+    "q_den": 6.096816277054667
+   },
+   "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+    "phi": 1.1006769865080115,
+    "lo": 1.0888678426975693,
+    "hi": 1.1101845756806097,
+    "label": "hardware-consistent",
+    "q_num": 0.25060501251520284,
+    "q_den": 0.22768261314363256
+   },
+   "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+    "phi": 1.1223651268561934,
+    "lo": 1.1130791680171677,
+    "hi": 1.129043563602752,
+    "label": "hardware-consistent",
+    "q_num": 2.354620428105127,
+    "q_den": 2.0979094697111167
+   },
+   "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+    "phi": 1.765871362654651,
+    "lo": 1.7468344162980964,
+    "hi": 1.774030256197182,
+    "label": "hardware-dependent",
+    "q_num": 0.060076500915183614,
+    "q_den": 0.03402088180696812
+   }
+  }
+ },
+ "per_type": {
+  "A100-80G": {
+   "H-cost-N(2)|R128|fib4181|frozen|BE": {
+    "label": "pass",
+    "pooled": "pass",
+    "q2": 1.002366627077537,
+    "lo": 1.000344909764216,
+    "hi": 1.0145704230451074,
+    "per_job": [
+     "pass",
+     "pass"
+    ]
+   },
+   "H-cost-N(2)|R384|gauss128|frozen|CNR": {
+    "label": "pass",
+    "pooled": "pass",
+    "q2": 1.0008614979809156,
+    "lo": 1.0000672695615136,
+    "hi": 1.003358229695295,
+    "per_job": [
+     "pass",
+     "pass"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+    "label": "pass",
+    "pooled": "pass",
+    "q3": 6.096816277054667,
+    "lo": 5.87699252939493,
+    "hi": 8.034941086271106,
+    "per_job": [
+     "pass",
+     "pass"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+    "label": "fail",
+    "pooled": "fail",
+    "q3": 0.22768261314363256,
+    "lo": 0.2245897992521664,
+    "hi": 0.23095701854343714,
+    "per_job": [
+     "fail",
+     "fail"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+    "label": "inconclusive",
+    "pooled": "inconclusive",
+    "q3": 2.0979094697111167,
+    "lo": 1.9993498006966681,
+    "hi": 2.560072262981317,
+    "per_job": [
+     "inconclusive",
+     "pass"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+    "label": "fail",
+    "pooled": "fail",
+    "q3": 0.03402088180696812,
+    "lo": 0.03353163090411142,
+    "hi": 0.03445633595218365,
+    "per_job": [
+     "fail",
+     "fail"
+    ]
+   }
+  },
+  "H200": {
+   "H-cost-N(2)|R128|fib4181|frozen|BE": {
+    "label": "pass",
+    "pooled": "pass",
+    "q2": 1.0080274257516821,
+    "lo": 1.0004172419748758,
+    "hi": 1.0403519300140622,
+    "per_job": [
+     "pass",
+     "pass"
+    ]
+   },
+   "H-cost-N(2)|R384|gauss128|frozen|CNR": {
+    "label": "pass",
+    "pooled": "pass",
+    "q2": 1.0024630516129562,
+    "lo": 1.0003594856539801,
+    "hi": 1.0077186353783365,
+    "per_job": [
+     "pass",
+     "pass"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+    "label": "pass",
+    "pooled": "pass",
+    "q3": 4.3182475020994024,
+    "lo": 4.131774503923544,
+    "hi": 5.619736363785028,
+    "per_job": [
+     "pass",
+     "pass"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+    "label": "fail",
+    "pooled": "fail",
+    "q3": 0.25060501251520284,
+    "lo": 0.24762219093077856,
+    "hi": 0.2537931867033758,
+    "per_job": [
+     "fail",
+     "fail"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+    "label": "pass",
+    "pooled": "pass",
+    "q3": 2.354620428105127,
+    "lo": 2.2465394874923095,
+    "hi": 2.858998653038714,
+    "per_job": [
+     "pass",
+     "pass"
+    ]
+   },
+   "S2|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+    "label": "fail",
+    "pooled": "fail",
+    "q3": 0.060076500915183614,
+    "lo": 0.05942194552026337,
+    "hi": 0.06054830092456539,
+    "per_job": [
+     "fail",
+     "fail"
+    ]
+   }
+  }
+ },
+ "agreement": {
+  "H-cost-N(2)|R128|fib4181|frozen|BE": "verdict-robust",
+  "H-cost-N(2)|R384|gauss128|frozen|CNR": "verdict-robust",
+  "S2|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": "verdict-robust",
+  "S2|ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": "verdict-robust",
+  "S2|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": "inconclusive",
+  "S2|ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": "verdict-robust"
+ },
+ "unit_to_unit": {
+  "A100-80G": {
+   "phi1": {
+    "R128|fib4181|frozen|BE|256": {
+     "phi": 0.991674314211748,
+     "lo": 0.9803429192789943,
+     "hi": 0.996141258112247,
+     "label": "hardware-consistent",
+     "q_num": 0.1512632957877471,
+     "q_den": 0.15253323961302934
+    },
+    "R128|fib4181|frozen|BE|1024": {
+     "phi": 0.9861001780192667,
+     "lo": 0.9791361457913558,
+     "hi": 0.9881935219209803,
+     "label": "hardware-consistent",
+     "q_num": 0.14949980113037228,
+     "q_den": 0.15160711301225555
+    },
+    "R384|gauss128|frozen|CNR|256": {
+     "phi": 0.9985829732555629,
+     "lo": 0.996632958439381,
+     "hi": 1.002146454750677,
+     "label": "hardware-consistent",
+     "q_num": 1.000901602635384,
+     "q_den": 1.0023219196019957
+    },
+    "R384|gauss128|frozen|CNR|1024": {
+     "phi": 1.0019461476870788,
+     "lo": 0.9989941499310973,
+     "hi": 1.0046718324064106,
+     "label": "hardware-consistent",
+     "q_num": 1.0008865672632252,
+     "q_den": 0.9989424776707814
+    }
+   },
+   "phi2": {
+    "R128|fib4181|frozen|BE": {
+     "phi": 1.0056527078249573,
+     "lo": 0.9932058049289777,
+     "hi": 1.0101826166517374,
+     "label": "hardware-consistent",
+     "q_num": 1.0117959665768181,
+     "q_den": 1.006108727897872
+    },
+    "R384|gauss128|frozen|CNR": {
+     "phi": 0.9966433580893748,
+     "lo": 0.9937962166016548,
+     "hi": 1.0013340838339524,
+     "label": "hardware-consistent",
+     "q_num": 1.0000150220540975,
+     "q_den": 1.0033830195499285
+    }
+   },
+   "phi3": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+     "phi": 1.0315302077641606,
+     "lo": 1.025128445015993,
+     "hi": 1.0391754872465024,
+     "label": "hardware-consistent",
+     "q_num": 6.192912819022915,
+     "q_den": 6.003617511547277
+    },
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+     "phi": 0.966008473339072,
+     "lo": 0.9578602844424501,
+     "hi": 0.9766957156758427,
+     "label": "hardware-consistent",
+     "q_num": 0.2241214073342522,
+     "q_den": 0.23200770336885532
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+     "phi": 1.0291288985468505,
+     "lo": 1.0273084613529286,
+     "hi": 1.0359578663840383,
+     "label": "hardware-consistent",
+     "q_num": 2.1320282869710647,
+     "q_den": 2.0716824588071807
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+     "phi": 0.9637948570618557,
+     "lo": 0.9583784117351744,
+     "hi": 0.973880070410893,
+     "label": "hardware-consistent",
+     "q_num": 0.03352443990983411,
+     "q_den": 0.0347837920737966
+    }
+   },
+   "device": "distinct GPUs"
+  },
+  "H200": {
+   "phi1": {
+    "R128|fib4181|frozen|BE|256": {
+     "phi": 1.0175625957009689,
+     "lo": 1.0026148689536678,
+     "hi": 1.0362912671568456,
+     "label": "hardware-consistent",
+     "q_num": 0.2510508686189087,
+     "q_den": 0.24671786254679218
+    },
+    "R128|fib4181|frozen|BE|1024": {
+     "phi": 1.0236286864130095,
+     "lo": 0.9952296224778898,
+     "hi": 1.066100854094784,
+     "label": "hardware-consistent",
+     "q_num": 0.2500152827778138,
+     "q_den": 0.24424411517218725
+    },
+    "R384|gauss128|frozen|CNR|256": {
+     "phi": 1.012316639977494,
+     "lo": 0.99890380248633,
+     "hi": 1.0232559685090588,
+     "label": "hardware-consistent",
+     "q_num": 1.0113104859291004,
+     "q_den": 0.9990060876126505
+    },
+    "R384|gauss128|frozen|CNR|1024": {
+     "phi": 1.0002779242679103,
+     "lo": 0.9886964429362602,
+     "hi": 1.0116021492828908,
+     "label": "hardware-consistent",
+     "q_num": 1.0043010281811116,
+     "q_den": 1.0040219861056574
+    }
+   },
+   "phi2": {
+    "R128|fib4181|frozen|BE": {
+     "phi": 0.994073934432907,
+     "lo": 0.9561864449286672,
+     "hi": 1.02487210596083,
+     "label": "hardware-consistent",
+     "q_num": 1.0041420901538054,
+     "q_den": 1.0101281759556868
+    },
+    "R384|gauss128|frozen|CNR": {
+     "phi": 1.001948765632064,
+     "lo": 0.9917492666743244,
+     "hi": 1.0132162831270612,
+     "label": "hardware-consistent",
+     "q_num": 1.0069794389842295,
+     "q_den": 1.0050208888165972
+    }
+   },
+   "phi3": {
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|fd|CC|L1024|0.0125|t2": {
+     "phi": 0.9986979420086555,
+     "lo": 0.9871719445249378,
+     "hi": 1.016346460219961,
+     "label": "hardware-consistent",
+     "q_num": 4.320162314415938,
+     "q_den": 4.325794750039142
+    },
+    "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod|ps|N96|0.0125": {
+     "phi": 1.0203528312057697,
+     "lo": 1.0028112719591917,
+     "hi": 1.0345502801593291,
+     "label": "hardware-consistent",
+     "q_num": 0.253268804873996,
+     "q_den": 0.2482168884411323
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|fd|CC|L1024|0.005|t1": {
+     "phi": 1.0159480063369388,
+     "lo": 1.000992186563218,
+     "hi": 1.0238396795901872,
+     "label": "hardware-consistent",
+     "q_num": 2.3813694765495566,
+     "q_den": 2.3439875482759462
+    },
+    "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod|ps|N96|0.0125": {
+     "phi": 1.0321461465722583,
+     "lo": 1.0170516207699936,
+     "hi": 1.0425178549202032,
+     "label": "hardware-consistent",
+     "q_num": 0.061056382469539205,
+     "q_den": 0.059154784109117224
+    }
+   },
+   "device": "distinct GPUs"
+  }
+ },
+ "gates": {
+  "p1_reference": {
+   "job_id": "5352971",
+   "gpu": "NVIDIA H200",
+   "cells": {
+    "R128|fib4181|frozen|BE|4096": {
+     "q1": 0.2522028849663564,
+     "lo": 0.24227557217199785,
+     "hi": 0.25460149238634244
+    },
+    "R384|gauss128|frozen|CNR|256": {
+     "q1": 1.0061323585478967,
+     "lo": 1.0017357647363556,
+     "hi": 1.0097035905392837
+    },
+    "R128|fib4181|frozen|BE|1024": {
+     "q1": 0.2521039888059275,
+     "lo": 0.24936628179747833,
+     "hi": 0.2588679709652619
+    },
+    "R384|gauss128|frozen|CNR|4096": {
+     "q1": 1.0161680769248707,
+     "lo": 1.0112219039731456,
+     "hi": 1.0285212923207676
+    },
+    "R384|gauss128|frozen|CNR|1024": {
+     "q1": 1.015766327881908,
+     "lo": 1.000204970666511,
+     "hi": 1.0292983412751515
+    },
+    "R128|fib4181|frozen|BE|256": {
+     "q1": 0.25425783996719864,
+     "lo": 0.25189725500453375,
+     "hi": 0.2600899375215786
+    }
+   }
+  },
+  "A100-80G#1": {
+   "G-E5.1": {
+    "passed": true,
+    "rows": {
+     "1024|R128|fib4181|frozen|BE": {
+      "file": "S_1024_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.159692053405162e-15,
+      "ref_sha256": "ed306ef0e2e0af5795460920dde4340f0b7d912a8365f92574d463b3e5a4d43b",
+      "bitwise": false
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "file": "S_1024_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.6235755518298014e-15,
+      "ref_sha256": "2528646547d99755b975a0a1a3058feb2b18fd934bd48478abad3807165c7f10",
+      "bitwise": false
+     },
+     "256|R128|fib4181|frozen|BE": {
+      "file": "S_256_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.623628420271414e-15,
+      "ref_sha256": "5c539f6f92d9de178ee4b98b9999001b93a8f37b17e24a118b8a071e691f2653",
+      "bitwise": false
+     },
+     "256|R384|gauss128|frozen|CNR": {
+      "file": "S_256_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.3916772643173524e-15,
+      "ref_sha256": "98d002f8f38e9a7923daa6a3c379e8da3694ed440ef21ee00e70ab29377cfe27",
+      "bitwise": false
+     }
+    },
+    "tol": 1e-10,
+    "subjects": [
+     "1024|R128|fib4181|frozen|BE",
+     "1024|R384|gauss128|frozen|CNR",
+     "256|R128|fib4181|frozen|BE",
+     "256|R384|gauss128|frozen|CNR"
+    ],
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4",
+     "dev6|5"
+    ]
+   },
+   "P-cross gates": {
+    "G-RR": true,
+    "G-FR": true,
+    "A-valid": true
+   },
+   "G-E5.2 (descriptive, H200)": null
+  },
+  "A100-80G#2": {
+   "G-E5.1": {
+    "passed": true,
+    "rows": {
+     "1024|R128|fib4181|frozen|BE": {
+      "file": "S_1024_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.0437228480646457e-15,
+      "ref_sha256": "ed306ef0e2e0af5795460920dde4340f0b7d912a8365f92574d463b3e5a4d43b",
+      "bitwise": false
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "file": "S_1024_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.6235755518298014e-15,
+      "ref_sha256": "2528646547d99755b975a0a1a3058feb2b18fd934bd48478abad3807165c7f10",
+      "bitwise": false
+     },
+     "256|R128|fib4181|frozen|BE": {
+      "file": "S_256_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.0437611273173375e-15,
+      "ref_sha256": "5c539f6f92d9de178ee4b98b9999001b93a8f37b17e24a118b8a071e691f2653",
+      "bitwise": false
+     },
+     "256|R384|gauss128|frozen|CNR": {
+      "file": "S_256_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.3916772643173524e-15,
+      "ref_sha256": "98d002f8f38e9a7923daa6a3c379e8da3694ed440ef21ee00e70ab29377cfe27",
+      "bitwise": false
+     }
+    },
+    "tol": 1e-10,
+    "subjects": [
+     "1024|R128|fib4181|frozen|BE",
+     "1024|R384|gauss128|frozen|CNR",
+     "256|R128|fib4181|frozen|BE",
+     "256|R384|gauss128|frozen|CNR"
+    ],
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4",
+     "dev6|5"
+    ]
+   },
+   "P-cross gates": {
+    "G-RR": true,
+    "G-FR": true,
+    "A-valid": true
+   },
+   "G-E5.2 (descriptive, H200)": null
+  },
+  "H200#1": {
+   "G-E5.1": {
+    "passed": true,
+    "rows": {
+     "1024|R128|fib4181|frozen|BE": {
+      "file": "S_1024_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 4.058922186918067e-16,
+      "ref_sha256": "ed306ef0e2e0af5795460920dde4340f0b7d912a8365f92574d463b3e5a4d43b",
+      "bitwise": false
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "file": "S_1024_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.2756665050091296e-15,
+      "ref_sha256": "2528646547d99755b975a0a1a3058feb2b18fd934bd48478abad3807165c7f10",
+      "bitwise": false
+     },
+     "256|R128|fib4181|frozen|BE": {
+      "file": "S_256_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 5.798672929540764e-16,
+      "ref_sha256": "5c539f6f92d9de178ee4b98b9999001b93a8f37b17e24a118b8a071e691f2653",
+      "bitwise": false
+     },
+     "256|R384|gauss128|frozen|CNR": {
+      "file": "S_256_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 5.943621649688692e-16,
+      "ref_sha256": "98d002f8f38e9a7923daa6a3c379e8da3694ed440ef21ee00e70ab29377cfe27",
+      "bitwise": false
+     },
+     "4096|R128|fib4181|frozen|BE": {
+      "file": "S_4096_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.2176723204527708e-15,
+      "ref_sha256": "6f01780704262654eaac5b2aa8f52a26b309af7219e90c56584f99f9b26cd6aa",
+      "bitwise": false
+     },
+     "4096|R384|gauss128|frozen|CNR": {
+      "file": "S_4096_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 8.1179115595070865e-16,
+      "ref_sha256": "a7d39f4ba13b2d626d4174c2461b8b1fa6eae3c45e74ac2675234abe45993647",
+      "bitwise": false
+     }
+    },
+    "tol": 1e-10,
+    "subjects": [
+     "1024|R128|fib4181|frozen|BE",
+     "1024|R384|gauss128|frozen|CNR",
+     "256|R128|fib4181|frozen|BE",
+     "256|R384|gauss128|frozen|CNR",
+     "4096|R128|fib4181|frozen|BE",
+     "4096|R384|gauss128|frozen|CNR"
+    ],
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4",
+     "dev6|5"
+    ]
+   },
+   "P-cross gates": {
+    "G-RR": true,
+    "G-FR": true,
+    "A-valid": true
+   },
+   "G-E5.2 (descriptive, H200)": {
+    "R384|gauss128|frozen|CNR|256": {
+     "job": 0.9990060876126505,
+     "p1": 1.0061323585478967,
+     "p1_lo": 1.0017357647363556,
+     "p1_hi": 1.0097035905392837,
+     "within": false
+    },
+    "R384|gauss128|frozen|CNR|1024": {
+     "job": 1.0040219861056574,
+     "p1": 1.015766327881908,
+     "p1_lo": 1.000204970666511,
+     "p1_hi": 1.0292983412751515,
+     "within": true
+    },
+    "R128|fib4181|frozen|BE|1024": {
+     "job": 0.24424411517218725,
+     "p1": 0.2521039888059275,
+     "p1_lo": 0.24936628179747833,
+     "p1_hi": 0.2588679709652619,
+     "within": false
+    },
+    "R384|gauss128|frozen|CNR|4096": {
+     "job": 1.0101503123019615,
+     "p1": 1.0161680769248707,
+     "p1_lo": 1.0112219039731456,
+     "p1_hi": 1.0285212923207676,
+     "within": false
+    },
+    "R128|fib4181|frozen|BE|256": {
+     "job": 0.24671786254679218,
+     "p1": 0.25425783996719864,
+     "p1_lo": 0.25189725500453375,
+     "p1_hi": 0.2600899375215786,
+     "within": false
+    },
+    "R128|fib4181|frozen|BE|4096": {
+     "job": 0.2477210404008942,
+     "p1": 0.2522028849663564,
+     "p1_lo": 0.24227557217199785,
+     "p1_hi": 0.25460149238634244,
+     "within": true
+    }
+   }
+  },
+  "H200#2": {
+   "G-E5.1": {
+    "passed": true,
+    "rows": {
+     "1024|R128|fib4181|frozen|BE": {
+      "file": "S_1024_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 0.0,
+      "ref_sha256": "ed306ef0e2e0af5795460920dde4340f0b7d912a8365f92574d463b3e5a4d43b",
+      "bitwise": true
+     },
+     "1024|R384|gauss128|frozen|CNR": {
+      "file": "S_1024_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.4568691335615627e-15,
+      "ref_sha256": "2528646547d99755b975a0a1a3058feb2b18fd934bd48478abad3807165c7f10",
+      "bitwise": false
+     },
+     "256|R128|fib4181|frozen|BE": {
+      "file": "S_256_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 0.0,
+      "ref_sha256": "5c539f6f92d9de178ee4b98b9999001b93a8f37b17e24a118b8a071e691f2653",
+      "bitwise": true
+     },
+     "256|R384|gauss128|frozen|CNR": {
+      "file": "S_256_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.0437579482380143e-15,
+      "ref_sha256": "98d002f8f38e9a7923daa6a3c379e8da3694ed440ef21ee00e70ab29377cfe27",
+      "bitwise": false
+     },
+     "4096|R128|fib4181|frozen|BE": {
+      "file": "S_4096_R128_fib4181_frozen_BE.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 0.0,
+      "ref_sha256": "6f01780704262654eaac5b2aa8f52a26b309af7219e90c56584f99f9b26cd6aa",
+      "bitwise": true
+     },
+     "4096|R384|gauss128|frozen|CNR": {
+      "file": "S_4096_R384_gauss128_frozen_CNR.npz",
+      "passed": true,
+      "status": "ok",
+      "cases": 6,
+      "max_rel": 1.2756718164939708e-15,
+      "ref_sha256": "a7d39f4ba13b2d626d4174c2461b8b1fa6eae3c45e74ac2675234abe45993647",
+      "bitwise": false
+     }
+    },
+    "tol": 1e-10,
+    "subjects": [
+     "1024|R128|fib4181|frozen|BE",
+     "1024|R384|gauss128|frozen|CNR",
+     "256|R128|fib4181|frozen|BE",
+     "256|R384|gauss128|frozen|CNR",
+     "4096|R128|fib4181|frozen|BE",
+     "4096|R384|gauss128|frozen|CNR"
+    ],
+    "cases": [
+     "dev6|0",
+     "dev6|1",
+     "dev6|2",
+     "dev6|3",
+     "dev6|4",
+     "dev6|5"
+    ]
+   },
+   "P-cross gates": {
+    "G-RR": true,
+    "G-FR": true,
+    "A-valid": true
+   },
+   "G-E5.2 (descriptive, H200)": {
+    "R384|gauss128|frozen|CNR|256": {
+     "job": 1.0113104859291004,
+     "p1": 1.0061323585478967,
+     "p1_lo": 1.0017357647363556,
+     "p1_hi": 1.0097035905392837,
+     "within": false
+    },
+    "R384|gauss128|frozen|CNR|1024": {
+     "job": 1.0043010281811116,
+     "p1": 1.015766327881908,
+     "p1_lo": 1.000204970666511,
+     "p1_hi": 1.0292983412751515,
+     "within": true
+    },
+    "R128|fib4181|frozen|BE|1024": {
+     "job": 0.2500152827778138,
+     "p1": 0.2521039888059275,
+     "p1_lo": 0.24936628179747833,
+     "p1_hi": 0.2588679709652619,
+     "within": true
+    },
+    "R384|gauss128|frozen|CNR|4096": {
+     "job": 1.0005856864407412,
+     "p1": 1.0161680769248707,
+     "p1_lo": 1.0112219039731456,
+     "p1_hi": 1.0285212923207676,
+     "within": false
+    },
+    "R128|fib4181|frozen|BE|256": {
+     "job": 0.2510508686189087,
+     "p1": 0.25425783996719864,
+     "p1_lo": 0.25189725500453375,
+     "p1_hi": 0.2600899375215786,
+     "within": false
+    },
+    "R128|fib4181|frozen|BE|4096": {
+     "job": 0.2538487512846641,
+     "p1": 0.2522028849663564,
+     "p1_lo": 0.24227557217199785,
+     "p1_hi": 0.25460149238634244,
+     "within": true
+    }
+   }
+  }
+ },
+ "duplicates": [],
+ "same_device": {
+  "A100-80G": {
+   "label": "distinct GPUs",
+   "uuids": [
+    "GPU-eb7290b8-220f-9aa0-5ebb-01d7b49f2bb5",
+    "GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d"
+   ],
+   "repeated": []
+  },
+  "H200": {
+   "label": "distinct GPUs",
+   "uuids": [
+    "GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec",
+    "GPU-b0179ed3-a42a-a1ab-60b1-bc208d1ddde2"
+   ],
+   "repeated": []
+  }
+ },
+ "types_complete": {
+  "A100-80G": true,
+  "H200": true
+ }
+}

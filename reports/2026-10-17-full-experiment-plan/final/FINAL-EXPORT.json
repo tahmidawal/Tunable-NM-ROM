@@ -1,9 +1,8 @@
 {
- "compiled_utc": "2026-10-20 01:46 UTC",
+ "compiled_utc": "2026-10-20 04:01 UTC",
  "label": "E0 R_ST conditional Richardson estimates; development/validation cohorts only; sealed and OOD cohorts unopened",
  "pending": [
-  "jcp-robust",
-  "jcp-regimes"
+  "jcp-robust"
  ],
  "verdicts": [
   {
@@ -329,6 +328,69 @@
    "key_number": "S = 9.87 (comparator Q2: fail); the unqualified speed3d winners had 17.2",
    "figure": "figs/dims_h2q_3d.png",
    "lane": "jcp-dims"
+  },
+  {
+   "hypothesis": "D1 regime",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, A+ (\u03bd above the training range), 8 primary LSPG configurations; viscosity extrapolation confounded with steepness",
+   "verdict": "HOLDS \u00d71, IMPROVES \u00d71, INCONCLUSIVE \u00d76",
+   "key_number": "qualified 8/8; labels HOLDS \u00d71, IMPROVES \u00d71, INCONCLUSIVE \u00d76; median error 0.246 %\u20131.37 %; ratio to in-range baseline 0.55\u20131.53",
+   "figure": "figs/regimes_median_by_regime.png",
+   "lane": "jcp-regimes"
+  },
+  {
+   "hypothesis": "D1 regime",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, A\u2212 (\u03bd below the training range), 8 primary LSPG configurations",
+   "verdict": "DEGRADES \u00d72, INCONCLUSIVE \u00d76",
+   "key_number": "qualified 8/8; labels DEGRADES \u00d72, INCONCLUSIVE \u00d76; median error 0.883 %\u20134.17 %; ratio to in-range baseline 1.63\u20139.25",
+   "figure": "figs/regimes_median_by_regime.png",
+   "lane": "jcp-regimes"
+  },
+  {
+   "hypothesis": "D1 regime",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, C1 (low \u03bd, high steepness s; paired with A\u2212), 8 primary LSPG configurations",
+   "verdict": "NOT QUALIFIED \u00d78",
+   "key_number": "qualified 0/8; labels NOT QUALIFIED \u00d78; median error 5.2 %\u201311.2 %; ratio to in-range baseline 5.78\u201336.7",
+   "figure": "figs/regimes_median_by_regime.png",
+   "lane": "jcp-regimes"
+  },
+  {
+   "hypothesis": "D1 regime",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, C2 (lower \u03bd, higher s), 8 primary LSPG configurations",
+   "verdict": "NOT QUALIFIED \u00d78",
+   "key_number": "qualified 0/8; labels NOT QUALIFIED \u00d78; median error 12.7 %\u201325.1 %; ratio to in-range baseline 14.2\u2013131",
+   "figure": "figs/regimes_median_by_regime.png",
+   "lane": "jcp-regimes"
+  },
+  {
+   "hypothesis": "D1 regime",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, B1 (IC family: two same-sign bumps), 8 primary LSPG configurations",
+   "verdict": "HOLDS \u00d73, INCONCLUSIVE \u00d75",
+   "key_number": "qualified 8/8; labels HOLDS \u00d73, INCONCLUSIVE \u00d75; median error 0.2 %\u20131.15 %; ratio to in-range baseline 0.989\u20131.55",
+   "figure": "figs/regimes_median_by_regime.png",
+   "lane": "jcp-regimes"
+  },
+  {
+   "hypothesis": "D1 regime",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, B2 (IC family: signed pair), 8 primary LSPG configurations",
+   "verdict": "INCONCLUSIVE \u00d78",
+   "key_number": "qualified 8/8; labels INCONCLUSIVE \u00d78; median error 0.245 %\u20131.4 %; ratio to in-range baseline 1.11\u20131.64",
+   "figure": "figs/regimes_median_by_regime.png",
+   "lane": "jcp-regimes"
+  },
+  {
+   "hypothesis": "D1 regime",
+   "reading": "r (bank width)",
+   "scope": "2D 1024\u00b2, N0s (stiff corner of the training box; descriptive), 8 primary LSPG configurations",
+   "verdict": "DEGRADES \u00d78 (descriptive)",
+   "key_number": "qualified 8/8; labels DEGRADES \u00d78; median error 1.22 %\u20134.22 %; ratio to in-range baseline 2.97\u20139.79",
+   "figure": "figs/regimes_median_by_regime.png",
+   "lane": "jcp-regimes"
   }
  ],
  "gpu_hours": {
@@ -366,7 +428,7 @@
     "cap": 45.0
    },
    "jcp-robust": {
-    "spent": 22.4672,
+    "spent": 27.5312,
     "cap": 75.0
    },
    "jcp-regimes": {
@@ -374,8 +436,8 @@
     "cap": 60.0
    }
   },
-  "total_finished": 107.4971,
-  "total_all": 144.8293
+  "total_finished": 122.3621,
+  "total_all": 149.8933
  },
  "lanes": [
   {
@@ -437,16 +499,16 @@
   {
    "lane": "jcp-robust",
    "branch": "exp/2026-10-19-jcp-robust",
-   "head": "55a8e68df",
-   "mirror": "d0faa7998",
+   "head": "c4302872e",
+   "mirror": "510a8f477",
    "report": null
   },
   {
    "lane": "jcp-regimes",
    "branch": "exp/2026-10-19-jcp-regimes",
-   "head": "6ec3a20fb",
-   "mirror": "f1bc8150b",
-   "report": null
+   "head": "70ce5f0f2",
+   "mirror": "ee52292fe",
+   "report": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/report.md"
   }
  ],
  "figures": [
@@ -478,6 +540,8 @@
   "figs/qualify_front2d_median.png",
   "figs/qualify_front2d_worst.png",
   "figs/qualify_order_b4.png",
+  "figs/regimes_error_vs_s.png",
+  "figs/regimes_median_by_regime.png",
   "figs/speed3d_mesh-time.png",
   "figs/summary_cost_vs_mesh.png",
   "figs/summary_family_speedup.png",

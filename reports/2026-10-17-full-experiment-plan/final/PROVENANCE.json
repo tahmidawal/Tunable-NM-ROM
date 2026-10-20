@@ -3923,12 +3923,12 @@
   ]
  },
  "ledger.jcp-robust.spent": {
-  "value": 22.4672,
+  "value": 27.5312,
   "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/GPU-LEDGER.json",
   "key_path": [
    "spent_gpu_hours"
   ],
-  "sha256": "405e610c00c12525192a145f7203302c70d2de0d119d59f9114f4d237698358f"
+  "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
  },
  "ledger.jcp-robust.cap": {
   "value": 75.0,
@@ -3936,10 +3936,10 @@
   "key_path": [
    "cap_gpu_hours"
   ],
-  "sha256": "405e610c00c12525192a145f7203302c70d2de0d119d59f9114f4d237698358f"
+  "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
  },
  "ledger.jcp-robust.n_jobs": {
-  "value": 25,
+  "value": 44,
   "derivation": "number of ledger entries",
   "sources": [
    {
@@ -3947,7 +3947,7 @@
     "key_path": [
      "jobs"
     ],
-    "sha256": "405e610c00c12525192a145f7203302c70d2de0d119d59f9114f4d237698358f"
+    "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
    }
   ]
  },
@@ -3981,8 +3981,8 @@
   ]
  },
  "ledger.total_finished": {
-  "value": 107.4971,
-  "derivation": "sum over the eight finished lanes",
+  "value": 122.3621,
+  "derivation": "sum over the 9 finished lanes",
   "sources": [
    {
     "file": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/runs/GPU-LEDGER.json",
@@ -4039,11 +4039,18 @@
      "spent_gpu_hours"
     ],
     "sha256": "1a496da4895a0f74de9af07222d55d1674c3172f80c8cb4d6f5a458b50fa9db8"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/GPU-LEDGER.json",
+    "key_path": [
+     "spent_gpu_hours"
+    ],
+    "sha256": "20388eab1d803917eaeb4ab9b780237ef7e1a108b10bb02589de51dd6b9cd25d"
    }
   ]
  },
  "ledger.total_all": {
-  "value": 144.8293,
+  "value": 149.8933,
   "derivation": "sum over all ten lanes at compile time",
   "sources": [
    {
@@ -4107,7 +4114,7 @@
     "key_path": [
      "spent_gpu_hours"
     ],
-    "sha256": "405e610c00c12525192a145f7203302c70d2de0d119d59f9114f4d237698358f"
+    "sha256": "893c125c0a441778e9506c314ef2fa554025ff66c0f812ab6c480b5f1533348d"
    },
    {
     "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/GPU-LEDGER.json",
@@ -4115,6 +4122,114 @@
      "spent_gpu_hours"
     ],
     "sha256": "20388eab1d803917eaeb4ab9b780237ef7e1a108b10bb02589de51dd6b9cd25d"
+   }
+  ]
+ },
+ "rg.C1.nq": {
+  "value": 0,
+  "derivation": "count of qualified primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.C2.nq": {
+  "value": 0,
+  "derivation": "count of qualified primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
    }
   ]
  },
@@ -7287,36 +7402,2566 @@
   "sha256": "12acf7a108fe185fdf3d3214786282b9acb12f2923d6f9d923272614c8717c77"
  },
  "jcp-robust.heartbeat.step": {
-  "value": "12: e2s1, e2s2 running, e2t3d2 pending; e2q0a/b e2q1a/b audited SUBMIT (queued); e2s3, e5h2, e2t3d3 queued; e13d scoring local",
+  "value": "15: 6 jobs (e2q0b, e2q1b, e2q0a, e2v2b, e2t2, e2v3a); queued e2v3b/c, e2t3, e2q1a, e2t3d3, e2q2a/b; E1 2D+3D analysed; E5 analysed",
   "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/HEARTBEAT.json",
   "key_path": [
    "step"
   ],
-  "sha256": "7ae8d4dfc4e534d594d03162ea73918eef5946feddc60d51921fee12f04a2fe2"
+  "sha256": "5cb50cf9d570f10cb161658d2ff93bfecdfea8ee247ec06a76bd2b93ac7258f6"
  },
  "jcp-robust.heartbeat.utc": {
-  "value": "2026-10-20T01:37:02Z",
+  "value": "2026-10-20T03:16:04Z",
   "file": "worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/HEARTBEAT.json",
   "key_path": [
    "utc"
   ],
-  "sha256": "7ae8d4dfc4e534d594d03162ea73918eef5946feddc60d51921fee12f04a2fe2"
+  "sha256": "5cb50cf9d570f10cb161658d2ff93bfecdfea8ee247ec06a76bd2b93ac7258f6"
  },
- "jcp-regimes.heartbeat.step": {
-  "value": "8: all jobs collected (14.87 GPU-h); final analysis with PS running locally",
-  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/HEARTBEAT.json",
+ "rg.qualification": {
+  "value": "exploratory development evidence, no family-wise control",
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
   "key_path": [
-   "step"
+   "qualification"
   ],
-  "sha256": "38992049d575294b8f1b4df2dc3218606dfcdacf28160e38d62acf07e32a3586"
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
  },
- "jcp-regimes.heartbeat.utc": {
-  "value": "2026-10-20T01:29:00Z",
-  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/HEARTBEAT.json",
+ "rg.selection_qualification": {
+  "value": "eligibility depends on cohort-specific tight-path allowances; bias direction unknown (A3.2)",
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
   "key_path": [
-   "utc"
+   "selection_qualification"
   ],
-  "sha256": "38992049d575294b8f1b4df2dc3218606dfcdacf28160e38d62acf07e32a3586"
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_BE_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_BE_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_CNR_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_CNR_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_BE_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_BE_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_CNR_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_CNR_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|GAL_CN_1.diagnostic": {
+  "value": true,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|GAL_CN_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_BE_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_BE_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_CNR_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_CNR_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_BE_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_BE_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_CNR_1.diagnostic": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_CNR_1",
+   "diagnostic"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.Ap.eligible": {
+  "value": 14,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "Ap",
+   "eligible"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.Ap.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "Ap",
+   "n"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.Ap.unresolved": {
+  "value": 2,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "Ap",
+   "unresolved_under_allowance"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.Ap.labels": {
+  "value": {
+   "INCONCLUSIVE": 6,
+   "IMPROVES": 1,
+   "HOLDS": 1
+  },
+  "derivation": "count of labels over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.Ap.nq": {
+  "value": 8,
+  "derivation": "count of qualified primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.Ap.median_range": {
+  "value": [
+   0.002457723015589142,
+   0.013723542118555256
+  ],
+  "derivation": "min/max of median error over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.Ap.ratio_range": {
+  "value": [
+   0.5500905216161872,
+   1.5267472294128264
+  ],
+  "derivation": "min/max of median-error ratio to baseline I",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Ap",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.regime_label.Ap": {
+  "value": "viscosity extrapolation confounded with steepness",
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "regime_labels",
+   "Ap"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.Am.eligible": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "Am",
+   "eligible"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.Am.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "Am",
+   "n"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.Am.unresolved": {
+  "value": 0,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "Am",
+   "unresolved_under_allowance"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.Am.labels": {
+  "value": {
+   "INCONCLUSIVE": 6,
+   "DEGRADES": 2
+  },
+  "derivation": "count of labels over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.Am.nq": {
+  "value": 8,
+  "derivation": "count of qualified primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.Am.median_range": {
+  "value": [
+   0.00882835978427704,
+   0.04165783830908913
+  ],
+  "derivation": "min/max of median error over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.Am.ratio_range": {
+  "value": [
+   1.6286022101617466,
+   9.247702976371942
+  ],
+  "derivation": "min/max of median-error ratio to baseline I",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "Am",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.regime_label.Am": {
+  "value": null,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "regime_labels",
+   "Am"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.C1.eligible": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "C1",
+   "eligible"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.C1.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "C1",
+   "n"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.C1.unresolved": {
+  "value": 0,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "C1",
+   "unresolved_under_allowance"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.C1.labels": {
+  "value": {
+   "NOT QUALIFIED": 8
+  },
+  "derivation": "count of labels over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.C1.median_range": {
+  "value": [
+   0.051979320696855257,
+   0.11176600045312743
+  ],
+  "derivation": "min/max of median error over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.C1.ratio_range": {
+  "value": [
+   5.784724881680121,
+   36.674504326415665
+  ],
+  "derivation": "min/max of median-error ratio to baseline I",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.regime_label.C1": {
+  "value": null,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "regime_labels",
+   "C1"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.C2.eligible": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "C2",
+   "eligible"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.C2.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "C2",
+   "n"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.C2.unresolved": {
+  "value": 0,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "C2",
+   "unresolved_under_allowance"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.C2.labels": {
+  "value": {
+   "NOT QUALIFIED": 8
+  },
+  "derivation": "count of labels over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.C2.median_range": {
+  "value": [
+   0.12716143983616202,
+   0.25110646388735747
+  ],
+  "derivation": "min/max of median error over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.C2.ratio_range": {
+  "value": [
+   14.151665222801178,
+   130.7143035782467
+  ],
+  "derivation": "min/max of median-error ratio to baseline I",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "C2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.regime_label.C2": {
+  "value": null,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "regime_labels",
+   "C2"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.B1.eligible": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "B1",
+   "eligible"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.B1.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "B1",
+   "n"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.B1.unresolved": {
+  "value": 0,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "B1",
+   "unresolved_under_allowance"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.B1.labels": {
+  "value": {
+   "INCONCLUSIVE": 5,
+   "HOLDS": 3
+  },
+  "derivation": "count of labels over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.B1.nq": {
+  "value": 8,
+  "derivation": "count of qualified primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.B1.median_range": {
+  "value": [
+   0.0020017309121169546,
+   0.011530051246208962
+  ],
+  "derivation": "min/max of median error over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.B1.ratio_range": {
+  "value": [
+   0.988757569251183,
+   1.5495392426310306
+  ],
+  "derivation": "min/max of median-error ratio to baseline I",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B1",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.regime_label.B1": {
+  "value": null,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "regime_labels",
+   "B1"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.B2.eligible": {
+  "value": 15,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "B2",
+   "eligible"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.B2.n": {
+  "value": 16,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "B2",
+   "n"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.B2.unresolved": {
+  "value": 0,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "B2",
+   "unresolved_under_allowance"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.B2.labels": {
+  "value": {
+   "INCONCLUSIVE": 8
+  },
+  "derivation": "count of labels over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.B2.nq": {
+  "value": 8,
+  "derivation": "count of qualified primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.B2.median_range": {
+  "value": [
+   0.00244904233011678,
+   0.014042078051410533
+  ],
+  "derivation": "min/max of median error over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.B2.ratio_range": {
+  "value": [
+   1.112042053085521,
+   1.641101015966423
+  ],
+  "derivation": "min/max of median-error ratio to baseline I",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "B2",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.regime_label.B2": {
+  "value": null,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "regime_labels",
+   "B2"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.N0s.eligible": {
+  "value": 8,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "N0s",
+   "eligible"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.N0s.n": {
+  "value": 8,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "N0s",
+   "n"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.cov.N0s.unresolved": {
+  "value": 0,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "coverage",
+   "N0s",
+   "unresolved_under_allowance"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.N0s.labels": {
+  "value": {
+   "DEGRADES": 8
+  },
+  "derivation": "count of labels over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.N0s.nq": {
+  "value": 8,
+  "derivation": "count of qualified primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.N0s.median_range": {
+  "value": [
+   0.012201206219351531,
+   0.04222131807804201
+  ],
+  "derivation": "min/max of median error over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.N0s.ratio_range": {
+  "value": [
+   2.9704647963617905,
+   9.793130642699206
+  ],
+  "derivation": "min/max of median-error ratio to baseline I",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "qualified"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   },
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "cells",
+     "N0s",
+     "ratio_median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9",
+    "filter": "non-diagnostic configurations"
+   }
+  ]
+ },
+ "rg.R384|GAL_CN_1.C2.label": {
+  "value": "FAILS",
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|GAL_CN_1",
+   "cells",
+   "C2",
+   "label"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|GAL_CN_1.C2.invalid": {
+  "value": 2,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|GAL_CN_1",
+   "cells",
+   "C2",
+   "invalid_runs"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.val32|R384": {
+  "value": 0.00026592225763646764,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "val32|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.N0|R384": {
+  "value": 0.00028647991280612037,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "N0|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.N0s|R384": {
+  "value": 0.00881080125185055,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "N0s|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.Ap|R384": {
+  "value": 5.202546168528621e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "Ap|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.Am|R384": {
+  "value": 0.005853617720905665,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "Am|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.C1|R384": {
+  "value": 0.03470543892415983,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "C1|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.C2|R384": {
+  "value": 0.09881812496440481,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "C2|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.B1|R384": {
+  "value": 0.0005190532527916971,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "B1|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.floor.B2|R384": {
+  "value": 0.0005930307658401715,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "projection_floor",
+   "B2|R384",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_BE_1.trend_s.rho": {
+  "value": 0.8826530612244898,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_CNR_1.trend_s.rho": {
+  "value": 0.8977420755536257,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_BE_1.trend_s.rho": {
+  "value": 0.8898176291793314,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_CNR_1.trend_s.rho": {
+  "value": 0.9017585757707339,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_BE_1.trend_s.rho": {
+  "value": 0.9087060356057315,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_CNR_1.trend_s.rho": {
+  "value": 0.9271602257924446,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_BE_1.trend_s.rho": {
+  "value": 0.8993703864524533,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_CNR_1.trend_s.rho": {
+  "value": 0.9197785497177593,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "rho"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_BE_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_CNR_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_BE_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_CNR_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_BE_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_CNR_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_BE_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_BE_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_CNR_1.trend_s.p": {
+  "value": 9.999000099990002e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_CNR_1",
+   "trends",
+   "Am+C1+C2|log10_s",
+   "p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.trend_s.pmax": {
+  "value": 9.999000099990002e-05,
+  "derivation": "max over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "trends",
+     "Am+C1+C2|log10_s",
+     "p"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+   }
+  ]
+ },
+ "rg.R128|LSPG_BE_1.baseline.median": {
+  "value": 0.009987930614112385,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_BE_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_CNR_1.baseline.median": {
+  "value": 0.004504668717791403,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_CNR_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_BE_1.baseline.median": {
+  "value": 0.009019137358362418,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_BE_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_CNR_1.baseline.median": {
+  "value": 0.0019786835686507547,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_CNR_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_BE_1.baseline.median": {
+  "value": 0.00898561673373105,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_BE_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_CNR_1.baseline.median": {
+  "value": 0.0019172641537896274,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_CNR_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_BE_1.baseline.median": {
+  "value": 0.008990436532736509,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_BE_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_CNR_1.baseline.median": {
+  "value": 0.0019210327945253748,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_CNR_1",
+   "baseline",
+   "median"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.baseline.median_max": {
+  "value": 0.009987930614112385,
+  "derivation": "max over primary",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "baseline",
+     "median"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+   }
+  ]
+ },
+ "rg.sep.Ap.frac": {
+  "value": 0.14285714285714285,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "separation",
+   "Ap",
+   "frac_in_range"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.sep.Am.frac": {
+  "value": 0.9375,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "separation",
+   "Am",
+   "frac_in_range"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.sep.Ap.passed": {
+  "value": false,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "separation",
+   "Ap",
+   "passed"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_BE_1.paired.q": {
+  "value": 2.580159333077833,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_BE_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_CNR_1.paired.q": {
+  "value": 3.0569329093066195,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_CNR_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_BE_1.paired.q": {
+  "value": 3.5863200004343994,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_BE_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_CNR_1.paired.q": {
+  "value": 4.5061323277209375,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_CNR_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_BE_1.paired.q": {
+  "value": 3.3998795473961074,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_BE_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_CNR_1.paired.q": {
+  "value": 4.6987273670942145,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_CNR_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_BE_1.paired.q": {
+  "value": 3.4200435506962537,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_BE_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_CNR_1.paired.q": {
+  "value": 5.185570566734849,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_CNR_1",
+   "paired_Am_C1",
+   "median_q"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_BE_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_BE_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R128|LSPG_CNR_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R128|LSPG_CNR_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_BE_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_BE_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R256|LSPG_CNR_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R256|LSPG_CNR_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_BE_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_BE_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R384|LSPG_CNR_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R384|LSPG_CNR_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_BE_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_BE_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.R512|LSPG_CNR_1.paired.p": {
+  "value": 3.0517578125e-05,
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "configs",
+   "R512|LSPG_CNR_1",
+   "paired_Am_C1",
+   "wilcoxon_p"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "rg.paired.pmax": {
+  "value": 3.0517578125e-05,
+  "derivation": "max over primary configurations",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "paired_Am_C1",
+     "wilcoxon_p"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+   }
+  ]
+ },
+ "rg.paired.labels": {
+  "value": {
+   "INCONCLUSIVE": 1,
+   "DEGRADES": 7
+  },
+  "derivation": "count of labels",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "configs",
+     "*",
+     "paired_Am_C1",
+     "label"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+   }
+  ]
+ },
+ "rg.ps.npass": {
+  "value": 7,
+  "derivation": "count of PASS",
+  "sources": [
+   {
+    "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+    "key_path": [
+     "ps",
+     "*",
+     "verdict"
+    ],
+    "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+   }
+  ]
+ },
+ "rg.ps.expected": {
+  "value": [
+   "Am|5",
+   "Ap|7",
+   "B1|0",
+   "B2|15",
+   "C1|11",
+   "C2|9",
+   "N0|2"
+  ],
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/EXPORT.json",
+  "key_path": [
+   "ps_status",
+   "expected"
+  ],
+  "sha256": "6bafb4c505b4afb69bebb74b02278635a265a05b4a0f0d1ea992b55d989f2cb9"
+ },
+ "fig:regimes_median_by_regime.png": {
+  "value": "figs/regimes_median_by_regime.png",
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/plots/median_by_regime.png",
+  "key_path": "(copied PNG)",
+  "sha256": "85fb881b7cbfba687982e2367d7588597369f5574dc1bec5efd022358ab8e24a"
+ },
+ "fig:regimes_error_vs_s.png": {
+  "value": "figs/regimes_error_vs_s.png",
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/plots/error_vs_s.png",
+  "key_path": "(copied PNG)",
+  "sha256": "ea239de90cd76c05ef84f5fd16561ff947e7de2eef8022bf367d8bd11f7cdb1d"
  },
  "p1g.R384|BE.256.dist": {
   "value": 0.0005233939056881039,
@@ -8096,11 +10741,17 @@
   "key_path": "section \"## What was wrong or corrected\"",
   "sha256": "4d10f22fa407dbf8857b2daf6367ddc68cf220f6f8b00b6853c80c3619460db7"
  },
+ "pointer:jcp-regimes:## What went wrong during the lane (disclosed)": {
+  "value": "lines 35-42",
+  "file": "worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/report.md",
+  "key_path": "section \"## What went wrong during the lane (disclosed)\"",
+  "sha256": "0226282062c2f550b345f9f219c9b96e822788ccf17e6cc1ff3321a3794865c3"
+ },
  "pointer:LAB-LOG": {
-  "value": "lines 19087-19308",
+  "value": "lines 19087-19320",
   "file": "LAB-LOG.md",
   "key_path": "from \"## 2026-10-17\"",
-  "sha256": "42681c0cd423ae34bf928f6ac4dc0052eda51e49dcd2be7013630dd1c99ac18b"
+  "sha256": "758c557925f22fada546a2986cafad1d96ec2944e3ee093fbaf38d68149c4683"
  },
  "bg.deferred": {
   "value": [
@@ -8212,25 +10863,25 @@
   "sha256": null
  },
  "git.jcp-robust.head": {
-  "value": "55a8e68df",
+  "value": "c4302872e",
   "file": "git:worktrees/2026-10-19-jcp-robust",
   "key_path": "rev-parse HEAD",
   "sha256": null
  },
  "git.jcp-robust.mirror": {
-  "value": "d0faa7998",
+  "value": "510a8f477",
   "file": "git:worktrees/2026-10-19-jcp-robust",
   "key_path": "rev-parse refs/remotes/origin/codeonly/exp/2026-10-19-jcp-robust",
   "sha256": null
  },
  "git.jcp-regimes.head": {
-  "value": "6ec3a20fb",
+  "value": "70ce5f0f2",
   "file": "git:worktrees/2026-10-19-jcp-regimes",
   "key_path": "rev-parse HEAD",
   "sha256": null
  },
  "git.jcp-regimes.mirror": {
-  "value": "f1bc8150b",
+  "value": "ee52292fe",
   "file": "git:worktrees/2026-10-19-jcp-regimes",
   "key_path": "rev-parse refs/remotes/origin/codeonly/exp/2026-10-19-jcp-regimes",
   "sha256": null
@@ -8251,7 +10902,7 @@
   "value": "figs/summary_gpu_ledger.png",
   "file": "generated by make_final.py",
   "key_path": "(new plot)",
-  "sha256": "57dc69ad7983d278fe00c22471ab5f226488a639147360449758a78d915d7e48"
+  "sha256": "15a83423a01bcb9bbd58a126524d70c190486ff9a88ed2868a147a1212672960"
  },
  "fig:summary_union_speedup.png": {
   "value": "figs/summary_union_speedup.png",

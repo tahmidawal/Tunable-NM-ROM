@@ -1,6 +1,6 @@
 # Viscous Burgers 2D/3D: final results of the JCP experiment campaign (priorities 1–4)
 
-**Status (compiled 2026-10-20 01:46 UTC by `make_final.py`).** Final for the development and validation cohorts (2D dev6 + val32, 3D 923801); the historical test cohorts were used for replication only, and the sealed and reserved out-of-distribution cohorts were **not opened**. Accuracy numbers are scored against the E0 second-order reference $R_{ST}$, whose per-case uncertainty $\varepsilon_{\rm ref}$ is a **conditional Richardson estimate**, not a bound, so they are conditional E0 estimates. Two labelled exceptions: the long-horizon windows beyond $t = 0.25$ (section 3.9) use jcp-budget's own second-order references (also conditional Richardson estimates), and the P1g spread columns marked "first-order" (section 4) are against the earlier first-order references, as in the historical claims they recheck. Post-hoc labels carry forward unchanged: E0 A10 (the reference cross-check rule was changed after data), combined A10 and A11 (post-hoc rule selections) and the retracted combined A15. **Pending:** jcp-robust, jcp-regimes (priority 4) had not exported results at compile time; their sections are marked pending and contain no numbers.
+**Status (compiled 2026-10-20 04:01 UTC by `make_final.py`).** Final for the development and validation cohorts (2D dev6 + val32, 3D 923801); the historical test cohorts were used for replication only, and the sealed and reserved out-of-distribution cohorts were **not opened**. Accuracy numbers are scored against the E0 second-order reference $R_{ST}$, whose per-case uncertainty $\varepsilon_{\rm ref}$ is a **conditional Richardson estimate**, not a bound, so they are conditional E0 estimates. Two labelled exceptions: the long-horizon windows beyond $t = 0.25$ (section 3.9) use jcp-budget's own second-order references (also conditional Richardson estimates), and the P1g spread columns marked "first-order" (section 4) are against the earlier first-order references, as in the historical claims they recheck. The regimes study (section 3.12) also uses fresh development cohorts outside these, scored against new references computed with E0's method in that lane's own store (conditional E0-style estimates); its in-range baseline uses the E0 references for dev6 and val32. Post-hoc labels carry forward unchanged: E0 A10 (the reference cross-check rule was changed after data), combined A10 and A11 (post-hoc rule selections) and the retracted combined A15. **Pending:** jcp-robust (priority 4) had not handed back at compile time; their sections are marked pending and contain no numbers.
 
 Every number in this report is read from a lane output (or from git, for commits) and registered in `PROVENANCE.json` (number id → file, JSON key path, sha256; derived values list every source and the derivation). `FINAL-EXPORT.json` holds the verdicts and key numbers. Bars such as 1.25, 2×, $2.5\times10^{-4}$ and 1/0.6, cohort sizes (2D dev6 + val32 = 38 cases; 3D 64 cases), meshes, time steps and design grids (r, K, seeds) are registered design constants of the plan, not results.
 
@@ -22,7 +22,7 @@ flowchart LR
 
 ## 1. In one paragraph
 
-Solve cost does not depend on the mesh: in 2D the evolution time of every registered setting is flat from 256² to 4096² (H-cost-N 8/8; the full-field decode lies outside this verdict and grows with the mesh), in 3D every timed ROM is flat from 64³ to 384³ (4/4), and the nonlinear-head reading of "k" is flat as well (K = 16, ratio 1.06). Accuracy does not depend on the mesh within the registered margin (H-acc-N 8/8) and improves with r up to 384 but not from 384 to 512. Kernel cost does not follow the declared operation-count exponents in r (H-cost-r fails as registered: the normal-matrix and Cholesky kernels grow more slowly than declared, the vector kernels slightly faster). Against full solvers, the plan's kill criterion **K2 fires in both dimensions**: a coarse sine pseudo-spectral solver reaches the ROM's accuracy faster (2D 4096² union speed-up 0.0493–0.706; 3D 0.00786–0.158). Against standard reduced models, **H-base fails**: a tuned POD model with ECSW or Q-DEIM hyper-reduction dominates all 8 tested qualified 2D configurations at 256² and all 8 at 1024² (developmental, in-sample, unadjusted; 2D tuning budgets budget band unresolved). The paper therefore cannot claim speed or accuracy advantages over standard alternatives for viscous Burgers on the box; what remains is mesh-independent cost, mesh-free evaluation and memory.
+Solve cost does not depend on the mesh: in 2D the evolution time of every registered setting is flat from 256² to 4096² (H-cost-N 8/8; the full-field decode lies outside this verdict and grows with the mesh), in 3D every timed ROM is flat from 64³ to 384³ (4/4), and the nonlinear-head reading of "k" is flat as well (K = 16, ratio 1.06). Accuracy does not depend on the mesh within the registered margin (H-acc-N 8/8) and improves with r up to 384 but not from 384 to 512. Kernel cost does not follow the declared operation-count exponents in r (H-cost-r fails as registered: the normal-matrix and Cholesky kernels grow more slowly than declared, the vector kernels slightly faster). Against full solvers, the plan's kill criterion **K2 fires in both dimensions**: a coarse sine pseudo-spectral solver reaches the ROM's accuracy faster (2D 4096² union speed-up 0.0493–0.706; 3D 0.00786–0.158). Against standard reduced models, **H-base fails**: a tuned POD model with ECSW or Q-DEIM hyper-reduction dominates all 8 tested qualified 2D configurations at 256² and all 8 at 1024² (developmental, in-sample, unadjusted; 2D tuning budgets budget band unresolved). The paper therefore cannot claim speed or accuracy advantages over standard alternatives for viscous Burgers on the box; what remains is mesh-independent cost, mesh-free evaluation and memory. Outside the training range in steepness (regimes C1 and C2) the frozen model is numerically qualified for 0 and 0 of the 8 primary configurations: its errors there cannot be certified, and even the best fit by the bank has large errors there (section 3.12).
 
 ## 2. Hypothesis verdicts
 
@@ -66,6 +66,13 @@ Solve cost does not depend on the mesh: in 2D the evolution time of every regist
 | H2q | – | 3D, qualified winner vs our earlier configuration C_old (ROM vs ROM; bar 1/0.6); full-field $65^{3}$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); qualified vs qualified comparator | **fail (the selected candidate failed confirmation)** | S = 1.15 (comparator Q2: pass); the unqualified speed3d winners had 2.01 | [dims_h2q_3d.png](figs/dims_h2q_3d.png) | jcp-dims |
 | H2q | – | 3D, qualified winner vs our earlier configuration C_W768 (ROM vs ROM; bar 1/0.6); full-field $65^{3}$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); qualified vs qualified comparator | **pass** | S = 2.95 (comparator Q2: pass); the unqualified speed3d winners had 5.37 | [dims_h2q_3d.png](figs/dims_h2q_3d.png) | jcp-dims |
 | H2q | – | 3D, qualified winner vs our earlier configuration C_W1024 (ROM vs ROM; bar 1/0.6); full-field $65^{3}$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); qualified configuration vs the deployed (unqualified) comparator | **pass** | S = 9.87 (comparator Q2: fail); the unqualified speed3d winners had 17.2 | [dims_h2q_3d.png](figs/dims_h2q_3d.png) | jcp-dims |
+| D1 regime | r (bank width) | 2D 1024², A+ (ν above the training range), 8 primary LSPG configurations; viscosity extrapolation confounded with steepness | **HOLDS ×1, IMPROVES ×1, INCONCLUSIVE ×6** | qualified 8/8; labels HOLDS ×1, IMPROVES ×1, INCONCLUSIVE ×6; median error 0.246 %–1.37 %; ratio to in-range baseline 0.55–1.53 | [regimes_median_by_regime.png](figs/regimes_median_by_regime.png) | jcp-regimes |
+| D1 regime | r (bank width) | 2D 1024², A− (ν below the training range), 8 primary LSPG configurations | **DEGRADES ×2, INCONCLUSIVE ×6** | qualified 8/8; labels DEGRADES ×2, INCONCLUSIVE ×6; median error 0.883 %–4.17 %; ratio to in-range baseline 1.63–9.25 | [regimes_median_by_regime.png](figs/regimes_median_by_regime.png) | jcp-regimes |
+| D1 regime | r (bank width) | 2D 1024², C1 (low ν, high steepness s; paired with A−), 8 primary LSPG configurations | **NOT QUALIFIED ×8** | qualified 0/8; labels NOT QUALIFIED ×8; median error 5.2 %–11.2 %; ratio to in-range baseline 5.78–36.7 | [regimes_median_by_regime.png](figs/regimes_median_by_regime.png) | jcp-regimes |
+| D1 regime | r (bank width) | 2D 1024², C2 (lower ν, higher s), 8 primary LSPG configurations | **NOT QUALIFIED ×8** | qualified 0/8; labels NOT QUALIFIED ×8; median error 12.7 %–25.1 %; ratio to in-range baseline 14.2–131 | [regimes_median_by_regime.png](figs/regimes_median_by_regime.png) | jcp-regimes |
+| D1 regime | r (bank width) | 2D 1024², B1 (IC family: two same-sign bumps), 8 primary LSPG configurations | **HOLDS ×3, INCONCLUSIVE ×5** | qualified 8/8; labels HOLDS ×3, INCONCLUSIVE ×5; median error 0.2 %–1.15 %; ratio to in-range baseline 0.989–1.55 | [regimes_median_by_regime.png](figs/regimes_median_by_regime.png) | jcp-regimes |
+| D1 regime | r (bank width) | 2D 1024², B2 (IC family: signed pair), 8 primary LSPG configurations | **INCONCLUSIVE ×8** | qualified 8/8; labels INCONCLUSIVE ×8; median error 0.245 %–1.4 %; ratio to in-range baseline 1.11–1.64 | [regimes_median_by_regime.png](figs/regimes_median_by_regime.png) | jcp-regimes |
+| D1 regime | r (bank width) | 2D 1024², N0s (stiff corner of the training box; descriptive), 8 primary LSPG configurations | **DEGRADES ×8 (descriptive)** | qualified 8/8; labels DEGRADES ×8; median error 1.22 %–4.22 %; ratio to in-range baseline 2.97–9.79 | [regimes_median_by_regime.png](figs/regimes_median_by_regime.png) | jcp-regimes |
 
 Provisional labels that travel with these verdicts: all errors are conditional E0 estimates; every matched FOM speed-up is an **upper bound** on the ROM speed-up (finite FOM ladder, screening-selected comparator; 2D timing intervals describe the dev6 workload, 3D matches use speed3d's paired match panels); H-base comparisons are **developmental, in-sample, unadjusted**; heads results are **exploratory validation evidence** with no family-wise claim.
 
@@ -342,11 +349,39 @@ At matched dimension the K = 16 head (median 1.44 %) is more accurate than the l
 
 ### 3.11 Robustness (E1 randomised rules, E2 retrain seeds, E5 A100 vs H200)
 
-> **PENDING — no results.** `jcp-robust` (E1, E2, E5) had not written `runs/EXPORT.json` when this report was compiled. Lane status at compile time (from its heartbeat, not a result): step "12: e2s1, e2s2 running, e2t3d2 pending; e2q0a/b e2q1a/b audited SUBMIT (queued); e2s3, e5h2, e2t3d3 queued; e13d scoring local", heartbeat 2026-10-20T01:37:02Z. GPU-hours spent so far are in the ledger section. This section will be regenerated from the lane's EXPORT when the lane hands back.
+> **PENDING — no results.** `jcp-robust` (E1, E2, E5) had not handed back when this report was compiled (any partial `runs/EXPORT.json` is deliberately not read). Lane status at compile time (from its heartbeat, not a result): step "15: 6 jobs (e2q0b, e2q1b, e2q0a, e2v2b, e2t2, e2v3a); queued e2v3b/c, e2t3, e2q1a, e2t3d3, e2q2a/b; E1 2D+3D analysed; E5 analysed", heartbeat 2026-10-20T03:16:04Z. GPU-hours spent so far are in the ledger section. This section will be regenerated from the lane's EXPORT when the lane hands back.
 
 ### 3.12 Regimes (D1: ν extrapolation, IC-family change, stiffness)
 
-> **PENDING — no results.** `jcp-regimes` (D1) had not written `runs/EXPORT.json` when this report was compiled. Lane status at compile time (from its heartbeat, not a result): step "8: all jobs collected (14.87 GPU-h); final analysis with PS running locally", heartbeat 2026-10-20T01:29:00Z. GPU-hours spent so far are in the ledger section. This section will be regenerated from the lane's EXPORT when the lane hands back.
+**exploratory development evidence, no family-wise control**; regime errors are conditional E0-style estimates against new references computed with E0's method in the lane's own store (the baseline's dev6 and val32 cases use the E0 references). Frozen ROM at 1024², eight primary LSPG configurations (r = 128–512 × BE / CN-R) plus one GAL-CN diagnostic row; seven fresh development regimes with seeds disjoint from every cohort. Each regime is compared with the in-range baseline I (fresh in-range cases N0 plus dev6 and val32) by the median-error ratio and its bootstrap interval against a factor-2 margin, after per-regime Q1/Q2. Selection qualification: eligibility depends on cohort-specific tight-path allowances; bias direction unknown (A3.2).
+
+| regime | references eligible | numerically qualified | labels (primary) | median error | ratio to baseline I | relabel |
+|---|---|---|---|---|---|---|
+| A+ (ν above the training range) | 14/16 (2 unresolved under the allowance) | 8/8 | HOLDS ×1, IMPROVES ×1, INCONCLUSIVE ×6 | 0.246 %–1.37 % | 0.55–1.53 | viscosity extrapolation confounded with steepness |
+| A− (ν below the training range) | 16/16 | 8/8 | DEGRADES ×2, INCONCLUSIVE ×6 | 0.883 %–4.17 % | 1.63–9.25 | – |
+| C1 (low ν, high steepness s; paired with A−) | 16/16 | 0/8 | NOT QUALIFIED ×8 | 5.2 %–11.2 % | 5.78–36.7 | – |
+| C2 (lower ν, higher s) | 16/16 | 0/8 | NOT QUALIFIED ×8 | 12.7 %–25.1 % | 14.2–131 | – |
+| B1 (IC family: two same-sign bumps) | 16/16 | 8/8 | HOLDS ×3, INCONCLUSIVE ×5 | 0.2 %–1.15 % | 0.989–1.55 | – |
+| B2 (IC family: signed pair) | 15/16 | 8/8 | INCONCLUSIVE ×8 | 0.245 %–1.4 % | 1.11–1.64 | – |
+| N0s (stiff corner of the training box; descriptive) | 8/8 | 8/8 | DEGRADES ×8 | 1.22 %–4.22 % | 2.97–9.79 | – |
+
+Diagnostic row `R384|GAL_CN_1` on C2: **FAILS** (2 invalid runs) — the only FAILS label, after the A11 correction.
+
+**Steepness and the representation floor.** The error grows with steepness: over A− ∪ C1 ∪ C2 the Spearman correlation of error with $\log_{10} s$ is 0.883–0.927 across the primary configurations (permutation p ≤ 0.0001). The bank itself cannot represent steep solutions: the median best-fit error of the references by the r = 384 bank span (a diagnostic, not a ROM error) is val32 0.0266 %, N0 (in range) 0.0286 %, N0s 0.881 %, A+ 0.0052 %, A− 0.585 %, C1 3.47 %, C2 9.88 %, B1 0.0519 %, B2 0.0593 %. For C1 and C2 the floor alone exceeds every in-range median ROM error. The floor is a diagnostic, not a proof of why the ROM degrades: it suggests the bank's span is a limit there, alongside the Q1/Q2 failures on those regimes; retraining on a wider steepness range was not tested.
+
+**A± confounding.** The viscosity regimes are meant to change ν without leaving the training range of front steepness $\sigma_a$. For A− 0.938 of cases are inside the in-range $\sigma_a$ range (separation check passed); for A+ only 0.143 are (passed: False), so A+ is relabelled "viscosity extrapolation confounded with steepness" and its IMPROVES / HOLDS labels do not isolate viscosity extrapolation.
+
+**Paired A− / C1.** C1 case j has the same position, width and viscosity as A− case j with a larger amplitude. Median paired error ratio C1/A− 2.58–5.19 (Wilcoxon p ≤ 3.05e-05); labels DEGRADES ×7, INCONCLUSIVE ×1. This is an amplitude (steepness) effect at matched geometry and viscosity, not a pure stiffness mechanism.
+
+**IC-family change (B1, B2).** Numerically qualified: B1 8/8, B2 8/8; DEGRADES labels: B1 0, B2 0; the rest are HOLDS or INCONCLUSIVE (interval too wide to decide against the factor-2 margin). **N0s** (the stiff corner inside the training box, descriptive): DEGRADES for 8 of 8 configurations, so "in range" does not mean "uniformly accurate".
+
+**Reference cross-check.** The pseudo-spectral cross-check passes on 7 of 7 scheduled cases (E0 A10-amended rule, label carried).
+
+![Median error by regime and configuration (jcp-regimes)](figs/regimes_median_by_regime.png)
+*Median error by regime and configuration (jcp-regimes)*
+
+![Error against nominal steepness s (jcp-regimes)](figs/regimes_error_vs_s.png)
+*Error against nominal steepness s (jcp-regimes)*
 
 ## 4. P1g recheck: how much earlier "flat accuracy" moved under frozen mode lists
 
@@ -387,10 +422,9 @@ Consolidated from LAB-LOG.md (entries 2026-10-17 onward) and the lane reports. N
 - **jcp-budget corrections.** A registered budget-gate bar was restated after the smoke (A6); the offline reference identity compares case descriptors because of last-bit differences across NumPy versions (A6); the first resource certificates under-priced the retry path (A7); at T = 1 the first eligibility code took W2 eligibility from the wrong horizon (A11.1); the 3D shared-IC requirement was restated level-wise after a last-bit inconsistency inside E0 (A13); case durations quoted in A14/A14.1 were cumulative log timestamps (A14.3). *(Source: jcp-budget report "What was wrong or corrected".)*
 - **jcp-dims corrections.** Missing in-job gate evidence for 2D family draws was first labelled "offline (b) disagrees" and relabelled "missing" (A12.4); protected jobs were missing from the ledger reserve (A11); the first memory-coverage argument for the t2 timing panel was wrong and was replaced by production evidence (A14.5). *(Source: jcp-dims report; LAB-LOG 2026-10-20.)*
 - **jcp-heads.** Under the successor-agreement quadrature policy the incumbent head needs Gauss 96² at 1024², where the quadrature-study lane had picked Gauss 32² post hoc (a policy outcome, not a universal requirement). A tighter initial-fit tolerance (A9) was set after smk1, before production; the seed-0 K = 16 retrain equals the incumbent to round-off (a same-seed replay, not a replication). *(Source: LAB-LOG 2026-10-18.)*
-- **jcp-regimes (design stage; the lane is still running).** Withdrawn during audit: a "clean one-factor attribution" (now distributional contrasts), a wrong reference acceptance rule (now E0's predicates), and a cost model missing the refinement time at low viscosity. *(Source: LAB-LOG 2026-10-19.)*
+- **jcp-regimes.** Withdrawn during the design audits: a "clean one-factor attribution" (now distributional contrasts), a wrong reference acceptance rule (now E0's predicates), and a cost model missing the refinement time at low viscosity. During the lane: the first smoke stopped at an over-specified GPU-float fingerprint, dropped by A7; A9 moved ordinary jobs to A100-80G (no timing result is reported); A10 relaxed an exact descriptor-hash check to round-off before any result was read; **A11**, after results audit 1 (RESULTS-WRONG): the scoring had counted solver budget exits as valid runs, contrary to the frozen design; corrected, only the GAL-CN diagnostic row on C2 changes (to FAILS) and no primary cell changes. *(Source: jcp-regimes report "What went wrong during the lane"; LAB-LOG 2026-10-20.)*
 
 - `jcp-robust`: its retractions will be added when it hands back (pending).
-- `jcp-regimes`: its retractions will be added when it hands back (pending).
 
 ### 5.1 Where the full records are
 
@@ -406,7 +440,8 @@ The list above consolidates the corrections. The full text lives in each lane re
 | jcp-heads | `worktrees/2026-10-18-jcp-heads/experiments/jcp-heads/report.md` | 6d. Relation to earlier results, and what is provisional | 640–646 |
 | jcp-dims | `worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md` | Retractions and corrections during the lane (details in DESIGN.md amendments) | 838–852 |
 | jcp-budget | `worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/report.md` | What was wrong or corrected | 371–386 |
-| coordinator | `LAB-LOG.md` | entries from 2026-10-17 on ("Wrong", "Retracted", "Corrections" bullets) | 19087–19308 |
+| jcp-regimes | `worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/report.md` | What went wrong during the lane (disclosed) | 35–42 |
+| coordinator | `LAB-LOG.md` | entries from 2026-10-17 on ("Wrong", "Retracted", "Corrections" bullets) | 19087–19320 |
 
 ## 6. Deferred items
 
@@ -414,7 +449,7 @@ The list above consolidates the corrections. The full text lives in each lane re
 |---|---|---|
 | coordinator | C3-full: 2D 4096², 3D meshes finer than 64 intervals, GNAT, POD + exact tensor, best-practice EQ; per-mesh setup cost for break-even counts | C3-minimal already falsified H-base (LAB-LOG 2026-10-19) |
 | coordinator | C4 | excluded from the freeze roster (plan V3-6) |
-| coordinator / jcp-regimes | 3D regimes and the regimes FOM comparison | regimes brief defer order |
+| jcp-regimes | 3D regimes (need their own amendment) and the FOM accuracy comparison on the regimes; retraining the bank on a wider steepness range (open) | jcp-regimes report summary (DESIGN A1.12, A3.3); LAB-LOG 2026-10-20 |
 | jcp-budget | B8 3D (fine route at $127^{3}$, C-A / C-E in 3D) | defer item 2, recorded in A4 (implementation scope) |
 | jcp-speed3d | upwind FOM ladder at L ≥ 256 (decides the upwind 3D cells); fixed-mode 3D cost panel | speed3d report, open items |
 | jcp-fom2d | same-resolution spectral FOM at 1024² and 4096²; upwind + CN-R, Newton–GMRES, IMEX-CG families | deferred by scope (A2.4) |
@@ -436,12 +471,12 @@ The list above consolidates the corrections. The full text lives in each lane re
 | jcp-heads | 3.68 | 35 | 9 | finished |
 | jcp-dims | 35.2 | 55 | 29 | finished |
 | jcp-budget | 25.9 | 45 | 20 | finished |
-| jcp-robust | 22.5 | 75 | 25 | running (priority 4) |
-| jcp-regimes | 14.9 | 60 | 13 | running (priority 4) |
+| jcp-robust | 27.5 | 75 | 44 | running (priority 4) |
+| jcp-regimes | 14.9 | 60 | 13 | finished |
 
 "Spent" is each lane ledger's `spent_gpu_hours`, which counts jobs that have reached a terminal state; jobs still running are not yet included.
 
-Total over the eight finished lanes: **107 GPU-h**; including the two priority-4 lanes at compile time: 145 GPU-h (still growing while they run). speed3d's ledger includes its jobs from before the campaign started.
+Total over the 9 finished lanes: **122 GPU-h**; including the running lane(s) jcp-robust at compile time: 150 GPU-h (still growing while they run). speed3d's ledger includes its jobs from before the campaign started.
 
 ![GPU-hours spent against each lane's cap](figs/summary_gpu_ledger.png)
 *GPU-hours spent against each lane's cap*
@@ -458,8 +493,8 @@ Total over the eight finished lanes: **107 GPU-h**; including the two priority-4
 | 3 | jcp-heads | C5 K sweep, linear span vs head | `exp/2026-10-18-jcp-heads` | 0ba9a1288 | ed3d0c841 | `worktrees/2026-10-18-jcp-heads/experiments/jcp-heads/report.md` | awaiting merge decision |
 | 3 | jcp-dims | A3, A4, B3, B6, 3D front, H2q | `exp/2026-10-18-jcp-dims` | a99906fe6 | 038cce675 | `worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/report.md` | awaiting merge decision |
 | 3 | jcp-budget | B2, B7, B8 | `exp/2026-10-18-jcp-budget` | d70608191 | 9be95f4fb | `worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/report.md` | awaiting merge decision |
-| 4 | jcp-robust | E1, E2, E5 | `exp/2026-10-19-jcp-robust` | 55a8e68df | d0faa7998 | not yet written | running |
-| 4 | jcp-regimes | D1 | `exp/2026-10-19-jcp-regimes` | 6ec3a20fb | f1bc8150b | not yet written | running |
+| 4 | jcp-robust | E1, E2, E5 | `exp/2026-10-19-jcp-robust` | c4302872e | 510a8f477 | not yet written | running |
+| 4 | jcp-regimes | D1 | `exp/2026-10-19-jcp-regimes` | 70ce5f0f2 | ee52292fe | `worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/report.md` | awaiting merge decision |
 
 Last commits and mirror commits are read from git at compile time (the mirror is the local tracking ref `origin/codeonly/exp/<slug>` updated by each lane's `sync_github.sh`). For jcp-qualify and jcp-fom2d the last commit is the coordinator's archive-offload commit made after the lane closed.
 
@@ -510,6 +545,10 @@ Last commits and mirror commits are read from git at compile time (the mirror is
 - **no error growth**: per case $g=e_{W_2}/e_{W_1}$ (or $e_{W_3}/e_{W_2}$) over cases whose errors exceed twice their reference uncertainty in both windows; "no growth" if the upper end of the bootstrap 95 % interval of the median $g$ is at most 1; "inconclusive (population)" below the minimum number of cases.
 - **dominant, no single dominant**: per case, the largest resolved error ingredient is the winner (ties within a registered threshold); an ingredient is dominant if it wins on more than half of the complete cases, otherwise "no single dominant"; "inconclusive" if too few cases are complete.
 - **front order preserved**: no resolved pair of members reverses its ranking by median window error between the two windows, over their common eligible cases (not necessarily identical raw rankings).
+- **regimes, baseline I, s, $\sigma_a$**: D1: fresh development cohorts drawn from distributions outside or at the edge of the training family (viscosity, steepness, IC family); they are distributional contrasts, not one-factor changes (C1 and C2 change both viscosity and steepness); baseline I = fresh in-range cases N0 plus dev6 and val32; $s=a/\nu$ is the nominal steepness (amplitude over viscosity); $\sigma_a$ is the largest interior gradient divided by the IC amplitude.
+- **HOLDS, IMPROVES, DEGRADES, INCONCLUSIVE, NOT QUALIFIED, FAILS**: D1 labels, in order of precedence: FAILS = an invalid production run; NOT QUALIFIED = Q1 or Q2 fails on the regime's own cases; otherwise, from the bootstrap 95 % interval of the median-error ratio against baseline I: IMPROVES if its upper end is below 1, HOLDS if its upper end is at most 2, DEGRADES if its lower end is above 2, else INCONCLUSIVE.
+- **representation floor**: error of the best least-squares fit of a reference by the first r bank functions on the scoring lattice; a lower bound on what any coefficients in that span can achieve.
+- **Spearman correlation**: rank correlation between two quantities; p from a permutation test.
 - **TH06**: $\theta$-method with $\theta=0.6$, a first-order control scheme in the temporal-order check.
 - **C-A, C-E**: jcp-budget's registered must-fire controls for the output-sampling check: an injected sampling alias and an injected energy drift.
 - **EQ**: empirical quadrature: hyper-reduction weights fitted to training data (here a deferred baseline variant).

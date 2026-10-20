@@ -44,6 +44,12 @@ LANES = [  # (lane, worktree dir, plan items, priority)
 LANE_DIR = {l: WT / w / 'experiments' / l for l, w, _, _ in LANES}
 LANE_WT = {l: WT / w for l, w, _, _ in LANES}
 PENDING_LANES = ('jcp-robust', 'jcp-regimes')
+# Lanes the coordinator has not yet declared finished: kept pending even if a partial runs/EXPORT.json exists.
+NOT_HANDED_BACK = {'jcp-robust'}
+
+
+def finished(lane):
+    return E(lane).exists() and lane not in NOT_HANDED_BACK
 
 # ----------------------------------------------------------------------------------------------------------------
 # provenance registry
@@ -540,9 +546,10 @@ def main():
         cap = R.get(f'ledger.{lane}.cap', p, 'cap_gpu_hours')
         nj = R.derived(f'ledger.{lane}.n_jobs', len(R.load(p)['jobs']), [R.src(p, 'jobs')], 'number of ledger entries')
         ledg[lane] = (sp, cap, nj)
-    done_total = R.derived('ledger.total_finished', sum(v[0] for k, v in ledg.items() if k not in PENDING_LANES),
-                           [R.src(LANE_DIR[k] / 'runs' / 'GPU-LEDGER.json', 'spent_gpu_hours') for k in ledg
-                            if k not in PENDING_LANES], 'sum over the eight finished lanes')
+    fin = [k for k in ledg if k not in PENDING_LANES or finished(k)]
+    done_total = R.derived('ledger.total_finished', sum(ledg[k][0] for k in fin),
+                           [R.src(LANE_DIR[k] / 'runs' / 'GPU-LEDGER.json', 'spent_gpu_hours') for k in fin],
+                           f'sum over the {len(fin)} finished lanes')
     all_total = R.derived('ledger.total_all', sum(v[0] for v in ledg.values()),
                           [R.src(LANE_DIR[k] / 'runs' / 'GPU-LEDGER.json', 'spent_gpu_hours') for k in ledg],
                           'sum over all ten lanes at compile time')
@@ -560,7 +567,7 @@ def main():
     # REPORT
     w('# Viscous Burgers 2D/3D: final results of the JCP experiment campaign (priorities 1–4)')
     w()
-    pend_now = [l for l in PENDING_LANES if not E(l).exists()]
+    pend_now = [l for l in PENDING_LANES if not finished(l)]
     w(f'**Status (compiled {now} by `make_final.py`).** Final for the development and validation cohorts '
       '(2D dev6 + val32, 3D 923801); the historical test cohorts were used for replication only, and the sealed and '
       'reserved out-of-distribution cohorts were **not opened**. Accuracy numbers are scored against the E0 '
@@ -568,10 +575,14 @@ def main():
       'Richardson estimate**, not a bound, so they are conditional E0 estimates. Two labelled exceptions: the '
       'long-horizon windows beyond $t = 0.25$ (section 3.9) use jcp-budget\'s own second-order references (also '
       'conditional Richardson estimates), and the P1g spread columns marked "first-order" (section 4) are against the '
-      'earlier first-order references, as in the historical claims they recheck. Post-hoc labels '
+      'earlier first-order references, as in the historical claims they recheck. '
+      + ('The regimes study (section 3.12) also uses fresh development cohorts outside these, scored against new '
+         'references computed with E0\'s method in that lane\'s own store (conditional E0-style estimates); its '
+         'in-range baseline uses the E0 references for dev6 and val32. ' if finished('jcp-regimes') else '')
+      + 'Post-hoc labels '
       'carry forward unchanged: E0 A10 (the reference cross-check rule was changed after data), combined A10 and A11 '
       '(post-hoc rule selections) and the retracted combined A15. '
-      + (f'**Pending:** {", ".join(pend_now)} (priority 4) had not exported results at compile time; their sections '
+      + (f'**Pending:** {", ".join(pend_now)} (priority 4) had not handed back at compile time; their sections '
          'are marked pending and contain no numbers.' if pend_now else 'All ten lanes have exported results.'))
     w()
     w('Every number in this report is read from a lane output (or from git, for commits) and registered in '
@@ -614,7 +625,7 @@ def main():
       f'configurations at 256² and all {hbase["2D 1024²"][1]} at 1024² (developmental, in-sample, unadjusted; 2D '
       f'tuning budgets {R.prov["hb.budget_2D_V2.short"]["value"]}). The paper therefore cannot claim speed or accuracy advantages over standard '
       'alternatives for viscous Burgers on the box; what remains is mesh-independent cost, mesh-free evaluation and '
-      'memory.')
+      'memory.' + regimes_headline())
     w()
 
     # ---- 2. verdicts
@@ -625,10 +636,7 @@ def main():
       'registered rule could not decide (usually because too few configurations were numerically qualified), not '
       'a negative result.')
     w()
-    w(table(['hypothesis', 'k reading', 'scope', 'verdict', 'key numbers', 'figure', 'lane'],
-            [[v['hypothesis'], v['reading'], v['scope'], f'**{v["verdict"]}**', v['key_number'],
-              v['figure'] if v['figure'] == '–' else f'[{Path(v["figure"]).name}]({v["figure"]})', v['lane']]
-             for v in verdicts]))
+    w('@@VERDICT_TABLE@@')  # filled in after every section has registered its verdicts
     w()
     w('Provisional labels that travel with these verdicts: all errors are conditional E0 estimates; every matched '
       'FOM speed-up is an **upper bound** on the ROM speed-up (finite FOM ladder, screening-selected comparator; 2D '
@@ -950,18 +958,21 @@ def main():
         w(f'### {title}')
         w()
         ex = E(lane)
-        if not ex.exists():
+        if not finished(lane):
             hbp = LANE_DIR[lane] / 'HEARTBEAT.json'
             hbj = {}
             if hbp.exists():
                 hbj = dict(step=R.get(f'{lane}.heartbeat.step', hbp, 'step'), utc=R.get(f'{lane}.heartbeat.utc', hbp, 'utc'))
-            w(f'> **PENDING — no results.** `{lane}` ({items}) had not written `runs/EXPORT.json` when this report was '
-              f'compiled. Lane status at compile time (from its heartbeat, not a result): step "{hbj.get("step", "unknown")}", '
+            w(f'> **PENDING — no results.** `{lane}` ({items}) had not handed back when this report was compiled '
+              f'(any partial `runs/EXPORT.json` is deliberately not read). Lane status at compile time (from its heartbeat, not a result): step "{hbj.get("step", "unknown")}", '
               f'heartbeat {hbj.get("utc", "unknown")}. GPU-hours spent so far are in the ledger section. This section '
               'will be regenerated from the lane\'s EXPORT when the lane hands back.')
             w()
             continue
-        render_generic(lane, ex)
+        if lane == 'jcp-regimes':
+            render_regimes(ex, V)
+        else:
+            render_generic(lane, ex)
 
     # ---- 4. P1g
     w('## 4. P1g recheck: how much earlier "flat accuracy" moved under frozen mode lists')
@@ -1091,15 +1102,20 @@ def main():
          'where the quadrature-study lane had picked Gauss 32² post hoc (a policy outcome, not a universal requirement). '
          'A tighter initial-fit tolerance (A9) was set after smk1, before production; the seed-0 K = 16 '
          'retrain equals the incumbent to round-off (a same-seed replay, not a replication).', 'LAB-LOG 2026-10-18'),
-        ('jcp-regimes (design stage; the lane is still running)', 'Withdrawn during audit: a "clean one-factor '
-         'attribution" (now distributional contrasts), a wrong reference acceptance rule (now E0\'s predicates), and a '
-         'cost model missing the refinement time at low viscosity.', 'LAB-LOG 2026-10-19'),
+        ('jcp-regimes', 'Withdrawn during the design audits: a "clean one-factor attribution" (now distributional '
+         'contrasts), a wrong reference acceptance rule (now E0\'s predicates), and a cost model missing the refinement '
+         'time at low viscosity. During the lane: the first smoke stopped at an over-specified GPU-float fingerprint, '
+         'dropped by A7; A9 moved ordinary jobs to A100-80G (no timing result is reported); A10 relaxed an exact '
+         'descriptor-hash check to round-off before any result was read; **A11**, after results audit 1 '
+         '(RESULTS-WRONG): the scoring had counted solver budget exits as valid runs, contrary to the frozen design; '
+         'corrected, only the GAL-CN diagnostic row on C2 changes (to FAILS) and no primary cell changes.',
+         'jcp-regimes report "What went wrong during the lane"; LAB-LOG 2026-10-20'),
     ]
     for t, body, src in items:
         w(f'- **{t}.** {body} *(Source: {src}.)*')
     w()
     for lane in PENDING_LANES:
-        if not E(lane).exists():
+        if not finished(lane):
             w(f'- `{lane}`: its retractions will be added when it hands back (pending).')
     w()
 
@@ -1113,7 +1129,8 @@ def main():
         ('coordinator', 'C3-full: 2D 4096², 3D meshes finer than 64 intervals, GNAT, POD + exact tensor, best-practice '
          'EQ; per-mesh setup cost for break-even counts', 'C3-minimal already falsified H-base (LAB-LOG 2026-10-19)'),
         ('coordinator', 'C4', 'excluded from the freeze roster (plan V3-6)'),
-        ('coordinator / jcp-regimes', '3D regimes and the regimes FOM comparison', 'regimes brief defer order'),
+        ('jcp-regimes', '3D regimes (need their own amendment) and the FOM accuracy comparison on the regimes; '
+         'retraining the bank on a wider steepness range (open)', 'jcp-regimes report summary (DESIGN A1.12, A3.3); LAB-LOG 2026-10-20'),
         ('jcp-budget', latexify('; '.join(d['item'] for d in bdef)), '; '.join(d['reason'] for d in bdef)),
         ('jcp-speed3d', 'upwind FOM ladder at L ≥ 256 (decides the upwind 3D cells); fixed-mode 3D cost panel',
          'speed3d report, open items'),
@@ -1134,15 +1151,15 @@ def main():
     # ---- 7. ledger
     w('## 7. GPU-hour ledger')
     w()
-    rows = [[l, g3(ledg[l][0]), g3(ledg[l][1]), ledg[l][2], 'running (priority 4)' if l in PENDING_LANES and not E(l).exists()
+    rows = [[l, g3(ledg[l][0]), g3(ledg[l][1]), ledg[l][2], 'running (priority 4)' if l in PENDING_LANES and not finished(l)
              else 'finished'] for l, *_ in LANES]
     w(table(['lane', 'spent (GPU-h, sacct)', 'cap', 'ledger entries', 'state'], rows))
     w()
     w('"Spent" is each lane ledger\'s `spent_gpu_hours`, which counts jobs that have reached a terminal state; '
       'jobs still running are not yet included.')
     w()
-    w(f'Total over the eight finished lanes: **{g3(done_total)} GPU-h**; including the two priority-4 lanes at '
-      f'compile time: {g3(all_total)} GPU-h (still growing while they run). speed3d\'s ledger includes its jobs from '
+    w(f'Total over the {len(fin)} finished lanes: **{g3(done_total)} GPU-h**; including the running lane(s) '
+      f'{", ".join(pend_now) or "none"} at compile time: {g3(all_total)} GPU-h (still growing while they run). speed3d\'s ledger includes its jobs from '
       'before the campaign started.')
     w()
     fig('figs/summary_gpu_ledger.png', 'GPU-hours spent against each lane\'s cap')
@@ -1160,7 +1177,7 @@ def main():
         rep = LANE_DIR[lane] / 'report.md'
         rows.append([prio, lane, what, f'`{br}`', head, mir,
                      f'`{rel(rep)}`' if rep.exists() else 'not yet written',
-                     'running' if lane in PENDING_LANES and not E(lane).exists() else 'awaiting merge decision'])
+                     'running' if lane in PENDING_LANES and not finished(lane) else 'awaiting merge decision'])
         lane_list.append(dict(lane=lane, branch=br, head=head, mirror=mir, report=rel(rep) if rep.exists() else None))
     w(table(['priority', 'lane', 'items', 'branch', 'last commit', 'code-only mirror', 'report', 'state'], rows))
     w()
@@ -1175,6 +1192,11 @@ def main():
     for t, d in GLOSSARY:
         w(f'- **{t}**: {d}')
     w()
+    L[L.index('@@VERDICT_TABLE@@')] = table(
+        ['hypothesis', 'k reading', 'scope', 'verdict', 'key numbers', 'figure', 'lane'],
+        [[v['hypothesis'], v['reading'], v['scope'], f'**{v["verdict"]}**', v['key_number'],
+          v['figure'] if v['figure'] == '–' else f'[{Path(v["figure"]).name}]({v["figure"]})', v['lane']]
+         for v in verdicts])
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')
 
     fx = dict(compiled_utc=now, label='E0 R_ST conditional Richardson estimates; development/validation cohorts only; '
@@ -1214,6 +1236,7 @@ CORRECTION_SECTIONS = [  # (lane, heading of the lane report's own correction se
     ('jcp-heads', '## 6d. Relation to earlier results, and what is provisional'),
     ('jcp-dims', '## Retractions and corrections during the lane (details in DESIGN.md amendments)'),
     ('jcp-budget', '## What was wrong or corrected'),
+    ('jcp-regimes', '## What went wrong during the lane (disclosed)'),
 ]
 
 
@@ -1242,6 +1265,142 @@ def pointer_record():
                  f'{start + 1}–{len(ll)}'])
     w(table(['lane', 'file', 'section', 'lines at compile time'], rows))
     w()
+
+
+FLOOR_NAMES = {'val32': 'val32', 'N0': 'N0 (in range)', 'N0s': 'N0s', 'Ap': 'A+', 'Am': 'A−', 'C1': 'C1', 'C2': 'C2',
+               'B1': 'B1', 'B2': 'B2'}
+REGIME_NAMES = {'Ap': 'A+ (ν above the training range)', 'Am': 'A− (ν below the training range)',
+                'C1': 'C1 (low ν, high steepness s; paired with A−)', 'C2': 'C2 (lower ν, higher s)',
+                'B1': 'B1 (IC family: two same-sign bumps)', 'B2': 'B2 (IC family: signed pair)',
+                'N0s': 'N0s (stiff corner of the training box; descriptive)'}
+
+
+def regimes_headline():
+    if not finished('jcp-regimes'):
+        return ''
+    ex = E('jcp-regimes')
+    d = R.load(ex)
+    prim = [k for k, c in d['configs'].items() if not c['diagnostic']]
+    out = {}
+    for g in ('C1', 'C2'):
+        out[g] = R.derived(f'rg.{g}.nq', sum(bool(d['configs'][k]['cells'][g]['qualified']) for k in prim),
+                           [R.src(ex, ['configs', '*', 'cells', g, f], 'non-diagnostic configurations')
+                            for f in ('label', 'qualified', 'median', 'ratio_median')],
+                           'count of qualified primary configurations')
+    return (f' Outside the training range in steepness (regimes C1 and C2) the frozen model is numerically qualified '
+            f'for {out["C1"]} and {out["C2"]} of the {len(prim)} primary configurations: its errors there cannot be '
+            'certified, and even the best fit by the bank has large errors there (section 3.12).')
+
+
+def render_regimes(ex, V):
+    """jcp-regimes (D1): regime table, steepness / floor finding, A± confounding, paired A−/C1, PS cross-check."""
+    d = R.load(ex)
+    lane = 'jcp-regimes'
+    qual = R.get('rg.qualification', ex, 'qualification')
+    sel = R.get('rg.selection_qualification', ex, 'selection_qualification')
+    w(f'**{qual}**; regime errors are conditional E0-style estimates against new references computed with E0\'s method '
+      f'in the lane\'s own store (the baseline\'s dev6 and val32 cases use the E0 references). Frozen ROM at 1024², eight primary LSPG configurations (r = 128–512 × BE / CN-R) plus '
+      f'one GAL-CN diagnostic row; seven fresh development regimes with seeds disjoint from every cohort. Each regime is '
+      f'compared with the in-range baseline I (fresh in-range cases N0 plus dev6 and val32) by the median-error ratio '
+      f'and its bootstrap interval against a factor-2 margin, after per-regime Q1/Q2. Selection qualification: {sel}.')
+    w()
+    prim = [k for k, c in d['configs'].items() if not R.get(f'rg.{k}.diagnostic', ex, 'configs', k, 'diagnostic')]
+    diag = [k for k in d['configs'] if k not in prim]
+    rows = []
+    for g in ('Ap', 'Am', 'C1', 'C2', 'B1', 'B2', 'N0s'):
+        cov = d['coverage'][g]
+        elig = R.get(f'rg.cov.{g}.eligible', ex, 'coverage', g, 'eligible')
+        n = R.get(f'rg.cov.{g}.n', ex, 'coverage', g, 'n')
+        unres = R.get(f'rg.cov.{g}.unresolved', ex, 'coverage', g, 'unresolved_under_allowance')
+        labs, nq, meds, rats = {}, 0, [], []
+        for k in prim:
+            c = d['configs'][k]['cells'][g]
+            labs[c['label']] = labs.get(c['label'], 0) + 1
+            nq += bool(c['qualified'])
+            meds.append(c['median']); rats.append(c['ratio_median'])
+        srcs = [R.src(ex, ['configs', '*', 'cells', g, f], 'non-diagnostic configurations')
+                for f in ('label', 'qualified', 'median', 'ratio_median')]
+        R.derived(f'rg.{g}.labels', labs, srcs, 'count of labels over primary configurations')
+        R.derived(f'rg.{g}.nq', nq, srcs, 'count of qualified primary configurations')
+        R.derived(f'rg.{g}.median_range', [min(meds), max(meds)], srcs, 'min/max of median error over primary configurations')
+        R.derived(f'rg.{g}.ratio_range', [min(rats), max(rats)], srcs, 'min/max of median-error ratio to baseline I')
+        relab = R.get(f'rg.regime_label.{g}', ex, 'regime_labels', g) if g in d['regime_labels'] else None
+        lab_txt = ', '.join(f'{k} ×{v}' for k, v in sorted(labs.items()))
+        rows.append([REGIME_NAMES[g], f'{elig}/{n}' + (f' ({unres} unresolved under the allowance)' if unres else ''),
+                     f'{nq}/{len(prim)}', lab_txt, f'{pct(min(meds))}–{pct(max(meds))}',
+                     f'{g3(min(rats))}–{g3(max(rats))}', relab or '–'])
+        ver = lab_txt + (' (descriptive)' if g == 'N0s' else '')
+        V('D1 regime', 'r (bank width)', f'2D 1024², {REGIME_NAMES[g]}, {len(prim)} primary LSPG configurations'
+          + (f'; {relab}' if relab else ''), ver,
+          f'qualified {nq}/{len(prim)}; labels {lab_txt}; median error {pct(min(meds))}–{pct(max(meds))}; ratio to '
+          f'in-range baseline {g3(min(rats))}–{g3(max(rats))}', 'figs/regimes_median_by_regime.png', lane)
+    w(table(['regime', 'references eligible', 'numerically qualified', 'labels (primary)', 'median error',
+             'ratio to baseline I', 'relabel'], rows))
+    w()
+    # diagnostic row
+    for k in diag:
+        c2 = d['configs'][k]['cells']['C2']
+        lab = R.get(f'rg.{k}.C2.label', ex, 'configs', k, 'cells', 'C2', 'label')
+        inv = R.get(f'rg.{k}.C2.invalid', ex, 'configs', k, 'cells', 'C2', 'invalid_runs')
+        w(f'Diagnostic row `{k}` on C2: **{lab}** ({inv} invalid runs) — the only FAILS label, after the A11 correction.')
+        w()
+    # steepness / floor
+    fl = {g: R.get(f'rg.floor.{g}|R384', ex, 'projection_floor', f'{g}|R384', 'median')
+          for g in ('val32', 'N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2')}
+    rho = [R.get(f'rg.{k}.trend_s.rho', ex, 'configs', k, 'trends', 'Am+C1+C2|log10_s', 'rho') for k in prim]
+    pmax = max(R.get(f'rg.{k}.trend_s.p', ex, 'configs', k, 'trends', 'Am+C1+C2|log10_s', 'p') for k in prim)
+    R.derived('rg.trend_s.pmax', pmax, [R.src(ex, ['configs', '*', 'trends', 'Am+C1+C2|log10_s', 'p'])], 'max over primary configurations')
+    w('**Steepness and the representation floor.** The error grows with steepness: over A− ∪ C1 ∪ C2 the Spearman '
+      f'correlation of error with $\\log_{{10}} s$ is {g3(min(rho))}–{g3(max(rho))} across the primary configurations '
+      f'(permutation p ≤ {g3(pmax)}). The bank itself cannot represent steep solutions: the median best-fit error of '
+      'the references by the r = 384 bank span (a diagnostic, not a ROM error) is ' +
+      ', '.join(f'{FLOOR_NAMES[g]} {pct(v)}' for g, v in fl.items()) + '. For C1 and C2 the floor alone exceeds every '
+      'in-range median ROM error. The floor is a diagnostic, not a proof of why the ROM degrades: it suggests the '
+      'bank\'s span is a limit there, alongside the Q1/Q2 failures on those regimes; retraining on a wider steepness '
+      'range was not tested.')
+    imax = max(R.get(f'rg.{k}.baseline.median', ex, 'configs', k, 'baseline', 'median') for k in prim)
+    R.derived('rg.baseline.median_max', imax, [R.src(ex, ['configs', '*', 'baseline', 'median'])], 'max over primary')
+    assert fl['C1'] > imax and fl['C2'] > imax
+    w()
+    # A± confounding
+    sAp = R.get('rg.sep.Ap.frac', ex, 'separation', 'Ap', 'frac_in_range')
+    sAm = R.get('rg.sep.Am.frac', ex, 'separation', 'Am', 'frac_in_range')
+    pAp = R.get('rg.sep.Ap.passed', ex, 'separation', 'Ap', 'passed')
+    w(f'**A± confounding.** The viscosity regimes are meant to change ν without leaving the training range of front '
+      f'steepness $\\sigma_a$. For A− {g3(sAm)} of cases are inside the in-range $\\sigma_a$ range (separation check '
+      f'passed); for A+ only {g3(sAp)} are (passed: {pAp}), so A+ is relabelled "{d["regime_labels"]["Ap"]}" and its '
+      'IMPROVES / HOLDS labels do not isolate viscosity extrapolation.')
+    w()
+    # paired
+    q = [R.get(f'rg.{k}.paired.q', ex, 'configs', k, 'paired_Am_C1', 'median_q') for k in prim]
+    pw = max(R.get(f'rg.{k}.paired.p', ex, 'configs', k, 'paired_Am_C1', 'wilcoxon_p') for k in prim)
+    R.derived('rg.paired.pmax', pw, [R.src(ex, ['configs', '*', 'paired_Am_C1', 'wilcoxon_p'])], 'max over primary configurations')
+    pl = {}
+    for k in prim:
+        pl[d['configs'][k]['paired_Am_C1']['label']] = pl.get(d['configs'][k]['paired_Am_C1']['label'], 0) + 1
+    R.derived('rg.paired.labels', pl, [R.src(ex, ['configs', '*', 'paired_Am_C1', 'label'])], 'count of labels')
+    w(f'**Paired A− / C1.** C1 case j has the same position, width and viscosity as A− case j with a larger amplitude. '
+      f'Median paired error ratio C1/A− {g3(min(q))}–{g3(max(q))} (Wilcoxon p ≤ {g3(pw)}); labels ' +
+      ', '.join(f'{k} ×{v}' for k, v in sorted(pl.items())) + '. This is an amplitude (steepness) effect at matched '
+      'geometry and viscosity, not a pure stiffness mechanism.')
+    w()
+    bl = {g: R.prov[f'rg.{g}.labels']['value'] for g in ('B1', 'B2', 'N0s')}
+    nq_b = {g: R.prov[f'rg.{g}.nq']['value'] for g in ('B1', 'B2')}
+    w(f'**IC-family change (B1, B2).** Numerically qualified: B1 {nq_b["B1"]}/{len(prim)}, B2 {nq_b["B2"]}/{len(prim)}; '
+      f'DEGRADES labels: B1 {bl["B1"].get("DEGRADES", 0)}, B2 {bl["B2"].get("DEGRADES", 0)}; the rest are HOLDS or '
+      f'INCONCLUSIVE (interval too wide to decide against the factor-2 margin). **N0s** (the stiff corner inside the '
+      f'training box, descriptive): DEGRADES for {bl["N0s"].get("DEGRADES", 0)} of {len(prim)} configurations, so '
+      '"in range" does not mean "uniformly accurate".')
+    w()
+    ps = d['ps']
+    npass = sum(v['verdict'] == 'PASS' for v in ps.values())
+    R.derived('rg.ps.npass', npass, [R.src(ex, ['ps', '*', 'verdict'])], 'count of PASS')
+    nexp = len(R.get('rg.ps.expected', ex, 'ps_status', 'expected'))
+    w(f'**Reference cross-check.** The pseudo-spectral cross-check passes on {npass} of {nexp} scheduled cases (E0 '
+      'A10-amended rule, label carried).')
+    w()
+    fig(copy_fig(lane, 'median_by_regime.png', 'regimes_median_by_regime.png'), 'Median error by regime and configuration (jcp-regimes)')
+    fig(copy_fig(lane, 'error_vs_s.png', 'regimes_error_vs_s.png'), 'Error against nominal steepness s (jcp-regimes)')
 
 
 def render_generic(lane, ex):
@@ -1354,6 +1513,18 @@ GLOSSARY = [
      '"no single dominant"; "inconclusive" if too few cases are complete.'),
     ('front order preserved', 'no resolved pair of members reverses its ranking by median window error between the '
      'two windows, over their common eligible cases (not necessarily identical raw rankings).'),
+    ('regimes, baseline I, s, $\\sigma_a$', 'D1: fresh development cohorts drawn from distributions outside or at the edge of the '
+     'training family (viscosity, steepness, IC family); they are distributional contrasts, not one-factor '
+     'changes (C1 and C2 change both viscosity and steepness); baseline I = fresh in-range cases N0 plus dev6 and val32; '
+     '$s=a/\\nu$ is the nominal steepness (amplitude over viscosity); $\\sigma_a$ is the largest interior gradient '
+     'divided by the IC amplitude.'),
+    ('HOLDS, IMPROVES, DEGRADES, INCONCLUSIVE, NOT QUALIFIED, FAILS', 'D1 labels, in order of precedence: FAILS = an invalid '
+     'production run; NOT QUALIFIED = Q1 or Q2 fails on the regime\'s own cases; otherwise, from the bootstrap 95 % '
+     'interval of the median-error ratio against baseline I: IMPROVES if its upper end is below 1, HOLDS if its upper '
+     'end is at most 2, DEGRADES if its lower end is above 2, else INCONCLUSIVE.'),
+    ('representation floor', 'error of the best least-squares fit of a reference by the first r bank functions on the '
+     'scoring lattice; a lower bound on what any coefficients in that span can achieve.'),
+    ('Spearman correlation', 'rank correlation between two quantities; p from a permutation test.'),
     ('TH06', '$\\theta$-method with $\\theta=0.6$, a first-order control scheme in the temporal-order check.'),
     ('C-A, C-E', 'jcp-budget\'s registered must-fire controls for the output-sampling check: an injected sampling alias '
      'and an injected energy drift.'),

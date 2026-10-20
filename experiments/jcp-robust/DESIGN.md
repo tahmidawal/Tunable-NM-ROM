@@ -882,3 +882,18 @@ CORRECT. Fixes:
   file holds the bank sha256 from OUTPUTS.sha256, cross-checked against the archive's LARGE.sha256, together with the
   archive path. `make_jobs.py e2run3d <name>` copies the config's `cluster_inputs` into the job spec, which is what
   stage.py reads. `--fetch` makes an untracked, sha256-verified local copy for e2score3.
+
+## A13 (2026-10-19): 2D seed banks registered; job audit e2s123-1
+
+- **A13.1** Job e2t2d (6076975, 3x A100-80G, 4 h 11 m) completed all three seeds. Each ran Stage A for 300,000 steps and
+  the mid head for 200,000 steps, with no time-cap firing and so no recipe deviation (A2.10). `register_banks.py` now
+  verifies the locally pulled files with `--ignore-missing`. Every file left on the cluster (the over-100 MB
+  `sep_coeff` file) must appear with the same sha256 in the archive's LARGE.sha256.
+- **A13.2** Codex job audit `audits/codex-job-e2s123-1.md`: SUBMIT for e2s1-3. It raised two downstream NEEDS-FIX
+  findings, both now fixed:
+  - (#5) `select2d.py` binds the requested bank independently of the result. The attempt must be `e2s<b>`, and the
+    checkpoint and rotation sha256 must equal `inputs/banks/s<b>/BANK.json` (bank 0 must name no retrained bank).
+  - (#6) The A2.5 qualifier "target unverified (diagnostic pick)" travels downstream. `e2analyze.py` annotates the
+    H-acc-N rows, the H-acc-r transitions touching an unverified rank, the selected-rule configurations and the
+    front slots. `e2verdicts.py` carries the annotation per seed in each row's `qualifiers`.
+  - Re-running `select2d.py` on bank 0 reproduces checks/select2d-0.json byte for byte.

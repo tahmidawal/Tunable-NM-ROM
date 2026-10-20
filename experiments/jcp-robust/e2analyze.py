@@ -273,6 +273,27 @@ def main():
             for sc in ('BE', 'CNR'):
                 rep['h_acc_r'][f'{kind}|{m}|{sc}'] = h_acc_r(C, m, kind, sc)
     rep['front_1024'] = front(C[1024], Path(a.time) if a.time else None)
+    # A2.5: a diagnostic pick (target unverified) carries its qualifier onto every downstream row that uses the selected
+    # rule (job audit e2s123-1 #6); the verdicts themselves stay available
+    unv = sorted(int(r) for r, v in sel['selected'].items() if str(v.get('outcome', '')).startswith('diagnostic'))
+    rep['target_unverified_ranks'] = unv
+    Q = 'target unverified (diagnostic pick, A2.5)'
+    for k, v in rep['h_acc_n'].items():
+        if k.startswith('sel|') and int(k.split('|')[1][1:]) in unv and isinstance(v, dict):
+            v['qualifier'] = Q
+    for k, v in rep['h_acc_r'].items():
+        if k.startswith('sel|') and isinstance(v, dict):
+            for tr, x in v.items():              # transitions 'r1->r2' touching an unverified rank
+                if isinstance(x, dict) and any(str(r_) in tr.split('->') for r_ in unv):
+                    x['qualifier'] = Q
+    for k, v in rep['configurations'].items():
+        r_ = int(k.split('|')[1][1:])
+        if r_ in unv and v['rule'] == sel['selected'][str(r_)]['rule']:
+            v['qualifier'] = Q
+    for k, v in ((rep['front_1024'] or {}).get('slots') or {}).items():
+        if isinstance(v, dict) and any(f'R{r_}' in str(k).split('|') or str(k).startswith(f'{r_}|') or str(k).startswith(f'R{r_}|')
+                                       for r_ in unv):
+            v['qualifier'] = Q
     if b == 0:
         rep['G-E2.3'] = g_e23(Path(a.sel), Path(a.v256),
                               json.loads((Path(a.sel) / 'result.json').read_text())['config'].get('replay', {})) if a.v256 else dict(passed=False, reason='256^2 verdict job missing')

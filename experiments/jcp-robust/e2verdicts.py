@@ -70,6 +70,27 @@ def keys_2d(r):
     return out
 
 
+def quals_2d(r):
+    """keys whose source entry carries the A2.5 'target unverified' qualifier (job audit e2s123-1 #6)"""
+    if r is None:
+        return {}
+    out = {}
+    for k, v in r['h_acc_n'].items():
+        if isinstance(v, dict) and v.get('qualifier'):
+            out[f'H-acc-N|{k}'] = v['qualifier']
+    for k, v in r['h_acc_r'].items():
+        for tr, x in (v.items() if isinstance(v, dict) else []):
+            if isinstance(x, dict) and x.get('qualifier'):
+                out[f'H-acc-r|{k}|{tr}'] = x['qualifier']
+    for k, v in r['configurations'].items():
+        if v.get('qualifier'):
+            out[f'Q1Q2|{k}'] = v['qualifier']
+    for k, v in ((r.get('front_1024') or {}).get('slots') or {}).items():
+        if isinstance(v, dict) and v.get('qualifier'):
+            out[f'front1024|slot|{k}'] = v['qualifier']
+    return out
+
+
 def keys_3d(r):
     out = {}
     if r is None:
@@ -108,13 +129,15 @@ def main():
     kf = keys_2d if dim == '2d' else keys_3d
     K = {b: (kf(r) if ok(r) else {}) for b, r in [(0, inc)] + list(new.items())}
     allk = sorted(set().union(*[set(v) for v in K.values()]))
+    QL = {b: (quals_2d(r) if (dim == '2d' and ok(r)) else {}) for b, r in [(0, inc)] + list(new.items())}
     rows = []
     for k in allk:
         lbls = [K[s].get(k) for s in seeds]
         robust = lab3(lbls)
+        q = {str(b): QL[b][k] for b in QL if k in QL[b]}
         rows.append(dict(key=k, incumbent=K[0].get(k), seeds=dict(zip(map(str, seeds), lbls)),
                          label=('blocked (G-E2.3)' if blocked else robust),
-                         historical=None if blocked else hist(K[0].get(k), lbls, robust)))
+                         historical=None if blocked else hist(K[0].get(k), lbls, robust), qualifiers=q or None))
     spread = {}
     for b, r in [(0, inc)] + list(new.items()):
         if not ok(r):

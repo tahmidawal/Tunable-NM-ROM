@@ -28,6 +28,14 @@ def main():
     assert res.get('complete'), 'selection job incomplete'
     e2bank.use(res['config'].get('bank'), (res.get('checkpoint_sha256'), res.get('rotation_sha256')))
     smoke = str(res['config'].get('attempt', '')).startswith('smk')
+    if not smoke:                                    # bind the requested bank independently (job audit e2s123-1 #5)
+        assert res['config'].get('attempt') == f'e2s{b}', f"result is from {res['config'].get('attempt')}, not e2s{b}"
+        if str(b) == '0':
+            assert res['config'].get('bank') is None, 'bank 0 is the incumbent: the result must not name a retrained bank'
+        else:
+            meta = json.loads((HERE / 'inputs' / 'banks' / f's{b}' / 'BANK.json').read_text())
+            assert (res.get('checkpoint_sha256'), res.get('rotation_sha256')) == (meta['ckpt_sha256'], meta['rotation_sha256']), \
+                f'result bank hashes differ from inputs/banks/s{b}/BANK.json'
     rep = dict(source=str(out), bank=b, job_id=res['job_id'], commit=res['commit'], selected={}, cells={})
     ranks = RANKS if not smoke else tuple(int(x['Rp']) for x in res['config']['groups'])
     cand_all = [c for c, _ in CANDIDATES]

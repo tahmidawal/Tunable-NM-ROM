@@ -1,20 +1,17 @@
 {
  "lane": "jcp-robust",
- "utc": "2026-10-20T12:31:19Z",
- "step": "22: bank-2 3D selection done (W768 gl40 selected; W1024 gl40 diagnostic); e2f2 submitted; e2q3b running",
+ "utc": "2026-10-20T13:22:31Z",
+ "step": "24: select3d 3 at W1024, then e2f3 submit",
  "waiting_on": {
-  "slurm_jobs": [
-   "6103425",
-   "6108025"
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": null,
-  "local": null
+  "local": "select3d 3 + e2f3 submit"
  },
  "expected_finish_utc": null,
- "last_commit": "05d081d38",
- "gpu_hours_spent": 42.9879,
- "gpu_hours_reserved": 8.75,
+ "last_commit": "f051de9dd",
+ "gpu_hours_spent": 46.3037,
+ "gpu_hours_reserved": 0,
  "gpu_hours_cap": 95.0,
  "notes": ""
 }

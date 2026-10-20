@@ -233,6 +233,51 @@ def e2_section(R, X):
         L += ['### 2D rule selection at 1024² (38 cases; first candidate qualified under both LSPG-BE and LSPG-CN-R)', '',
               tbl(['rank', 'bank 0 (incumbent)', 'seed 1', 'seed 2', 'seed 3', 'deployed rule'], rows), '']
         X['E2']['selection_2d'] = {str(b): ({k: v['rule'] for k, v in s['selected'].items()} if s else None) for b, s in sel.items()}
+    sel3 = {b: load(f'select3d-{b}.json') for b in range(4)}
+    if any(sel3.values()):
+        keys = []
+        for s3 in sel3.values():
+            for sl in (s3 or {}).get('slots', []):
+                k = (sl['width'], sl['spec'], sl['family'])
+                if k not in keys:
+                    keys.append(k)
+        rows = []
+        for k in keys:
+            row = [f'W{k[0]}', k[1].replace('|', ' '), k[2]]
+            for b in range(4):
+                sl = next((x for x in (sel3[b] or {}).get('slots', []) if (x['width'], x['spec'], x['family']) == k), None)
+                row.append('pending' if sl is None else (sl['rule'] or '—') + ('' if sl['outcome'] == 'selected' else
+                                                                                 f" ({sl['outcome']})"))
+            rows.append(row)
+        L += ['### 3D rule selection at 65³ (64 cases; first candidate of the ladder qualified against gl64, check gl56)', '',
+              tbl(['width', 'spec', 'family', 'bank 0 (incumbent)', 'seed 1', 'seed 2', 'seed 3'], rows), '']
+        X['E2']['selection_3d'] = {str(b): ([dict(width=x['width'], spec=x['spec'], family=x['family'], rule=x['rule'],
+                                                  outcome=x['outcome']) for x in s3['slots']] if s3 else None) for b, s3 in sel3.items()}
+    fr3 = {b: (load(f'e2-3d-{b}.json') or {}).get('front_65') for b in range(4)}
+    if any(fr3.values()):
+        pk = []
+        for fr in fr3.values():
+            for k in (fr or {}).get('points', {}):
+                if k not in pk:
+                    pk.append(k)
+        rows = []
+        for k in pk:
+            row = [k.replace('|', ' ')]
+            for b in range(4):
+                v = ((fr3[b] or {}).get('points') or {}).get(k)
+                row.append('pending' if fr3[b] is None else ('n/a' if v is None else
+                           f"{v.get('state')} / {v.get('state_worst')}" + (f" (cost {f(v['cost'])})" if v.get('cost') is not None else '')
+                           + (' †' if v.get('qualifier') else '')))
+            rows.append(row)
+        L += ['### 3D front of the tested universe at 65³ (median-error front / worst-error front; cost = B/A vs '
+              'W256 gl24 fs CN 0.01 on the same bank; † = target-unverified pick, A2.5)', '',
+              tbl(['point', 'bank 0', 'seed 1', 'seed 2', 'seed 3'], rows), '',
+              '"missing" means no definitive state. Either no rule could be selected under an unverified target (A13.5), '
+              'or the registered timing contract (≥ 2 drift-accepted repetitions on every case) was not met. The front is '
+              'never complete: it covers only the tested candidates.', '']
+        X['E2']['front_3d'] = {str(b): ({k: dict(state=v.get('state'), state_worst=v.get('state_worst'), cost=v.get('cost'),
+                                                 median_e=v.get('median_e'), worst_e=v.get('worst_e'), qualifier=v.get('qualifier'))
+                                         for k, v in fr['points'].items()} if fr else None) for b, fr in fr3.items()}
     for dim in ('2d', '3d'):
         v = load(f'e2-verdicts-{dim}.json')
         banks = {b: load(f'e2-{dim}-{b}.json') for b in range(4)}

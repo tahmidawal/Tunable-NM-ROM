@@ -1,0 +1,125 @@
+{
+ "attempt": "e2v1a",
+ "driver": "r2acc",
+ "mesh": 256,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "all38",
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "dep",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    }
+   ]
+  }
+ ],
+ "selection": {
+  "file": "checks/select2d-1.json",
+  "sha256": "3936873d7fa346ae995b13050af1483ad0d3e585bd68cca6860d3f80e0d7bf19"
+ },
+ "bank": {
+  "ckpt": "inputs/banks/s1/ckpt.pkl",
+  "ckpt_sha256": "244e1107c33ae38a23d17517fc198d7f2f307f12d2bb20006d3ed7aada188954",
+  "rotation": "inputs/banks/s1/rotation_R512.npz",
+  "rotation_sha256": "73bb603b48f2883dfb7b40809cc67ceab86486d38dc23f2deea282356294af4d",
+  "seed": 1
+ }
+}

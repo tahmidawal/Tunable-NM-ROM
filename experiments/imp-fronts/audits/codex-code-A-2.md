@@ -1,0 +1,29 @@
+**Verdict: corrections are still required.** A3 cannot finish: `verdict_reg` is undefined. A1 input binding and A2 population/reporting handling remain incomplete.
+
+Read-only audit; no files changed, jobs submitted, JAX imported, or scratch created. CPU probes used one thread and disabled bytecode writes. Locations below are relative to `experiments/imp-fronts/`.
+
+| Audit-1 item | Verdict now | Fixed? Evidence / required fix |
+|---|---|---|
+| #1 A2 tail cancellation | **CORRECT** | Fixed. `fcommon.py:102–106` reverse-sums retained coefficients; `sine_highpass` synthesises them directly. A synthetic unit low mode plus a `1e-8` high mode preserves the tail to approximately `8.4e-11` relative error. |
+| #2 A2 invalid-run population | **WRONG** | Partly fixed: invalid ROMs retain reference/projection diagnostics. But `a2_wall.py:140–152` enumerates saved ROM IDs and drops eligible references with unavailable Laplacian scale before constructing the denominator. Enumerate eligible references independently; missing ROMs count as unavailable, and unavailable curvature must not remove tail diagnostics. |
+| #2 A2 empty handling | **WRONG** | Group medians now handle emptiness, but `a2_wall.py:206` unconditionally looks up `dev6\|0`; an empty/missing-fixture archive raises `ValueError`. Mark the curvature fixture unavailable and continue the independently gated decision. |
+| #3 A1 G2 | **CORRECT** | Fixed for the registered residual arrays: both resolutions require finite saved fields, 50 finite residuals, and the residual bound (`a1_smear.py:165–175`). The generator’s residual calculation supports Amendment 6’s state-finiteness implication. |
+| #3 A1 sensitivity clipping | **NEEDS-RESTATEMENT** | Floors are now clipped, but sensitivity clipping is not flagged (`a1_smear.py:226–230`). Preserve raw floors and record clipped names, as required by Amendment 1. |
+| #4 A1 input binding | **WRONG** | Manifest, embedded hash, current eligibility and set reproduction checks were added. However, generator environment settings remain unrecorded/unasserted; existing files are still reused blindly. `verify_inputs` checks only `nu/a`, accepts NaN descriptors, and ignores saved `n`. Persist/validate settings and full descriptors with explicit finiteness and shape checks. |
+| #5 A1 primary q | **CORRECT** | Fixed: primary uses `1/256`; separately named `q_train` uses `1/255` (`a1_smear.py:183–184`). |
+| #6 A3 secondary scope/reporting | **WRONG** | `all_regimes` is correctly computed, but `verdict_reg` is never defined (`a3_trunc.py:94`); the final print also accesses nonexistent `verdict_all_regimes`. Compute a control-gated regime verdict, use one output key, and replace “F7 screen passes” with the registered wording. |
+| #6 A3 reproduction | **WRONG** | Missing case records now fail reproduction, but an existing record lacking `e` raises `KeyError` (`a3_trunc.py:46`). NaN errors can also be hidden by Python’s order-dependent `max`. Treat missing/non-finite recorded or recomputed errors explicitly as failed evidence. |
+| #7 A2 projection rank | **CORRECT** | Fixed: `pinv(..., rcond=1e-13)` matches the shared SVD cutoff (`a2_wall.py:137`). |
+| #7 A4 union rank | **CORRECT** | Fixed: SVD replaces QR filtering and records rank plus retained/dropped singular-value margins (`a4_hybrid.py:17–24`). A dependent-column CPU fixture returned rank 2 and zero span residual. |
+| #8 shared accounting/output | **WRONG** | Reference qualification, store-override rejection and filename enumeration are fixed. Exclusion records were added. A1 still lacks explicit invalid-run accounting and empty-population handling; A3 still crashes on empty populations. A4’s empty-C1 handling is fixed. |
+| A2 bank-path coverage | **CORRECT** | Fixture identity is now explicitly `dev6\|0`, rather than whichever case survives first. Its availability still needs handling, as above. |
+
+**Additional adversarial findings**
+
+- **WRONG — A3 empty handling:** executable probes reproduced `ValueError` at both the empty identity reduction (`a3_trunc.py:62`) and empty fixture reduction (`:84`). Missing primary configuration also lacks handling; an empty primary scope would otherwise treat `None` as a screen pass. Return explicit unavailable outcomes before reductions or verdicts.
+- **CORRECT — A2 Richardson formula and decision scope:** `(4*a_5e-5-a_1e-4)/3`, the raw infinity-norm bound, and exclusion of curvature controls from the arm decision implement Amendment 7 (`a2_wall.py:124–129,212–219`). This is implementation validation, not a replay establishing that the real fixture passes.
+- **WRONG — A2 curvature withholding:** failed identity/path controls suppress only group medians; numeric per-case `rows[*][rom/proj]['kappa_a']` remain published (`a2_wall.py:214–216`). Withhold per-case curvature too; retain explicitly labelled diagnostic estimates if needed.
+- **NEEDS-RESTATEMENT — A2 invalid-run labels:** non-finite coefficients correctly omit ROM statistics, but `rom_valid` remains the archive’s possibly true flag (`a2_wall.py:160–166`). Report effective validity and rejection reason; an invalid fixture run must not certify curvature.
+- **WRONG — A1 descriptor rejection demonstrated:** an in-memory fixture with `nu=NaN, a=NaN` returned `verify_inputs(...).ok=True`; comparisons against NaN do not reject it. Hash verification establishes file integrity, not valid descriptors or generator settings.
+
+The probes also reproduced A3’s undefined-variable failure without running its analysis pipeline. No full production diagnostics or expensive bank decompositions were run.

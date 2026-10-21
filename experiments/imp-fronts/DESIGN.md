@@ -734,3 +734,8 @@ the value path is Richardson-extrapolated, $a_R=(4a_{5\cdot10^{-5}}-a_{10^{-4}})
 $\lVert a_R-b\rVert_\infty\le10^{-3}\lVert b\rVert_\infty+10^{-6}L$. Scope change: $\kappa_a$ is descriptive and never
 entered the arm-(c) decision, so the curvature identity and path checks now gate **only the reporting of $\kappa_a$**
 (withheld if any fails); the decision's controls are C-A2w±, the $\omega$ availability rule and the tail computation.
+
+**Amendment 8 (2026-10-21, after `audits/codex-design-6.md`, whose only open item was B0).** Early STOP (guard) on
+incomplete evidence is allowed only when the observed arm maximum floor exceeds 2 × the **complete** eligible-population
+K1 maximum (K1 floors are CPU quantities and must be complete for every eligible FI test case); otherwise incomplete
+arm evidence gives guard UNAVAILABLE. The population minimum (FI ≥ 6) stays explicit.

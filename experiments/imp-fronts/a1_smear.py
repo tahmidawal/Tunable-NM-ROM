@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -60,8 +61,10 @@ def gen():
         t = time.time()
         snaps, res = ro[n](jnp.asarray(u0[None]), jnp.asarray([d['nu']]))
         snaps, res = np.asarray(snaps)[:, 0], np.asarray(res)[:, 0]
-        np.savez(p, u=snaps[list(STEPS)].reshape(6, n, n), res=res, nu=d['nu'], a=d['a'], n=n,
-                 gen_sha256=F.sha(F.HERE / 'deps/burgers2d_film.py'))
+        np.savez(p, u=snaps[list(STEPS)].reshape(6, n, n), res=res, nu=d['nu'], a=d['a'], cx=d['cx'], cy=d['cy'], w=d['w'], n=n,
+                 gen_sha256=F.sha(F.HERE / 'deps/burgers2d_film.py'),
+                 settings=json.dumps(dict(DT=BF.DT, NUM_STEPS=BF.NUM_STEPS, NEWTON_ITERS=BF.NEWTON_ITERS, LIN_TOL=BF.LIN_TOL,
+                                          LIN_MAXITER=BF.LIN_MAXITER)))
         print(cid, n, f'{time.time() - t:.1f}s', 'max_res', float(res.max()), flush=True)
     lines = [f'{F.sha(p)}  {p.name}' for p in sorted(OUT.glob('upw_*.npz'))]
     (OUT / 'MANIFEST.sha256').write_text('\n'.join(lines) + '\n')
@@ -124,7 +127,10 @@ def verify_inputs(T6, X):
     man = dict(l.split()[::-1] for l in (OUT / 'MANIFEST.sha256').read_text().splitlines() if l.strip())
     gsha = F.sha(F.HERE / 'deps/burgers2d_film.py')
     prov = json.loads((F.HERE / 'deps/PROVENANCE.json').read_text())['files'][0]['sha256']
-    bad = []
+    bad, settings_unpersisted = [], []
+    for k in ('NEWTON_ITERS', 'LIN_TOL', 'LIN_MAXITER', 'N_TRAIN', 'N_VAL'):
+        if k in os.environ:
+            bad.append(f'environment override {k} present')
     if gsha != prov:
         bad.append('generator sha != PROVENANCE')
     need = [(c, 257) for c in X] + [(c, 256) for c in T6]
@@ -138,24 +144,41 @@ def verify_inputs(T6, X):
         d = F.load_ref(coh, int(c))[1]
         if str(z['gen_sha256']) != gsha:
             bad.append(f'{p.name}: generator hash')
-        if abs(float(z['nu']) - d['desc']['nu']) > 1e-15 * d['desc']['nu'] or abs(float(z['a']) - d['desc']['a']) > 1e-15:
-            bad.append(f'{p.name}: descriptor mismatch')
+        if int(z['n']) != n or z['u'].shape != (6, n, n) or np.asarray(z['res']).shape != (50,):
+            bad.append(f'{p.name}: shape / resolution mismatch')
+        for k in ('nu', 'a'):
+            ok = np.isfinite(float(z[k])) and np.isfinite(d['desc'][k]) and abs(float(z[k]) - d['desc'][k]) <= 1e-15 * abs(d['desc'][k])
+            if not ok:
+                bad.append(f'{p.name}: descriptor {k} mismatch or non-finite')
+        if 'settings' in z.files:
+            st = json.loads(str(z['settings']))
+            if st != dict(DT=0.005, NUM_STEPS=50, NEWTON_ITERS=8, LIN_TOL=1e-10, LIN_MAXITER=2000):
+                bad.append(f'{p.name}: generator settings {st}')
+        else:
+            settings_unpersisted.append(p.name)
         if not d['eligible']:
             bad.append(f'{cid}: no longer eligible')
     T6n, Xn, _ = select_sets()
     if (T6n, Xn) != (T6, X):
         bad.append('T6/X selection rule no longer reproduces sets.json')
-    return dict(ok=not bad, problems=bad, n_files=len(need))
+    return dict(ok=not bad, problems=bad, n_files=len(need), settings_unpersisted=len(settings_unpersisted),
+                settings_note=('files written before settings were persisted: certified by the generator sha256 (constants '
+                               'DT, NUM_STEPS fixed in the file; NEWTON_ITERS, LIN_TOL, LIN_MAXITER env-overridable and '
+                               'not set in the gen environment) and by the G2 residual gate; descriptors cx, cy, w are '
+                               'certified by the G1 IC identity'))
 
 
 def analyze():
     sets = json.loads((OUT / 'sets.json').read_text())
     T6, X = sets['T6'], sets['X']
+    if not X or len(T6) != 6:
+        F.write_json('a1_smear', dict(design='DESIGN.md A1', verdict='UNAVAILABLE (empty population)', T6=T6, X=X))
+        raise SystemExit('empty population')
     inputs = verify_inputs(T6, X)
     if not inputs['ok']:
         raise SystemExit(f'input verification failed: {inputs["problems"][:5]}')
     ref, upw, meta = {}, {}, {}
-    gates = dict(ic_rel_max=0., newton_res_max=0., all_finite=True)
+    gates = dict(ic_rel_max=0., newton_res_max=0., all_finite=True, runs_failing_G2=[])
     for cid in X:
         coh, c = cid.split('|')
         u, m = F.load_ref(coh, int(c))
@@ -165,12 +188,16 @@ def analyze():
         res = np.asarray(z['res'], float)
         gates['all_finite'] &= bool(np.isfinite(z['u']).all() and np.isfinite(res).all() and res.size == 50)
         gates['newton_res_max'] = max(gates['newton_res_max'], float(np.max(res)) if np.isfinite(res).all() else float('inf'))
+        if not (np.isfinite(res).all() and res.size == 50 and float(np.max(res)) <= 1e-8 and np.isfinite(z['u']).all()):
+            gates['runs_failing_G2'].append(f'{cid}@{int(z["n"])}')
     for cid in T6:                                        # G2 at the n = 256 sensitivity resolution too
         coh, c = cid.split('|')
         z = np.load(OUT / f'upw_{coh}_{int(c):03d}_n256.npz')
         res = np.asarray(z['res'], float)
         gates['all_finite'] &= bool(np.isfinite(z['u']).all() and np.isfinite(res).all() and res.size == 50)
         gates['newton_res_max'] = max(gates['newton_res_max'], float(np.max(res)) if np.isfinite(res).all() else float('inf'))
+        if not (np.isfinite(res).all() and res.size == 50 and float(np.max(res)) <= 1e-8 and np.isfinite(z['u']).all()):
+            gates['runs_failing_G2'].append(f'{cid}@{int(z["n"])}')
     gates['G1_ic_pass'] = gates['ic_rel_max'] <= 1e-12
     gates['G2_newton_pass'] = bool(gates['newton_res_max'] <= 1e-8 and gates['all_finite'])
     gates['G2_note'] = 'finite residual at all 50 steps implies all 51 states finite (non-finite states propagate into the residual norm)'
@@ -223,11 +250,13 @@ def analyze():
         coh, c = cid.split('|')
         z = np.load(OUT / f'upw_{coh}_{int(c):03d}_n256.npz')['u']
         n0u = np.linalg.norm(z[0])
-        fu = {b: max(F.floor_Q(z, Q, n0u), CLIP) for b, Q in b256.items()}
+        fu_raw = {b: F.floor_Q(z, Q, n0u) for b, Q in b256.items()}
+        clipped = [b for b, v in fu_raw.items() if v < CLIP]
+        fu = {b: max(v, CLIP) for b, v in fu_raw.items()}
         r = rows[cid]
         sens[cid] = dict(D_bank384=(r['f_ref_bank384'] / fu['bank384']) / (r['f_ref_sine384'] / fu['sine384']),
                          D_bank128=(r['f_ref_bank128'] / fu['bank128']) / (r['f_ref_sine128'] / fu['sine128']),
-                         **{f'f_upw256_{b}': v for b, v in fu.items()})
+                         clipped=clipped, **{f'f_upw256_{b}': v for b, v in fu_raw.items()})
     med = lambda key, S: float(np.median([rows[c][key] for c in S]))
     ctrl = dict(Dpos_med_T6=med('D_pod_upw', T6), Dneg_med_T6=med('D_pod_ref', T6),
                 resolution_med_T6=float(np.median([rows[c]['D_pod_upw'] / rows[c]['D_pod_ref'] for c in T6])))

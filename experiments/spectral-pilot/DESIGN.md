@@ -265,3 +265,171 @@ Every job ≤ 30 min, ≤ 2 at once. No GPU-hours.
 `audits/` (Codex design, code, results audits), `make_report.py` → `report.md` with generated numbers, plots and a
 glossary, and in the report a full-scale proposal for a cluster lane (arms, cohorts, GPU-hour budget, kill criteria).
 A short pointer README goes on `main` in `reports/2026-10-20-spectral-investigation/experimentalist/`.
+
+---
+
+## Amendment A1 (2026-10-20, after Codex design audit 1, before any pilot run)
+
+Audit `audits/codex-design-1.md` returned NOT-READY. Every item was checked against the files; the following replaces
+the corresponding text above. Where A1 and the original text disagree, A1 governs.
+
+### A1.1 Claims withdrawn
+
+- **Withdrawn: "a negative pilot result transfers to the real bank."** POD minimises mean-square *training*
+  reconstruction error; it does not bound held-out worst-case error, rollout error or the cost of other evaluation
+  structures. The ROM arm is renamed the **POD–Galerkin feasibility comparator**. A loss means this registered
+  implementation loses; a win licenses the full experiment. The report separates representation (floors), evolution
+  error and measured cost, and any statement about other spans is scoped to that span and that cost model.
+- **Withdrawn: "3/2 padding is exact".** `pscore.nonlinear` is oversampled collocation (its own docstring). The
+  tensor reproduces *that discrete right-hand side* projected on the span (so the tensor ROM is the Galerkin ROM of
+  the vendored FOM, to round-off), not the continuous Galerkin tensor. A padding-convergence check is added (A1.6 G9).
+- **Withdrawn: "crossover needs $r$ below about $N$".** Equal per-evaluation cost gives, up to constants,
+  $r_\times\sim(N^2\log N)^{1/3}$ for the tensor form. H-A2′ is restated with the *measured* $r_\times(N)$ (A1.3).
+- **Withdrawn:** the front-width and CFL formulas as eligibility rules (they are rough scales only); the claim that
+  the reading rules were symmetric; "not reachable" as a pilot conclusion.
+
+### A1.2 Cohorts (paired across levels; compatible initial condition)
+
+- **Paired design.** One draw of $(c_x,c_y,w,a,u_\nu)$ per row, $u_\nu\sim U[0,1]$, shared by every level; level
+  $\ell$ uses $\nu=\nu_{\ell}^{\rm lo}\,2^{u_\nu}$. So between levels only $\nu$ changes, by a factor 3 per level.
+  Training rows (seed 1 000 001) and test rows (seed 2 000 001) are drawn once.
+
+  | level | $\nu$ band | $s=a/\nu$ range | $N_{\rm ref}$ | training trajectories |
+  |---|---|---|---|---|
+  | A1 | $[0.06, 0.12]$ | 8–33 | 128 | 96 |
+  | A2 | $[0.02, 0.04]$ | 25–100 | 192 | 96 |
+  | A3 | $[0.00667, 0.01333]$ | 75–300 | 384 | 96 |
+  | A4 | $[0.00222, 0.00444]$ | 225–900 | 768 | 48 (memory), conditional (A1.7) |
+
+- **Compatible IC.** $a\sim U[1,2]$, $c_x,c_y\sim U[0.3,0.7]$, $w\sim U[0.035,0.05]$, so $u_0\le 2e^{-18}\approx3\times10^{-8}$
+  on the walls. The campaign family ($c\in[0.15,0.85]$, $w$ up to 0.2) has wall values up to about 0.75a; its sine
+  series then converges only algebraically and, at small $\nu$, the wall-incompatibility layer (not the front) would
+  set the spectral resolution. Changing the family isolates front steepness. This departs from the campaign family
+  on purpose and is stated in the report.
+- **Part B** keeps its own family (§3) with $c_x,c_y\sim U[0.22,0.30]$, $w\sim U[0.03,0.045]$ (wall values
+  $\le 2e^{-12}$), $\nu$ log-uniform in $[0.02,0.05]$; 96 training, 12 test.
+
+### A1.3 Quantities and hypotheses, per target
+
+For a method and target $\tau$ (worst-case error over the 12 test cases):
+- **minimum feasible size** $N_{\min}(\tau)$, $r_{\min}(\tau)$, $L_{\min}(\tau)$: the smallest size with any step count
+  reaching $\tau$;
+- **cost-optimal configuration**: the cheapest member (by the A1.5 contract) reaching $\tau$; its time is $t^*$.
+  $S(\tau)=t^*_{\rm FOM}/t^*_{\rm ROM}$.
+- If a method does not reach $\tau$ inside its ladder at a level, that cell is **censored** (reported as a bound,
+  e.g. $S>t_{\rm FOM}^*/t_{\rm ROM}^{\max}$ is not formed; the cell reads "ROM did not reach $\tau$"). A level whose
+  reference fails its gate is **unresolved**, never evidence for either side.
+- Fits and trends use only levels that are eligible for that $\tau$ (reference eligible and both methods reached it),
+  and need **at least three** such levels; otherwise the verdict for that $\tau$ is "too few levels".
+
+Per-target verdicts (each $\tau$ separately; no aggregation across targets):
+- **H-A1:** fitted $\alpha$ of $N_{\min}\propto\bar s^{\alpha}$ ($\bar s$ = level median of $s$). "Consistent" if
+  $\alpha\ge0.5$, "inconsistent" otherwise.
+- **H-A2:** "consistent" if $r_{\min}/(N_{\min}-1)^2$ decreases from the lowest to the highest eligible level.
+- **H-A2′ (restated):** let $r_\times(N)$ be the reduced size at which the ROM's measured time per right-hand-side
+  evaluation equals the FOM's at resolution $N$ (from the R4 cost model, cheaper of the two ROM forms). "Consistent"
+  if $r_{\min}/r_\times(N_{\min})$ decreases from the lowest to the highest eligible level; the value $<1$ means the
+  ROM's per-step work is below the FOM's.
+- **H-A3 (descriptive categories):** *ROM faster throughout* ($S\ge1$ at every eligible level), *FOM faster
+  throughout* ($S<1$ at every eligible level), *crossover toward the ROM* ($S<1$ at the lower and $S\ge1$ at the higher
+  levels, one sign change), *reverse crossover* ($S\ge1$ at the lower, $S<1$ at the higher levels), *mixed*
+  (more than one sign change). The least-squares slope of $\log S$ on $\log\bar s$ is reported with its sign, and,
+  when it is positive and $S<1$, the $\bar s$ at which the fitted line reaches 1 is reported as **an extrapolation
+  under this fit**, not as evidence. The K2 bar ($S\ge2$) is reported alongside.
+- **H-B:** per $\tau$, *ROM ≥ 2× faster*, *ROM faster but < 2×*, or *FD faster*, against the faster of the FD
+  families of §4.3. The claim is scoped to "these FD implementations"; it is not a statement about the best possible
+  solver on the L-shape (A1.8).
+
+### A1.4 Error metric and floors
+
+- **Part A error is the continuous $L^2$ norm, computed exactly in coefficient space** (Parseval): FOM coefficients
+  are zero-padded to $N_{\rm ref}$; ROM states are $\Psi z$ in the same space. $e=\max_{k=1..5}\lVert
+  b(t_k)-b_{\rm ref}(t_k)\rVert/\lVert b_{\rm ref}(0)\rVert$. This removes the 257² lattice's aliasing (mode 256 is
+  invisible there) from the scoring. The 257² lattice is used only as the output-synthesis *cost* contract.
+- **Floors (A):** the span floor (orthogonal projection on $\Psi_r$) and the spectral floor (truncation to $N$) are
+  the $L^2$-optimal errors in those spaces at each time, so for the max-over-times metric every run's error is
+  $\ge$ its floor. D2 is kept as a software check in this norm.
+- **Part B error** is the discrete $L^2$ norm on the lattice $x_i=i/64$ restricted to $\Omega_L$ (common to every
+  ladder grid). Diagnostics: the same norm on the window $\{\rho<0.1\}$ around the re-entrant corner, and, for the
+  matched configurations only, the norm on the $i/128$ lattice where the grid contains it. Part-B floors are computed
+  by least squares with the *sampled* basis (lattice rows of $\Phi_r$, rank-revealing), so D2 holds in the scoring
+  norm. Conclusions are restricted to the six output fields.
+
+### A1.5 Query and timing contract (replaces §6 where different)
+
+- **Query (primary, "field"):** case parameters $\to$ six output fields. Charged to both: initial condition from a
+  shared, precomputed 1024-point composite Gauss–Legendre table (64 panels × 16; checked against `pscore`'s
+  8192-point rule, gate G7); the $\nu$-dependent ETDRK4 coefficients (FOM: $(N-1)^2$ modes; ROM: $r$ modes);
+  all steps; output synthesis to the 257² lattice (FOM: DST via FFT; ROM: precomputed lattice basis times $z$).
+  Secondary contract "native": the same without output synthesis. F-IMEX (B) is charged **both** factorisations
+  (IMEX Euler start and SBDF2).
+- **Synchronisation:** every timed call ends with `block_until_ready` on all outputs (JAX) or returns materialised
+  arrays (scipy).
+- **Protocol:** one CPU core (`taskset`), single-thread flags as in §6, no other local job running. For each timing
+  case, FOM and ROM calls are interleaved (F, R, F, R, …), 5 repetitions each after a warm-up; every repetition is
+  stored. Sentinel (a fixed FOM configuration) at the start and end; drift $>10\%$ → the timing job is re-run once;
+  a second drift marks it invalid. The cost-optimal FOM and ROM configurations at each level and $\tau$ are re-timed
+  in a fresh process, and those times are the reported $t^*$.
+- **Ladders (replace the CFL window):** for every size, step counts $n=5\cdot2^k$ are run in increasing order,
+  from $n=5$, until the error is time-converged (relative change $<2\%$ between $n/2$ and $n$) or $n=2560$ (A,
+  F-IMEX) / $n=40960$ (F-RK4). Blown-up runs are invalid. A: $N\in\{8,12,16,24,32,48,64,96,128,192,256,384,512\}$
+  up to $\tfrac34N_{\rm ref}$; ROM $r\in\{4,6,8,12,16,24,32,48,64,96,128,192,256,384,512\}$ up to
+  $r_{\max}$ (A1 256, A2 384, A3/A4 512). B: $L\in\{32,64,128,192,256,320,384,448,512\}$ (32 scored on the $i/32$
+  sub-lattice only as a diagnostic). A size whose ladder top is reached without meeting $\tau$ gives a censored cell.
+- **Two ROM forms, each scored and timed on its own:** ROM-T (packed tensor) and ROM-Q (grid-trapezoid rule of
+  $(M_q-1)^2$ points, $M_q$ in a ladder, values and derivatives synthesised exactly; $6mr$ flops per evaluation). The
+  ROM's cost-optimal configuration is the cheaper over both forms. **No shape-only timing:** every timed ROM uses
+  its real operators.
+- **Sine-ROM control:** the same Galerkin/ETDRK4 machinery on the first $r$ Laplacian-ordered sines (reported as a
+  named arm, not as the ROM).
+
+### A1.6 Controls (replaces §7)
+
+*Deterministic software checks (must fire; a non-firing check is a code bug):*
+
+| id | check | must |
+|---|---|---|
+| SW1 | matcher on real FOM fields with injected errors of known size: $b+\epsilon\,\lVert b_0\rVert\,\hat e$ with $\epsilon=2\tau$ and $\epsilon=\tau/2$ | reject $2\tau$, accept $\tau/2$ |
+| SW2 | reference gate on a real reference perturbed by $5\times$ its threshold | reject |
+| SW3 | timing on a call that runs two *different* cases and returns both outputs | 1.8–2.2× a single call |
+| SW4 | tensor corruption: zero the slice $k^\star$ with the largest $\lvert T(z,z)_k\rvert$ along a real trajectory | rollout differs by $\ge10^{-6}$ |
+| G4 | ROM-T vs the exact-evaluation ROM ($\Psi^\top$`pscore.nonlinear`$(\Psi z)$; B: direct FD evaluation), 2 cases, $r\in\{32,128\}$ | agree to $\le10^{-9}$ relative |
+| G6 | training/test disjointness; seeds disjoint from campaign seeds | assert |
+| G7 | 1024-point IC rule vs `pscore.ic_coefs_2d` (8192 points) | $\le10^{-12}$ relative |
+| G9 | tensor at padding $M=3N_{\rm ref}/2$ vs $2N_{\rm ref}$, $r=64$ | report the rollout difference; must be $\le\tau_{\min}/10$ for targets to be eligible |
+| D2 | every run's error $\ge$ its floor (A: continuous norm; B: sampled-basis floor) | assert |
+
+*Physical diagnostics (reported, not asserted):* a coarse "reference" ($N_{\rm ref}/4$; B: $L=128$) against the
+gate; $N=16$ and $L=64$ against $\tau=10^{-2}$; a random orthonormal span at $r\in\{32,128\}$; data sensitivity D1
+(48 vs 96 training trajectories: a lower $r_{\min}$ with 96 is evidence of data sensitivity, not a quantified bound).
+
+### A1.7 References (replaces §5's acceptance)
+
+- **A:** continuous-norm gates on every test case: space $\lVert u_{N_{\rm ref}}-u_{3N_{\rm ref}/4}\rVert\le2\times10^{-5}$,
+  time $\lVert u_{n}-u_{2n}\rVert\le2\times10^{-6}$ (relative to $\lVert u_0\rVert$, max over output times),
+  $n=$ `ref_cfl_steps(N_ref, 2)`. A target is eligible only if $\tau\ge20\times$ the larger observed gate
+  difference at that level. Four training trajectories per level are checked at $3N_{\rm ref}/4$ against
+  $10^{-4}$. A failed gate makes the level unresolved (it may be re-run once at a larger $N_{\rm ref}$ by a dated
+  amendment, before any ROM or FOM ladder is read).
+- **B:** the reference is F-IMEX (SBDF2 + SuperLU) at $L=1024$, $n=2000$. Space: runs at $L\in\{256,512,1024\}$,
+  same $n$; observed orders $p_{1}$ (256→512) and $p_{2}$ (512→1024) on the $i/64$ lattice and on the $i/256$
+  lattice; gate $p_2\ge1$ and $\lvert p_1-p_2\rvert\le0.5$; reference error estimate
+  $\hat e_{\rm ref}=\lVert u_{512}-u_{1024}\rVert/(2^{p_2}-1)$. Time: $n$ vs $2n$ at $L=512$ on 3 cases
+  $\le10^{-1}\hat e_{\rm ref}$. Eligible targets $\tau\ge10\max\hat e_{\rm ref}$. The corner singularity
+  $\rho^{2/3}\sin(2\theta/3)$ is why the order is measured, not assumed.
+- **Feasibility rule (registered):** levels run in the order A1, A2, A3, A4; each stage is a job of at most 30 minutes.
+  A3 runs only if A2's generation finished in under 15 minutes; A4 only if A3's finished in under 20 minutes and its
+  snapshot set fits in 8 GB. Anything not run is "not run (time cap)", not a negative.
+
+### A1.8 Competitors (Part B)
+
+The two FD families stay (F-RK4 with the step ladder extended to $n=40960$, since RK4 diffusion stability needs
+$n\gtrsim0.25\cdot8\nu L^2/2.785$; F-IMEX with SuperLU). Sparse direct solves in 2D at $n\le2\times10^5$ are a strong
+practical choice, but multigrid, stabilised explicit (RKC) and high-order/spectral-element/multi-domain solvers are
+**not** in the pilot; the H-B wording is restricted accordingly, and the full proposal must include them.
+
+### A1.9 Compute and memory
+
+Snapshots stream to disk per chunk; POD by the method of snapshots (Gram matrix accumulated in chunks). Memory caps:
+A4 snapshot set 4.7 GB (48 trajectories), packed tensor at $r=512$ 0.54 GB, Part-B snapshot set 3.2 GB. Every
+stage writes a JSON with its wall time; the report states which stages ran.

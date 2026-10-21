@@ -8,6 +8,7 @@ from pathlib import Path
 
 H = Path(__file__).resolve().parent
 R = H / 'runs'
+TS = ('0.03', '0.01', '0.003', '0.001')
 
 
 def _l(p):
@@ -26,170 +27,166 @@ def tail(w):
     t3 = v['0.03']
     b = A.get('B')
     ab = a.get('AB') if a.get('AB', {}).get('status') == 'run' else None
+    L3 = ('A1', 'A2', 'A3')
+    SA = [a[lv]['targets'][t]['S'] for lv in L3 for t in TS if a[lv]['targets'][t].get('S')]
+    SB = [b['targets'][t]['S'] for t in TS if b and b['targets'][t].get('S')]
 
-    SA = [a[lv]['targets'][t]['S'] for lv in ('A1', 'A2', 'A3') for t in ('0.03', '0.01', '0.003', '0.001')
-          if a[lv]['targets'][t].get('S')]
-    w('## 6. What the pilot suggests\n')
+    w('## 6. What the pilot suggests (PILOT: small, not a result)\n')
+    w('All statements in this section are about **this POD–Galerkin implementation, the evaluated ladders, '
+      'in-sample matching on 12 test cases per level, and one CPU core**. They do not transfer to the '
+      'coordinate-network bank or to other reduced representations (DESIGN A1.1).\n')
     w('### 6.1 (A) Why spectral wins on the box\n')
     if 'H-A3' in t3:
         S = t3['H-A3']['S']
-        rr = t3['H-A2']['ratio']
-        rx = t3['H-A2p'].get('ratio')
-        w(f"- **No crossover in the pilot range; the comparison does not move toward the ROM.** At the only target "
-          f"reached at all three levels (worst error 3 %), the spectral FOM is faster at every level: "
-          f"S = {', '.join(g(x, '%.2f') for x in S)} for A1, A2, A3 (median s = "
-          f"{', '.join(g(a[lv]['s_median'], '%.0f') for lv in ('A1', 'A2', 'A3'))}), slope of log S on log s "
-          f"{g(t3['H-A3']['slope'], '%.2f')}. At A3 the ROM reaches no tighter target with r ≤ 512 (censored). "
-          f"PILOT: small, not a result.")
-        w(f"- **The trained span does get relatively more compressive as fronts sharpen** (H-A2 {t3['H-A2']['verdict']} at 3 %): "
-          f"$r_{{\\min}}/(N_{{\\min}}-1)^2$ = {', '.join(g(x, '%.2f') for x in rr)}. At A3 the POD span needs "
-          f"{a['A3']['targets']['0.03']['r_min']} unknowns where the spectral FOM carries "
-          f"{(a['A3']['targets']['0.03']['N_min'] - 1) ** 2} (N = {a['A3']['targets']['0.03']['N_min']}).")
-        if rx:
-            w(f"- **But not fast enough to pay for its unknowns** (H-A2′ {t3['H-A2p']['verdict']}): one tensor evaluation costs "
-              f"about $r^3$ flops against the FOM's $N^2\\log N$, so the ROM's per-step work equals the FOM's at "
-              f"$r_\\times(N_{{\\min}})$ ≈ {', '.join(g(a[lv]['targets']['0.03']['r_cross']['value'], '%.0f') for lv in ('A1', 'A2', 'A3'))}; "
-              f"the needed $r_{{\\min}}/r_\\times$ = {', '.join(g(x, '%.2f') for x in rx)} grows with steepness. "
-              "A crossover would need the reduced size to grow more slowly than about $N^{2/3}$, i.e. far more "
-              "compression than a linear span achieves for moving fronts.")
-        w(f"- H-A1 (spectral resolution grows with steepness): α = {g(t3['H-A1']['alpha'], '%.2f')} "
-          f"({t3['H-A1']['verdict']}); $N_{{\\min}}$ = "
-          f"{', '.join(str(a[lv]['targets']['0.03']['N_min']) for lv in ('A1', 'A2', 'A3'))} at 3 %, and "
-          f"{', '.join(str(a[lv]['targets']['0.001']['N_min']) for lv in ('A1', 'A2', 'A3'))} at 0.1 %. Spectral "
-          "resolution grows with steepness, but slowly (the fronts are resolved, so convergence stays "
-          "exponential).")
-    sine = [(lv, t) for lv in ('A1', 'A2', 'A3') for t in ('0.03', '0.01', '0.003', '0.001')
+        w(f"- **No crossover observed.** At the only target reached at all three levels (worst error 3 %), the "
+          f"spectral FOM is faster at every level: S = {', '.join(g(x, '%.2f') for x in S)} for A1, A2, A3 "
+          f"(median s = {', '.join(g(a[lv]['s_median'], '%.0f') for lv in L3)}); the sequence is not monotone and "
+          f"the log-slope is {g(t3['H-A3']['slope'], '%.2f')} (PILOT). Over all eligible levels and targets the "
+          f"ROM is {g(1 / max(SA), '%.0f')}–{g(1 / min(SA), '%.0f')}× slower. At A3 the ROM reached no tighter "
+          "target with r ≤ 512 (censored, not evidence either way).")
+        w(f"- **The trained span needs fewer unknowns than the spectral block, increasingly so at A3** (H-A2 "
+          f"{t3['H-A2']['verdict']} by the registered endpoint rule; not monotone): $r_{{\\min}}/(N_{{\\min}}-1)^2$ = "
+          f"{', '.join(g(x, '%.2f') for x in t3['H-A2']['ratio'])}; at A3, r = "
+          f"{a['A3']['targets']['0.03']['r_min']} against {(a['A3']['targets']['0.03']['N_min'] - 1) ** 2} sine modes "
+          f"(N = {a['A3']['targets']['0.03']['N_min']}) (PILOT).")
+        hp = t3['H-A2p']
+        if 'ratio' in hp:
+            w(f"- **Per nonlinear evaluation the ROM is near cost parity, so the per-unknown cost is the issue, not "
+              f"the count alone** (H-A2′ {hp['verdict']}): with the cheaper measured evaluation form per r, "
+              f"$r_{{\\min}}/r_\\times(N_{{\\min}})$ = {', '.join(g(x, '%.2f') for x in hp['ratio'])}; with the "
+              f"tensor alone (diagnostic) {', '.join(g(x, '%.2f') for x in t3.get('H-A2p_tensor_only', []))}. "
+              "The cheaper form is often a coarse grid rule whose own accuracy was not required here, so these are "
+              "optimistic for the ROM (PILOT). Since the matched whole-query ratio is far below these per-evaluation "
+              "ratios, the rest of the ROM query (the grid size actually needed, the initial projection, the "
+              "coefficient setup, the output decode and the step count) carries the gap; the pilot did not "
+              "decompose it.")
+        w(f"- H-A1: α = {g(t3['H-A1']['alpha'], '%.2f')} ({t3['H-A1']['verdict']}); $N_{{\\min}}$ = "
+          f"{', '.join(str(a[lv]['targets']['0.03']['N_min']) for lv in L3)} at 3 % and "
+          f"{', '.join(str(a[lv]['targets']['0.001']['N_min']) for lv in L3)} at 0.1 % (PILOT): the spectral "
+          "resolution needed grows with steepness, but from small values.")
+    sine = [(lv, t) for lv in L3 for t in TS
             if a[lv]['targets'][t].get('r_min_sine') and a[lv]['targets'][t].get('r_min')
             and a[lv]['targets'][t]['r_min_sine'] <= a[lv]['targets'][t]['r_min']]
     if sine:
-        w(f"- On the smooth end the learned span is not even better than plain sines: the sine-ROM (first r "
-          f"Laplacian-ordered sines, same Galerkin/ETDRK4 machinery) needs no more unknowns than the POD ROM at "
-          f"{', '.join(lv + ' τ=' + t for lv, t in sine)}.")
+        w(f"- At the smooth end the POD span is not better than plain sines: the sine-ROM needs no more unknowns "
+          f"than the POD ROM at {', '.join(lv + ' τ=' + t for lv, t in sine)} (PILOT).")
     nat = a['A1']['targets']['0.03'].get('native_S')
-    w(f"- Output synthesis is a large part of the ROM's query: on the native contract (no decode to the 257² "
-      f"lattice) S at A1, 3 % is {g(nat, '%.2f')} against {g(a['A1']['targets']['0.03'].get('S'), '%.2f')} on the "
-      "field contract.")
-    d1 = [(lv, a[lv]['targets']['0.03']['r_floor'], a[lv]['targets']['0.03']['r_floor48']) for lv in ('A1', 'A2', 'A3')]
-    w(f"- Data sensitivity (D1): the 3 % floor needs r = {', '.join(f'{x} (96 traj.) / {y} (48)' for _, x, y in d1)} "
-      f"at A1, A2, A3; doubling the data lowers the needed r at {sum(1 for _, x, y in d1 if x and y and x < y)} of 3 "
-      "levels, so the 96-trajectory POD is probably still data-limited and r_min is pessimistic for a "
-      "better-trained span. This changes the cost argument only if r falls by several times.")
+    w(f"- The output contract matters: at A1, 3 %, S is {g(nat, '%.2f')} on the native contract (no decode to the "
+      f"257² lattice) against {g(a['A1']['targets']['0.03'].get('S'), '%.2f')} on the field contract (PILOT; native "
+      "timings are batched, not call-interleaved).")
+    d1 = [(a[lv]['targets']['0.03']['r_floor'], a[lv]['targets']['0.03']['r_floor48']) for lv in L3]
+    w(f"- Data sensitivity of the *projection floor* (D1): the 3 % floor needs r = "
+      f"{', '.join(f'{x} (96 traj.) / {y} (48)' for x, y in d1)} at A1, A2, A3 (PILOT). More data lowered the "
+      "floor-based r here; whether it would lower the rollout r or the cost is untested.")
 
     w('\n### 6.2 (B) A domain without a fast transform\n')
     if b:
-        ts = [t for t in ('0.03', '0.01', '0.003', '0.001') if b['targets'][t].get('S') is not None]
-        w(f"- **Against these two FD solvers, the POD–Galerkin ROM is far faster at every target:** S = "
-          f"{', '.join(g(b['targets'][t]['S'], '%.0f') + ' (τ=' + t + ')' for t in ts)}. The FD solvers need "
-          f"L = {', '.join(str(min(x for x in (b['targets'][t].get('L_min_IMEX'), b['targets'][t].get('L_min_RK4')) if x)) for t in ts)} "
-          f"while the ROM needs r = {', '.join(str(b['targets'][t]['r_min']) for t in ts)}. PILOT: small, not a "
-          "result; scoped to these FD implementations.")
+        ts = [t for t in TS if b['targets'][t].get('S') is not None]
+        w(f"- **Against these two second-order FD solvers the POD–Galerkin ROM is much faster at every target:** "
+          f"S = {', '.join(g(b['targets'][t]['S'], '%.0f') + ' (τ=' + t + ')' for t in ts)}; FD needs "
+          f"L = {', '.join(str(min(x for x in (b['targets'][t].get('L_min_IMEX'), b['targets'][t].get('L_min_RK4')) if x)) for t in ts)}, "
+          f"the ROM r = {', '.join(str(b['targets'][t]['r_min']) for t in ts)} (PILOT; scoped to these FD "
+          "implementations; B basis qualification unestablished).")
         rom = _l(R / 'B' / 'rom.json')
         ref = _l(R / 'B' / 'ref.json')
         off = ref['seconds']['train'] + rom['timings']['pod'] + rom['timings']['tensor_full']
         x = b['targets']['0.001']
         if x.get('S'):
             sav = x['fom']['t'] - x['rom']['t']
-            w(f"- Offline cost (training data, POD, tensor; wall time on the shared CPU) is {g(off / 60, '%.0f')} "
-              f"minutes; at τ = 0.1 % each query saves {g(sav * 1e3, '%.0f')} ms on one core, so the break-even is "
-              f"about {g(off / sav, '%.0f')} queries (mixing multi-process offline wall time with single-core "
-              "query time; indicative only).")
+            w(f"- Component-based break-even estimate: training data + POD + tensor took {g(off / 60, '%.0f')} minutes "
+              f"of wall time on the shared multi-core CPU; at τ = 0.1 % each query saves {g(sav * 1e3, '%.0f')} ms "
+              f"on one core, i.e. about {g(off / sav, '%.0f')} queries (PILOT; mixes parallel offline wall time "
+              "with single-core query time; not a deployment accounting).")
     if ab and b:
-        sab = [(t, ab['targets'][t].get('S'), b['targets'][t].get('S')) for t in ('0.03', '0.01', '0.003', '0.001')]
+        sab = [(t, ab['targets'][t].get('S'), b['targets'][t].get('S')) for t in TS]
         sab = [(t, x, y) for t, x, y in sab if x is not None]
         if sab:
             win = [t for t, x, _ in sab if x >= 1]
-            w(f"- **Post-hoc control AB (A6): the identical Part-B cases solved on the box, ROM vs the spectral FOM**: "
-              f"S = {', '.join(g(x, '%.2f') + ' (τ=' + t + ')' for t, x, _ in sab)}. With this narrow family the ROM "
-              f"beats even the spectral FOM on the box at τ ∈ {{{', '.join(win) or 'none'}}} "
-              f"(r = {', '.join(str(ab['targets'][t]['r_min']) for t, _, _ in sab)} against the FOM's N = "
-              f"{', '.join(str(ab['targets'][t]['N_min']) for t, _, _ in sab)}). So the Part-B advantage has two "
-              "parts: the narrow, low-dimensional family (which already gives the ROM a win on the box at loose "
-              "targets) and the replacement of the spectral FOM by second-order FD (the remaining factor "
-              f"S_B / S_AB = {', '.join(g(y / x, '%.0f') + ' (τ=' + t + ')' for t, x, y in sab if y)}). The pilot "
-              "cannot separate 'no fast transform' from 'second-order FD is slow'; a high-order L-shape solver is "
-              "needed for that.")
-        else:
-            w('- Post-hoc control AB: no target reached by both methods (censored).')
-    SA = [a[lv]['targets'][t]['S'] for lv in ('A1', 'A2', 'A3') for t in ('0.03', '0.01', '0.003', '0.001')
-          if a[lv]['targets'][t].get('S')]
-    SB = [b['targets'][t]['S'] for t in b['targets'] if b['targets'][t].get('S')] if b else []
-    w(f"- **Caveat that dominates B:** second-order FD is a weak competitor for smooth solutions; on the box the "
-      f"spectral FOM beats the same ROM machinery by {g(1 / max(SA), '%.0f')}–{g(1 / min(SA), '%.0f')}×, while on "
-      f"the L-shape the FD solvers lose by {g(min(SB), '%.0f')}–{g(max(SB), '%.0f')}×. A "
-      "high-order spectral-element or multi-domain Chebyshev solver on the L-shape would sit between these, and it "
-      "is the comparison that decides the question. It was not run.\n")
+            w(f"- **Post-hoc control AB (A6): the identical Part-B cases solved on the box, ROM vs the spectral FOM:** "
+              f"S = {', '.join(g(x, '%.2f') + ' (τ=' + t + ')' for t, x, _ in sab)}; the ROM is faster at "
+              f"τ ∈ {{{', '.join(win) or 'none'}}} (r = {', '.join(str(ab['targets'][t]['r_min']) for t, _, _ in sab)} "
+              f"against N = {', '.join(str(ab['targets'][t]['N_min']) for t, _, _ in sab)}) (PILOT). So with a "
+              "narrow family the same ROM machinery can beat even the spectral FOM on the box at loose targets. "
+              f"The descriptive cross-panel ratios S_B / S_AB = "
+              f"{', '.join(g(y / x, '%.0f') + ' (τ=' + t + ')' for t, x, y in sab if y)} (PILOT) mix several changes "
+              "at once (geometry, competitor, scoring norm, basis, initialisation, output cost); they are not an "
+              "attribution to the missing fast transform.")
+    w(f"- **Caveat that dominates B:** second-order FD is a weak competitor for smooth solutions (on the box the "
+      f"spectral FOM beats this ROM by {g(1 / max(SA), '%.0f')}–{g(1 / min(SA), '%.0f')}× with the wide family, "
+      f"while the L-shape FD solvers lose to it by {g(min(SB), '%.0f')}–{g(max(SB), '%.0f')}×; PILOT). How a "
+      "high-order spectral-element or multi-domain Chebyshev solver on the L-shape would compare is unknown; it "
+      "was not run and it is the comparison that decides question (B).\n")
 
     w('### 6.3 Does a crossover against spectral look reachable, and where?\n')
     if ab:
-        sab = [ab['targets'][t].get('S') for t in ('0.03', '0.01', '0.003', '0.001') if ab['targets'][t].get('S')]
-        w(f"- **What drives the outcome is the width of the parameter family (its n-width) more than front "
-          f"steepness.** With the Part-A family (bump centres anywhere in a 0.4-wide square) the ROM loses at every "
-          f"level; with the Part-B family (centres in a 0.08-wide square) on the same box and the same solvers it wins "
-          f"at the looser targets (S up to {g(max(sab), '%.1f')}). Steepness raises both methods' sizes; family width "
-          "decides whether the reduced size stays below the equal-cost size $r_\\times$. (AB is post hoc and has a "
-          "different ν band from A1–A3; PILOT.)")
-    w(f"- **On the box with a wide family: not with a linear span.** The pilot's trend runs the wrong way (the ROM's required size "
-      f"relative to its equal-cost size grows with steepness), the ROM is {g(1 / max(SA), '%.0f')}–"
-      f"{g(1 / min(SA), '%.0f')}× slower at every eligible level and target, and "
-      "its cost per unknown (dense $r^3$ tensor or $6mr$ grid rule) is structurally above the FFT's. Steeper fronts "
-      "make the linear n-width worse for moving fronts. A crossover on the box would need a nonlinear or "
-      "transport-aware reduced representation (registration, shifted POD, manifold ROMs) whose online cost does "
-      "not grow with the front resolution — which this pilot did not test.")
-    w("- **Off the box: plausible, and it is where the full experiment should go.** Where no fast transform "
-      "exists the ROM's advantage over the FD solvers is one to two orders of magnitude in the pilot. Whether it "
-      "survives a high-order solver (spectral elements, $p$-FEM with static condensation, Chebyshev multi-domain) "
-      "and a wider parameter family is the open question.\n")
+        sab = [ab['targets'][t].get('S') for t in TS if ab['targets'][t].get('S')]
+        w(f"- **The AB result motivates a controlled family-width experiment.** With the Part-A family the ROM lost "
+          f"at every level; with the narrow Part-B family on the same box it won at the looser targets (S up to "
+          f"{g(max(sab), '%.1f')}, PILOT). AB also changes the viscosity band, the bump-width distribution and the "
+          "cases, so the pilot does not establish that family width dominates viscosity or front sharpness; it "
+          "makes family width (with the others held fixed) the first axis to test.")
+    w("- **On the box with the wide Part-A family: no crossover was observed for this POD implementation**, and "
+      "the steepness sweep did not move the comparison toward the ROM. Whether a better-trained span, the "
+      "coordinate-network bank, or a transport-aware or nonlinear representation would cross is a hypothesis for "
+      "the full experiment, not a pilot finding.")
+    w("- **Off the box: a large advantage over second-order FD was observed; against a high-order solver it is "
+      "unknown.** That comparison, with a wider family, is where the full experiment should start.\n")
 
-    w('## 7. Proposed full-scale experiment (cluster lane; planning numbers)\n')
-    w("Two parts, each pre-registered and Codex-gated as usual. Budgets are planning estimates, not results.\n")
-    w("**Part A′ (box, steepness, one more chance for the bank).** Purpose: decide whether *any* reduced "
-      "representation we can build crosses the spectral FOM on the box as fronts sharpen; stop the box line if not.")
-    w("- Primary axis (from the AB control): family width (bump-centre range 0.08 → 0.4 in 4 steps, width range "
-      "likewise) crossed with 3 steepness levels; the readout is the family width at which S crosses 1 and 2 for "
-      "each target, per arm.")
-    w("- Cohorts: the paired viscosity sweep extended to 5 levels (s up to about 2000; $N_{\\rm ref}$ up to 1536–2048 "
-      "on H200), training sets 96 / 384 / 1536 trajectories per level (data-sufficiency curve), 32 test cases per "
-      "level, plus a sealed confirmation cohort per level opened only once.")
-    w("- Arms: (1) spectral FOM ETDRK4 (fixed and adaptive step), GPU and CPU; (2) POD–Galerkin tensor ETDRK4 "
-      "(this pilot); (3) the coordinate-network bank retrained per level (incumbent recipe, linear span) with the "
-      "off-mesh rule and its best stepper (F1 of the ideation report); (4) a transport-aware arm (registration or "
-      "shifted POD) or a nonlinear decoder; (5) POD-ECSW as the standard hyper-reduction control.")
-    w("- Metrics: as here (worst/median continuous-L² error, three-way scoring with allowances, matched cost-optimal "
-      "configurations, field and native contracts), on GPU (H200) and one CPU core.")
-    w("- Budget: references and training data 15 GPU-h; bank retrains 5 levels × 2 data sizes × ~3 A100-h = 30 GPU-h; "
-      "ROM ladders and timing 10 GPU-h; transport/nonlinear arm 10 GPU-h; total about **65 GPU-h**.")
-    w("- Kill criteria: stop Part A′ if, at every level and every target reached by both methods, the best reduced "
-      "arm has S < 0.5 **and** its $r_{\\min}/r_\\times(N_{\\min})$ does not fall with steepness; stop the bank arm "
-      "if its floor at $r_\\times(N_{\\min})$ is above τ at every level.\n")
-    w("**Part B′ (no fast transform).** Purpose: test the pilot's Part-B signal against strong solvers and a wider "
-      "family.")
-    w("- Geometries: the L-shape and a box with a circular hole (curved boundary; the bank uses an R-function / "
-      "distance envelope, with the corner-singularity caveat of A2.1).")
-    w("- Cohorts: Part-B family widened to the Part-A spread (centres over the domain, w 0.035–0.2) and two "
-      "steepness levels; 96 / 384 training trajectories; 32 test; sealed confirmation cohort.")
-    w("- Competitors: FD + IMEX with geometric/algebraic multigrid (GPU), high-order spectral-element or $p$-FEM "
-      "with static condensation (the decisive comparator), Chebyshev multi-domain on the L-shape, explicit RK on "
-      "the coarsest adequate high-order mesh; each tuned over order, mesh, step and solver tolerance.")
-    w("- Reduced arms: POD–Galerkin tensor (this pilot), the off-mesh bank with an envelope, POD-ECSW.")
-    w("- Budget: references (high-order, refined) 15 GPU-h; competitor ladders 20 GPU-h; bank trainings 2 geometries "
-      "× 2 levels × ~3 A100-h = 12 GPU-h; ROM ladders and timing 8 GPU-h; total about **55 GPU-h**. Whole proposal "
-      "about **120 GPU-h** with contingency.")
-    w("- Kill criteria: the Part-B claim is withdrawn if the best high-order solver matches the ROM's worst error "
-      "with S < 2 at every target; the 'geometry' attribution is withdrawn if the box control with the same family "
-      "(as AB here) gives the ROM the same advantage over the spectral FOM.\n")
+    w('## 7. Proposed full-scale experiment (cluster lane)\n')
+    w("All sizes, budgets and thresholds in this section are **planning estimates and design choices, not "
+      "measured results**. Both parts are pre-registered and Codex-gated as usual.\n")
+    w("**Part A′ — the box: family width × steepness.**")
+    w("- Matrix: family width W ∈ {0.08, 0.16, 0.28, 0.4} (range of bump centres; bump width held at the pilot's "
+      "U[0.035, 0.05]) × steepness levels {A1, A2, A3, A4} (paired ν, factor 3 per level; A4 needs "
+      "$N_{\\rm ref}$ ≈ 768 on GPU) = 16 cells; 32 test cases per cell; one sealed confirmation cohort per cell, "
+      "opened once; training 96 and 384 trajectories per cell (data-sufficiency pair).")
+    w("- Arms: (1) spectral FOM ETDRK4 (fixed and adaptive step); (2) POD–Galerkin tensor/grid ETDRK4 (this pilot); "
+      "(3) the coordinate-network bank retrained per cell (linear span, off-mesh rule, best stepper F1 of the "
+      "ideation report) for the 8 cells with W ∈ {0.08, 0.4}; (4) one transport-aware or nonlinear arm on the 4 "
+      "cells with W = 0.4; (5) POD-ECSW.")
+    w("- Readouts: the family width at which S crosses 1 and 2 per target and level; matched S on GPU (H200) and "
+      "one CPU core; per arm a query-cost decomposition (evaluation, initial projection, setup, decode, steps). "
+      "The equal-cost size $r_\\times$ is defined per arm from that arm's own measured evaluation cost.")
+    w("- Budget (planning): references and training data 16 cells × 2 sizes ≈ 12 GPU-h; bank retrains 8 cells × "
+      "2 data sizes × ~3 A100-h ≈ 48 GPU-h; transport/nonlinear arm ≈ 12 GPU-h; ladders, timing, POD-ECSW ≈ 15 "
+      "GPU-h. Subtotal ≈ 87 GPU-h.")
+    w("- Kill criteria: stop the box line if, in every cell with W ≥ 0.28, every reduced arm has S < 0.5 at every "
+      "target reached by both methods; stop the bank arm if its projection floor at its own $r_\\times$ is above "
+      "τ in every cell.\n")
+    w("**Part B′ — no fast transform, against strong solvers.**")
+    w("- Geometries: the L-shape and a box with a circular hole (the bank uses an R-function/distance envelope; "
+      "corner caveat of A2.1).")
+    w("- Families: the pilot's narrow family and the wide family W = 0.4 (same bump widths as A′), two steepness "
+      "levels; 32 test cases and a sealed cohort per cell (2 geometries × 2 families × 2 levels = 8 cells).")
+    w("- Competitors (the decisive part): high-order spectral elements or $p$-FEM with static condensation, "
+      "Chebyshev multi-domain (L-shape), FD-IMEX with multigrid; each tuned over order, mesh, step and solver "
+      "tolerance. Reduced arms: POD–Galerkin, the bank with an envelope, POD-ECSW. Plus the box control of each "
+      "cell (as AB), against the spectral FOM.")
+    w("- Budget (planning): references ≈ 10 GPU-h; competitor ladders ≈ 20 GPU-h; bank trainings 8 cells × ~3 "
+      "A100-h ≈ 24 GPU-h; ladders and timing ≈ 8 GPU-h. Subtotal ≈ 62 GPU-h.")
+    w("- Kill criteria: withdraw the Part-B claim if the best high-order solver matches the ROM's worst error with "
+      "S < 2 at every target in the wide-family cells; withdraw any geometry attribution if the box control of a "
+      "cell gives the ROM the same S against the spectral FOM.\n")
+    w("**Total (planning): ≈ 150 GPU-h, plus a 20 % contingency held by the coordinator (≈ 180 GPU-h ceiling).** "
+      "Run Part B′ first (its kill test is cheaper and decides the paper's off-box claim).\n")
 
     w('## 8. Deviations, limitations, audits\n')
     w("- **Amended exploratory design**: references and training for A1–A3 and an A1 debugging ladder ran before "
       "design amendment A3 was final; implementation records A5 (two addenda) and the post-hoc control A6 are in "
-      "`DESIGN.md`. A4 not run (time cap). A3's r = 512 ROM ladder ran as a separate checkpoint unit after the "
-      "first A3 job reached its 30-minute cap; the AB control is post hoc.")
-    w("- The ROM is a POD–Galerkin feasibility comparator, not the coordinate-network bank; matching is in-sample "
-      "and symmetric on 12 test cases per level; errors are against numerical references with conditional "
-      "allowances; all timing is one CPU core of the GB10 (no GPU numbers).")
+      "`DESIGN.md`. A3's first ROM job reached its 30-minute unit cap at r = 512, which then ran as a separate "
+      "checkpoint unit; by rule A2.6 (A4 only if all A3 stages finished) **A4 was not run**.")
+    w("- Allowance coverage: the A padding gate covers the two steepest test cases per level; the B time allowance "
+      "extrapolates from a fine-grid check on 4 cases and an L = 512 check on 12. G6 (cohort disjointness) and D2 "
+      "(no run below its floor, Part A and B, and the spectral floor) were asserted in the code. Diagnostics (G9, "
+      "H1, coarse references, random spans) are reported, not asserted.")
+    w("- Timing: one GB10 CPU core, f64, single-thread flags asserted; sentinels valid in every screen and final. "
+      "`JAX_DEFAULT_MATMUL_PRECISION` was not set (recorded as null); on CPU with f64 it is not expected to change "
+      "results, but it departs from the project rule. Native-contract timings are batched, not interleaved. "
+      "Spreads and outlier counts are in the timing table above.")
     w("- Not implemented (stated limitations): written memory projections, pre-stage benchmarks, D3, B "
       "corner-window and finer-lattice diagnostics, Part-B native timing and H1, rollouts for D1/random span.")
-    w("- Audits (`audits/`): design 1–3 NOT-READY, 4 READY; code 1–4 NEEDS-FIX, 5 READY-TO-TRUST; results audit "
-      "listed in the hand-back.\n")
+    w("- Audits (`audits/`): design 1–3 NOT-READY, 4 READY; code 1–4 NEEDS-FIX, 5 READY-TO-TRUST; results 1 "
+      "NEEDS-FIX (numbers reproduced; interpretation corrected), later rounds listed in the hand-back.\n")
 
     w('## 9. Glossary\n')
     for k, d in [

@@ -29,12 +29,19 @@ def floor_size(worst_by_size, tau):
     return min(ok) if ok else None
 
 
-def r_cross(cm, N):
-    """First crossing from below (A3.1): smallest measured r whose tensor-evaluation time >= the FOM's at N,
-    log-log interpolated with the preceding r. 'unresolved' if not bracketed or multiple crossings."""
+def r_cross(cm, N, cheapest=True):
+    """First crossing from below (A3.1): smallest measured r whose ROM evaluation time >= the FOM's at N, log-log
+    interpolated with the preceding r. cheapest=True (the design's rule, DESIGN 6 / A2.1): per r the cheaper of the
+    tensor and every measured grid-rule form (unrestricted by accuracy); cheapest=False: tensor only (diagnostic).
+    'unresolved' if not bracketed or multiple crossings."""
     tf = cm['fom'].get(str(N)) or cm['fom'].get(N)
     rs = sorted(int(r) for r in cm['rom_t'])
-    tr = [cm['rom_t'][str(r)] for r in rs]
+    tr = []
+    for r in rs:
+        c = [cm['rom_t'][str(r)]]
+        if cheapest:
+            c += [v for k, v in cm['rom_q'].items() if int(k.split('|')[0]) == r]
+        tr.append(min(c))
     above = [t >= tf for t in tr]
     changes = sum(1 for i in range(1, len(above)) if above[i] != above[i - 1])
     if not any(above) or above[0] or changes != 1:
@@ -110,6 +117,7 @@ def main():
             t['r_floor_sine'] = floor_size({i + 1: w for i, w in enumerate(rom['floors']['sine']['worst'])}, tau)
             if ts and ts.get('screen_valid'):
                 t['r_cross'] = r_cross(ts['cost_model'], t['N_min']) if t['N_min'] else None
+                t['r_cross_tensor'] = r_cross(ts['cost_model'], t['N_min'], cheapest=False) if t['N_min'] else None
             # spectral-floor D2 (worst over cases): every FOM run's worst error >= the truncation floor's worst
             for N, v in fom['sizes'].items():
                 fl_ = rom['floors']['spectral'].get(str(N))
@@ -152,7 +160,10 @@ def main():
                 q2 = [r / x['value'] for r, x in zip(rm, rx)]
                 v['H-A2p'] = dict(ratio=q2, verdict='consistent' if q2[-1] < q2[0] else 'inconsistent')
             else:
-                v['H-A2p'] = dict(verdict='unresolved')
+                v['H-A2p'] = dict(verdict='unresolved', detail=rx)
+            rxt = [lv_data[lv]['targets'][str(tau)].get('r_cross_tensor') for lv in elig]
+            if all(x and x['status'] == 'ok' for x in rxt):
+                v['H-A2p_tensor_only'] = [r / x['value'] for r, x in zip(rm, rxt)]
             sl = fit_slope(s, S)
             v['H-A3'] = dict(S=S, category=category(S), slope=sl, K2_bar=[x >= 2 for x in S])
             if sl is not None and sl > 0 and S[-1] < 1:

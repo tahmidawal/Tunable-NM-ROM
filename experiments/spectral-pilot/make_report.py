@@ -209,9 +209,11 @@ def main():
         w(f"| {lv} | [{g(ref['nu'][0], '%.4g')}, {g(ref['nu'][1], '%.4g')}] | {g(e['s_median'], '%.0f')} "
           f"({g(e['s_range'][0], '%.0f')}–{g(e['s_range'][1], '%.0f')}) | {e['Nref']} | {g(e['U'], '%.1e')} | "
           f"{g(dg.get('sharp'), '%.1f')} ({g(dg.get('sharp_t0'), '%.1f')}) | {g(dg.get('energy'), '%.2f')} | {gates} |")
-    w(f"\nA4 (ν band [0.0022, 0.0044]) was **not run (time cap)**: the registered rule (A2.6/A1.7) allowed it only if "
-      f"A3's generation finished in under 20 minutes; it took {g(load(R / 'A' / 'A3' / 'ref.json')['seconds'] / 60, '%.0f')} "
-      "minutes on the shared CPU. Gates per level: reference space/time/padding differences, SW1a/SW1b (matcher), SW2 "
+    w(f"\nTable: PILOT. A4 (ν band [0.0022, 0.0044]) was **not run (time cap)**: rule A2.6 allows A4 only if all of "
+      "A3's stages finished; A3's first ROM job hit its 30-minute unit cap (its r = 512 part was re-run as a "
+      "separate unit). A3's reference generation took "
+      f"{g(load(R / 'A' / 'A3' / 'ref.json')['seconds'] / 60, '%.0f')} minutes on the shared CPU. AB is the post-hoc "
+      "control of A6. Gates per level: reference space/time/padding differences, SW1a/SW1b (matcher), SW2 "
       "(reference gate), G4 (tensor ROM = direct-evaluation ROM), SW4 (tensor-slice corruption), G7 (IC rule), D2 "
       "(no run below its floor). Front sharpness is $\\max|\\nabla u|/\\max|u|$, median over test cases of the max "
       "over $t_1..t_5$.\n")
@@ -221,30 +223,34 @@ def main():
         w(f"Part B (L-shape, ν ∈ [0.02, 0.05]): reference = SBDF2 + SuperLU at L = 1024; observed orders "
           f"p₁ = {g(o['p1'], '%.2f')}, p₂ = {g(o['p2'], '%.2f')} (gate {'passed' if b['order_gate'] else 'failed'}); "
           f"Richardson reference-error estimate {g(b['e_ref'], '%.1e')}, time-gate difference {g(b['delta_t'], '%.1e')}, "
-          f"allowance U = {g(b['U'], '%.1e')} (conditional). The ROM's own operator (FD at L = 512) is "
-          f"{g(b['fd512']['worst'], '%.1e')} (worst) from the reference, which floors every ROM error.\n")
+          f"allowance U = {g(b['U'], '%.1e')} (conditional). The ROM's own operator (FD at L = 512) differs from the "
+          f"reference by {g(b['fd512']['worst'], '%.1e')} (worst), a measured discretisation discrepancy that may "
+          "limit the ROM's accuracy (PILOT).\n")
 
     # ---- Part A table
     w('## 3. Part A: the box, paired viscosity sweep\n')
-    w('Smallest observed feasible sizes (any step count meets τ under the three-way rule), representation floors '
-      '(smallest size whose projection floor ≤ τ), and the matched, freshly re-timed cost-optimal configurations. '
-      '"–" = not reached inside the ladder (censored) or not timed.\n')
-    w('| level | τ (worst) | FOM $N_{\\min}$ [$(N-1)^2$] | ROM $r_{\\min}$ | sine-ROM $r_{\\min}$ | floor: block $N$ | floor: POD r (96 / 48 traj.) | FOM matched (N, steps, time) | ROM matched (form, r, steps, time) | S | S native |')
+    w('Table (PILOT): smallest observed feasible sizes (any step count meets τ under the three-way rule), '
+      'representation floors (smallest size whose projection floor ≤ τ), and the screen-selected fastest among '
+      'evaluated candidates, re-timed in a fresh process (one-repetition pruning, A5). "cens." = not reached inside '
+      'the ladder (censored); "–" = not applicable / not timed. ROM matched lists form, r, $M_q$ (grid size, ROM-Q), '
+      'steps and $N_{\\rm init}$.\n')
+    w('| level | τ (worst) | FOM $N_{\\min}$ [$(N-1)^2$] | ROM $r_{\\min}$ | sine-ROM $r_{\\min}$ | floor: block $N$ | floor: POD r (96 / 48 traj.) | FOM matched (N, steps, time) | ROM matched (form, r, $M_q$, steps, $N_{\\rm init}$, time) | S | S native |')
     w('|---|---|---|---|---|---|---|---|---|---|---|')
     for lv in LVX:
         for t in TAUS:
             x = A['A'][lv]['targets'][t]
             Nm = x['N_min']
             fo, ro = x.get('fom'), x.get('rom')
-            w(f"| {lv} | {tau_s(t)} | {g(Nm)} [{g((Nm - 1) ** 2 if Nm else None)}] | {g(x['r_min'])} | "
-              f"{g(x.get('r_min_sine'))} | {g(x['N_floor'])} | {g(x['r_floor'])} / {g(x['r_floor48'])} | "
+            cz = lambda y: 'cens.' if y is None else g(y)
+            w(f"| {lv} | {tau_s(t)} | {cz(Nm)} [{g((Nm - 1) ** 2 if Nm else None)}] | {cz(x['r_min'])} | "
+              f"{cz(x.get('r_min_sine'))} | {cz(x['N_floor'])} | {cz(x['r_floor'])} / {cz(x['r_floor48'])} | "
               f"{(str(fo['N']) + ', ' + str(fo['n']) + ', ' + ms(fo['t'])) if fo else '–'} | "
-              f"{(ro['form'] + ', ' + str(ro['r']) + ', ' + str(ro['n']) + ', ' + ms(ro['t'])) if ro else '–'} | "
+              f"{(ro['form'] + ', ' + str(ro['r']) + ', ' + g(ro['Mq']) + ', ' + str(ro['n']) + ', ' + str(ro['Ninit']) + ', ' + ms(ro['t'])) if ro else '–'} | "
               f"{g(x.get('S'), '%.3g')} | {g(x.get('native_S'), '%.3g')} |")
     w('\n![floors](plots/floors.png)\n\n![sweep](plots/sweep.png)\n\n![pareto](plots/pareto.png)\n')
 
-    w('### 3.1 Verdicts per target (DESIGN A1.3, A2.1, A3.1)\n')
-    w('| τ | eligible levels | H-A1 α (N ∝ s^α) | H-A2: $r_{\\min}/(N_{\\min}-1)^2$ | H-A2′: $r_{\\min}/r_\\times(N_{\\min})$ | H-A3 category; S per level | slope of log S |')
+    w('### 3.1 Verdicts per target (DESIGN A1.3, A2.1, A3.1; PILOT)\n')
+    w('| τ | eligible levels | H-A1 α (N ∝ s^α) | H-A2: $r_{\\min}/(N_{\\min}-1)^2$ | H-A2′: $r_{\\min}/r_\\times(N_{\\min})$ (cheaper form; tensor only) | H-A3 category; S per level | slope of log S |')
     w('|---|---|---|---|---|---|---|')
     for t in TAUS:
         v = A['verdicts'][t]
@@ -254,13 +260,13 @@ def main():
         a2p = v['H-A2p']
         w(f"| {tau_s(t)} | {', '.join(v['eligible'])} | {g(v['H-A1']['alpha'], '%.2f')} ({v['H-A1']['verdict']}) | "
           f"{', '.join(g(q, '%.2g') for q in v['H-A2']['ratio'])} ({v['H-A2']['verdict']}) | "
-          f"{(', '.join(g(q, '%.2g') for q in a2p['ratio']) + ' (' + a2p['verdict'] + ')') if 'ratio' in a2p else a2p['verdict']} | "
+          f"{(', '.join(g(q, '%.2g') for q in a2p['ratio']) + ' (' + a2p['verdict'] + '); ' + ', '.join(g(q, '%.2g') for q in v.get('H-A2p_tensor_only', []))) if 'ratio' in a2p else a2p['verdict']} | "
           f"{v['H-A3']['category']}; {', '.join(g(q, '%.3g') for q in v['H-A3']['S'])} | {g(v['H-A3']['slope'], '%.2f')} |")
     w('\nA target is *eligible* at a level only if both methods reached it and the timing was valid; a verdict needs '
       'three eligible levels. Censored cells (a method never reached τ) are not evidence for either side.\n')
 
     # cost model
-    w('### 3.2 Cost per nonlinear evaluation (one core)\n')
+    w('### 3.2 Cost per nonlinear evaluation (one core; PILOT)\n')
     cm = A['A'][LV[-1]].get('cost_model')
     if cm:
         w(f'From the {LV[-1]} screen (median of 20 calls):\n')
@@ -276,13 +282,14 @@ def main():
         rx = [(lv, t, A['A'][lv]['targets'][t].get('r_cross')) for lv in LV for t in TAUS]
         rx = [(lv, t, x) for lv, t, x in rx if x and x.get('status') == 'ok']
         if rx:
-            w('Equal-cost reduced size $r_\\times(N_{\\min})$ (ROM tensor evaluation as expensive as one FOM '
-              'evaluation at the FOM\'s smallest feasible N): ' +
+            w('Equal-cost reduced size $r_\\times(N_{\\min})$ (the cheaper measured ROM evaluation form per r, '
+              'unrestricted by its accuracy, as expensive as one FOM evaluation at the FOM\'s smallest feasible N; '
+              'PILOT): ' +
               '; '.join(f"{lv} τ={tau_s(t)}: N={A['A'][lv]['targets'][t]['N_min']} → r× ≈ {g(x['value'], '%.0f')}"
                         for lv, t, x in rx) + '.\n')
 
     # ---- Part B
-    w('## 4. Part B: L-shaped domain\n')
+    w('## 4. Part B: L-shaped domain (PILOT)\n')
     if b:
         w('| τ (worst) | F-IMEX $L_{\\min}$ | F-RK4 $L_{\\min}$ | ROM $r_{\\min}$ | FD matched (family, L, steps, time) | ROM matched (r, steps, L_init, time) | S | reading |')
         w('|---|---|---|---|---|---|---|---|')
@@ -298,7 +305,7 @@ def main():
           '(A3.4).\n')
 
     # ---- controls
-    w('## 5. Controls\n')
+    w('## 5. Controls and timing quality (PILOT)\n')
     w('| check | ' + ' | '.join(LVX) + ' | B |')
     w('|---|' + '---|' * (len(LVX) + 1))
     rows = [('SW1a error metric', lambda e: e['SW1a'], lambda: b and b['SW1']),
@@ -316,6 +323,21 @@ def main():
         for lv in LV) + '; random 128-dimensional span floors ' + ', '.join(
         f"{lv}: {g(load(R / 'A' / lv / 'rom.json')['floors']['random']['worst'][127], '%.2f')}" for lv in LV) + '.\n')
 
+    w('| level | τ | FOM spread (max/min) | FOM outliers | ROM spread | ROM outliers |')
+    w('|---|---|---|---|---|---|')
+    for lv in LVX:
+        tf = load(R / 'A' / lv / 'time_final.json')
+        for t, x in (tf or {}).get('targets', {}).items():
+            if x.get('S') is not None:
+                w(f"| {lv} | {tau_s(t)} | {g(x['fom']['spread'], '%.2f')} | {x['fom']['outliers']} | "
+                  f"{g(x['rom']['spread'], '%.2f')} | {x['rom']['outliers']} |")
+    tf = load(R / 'B' / 'time_final.json')
+    for t, x in (tf or {}).get('targets', {}).items():
+        if x.get('S') is not None:
+            w(f"| B | {tau_s(t)} | {g(x['fom']['spread'], '%.2f')} | {x['fom']['outliers']} | "
+              f"{g(x['rom']['spread'], '%.2f')} | {x['rom']['outliers']} |")
+    w('\nSpread = max/min over the 15 repetitions (3 cases × 5); outliers = repetitions more than 20 % above the '
+      'median.\n')
     tail(w)
     (H / 'report.md').write_text('\n'.join(L) + '\n')
     print('report written')
@@ -326,7 +348,7 @@ def brief_lines():
     for t in TAUS:
         v = A['verdicts'][t]
         if 'H-A3' in v:
-            out.append(f"Part A, τ = {tau_s(t)}: {v['H-A3']['category']} (S = "
+            out.append(f"Part A (box, wide family, this POD–Galerkin ROM), τ = {tau_s(t)}: {v['H-A3']['category']} (S = "
                        f"{', '.join(g(q, '%.2g') for q in v['H-A3']['S'])} at {', '.join(v['eligible'])}; PILOT).")
     for lv in LV:
         cens = [tau_s(t) for t in TAUS if A['A'][lv]['targets'][t]['r_min'] is None]
@@ -338,7 +360,7 @@ def brief_lines():
         for t in TAUS:
             x = b['targets'][t]
             if x.get('S') is not None:
-                out.append(f"Part B (L-shape vs FD), τ = {tau_s(t)}: {x['verdict']} (S = {g(x['S'], '%.2g')}; PILOT).")
+                out.append(f"Part B (L-shape vs these second-order FD solvers), τ = {tau_s(t)}: {x['verdict']} (S = {g(x['S'], '%.2g')}; PILOT).")
     ab = A['A'].get('AB')
     if ab and ab.get('status') == 'run':
         out.append('Post-hoc control AB (Part-B cases on the box vs the spectral FOM): S = ' + ', '.join(

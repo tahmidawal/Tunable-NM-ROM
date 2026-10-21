@@ -1,8 +1,23 @@
 {
  "cap_gpu_hours": 4.0,
- "jobs": [],
+ "jobs": [
+  {
+   "job": "ecsw",
+   "job_id": "6159327",
+   "gpu": "h200",
+   "time_limit_hours": 1.25,
+   "state": "PENDING",
+   "elapsed_hours": 0.0,
+   "node": "None assigned",
+   "tres": "",
+   "name": "ifs_ecsw",
+   "slurm_time_limit_hours": 1.25,
+   "gpu_count": null,
+   "identity_ok": true
+  }
+ ],
  "spent_gpu_hours": 0,
- "reserved_gpu_hours": 0,
+ "reserved_gpu_hours": 1.25,
  "unresolved_intents": [],
  "identity_problems": []
 }

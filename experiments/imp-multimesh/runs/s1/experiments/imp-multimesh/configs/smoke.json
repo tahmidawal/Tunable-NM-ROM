@@ -1,0 +1,48 @@
+{
+ "commands": [
+  {
+   "name": "preflight_cpu",
+   "cmd": "env JAX_PLATFORMS=cpu $PY -c \"import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b=='gpu' else 42)\"\nrc=$?\necho cpu_preflight_rc=$rc\n[ $rc -eq 42 ]",
+   "timeout_s": 120
+  },
+  {
+   "name": "smoke",
+   "cmd": "$PY mmsmoke.py configs/smoke.json $OUT/smoke",
+   "timeout_s": 3600
+  },
+  {
+   "name": "repl",
+   "cmd": "$PY ../jcp-p1-scaling/p1acc.py --config configs/repl1024.json --out $OUT/repl",
+   "timeout_s": 900,
+   "always_run": true
+  },
+  {
+   "name": "repl_score",
+   "cmd": "env JAX_PLATFORMS=cpu $PY oursq.py $OUT/repl 1024 $OUT/repl/oursq.json",
+   "timeout_s": 300,
+   "always_run": true
+  },
+  {
+   "name": "accept",
+   "cmd": "env JAX_PLATFORMS=cpu $PY mmaccept.py $OUT $TASK_ROOT/logs/$SLURM_JOB_ID.out",
+   "timeout_s": 300,
+   "always_run": true
+  }
+ ],
+ "ntraj": 64,
+ "pilot_traj": 2,
+ "pilot_tile": 12,
+ "nnls_seconds": 900,
+ "import_check": [
+  "mmcore",
+  "mmbuild",
+  "mmsmoke",
+  "mmtime",
+  "mmaccept",
+  "cost",
+  "oursq",
+  "import p1common",
+  "import p1acc"
+ ],
+ "pilot_nnls_seconds": 300
+}

@@ -100,8 +100,8 @@ def diag_cost(T, lb, veto, kernel=False, per_slot=False):
     rows = subj.get('scoring', [])
     if sorted(r_['case'] for r_ in rows) != CASES or not all(r_.get('valid') is True for r_ in rows):
         return 'unavailable: scoring coverage or validity'
-    if kernel and not all(r_.get('kernel_query_ok') is True for r_ in rows):
-        return 'unavailable: kernel output differs from the query output'
+    if kernel and not all(r_.get('kernel_query_ok') is True and r_.get('repro') is True for r_ in rows):
+        return 'unavailable: kernel output differs from the query output or does not reproduce the ladder error'
     if lb in veto:
         return 'unavailable: identity veto'
     cs_, ex_ = cost_by_slot(T['stage2'], lb)
@@ -242,8 +242,9 @@ def main():
                 continue
             c1 = psel.replace('@C100', '@C1')
             a_, ea_ = cost_by_slot(T['stage2'], psel)
-            b_ = diag_cost(T, c1, veto, per_slot=True)
-            if ea_ and isinstance(b_, dict):
+            num_ok = bool(ea_ and psel not in veto and scored_ok(T['subjects'].get(psel, {})))
+            b_ = diag_cost(T, c1, veto, per_slot=True) if num_ok else 'unavailable: C = 100 numerator invalid, vetoed or incomplete'
+            if num_ok and isinstance(b_, dict):
                 r_ = float(np.median([a_[c] / b_[c] for c in cases]))
                 res['targets'][f'{tau:g}|C{C:g}']['psi_C100_over_C1'] = dict(config=psel, ratio=r_,
                                                                             note='median over slots of cost(C=100)/cost(C=1)')

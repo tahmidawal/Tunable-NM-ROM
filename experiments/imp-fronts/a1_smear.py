@@ -93,7 +93,7 @@ def grid_bases_256(r_list, K_list):
 def exact_d_fixture():
     """Amendment 2: synthetic fields with analytically prescribed D (= 10 and 0.1) at r = 128, 384; returns max rel err."""
     rng = np.random.default_rng(424242)
-    errs = {}
+    errs, prereq = {}, True
     for r in (128, 384):
         B, S = F.orth(F.G(r)), F.sine_cols(np.arange(r))
         y = F.sine_cols([5])[:, 0]
@@ -111,10 +111,12 @@ def exact_d_fixture():
             b_f = np.stack([u0] + [alpha * z + gamma * y] * 5)
             upw, ref = (a_f, b_f) if target > 1 else (b_f, a_f)
             n0 = float(np.linalg.norm(u0))
+            raw = [F.floor_Q(u, Q, n0) for u in (ref, upw) for Q in (B, S)]
+            prereq &= bool(c >= 1e-3 and min(raw) > 10 * CLIP)
             fl = lambda u, Q: max(F.floor_Q(u, Q, n0), CLIP)
             D = (fl(ref, B) / fl(upw, B)) / (fl(ref, S) / fl(upw, S))
             errs[f'r{r}_D{target:g}'] = abs(D - target) / target
-    return dict(rel_err=errs, ok=all(e <= 1e-10 for e in errs.values()))
+    return dict(rel_err=errs, prerequisites=prereq, ok=bool(prereq and all(e <= 1e-10 for e in errs.values())))
 
 
 def analyze():

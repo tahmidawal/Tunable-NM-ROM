@@ -75,10 +75,13 @@ _band[:BAND + 1, :] = _band[-BAND - 1:, :] = _band[:, :BAND + 1] = _band[:, -BAN
 def omega(V):
     """Wall share of the >4096 high-pass energy, pooled over t1..t5; None (unavailable) if that energy is below
     OMEGA_FLOOR of the field's total energy (Amendment 2)."""
-    V = np.asarray(V)[1:]
+    V = np.asarray(V, float)[1:]
+    E = float(np.sum(V ** 2))
+    if not (np.isfinite(E) and E > 0):
+        return None
     hp = V - F.sine_truncate(V, 4096)
     tot = float(np.sum(hp ** 2))
-    if not tot > OMEGA_FLOOR * float(np.sum(V ** 2)):
+    if not (np.isfinite(tot) and tot >= OMEGA_FLOOR * E):
         return None
     return float(np.sum(hp[:, _band] ** 2) / tot)
 
@@ -109,15 +112,16 @@ def identity_checks():
     return dict(envelope_closed_form_rel=e1, envelope_ok=e1 <= 1e-6, sine_zero_rel=e2, sine_ok=e2 <= 1e-8)
 
 
-def bank_path_check(W, dv=1e-3):
+def bank_path_check(W, L, dv=1e-3):
     """Independent path: second difference of bank VALUES across the wall (bank defined outside the box) vs bank_dnn."""
     P, T = F.NC.bank()
     pts, nrm = wall_points()
     val = lambda q: F.NC.NB.features_grad(P, q)[0] @ T[:, :384]
     D2v = (val(pts + dv * nrm) - 2 * val(pts) + val(pts - dv * nrm)) / dv ** 2
-    a, b = np.asarray(W) @ D2v.T, bank_dnn(W)
-    e = float(np.max(np.abs(a - b)) / np.max(np.abs(b)))
-    return dict(bank_values_vs_gradient_path_rel=e, bank_path_ok=e <= 1e-3)
+    a, b = (np.asarray(W) @ D2v.T)[1:], bank_dnn(W)[1:]
+    gap, bound = float(np.max(np.abs(a - b))), 1e-3 * float(np.max(np.abs(b))) + 1e-6 * L
+    return dict(bank_values_vs_gradient_path_maxabs=gap, bank_path_bound=bound, bank_path_ok=bool(gap <= bound),
+                bank_path_note='fixed-spacing discretisation check (Amendment 3), not refined')
 
 
 def main():
@@ -140,6 +144,9 @@ def main():
         cp = np.linalg.lstsq(G, u.reshape(6, -1).T, rcond=None)[0].T          # (6, 384) projection coefficients
         pu = (G @ cp.T).T.reshape(6, 257, 257)
         L = lap_rms(u)
+        if not (np.isfinite(L) and L > 0):
+            skipped.append(dict(case=cid, reason='zero or non-finite interior Laplacian scale'))
+            continue
         amp = 0.01 * np.abs(u[0]).max()
         d = m['desc']
         hp = amp * np.broadcast_to(env, (6, 257, 257))
@@ -147,7 +154,7 @@ def main():
         row = dict(case=cid, cohort=coh, s=d['a'] / d['nu'])
         for name, W_, V in (('rom', Z['W'][i], v), ('proj', cp, pu)):
             kk = [float(np.sqrt(np.mean(bank_dnn(W_, d)[1:] ** 2)) / L) for d in DELTAS]
-            conv = abs(kk[2] - kk[1]) <= 1e-3 * abs(kk[1])
+            conv = abs(kk[2] - kk[1]) <= 1e-3 * max(abs(kk[1]), 1e-6)       # Amendment 3
             tau, beta = tails(V, n0)
             row[name] = dict(kappa_a=kk[2] if conv else None, kappa_a_deltas=kk, kappa_converged=bool(conv), beta=beta,
                              tau={str(K): t for K, t in tau.items()}, omega=omega(V))
@@ -176,8 +183,13 @@ def main():
     groups = {'in_range': grp(F.IN_RANGE), **{c: grp((c,)) for c in ('N0s', 'C1', 'C2')}}
     g = groups['in_range']
     ident = identity_checks()
-    ident.update(bank_path_check(Z['W'][0]))
-    ctrl = dict(identity=ident, omega_plus_ok=g['ctrl_omega_plus_med'] >= 0.5, omega_minus_ok=g['ctrl_omega_minus_med'] <= 0.25)
+    i0 = next(i for i, c in enumerate(Z['case_ids']) if str(c) in rows)
+    coh0, c0 = str(Z['case_ids'][i0]).split('|')
+    u0_ = F.load_ref(coh0, int(c0))[0]
+    ident.update(bank_path_check(Z['W'][i0], lap_rms(u0_)))
+    ctrl = dict(identity=ident,
+                omega_plus_ok=g['ctrl_omega_plus_med'] is not None and g['ctrl_omega_plus_med'] >= 0.5,
+                omega_minus_ok=g['ctrl_omega_minus_med'] is not None and g['ctrl_omega_minus_med'] <= 0.25)
     ctrl['controls_pass'] = bool(ident['envelope_ok'] and ident['sine_ok'] and ident['bank_path_ok'] and ctrl['omega_plus_ok'] and ctrl['omega_minus_ok'])
     ctrl['omega_rom_available_half'] = g['omega_available']['rom'] >= g['n'] / 2
     ctrl['controls_pass'] = bool(ctrl['controls_pass'] and ctrl['omega_rom_available_half'])

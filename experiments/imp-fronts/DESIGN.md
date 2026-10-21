@@ -639,3 +639,42 @@ finest factor; references from the two dev references and jcp-regimes' measured 
 A100, 5.4 H200) with refinement at the measured ratio; compilation per distinct (rule, factor) shape. If any
 projected item exceeds its ceiling, the frozen schedules S2 / S3 / S4 apply in order (S3 saves 4.85 GPU-h). Smoke
 GPU-h are counted once, in the smoke line.
+
+---
+
+## Amendment 4 (2026-10-21, after `audits/codex-design-4.md`, which has no WRONG items; supersedes the items named)
+
+Note: the Codex `-o` file of audit 4 was not written; `audits/codex-design-4.md` is the final answer block copied
+verbatim from its stdout log (disclosed in the file header).
+
+**A2 bank-path check.** $a$ and $b$ are **raw** normal second derivatives (not normalised by $L$); the comparison is
+the absolute infinity norm over the interior wall nodes and $t_1..t_5$: $\lVert a-b\rVert_\infty\le10^{-3}\lVert b\rVert_\infty
++10^{-6}L$.
+
+**B0.** The guard and the (a) floor route use one common case set: eligible test cases where **both** the arm's and
+K1's floors are finite; missing or non-finite evidence for a case removes it from the set; the minima (FI ≥ 6, FN0s ≥ 5)
+apply to that common set, else UNAVAILABLE. The (c) tail route uses one common set: eligible FI test cases where both the
+arm and K1 have valid finite terminal policy runs (≥ 6, else UNAVAILABLE); both medians are over that set, while the
+arm's qualification requirement still covers every eligible FI test case. The (b) route's $\hat e_{K1}$ is over all
+eligible FC1 test cases (invalid = ∞), as Amendment 2.
+
+**B5 / B8 consistency.** If selection certifies no rule, the policy still runs from the chain's first rule (fib4181),
+labelled "uncertified start", and its cases are evaluated and qualified per case exactly as any other; the $m^*$ route
+is FAIL; the ROM routes are **not** made UNAVAILABLE (Amendment 3's B8 clause "arm's ROM routes UNAVAILABLE" is
+withdrawn). The synthetic transition tests cover this start.
+
+**B8 operational ceilings.** Each job's Slurm wall limit = (ceiling GPU-h) / (GPUs requested): references 2 GPUs →
+1.4 h wall; all other jobs 1 GPU. Smoke split: SM-a 0.45, SM-b 0.45. Every driver runs a self-timer that stops new
+work at 90 % of its wall limit and writes its partial result plus exhaustion records (the last 10 % is the
+finalisation reserve); if a job is killed anyway, the collector writes the exhaustion records from the job's
+persisted per-case outputs. Failed attempts and retries are charged to the same 15 GPU-h total in
+`runs/GPU-LEDGER.json`; a retry is submitted only if spent + certified remaining ≤ 15.
+
+**B9 cost inventory.** The certificate enumerates solve multiplicities per production item: for each bank's policy,
+44 cases × path length ≤ 10 rounds × {prod, succ, half, tight} + tighter on the 4 anchors, at the rule and factor of
+each round; per-solve rates are the smoke's measured rates at its largest measured rule and finest factor, scaled by
+node count and step count, and multiplied by (solver iteration cap / measured mean iterations) as a conservative bound
+on adaptive tight/tighter iterations. References: per-case bound = the maximum measured per-case time in the
+jcp-regimes reference jobs that exercised refinement (their per-case `seconds` records), on the same GPU type, × 1.5.
+Any item without a measured or recorded bound is marked **uncertified** and deferred under S2–S4. The job ceilings of
+B8 hold the cap regardless of the certificate; the certificate predicts whether each item will complete.

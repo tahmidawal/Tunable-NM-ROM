@@ -275,3 +275,76 @@ Each item answers the audit item of the same number; the original text above sta
 - **A1.20 Budget.** Every production job needs a smoke-derived certificate (reference: per-level seconds on the hardest smoke
   case at $C=100$; ladder: per-config compile + run seconds; timing: memory with the bank resident). Fallback reference cost is
   reserved before the ladder is submitted. Mandatory reference/qualification work is never deferred to preserve a positive gate.
+
+---
+
+## Amendment A2 (2026-10-21, after Codex design audit 2, `audits/codex-design-2.md`; before any job)
+
+Numbers refer to the round-2 items. A2 overrides A1 where they differ.
+
+- **A2.2 Gate outcome table.** Per decisive target $\tau\in\{3\%,10\%\}$ at $C=100$ the target outcome is *pass* ($G\ge2$),
+  *fail* ($G<2$) or *inconclusive* (no qualified admissible FOM, union winner vetoed or with incomplete stage-2 coverage,
+  or reference coverage/cross-check failure at $C=100$). **Gate = pass** if any decisive target passes; **fail** only if
+  both fail; otherwise **unresolved**. A reference failure at $C=100$ (coverage < 24 eligible, or the cross-check fails)
+  overrides all costs: unresolved. Unresolved → no ROM trained.
+- **A2.4** `rom_box.py` now asserts the C2 gates (G-RR, A-valid, G-FR), pilots, every control fired, the exact registered case set,
+  repetitions 0–2 per case and identity hashes for each subject.
+- **A2.5 Cross-check (replaces A1.5's single run).** On dev cases 0–3 at each contrast, PSI SBDF2, tol $10^{-12}$:
+  $(N,\Delta t,Q) = (192,\,0.05/128,\,2N)$, $(256,\,0.05/128,\,2N)$, $(256,\,0.05/256,\,2N)$, $(256,\,0.05/128,\,3N)$.
+  The spatial, temporal and quadrature differences against $(256, 0.05/128, 2N)$ must each be $\le 2.5\cdot10^{-5}$ (cross-check
+  converged); then its distance to the reference must be $\le\max(2.5\cdot10^{-4},\,3\epsilon_{\rm ref})$. Not converged or
+  too far → "cross-check failed" for that contrast. API as E0: `floor_proxy(res, n_stages)`, `steps_ok(res, n_stages)` with
+  `n_stages = refcore.n_stages(dt, 'cnr')`. The mask is frozen after all permitted fallback attempts; conclusions are stated as
+  conditional on the eligible population.
+- **A2.7 Discrete Péclet.** `judge`'s `nu` := the minimum of the coarsest reference level's face coefficients (the discrete
+  operator's own minimum), with the running $\max|u|$ of that level. Sampled continuous extrema are reported as "sampled".
+- **A2.9 MG.** A failed symmetry/positivity probe is treated as a bug to be fixed before production; no automatic method switch.
+  If it cannot be fixed, the MG preconditioner variant is dropped (recorded) and FDMG runs with the DST preconditioner only.
+- **A2.10 Stability and temporal checks.** (i) Fixed-case temporal check: on dev case 0 at each contrast, for each family at its
+  largest $N$/$L$, the finest ladder $\Delta t$ and $\Delta t/2$ are compared (reported). (ii) Small-step extension: an
+  $(N/L)$ row with no valid configuration at any ladder $\Delta t$ gets $\Delta t/2$ and $\Delta t/4$ once. (iii) A family with no
+  qualified configuration at a decisive $\tau$ after the extensions is reported "unresolved for that family"; a positive gate in
+  that situation carries the label "family X unresolved".
+- **A2.12 ROM denominators.** Timed ROM subjects carry Q1/Q2 **by inheritance** (jcp-qualify FRONT-2D labels, prior evidence);
+  the job verifies trajectory identity in-job (lattice error equal to `target_e` within $10^{-9}$ on dev6, W, w0, per-step exit
+  reasons and iteration counts hashed and compared on every timed execution as C2). This is labelled next to every ROM number;
+  no fresh in-job stationarity / quadrature requalification is run (it would repeat a deterministic computation on the same code
+  and GPU type; the denominator is in any case an optimistic constant-$\kappa$ proxy, §5).
+- **A2.14 Cost contract.** The gate uses the **setup-inclusive** query cost (A1.14), which is the C2 convention for the
+  spectral FOM (ETD coefficients inside the timed program) and for the FD FOM (preconditioner denominators inside the solve).
+  For each union winner a setup-only program (all of the winner's per-query setup, no stepping) is also timed and reported.
+- **A2.16 Estimand.** $G=\mathrm{cost}_{\rm FOM}/\mathrm{cost}_{\rm ROM}$ with cost = median over anchor indices $i$ of the per-index
+  median of $t_B/\tfrac12(t_{A1}+t_{A2})$ (the C2 A-normalised convention, the same as `rom_box.py`); the ratio of median
+  absolute seconds is reported beside it.
+- **A2.17** If no dev case is eligible at a contrast, no pruning: every configuration runs on val.
+- **A2.18 Test-once (COMMON-BRIEF §2 is binding; A1.18 withdrawn).** At the end of Phase 1, the frozen union and per-family
+  winners at each decisive $\tau$ for $C=100$ are run **once** on the 16 test cases with references built by §4 (test references
+  are generated only after the selection is frozen). Their test median/worst errors are reported; the gate decision stays the
+  dev+val one (test is not used for selection or for the gate).
+- **A2.19 Controls with demonstrable power.** Implementation must-fail controls, each with its fixture:
+  *T-loose*: PSI and FDMG at maxiter 0 on a real case; the first stage's initial residual is nonzero by construction
+  ($\lVert A b^n-{\rm rhs}\rVert=\Delta t\lVert\theta D b^n+N(b^n)\rVert>0$); the validity flag must be false (true residual
+  $>10\,$tol), and the residual value is reported.
+  *T-ref-solver*: `judge` with one level's `steps_ok` = False → `solver-fail`. *T-ref-floor*: `tau` = 1 → `unresolved-floor`.
+  *T-ref-peclet*: `nu` = $10^{-9}$ → `peclet-fail`. *T-ref-order*: $u_3=2u_2-u_1$ → `order-fail`. *T-ref-direction*: per $t_k$,
+  $u_3=u_2-\tfrac14\lVert u_1-u_2\rVert\,\hat v$ with $\hat v\perp(u_1-u_2)$ (unit), giving $p=2$ but $c=\sqrt2>0.5$ →
+  `direction-inconsistent`. *T-ref-ic*: $u_3(t_0)$ perturbed → `ic-mismatch`. All on the real smoke reference levels.
+  *T-nan*, *T-dbl/T-fault/T-id*, *T-gate* (now also: one target pass + other inconclusive → pass; one fail + other inconclusive →
+  unresolved; reference failure → unresolved) as before.
+- **A2.21 Extension order.** After the dev ladder: provisional winners per (family, $\tau$, $C$) = screening-cheapest valid
+  configuration with eligible-dev worst $\le\tau$; cheap-edge (A1.10) and small-step (A2.10) extensions run on dev and then
+  val; only then are timing candidates (top 3 by screening cost per family/$\tau$/$C$ among valid configurations with pooled
+  eligible worst $\le\tau$) chosen and qualified (A1.12, A2.23).
+- **A2.22 CCv validity.** CCv competitors use a configuration-specific threshold: every stage's Newton residual
+  $\le 2\,n_{\rm tol}$ (its own level's Newton tolerance), complete schedule, finite. E0's $2\cdot10^{-11}$ stays for references.
+- **A2.23 Quadrature qualification (Q2 analogue).** Every spectral timing candidate (PSI, ETD) is rerun with $Q=3N$ on all pooled
+  eligible cases; rollout distance $\le2.5\cdot10^{-4}$ on every case, else not qualified. The ROM ρ-bar (0.116) is a statistic of
+  residual quadrature on reduced states and has no Galerkin-FOM analogue; stated. FD arms have no quadrature (exact face sampling).
+- **A2.24 κ normalisation.** The extrema $\min g,\max g$ on $1025^2$ are part of the case definition (the coefficient's parameters),
+  computed once per case like the IC, excluded from every arm's timer (and from Phase 2's ROM), cost reported.
+- **A2.25 Timing cases.** Timing workload at contrast $C$ = the first six *eligible* dev cases, completed in index order with eligible
+  val cases if fewer than six dev cases are eligible; frozen with the eligibility mask before the ladder.
+- **A2.26 Stage-2 failure.** A frozen union winner that is vetoed, or lacks valid triplets for every timing index × 3 reps, makes the
+  target inconclusive. No replacement.
+- **A2.20 Budget ledger.** After the smoke a `checks/budget-plan.json` lists every remaining job with its certified projection, including
+  the worst-case fallback references and the test references; production starts only if the total ≤ 8 GPU-h.

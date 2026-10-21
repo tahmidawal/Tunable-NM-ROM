@@ -31,6 +31,9 @@ def main():
     rows = []
     assert c2.get('complete') is True, 'C2 4096 job not complete'
     veto = set(c2.get('veto') or [])
+    assert all(c2['gates'].values()) and c2.get('pilots_ok') is True, ('C2 gates/pilots', c2['gates'])
+    assert all(v.get('fires') for v in c2['controls'].values()), ('C2 controls', c2['controls'].keys())
+    case_ids = {f'{c}|{j}' for c, j in c2['config']['cases']}
     M4 = fr['meshes']['4096']
     for src, m in [('members', x) for x in M4['members']] + [('other_qualified', x) for x in M4['other_qualified']]:
         mf, lab = m['manifest'], m['labels']
@@ -45,7 +48,9 @@ def main():
             raise SystemExit(f'no C2 stage-2 triplets for {label}')
         cases = sorted({t['case'] for t in tr})
         assert label not in veto, ('vetoed in C2', label)
-        assert len(cases) == 6 and all(sum(t['case'] == c for t in tr) == 3 for c in cases), ('C2 coverage', label)
+        assert set(cases) == case_ids and all(sorted(t['rep'] for t in tr if t['case'] == c) == list(range(3))
+                                              for c in cases), ('C2 case/rep coverage', label)
+        assert all(t['hashes_ok'] for t in tr), ('C2 identity', label)
         # C2 cost = median over cases of the per-case median ratio (jcp-fom2d DESIGN §5)
         ratio = float(np.median([np.median([t['ratio'] for t in tr if t['case'] == c]) for c in cases]))
         secs = float(np.median([np.median([t['tB'] for t in tr if t['case'] == c]) for c in cases]))

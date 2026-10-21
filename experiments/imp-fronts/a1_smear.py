@@ -184,6 +184,28 @@ def verify_inputs(T6, X):
                 settings_note='every file must carry persisted generator settings and all five descriptors (Amendment 6)')
 
 
+_GRAM = {}
+
+
+def loo_pod(src, store, X, cid, r=128):
+    """Top-r left singular vectors of the lattice snapshot matrix of the other cases (6 times each), via the f64
+    Gram matrix of all snapshots with the held-out case's rows removed: M^T M = V S^2 V^T, U = M V S^-1. Identical
+    span to the SVD route up to round-off at these (well-separated, sigma_r/sigma_1 >> 1e-8) singular values."""
+    if src not in _GRAM:
+        M = np.concatenate([store[o].reshape(6, -1) for o in X]).T
+        _GRAM[src] = (M, M.T @ M)
+    M, Gm = _GRAM[src]
+    k = X.index(cid)
+    keep = np.r_[0:6 * k, 6 * (k + 1):M.shape[1]]
+    w, V = np.linalg.eigh(Gm[np.ix_(keep, keep)])
+    w, V = w[::-1][:r], V[:, ::-1][:, :r]
+    if w[-1] <= w[0] * 1e-16:
+        raise SystemExit('LOO POD: r-th singular value too small for the Gram route')
+    U = (M[:, keep] @ V) / np.sqrt(w)
+    U, _ = np.linalg.qr(U)                                    # re-orthonormalise
+    return U
+
+
 def analyze():
     sets = json.loads((OUT / 'sets.json').read_text())
     T6, X = sets['T6'], sets['X']
@@ -233,8 +255,7 @@ def analyze():
         # LOO POD controls (size 128) from the six output times of the other cases
         oth = [o for o in X if o != cid]
         for src, store in (('upw', upw), ('ref', ref)):
-            M = np.concatenate([store[o].reshape(6, -1) for o in oth]).T
-            Q = np.linalg.svd(M, full_matrices=False)[0][:, :128]
+            Q = loo_pod(src, store, X, cid)                    # top-128 left singular vectors (Gram route, f64)
             row[f'f_ref_pod_{src}'] = F.floor_Q(ref[cid], Q, n0)
             row[f'f_upw_pod_{src}'] = F.floor_Q(upw[cid], Q, np.linalg.norm(upw[cid][0]))
         # constructed detector checks (Amendment 1): own upwind / own E0 fields + low sines, sizes 128 and 384

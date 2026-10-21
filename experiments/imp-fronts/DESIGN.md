@@ -805,3 +805,32 @@ retrain. Training has no partial result, so it gets **no self-timer** (`SELF_TIM
   jcp-fom2d); smoothtrain's R0 fingerprint gate runs only for the incumbent generator and is replaced by the arm gate
   (`arm_gate.py`: fid = finite + C-B3 + self-convergence; cov = C-B4 + Newton residual), disclosed in PROVENANCE; the
   arms also change Stage B's 8-trajectory test-floor diagnostic cohort (diagnostic only).
+
+---
+
+## Amendment 12 (2026-10-21, after `audits/codex-design-7.md` and `audits/codex-code-B-1.md`; before any Phase B job)
+
+- **Projections are expected costs, not completion bounds**; the "worst-path upper bounds" are renamed **worst-path
+  cost projections**. Hard ceilings and the admission rule enforce spending; nothing guarantees completion.
+- **Certify against the work cutoff.** A projection passes only if it is ≤ 90 % of its ceiling (the self-timer stops new
+  work there; training has no self-timer, so its projection is compared with 100 %). References: the H200 mean
+  288.5 s/case is over the 64 per-case records of the jcp-regimes H200 reference jobs (the earlier "≈ 252 s" was a
+  rounder estimate from a subset); 24 × 288.5 × 1.5 = 2.885 GPU-h → ceiling **3.2 GPU-h** (2 GPUs, 1.6 h wall).
+  Selection projection 0.3435 → ceiling **0.4** per arm.
+- **Policy projection formula**: (measured mean per-case cost of the SM-r K1 dry run on the 16 fresh dev/val cases)
+  × 40 cases × 1.5 + measured compilation per distinct (rule, factor) shape × the number of shapes the bank's chain
+  can reach + 4 tighter-anchor solves at the largest reachable rule. The K1 path distribution is assumed to transfer to
+  the arm bank; that cannot be validated in advance, so arm policy jobs keep the BUDGET-CAP protection and the report
+  states the transfer assumption. Ceiling 0.5 per bank.
+- **Schedules (replacing Amendment 11's totals):** S1 = 9.2 + 3.2 + 0.8 + 1.5 + 0.85 = **15.55 GPU-h (over the cap)**;
+  **S3** = 4.6 + 3.2 + 0.4 + 1.0 + 0.65 = **9.85 GPU-h** (fundable). E9 paired fallback timing is **deferred**: the E9
+  deliverable reports flagged fractions only, and its fallback cost is "unmeasured" unless S3's actual spend leaves
+  ≥ 0.3 GPU-h under the admission rule. E9 routing cost separates input-based routing (s known before solving; no ROM
+  cost) from failure fallback (ROM cost charged for failures found after solving).
+- **Control evidence gates admission.** No production item is admitted unless C-B1 (hash rejection), C-B6 (γ fixture)
+  and the smoke dry run have hash-bound passing records; a missing or failed control blocks Phase B.
+- **Test-once enforcement**: each (bank, policy hash, cohort-table hash) evaluation of test cases is registered
+  immutably before it runs; a second test evaluation of the same key is refused (recovery of a killed job resumes the
+  same registration from its persisted per-case outputs only).
+- **B0 routes are fixed per arm** in code (`ARM_ROUTES`): (a) floor, (b) ROM, (c) $m^*$ + tail; inputs cannot
+  substitute routes.

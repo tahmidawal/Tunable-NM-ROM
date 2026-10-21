@@ -1,6 +1,17 @@
 {
- "design": "DESIGN.md \u00a72 A3",
+ "thresholds": {
+  "stop_rise": 0.001,
+  "K_stop": 9216,
+  "identity": 1e-12,
+  "repro": 1e-09
+ },
+ "design": "DESIGN.md \u00a72 A3 + Amendments 1, 6",
  "provenance": {
+  "reference_label": "dev6/val32: E0 ST store (finest a2_L8192); regimes: jcp-regimes E0-style ST (finest final level); eps_ref is a conditional Richardson estimate",
+  "e0_store": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/store",
+  "regimes_lane": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes",
+  "rom_dir": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs/rom1024/output/qacc_rom1024",
+  "metric_id": "2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1",
   "bank_ckpt": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
   "bank_ckpt_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
   "rotation": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/jcp-regimes/vendor/quad2d/inputs/rotation_R512.npz",
@@ -9,14 +20,33 @@
   "regimes_analysis_sha256": "d1ae5749fd5fd4cef7acfcf2674b9c19a42781da032cf04a20a0a08685a01806"
  },
  "controls": {
+  "fixture_dworst_9216": 0.005000163414563637,
+  "fixture_trips": true,
   "identity_all": true,
-  "k16_trips_all": true,
-  "repro_all": true,
-  "controls_pass": true
+  "repro_all": false,
+  "controls_pass": false
  },
  "primary": "R384|LSPG_CNR_1",
- "verdict": "F7 screen passes",
- "verdict_all_regimes": "pass",
+ "verdict": "INCONCLUSIVE (control failed, primary missing or empty population)",
+ "verdict_regime_scope": "INCONCLUSIVE",
+ "k16_stress_dworst_in_range": {
+  "R128|LSPG_BE_1": 0.37095158062616584,
+  "R128|LSPG_CNR_1": 0.3673772102218976,
+  "R256|LSPG_BE_1": 0.386189121154172,
+  "R256|LSPG_CNR_1": 0.3942054154638832,
+  "R384|GAL_CN_1": 0.40087053748702545,
+  "R384|LSPG_BE_1": 0.3893016785726934,
+  "R384|LSPG_CNR_1": 0.40162782809812014,
+  "R512|LSPG_BE_1": 0.3884932270300113,
+  "R512|LSPG_CNR_1": 0.3977098100344402
+ },
+ "excluded_ineligible": [
+  "N0|4",
+  "N0|15",
+  "Ap|4",
+  "Ap|8",
+  "B2|7"
+ ],
  "timing_gate": "deferred (GPU, not in this lane brief)",
  "configs": {
   "R128|LSPG_BE_1": {
@@ -68,9 +98,10 @@
     }
    },
    "repro_max_abs": 5.551115123125783e-17,
+   "repro_missing": [],
    "identity_max_abs": 3.642919299551295e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -1507,9 +1538,10 @@
     }
    },
    "repro_max_abs": 1.1102230246251565e-16,
+   "repro_missing": [],
    "identity_max_abs": 5.551115123125783e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -2946,9 +2978,10 @@
     }
    },
    "repro_max_abs": 5.551115123125783e-17,
+   "repro_missing": [],
    "identity_max_abs": 5.551115123125783e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -4385,9 +4418,10 @@
     }
    },
    "repro_max_abs": 5.551115123125783e-17,
+   "repro_missing": [],
    "identity_max_abs": 5.551115123125783e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -5823,10 +5857,14 @@
      "maxrise_65025": 1.4257258568184383e-17
     }
    },
-   "repro_max_abs": 1.1102230246251565e-16,
+   "repro_max_abs": Infinity,
+   "repro_missing": [
+    "C2|8",
+    "C2|13"
+   ],
    "identity_max_abs": 4.440892098500626e-16,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -7263,9 +7301,10 @@
     }
    },
    "repro_max_abs": 5.551115123125783e-17,
+   "repro_missing": [],
    "identity_max_abs": 5.724587470723463e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -8702,9 +8741,10 @@
     }
    },
    "repro_max_abs": 5.551115123125783e-17,
+   "repro_missing": [],
    "identity_max_abs": 5.551115123125783e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -10141,9 +10181,10 @@
     }
    },
    "repro_max_abs": 5.551115123125783e-17,
+   "repro_missing": [],
    "identity_max_abs": 7.719519468096792e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -11580,9 +11621,10 @@
     }
    },
    "repro_max_abs": 5.551115123125783e-17,
+   "repro_missing": [],
    "identity_max_abs": 6.505213034913027e-17,
    "stop_K9216_in_range": false,
-   "stop_K9216_all": false,
+   "stop_K9216_regimes": false,
    "pass_K": {
     "16": false,
     "2304": true,
@@ -12970,5 +13012,9 @@
     }
    }
   }
+ },
+ "run_commit": {
+  "commit": "0c6698d28657b83672bbf4353bd51272f7b867c4",
+  "code_dirty": false
  }
 }

@@ -24,16 +24,24 @@ N_STEPS = [5 * 2 ** k for k in range(10)]          # 5 .. 2560
 MQ_LADDER = [16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 576, 1152]
 
 
-def ladder_n(run, label, conv=0.02):
-    """Run n ascending until time-converged (relative change of the worst error < conv) or the top (A1.5)."""
+DIST_TOL = 1e-5                                     # DESIGN A2.2
+
+
+def ladder_n(run, label, den):
+    """n ascending (A2.2): run(n) -> (per-case errors, trajectory array (B, 6, ...)). Stop once the trajectory distance
+    to the n/2 run, max over cases and times / ||u0||, is <= DIST_TOL (both valid), or at the ladder top."""
     rows, prev = [], None
     for n in N_STEPS:
-        e = run(n)
+        e, Z = run(n)
         w = float(np.max(e))
-        rows.append(dict(n=n, err=[float(x) for x in e], worst=w, median=float(np.median(e))))
-        if prev is not None and np.isfinite(w) and np.isfinite(prev) and abs(w - prev) <= conv * w:
+        dist = None
+        if prev is not None:
+            dd = np.sqrt(np.sum((Z - prev).reshape(Z.shape[0], Z.shape[1], -1) ** 2, axis=-1)) / den[:, None]
+            dist = float(np.max(dd)) if np.isfinite(dd).all() else float('inf')
+        rows.append(dict(n=n, err=[float(x) for x in e], worst=w, median=float(np.median(e)), dist=dist))
+        if dist is not None and dist <= DIST_TOL and np.isfinite(w):
             break
-        prev = w
+        prev = Z
     print(label, ' '.join('%d:%.2e' % (r['n'], r['worst']) for r in rows), flush=True)
     return rows
 
@@ -111,7 +119,7 @@ def main():
     if not a.no_quad:
         t0 = time.perf_counter()
         for Mq in MQ_LADDER:
-            if Mq < 3 * Nref // 2 * 2 and (Mq - 1) ** 2 * 6 <= 2 * rmax ** 2:
+            if Mq < 3 * Nref and (Mq - 1) ** 2 * 6 <= 2 * rmax ** 2:
                 Bq_phi[Mq] = RL.q_values(Phi, Nref, Mq)
         rep['timings']['q_values'] = time.perf_counter() - t0
     for r in rlist:
@@ -129,8 +137,8 @@ def main():
         def run_t(nn, NL=NLt):
             Z = np.asarray(RL.make_rom_batch(NL, D, nn)(jnp.asarray(z0), jnp.asarray(nu)))
             e, _ = RL.rom_errors(Z, Cref, floor2, den)
-            return e
-        rom_t[r] = dict(build_s=tb, rows=ladder_n(run_t, f'{lv} ROM-T r={r}'))
+            return e, Z
+        rom_t[r] = dict(build_s=tb, rows=ladder_n(run_t, f'{lv} ROM-T r={r}', den))
         # D2: every run >= its floor
         fr = np.max(np.sqrt(floor2[:, 1:]), axis=1) / den
         for row in rom_t[r]['rows']:
@@ -144,7 +152,7 @@ def main():
                 if 6 * m * r > 2 * r ** 3:
                     continue
                 NLq = RL.nl_quad(Bq[:, :r] @ V, Dq[:, :r] @ V, Mq)
-                rom_q[r][Mq] = ladder_n(lambda nn, NL=NLq: run_t(nn, NL), f'{lv} ROM-Q r={r} Mq={Mq}')
+                rom_q[r][Mq] = ladder_n(lambda nn, NL=NLq: run_t(nn, NL), f'{lv} ROM-Q r={r} Mq={Mq}', den)
         # gates at r in {32, 128}: G4 (tensor vs exact evaluation), SW4 (corrupted slice)
         if r in (32, 128):
             NLe = RL.nl_exact(Psi, Nref)
@@ -155,12 +163,20 @@ def main():
             zs = Ze.reshape(-1, r)
             Nv = np.stack([np.asarray(NLt(jnp.asarray(z))) for z in zs])
             ks = int(np.argmax(np.max(np.abs(Nv), axis=0)))
+            jz = int(np.argmax(np.abs(Nv[:, ks])))           # the frozen reached state exciting slice k*
+            zf = jnp.asarray(zs[jz])
             Tc = Tp.copy()
             Tc[ks] = 0
-            Zc = run2(RL.nl_tensor(Tc, iu, ju))
+            NLc = RL.nl_tensor(Tc, iu, ju)
+            dN = np.asarray(NLt(zf)) - np.asarray(NLc(zf))
+            contrib = float(np.asarray(NLt(zf))[ks])
+            exact = bool(abs(dN[ks] - contrib) <= 1e-12 * max(1.0, abs(contrib)) and
+                         np.max(np.abs(np.delete(dN, ks))) <= 1e-14 * max(1.0, abs(contrib)))
+            big = bool(abs(contrib) >= 1e-6 * np.linalg.norm(np.asarray(NLt(zf))))
+            Zc = run2(NLc)
             sw4 = float(np.max(np.abs(Zc - Zt)) / np.max(np.abs(Zt)))
-            gates[r] = dict(G4_rel=g4, G4_pass=bool(g4 <= 1e-9), SW4_rel=sw4, SW4_fired=bool(sw4 >= 1e-6),
-                            SW4_slice=ks, n=nn)
+            gates[r] = dict(G4_rel=g4, G4_pass=bool(g4 <= 1e-9), SW4_exact=exact, SW4_large=big,
+                            SW4_fired=bool(exact and big), SW4_rollout_rel=sw4, SW4_slice=ks, n=nn)
             print(lv, 'gates r', r, gates[r], flush=True)
         # sine-ROM control (first r Laplacian-ordered sines), r <= 256
         if not a.no_sine and r <= 256:
@@ -176,8 +192,8 @@ def main():
 
             def run_s(nn):
                 Z = np.asarray(RL.make_rom_batch(NLs, D_s, nn)(jnp.asarray(z0s), jnp.asarray(nu)))
-                return RL.rom_errors(Z, Crs, f2s, den)[0]
-            rom_s[r] = ladder_n(run_s, f'{lv} sine-ROM r={r}')
+                return RL.rom_errors(Z, Crs, f2s, den)[0], Z
+            rom_s[r] = ladder_n(run_s, f'{lv} sine-ROM r={r}', den)
         C.dump(d / 'rom.json', dict(rep, rom_t=rom_t, rom_q=rom_q, rom_sine=rom_s, gates=gates))
 
     # G9: padding convergence of the tensor at r = 64 (M = 3N/2 vs 2N), rollout difference
@@ -197,15 +213,8 @@ def main():
 
 
 def tensor_full_padded(Phi, N):
-    """The tensor with a 2N-point padded grid instead of 3N/2 (G9): embed coefficients in a larger N' = 4N/3 grid so
-    that pscore's M = 3N'/2 = 2N; the extra modes are zero, the products are projected back onto the original modes."""
-    n = N - 1
-    N2 = 4 * N // 3
-    assert 3 * N2 // 2 == 2 * N, N
-    r = Phi.shape[1]
-    Pb = Phi.T.reshape(r, n, n)
-    Pb = np.pad(Pb, ((0, 0), (0, N2 - N), (0, N2 - N))).reshape(r, -1).T
-    return RL.tensor_full(Pb, N2)
+    """G9 diagnostic: the tensor on a 2N-point padded grid instead of 3N/2."""
+    return RL.tensor_full(Phi, N, M=2 * N)
 
 
 if __name__ == '__main__':

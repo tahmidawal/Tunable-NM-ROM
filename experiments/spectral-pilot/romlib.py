@@ -58,10 +58,10 @@ def rotate(Phi_r, lam):
 
 # ------------------------------------------------------------------------------------ padded-grid values -------
 
-def grid_values(B, N):
-    """B (r, N-1, N-1) coefficient arrays -> (u, g) on the 3/2-padded interior grid, the arithmetic of
-    pscore.nonlinear: u = synthesis, g = d_x u + d_y u. Shapes (r, M-1, M-1)."""
-    M = 3 * N // 2
+def grid_values(B, N, M=None):
+    """B (r, N-1, N-1) coefficient arrays -> (u, g) on the padded interior grid (default M = 3N/2, the arithmetic of
+    pscore.nonlinear): u = synthesis, g = d_x u + d_y u. Shapes (r, M-1, M-1)."""
+    M = M or 3 * N // 2
     bp = jnp.pad(B, ((0, 0), (0, M - N), (0, M - N)))
     n = M - 1
     S = lambda x, ax: P.along(P.sine_synth_last, x, ax, M)
@@ -75,14 +75,14 @@ def grid_values(B, N):
     return jax.vmap(one)(bp)
 
 
-def tensor_full(Phi, N, kchunk=1):
-    """T[k, i, j] = -(2/M)^2 sum_g phi_k phi_i (D phi_j) on the padded grid (M = 3N/2). Returns (r, r, r) numpy."""
+def tensor_full(Phi, N, M=None):
+    """T[k, i, j] = -(2/M)^2 sum_g phi_k phi_i (D phi_j) on the padded grid (default M = 3N/2). (r, r, r) numpy."""
     r = Phi.shape[1]
     n = N - 1
-    M = 3 * N // 2
+    M = M or 3 * N // 2
     U, Gd = [], []
     for i in range(0, r, 64):
-        u, g = grid_values(jnp.asarray(Phi[:, i:i + 64].T.reshape(-1, n, n)), N)
+        u, g = grid_values(jnp.asarray(Phi[:, i:i + 64].T.reshape(-1, n, n)), N, M)
         U.append(np.asarray(u).reshape(len(u), -1))
         Gd.append(np.asarray(g).reshape(len(g), -1))
     U = jnp.asarray(np.concatenate(U).T)          # (G, r)

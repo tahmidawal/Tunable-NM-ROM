@@ -179,16 +179,32 @@ def k2grid(N):
 
 # --------------------------------------------------------------------------------------------- spectral FOM ----
 
-def fom_nl(N):
-    return lambda b: P.nonlinear(b, N, 2)[0]
+def fom_nl(N, M=None):
+    """pscore.nonlinear (M = 3N/2); with M given, the same arithmetic on an M-point padded grid (padding gate, A3)."""
+    if M is None:
+        return lambda b: P.nonlinear(b, N, 2)[0]
+    return lambda b: nonlinear_M(b, N, M)
 
 
-def make_fom(N, n, n_out=5, lattice=True):
+def nonlinear_M(b, N, M):
+    """Copy of pscore.nonlinear (d = 2) with the padded grid size M as a parameter (vendor file untouched)."""
+    bp = jnp.pad(b, [(0, M - N)] * 2)
+    n = M - 1
+    S = lambda x, ax: P.along(P.sine_synth_last, x, ax, M)
+    Cc = lambda x, ax: P.along(P.cos_synth_last, x, ax, M)
+    Ty = S(bp, 1)
+    u = S(Ty, 0)
+    g = Cc(P.kvec(n, 2, 0) * Ty, 0) + S(Cc(P.kvec(n, 2, 1) * bp, 1), 0)
+    f = P.analysis(u * g, M)
+    return -f[:N - 1, :N - 1]
+
+
+def make_fom(N, n, n_out=5, lattice=True, M=None):
     """Batched FOM: (B, 5) descriptors -> (B, n_out+1, 257, 257) lattice fields (or coefficients if lattice=False).
     Includes the IC coefficients, the rollout and the output synthesis."""
     rule = ICRule(N)
     K2 = k2grid(N)
-    NL = fom_nl(N)
+    NL = fom_nl(N, M)
 
     def one(d):
         gx, gy, a = rule.coefs(d)

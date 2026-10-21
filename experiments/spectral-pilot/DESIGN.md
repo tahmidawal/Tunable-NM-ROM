@@ -526,3 +526,69 @@ observed feasible size"; a size stopped at the ladder top without meeting $\tau$
 - Total local budget for the pilot: **8 hours of wall time**; A4 runs only if A3's stages all finished and its
   48-trajectory snapshot set (4.7 GB) plus a peak of 3× that in POD workspace fits in the 36 GB `jaxrun` ceiling.
 - Stopping after A1–A2 (or A1–A3) is acceptable; "too few levels" is not a negative finding.
+
+---
+
+## Amendment A3 (2026-10-20, after Codex design audit 3; final pre-ladder amendment)
+
+Audit `audits/codex-design-3.md`: NOT-READY (items 1, 2, 7, 10–12, 14 CORRECT or CORRECT with qualifications).
+State at this amendment: A1–A3 references and training generated; an A1 ROM ladder ran as a code smoke (its output
+was used to debug, not read for any verdict). This amendment governs over A2, A1 and the original.
+
+### A3.1 Scoring and the step search
+
+- **Every valid observed configuration** (size, step count, and for the ROM the form and $M_q$) is scored by the
+  three-way rule of A2.5. A size is *observed feasible* at $\tau$ if any of its observed configurations *meets*
+  $\tau$. The trajectory-distance rule of A2.2 is a **search-stopping heuristic only**: it adds no uncertainty to an
+  observed configuration, step counts above the stopping point are reported as "not searched", and no order-based
+  remaining-error estimate is used in any verdict. At the first rung, or after an invalid run, no distance exists and
+  the search continues.
+- $r_\times(N)$ (H-A2′): the first crossing from below in increasing $r$ (the smallest measured $r$ whose ROM
+  nonlinear-evaluation time exceeds the FOM's at $N$, interpolated log–log with the preceding $r$); if the measured
+  curve crosses more than once, all crossings are reported and the verdict is "unresolved".
+- ROM-Q pruning ($6(M_q-1)^2r\le 2r^3$) is a **workload heuristic**: the packed tensor costs about $r^3$ flops
+  ($r\cdot r(r+1)/2$ multiply–adds) and the grid form $6mr$; configurations it excludes are "not explored", and
+  winners are "cheapest among evaluated configurations".
+
+### A3.2 Part B accounting (corrects A2.3)
+
+The B POD basis $\Phi$ is orthonormal in the Euclidean inner product of the $L=512$ interior nodes. For each $r$,
+$\Psi_r=\Phi_rV_r$ (rotated, as in A); the initialiser is $z_0=(512/L_{\rm init})^2\,\Psi_{r,\rm sub}^\top u_{0,\rm sub}$
+(the sub-lattice sum approximating the full-node sum; exact for $L_{\rm init}=512$) and the decoder is
+$\Psi_{r,\rm lat}z$ on the $i/64$ lattice. The ROM is charged its $\nu$-dependent ETDRK4 coefficients ($r$ modes). IC
+discrepancies for the $N_{\rm init}$/$L_{\rm init}$ rule are normalised by $\lVert u_0\rVert$ exactly as the scoring
+metric; the chosen initialiser is re-scored with the full $e\pm U$ rule and is the one priced in the finalist timing.
+
+### A3.3 Controls (replace A2.4's SW1 and qualify SW4)
+
+- **SW1a (deterministic):** with $U=0$, a run equal to the reference plus a perturbation of exact relative size
+  $\epsilon\in\{10^{-3},10^{-2}\}$ at every scored time must be scored as $\epsilon$ (relative agreement $10^{-10}$).
+- **SW1b (deterministic):** the three-way matcher on fixtures $(e,U,\tau)$: $(0.5,0.1,1)$ meets; $(1.5,0.1,1)$
+  misses; $(0.95,0.1,1)$ unresolved; $(0.9,0.1,1)$ meets (equality $e+U=\tau$); $(1.1,0.1,1)$ unresolved (equality
+  $e-U=\tau$ is not a miss).
+- **SW4** needs a finite, non-zero $N(z)$ on a reached state, with the largest-component slice; if no such state
+  exists the fixture is "unavailable" (not a solver bug). The rollout change stays diagnostic.
+
+### A3.4 References and the allowance (replace A2.5's fallback and A2.4's padding statement)
+
+- **A padding gate (new):** at $N_{\rm ref}$, the FOM with padded grid $M=2N_{\rm ref}$ against the default
+  $M=3N_{\rm ref}/2$ on the two test cases with the largest $s$ (same $n$); the difference $\delta_{\rm pad}$ joins the
+  allowance, $U_A=\delta_{\rm space}+\delta_{\rm time}+\delta_{\rm pad}$, each the max over cases and times of the
+  normalised difference. If the gate exceeds $2\times10^{-5}$ the level is unresolved. Its coverage (two cases) is
+  stated next to $U_A$.
+- **B:** $U_B=\hat e_{\rm ref}+\delta_t$ is used only if the order gate on the $i/64$ lattice passes and the three
+  differences are finite and strictly decreasing (the $i/128$ orders are diagnostic). Otherwise $U_B$ is
+  **unavailable**: B is scored two-way against the numerical $L=1024$ field ($U=\delta_t$) and every B verdict is
+  labelled "against the numerical reference; physical accuracy unqualified". The twelve-case $\delta_t$ is
+  labelled an extrapolation from the fine-grid check on 4 cases and the $L=512$ check on 12.
+- B training comparison (4 trajectories, $L=512$ vs $L=1024$) is diagnostic; the B basis qualification is
+  "unestablished" in the report whatever its value.
+- **$U$ is a conditional allowance, not an error bound.** It is one scalar per level (or per part), the sum of the
+  gate maxima above.
+
+### A3.5 Memory and budget
+
+Every unit must fit the 36 GB `jaxrun` ceiling (CPU jobs also run under `jaxrun`) including temporaries and
+factorisation storage, by a projection written before it runs; a unit that does not fit is split or skipped and
+reported. The 8-hour wall budget includes benchmarks, retries and the work done before this amendment; unit timeouts
+(30 min) and the total budget both apply.

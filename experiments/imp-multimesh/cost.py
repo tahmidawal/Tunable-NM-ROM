@@ -115,6 +115,8 @@ def match(D, X, w, verdict='worst', var='A_dep', compile_scale=1.0, arms=CP_ARMS
           comp_compile=None):
     """Three-valued per (w, X) over all CP variants (A2.1, A3.1). Returns (state, witness, best_admissible)."""
     Cx = ours_cost(D, X, w, var, compile_scale, ours_compile)
+    if not math.isfinite(Cx):
+        return 'UNRESOLVED', None, Cx                    # a missing measurement of ours (e.g. compile) is unresolved
     unresolved = False
     best = None
     for arm in arms:
@@ -138,6 +140,9 @@ def match(D, X, w, verdict='worst', var='A_dep', compile_scale=1.0, arms=CP_ARMS
             if not admissible(D, X, arm, choice, w, verdict):
                 continue
             c = comp_cost(D, arm, choice, w, compile_scale, comp_compile)
+            if not math.isfinite(c):
+                unresolved = True
+                continue
             if best is None or c < best[0]:
                 best = (c, arm, choice)
     if best is not None and best[0] <= Cx:

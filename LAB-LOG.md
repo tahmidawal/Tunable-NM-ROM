@@ -19389,3 +19389,9 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
     - `git worktree remove` deletes ignored files, so never use it before archiving.
     - Two cone-mode worktrees are excluded from re-sparsing.
   - **Awaiting user approval;** nothing executed.
+
+### Disk: re-sparsed the 42 September worktrees (user: "remove some of the oldest")
+- **Change.** Applied the disk plan's SAFE re-sparse (Procedure E) to the 42 `2026-09-*` worktrees, one at a time, using the exact command from the plan for each worktree. **No worktree or branch was removed.** The oldest (August) worktrees were left alone: they are small (about 13 GB) and hold local-only data that would need archiving first.
+- **Checks.** Every worktree was confirmed clean and in non-cone mode, with no process using it. Each previous sparse state is saved in `reports/2026-10-20-disk-space-sparse-before/` (with a copy in `~/disk-plan/sparse-before/`), so each change can be undone (plan §E). After the change, all 42 report a clean status, and the lane folders and ignored data are intact.
+- **Effect.** Free space on /home went from 28 GB to 641 GB.
+- **Still to do (needs approval):** the rest of the SAFE list (the October lanes, pip cache); archive-first removal of local-only data (about 1.4 TB); pushing the 7 unbacked branches (plan procedure A).

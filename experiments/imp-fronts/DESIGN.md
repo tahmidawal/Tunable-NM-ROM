@@ -1,0 +1,311 @@
+# imp-fronts DESIGN (pre-registration): steep fronts — E8 (W2), E9 (out-of-regime indicator), E10 (conditional)
+
+Status: pre-registration, written 2026-10-21 before any code or run. Amendments are appended at the end, dated; this
+text is never rewritten. Brief: main `reports/2026-10-21-improvement-campaign/campaign/briefs/imp-fronts.md`
+(binding, with `COMMON-BRIEF.md`). Sources: ideation `reports/2026-10-20-improvement-ideation/report.md` §2.3, F7,
+F11 (+F13, F16), F12, F15, §5 row W2; jcp-regimes `report.md` (cohorts N0s, C1, C2).
+
+## 0. Problem
+
+The ROM fails on fronts steeper than training. On the jcp-regimes cohorts the r = 384 bank floor (best lattice fit
+by the first 384 bank functions) has median 3.47 % on C1 and 9.88 % on C2 against 0.0266 % on val32, the in-span
+part of the ROM error is as large or larger, and widening the prefix 384 → 512 barely helps (C1 1.1×). Phase A asks
+four cheap CPU questions that decide what Phase B retrains are worth running; Phase B runs single-change retrains
+against a control retrain.
+
+## 1. Data and conventions (both phases)
+
+- **Bank.** Incumbent = `separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl` + `rotation_R512.npz`,
+  evaluated by the vendored NumPy evaluator (`jcp-regimes/npcheck.py`, read-only import from the consolidated
+  worktree, sha256 of both files recorded in every output). $G_r$ = first $r$ ordered bank functions on the
+  257² scoring lattice $x_i=i/256$ (wall nodes zeroed by `decode257`).
+- **References.** dev6 / val32: E0 ST store (`jcp-references/refstore.py`, local store copy of
+  `worktrees/2026-10-06-jcp-references/.../store`, manifest-verified, field `finest` = `a2_L8192`, eligibility from
+  `reference_status`). Regime cohorts N0, N0s, Ap, Am, C1, C2, B1, B2: jcp-regimes E0-style ST store
+  (`worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/store/2d/<cohort>/ST/cNNN.npz`, array `a2_L8192`),
+  eligibility = `checks/analysis.json` → `configs.R384|LSPG_CNR_1.per_case[*].eligible`. ε_ref is a conditional
+  Richardson estimate; every accuracy number carries that label.
+- **Error metric** (project convention, metric id `2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1`):
+  $e(v,u)=\max_{k=1..5}\lVert v(t_k)-u(t_k)\rVert_2/\lVert u(t_0)\rVert_2$ on the 257² lattice.
+- **Floor** of a field $u$ in a basis $B$ (orthonormalised on the lattice, $P_B$ the lattice projector):
+  $f_B(u)=\max_{k=1..5}\lVert(I-P_B)u(t_k)\rVert/\lVert u(t_0)\rVert$.
+- **Laplacian sines.** $S_K$ = first $K$ products $\sin(\pi k_1x)\sin(\pi k_2y)$, $1\le k_i\le255$, ordered by
+  $k_1^2+k_2^2$ (stable argsort, ties by flattened index), orthonormal on the lattice interior via DST-I (Parseval).
+- **Cases are the statistical unit**; snapshots are never bootstrapped. Ineligible references are excluded and
+  counted. Invalid ROM runs are counted and reported, never silently dropped.
+- Phase A uses only dev/val and the jcp-regimes regime cohorts (all already opened by earlier lanes; none sealed,
+  none reserved-OOD). Phase A results select which Phase B arms run; Phase B scores only on **fresh** cohorts that
+  this lane generates from new seeds (§B3), so Phase A selection cannot leak into Phase B scoring.
+
+## 2. Phase A — CPU diagnostics (0 GPU-h)
+
+All Phase A computations are NumPy/SciPy on CPU; the only JAX use is the incumbent upwind generator in A1, run with
+`JAX_PLATFORMS=cpu` under the campaign slot guard. Each diagnostic has a positive control (the detector must fire
+on a case where the effect is present by construction) and a negative / identity control (it must not fire where
+the effect is absent by construction). **If a control does not behave as required, that diagnostic's verdict is
+"INCONCLUSIVE (control failed)"** and it is not used for any Phase B decision.
+
+### A1. Smearing test with a sine control (ideation F11 Step 0; a diagnostic, not a gate)
+
+*Question.* Is the bank's large floor on steep in-range cases consistent with having been trained on smeared
+(first-order upwind, BE) data?
+
+- **Upwind fields.** The incumbent generator, byte-identical copy of `burgers2d_film.py` (sha256 `c521b36a…`):
+  `make_rollout(n)`, BE $\Delta t=0.005$, 50 steps, first-order sign-upwind advection, Newton 8 + preconditioned
+  BiCGStab, f64; IC `blob_ic(n, cx, cy, w, a)` from the case descriptor; output steps 10, 20, …, 50
+  ($t_k=0.05k$). **Primary $n=257$** ($h=1/256$, nodes coincide with the scoring lattice, so no interpolation; the
+  numerical viscosity $ah/2$ differs from the training grid's $h=1/255$ by 0.4 %). **Sensitivity $n=256$** (the
+  training grid itself) on the target set, with bank and sines evaluated at that grid's nodes $x_i=i/255$.
+- **Gates.** (G1) IC identity: $\lVert\text{blob\_ic}(257)-u_{\rm ref}(t_0)\rVert/\lVert u_{\rm ref}(t_0)\rVert
+  \le10^{-12}$ on every case (else the generator is not the reference's problem; stop A1). (G2) generator's own
+  bar: every step's relative Newton residual $\le10^{-8}$ and every field finite.
+- **Cases.** Target set T6 = val32|19 plus the five other eligible dev6 + val32 cases with the largest bank-384
+  floor on E0 references (rule computed in code, before any upwind run is looked at). Extended set X = every
+  eligible dev6 + val32 case (38) + every eligible N0s case (8).
+- **Statistic.** For a basis $B$: $\rho_B=f_B(u_{\rm ref})/f_B(u_{\rm upw})$; smearing excess
+  $D_B=\rho_B/\rho_{S}$ with $S$ the Laplacian-sine basis of the **same size**. Computed at sizes 128 and 384 for
+  the bank. $D>1$ means the basis represents the smeared field better than the sharp one by more than a
+  data-agnostic basis of the same size does.
+- **Controls (both at size 128, leave-one-case-out over X, built from the same six output times $t_0..t_5$ of the
+  other 45 cases, 270 snapshots, top-128 left singular vectors of the lattice snapshot matrix).**
+  - C-A1+ (must fire): POD of the **upwind** fields of the other cases. Required: median over T6 of
+    $D_{\rm POD,upw}\ge2$.
+  - C-A1− (must not fire): POD of the **E0 reference** fields of the other cases. Required: median over T6 of
+    $D_{\rm POD,ref}\le1.25$.
+  - Resolution: median over T6 of $D_{\rm POD,upw}/D_{\rm POD,ref}\ge2$.
+- **Reading (pre-registered, descriptive).** With controls passed: bank **smearing-consistent** if median over T6
+  of $D_{\rm bank}$ (size 384) $\ge2$ and $D_{\rm bank}>1$ on at least 5 of 6; **not smearing-consistent** if the
+  median is $\le1.25$; otherwise **ambiguous**. The same statistic is reported on X (median, and Spearman of
+  $D_{\rm bank}$ with $q=ah/(2\nu)$). Alternatives that remain open even when consistent (ideation): generator
+  mismatch and BE time error; this is not a proof of the fidelity hypothesis — the Phase B fidelity arm is the test.
+- **Also reported.** $e(u_{\rm upw},u_{\rm ref})$ per case (the upwind generator's own error against E0).
+
+### A2. Wall curvature and sine-tail convergence of decoded fields (ideation F11 "before Step 1", F16)
+
+*Question.* Do decoded ROM fields violate the Dirichlet compatibility that the true solution satisfies, so that a
+boundary-compatible bank (Phase B arm c) could shrink their sine tail and quadrature need?
+
+Burgers with $u=0$ on the wall gives $u_t=0$ and $u\,(u_x+u_y)=0$ there, hence $\Delta u=0$ on the wall, and since the
+tangential second derivative vanishes, $\partial_n^2u=0$: the odd reflection of $u$ is $C^2$. A field with
+$\partial_n^2v\ne0$ on a wall has an odd reflection with a jump in the second derivative, which slows sine-coefficient
+decay.
+
+- **Fields.** (i) decoded ROM fields $G_{384}W$ of the saved r = 384 LSPG-CN-R run
+  (`runs/rom1024/output/qacc_rom1024/R_R384_LSPG_CNR_1.npz`, valid runs only, invalid counted); (ii) the bank
+  projection $P_{384}u_{\rm ref}$ (span effect without dynamics); (iii) the E0 reference $u_{\rm ref}$.
+  Cohorts: dev6 + val32 (in range, primary), N0s, C1, C2 (secondary).
+- **Wall-curvature ratio.** $\kappa(v)=\dfrac{\big(\operatorname{mean}_{k,\ \text{wall nodes}}(\partial_n^2v)^2\big)^{1/2}}
+  {\big(\operatorname{mean}_{k,\ \text{interior}}(\Delta_hv)^2\big)^{1/2}}$ over $t_1..t_5$, with
+  $\partial_n^2v$ at each wall node (corners excluded) by the one-sided second-order stencil
+  $(2v_0-5v_1+4v_2-v_3)/h^2$ and $\Delta_h$ the 5-point Laplacian, $h=1/256$. Because `decode257` zeroes the wall
+  nodes, the raw bank wall value $\max|G_{384}W|_{\rm wall}|/\max|G_{384}W|$ is also reported (evaluated with the
+  wall-zeroing switched off); a non-zero raw wall value would itself be an incompatibility.
+- **Sine tail.** $\tau_K(v)=\max_k\lVert(I-S_K)v(t_k)\rVert/\lVert u_{\rm ref}(t_0)\rVert$ for
+  $K\in\{1024,2304,4096,9216,16384,36864\}$, and the decay slope $\beta$ = least-squares slope of
+  $\log\tau_K$ against $\log K$ over $K\in[2304,16384]$.
+- **Controls.**
+  - C-A2+ (must fire): $v_+=u_{\rm ref}+0.01\max|u_{\rm ref}(t_0)|\cdot16\,x(1-x)y(1-y)$ (zero on the walls,
+    $\partial_n^2\ne0$). Required on every in-range case: $\kappa(v_+)\ge10\,\kappa(u_{\rm ref})$ and median
+    $\beta(v_+)\ge\beta(u_{\rm ref})+0.5$ (slower decay; $\beta<0$).
+  - C-A2− (must not fire): $S_{4096}u_{\rm ref}$ (exactly compatible: every sine has zero even derivatives at the
+    walls). Required: median $\kappa(S_{4096}u_{\rm ref})\le2\,\kappa(u_{\rm ref})$ (the reference's own $\kappa$
+    is FD truncation plus true content, both small).
+- **Pre-registered decision for Phase B arm (c).** Run the boundary-compatible arm only if, on the in-range cases
+  (dev6 + val32), **either** median $\kappa(G_{384}W)\ge5\times$ median $\kappa(u_{\rm ref})$ **or** median
+  $\tau_{4096}(G_{384}W)/\tau_{4096}(u_{\rm ref})\ge3$ (the arm's own endpoint is a 3× tail reduction, which is
+  impossible if the decoded tail is already the true solution's tail). Otherwise arm (c) is not run, the decision
+  and numbers are recorded, and its budget is released. If A2's controls fail, arm (c) runs (no evidence either
+  way) only if budget allows after arms (a) and (b).
+
+### A3. F7 truncation screen (ideation F7, CPU part only)
+
+*Question.* Can the full-field decode be replaced by a $K$-sine synthesis without materially changing the ROM's
+error?
+
+- Decode every saved coefficient output in `runs/rom1024/output/qacc_rom1024/R_*.npz` (nine configurations, r =
+  128 … 512; primary `R384|LSPG_CNR_1`) on the 257² lattice: $v=G_rW$; truncated $v_K=S_K v$ (DST-I, keep the first
+  $K$ Laplacian-ordered coefficients), $K\in\{2304,4096,9216\}$. Score $e(v,u_{\rm ref})$, $e(v_K,u_{\rm ref})$ on
+  every eligible case with a valid run.
+- **Stop rule (verbatim from ideation F7):** *Stop if the worst error rises by more than 0.1 percentage points at
+  K = 9216.* Operationalised: $\Delta_{\rm worst}(K)=\max_c e(v_K)-\max_c e(v)$, evaluated (primary) over dev6 +
+  val32 and (secondary) over all regime cohorts; also reported: $\max_c[e(v_K)-e(v)]$ (per-case rise).
+- **Controls.** C-A3= (identity, must hold): $K=65025$ (all sines) gives $|e(v_K)-e(v)|\le10^{-12}$ on every case.
+  C-A3+ (must fire): $K=16$ must trip the stop rule ($\Delta_{\rm worst}>0.001$). Reproduction: $e(v)$ equals the
+  jcp-regimes per-case error (`analysis.json`) to $\le10^{-9}$ on every regime case.
+- The F7 **timing gate** (GPU, ≤ 0.5 GPU-h) is not in this lane's brief; it is recorded as deferred to the
+  coordinator, with the passing $K$ values.
+
+### A4. F15 hybrid (sine-enriched) floors with controls
+
+- Bases: $H$ = span(bank $G_{512}$ ∪ $S_{512}$) (1024 unknowns); $S_{1024}$ (equal-dimension control); $B_{512}$
+  (largest available bank; unmatched baseline). Also, for replication of the ideation number on E0 references:
+  span($G_{384}\cup S_{512}$).
+- Floors $f(u_{\rm ref})$ on every eligible case of dev6, val32, N0, N0s, Ap, Am, C1, C2, B1, B2.
+- **Stop rule (verbatim from ideation F15):** *Stop if the hybrid's C1 worst floor is not ≥ 2× below the sine
+  control and below the bank-512 floor.* i.e. continue only if $\max_{C1}f_H\le\tfrac12\max_{C1}f_{S_{1024}}$
+  **and** $\max_{C1}f_H<\max_{C1}f_{B_{512}}$.
+- **Controls.** C-A4= (containment, must hold): $f_H\le\min(f_{B_{512}},f_{S_{512}})+10^{-12}$ at every case and
+  time. C-A4− (must fail the rule): the same hybrid with the 512 sines of Laplacian rank 40 000 … 40 511 (content
+  far above the fields' spectrum) in place of $S_{512}$ must be stopped by the rule.
+- A pass says only that missing content can be added by sines at the floor level; online cost (1024 unknowns) and
+  dynamics are not tested here.
+
+### A5. Phase A deliverables
+
+`a1_smear.py`, `a2_wall.py`, `a3_trunc.py`, `a4_hybrid.py` (each writes `checks/<name>.json` with sources, hashes,
+per-case rows, control outcomes), `make_report.py` → `report.md` (interim), `EXPORT.json`, PNG plots in `plots/`.
+Local CPU time estimate: A1 ≈ 46 cases × 20 s + sensitivity 6 × 20 s ≈ 20 min; A2–A4 ≈ 30 min. GPU-h: 0.
+
+## 3. Phase B — single-change bank retrains (wave 2; nothing is submitted before the coordinator's "release Phase B")
+
+### B0. Question and stop rules (verbatim from the brief)
+
+Does one change to the bank's training recipe fix the steep-front failure, against a control retrain?
+
+- (a) **data fidelity** — stop if the N0s floor is not ≥ 3× below the control's;
+- (b) **steep / low-ν coverage** — stop if the C1 ROM median is not ≥ 2× lower;
+- (c) **boundary-compatible bank** — stop if $m^*$ is not ≥ 2× smaller **and** the tail not ≥ 3× smaller.
+- Every arm also stops if the in-range worst floor is more than 2× the control's.
+
+Operationalisation (all on the fresh cohorts of §B3, eligible references only, r = 384 prefix):
+"N0s floor" = median over fresh N0s cases of $f_{384}$; "C1 ROM median" = median over fresh C1 cases of $e$ of the
+§B5 policy result (invalid runs counted at $e=\infty$); "$m^*$" = node count of the rule selected at R384 by the
+§B4 procedure; "tail" = median over fresh in-range cases of $\tau_{4096}$ (A2) of the decoded §B5 ROM fields;
+"in-range worst floor" = max over fresh in-range cases of $f_{384}$. "≥ k× below/lower/smaller" means arm ≤ control / k.
+Arm (c) therefore continues if either of its two endpoints improves by its factor.
+
+### B1. Banks
+
+- **K0** archived incumbent (seed 0; deployed rule R384 gauss128). Unmatched historical baseline.
+- **K1 = the control retrain**: the jcp-robust seed-1 retrain of the incumbent recipe
+  (`jcp-robust/inputs/banks/s1/`, hashes in its `BANK.json`; procedure-selected R384 rule gauss160, jcp-robust E2).
+  It is exactly "an incumbent-recipe retrain with a new seed", already trained and rule-selected, so it costs 0 GPU-h
+  here. Every arm is trained with **seed 1** and otherwise the identical pipeline.
+- **K2, K3**: jcp-robust seeds 2, 3 — the retraining-variation band. Floors are CPU-only and always reported; their ROM
+  scoring is in the defer list. An arm's result is called **seed-robust** only if it meets its bar against each of K1–K3
+  (reported, not gating; the stop rule is judged against K1).
+- Pipeline: a copy of `jcp-robust/train2d/` (`run_seed.sh`: Stage A `smoothtrain.py` 300k steps, Stage B
+  `sep_coeff_extract.py` + `sep_hfit_run.py`, rotation `make_rotation.py`) into `experiments/imp-fronts/train2d/`, with
+  `PROVENANCE.json` updated for exactly the files each arm changes; the vendored-file guard of `run_seed.sh` stays on.
+  Retrains are not bitwise reproducible; seeds, data fingerprints and output hashes are recorded.
+- **Arm (a) fidelity.** Only change: the training-data generator. Every place the incumbent calls `make_rollout(256)`
+  (both stages) receives instead the jcp-fom2d sine pseudo-spectral ETDRK4 solution ($N=128$ modes per axis,
+  $\Delta t=0.001$; jcp-fom2d measured median 3.76e-4 %, worst 0.00251 % against E0 on dev6 + val32, conditional E0
+  estimates) sampled at $t=0.005k$, $k=0..50$, by exact sine synthesis at the same 256-node grid. Same parameter draws,
+  same state pick, same everything else.
+- **Arm (b) coverage.** Only change: the viscosity range of `sample_params`. Draws of $c_x,c_y,w,a$ are unchanged
+  (same RNG stream order); $\log\nu\sim U(\log\max(0.0016,a/1000),\log0.1)$, so $s=a/\nu\le1000$ (C2's range) and the
+  in-range box is a subset. Same generator (upwind + BE at 256 nodes), same 576 trajectories, same state count.
+- **Arm (c) boundary-compatible** (runs only if A2 decides "RUN arm (c)" **and** the certified projection fits the cap
+  after (a), (b)). Only change: the output construction
+  $u=\text{out\_scale}\,[m(x,y)-m(-x,y)-m(x,-y)+m(-x,-y)]$, $m$ the incumbent MLP on 2-periodic Fourier features
+  $[\sin\pi Bx,\cos\pi Bx]$ with $B$ an integer matrix (frozen: $B=\operatorname{round}(2B_0)$ from the incumbent's
+  seed-1 initial draw), replacing the envelope $16x(1-x)y(1-y)$. Freezing $B$ to integers is part of the single
+  change (2-periodicity requires it) and is disclosed. Needs the JAX ROM path, the NumPy evaluator and the hand
+  gradient to support the new form; a field-identity test (JAX vs NumPy values and gradients ≤ 1e-12 relative) gates it.
+  If A2 decides "DO NOT RUN", arm (c) is recorded as not run and E10 inherits its question.
+
+### B2. Gates and must-fail controls (each shown to fire in the smoke, §B9)
+
+- C-B1 bank identity: decoding a bank's saved coefficients with another bank must give an error ≥ 10× the matched
+  decode on every smoke case (catches bank mix-ups); the hash guard must reject a mismatched `BANK.json`.
+- C-B2 stop-rule evaluator: unit tests with synthetic inputs on both sides of every bar (including ties at exactly
+  the factor) must give the pre-registered stop / continue outcome.
+- C-B3 fidelity data: on dev6, the arm-(a) generator's fields on the 257² lattice must be within 0.01 % (worst, project
+  metric) of E0; the incumbent upwind generator's fields must **fail** the same bar (must-fail).
+- C-B4 coverage data: the arm-(b) draws must have max $s\ge900$, all $s\le1000$, min $\nu\ge0.0016$; the incumbent
+  draws must fail max $s\ge900$ (must-fail); every arm-(b) state finite with relative Newton residual ≤ 1e-8.
+- C-B5 freshness: the fresh-cohort seed root differs from every earlier cohort's; no fresh IC's sha256 equals any t0
+  sha256 in the E0 store or the jcp-regimes store; a known val32 IC injected into the check must be flagged (must-fail).
+- C-B6 Q1 certificate: the r2acc in-job certificate (fresh-Jacobian stationarity γ, tight distance) is reused unchanged;
+  its existing must-fail control (a perturbed solve flagged non-stationary) is re-run once in the smoke.
+- G-B7: every job log contains `jax_backend=gpu`; f64; `JAX_DEFAULT_MATMUL_PRECISION=highest`.
+
+### B3. Fresh cohorts (generated, hashed and committed before any Phase B job; all **test-once**)
+
+`fcohorts.py`, families copied from jcp-regimes `rcohorts.py`, rows drawn from
+`numpy.random.default_rng([0x494D5046, g, j])` (new seed root "IMPF"; $g$ = cohort index, $j$ = case index):
+
+| cohort | $c_x,c_y$ | $w$ | $\nu$ | $a$ | cases |
+|---|---|---|---|---|---|
+| FI (in range) | U(.15,.85) | U(.05,.20) | logU(0.01, 0.1) | U(0.5, 2) | 12 |
+| FN0s (stiff corner) | U(.15,.85) | U(.05,.20) | logU(0.01, 0.0126) | U(1.5, 2) | 8 |
+| FC1 ($s\in[250,500]$) | U(.15,.85) | U(.05,.20) | $10^{U[-2.5,-2.15]}$ | U(250ν, min(2, 500ν)) | 12 |
+| FC2 ($s\in[500,1000]$) | U(.15,.85) | U(.05,.20) | $10^{U[-2.8,-2.45]}$ | U(500ν, min(2, 1000ν)) | 8 |
+
+(FC1 is drawn independently, not paired with an A− row.) Each fresh cohort is scored **once**, at the end; nothing is
+selected on it. Development and debugging use dev6 + val32 (E0) and the already-opened jcp-regimes cohorts.
+References: the jcp-regimes E0-style ST recipe (`refjob.py` mode `fd`, CN-R levels 2048² / 4096² / 8192² with
+refinement, the same acceptance checks, tight-path allowance 0), labelled conditional; eligibility per case from the
+recipe's outcome. Never the sealed or reserved-OOD cohorts.
+
+### B4. Rule selection per new bank ($m^*$)
+
+The jcp-robust E2 procedure, unchanged (`r2acc.py` config pattern `e2s1.json`): mesh 1024², 38 dev6 + val32 cases,
+ladder fib4181 → fib6765 → gauss96 → fib10946 → gauss128 → gauss160 → gauss192, first rule qualified under both
+LSPG-BE and LSPG-CN-R (Q1 ≤ 2.5e-4, Q2 against its successor ≤ 2.5e-4 with ρ ≤ 0.116, distance to gauss384
+≤ 2.5e-4). K0's and K1's selections are taken from jcp-robust (not rerun). A bank with no qualified rule at R384 is
+reported as such; its $m^*$ is "> gauss192".
+
+### B5. ROM scoring on the fresh cohorts — the same adaptive rule and step policy for every bank
+
+r = 384, LSPG-CN-R, mesh 1024², the bank's selected rule $m_0$. **Adaptive policy (identical for all banks):** per
+case, run rule $m_j$ (start $j=0$) and its ladder successor; if the case fails Q2 (rollout distance > 2.5e-4 or
+ρ > 0.116 on its own states), escalate $j\to j+1$ along gauss160 → gauss192 → gauss256 → gauss384, stop at the first
+Q2-qualified rule or at gauss384 ("not Q2-qualified"). At that rule, run step factors 1, 2, 4 ($\Delta t$, $\Delta t/2$,
+$\Delta t/4$); the scored field is the coarsest factor whose distance to the next finer one is ≤ 2.5e-4, else factor 4
+("not step-converged"). Q1 is certified in-job (r2acc certificate) on every run. Reported per bank and cohort:
+median / worst $e$, counts of Q2-unqualified, step-unconverged and Q1-failing cases, and the three labels
+(numerical, role, frontier) kept separate. Each policy level is a separate r2acc run (one config per bank).
+
+### B6. Floors on the fresh cohorts (CPU)
+
+$f_{384}$ and $f_{512}$ for K0–K3 and every trained arm on every eligible fresh case; medians and worst per cohort.
+
+### B7. E9 — out-of-regime indicator $s=a/\nu$
+
+- Frozen before any fresh case is scored, on dev data (dev6 + val32 + the jcp-regimes cohorts, K0's deployed
+  `R384|LSPG_CNR_1` errors from jcp-regimes `analysis.json`): threshold $\tau_s$ = 95th percentile of $s$ over the
+  in-range cases dev6 + val32 + N0 (the ideation rule); targets A ($e>2\times$ the dev in-range median) and B ($e>1\,\%$).
+- Scored once on the fresh cohorts with K0's and K1's §B5 errors: AUC, detection and false-alarm rates with one-sided
+  95 % Clopper–Pearson bounds; per F12, fewer than 30 good or 20 bad cases under a target → "inconclusive" (expected
+  with 40 fresh cases; reported as such, never as a pass).
+- FOM-fallback cost: (flagged fraction) × (accuracy-matched FOM time) + (ROM time) per query, using the jcp-fom2d PS
+  FOM and the ROM timings measured on the same GPU type in the same job (jcp-fom2d / jcp-budget timing records); the
+  GPU type is stated next to every time; no cross-GPU comparison.
+- Note carried forward: on this family $s$ is a known input, so the indicator is a safety feature, not a speed one.
+
+### B8. GPU-hour projection (to be certified by the smoke; cap 15 for E8 + E9; lane concurrent-job cap 2)
+
+| item | basis | GPU-h |
+|---|---|---|
+| arm (a) retrain | jcp-robust measured 4.18 GPU-h/seed (A100-80G); PS data generation added | 4.3 |
+| arm (b) retrain | same; low-ν Newton may cost more (certified in smoke) | 4.3 |
+| fresh references, 40 cases | jcp-regimes measured 2.9–8.5 min/case | 4.0 |
+| rule selection (a), (b) | jcp-robust measured 0.45/bank | 0.9 |
+| §B5 scoring K0, K1, (a), (b) | jcp-regimes rom1024 0.84 GPU-h for 158 cases × 9 configs; policy levels added | 0.6 |
+| smoke | | 0.5 |
+| **total** | | **14.6** |
+
+Submit only if spent + certified projection ≤ 15. **Defer order** if the certified projection exceeds the cap:
+(1) arm (c); (2) K2 / K3 ROM scoring; (3) FC2 8 → 4 cases; (4) step factor 4; (5) FI 12 → 8 cases. Each deferral is
+recorded in `runs/GPU-LEDGER.json` and the report. Arm (c) also needs ≈ 4.8 GPU-h; it runs only if A2 says so and
+(a), (b) leave room (they will not under this projection, so (c) is expected to be deferred to E10's design).
+
+### B9. Smoke plan (before any production job; every must-fail control of §B2 shown to fire)
+
+1. Local CPU: arm-(a) and arm-(b) generators on 2 trajectories each; C-B3, C-B4, C-B5, C-B2 locally.
+2. One cluster smoke job (A100, ≤ 0.5 GPU-h): arm (b) full 576-trajectory data generation (timed: the cost
+   certificate for low ν), Stage A 2 000 steps, Stage B tiny, rotation; r2acc on the smoke bank with 2 cases of
+   jcp-regimes C1 (opened cohort); refjob on 1 jcp-regimes C2 case (reference timing); C-B1 and C-B6 fire.
+3. The cost certificate (`resources.py` pattern) converts measured rates into the production projection.
+
+### B10. E10 (only if E8 falls short)
+
+If every E8 arm stops (or none meets its bar), write `E10-DESIGN.md` for a transport/shift-aware bank or adaptive
+quadrature and time steps near fronts (F8, F13), Codex-audit it and hand it back design-only (no GPU). If an arm meets
+its bar, write a one-paragraph note that E10 was not needed.
+
+### B11. Deliverables
+
+`report.md` (generated by `make_report.py`), `EXPORT.json`, PNG plots, `runs/GPU-LEDGER.json`, every audit in `audits/`.

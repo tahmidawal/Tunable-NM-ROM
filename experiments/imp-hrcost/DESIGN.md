@@ -458,3 +458,39 @@ tables, $C$, the QR buffers and temporaries; F3a, F3b and F2+F3 fit costs are me
 cannot fit under the cap after the §8 deferrals, the lane stops with incomplete evidence; qualification coverage is never
 reduced silently. If the E5 deadline passes without a hand-off, results against the lane's own R are labelled
 "**local ablation; equivalence to E5's arm not established**".
+
+## Amendment A3 (2026-10-21, before any lane code ran; answers `audits/codex-design-3.md`, verdict WRONG on the F2 outcome)
+
+The E5 reconciliation amendment (called "A2" in A1.8 and "A3" in A2) is named **Amendment E5R** from here on.
+
+**A3.1 F2 outcome uses only an identified $m^\*$ (replaces the F2 bullet of A2.3).** $m^\*$ is identified only when every
+registered candidate with smaller $m$ is resolved (fully evaluated, not numerically qualified). Then: *not fired* iff
+F2 at $m^\*$ is "no worse" and "faster" than R; *fired (tested failure)* otherwise. If no candidate with $m\le16384$ is
+qualified and all are resolved: *fired (tested failure)* through (a). **If any smaller candidate is unresolved, the F2
+verdict is *fired (incomplete evidence)***, whatever larger candidates show; the smallest qualified larger rule (if
+any) is reported descriptively as "a qualified rule exists at $m$ (upper bound on $m^\*$)", with its accuracy and speed
+predicates, labelled non-binding. "Reference unqualified" (A2.3) still overrides.
+
+**A3.2 Fitting targets.** F3a's target matches the **non-binding** Q2-projected indicator; F3b's and F2+F3's targets match
+the **binding** tested-vector gates. F3a and F3b use different snapshot schedules, so their comparison is a comparison of
+fitted procedures, not an isolated test of the target norm. The F3 search has **six candidates across two families**
+(F3a, F3b × κ ∈ {4, 8, 16}); all per-arm intervals stay labelled exploratory, in-sample, selection-unadjusted.
+
+**A3.3 NNLS drift.** `nnls.greedy_nnls` returns path-level drift evidence only, so the policy is conservative: if a fit's
+path reports any drift event (`drift_ok` false or a recorded drift above the solver's tolerance), **every support
+checkpoint of that path is "not built (drift)"** (incomplete evidence for those κ).
+
+**A3.4 Fixtures named.** C2 uses F3b κ = 8 (binding family); if that support is not reached, F3a κ = 8 (recorded). The
+fitted fixture of P4 is F3a κ = 8 (else F3b κ = 8).
+
+**A3.5 Resources (replaces A1.5's deadline and A2.7's reservation).** NNLS deadline **12 min per fit** (three fits ≤ 36 min
+plus the measured cooperative overshoot and final-residual tail). Smoke reservation **1.5 h** (ledgered); production
+is submitted only with a smoke-certified projection such that spent + projection ≤ 3 GPU-h. The runtime is bounded by
+the reservation; completion is not guaranteed — work that cannot complete is reported as incomplete evidence. Peak device
+bytes come from `memory_stats` (peak per phase where resettable, else the running peak with the phase order recorded);
+if the counters are unavailable, `nvidia-smi` memory.used is polled per phase. Host bytes of the system construction
+(the $b$ vector and host copies) are recorded from `resource.getrusage`.
+
+**A3.6 Wording carried into the report.** The report distinguishes: binding vs projected fitting targets and Q2 labels;
+an identified minimum vs a qualified upper bound; bounded runtime vs guaranteed completion; local-fallback evidence vs
+E5-equivalent evidence.

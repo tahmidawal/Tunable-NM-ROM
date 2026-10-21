@@ -106,56 +106,70 @@ class Base:
     # -------------------------------------------------------------- tables ----
 
     def tables(self, proj, rule_name):
-        """Classical-rule tables of an arm. proj: 'sine' (R, F3) or 'bank' (F2, F2+F3)."""
+        """Classical-rule tables of an arm. proj: 'sine' (R, F3) or 'bank' (F2, F2+F3).
+        Returns (d, aux, meta, (X, w)): d = stepper tables (Gq, Gs, P, L0); aux['T'] = weighted tested rows (m, k) with
+        tested vector T^T[(Gq c)(Gs c)] (sine: Psi, k = M, the inherited N(c); bank: diag(w) Gq, k = r, DESIGN A2.1);
+        aux['fit'] = unweighted per-point fitting rows for the NNLS families (A2.2)."""
         X, w = rule(rule_name)
+        wj = jnp.asarray(w)[:, None]
         t0 = time.perf_counter()
         if proj == 'sine':
             blk = Q.offmesh_data(self.bank.mdl, self.Rp, X, w, self.L, self.kx, self.ky, 'point')
             Pt = solve_triangular(self.Rm, self.Qm.T @ blk['Psi'].T, lower=False)          # (r, m) = Rm^-1 Q^T Psi^T
             d = dict(Gq=blk['Gq'], Gs=blk['Gs'], P=Pt.T, L0=self.L0_sine)
-            del blk
+            aux = dict(T=blk['Psi'])
         elif proj == 'bank':
             Mm, _, L0, _ = self.bank_ops()
             g, gx, gy = _vg(self.bank, X, self.Rp)
-            Pm = jnp.linalg.solve(Mm, (jnp.asarray(w)[:, None] * g).T).T                     # diag(w) G M^-1
+            Tw = wj * g
+            Pm = jnp.linalg.solve(Mm, Tw.T).T                                              # diag(w) G M^-1
             d = dict(Gq=g, Gs=gx + gy, P=Pm, L0=L0)
+            aux = dict(T=Tw)
             del gx, gy
         else:
             raise ValueError(proj)
-        d = jax.block_until_ready(d)
+        d, aux = jax.block_until_ready((d, aux))
         meta = dict(proj=proj, rule=rule_name, m=int(len(X)), rule_sha256=sha(np.concatenate([X.ravel(), w])),
                     L=self.L, Rp=self.Rp, M=self.M, mode_hash=self.mode_hash, build_seconds=time.perf_counter() - t0)
-        return d, meta, (X, w)
+        return d, aux, meta, (X, w)
 
-    def unweighted_rows(self, proj, rule_name):
-        """Rows p_q of P with the quadrature weight removed: P = diag(w) P_unw (for the ECSW system)."""
-        d, meta, (X, w) = self.tables(proj, rule_name)
-        return d, meta, (X, w), d['P'] / jnp.asarray(w)[:, None]
+    def fit_rows(self, family, aux, w):
+        """Unweighted per-point rows of the NNLS system (A2.2): F3a Q^T(L psi) (m, r); F3b L psi (m, M); F2F3 G (m, r)."""
+        wj = jnp.asarray(w)[:, None]
+        if family == 'F3a':
+            return (aux['T'] @ self.Qm) / wj
+        if family == 'F3b':
+            return aux['T'] / wj
+        if family == 'F2F3':
+            return aux['T'] / wj
+        raise ValueError(family)
 
 
 def fitted(parent, parent_w, idx, w_hat, name):
-    """Row subset of parent tables with new non-negative weights (F3, F2+F3)."""
-    d, meta = parent
+    """Row subset of parent tables with new non-negative weights (F3, F2+F3). parent = (d, aux, meta)."""
+    d, aux, meta = parent
     idx = np.asarray(idx, int)
     sc = jnp.asarray(np.asarray(w_hat, float) / np.asarray(parent_w, float)[idx])[:, None]
     out = dict(Gq=d['Gq'][idx], Gs=d['Gs'][idx], P=d['P'][idx] * sc, L0=d['L0'])
+    ax = dict(T=aux['T'][idx] * sc)
     m2 = dict(meta, rule=name, m=int(len(idx)), parent_rule=meta['rule'],
               rule_sha256=sha(np.concatenate([idx.astype(float), np.asarray(w_hat, float)])))
-    return jax.block_until_ready(out), m2
+    return jax.block_until_ready((out, ax)) + (m2,)
 
 
 def duplicated(parent):
     """C5: every row twice with half weight (same mathematics, 2x point work)."""
-    d, meta = parent
-    out = dict(Gq=jnp.concatenate([d['Gq'], d['Gq']]), Gs=jnp.concatenate([d['Gs'], d['Gs']]),
-               P=jnp.concatenate([.5 * d['P'], .5 * d['P']]), L0=d['L0'])
-    return jax.block_until_ready(out), dict(meta, rule=meta['rule'] + '-dup', m=2 * meta['m'])
+    d, aux, meta = parent
+    cat = lambda a, f=1.: jnp.concatenate([f * a, f * a])
+    out = dict(Gq=cat(d['Gq']), Gs=cat(d['Gs']), P=cat(d['P'], .5), L0=d['L0'])
+    return out, dict(T=cat(aux['T'], .5)), dict(meta, rule=meta['rule'] + '-dup', m=2 * meta['m'])
 
 
 def nan_injected(parent):
-    """C4: one NaN in P."""
-    d, meta = parent
-    return dict(d, P=d['P'].at[0, 0].set(jnp.nan)), dict(meta, rule=meta['rule'] + '-nan')
+    """C4 / P6: one NaN in P (and in the tested rows)."""
+    d, aux, meta = parent
+    return (dict(d, P=d['P'].at[0, 0].set(jnp.nan)), dict(T=aux['T'].at[0, 0].set(jnp.nan)),
+            dict(meta, rule=meta['rule'] + '-nan'))
 
 
 def table_fingerprint(d):
@@ -164,5 +178,10 @@ def table_fingerprint(d):
 
 
 def advection(d, c):
-    """v(c) = P^T [(Gq c) * (Gs c)], the advection contribution to dc/dt (rho is measured on it, DESIGN 3.2)."""
+    """v(c) = P^T [(Gq c) * (Gs c)], the advection contribution to dc/dt (Q2-projected indicator, A1.4)."""
     return d['P'].T @ ((d['Gq'] @ c) * (d['Gs'] @ c))
+
+
+def tested(d, aux, c):
+    """The binding tested vector (A2.1): T^T [(Gq c) * (Gs c)] (sine: N(c), M entries; bank: T(c), r entries)."""
+    return aux['T'].T @ ((d['Gq'] @ c) * (d['Gs'] @ c))

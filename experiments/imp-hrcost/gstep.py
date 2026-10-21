@@ -152,8 +152,13 @@ def gram_factor(proj, base):
     return jnp.linalg.cholesky(Mm).T
 
 
-def run_valid(stats, nsteps):
-    """Validity (DESIGN 3.1 item 1): every step converged to tolerance (reason 1), finite states."""
-    rs = np.asarray(stats['reason'])[:nsteps]
-    st = np.asarray(stats['states'])[:nsteps + 1]
-    return bool(np.all(rs == 1) and np.isfinite(st).all())
+def run_valid(out, nsteps):
+    """Validity (DESIGN 3.1 item 1): finite outputs, fields and states, no non-finite step (reason 2). Budget exits
+    (reason 0) are not invalid by themselves; they are judged by the certificate (non-converged steps <= 1 %)."""
+    st = out['stats']
+    rs = np.asarray(st['reason'])[:nsteps]
+    ok = int(st['steps']) == nsteps and bool(np.all(rs >= 0) and not np.any(rs == 2))
+    for k in ('W', 'w0', 'fields'):
+        if k in out:
+            ok = ok and bool(np.isfinite(np.asarray(out[k])).all())
+    return ok and bool(np.isfinite(np.asarray(st['states'])[:nsteps + 1]).all())

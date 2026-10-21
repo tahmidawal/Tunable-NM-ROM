@@ -1,7 +1,8 @@
 """imp-hrcost fitted rules (DESIGN 2.2, A1.5): support-targeted greedy NNLS (jcp-hr-baselines nnls.py, copied
 unchanged) on the ECSW system of projected advection contributions over the Gauss 128^2 candidate pool.
 
-  g_qj = p_q * u_q(c_j) s_q(c_j)   (p_q: row of P with the quadrature weight removed)
+  g_qj = p_q * u_q(c_j) s_q(c_j)   (p_q: the family's per-point row without the quadrature weight, DESIGN A2.2:
+                                    F3a Q^T(L psi_q), F3b L psi_q, F2F3 G(x_q))
   C[(j, :), q] = g_qj / ||b_j||,   b = C w_parent,   min_{w >= 0} ||C w - b||, first crossing of supports kappa r.
 
 Snapshots c_j come from parent-arm rollouts of training draws only (hrcore.train_draw_2d(seed=0, count=576) rows 0-15,
@@ -19,8 +20,9 @@ import jax.numpy as jnp
 import nnls as NN
 
 KAPPAS = (4, 8, 16)
-NDRAW, MAX_REPL, SNAP_TIMES = 16, 4, 11          # states at t = 0, 0.025, ..., 0.25
-CAP, DEADLINE_S = 6400, 40 * 60
+NDRAW, MAX_REPL = 16, 4
+SNAP_STEPS = {'F3a': tuple(range(0, 51, 5)), 'F2F3': tuple(range(0, 51, 5)), 'F3b': (0, 10, 30, 50)}   # dt0 steps
+CAP, DEADLINE_S = 6400, 12 * 60       # DESIGN A3.5
 
 
 # ---------------------------------------------------------------- training draws (copied from hrcore) ----
@@ -51,19 +53,20 @@ def assert_not_dev_val(rows, dev_val_desc):
 
 # ------------------------------------------------------------------------------------- ECSW system ----
 
-def build_system(P_unw, Gq, Gs, w_parent, snaps):
-    """(C on device (n r, m), b (n r,), info). snaps (n, r) host array."""
+def build_system(rows_unw, Gq, Gs, w_parent, snaps):
+    """(C on device (n k, m), b (n k,), info). rows_unw (m, k): unweighted per-point rows of the family (A2.2);
+    snaps (n, r) host array."""
     S = jnp.asarray(snaps)
     a = (S @ Gq.T) * (S @ Gs.T)                                  # (n, m)
     wp = jnp.asarray(w_parent)
-    bj = (a * wp[None]) @ P_unw                                  # (n, r) = sum_q w_q p_q a_jq
+    bj = (a * wp[None]) @ rows_unw                               # (n, k) = sum_q w_q p_q a_jq
     nb = jnp.linalg.norm(bj, axis=1)
     keep = np.asarray(nb > 1e-12 * jnp.max(nb))
     if not np.isfinite(np.asarray(bj)).all():
         raise FloatingPointError('non-finite ECSW target')
     a, bj, nb = a[keep], bj[keep], nb[keep]
     n, r = bj.shape
-    C = (P_unw.T[None, :, :] * (a / nb[:, None])[:, None, :]).reshape(n * r, -1)
+    C = (rows_unw.T[None, :, :] * (a / nb[:, None])[:, None, :]).reshape(n * r, -1)
     b = np.asarray((bj / nb[:, None]).reshape(-1))
     info = dict(rows=int(C.shape[0]), cols=int(C.shape[1]), bytes=int(C.size * 8), dropped=int((~keep).sum()),
                 snapshots=int(n))

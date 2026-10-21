@@ -440,3 +440,12 @@ def test_collector_writes_exhaustion_records_for_killed_job(tmp_path, monkeypatc
     r = json.loads((tmp_path / 'result.json').read_text())
     assert r['killed'] and r['counts']['BUDGET-CAP'] == 2 and r['qualified'] == 0
     assert [p['scored'] for p in r['policy']] == ['FC1|0|cert|gauss160|0.5', 'FC1|1|cert|gauss160|0.5']
+
+
+def test_selection_config_r384_group_identical_to_e2s1():
+    import mkconfigs_sel as MS
+    full = json.loads((ROM / 'configs' / 'e2s1.json').read_text())
+    c = MS.sel_config('1', r384=True)
+    assert [g['Rp'] for g in c['groups']] == [384]
+    assert c['groups'] == [g for g in full['groups'] if g['Rp'] == 384]
+    assert {k: v for k, v in c.items() if k != 'groups'} == {k: v for k, v in full.items() if k != 'groups'}

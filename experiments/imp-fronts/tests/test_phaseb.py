@@ -370,3 +370,13 @@ def test_reference_adapter_allow_list():
     tab = FC.load()
     assert c.nu(5) == tab['cohorts']['FC1'][5]['nu'] and c.full_ic(256, 5).shape == (257, 257)
     assert c.full_ic(256, 5)[0].max() == 0. and c.ic(256, 5).shape == (255, 255)
+
+
+def test_rom_driver_loads_fresh_table():
+    """Interface contract: rom/fcases.load_table accepts phaseb/fresh_cohorts.json (sha256 definition and splits)."""
+    if not FC.OUT.exists():
+        pytest.skip('fresh_cohorts.json not yet written')
+    sys.path.insert(0, str(LANE / 'rom'))
+    import fcases
+    t, _ = fcases.load_table(FC.OUT)
+    assert fcases.table_sha(t['cohorts']) == FC.load()['sha256']

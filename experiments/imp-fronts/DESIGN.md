@@ -763,3 +763,20 @@ predicts completion):
   counts as "no certified rule" (policy then starts uncertified at fib4181, Amendment 4).
 - "Numerically qualified" additionally requires the job-wide pooled non-stationary fraction ≤ 1 % over all scored
   prod runs of that bank (the common-brief contract is pooled).
+
+---
+
+## Amendment 10 (2026-10-21; budget rebalance after the history-only certificate; before any Phase B job)
+
+The history-only certificate (`resources.py`, no smoke yet) projects: references 3.37 GPU-h for 28 H200 cases (mean
+288.5 s/case × 1.5), selection 0.35 per arm (e2s1's R384 group 0.229 h × 1.5), policy **worst-path upper bounds** 0.69
+(K1) and 0.94 (each arm); training is uncertified until the smoke. Under Amendment 9's ceilings every schedule fails.
+Replaced ceilings and schedules:
+- Policy projection = the smoke's measured mean per-case path cost on the 16 fresh dev/val cases (reference-free
+  policy dry run inside SM-b, all three maps exercised) × 1.5; the worst-path bound is reported beside it. Policy
+  ceiling 0.5 GPU-h per bank (BUDGET-CAP outcome unchanged).
+- Selection ceiling 0.35 per arm. References: 24 test cases (FI 6, FN0s 8, FC1 8, FC2 2; lowest test indices),
+  ceiling 2.9 GPU-h on 2 GPUs (1.45 h wall), H200.
+- **S1** (both arms): 8.8 + 2.9 + 0.7 + 1.5 + 0.9 = **14.8 GPU-h**. **S3** (arm (b) only + K1): 4.4 + 2.9 + 0.35 +
+  1.0 + 0.9 = **9.55**. S2 is withdrawn (S1 already uses the reduced reference set). S4: no Phase B.
+- Submission of each production item still follows the Amendment 5 admission rule against these ceilings.

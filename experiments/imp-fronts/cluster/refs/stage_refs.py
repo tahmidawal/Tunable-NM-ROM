@@ -45,7 +45,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--kind', required=True, choices=sorted(KINDS))
-    p.add_argument('--gpu', default='a100-80G', choices=sorted(GRES))
+    p.add_argument('--gpu', default='h200', choices=sorted(GRES))   # H200 preferred: ~252 s/case vs ~384 s on A100 (ROM-driver lane measurement)
     p.add_argument('--render-only')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt

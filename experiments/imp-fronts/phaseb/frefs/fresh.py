@@ -27,9 +27,8 @@ class FreshError(ValueError):
 
 
 def canonical_sha(tab):
-    root = {k: v for k, v in tab['seed_root'].items() if k != 'numpy'}
-    blob = json.dumps(dict(cohorts=tab['cohorts'], seed_root=root), sort_keys=True, separators=(',', ':'))
-    return hashlib.sha256(blob.encode()).hexdigest()
+    """= phaseb/fcohorts.canonical_sha = rom/fcases.table_sha: sha256 of the compact sorted JSON of tab['cohorts']."""
+    return hashlib.sha256(json.dumps(tab['cohorts'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
 _TAB = None

@@ -4,8 +4,9 @@ complete sbatch script; never submits. The staged tree under the job directory m
 experiments/separable-decoder/sep_common.py, which rom/env.sh puts on PYTHONPATH) and carry MANIFEST.sha256 + COMMIT.txt.
 
 Kinds
-  sel  <label>            SEL-<label>: r2acc on configs/e2s<label>.json (select2d.py runs locally on the pulled output).
-                          Wall = ceiling 0.45 GPU-h / 1 GPU (Amendment 4); r2acc has no self-timer, so it runs under
+  sel  <label>            SEL-<label>: r2acc on configs/e2s<label>.json (R384 group only, mkconfigs_sel.py --r384;
+                          select2d_r384.py runs locally on the pulled output).
+                          Wall = ceiling 0.3 GPU-h / 1 GPU (Amendment 9); r2acc has no self-timer, so it runs under
                           `timeout` at 90 % of the wall (exhaustion: incomplete result -> select2d refuses -> no
                           certified rule -> m* route FAIL, ROM routes run from the uncertified start, Amendment 4).
   pol  <bank> <config>    POL-<bank>: fpolicy on configs/<config>.json, wall = ceiling 0.4 GPU-h; fpolicy's self-timer
@@ -28,7 +29,7 @@ from pathlib import Path
 NS = '/cluster/tufts/paralab/tawal01/imp-fronts'
 VENV = '/cluster/tufts/paralab/tawal01/ae-research/venv'
 GRES = {'a100': 'a100', 'h100': 'h100', 'h200': 'h200', 'l40s': 'l40s'}
-CEIL = {'sel': .45, 'pol': .4, 'smb': .45}
+CEIL = {'sel': .3, 'pol': .4, 'smb': .45}
 
 
 def hms(hours):

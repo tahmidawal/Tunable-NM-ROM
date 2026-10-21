@@ -124,11 +124,10 @@ def table():
 
 
 def canonical_sha(tab):
-    """sha256 of the canonical cohort content: cohorts + seed_root (minus the numpy version), sorted keys, compact,
-    floats as Python repr (round-trip exact)."""
-    root = {k: v for k, v in tab['seed_root'].items() if k != 'numpy'}
-    blob = json.dumps(dict(cohorts=tab['cohorts'], seed_root=root), sort_keys=True, separators=(',', ':'))
-    return hashlib.sha256(blob.encode()).hexdigest()
+    """sha256 of the canonical cohort content = json.dumps(tab['cohorts'], sort_keys=True, separators=(',', ':')) (UTF-8;
+    floats as Python repr, round-trip exact). Identical to rom/fcases.table_sha (the ROM-driver contract); the seed root
+    is recorded beside it and is reproduced by the generator check in load()."""
+    return hashlib.sha256(json.dumps(tab['cohorts'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
 def load(path=OUT, verify=True):

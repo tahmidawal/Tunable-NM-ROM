@@ -1,0 +1,178 @@
+{
+ "controls": {
+  "identity": {
+   "envelope_closed_form_rel": 6.874500968478969e-13,
+   "envelope_ok": true,
+   "sine_zero_rel": 4.908934323294528e-14,
+   "sine_ok": true,
+   "bank_path_fixture": "dev6|0",
+   "bank_path_gap": 0.49157439336207176,
+   "bank_path_gap_dv": 2.9639626873718043,
+   "bank_path_bound": 1.4090040403712631,
+   "bank_path_ok": true,
+   "gap_unextrapolated_5em5": 0.49641316909520583,
+   "original_dv_1em3_gap": 241.8637351362641,
+   "note": "Amendment 6 respecification; the original dv = 1e-3 check failed (truncation of the value path)"
+  },
+  "omega_plus_ok": true,
+  "omega_minus_ok": true,
+  "omega_rom_available_half": true,
+  "kappa_reportable": true,
+  "controls_pass": true
+ },
+ "criteria": {
+  "tail_3x": true,
+  "wall_share_half": true
+ },
+ "decision": "RUN",
+ "groups": {
+  "in_range": {
+   "n_eligible": 38,
+   "n_rom_valid": 38,
+   "n_laplacian_unavailable": 0,
+   "kappa_a_med": {
+    "rom": 29.26464270137678,
+    "proj": 25.543061938967107
+   },
+   "kappa_unconverged": {
+    "rom": 0,
+    "proj": 0
+   },
+   "omega_available": {
+    "rom": 38,
+    "proj": 38,
+    "ref": 38
+   },
+   "beta_med": {
+    "rom": -0.44919653008103055,
+    "proj": -0.40371256785420595,
+    "ref": -2.272119516087897
+   },
+   "tau4096_med": {
+    "rom": 0.00019329813661455225,
+    "proj": 9.782452324951524e-05,
+    "ref": 1.0631724482257921e-07
+   },
+   "omega_med": {
+    "rom": 0.950571355799446,
+    "proj": 0.931398870016603,
+    "ref": 0.6921457141690341
+   },
+   "tau4096_ratio_rom_ref_med": 2165.2113973877194,
+   "tau4096_ratio_proj_ref_med": 931.8649063864113,
+   "ctrl_omega_plus_med": 0.8130354355212993,
+   "ctrl_omega_minus_med": 0.046883626396934094
+  },
+  "N0s": {
+   "n_eligible": 8,
+   "n_rom_valid": 8,
+   "n_laplacian_unavailable": 0,
+   "kappa_a_med": {
+    "rom": 160.14544977103714,
+    "proj": 119.88230781369217
+   },
+   "kappa_unconverged": {
+    "rom": 0,
+    "proj": 0
+   },
+   "omega_available": {
+    "rom": 8,
+    "proj": 8,
+    "ref": 8
+   },
+   "beta_med": {
+    "rom": -0.4628369872339679,
+    "proj": -0.40116900104605213,
+    "ref": -3.5357527325133913
+   },
+   "tau4096_med": {
+    "rom": 0.006385093872932778,
+    "proj": 0.0016749667581237976,
+    "ref": 4.785036897921933e-05
+   },
+   "omega_med": {
+    "rom": 0.9582577917652194,
+    "proj": 0.944630447439291,
+    "ref": 0.31017053972097414
+   },
+   "tau4096_ratio_rom_ref_med": 222.54510006058175,
+   "tau4096_ratio_proj_ref_med": 58.693539216886265,
+   "ctrl_omega_plus_med": 0.8130354355213186,
+   "ctrl_omega_minus_med": 0.046883622943944304
+  },
+  "C1": {
+   "n_eligible": 16,
+   "n_rom_valid": 16,
+   "n_laplacian_unavailable": 0,
+   "kappa_a_med": {
+    "rom": 193.39822979621533,
+    "proj": 127.86894963453705
+   },
+   "kappa_unconverged": {
+    "rom": 0,
+    "proj": 0
+   },
+   "omega_available": {
+    "rom": 16,
+    "proj": 16,
+    "ref": 16
+   },
+   "beta_med": {
+    "rom": -0.42395862879512725,
+    "proj": -0.39523612378744855,
+    "ref": -2.1161840710506135
+   },
+   "tau4096_med": {
+    "rom": 0.035212028147018,
+    "proj": 0.008626659312322763,
+    "ref": 0.00633824191120143
+   },
+   "omega_med": {
+    "rom": 0.9570676355977067,
+    "proj": 0.9430451134639439,
+    "ref": 0.09478164497831765
+   },
+   "tau4096_ratio_rom_ref_med": 7.108941751964106,
+   "tau4096_ratio_proj_ref_med": 1.6552690922207653,
+   "ctrl_omega_plus_med": 0.8130354355214303,
+   "ctrl_omega_minus_med": 0.04688362576427594
+  },
+  "C2": {
+   "n_eligible": 16,
+   "n_rom_valid": 16,
+   "n_laplacian_unavailable": 0,
+   "kappa_a_med": {
+    "rom": 127.12106363324014,
+    "proj": 82.48950820452056
+   },
+   "kappa_unconverged": {
+    "rom": 0,
+    "proj": 0
+   },
+   "omega_available": {
+    "rom": 16,
+    "proj": 16,
+    "ref": 16
+   },
+   "beta_med": {
+    "rom": -0.4735583708752533,
+    "proj": -0.38851144897799933,
+    "ref": -1.0449798926951415
+   },
+   "tau4096_med": {
+    "rom": 0.08533493009005666,
+    "proj": 0.014605459826706288,
+    "ref": 0.028225773886973636
+   },
+   "omega_med": {
+    "rom": 0.9504886534974348,
+    "proj": 0.9447185906663378,
+    "ref": 0.009477582846677768
+   },
+   "tau4096_ratio_rom_ref_med": 3.3334223378058168,
+   "tau4096_ratio_proj_ref_med": 0.7049520711783692,
+   "ctrl_omega_plus_med": 0.8130354355212956,
+   "ctrl_omega_minus_med": 0.0468836264772515
+  }
+ }
+}

@@ -19426,3 +19426,7 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
     - then A′ (4 family widths × 4 steepness levels, including the real bank, a front-tracking model and POD-ECSW; about 87 GPU-h).
   - **Deviations:** JAX_DEFAULT_MATMUL_PRECISION was unset in the CPU jobs; amendments A5 and A6 came after the design audits; about 12 GB of arrays are outside git, listed by sha256 and regenerable.
 - **Synthesis.** On the smooth Dirichlet box, spectral wins by a margin no internal speed-up closes. A win needs a problem where (i) the competitor is forced to be fine or slow, (ii) the parameter family is narrow enough, or the features fixed enough, for a learned basis to compress hard, and (iii) the ROM keeps few, large steps.
+
+### 7 unbacked branches pushed (plan procedure A)
+- Direct pushes, confirmed: exp/2026-08-12-coord-decoder and exp/2026-08-26-codesign.
+- Code-only mirrors rebuilt with pinned bases, each verified to contain exactly the new paths with identical content: paper-b3d 4892528c8, paper-ns3d a3d57c2f2, ns3d-grok 0de70bfcb, burgers-repanel a264850e2, operators-all-pdes bac0f6331.

@@ -388,3 +388,79 @@ queued/running job; submit only if spent + reserved + certified projection ≤ 4
   fused query init (cold-point fit) + evolve + decode (full field).
 - Claims: §11's last sentence is replaced by: E5 speed ratios are **against the incumbent (arm 1)**; matched-competitor
   ratios are against the strongest tested competitor and are upper bounds; shared-integrator comparisons are controls.
+
+---
+
+## Amendment A2 (2026-10-21) — answers to Codex design audit 3 (`audits/codex-design-3.md`, WRONG on A1.10)
+
+(Audit 2 is void: that Codex run audited another lane's design; kept as `audits/codex-design-2-INVALID-wrong-lane.md`.)
+A1.1, A1.2, A1.3, A1.7 were CORRECT; the rest is restated here. A2 governs where it conflicts with A1.
+
+**A2.1 Wording (A1.3).** Arm 4 performs one algebraic linear solve per step; its residual certificate checks that
+solve. Newton's quadratic convergence does not guarantee that $10^{-13}$ is above the attainable round-off floor of
+every case: an anchor that cannot certify its level is **invalid** and the case fails Q1 (conservative; counted).
+
+**A2.2 POD Q2 successor policy (A1.4).** Members of one (r_P, Δt) are ordered κ = 2, 4, 8, 16 (available ones only),
+then `P-E4-none`. The successor of a member is the **next available** member in that order; the last available κ has
+`P-E4-none` as successor; `P-E4-none` itself carries "HR-free" (no Q2-POD). The successor must be valid, stable and pass
+the reconstruction certificate on the case, else the member is "HR-unqualified (successor not certified)" on that case.
+Force ratio $\rho = \|f_m(c) - f_s(c)\|/\|f_s(c)\|$ at the member's own six output states with `p1common.rho` semantics
+(both zero → NaN, excluded and counted; zero denominator with nonzero numerator → $+\infty$; non-finite → $+\infty$).
+
+**A2.3 Stability diagnostics (A1.5).** The stop-rule meaning of "unstable" is unchanged (monitor trip or non-finite
+stage). The classification is diagnostic only and three-valued: for a tripped run, its **own scheme** at
+$\Delta t/8$ and $\Delta t/16$ (arms 1, 6: LSPG CN-R; arms 2, 4: their own steppers; arms 3, 5: ETDRK4) gives the
+every-step growth maxima $G_8, G_{16}$; if $|G_8 - G_{16}| > 0.005$ → "unresolved"; else $G_8 > 1.05$ → "growth also in
+the refined trajectory (model growth, possibly mixed)", $G_8 \le 1.05$ → "integrator-induced". Alternation index on
+$z$: stiff mask = coordinates with $D$ above its median, amplitude threshold $10^{-5}\max|z_0|$, run length ≥ 3
+(p1core A2.14 rule transplanted). Reported only.
+
+**A2.4 Order tests (A1.6).** Slopes are **observed finite-range slopes** over the registered Δt levels, not proofs or
+disproofs of formal order. A case whose reference fails the A1.6 convergence test has slope "reference not converged";
+if any dev6 case is in that state, the F5 order condition is "unresolved" (never a pass), and a control relying on it
+is "not demonstrated" (blocks production until the fixture is fixed by an amendment before any verdict data).
+
+**A2.5 Stop predicate (A1.7 clarification).** Condition 2 fires if **either** the strict all-38 comparison **or** the
+strict E0-eligible-subset comparison has $W_X > W_1$ (§6 retained, conservative). Ranking statements use the
+eligible per-case resolved comparisons only.
+
+**A2.6 POD selection (A1.8).**
+- Diagnostic same-rank pick: smallest available κ with dev6 worst ≤ 1.1 × `P-E4-none`'s; if none, the **largest
+  available** κ ("HR-limited"); if no κ is available at (r_P, Δt), no diagnostic pick (recorded).
+- $B^\*(X)$ timing ties (relative difference of dev6 median fused-query ratios < 1 %): lower dev6 worst error, then
+  smaller r_P, then smaller κ, then larger Δt.
+- Validation match: on the 38-case population, $B^\*(X)$ is "validation-matched" iff its 38-case worst error ≤ X's.
+  If not, the X-vs-$B^\*$ speed ratio is labelled "dev-matched only" and no validation-population upper-bound claim is
+  made. Numerical labels (Q1, Q2-POD) are always shown beside validity/stability; 5L runs carry "anchors on dev6
+  only".
+
+**A2.7 Controls: witnesses, escalation, blocking (A1.9).** Every must-fire control must be **demonstrated on a real
+fixture in the smoke**; if a required detector is not exercised, production is blocked until an amendment (before any
+verdict data) fixes the fixture. Pre-registered escalations: C4m ν → −ν, then −10ν; C7m gauss32, then gauss16, then
+gauss8; C11 the κ = 8 support or, if unavailable, the largest available κ, uniform weights on |E| then |E|/4 nodes;
+C16 Newton budget 1, then 0; C14 uses ν × 1.37 (never equal to the true ν); C3m requires the reconstruction mismatch
+of the `f2_as_f1` mutant to exceed $10^{-8}$ (else the fixture uses Δt = 0.025). C9: if the self-timing ratio lies
+outside [0.9, 1.1] after the drift retries, the smoke timing protocol is revised before production; in production the
+block is flagged "drift". New controls: **C19** unavailable checkpoint — the offline checker run on an artifact list
+with κ = 4 removed must pick successors by A2.2 and reproduce the labels; **C20** a synthetic dev-matched competitor
+whose 38-case worst exceeds X's must receive "dev-matched only".
+
+**A2.8 NNLS budget (A1.10, WRONG).** `ecsw_weights(max_seconds)` limits each attempt, and a banning-triggered retry
+gets the limit again. Per-attempt limits are therefore set to r_P = 128: 240 s, 256: 360 s, 384: 600 s, so the NNLS
+worst case is 2 × 1200 s = 0.67 h; with states, contributions, transfers and compilation the `ecsw` job is projected at
+≤ 0.85 h (time limit 1.25 h, reserved in the ledger). A κ target not reached within its limit does not exist. Revised
+total: ecsw 0.85, smk1 0.35, smk4096 0.2, f1024 1.1 (POD ladder of up to 30 ETDRK4 members + 2 native picks, all
+certificates and timing), f4096 0.6 = 3.1 GPU-h; reserve 0.9. The smoke-derived certificate for f1024 must price
+every one of those members, including `P-E4-none` full-node evaluations.
+
+**A2.9 Selection outcome and full-query timing (A1.11).**
+- The dev6-selected best stepper is **frozen**; if it then fails on val32 / the 38 cases it is reported as the failed
+  frozen selection, never replaced by a validation winner. Ties (dev6 median fused ratio within 1 %): lower dev6 worst
+  error, then the order 3b, 3a, 4, 2.
+- Two triplet types per subject and dev6 timing case (3 reps): **evolve triplets** (A = arm 1 evolve at the same r)
+  for the E5 speed predicate, and **fused triplets** (A = arm 1 fused query at r = 384, the job's single full-query
+  anchor) for every full-query comparison. A full-query ratio between two subjects X, B is the per-case median over
+  reps of $t_B/\bar t_A$ divided by that of $t_X/\bar t_A$ (paired through the common anchor on the same case), then
+  the median over cases. Drift outside [1/1.1, 1.1] after ≤ 2 retries or an identity-hash mismatch invalidates a
+  triplet (counted); a statistic with fewer than 4 of the 6 cases valid is "timing incomplete", which **fires** the
+  speed condition and suppresses the comparison.

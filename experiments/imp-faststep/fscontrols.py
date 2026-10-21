@@ -23,7 +23,8 @@ def _slope(dts, errs):
     return float(np.polyfit(x, y, 1)[0]) if np.isfinite(y).all() else float('nan')
 
 
-def run(cfg, st, dg, tabs, nl, g_run, g_valid, g_cert, lspg_run, U0, dev, ids, cases, bank, L, evolver, settings):
+def run(cfg, st, dg, tabs, nl, g_run, g_valid, g_cert, lspg_run, U0, dev, ids, cases, bank, L, evolver, settings,
+        check_tab, e0, rec_of):
     C = {}
     Rp = st.Rp
     tab = tabs['main']
@@ -51,15 +52,19 @@ def run(cfg, st, dg, tabs, nl, g_run, g_valid, g_cert, lspg_run, U0, dev, ids, c
                     fired=bool(not mis <= 1e-10))
     # C2 / C2m / C16 -------------------------------------------------------------------------------------------
     evg = jax.jit(T2.make_evolve(nl, Q.tested_jac('point', L), 'GAL', Rp, st.trust))
-    c2 = []
+    c2, c2a, c2g = [], [], []
     for ci in (d0, d1):
         uu, nn, n00 = U0[ci]
         ww, sc_ = st.q['GAL']['init'](uu, st.cold)
         Wg, sg = evg(ww, nn, sc_, dg['main'], T2.sched('CN', DT0, 0., 1e-13))
         fg = P.restrict(st.q['GAL']['decode'](Wg, dg['main']), L)
         vt = g_run('cn', DT0, ci, level='tight')
+        ct = g_cert(vt, 'cn', DT0, level='tight')
         c2.append(P.fdist(vt['f'], fg, n00))
-    C['C2'] = dict(values=c2, bar=1e-8, passed=bool(max(c2) <= 1e-8))
+        c2a.append(bool(g_valid(vt, 'cn', ct) and ct['unconverged'] == 0))
+        c2g.append(bool(np.isfinite(np.asarray(Wg)).all() and np.asarray(sg['exits'])[3] == 0))
+    C['C2'] = dict(values=c2, bar=1e-8, anchors_valid=c2a, t2core_valid=c2g,
+                   passed=bool(max(c2) <= 1e-8 and all(c2a) and all(c2g)))
     vm = g_run('cn', DT0, d0, mutation='newton0')
     cm = g_cert(vm, 'cn', DT0)
     C['C2m'] = dict(unconverged=cm['unconverged'], steps=cm['steps'], fired=bool(cm['unconverged'] > .01 * cm['steps']))
@@ -118,6 +123,7 @@ def run(cfg, st, dg, tabs, nl, g_run, g_valid, g_cert, lspg_run, U0, dev, ids, c
         ez.append(P.fdist(vz['f'], e8['f'], n0) if g_valid(vz, 'ros') and vz['growth'] <= 1.05 else float('inf'))
     sz = _slope((DT0, DT0 / 2, DT0 / 4), ez)
     C['C5'] = dict(ref_dist=dr, ref_converged=bool(dr <= 1e-3 * min(er)), errors=er, slope=_slope((DT0, DT0 / 2, DT0 / 4), er),
+                   slope_ok=bool(_slope((DT0, DT0 / 2, DT0 / 4), er) >= 1.8),
                    mutant_errors=ez, mutant_slope=sz, fired=bool(not np.isfinite(sz) or sz < 1.8))
     # C6m LSPG Jacobian (analytic vs autodiff) and the jflip run -----------------------------------------------
     jac = T2.make_jac(nl)
@@ -168,12 +174,17 @@ def run(cfg, st, dg, tabs, nl, g_run, g_valid, g_cert, lspg_run, U0, dev, ids, c
     # C12 guards -------------------------------------------------------------------------------------------------
     c12 = {}
     try:
-        if F.table_fingerprint(tabs['qp']) == F.table_fingerprint(tab):
-            c12['table_swap'] = False
-        else:
-            raise ValueError('swap detected')
+        check_tab(tabs['qp'], 'main')                    # the production guard, fed the successor table as 'main'
+        c12['table_swap'] = False
     except ValueError:
         c12['table_swap'] = True
+    try:
+        rr_ = dict(rec_of(d0))
+        rr_['case_id'] = rec_of(d1)['case_id']           # a field of case d1 requested as d0 (production scorer)
+        e0(v['f'], rr_)
+        c12['e0_case_swap'] = d0 == d1
+    except ValueError:
+        c12['e0_case_swap'] = True
     try:
         st.check('main', types.SimpleNamespace(L=2 * L, mesh_hash='x', ops=bank.ops))
         c12['wrong_mesh'] = False
@@ -204,7 +215,8 @@ def run(cfg, st, dg, tabs, nl, g_run, g_valid, g_cert, lspg_run, U0, dev, ids, c
     pos = ('C1', 'C2', 'C3', 'C22')
     C['summary'] = dict(must_fire={m: bool(C[m]['fired']) for m in must}, positive={p_: bool(C[p_]['passed']) for p_ in pos},
                         demonstrated=dict(C3m=C['C3m']['demonstrated'], C5=C['C5']['ref_converged']),
+                        positive_slopes=dict(C3m=C['C3m']['slope_ok'], C5=C['C5']['slope_ok']),
                         all_ok=bool(all(C[m]['fired'] for m in must) and all(C[p_]['passed'] for p_ in pos)
-                                    and C['C3m']['demonstrated'] and C['C5']['ref_converged']
-                                    and C['C6m']['positive_ok'] and C['C8']['positive_ok']))
+                                    and C['C3m']['demonstrated'] and C['C3m']['slope_ok'] and C['C5']['ref_converged']
+                                    and C['C5']['slope_ok'] and C['C6m']['positive_ok'] and C['C8']['positive_ok']))
     return C

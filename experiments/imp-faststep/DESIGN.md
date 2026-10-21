@@ -540,3 +540,62 @@ unresolved, unresolved because the difference exceeds 0.005), calling the produc
 Design audits: 1 WRONG (→ A1), 2 void (wrong lane), 3 WRONG on A1.10 (→ A2), 4 NEEDS-RESTATEMENT (→ A3),
 5 NEEDS-RESTATEMENT with no WRONG (→ A4, a diagnostic-only classifier fix). The design is accepted for coding; A4 is
 re-checked inside the first code audit.
+
+---
+
+## Amendment A5 (2026-10-21) — implementation decisions from Codex code audit 3 (`audits/codex-code-3-main.md`, NOT READY)
+
+No verdict data exists; these make the registered rules executable and close the audit's holes.
+
+**A5.1 Table and map gates.** Per (mesh, r, rule): $\|Q^\top\Lambda QV - VD\|_F/\|D\|_F \le 10^{-10}$ and
+$\|V^\top V - I\|_{\max} \le 10^{-10}$ with $K$ built from the **original** $Q$, $\lambda$ (POD: $K$ from $\Phi$ and
+$\Delta_h\Phi$, same bars); a failure aborts the setting. The gated tables are fingerprinted and every run re-checks the
+fingerprint. Per run (every case): $z_0$ must equal $V^\top(R_mc_0)$ with the original $R_m$ (relative $10^{-12}$),
+each returned output coefficient $c_k$ must equal `solve_triangular`$(R_m, Vz_{k\cdot\rm keep})$ (relative $10^{-12}$;
+POD: $c_k = Wy_{k\cdot\rm keep}$), and every Galerkin arm's $c_0$ must be bitwise equal to arm 1's for the same case.
+These are Q1 gates (a failing run is invalid).
+
+**A5.2 Anchors.** No round-off-stall exception: an LSPG anchor is valid iff its run is valid and the **fresh** autodiff
+$\gamma$ (p1core certifier on its saved states) is ≤ the level's gtol (tight $10^{-7}$, tighter $10^{-8}$) on every
+step, or the step's residual ≤ tol; a CN anchor iff every fresh residual ≤ its level's tolerance. Invalid anchors fail
+Q1 for that case (this may disqualify configurations earlier lanes qualified with a weaker anchor rule; reported).
+
+**A5.3 CN budget exits.** A production step that exits on the Newton budget with a fresh residual above tolerance makes
+the run **invalid** (§5).
+
+**A5.4 Evidence persisted.** Per run: $c_0$, $W$, full state trajectory, per-step certificate arrays (γ, residual
+ratios, reconstruction mismatches, Jacobian/increment ratios), anchors' states and certificates, successor
+coefficients, own-state ρ. Step halving on dev6 includes arm 1 (LSPG CN-R at $\Delta t_0/2$).
+
+**A5.5 Stability classification** for **every** tripped run with its own scheme (LSPG through a recording program with
+an 801-state buffer; POD members through ETDRK4); the alternation diagnostic (A2.3) is computed offline from the saved
+states.
+
+**A5.6 E0 identity.** In-job scoring carries the field's case id and time tag and checks them, the pinned store version
+and metric id, and records the reference sha256 from the store manifest. The offline checker recomputes **every**
+error from the saved coefficients with an independent decode (bank: `npcheck.decode257`; POD: $\Phi$ at the lattice
+nodes) and requires agreement with the in-job error to $10^{-9}$ relative; a disagreement fails the run.
+
+**A5.7 Timing identity.** A timed evolve output must be **bitwise** equal to the scored production run's (same compiled
+program, same inputs; W and states hashed). The fused query is a different compiled program, so its output must be
+within $10^{-12}$ relative of the scored coefficients and bitwise equal to its own warm-up (W, states and fields
+hashed). An identity failure in **any** attempt (including discarded retries) invalidates the timing block
+("failed (identity)") and every speed condition of the job fires.
+
+**A5.8 Coverage.** Production configs set `headline: true`, which requires the six dev6 timing cases × 3 repetitions;
+smoke statistics are labelled "smoke subset" and never used for a verdict.
+
+**A5.9 Best stepper in-job.** The A1.11/A3.4 best-stepper candidate is computed and frozen in-job from dev6 data
+(validity, stability, certificates, Q2 bars, worst error ≤ arm 1's at both r, evolve speed-up ≥ 3 at r = 384, then the
+lowest r = 384 screening fused ratio with the A3.4 tie rule); the offline checker recomputes it.
+
+**A5.10 Acceptance gate.** `COMPLETE` marks execution only. Acceptance is the offline `checks.py` verdict, which
+requires every in-job control (C1–C8, C12–C16, C18, C22 with C3m/C5 positive slopes and C2 anchor validity), C9 from
+the timing block, C11 from the `ecsw` job, and the offline controls C10, C17, C19–C21, C23, C24; any missing evidence
+blocks acceptance. C12 exercises the production table guard and an E0 case-swap through the production scorer.
+
+**A5.11 POD duplicates.** Members sharing a rule (A3.1) are run and timed once, under the smallest κ name, and carry
+all their κ names.
+
+**A5.12 Native 5L anchors.** Tight and tighter anchors on dev6 with `rom.certify` anchor semantics, tight and
+tight/tighter distances, states and γ arrays persisted (descriptive Q1).

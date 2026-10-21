@@ -179,3 +179,99 @@ within the remaining cap (15 − spent); if it cannot fit, stop and report.
 
 `checks/*.json` (references, ladders, timing, gate), `make_report.py` → `report.md` (every number generated), `EXPORT.json`,
 plots (`plots/fom_cost_vs_error.png`, `plots/gate.png`), `runs/GPU-LEDGER.json`, `audits/`, HEARTBEAT.
+
+---
+
+## Amendment A1 (2026-10-21, after Codex design audit 1, `audits/codex-design-1.md`; before any code)
+
+Each item answers the audit item of the same number; the original text above stands where not changed.
+
+- **A1.2 Gate interpretation.** The operational form in §9 (pass at either 3 % or 10 %, point estimate, "marginal" label
+  when the interval crosses 2) is a **lane-specific operational choice**, not a consequence of the quoted gate. The
+  where-we-win §7.3 Phase-2 criteria (equal median **and** worst error, union of competitors, bank floor ≤ 2× the
+  constant-$\kappa$ floor) are carried into any Phase 2 amendment. A missing reference coverage (A1.6), or a target with
+  no qualified admissible FOM, makes that target **inconclusive** (never an infinite-cost pass). If both 3 % and 10 % are
+  inconclusive at $C=100$ the gate outcome is **unresolved** and no ROM is trained.
+- **A1.4 ROM population.** `rom_box.py` searches FRONT-2D 4096² `members` **and** `other_qualified`, keeps entries with both
+  `numerically_qualified_accuracy_job` and `numerically_qualified_timing_job`, LSPG only, and checks C2 completion
+  (`complete`), absence of a veto for the subject, and 6 cases × 3 reps of valid stage-2 triplets. The E0 A10 and combined
+  A10/A11/A15 labels are carried forward next to every ROM number.
+- **A1.5 Reference acceptance = E0 predicates.** The reference job calls the E0 `verdict.judge` (imported unchanged from
+  `experiments/jcp-references/verdict.py`) with per-level `tau = verdict.floor_proxy(res)`, `steps_ok = verdict.steps_ok`, and
+  `nu` := the case's $\kappa_{\min}$ (Péclet uses the minimum diffusivity and the running $\max|u|$ at the coarsest level).
+  This gives shared-$t_0$, solver, accumulated-floor, Péclet, order ($k=1..5$ only) and direction-consistency checks.
+  **Independent cross-check:** on dev cases 0–3 at each contrast, a spectral PSI solve at $N=256$, SBDF2,
+  $\Delta t=0.05/128$, tol $10^{-12}$; its lattice distance to the reference must be $\le 2.5\cdot10^{-4}$; a failure flags
+  the contrast's reference as "cross-check failed" (reported; gate inconclusive at that contrast).
+- **A1.6 Eligibility mask.** The eligibility mask per contrast (accepted by `judge`, $\epsilon_{\rm ref}\le10^{-3}$, cross-check
+  not failed) is computed from the reference job alone and **frozen (sha256 in `checks/eligibility.json`) before any
+  ladder output is scored**. Every exclusion is reported with its descriptors and outcome. Fallback: the ineligible cases
+  of a contrast are rerun at the E0 levels $(2048,4096,8192)$ if the cap allows, else stay excluded. **Coverage rule:**
+  the gate is decided at $C=100$ only if ≥ 24 of 32 pooled cases are eligible; otherwise it is unresolved.
+- **A1.7 ν range.** The narrowed $\nu\in[0.02,0.1]$ is a **scope choice**, not a Péclet necessity (the audit is right that
+  $\nu_{\min}=0.01$ gives Péclet 1.95 < 2 at $L=1024$ with $|u|\le2$). Reasons: (i) margin for the asymptotic regime of the
+  coarser reference ladder, (ii) the minimum diffusivity ($\ge 0.002$) stays within a factor 5 of the campaign's stiffest
+  corner (0.01), so the benchmark is less confounded with the documented steep-front failure. It does **not** isolate the
+  loss of exact diffusion from changed steepness; the paired $C=1$ runs of PSI are the reading of that cost. Péclet is
+  measured (running $\max|u|$, $\kappa_{\min}$ on the $4097^2$ grid, which bounds the $1025^2$ normalisation extremes from outside).
+- **A1.8 PSI SPD.** With $G=[\partial_x;\partial_y]$ evaluated at the quadrature points, $W$ the positive tensor weights and
+  $\kappa>0$, the implicit matrix $A=\alpha I+4\theta\Delta t\,G^\top W_\kappa G$ is SPD ($\alpha\in\{1,\tfrac32\}$,
+  $\theta\in\{\tfrac12,1\}$), since $x^\top A x=\alpha|x|^2+4\theta\Delta t\sum_q w_q\kappa_q|(Gx)_q|^2>0$; the transpose is
+  implemented as the exact matrix transpose of the evaluation matrices. **Quadrature change:** tensor **midpoint** rule with
+  $Q=2N$ points per axis (exact for trigonometric products whose total frequency is below $2Q$; better than Gauss–Legendre
+  for sine/cosine integrands), checked by I-quad ($Q=2N$ vs $3N$).
+- **A1.9 MG contract.** Fixed linear V(2,2) cycle; prolongation $P=4R^\top$ with $R$ full weighting (adjoint up to a constant);
+  pre- and post-smoothing the same damped Jacobi (ω = 0.8, 2 sweeps), which is symmetric; coarse operators re-discretised
+  from $\kappa$ (SPD); dense Cholesky solve on $L=8$. Tests: symmetry $|x^\top My-y^\top Mx|\le10^{-10}|x||My|$ and
+  positivity $x^\top Mx>0$ on 8 random probes per level count. If either fails the MG-PCG arm is replaced by the same cycle inside
+  flexible CG (Notay's FCG(1)) and that is recorded.
+- **A1.10 Integrators.** Temporal/stability behaviour is read from the ladder (the $\Delta t$ dimension at fixed $N$). **Boundary
+  extension rule:** if, after the dev ladder, the cheapest qualified configuration of a (family, $\tau$, $C$) sits on the
+  cheap edge of a knob (smallest $N$/$L$, largest $\Delta t$, loosest tol), one extension step beyond that edge is run
+  (N 12 / L 32, Δt 0.05, tol $10^{-2}$) on dev and, if it survives, val. `pscore.nonlinear` is oversampled (3/2) collocation,
+  not exact dealiasing; stated.
+- **A1.11 Competitor strength.** Every gate ratio carries "against the strongest tested competitor; finite-ladder upper bound on
+  the ROM speed-up". If the gate passes, the Phase 2 amendment must first add a full-operator Krylov exponential competitor
+  (Lanczos $\varphi$-functions on the symmetric diffusion part, exponential-Euler/ETD2-type) and re-evaluate the gate before
+  any training.
+- **A1.12 FOM numerical qualification (Q1 analogue).** Every implicit stage records its iteration count and an independently
+  recomputed true relative residual $\lVert A x-b\rVert/\lVert b\rVert$; a run is *valid* iff all outputs are finite, every
+  stage's true residual $\le 10\,$tol (CCv: E0's `steps_ok`), the schedule completed, and running $\max|u|\le10$. A
+  configuration is **numerically qualified** iff (i) valid on every pooled case (ineligible ones included), (ii) its
+  lattice distance to the same $(N/L,\Delta t)$ solved at tol $10^{-10}$ (CCv: E0 tight level) is $\le2.5\cdot10^{-4}$ on
+  every pooled case, and (iii) tol $10^{-10}$ vs $10^{-12}$ agree to $\le2.5\cdot10^{-5}$ on dev cases 0–1. (ii)–(iii) are run
+  for every configuration that is a timing candidate. ETD has no solver: (i) only. Only qualified configurations enter the gate.
+  Timed ROM subjects are revalidated in-job: their lattice errors reproduce the C2/FRONT `target_e` to $10^{-9}$, and the
+  checkpoint, rule and mode-list hashes are recorded.
+- **A1.13 Identity.** The timing job keeps C2's identity checks: per subject, the sha256 of the lattice restriction plus the full-output
+  fingerprint (FOM) and W, w0, per-step exit reasons/iterations plus output fingerprint (ROM) from the scoring run, compared on every
+  timed execution; a mismatch vetoes the subject. T-dbl uses two separately dispatched, separately synchronised A executions.
+- **A1.14 Timed operations.** Excluded from the timer (prepared input, as C2): the IC (FD nodal samples, spectral sine
+  coefficients). **Included** in every timed FOM call: evaluation of $\kappa$ from its 15 coefficients at quadrature points / faces /
+  coarse-grid faces, multigrid hierarchy and coarse Cholesky factor, ETD coefficients, preconditioner diagonals, all time
+  stepping and the six-field $4096^2$ synthesis. So the FOM pays all of its per-query setup.
+- **A1.15 Selection.** Stage 1 selects and freezes, per $(\tau,C)$, both the per-family winners and the **union winner**
+  (FROZEN-SELECTION written with sha256 before stage 2); stage 2 only re-measures. The gate uses the union winner's stage-2 cost.
+- **A1.16 Bootstrap and anchors.** FOM timing workload = dev cases 0–5 (six); FOM case $i$ and ROM subjects are both timed
+  against A on dev6 case $i$. Estimand: $G=\mathrm{med}_i\,\mathrm{med}_{\rm rep}\,r^{\rm FOM}_i/\mathrm{med}_i\,\mathrm{med}_{\rm rep}\,r^{\rm ROM}_i$.
+  Interval: bootstrap over anchor index $i$ (resampling the whole record of index $i$: its FOM and ROM triplets jointly),
+  2000 draws, percentile 95 %; called "anchor-paired case bootstrap" (descriptive of the timing workload).
+- **A1.17 Pruning.** Val runs are skipped only for configurations whose worst error over the **frozen eligible** dev cases exceeds
+  10 %, or which are invalid on any dev case (validity is checked on all cases, eligible or not).
+- **A1.18 Test split.** Phase 1 result is **developmental evidence** (dev + val). The test split stays unopened, reserved
+  for a Phase 2 test-once or a later lane; no claim beyond dev + val is made.
+- **A1.19 Controls, restated.**
+  *Implementation must-fail controls* (deterministic, real meshes): **T-loose** = PSI/FDMG with maxiter 0 (no solve; the
+  stage keeps the warm start) must be invalid (true residual check) and differ from tight by $>10^{-3}$; **T-ref-a**: `judge` on
+  levels $(u_1,u_2,u_2)$ must not be accepted; **T-ref-b**: $(u_1,u_2,2u_2-u_1)$ must not be accepted; **T-ref-c**: CCv level run
+  with max_newton 1 at loose tolerance must give `steps_ok` false; **T-nan**: injected NaN output → invalid; **T-dbl/T-fault/T-id**
+  as C2; **T-gate**: synthetic costs 3× → pass, exactly 2× → pass, 1.9× → fail, missing ROM target → inconclusive, empty FOM set →
+  inconclusive, coverage < 24 → unresolved, success at $C=10$ only → fail.
+  *Implementation must-pass checks:* I-C1, I-sym (now also positivity), I-quad, and **I-mms**: operator-level manufactured
+  solution $u=\sin(\pi x)\sin(2\pi y)$ with the case $\kappa$: the discrete diffusion operators (PSI/ETD Galerkin projection, FD flux form)
+  applied to $u$ must match the analytic $\nabla\cdot(\kappa\nabla u)=\kappa\Delta u+\nabla\kappa\cdot\nabla u$ (projected /
+  sampled) with error decreasing (FD: observed order in $[1.8,2.2]$ over $L=64,128,256$; spectral: error $\le10^{-8}$ at $N=64$).
+  *Scientific diagnostics (reported, not controls):* T-kappa (constant-$\nu$ solver vs the $C=100$ reference).
+- **A1.20 Budget.** Every production job needs a smoke-derived certificate (reference: per-level seconds on the hardest smoke
+  case at $C=100$; ladder: per-config compile + run seconds; timing: memory with the bank resident). Fallback reference cost is
+  reserved before the ladder is submitted. Mandatory reference/qualification work is never deferred to preserve a positive gate.

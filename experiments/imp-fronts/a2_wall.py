@@ -24,6 +24,8 @@ FIT = (2304, 4096, 9216, 16384)
 COHORTS = ('dev6', 'val32', 'N0s', 'C1', 'C2')
 H = 1 / 256.
 DELTA = 1e-4
+DELTAS = (1e-4, 5e-5, 2.5e-5)                 # Amendment 2: gradient-difference convergence
+OMEGA_FLOOR = 1e-24
 CLIP = 1e-14
 BAND = 8
 X = np.arange(257) / 256.
@@ -39,15 +41,15 @@ def wall_points():
     return pts, nrm
 
 
-def bank_dnn(W):
+def bank_dnn(W, delta=DELTA):
     """Normal second derivative at the interior wall nodes of v = G_384 W for W (6, 384): (6, 1020)."""
     P, T = F.NC.bank()
     pts, nrm = wall_points()
     dd = []
     for sgn in (+1, -1):
-        _, gx, gy = F.NC.NB.features_grad(P, pts + sgn * DELTA * nrm)
+        _, gx, gy = F.NC.NB.features_grad(P, pts + sgn * delta * nrm)
         dd.append(nrm[:, :1] * gx + nrm[:, 1:] * gy)                    # inward-normal derivative per feature
-    D2 = ((dd[0] - dd[1]) / (2 * DELTA)) @ T[:, :384]                   # (n, 384)
+    D2 = ((dd[0] - dd[1]) / (2 * delta)) @ T[:, :384]                   # (n, 384)
     return np.asarray(W) @ D2.T
 
 
@@ -71,10 +73,14 @@ _band[:BAND + 1, :] = _band[-BAND - 1:, :] = _band[:, :BAND + 1] = _band[:, -BAN
 
 
 def omega(V):
+    """Wall share of the >4096 high-pass energy, pooled over t1..t5; None (unavailable) if that energy is below
+    OMEGA_FLOOR of the field's total energy (Amendment 2)."""
     V = np.asarray(V)[1:]
     hp = V - F.sine_truncate(V, 4096)
     tot = float(np.sum(hp ** 2))
-    return float(np.sum(hp[:, _band] ** 2) / tot) if tot > 0 else float('nan')
+    if not tot > OMEGA_FLOOR * float(np.sum(V ** 2)):
+        return None
+    return float(np.sum(hp[:, _band] ** 2) / tot)
 
 
 def identity_checks():
@@ -140,10 +146,11 @@ def main():
         hm = amp * np.broadcast_to(np.exp(-((X[:, None] - 0.5) ** 2 + (X[None] - 0.5) ** 2) / (2 * 0.03 ** 2)), (6, 257, 257))
         row = dict(case=cid, cohort=coh, s=d['a'] / d['nu'])
         for name, W_, V in (('rom', Z['W'][i], v), ('proj', cp, pu)):
-            dn = bank_dnn(W_)[1:]
+            kk = [float(np.sqrt(np.mean(bank_dnn(W_, d)[1:] ** 2)) / L) for d in DELTAS]
+            conv = abs(kk[2] - kk[1]) <= 1e-3 * abs(kk[1])
             tau, beta = tails(V, n0)
-            row[name] = dict(kappa_a=float(np.sqrt(np.mean(dn ** 2)) / L), beta=beta, tau={str(K): t for K, t in tau.items()},
-                             omega=omega(V))
+            row[name] = dict(kappa_a=kk[2] if conv else None, kappa_a_deltas=kk, kappa_converged=bool(conv), beta=beta,
+                             tau={str(K): t for K, t in tau.items()}, omega=omega(V))
         tau, beta = tails(u, n0)
         row['ref'] = dict(beta=beta, tau={str(K): t for K, t in tau.items()}, omega=omega(u))
         row['ctrl_omega_plus'] = omega(hp)
@@ -151,9 +158,14 @@ def main():
         rows[cid] = row
     def grp(cohs):
         R = [r for r in rows.values() if r['cohort'] in cohs]
-        med = lambda f: float(np.median([f(r) for r in R]))
+        def med(f):
+            v = [f(r) for r in R]
+            v = [x for x in v if x is not None]
+            return float(np.median(v)) if v else None
         return dict(n=len(R),
                     kappa_a_med={k: med(lambda r: r[k]['kappa_a']) for k in ('rom', 'proj')},
+                    kappa_unconverged={k: sum(not r[k]['kappa_converged'] for r in R) for k in ('rom', 'proj')},
+                    omega_available={k: sum(r[k]['omega'] is not None for r in R) for k in ('rom', 'proj', 'ref')},
                     beta_med={k: med(lambda r: r[k]['beta']) for k in ('rom', 'proj', 'ref')},
                     tau4096_med={k: med(lambda r: r[k]['tau']['4096']) for k in ('rom', 'proj', 'ref')},
                     omega_med={k: med(lambda r: r[k]['omega']) for k in ('rom', 'proj', 'ref')},
@@ -167,7 +179,10 @@ def main():
     ident.update(bank_path_check(Z['W'][0]))
     ctrl = dict(identity=ident, omega_plus_ok=g['ctrl_omega_plus_med'] >= 0.5, omega_minus_ok=g['ctrl_omega_minus_med'] <= 0.25)
     ctrl['controls_pass'] = bool(ident['envelope_ok'] and ident['sine_ok'] and ident['bank_path_ok'] and ctrl['omega_plus_ok'] and ctrl['omega_minus_ok'])
-    crit = dict(tail_3x=bool(g['tau4096_ratio_rom_ref_med'] >= 3), wall_share_half=bool(g['omega_med']['rom'] >= 0.5))
+    ctrl['omega_rom_available_half'] = g['omega_available']['rom'] >= g['n'] / 2
+    ctrl['controls_pass'] = bool(ctrl['controls_pass'] and ctrl['omega_rom_available_half'])
+    crit = dict(tail_3x=bool(g['tau4096_ratio_rom_ref_med'] >= 3),
+                wall_share_half=bool(g['omega_med']['rom'] is not None and g['omega_med']['rom'] >= 0.5))
     decision = ('INCONCLUSIVE' if not ctrl['controls_pass'] else ('RUN' if crit['tail_3x'] and crit['wall_share_half'] else 'DEFER'))
     out = dict(design='DESIGN.md Amendment 1, A2', provenance=F.provenance(), source=str(F.ROMDIR / 'R_R384_LSPG_CNR_1.npz'),
                skipped=skipped, controls=ctrl, criteria=crit, decision_arm_c=decision, groups=groups, rows=rows)

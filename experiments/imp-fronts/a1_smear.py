@@ -90,6 +90,33 @@ def grid_bases_256(r_list, K_list):
     return out
 
 
+def exact_d_fixture():
+    """Amendment 2: synthetic fields with analytically prescribed D (= 10 and 0.1) at r = 128, 384; returns max rel err."""
+    rng = np.random.default_rng(424242)
+    errs = {}
+    for r in (128, 384):
+        B, S = F.orth(F.G(r)), F.sine_cols(np.arange(r))
+        y = F.sine_cols([5])[:, 0]
+        z = rng.standard_normal(B.shape[0])
+        QU = F.orth(np.concatenate([B, S], 1))
+        for _ in range(2):
+            z -= QU @ (QU.T @ z)
+        z /= np.linalg.norm(z)
+        c = float(np.linalg.norm(y - B @ (B.T @ y)))
+        alpha = 1.0
+        for target in (10., 0.1):
+            gamma = alpha * np.sqrt(target ** 2 - 1) / c if target > 1 else alpha * np.sqrt(1 / target ** 2 - 1) / c
+            u0 = np.ones(B.shape[0])
+            a_f = np.stack([u0] + [alpha * z] * 5)
+            b_f = np.stack([u0] + [alpha * z + gamma * y] * 5)
+            upw, ref = (a_f, b_f) if target > 1 else (b_f, a_f)
+            n0 = float(np.linalg.norm(u0))
+            fl = lambda u, Q: max(F.floor_Q(u, Q, n0), CLIP)
+            D = (fl(ref, B) / fl(upw, B)) / (fl(ref, S) / fl(upw, S))
+            errs[f'r{r}_D{target:g}'] = abs(D - target) / target
+    return dict(rel_err=errs, ok=all(e <= 1e-10 for e in errs.values()))
+
+
 def analyze():
     sets = json.loads((OUT / 'sets.json').read_text())
     T6, X = sets['T6'], sets['X']
@@ -167,8 +194,10 @@ def analyze():
     ctrl['resolution_ok'] = ctrl['resolution_med_T6'] >= 2
     ctrl['constructed_upw_D_ge10_all_T6'] = all(rows[c][f'D_conupw{r}'] >= 10 for c in T6 for r in (128, 384))
     ctrl['constructed_ref_D_le0.1_all_T6'] = all(rows[c][f'D_conref{r}'] <= 0.1 for c in T6 for r in (128, 384))
+    ctrl['exact_D_fixture'] = exact_d_fixture()
+    # Amendment 2: own-field constructions are empirical self-fit checks (reported, not gating)
     ctrl['controls_pass'] = bool(ctrl['C_A1plus_fires'] and ctrl['C_A1minus_quiet'] and ctrl['resolution_ok']
-                                 and ctrl['constructed_upw_D_ge10_all_T6'] and ctrl['constructed_ref_D_le0.1_all_T6'])
+                                 and ctrl['exact_D_fixture']['ok'])
     Db = [rows[c]['D_bank384'] for c in T6]
     mD = float(np.median(Db))
     if not (gates['G1_ic_pass'] and gates['G2_newton_pass']):

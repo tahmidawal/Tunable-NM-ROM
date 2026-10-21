@@ -1,0 +1,630 @@
+{
+ "Qstar_3d128": {
+  "value": "85,000",
+  "source": "bank_fit_h / (t_CC(L=128) - t_C_old(L=128) x g3_H8a), both from the L=128 paired panel: illustrative partial-cost crossover (borrowed 2D fit time; data, qualification, FOM setup and output-contract difference excluded)"
+ },
+ "Qstar_3d256": {
+  "value": "6,500",
+  "source": "bank_fit_h / (t_CC(L=256) - t_C_old(L=256) x g3_H8a), both from the L=256 paired panel: illustrative partial-cost crossover (borrowed 2D fit time; data, qualification, FOM setup and output-contract difference excluded)"
+ },
+ "Qstar_vc_noisy": {
+  "value": "300,000",
+  "source": "bank_fit_h / ((FOM latency + steps x nit_noisy x 0.065 ms) - ROM latency) for vc_best: illustrative"
+ },
+ "Qstar_vc_warm": {
+  "value": "no break-even (ROM not faster)",
+  "source": "bank_fit_h / ((FOM latency + steps x nit_warm x 0.065 ms) - ROM latency) for vc_best: illustrative"
+ },
+ "S3_same_L128": {
+  "value": "3.52",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json m1.per_L[\"128\"].panels.C_old.same_mesh[\"fd|CC|L128|0.01|t1\"].ratio (registered paired statistic; same mesh, not accuracy-matched)"
+ },
+ "S3_same_L256": {
+  "value": "28.8",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json m1.per_L[\"256\"].panels.C_old.same_mesh[\"fd|CC|L256|0.01|t1\"].ratio (registered paired statistic; same mesh, not accuracy-matched)"
+ },
+ "S3_same_L384": {
+  "value": "123",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json m1.per_L[\"384\"].panels.C_old.same_mesh[\"fd|CC|L384|0.01|t1\"].ratio (registered paired statistic; same mesh, not accuracy-matched)"
+ },
+ "S3geo_H1a_L128": {
+  "value": "3.3",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 1.08; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H1a_L256": {
+  "value": "27",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 1.08; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H1aw_L128": {
+  "value": "1.4",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 2.45; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H1aw_L256": {
+  "value": "12",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 2.45; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H1b_L128": {
+  "value": "2.7",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 1.3; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H1b_L256": {
+  "value": "22",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 1.3; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H1bw_L128": {
+  "value": "1.2",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 2.96; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H1bw_L256": {
+  "value": "9.7",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 2.96; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27a_L128": {
+  "value": "1.3",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 2.62; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27a_L256": {
+  "value": "11",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 2.62; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27aw_L128": {
+  "value": "0.59",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 5.95; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27aw_L256": {
+  "value": "4.8",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 5.95; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27b_L128": {
+  "value": "0.61",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 5.74; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27b_L256": {
+  "value": "5",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 5.74; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27bw_L128": {
+  "value": "0.27",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 13; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H27bw_L256": {
+  "value": "2.2",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 13; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8a_L128": {
+  "value": "2.2",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 1.57; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8a_L256": {
+  "value": "18",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 1.57; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8aw_L128": {
+  "value": "0.99",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 3.57; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8aw_L256": {
+  "value": "8.1",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 3.57; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8b_L128": {
+  "value": "1.2",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 2.86; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8b_L256": {
+  "value": "10",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 2.86; bank width x1, tests x1 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8bw_L128": {
+  "value": "0.54",
+  "source": "paired ratio C_old vs CC L=128 / (ROM slowdown 6.49; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S3geo_H8bw_L256": {
+  "value": "4.4",
+  "source": "paired ratio C_old vs CC L=256 / (ROM slowdown 6.49; bank width x2, tests x2 by el_r, el_M): uniform-grid scenario, f_FOM = 1"
+ },
+ "S_CC_hi": {
+  "value": "1.79",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json same, max"
+ },
+ "S_CC_lo": {
+  "value": "0.139",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json hcomp[\"4096|...|CC|joint\"].S with scope \"primary (LSPG)\", min over 21 configurations"
+ },
+ "S_CC_n": {
+  "value": "21",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json count of 4096^2 CC rows with an S value"
+ },
+ "S_PS_hi": {
+  "value": "0.706",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json same, max"
+ },
+ "S_PS_lo": {
+  "value": "0.0493",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json hcomp[\"4096|...|PS|joint\"].S with scope \"primary (LSPG)\", min over 21 configurations"
+ },
+ "S_PS_n": {
+  "value": "21",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json count of 4096^2 PS rows with an S value"
+ },
+ "S_UB_hi": {
+  "value": "58.5",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json same, max"
+ },
+ "S_UB_lo": {
+  "value": "0.666",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/c2-analysis.json hcomp[\"4096|...|UB|joint\"].S with scope \"primary (LSPG)\", min over 21 configurations"
+ },
+ "Svc_noisy_20": {
+  "value": "1.5 / 0.41 / 0",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_noisy, t_it = 0.02 ms; ROM unchanged (assumption)"
+ },
+ "Svc_noisy_200": {
+  "value": "8.2 / 2.3 / 13",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_noisy, t_it = 0.2 ms; ROM unchanged (assumption)"
+ },
+ "Svc_noisy_65": {
+  "value": "3.2 / 0.89 / 4",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_noisy, t_it = 0.06499999999999999 ms; ROM unchanged (assumption)"
+ },
+ "Svc_smooth_20": {
+  "value": "1.2 / 0.34 / 0",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_smooth, t_it = 0.02 ms; ROM unchanged (assumption)"
+ },
+ "Svc_smooth_200": {
+  "value": "5.8 / 1.6 / 7",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_smooth, t_it = 0.2 ms; ROM unchanged (assumption)"
+ },
+ "Svc_smooth_65": {
+  "value": "2.4 / 0.67 / 1",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_smooth, t_it = 0.06499999999999999 ms; ROM unchanged (assumption)"
+ },
+ "Svc_warm_20": {
+  "value": "0.78 / 0.22 / 0",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_warm, t_it = 0.02 ms; ROM unchanged (assumption)"
+ },
+ "Svc_warm_200": {
+  "value": "1.4 / 0.41 / 0",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_warm, t_it = 0.2 ms; ROM unchanged (assumption)"
+ },
+ "Svc_warm_65": {
+  "value": "0.95 / 0.27 / 0",
+  "source": "best / median / count >= 2 over the 21 configurations of (t_FOM + steps x n_it x t_it) / t_ROM, n_it = nit_warm, t_it = 0.06499999999999999 ms; ROM unchanged (assumption)"
+ },
+ "bank_fit_h": {
+  "value": "2.97 h",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[bank_fit_h] <- LAB-LOG.md (text \"ours 2.97 h (R512 bank)\")"
+ },
+ "campaign_gpuh": {
+  "value": "168.8 GPU-h",
+  "source": "LAB-LOG.md (text \"Total 168.8 GPU-h over ten lanes\")"
+ },
+ "cc2_L128_cost": {
+  "value": "26.4 ms",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.CC[fd|CC|L128|0.01|t2].cost (screening, lattice output)"
+ },
+ "cc2_L128_med": {
+  "value": "0.379 %",
+  "source": "... pareto.CC[fd|CC|L128|0.01|t2].median"
+ },
+ "cc2_L128_worst": {
+  "value": "0.911 %",
+  "source": "... pareto.CC[fd|CC|L128|0.01|t2].worst"
+ },
+ "cc2_L64_cost": {
+  "value": "20.2 ms",
+  "source": "worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.CC[fd|CC|L64|0.0125|t2].cost (screening, lattice output)"
+ },
+ "cc2_L64_med": {
+  "value": "0.609 %",
+  "source": "... pareto.CC[fd|CC|L64|0.0125|t2].median"
+ },
+ "cc2_L64_worst": {
+  "value": "4.43 %",
+  "source": "... pareto.CC[fd|CC|L64|0.0125|t2].worst"
+ },
+ "dtexp48_100": {
+  "value": "0.0011",
+  "source": "... dt_explicit_max at N=48, contrast 100 (h^2 / 4 kappa_max, nu = 0.01 assumed)"
+ },
+ "e3_Cold_med": {
+  "value": "1.57 %",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/rom-scores.json C_old.e median over 64 cases (conditional E0)"
+ },
+ "e3_Cold_worst": {
+  "value": "4.46 %",
+  "source": "... C_old.e max"
+ },
+ "e3_W768_med": {
+  "value": "0.335 %",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/rom-scores.json W_C_W768.e median over 64 cases (conditional E0)"
+ },
+ "e3_W768_worst": {
+  "value": "4.65 %",
+  "source": "... W_C_W768.e max"
+ },
+ "el_M": {
+  "value": "0.53",
+  "source": "... elasticity.beta[2] (in M)"
+ },
+ "el_m": {
+  "value": "0.65",
+  "source": "... elasticity.beta[3] (in m)"
+ },
+ "el_r": {
+  "value": "0.65",
+  "source": "worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/checks/analysis-2d.json elasticity.beta[1] (descriptive full-query elasticity in r)"
+ },
+ "fgeo2_hi": {
+  "value": "14",
+  "source": "2 / min S_CC"
+ },
+ "fgeo2_lo": {
+  "value": "1.1",
+  "source": "2 / max S_CC: slowdown factor needed for a 2x win"
+ },
+ "floor_C1_384": {
+  "value": "3.47 %",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[floor_C1_384] <- worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C1|R384\"].median"
+ },
+ "floor_C2_384": {
+  "value": "9.88 %",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[floor_C2_384] <- worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/analysis.json projection_floor[\"C2|R384\"].median"
+ },
+ "fps2_hi": {
+  "value": "41",
+  "source": "2 / min S_PS"
+ },
+ "fps2_lo": {
+  "value": "2.8",
+  "source": "2 / max S_PS: slowdown of the spectral FOM needed for a 2x win"
+ },
+ "g3_H1a": {
+  "value": "1.1",
+  "source": "ROM slowdown ((32768 + 1 x 4096) / 32768)^el_m: 4096 extra shell-rule points per hole (assumption), 2D m-elasticity transported to 3D (assumption)"
+ },
+ "g3_H1b": {
+  "value": "1.3",
+  "source": "ROM slowdown ((32768 + 1 x 16384) / 32768)^el_m: 16384 extra shell-rule points per hole (assumption), 2D m-elasticity transported to 3D (assumption)"
+ },
+ "g3_H27a": {
+  "value": "2.6",
+  "source": "ROM slowdown ((32768 + 27 x 4096) / 32768)^el_m: 4096 extra shell-rule points per hole (assumption), 2D m-elasticity transported to 3D (assumption)"
+ },
+ "g3_H27b": {
+  "value": "5.7",
+  "source": "ROM slowdown ((32768 + 27 x 16384) / 32768)^el_m: 16384 extra shell-rule points per hole (assumption), 2D m-elasticity transported to 3D (assumption)"
+ },
+ "g3_H8a": {
+  "value": "1.6",
+  "source": "ROM slowdown ((32768 + 8 x 4096) / 32768)^el_m: 4096 extra shell-rule points per hole (assumption), 2D m-elasticity transported to 3D (assumption)"
+ },
+ "g3_H8b": {
+  "value": "2.9",
+  "source": "ROM slowdown ((32768 + 8 x 16384) / 32768)^el_m: 16384 extra shell-rule points per hole (assumption), 2D m-elasticity transported to 3D (assumption)"
+ },
+ "hrb_R384_base": {
+  "value": "30.7 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[hrb_R384_base] <- ... same key, median tB"
+ },
+ "hrb_R384_ours": {
+  "value": "86.8 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[hrb_R384_ours] <- worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/runs/s2d1024b/archive/output/stageb.json timing[\"1024|R384|CNR||ecsw|384|k8|CNR|0.005|common|central\"] median of (tA1+tA2)/2"
+ },
+ "hrb_build_2d": {
+  "value": "1.45 h",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[hrb_build_2d] <- LAB-LOG.md (text \"Construction cost: baseline 1.45 h (2D)\")"
+ },
+ "k2_3d_range": {
+  "value": "0.00786–0.158",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[k2_3d_range] <- reports/2026-10-17-full-experiment-plan/final/report.md (text \"union speed-up 0.00786–0.158 (4 ROMs)\")"
+ },
+ "lit_crom_cpu": {
+  "value": "109×",
+  "source": "literature quotation: Chen et al., ICLR 2023, arXiv:2206.02607, abstract (CPU wall-clock)"
+ },
+ "lit_crom_gpu": {
+  "value": "89×",
+  "source": "literature quotation: same, abstract (GPU wall-clock)"
+ },
+ "lit_ecsw": {
+  "value": "up to four orders of magnitude",
+  "source": "literature quotation: Farhat, Chapman & Avery, IJNME 2015, doi:10.1002/nme.4820, abstract"
+ },
+ "lit_gnat": {
+  "value": "more than two orders of magnitude",
+  "source": "literature quotation: Carlberg et al., JCP 2013, arXiv:1207.1349, abstract (computational resources)"
+ },
+ "lit_kim1": {
+  "value": "2.6×",
+  "source": "literature quotation: Kim, Choi, Widemann & Zohdi, JCP 2022, arXiv:2009.11990, abstract (1D Burgers)"
+ },
+ "lit_kim2": {
+  "value": "11.7×",
+  "source": "literature quotation: same, abstract (2D Burgers)"
+ },
+ "lit_koch": {
+  "value": "40–80×",
+  "source": "literature quotation: Kochkov et al., PNAS 2021, doi:10.1073/pnas.2101784118, abstract"
+ },
+ "lit_mcg": {
+  "value": "79 %",
+  "source": "literature quotation: McGreivy & Hakim, Nat. Mach. Intell. 2024, arXiv:2407.07218, abstract (60 of 76 papers)"
+ },
+ "lit_opinf": {
+  "value": "about $10^6$×",
+  "source": "literature quotation: McQuarrie, Huang & Willcox, J. R. Soc. NZ 2021, doi:10.1080/03036758.2020.1863237"
+ },
+ "lit_snf": {
+  "value": "199×",
+  "source": "literature quotation: Puri et al., JCP 2025, arXiv:2405.14890, abstract"
+ },
+ "ls64_dof": {
+  "value": "2945",
+  "source": "... singular.rows[N=64].dof"
+ },
+ "ls64_err": {
+  "value": "0.108 %",
+  "source": "... singular.rows[N=64].rel_l2"
+ },
+ "ls64_t": {
+  "value": "3.68 ms",
+  "source": "... singular.rows[N=64].solve_s (CPU sparse LU)"
+ },
+ "ls_N_1e4": {
+  "value": "390",
+  "source": "... singular.N_for_rel_l2[\"0.0001\"]"
+ },
+ "ls_N_2e3": {
+  "value": "41",
+  "source": "... singular.N_for_rel_l2[\"0.002\"] (intervals on the side-2 domain)"
+ },
+ "ls_order_l2": {
+  "value": "1.3",
+  "source": "... singular.order_l2"
+ },
+ "ls_order_max": {
+  "value": "0.67",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/lshape_fd.json singular.order_max (last three meshes)"
+ },
+ "ls_order_smooth": {
+  "value": "2",
+  "source": "... smooth.order_l2"
+ },
+ "lsh_2048_worst": {
+  "value": "1.99 %",
+  "source": "exp/2026-09-25-poisson-lshape3d-test:experiments/poisson-lshape3d-test/reports/2026-09-25-poisson-lshape3d-test-rows.md row L-shape 2048² test, \"accurate %\" (worst, vs same-grid FD)"
+ },
+ "lsh_2048_x": {
+  "value": "78.4×",
+  "source": "... \"accurate ×\" (vs fastest CG tolerance meeting the worst error, same grid)"
+ },
+ "lsh_256_worst": {
+  "value": "2.02 %",
+  "source": "exp/2026-09-25-poisson-lshape3d-test:experiments/poisson-lshape3d-test/reports/2026-09-25-poisson-lshape3d-test-rows.md row L-shape 256² test, \"accurate %\" (worst, vs same-grid FD)"
+ },
+ "lsh_256_x": {
+  "value": "32.1×",
+  "source": "... \"accurate ×\" (vs fastest CG tolerance meeting the worst error, same grid)"
+ },
+ "nit_noisy": {
+  "value": "31",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json contrast 100, N=48, dt 0.0125: noisy, tol 1e-10"
+ },
+ "nit_smooth": {
+  "value": "21",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json contrast 100, N=48, dt 0.0125: smooth, tol 1e-10"
+ },
+ "nit_warm": {
+  "value": "3",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json contrast 100, N=48, dt 0.0125: warm start, tol 1e-4"
+ },
+ "ns3d_pod": {
+  "value": "8–10×",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[ns3d_pod] <- LAB-LOG.md:88-92 (text \"about 8–10×\")"
+ },
+ "ns3d_src": {
+  "value": "worktrees/2026-10-01-ns3d-coordnet-bank/reports/2026-10-01-ns3d-coordnet-bank.md",
+  "source": "path of the NS 3D bank report"
+ },
+ "ns96_cmp_worst": {
+  "value": "1.05 %",
+  "source": "worktrees/2026-10-01-ns3d-coordnet-bank/experiments/ns3d-coordnet/runs/dev96/output/mesh/summary.json comparators.coordnet_head_k8.comparator_worst"
+ },
+ "ns96_worst": {
+  "value": "1.27 %",
+  "source": "worktrees/2026-10-01-ns3d-coordnet-bank/experiments/ns3d-coordnet/runs/dev96/output/mesh/summary.json comparators.coordnet_head_k8.arm_worst"
+ },
+ "ns96_x": {
+  "value": "5.74×",
+  "source": "worktrees/2026-10-01-ns3d-coordnet-bank/experiments/ns3d-coordnet/runs/dev96/output/mesh/summary.json comparators.coordnet_head_k8.speedup (vs CNAB2_s50, mesh ROM, A100)"
+ },
+ "p3_CC": {
+  "value": "3.2",
+  "source": "log(t_CC(384)/t_CC(128)) / log 3 (C_old panel): growth exponent of the 3D FD FOM in L at fixed dt = 0.01"
+ },
+ "pcg128_100": {
+  "value": "52–70",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json case noisy, N=128, contrast 100, tol 1e-10"
+ },
+ "pcg48_1": {
+  "value": "2",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json N=48, contrast 1.0001 (nearly constant coefficient; the script never runs exactly 1)"
+ },
+ "pcg_noisy_10": {
+  "value": "12–17",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json rows[case=noisy, N=48, contrast 10, dt 0.005-0.0125].pcg_iters (tol 1e-10)"
+ },
+ "pcg_noisy_100": {
+  "value": "21–31",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json rows[case=noisy, N=48, contrast 100, dt 0.005-0.0125].pcg_iters (tol 1e-10)"
+ },
+ "pcg_noisy_1000": {
+  "value": "34–53",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json rows[case=noisy, N=48, contrast 1000, dt 0.005-0.0125].pcg_iters (tol 1e-10)"
+ },
+ "pcg_smooth_10": {
+  "value": "8–11",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json rows[case=smooth, N=48, contrast 10, dt 0.005-0.0125].pcg_iters (tol 1e-10)"
+ },
+ "pcg_smooth_100": {
+  "value": "14–21",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json rows[case=smooth, N=48, contrast 100, dt 0.005-0.0125].pcg_iters (tol 1e-10)"
+ },
+ "pcg_smooth_1000": {
+  "value": "26–38",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json rows[case=smooth, N=48, contrast 1000, dt 0.005-0.0125].pcg_iters (tol 1e-10)"
+ },
+ "pcgl_warm_10": {
+  "value": "1–2",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json same rows, pcg_iters_1e4 (tol 1e-4)"
+ },
+ "pcgl_warm_100": {
+  "value": "2–3",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json same rows, pcg_iters_1e4 (tol 1e-4)"
+ },
+ "pcgl_warm_1000": {
+  "value": "4–7",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/varcoef_pcg.json same rows, pcg_iters_1e4 (tol 1e-4)"
+ },
+ "pen_N_1e2": {
+  "value": "650",
+  "source": "... N_for_rel_l2_periodic_cell[\"0.01\"] / 2 (points per unit length)"
+ },
+ "pen_N_2e3": {
+  "value": "4,400",
+  "source": "... [\"0.002\"] / 2"
+ },
+ "pen_err_1024": {
+  "value": "1.22 %",
+  "source": "... penalized[N=1024].rel_l2 (periodic cell of side 2, 512 points per unit length)"
+ },
+ "pen_order": {
+  "value": "0.96",
+  "source": "reports/2026-10-20-spectral-investigation/where-we-win/analysis/penalized_spectral.json order (last three N)"
+ },
+ "ps_N24_med": {
+  "value": "0.0275 %",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[ps_N24_med] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N24|0.025].median"
+ },
+ "ps_N24_worst": {
+  "value": "6.34 %",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[ps_N24_worst] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N24|0.025].worst"
+ },
+ "ps_N48_med": {
+  "value": "0.00178 %",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[ps_N48_med] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N48|0.0125].median"
+ },
+ "ps_N48_worst": {
+  "value": "0.845 %",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[ps_N48_worst] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/checks/match-final.json pareto.PS[ps|N48|0.0125].worst"
+ },
+ "q2_note": {
+  "value": "C_old pass; W_C_W768, W_C_old, C_W1024 fail",
+  "source": "reports/2026-10-17-full-experiment-plan/final/report.md (text \"C_old pass, C_W1024 fail, W_C_old fail, W_C_W768 fail\")"
+ },
+ "r3_W1024": {
+  "value": "8.1×",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json t_A(C_W1024) / t_A(C_old) at L=128 (wider W1024 bank)"
+ },
+ "step_R128": {
+  "value": "0.441 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[step_R128] <- t_ev_R128 / 50 steps (dt 0.005, T 0.25)"
+ },
+ "step_R384": {
+  "value": "1.77 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[step_R384] <- t_ev_R384 / 50 steps"
+ },
+ "stepmodel_a": {
+  "value": "0.402 ms",
+  "source": "two-point fit t_step = a + b m M r through (R128: m 4181, M 512) and (R384: m 16384, M 1536); a = fixed per-step cost"
+ },
+ "stepmodel_b": {
+  "value": "0.142 ms per 1e9",
+  "source": "slope b of the same fit (ms per 1e9 units of m M r)"
+ },
+ "t3_CC64": {
+  "value": "50.2 ms",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/fom-match.json matches.C_old.CC.cost_screen (fd|CC|L64|0.0125|t1; screening cost)"
+ },
+ "t3_CC64_worst": {
+  "value": "1.16 %",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/fom-match.json matches.C_old.CC.worst"
+ },
+ "t3_CC_L128": {
+  "value": "227 ms",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json m1.per_L[\"128\"].panels.C_old.same_mesh[\"fd|CC|L128|0.01|t1\"].t_B (DST-preconditioned central CN FD, H200, full L^3 field)"
+ },
+ "t3_CC_L256": {
+  "value": "1.75 s",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json m1.per_L[\"256\"].panels.C_old.same_mesh[\"fd|CC|L256|0.01|t1\"].t_B (DST-preconditioned central CN FD, H200, full L^3 field)"
+ },
+ "t3_CC_L384": {
+  "value": "7.46 s",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json m1.per_L[\"384\"].panels.C_old.same_mesh[\"fd|CC|L384|0.01|t1\"].t_B (DST-preconditioned central CN FD, H200, full L^3 field)"
+ },
+ "t3_Cold": {
+  "value": "64.4 ms",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json m1.per_L[\"128\"].panels.C_old.same_mesh[\"fd|CC|L128|0.01|t1\"].t_A (qualified ROM, H200, scoring-lattice output)"
+ },
+ "t3_Cold_rng": {
+  "value": "60.4–64.4 ms",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json C_old t_A over L = 64, 128, 256, 384 (approximately mesh-independent)"
+ },
+ "t3_PS": {
+  "value": "4.06 ms",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/fom-match.json matches.C_old.PS.cost_screen (ps|N16|0.025; screening cost, cheapest admissible = boundary match)"
+ },
+ "t3_W768": {
+  "value": "28.8 ms",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/checks/analysis-pm.json ... panels.W_C_W768 ... t_A (fails Q2: unqualified, optimistic)"
+ },
+ "t3_batch64": {
+  "value": "4.3 ms",
+  "source": "worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/report.md row \"| W_C_W768 | 64 |\": 0.278 s for a batch of 64 -> per query"
+ },
+ "t4k_R128": {
+  "value": "24.9 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[t4k_R128] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (R128 LSPG-BE dt 0.005)"
+ },
+ "t4k_R384": {
+  "value": "97.1 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[t4k_R384] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (4096^2 stage-2 table, R384 LSPG-CNR dt 0.005)"
+ },
+ "t4k_ps24": {
+  "value": "10.2 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[t4k_ps24] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (PS N=24 dt 0.025)"
+ },
+ "t4k_ps48": {
+  "value": "11.7 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[t4k_ps48] <- worktrees/2026-10-18-jcp-fom2d/experiments/jcp-fom2d/report.md:370-393 (PS N=48 dt 0.0125, full-field 4096^2)"
+ },
+ "t_dec_R128_4k": {
+  "value": "5.74 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[t_dec_R128_4k] <- worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json ...[\"R128|BE|frozen\"].descriptive_seconds.t_decode[\"4096\"]"
+ },
+ "t_dec_R384_4k": {
+  "value": "14.3 ms",
+  "source": "reports/2026-10-20-improvement-ideation/VALUES.json[t_dec_R384_4k] <- worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/checks/analysis.json ...[\"R384|CNR|frozen\"].descriptive_seconds.t_decode[\"4096\"]"
+ },
+ "thr_J": {
+  "value": "36 TFLOP/s",
+  "source": "flops_J_384 / nom_J_384: effective throughput of the dense Jacobian kernel (H200)"
+ },
+ "tit_20": {
+  "value": "0.02 ms",
+  "source": "hypothetical GPU cost per PCG iteration (assumption, not measured)"
+ },
+ "tit_200": {
+  "value": "0.2 ms",
+  "source": "hypothetical GPU cost per PCG iteration (assumption, not measured)"
+ },
+ "tit_65": {
+  "value": "0.065 ms",
+  "source": "hypothetical GPU cost per PCG iteration (assumption, not measured)"
+ },
+ "vc_best": {
+  "value": "R128 fib4181 LSPG-BE dt=0.01",
+  "source": "configuration with the largest measured S_PS in the latency table"
+ }
+}

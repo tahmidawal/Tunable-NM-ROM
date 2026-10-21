@@ -1,0 +1,62 @@
+{
+ "penalized": [
+  {
+   "N": 64,
+   "h": 0.03125,
+   "cg_iters": 62,
+   "converged": true,
+   "final_rel_residual": 3.593210919632709e-11,
+   "rel_l2": 0.20091294496901554,
+   "max_err": 0.49098883934036663,
+   "solve_s": 0.008208351908251643
+  },
+  {
+   "N": 128,
+   "h": 0.015625,
+   "cg_iters": 122,
+   "converged": true,
+   "final_rel_residual": 5.619648216853845e-11,
+   "rel_l2": 0.11433612224580286,
+   "max_err": 0.24500821484773772,
+   "solve_s": 0.08583278395235538
+  },
+  {
+   "N": 256,
+   "h": 0.0078125,
+   "cg_iters": 242,
+   "converged": true,
+   "final_rel_residual": 8.268845302195343e-11,
+   "rel_l2": 0.045970042144739834,
+   "max_err": 0.10082039741312816,
+   "solve_s": 1.050806307932362
+  },
+  {
+   "N": 512,
+   "h": 0.00390625,
+   "cg_iters": 484,
+   "converged": true,
+   "final_rel_residual": 8.710896112231023e-11,
+   "rel_l2": 0.021813597830051188,
+   "max_err": 0.055321955096928235,
+   "solve_s": 11.702979618916288
+  },
+  {
+   "N": 1024,
+   "h": 0.001953125,
+   "cg_iters": 975,
+   "converged": true,
+   "final_rel_residual": 1.004389400425605e-10,
+   "rel_l2": 0.012170830555821355,
+   "max_err": 0.02758459177341371,
+   "solve_s": 84.07453060313128
+  }
+ ],
+ "order": 0.9586331828521863,
+ "N_for_rel_l2_periodic_cell": {
+  "0.01": 1293.1664840466835,
+  "0.002": 8749.4790995935,
+  "0.001": 19933.561432215818,
+  "0.0001": 307266.6019989254
+ },
+ "note": "periodic cell side 2 holds the unit box: physical points per unit length = N/2; N_for_rel_l2 values are EXTRAPOLATED from the last two N with the local order"
+}

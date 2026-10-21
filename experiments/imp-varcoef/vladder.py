@@ -85,13 +85,17 @@ class Ladder:
             cfg = dict(cfg, eligibility=cfg['eligibility_from'])
             self.cfg = cfg
         else:
-            self.el = json.loads(Path(cfg['eligibility']).read_text())
+            raw = Path(cfg['eligibility']).read_bytes()
+            fro = Path(cfg['eligibility']).with_suffix('.FROZEN').read_text().split()[0]
+            assert hashlib.sha256(raw).hexdigest() == fro == cfg['eligibility_sha256'], 'eligibility mask not the frozen one'
+            self.el = json.loads(raw)
         self.cases = {s: VC.cohort(s) for s in ('dev', 'val')}
         self.progs = {}
         self.runs = {}            # (key, C, case_id) -> record
         self.fields = {}          # (key, C, case_id) -> lattice fields (kept only for qualification comparisons)
         self.refs = {}
         self.compile = {}
+        self.stage_arrays = {}
         self.rep = dict(config=cfg, backend=jax.default_backend(), devices=[str(d) for d in jax.devices()],
                         jax_version=jax.__version__, eligibility_sha256=hashlib.sha256(
                             Path(cfg['eligibility']).read_bytes()).hexdigest(), phases={}, extensions={},
@@ -108,6 +112,9 @@ class Ladder:
             fs = [f_ for f_ in fs if f_.exists()]
             assert len(fs) >= 1, ('no reference', C, cid)
             z = np.load(fs[-1])                                   # later directories (fallback reruns) win
+            want = self.el['contrasts'][f'{C:g}'].get('cases', {}).get(cid, {}).get('ref_sha256')
+            if not self.el.get('smoke'):
+                assert want is not None and sha(z['lat']) == want, ('reference differs from the frozen mask', C, cid)
             self.refs[k] = (z['lat'], float(np.linalg.norm(z['t0'].ravel())))
         return self.refs[k]
 
@@ -140,6 +147,9 @@ class Ladder:
         if key not in self.compile:
             self.compile[key] = secs
         ok, ev = VK.validity(sp, F, st)
+        for a_ in ('it_stage', 'res_stage'):                     # per-stage evidence -> stages npz (A1.12)
+            if a_ in ev:
+                self.stage_arrays[f'{key}@C{C:g}@{cid}@{a_}'] = np.asarray(ev.pop(a_))
         F = np.asarray(F)
         R, n0 = self.ref(C, cid)
         e = VK.lat_err(F, R, n0) if ok else None
@@ -169,6 +179,8 @@ class Ladder:
     def save(self):
         rows = [{k: v for k, v in r.items() if not k.startswith('_')} for r in self.runs.values()]
         self.rep['runs'] = rows
+        if self.stage_arrays:
+            np.savez_compressed(self.out / 'stages.npz', **self.stage_arrays)
         self.rep['compile_seconds'] = self.compile
         self.rep['elapsed_seconds'] = time.perf_counter() - self.T0
         (self.out / 'result.json').write_text(json.dumps(self.rep, indent=1, default=float))
@@ -237,24 +249,25 @@ class Ladder:
                 sp = VK.parse(ks[-1])
                 for div in (2, 4):
                     new.append(VK.key(dict(sp, dt=sp['dt'] / div)))
-        # cheap edge (A1.10): per (family, tau) provisional winner by dev seconds; if on an edge, one step beyond
+        # cheap edge (A1.10, restated for code audit 1 item 8): every dev-valid configuration matching a target that sits on
+        # a cheap edge of a knob is extended one step beyond that edge (a superset of the provisional-winner rule; no
+        # latency is used to choose)
         edge = {'N': 12, 'L': 32}
         for f, ks in fams.items():
-            for tau in self.cfg['taus']:
-                ok = [k for k in ks if self.dev_ok(k, C, tau) and self.stats(k, C, dev)['worst'] is not None]
-                if not ok:
+            allsp = [VK.parse(k) for k in ks]
+            rk = 'N' if 'N' in allsp[0] else 'L'
+            for k in ks:
+                if not any(self.dev_ok(k, C, tau) and self.stats(k, C, dev)['worst'] is not None for tau in self.cfg['taus']):
                     continue
-                cost = lambda k: float(np.median([self.runs[(k, C, i)].get('seconds', np.inf) for i in dev[1:]]))  # dev[0] holds the compile
-                w = min(ok, key=cost)
-                sp = VK.parse(w)
-                allsp = [VK.parse(k) for k in ks]
-                rk = 'N' if 'N' in sp else 'L'
-                if sp[rk] == min(s[rk] for s in allsp):
+                sp = VK.parse(k)
+                if sp[rk] == min(x[rk] for x in allsp):
                     new.append(VK.key(dict(sp, **{rk: edge[rk]})))
-                if sp['dt'] == max(s['dt'] for s in allsp):
+                if sp['dt'] == max(x['dt'] for x in allsp):
                     new.append(VK.key(dict(sp, dt=0.05)))
-                if 'tol' in sp and sp['tol'] == max(s['tol'] for s in allsp if 'tol' in s):
+                if 'tol' in sp and sp['tol'] == max(x['tol'] for x in allsp if 'tol' in x):
                     new.append(VK.key(dict(sp, tol=1e-2)))
+                if 'level' in sp and sp['level'] == max((x['level'] for x in allsp if 'level' in x), key=int):
+                    new.append(VK.key(dict(sp, level='4')))
         new = sorted(set(new) - set(keys))
         self.rep['extensions'][f'{C:g}'] = new
         log(f'EXT C={C:g}: {len(new)} extension configurations')
@@ -272,6 +285,24 @@ class Ladder:
             t.update(after=dict(key=ka, half=kb, distance=d2), final='accepted' if (d2 is not None and d2 <= 1e-3) else
                      'unresolved')
         return new
+
+    def tkappa(self, C, dev):
+        """Scientific diagnostic T-kappa (A1.19): the constant-coefficient solver (kappa = nu; ETDRK4 N = 48,
+        dt = 0.0125, i.e. jcp-fom2d PS) scored against this contrast's references."""
+        k = 'etd|N48|0.0125|nu'
+        rows = []
+        for cid in dev:
+            c = self.case(cid)
+            sp = VK.parse(k)
+            x0, _ = VK.prepare(sp, c)
+            F, st = self.prog(k)(x0, jnp.asarray(VC.kappa_params(c, 1.0)))
+            F = np.asarray(jax.block_until_ready(F))
+            R, n0 = self.ref(C, cid)
+            rows.append(dict(case=cid, e=VK.lat_err(F, R, n0), eligible=self.eligible(C, cid)))
+        el = [r['e'] for r in rows if r['eligible']]
+        self.rep['controls'][f'T-kappa@C{C:g}'] = dict(kind='scientific diagnostic', key=k, rows=rows,
+                                                      worst=float(max(el)) if el else None,
+                                                      median=float(np.median(el)) if el else None)
 
     def screen(self, keys, C):
         sc = self.cfg['screen']
@@ -316,8 +347,8 @@ class Ladder:
         for cid in pooled:
             self.run(key, C, cid, True)
         if f in ('psi', 'fdmg', 'ccv'):
-            tk = VK.key(dict(sp, tol=1e-10)) if f != 'ccv' else VK.key(dict(sp, level='0'))
-            tt = VK.key(dict(sp, tol=1e-12)) if f != 'ccv' else VK.key(dict(sp, level='T'))
+            tk = VK.key(dict(sp, tol=1e-10)) if f != 'ccv' else VK.key(dict(sp, level='E'))     # CCv: E0 tight
+            tt = VK.key(dict(sp, tol=1e-12)) if f != 'ccv' else VK.key(dict(sp, level='F'))     # CCv: tighter anchor
             dist = []
             for cid in pooled:
                 r = self.run(tk, C, cid, True)
@@ -362,6 +393,7 @@ class Ladder:
             dev, val = self.ids('dev'), self.ids('val')
             log(f'=== C={C:g}: dev ladder, {len(keys0)} configurations')
             self.ladder(keys0, C, dev, 'DEV')
+            self.tkappa(C, dev)
             self.save()
             ext = self.extensions(keys0, C) if self.cfg.get('extensions', True) else []
             keys = keys0 + ext

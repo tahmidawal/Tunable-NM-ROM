@@ -32,7 +32,10 @@ from vspec import pcg         # noqa: E402
 
 UMAX_GUARD = 10.0
 COARSE_L = 8
-CCV_TOLS = dict(FR.TOLS, T=(1e-12, 1e-13))      # jcp-fom2d levels t0..t3 (+X) and a tighter anchor level T (A1.12)
+# jcp-fom2d levels t0..t3 (+X); '4' = one step looser than t3 (cheap-edge extension); 'E' = E0 tight (1e-13, 1e-12, 40 Newton),
+# 'F' = tighter anchor (1e-13, 1e-13, 40) for the A1.12 qualification of CCv
+CCV_TOLS = dict(FR.TOLS, **{'4': (1e-3, 1e-4), 'E': (1e-13, 1e-12), 'F': (1e-13, 1e-13)})
+CCV_NEWTON = {'E': 40, 'F': 40}
 
 
 # ---------------------------------------------------------------------------------------------- operators -----
@@ -198,6 +201,7 @@ def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
                                      lambda: solve(1.5, rhs2, 2 * u - up, P2))
             st = dict(it_sum=st['it_sum'] + it, it_max=jnp.maximum(st['it_max'], it),
                       res_max=jnp.maximum(st['res_max'], tr),
+                      it_stage=st['it_stage'].at[k].set(it), res_stage=st['res_stage'].at[k].set(tr),
                       nbad=st['nbad'] + jnp.where((tr <= 10 * tol) & jnp.isfinite(tr), 0, 1), nst=st['nst'] + 1)
             return x, u, Au, jnp.maximum(um, jnp.max(jnp.abs(x))), st
 
@@ -205,7 +209,7 @@ def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
             c = jax.lax.fori_loop(i * keep, (i + 1) * keep, step, c)
             return c, synth(c[0])
         st0 = dict(it_sum=jnp.int32(0), it_max=jnp.int32(0), res_max=jnp.float64(0.0), nbad=jnp.int32(0),
-                   nst=jnp.int32(0))
+                   nst=jnp.int32(0), it_stage=jnp.full(5 * keep, -1, jnp.int32), res_stage=jnp.full(5 * keep, jnp.nan))
         c0 = (U0, U0, jnp.zeros_like(U0), jnp.max(jnp.abs(U0)), st0)
         c, outs = jax.lax.scan(interval, c0, jnp.arange(5))
         fields = jnp.concatenate((synth(U0)[None], outs))
@@ -225,7 +229,9 @@ def vref_solver(L, max_newton=20, lin_maxiter=None):
 
     def query(u0, kp, sched, lam):
         KX, KY = faces(kp, L)
-        nu = kp[0]
+        return solve(u0, KX, KY, kp[0], sched, lam)
+
+    def solve(u0, KX, KY, nu, sched, lam):
 
         def F(u):
             g = u.reshape(shape)
@@ -293,23 +299,34 @@ def vref_solver(L, max_newton=20, lin_maxiter=None):
             run.compile_seconds = time.perf_counter() - t
         return cache['exe'](*args)
     run.compile_seconds = 0.0
+    run.solve = solve
+    run.lam = lam
     return run
 
 
 def make_ccv(L, dt, level, out='lattice'):
-    """CCv FOM: vref_solver at jcp-fom2d tolerance level t1..t3, CN-R, followed by the output map, in one timed call.
-    Returns q(u0, kp) -> (fields, stats)."""
+    """CCv FOM as a Program (A3.14): setup(kp) = face coefficients and nu; core(u0, S) = the E0 CN-R solve with variable
+    kappa (Newton + DST-preconditioned BiCGStab; the per-stage DST denominators are formed inside the solve, as E0) followed
+    by the output map; query = core(u0, setup(kp)) as ONE jitted program. Tolerance level from CCV_TOLS."""
+    from vspec import Program
     ntol, ltol = CCV_TOLS[level]
-    run = vref_solver(L, max_newton=FR.MAX_NEWTON)
-    synth = jax.jit(lambda o: jax.vmap(lambda f: fd_out(out, L)(f.reshape(L - 1, L - 1)))(o))
+    lim = CCV_NEWTON.get(level, FR.MAX_NEWTON)
+    run = vref_solver(L, max_newton=lim)
+    fo = fd_out(out, L)
+    sched = FC.schedule(dt, 'cnr', ntol, ltol)
+    lam = run.lam
     nexp = int(FC.n_stages(dt, 'cnr'))
 
-    def q(u0, kp):
-        r = run(u0, kp, dt, 'cnr', ntol, ltol)
-        F = synth(r['out'])
-        return F, dict(raw=r, nexp=nexp, ntol=ntol)
-    q.run = run
-    return q
+    def setup(kp):
+        KX, KY = faces(kp, L)
+        return dict(KX=KX, KY=KY, nu=kp[0])
+
+    def core(u0, S_):
+        r = run.solve(jnp.asarray(u0).reshape(-1), S_['KX'], S_['KY'], S_['nu'], sched, lam)
+        F = jax.vmap(lambda f: fo(f.reshape(L - 1, L - 1)))(r['out'])
+        return F, dict(res=r['res'], nwt=r['nwt'], umax=r['umax'], stages=r['stages'], nexp=jnp.int32(nexp),
+                       ntol=jnp.float64(ntol))
+    return Program(setup, core, f'ccv|L{L}|{dt:g}|t{level}')
 
 
 def fd_ic(desc, L):

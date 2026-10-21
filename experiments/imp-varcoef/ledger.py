@@ -24,9 +24,13 @@ def load():
 
 def save(d):
     d['total_gpu_hours'] = round(sum(j.get('gpu_hours') or 0.0 for j in d['jobs']), 4)
+    d['committed_gpu_hours'] = round(sum((j.get('gpu_hours') or 0.0) if j.get('final') else j['time_limit_hours']
+                                         for j in d['jobs']), 4)        # finished: actual; queued/running: time limit
     d['updated_utc'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     LED.parent.mkdir(exist_ok=True)
-    LED.write_text(json.dumps(d, indent=1) + '\n')
+    tmp = LED.with_suffix('.tmp')
+    tmp.write_text(json.dumps(d, indent=1) + '\n')
+    tmp.replace(LED)                                                    # atomic replacement
 
 
 def sacct(jid):
@@ -49,6 +53,7 @@ def main():
     cmd = sys.argv[1]
     if cmd == 'submit':
         job, jid = sys.argv[2], sys.argv[3]
+        assert not any(j['jobid'] == jid for j in d['jobs']), 'job id already recorded'
         res = json.loads((HERE / 'runs' / job / 'RESERVATION.json').read_text())
         d['jobs'].append(dict(job=job, jobid=jid, gpu_request=res['gpu'], time_limit_hours=res['time_limit_hours'],
                               submitted_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), state='PENDING',

@@ -28,7 +28,8 @@ def main():
     ap.add_argument('--out', required=True)
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
-    assert cfg.get('test_once') and cfg.get('frozen_selection_sha256'), 'test-once only after a frozen selection'
+    import testgate
+    allowed = testgate.verify(cfg)                       # frozen selection + opening record (A2.18) before generation
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     C = float(cfg['contrast'])
@@ -39,7 +40,7 @@ def main():
         rj = Path(d_) / 'result.json'
         if rj.exists():
             refres.update(json.loads(rj.read_text())['cases'])
-    rep = dict(config=cfg, backend=jax.default_backend(), keys={})
+    rep = dict(config=cfg, backend=jax.default_backend(), keys={}, permitted=allowed)
     for k in cfg['keys']:
         sp = VK.parse(k)
         p = VK.program(sp)

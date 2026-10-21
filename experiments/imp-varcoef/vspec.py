@@ -157,6 +157,7 @@ def make_psi(N, dt, scheme, tol, out='lattice', maxiter=200, Q=None):
             x, it, tr = pcg(A, rhs, x0, lambda r: r / den, tol, maxiter)
             st = dict(it_sum=st['it_sum'] + it, it_max=jnp.maximum(st['it_max'], it),
                       res_max=jnp.maximum(st['res_max'], tr),
+                      it_stage=st['it_stage'].at[k].set(it), res_stage=st['res_stage'].at[k].set(tr),
                       nbad=st['nbad'] + jnp.where((tr <= 10 * tol) & jnp.isfinite(tr), 0, 1),
                       nst=st['nst'] + 1)
             return x, b, Nb, jnp.maximum(um, m), st
@@ -165,7 +166,7 @@ def make_psi(N, dt, scheme, tol, out='lattice', maxiter=200, Q=None):
             c = jax.lax.fori_loop(i * keep, (i + 1) * keep, step, c)
             return c, (synth(c[0]), c[0])
         st0 = dict(it_sum=jnp.int32(0), it_max=jnp.int32(0), res_max=jnp.float64(0.0), nbad=jnp.int32(0),
-                   nst=jnp.int32(0))
+                   nst=jnp.int32(0), it_stage=jnp.full(5 * keep, -1, jnp.int32), res_stage=jnp.full(5 * keep, jnp.nan))
         c0 = (b0, b0, jnp.zeros_like(b0), jnp.float64(0.0), st0)
         c, (outs, coefs) = jax.lax.scan(interval, c0, jnp.arange(5))
         fields = jnp.concatenate((synth(b0)[None], outs))

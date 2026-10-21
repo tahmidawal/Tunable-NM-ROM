@@ -85,16 +85,16 @@ def i_sym(case, C, N, L, dt):
     fd = dict(sym_max=max(r['sym'] for r in rows), neg_max=max(r['neg'] for r in rows))
     fd['pass'] = fd['sym_max'] <= 1e-12 and fd['neg_max'] < 0
     mg = {}
-    for alpha in (1.0, 1.5):
-        lv, ch = VF.make_hierarchy(kp, L, alpha, dt)
+    for Lm, alpha in [(Lm, al) for Lm in sorted({32, 64, L, 2 * L, 4 * L}) for al in (1.0, 1.5)]:   # every deployed depth
+        lv, ch = VF.make_hierarchy(kp, Lm, alpha, dt)
         M = jax.jit(VF.vcycle(lv, ch, alpha, dt))
         rows = []
         for _ in range(8):
-            x, y = (jnp.asarray(rng.standard_normal((L - 1, L - 1))) for _ in range(2))
+            x, y = (jnp.asarray(rng.standard_normal((Lm - 1, Lm - 1))) for _ in range(2))
             My, Mx = M(y), M(x)
             rows.append(dict(sym=abs(float(jnp.vdot(x, My)) - float(jnp.vdot(Mx, y))) / float(jnp.linalg.norm(x) * jnp.linalg.norm(My)),
                              pos=float(jnp.vdot(x, Mx))))
-        mg[str(alpha)] = dict(sym_max=max(r['sym'] for r in rows), pos_min=min(r['pos'] for r in rows))
+        mg[f'L{Lm}|{alpha}'] = dict(levels=len(lv), sym_max=max(r['sym'] for r in rows), pos_min=min(r['pos'] for r in rows))
     mgp = all(v['sym_max'] <= 1e-10 and v['pos_min'] > 0 for v in mg.values())
     return dict(psi=psi, fd=fd, mg=mg, mg_pass=mgp, pass_=bool(psi['pass'] and fd['pass'] and mgp))
 
@@ -150,12 +150,28 @@ def t_loose(case, C, N, L, dt):
     b0 = VS.ic(case['desc'], N)
     _, st = VS.make_psi(N, dt, 'SBDF2', 1e-8, maxiter=0)(b0, kp)
     st = jax.device_get(st)
-    psi = dict(res_max=float(st['res_max']), nbad=int(st['nbad']), valid=bool(int(st['nbad']) == 0))
+    psi = dict(res_max=float(st['res_max']), nbad=int(st['nbad']), valid=bool(int(st['nbad']) == 0),
+               margin=float(st['res_max']) / (10 * 1e-8))
     u0 = VF.fd_ic(case['desc'], L)
     _, st = VF.make_fdmg(L, dt, 1e-7, 'MG', maxiter=0)(u0, kp)
     st = jax.device_get(st)
-    fd = dict(res_max=float(st['res_max']), nbad=int(st['nbad']), valid=bool(int(st['nbad']) == 0))
-    return dict(psi=psi, fdmg=fd, fires=bool((not psi['valid']) and (not fd['valid'])))
+    fd = dict(res_max=float(st['res_max']), nbad=int(st['nbad']), valid=bool(int(st['nbad']) == 0),
+              margin=float(st['res_max']) / (10 * 1e-7))
+    return dict(psi=psi, fdmg=fd, fixture='dev|0 at C = 100 (A3.19)',
+                fires=bool((not psi['valid']) and (not fd['valid']) and psi['margin'] > 1 and fd['margin'] > 1))
+
+
+def t_nan(case, C, N, dt):
+    """T-nan: an output with one injected non-finite value must be invalid under the shared predicate."""
+    import vkeys as VK
+    kp = jnp.asarray(VC.kappa_params(case, C))
+    sp = VK.parse(f'psi|N{N}|{dt:g}|SBDF2|1e-08')
+    F, st = VK.program(sp)(VS.ic(case['desc'], N), kp)
+    ok0, _ = VK.validity(sp, F, st)
+    Fb = np.array(F)
+    Fb[3, 100, 100] = np.nan
+    ok1, ev = VK.validity(sp, Fb, st)
+    return dict(clean_valid=ok0, injected_valid=ok1, fires=bool(ok0 and not ok1))
 
 
 def run_all(small=False):
@@ -171,10 +187,11 @@ def run_all(small=False):
     out['I-quad'] = i_quad(case, 100.0, 64 if not small else 24, dt)
     out['I-mms'] = i_mms(case, 100.0, 64 if not small else 32, Ls)
     out['T-loose'] = t_loose(case, 100.0, N, L, dt)
+    out['T-nan'] = t_nan(case, 100.0, N, dt)
     out['seconds'] = time.perf_counter() - t
     out['backend'] = jax.default_backend()
     out['all_pass'] = bool(out['I-C1']['pass'] and out['I-sym']['pass_'] and out['I-quad']['pass_'] and out['I-mms']['pass_'])
-    out['controls_fire'] = bool(out['T-loose']['fires'])
+    out['controls_fire'] = bool(out['T-loose']['fires'] and out['T-nan']['fires'])
     return out
 
 

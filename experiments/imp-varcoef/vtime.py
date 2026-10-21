@@ -123,6 +123,23 @@ def main():
     for c in cases:
         u0n = Q.e.initial(N, c[2])
         U0[cid(c)] = (jnp.asarray(u0n), float(c[2][4]))
+    if cfg.get('bindings'):                                 # production: authenticate the hash chain (code audit 1 item 5)
+        b_ = cfg['bindings']
+        for name_, h_ in b_['files'].items():
+            assert hashlib.sha256((HERE / name_).read_bytes()).hexdigest() == h_, ('binding mismatch', name_)
+        el_ = json.loads((HERE / b_['eligibility']).read_text())
+        ca_ = json.loads((HERE / b_['candidates']).read_text())
+        for C_, v_ in cfg['slots'].items():
+            assert v_ == [x['fom'] for x in el_['contrasts'][C_]['slots']], ('slots differ from the frozen mask', C_)
+        qual_ = set(ca_['candidates'])
+        for g_ in cfg['groups']:
+            for k_ in g_['candidates']:
+                assert k_ in qual_, ('timing candidate not a qualified ladder candidate', k_)
+        for k_, v_ in cfg['foms'].items():
+            base_ = VK.split_key(k_)
+            if base_[2] != 1.0 and base_[0] != 'SETUP':
+                bk_ = f'{base_[1]}@C{base_[2]:g}'
+                assert bk_ in qual_ and v_['slot_e'] == ca_['candidates'][bk_]['slot_e'], ('slot_e not from the ladder', k_)
     if cfg.get('slot_e_from'):                              # smoke only: ladder errors from the in-job smoke ladder
         lr = json.loads(Path(cfg['slot_e_from']).read_text())
         for k_, v_ in cfg['foms'].items():
@@ -235,7 +252,12 @@ def main():
             fn = call(lb, c)
             t, o = sync_time(fn)
             REF[(lb, cid(c))] = ident(lb, o)
-            if lb not in roms and VK.split_key(base(lb))[0] == 'SETUP':
+            if lb not in roms and (VK.split_key(base(lb))[0] == 'SETUP' or VK.split_key(base(lb))[2] == 1.0):
+                if VK.split_key(base(lb))[0] != 'SETUP':           # C = 1 cost-reading subject: validity only, no reference
+                    okv, ev = VK.validity(VK.parse(VK.split_key(base(lb))[1]), o[0], o[1])
+                    rows.append(dict(case=cid(c), e=None, eligible=None, first_seconds=t, want=None, repro=None,
+                                     finite=bool(np.isfinite(np.asarray(o[0])).all()), valid=okv, kind='C1 diagnostic'))
+                    continue
                 rows.append(dict(case=cid(c), e=None, eligible=None, first_seconds=t, want=None, repro=None, finite=True,
                                  valid=True, kind='setup-only'))
                 continue
@@ -267,7 +289,7 @@ def main():
     rep['gates']['A-valid'] = all(r_.get('valid') is True for r_ in rep['subjects'][cfg['A']['label']]['scoring'])
     rep['gates']['G-FR'] = all(rep['subjects'][k]['repro_ok'] and rep['subjects'][k]['repro_checked'] == len(cases)
                                and all(r_.get('valid') is True for r_ in rep['subjects'][k]['scoring'])
-                               for k in fkeys if VK.split_key(k)[0] is None)     # query subjects; KERNEL/SETUP diagnostic
+                               for k in fkeys if VK.split_key(k)[0] is None and VK.split_key(k)[2] != 1.0)  # query subjects
     rep['memory']['scoring'] = P.mem()
     save()
 
@@ -372,7 +394,7 @@ def main():
                                           else 'invalid timing (selection population < 5)'))
     keep = {v['selected'] for v in rep['selection'].values() if v['selected']}
     keep |= {k for k in (ctl0.get('fault_subject'), ctl0.get('identity_fault_subject')) if k and k not in roms}
-    keep |= {k for k in fkeys if VK.split_key(k)[0] is not None}           # KERNEL / SETUP diagnostics stay
+    keep |= {k for k in fkeys if VK.split_key(k)[0] is not None or VK.split_key(k)[2] == 1.0}   # diagnostics stay
     keepk = {VK.split_key(base(x))[1] for x in keep if x not in roms}
     for k_ in list(PROGS):                                  # release programs and inputs no longer needed
         if k_ not in keepk:
@@ -393,8 +415,10 @@ def main():
 
     # ---- 4. stage 2: inference block (fresh triplets) ----------------------------------------------------------------
     sel = sorted({v['selected'] for v in rep['selection'].values() if v['selected']})
-    diag = [k for k in fkeys if VK.split_key(k)[0] is not None and VK.split_key(k)[1] + '@C' + f"{VK.split_key(k)[2]:g}" in
-            {VK.split_key(x)[1] + '@C' + f"{VK.split_key(x)[2]:g}" for x in sel}]       # A3.14 for selected winners only
+    selb = {VK.split_key(x)[1] for x in sel}
+    diag = [k for k in fkeys if (VK.split_key(k)[0] is not None and VK.split_key(k)[1] + '@C' + f"{VK.split_key(k)[2]:g}" in
+            {VK.split_key(x)[1] + '@C' + f"{VK.split_key(x)[2]:g}" for x in sel})            # A3.14 for selected winners
+            or (VK.split_key(k)[0] is None and VK.split_key(k)[2] == 1.0 and VK.split_key(k)[1] in selb)]   # C=1 reading
     s2 = [lb for lb in roms if lb != A] + sel + diag
     order = [(lb, ci, r_) for lb in s2 for ci in range(len(cases)) for r_ in range(reps)]
     rng.shuffle(order)

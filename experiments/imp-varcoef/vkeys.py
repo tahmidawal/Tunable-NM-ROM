@@ -72,25 +72,6 @@ def resolution(sp):
     return sp.get('N') or sp.get('L')
 
 
-class CCvProgram:
-    """CCv in the Program interface: query = solve (AOT) then the output map (two dispatches in one timed call, as
-    jcp-fom2d's FD); setup = face coefficients; kernel = query (CCv's setup is inside refcore's solve)."""
-
-    def __init__(self, sp, out):
-        self.q = VF.make_ccv(sp['L'], sp['dt'], sp['level'], out)
-        self.name = key(sp)
-        L = sp['L']
-        self.setup_only = jax.jit(lambda kp: VF.faces(kp, L))
-
-    def query(self, x0, kp):
-        return self.q(x0, kp)
-
-    kernel = None
-
-    def __call__(self, x0, kp):
-        return self.query(x0, kp)
-
-
 def program(sp, out='lattice'):
     f = sp['f']
     if f == 'psi':
@@ -100,7 +81,7 @@ def program(sp, out='lattice'):
     if f == 'fdmg':
         return VF.make_fdmg(sp['L'], sp['dt'], sp['tol'], sp['prec'], out=out)
     if f == 'ccv':
-        return CCvProgram(sp, out)
+        return VF.make_ccv(sp['L'], sp['dt'], sp['level'], out)
     raise KeyError(f)
 
 
@@ -113,25 +94,30 @@ def prepare(sp, case):
 
 
 def validity(sp, F, st):
-    """A1.12 / A2.22 run validity from the program's own stats and outputs."""
+    """A1.12 / A2.22 run validity from the program's own stats and outputs. The running max |u| includes every output
+    field (so the terminal state is covered)."""
     F = np.asarray(F)
+    st = jax.device_get(st)
     finite = bool(np.all(np.isfinite(F)))
+    fmax = float(np.nanmax(np.abs(F))) if F.size else 0.0
     if sp['f'] == 'ccv':
-        r = st['raw']
         ns = int(st['nexp'])
-        res = np.asarray(r['res'])[:ns]
-        complete = int(r['stages']) == ns
-        res_ok = bool(len(res) == ns and np.all(np.isfinite(res)) and np.all(res <= 2 * st['ntol']))
-        umax = float(r['umax'])
-        ev = dict(stages=int(r['stages']), expected=ns, worst_res=float(np.nanmax(res)) if len(res) else None,
-                  newton_total=int(np.asarray(r['nwt'])[:ns].sum()), umax=umax)
+        res = np.asarray(st['res'])[:ns]
+        complete = int(st['stages']) == ns
+        res_ok = bool(len(res) == ns and np.all(np.isfinite(res)) and np.all(res <= 2 * float(st['ntol'])))
+        umax = max(float(st['umax']), fmax)
+        ev = dict(stages=int(st['stages']), expected=ns, worst_res=float(np.nanmax(res)) if len(res) else None,
+                  newton_total=int(np.asarray(st['nwt'])[:ns].sum()), newton_max=int(np.asarray(st['nwt'])[:ns].max()),
+                  umax=umax)
     else:
-        st = jax.device_get(st)
         complete = int(st['nst']) == int(st['nst_expected'])
         res_ok = int(st['nbad']) == 0
-        umax = float(st['umax'])
+        umax = max(float(st['umax']), fmax)
         ev = dict(stages=int(st['nst']), expected=int(st['nst_expected']), nbad=int(st['nbad']),
                   it_sum=int(st['it_sum']), it_max=int(st['it_max']), worst_res=float(st['res_max']), umax=umax)
+        if 'it_stage' in st:
+            ev['it_stage'] = np.asarray(st['it_stage']).astype(int).tolist()
+            ev['res_stage'] = np.asarray(st['res_stage']).tolist()
     ok = bool(finite and complete and res_ok and np.isfinite(umax) and umax <= UMAX_GUARD)
     ev.update(finite=finite, complete=bool(complete), res_ok=bool(res_ok), valid=ok)
     return ok, ev

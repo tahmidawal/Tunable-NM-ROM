@@ -104,6 +104,17 @@ def main():
     Lr = json.loads(Path(a.ladder).read_text())
     El = json.loads(Path(a.eligibility).read_text())
     RB = json.loads(Path(a.rombox).read_text())
+    HERE = Path(__file__).resolve().parent
+    b_ = T['config'].get('bindings') or {}
+    chain = dict(timing_bindings_present=bool(b_))
+    for name_, h_ in (b_.get('files') or {}).items():
+        chain[name_] = bool(hashlib.sha256((HERE / name_).read_bytes()).hexdigest() == h_)
+    chain['rombox_frozen'] = bool(hashlib.sha256(Path(a.rombox).read_bytes()).hexdigest() ==
+                                  (HERE / 'checks/rom-box.FROZEN').read_text().split()[0])
+    chain['eligibility_frozen'] = bool(hashlib.sha256(Path(a.eligibility).read_bytes()).hexdigest() ==
+                                       Path(a.eligibility).with_suffix('.FROZEN').read_text().split()[0])
+    chain['ladder_eligibility'] = bool(Lr.get('eligibility_sha256') == hashlib.sha256(Path(a.eligibility).read_bytes()).hexdigest())
+    chain_ok = all(chain.values())
     cases = [f'{c}|{j}' for c, j in T['config']['cases']]
     reps = int(T['config']['reps'])
     veto = set(T.get('veto') or [])
@@ -129,10 +140,10 @@ def main():
                 tf = temporal.get(f, {}).get('final', 'accepted')
                 runs_f = [r for r in Lr['runs'] if r['key'].split('|')[0].upper() == f and float(r['C']) == C]
                 unstable = bool(runs_f) and not any(r['valid'] for r in runs_f)
-                fam_status[f] = ('unstable on the tested ladder' if unstable else
-                                 ('unresolved' if (g.get('status') != 'ok' or tf == 'unresolved') else 'resolved'))
+                res_ = 'unresolved' if (g.get('status') != 'ok' or tf == 'unresolved') else 'resolved'
+                fam_status[f] = dict(status=res_, all_runs_invalid=unstable, temporal=tf)   # A4.10: no unstable exemption
             row['families'] = fam_status
-            unresolved = [f for f, s in fam_status.items() if s == 'unresolved']
+            unresolved = [f for f, s in fam_status.items() if s['status'] == 'unresolved']
             row['unresolved_families'] = unresolved
             if rom is None:
                 row.update(status='inconclusive', reason='no qualified ROM at this target (inherited population)')
@@ -141,19 +152,29 @@ def main():
             row['rom'] = dict(label=rom['label'], worst=rom['worst'], inherited_ratio=rom['ratio_to_A'],
                               inherited_seconds=rom['seconds'], qualification='inherited (jcp-qualify FRONT-2D), prior evidence')
             rs, rn = cost_by_slot(T['stage2'], rom['label'])
-            rom_ok = rom['label'] not in veto and len(rs) == len(cases) and all(rn[c] == reps for c in cases)
+            subj = T['subjects'].get(rom['label'], {})
+            scored_ok = bool(subj.get('repro_ok') and subj.get('repro_checked') == len(cases)
+                             and all(r_.get('valid') is True for r_ in subj.get('scoring', [])))
+            rom_ok = bool(rom['label'] not in veto and scored_ok and set(rs) == set(cases)
+                          and all(rn[c] == reps for c in cases))
             row['rom']['in_job'] = rom_ok
             if not rom_ok:
                 rs = {c: rom['ratio_to_A'] for c in cases}
                 row['rom']['note'] = 'in-job re-measurement failed: inherited C2 ratio used (same GPU type, same convention)'
             row['rom']['cost'] = float(np.median([rs[c] for c in cases]))
+            row['rom']['vs_inherited'] = row['rom']['cost'] / rom['ratio_to_A']
+            row['rom']['consistent_20pct'] = bool(0.8 <= row['rom']['vs_inherited'] <= 1.2)
             if not fsel:
                 row.update(status='inconclusive', reason=f'no union winner: {sel.get("status")}')
                 res['targets'][key] = row
                 continue
             fs, fn = cost_by_slot(T['stage2'], fsel)
-            f_ok = fsel not in veto and len(fs) == len(cases) and all(fn[c] == reps for c in cases)
-            row['fom'] = dict(key=fsel, family=fsel.split('|')[0].upper(), cost=float(np.median([fs[c] for c in cases])) if fs else None,
+            fsub = T['subjects'].get(fsel, {})
+            f_scored = bool(fsub.get('repro_ok') and fsub.get('repro_checked') == len(cases)
+                            and all(r_.get('valid') is True for r_ in fsub.get('scoring', [])))
+            f_ok = bool(fsel not in veto and f_scored and set(fs) == set(cases) and all(fn[c] == reps for c in cases))
+            row['fom'] = dict(key=fsel, family=fsel.split('|')[0].upper(),
+                              cost=float(np.median([fs[c] for c in cases])) if f_ok else None,
                               stage2_complete=f_ok, per_family={g_.split('|')[0]: T['selection'][g_].get('selected')
                                                                 for g_ in T['selection'] if g_.endswith(f'|{tau:g}|C{C:g}')
                                                                 and not g_.startswith('union')})
@@ -166,13 +187,19 @@ def main():
             # absolute-seconds ratio, reported beside (A2.16)
             tb = lambda lb: float(np.median([np.median([t['tB'] for t in T['stage2'] if t['B'] == lb and t['case'] == c and t.get('valid')])
                                              for c in cases]))
+            fsec, rsec = tb(fsel), (tb(rom['label']) if rom_ok else rom['seconds'])
             row.update(status='ok', G=G, G_ci95=ci, marginal=bool(G >= 2 and ci[0] < 2),
-                       fom_seconds=tb(fsel), rom_seconds=tb(rom['label']) if rom_ok else rom['seconds'],
+                       fom_seconds=fsec, rom_seconds=rsec, seconds_ratio=fsec / rsec,
                        label='anchor-normalised cost ratio; against the strongest tested competitor; finite-ladder upper '
                              'bound on the ROM speed-up')
             res['targets'][key] = row
     dec = {t: res['targets'][f'{t:g}|C{GATE_C:g}'] for t in DECISIVE}
-    ref_ok = bool(El['contrasts'][f'{GATE_C:g}']['decidable'])
+    timing_ok = bool(T.get('complete') is True and T.get('backend') == 'gpu' and T['gates'].get('A-valid') is True
+                     and all(v.get('fires') for v in T['controls'].values()) and set(T['controls']) >= {'T-dbl', 'T-fault', 'T-id'}
+                     and 'H200' in str(T.get('gpu')))
+    res['timing_valid'] = timing_ok
+    res['hash_chain'] = chain
+    ref_ok = bool(El['contrasts'][f'{GATE_C:g}']['decidable']) and timing_ok and chain_ok
     gate, outs = decide({t: dict(G=v.get('G'), status=v.get('status'), unresolved_families=v.get('unresolved_families'))
                          for t, v in dec.items()}, ref_ok)
     res['gate'] = dict(outcome=gate, target_outcomes={f'{t:g}': o for t, o in outs.items()}, reference_decidable=ref_ok,

@@ -45,6 +45,13 @@ def main():
     runs = [tuple(r.split(':', 1)) for r in a.run]
     assert all(d in DRIVERS for d, _ in runs), runs
     if not a.job.startswith('smk'):
+        acc = json.loads((ROOT / LANE / 'checks' / 'smoke-accept.json').read_text())
+        assert acc['accepted'] is True, 'real-size smoke not accepted (controls/checks)'
+        plan = json.loads((ROOT / LANE / 'checks' / 'budget-plan.json').read_text())
+        led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
+        committed = sum((j.get('gpu_hours') or 0.0) if j.get('final') else j['time_limit_hours'] for j in led['jobs'])
+        assert committed + a.hours <= plan['phase_cap'] + 1e-9, ('phase cap: committed + this limit', committed, a.hours)
+        assert plan['spent_plus_remaining'] <= plan['phase_cap'] + 1e-9, 'budget plan exceeds the phase cap (A3.20)'
         c_ = json.loads((ROOT / LANE / 'checks' / f'resources-{a.job}.json').read_text())
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
         for _, cf in runs:

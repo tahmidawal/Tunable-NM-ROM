@@ -110,5 +110,93 @@ def base():
     print('keys', len(keys), 'smoke cases', sm, 'roms', [r['label'] for r in roms])
 
 
+def sha(p):
+    import hashlib
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def ladder(refdirs, contrasts=(100, 10)):
+    """Production ladder config; refdirs = cluster output dirs of the reference jobs (fallback dirs last)."""
+    el = HERE / 'checks/eligibility.json'
+    fro = el.with_suffix('.FROZEN').read_text().split()[0]
+    assert sha(el) == fro
+    keys = json.loads((CFG / 'ladder-keys.json').read_text())
+    (CFG / 'ladder.json').write_text(json.dumps(dict(
+        contrasts=list(contrasts), keys=keys, refdir=list(refdirs), eligibility='checks/eligibility.json',
+        eligibility_sha256=fro, taus=TAUS, screen=dict(mesh=4096, reps=3, burn=0.1), ntop=3, extensions=True,
+        qualify=True), indent=1) + '\n')
+
+
+def time_cfg(refdirs, contrasts=(100, 10)):
+    """Production timing config from checks/candidates.json (copied from the ladder output) and the frozen mask."""
+    el = json.loads((HERE / 'checks/eligibility.json').read_text())
+    ca = json.loads((HERE / 'checks/candidates.json').read_text())
+    A, roms = rom_entries()
+    foms, groups = {}, []
+    for C in contrasts:
+        for tau in TAUS:
+            union = []
+            for f in ('PSI', 'ETD', 'FDMG', 'CCV'):
+                g = ca['groups'][f'{C:g}'][f'{f}|{tau:g}|C{C:g}']
+                cands = [f'{k}@C{C:g}' for k in g['candidates']]
+                for k in cands:
+                    foms[k] = dict(family=f, slot_e=ca['candidates'][k]['slot_e'])
+                    foms['KERNEL|' + k] = dict(family=f, slot_e=ca['candidates'][k]['slot_e'])
+                    foms['SETUP|' + k] = dict(family=f, slot_e={})
+                    if f == 'PSI' and C == 100:
+                        foms[k.replace('@C100', '@C1')] = dict(family=f, slot_e={})
+                if cands:
+                    groups.append(dict(id=f'{f}|{tau:g}|C{C:g}', target=f'{tau:g}', family=f, criterion='worst',
+                                       candidates=cands))
+                union += cands
+            if union:
+                groups.append(dict(id=f'union|{tau:g}|C{C:g}', target=f'{tau:g}', family='union', criterion='worst',
+                                   candidates=sorted(set(union)), pool_by_family=True))
+    slots = {f'{C:g}': [x['fom'] for x in el['contrasts'][f'{C:g}']['slots']] for C in contrasts}
+    q = [k for k in foms if not k.startswith(('KERNEL|', 'SETUP|')) and not k.endswith('@C1')]
+    files = {n: sha(HERE / n) for n in ('checks/eligibility.json', 'checks/candidates.json', 'checks/rom-box.json')}
+    (CFG / 'time.json').write_text(json.dumps(dict(
+        attempt='time', mesh=4096, edges=[0, 128, 256, 384, 512], cases=[['dev6', s] for s in range(6)], A=A,
+        roms=[{k: v for k, v in r.items() if k != 'tau'} for r in roms], foms=foms, groups=groups, slots=slots,
+        refdir=list(refdirs), reps=3, burn=0.1, seed=20261021,
+        bindings=dict(files=files, eligibility='checks/eligibility.json', candidates='checks/candidates.json'),
+        controls=dict(doubled_cases=[['dev6', 0], ['dev6', 1]], fault_subject=roms[0]['label'],
+                      identity_fault_subject=sorted(q)[0]),
+        pilot_foms=[]), indent=1) + '\n')
+    print('timing subjects', len(foms), 'groups', len(groups))
+
+
+def test_cfg(refdirs_test, frozen_src):
+    """Test-once: copy the timing job's FROZEN-SELECTION into checks/, write the one-time opening record, configs."""
+    import shutil
+    import time as _t
+    sys.path.insert(0, str(HERE))
+    import testgate
+    dst = HERE / 'checks/FROZEN-SELECTION-4096.json'
+    rec = HERE / 'checks/TEST-OPENED.json'
+    assert not rec.exists(), 'the test split has already been opened (A2.18: once)'
+    shutil.copyfile(frozen_src, dst)
+    keys = testgate.permitted(json.loads(dst.read_text()))
+    rec.write_text(json.dumps(dict(frozen_selection_sha256=sha(dst), permitted_keys=keys, purpose='Phase-1 FOM test-once',
+                                   utc=_t.strftime('%Y-%m-%dT%H:%M:%SZ', _t.gmtime())), indent=1) + '\n')
+    bind = dict(test_once=True, frozen_selection='checks/FROZEN-SELECTION-4096.json', frozen_selection_sha256=sha(dst),
+                opening_record='checks/TEST-OPENED.json', opening_record_sha256=sha(rec))
+    (CFG / 'ref-test.json').write_text(json.dumps(dict(contrasts=[100], cases=[['test', j] for j in range(16)], levels=LEVELS,
+                                                       crosscheck=[], controls=False, **bind), indent=1) + '\n')
+    (CFG / 'test-run.json').write_text(json.dumps(dict(contrast=100, keys=keys, refdir=list(refdirs_test), **bind),
+                                                  indent=1) + '\n')
+    print('test keys', keys)
+
+
 if __name__ == '__main__':
-    {'base': base}[sys.argv[1]]()
+    cmd = sys.argv[1]
+    if cmd == 'base':
+        base()
+    elif cmd == 'ladder':
+        ladder(sys.argv[2:])
+    elif cmd == 'time':
+        time_cfg(sys.argv[2:])
+    elif cmd == 'test':
+        test_cfg(sys.argv[3:], sys.argv[2])
+    else:
+        raise SystemExit(cmd)

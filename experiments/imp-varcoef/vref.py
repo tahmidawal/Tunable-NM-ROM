@@ -34,6 +34,7 @@ import vspec as VS       # noqa: E402
 import refcore as FC     # noqa: E402  (jcp-fom2d copy == jcp-references copy, byte-identical)
 import cohorts as CH     # noqa: E402
 import verdict as V      # noqa: E402  (jcp-references/verdict.py, E0 acceptance, unchanged)
+import vkeys as VK       # noqa: E402
 
 TOL = dict(prod=(1e-11, 1e-9), retry=(1e-11, 1e-10))
 NEWTON = dict(prod=20, retry=40)
@@ -104,10 +105,10 @@ def crosscheck(case, kp, Lat_ref, n0, eps):
         F, st = q(VS.ic(case['desc'], N), jnp.asarray(kp))
         F = np.asarray(jax.block_until_ready(F))
         runs[k] = F
-        st = jax.device_get(st)
-        stats[k] = dict(N=N, dt=dt, Q=Q, tol=tol, nbad=int(st['nbad']), it_max=int(st['it_max']),
-                        res_max=float(st['res_max']), seconds=time.perf_counter() - t,
-                        finite=bool(np.all(np.isfinite(F))), valid=bool(int(st['nbad']) == 0 and np.all(np.isfinite(F))))
+        ok, ev = VK.validity(VK.parse(f'psi|N{N}|{dt:g}|SBDF2|{tol:g}'), F, st)     # full shared validity predicate
+        ev.pop('it_stage', None)
+        ev.pop('res_stage', None)
+        stats[k] = dict(N=N, dt=dt, Q=Q, tol=tol, seconds=time.perf_counter() - t, valid=ok, evidence=ev)
     b = runs['base']
     d = lambda x, y: lat_dist(runs[x], runs[y], n0)
     d1, d2 = d('s128', 's192'), d('s192', 'base')          # adjacent spatial differences (A5.5)
@@ -196,9 +197,10 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     rep = dict(config=cfg, backend=jax.default_backend(), devices=[str(d) for d in jax.devices()],
                jax_version=jax.__version__, cases={}, crosscheck={}, controls=None)
-    cohorts = {s: VC.cohort(s, unlock_test=bool(cfg.get('test_once'))) for s in {c[0] for c in cfg['cases']}}
     if any(c[0] == 'test' for c in cfg['cases']):
-        assert cfg.get('test_once') and cfg.get('frozen_selection_sha256'), 'test refs only after a frozen selection'
+        import testgate
+        testgate.verify(cfg)                                          # A2.18: frozen selection + opening record, before generation
+    cohorts = {s: VC.cohort(s, unlock_test=any(c[0] == 'test' for c in cfg['cases'])) for s in {c[0] for c in cfg['cases']}}
     S = Solvers()
     T0 = time.perf_counter()
     for C in cfg['contrasts']:
@@ -208,6 +210,9 @@ def main():
             cid = f'C{C:g}|{split}|{j}'
             log(f'CASE {cid} desc={np.round(case["desc"], 4).tolist()}')
             t0 = np.asarray(CH.ic_2d(256, case['desc']))
+            tn = time.perf_counter()
+            VC.g_extrema(case['xi'], VC.NORM_GRID)
+            norm_seconds = time.perf_counter() - tn
             levels, recs = [], []
             for L, dt in cfg['levels']:
                 r, lat, res = level(S, case, kp, int(L), float(dt))
@@ -222,14 +227,16 @@ def main():
             rec = dict(desc=case['desc'].tolist(), xi=case['xi'].tolist(), gmin=case['gmin'], gmax=case['gmax'],
                        realised=VC.realised(case, float(C)), levels=recs, judge={k: v for k, v in jd.items()},
                        eps_ref=eps, eligible_pre_crosscheck=elig, ref_sha256=sha(levels[-1]['lat']),
-                       n0=float(np.linalg.norm(t0.ravel())))
+                       n0=float(np.linalg.norm(t0.ravel())), normalisation_seconds=norm_seconds)
             rep['cases'][cid] = rec
             log(f'  -> {jd["outcome"]} p={np.round([p if p is not None else -1 for p in jd["p"]], 3).tolist()} '
                 f'eps={eps} eligible={elig} elapsed={time.perf_counter() - T0:.0f}s')
             if [split, j] in cfg.get('crosscheck', []):
                 xc = crosscheck(case, kp, levels[-1]['lat'], rec['n0'], eps)
                 rep['crosscheck'][cid] = xc
-                log(f'  XC conv={xc["converged"]} diffs={xc["diffs"]} dist={xc["distance"]:.2e} passed={xc["passed"]}')
+                log(f'  XC conv={xc["converged"]} d1={xc["delta1"]:.2e} d2={xc["delta2"]:.2e} e1={xc["e1"]:.2e} '
+                    f'e2={xc["e2"]:.2e} U={xc["U_xc"]:.2e} dist={xc["distance"]:.2e} bar={xc["bar"]:.2e} passed={xc["passed"]}')
+                (out / 'result.json').write_text(json.dumps(rep, indent=1, default=float))
             if cfg.get('controls') and (rep['controls'] is None or rep['controls'].get('all_fire') is None):
                 rep['controls'] = ref_controls(levels, t0, nu_pe)
                 log(f'  CONTROLS {rep["controls"]}')

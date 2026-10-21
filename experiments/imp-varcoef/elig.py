@@ -38,7 +38,9 @@ def main():
     for C in sorted({k.split('|')[0][1:] for k in cases}, key=float):
         rows = {k.split('|', 1)[1]: v for k, v in cases.items() if k.split('|')[0] == f'C{C}'}
         xcs = {k.split('|', 1)[1]: v for k, v in xc.items() if k.split('|')[0] == f'C{C}'}
-        xc_failed = any(not v['passed'] for v in xcs.values())
+        want_xc = {f'dev|{j}' for j in range(4)}
+        xc_missing = sorted(want_xc - set(xcs))
+        xc_failed = bool(xc_missing) or any(not xcs[c]['passed'] for c in want_xc if c in xcs)
         per = {}
         for cid, v in rows.items():
             ok = bool(v['judge']['outcome'] == 'accepted' and v['eps_ref'] is not None and v['eps_ref'] <= ELIG_EPS
@@ -50,9 +52,12 @@ def main():
         val = sorted([c for c in el if c.startswith('val|')], key=lambda c: int(c.split('|')[1]))
         fom = (dev + val)[:NSLOT]
         slots = [dict(slot=s, anchor=['dev6', s], fom=f) for s, f in enumerate(fom)]
-        pooled = len(VC.cohort('dev')) + len(VC.cohort('val'))
+        want_ids = {f'dev|{j}' for j in range(len(VC.cohort('dev')))} | {f'val|{j}' for j in range(len(VC.cohort('val')))}
+        pooled = len(want_ids)
+        exact = set(per) == want_ids
         out['contrasts'][C] = dict(cases=per, eligible=el, n_cases=len(per), n_pooled_expected=pooled,
-                                   coverage=len(el), decidable=bool(len(el) >= COVERAGE and len(per) == pooled
+                                   exact_case_set=exact, crosscheck_missing=xc_missing,
+                                   coverage=len(el), decidable=bool(len(el) >= COVERAGE and exact
                                                                      and not xc_failed and len(slots) == NSLOT),
                                    crosscheck={k: dict(passed=v['passed'], converged=v['converged'],
                                                        distance=v['distance'], bar=v['bar'], U_xc=v['U_xc'])

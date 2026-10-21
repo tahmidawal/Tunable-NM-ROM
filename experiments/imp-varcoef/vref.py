@@ -196,7 +196,9 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     rep = dict(config=cfg, backend=jax.default_backend(), devices=[str(d) for d in jax.devices()],
                jax_version=jax.__version__, cases={}, crosscheck={}, controls=None)
-    cohorts = {s: VC.cohort(s) for s in {c[0] for c in cfg['cases']}}
+    cohorts = {s: VC.cohort(s, unlock_test=bool(cfg.get('test_once'))) for s in {c[0] for c in cfg['cases']}}
+    if any(c[0] == 'test' for c in cfg['cases']):
+        assert cfg.get('test_once') and cfg.get('frozen_selection_sha256'), 'test refs only after a frozen selection'
     S = Solvers()
     T0 = time.perf_counter()
     for C in cfg['contrasts']:

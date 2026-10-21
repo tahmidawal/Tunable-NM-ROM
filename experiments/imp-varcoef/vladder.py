@@ -61,10 +61,31 @@ def lat_dist(F, G, n0):
     return float(max(np.linalg.norm((np.asarray(F[k]) - np.asarray(G[k])).ravel()) for k in range(1, 6)) / n0)
 
 
+def smoke_eligibility(path):
+    d = json.loads(Path(path).read_text())
+    out = dict(contrasts={}, smoke=True)
+    for k, v in d['cases'].items():
+        C, cid = k.split('|', 1)
+        C = C[1:]
+        e = out['contrasts'].setdefault(C, dict(eligible=[], slots=[]))
+        if v['judge']['outcome'] == 'accepted' and v['eps_ref'] is not None and v['eps_ref'] <= 1e-3:
+            e['eligible'].append(cid)
+    for C, e in out['contrasts'].items():
+        allc = sorted({k.split('|', 1)[1] for k in d['cases'] if k.startswith(f'C{C}|')})
+        src = e['eligible'] or allc
+        e['slots'] = [dict(slot=s, anchor=['dev6', s], fom=src[s % len(src)]) for s in range(6)]
+    return out
+
+
 class Ladder:
     def __init__(self, cfg, out):
         self.cfg, self.out = cfg, out
-        self.el = json.loads(Path(cfg['eligibility']).read_text())
+        if cfg.get('eligibility_from'):                           # smoke only: mask built in-job from the smoke refs
+            self.el = smoke_eligibility(cfg['eligibility_from'])
+            cfg = dict(cfg, eligibility=cfg['eligibility_from'])
+            self.cfg = cfg
+        else:
+            self.el = json.loads(Path(cfg['eligibility']).read_text())
         self.cases = {s: VC.cohort(s) for s in ('dev', 'val')}
         self.progs = {}
         self.runs = {}            # (key, C, case_id) -> record
@@ -82,7 +103,11 @@ class Ladder:
         k = (C, cid)
         if k not in self.refs:
             split, j = cid.split('|')
-            z = np.load(Path(self.cfg['refdir']) / f'ref_C{C:g}_{split}_{j}.npz')
+            dirs = self.cfg['refdir'] if isinstance(self.cfg['refdir'], list) else [self.cfg['refdir']]
+            fs = [Path(d_) / f'ref_C{C:g}_{split}_{j}.npz' for d_ in dirs]
+            fs = [f_ for f_ in fs if f_.exists()]
+            assert len(fs) >= 1, ('no reference', C, cid)
+            z = np.load(fs[-1])                                   # later directories (fallback reruns) win
             self.refs[k] = (z['lat'], float(np.linalg.norm(z['t0'].ravel())))
         return self.refs[k]
 
@@ -128,6 +153,8 @@ class Ladder:
         return rec
 
     def ids(self, split):
+        if 'ids' in self.cfg:                                     # smoke only: a restricted case list
+            return list(self.cfg['ids'].get(split, []))
         return [f'{split}|{j}' for j in range(len(self.cases[split]))]
 
     def stats(self, key, C, ids):
@@ -232,6 +259,18 @@ class Ladder:
         self.rep['extensions'][f'{C:g}'] = new
         log(f'EXT C={C:g}: {len(new)} extension configurations')
         self.ladder(new, C, dev, 'EXT')
+        # A5.10: a failed temporal check is repeated on the two finest (extended) steps of the same row
+        for f, t in temporal.items():
+            if t['accepted']:
+                t['final'] = 'accepted'
+                continue
+            sp = VK.parse(t['key'])
+            ka, kb = VK.key(dict(sp, dt=sp['dt'] / 2)), VK.key(dict(sp, dt=sp['dt'] / 4))
+            ra, rb = self.run(ka, C, dev[0], True), self.run(kb, C, dev[0], True)
+            d2 = lat_dist(self.fields[(ka, C, dev[0])], self.fields[(kb, C, dev[0])], self.ref(C, dev[0])[1]) \
+                if ra['valid'] and rb['valid'] else None
+            t.update(after=dict(key=ka, half=kb, distance=d2), final='accepted' if (d2 is not None and d2 <= 1e-3) else
+                     'unresolved')
         return new
 
     def screen(self, keys, C):

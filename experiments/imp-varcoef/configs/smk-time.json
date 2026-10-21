@@ -1,0 +1,186 @@
+{
+ "attempt": "smk-time",
+ "mesh": 4096,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": [
+  [
+   "dev6",
+   0
+  ],
+  [
+   "dev6",
+   1
+  ],
+  [
+   "dev6",
+   2
+  ],
+  [
+   "dev6",
+   3
+  ],
+  [
+   "dev6",
+   4
+  ],
+  [
+   "dev6",
+   5
+  ]
+ ],
+ "A": {
+  "label": "A",
+  "Rp": 384,
+  "rule": "gauss128",
+  "policy": "frozen",
+  "scheme": "CNR",
+  "dt": 0.005,
+  "form": "LSPG",
+  "level": "prod"
+ },
+ "roms": [
+  {
+   "label": "ckpt:18f0266ae6f0|R256|gauss128|frozen|CNR|0.0125|LSPG|prod",
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "dt": 0.0125,
+   "form": "LSPG",
+   "level": "prod",
+   "target_e": {
+    "dev6|0": 0.0047104435247715196,
+    "dev6|1": 0.014797590455323011,
+    "dev6|2": 0.020465170754672607,
+    "dev6|3": 0.011904990192576908,
+    "dev6|4": 0.011110238673117034,
+    "dev6|5": 0.014482181597753272
+   }
+  },
+  {
+   "label": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.0125|LSPG|prod",
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "BE",
+   "dt": 0.0125,
+   "form": "LSPG",
+   "level": "prod",
+   "target_e": {
+    "dev6|0": 0.014276582207455412,
+    "dev6|1": 0.03106384418284458,
+    "dev6|2": 0.048525876359223855,
+    "dev6|3": 0.03153980014067276,
+    "dev6|4": 0.022928412725905106,
+    "dev6|5": 0.030815600631494442
+   }
+  }
+ ],
+ "foms": {
+  "psi|N48|0.0125|SBDF2|1e-05@C100": {
+   "family": "PSI"
+  },
+  "fdmg|L128|0.00625|MG|1e-07@C100": {
+   "family": "FDMG"
+  },
+  "etd|N48|0.0125|mid@C100": {
+   "family": "ETD"
+  },
+  "ccv|L128|0.00625|t2@C100": {
+   "family": "CCV"
+  },
+  "KERNEL|psi|N48|0.0125|SBDF2|1e-05@C100": {
+   "family": "PSI"
+  },
+  "SETUP|psi|N48|0.0125|SBDF2|1e-05@C100": {
+   "family": "PSI"
+  }
+ },
+ "groups": [
+  {
+   "id": "PSI|smk",
+   "target": "smk",
+   "family": "PSI",
+   "criterion": "worst",
+   "candidates": [
+    "psi|N48|0.0125|SBDF2|1e-05@C100"
+   ]
+  },
+  {
+   "id": "FDMG|smk",
+   "target": "smk",
+   "family": "FDMG",
+   "criterion": "worst",
+   "candidates": [
+    "fdmg|L128|0.00625|MG|1e-07@C100"
+   ]
+  },
+  {
+   "id": "ETD|smk",
+   "target": "smk",
+   "family": "ETD",
+   "criterion": "worst",
+   "candidates": [
+    "etd|N48|0.0125|mid@C100"
+   ]
+  },
+  {
+   "id": "CCV|smk",
+   "target": "smk",
+   "family": "CCV",
+   "criterion": "worst",
+   "candidates": [
+    "ccv|L128|0.00625|t2@C100"
+   ]
+  },
+  {
+   "id": "union|smk",
+   "target": "smk",
+   "family": "union",
+   "criterion": "worst",
+   "candidates": [
+    "psi|N48|0.0125|SBDF2|1e-05@C100",
+    "fdmg|L128|0.00625|MG|1e-07@C100",
+    "etd|N48|0.0125|mid@C100",
+    "ccv|L128|0.00625|t2@C100"
+   ],
+   "pool_by_family": true
+  }
+ ],
+ "slots": {
+  "100": [
+   "dev|0",
+   "dev|3",
+   "dev|0",
+   "dev|3",
+   "dev|0",
+   "dev|3"
+  ]
+ },
+ "refdir": [
+  "../../output/vref_smk-ref"
+ ],
+ "slot_e_from": "../../output/vladder_smk-ladder/result.json",
+ "reps": 1,
+ "burn": 0.1,
+ "seed": 7,
+ "controls": {
+  "doubled_cases": [
+   [
+    "dev6",
+    0
+   ]
+  ],
+  "fault_subject": "ckpt:18f0266ae6f0|R256|gauss128|frozen|CNR|0.0125|LSPG|prod",
+  "identity_fault_subject": "psi|N48|0.0125|SBDF2|1e-05@C100"
+ },
+ "pilot_foms": [
+  "psi|N128|0.003125|CNAB2|1e-08@C100"
+ ]
+}

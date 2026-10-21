@@ -1,0 +1,39 @@
+{
+ "contrasts": [
+  100
+ ],
+ "keys": [
+  "psi|N48|0.0125|SBDF2|1e-05",
+  "psi|N128|0.003125|CNAB2|1e-08",
+  "psi|N32|0.025|SBDF2|0.001",
+  "etd|N48|0.0125|mid",
+  "etd|N128|0.0015625|max",
+  "fdmg|L128|0.00625|MG|1e-07",
+  "fdmg|L512|0.0015625|MG|1e-07",
+  "fdmg|L256|0.003125|DST|0.0001",
+  "ccv|L128|0.00625|t2",
+  "ccv|L512|0.003125|t1"
+ ],
+ "refdir": "../../output/vref_smk-ref",
+ "eligibility_from": "../../output/vref_smk-ref/result.json",
+ "ids": {
+  "dev": [
+   "dev|0",
+   "dev|3"
+  ],
+  "val": []
+ },
+ "taus": [
+  0.01,
+  0.03,
+  0.1
+ ],
+ "screen": {
+  "mesh": 4096,
+  "reps": 2,
+  "burn": 0.1
+ },
+ "ntop": 1,
+ "extensions": true,
+ "qualify": true
+}

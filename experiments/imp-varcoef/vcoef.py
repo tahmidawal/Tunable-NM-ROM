@@ -29,11 +29,12 @@ def draw(seed, j):
     return dict(desc=np.array([cx, cy, w, a, nu]), xi=xi)
 
 
-def cohort(name):
-    """Return a list of case dicts (desc (5,), xi (15,), gmin, gmax, id)."""
+def cohort(name, unlock_test=False):
+    """Return a list of case dicts (desc (5,), xi (15,), gmin, gmax, id). The test split opens only for the
+    test-once step after the selection is frozen (DESIGN A2.18): unlock_test=True, used by vref/vtest test configs."""
     assert name in SEEDS, name
-    if name == 'test':
-        raise PermissionError('test split is reserved (DESIGN A1.18): not opened in Phase 1')
+    if name == 'test' and not unlock_test:
+        raise PermissionError('test split is reserved for the frozen test-once step (DESIGN A2.18)')
     out = []
     for j in range(SIZES[name]):
         c = draw(SEEDS[name], j)

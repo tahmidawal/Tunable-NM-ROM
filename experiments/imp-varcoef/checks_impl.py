@@ -182,8 +182,12 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', required=True)
     ap.add_argument('--small', action='store_true')
+    ap.add_argument('--config', default=None)
     a = ap.parse_args()
-    r = run_all(a.small)
+    small = a.small or (json.loads(Path(a.config).read_text()).get('small', False) if a.config else False)
+    r = run_all(small)
+    if a.out and not a.out.endswith('.json'):
+        a.out = str(Path(a.out) / 'result.json')
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(r, indent=1, default=float))
     print(json.dumps(r, indent=1, default=float))

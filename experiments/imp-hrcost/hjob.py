@@ -32,7 +32,7 @@ import fit as FT
 import hlabel as HL
 from hrtab import P, Q
 
-TOL = dict(prod=1e-10, tight=1e-13, tighter=1e-15)
+TOL = dict(prod=1e-10, tight=1e-12, tighter=1e-13)        # E5 arm-2 levels (imp-faststep DESIGN A1.3); see DESIGN E5R
 GAUSS = [64, 80, 96, 112, 128, 160, 192]
 FIB = [4181, 6765, 10946, 17711, 28657]
 MMAX_CAND = 16384
@@ -226,7 +226,8 @@ class Job:
         steps = FT.SNAP_STEPS[fam]
         rows_used, snaps, repl = [], [], 0
         j = 0
-        while len(rows_used) < FT.NDRAW and j < FT.NDRAW + FT.MAX_REPL:
+        ndraw = int(self.cfg.get('fit_draws', FT.NDRAW))             # debug override only; production = 16
+        while len(rows_used) < ndraw and j < ndraw + FT.MAX_REPL:
             ph = D[j]
             u0 = jnp.asarray(Q.e.initial(self.L, ph))
             o = self.Qy['fused'](u0, float(ph[4]), d, self.U[proj], self.base.G, self.base.cold, self.sch['prod'])
@@ -239,7 +240,7 @@ class Job:
             j += 1
         info = dict(family=fam, parent=rule, parent_fingerprint=meta['fingerprint'], draws_sha=HT.sha(D),
                     rows_used=rows_used, replacements=repl, steps=list(steps))
-        if len(rows_used) < FT.NDRAW:
+        if len(rows_used) < ndraw:
             info['status'] = 'not built (too many invalid parent rollouts)'
             self.rep['fits'][fam] = info
             return {}
@@ -259,7 +260,7 @@ class Job:
             info['status'] = 'not built (all blocks dropped)'
             self.rep['fits'][fam] = info
             return {}
-        res = FT.fit(C, b, self.Rp, log=lambda s: print(fam, s, flush=True))
+        res = FT.fit(C, b, self.Rp, log=lambda s: print(fam, s, flush=True), kappas=tuple(self.cfg.get('kappas', FT.KAPPAS)))
         info.update({k: v for k, v in res.items() if k != 'rules'}, mem_fit=P.mem())
         del C
         drift_bad = not res.get('drift_ok', True)
@@ -288,9 +289,9 @@ class Job:
         return out
 
     # ------------------------------------------------------------------------------------------ timing ----
-    def timing(self, pairs, cases, reps, burn):
-        """Paired A-B-A per case (A = R): end-to-end fused query and evolution only (A1.7)."""
-        dR, projR = pairs[0][1], pairs[0][2]
+    def timing(self, ref, pairs, cases, reps, burn):
+        """Paired A-B-A per case (A = ref = R): end-to-end fused query and evolution only (A1.7)."""
+        dR, projR = ref
         res = {}
         ev = self.Qy['evolve']
         for name, dB, projB in pairs:
@@ -332,17 +333,20 @@ class Job:
     def jac_bench(self, d, n=200, warm=20):
         rng = np.random.default_rng(0)
         cs = jnp.asarray(rng.standard_normal((n + warm, self.Rp)) * 1e-2)
-        f = jax.jit(lambda c, acc: acc + jnp.sum(GS.rhs_jac(c, .05, d)))
+        f = _JB
         acc = jnp.float64(0.)
         for i in range(warm):
-            acc = f(cs[i], acc)
+            acc = f(cs[i], acc, d)
         jax.block_until_ready(acc)
         ts = []
         for i in range(warm, warm + n):
             s = time.perf_counter()
-            acc = jax.block_until_ready(f(cs[i], acc))
+            acc = jax.block_until_ready(f(cs[i], acc, d))
             ts.append(time.perf_counter() - s)
         return float(np.median(ts)), float(acc)
+
+
+_JB = jax.jit(lambda c, acc, d: acc + jnp.sum(GS.rhs_jac(c, .05, d)))      # tables are arguments, never captured
 
 
 def _boot(x, n=2000, seed=0):

@@ -73,13 +73,13 @@ def build_system(rows_unw, Gq, Gs, w_parent, snaps):
     return jax.block_until_ready(C), b, info
 
 
-def fit(C, b, Rp, log=None):
+def fit(C, b, Rp, log=None, kappas=KAPPAS):
     t0 = time.perf_counter()
-    res = NN.greedy_nnls(C, b, supports=[k * Rp for k in KAPPAS], cap=CAP, max_seconds=DEADLINE_S, log=log)
+    res = NN.greedy_nnls(C, b, supports=[k * Rp for k in kappas], cap=CAP, max_seconds=DEADLINE_S, log=log)
     out = dict(seconds=time.perf_counter() - t0, reason=res['reason'], relres_final=float(res['relres']),
                support_final=int(len(res['support'])), drift_ok=bool(res.get('drift_ok', False)),
                drift_events=res.get('drift_events'), rules={})
-    for k in KAPPAS:
+    for k in kappas:
         rec = res['records'].get(('s', k * Rp))
         if rec is None:
             out['rules'][k] = None                               # "not reached" (incomplete evidence, A1.5)

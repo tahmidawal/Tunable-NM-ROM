@@ -53,7 +53,16 @@ def main():
     te = np.asarray(ref['test_desc'])
     R256 = np.load(d / 'ref_lat256.npy')
     U = ref['U_B'] if ref['U_B'] is not None else ref['U_numerical']
-    rep = dict(env=C.env_record(), label=C.PILOT, U=U, scoring=ref['scoring'], families={}, unexplored={})
+    if U is not None and not np.isfinite(U):
+        U = None
+    R64 = R256[..., sub(256, 64)]
+    sw1a = SC.sw1a(R64, lambda Fv, Rv: jnp.asarray(F.err_lat(np.asarray(Fv), np.asarray(Rv))))
+    rep = dict(env=C.env_record(), label=C.PILOT, U=U, scoring=ref['scoring'], families={}, unexplored={},
+               SW1a=sw1a, SW1b=SC.sw1b(), basis_label='unestablished (A3.4)',
+               search_heuristics='size stop after two consecutive sizes meet every target (A5); F-RK4 starts at the '
+                                 'first n above the RK4 diffusion limit (A5)')
+    if not (sw1a['passed'] and rep['SW1b']['passed']):
+        U = rep['U'] = None
     numax = float(te[:, 4].max())
     for fam in ('IMEX', 'RK4'):
         rep['families'][fam] = {}
@@ -68,16 +77,15 @@ def main():
             den = np.sqrt(np.sum(Rl[:, 0] ** 2, axis=-1))
             t0 = time.perf_counter()
             if fam == 'IMEX':
-                ns = [5 * 2 ** k for k in range(1, 10)]                 # 10 .. 2560
+                ns = [5 * 2 ** k for k in range(0, 10)]                 # 5 .. 2560
                 fn = lambda n: (lambda V: (F.err_lat(V, Rl), V))(run(te, L, n, a.procs, lat=lat))
             else:
                 nst = 0.25 * 8 * numax * L * L / 2.785
                 ns = [5 * 2 ** k for k in range(0, 14) if 5 * 2 ** k >= nst]
 
                 def fn(n, L=L, lat=lat, Rl=Rl):
-                    q = F.make_rk4(L, n, out_lattice=False)
-                    I, J = F.lattice_idx(L, lat)
-                    V = np.stack([np.asarray(q(jnp.asarray(dd)))[:, I, J] for dd in te])
+                    q = F.make_rk4(L, n, out_lattice=True, lat=lat)
+                    V = np.stack([np.asarray(q(jnp.asarray(dd))) for dd in te])
                     return F.err_lat(V, Rl), V
             rows = ladder(fn, ns, den, f'B {fam} L={L}')
             rep['families'][fam][L] = dict(rows=rows, lattice=lat, seconds=time.perf_counter() - t0,

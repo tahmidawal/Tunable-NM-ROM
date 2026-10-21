@@ -10,6 +10,7 @@ G9, SW4, D2, and offline timings. Operators for timing are saved to runs/A/<leve
 from __future__ import annotations
 
 import argparse
+import json
 import time
 
 import numpy as np
@@ -46,6 +47,12 @@ def ladder_n(run, label, den):
     return rows
 
 
+def d2(rows, fr):
+    """D2 (A4 tolerance, relative 1e-9): every valid run's per-case error >= its span floor."""
+    for row in rows:
+        assert all((not np.isfinite(e_)) or e_ >= f_ * (1 - 1e-9) for e_, f_ in zip(row['err'], fr)), 'D2'
+
+
 def floors_from_coefs(Cref, bnorm2, den):
     """Cref (B, 6, R) coefficients on an orthonormal basis; bnorm2 (B, 6). floor(r) = max_t sqrt(||b||^2 - sum_{<r}
     c^2)/den for every r = 1..R. Returns (B, R)."""
@@ -60,6 +67,7 @@ def main():
     ap.add_argument('--rmax', type=int, default=None)
     ap.add_argument('--no-quad', action='store_true')
     ap.add_argument('--no-sine', action='store_true')
+    ap.add_argument('--g9-only', action='store_true')
     a = ap.parse_args()
     lv = a.level
     d = C.RUNS / 'A' / lv
@@ -116,7 +124,12 @@ def main():
     rlist = [r for r in R_LADDER if r <= rmax]
     rom_t, rom_q, rom_s, gates = {}, {}, {}, {}
     Bq_phi = {}
-    if not a.no_quad:
+    if a.g9_only:
+        old = json.loads((d / 'rom.json').read_text())
+        rom_t = {int(k): v for k, v in old['rom_t'].items()}
+        rom_q, rom_s, gates = old['rom_q'], old['rom_sine'], old['gates']
+        rlist = []
+    if not a.no_quad and not a.g9_only:
         t0 = time.perf_counter()
         for Mq in MQ_LADDER:
             if Mq < 3 * Nref and (Mq - 1) ** 2 * 6 <= 2 * rmax ** 2:
@@ -139,10 +152,8 @@ def main():
             e, _ = RL.rom_errors(Z, Cref, floor2, den)
             return e, Z
         rom_t[r] = dict(build_s=tb, rows=ladder_n(run_t, f'{lv} ROM-T r={r}', den))
-        # D2: every run >= its floor
         fr = np.max(np.sqrt(floor2[:, 1:]), axis=1) / den
-        for row in rom_t[r]['rows']:
-            assert all((not np.isfinite(e_)) or e_ >= f_ * (1 - 1e-9) for e_, f_ in zip(row['err'], fr)), 'D2'
+        d2(rom_t[r]['rows'], fr)
         np.savez(d / f'ops_r{r}.npz', Psi=Psi, D=D, Tp=Tp, iu=iu, ju=ju)
         # ROM-Q at the admissible grid sizes (6 m r <= 2 r^3, DESIGN A1 pruning registered in A2)
         if not a.no_quad:
@@ -153,6 +164,7 @@ def main():
                     continue
                 NLq = RL.nl_quad(Bq[:, :r] @ V, Dq[:, :r] @ V, Mq)
                 rom_q[r][Mq] = ladder_n(lambda nn, NL=NLq: run_t(nn, NL), f'{lv} ROM-Q r={r} Mq={Mq}', den)
+                d2(rom_q[r][Mq], fr)
         # gates at r in {32, 128}: G4 (tensor vs exact evaluation), SW4 (corrupted slice)
         if r in (32, 128):
             NLe = RL.nl_exact(Psi, Nref)
@@ -172,11 +184,13 @@ def main():
             contrib = float(np.asarray(NLt(zf))[ks])
             exact = bool(abs(dN[ks] - contrib) <= 1e-12 * max(1.0, abs(contrib)) and
                          np.max(np.abs(np.delete(dN, ks))) <= 1e-14 * max(1.0, abs(contrib)))
-            big = bool(abs(contrib) >= 1e-6 * np.linalg.norm(np.asarray(NLt(zf))))
+            nN = float(np.linalg.norm(np.asarray(NLt(zf))))
+            avail = bool(np.isfinite(nN) and nN > 0)
+            big = bool(avail and abs(contrib) >= 1e-6 * nN)
             Zc = run2(NLc)
             sw4 = float(np.max(np.abs(Zc - Zt)) / np.max(np.abs(Zt)))
             gates[r] = dict(G4_rel=g4, G4_pass=bool(g4 <= 1e-9), SW4_exact=exact, SW4_large=big,
-                            SW4_fired=bool(exact and big), SW4_rollout_rel=sw4, SW4_slice=ks, n=nn)
+                            SW4_fired=bool(avail and exact and big), SW4_available=avail, SW4_rollout_rel=sw4, SW4_slice=ks, n=nn)
             print(lv, 'gates r', r, gates[r], flush=True)
         # sine-ROM control (first r Laplacian-ordered sines), r <= 256
         if not a.no_sine and r <= 256:
@@ -194,10 +208,11 @@ def main():
                 Z = np.asarray(RL.make_rom_batch(NLs, D_s, nn)(jnp.asarray(z0s), jnp.asarray(nu)))
                 return RL.rom_errors(Z, Crs, f2s, den)[0], Z
             rom_s[r] = ladder_n(run_s, f'{lv} sine-ROM r={r}', den)
+            d2(rom_s[r], np.max(np.sqrt(f2s[:, 1:]), axis=1) / den)
         C.dump(d / 'rom.json', dict(rep, rom_t=rom_t, rom_q=rom_q, rom_sine=rom_s, gates=gates))
 
     # G9: padding convergence of the tensor at r = 64 (M = 3N/2 vs 2N), rollout difference
-    r = min(64, rmax)
+    r = max(x for x in rom_t if x <= 64)
     Psi, D, V = RL.rotate(Phi[:, :r], lam)
     z0 = RL.ic_project(Psi, Nref, te)
     nn = rom_t[r]['rows'][-1]['n']

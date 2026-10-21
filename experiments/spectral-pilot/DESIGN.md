@@ -609,3 +609,32 @@ Non-blocking restatements adopted from `audits/codex-design-4.md`:
 - Provenance: this is an **amended exploratory design**: the reference/training generation (A1–A3) and an A1 ROM
   ladder used for debugging ran before A3 was final; the report keeps that chronology and reads no verdict from the
   debugging run.
+
+---
+
+## Amendment A5 (2026-10-20, implementation record after Codex code audit 1; no ladder verdict read yet)
+
+The four design rounds are used up, so this is an implementation record, carried into the report, not a new design
+round. Changes and deviations, each disclosed:
+- **IC rule (G7):** the 1024-point table fails G7 above $N\approx384$ (code audit 1: $8.9\times10^{-11}$ at 512,
+  $8.2\times10^{-6}$ at 768). $N\le384$ keeps it (G7 passes, $\le4.2\times10^{-14}$ at A1–A3); larger $N$ use
+  pscore's 8192-point rule. Every level run (A1–A3, $N_{\rm ref}\le384$) is unaffected.
+- **POD rank cutoff:** Gram eigenvalues below $10^{-14}\lambda_1$ (singular values below $10^{-7}\sigma_1$) are
+  discarded (they are Gram round-off). The A1 ROM ladder is re-run with this cutoff.
+- **Search heuristics (registered here, reported as "not explored"):** (i) the size ladders stop after two consecutive
+  sizes meet every target (for the explicit-stability-limited spectral and RK4 solvers a larger size cannot take
+  fewer stable steps; for F-IMEX it is a heuristic); (ii) F-RK4 starts at the first ladder $n$ above the RK4 diffusion
+  limit $0.25\cdot8\nu_{\max}L^2/2.785$; (iii) timing screens each candidate by one whole-query repetition and fully
+  times it unless that exceeds 3× the method's best fully-timed query for the target (this replaces the
+  evolve-only estimate pruning, which omitted IC, setup and output cost).
+- **Allowance and gates enforced:** a missing or failed space, time, padding, SW1a, SW1b or SW2 check makes $U$
+  unavailable and every configuration of that level "unresolved"; the training gate labels the basis.
+- **Operator arrays** are passed as explicit jit arguments (no captured large constants).
+- **Part B:** seeds are 3 000 001 / 4 000 001 (the design text said 3 000 000 / 4 000 000; fixed before any B
+  result was read); worker pools use the `spawn` start method (the first B reference job used `fork` after JAX
+  import; its outputs are checked by the order gate and the B G4); G4 compares two rollouts (tensor vs direct FD
+  evaluation); SW1a/SW1b run on B.
+- **Not implemented (stated limitations):** written pre-stage memory projections (observed stage times are recorded
+  instead; all stages ran under the 36 GB `jaxrun` ceiling or well below it); D1 and the random-span diagnostic are
+  floors only (no ROM rollout); D3 (envelope representability) and the B corner-window and finer-lattice diagnostics
+  are not run; snapshots are held in memory (≤ 3.2 GB), not streamed.

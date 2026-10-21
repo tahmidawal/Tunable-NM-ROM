@@ -8,11 +8,12 @@ Run on ONE core with single-thread flags (asserted):
 screen: (1) cost model R4: per-evaluation time of the FOM nonlinear term at every ladder N, the packed tensor at every r,
         and the grid form at every (r, Mq) run; (2) candidates per target: for each size (and form), the smallest
         observed step count that MEETS tau (three-way rule, A3.1); for ROM candidates, N_init is selected (A2.3) and the
-        candidate re-scored with it before timing (A4); candidates whose estimated evolve cost (n * 4 * eval) exceeds
-        3x the method's minimum estimate for that tau are not timed (heuristic, reported); (3) whole-query timing of
-        every kept candidate, FOM and ROM interleaved, 5 repetitions on each of the 3 timing cases.
+        candidate re-scored with it before timing (A4); (3) each candidate is timed once (whole query, case 0) and fully
+        timed (5 repetitions on each of the 3 timing cases) unless that single time exceeds 3x the method's best
+        fully-timed query so far for that tau (heuristic, A5, reported); candidates alternate FOM/ROM; sentinel at the
+        start and end of the screen.
 final:  fresh process; the cost-optimal FOM and ROM per target re-timed interleaved F, R, F, R with a sentinel at the
-        start and end (drift > 10 % -> invalid), plus diagnostic H1 (two-case call vs the sum of single calls).
+        start and end (drift > 10 % -> re-run once, then invalid), the secondary native contract, plus diagnostic H1 (two-case call vs the sum of single calls).
 """
 from __future__ import annotations
 
@@ -38,6 +39,8 @@ def check_env():
     xf = os.environ.get('XLA_FLAGS', '')
     assert 'intra_op_parallelism_threads=1' in xf and 'multi_thread_eigen=false' in xf, xf
     assert os.environ.get('JAX_PLATFORMS') == 'cpu'
+    for k in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'):
+        assert os.environ.get(k) == '1', k
     aff = os.sched_getaffinity(0)
     assert len(aff) == 1, aff
     return dict(xla_flags=xf, affinity=sorted(aff))
@@ -75,21 +78,25 @@ class RomOps:
         Bq, Dq = RL.q_values(self.Psi, self.Nref, Mq)
         return RL.nl_quad(Bq, Dq, Mq)
 
-    def query(self, form, n, Ninit, Mq=None):
+    def query(self, form, n, Ninit, Mq=None, native=False):
         NL = self.nl(form, Mq)
+        fn = NL.fn
         n_ = self.Nref - 1
         rule = C.ICRule(Ninit)
         Pinit = jnp.asarray(self.Psi.T.reshape(self.r, n_, n_)[:, :Ninit - 1, :Ninit - 1])
         Dj = jnp.asarray(self.D)
         Plat = self.Plat
+        X, SW = rule.X, rule.SW
 
         @jax.jit
-        def q(d):
-            gx, gy, a = rule.coefs(d)
+        def q(d, ops, Pinit, Dj, Plat, X, SW):              # operator arrays are explicit jit arguments
+            cx, cy, w, a = d[0], d[1], d[2], d[3]
+            gx = jnp.exp(-(X - cx) ** 2 / (2 * w * w)) @ SW
+            gy = jnp.exp(-(X - cy) ** 2 / (2 * w * w)) @ SW
             z0 = a * jnp.einsum('kij,i,j->k', Pinit, gx, gy)
-            Z = C.rollout(z0, d[4] * Dj, NL, n, 5)
-            return Z @ Plat.T
-        return q
+            Z = C.rollout(z0, d[4] * Dj, lambda z: fn(z, ops), n, 5)
+            return Z if native else Z @ Plat.T
+        return lambda d: q(d, NL.ops, Pinit, Dj, Plat, X, SW)
 
 
 # ----------------------------------------------------------------------------------------------- screening -----
@@ -128,20 +135,34 @@ def screen(lv):
     bnorm2 = np.sum(bflat ** 2, axis=-1)
     den = np.sqrt(bnorm2[:, 0])
     rep = dict(level=lv, env=C.env_record(), threads=check_env(), U=U, label=C.PILOT, cost_model={}, targets={})
+    if U is None:
+        rep['status'] = 'unresolved: allowance unavailable'
+        C.dump(d / 'time_screen.json', rep)
+        return
+    sent = fom_query(32, 80)
+    rep['sentinel_start'] = [tmed(sent, jnp.asarray(te[c])) for c in TIMING_CASES]
     # (1) cost model
     rng = np.random.default_rng(0)
     cm = dict(fom={}, rom_t={}, rom_q={})
     for N in sorted(int(k) for k in fom['sizes']):
         b = jnp.asarray(rng.standard_normal((N - 1, N - 1)) * 1e-3)
         f = jax.jit(C.fom_nl(N))
-        cm['fom'][N] = float(np.median(tmed(f, b, 20)))
+        ts_ = tmed(f, b, 20)
+        cm['fom'][N] = float(np.median(ts_))
+        cm.setdefault('reps', {})[f'fom|{N}'] = ts_
     ops = {}
     for r in sorted(int(k) for k in rom['rom_t']):
         ops[r] = RomOps(d, Nref, r)
         z = jnp.asarray(rng.standard_normal(r) * 1e-2)
-        cm['rom_t'][r] = float(np.median(tmed(jax.jit(ops[r].nl('T')), z, 20)))
+        nlo = ops[r].nl('T')
+        ts_ = tmed(lambda zz, fj=jax.jit(nlo.fn), o=nlo.ops: fj(zz, o), z, 20)
+        cm['rom_t'][r] = float(np.median(ts_))
+        cm.setdefault('reps', {})[f'rom_t|{r}'] = ts_
         for Mq in rom['rom_q'].get(str(r), {}):
-            cm['rom_q'][f'{r}|{Mq}'] = float(np.median(tmed(jax.jit(ops[r].nl('Q', int(Mq))), z, 20)))
+            nlq = ops[r].nl('Q', int(Mq))
+            ts_ = tmed(lambda zz, fj=jax.jit(nlq.fn), o=nlq.ops: fj(zz, o), z, 20)
+            cm['rom_q'][f'{r}|{Mq}'] = float(np.median(ts_))
+            cm['reps'][f'rom_q|{r}|{Mq}'] = ts_
     rep['cost_model'] = cm
     print(lv, 'cost model done', flush=True)
     fom_rows = {int(k): v['rows'] for k, v in fom['sizes'].items()}
@@ -151,14 +172,10 @@ def screen(lv):
     for tau in SC.TARGETS:
         cf = candidates(fom_rows, U, tau)
         cr = candidates({**romt_rows, **romq_rows}, U, tau)
-        est_f = {N: n * 4 * cm['fom'][N] for N, n in cf.items()}
-        est_r = {k: n * 4 * (cm['rom_t'][k[1]] if k[0] == 'T' else cm['rom_q'][f'{k[1]}|{k[2]}']) for k, n in cr.items()}
-        keep_f = [N for N in cf if est_f[N] <= 3 * min(est_f.values())] if cf else []
-        keep_r = [k for k in cr if est_r[k] <= 3 * min(est_r.values())] if cr else []
+        keep_f, keep_r = list(cf), list(cr)
         entry = dict(fom_candidates={str(k): v for k, v in cf.items()},
                      rom_candidates={'|'.join(map(str, k)): v for k, v in cr.items()},
-                     fom_timed=[], rom_timed=[], not_timed_heuristic=dict(
-                         fom=[N for N in cf if N not in keep_f], rom=['|'.join(map(str, k)) for k in cr if k not in keep_r]))
+                     fom_timed=[], rom_timed=[], not_timed_heuristic=dict(fom=[], rom=[]))
         # ROM: N_init selection + re-score before timing (A4)
         rescored = {}
         for k in keep_r:
@@ -192,26 +209,39 @@ def screen(lv):
                 order.append(jobs[i])
             if i < len(rj):
                 order.append(rj[i])
+        best = {'F': None, 'R': None}
         for kind, k in order:
             if kind == 'F':
                 key = ('F', k, cf[k])
                 if key not in timed:
                     q = fom_query(k, cf[k])
+                    t1 = tmed(q, jnp.asarray(te[0]), reps=1)[0]           # whole-query one-rep screen (A5)
+                    if best['F'] is not None and t1 > 3 * best['F']:
+                        entry['not_timed_heuristic']['fom'].append(dict(N=k, n=cf[k], t_one=t1))
+                        continue
                     timed[key] = [tmed(q, jnp.asarray(te[c])) for c in TIMING_CASES]
                 ts = timed[key]
                 entry['fom_timed'].append(dict(N=k, n=cf[k], times=ts, t=float(np.median([np.median(x) for x in ts])),
                                                worst=min(r['worst'] for r in fom_rows[k] if r['n'] == cf[k])))
+                tt = entry['fom_timed'][-1]['t']
+                best['F'] = tt if best['F'] is None else min(best['F'], tt)
             else:
                 form, r, Mq = k
                 Ni = rescored[k]['Ninit']
                 key = ('R', form, r, Mq, cr[k], Ni)
                 if key not in timed:
                     q = ops[r].query(form, cr[k], Ni, Mq)
+                    t1 = tmed(q, jnp.asarray(te[0]), reps=1)[0]
+                    if best['R'] is not None and t1 > 3 * best['R']:
+                        entry['not_timed_heuristic']['rom'].append(dict(key='|'.join(map(str, k)), t_one=t1))
+                        continue
                     timed[key] = [tmed(q, jnp.asarray(te[c])) for c in TIMING_CASES]
                 ts = timed[key]
                 entry['rom_timed'].append(dict(form=form, r=r, Mq=Mq, n=cr[k], Ninit=Ni, times=ts,
                                                t=float(np.median([np.median(x) for x in ts])),
                                                worst=rescored[k]['worst']))
+                tt = entry['rom_timed'][-1]['t']
+                best['R'] = tt if best['R'] is None else min(best['R'], tt)
         entry['rescored'] = {'|'.join(map(str, k)): v for k, v in rescored.items()}
         bf = min(entry['fom_timed'], key=lambda x: x['t']) if entry['fom_timed'] else None
         br = min(entry['rom_timed'], key=lambda x: x['t']) if entry['rom_timed'] else None
@@ -221,10 +251,13 @@ def screen(lv):
         print(lv, 'tau', tau, 'FOM', bf and (bf['N'], bf['n'], '%.2e s' % bf['t']),
               'ROM', br and (br['form'], br['r'], br['Mq'], br['n'], '%.2e s' % br['t']), 'S', entry['S_screen'], flush=True)
         C.dump(d / 'time_screen.json', rep)
+    s1 = [tmed(sent, jnp.asarray(te[c])) for c in TIMING_CASES]
+    rep['sentinel_end'] = s1
+    rep['sentinel_drift'] = abs(np.median(s1) / np.median(rep['sentinel_start']) - 1)
     C.dump(d / 'time_screen.json', rep)
 
 
-def final(lv):
+def final(lv, attempt=1):
     d = C.RUNS / 'A' / lv
     ref = json.loads((d / 'ref.json').read_text())
     scr = json.loads((d / 'time_screen.json').read_text())
@@ -261,7 +294,12 @@ def final(lv):
             tr.append(b_)
         mf = float(np.median([np.median(x) for x in tf]))
         mr = float(np.median([np.median(x) for x in tr]))
-        allr = np.concatenate([np.asarray(x) for x in tf + tr])
+        # secondary "native" contract (no output synthesis): FOM coefficients, ROM coefficients z
+        fn_ = C.make_fom(bf['N'], bf['n'], 5, lattice=False)
+        qfn = lambda dd: fn_(dd[None])
+        qrn = ops[br['r']].query(br['form'], br['n'], br['Ninit'], br['Mq'], native=True)
+        nf = float(np.median([np.median(tmed(qfn, jnp.asarray(te[c]))) for c in TIMING_CASES]))
+        nr = float(np.median([np.median(tmed(qrn, jnp.asarray(te[c]))) for c in TIMING_CASES]))
 
         def outl(ts):
             ts = np.asarray(ts).ravel()
@@ -271,7 +309,7 @@ def final(lv):
                                    rom=dict(form=br['form'], r=br['r'], Mq=br['Mq'], n=br['n'], Ninit=br['Ninit'],
                                             times=tr, t=mr, spread=float(np.max(tr) / np.min(tr)), outliers=outl(tr),
                                             worst=br['worst']),
-                                   S=mf / mr, order_changed=bool((mf / mr >= 1) != (e['S_screen'] >= 1)))
+                                   S=mf / mr, native=dict(fom=nf, rom=nr, S=nf / nr), order_changed=bool((mf / mr >= 1) != (e['S_screen'] >= 1)))
         print(lv, 'final tau', tau, 'S=%.3g' % (mf / mr), flush=True)
     s1 = [tmed(sent, jnp.asarray(te[c])) for c in TIMING_CASES]
     m0, m1 = float(np.median(s0)), float(np.median(s1))
@@ -282,6 +320,12 @@ def final(lv):
     one = [tmed(f2, jnp.asarray(te[c:c + 1])) for c in (0, 1)]
     rep['H1'] = dict(two=float(np.median(two)), sum_single=float(np.median(one[0]) + np.median(one[1])),
                      ratio=float(np.median(two) / (np.median(one[0]) + np.median(one[1]))))
+    rep['attempt'] = attempt
+    if not rep['sentinel']['valid'] and attempt == 1:          # drift > 10 %: re-run once (A1.5)
+        print(lv, 'sentinel drift', rep['sentinel']['drift'], '-> re-run', flush=True)
+        C.dump(d / 'time_final_attempt1.json', rep)
+        return final(lv, attempt=2)
+    rep['timing_valid'] = rep['sentinel']['valid']
     C.dump(d / 'time_final.json', rep)
     print(lv, 'sentinel drift', rep['sentinel']['drift'], 'H1', rep['H1']['ratio'], flush=True)
 

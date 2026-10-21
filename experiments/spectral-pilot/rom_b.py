@@ -52,12 +52,12 @@ def tensor_fd(Phi, Dm):
     G = jnp.asarray(Dm @ Phi)
 
     @jax.jit
-    def slab(k):
+    def slab(U, G, k):
         return -((U * U[:, k][:, None]).T @ G)
     r = Phi.shape[1]
     T = np.empty((r, r, r))
     for k in range(r):
-        T[k] = np.asarray(slab(k))
+        T[k] = np.asarray(slab(U, G, k))
     return T
 
 
@@ -133,18 +133,21 @@ def main():
         for row in rom_t[r]['rows']:                                # D2 with the A4 tolerance
             assert all((not np.isfinite(e_)) or e_ >= f_ * (1 - 1e-9) for e_, f_ in zip(row['err'], fr)), 'D2'
         np.savez(d / f'ops_r{r}.npz', Psi=Psi, D=D, Tp=Tp, iu=iu, ju=ju, Plat=Plat)
-        if r in (32, 128):                                          # G4 and SW4
-            Pj = jnp.asarray(Psi)
-            Dd = Dm.tocsr()
+        if r in (32, 128):                                          # G4 (rollouts) and SW4
+            I_, J_ = np.nonzero(m)
+            Ij, Jj = jnp.asarray(I_), jnp.asarray(J_)
 
-            def nl_exact(z):
-                u = np.asarray(Psi @ np.asarray(z))
-                return jnp.asarray(-(Psi.T @ (u * (Dd @ u))))
+            def _exact(z, o):
+                u = jnp.zeros(m.shape).at[Ij, Jj].set(o[0] @ z)
+                p = jnp.pad(u, 1)
+                adv = u * ((p[2:, 1:-1] - p[:-2, 1:-1]) + (p[1:-1, 2:] - p[1:-1, :-2])) * (L / 2.0)
+                return -(o[0].T @ adv[Ij, Jj])
+            NLe = RL.NLOp(_exact, (jnp.asarray(Psi),))
             nn = rom_t[r]['rows'][-1]['n']
             Zt = np.asarray(RL.make_rom_batch(NL, D, nn)(jnp.asarray(z0[:2]), jnp.asarray(nu[:2])))
-            zs = Zt.reshape(-1, r)
-            g4 = max(float(np.max(np.abs(np.asarray(NL(jnp.asarray(z))) - np.asarray(nl_exact(z)))) /
-                           max(np.max(np.abs(np.asarray(nl_exact(z)))), 1e-300)) for z in zs[1:])
+            Ze = np.asarray(RL.make_rom_batch(NLe, D, nn)(jnp.asarray(z0[:2]), jnp.asarray(nu[:2])))
+            g4 = float(np.max(np.abs(Zt - Ze)) / np.max(np.abs(Ze)))
+            zs = Ze.reshape(-1, r)
             Nv = np.stack([np.asarray(NL(jnp.asarray(z))) for z in zs])
             ks = int(np.argmax(np.max(np.abs(Nv), axis=0)))
             jz = int(np.argmax(np.abs(Nv[:, ks])))
@@ -154,11 +157,15 @@ def main():
             NLc = RL.nl_tensor(Tc, iu, ju)
             full, cor = np.asarray(NL(zf)), np.asarray(NLc(zf))
             dN = full - cor
+            nN = float(np.linalg.norm(full))
+            avail = bool(np.isfinite(nN) and nN > 0)
             exact = bool(abs(dN[ks] - full[ks]) <= 1e-12 * max(1.0, abs(full[ks]))
                          and np.max(np.abs(np.delete(dN, ks))) <= 1e-14 * max(1.0, abs(full[ks])))
-            big = bool(abs(full[ks]) >= 1e-6 * np.linalg.norm(full))
-            gates[r] = dict(G4_rel=g4, G4_pass=bool(g4 <= 1e-9), SW4_exact=exact, SW4_large=big,
-                            SW4_fired=bool(exact and big), n=nn)
+            big = bool(avail and abs(full[ks]) >= 1e-6 * nN)
+            Zc = np.asarray(RL.make_rom_batch(NLc, D, nn)(jnp.asarray(z0[:2]), jnp.asarray(nu[:2])))
+            gates[r] = dict(G4_rel=g4, G4_pass=bool(g4 <= 1e-9), SW4_exact=exact, SW4_large=big, SW4_available=avail,
+                            SW4_fired=bool(avail and exact and big),
+                            SW4_rollout_rel=float(np.max(np.abs(Zc - Zt)) / np.max(np.abs(Zt))), n=nn)
             print('B gates', r, gates[r], flush=True)
         C.dump(d / 'rom.json', dict(rep, rom_t=rom_t, gates=gates))
     C.dump(d / 'rom.json', dict(rep, rom_t=rom_t, gates=gates))

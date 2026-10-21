@@ -144,12 +144,12 @@ def imex_query(d, L, n, A, m, out_lattice=True, n_out=5, flat=False):
     return lat_vals(O, L) if out_lattice else O
 
 
-def make_rk4(L, n, out_lattice=True):
-    """F-RK4 query (JAX): d -> outputs at the 6 times."""
+def make_rk4(L, n, out_lattice=True, lat=LAT_B):
+    """F-RK4 query (JAX): d -> outputs at the 6 times (lattice i/lat values, or full arrays)."""
     m, X, Y = mask(L)
     mj = jnp.asarray(m, jnp.float64)
     Xj, Yj = jnp.asarray(X), jnp.asarray(Y)
-    I, J = lattice_idx(L)
+    I, J = lattice_idx(L, lat) if out_lattice else (None, None)
     dt = T_END / n
     keep = n // 5
     assert keep * 5 == n

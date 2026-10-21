@@ -9,7 +9,10 @@ TARGETS = [3e-2, 1e-2, 3e-3, 1e-3]
 
 
 def classify(e, U, tau):
-    """'meets' if e + U <= tau, 'misses' if e - U > tau, else 'unresolved'. e = worst error (inf = invalid)."""
+    """'meets' if e + U <= tau, 'misses' if e - U > tau, else 'unresolved'. e = worst error (inf = invalid).
+    U None (unavailable allowance, A4) -> 'unresolved' for every run."""
+    if U is None or not np.isfinite(U):
+        return 'unresolved'
     if not np.isfinite(e):
         return 'misses'
     if e + U <= tau:

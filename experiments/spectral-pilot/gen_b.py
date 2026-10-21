@@ -9,8 +9,9 @@ train_flat.npy (96, 21, n_in(512)) (large, untracked; SHA256 in ref.json).
 from __future__ import annotations
 
 import argparse
+import json
 import time
-from multiprocessing import Pool
+import multiprocessing as mp
 
 import numpy as np
 
@@ -31,7 +32,7 @@ def _work(args):
 
 
 def run(D, L, n, procs, lat=64, n_out=5, flat=False):
-    with Pool(procs) as p:
+    with mp.get_context('spawn').Pool(procs) as p:
         return np.stack(p.map(_work, [(d, L, n, lat, n_out, flat) for d in D]))
 
 
@@ -51,6 +52,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--procs', type=int, default=6)
     ap.add_argument('--skip-train', action='store_true')
+    ap.add_argument('--train-only', action='store_true')
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     tr, te = F.cohorts_b()
@@ -58,6 +60,10 @@ def main():
     rep = dict(env=C.env_record(), n_ref=n, L_ref=1024, test_desc=te.tolist(), s_test=C.steep(te).tolist(),
                train_sha=C.sha(tr), label=C.PILOT, seconds={})
     t0 = time.perf_counter()
+    if a.train_only:
+        rep = json.loads((OUT / 'ref.json').read_text())
+        rep.setdefault('seconds', {})
+        return train(rep, tr, n, a, t0)
     R256 = run(te, 1024, n, a.procs, lat=256)
     rep['seconds']['ref1024'] = time.perf_counter() - t0
     np.save(OUT / 'ref_lat256.npy', R256)
@@ -76,10 +82,11 @@ def main():
         d1 = maxdiff(S[128], S[256])
         d2 = maxdiff(S[256], S[512])
         d3 = maxdiff(S[512], S[1024])
-        p1, p2 = np.log2(d1 / d2), np.log2(d2 / d3)
+        okd = all(np.isfinite(x) and x > 0 for x in (d1, d2, d3))
+        p1, p2 = (np.log2(d1 / d2), np.log2(d2 / d3)) if okd else (float('nan'), float('nan'))
         order[tag] = dict(d128_256=d1, d256_512=d2, d512_1024=d3, p1=float(p1), p2=float(p2))
     o = order['lat64']
-    gate = bool(o['p2'] >= 1 and abs(o['p1'] - o['p2']) <= 0.5 and o['d128_256'] > o['d256_512'] > o['d512_1024'] > 0)
+    gate = bool(np.isfinite(o['p2']) and np.isfinite(o['p1']) and o['p2'] >= 1 and abs(o['p1'] - o['p2']) <= 0.5 and o['d128_256'] > o['d256_512'] > o['d512_1024'] > 0)
     e_ref = o['d512_1024'] / (2 ** o['p2'] - 1) if gate else None
     rep['order'] = order
     rep['order_gate'] = gate
@@ -95,9 +102,13 @@ def main():
     rep['time_gate'] = dict(hard_cases=hard.tolist(), d1024_4cases=dt1024, d512_12cases=dt512)
     delta_t = max(dt1024, dt512)
     rep['delta_t'] = delta_t
-    rep['U_B'] = (e_ref + delta_t) if gate else None
+    rep['U_B'] = (e_ref + delta_t) if (gate and np.isfinite(delta_t)) else None
+    if not np.isfinite(delta_t):
+        delta_t = None
     rep['U_numerical'] = delta_t
-    rep['scoring'] = 'physical (Richardson allowance)' if gate else 'numerical reference only (order gate failed)'
+    rep['scoring'] = ('conditional physical allowance (Richardson; time allowance extrapolated from 4 fine-grid + 12 '
+                      'L=512 checks)' if gate else 'numerical reference only (order gate failed); physical accuracy unqualified')
+    rep['basis_label'] = 'unestablished (A3.4)'
     rep['fd512_err_vs_ref'] = dict(worst=float(np.max(F.err_lat(on64[512], on64[1024]))),
                                    median=float(np.median(F.err_lat(on64[512], on64[1024]))))
     # diagnostic (MF1 -> physical diagnostic): the L=128 run as a "reference" for the 256->512 gate
@@ -105,6 +116,11 @@ def main():
     print('order', order, 'gate', gate, 'e_ref', e_ref, 'delta_t', delta_t, flush=True)
     C.dump(OUT / 'ref.json', rep)
     if not a.skip_train:
+        train(rep, tr, n, a, t0)
+
+
+def train(rep, tr, n, a, t0):
+    if True:
         t1 = time.perf_counter()
         X = run(tr, 512, n, a.procs, n_out=20, flat=True)
         assert np.isfinite(X).all()

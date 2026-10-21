@@ -36,7 +36,7 @@ def pod(X, rmax, chunk=256):
     w, U = np.linalg.eigh(G)
     order = np.argsort(w)[::-1]
     w, U = w[order], U[:, order]
-    rmax = int(min(rmax, np.sum(w > w[0] * 1e-24)))
+    rmax = int(min(rmax, np.sum(w > w[0] * 1e-14)))       # sigma/sigma_0 > 1e-7: above Gram round-off (code audit 1)
     Phi = S.T @ (U[:, :rmax] / np.sqrt(w[:rmax]))
     Q, R = np.linalg.qr(Phi)
     Q = Q * np.sign(np.diag(R))                       # keep orientation; prefixes span the POD prefixes
@@ -90,11 +90,11 @@ def tensor_full(Phi, N, M=None):
     fac = -(2.0 / M) ** 2
 
     @jax.jit
-    def slab(k):
+    def slab(U, Gd, k):                           # large arrays are explicit jit arguments (no captured constants)
         return fac * ((U * U[:, k][:, None]).T @ Gd)
     T = np.empty((r, r, r))
     for k in range(r):
-        T[k] = np.asarray(slab(k))
+        T[k] = np.asarray(slab(U, Gd, k))
     return T
 
 
@@ -115,16 +115,29 @@ def pack(T):
     return Ts[:, iu, ju] * fac[None, :], iu, ju
 
 
+class NLOp:
+    """A nonlinear term f(z, ops) with its operator arrays `ops` passed as explicit jit arguments; calling the object
+    with z alone uses its own arrays (convenience for eager checks)."""
+
+    def __init__(self, fn, ops):
+        self.fn, self.ops = fn, ops
+
+    def __call__(self, z):
+        return self.fn(z, self.ops)
+
+
+def _nl_t(z, o):
+    return o[0] @ (z[o[1]] * z[o[2]])
+
+
 def nl_tensor(Tp, iu, ju):
-    Tp, iu, ju = jnp.asarray(Tp), jnp.asarray(iu), jnp.asarray(ju)
-    return lambda z: Tp @ (z[iu] * z[ju])
+    return NLOp(_nl_t, (jnp.asarray(Tp), jnp.asarray(iu), jnp.asarray(ju)))
 
 
 def nl_exact(Psi, N):
     """Psi^T pscore.nonlinear(Psi z) at N (gate G4)."""
     n = N - 1
-    Pj = jnp.asarray(Psi)
-    return lambda z: Pj.T @ P.nonlinear((Pj @ z).reshape(n, n), N, 2)[0].reshape(-1)
+    return NLOp(lambda z, o: o[0].T @ P.nonlinear((o[0] @ z).reshape(n, n), N, 2)[0].reshape(-1), (jnp.asarray(Psi),))
 
 
 # ------------------------------------------------------------------------------------------ grid rule (Q) -------
@@ -148,20 +161,21 @@ def q_values(Psi, N, Mq):
 
 
 def nl_quad(Bq, Dq, Mq):
-    Bq, Dq = jnp.asarray(Bq), jnp.asarray(Dq)
     fac = -(2.0 / Mq) ** 2
-    return lambda z: fac * (Bq.T @ ((Bq @ z) * (Dq @ z)))
+    return NLOp(lambda z, o: fac * (o[0].T @ ((o[0] @ z) * (o[1] @ z))), (jnp.asarray(Bq), jnp.asarray(Dq)))
 
 
 # ------------------------------------------------------------------------------------------ the ROM query -------
 
 def make_rom_batch(NL, D, n):
-    """Batched accuracy rollout: (z0 (B, r), nu (B,)) -> (B, 6, r)."""
+    """Batched accuracy rollout: (z0 (B, r), nu (B,)) -> (B, 6, r). Operator arrays enter as jit arguments."""
     Dj = jnp.asarray(D)
+    fn = NL.fn
 
-    def one(z0, nu):
-        return C.rollout(z0, nu * Dj, NL, n, 5)
-    return jax.jit(jax.vmap(one))
+    @jax.jit
+    def batch(z0, nu, ops, Dj):
+        return jax.vmap(lambda z, v: C.rollout(z, v * Dj, lambda x: fn(x, ops), n, 5))(z0, nu)
+    return lambda z0, nu: batch(z0, nu, NL.ops, Dj)
 
 
 def ic_project(Psi, N, D_cases, Ninit=None):

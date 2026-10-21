@@ -86,13 +86,20 @@ def steep(D):
 # --------------------------------------------------------------------------------------- initial condition ----
 
 IC_PANELS, IC_PTS = 64, 16       # composite Gauss-Legendre (1024 points) -- checked against pscore's 256 x 32 (G7)
+# code audit 1: the 1024-point rule fails G7 above N ~ 384 (8.9e-11 at 512, 8.2e-6 at 768); N > 384 uses pscore's rule
+
+
+def ic_panels(N):
+    return (IC_PANELS, IC_PTS) if N <= 384 else (256, 32)
 
 
 class ICRule:
     """Precomputed (case-independent) quadrature for the separable IC: b0 = a gx gy^T with
     g_k = 2 int_0^1 exp(-(x-c)^2 / (2 w^2)) sin(k pi x) dx. Constant tables are allowed offline for every method."""
 
-    def __init__(self, N, panels=IC_PANELS, pts=IC_PTS):
+    def __init__(self, N, panels=None, pts=None):
+        if panels is None:
+            panels, pts = ic_panels(N)
         X, W = P.composite_gl(panels, pts)
         self.X = jnp.asarray(X)
         self.SW = jnp.asarray(2.0 * W[:, None] * np.sin(np.pi * np.outer(X, np.arange(1, N))))   # (Q, N-1)

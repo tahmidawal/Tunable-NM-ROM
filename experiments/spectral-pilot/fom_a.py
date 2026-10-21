@@ -38,12 +38,19 @@ def main():
     te = np.asarray(ref['test_desc'])
     Bref = jnp.asarray(np.load(d / 'ref_coef.npy'))
     den = np.sqrt(np.sum(np.asarray(Bref[:, 0]) ** 2, axis=(-1, -2)))
-    U = ref['checks']['space']['max'] + ref['checks']['time']['max']
     pad = json.loads((d / 'pad.json').read_text()) if (d / 'pad.json').exists() else None
-    if pad:
-        U += pad['max']
-    rep = dict(level=lv, env=C.env_record(), Nref=Nref, U=U, U_has_pad=bool(pad), label=C.PILOT,
-               SW1a=SC.sw1a(np.asarray(Bref), C.err_coef), SW1b=SC.sw1b(), sizes={}, unexplored=[])
+    sw1a, sw1b = SC.sw1a(np.asarray(Bref), C.err_coef), SC.sw1b()
+    gates = dict(space=ref['accept_space'], time=ref['accept_time'], pad=bool(pad and pad['ok']),
+                 SW2=ref['SW2_fired'], SW1a=sw1a['passed'], SW1b=sw1b['passed'],
+                 train=ref.get('train_check', {}).get('ok', False))
+    vals = [ref['checks']['space']['max'], ref['checks']['time']['max'], pad['max'] if pad else float('nan')]
+    # A3.4/A4: U = space + time + padding gate maxima; any missing/failed/non-finite gate -> U unavailable (unresolved)
+    U = float(sum(vals)) if all(gates[k] for k in ('space', 'time', 'pad', 'SW2', 'SW1a', 'SW1b')) and \
+        np.all(np.isfinite(vals)) else None
+    rep = dict(level=lv, env=C.env_record(), Nref=Nref, U=U, U_has_pad=bool(pad), gates=gates, label=C.PILOT,
+               basis_label='qualified' if gates['train'] else 'unqualified (training gate)',
+               SW1a=sw1a, SW1b=sw1b, sizes={}, unexplored=[],
+               size_stop_rule='heuristic (A5): stop after two consecutive sizes meet every target')
     print(lv, 'SW1a', rep['SW1a']['passed'], 'SW1b', rep['SW1b']['passed'], flush=True)
     all_met_run = 0
     for N in [x for x in N_LADDER if x <= 3 * Nref // 4]:

@@ -594,3 +594,30 @@ if (a) an accuracy-admissible, Q1-qualified competitor combination exists for th
 resolved (no UNRESOLVED configuration of any CP variant at the meshes of $w$), and (c) the minimum cost over the
 admissible combinations exceeds $C_X(w)$. A NO-MATCH without an admissible competitor is reported as "competitor
 not accuracy-matched; cost advantage undetermined".
+
+---
+
+## Amendment A5 (2026-10-21, before any job; answers `audits/codex-design-5.md`)
+
+**A5.1 Compilation (replaces A4.3's acceptance rule).** J6 adds **fresh-process** compile measurements: for each
+mesh, four separate Python processes (persistent compilation cache disabled), each building exactly one deployed
+query and timing its first `lower().compile()`: ours R128-BE and R384-CNR, competitor $r=128$/κ=4 and
+$r=384$/κ=8 (script `mmcompile.py`). The charged compile cost of a configuration is
+max(in-process AOT measurement, the fresh-process measurement of the same mesh, side and nearest $r$). Verdicts
+are also reported with compile × 0; a verdict that changes is labelled compile-sensitive. No verdict uses a
+compile value known to be a cache hit.
+
+**A5.2 A_sel (replaces A4.4).** A_sel(w) = [union of all selection work] − [items already in A_dep(w)], each item
+once, where the union is: every competitor configuration's target-job wall time (`run_seconds`: prod, tight,
+tighter and certification calls including their compilation; plus its `armdata_seconds`), every competitor
+construction item of the arm not used by the deployed combination (other ranks' contributions/NNLS paths, codes),
+our J5 job's p1acc wall time, the historical non-producing head arms (A100-80GB, labelled cross-GPU), and the
+A3.4 stand-in. Timer boundaries: `run_seconds` is wall clock around `run_config` (it contains its own compiles);
+deployment compile (A5.1) is a separate measurement and is never added to A_sel. A_sel is descriptive and mixes
+hardware; it never decides the stop rule.
+
+**A5.3 NNLS memory (replaces A4.5's certificate).** No complete a-priori allocation bound is claimed. Feasibility is
+empirical: the S1 pilot records the device and host peaks of the production-shaped matrix and its NNLS run; the
+production jobs write results after every configuration; a configuration whose construction fails for memory is
+UNRESOLVED (A4.1) and is retried once in a fresh job if the GPU-hour cap allows; a remaining failure stays
+UNRESOLVED and is reported (it can only prevent a NO-MATCH or FIRES verdict from being proven, never create one).

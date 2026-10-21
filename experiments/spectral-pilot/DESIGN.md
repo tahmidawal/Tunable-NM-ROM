@@ -433,3 +433,96 @@ practical choice, but multigrid, stabilised explicit (RKC) and high-order/spectr
 Snapshots stream to disk per chunk; POD by the method of snapshots (Gram matrix accumulated in chunks). Memory caps:
 A4 snapshot set 4.7 GB (48 trajectories), packed tensor at $r=512$ 0.54 GB, Part-B snapshot set 3.2 GB. Every
 stage writes a JSON with its wall time; the report states which stages ran.
+
+---
+
+## Amendment A2 (2026-10-20, after Codex design audit 2, before any ladder is read)
+
+Audit `audits/codex-design-2.md`: NOT-READY (items 2, 6, 7 CORRECT). Changes below govern over A1 and the original.
+At this point only the A1 and A2 reference/training generation had run (gates printed; no FOM or ROM ladder run).
+
+### A2.1 Interpretation
+
+- Part A is a **paired viscosity sweep**, not an isolation of front steepness: lowering $\nu$ also changes diffusion
+  and decay. Two diagnostics are reported per level from the references: the front sharpness
+  $\max_x|\nabla u(t_k)|/\max_x|u(t_k)|$ (on the $N_{\rm ref}$ padded grid) and the remaining energy
+  $\lVert u(t_5)\rVert/\lVert u_0\rVert$.
+- If A4 runs (48 training trajectories), the trend A1–A4 is read with the **48-trajectory POD** at every level (a
+  common training budget); the 96-trajectory trend covers A1–A3 and is reported separately.
+- **H-A2′** concerns the *nonlinear-evaluation* cost only: $r_\times(N)$ is the $r$ at which the measured ROM
+  nonlinear-evaluation time equals the FOM's at $N$, found by log–log interpolation between the two measured $r$
+  values that bracket it; "unresolved" if no bracketing pair exists. The speed verdict (H-A3) uses measured whole-query
+  times only.
+- A's IC has a **negligible wall mismatch at pilot tolerances** ($\le3\times10^{-8}$), not exact compatibility.
+- D3's R-function envelope behaves like $\rho$ at the re-entrant corner, while the leading corner solution can behave
+  like $\rho^{2/3}$, so the quotient can be singular; D3 measures that polynomial-envelope space only, not
+  neural-bank representability.
+
+### A2.2 Step ladder: trajectory-distance rule (replaces the 2 % error rule)
+
+For each size, $n=5\cdot2^k$ ascending; stop increasing $n$ once the trajectory distance
+$\delta_n=\max_{\rm cases}\max_k\lVert u_n(t_k)-u_{n/2}(t_k)\rVert/\lVert u_0\rVert\le10^{-5}$ (both runs valid), or at
+the ladder top. With a 4th-order integrator the remaining change for any larger $n$ is then about $\delta_n/15$; a
+size's pass/fail at $\tau$ is **unresolved** if $|e_n-\tau|\le\delta_n$ for its last $n$. Minima are "smallest
+observed feasible size"; a size stopped at the ladder top without meeting $\tau$ is censored for that $\tau$.
+
+### A2.3 ROM-Q ladder and accounting
+
+- ROM-Q grid sizes $M_q\in\{16,24,32,48,64,96,128,192,256,384,576,1152\}$ with $M_q<3N_{\rm ref}$, each run only
+  where $6(M_q-1)^2r\le2r^3$ (where the grid form could beat the tensor by its flop count). Part B has no ROM-Q
+  (deferred; a node-sampling operator would need its own definition).
+- **Each selected POD prefix is diagonalised separately**; $\Psi_r=\Phi_rV_r$, and the tensor, the grid matrices,
+  the initialiser and the decoder of size $r$ are all built from $\Psi_r$ (never by truncating a larger rotated basis).
+- **Part A accounting:** IC coefficients from the shared 1024-point table (FOM at its $N$; ROM at $N_{\rm init}$),
+  ETDRK4 coefficients for $(N-1)^2$ resp. $r$ modes, all steps, synthesis to the 257² lattice.
+  **Part B accounting:** IC by nodal sampling (FOM: its grid; ROM: $z_0=\Phi^\top u_0$ on the $L_{\rm init}$
+  sub-lattice of the $L=512$ grid, scaled by $(512/L_{\rm init})^2$), all steps (F-IMEX: both factorisations),
+  output = the values on the $i/64$ lattice of $\Omega_L$ (FOM: subsampling; ROM: lattice rows of $\Phi$ times $z$).
+- $N_{\rm init}$/$L_{\rm init}$ rule: the smallest value whose IC truncation (A: $\lVert b_0-{\rm trunc}(b_0)\rVert$;
+  B: the $z_0$ difference from the full-grid projection, in the ROM norm) is $\le\tau/20$ on every test case; the
+  matched configuration is then re-scored with it and must still meet $\tau$ (else the next value).
+- Timing records every repetition, the sentinel values, the spread (max/min) and the count of repetitions more than
+  20 % above the median. If the fresh finalist timing changes the ordering, the report gives the fresh times of the
+  selected configurations and says so; it does not re-select.
+
+### A2.4 Controls (replace A1.6's SW1, SW3, SW4)
+
+- **SW1 (deterministic):** feed the matcher a "run" equal to the reference plus a perturbation of exact relative size
+  $\epsilon$ at every scored time ($\epsilon=2\tau$ and $\tau/2$, same norm and denominator): it must reject and accept
+  respectively.
+- **SW3 → diagnostic H1:** a combined two-case call against the sum of the two single calls (ratio reported; 0.8–1.25
+  expected).
+- **SW4 (deterministic):** on a frozen reached state $z$, zeroing tensor slice $k^\star$ must change the right-hand
+  side by exactly that slice's contribution (to round-off) and that contribution must be $\ge10^{-6}\lVert N(z)\rVert$;
+  the rollout change is reported as a diagnostic.
+- **G9** (reduced padding) is a diagnostic. The reference's own padding error is covered by the A space gate
+  ($N_{\rm ref}$ vs $3N_{\rm ref}/4$ changes modes and padding together).
+- **Training gates:** A: 4 trajectories at $3N_{\rm ref}/4$, $\le10^{-4}$; B: 4 training trajectories ($L=512$) against
+  $L=1024$, difference reported. A failure labels the level's basis "unqualified" (the ROM is still run and
+  labelled).
+
+### A2.5 References and eligibility (replace A1.7's B rule and margins)
+
+- **B space:** F-IMEX at $L\in\{128,256,512,1024\}$, same $n=2000$, compared on the common $i/64$ lattice (and the $i/128$
+  lattice as a second readout). Two observed orders $p_1=\log_2(d_{128,256}/d_{256,512})$ and
+  $p_2=\log_2(d_{256,512}/d_{512,1024})$ (max over cases and times of the normalised differences). Gate: $p_2\ge1$ and
+  $|p_1-p_2|\le0.5$; $\hat e_{\rm ref}=d_{512,1024}/(2^{p_2}-1)$. If the gate fails, B targets are scored against the
+  numerical $L=1024$ field and every B statement is labelled "conditional on an unqualified reference".
+- **B time:** $n=2000$ vs $4000$ at $L=1024$ on the 4 test cases with the largest $s$, and at $L=512$ on all 12;
+  the larger difference $\delta_t$ enters the allowance. Conclusions apply to that check's coverage.
+- **B training:** SBDF2 + SuperLU at $L=512$, $n=2000$ (the reference integrator), snapshots every 0.0125.
+- **Uncertainty allowance and three-way scoring.** $U_A=\delta_{\rm space}+\delta_{\rm time}$ (the two A gate
+  differences); $U_B=\hat e_{\rm ref}+\delta_t$. A configuration *meets* $\tau$ if worst error $+U\le\tau$, *misses*
+  if worst error $-U>\tau$, and is *unresolved* otherwise; unresolved cells are reported, never counted as passes.
+  All errors are errors against the numerical references.
+
+### A2.6 Feasibility (replaces A1.7's rule)
+
+- Before each expensive stage (references, training, POD+tensor, each ladder, timing), a one-unit benchmark (one case,
+  or one $r$) is timed and the stage's projected time and peak memory (arrays held at once) are written to the stage
+  JSON. A stage whose projection exceeds 30 minutes is split into checkpointable units (per $r$, per $N$, per case
+  chunk; each unit writes its results before the next starts) or not run.
+- A timeout stops the stage; completed units are kept and the remainder is reported "not run (time cap)".
+- Total local budget for the pilot: **8 hours of wall time**; A4 runs only if A3's stages all finished and its
+  48-trajectory snapshot set (4.7 GB) plus a peak of 3× that in POD workspace fits in the 36 GB `jaxrun` ceiling.
+- Stopping after A1–A2 (or A1–A3) is acceptable; "too few levels" is not a negative finding.

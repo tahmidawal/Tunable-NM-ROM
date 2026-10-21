@@ -621,3 +621,20 @@ empirical: the S1 pilot records the device and host peaks of the production-shap
 production jobs write results after every configuration; a configuration whose construction fails for memory is
 UNRESOLVED (A4.1) and is retried once in a fresh job if the GPU-hour cap allows; a remaining failure stays
 UNRESOLVED and is reported (it can only prevent a NO-MATCH or FIRES verdict from being proven, never create one).
+
+---
+
+## Amendment A6 (2026-10-21, before any job; answers `audits/codex-design-6.md`)
+
+**A6.1 Compilation (replaces the charging rule of A5.1).** Charged query-compile values are **projections**: the
+in-process AOT measurement of each deployed executable (accepted only when JAX recorded a backend-compile event
+during it; otherwise the entry is missing). The fresh-process probes of A5.1 are reported beside them to quantify
+the in-process/fresh difference. A verdict is stated unconditionally only if it is **compile-insensitive**: it is
+the same with every query-compile value set to 0 and with every query-compile value set to 10 × the largest
+compile time measured anywhere in the lane (in-process or fresh). A verdict that differs between the two is
+withheld as "compile-dependent" (with both outcomes shown). A missing compile entry is treated the same way
+(0 and the 10× value).
+
+**A6.2 Control 4 fallback (refines A2.6).** The fallback mutation is a stepper whose every step returns half of
+its starting candidate, unsolved (`mmcore.unsolved_override`); the control also requires the unmutated fixture to
+pass Q1.

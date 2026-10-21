@@ -72,8 +72,9 @@ def run(cfg, st, dg, tabs, nl, g_run, g_valid, g_cert, lspg_run, U0, dev, ids, c
     for b_ in (1, 0):
         ev1 = jax.jit(F.make_evolve('cn', F.adv_pre, F.jac_pre, budget_override=b_))
         W1, s1 = ev1(w0, jnp.float64(nu), tab, F.sched(DT0, level='tight'))
-        v1 = dict(W=np.asarray(W1), Z=np.asarray(s1['Z']), steps=int(s1['steps']), reason=np.asarray(s1['reason']),
-                  it=np.asarray(s1['it']), nu=nu, f=np.zeros(1), stage_max=float(s1['stage_max']))
+        k1 = int(s1['steps'])
+        v1 = dict(W=np.asarray(W1), Z=np.asarray(s1['Z'])[:k1 + 1], steps=k1, reason=np.asarray(s1['reason'])[:k1],
+                  it=np.asarray(s1['it'])[:k1], nu=nu, f=np.zeros(1), stage_max=float(s1['stage_max']))
         c1 = g_cert(v1, 'cn', DT0, level='tight')
         c16.append(dict(budget=b_, unconverged=c1['unconverged'], anchor_invalid=bool(c1['unconverged'] > 0)))
         if c16[-1]['anchor_invalid']:

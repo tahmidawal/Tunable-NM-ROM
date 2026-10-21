@@ -91,6 +91,25 @@ def scored_ok(subj):
                                                                   for r_ in rows))
 
 
+def diag_cost(T, lb, veto, kernel=False, per_slot=False):
+    """Diagnostic subjects (KERNEL / SETUP / C = 1): own acceptance predicate -- exact scoring coverage, every run valid,
+    kernel/query field agreement (KERNEL), complete valid timing, not vetoed; else an 'unavailable: reason' string."""
+    subj = T['subjects'].get(lb)
+    if subj is None:
+        return 'unavailable: not a timing subject'
+    rows = subj.get('scoring', [])
+    if sorted(r_['case'] for r_ in rows) != CASES or not all(r_.get('valid') is True for r_ in rows):
+        return 'unavailable: scoring coverage or validity'
+    if kernel and not all(r_.get('kernel_query_ok') is True for r_ in rows):
+        return 'unavailable: kernel output differs from the query output'
+    if lb in veto:
+        return 'unavailable: identity veto'
+    cs_, ex_ = cost_by_slot(T['stage2'], lb)
+    if not ex_:
+        return 'unavailable: incomplete stage-2 coverage'
+    return cs_ if per_slot else float(np.median([cs_[c] for c in CASES]))
+
+
 def scored_ok_A(T):
     rows = T['subjects'].get('A', {}).get('scoring', [])
     return bool(sorted(r_['case'] for r_ in rows) == CASES and all(r_.get('valid') is True for r_ in rows))
@@ -193,12 +212,7 @@ def main():
             dec_ = {}
             for pre in ('KERNEL', 'SETUP'):
                 lb = f'{pre}|{fsel}'
-                cs_, ex_ = cost_by_slot(T['stage2'], lb)
-                dec_[pre.lower()] = float(np.median([cs_[c] for c in cases])) if ex_ and lb not in veto else None
-            c1 = fsel.replace('@C100', '@C1') if fsel.endswith('@C100') and fsel.startswith('psi') else None
-            if c1:
-                cs_, ex_ = cost_by_slot(T['stage2'], c1)
-                dec_['C1_same_config'] = float(np.median([cs_[c] for c in cases])) if ex_ and c1 not in veto else None
+                dec_[pre.lower()] = diag_cost(T, lb, veto, kernel=(pre == 'KERNEL'))
             row['fom'] = dict(key=fsel, family=fsel.split('|')[0].upper(),
                               cost=float(np.median([fs[c] for c in cases])) if f_ok else None,
                               stage2_complete=f_ok, per_family={g_.split('|')[0]: T['selection'][g_].get('selected')
@@ -219,6 +233,22 @@ def main():
                        label='anchor-normalised cost ratio; against the strongest tested competitor; finite-ladder upper '
                              'bound on the ROM speed-up')
             res['targets'][key] = row
+        # paired PSI reading (DESIGN §9 secondary; A6.3): the C = 100 PSI-family winner against the same configuration at C = 1
+        for tau in (0.01, 0.03, 0.10):
+            if C != GATE_C:
+                continue
+            psel = T['selection'].get(f'PSI|{tau:g}|C{C:g}', {}).get('selected')
+            if not psel:
+                continue
+            c1 = psel.replace('@C100', '@C1')
+            a_, ea_ = cost_by_slot(T['stage2'], psel)
+            b_ = diag_cost(T, c1, veto, per_slot=True)
+            if ea_ and isinstance(b_, dict):
+                r_ = float(np.median([a_[c] / b_[c] for c in cases]))
+                res['targets'][f'{tau:g}|C{C:g}']['psi_C100_over_C1'] = dict(config=psel, ratio=r_,
+                                                                            note='median over slots of cost(C=100)/cost(C=1)')
+            else:
+                res['targets'][f'{tau:g}|C{C:g}']['psi_C100_over_C1'] = dict(config=psel, ratio=None, note=str(b_))
     dec = {t: res['targets'][f'{t:g}|C{GATE_C:g}'] for t in DECISIVE}
     timing_ok = bool(T.get('complete') is True and T.get('backend') == 'gpu' and T['gates'].get('A-valid') is True
                      and 'A' not in veto and scored_ok_A(T)

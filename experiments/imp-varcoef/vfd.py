@@ -306,8 +306,9 @@ def vref_solver(L, max_newton=20, lin_maxiter=None):
 
 def make_ccv(L, dt, level, out='lattice'):
     """CCv FOM as a Program (A3.14): setup(kp) = face coefficients and nu; core(u0, S) = the E0 CN-R solve with variable
-    kappa (Newton + DST-preconditioned BiCGStab; the per-stage DST denominators are formed inside the solve, as E0) followed
-    by the output map; query = core(u0, setup(kp)) as ONE jitted program. Tolerance level from CCV_TOLS."""
+    kappa (Newton + DST-preconditioned BiCGStab; the DST denominator 1 + dt/2 nu Lambda_h, the same at every CN-R stage, is
+    prepared in setup, A6.2) followed by the output map; query = core(u0, setup(kp)) as ONE jitted program. Tolerance level
+    from CCV_TOLS."""
     from vspec import Program
     ntol, ltol = CCV_TOLS[level]
     lim = CCV_NEWTON.get(level, FR.MAX_NEWTON)

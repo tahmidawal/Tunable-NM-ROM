@@ -174,6 +174,7 @@ def test_cfg(refdirs_test, frozen_src):
     import testgate
     dst = HERE / 'checks/FROZEN-SELECTION-4096.json'
     rec = HERE / 'checks/TEST-OPENED.json'
+    assert not rec.exists(), 'the test split has already been opened (A2.18: once)'
     shutil.copyfile(frozen_src, dst)
     keys = testgate.permitted(json.loads(dst.read_text()))
     with open(rec, 'x') as fh:                                   # exclusive create: the test split opens once (A2.18)

@@ -254,8 +254,9 @@ def main():
         return o['fields'] if lb in roms else o[0]
 
     # ---- 1. scoring runs, identities, G-RR / G-FR --------------------------------------------------------------------
-    REF = {}
-    for lb in list(roms) + fkeys:
+    REF, LATF = {}, {}
+    fk_order = [k for k in fkeys if not k.startswith('KERNEL|')] + [k for k in fkeys if k.startswith('KERNEL|')]
+    for lb in list(roms) + fk_order:                       # queries before their kernels (kernel/query check)
         rows = []
         for c in cases:
             fn = call(lb, c)
@@ -287,6 +288,14 @@ def main():
                 row['valid'] = P.run_valid(o)
             else:
                 row.update(valid=okv, fom_case=cidf, evidence=ev)
+                pre_ = VK.split_key(base(lb))[0]
+                kq_ = VK.split_key(base(lb))[1] + f"@C{VK.split_key(base(lb))[2]:g}"
+                if pre_ is None and ('KERNEL|' + lb) in cfg['foms']:
+                    LATF[(lb, cid(c))] = F                         # query lattice output, for the kernel/query check
+                if pre_ == 'KERNEL':
+                    Fq_ = LATF.get((kq_, cid(c)))
+                    d_ = None if Fq_ is None else float(np.linalg.norm((F - Fq_).ravel()) / max(np.linalg.norm(Fq_.ravel()), 1e-300))
+                    row.update(kernel_query_dist=d_, kernel_query_ok=bool(d_ is not None and d_ <= 1e-12))
             rows.append(row)
         rep['subjects'][lb] = dict(kind='rom' if lb in roms else 'fom', spec=roms.get(lb) or dict(key=lb), scoring=rows,
                                    repro_ok=all(r['repro'] is not False for r in rows),

@@ -635,6 +635,8 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     D = cohorts(a.fam, a.lev, a.smoke)
     G.check_cohorts()
+    if a.smoke:                                   # smoke only: a loose extra target so every finalist path runs
+        SC.TAUS = SC.TAUS + (0.2,)
     marks = {'ref': 'ref.json', 'data': 'data.json', 'bank': 'bank.json', 'ladder': 'ladder.done', 'time': 'final.json',
              'test': 'test.json', 'inter': 'inter.json'}
     for st in a.stages.split(','):

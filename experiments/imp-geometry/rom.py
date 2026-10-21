@@ -125,7 +125,7 @@ def etd_coefs_direct(Lam, dt):
 
 
 def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.N_OUT, Mt=None, cert=False,
-               maxit=60, perturb_cert=0.0, zero_slice=None, out='lattice'):
+               maxit=60, perturb_cert=0.0, zero_slice=None, out='lattice', zero_test=None):
     """Reduced query d -> (lattice outputs (n_out+1, P_lat), stats). stats (float vector):
     [n_nonstationary, max_gamma, n_steps, n_nonfinite, max_iters, n_damping_saturated, n_unconverged].
     cert=True computes gamma with a fresh Jacobian at every step (LSPG) / the Newton residual ratio (Galerkin).
@@ -164,6 +164,9 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
         def dNt(z):
             return jnp.einsum('kij,j->ki', T, z) + jnp.einsum('kij,i->kj', T, z)
     else:
+        if zero_test is not None:                       # MF-TENS independent fault: k-th test function removed
+            Th = Th.at[:, zero_test].set(0.0)
+
         def Nt(z):
             return Th.T @ (w * (P @ z) * (Sx @ z))
 

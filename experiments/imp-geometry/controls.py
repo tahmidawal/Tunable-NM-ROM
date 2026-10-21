@@ -136,19 +136,47 @@ def cell_controls(a, celldir):
         k = int(np.argmax(contrib))
         qf = RM.make_query(sp, r, 'gal_etdrk4', 40, form='tensor', zero_slice=k)
         Of = np.stack([np.asarray(qf(jnp.asarray(d))[0]) for d in Dv])
+        # independent fault in point form: the k-th test function removed from the nonlinear term
+        qpf = RM.make_query(sp, r, 'gal_etdrk4', 40, form='point', zero_test=k)
+        Opf = np.stack([np.asarray(qpf(jnp.asarray(d))[0]) for d in Dv])
         rel = float(np.max(np.abs(Ot - Op)) / np.max(np.abs(Op)))
         relf = float(np.max(np.abs(Of - Ot)) / np.max(np.abs(Ot)))
-        rec[f'r{r}'] = dict(tensor_vs_point=rel, zeroed_slice=k, zeroed_change=relf, fires=bool(rel <= 1e-9 and relf >= 1e-6))
+        agree = float(np.max(np.abs(Of - Opf)) / np.max(np.abs(Ot)))
+        rec[f'r{r}'] = dict(tensor_vs_point=rel, zeroed_slice=k, zeroed_change=relf, tensor_vs_point_fault=agree,
+                            fires=bool(rel <= 1e-9 and relf >= 1e-6 and agree <= 1e-9))
     rec['fires'] = all(v['fires'] for v in rec.values() if isinstance(v, dict))
     out['MF-TENS'] = rec
-    # MF-Q1: certificate on a perturbed iterate must flag (LSPG, r = 32)
+    # MF-Q1 (A3.6): the perturbed iterate's gamma is computed independently (NumPy, dense Jacobian by finite
+    # differences of an independent residual); the in-job certificate must flag every step whose independent gamma
+    # exceeds 1e-3, and at least one such step must exist
     r = min(32, sp.R)
-    qc = RM.make_query(sp, r, 'lspg_cnr', 40, form='tensor', cert=True)
-    qcp = RM.make_query(sp, r, 'lspg_cnr', 40, form='tensor', cert=True, perturb_cert=1e-3)
+    nt = 40
+    qc = RM.make_query(sp, r, 'lspg_cnr', nt, form='tensor', cert=True)
+    qcp = RM.make_query(sp, r, 'lspg_cnr', nt, form='tensor', cert=True, perturb_cert=1e-3)
+    qz = RM.make_query(sp, r, 'lspg_cnr', nt, form='tensor', n_out=nt, out='z')
     s0 = np.asarray(qc(jnp.asarray(Dv[0]))[1])
     s1 = np.asarray(qcp(jnp.asarray(Dv[0]))[1])
-    out['MF-Q1'] = dict(clean_nonstationary=float(s0[0]), clean_max_gamma=float(s0[1]), faulted_nonstationary=float(s1[0]),
-                        steps=float(s1[2]), fires=bool(s0[0] / s0[2] <= 0.01 and s1[0] / s1[2] > 0.5))
+    Zs = np.asarray(qz(jnp.asarray(Dv[0]))[0])          # states after every step
+    Mt = min(4 * r, sp.R)
+    P, Sx, Th, w = sp.P[:, :r], sp.S[:, :r], sp.P[:, :Mt], sp.w
+    Mm, Kk = sp.M[:Mt, :r], sp.K[:Mt, :r]
+    nu = float(Dv[0][4])
+    dt = G.T_END / nt
+    Nf = lambda z: Th.T @ (w * (P @ z) * (Sx @ z))
+    def res(z, zn, th):
+        return Mm @ (z - zn) / dt + th * (nu * Kk @ z + Nf(z)) + (1 - th) * (nu * Kk @ zn + Nf(zn))
+    n_viol = 0
+    for i in range(nt):
+        zn, z = Zs[i], Zs[i + 1]
+        th = 1.0 if i < 2 else 0.5
+        zc = z + 1e-3 * np.linalg.norm(z) * np.cos(np.arange(r) * 1.7 + 0.3) / np.sqrt(r)
+        rv = res(zc, zn, th)
+        J = np.stack([(res(zc + 1e-7 * e, zn, th) - res(zc - 1e-7 * e, zn, th)) / 2e-7 for e in np.eye(r)], 1)
+        g = np.linalg.norm(J.T @ rv) / (np.linalg.norm(J) * np.linalg.norm(rv) + 1e-300)
+        n_viol += int(g > 1e-3)
+    out['MF-Q1'] = dict(clean_nonstationary=float(s0[0]), clean_max_gamma=float(s0[1]), faulted_flagged=float(s1[0]),
+                        independent_violations=n_viol, steps=nt,
+                        fires=bool(s0[0] / s0[2] <= 0.01 and n_viol >= 1 and int(s1[0]) == n_viol))
     # MF-Q2: reference rule with the elements carrying the largest share of ||N|| zeroed must exceed the rho bar
     if (celldir / 'bank.pkl').exists():
         import bank as BK

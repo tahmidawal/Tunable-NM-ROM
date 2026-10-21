@@ -153,18 +153,21 @@ class SEMSpace:
         return self.dss(self.Kloc(self.gather(u)))
 
     def assembled_K(self):
-        """Dense assembled stiffness on all global nodes (offline; for the 'eig' solver)."""
+        """Dense assembled stiffness on all global nodes (offline; for the 'eig' solver), by one vectorised local
+        operator application to the n^2 unit vectors and a sparse COO sum."""
+        import scipy.sparse as sps
         n = self.p + 1
         E = self.E
-        eye = np.eye(n * n).reshape(n * n, n, n)
-        Kd = np.zeros((self.Ng, self.Ng))
+        eye = jnp.asarray(np.eye(n * n).reshape(n * n, n, n))
+        cols = []
+        for c0 in range(0, n * n, 64):
+            basis = jnp.broadcast_to(eye[c0:c0 + 64][None], (E,) + eye[c0:c0 + 64].shape)
+            cols.append(np.asarray(jax.vmap(self.Kloc, in_axes=1, out_axes=1)(basis)).reshape(E, -1, n * n))
+        Ke = np.concatenate(cols, axis=1)                  # Ke[e, j, i] = (K_e phi_j)[i]
         conn = self.conn.reshape(E, -1)
-        for c0 in range(0, n * n, 32):
-            basis = jnp.asarray(np.broadcast_to(eye[c0:c0 + 32][None], (E,) + eye[c0:c0 + 32].shape))
-            cols = np.asarray(jax.vmap(self.Kloc, in_axes=1, out_axes=1)(basis)).reshape(E, -1, n * n)
-            for t in range(cols.shape[1]):
-                np.add.at(Kd, (conn, conn[:, c0 + t][:, None]), cols[:, t, :])
-        return Kd
+        rows = np.broadcast_to(conn[:, None, :], Ke.shape).ravel()
+        colsi = np.broadcast_to(conn[:, :, None], Ke.shape).ravel()
+        return sps.coo_matrix((Ke.ravel(), (rows, colsi)), shape=(self.Ng, self.Ng)).toarray()
 
     def eig_factor(self):
         """Generalised eigendecomposition on the interior nodes: K v = lambda B v, V^T B V = I (nu-independent)."""

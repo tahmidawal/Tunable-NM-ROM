@@ -348,3 +348,47 @@ Numbers refer to the round-2 items. A2 overrides A1 where they differ.
   target inconclusive. No replacement.
 - **A2.20 Budget ledger.** After the smoke a `checks/budget-plan.json` lists every remaining job with its certified projection, including
   the worst-case fallback references and the test references; production starts only if the total ≤ 8 GPU-h.
+
+---
+
+## Amendment A3 (2026-10-21, after Codex design audit 3, `audits/codex-design-3.md`; before any job)
+
+A3 overrides A1/A2 where they differ. Numbers refer to the round-3 items.
+
+- **A3.5 Cross-check certificate (a departure from E0's PS cross-check recipe, labelled so).** On dev cases 0–3 per contrast:
+  PSI SBDF2 base $(N,\Delta t,Q,{\rm tol})=(256,0.05/128,2N,10^{-12})$ and four refinements: space $N\in\{128,192\}$ (three
+  spatial levels; the differences to base must decrease monotonically, $d_{128}>d_{192}$), time $\Delta t/2$, quadrature $Q=3N$,
+  solver tol $10^{-14}$. Cross-check uncertainty $U_{xc}=d_{192}+d_{\Delta t/2}+d_{3N}+d_{\rm tol}$; **converged** iff
+  $U_{xc}\le2.5\cdot10^{-5}$, monotone spatial differences, all solves valid. **Passed** iff converged and
+  $\lVert{\rm base}-R\rVert\le \max\big(2.5\cdot10^{-4},\,3(\epsilon_{\rm ref}+U_{xc})\big)$. The $2.5\cdot10^{-4}$ floor is the
+  Q1 distance bar: the cross-check certifies the reference to the resolution relevant to targets $\ge1\%$ (40× below), not to $\epsilon_{\rm ref}$.
+- **A3.10 Temporal/stability acceptance.** A row = (family, $N$/$L$, scheme/$\bar\kappa$/preconditioner, tol). A row is extended once by
+  $\Delta t/2$ and $\Delta t/4$ if (a) it has no valid configuration, or (b) its finest-$\Delta t$ eligible-dev worst error is more
+  than 20 % below the second-finest (time-error-limited). Fixed-case temporal check (A2.10 i) is reported. **A required family
+  (PSI, ETD, FDMG: the brief's three categories) without a qualified configuration at a decisive $\tau$ after extensions makes
+  that target inconclusive**, unless every one of that family's rows is invalid at every tested $\Delta t$ (then "family X
+  unstable on the tested ladder" is reported and the target is decided on the remaining families).
+- **A3.12 ROM denominators and COMMON-BRIEF §3.** The ROM configurations are **not** requalified in this lane; their labels are
+  prior evidence and are stated as such next to every ROM number. This does not affect a **fail** verdict: requalification can
+  only remove ROM configurations, which can only make the cheapest qualified ROM at a target slower, which can only lower $G$.
+  A **pass** verdict is provisional: the Phase-2 amendment must, before any training, requalify (fresh in-job Q1/Q2 with the
+  jcp-qualify machinery) every ROM configuration whose cost is used, and recompute $G$.
+- **A3.14 Kernel timing.** Every competitor is implemented as `setup(kp) -> S` (κ evaluation, preconditioner/hierarchy, ETD
+  coefficients) and `core(b0 or u0, S) -> fields` (stepping + synthesis). Timed programs: **query** = `core(·, setup(kp))` jitted as
+  one program (the gate cost); for each union winner also **kernel** = `core` with prepared `S`, and **setup** = `setup` alone,
+  each as its own A–B–A subject. Reported side by side; not subtracted.
+- **A3.16** The gate statistic is named the **anchor-normalised cost ratio**.
+- **A3.19 Control fixtures.** T-loose: the fixture is dev case 0 at $C=100$ (frozen); the control fires iff the run is invalid, and the
+  measured margin $\max_{\rm stage}\,{\rm res}/(10\,{\rm tol})$ is reported (expected ≫ 1). Reference predicates: fixtures start
+  from the first **accepted** real case; $t_0$ is preserved in every fixture except T-ref-ic, and mutations touch $k\ge1$ only; each
+  fixture asserts that its target predicate is false **and every other predicate of `judge.checks` stays true**.
+- **A3.20 Budget.** Production starts only if spent + all remaining certified work (references, fallback reserve, ladder, extensions,
+  qualification, timing with one retry reserve, test-once references and runs) ≤ 8 GPU-h; otherwise the §11 defer order applies.
+- **A3.23 Quadrature qualification (Q2 analogue, replaces A2.23).** For every spectral timing candidate, on every pooled case
+  (eligible or not): (i) own-state operator discrepancy $\rho=\max_k\lVert D_{2N}b_k-D_{3N}b_k\rVert/\lVert D_{3N}b_k\rVert$ over the
+  six reached states $b_k$ of its trajectory, $\rho\le0.116$ (the binding ρ bar applied to the quadrature-dependent operator), and
+  (ii) rollout distance between $Q=2N$ and $Q=3N$ trajectories $\le2.5\cdot10^{-4}$. Both on every case.
+- **A3.25 Timing slots.** Six slots $s=0..5$, frozen with the eligibility mask: slot $s$ = (FOM case: the $s$-th eligible dev case at
+  that contrast, filled in index order from eligible val cases if needed; anchor and ROM case: dev6 case $s$). Bootstrap resamples slots.
+- **A3.27 Test cohorts.** The current test split (seed 2026102103) is **Phase-1 only** (FOM test-once, A2.18). Phase 2, if any, must
+  register a separately seeded, unopened cohort (seed 2026102104) before any training or tuning.

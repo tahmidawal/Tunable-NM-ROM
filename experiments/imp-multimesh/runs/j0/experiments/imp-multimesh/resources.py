@@ -21,10 +21,17 @@ def main():
     per_case_p1 = (rp['elapsed_seconds'] - rp['phases']['setup']) / 6          # one case, every role, R128
     cfg = json.loads((HERE / cfgn).read_text())
     if att == 'j0':
-        s256 = snap1024 * (255 ** 2 / 1023 ** 2) * 51 / 12
-        t = snap1024 + 120 + src['states_seconds'] + 3 * nnls + s256 + 120 + src['states_seconds'] / 4 + 3 * nnls
+        # 1024^2 12-step: jcp-hr-baselines t2d1024a measured H200 phases of exactly this recipe (tune.json timers /
+        # phases): snapshots 208.4, POD 33.9, certificate 30.8, ECSW states 11.6, ECSW paths r128/256/384 31.5/310.8/
+        # 2286.5 s (to kappa 16, an upper bound for kappa 8). 256^2 all-step: t2d256a measured A100 phases (upper bound
+        # for an H200): saturation rebuild (all-step snapshots + POD) 539, states 5.5, paths r128/256/384 39/99/241 s.
+        # Codes: s1c 1024 codes 1.0 s x 9 (snapshot count).
+        t = (208.4 + 33.9 + 30.8 + 11.6 + 31.5 + 310.8 + 2286.5 + 9 * src['codes_seconds']) + (539 + 5.5 + 39 + 99 + 241 + 60)
     elif att == 'j5':
-        t = sum(6 * 38 * per_case_p1 * f for f in (0.5, 1.0, 3.0)) + 3 * 120      # 4096^2 decode-heavy x3
+        # jcp-p1-scaling accuracy jobs (p1acc, same code): acc256 0.4389 h, acc1024 0.3694 h (A100-80G), acc4096
+        # 0.3381 h (H200), each with more configurations than here but sub16 Q2; here all38 Q2 adds 22 successor runs
+        # per configuration-scheme (~+30 %); plus the offline checker (CPU) ~120 s per mesh.
+        t = (0.4389 + 0.3694 + 0.3381) * 3600 * 1.3 + 3 * 120
     else:
         L = cfg['L']
         st = {256: src['states_seconds'] / 4, 1024: src['states_seconds'], 4096: pl['states_seconds'] * 12}[L]

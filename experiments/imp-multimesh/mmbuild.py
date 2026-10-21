@@ -70,7 +70,7 @@ _T_START = time.perf_counter()
 def path_budget(cfg):
     """Code audit (job-6): NNLS max_seconds = min(per-path budget, remaining job budget - reserve)."""
     rem = cfg.get('wall_seconds', 1e9) - (time.perf_counter() - _T_START) - cfg.get('reserve_seconds', 600)
-    return max(0., min(float(cfg['nnls_seconds']), rem / 2))      # initial path + a possible registered retry
+    return max(0., min(float(cfg['nnls_seconds']), (rem - 300) / 2))   # contributions (<= 300 s) + path + retry
 
 
 def timed(rec, key, fn, *a, **k):

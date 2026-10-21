@@ -392,3 +392,35 @@ A3 overrides A1/A2 where they differ. Numbers refer to the round-3 items.
   that contrast, filled in index order from eligible val cases if needed; anchor and ROM case: dev6 case $s$). Bootstrap resamples slots.
 - **A3.27 Test cohorts.** The current test split (seed 2026102103) is **Phase-1 only** (FOM test-once, A2.18). Phase 2, if any, must
   register a separately seeded, unopened cohort (seed 2026102104) before any training or tuning.
+
+---
+
+## Amendment A4 (2026-10-21, after Codex design audit 4, `audits/codex-design-4.md`; before any job)
+
+- **A4.5 Cross-check convergence evidence (replaces A3.5's acceptance).** Runs: base $(256,\,0.05/128,\,2N,\,10^{-12})$; space
+  $N=128, 192$; time $\Delta t/2$ and $\Delta t/4$; quadrature $3N$; solver $10^{-14}$. *Spatial evidence:* $d_{192}\le0.1\,d_{128}$
+  (geometric decay consistent with spectral convergence; tail estimate $t_s=0.11\,d_{192}$) or $d_{128}\le10^{-7}$ (resolved; $t_s=d_{128}$).
+  *Temporal evidence:* with $e_1=\lVert F_{\Delta t}-F_{\Delta t/2}\rVert$, $e_2=\lVert F_{\Delta t/2}-F_{\Delta t/4}\rVert$ (lattice
+  distance), observed order $\log_2(e_1/e_2)\in[1.8,2.2]$ (base time-error estimate $t_t=\tfrac43e_1$) or $e_1\le10^{-7}$ ($t_t=e_1$).
+  $U_{xc}=t_s+t_t+d_{3N}+d_{\rm tol}$ is a **conditional indicator**, not a certified bound. **Converged** iff both evidence rules hold,
+  $U_{xc}\le2.5\cdot10^{-5}$ and all solves are valid. **Passed** iff converged and $\lVert{\rm base}-R\rVert\le\max(2.5\cdot10^{-4},3(\epsilon_{\rm ref}+U_{xc}))$.
+  This validates the reference at the $2.5\cdot10^{-4}$ resolution relevant to targets $\ge1\%$; it does not validate a smaller $\epsilon_{\rm ref}$.
+- **A4.10 Temporal acceptance and families.** Fixed-case temporal check (dev case 0, each contrast, each family at its largest $N/L$
+  with its tightest tolerance): accepted iff $\lVert F_{\Delta t_{\min}}-F_{\Delta t_{\min}/2}\rVert\le10^{-3}$ (one tenth of the tightest
+  target); if not accepted, every row of that family gets the A3.10 small-step extension ($\Delta t/2$, $\Delta t/4$). After extensions, a
+  required family (PSI, ETD, FDMG) with no qualified configuration at a decisive $\tau$ is **unresolved**. Direction of the effect:
+  adding competitors can only make the fastest FOM faster, so it can only lower $G$. Hence an unresolved family **blocks a pass**
+  at that target (target inconclusive for passing) but does **not** block a fail decided by the resolved families (a budget-limited
+  omission under COMMON-BRIEF §5, labelled "against the strongest tested competitor; family X unresolved").
+- **A4.12 Outcome labels (COMMON-BRIEF §3 compliance).** No exception to §3 is claimed. The gate outcomes are renamed:
+  **PASS-PROVISIONAL** ($G\ge2$; cannot authorise training until the Phase-2 amendment performs fresh in-job Q1/Q2 of the ROM
+  denominators and recomputes $G$), **FAIL-SCREEN** (a conservative historical-proxy screen: the denominators are inherited,
+  not §3-qualified in this lane; presented as a screening result, not a §3-qualified fail), **UNRESOLVED**. Either non-pass outcome means
+  no ROM is trained. To make the denominator an in-job minimum rather than a historical winner, the timing job times **every** ROM
+  configuration of `rom-box.json` with worst $\le\tau$ whose C2 cost is within 1.5× of the C2 cheapest at that target; the denominator is
+  the in-job cheapest of these (anchor-normalised, stage 2). If a target loses all its ROM configurations (none valid in-job), it is
+  inconclusive, not a fail. The lack of an authorised exception is raised in the hand-back as an open question.
+- **A4.19 T-ref-order fixture (replaces A2.19's).** $u_3=u_2-\tfrac12(u_1-u_2)$ at $k\ge1$ ($t_0$ preserved): order $p=1$ (outside
+  [1.8, 2.2]) while floor, direction ($c=0$), Péclet, solver and $t_0$ predicates stay true. Failure of any must-fail control to fire
+  blocks production.
+- **A4.23 ρ zero denominators.** $\rho_k=0$ if $\lVert D_{3N}b_k\rVert=\lVert D_{2N}b_k\rVert=0$; $\rho_k=\infty$ if only the denominator is zero.

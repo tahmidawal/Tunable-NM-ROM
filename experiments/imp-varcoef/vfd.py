@@ -79,18 +79,26 @@ def prolong(e, nf):
     return out[1:-1, 1:-1]
 
 
-def make_hierarchy(kp, L, alpha, cdt):
-    """Levels L, L/2, ..., COARSE_L: (L, KX, KY, diag) and the coarse Cholesky factor. A_l = alpha I - cdt Dk_l."""
-    levels = []
+def level_sizes(L):
+    out = []
     Ll = L
     while Ll >= COARSE_L:
-        KX, KY = faces(kp, Ll)
-        dg = alpha - cdt * diag_divk(KX, KY, Ll)
-        levels.append((Ll, KX, KY, dg))
+        out.append(Ll)
         if Ll == COARSE_L:
             break
         Ll //= 2
-    Lc, KXc, KYc, _ = levels[-1]
+    return out
+
+
+def make_hierarchy(kp, L, alpha, cdt):
+    """Levels L, L/2, ..., COARSE_L as arrays [(KX, KY, diag)] and the coarse Cholesky factor. A_l = alpha I - cdt Dk_l."""
+    levels = []
+    for Ll in level_sizes(L):
+        KX, KY = faces(kp, Ll)
+        dg = alpha - cdt * diag_divk(KX, KY, Ll)
+        levels.append((KX, KY, dg))
+    Lc = level_sizes(L)[-1]
+    KXc, KYc, _ = levels[-1]
     n = (Lc - 1) ** 2
     Ac = jax.vmap(lambda e: (alpha * e.reshape(Lc - 1, Lc - 1) - cdt * divk(e.reshape(Lc - 1, Lc - 1), KXc, KYc, Lc)
                              ).reshape(-1))(jnp.eye(n))
@@ -100,12 +108,14 @@ def make_hierarchy(kp, L, alpha, cdt):
 
 
 def vcycle(levels, chol, alpha, cdt, omega=0.8, nu1=2, nu2=2):
+    sizes = [lv[0].shape[0] for lv in levels]          # KX has shape (L_l, L_l - 1): static
+
     def A(l, u):
-        Ll, KX, KY, _ = levels[l]
-        return alpha * u - cdt * divk(u, KX, KY, Ll)
+        KX, KY, _ = levels[l]
+        return alpha * u - cdt * divk(u, KX, KY, sizes[l])
 
     def cyc(l, r):
-        Ll, KX, KY, dg = levels[l]
+        KX, KY, dg = levels[l]
         if l == len(levels) - 1:
             y = jax.scipy.linalg.cho_solve((chol, True), r.reshape(-1))
             return y.reshape(r.shape)
@@ -141,22 +151,38 @@ def fd_out(out, L):
 # ---------------------------------------------------------------------------------------------- FDMG ----------
 
 def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
+    """FDMG Program (x0 = flat interior nodal IC)."""
+    from vspec import Program
     assert prec in ('MG', 'DST'), prec
     keep = int(round(0.05 / dt))
     assert abs(keep * dt - 0.05) < 1e-12, dt
     synth = fd_out(out, L)
+    k1 = jnp.arange(1, L, dtype=jnp.float64)
+    lam1 = 4 * L ** 2 * jnp.sin(jnp.pi * k1 / (2 * L)) ** 2
+    lam = lam1[:, None] + lam1[None, :]
 
-    def query(u0, kp):
-        U0 = u0.reshape(L - 1, L - 1)
+    def setup(kp):
         KX, KY = faces(kp, L)
-        nu = kp[0]
-        Pin = {}
-        for first, alpha in ((True, 1.0), (False, 1.5)):
+        S_ = dict(KX=KX, KY=KY)
+        for tag, alpha in (('1', 1.0), ('2', 1.5)):
             if prec == 'MG':
                 lv, ch = make_hierarchy(kp, L, alpha, dt)
-                Pin[first] = vcycle(lv, ch, alpha, dt)
+                S_['mg' + tag] = (lv, ch)
             else:
-                Pin[first] = dst_pinv(L, alpha, dt, nu)
+                S_['den' + tag] = alpha + dt * kp[0] * lam
+        return S_
+
+    def pinv(S_, tag, alpha):
+        if prec == 'MG':
+            lv, ch = S_['mg' + tag]
+            return vcycle(lv, ch, alpha, dt)
+        den = S_['den' + tag]
+        return lambda r: FC.dstn(FC.dstn(r) / den)
+
+    def core(u0, S_):
+        U0 = u0.reshape(L - 1, L - 1)
+        KX, KY = S_['KX'], S_['KY']
+        P1, P2 = pinv(S_, '1', 1.0), pinv(S_, '2', 1.5)
 
         def step(k, c):
             u, up, Ap, um, st = c
@@ -167,8 +193,8 @@ def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
                 return pcg(lambda x: alpha * x - dt * divk(x, KX, KY, L), rhs, x0, P, tol, maxiter)
             rhs1 = u - dt * Au
             rhs2 = 2 * u - 0.5 * up - dt * (2 * Au - Ap)
-            x, it, tr = jax.lax.cond(first, lambda: solve(1.0, rhs1, u, Pin[True]),
-                                     lambda: solve(1.5, rhs2, 2 * u - up, Pin[False]))
+            x, it, tr = jax.lax.cond(first, lambda: solve(1.0, rhs1, u, P1),
+                                     lambda: solve(1.5, rhs2, 2 * u - up, P2))
             st = dict(it_sum=st['it_sum'] + it, it_max=jnp.maximum(st['it_max'], it),
                       res_max=jnp.maximum(st['res_max'], tr),
                       nbad=st['nbad'] + jnp.where((tr <= 10 * tol) & jnp.isfinite(tr), 0, 1), nst=st['nst'] + 1)
@@ -183,7 +209,7 @@ def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
         c, outs = jax.lax.scan(interval, c0, jnp.arange(5))
         fields = jnp.concatenate((synth(U0)[None], outs))
         return fields, dict(c[4], umax=c[3], nst_expected=jnp.int32(5 * keep))
-    return jax.jit(query)
+    return Program(setup, core, f'fdmg|L{L}|{dt:g}|{prec}|{tol:g}')
 
 
 # ---------------------------------------------------------------------------------------------- CCv / ref -----

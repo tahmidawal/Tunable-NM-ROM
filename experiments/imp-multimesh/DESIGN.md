@@ -547,3 +547,50 @@ accounting variant. The verdict is labelled "full cost of the measured items" an
 next to it.
 
 **A3.8 Budget.** J2 adds the H200 head re-measurement (≈ 0.35 h): total ≈ 6.4 GPU-h projected, cap 8.
+
+---
+
+## Amendment A4 (2026-10-21, before any job; answers `audits/codex-design-4.md`)
+
+A4 governs wherever it conflicts with sections 1–9 or A1–A3.
+
+**A4.1 Default terminal state.** The only registered impossibility certificates are: the basis certificate failing
+(orthonormality / POD certificate), and the rank check of A2.4 failing. **Every other unsuccessful construction**
+(NNLS `time`, `max_iter`, `cap`, `incomplete (KKT violated)`, a quality-limited path without a usable checkpoint, a
+crash, a missing rule) leaves the configuration UNRESOLVED. A target filled from a KKT-certified optimum (A23 of
+jcp-hr-baselines) is constructible.
+
+**A4.2 Head boundary.** The head dependency is the **complete producing invocations**: on the H200 (J2), the wall
+seconds of the extraction process and of the single-arm `sep_hfit_run.py` process (`ARMS=mid EMIT=mid`), each from
+process start to exit (input loading, whitening, fitting, evaluation, emission). For A_100 the same boundary is
+approximated from the historical records as extraction `total_seconds` (915.24 s) + `mid.seconds` (360.85 s) + the
+`full` run's time outside every arm timer (9.20 s, all charged to the dependency).
+
+**A4.3 Query compilation.** The deployed query's jit object is created immediately before its ahead-of-time
+`lower().compile()`, so that executable has never been compiled in the process; in addition a
+`jax.monitoring` duration listener records JAX's own backend-compile events during that call, and the charged
+compile cost is the measured wall time of `lower().compile()` only if at least one backend-compile event was
+recorded (otherwise the entry is flagged "cache hit suspected" and the verdict is reported with and without it).
+The ×0/×3 compile scenario of A3.3 is kept as a descriptive sensitivity, not a bound.
+
+**A4.4 A_sel, exactly.** A_sel adds, each once and each with its hardware provenance: (i) every competitor
+configuration run of the target jobs (all 38-case prod/tight/tighter runs: measured H200 `run_seconds`), (ii) the
+construction work of every non-deployed competitor configuration (other ranks' contributions and NNLS paths:
+measured H200), (iii) the non-producing head arms and head experiments (`wide`, `k32`, `f576`, `f4096`:
+historical A100-80GB seconds, labelled cross-GPU, A_sel only), (iv) our J5 qualification runs (measured H200), and
+(v) the stand-in of A3.4 for our unmeasured selection. A_sel is descriptive.
+
+**A4.5 NNLS memory certificate.** Device bytes at $4096^2$, $r=384$: $\Phi$ 51.5 GB + $G$ 12.1 GB +
+NNLS workspaces bounded by the fixed capacity of `nnls.UpdQR` (rows × capacity × 8 B for $Q$ and capacity² × 8 B for
+$R$, with at most two copies alive during a refactorisation): for 46,080 rows and capacity 8,192, ≤ 2 × (3.0 + 0.5)
+GB; total ≤ 71 GB, below the 130 GB usable on the H200 at memory fraction 0.92. Host: 120 states × 3 × 134 MB +
+the host copy of $G$ ≈ 61 GB, below the 240 GB requested. The S1 pilot records the observed device peak; the
+certificate holds if the observed peak is below the bound.
+The **unreduced POD-LSPG diagnostics are withdrawn** (not run, not reported); the only competitor rollout check is
+the κ=4 vs κ=8 rollout-agreement sensitivity.
+
+**A4.6 Claim rule (restores A2's existence condition).** A comparative cost advantage of X on $w$ is claimed only
+if (a) an accuracy-admissible, Q1-qualified competitor combination exists for that verdict, (b) the search is
+resolved (no UNRESOLVED configuration of any CP variant at the meshes of $w$), and (c) the minimum cost over the
+admissible combinations exceeds $C_X(w)$. A NO-MATCH without an admissible competitor is reported as "competitor
+not accuracy-matched; cost advantage undetermined".

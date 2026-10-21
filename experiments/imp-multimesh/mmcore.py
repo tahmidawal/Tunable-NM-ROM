@@ -390,3 +390,29 @@ def summarise(rows):
         return dict(worst=float('nan'), median=float('nan'), n=int(len(e)))
     return dict(worst=float(e.max()), median=float(np.median(e)), n=int(len(e)),
                 eps_star=float(max(x['eps_ref'] for x in rows if x['eligible'])))
+
+
+# ------------------------------------------------------------------------------------- compile measurement ----
+
+_EVENTS = []
+_INSTALLED = [False]
+
+
+def _install_listener():
+    if not _INSTALLED[0]:
+        import jax.monitoring as jm
+        jm.register_event_duration_secs_listener(lambda name, secs, **kw: _EVENTS.append((str(name), float(secs))))
+        _INSTALLED[0] = True
+
+
+def aot_compile(jitted, *args):
+    """DESIGN A4.3: wall seconds of jitted.lower(*args).compile() on a jit object never compiled before, with JAX's
+    own backend-compile events recorded during the call (none recorded -> 'cache hit suspected')."""
+    _install_listener()
+    n0 = len(_EVENTS)
+    t0 = time.perf_counter()
+    jitted.lower(*args).compile()
+    sec = time.perf_counter() - t0
+    ev = [e for e in _EVENTS[n0:] if 'backend_compile' in e[0]]
+    return dict(seconds=sec, backend_events=len(ev), backend_seconds=float(sum(e[1] for e in ev)),
+                cache_hit_suspected=len(ev) == 0)

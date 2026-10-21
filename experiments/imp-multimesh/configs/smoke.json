@@ -1,0 +1,36 @@
+{
+ "commands": [
+  {
+   "name": "preflight_cpu",
+   "cmd": "env JAX_PLATFORMS=cpu $PY -c \"import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b=='gpu' else 42)\" ; echo cpu_preflight_rc=$?",
+   "continue_on_fail": true,
+   "timeout_s": 300
+  },
+  {
+   "name": "smoke",
+   "cmd": "$PY mmsmoke.py configs/smoke.json $OUT/smoke",
+   "timeout_s": 4200
+  },
+  {
+   "name": "repl",
+   "cmd": "$PY ../jcp-p1-scaling/p1acc.py --config configs/repl1024.json --out $OUT/repl",
+   "timeout_s": 1200
+  },
+  {
+   "name": "repl_score",
+   "cmd": "env JAX_PLATFORMS=cpu $PY oursq.py $OUT/repl 1024 $OUT/repl/oursq.json",
+   "timeout_s": 600
+  }
+ ],
+ "ntraj": 64,
+ "pilot_traj": 2,
+ "pilot_tile": 12,
+ "nnls_seconds": 900,
+ "import_check": [
+  "mmcore",
+  "mmbuild",
+  "mmsmoke",
+  "mmtime"
+ ],
+ "pilot_nnls_seconds": 300
+}

@@ -41,7 +41,8 @@ def main():
                                          commit=os.environ.get('SOURCE_COMMIT'), complete=False))
     s, Lf, Lc = 1024, 4096, 256
     # ---------------------------------------------------------------- reduced source at 1024^2 (A2.7) -----
-    src = B.build_source(rec, 'src1024', s, '12', [128, 384], [4, 8], cfg['nnls_seconds'], out, ntraj=cfg['ntraj'])
+    src = B.build_source(rec, 'src1024', s, '12', [128, 384], [4, 8], cfg['nnls_seconds'], out, ntraj=cfg['ntraj'],
+                         ecsw_ranks=[128])
     Phi_s, C_s, rules_s, trust_s, states_s = src['Phi'], src['C'], src['rules'], src['trust'], src['states']
     Phi_h = np.asarray(Phi_s)
     # ---------------------------------------------------------------- control 2: restriction to 256 -----
@@ -100,12 +101,14 @@ def main():
     BD.N_ECSW_TRAJ = old
     rec.d['pilot'].update(states=len(st_f), states_seconds=time.perf_counter() - t0, mem_states=B.dev_mem())
     rec.save()
+    st_t = st_f * int(cfg['pilot_tile'])                 # A3.6: production-shaped (120-state) contribution matrix
     t0 = time.perf_counter()
-    G, b, cand, cinfo = M.ecsw_contrib_blocked(st_f, Pf, 384, Lf, log=log)
+    G, b, cand, cinfo = M.ecsw_contrib_blocked(st_t, Pf, 384, Lf, log=log)
+    rec.d['pilot'].update(tiled_states=len(st_t), G_bytes=int(G.size * 8))
     rec.d['pilot'].update(contrib_seconds=time.perf_counter() - t0, contrib=cinfo, mem_contrib=B.dev_mem())
     rec.save()
     t0 = time.perf_counter()
-    rr, summ = BD.ecsw_weights(G, b, cand, 384, (4, 8), max_seconds=cfg['nnls_seconds'])
+    rr, summ = BD.ecsw_weights(G, b, cand, 384, (4, 8), max_seconds=cfg['pilot_nnls_seconds'])
     summ.pop('checkpoints_all', None)
     rec.d['pilot'].update(nnls_seconds=time.perf_counter() - t0, nnls=summ, mem_nnls=B.dev_mem(),
                           supports={k: (None if v is None else len(v['nodes'])) for k, v in rr.items()})
@@ -113,22 +116,21 @@ def main():
     rec.save()
     fams = B.families()
     refs = B.refs_for(fams)
-    cellf = M.Cell(Lf, Pf, {384: tr_f[384]}, log=log)
-    v = rr.get(8) or rr.get(4)
-    data, _ = cellf.ecsw_data(384, np.asarray(v['nodes']), np.asarray(v['weights']))
+    cellf = M.Cell(Lf, Pf, {128: tr_f[128], 384: tr_f[384]}, log=log)
+    n128, w128 = rules_s[(128, 'k4')]
+    data, _ = cellf.ecsw_data(128, M.map_nodes(n128, s, Lf), w128)       # the reused (CPU-1024) r=128 rule
     u0 = fams['dev6'].ic(Lf, 0)
-    q = RM.make_query('ecsw', D, Lf, 'common', trust=tr_f[384])
+    q = RM.make_query('ecsw', D, Lf, 'common', trust=tr_f[128])
     sch = RM.schedule(D, 'CNR', 0.005, 'prod')
-    t0 = time.perf_counter()
-    comp = q.lower(jnp.asarray(u0), jnp.float64(fams['dev6'].nu(0)), data, sch).compile()
-    t_comp = time.perf_counter() - t0
-    r1 = cellf.run('ecsw', 384, data, 'common', ('CNR', 0.005), 'prod', u0, fams['dev6'].nu(0))
-    r2 = cellf.run('ecsw', 384, data, 'common', ('CNR', 0.005), 'prod', u0, fams['dev6'].nu(0))
+    cinfo = M.aot_compile(q, jnp.asarray(u0), jnp.float64(fams['dev6'].nu(0)), data, sch)
+    t_comp = cinfo
+    r1 = cellf.run('ecsw', 128, data, 'common', ('CNR', 0.005), 'prod', u0, fams['dev6'].nu(0))
+    r2 = cellf.run('ecsw', 128, data, 'common', ('CNR', 0.005), 'prod', u0, fams['dev6'].nu(0))
     e = refs['dev6'].score(r2['fields_lat'], 0)['e']
     rec.d['pilot'].update(query_seconds=[r1['seconds'], r2['seconds']], aot_compile_seconds=t_comp,
                           e_dev6_0=e, mem_query=B.dev_mem(), cert=r2['cert'])
     rec.save()
-    del cellf, data, Pf, q, comp
+    del cellf, data, Pf, q
     gc.collect()
     rec.d['pilot']['mem_after_free'] = B.dev_mem()
     rec.save()

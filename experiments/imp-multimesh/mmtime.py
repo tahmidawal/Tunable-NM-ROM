@@ -83,19 +83,18 @@ def main():
         U = [(jnp.asarray(P.Q.e.initial(L, ph)), float(ph[4])) for (_, _, ph) in allc]
         res['mem_bank'] = B.dev_mem()
         for X in mc['configs']:
-            t0 = time.perf_counter()
-            st = P.Setting(bank, X['name'], X['Rp'], X['rule'], 'frozen', roles={}, nrec=NREC)
-            jax.block_until_ready(st.data[('main', 'LSPG')])
-            setup = time.perf_counter() - t0
-            st.check('main', bank)
-            q = st.q['LSPG']['fused']
-            dat = st.data[('main', 'LSPG')]
-            for sc in X['schemes']:
+            for sc in X['schemes']:                     # a fresh Setting (fresh jit objects) per scheme: A4.3
+                t0 = time.perf_counter()
+                st = P.Setting(bank, X['name'], X['Rp'], X['rule'], 'frozen', roles={}, nrec=NREC)
+                jax.block_until_ready(st.data[('main', 'LSPG')])
+                setup = time.perf_counter() - t0
+                st.check('main', bank)
+                q = st.q['LSPG']['fused']
+                dat = st.data[('main', 'LSPG')]
                 key = f"{X['name']}|{sc}"
                 sch = st.sched('LSPG', sc, P.DT0, 'prod')
-                t0 = time.perf_counter()
-                q.lower(U[0][0], jnp.float64(U[0][1]), dat, st.cold, sch).compile()
-                comp = time.perf_counter() - t0
+                cinfo = M.aot_compile(q, U[0][0], jnp.float64(U[0][1]), dat, st.cold, sch) if tag == 'A1' else None
+                comp = None if cinfo is None else cinfo['seconds']
                 jax.block_until_ready(q(U[0][0], jnp.float64(U[0][1]), dat, st.cold, sch))
                 fn = lambda u, nu: q(u, jnp.float64(nu), dat, st.cold, sch)
                 obs = time_calls(fn, U, reps=reps)
@@ -115,12 +114,12 @@ def main():
                         if not (dW <= 1e-10 and dS <= 1e-10 and it_ok and rs_ok):
                             bad.append(dict(case=ci, dW=dW, dS=dS, it_ok=it_ok, reason_ok=rs_ok))
                     ident = dict(n=len(U), mismatches=bad, ok=not bad)
-                res[key] = dict(setup_seconds=setup, compile_seconds=comp, obs=obs, mean=float(np.mean(obs)),
+                res[key] = dict(setup_seconds=setup, compile_seconds=comp, compile_info=cinfo, obs=obs, mean=float(np.mean(obs)),
                                 median=float(np.median(obs)), identity=ident, table_bytes=st.table_bytes)
-                log(f'  ours {tag} L={L} {key}: mean {res[key]["mean"]*1e3:.2f} ms compile {comp:.1f}s '
+                log(f'  ours {tag} L={L} {key}: mean {res[key]["mean"]*1e3:.2f} ms compile {comp}s '
                     f'identity {None if ident is None else ident["ok"]}')
-            del st, q, dat
-            gc.collect()
+                del st, q, dat
+                gc.collect()
         res['mem_peak'] = B.dev_mem()
         del bank, U
         gc.collect()
@@ -168,9 +167,8 @@ def main():
             data, _ = cell.ecsw_data(r, z['nodes'], z['weights'])
             t_data = time.perf_counter() - t0
             q = RM.make_query('ecsw', D, L, 'common', trust=trust[r])
-            t0 = time.perf_counter()
-            q.lower(xs[0][0], jnp.float64(xs[0][1]), data, sch_c).compile()
-            comp = time.perf_counter() - t0
+            cinfo = M.aot_compile(q, xs[0][0], jnp.float64(xs[0][1]), data, sch_c)
+            comp = cinfo['seconds']
             jax.block_until_ready(q(xs[0][0], jnp.float64(xs[0][1]), data, sch_c)['fields'])
             fn = lambda u, nu: q(u, jnp.float64(nu), data, sch_c)['fields']
             obs = time_calls(fn, xs, reps=2)
@@ -184,7 +182,7 @@ def main():
                 rs_ok = bool(np.array_equal(np.asarray(v['stats']['reason']), z[f'reason|{coh}|{j}']))
                 if not (dC <= 1e-10 and it_ok and rs_ok):
                     bad.append(dict(case=[coh, j], dC=dC, it_ok=it_ok, reason_ok=rs_ok))
-            res['configs'][cid] = dict(armdata_seconds=t_data, compile_seconds=comp, obs=obs, mean=float(np.mean(obs)),
+            res['configs'][cid] = dict(armdata_seconds=t_data, compile_seconds=comp, compile_info=cinfo, obs=obs, mean=float(np.mean(obs)),
                                        median=float(np.median(obs)), identity=dict(ok=not bad, mismatches=bad),
                                        outliers=int(np.sum(np.asarray(obs) > 3 * np.median(obs))))
             log(f'  {arm["name"]} L={L} {cid}: mean {res["configs"][cid]["mean"]*1e3:.2f} ms compile {comp:.1f}s '

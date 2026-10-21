@@ -91,7 +91,7 @@ def refs_for(fams):
 
 # ------------------------------------------------------------------------------------------- sources ----
 
-def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log_=log):
+def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log_=log, ecsw_ranks=None):
     """Snapshots -> POD -> certificate -> codes -> trust -> states -> ECSW per rank. Returns dict of artefacts."""
     fam = H.Family(D, 'train')
     rows = list(range(fam.n if ntraj is None else ntraj))
@@ -121,7 +121,7 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
     info['states_seconds'] = time.perf_counter() - t0
     info['ecsw'] = {}
     rules = {}
-    for r in ranks:
+    for r in (ranks if ecsw_ranks is None else ecsw_ranks):
         t0 = time.perf_counter()
         c0 = T.t.get('ecsw_contrib', 0.)
         n0_ = T.t.get('ecsw_nnls', 0.)
@@ -233,7 +233,8 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
     blocked = L > cfg.get('dense_max_L', 1024)
     for r in cfg['ranks']:
         if r not in trust:
-            A['configs'][f'r{r}'] = dict(status='not constructible (rank)')
+            for k in cfg['kappas']:
+                A['configs'][f'r{r}|k{k}|CNR'] = dict(status='NOT-CONSTRUCTIBLE', reason='rank check (A2.4)')
             continue
         if kind == 'refit' and s != L:
             rr, inf = contrib_and_nnls(states, Phi, r, L, cfg['kappas'], cfg['nnls_seconds'], blocked)
@@ -261,7 +262,11 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
             cid = f'r{r}|k{k}|CNR'
             v = rr.get(f'k{k}')
             if v is None:
-                A['configs'][cid] = dict(status='not constructible (support not reached)')
+                why = 'missing source rule (see sources.json path reason)'
+                if kind == 'refit' and s != L:
+                    pth = A['ecsw'][r]['paths']
+                    why = pth['attempts'][pth['selected']].get('reason')
+                A['configs'][cid] = dict(status='UNRESOLVED', reason=why)     # A4.1: no impossibility certificate
                 rec.save()
                 continue
             t0 = time.perf_counter()

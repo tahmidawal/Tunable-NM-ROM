@@ -18,7 +18,7 @@ sys.path.insert(0, str(HERE / 'vendor' / 'quad2d'))
 import npbank as NB  # noqa: E402
 
 ROOT = HERE.parents[1]
-CKPT = ROOT / 'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl'
+CKPT = HERE / 'inputs' / 'sep_hfit_dense_mid_N256_dense.pkl'   # imp-hrcost edit: lane copy (PROVENANCE.json)
 ROT = HERE / 'vendor' / 'quad2d' / 'inputs' / 'rotation_R512.npz'
 SCHEMES = dict(BE=(1., -1., 0., 1., 0., 0), CNR=(1., -1., 0., .5, .5, 2))
 BE_CO = (1., -1., 0., 1., 0.)

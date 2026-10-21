@@ -530,3 +530,23 @@ protects (independent assembly of the bank operators) is used; P5(i) (host NumPy
 
 **Also noted for the reader.** The same spectral content enters the bank-tested advection integrand $G_i\,u\,s$ (a product
 of three bank functions with one derivative); this is the mechanism by which F2 may need many points (§10 hypothesis).
+
+## Amendment A6 (2026-10-21; P5 fixture re-registered from the local debug run, construction-only, before any cluster job)
+
+**What was seen.** The local GB10 debug run (L = 256, r = 128, dev2; code-path check, no verdict use) gave P5(i)
+(host NumPy evaluation) agreement $\le4.1\times10^{-15}$, but the mesh-sum fixtures far outside their assumed bars:
+mass vs mesh $4.7\times10^{-3}$, stiffness vs five-point mesh $0.24$, FD right-hand side $0.09$–$0.26$. This is the
+spectral content of A5 under-resolved by a 256² stencil (relative error $\sim(kh)^2/12$), so P5(ii) as registered is a
+defective fixture (A5 anticipated this). It is replaced, before any cluster job, by checks that do not depend on a mesh:
+
+- **P5(ii′) diffusion by the AD Laplacian:** $\int_\Omega G^{\mathsf T}\Delta u$ with $\Delta u$ from forward-over-forward AD
+  of the bank (second derivatives), Gauss 1024², must equal $-\mathcal Kc$ (gradient form, P3's matrix) to relative
+  $10^{-5}$ at the six dev6 output states — the integration-by-parts identity (Dirichlet-exact envelope), checking the
+  sign and assembly of $\mathcal K$ by an independent integrand.
+- **P5(iii′) advection energy identity:** for the Dirichlet problem $\int_\Omega u^2(u_x+u_y)=0$, so the exact bank-tested
+  advection satisfies $c^{\mathsf T}T(c)=0$; with Gauss 1024² tables $|c^{\mathsf T}T(c)|\le10^{-6}\lVert c\rVert\lVert T(c)\rVert$
+  at the six dev6 output states — checks that $T$ is the $u\,(u_x+u_y)$ form tested against the trial functions.
+- **P5(iv′) host assembly:** $\mathcal M$ and $\mathcal K$ assembled on the host from the independent NumPy bank
+  evaluator (`npcheck.values_grads`, NumPy Gauss–Legendre points) at Gauss 768², against the device Gauss 768² check
+  matrices, relative $10^{-11}$.
+- The mesh sums (mass, stiffness, FD right-hand side) at the run mesh are **reported descriptively** (no bar).

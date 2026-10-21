@@ -303,45 +303,69 @@ def controls(J, runs_sine, runs_bank):
 
 
 def p5(J, states):
-    """P5 (A2.6): (i) bank RHS vs host NumPy M^-1[-T(c) - nu K c] with npcheck tables; (ii) mesh FD Galerkin projection;
-    plus Mass / Stiff vs mesh sums."""
+    """P5 (A2.6, A6): (i) bank RHS vs host NumPy M^-1[-T(c) - nu K c] with npcheck tables; (ii') AD-Laplacian diffusion
+    identity; (iii') advection energy identity; (iv') host NumPy assembly of Mass / Stiff at Gauss 768^2; mesh sums
+    reported descriptively."""
     import hops as H
+    import sep_common as sc
     B = J.base
     Mm, Km, L0, _ = B.bank_ops()
     Mm_, Km_ = np.asarray(Mm), np.asarray(Km)
+    out = dict(rhs_np=[], lap_identity=[], energy=[])
+    # (i)
     X, w = HT.rule('gauss96')
     d = J.table('bank', 'gauss96')[0]
     Gq, Gx, Gy = NC.values_grads(X, J.Rp)
-    out = dict(rhs_np=[], rhs_mesh=[])
-    L, h = J.L, 1. / J.L
-    Gm = np.asarray(H.bank_apply(B.G, jnp.eye(J.Rp)))                    # (L-1)^2 x r mesh bank (interior)
-    Mh = h * h * Gm.T @ Gm
-
-    def lap(F):     # five-point Laplacian of (L-1, L-1, k) interior fields with zero walls
-        Fp = np.pad(F, ((1, 1), (1, 1), (0, 0)))
-        return (Fp[2:, 1:-1] + Fp[:-2, 1:-1] + Fp[1:-1, 2:] + Fp[1:-1, :-2] - 4 * Fp[1:-1, 1:-1]) / h ** 2
-
-    def dsum(F):    # central D_x + D_y
-        Fp = np.pad(F, ((1, 1), (1, 1), (0, 0)))
-        return (Fp[2:, 1:-1] - Fp[:-2, 1:-1] + Fp[1:-1, 2:] - Fp[1:-1, :-2]) / (2 * h)
-
-    G3 = Gm.reshape(L - 1, L - 1, J.Rp)
-    Kh = -h * h * Gm.T @ lap(G3).reshape(-1, J.Rp)
-    out['mass_vs_mesh'] = float(np.linalg.norm(Mh - Mm_) / np.linalg.norm(Mm_))
-    out['stiff_vs_mesh'] = float(np.linalg.norm(.5 * (Kh + Kh.T) - Km_) / np.linalg.norm(Km_))
     nu = .05
     for c in states[0]:
-        u, s = Gq @ c, (Gx + Gy) @ c
-        Tc = (w[:, None] * Gq).T @ (u * s)
-        ref = np.linalg.solve(Mm_, -Tc - nu * Km_ @ c)
+        u, s_ = Gq @ c, (Gx + Gy) @ c
+        ref = np.linalg.solve(Mm_, -(w[:, None] * Gq).T @ (u * s_) - nu * Km_ @ c)
         got = np.asarray(GS.rhs(jnp.asarray(c), nu, d))
         out['rhs_np'].append(float(np.linalg.norm(got - ref) / np.linalg.norm(ref)))
-        U_ = (Gm @ c).reshape(L - 1, L - 1, 1)
-        F = (-U_ * dsum(U_) + nu * lap(U_)).reshape(-1)
-        cm = np.linalg.solve(Mh, h * h * Gm.T @ F)
-        got_ex = np.asarray(GS.rhs(jnp.asarray(c), nu, J.table('bank', 'gauss128')[0]))
-        out['rhs_mesh'].append(float(np.linalg.norm(got_ex - cm) / np.linalg.norm(cm)))
-    del Gm, G3
-    out['passed'] = bool(max(out['rhs_np']) <= 1e-10 and max(out['rhs_mesh']) <= 1e-3 and
-                         out['mass_vs_mesh'] <= 1e-4 and out['stiff_vs_mesh'] <= 1e-3)
+    # (ii') and (iii') at Gauss 1024^2 (device, chunked)
+    X, w = HT.rule('gauss1024')
+    mdl = B.bank.mdl
+    Tp = jnp.asarray(mdl.T[:, :J.Rp])
+
+    def lap1(x):
+        f = lambda y: sc.features(mdl.params, y[None])[0]
+        tot = 0.
+        for e in (jnp.array([1., 0.]), jnp.array([0., 1.])):
+            g = lambda y: jax.jvp(f, (y,), (e,))[1]
+            tot = tot + jax.jvp(g, (x,), (e,))[1]
+        return tot
+    lapv = jax.jit(jax.vmap(lap1))
+    C6 = jnp.asarray(np.stack(states[0]))                                  # (6, r)
+    GtLap = jnp.zeros((6, J.Rp))
+    Tc = jnp.zeros((6, J.Rp))
+    for s0 in range(0, len(X), 16384):
+        Xs = X[s0:s0 + 16384]
+        ws = jnp.asarray(w[s0:s0 + 16384])
+        g, gx, gy = mdl.values_grads(Xs, J.Rp)
+        lg = lapv(jnp.asarray(Xs)) @ Tp
+        U, Lu, S_ = C6 @ g.T, C6 @ lg.T, C6 @ (gx + gy).T              # (6, chunk)
+        GtLap = GtLap + (ws[None] * Lu) @ g
+        Tc = Tc + (ws[None] * U * S_) @ g
+    for j in range(6):
+        c = C6[j]
+        out['lap_identity'].append(float(jnp.linalg.norm(GtLap[j] + Km @ c) / jnp.linalg.norm(Km @ c)))
+        out['energy'].append(float(jnp.abs(c @ Tc[j]) / (jnp.linalg.norm(c) * jnp.linalg.norm(Tc[j]))))
+    # (iv') host assembly at Gauss 768^2
+    X, w = NC.gauss_rule(768)
+    Mh, Kh = np.zeros((J.Rp, J.Rp)), np.zeros((J.Rp, J.Rp))
+    for s0 in range(0, len(X), 32768):
+        g, gx, gy = NC.values_grads(X[s0:s0 + 32768], J.Rp)
+        ws = w[s0:s0 + 32768][:, None]
+        Mh += g.T @ (ws * g)
+        Kh += gx.T @ (ws * gx) + gy.T @ (ws * gy)
+    Md, Kd = (np.asarray(a_) for a_ in HT.mass_stiff(B.bank, J.Rp, 'gauss768'))
+    out['host_mass'] = float(np.linalg.norm(Mh - Md) / np.linalg.norm(Md))
+    out['host_stiff'] = float(np.linalg.norm(Kh - Kd) / np.linalg.norm(Kd))
+    # descriptive mesh sums
+    L, h = J.L, 1. / J.L
+    Gm = np.asarray(H.bank_apply(B.G, jnp.eye(J.Rp)))
+    out['mesh_mass_rel'] = float(np.linalg.norm(h * h * Gm.T @ Gm - Mm_) / np.linalg.norm(Mm_))
+    del Gm
+    out['passed'] = bool(max(out['rhs_np']) <= 1e-10 and max(out['lap_identity']) <= 1e-5 and max(out['energy']) <= 1e-6
+                         and out['host_mass'] <= 1e-11 and out['host_stiff'] <= 1e-11)
     return out

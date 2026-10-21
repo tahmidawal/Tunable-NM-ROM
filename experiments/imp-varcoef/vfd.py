@@ -32,6 +32,7 @@ from vspec import pcg         # noqa: E402
 
 UMAX_GUARD = 10.0
 COARSE_L = 8
+CCV_TOLS = dict(FR.TOLS, T=(1e-12, 1e-13))      # jcp-fom2d levels t0..t3 (+X) and a tighter anchor level T (A1.12)
 
 
 # ---------------------------------------------------------------------------------------------- operators -----
@@ -298,7 +299,7 @@ def vref_solver(L, max_newton=20, lin_maxiter=None):
 def make_ccv(L, dt, level, out='lattice'):
     """CCv FOM: vref_solver at jcp-fom2d tolerance level t1..t3, CN-R, followed by the output map, in one timed call.
     Returns q(u0, kp) -> (fields, stats)."""
-    ntol, ltol = FR.TOLS[level]
+    ntol, ltol = CCV_TOLS[level]
     run = vref_solver(L, max_newton=FR.MAX_NEWTON)
     synth = jax.jit(lambda o: jax.vmap(lambda f: fd_out(out, L)(f.reshape(L - 1, L - 1)))(o))
     nexp = int(FC.n_stages(dt, 'cnr'))

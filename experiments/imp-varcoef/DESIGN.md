@@ -424,3 +424,31 @@ A3 overrides A1/A2 where they differ. Numbers refer to the round-3 items.
   [1.8, 2.2]) while floor, direction ($c=0$), Péclet, solver and $t_0$ predicates stay true. Failure of any must-fail control to fire
   blocks production.
 - **A4.23 ρ zero denominators.** $\rho_k=0$ if $\lVert D_{3N}b_k\rVert=\lVert D_{2N}b_k\rVert=0$; $\rho_k=\infty$ if only the denominator is zero.
+
+---
+
+## Amendment A5 (2026-10-21, after Codex design audit 5, `audits/codex-design-5.md`; before any job)
+
+- **A5.5 Cross-check extrapolation (replaces A4.5's evidence rules).** Adjacent differences. Space: $\delta_1=\lVert F_{128}-F_{192}\rVert$,
+  $\delta_2=\lVert F_{192}-F_{256}\rVert$ (lattice distance, same $\Delta t,Q$/N-ratio, tol); with $r=\delta_2/\delta_1$, the
+  equal-spacing geometric (spectral) model gives the base's remaining spatial error $t_s=\delta_2\,r/(1-r)$; accepted iff $r\le0.1$,
+  or iff **both** $\delta_1,\delta_2\le10^{-7}$ (resolved; $t_s=\delta_2$). Time: $e_1=\lVert F_{\Delta t}-F_{\Delta t/2}\rVert$,
+  $e_2=\lVert F_{\Delta t/2}-F_{\Delta t/4}\rVert$, $p=\log_2(e_1/e_2)$; accepted iff $p\in[1.8,2.2]$ with the base's time error
+  $t_t=e_1/(1-2^{-p})$, or iff **both** $e_1,e_2\le10^{-7}$ ($t_t=e_1+e_2$). $U_{xc}=t_s+t_t+d_{3N}+d_{\rm tol}$, still a conditional
+  indicator; converged/passed rules as A4.5.
+- **A5.10 Temporal check after extension.** After the small-step extension, the fixed-case temporal check is repeated on the two finest
+  (extended) steps; if it still fails ($>10^{-3}$) the family is **unresolved** (blocks a positive target verdict; does not block a
+  negative one, A4.10).
+- **A5.12 ROM denominator — the lane brief is the binding exception.** COMMON-BRIEF's header: "Where they conflict, your lane brief
+  wins." The lane brief defines the denominator: *"Our box cost = the deployed bank ROM per-query cost on the box at the same targets
+  (from jcp-p1-scaling / jcp-fom2d, same GPU type; re-measure in the same job if possible)."* So the denominator is, by the lane brief,
+  the inherited deployed configuration's cost, with its inherited qualification (prior evidence, stated next to every ROM number);
+  no fresh Q1/Q2 is required for the Phase-1 gate. **Selection/inference separation:** the ROM denominator per target is selected
+  from the **whole** registered population (all 21 inherited qualified LSPG configurations in `rom-box.json`) using the historical C2
+  stage-2 costs — this plays the role of stage 1 and is frozen in `checks/rom-box.json` (sha256 recorded) before any job of this lane —
+  and the timing job re-measures only that frozen configuration (stage 2, fresh triplets). It is described as "the frozen selected
+  configuration", not as an established population minimum. The A4.12 1.5× shortlist is withdrawn. The inherited C2 cost is reported
+  beside the in-job one; if the in-job re-measurement fails (vetoed, invalid, coverage), the inherited C2 cost is the denominator,
+  labelled "inherited, not re-measured". Outcome labels: **PASS-PROVISIONAL** (before any training the Phase-2 amendment must still
+  requalify the denominators in-job and recompute $G$; a prudential rule of this lane), **FAIL** (per the lane-brief gate; denominators
+  with inherited qualification), **UNRESOLVED**.

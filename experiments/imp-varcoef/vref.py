@@ -92,67 +92,97 @@ def level(S, case, kp, L, dt):
 
 
 def crosscheck(case, kp, Lat_ref, n0, eps):
-    runs = {}
-    specs = {'base': (256, 0.05 / 128, 512), 'space': (192, 0.05 / 128, 384), 'time': (256, 0.05 / 256, 512),
-             'quad': (256, 0.05 / 128, 768)}
-    stats = {}
-    for k, (N, dt, Q) in specs.items():
+    """A4.5: PSI SBDF2 base (256, 0.05/128, Q 2N, tol 1e-12) and refinements; conditional indicator U_xc."""
+    runs, stats = {}, {}
+    dt0 = 0.05 / 128
+    specs = {'base': (256, dt0, 512, 1e-12), 's128': (128, dt0, 256, 1e-12), 's192': (192, dt0, 384, 1e-12),
+             't2': (256, dt0 / 2, 512, 1e-12), 't4': (256, dt0 / 4, 512, 1e-12), 'quad': (256, dt0, 768, 1e-12),
+             'tol': (256, dt0, 512, 1e-14)}
+    for k, (N, dt, Q, tol) in specs.items():
         t = time.perf_counter()
-        q = VS.make_psi(N, dt, 'SBDF2', 1e-12, Q=Q)
+        q = VS.make_psi(N, dt, 'SBDF2', tol, Q=Q, maxiter=400)
         F, st = q(VS.ic(case['desc'], N), jnp.asarray(kp))
         F = np.asarray(jax.block_until_ready(F))
         runs[k] = F
         st = jax.device_get(st)
-        stats[k] = dict(N=N, dt=dt, Q=Q, nbad=int(st['nbad']), it_max=int(st['it_max']), res_max=float(st['res_max']),
-                        seconds=time.perf_counter() - t, finite=bool(np.all(np.isfinite(F))))
+        stats[k] = dict(N=N, dt=dt, Q=Q, tol=tol, nbad=int(st['nbad']), it_max=int(st['it_max']),
+                        res_max=float(st['res_max']), seconds=time.perf_counter() - t,
+                        finite=bool(np.all(np.isfinite(F))), valid=bool(int(st['nbad']) == 0 and np.all(np.isfinite(F))))
     b = runs['base']
-    diffs = {k: lat_dist(runs[k], b, n0) for k in ('space', 'time', 'quad')}
-    conv = all(v <= XC_BAR_CONV for v in diffs.values()) and all(s['nbad'] == 0 and s['finite'] for s in stats.values())
+    d = lambda x, y: lat_dist(runs[x], runs[y], n0)
+    d1, d2 = d('s128', 's192'), d('s192', 'base')          # adjacent spatial differences (A5.5)
+    e1, e2 = d('base', 't2'), d('t2', 't4')                 # adjacent temporal differences
+    dq, dtol = d('quad', 'base'), d('tol', 'base')
+    r = d2 / d1 if d1 > 0 else float('inf')
+    if d1 <= 1e-7 and d2 <= 1e-7:
+        space_ok, ts = True, d2
+    elif r <= 0.1:
+        space_ok, ts = True, d2 * r / (1 - r)
+    else:
+        space_ok, ts = False, d2
+    p_t = float(np.log2(e1 / e2)) if e2 > 0 and e1 > 0 else None
+    if e1 <= 1e-7 and e2 <= 1e-7:
+        time_ok, tt = True, e1 + e2
+    elif p_t is not None and 1.8 <= p_t <= 2.2:
+        time_ok, tt = True, e1 / (1 - 2.0 ** (-p_t))
+    else:
+        time_ok, tt = False, e1
+    U = ts + tt + dq + dtol
+    valid = all(v['valid'] for v in stats.values())
+    conv = bool(space_ok and time_ok and U <= XC_BAR_CONV and valid)
     dist = lat_dist(b, Lat_ref, n0)
-    bar = max(XC_BAR_DIST, 3 * eps) if eps is not None else XC_BAR_DIST
-    return dict(stats=stats, diffs=diffs, converged=bool(conv), distance=dist, bar=bar,
-                passed=bool(conv and dist <= bar))
+    bar = max(XC_BAR_DIST, 3 * ((eps or 0.0) + U))
+    return dict(stats=stats, delta1=d1, delta2=d2, r_space=r, e1=e1, e2=e2, p_time=p_t, d_quad=dq, d_tol=dtol, t_space=ts,
+                t_time=tt, U_xc=U, space_ok=space_ok, time_ok=time_ok, all_valid=valid, converged=conv,
+                distance=dist, bar=bar, passed=bool(conv and dist <= bar),
+                note='U_xc is a conditional indicator, not a certified bound (A4.5)')
 
 
 def ref_controls(levels, t0, nu):
-    """A2.19 reference-predicate fixtures on real levels: each must give its own outcome."""
+    """A2.19/A3.19/A4.19 reference-predicate fixtures on real, ACCEPTED levels: each fixture must fail exactly its
+    target predicate while every other judge check stays true."""
     u1, u2, u3 = (np.asarray(l['lat']) for l in levels)
     base = [dict(l) for l in levels]
-    out = {}
+    jb = V.judge(base, t0, nu)
+    out = dict(baseline=jb['outcome'], baseline_checks=jb['checks'])
+    if jb['outcome'] != 'accepted':
+        out['all_fire'] = None
+        out['note'] = 'baseline not accepted: fixtures need an accepted case'
+        return out
 
-    def J(lv, nu_=nu, t0_=t0):
-        return V.judge(lv, t0_, nu_)['outcome']
-    out['baseline'] = J(base)
-    lv = [dict(l) for l in base]
-    lv[1]['steps_ok'] = False
-    out['T-ref-solver'] = dict(outcome=J(lv), expect='solver-fail')
-    lv = [dict(l) for l in base]
-    lv[0]['tau'] = 1.0
-    out['T-ref-floor'] = dict(outcome=J(lv), expect='unresolved-floor')
-    out['T-ref-peclet'] = dict(outcome=J(base, 1e-9), expect='peclet-fail')
-    lv = [dict(l) for l in base]
-    lv[2]['lat'] = 2 * u2 - u1
-    out['T-ref-order'] = dict(outcome=J(lv), expect='order-fail')
-    w = np.array(u3, copy=True)
+    def mut(i, key, val):
+        lv = [dict(l) for l in base]
+        lv[i][key] = val
+        return lv
+
+    def later(f):
+        w = np.array(u3, copy=True)
+        for k in range(1, 6):
+            w[k] = f(k)
+        return w
     rng = np.random.default_rng(1)
-    for k in range(1, 6):
+
+    def orth(k):
         e = (u1[k] - u2[k]).ravel()
         v = rng.standard_normal(e.size)
         v -= v @ e / (e @ e) * e
         v /= np.linalg.norm(v)
-        w[k] = u2[k] - 0.25 * np.linalg.norm(e) * v.reshape(u2[k].shape)
-    lv = [dict(l) for l in base]
-    lv[2]['lat'] = w
-    out['T-ref-direction'] = dict(outcome=J(lv), expect='direction-inconsistent')
-    w = np.array(u3, copy=True)
-    w[0] = w[0] * (1 + 1e-6)
-    lv = [dict(l) for l in base]
-    lv[2]['lat'] = w
-    out['T-ref-ic'] = dict(outcome=J(lv), expect='ic-mismatch')
-    for k, v in out.items():
-        if k != 'baseline':
-            v['fires'] = v['outcome'] == v['expect']
-    out['all_fire'] = all(v['fires'] for k, v in out.items() if k not in ('baseline',))
+        return u2[k] - 0.25 * np.linalg.norm(e) * v.reshape(u2[k].shape)
+    wic = np.array(u3, copy=True)
+    wic[0] = wic[0] * (1 + 1e-6)
+    fx = {'T-ref-solver': (mut(1, 'steps_ok', False), nu, 'solver', 'solver-fail'),
+          'T-ref-floor': (mut(0, 'tau', 1.0), nu, 'floor', 'unresolved-floor'),
+          'T-ref-peclet': (base, 1e-9, 'peclet', 'peclet-fail'),
+          'T-ref-order': (mut(2, 'lat', later(lambda k: u2[k] - 0.5 * (u1[k] - u2[k]))), nu, 'order', 'order-fail'),
+          'T-ref-direction': (mut(2, 'lat', later(orth)), nu, 'direction', 'direction-inconsistent'),
+          'T-ref-ic': (mut(2, 'lat', wic), nu, 't0_shared', 'ic-mismatch')}
+    for name, (lv, nu_, target, expect) in fx.items():
+        j = V.judge(lv, t0, nu_)
+        others = {k: v for k, v in j['checks'].items() if k != target}
+        out[name] = dict(outcome=j['outcome'], expect=expect, target_false=bool(not j['checks'][target]),
+                         others_true=bool(all(others.values())), checks=j['checks'])
+        out[name]['fires'] = bool(j['outcome'] == expect and out[name]['target_false'] and out[name]['others_true'])
+    out['all_fire'] = all(v['fires'] for k, v in out.items() if k.startswith('T-'))
     return out
 
 
@@ -198,7 +228,7 @@ def main():
                 xc = crosscheck(case, kp, levels[-1]['lat'], rec['n0'], eps)
                 rep['crosscheck'][cid] = xc
                 log(f'  XC conv={xc["converged"]} diffs={xc["diffs"]} dist={xc["distance"]:.2e} passed={xc["passed"]}')
-            if cfg.get('controls') and rep['controls'] is None:
+            if cfg.get('controls') and (rep['controls'] is None or rep['controls'].get('all_fire') is None):
                 rep['controls'] = ref_controls(levels, t0, nu_pe)
                 log(f'  CONTROLS {rep["controls"]}')
             (out / 'result.json').write_text(json.dumps(rep, indent=1, default=float))

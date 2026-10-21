@@ -1,0 +1,27 @@
+{
+ "job": "runs/smk1",
+ "checks": {
+  "backend_gpu": true,
+  "x64_highest": true,
+  "impl_real_size": true,
+  "timing_pilots_ok": true,
+  "impl_checks_pass": true,
+  "impl_controls_fire": true,
+  "ref_controls_fire": true,
+  "ref_complete": true,
+  "ladder_complete": true,
+  "timing_complete": true,
+  "timing_controls_fire": true,
+  "timing_gates": true,
+  "timing_h200": true,
+  "gate_selftest": true,
+  "all_done": true
+ },
+ "accepted": true,
+ "sources": {
+  "impl": "a0dbd96a5282c45206c0406c98352a5b2385277c7f9e6f01db24e5d7e3043417",
+  "ref": "03c4ab5770742be254064a0768b805f62193af8f30cb0b39bd8df536158a1604",
+  "ladder": "f10b41cf94015e82815eb1919509939957a1e977fe34687d27277207f39b6533",
+  "timing": "6c3a02bd2d97f81c7526a5888eda061eb32487e28fb320fcae98b9604fc2299d"
+ }
+}

@@ -1,0 +1,210 @@
+host=pax009 source_commit=3117fd59187d6412587985a72f41504027934604
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB
+10.235.106.23:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+jax_backend=gpu
+x64+highest ok
+STEP checks_impl configs/smk-impl.json 2026-10-21T18:28:30Z
+{
+ "case": "dev|0",
+ "small": false,
+ "I-C1": {
+  "etd_vs_ps": {
+   "value": 4.3776917465567194e-16,
+   "bar": 1e-10,
+   "pass": true
+  },
+  "psi_cg_iterations_C1": {
+   "SBDF2": {
+    "it_max": 1,
+    "nst": 20,
+    "pass_": true
+   },
+   "CNAB2": {
+    "it_max": 1,
+    "nst": 20,
+    "pass_": true
+   }
+  },
+  "psi_cg_iterations_C1_pass": true,
+  "ccv_vs_refcore": {
+   "value": 2.775105954653419e-16,
+   "bar": 1e-10,
+   "pass": true
+  },
+  "pass": true
+ },
+ "I-sym": {
+  "psi": {
+   "sym_max": 1.6945508459628585e-17,
+   "neg_max": -3258448.3377306913,
+   "pass": true
+  },
+  "fd": {
+   "sym_max": 4.827658587563942e-18,
+   "neg_max": -105919605.94516411,
+   "pass": true
+  },
+  "mg": {
+   "L32|1.0": {
+    "levels": 3,
+    "sym_max": 1.3223555816949976e-17,
+    "pos_min": 314.89107796480033
+   },
+   "L32|1.5": {
+    "levels": 3,
+    "sym_max": 1.1565061284867402e-17,
+    "pos_min": 263.4713152705171
+   },
+   "L64|1.0": {
+    "levels": 4,
+    "sym_max": 7.380490035697653e-18,
+    "pos_min": 618.7086220824385
+   },
+   "L64|1.5": {
+    "levels": 4,
+    "sym_max": 9.00463885003303e-18,
+    "pos_min": 533.5280920238874
+   },
+   "L128|1.0": {
+    "levels": 5,
+    "sym_max": 3.891870343745936e-18,
+    "pos_min": 941.3619389781192
+   },
+   "L128|1.5": {
+    "levels": 5,
+    "sym_max": 2.357302513617563e-18,
+    "pos_min": 879.0141365822492
+   },
+   "L256|1.0": {
+    "levels": 6,
+    "sym_max": 1.9993978299193803e-18,
+    "pos_min": 1252.097169186657
+   },
+   "L256|1.5": {
+    "levels": 6,
+    "sym_max": 1.4880681817088473e-18,
+    "pos_min": 1183.3799231526987
+   },
+   "L512|1.0": {
+    "levels": 7,
+    "sym_max": 1.569192421183359e-18,
+    "pos_min": 1546.012064760217
+   },
+   "L512|1.5": {
+    "levels": 7,
+    "sym_max": 9.290315528821498e-19,
+    "pos_min": 1477.4823089228
+   }
+  },
+  "mg_pass": true,
+  "pass_": true
+ },
+ "I-quad": {
+  "value": 3.3655052776218524e-15,
+  "bar": 1e-08,
+  "N": 64,
+  "C": 100.0,
+  "pass_": true
+ },
+ "I-mms": {
+  "spectral": {
+   "value": 4.062545230299537e-14,
+   "bar": 1e-08,
+   "N": 64,
+   "pass": true
+  },
+  "fd": {
+   "L": [
+    64,
+    128,
+    256
+   ],
+   "err": [
+    0.0009646982275144184,
+    0.00024161433316618558,
+    6.040536233203834e-05
+   ],
+   "orders": [
+    1.9973716742130603,
+    1.999957509555568
+   ],
+   "pass_": true
+  },
+  "pass_": true
+ },
+ "T-loose": {
+  "psi": {
+   "res_max": 0.10272202446080254,
+   "nbad": 20,
+   "valid": false,
+   "margin": 1027220.2446080255
+  },
+  "fdmg": {
+   "res_max": 0.14708026527969784,
+   "nbad": 20,
+   "valid": false,
+   "margin": 147080.26527969784
+  },
+  "fixture": "dev|0 at C = 100 (A3.19)",
+  "fires": true
+ },
+ "T-nan": {
+  "clean_valid": true,
+  "injected_valid": false,
+  "fires": true
+ },
+ "seconds": 76.76748711336404,
+ "backend": "gpu",
+ "all_pass": true,
+ "controls_fire": true
+}
+STEP vref configs/smk-ref.json 2026-10-21T18:29:50Z
+14:29:53 CASE C100|dev|0 desc=[0.7257, 0.4712, 0.1482, 1.0983, 0.0579]
+14:30:02    L=1024 dt=2.500e-03 prod ok=True maxres=3.99e-12 newton=206 4.8s (compile 1.6s)
+14:30:29    L=2048 dt=1.250e-03 prod ok=True maxres=9.08e-12 newton=405 23.7s (compile 1.5s)
+14:33:49    L=4096 dt=6.250e-04 prod ok=True maxres=2.70e-12 newton=805 196.7s (compile 1.7s)
+14:33:50   -> accepted p=[1.994, 2.0, 1.999, 1.996, 1.992] eps=7.355815777179384e-06 eligible=True elapsed=237s
+14:33:50   CONTROLS {'baseline': 'accepted', 'baseline_checks': {'solver': True, 'peclet': True, 'floor': True, 'order': True, 'direction': True, 't0_shared': True}, 'T-ref-solver': {'outcome': 'solver-fail', 'expect': 'solver-fail', 'target_false': True, 'others_true': True, 'checks': {'solver': False, 'peclet': True, 'floor': True, 'order': True, 'direction': True, 't0_shared': True}, 'fires': True}, 'T-ref-floor': {'outcome': 'unresolved-floor', 'expect': 'unresolved-floor', 'target_false': True, 'others_true': True, 'checks': {'solver': True, 'peclet': True, 'floor': False, 'order': True, 'direction': True, 't0_shared': True}, 'fires': True}, 'T-ref-peclet': {'outcome': 'peclet-fail', 'expect': 'peclet-fail', 'target_false': True, 'others_true': True, 'checks': {'solver': True, 'peclet': False, 'floor': True, 'order': True, 'direction': True, 't0_shared': True}, 'fires': True}, 'T-ref-order': {'outcome': 'order-fail', 'expect': 'order-fail', 'target_false': True, 'others_true': True, 'checks': {'solver': True, 'peclet': True, 'floor': True, 'order': False, 'direction': True, 't0_shared': True}, 'fires': True}, 'T-ref-direction': {'outcome': 'direction-inconsistent', 'expect': 'direction-inconsistent', 'target_false': True, 'others_true': True, 'checks': {'solver': True, 'peclet': True, 'floor': True, 'order': True, 'direction': False, 't0_shared': True}, 'fires': True}, 'T-ref-ic': {'outcome': 'ic-mismatch', 'expect': 'ic-mismatch', 'target_false': True, 'others_true': True, 'checks': {'solver': True, 'peclet': True, 'floor': True, 'order': True, 'direction': True, 't0_shared': False}, 'fires': True}, 'all_fire': True}
+14:33:50 CASE C100|dev|3 desc=[0.554, 0.5696, 0.1471, 1.4609, 0.0206]
+14:33:52    L=1024 dt=2.500e-03 prod ok=True maxres=4.65e-13 newton=204 1.8s (compile 0.0s)
+14:34:05    L=2048 dt=1.250e-03 prod ok=True maxres=9.46e-14 newton=404 12.1s (compile 0.0s)
+14:35:50    L=4096 dt=6.250e-04 prod ok=True maxres=3.63e-14 newton=804 104.6s (compile 0.0s)
+14:35:50   -> accepted p=[1.997, 1.996, 1.994, 1.992, 1.991] eps=1.433118348273439e-05 eligible=True elapsed=357s
+14:36:24   XC conv=True d1=2.25e-09 d2=5.54e-10 e1=1.13e-05 e2=2.81e-06 U=1.50e-05 dist=2.67e-05 bar=2.50e-04 passed=True
+14:36:24 CASE C10|dev|0 desc=[0.7257, 0.4712, 0.1482, 1.0983, 0.0579]
+14:36:25    L=1024 dt=2.500e-03 prod ok=True maxres=1.72e-12 newton=206 0.9s (compile 0.0s)
+14:36:31    L=2048 dt=1.250e-03 prod ok=True maxres=4.11e-12 newton=405 5.9s (compile 0.0s)
+14:37:24    L=4096 dt=6.250e-04 prod ok=True maxres=1.23e-12 newton=805 52.1s (compile 0.0s)
+14:37:24   -> accepted p=[1.997, 2.0, 1.997, 1.993, 1.99] eps=7.116683882090315e-06 eligible=True elapsed=451s
+14:37:24 CASE C10|dev|3 desc=[0.554, 0.5696, 0.1471, 1.4609, 0.0206]
+14:37:25    L=1024 dt=2.500e-03 prod ok=True maxres=4.00e-13 newton=204 0.7s (compile 0.0s)
+14:37:30    L=2048 dt=1.250e-03 prod ok=True maxres=1.12e-13 newton=404 4.4s (compile 0.0s)
+14:38:07    L=4096 dt=6.250e-04 prod ok=True maxres=4.37e-14 newton=804 36.7s (compile 0.0s)
+14:38:07   -> accepted p=[1.997, 1.996, 1.994, 1.992, 1.991] eps=1.3836152614746832e-05 eligible=True elapsed=494s
+14:38:20   XC conv=True d1=3.10e-09 d2=6.53e-10 e1=1.04e-05 e2=2.59e-06 U=1.38e-05 dist=2.51e-05 bar=2.50e-04 passed=True
+STEP vladder configs/smk-ladder.json 2026-10-21T18:38:20Z
+14:38:25 === C=100: dev ladder, 10 configurations
+14:39:25 DEV C=100 10/10 elapsed 59s
+14:39:57 EXT C=100: 8 extension configurations
+14:40:32 VAL C=100: 16 of 18 survive pruning
+14:40:32 VAL C=100 10/16 elapsed 127s
+14:40:32 SCREEN C=100: 16 configurations
+STEP vtime configs/smk-time.json 2026-10-21T18:43:03Z
+jax_backend=gpu x64=True precision=highest
+BANK 4096 13.2 {'in_use': 69115873792, 'peak': 96592342016, 'limit': 138101653504}
+SCORED A True 39.5
+SCORED ckpt:18f0266ae6f0|R256|gauss128|frozen|CNR|0.0125|LSPG|prod True 50.0
+SCORED ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.0125|LSPG|prod True 61.6
+SCORED psi|N48|0.0125|SBDF2|1e-05@C100 True 65.1
+SCORED fdmg|L128|0.00625|MG|1e-07@C100 True 70.9
+SCORED etd|N48|0.0125|mid@C100 True 82.5
+SCORED ccv|L128|0.00625|t2@C100 True 85.0
+SCORED SETUP|psi|N48|0.0125|SBDF2|1e-05@C100 True 85.1
+SCORED KERNEL|psi|N48|0.0125|SBDF2|1e-05@C100 True 86.4
+STAGE0 6 89.3
+STAGE1 4 106.1
+STAGE2 24 48 120.0
+STAGE2 48 48 133.5
+PILOT psi|N128|0.003125|CNAB2|1e-08@C100 True {'in_use': 73847718912, 'peak': 96592342016, 'limit': 138101653504}
+C2TIME COMPLETE 145.2
+ALL-DONE

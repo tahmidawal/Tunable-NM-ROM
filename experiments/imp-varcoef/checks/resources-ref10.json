@@ -1,0 +1,17 @@
+{
+ "job": "ref10",
+ "runs": [
+  "vref:configs/ref10.json"
+ ],
+ "configs": {
+  "configs/ref10.json": "93d6d81dea5bfe2031ff9ac1458c663f27c3abd4622dd03116c21e55e97cc7ee"
+ },
+ "parts_hours": {
+  "vref:configs/ref10.json": 0.13763484235638043
+ },
+ "projection_hours": 0.13763484235638043,
+ "safety": 1.3,
+ "smoke": "runs/smk1",
+ "gpu": "NVIDIA H200",
+ "note": "smoke-derived upper-bound certificate (resources.py docstring)"
+}

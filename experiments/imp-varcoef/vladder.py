@@ -322,7 +322,7 @@ class Ladder:
                     jax.block_until_ready(p(x0, kp)[0])
                     ts.append(time.perf_counter() - t)
             self.rep['screening'][f'{k}@C{C:g}'] = dict(times=ts, cost=float(np.median(ts)))
-            del self.progs[(k, str(('mesh', int(sc['mesh']))))]
+            # A7.1: compiled programs are shared via vspec.cached and kept across contrasts
 
     def rho(self, key, key3, C, cid):
         """A3.23 own-state operator discrepancy over the six reached states of `key`'s trajectory."""
@@ -398,6 +398,11 @@ class Ladder:
             ext = self.extensions(keys0, C) if self.cfg.get('extensions', True) else []
             keys = keys0 + ext
             self.save()
+            if self.cfg.get('dev_only', {}).get(f'{C:g}'):       # A7.4: deferred contrast -- dev ladder only, no selection
+                self.rep['phases'][f'{C:g}'] = dict(n_keys=len(keys), n_val=0, mode='dev-only (deferred: val, screening, '
+                                                                                 'qualification, timing)')
+                self.save()
+                continue
             survive = [k for k in keys if self.dev_ok(k, C, PRUNE)]
             log(f'VAL C={C:g}: {len(survive)} of {len(keys)} survive pruning')
             self.rep['phases'][f'{C:g}'] = dict(n_keys=len(keys), n_val=len(survive))
@@ -422,8 +427,8 @@ class Ladder:
                     ranked = sorted([k for k in scr if VK.family(k) == f and match[k]['worst'] <= tau], key=lambda k: (cost(k), k))
                     chosen, tried = [], []
                     for k in ranked:
-                        if len(chosen) >= int(self.cfg.get('ntop', 3)):
-                            break
+                        if len(chosen) >= int(self.cfg.get('ntop', 3)) or len(tried) >= int(self.cfg.get('max_tries', 8)):
+                            break                              # A7.2: at most 8 qualification attempts per group
                         qk = f'{k}@C{C:g}'
                         if qk not in self.rep['qualification']:
                             self.rep['qualification'][qk] = self.qualify(k, C, pooled) if self.cfg.get('qualify', True) \

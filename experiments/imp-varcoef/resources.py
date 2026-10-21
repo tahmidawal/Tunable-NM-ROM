@@ -30,6 +30,7 @@ SAFETY = 1.3
 EXT_FRAC = 0.5
 MESH_FACTOR = 3.0
 VARIANT_FACTOR = 3.0 * 3          # three variants (candidate, tight, tighter or 3N), each up to 3x the candidate's cost
+QUAL_FRAC = 0.5                   # bound on the fraction of configurations tried in qualification (A7.2 cap: <= 8 per group)
 RETRY = 1.5
 CATEGORIES = ('ref100', 'ref10', 'fallback-reserve', 'ladder', 'timing', 'timing-retry-reserve', 'test-refs', 'test-run')
 
@@ -55,22 +56,50 @@ def fam(key):
     return key.split('@')[0].split('|')[-1] if key.startswith(('KERNEL|', 'SETUP|')) else key.split('|')[0]
 
 
+def steps_res(key):
+    import vkeys as VK
+    sp = VK.parse(key)
+    return 0.25 / sp['dt'], float(sp.get('N') or sp.get('L'))
+
+
 def family_rates(smoke):
+    """Per family: the observed per-step times tau_k = steady_k / steps_k (steady = the largest non-first-case time of a
+    configuration; variants priced separately) and the largest compile excess c_f. A configuration's per-run cost is
+    steps x (the largest per-step time observed at a resolution >= its own; beyond the largest observed resolution,
+    quadratic extrapolation from it). Assumption: per-step time is non-decreasing in resolution (GPU latency floor)."""
     lad = J(Path(smoke) / 'output/vladder_smk-ladder/result.json')
-    rate = {}
+    byk = {}
     for r in lad['runs']:
         if r.get('seconds') is not None:
-            f = r['key'].split('|')[0]
-            rate[f] = max(rate.get(f, 0.0), r['seconds'] / work(r['key']))
-    missing = {'psi', 'etd', 'fdmg', 'ccv'} - set(rate)
-    assert not missing, ('no smoke timing for families', missing)
-    return rate
+            byk.setdefault(r['key'], []).append(r['seconds'])
+    variant = lambda k: any(t in k for t in ('|1e-10', '|1e-12', '|tE', '|tF', '|Q'))   # priced by VARIANT_FACTOR
+    out = {}
+    for f in ('psi', 'etd', 'fdmg', 'ccv'):
+        ks = [k for k in byk if k.split('|')[0] == f and len(byk[k]) >= 2 and not variant(k)]
+        assert ks, ('no smoke timing for family', f)
+        obs = [(max(byk[k][1:]) / steps_res(k)[0], steps_res(k)[1]) for k in ks]
+        c_f = max(max(byk[k][0] - max(byk[k][1:]), 0.0) for k in ks)
+        out[f] = (obs, c_f)
+    return out
+
+
+def run_cost(rate, key):
+    obs, _ = rate[key.split('|')[0]]
+    n, res = steps_res(key)
+    above = [t for t, r in obs if r >= res]
+    if above:                                   # per-step time is non-decreasing in resolution: bound by observations above
+        return n * max(above)
+    tmax, rmax = max(((t, r) for t, r in obs), key=lambda x: (x[1], x[0]))
+    return n * tmax * (res / rmax) ** 2         # beyond the largest observed resolution: quadratic in res
 
 
 def proj_vref(smoke, cfg):
     ref = J(Path(smoke) / 'output/vref_smk-ref/result.json')
     rates, retries, n = {}, 0, 0
-    for c in ref['cases'].values():
+    Cs = {f'C{float(C):g}' for C in cfg['contrasts']}
+    for kc, c in ref['cases'].items():
+        if kc.split('|')[0] not in Cs:                 # rates from the same contrast only
+            continue
         for lv in c['levels']:
             n += 1
             retries += len(lv) > 1
@@ -82,7 +111,7 @@ def proj_vref(smoke, cfg):
     for L, dt in cfg['levels']:
         r = rates.get(L, top) if L <= max(rates) else top
         per_case += r * L * L * nstages_fd(dt)
-    retry = max(retries / max(n, 1), 0.5)
+    retry = max(retries / max(n, 1), 0.1)          # observed retry fraction (fallback reruns are reserved separately)
     xc = [sum(s['seconds'] for s in x['stats'].values()) for x in ref['crosscheck'].values()]
     assert xc, 'smoke has no cross-check timing'
     nc = len(cfg['cases']) * len(cfg['contrasts'])
@@ -90,13 +119,33 @@ def proj_vref(smoke, cfg):
     return (per_case * (1 + retry) * nc + max(xc) * nx) / 3600.0
 
 
+def structural(key):
+    """Compiled-program identity (A7.1): the key without the traced knob (tol / kbar mode / CCv level)."""
+    p = key.split('|')
+    f = p[0]
+    if f in ('psi', 'fdmg'):
+        return '|'.join(p[:4] if f == 'psi' else p[:4])
+    if f == 'etd':
+        return '|'.join(p[:3])
+    return '|'.join(p[:3])
+
+
 def proj_vladder(smoke, cfg):
     rate = family_rates(smoke)
     nC = len(cfg['contrasts'])
     tot = 0.0
+    progs = {structural(k): k.split('|')[0] for k in cfg['keys']}
+    for s_, f in progs.items():                       # compiles: lattice + full-field + (spectral) Q = 3N, x extensions
+        tot += (1 + EXT_FRAC) * rate[f][1] * (2 + (1 if f in ('psi', 'etd') else 0))
+    dev_only = cfg.get('dev_only', {})
+    nfull = sum(1 for C in cfg['contrasts'] if not dev_only.get(f'{float(C):g}'))
+    ndev = nC - nfull
     for k in cfg['keys']:
-        t = rate[k.split('|')[0]] * work(k)
-        tot += nC * (32 * t * (1 + EXT_FRAC) + (2 * t + 8 * MESH_FACTOR * t) * (1 + EXT_FRAC) + 32 * t * VARIANT_FACTOR)
+        t = run_cost(rate, k)
+        # full contrast: 32 runs (no pruning) with extensions; screening = 8 full-field calls; qualification at most once
+        # per configuration (three variants x 32 runs, each up to 3x) for a QUAL_FRAC share; dev-only contrast: 8 runs
+        tot += (1 + EXT_FRAC) * nfull * (32 * t + 8 * MESH_FACTOR * t) + QUAL_FRAC * nfull * 32 * t * VARIANT_FACTOR
+        tot += (1 + EXT_FRAC) * ndev * 8 * t + nC * t        # + the T-kappa / temporal-check runs (one per key bound)
     return tot / 3600.0
 
 
@@ -124,7 +173,7 @@ def proj_vtime(smoke, cfg, cands):
 
 def proj_vtest(smoke, cfg):
     rate = family_rates(smoke)
-    return sum(16 * rate[k.split('@')[0].split('|')[0]] * work(k.split('@')[0]) for k in cfg['keys']) / 3600.0
+    return sum(rate[k.split('@')[0].split('|')[0]][1] + 16 * run_cost(rate, k.split('@')[0]) for k in cfg['keys']) / 3600.0
 
 
 def project(smoke, r):

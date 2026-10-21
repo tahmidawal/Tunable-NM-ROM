@@ -469,3 +469,33 @@ A3 overrides A1/A2 where they differ. Numbers refer to the round-3 items.
 - **A6.4 Findings noted, not blocking (COMMON-BRIEF §8: forgery-only or single-submitter concurrency).** Replay of the test-once step
   by a deliberate second invocation, concurrent staging by several submitters, and hand-edited result files: this lane has one
   submitter acting sequentially; the opening record is created exclusively once, and every acceptance check recomputes from raw outputs.
+
+---
+
+## Amendment A7 (2026-10-21, after the accepted real-size smoke `runs/smk1` (job 6158986); before any production job)
+
+The smoke (all must-fail controls fired, `checks/smoke-accept.json`) measured costs only; no production cohort was run. Its
+cost data force the following changes to fit the 8 GPU-h phase cap (A3.20); each is either a budget-neutral implementation
+change or a step of the pre-registered §11 defer order.
+
+- **A7.1 Shared compiled programs.** The solver tolerance (PSI, FDMG), the ETD $\bar\kappa$ mode (as weights over
+  $\kappa_{\max}$, $\tfrac12(\kappa_{\max}+\kappa_{\min})$, $\nu$) and the CCv tolerance pair are **traced inputs**, so
+  configurations differing only in them share one compiled program (135 programs instead of 338). Numerically identical
+  (a tiny CPU ladder reproduced every error exactly). Compile time (5–11 s per program in the smoke) dominated the projection.
+- **A7.2 Qualification cap.** At most 8 qualification attempts per (family, $\tau$, $C$) group; a group with no qualified
+  configuration after 8 attempts has status "no qualified" (the target is then decided as A4.10).
+- **A7.3 Reference levels.** Production references use $(L,\Delta t)=(512,0.005),(1024,0.0025),(2048,0.00125)$ (ratio 2,
+  $\Delta t\propto h$), the A1.5–A5.5 acceptance unchanged. Reason: the smoke references at the §4 levels had
+  $\epsilon_{\rm ref}=7\cdot10^{-6}$–$1.4\cdot10^{-5}$, $p=1.99$–$2.00$, Péclet $\le0.69$ at $L=1024$, i.e. two orders of magnitude
+  inside the eligibility bound $10^{-3}$, while the 4096 level costs ~85 % of the time; one level coarser multiplies
+  $\epsilon_{\rm ref}$ by about 4 and Péclet by 2 (≤ 1.4 on the smoke cases). **Fallback (replaces the A1.6 E0-level fallback):** every
+  case ineligible at these levels (or whose cross-check fails) is rerun at the §4 levels (1024, 2048, 4096), whose acceptance the
+  smoke demonstrated; the mask is frozen after that. Test references (A2.18) use the same levels and fallback.
+- **A7.4 Deferrals (§11 defer order, items 1–3).** (1) $C=10$ timing is deferred; (2) the $C=10$ val ladder is deferred — the
+  $C=10$ ladder runs on the 8 dev cases only (reported as dev-only, no selection, not decisive); (3) CCv at $L=512$ is deferred
+  (in the smoke it was 4–7× slower than FDMG/PSI at comparable error). The gate is unaffected ($C=100$ only); C = 10 timing and
+  the $C=10$ cost of the competitors at matched accuracy become open items.
+- **A7.5 Certificates.** `resources.py` upper-bound models (docstring): references from the smoke's per-level seconds per
+  $L^2\times$stages at the same contrast (largest observed level rate for unobserved levels); ladder per-run cost = steps × the largest
+  per-step time observed at a resolution ≥ its own (quadratic beyond the largest observed), plus per-program compiles,
+  extensions (+50 %), screening, and qualification (50 % of configurations, three variants at up to 3×); safety 1.3.

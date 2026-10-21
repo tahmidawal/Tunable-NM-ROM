@@ -1,0 +1,318 @@
+{
+ "candidates": {
+  "psi|N128|0.003125|CNAB2|1e-08@C100": {
+   "key": "psi|N128|0.003125|CNAB2|1e-08",
+   "C": 100.0,
+   "family": "PSI",
+   "screening": 0.13932691514492035,
+   "pooled": {
+    "valid": true,
+    "n": 2,
+    "n_eligible": 2,
+    "median": 0.00041368959459843946,
+    "worst": 0.0006222262883650408
+   },
+   "slot_e": {
+    "dev|0": 0.00020515290083183822,
+    "dev|3": 0.0006222262883650408
+   }
+  },
+  "psi|N48|0.0125|SBDF2|1e-05@C100": {
+   "key": "psi|N48|0.0125|SBDF2|1e-05",
+   "C": 100.0,
+   "family": "PSI",
+   "screening": 0.02110138675197959,
+   "pooled": {
+    "valid": true,
+    "n": 2,
+    "n_eligible": 2,
+    "median": 0.015609017372177686,
+    "worst": 0.026823483130215035
+   },
+   "slot_e": {
+    "dev|0": 0.004394551614140337,
+    "dev|3": 0.026823483130215035
+   }
+  },
+  "etd|N48|0.0125|mid@C100": {
+   "key": "etd|N48|0.0125|mid",
+   "C": 100.0,
+   "family": "ETD",
+   "screening": 0.01309909950941801,
+   "pooled": {
+    "valid": true,
+    "n": 2,
+    "n_eligible": 2,
+    "median": 0.0038649711340923514,
+    "worst": 0.0071195371183262295
+   },
+   "slot_e": {
+    "dev|0": 0.0071195371183262295,
+    "dev|3": 0.0006104051498584736
+   }
+  },
+  "etd|N48|0.05|mid@C100": {
+   "key": "etd|N48|0.05|mid",
+   "C": 100.0,
+   "family": "ETD",
+   "screening": 0.00952277984470129,
+   "pooled": {
+    "valid": true,
+    "n": 2,
+    "n_eligible": 2,
+    "median": 0.026277912861529123,
+    "worst": 0.02808504727548375
+   },
+   "slot_e": {
+    "dev|0": 0.024470778447574497,
+    "dev|3": 0.02808504727548375
+   }
+  },
+  "fdmg|L32|0.00625|MG|1e-07@C100": {
+   "key": "fdmg|L32|0.00625|MG|1e-07",
+   "C": 100.0,
+   "family": "FDMG",
+   "screening": 0.021025455556809902,
+   "pooled": {
+    "valid": true,
+    "n": 2,
+    "n_eligible": 2,
+    "median": 0.008002172757822125,
+    "worst": 0.008414472440806512
+   },
+   "slot_e": {
+    "dev|0": 0.007589873074837738,
+    "dev|3": 0.008414472440806512
+   }
+  },
+  "ccv|L128|0.00625|t4@C100": {
+   "key": "ccv|L128|0.00625|t4",
+   "C": 100.0,
+   "family": "CCV",
+   "screening": 0.04079030407592654,
+   "pooled": {
+    "valid": true,
+    "n": 2,
+    "n_eligible": 2,
+    "median": 0.0011213874084430695,
+    "worst": 0.001404641783901166
+   },
+   "slot_e": {
+    "dev|0": 0.0008381330329849726,
+    "dev|3": 0.001404641783901166
+   }
+  }
+ },
+ "groups": {
+  "100": {
+   "PSI|0.01|C100": {
+    "family": "PSI",
+    "tau": 0.01,
+    "C": 100.0,
+    "ranked": [
+     "psi|N128|0.003125|CNAB2|1e-08"
+    ],
+    "tried": [
+     "psi|N128|0.003125|CNAB2|1e-08"
+    ],
+    "candidates": [
+     "psi|N128|0.003125|CNAB2|1e-08"
+    ],
+    "status": "ok"
+   },
+   "PSI|0.03|C100": {
+    "family": "PSI",
+    "tau": 0.03,
+    "C": 100.0,
+    "ranked": [
+     "psi|N48|0.0125|SBDF2|1e-05",
+     "psi|N128|0.003125|CNAB2|1e-08"
+    ],
+    "tried": [
+     "psi|N48|0.0125|SBDF2|1e-05"
+    ],
+    "candidates": [
+     "psi|N48|0.0125|SBDF2|1e-05"
+    ],
+    "status": "ok"
+   },
+   "PSI|0.1|C100": {
+    "family": "PSI",
+    "tau": 0.1,
+    "C": 100.0,
+    "ranked": [
+     "psi|N48|0.0125|SBDF2|1e-05",
+     "psi|N128|0.003125|CNAB2|1e-08"
+    ],
+    "tried": [
+     "psi|N48|0.0125|SBDF2|1e-05"
+    ],
+    "candidates": [
+     "psi|N48|0.0125|SBDF2|1e-05"
+    ],
+    "status": "ok"
+   },
+   "ETD|0.01|C100": {
+    "family": "ETD",
+    "tau": 0.01,
+    "C": 100.0,
+    "ranked": [
+     "etd|N48|0.0125|mid",
+     "etd|N128|0.0015625|max"
+    ],
+    "tried": [
+     "etd|N48|0.0125|mid"
+    ],
+    "candidates": [
+     "etd|N48|0.0125|mid"
+    ],
+    "status": "ok"
+   },
+   "ETD|0.03|C100": {
+    "family": "ETD",
+    "tau": 0.03,
+    "C": 100.0,
+    "ranked": [
+     "etd|N48|0.05|mid",
+     "etd|N12|0.0125|mid",
+     "etd|N48|0.0125|mid",
+     "etd|N128|0.0015625|max"
+    ],
+    "tried": [
+     "etd|N48|0.05|mid"
+    ],
+    "candidates": [
+     "etd|N48|0.05|mid"
+    ],
+    "status": "ok"
+   },
+   "ETD|0.1|C100": {
+    "family": "ETD",
+    "tau": 0.1,
+    "C": 100.0,
+    "ranked": [
+     "etd|N48|0.05|mid",
+     "etd|N12|0.0125|mid",
+     "etd|N48|0.0125|mid",
+     "etd|N128|0.0015625|max"
+    ],
+    "tried": [
+     "etd|N48|0.05|mid"
+    ],
+    "candidates": [
+     "etd|N48|0.05|mid"
+    ],
+    "status": "ok"
+   },
+   "FDMG|0.01|C100": {
+    "family": "FDMG",
+    "tau": 0.01,
+    "C": 100.0,
+    "ranked": [
+     "fdmg|L32|0.00625|MG|1e-07",
+     "fdmg|L128|0.00625|MG|1e-07",
+     "fdmg|L256|0.003125|DST|0.0001",
+     "fdmg|L512|0.0015625|MG|1e-07"
+    ],
+    "tried": [
+     "fdmg|L32|0.00625|MG|1e-07"
+    ],
+    "candidates": [
+     "fdmg|L32|0.00625|MG|1e-07"
+    ],
+    "status": "ok"
+   },
+   "FDMG|0.03|C100": {
+    "family": "FDMG",
+    "tau": 0.03,
+    "C": 100.0,
+    "ranked": [
+     "fdmg|L32|0.00625|MG|1e-07",
+     "fdmg|L128|0.00625|MG|1e-07",
+     "fdmg|L256|0.003125|DST|0.0001",
+     "fdmg|L512|0.0015625|MG|1e-07"
+    ],
+    "tried": [
+     "fdmg|L32|0.00625|MG|1e-07"
+    ],
+    "candidates": [
+     "fdmg|L32|0.00625|MG|1e-07"
+    ],
+    "status": "ok"
+   },
+   "FDMG|0.1|C100": {
+    "family": "FDMG",
+    "tau": 0.1,
+    "C": 100.0,
+    "ranked": [
+     "fdmg|L32|0.00625|MG|1e-07",
+     "fdmg|L256|0.003125|DST|0.01",
+     "fdmg|L128|0.00625|MG|1e-07",
+     "fdmg|L256|0.003125|DST|0.0001",
+     "fdmg|L512|0.0015625|MG|1e-07"
+    ],
+    "tried": [
+     "fdmg|L32|0.00625|MG|1e-07"
+    ],
+    "candidates": [
+     "fdmg|L32|0.00625|MG|1e-07"
+    ],
+    "status": "ok"
+   },
+   "CCV|0.01|C100": {
+    "family": "CCV",
+    "tau": 0.01,
+    "C": 100.0,
+    "ranked": [
+     "ccv|L128|0.00625|t4",
+     "ccv|L128|0.00625|t2",
+     "ccv|L512|0.003125|t1"
+    ],
+    "tried": [
+     "ccv|L128|0.00625|t4"
+    ],
+    "candidates": [
+     "ccv|L128|0.00625|t4"
+    ],
+    "status": "ok"
+   },
+   "CCV|0.03|C100": {
+    "family": "CCV",
+    "tau": 0.03,
+    "C": 100.0,
+    "ranked": [
+     "ccv|L128|0.00625|t4",
+     "ccv|L32|0.00625|t2",
+     "ccv|L128|0.00625|t2",
+     "ccv|L512|0.003125|t1"
+    ],
+    "tried": [
+     "ccv|L128|0.00625|t4"
+    ],
+    "candidates": [
+     "ccv|L128|0.00625|t4"
+    ],
+    "status": "ok"
+   },
+   "CCV|0.1|C100": {
+    "family": "CCV",
+    "tau": 0.1,
+    "C": 100.0,
+    "ranked": [
+     "ccv|L128|0.00625|t4",
+     "ccv|L32|0.00625|t2",
+     "ccv|L128|0.05|t2",
+     "ccv|L128|0.00625|t2",
+     "ccv|L512|0.003125|t1"
+    ],
+    "tried": [
+     "ccv|L128|0.00625|t4"
+    ],
+    "candidates": [
+     "ccv|L128|0.00625|t4"
+    ],
+    "status": "ok"
+   }
+  }
+ }
+}

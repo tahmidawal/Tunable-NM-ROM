@@ -13,7 +13,8 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 CFG = HERE / 'configs'
 NS = '/cluster/tufts/paralab/tawal01/imp-varcoef'
-LEVELS = [[1024, 0.0025], [2048, 0.00125], [4096, 0.000625]]
+LEVELS = [[512, 0.005], [1024, 0.0025], [2048, 0.00125]]          # A7.3 (registered smoke levels: LEVELS_FALLBACK)
+LEVELS_FALLBACK = [[1024, 0.0025], [2048, 0.00125], [4096, 0.000625]]
 TAUS = [0.01, 0.03, 0.1]
 
 
@@ -78,6 +79,8 @@ def base():
     # ---- smoke: real sizes, two dev cases (smallest nu = hardest, and dev 0) -----------------------------------
     hard = dev_by_nu()[0]
     sm = sorted({0, hard})
+    if 'refs-only' in sys.argv:                                   # A7.3: production reference configs only
+        return
     (CFG / 'smk-impl.json').write_text(json.dumps(dict(small=False)) + '\n')
     (CFG / 'smk-ref.json').write_text(json.dumps(dict(contrasts=[100, 10], cases=[['dev', j] for j in sm], levels=LEVELS,
                                                       crosscheck=[['dev', hard]], controls=True), indent=1) + '\n')
@@ -115,19 +118,34 @@ def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
+def fallback(job_results):
+    """A7.3 fallback references: every ineligible case of the frozen mask rerun at LEVELS_FALLBACK (one config per contrast)."""
+    el = json.loads((HERE / 'checks/eligibility.json').read_text())
+    for C, v in el['contrasts'].items():
+        bad = sorted(v['excluded'])
+        xc = [c for c in v.get('crosscheck_missing', [])] + [c for c, x in v['crosscheck'].items() if not x['passed']]
+        if not bad and not xc:
+            continue
+        cases = [[c.split('|')[0], int(c.split('|')[1])] for c in sorted(set(bad) | set(xc))]
+        (CFG / f'reffb{C}.json').write_text(json.dumps(dict(contrasts=[float(C)], cases=cases, levels=LEVELS_FALLBACK,
+                                                            crosscheck=[c for c in cases if c[0] == 'dev' and c[1] < 4],
+                                                            controls=False), indent=1) + '\n')
+        print('fallback', C, cases)
+
+
 def ladder(refdirs, contrasts=(100, 10)):
     """Production ladder config; refdirs = cluster output dirs of the reference jobs (fallback dirs last)."""
     el = HERE / 'checks/eligibility.json'
     fro = el.with_suffix('.FROZEN').read_text().split()[0]
     assert sha(el) == fro
-    keys = json.loads((CFG / 'ladder-keys.json').read_text())
+    keys = [k for k in json.loads((CFG / 'ladder-keys.json').read_text()) if not k.startswith('ccv|L512')]   # A7.4 defer
     (CFG / 'ladder.json').write_text(json.dumps(dict(
         contrasts=list(contrasts), keys=keys, refdir=list(refdirs), eligibility='checks/eligibility.json',
-        eligibility_sha256=fro, taus=TAUS, screen=dict(mesh=4096, reps=3, burn=0.1), ntop=3, extensions=True,
-        qualify=True), indent=1) + '\n')
+        eligibility_sha256=fro, taus=TAUS, screen=dict(mesh=4096, reps=3, burn=0.1), ntop=3, max_tries=8, extensions=True,
+        qualify=True, dev_only={'10': True}), indent=1) + '\n')
 
 
-def time_cfg(refdirs, contrasts=(100, 10)):
+def time_cfg(refdirs, contrasts=(100,)):                 # A7.4: C = 10 timing deferred
     """Production timing config from checks/candidates.json (copied from the ladder output) and the frozen mask."""
     el = json.loads((HERE / 'checks/eligibility.json').read_text())
     ca = json.loads((HERE / 'checks/candidates.json').read_text())
@@ -193,6 +211,8 @@ if __name__ == '__main__':
     cmd = sys.argv[1]
     if cmd == 'base':
         base()
+    elif cmd == 'fallback':
+        fallback(sys.argv[2:])
     elif cmd == 'ladder':
         ladder(sys.argv[2:])
     elif cmd == 'time':

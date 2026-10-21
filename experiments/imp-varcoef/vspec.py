@@ -66,18 +66,47 @@ def make_D(N, Q, kp):
 
 
 class Program:
-    """setup(kp) -> S; core(x0, S) -> (fields, stats); query(x0, kp) = core(x0, setup(kp)) as ONE jitted program.
-    kernel = jit(core), setup_only = jit(setup) (DESIGN A3.14)."""
+    """setup(kp, p) -> S; core(x0, S, p) -> (fields, stats); query(x0, kp, p) = core(x0, setup(kp, p), p) as ONE jitted
+    program; kernel = jit(core), setup_only = jit(setup) (DESIGN A3.14). p = the traced numerical knob (solver tolerance,
+    ETD kbar weights, CCv (ntol, ltol)), so configurations that differ only in it share one compiled program (A7.1).
+    Use .bind(p) to obtain a configuration."""
 
     def __init__(self, setup, core, name):
         self.name = name
         self.setup_fn, self.core_fn = setup, core
-        self.query = jax.jit(lambda x0, kp: core(x0, setup(kp)))
-        self.kernel = jax.jit(core)
-        self.setup_only = jax.jit(setup)
+        self.q = jax.jit(lambda x0, kp, p: core(x0, setup(kp, p), p))
+        self.k = jax.jit(core)
+        self.s = jax.jit(setup)
+
+    def bind(self, p, name=None):
+        return Bound(self, jnp.asarray(p, jnp.float64), name or self.name)
+
+
+class Bound:
+    def __init__(self, base, p, name):
+        self.base, self.p, self.name = base, p, name
+
+    def query(self, x0, kp):
+        return self.base.q(x0, kp, self.p)
+
+    def kernel(self, x0, S_):
+        return self.base.k(x0, S_, self.p)
+
+    def setup_only(self, kp):
+        return self.base.s(kp, self.p)
 
     def __call__(self, x0, kp):
         return self.query(x0, kp)
+
+
+_BASE = {}
+
+
+def cached(key, build):
+    """One structural Program per key (module-level cache shared by every configuration)."""
+    if key not in _BASE:
+        _BASE[key] = build()
+    return _BASE[key]
 
 
 def lam_ps(N):
@@ -122,7 +151,14 @@ def _synth(out, N):
 
 
 def make_psi(N, dt, scheme, tol, out='lattice', maxiter=200, Q=None):
-    """PSI: SBDF2 (first step SBDF1) or CNAB2 (first step CN + forward Euler); returns a Program (x0 = IC coefficients)."""
+    """PSI: SBDF2 (first step SBDF1) or CNAB2 (first step CN + forward Euler); a bound configuration (tol traced)."""
+    Qk = 2 * N if Q is None else Q
+    base = cached(('psi', N, float(dt), scheme, str(out), int(maxiter), Qk),
+                  lambda: _make_psi(N, dt, scheme, out=out, maxiter=maxiter, Q=Qk))
+    return base.bind(tol, f'psi|N{N}|{dt:g}|{scheme}|{tol:g}|Q{Qk}')
+
+
+def _make_psi(N, dt, scheme, out='lattice', maxiter=200, Q=None):
     assert scheme in ('SBDF2', 'CNAB2'), scheme
     keep = int(round(0.05 / dt))
     assert abs(keep * dt - 0.05) < 1e-12, dt
@@ -132,13 +168,13 @@ def make_psi(N, dt, scheme, tol, out='lattice', maxiter=200, Q=None):
     theta = 1.0 if scheme == 'SBDF2' else 0.5
     lam = lam_ps(N)
 
-    def setup(kp):
+    def setup(kp, tol):
         nu = kp[0]
         den1 = 1.0 + theta * dt * nu * lam
         den2 = (1.5 if scheme == 'SBDF2' else 1.0) + theta * dt * nu * lam
         return dict(K=kappa_q(N, Q, kp), den1=den1, den2=den2)
 
-    def core(b0, S_):
+    def core(b0, S_, tol):
         D = D_of(N, Q, S_['K'])
 
         def step(k, c):
@@ -174,27 +210,37 @@ def make_psi(N, dt, scheme, tol, out='lattice', maxiter=200, Q=None):
         fields = jnp.concatenate((synth(b0)[None], outs))
         st = dict(c[4], umax=c[3], nst_expected=jnp.int32(nst), coefs=jnp.concatenate((b0[None], coefs)))
         return fields, st
-    return Program(setup, core, f'psi|N{N}|{dt:g}|{scheme}|{tol:g}|Q{Q}')
+    return Program(setup, core, f'psi|N{N}|{dt:g}|{scheme}|Q{Q}')
+
+
+KBAR_W = {'max': (1.0, 0.0, 0.0), 'mid': (0.0, 1.0, 0.0), 'nu': (0.0, 0.0, 1.0)}
 
 
 def make_etd(N, dt, kbar_mode, out='lattice', Q=None, Mc=32):
+    """ETD configuration: kbar mode as traced weights over (kappa_max, (kappa_max + kappa_min)/2, nu)."""
+    assert kbar_mode in KBAR_W, kbar_mode
+    Qk = 2 * N if Q is None else Q
+    base = cached(('etd', N, float(dt), str(out), Qk, Mc), lambda: _make_etd(N, dt, out=out, Q=Qk, Mc=Mc))
+    return base.bind(KBAR_W[kbar_mode], f'etd|N{N}|{dt:g}|{kbar_mode}|Q{Qk}')
+
+
+def _make_etd(N, dt, out='lattice', Q=None, Mc=32):
     """ETD: ETDRK4 (pscore Kassam-Trefethen coefficients) with linear part -kbar pi^2 |k|^2 and the remainder
     D - L plus advection explicit. kbar_mode: 'max' (kappa_max) or 'mid' ((kappa_max + kappa_min) / 2) over the
     quadrature points; 'nu' (= nu) for the C = 1 identity check only. Returns a Program."""
-    assert kbar_mode in ('max', 'mid', 'nu'), kbar_mode
     keep = int(round(0.05 / dt))
     assert abs(keep * dt - 0.05) < 1e-12, dt
     Q = 2 * N if Q is None else Q
     synth = _synth(out, N)
     lam = lam_ps(N)
 
-    def setup(kp):
+    def setup(kp, w):
         K = kappa_q(N, Q, kp)
-        kb = {'max': jnp.max(K), 'mid': 0.5 * (jnp.max(K) + jnp.min(K)), 'nu': kp[0]}[kbar_mode]
+        kb = w[0] * jnp.max(K) + w[1] * 0.5 * (jnp.max(K) + jnp.min(K)) + w[2] * kp[0]
         Lk = -kb * lam
         return dict(K=K, Lk=Lk, co=PS.etdrk4_coefs(Lk, dt, Mc))
 
-    def core(b0, S_):
+    def core(b0, S_, w):
         D = D_of(N, Q, S_['K'])
         Lk, co = S_['Lk'], S_['co']
 
@@ -223,7 +269,7 @@ def make_etd(N, dt, kbar_mode, out='lattice', Q=None, Mc=32):
         z = jnp.int32(0)
         return fields, dict(it_sum=z, it_max=z, res_max=jnp.float64(0.0), nbad=z, nst=jnp.int32(5 * keep),
                             nst_expected=jnp.int32(5 * keep), umax=um, coefs=jnp.concatenate((b0[None], coefs)))
-    return Program(setup, core, f'etd|N{N}|{dt:g}|{kbar_mode}|Q{Q}')
+    return Program(setup, core, f'etd|N{N}|{dt:g}|Q{Q}')
 
 
 def ic(desc, N):

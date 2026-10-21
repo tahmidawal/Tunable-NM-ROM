@@ -155,7 +155,13 @@ def fd_out(out, L):
 # ---------------------------------------------------------------------------------------------- FDMG ----------
 
 def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
-    """FDMG Program (x0 = flat interior nodal IC)."""
+    """FDMG configuration (x0 = flat interior nodal IC; tol traced, A7.1)."""
+    from vspec import cached
+    base = cached(('fdmg', L, float(dt), prec, str(out), int(maxiter)), lambda: _make_fdmg(L, dt, prec, out, maxiter))
+    return base.bind(tol, f'fdmg|L{L}|{dt:g}|{prec}|{tol:g}')
+
+
+def _make_fdmg(L, dt, prec, out='lattice', maxiter=200):
     from vspec import Program
     assert prec in ('MG', 'DST'), prec
     keep = int(round(0.05 / dt))
@@ -165,7 +171,7 @@ def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
     lam1 = 4 * L ** 2 * jnp.sin(jnp.pi * k1 / (2 * L)) ** 2
     lam = lam1[:, None] + lam1[None, :]
 
-    def setup(kp):
+    def setup(kp, tol):
         KX, KY = faces(kp, L)
         S_ = dict(KX=KX, KY=KY)
         for tag, alpha in (('1', 1.0), ('2', 1.5)):
@@ -183,7 +189,7 @@ def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
         den = S_['den' + tag]
         return lambda r: FC.dstn(FC.dstn(r) / den)
 
-    def core(u0, S_):
+    def core(u0, S_, tol):
         U0 = u0.reshape(L - 1, L - 1)
         KX, KY = S_['KX'], S_['KY']
         P1, P2 = pinv(S_, '1', 1.0), pinv(S_, '2', 1.5)
@@ -214,7 +220,7 @@ def make_fdmg(L, dt, tol, prec, out='lattice', maxiter=200):
         c, outs = jax.lax.scan(interval, c0, jnp.arange(5))
         fields = jnp.concatenate((synth(U0)[None], outs))
         return fields, dict(c[4], umax=c[3], nst_expected=jnp.int32(5 * keep))
-    return Program(setup, core, f'fdmg|L{L}|{dt:g}|{prec}|{tol:g}')
+    return Program(setup, core, f'fdmg|L{L}|{dt:g}|{prec}')
 
 
 # ---------------------------------------------------------------------------------------------- CCv / ref -----
@@ -309,26 +315,33 @@ def make_ccv(L, dt, level, out='lattice'):
     kappa (Newton + DST-preconditioned BiCGStab; the DST denominator 1 + dt/2 nu Lambda_h, the same at every CN-R stage, is
     prepared in setup, A6.2) followed by the output map; query = core(u0, setup(kp)) as ONE jitted program. Tolerance level
     from CCV_TOLS."""
-    from vspec import Program
+    from vspec import cached
     ntol, ltol = CCV_TOLS[level]
     lim = CCV_NEWTON.get(level, FR.MAX_NEWTON)
+    base = cached(('ccv', L, float(dt), str(out), lim), lambda: _make_ccv(L, dt, out, lim))
+    return base.bind((ntol, ltol), f'ccv|L{L}|{dt:g}|t{level}')
+
+
+def _make_ccv(L, dt, out, lim):
+    from vspec import Program
     run = vref_solver(L, max_newton=lim)
     fo = fd_out(out, L)
-    sched = FC.schedule(dt, 'cnr', ntol, ltol)
+    sched0 = FC.schedule(dt, 'cnr', 1e-6, 1e-7)                # tolerances replaced by the traced p below
     lam = run.lam
     nexp = int(FC.n_stages(dt, 'cnr'))
 
-    def setup(kp):
+    def setup(kp, p):
         KX, KY = faces(kp, L)
         # every CN-R stage has theta * tau = dt / 2 (four BE half steps: 1 * dt/2; CN: 1/2 * dt), so one denominator
         return dict(KX=KX, KY=KY, nu=kp[0], den=1 + 0.5 * dt * kp[0] * lam)
 
-    def core(u0, S_):
+    def core(u0, S_, p):
+        sched = dict(sched0, ntol=p[0], ltol=p[1])
         r = run.solve(jnp.asarray(u0).reshape(-1), S_['KX'], S_['KY'], S_['nu'], sched, lam, S_['den'])
         F = jax.vmap(lambda f: fo(f.reshape(L - 1, L - 1)))(r['out'])
         return F, dict(res=r['res'], nwt=r['nwt'], umax=r['umax'], stages=r['stages'], nexp=jnp.int32(nexp),
-                       ntol=jnp.float64(ntol))
-    return Program(setup, core, f'ccv|L{L}|{dt:g}|t{level}')
+                       ntol=p[0])
+    return Program(setup, core, f'ccv|L{L}|{dt:g}')
 
 
 def fd_ic(desc, L):

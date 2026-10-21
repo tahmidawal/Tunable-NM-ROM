@@ -1,0 +1,49 @@
+=== time_a.py A1 screen 00:08:29
+A1 cost model done
+A1 tau 0.03 FOM (12, 5, '7.35e-03 s') ROM ('Q', 96, 16, 5, '3.31e-02 s') S 0.22209042746403604
+/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-spectral-pilot/experiments/spectral-pilot/time_a.py:119: RuntimeWarning: invalid value encountered in sqrt
+  tail = np.sqrt(np.sum(Bref0 ** 2, axis=(-1, -2)) - np.sum(Bref0[:, :m, :m] ** 2, axis=(-1, -2)))
+A1 tau 0.01 FOM (12, 5, '7.30e-03 s') ROM ('Q', 128, 16, 10, '5.62e-02 s') S 0.12993303800096884
+A1 tau 0.003 FOM (16, 10, '8.58e-03 s') ROM ('Q', 192, 24, 10, '8.04e-02 s') S 0.10681070843721872
+A1 tau 0.001 FOM (16, 10, '8.52e-03 s') ROM ('Q', 192, 24, 10, '8.16e-02 s') S 0.10439576150421136
+=== time_a.py A1 final 00:29:28
+A1 final tau 0.03 S=0.218
+A1 final tau 0.01 S=0.129
+A1 final tau 0.003 S=0.108
+A1 final tau 0.001 S=0.11
+A1 sentinel drift 0.008621922976880692 H1 1.009087383061741
+=== time_a.py A2 screen 00:32:16
+A2 cost model done
+A2 tau 0.03 FOM (16, 5, '1.49e-02 s') ROM ('Q', 192, 24, 10, '7.86e-02 s') S 0.18993009268436237
+/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-spectral-pilot/experiments/spectral-pilot/time_a.py:119: RuntimeWarning: invalid value encountered in sqrt
+  tail = np.sqrt(np.sum(Bref0 ** 2, axis=(-1, -2)) - np.sum(Bref0[:, :m, :m] ** 2, axis=(-1, -2)))
+A2 tau 0.01 FOM (24, 10, '1.05e-02 s') ROM ('Q', 256, 48, 10, '1.28e-01 s') S 0.08195434328478819
+A2 tau 0.003 FOM (32, 20, '1.75e-02 s') ROM ('Q', 384, 48, 20, '2.12e-01 s') S 0.08267407001481365
+A2 tau 0.001 FOM (32, 20, '1.75e-02 s') ROM ('Q', 384, 48, 20, '2.16e-01 s') S 0.08129999560850792
+=== time_a.py A2 final 00:51:16
+A2 final tau 0.03 S=0.102
+A2 final tau 0.01 S=0.0799
+A2 final tau 0.003 S=0.0811
+A2 final tau 0.001 S=0.0809
+A2 sentinel drift 0.0030917472788296596 H1 0.9834828646972321
+=== time_a.py A3 screen 00:54:49
+A3 cost model done
+A3 tau 0.03 FOM (48, 20, '3.18e-02 s') ROM ('Q', 384, 48, 20, '2.08e-01 s') S 0.15264428098708271
+A3 tau 0.01 FOM (48, 40, '5.21e-02 s') ROM None S None
+A3 tau 0.003 FOM (64, 40, '8.60e-02 s') ROM None S None
+A3 tau 0.001 FOM (96, 40, '1.97e-01 s') ROM None S None
+=== time_a.py A3 final 01:07:36
+A3 final tau 0.03 S=0.152
+A3 sentinel drift 0.006701030592154877 H1 0.9914792575446324
+=== time_b.py screen 01:09:31
+B tau 0.03 FOM ('RK4', 64, 160, '1.523e-02') ROM (24, 5, 32, '5.942e-04') S 25.635192408282087
+B tau 0.01 FOM ('RK4', 64, 160, '1.526e-02') ROM (32, 10, 64, '1.181e-03') S 12.915470208678986
+B tau 0.003 FOM ('IMEX', 128, 80, '1.048e-01') ROM (48, 10, 64, '1.688e-03') S 62.115663710074834
+B tau 0.001 FOM ('IMEX', 192, 160, '4.319e-01') ROM (64, 20, 64, '3.851e-03') S 112.13939098032189
+=== time_b.py final 01:18:18
+B final tau 0.03 S=29.3
+B final tau 0.01 S=17
+B final tau 0.003 S=64.2
+B final tau 0.001 S=115
+B sentinel drift 0.0002362072667223547
+=== all timing done 01:19:09

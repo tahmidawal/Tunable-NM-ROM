@@ -11,7 +11,7 @@ import numpy as np
 import common as C
 import score as SC
 
-LEVELS = ['A1', 'A2', 'A3', 'A4']
+LEVELS = ['A1', 'A2', 'A3', 'A4', 'AB']
 
 
 def load(p):

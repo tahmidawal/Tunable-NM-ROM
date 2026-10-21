@@ -75,7 +75,7 @@ def main():
     ref = __import__('json').loads((d / 'ref.json').read_text())
     Nref = ref['Nref']
     n = Nref - 1
-    rmax = a.rmax or {'A1': 256, 'A2': 384, 'A3': 512, 'A4': 512}[lv]
+    rmax = a.rmax or {'A1': 256, 'A2': 384, 'A3': 512, 'A4': 512, 'AB': 384}[lv]
     te = np.asarray(ref['test_desc'])
     nu = te[:, 4]
     Bref = np.load(d / 'ref_coef.npy')                       # (12, 6, n, n)

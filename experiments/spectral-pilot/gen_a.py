@@ -44,7 +44,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     tr, te = C.level_cohorts(lv)
     n = C.ref_cfl_steps(Nref, factor=2.0)
-    rep = dict(level=lv, env=C.env_record(), Nref=Nref, n_ref=n, nu=(nu_lo, 2 * nu_lo), n_train=len(tr),
+    rep = dict(level=lv, env=C.env_record(), Nref=Nref, n_ref=n, nu=(float(min(np.r_[tr[:, 4], te[:, 4]])), float(max(np.r_[tr[:, 4], te[:, 4]]))), n_train=len(tr),
                n_test=len(te), test_desc=te.tolist(), train_sha=C.sha(tr), s_test=C.steep(te).tolist(),
                s_train=C.steep(tr).tolist(), label=C.PILOT)
     t0 = time.perf_counter()

@@ -43,6 +43,7 @@ LEVELS = {
     'A2': (0.02, 192, 96),
     'A3': (0.02 / 3, 384, 96),
     'A4': (0.02 / 9, 768, 48),
+    'AB': (0.02, 192, 96),          # A6 post-hoc control: Part-B family and nu band (0.02-0.05) on the box
 }
 TRAIN_SEED, TEST_SEED = 1_000_001, 2_000_001
 N_TEST = 12
@@ -71,6 +72,9 @@ def with_nu(rows, nu_lo):
 
 
 def level_cohorts(name):
+    if name == 'AB':                                      # A6: the Part-B cohorts (identical descriptors) on the box
+        import fd_l
+        return fd_l.cohorts_b()
     nu_lo, Nref, ntr = LEVELS[name]
     tr = with_nu(draw_rows(TRAIN_SEED, ntr), nu_lo)
     te = with_nu(draw_rows(TEST_SEED, N_TEST), nu_lo)

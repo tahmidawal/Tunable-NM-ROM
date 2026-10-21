@@ -659,3 +659,17 @@ round. Changes and deviations, each disclosed:
   accepted); missing or non-finite space evidence makes the B allowance unavailable.
 - Remaining stated limitations: the Part A native-output timing is FOM-then-ROM batched (not call-interleaved; a
   secondary contract only); `highest` matmul precision is recorded, not asserted (all runs are CPU f64).
+
+---
+
+## Amendment A6 (2026-10-21, after all registered runs and before reading them in a report): post-hoc control AB
+
+The registered Part-B comparison showed the ROM well ahead of the FD solvers. Part B differs from Part A in **two**
+ways at once: the geometry (no fast transform) and the cohort (Part B's family is much narrower: centres in a
+0.08-wide square, $w\in[0.03,0.045]$, against Part A's 0.4-wide square). To separate them, a **post-hoc control
+level "AB"** runs the Part-A pipeline (sine pseudo-spectral FOM vs POD–Galerkin ROM, same gates, same timing
+protocol) on the box with **the identical Part-B descriptors** (`fd_l.cohorts_b()`, 96 training / 12 test,
+$\nu\in[0.02,0.05]$), $N_{\rm ref}=192$, $r_{\max}=384$. Reading (descriptive, post hoc): if the ROM also beats the
+spectral FOM on AB, the Part-B win is attributable at least partly to the narrow family rather than the geometry;
+if the spectral FOM wins on AB, the win is consistent with the missing fast transform. AB is not part of the
+registered A1–A3 trend (it is excluded from H-A1–H-A3).

@@ -1,7 +1,8 @@
 {
  "attempt": "j2",
  "kind": "probe",
- "projected_hours": 0.9,
- "basis": "A100 log: data 126 s + 15000 sub steps x 0.0265 + 10000 full x 0.30 (= 3.5e3 s A100, H200 expected faster) + extraction 915 s + head arm 361 s; step budgets 2700+1800+1200 s",
- "config": null
+ "projected_hours": 1.2,
+ "basis": "A100 log: data 126 s + 15000 sub steps x 0.0265 + 10000 full x 0.30 = 3.5e3 s (A100; H200 expected faster) + extraction 915 s + head arm 361 s; step budgets 3600+1800+1200 s; limit 125 min",
+ "config": null,
+ "sbatch_sha256": "feb22ea242b2da08143116a3f06b3d5cd93325030576ceb86340b36f55152509"
 }

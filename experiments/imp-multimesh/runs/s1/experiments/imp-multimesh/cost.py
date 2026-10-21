@@ -60,22 +60,29 @@ def complete_universe(D, cfgs=REG_CFGS, arms=CP_ARMS, meshes=MESHES):
     return D
 
 
-def ours_cost(D, X, w, var='A_dep', compile_scale=1.0):
+def _cmp(v, mode):
+    """A7.1: compile value under a mode: None = as measured (missing -> nan); a number = that value."""
+    if mode is None:
+        return float('nan') if v is None else float(v)
+    return float(mode)
+
+
+def ours_cost(D, X, w, var='A_dep', compile_scale=1.0, ours_compile=None):
     o = D['ours'][X]
     c = D['ours_offline'][var]
     for L in w[0]:
-        c += o['setup'][L] + compile_scale * o['compile'][L] + w[1] * o['t'][L]
+        c += o['setup'][L] + compile_scale * _cmp(o['compile'].get(L), ours_compile) + w[1] * o['t'][L]
     return c
 
 
-def comp_cost(D, arm, choice, w, compile_scale=1.0):
+def comp_cost(D, arm, choice, w, compile_scale=1.0, comp_compile=None):
     """choice: {L: cfg}. Shared artefacts charged once (A2.3, A3.4)."""
     need = set()
     c = 0.
     for L, cfg in choice.items():
         rec = D['comp'][arm][L][cfg]
         need.update(rec['needs'])
-        c += rec['armdata'] + compile_scale * rec['compile'] + w[1] * rec['t']
+        c += rec['armdata'] + compile_scale * _cmp(rec.get('compile'), comp_compile) + w[1] * rec['t']
     return c + sum(D['art'][k] for k in need)
 
 
@@ -104,9 +111,12 @@ def admissible(D, X, arm, choice, w, verdict):
     raise ValueError(verdict)
 
 
-def match(D, X, w, verdict='worst', var='A_dep', compile_scale=1.0, arms=CP_ARMS):
+def match(D, X, w, verdict='worst', var='A_dep', compile_scale=1.0, arms=CP_ARMS, ours_compile=None,
+          comp_compile=None):
     """Three-valued per (w, X) over all CP variants (A2.1, A3.1). Returns (state, witness, best_admissible)."""
-    Cx = ours_cost(D, X, w, var, compile_scale)
+    Cx = ours_cost(D, X, w, var, compile_scale, ours_compile)
+    if not math.isfinite(Cx):
+        return 'UNRESOLVED', None, Cx                    # a missing measurement of ours (e.g. compile) is unresolved
     unresolved = False
     best = None
     for arm in arms:
@@ -129,12 +139,24 @@ def match(D, X, w, verdict='worst', var='A_dep', compile_scale=1.0, arms=CP_ARMS
             choice = dict(combo)
             if not admissible(D, X, arm, choice, w, verdict):
                 continue
-            c = comp_cost(D, arm, choice, w, compile_scale)
+            c = comp_cost(D, arm, choice, w, compile_scale, comp_compile)
+            if not math.isfinite(c):
+                unresolved = True
+                continue
             if best is None or c < best[0]:
                 best = (c, arm, choice)
     if best is not None and best[0] <= Cx:
         return 'MATCH', best, Cx
     return ('UNRESOLVED' if unresolved else 'NO-MATCH'), best, Cx
+
+
+def compile_robust(D, X, w, verdict='worst', var='A_dep'):
+    """A7.1 adverse assignments with B = 10 x the largest measured compile time."""
+    B = 10. * D['compile_max']
+    base = match(D, X, w, verdict, var)[0]
+    a = match(D, X, w, verdict, var, ours_compile=0., comp_compile=B)[0]
+    b = match(D, X, w, verdict, var, ours_compile=B, comp_compile=0.)[0]
+    return dict(base=base, adverse_to_match=a, adverse_to_nomatch=b, robust=(a == base == b), B=B)
 
 
 def stop_rule(D, verdict='worst', var='A_dep', compile_scale=1.0):
@@ -152,7 +174,7 @@ def stop_rule(D, verdict='worst', var='A_dep', compile_scale=1.0):
             vacuous.append(wname(w))
         for X in qual:
             st, best, Cx = match(D, X, w, verdict, var, compile_scale)
-            row[X] = dict(state=st, C_ours=Cx, best=None if best is None else dict(cost=best[0], arm=best[1],
+            row[X] = dict(state=st, C_ours=Cx, compile=compile_robust(D, X, w, verdict, var) if 'compile_max' in D else None, best=None if best is None else dict(cost=best[0], arm=best[1],
                           choice={str(k): v for k, v in best[2].items()}, ratio=best[0] / Cx,
                           near_tie=bool(BAND[0] <= best[0] / Cx <= BAND[1])))
             any_nomatch |= st == 'NO-MATCH'

@@ -6,6 +6,7 @@ Bars (COMMON-BRIEF 3): every run valid; non-stationary steps (certified gamma > 
 distance to tight <= 2.5e-4 on every case; tight/tighter <= 2.5e-5 on dev6; Q2: own-state rho <= 0.116 and successor
 rollout distance <= 2.5e-4 on every Q2 case (all 38 here), successor runs valid.
 """
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -51,6 +52,11 @@ def main():
             full = cc.get('cases') == 'all38'
             coverage_ok = (sorted(ids) == sorted(expect) and sorted(rid) == sorted(expect)) if full else \
                 (len(set(ids)) == len(ids) and sorted(ids) == sorted(rid))
+            meta_ok = bool(int(R['mesh']) == L and str(R['scheme']) == sc and int(R['Rp']) == int(cc['Rp']))
+            wsha = {f"{x['cohort']}|{x['case']}": x['W_sha'] for x in rr}
+            sha_ok = all(hashlib.sha256(np.ascontiguousarray(R['W'][i]).tobytes()).hexdigest() == wsha.get(c)
+                         for i, c in enumerate(ids))
+            coverage_ok = bool(coverage_ok and meta_ok and sha_ok)
             per = []
             for i, cid in enumerate(ids):
                 coh, j = cid.split('|')
@@ -62,7 +68,7 @@ def main():
             steps = 50 * len(rr)
             nonstat = sum(x['nonstationary'] for x in rr)
             dev = [x for x in rr if x['cohort'] == 'dev6']
-            q1 = dict(n=len(rr), coverage_ok=coverage_ok, all_valid=all(x['valid'] for x in rr),
+            q1 = dict(n=len(rr), coverage_ok=coverage_ok, npz_meta_ok=meta_ok, W_sha_ok=sha_ok, all_valid=all(x['valid'] for x in rr),
                       tight_valid=all(x.get('tight_valid') for x in rr), gcert_ok=all(x.get('gcert_ok') for x in rr),
                       nonstat=nonstat, steps=steps,
                       dist_tight=tri(lambda v: max(v) <= Q1_DIST, [x.get('dist_tight') for x in rr]),
@@ -79,10 +85,11 @@ def main():
                       dist_qp=tri(lambda v: max(v) <= Q2_DIST, [x.get('dist_qp') for x in q2r]),
                       qpp_runs=sum(1 for x in dev if 'qpp_valid' in x), qpp_valid=all(x.get('qpp_valid') for x in dev if 'qpp_valid' in x),
                       max_dist_qp_qpp=max((x['dist_qp_qpp'] for x in dev if fin(x.get('dist_qp_qpp'))), default=None))
-            q2['state'] = 'PASS' if (len(q2r) == 38 and q2['qp_valid'] and q2['rho'] == 'PASS' and q2['dist_qp'] == 'PASS'
-                                     and q2['qpp_runs'] == 6 and q2['qpp_valid']) else \
-                ('UNVERIFIED' if 'UNVERIFIED' in (q2['rho'], q2['dist_qp']) or len(q2r) != 38 or q2['qpp_runs'] != 6
-                 else 'FAIL')
+            q2['qpp'] = tri(lambda v: len(v) == 6 and max(v) <= Q2_DIST, [x.get('dist_qp_qpp') for x in dev])
+            evid_ok = len(q2r) == 38 and q2['qpp_runs'] == 6 and q2['qp_valid'] and q2['qpp_valid']
+            st3 = (q2['rho'], q2['dist_qp'], q2['qpp'])
+            q2['state'] = 'PASS' if (evid_ok and all(x == 'PASS' for x in st3)) else \
+                ('FAIL' if (evid_ok and 'FAIL' in st3 and 'UNVERIFIED' not in st3) else 'UNVERIFIED')
             status = 'QUALIFIED' if (q1['state'] == 'PASS' and q2['state'] == 'PASS') else \
                 ('NOT-QUALIFIED' if 'FAIL' in (q1['state'], q2['state']) else 'UNRESOLVED')
             out['configs'][key] = dict(per_case=per, worst=float(el.max()) if len(el) else None,

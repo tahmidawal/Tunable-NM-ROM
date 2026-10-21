@@ -63,7 +63,7 @@ def resolve(manifest, by, cache):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('attempt')
-    ap.add_argument('--minutes', type=int, default=105)
+    ap.add_argument('--minutes', type=int, default=125)
     a = ap.parse_args()
     out = ROOT / LANE / 'runs' / a.attempt
     assert not out.exists()
@@ -87,7 +87,7 @@ def main():
     (out / 'COMMIT.txt').write_text(commit + '\n')
     (out / 'logs').mkdir()
     hh, mm = divmod(a.minutes, 60)
-    R3A_S, EX_S, HF_S = 2700, 1800, 1200
+    R3A_S, EX_S, HF_S = 3600, 1800, 1200
     assert R3A_S + EX_S + HF_S + 300 <= a.minutes * 60, 'probe step budgets exceed the allocation'
     script = f'''#!/bin/bash
 #SBATCH --job-name=imm_{a.attempt}
@@ -121,21 +121,27 @@ for i in $(seq 1 {R3A_S // 2}); do
   sleep 2
 done
 T1=$(now)
-kill $PID 2>/dev/null; sleep 5; kill -9 $PID 2>/dev/null
-echo "r3a_marker_seen=$SEEN r3a_wall=$(awk "BEGIN{print $T1-$T0}")"
+kill $PID 2>/dev/null; sleep 5; kill -9 $PID 2>/dev/null; wait $PID 2>/dev/null; echo "r3a_reaped_status=$?"
+echo "r3a_marker_seen=$SEEN r3a_wall=$(awk "BEGIN{{print $T1-$T0}}")"
 [ $SEEN -eq 1 ] || FAIL=1
+for M in "gen: trajectories 576/576" "step      1/25000" "step   5000/25000" "step  15000/25000" "step  20000/25000" "step  25000/25000" "done: recon"; do
+  grep -qF "$M" "$ROOT/output/r3a.log" || {{ echo "missing marker: $M"; FAIL=1; }}
+done
 grep -E "gen: trajectories 576|step +(1|5000|15000|20000|25000)/|done: recon" "$ROOT/output/r3a.log"
 # ---- (2) dn256b extraction, (3) head fit, producing arm only (complete invocations timed, A4.2)
 cd "$ROOT/code_dn"
 T0=$(now)
 env {DN_EXTRACT_ENV} CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/output/dn/" timeout {EX_S} "$PY" -u sep_coeff_extract.py > "$ROOT/output/extract.log" 2>&1
-RC=$?; T1=$(now); echo "extract_exit=$RC extract_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
+RC=$?; T1=$(now); echo "extract_exit=$RC extract_wall=$(awk "BEGIN{{print $T1-$T0}}")"; [ $RC -eq 0 ] || FAIL=1
+EXRC=$RC
 tail -2 "$ROOT/output/extract.log"
+if [ $EXRC -ne 0 ]; then echo "head fit skipped (extraction failed)"; else
 T0=$(now)
 env NPZ="$ROOT/output/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/output/dn/hfit_mid.json" ARMS=mid {DN_HFIT_ENV} EMIT=mid EMIT_PATH="$ROOT/output/dn/emit_mid.pkl" timeout {HF_S} "$PY" -u sep_hfit_run.py > "$ROOT/output/hfit.log" 2>&1
-RC=$?; T1=$(now); echo "hfit_exit=$RC hfit_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
+RC=$?; T1=$(now); echo "hfit_exit=$RC hfit_wall=$(awk "BEGIN{{print $T1-$T0}}")"; [ $RC -eq 0 ] || FAIL=1
 tail -2 "$ROOT/output/hfit.log"
-rm -f "$ROOT/output/dn/sep_coeff_N256_K16_R512.npz"
+fi
+[ $FAIL -eq 0 ] && rm -f "$ROOT/output/dn/sep_coeff_N256_K16_R512.npz"
 cd "$ROOT" && find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo "job_fail=$FAIL"
 echo ALL-DONE

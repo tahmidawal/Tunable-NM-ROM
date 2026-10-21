@@ -90,27 +90,31 @@ def main():
     b_ = Phi_h[nodes, :128]
     val = float(np.max(np.abs(a_ - b_)) / np.max(np.abs(b_)))
     pu = M.map_nodes(nodes, s, Lf, mutate=True)
+    k2, l2 = np.unravel_index(pu, (Lf - 1, Lf - 1))
+    coord_bad = bool(np.any((i + 1) * Lf != (k2 + 1) * s) or np.any((j + 1) * Lf != (l2 + 1) * s))
     val_bad = float(np.max(np.abs((Lf / s) * np.asarray(Pf[jnp.asarray(pu), :128]) - b_)) / np.max(np.abs(b_)))
-    ctl(rec, '3_mapping', coord_ok and val <= 1e-12 and val_bad > 1e-6, coord_ok=coord_ok, value_err=val,
-        unmapped_value_err=val_bad)
+    ctl(rec, '3_mapping', coord_ok and val <= 1e-12 and val_bad > 1e-6 and coord_bad, coord_ok=coord_ok, value_err=val,
+        unmapped_value_err=val_bad, unmapped_coords_differ=coord_bad)
     # ---------------------------------------------------------------- 4096^2 pilot: states, blocked contrib, NNLS, query -----
     old = BD.N_ECSW_TRAJ
     BD.N_ECSW_TRAJ = cfg['pilot_traj']
     t0 = time.perf_counter()
     st_f, _ = BD.ecsw_states(D, Lf, H.Family(D, 'train'), None)
     BD.N_ECSW_TRAJ = old
-    rec.d['pilot'].update(states=len(st_f), states_seconds=time.perf_counter() - t0, mem_states=B.dev_mem())
+    rec.d['pilot'].update(states=len(st_f), states_seconds=time.perf_counter() - t0, mem_states=B.dev_mem(),
+                          host_rss_states=PL.host_rss())
     rec.save()
     st_t = st_f * int(cfg['pilot_tile'])                 # A3.6: production-shaped (120-state) contribution matrix
     t0 = time.perf_counter()
     G, b, cand, cinfo = M.ecsw_contrib_blocked(st_t, Pf, 384, Lf, log=log)
-    rec.d['pilot'].update(tiled_states=len(st_t), G_bytes=int(G.size * 8))
+    rec.d['pilot'].update(real_states=len(st_f), tiled_states=len(st_t), G_shape=list(G.shape), G_bytes=int(G.size * 8),
+                          G_shape_ok=bool(G.shape[0] == 120 * 384 and G.shape[1] == 32768), host_rss=PL.host_rss())
     rec.d['pilot'].update(contrib_seconds=time.perf_counter() - t0, contrib=cinfo, mem_contrib=B.dev_mem())
     rec.save()
     t0 = time.perf_counter()
     rr, summ = BD.ecsw_weights(G, b, cand, 384, (4, 8), max_seconds=cfg['pilot_nnls_seconds'])
     summ.pop('checkpoints_all', None)
-    rec.d['pilot'].update(nnls_seconds=time.perf_counter() - t0, nnls=summ, mem_nnls=B.dev_mem(),
+    rec.d['pilot'].update(nnls_seconds=time.perf_counter() - t0, nnls=summ, mem_nnls=B.dev_mem(), host_rss_nnls=PL.host_rss(),
                           supports={k: (None if v is None else len(v['nodes'])) for k, v in rr.items()})
     del G, b
     rec.save()
@@ -209,7 +213,8 @@ def main():
     u0 = jnp.asarray(P.Q.e.initial(Lf, ph))
     v = P.run_query(bank, st, 'main', 'LSPG', 'CNR', P.DT0, 'prod', u0, float(ph[4]))
     jax.block_until_ready(v['W'])
-    rec.d['ours_pilot'] = dict(seconds=time.perf_counter() - t0, bank_bytes=bank.bytes, mem=B.dev_mem())
+    rec.d['ours_pilot'] = dict(seconds=time.perf_counter() - t0, bank_bytes=bank.bytes, mem=B.dev_mem(),
+                               host_rss=PL.host_rss())
     del bank, st, v, u0
     gc.collect()
     rec.d['complete'] = True

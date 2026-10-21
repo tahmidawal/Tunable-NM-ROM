@@ -30,21 +30,27 @@ for i in $(seq 1 1800); do
   sleep 2
 done
 T1=$(now)
-kill $PID 2>/dev/null; sleep 5; kill -9 $PID 2>/dev/null
+kill $PID 2>/dev/null; sleep 5; kill -9 $PID 2>/dev/null; wait $PID 2>/dev/null; echo "r3a_reaped_status=$?"
 echo "r3a_marker_seen=$SEEN r3a_wall=$(awk "BEGIN{print $T1-$T0}")"
 [ $SEEN -eq 1 ] || FAIL=1
+for M in "gen: trajectories 576/576" "step      1/25000" "step   5000/25000" "step  15000/25000" "step  20000/25000" "step  25000/25000" "done: recon"; do
+  grep -qF "$M" "$ROOT/output/r3a.log" || { echo "missing marker: $M"; FAIL=1; }
+done
 grep -E "gen: trajectories 576|step +(1|5000|15000|20000|25000)/|done: recon" "$ROOT/output/r3a.log"
 # ---- (2) dn256b extraction, (3) head fit, producing arm only (complete invocations timed, A4.2)
 cd "$ROOT/code_dn"
 T0=$(now)
 env N=256 K=16 R=512 MAX_SNAPS=131072 T_EARLY=5 N_TEST=8 SEED0=0 LOOSE=1 EXTRA_SEED=1000 EXTRA_TRAJ=4032 GEN_CHUNK=64 PROJ_CHUNK=256 IDENT_ROWS=64 CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/output/dn/" timeout 1800 "$PY" -u sep_coeff_extract.py > "$ROOT/output/extract.log" 2>&1
 RC=$?; T1=$(now); echo "extract_exit=$RC extract_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
+EXRC=$RC
 tail -2 "$ROOT/output/extract.log"
+if [ $EXRC -ne 0 ]; then echo "head fit skipped (extraction failed)"; else
 T0=$(now)
 env NPZ="$ROOT/output/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/output/dn/hfit_mid.json" ARMS=mid STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 ORACLE_ITERS=150 CODEDIAG_N=2048 CODEDIAG_ITERS=60 ENC_STEPS=12000 SEED0=0 EMIT=mid EMIT_PATH="$ROOT/output/dn/emit_mid.pkl" timeout 1200 "$PY" -u sep_hfit_run.py > "$ROOT/output/hfit.log" 2>&1
 RC=$?; T1=$(now); echo "hfit_exit=$RC hfit_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
 tail -2 "$ROOT/output/hfit.log"
-rm -f "$ROOT/output/dn/sep_coeff_N256_K16_R512.npz"
+fi
+[ $FAIL -eq 0 ] && rm -f "$ROOT/output/dn/sep_coeff_N256_K16_R512.npz"
 cd "$ROOT" && find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo "job_fail=$FAIL"
 echo ALL-DONE

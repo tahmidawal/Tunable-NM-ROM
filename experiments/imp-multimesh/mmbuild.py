@@ -205,6 +205,11 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
     src_info = json.loads((Path(arm['source_dir']).parent / 'sources.json').read_text()) \
         if (Path(arm['source_dir']).parent / 'sources.json').exists() else None
     cert_s = None if src_info is None else src_info.get(f'src{s}', {}).get('certified_ranks')
+    if cert_s is None:                             # code audit 2: missing certificate evidence is not accepted
+        for c_ in A['configs'].values():
+            c_.update(status='UNRESOLVED', reason='source certificate evidence missing')
+        rec.save()
+        return
     Phi_s, C_s, rules_s, trust_s = load_source(arm['source_dir'])
     rmax = max(cfg['ranks'])
     t0 = time.perf_counter()
@@ -315,9 +320,10 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
                 Fa = H.to_lattice(np.asarray(Wk[ks[0]][cs]) @ Pl.T, D)
                 Fb = H.to_lattice(np.asarray(Wk[ks[1]][cs]) @ Pl.T, D)
                 dd[cs] = SC.lattice_distance(Fa, Fb, refs[coh].n0(int(j)))
-            cid = f'r{r}|k{ks[0]}|CNR'
-            A['configs'][cid]['rollout'] = dict(vs=f'k{ks[1]}', max=max(dd.values()), per_case=dd,
-                                                ok=bool(all(np.isfinite(v) and v <= 2.5e-4 for v in dd.values())))
+            ro = dict(pair=[f'k{ks[0]}', f'k{ks[1]}'], max=max(dd.values()), per_case=dd,
+                      ok=bool(all(np.isfinite(v) and v <= 2.5e-4 for v in dd.values())))
+            for kk in ks:
+                A['configs'][f'r{r}|k{kk}|CNR']['rollout'] = ro
             rec.save()
     del cell, Phi
     gc.collect()

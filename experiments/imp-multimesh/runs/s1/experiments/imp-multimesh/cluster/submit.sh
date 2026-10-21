@@ -6,6 +6,7 @@
 # Usage: submit.sh <attempt> [smoke|probe]
 set -euo pipefail
 A="$1"; KIND="${2:-prod}"; [[ "$A" =~ ^[a-zA-Z0-9]+$ ]]
+case "$KIND" in prod|smoke|probe) ;; *) echo "unknown kind $KIND"; exit 2;; esac
 PY=/home/tahmid/Dev/.venv/bin/python
 LANE=$(cd "$(dirname "$0")/.." && pwd)
 NS=/cluster/tufts/paralab/tawal01/imp-multimesh
@@ -19,9 +20,12 @@ PROJ=$("$PY" - "$CERT" "$LOCAL" <<'PYEOF'
 import json, sys, hashlib, pathlib
 c = json.load(open(sys.argv[1])); loc = pathlib.Path(sys.argv[2])
 r = json.load(open(loc / 'RESERVATION.json'))
+assert c.get('attempt') == loc.name, 'certificate for another attempt'
 if c.get('config'):
     staged = loc / 'experiments' / 'imp-multimesh' / c['config']
     assert hashlib.sha256(staged.read_bytes()).hexdigest() == c['config_sha256'], 'certificate not bound to this config'
+else:
+    assert hashlib.sha256((loc / 'run.sbatch').read_bytes()).hexdigest() == c['sbatch_sha256'], 'certificate not bound'
 print(c['projected_hours'])
 PYEOF
 )
@@ -47,10 +51,14 @@ RC=$?
 set -e
 echo "$OUT"
 JID=$(echo "$OUT" | awk '/Submitted batch job/ {print $4}')
-if [ -z "$JID" ]; then
-  "$PY" "$LANE/cluster/ledger.py" release "$A"
-  echo "sbatch did not submit (rc=$RC; 75 = account at cap); reservation released; check squeue for imm_$A before retrying"
-  exit 7
+if [ -z "$JID" ]; then         # ambiguous: look the job up by its unique name before releasing anything
+  JID=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "sacct -n -X -P --name=imm_$A -S now-1hours -o JobID | tail -1" || true)
+  if [ -z "$JID" ]; then
+    "$PY" "$LANE/cluster/ledger.py" release "$A"
+    echo "sbatch did not submit (rc=$RC; 75 = account at cap); reservation released"
+    exit 7
+  fi
+  echo "recovered job id $JID by name after an ambiguous sbatch response"
 fi
 "$PY" "$LANE/cluster/ledger.py" bind "$A" "$JID"
 echo "--- squeue after"; timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -o "%.10i %.24j %.8T %.10M %R"'

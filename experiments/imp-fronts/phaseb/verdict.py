@@ -22,9 +22,11 @@ Routes (missing prerequisite -> that route UNAVAILABLE):
   (c) tail  : common set = eligible FI test cases where BOTH the arm and K1 have valid finite terminal policy runs
               (>= 6, else UNAVAILABLE; Amendment 4); PASS iff the arm is qualified on every eligible FI test case and
               median tau_4096(arm) <= median tau_4096(K1) / 3, both medians over the common set.
-Guard (Amendment 5): PASS requires finite arm and K1 floors on EVERY eligible FI test case (>= 6); any missing or
-non-finite floor -> UNAVAILABLE, except that an observed violation on the available (paired finite) cases -> FAIL
-(STOP (guard)). Route (a) (Amendment 5): finite arm and K1 floors on every eligible FN0s test case (>= 5), else UNAVAILABLE.
+Guard (Amendments 5, 8): PASS requires finite arm and K1 floors on EVERY eligible FI test case (>= 6); any missing or
+non-finite floor -> UNAVAILABLE, except that when K1's floors are complete and the observed arm maximum (finite arm
+floors) exceeds 2 x the complete K1 maximum -> FAIL (STOP (guard)).
+Numerical qualification (Amendment 9: Q1 and Q2 and step-converged, plus the bank's pooled non-stationary fraction
+<= 1 %) is computed upstream; this module consumes the per-case 'qualified' flag. Route (a) (Amendment 5): finite arm and K1 floors on every eligible FN0s test case (>= 5), else UNAVAILABLE.
 No certified selected rule (Amendment 4): m* route FAIL; the policy ran from fib4181 ("uncertified start") and the ROM
 routes are evaluated normally.
 "x-fold below" means arm <= control / x (ties at exactly the factor pass); the guard is violated only if strictly > 2x.
@@ -107,12 +109,14 @@ def guard(arm, ctrl, elig, eps=None):
         return dict(status=UNAV, why=f'{len(cases)} eligible FI test cases < {MIN["guard"]}')
     fa, fc = _floors(arm, 'FI', cases), _floors(ctrl, 'FI', cases)
     bad = [c for c in cases if not (_fin(fa[c]) and _fin(fc[c]))]
-    if bad:                                          # Amendment 5: violation on the available cases still stops
-        av = [c for c in cases if c not in bad]
-        if av and max(fa[c] for c in av) > FAC['guard'] * max(fc[c] for c in av):
-            return dict(status=FAIL, why=f'violation on the available cases; missing / non-finite floors on {bad}',
-                        arm_worst=max(fa[c] for c in av), ctrl_worst=max(fc[c] for c in av), n=len(av), missing=bad)
-        return dict(status=UNAV, why=f'missing / non-finite floors on {bad} (defect, reported)', missing=bad)
+    if bad:            # Amendments 5 + 8: early STOP on incomplete ARM evidence only against the COMPLETE K1 maximum
+        k1_complete = all(_fin(fc[c]) for c in cases)
+        av = [c for c in cases if _fin(fa[c])]
+        if k1_complete and av and max(fa[c] for c in av) > FAC['guard'] * max(fc.values()):
+            return dict(status=FAIL, why=f'observed arm maximum > 2 x complete K1 maximum; arm floors missing on {bad}',
+                        arm_worst=max(fa[c] for c in av), ctrl_worst=max(fc.values()), n=len(av), missing=bad)
+        return dict(status=UNAV, why=f'missing / non-finite floors on {bad} (defect, reported)', missing=bad,
+                    k1_complete=k1_complete)
     wa, wc = max(fa.values()), max(fc.values())
     st = FAIL if wa > FAC['guard'] * wc else PASS
     return dict(status=st, arm_worst=wa, ctrl_worst=wc, ratio=wa / wc if wc > 0 else float('inf'), n=len(cases),

@@ -20,6 +20,7 @@ NAMES = ('FI', 'FN0s', 'FC1', 'FC2')
 KEYS = ('cx', 'cy', 'w', 'a', 'nu')
 TIGHT_ALLOWANCE = {}                 # DESIGN B3: tight-path allowance 0 for every fresh cohort
 DEV_SMOKE = {'FC1': [0], 'FC2': [0]}  # Amendment 2 B3: development references (smoke only, never scored with test)
+REFERENCED = {'FI': 6, 'FN0s': 8, 'FC1': 8, 'FC2': 2}   # Amendment 10: 24 test references, lowest test indices
 
 
 class FreshError(ValueError):
@@ -50,7 +51,7 @@ def admissible_cases(name, split):
     """'test' -> every j >= 4; 'dev-smoke' -> the registered development reference cases only."""
     rows = table()['cohorts'][name]
     if split == 'test':
-        return [r['j'] for r in rows if r['split'] == 'test']
+        return [r['j'] for r in rows if r['split'] == 'test'][:REFERENCED[name]]
     if split == 'dev-smoke':
         return list(DEV_SMOKE.get(name, []))
     raise FreshError(f'split {split} not admissible (references exist only for test and the dev smoke cases)')

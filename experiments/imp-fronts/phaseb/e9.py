@@ -14,7 +14,7 @@ Score (once, at the end; K1's terminal policy errors on the fresh TEST cases, Am
   alarm = s > tau_s or invalid run; invalid runs count as bad and alarmed. Ineligible references are excluded and counted.
   AUC (score s; invalid -> +inf), detection = P(alarm | bad) with its one-sided 95 % Clopper-Pearson LOWER bound,
   false alarm = P(alarm | good) with its one-sided 95 % Clopper-Pearson UPPER bound. Fewer than 30 good or 20 bad cases
-  under a target -> "inconclusive (F12 minimum 30 good / 20 bad not met)", never a pass (necessarily so with 28 cases).
+  under a target -> "inconclusive (F12 minimum 30 good / 20 bad not met)", never a pass (necessarily so with 24 cases).
   Routing reported both ways: ROM-then-fallback (every query runs the ROM; flagged ones also the FOM) and direct-to-FOM
   (flagged queries skip the ROM; s is known before solving). Cost only if a paired same-GPU timing file is given,
   else "unmeasured" (Amendment 2 B7). Flagged fractions overall and per cohort.
@@ -43,6 +43,7 @@ Q = 95
 TARGET_B = 0.01
 MIN_GOOD, MIN_BAD = 30, 20
 ALPHA = 0.05
+REFERENCED = {'FI': 6, 'FN0s': 8, 'FC1': 8, 'FC2': 2}
 
 
 def sha(p):
@@ -143,7 +144,8 @@ def score(policy, timing=None, frozen=None, fresh=None):
         sys.path.insert(0, str(HERE))
         import fcohorts as FC
         fresh = FC.load()
-    srow = {f"{c}|{r['j']}": r['s'] for c, rows in fresh['cohorts'].items() for r in rows if r['split'] == 'test'}
+    srow = {f"{c}|{r['j']}": r['s'] for c, rows in fresh['cohorts'].items() for r in rows if r['split'] == 'test'
+            and r['j'] < 4 + REFERENCED.get(c, 0)}             # Amendment 10: unreferenced test draws are not scored
     unknown = set(policy) - set(srow)
     if unknown:
         raise ValueError(f'not fresh test cases: {sorted(unknown)}')

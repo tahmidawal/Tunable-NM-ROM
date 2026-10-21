@@ -6,15 +6,16 @@ experiments/separable-decoder/sep_common.py, which rom/env.sh puts on PYTHONPATH
 Kinds
   sel  <label>            SEL-<label>: r2acc on configs/e2s<label>.json (R384 group only, mkconfigs_sel.py --r384;
                           select2d_r384.py runs locally on the pulled output).
-                          Wall = ceiling 0.3 GPU-h / 1 GPU (Amendment 9); r2acc has no self-timer, so it runs under
+                          Wall = ceiling 0.35 GPU-h / 1 GPU (Amendment 10); r2acc has no self-timer, so it runs under
                           `timeout` at 90 % of the wall (exhaustion: incomplete result -> select2d refuses -> no
                           certified rule -> m* route FAIL, ROM routes run from the uncertified start, Amendment 4).
-  pol  <bank> <config>    POL-<bank>: fpolicy on configs/<config>.json, wall = ceiling 0.4 GPU-h; fpolicy's self-timer
+  pol  <bank> <config>    POL-<bank>: fpolicy on configs/<config>.json, wall = ceiling 0.5 GPU-h (Amendment 10); fpolicy's self-timer
                           stops new work at 90 % of the wall counted from job start (--t0-epoch); a killed job is
                           finalised locally by rom/fcollect.py.
   smb-rom                 the ROM part of SM-b as a shell FRAGMENT for the SM-b job (which owns the preamble, the wall
                           0.45 h and the smoke-bank training): runtime registration of the smoke bank, fpolicy round 1
-                          on FC1 dev j = 0, 1 with K1 (+ C-B1, C-B6) and with the smoke bank.
+                          on FC1 dev j = 0, 1 with K1 (+ C-B1, C-B6), the reference-free K1 policy dry run on the 16 fresh dev/val
+                          cases (Amendment 10: the policy projection), and round 1 with the smoke bank.
   smb-rom-standalone      the same fragment wrapped in a full 0.45 h script (K1 part only works without the smoke bank).
 
     python render.py sel a [--out runs/SEL-a/run.sbatch]
@@ -29,7 +30,7 @@ from pathlib import Path
 NS = '/cluster/tufts/paralab/tawal01/imp-fronts'
 VENV = '/cluster/tufts/paralab/tawal01/ae-research/venv'
 GRES = {'a100': 'a100', 'h100': 'h100', 'h200': 'h200', 'l40s': 'l40s'}
-CEIL = {'sel': .3, 'pol': .4, 'smb': .45}
+CEIL = {'sel': .35, 'pol': .5, 'smb': .45}           # Amendment 10 ceilings = walls (1 GPU)
 
 
 def hms(hours):
@@ -123,6 +124,8 @@ r = json.load(open(os.environ['TASK_ROOT'] + '/output/fpolicy_smkpolK1/result.js
 c = r['controls']
 print('C-B1 fired', c['cb1']['fired'], '| C-B6', c.get('CB6', {{}}).get('verdict'), '| backend', r['backend'])
 PYEOF
+# (2b) reference-free policy dry run: full policy with K1 on the 16 fresh dev/val cases -> resources.py --dry
+"$PY" fpolicy.py --config configs/smkdryK1.json --out "$TASK_ROOT/output/fpolicy_smkdryK1" --t0-epoch "$T0"
 {sb2}'''
 
 

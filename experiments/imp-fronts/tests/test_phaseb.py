@@ -96,7 +96,20 @@ def test_guard_missing_floor_unavailable_but_violation_still_stops():
     arm = bank(fn=0.1, fi=5.0)
     arm['floors']['FI']['4'] = dict(f384=None)
     r = ev('a', arm)
-    assert r['guard']['status'] == V.FAIL and r['outcome'] == V.STOP_G               # Amendment 5
+    assert r['guard']['status'] == V.FAIL and r['outcome'] == V.STOP_G               # Amendments 5, 8
+    arm = bank(fn=0.1, fi=2.0)
+    arm['floors']['FI']['4'] = dict(f384=None)                                       # 2.0 = 2 x complete K1 max: no stop
+    assert ev('a', arm)['guard']['status'] == V.UNAV
+    ctrl = bank()
+    ctrl['floors']['FI']['5'] = dict(f384=INF)                                       # K1 incomplete: no early stop
+    arm = bank(fn=0.1, fi=5.0)
+    arm['floors']['FI']['4'] = dict(f384=None)
+    assert ev('a', arm, ctrl)['guard']['status'] == V.UNAV
+    ctrl = bank()
+    ctrl['floors']['FI']['5'] = dict(f384=0.1)                                       # complete K1 max = 1.0
+    arm = bank(fn=0.1, fi=2.5)
+    arm['floors']['FI']['4'] = dict(f384=float('nan'))
+    assert ev('a', arm, ctrl)['guard']['status'] == V.FAIL
     ctrl = bank()
     del ctrl['floors']['FI']['7']
     assert ev('a', bank(fn=0.1), ctrl)['guard']['status'] == V.UNAV
@@ -337,12 +350,12 @@ def test_e9_score_synthetic():
     fresh = dict(cohorts=dict(FI=[dict(j=j, split='test' if j >= 4 else 'dev', s=10. * (j + 1)) for j in range(12)],
                               FC1=[dict(j=j, split='test' if j >= 4 else 'dev', s=300. + j) for j in range(12)]))
     frozen = dict(content_sha256='x', tau_s=150., target_A=dict(threshold=0.002), target_B=dict(threshold=0.01))
-    pol = {f'FI|{j}': dict(e=0.001, valid=True, eligible=True) for j in range(4, 12)}
+    pol = {f'FI|{j}': dict(e=0.001, valid=True, eligible=True) for j in range(4, 10)}
     pol.update({f'FC1|{j}': dict(e=0.05, valid=True, eligible=True) for j in range(4, 11)})
     pol['FC1|11'] = dict(e=None, valid=False, eligible=True)
-    pol['FI|11']['eligible'] = False
+    pol['FI|9']['eligible'] = False
     out = E9.score(pol, frozen=frozen, fresh=fresh)
-    assert out['n'] == 15 and out['n_ineligible'] == 1 and out['n_invalid'] == 1
+    assert out['n'] == 13 and out['n_ineligible'] == 1 and out['n_invalid'] == 1 and out['n_test'] == 14
     tA = out['targets']['A']
     assert tA['n_bad'] == 8 and tA['detection'] == 1.0 and tA['false_alarm'] == 0.0 and tA['auc'] == 1.0
     assert tA['label'].startswith('inconclusive')
@@ -357,8 +370,9 @@ def test_reference_adapter_allow_list():
         pytest.skip('fresh_cohorts.json not yet written')
     sys.path.insert(0, str(LANE / 'phaseb' / 'frefs'))
     import fresh as FR
-    assert FR.admissible_cases('FI', 'test') == list(range(4, 12))
-    assert FR.admissible_cases('FC2', 'test') == [4, 5, 6, 7]
+    assert FR.admissible_cases('FI', 'test') == list(range(4, 10))                  # Amendment 10
+    assert FR.admissible_cases('FN0s', 'test') == list(range(4, 12))
+    assert FR.admissible_cases('FC2', 'test') == [4, 5]
     assert FR.admissible_cases('FC1', 'dev-smoke') == [0] and FR.admissible_cases('FI', 'dev-smoke') == []
     for bad in ('val', 'dev', None):
         with pytest.raises(FR.FreshError):

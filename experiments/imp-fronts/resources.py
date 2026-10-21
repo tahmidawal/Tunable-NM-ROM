@@ -19,25 +19,25 @@ Inputs
   runs/GPU-LEDGER.json: {"jobs": [{"name", "item", "ceiling_gpu_h", "state": pending|running|done|failed,
       "charged_gpu_h"}], ...}.
 
-Projection rules (Amendments 3-5 as replaced by Amendment 9)
+Projection rules (Amendments 3-5 as replaced by Amendments 9 and 10)
   * training (a), (b): sum of the four phases x 1.25 (contingency); ceiling 4.4 each.
-  * references: n_test x (MEAN measured per-case seconds of the jcp-regimes reference records on the reference GPU type,
-    H200 preferred, A100 with its own mean otherwise; never below the smoke dev-reference mean) x 1.5; ceiling 2.8 GPU-h
-    on 2 GPUs (1.4 h wall); exceeded -> S2.
-  * ROM solves: rates seconds / (m * steps) per (level, recorded, rule) from the jcp-robust e2s1 selection job (1024^2,
-    A100-80G; prod, tight and gauss384 target solves) pooled with the smoke's solves -- every key takes the LARGER rate;
-    rules never measured at a level scale from that level's largest measured rule by node and step count; tighter uses
-    the tight rate; no iteration-cap multiplier; + compile per distinct (rule, factor, recorded) shape. x 1.5.
-  * selection (a), (b): R384 group only, inventory 2 arms x [38 gauss384 target + 6 gauss320 check + 7 rules x
-    (38 prod + 38 tight + 6 tighter + 38 succ)]; projection max(inventory, e2s1 measured R384 group + setup) x 1.5;
-    ceiling 0.3 each.
-  * policy per bank (K1, (a), (b)): every case x the most expensive state path of policy_sm.paths from the bank's start
-    (K1: gauss160; arms: worst over every start incl. the uncertified fib4181), Amendment 5 inventory + 1 tighter per
-    anchor; ceiling 0.4 each.
+  * references: 24 test cases (FI 6, FN0s 8, FC1 8, FC2 2) x (MEAN measured per-case seconds of the jcp-regimes
+    reference records on the reference GPU type, H200; never below the smoke dev-reference mean) x 1.5; ceiling 2.9
+    GPU-h on 2 GPUs (1.45 h wall).
+  * ROM solve rates (selection, worst-path bound, dry-run expectation): seconds / (m * steps) per (level, recorded, rule)
+    from the jcp-robust e2s1 selection job pooled with the smoke's solves (larger rate per key), node / step scaling for
+    unmeasured rules, tighter = tight, + compile per shape; x 1.5.
+  * selection (a), (b): R384 group only; max(solve inventory, e2s1 measured R384 group + setup) x 1.5; ceiling 0.35 each.
+  * policy per bank (K1, (a), (b)), 40 cases (24 test + 16 dev/val): the smoke's reference-free dry run on the 16 fresh
+    dev/val cases (--dry, K1) gives the measured mean per-case path cost (all charged solve seconds of a case, compile
+    included); projection = mean x 40 x 1.5; ceiling 0.5 each. The worst-path bound (every case on the most expensive
+    state path) is reported beside it. No dry run, or a dry run with BUDGET-CAP cases -> UNCERTIFIED.
   * an item with no measured or recorded bound is UNCERTIFIED. The smoke ceiling (0.9) is reserved until the ledger
     records the smoke jobs (item 'smoke').
-Schedules S1 -> S2 -> S3 -> S4 (Amendment 2 B8): the first whose every item is certified and projected <= its ceiling is
-selected; S4 (no Phase B) always qualifies. COST-CERT.json records every item of every schedule.
+Schedules (Amendment 10): S1 both arms (ceilings 13.9 + smoke 0.9 = 14.8), S3 arm (b) + K1 (8.65 + 0.9 = 9.55), S4 no
+Phase B; S2 withdrawn. The first schedule whose every item is certified and projected <= its ceiling, and whose
+ceilings + spent + smoke reservation <= 15, is selected. COST-CERT.json records every item of every schedule and the
+expected cost of the SM-b dry run at the pooled rates (dry_run_expected).
 Admission (Amendment 5): submit a job only if spent + ceilings of running / pending jobs + its ceiling + ceilings of the
 remaining scheduled items <= 15.
 
@@ -61,15 +61,16 @@ import policy_sm as SM  # noqa: E402
 
 CAP = 15.
 REGIMES = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs')
-CEIL = {'train_a': 4.4, 'train_b': 4.4, 'references': 2.8, 'select_a': .3, 'select_b': .3,
-        'policy_K1': .4, 'policy_a': .4, 'policy_b': .4}
+CEIL = {'train_a': 4.4, 'train_b': 4.4, 'references': 2.9, 'select_a': .35, 'select_b': .35,     # Amendment 10
+        'policy_K1': .5, 'policy_a': .5, 'policy_b': .5}
 SMOKE_CEIL = .9
 C_TRAIN, C_REF, C_ROM = 1.25, 1.5, 1.5
 E2S1 = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/e2s1/archive/output/r2acc_e2s1/result.json')
 GAUSS = lambda p: p * p
 M = {'fib4181': 4181, 'fib6765': 6765, 'gauss96': GAUSS(96), 'fib10946': 10946, 'fib17711': 17711, 'gauss128': GAUSS(128),
      'gauss160': GAUSS(160), 'gauss192': GAUSS(192), 'gauss256': GAUSS(256), 'gauss320': GAUSS(320), 'gauss384': GAUSS(384)}
-TEST = {'S1': dict(FI=8, FN0s=8, FC1=8, FC2=4), 'S2': dict(FI=6, FN0s=8, FC1=8, FC2=2)}
+TEST = dict(FI=6, FN0s=8, FC1=8, FC2=2)       # Amendment 10: 24 test references (lowest test indices), S1 and S3
+SCHEDULES = ('S1', 'S3', 'S4')                 # Amendment 10: S2 withdrawn
 DEVVAL = 16                         # 4 dev/val cases per fresh cohort
 ANCHORS = 4
 K1_START = 'gauss160'
@@ -212,7 +213,36 @@ def worst_path(rates, start):
     return best
 
 
-def policy_item(rates, n_cases, starts):
+def dry_run_mean(dry):
+    """Amendment 10: mean per-case path cost (all charged solve seconds of the case, compilation included) of the
+    smoke's reference-free policy dry run on the 16 fresh dev/val cases. dry = list of fpolicy result.json dicts."""
+    if not dry:
+        return None, dict(basis='no smoke policy dry run')
+    per, info = {}, dict(runs=[], complete=True)
+    for r in dry:
+        for x in r['rows']:
+            per[(r['config']['attempt'], x['case'])] = per.get((r['config']['attempt'], x['case']), 0.) + x['seconds']
+        bc = r.get('counts', {}).get('BUDGET-CAP', 0)
+        info['runs'].append(dict(attempt=r['config']['attempt'], cases=len(r['config']['cases']), budget_cap=bc,
+                                 complete=bool(r.get('complete')), counts=r.get('counts')))
+        info['complete'] = info['complete'] and bool(r.get('complete')) and bc == 0
+    return sum(per.values()) / len(per), dict(info, n_case_runs=len(per))
+
+
+def policy_item(rates, n_cases, starts, dry=None):
+    """Amendment 10: projection = smoke dry-run mean per-case path cost x n_cases x 1.5; the worst-path bound (every case
+    on the most expensive state path at the pooled rates) is reported beside it. No (complete) dry run -> uncertified."""
+    mean, dinfo = dry_run_mean(dry)
+    wb = worst_bound(rates, n_cases, starts)
+    if mean is None or not dinfo.get('complete'):
+        return dict(projected=None, certified=False, basis=dinfo.get('basis', 'dry run incomplete or budget-capped'),
+                    dry_run=dinfo, worst_path_bound=wb)
+    return dict(projected=mean * n_cases * C_ROM / 3600., certified=True, per_case_seconds=mean, n_cases=n_cases,
+                contingency=C_ROM, dry_run=dinfo, worst_path_bound=wb,
+                basis='smoke dry-run mean per-case path cost (16 fresh dev/val cases)')
+
+
+def worst_bound(rates, n_cases, starts):
     if rates is None:
         return dict(projected=None, certified=False, basis='no ROM timing (neither e2s1 history nor smoke)')
     worst, shapes_all = None, set()
@@ -253,12 +283,24 @@ def selection_item(rates, hist):
                 e2s1_R384_seconds=h or None, contingency=C_ROM, groups=['R384'])
 
 
+def dry_run_expected(rates, n=16, start=K1_START):
+    """Expected GPU cost of the SM-b dry run (16 dev/val cases, K1 from gauss160) at the pooled rates: every case
+    converging in round 1 (lower) to every case on the worst path (upper), plus compilation of the shapes visited."""
+    if rates is None:
+        return None
+    lo, _ = solves_cost(rates, SM.path_solves([(start, 1.)]))
+    hi, p, _ = worst_path(rates, start)
+    sh_lo = len({(r, f, KIND[k][1]) for k, r, f in SM.path_solves([(start, 1.)])})
+    sh_hi = len({(r, f, KIND[k][1]) for q in SM.paths(start) for k, r, f in SM.path_solves(q)})
+    return dict(cases=n, start=start, lower_gpu_h=(n * lo + sh_lo * rates.compile) / 3600.,
+                upper_gpu_h=(n * hi + sh_hi * rates.compile) / 3600., per_case_lower_s=lo, per_case_upper_s=hi, worst_path=p)
+
+
 # --------------------------------------------------------------------------------------------- schedules
 def schedule_items(name, base):
     if name == 'S4':
         return {}
-    t = TEST['S1' if name == 'S1' else 'S2']
-    n_test = sum(t.values())
+    n_test = sum(TEST.values())
     items = dict(train_a=dict(base['train_a']), train_b=dict(base['train_b']), references=base['ref'](n_test),
                  select_a=dict(base['select']), select_b=dict(base['select']), policy_K1=base['policy_K1'](n_test + DEVVAL),
                  policy_a=base['policy_arm'](n_test + DEVVAL), policy_b=base['policy_arm'](n_test + DEVVAL))
@@ -268,7 +310,7 @@ def schedule_items(name, base):
     return items
 
 
-def certify(timings, rom_rows, regimes_dir=REGIMES, ref_gpu='H200', ledger=None, hist_path=E2S1):
+def certify(timings, rom_rows, regimes_dir=REGIMES, ref_gpu='H200', ledger=None, hist_path=E2S1, dry=None):
     hrows, hist = e2s1_rows(hist_path) if hist_path and Path(hist_path).exists() else ([], None)
     rows = list(hrows) + list(rom_rows or [])
     rates = Rates(rows) if rows else None
@@ -276,8 +318,8 @@ def certify(timings, rom_rows, regimes_dir=REGIMES, ref_gpu='H200', ledger=None,
     smoke_refs = (timings.get('SM-b') or {}).get('references')
     base = dict(train_a=train_item(timings.get('SM-a')), train_b=train_item(timings.get('SM-b')),
                 ref=lambda n: ref_item(n, regimes_dir, ref_gpu, smoke_refs), select=selection_item(rates, hist),
-                policy_K1=lambda n: policy_item(rates, n, [K1_START]),
-                policy_arm=lambda n: policy_item(rates, n, [None] + list(SM.CHAIN)))
+                policy_K1=lambda n: policy_item(rates, n, [K1_START], dry),
+                policy_arm=lambda n: policy_item(rates, n, [None] + list(SM.CHAIN), dry))
     spent = spent_gpu_h(ledger)
     smoke_reserved = 0. if any(j.get('item') == 'smoke' for j in (ledger or {}).get('jobs', [])) else SMOKE_CEIL
     out = dict(schema='imp-fronts-cost-cert/2', amendment=9, cap=CAP, ceilings=CEIL, smoke_ceiling=SMOKE_CEIL,
@@ -285,7 +327,8 @@ def certify(timings, rom_rows, regimes_dir=REGIMES, ref_gpu='H200', ledger=None,
                history=dict(e2s1=str(hist_path) if hist else None, **(hist or {})), smoke_rom_rows=len(rom_rows or []),
                rates=(rates.basis if rates else None), compile_seconds=(rates.compile if rates else None),
                smoke_rates=(smoke_only.basis if smoke_only else None), schedules={}, selected=None)
-    for s in ('S1', 'S2', 'S3', 'S4'):
+    out['dry_run_expected'] = dry_run_expected(rates)
+    for s in SCHEDULES:
         items = schedule_items(s, base)
         for k, v in items.items():
             v['ceiling'] = CEIL[k]
@@ -344,6 +387,12 @@ def selftest():
                         first_of_shape=True))
         return out
 
+    def dryrun(per_case, n=16, capped=0):
+        ids = [f'{c}|{j}' for c in ('FI', 'FN0s', 'FC1', 'FC2') for j in range(4)][:n]
+        return [dict(config=dict(attempt='smkdryK1', cases=ids), complete=True, counts={'BUDGET-CAP': capped},
+                     rows=[dict(case=i, seconds=per_case / 2, level='prod', recorded=True, rule='gauss160', m=M['gauss160'],
+                                steps=50, first_of_shape=False) for i in ids for _ in range(2)])]
+
     with tempfile.TemporaryDirectory() as td:
         d = Path(td) / 'refA' / 'output' / 'refjob_x' / '2d' / 'C1' / 'ST'
         d.mkdir(parents=True)
@@ -351,56 +400,62 @@ def selftest():
             (d / f'c{i:03d}.json').write_text(json.dumps(dict(seconds=sx, refined=r, job=dict(job_id='1', gpu='NVIDIA H200'))))
         A = dict(SMa=tim('SM-a', 3.), SMb=tim('SM-b', 3.))
         T = lambda **k: {'SM-a': k.get('a', A['SMa']), 'SM-b': k.get('b', A['SMb'])}
-        # (1) cheap everything, no history -> S1; reference mean (150) x 1.5
-        c = certify(T(), rows(1e-9), td, hist_path=None)
+        D = dryrun(10.)
+        # (1) cheap everything, no history -> S1; reference mean (150) x 1.5; policy = 10 s x 40 x 1.5
+        c = certify(T(), rows(1e-9), td, hist_path=None, dry=D)
         assert c['selected'] == 'S1', c['schedules']['S1']['over_ceiling']
         it = c['schedules']['S1']['items']
         assert abs(it['train_a']['projected'] - 3.75) < 1e-9 and abs(it['references']['per_case_seconds'] - 225.) < 1e-9
-        assert abs(c['compile_seconds'] - 1.) < 1e-6
-        assert abs(c['schedules']['S1']['total_with_smoke'] - 14.3) < 1e-9          # Amendment 9 S1 total
+        assert it['references']['n_cases'] == 24 and it['policy_K1']['n_cases'] == 40
+        assert abs(it['policy_K1']['projected'] - 10 * 40 * 1.5 / 3600) < 1e-12 and it['policy_K1']['worst_path_bound']['certified']
+        assert abs(c['compile_seconds'] - 1.) < 1e-6 and set(c['schedules']) == {'S1', 'S3', 'S4'}
+        assert abs(c['schedules']['S1']['total_with_smoke'] - 14.8) < 1e-9          # Amendment 10 S1 total
+        assert abs(c['schedules']['S3']['total_with_smoke'] - 9.55) < 1e-9          # Amendment 10 S3 total
+        assert c['dry_run_expected']['lower_gpu_h'] <= c['dry_run_expected']['upper_gpu_h']
         # (2) arm (a) training over its ceiling -> S3
-        c = certify(T(a=tim('SM-a', 4.)), rows(1e-9), td, hist_path=None)
+        c = certify(T(a=tim('SM-a', 4.)), rows(1e-9), td, hist_path=None, dry=D)
         assert c['schedules']['S1']['over_ceiling'] == ['train_a'] and c['selected'] == 'S3'
         # (3) missing SM-b timing -> S4
-        c = certify({'SM-a': A['SMa']}, rows(1e-9), td, hist_path=None)
+        c = certify({'SM-a': A['SMa']}, rows(1e-9), td, hist_path=None, dry=D)
         assert 'train_b' in c['schedules']['S3']['uncertified'] and c['selected'] == 'S4'
-        # (4) references fit 24 but not 28 -> S2 (smoke dev mean 250 dominates the regimes mean): 28*375 > 2.8 h >= 24*375
-        c = certify(T(b=tim('SM-b', 3., ref_s=250.)), rows(1e-9), td, hist_path=None)
-        assert c['selected'] == 'S2' and c['schedules']['S1']['over_ceiling'] == ['references']
-        # (5) the larger of two sources is used (pooled rates): a 10x slower second source dominates
+        # (4) references over 2.9 h (smoke dev mean 300 s dominates: 24 x 450 s = 3.0 h) -> S4 (S3 has the same refs)
+        c = certify(T(b=tim('SM-b', 3., ref_s=300.)), rows(1e-9), td, hist_path=None, dry=D)
+        assert c['schedules']['S1']['over_ceiling'] == ['references'] and c['selected'] == 'S4'
+        # (5) the larger of two sources is used (pooled rates)
         slow = [dict(x, seconds=10 * x['seconds'], src='hist') for x in rows(1e-9)]
-        c1 = certify(T(), rows(1e-9), td, hist_path=None)
-        c2 = Rates(rows(1e-9) + slow)
-        assert abs(c2.sec('prod', True, 'fib4181', 1.) - 10 * Rates(rows(1e-9)).sec('prod', True, 'fib4181', 1.)) < 1e-12
+        assert abs(Rates(rows(1e-9) + slow).sec('prod', True, 'fib4181', 1.) - 10 * Rates(rows(1e-9)).sec('prod', True, 'fib4181', 1.)) < 1e-12
         # (6) unmeasured rules scale from the largest measured rule; tighter = tight
         R = Rates(rows(1e-9))
         assert abs(R.sec('prod', True, 'gauss256', .25) - 1e-9 * M['gauss256'] * 200) < 1e-12
         assert R.sec('tighter', False, 'fib4181', 1.) == R.sec('tight', False, 'fib4181', 1.)
-        # (7) slow policy rates -> policy over ceiling -> S4
-        c = certify(T(), rows(1e-6), td, hist_path=None)
+        # (7) slow dry run (40 s / case -> 0.67 GPU-h) -> policy over 0.5 -> S4
+        c = certify(T(), rows(1e-9), td, hist_path=None, dry=dryrun(40.))
         assert 'policy_K1' in c['schedules']['S1']['over_ceiling'] and c['selected'] == 'S4'
-        # (8) no ROM timing at all -> uncertified
-        c = certify(T(), [], td, hist_path=None)
-        assert 'policy_K1' in c['schedules']['S1']['uncertified'] and c['selected'] == 'S4'
-        # (9) the real e2s1 history parses (if present) and gives R384 group time
+        # (8) no dry run -> policy uncertified (worst-path bound still reported); (9) budget-capped dry run -> uncertified
+        for dd in (None, dryrun(10., capped=1)):
+            c = certify(T(), rows(1e-9), td, hist_path=None, dry=dd)
+            pk = c['schedules']['S1']['items']['policy_K1']
+            assert 'policy_K1' in c['schedules']['S1']['uncertified'] and c['selected'] == 'S4' and pk['worst_path_bound']['certified']
+        # (10) the real e2s1 history parses (if present)
         if E2S1.exists():
             hr, h = e2s1_rows()
             assert h['elapsed_R384'] > 0 and any(x['level'] == 'tight' for x in hr)
-        # (10) admission rule (smoke charged -> no smoke reservation)
+        # (11) admission rule (smoke charged -> no smoke reservation): S1 ceilings 13.9
         led = dict(jobs=[dict(name='SM-a', item='smoke', ceiling_gpu_h=.45, state='done', charged_gpu_h=.4),
                          dict(name='SM-b', item='smoke', ceiling_gpu_h=.45, state='done', charged_gpu_h=.45)])
-        c = certify(T(), rows(1e-9), td, hist_path=None, ledger=led)
+        c = certify(T(), rows(1e-9), td, hist_path=None, ledger=led, dry=D)
         a = admit(led, c, 'train_a', 4.4)
-        assert a['admit'] and abs(a['total'] - (.85 + 13.4)) < 1e-9
+        assert a['admit'] and abs(a['total'] - (.85 + 13.9)) < 1e-9
         led['jobs'].append(dict(name='X', item='train_b', ceiling_gpu_h=4.4, state='running'))
         led['jobs'][1]['charged_gpu_h'] = 2.2
-        assert not admit(led, c, 'train_a', 4.4)['admit']            # 2.6 + 4.4 + 4.4 + 4.6 > 15
+        assert not admit(led, c, 'train_a', 4.4)['admit']            # 2.6 + 4.4 + 4.4 + 5.1 > 15
     print('resources selftest OK')
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--rom', action='append', default=[])
+    ap.add_argument('--dry', action='append', default=[], help='fpolicy result.json of the SM-b policy dry run(s)')
     ap.add_argument('--regimes', default=str(REGIMES))
     ap.add_argument('--ref-gpu', default='H200')
     ap.add_argument('--rom-gpu', default='A100')
@@ -429,7 +484,11 @@ def main():
         r = json.loads(Path(p).read_text())
         assert r.get('backend') == 'gpu' and a.rom_gpu.lower() in str(r.get('gpu', '')).lower(), f'{p}: not a {a.rom_gpu} GPU run'
         rows += [dict(x, src='smoke') for x in r['rows']]
-    cert = certify(timings, rows, a.regimes, a.ref_gpu, ledger, a.history)
+    dry = [json.loads(Path(p).read_text()) for p in a.dry]
+    for r in dry:
+        assert r.get('backend') == 'gpu' and a.rom_gpu.lower() in str(r.get('gpu', '')).lower(), 'dry run not on the ROM GPU'
+        rows += [dict(x, src='smoke-dry') for x in r['rows']]
+    cert = certify(timings, rows, a.regimes, a.ref_gpu, ledger, a.history, dry)
     cert['inputs'] = dict(timings=sorted(timings), rom=a.rom, regimes=a.regimes, history=a.history)
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(cert, indent=1, default=float) + '\n')

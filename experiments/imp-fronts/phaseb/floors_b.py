@@ -36,6 +36,7 @@ import fcohorts as FC  # noqa: E402
 ROBUST = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/inputs/banks')
 RS = (384, 512)
 TAIL_K = 4096
+REFERENCED = {'FI': 6, 'FN0s': 8, 'FC1': 8, 'FC2': 2}   # Amendment 10: lowest test indices
 CLIP = 1e-14
 FORBIDDEN = ('/sealed/', '/custody/')
 _INC = (F.NC.CKPT, F.NC.ROT)
@@ -151,7 +152,7 @@ def load_fresh_ref(root, cohort, j, tab=None, allow_dev=False):
 
 
 def available_cases(root, cohort, tab):
-    return [r['j'] for r in tab['cohorts'][cohort] if r['split'] == 'test'
+    return [r['j'] for r in tab['cohorts'][cohort] if r['split'] == 'test' and r['j'] < 4 + REFERENCED[cohort]
             and Path(root, '2d', cohort, 'ST', f"c{r['j']:03d}.json").exists()]
 
 
@@ -160,7 +161,7 @@ def run(spec, root):
     b = use(spec)
     out = dict(bank={k: v for k, v in b.items()}, fresh_sha256=tab['sha256'], refs=str(root), cohorts={})
     for coh in FC.COHORTS:
-        tests = [r['j'] for r in tab['cohorts'][coh] if r['split'] == 'test']
+        tests = [r['j'] for r in tab['cohorts'][coh] if r['split'] == 'test'][:REFERENCED[coh]]
         have = available_cases(root, coh, tab)
         per = {}
         for j in have:

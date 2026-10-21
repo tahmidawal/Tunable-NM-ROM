@@ -1,0 +1,29 @@
+Codex (`codex exec -s read-only`) reviewed this report adversarially; each round's full output is in this folder as `codex-review-<n>.md`.
+
+- **Round 1: NEEDS-FIX.** All 264 values traced; no DST, tail-index or bank-QR error found; one CPU spectral solve reproduced. Findings and fixes:
+  - The fitted ROM intercept had been presented as a lower bound. It is now labelled a property of the present implementation, the 3D part as the weakest, and a sensitivity table was added.
+  - The steepness fit dropped unresolved cases silently and ignored the worst case. Censored counts are now reported, and a worst-case envelope variant was added.
+  - Accuracy (small step) and cost (20 or 10 steps) referred to different configurations. The solver was rerun at the charged steps, and the matching N is unchanged.
+  - The stability law had been over-generalised. It is now reported with its bracket and exclusions, with c minimum and median, restricted to 2D, and the aT parameter is noted.
+  - The synthetic conclusions overreached. They are now limited to the sampled families, and an anisotropic sine comparator was added; it removes F1's apparent advantage.
+  - The Arbes–Greif–Urban statement was wrong; it was corrected and narrowed.
+  - The query decomposition mixed jobs; total and profile are now separated.
+  - The model check now uses the prediction model itself, and the check is labelled in-sample.
+  - Wording: n_J borrowed; dominant-term rate; table footprint; approximately exponential; A10 self-differences.
+  - Table delimiters fixed; "cannot win" claims made conditional; literature headings narrowed.
+- **Round 2: NEEDS-FIX.** All 292 values traced; independent checks of DST tails, the bank projection, a charged-step rerun and the F1 synthetic row all agreed. Findings and fixes:
+  - The steepness scenario charged fewer spectral steps than its accuracy runs used. A new run (`a2_ps.py stab`) measures every 2D case at exactly the executable step the model charges; the model now uses aligned step counts.
+  - The worst-case envelope ignored censored cases. It is relabelled an envelope of resolved cases only, with the censored counts stated.
+  - The N0 row mixed a pooled ROM baseline with N0-only spectral runs. Both are now computed on the same eligible case IDs (N_joint moves from 32 to 48).
+  - The claimed bias direction of the stability exclusions was unsupported. It was removed; the excluded cases' upper limits are now listed.
+  - Summary values pooled two scenarios. Each is now generated from the scenario its sentence names, with N and step counts printed.
+  - "Every crossover needs fixed ROM steps" contradicted the tables. It is restated to cover what the scan found.
+  - Synthetic censoring is described as our rank cutoff.
+  - The Arbes–Greif–Urban decay statement and the literature headings were narrowed.
+  - "Spatial error only", "near-optimal" and "aT not varied" were replaced; a stale provenance string was fixed.
+- **Round 3 (final): NEEDS-FIX, with two MEDIUM findings and no HIGH.** All 293 values traced; DST tails, the bank projection and a new charged-step run were reproduced independently. Findings and fixes:
+  - The median-c sensitivity reused accuracy measured at the minimum-c steps, and one sampled C2 case diverged at the larger step. It is now labelled a cost-only, unvalidated sensitivity.
+  - The opening sentence said the steepness crossover happens "only if ρ ≳ 1000", contradicting its own table. Corrected: some ρ = 100 rows also cross.
+  - Minor wording: "stability limit" changed to "empirical step law from sampled boundedness brackets"; "a large r never helps" made precise; the scope of the Greif–Urban result narrowed; a stale docstring fixed.
+  - This round's fixes were not re-reviewed: the three-round limit was reached.
+- **Codex's closing view:** the measured result survives review. The cost model supports conditional scenarios, not a validated regime boundary.

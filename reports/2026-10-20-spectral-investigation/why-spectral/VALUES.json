@@ -1,0 +1,1174 @@
+{
+ "E0_2d_Nprojp001_max": {
+  "value": "76",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].N_proj[\"0.001\"] max over uncensored"
+ },
+ "E0_2d_Nprojp001_med": {
+  "value": "16",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].N_proj[\"0.001\"] median"
+ },
+ "E0_2d_Nprojp01_max": {
+  "value": "45",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].N_proj[\"0.01\"] max over uncensored"
+ },
+ "E0_2d_Nprojp01_med": {
+  "value": "11",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].N_proj[\"0.01\"] median"
+ },
+ "E0_2d_Nt1_max": {
+  "value": "37",
+  "source": "analysis/a1_spectra.json max over cases, same"
+ },
+ "E0_2d_Nt1_med": {
+  "value": "11",
+  "source": "analysis/a1_spectra.json median over cases of smallest N with tail_t1(N) <= 1e-2"
+ },
+ "E0_2d_Nt5_max": {
+  "value": "27",
+  "source": "analysis/a1_spectra.json max over cases, same"
+ },
+ "E0_2d_Nt5_med": {
+  "value": "8",
+  "source": "analysis/a1_spectra.json median over cases of smallest N with tail_t5(N) <= 1e-2"
+ },
+ "E0_2d_n": {
+  "value": "38",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d (rows)"
+ },
+ "E0_2d_sigma_t0_med": {
+  "value": "0.0289",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].sigma[0] median (t = 0, the nodal IC with zero wall nodes)"
+ },
+ "E0_2d_sigma_t1_med": {
+  "value": "0.27",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].sigma[1] median"
+ },
+ "E0_2d_sigma_t5_med": {
+  "value": "0.381",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].sigma[5] median"
+ },
+ "E0_2d_smax": {
+  "value": "176",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].s max"
+ },
+ "E0_2d_smin": {
+  "value": "10.9",
+  "source": "analysis/a1_spectra.json cohorts.E0_2d[*].s min"
+ },
+ "E0_2d_t0_slope": {
+  "value": "-0.89",
+  "source": "analysis/a1_spectra.json median over cases of log(tail_t0(128)/tail_t0(16)) / log 8"
+ },
+ "E0_3d_Nprojp001_max": {
+  "value": "39",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].N_proj[\"0.001\"] max over uncensored"
+ },
+ "E0_3d_Nprojp001_med": {
+  "value": "13.5",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].N_proj[\"0.001\"] median"
+ },
+ "E0_3d_Nprojp01_max": {
+  "value": "22",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].N_proj[\"0.01\"] max over uncensored"
+ },
+ "E0_3d_Nprojp01_med": {
+  "value": "9",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].N_proj[\"0.01\"] median"
+ },
+ "E0_3d_n": {
+  "value": "68",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d (rows)"
+ },
+ "E0_3d_sigma_t1_med": {
+  "value": "0.453",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].sigma[1] median"
+ },
+ "E0_3d_sigma_t5_med": {
+  "value": "0.375",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].sigma[5] median"
+ },
+ "E0_3d_smax": {
+  "value": "180",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].s max"
+ },
+ "E0_3d_smin": {
+  "value": "7.53",
+  "source": "analysis/a1_spectra.json cohorts.E0_3d[*].s min"
+ },
+ "N3_joint": {
+  "value": "14",
+  "source": "analysis/a4_match.json rom3d[*].N_joint (identical for all four)"
+ },
+ "N3_modes": {
+  "value": "2197",
+  "source": "(N3_joint - 1)^3"
+ },
+ "N3c_joint": {
+  "value": "14",
+  "source": "analysis/a4_match.json rom3d[*].N_joint_charged (dt 0.025, 10 steps)"
+ },
+ "Nc_c2_20_2": {
+  "value": "456–484",
+  "source": "analysis/a7_model.json crossover_floor[\"d2|nps20|nrom20|S2\"]"
+ },
+ "Nc_c2_50_2": {
+  "value": "828–876",
+  "source": "analysis/a7_model.json crossover_floor[\"d2|nps20|nrom50|S2\"]"
+ },
+ "Nc_c3_20_2": {
+  "value": "62",
+  "source": "analysis/a7_model.json crossover_floor[\"d3|nps10|nrom20|S2\"]"
+ },
+ "Nc_c3_50_2": {
+  "value": "100–102",
+  "source": "analysis/a7_model.json crossover_floor[\"d3|nps10|nrom50|S2\"]"
+ },
+ "Ncase_med_hi": {
+  "value": "20",
+  "source": "max over configurations of the per-case median N*"
+ },
+ "Ncase_med_lo": {
+  "value": "10",
+  "source": "min over configurations of the per-case median N*"
+ },
+ "Ncase_worst_case": {
+  "value": "val32|5",
+  "source": "case with the largest N*_case for R384 LSPG-CN-R"
+ },
+ "Ncase_worst_s": {
+  "value": "165",
+  "source": "its s"
+ },
+ "Ndelta_iqr": {
+  "value": "0.9–1.3",
+  "source": "same, interquartile range"
+ },
+ "Ndelta_med": {
+  "value": "1.1",
+  "source": "analysis/a1_spectra.json median over 2D cases of N_proj(1e-2) x min_(t>0) delta(t)"
+ },
+ "Njoint_max": {
+  "value": "40",
+  "source": "same, max"
+ },
+ "Njoint_min": {
+  "value": "24",
+  "source": "analysis/a4_match.json min N_joint over all qualified 1024^2 configurations"
+ },
+ "Njoint_n": {
+  "value": "33",
+  "source": "same, number of configurations"
+ },
+ "Njointc_max": {
+  "value": "40",
+  "source": "same, max"
+ },
+ "Njointc_max_modes": {
+  "value": "1521",
+  "source": "(Njointc_max - 1)^2"
+ },
+ "Njointc_min": {
+  "value": "24",
+  "source": "analysis/a4_match.json rom2d[*].N_joint_charged min (spectral at dt 0.0125, 20 steps)"
+ },
+ "bank_e0_384_max": {
+  "value": "4.7",
+  "source": "A3 E0 max K_match/r at 384"
+ },
+ "bank_e0_384_med": {
+  "value": "0.63",
+  "source": "A3 E0 median K_match/r at 384"
+ },
+ "bank_idea_384_med": {
+  "value": "0.64",
+  "source": "improvement-ideation analysis/bank_vs_sine.json ratio_sineK_over_r_384.median (first-order refdv fields)"
+ },
+ "c12_Klap3_med": {
+  "value": "2.07e3",
+  "source": "A3 C1+C2 median Laplacian-ordered sine count for a 3 % floor"
+ },
+ "c12_bank512_reach3": {
+  "value": "7",
+  "source": "A3 C1+C2 cases where the bank (<= 512) reaches a 3 % floor"
+ },
+ "c12_n": {
+  "value": "32",
+  "source": "A3 C1+C2 cases"
+ },
+ "c_dt": {
+  "value": "1.41",
+  "source": "analysis/a7_model.json s_crossover.c_variants.c_min: dt_max ~ c / s"
+ },
+ "c_dt_med": {
+  "value": "2.07",
+  "source": "analysis/a7_model.json s_crossover.c_variants.c_med"
+ },
+ "ev_share_R128": {
+  "value": "78 %",
+  "source": "same, R128 BE"
+ },
+ "ev_share_R384": {
+  "value": "86 %",
+  "source": "P1 evolve / (init + evolve + decode) at 4096^2, R384 CN-R"
+ },
+ "fitPS_alpha": {
+  "value": "0.73",
+  "source": "log N*_PS(1e-2) = log c + alpha log s over E0 2D + regimes at the charged step (analysis/a2_stab.json), 102 resolved cases"
+ },
+ "fitPS_c": {
+  "value": "1",
+  "source": "same fit, prefactor"
+ },
+ "fitPS_n": {
+  "value": "102",
+  "source": "same fit, cases"
+ },
+ "fit_Nprojp001_alpha": {
+  "value": "0.75",
+  "source": "analysis/a1_spectra.json least squares log N_proj(\"0.001\") = log c + alpha log s, 2D, 102 cases"
+ },
+ "fit_Nprojp001_c": {
+  "value": "1.2",
+  "source": "same fit, prefactor c"
+ },
+ "fit_Nprojp01_alpha": {
+  "value": "0.69",
+  "source": "analysis/a1_spectra.json least squares log N_proj(\"0.01\") = log c + alpha log s, 2D, 102 cases"
+ },
+ "fit_Nprojp01_c": {
+  "value": "0.98",
+  "source": "same fit, prefactor c"
+ },
+ "fit_Nprojp01_n": {
+  "value": "102",
+  "source": "same fit, cases used"
+ },
+ "flop_ratio": {
+  "value": "4.6e4",
+  "source": "rom_flopunk_R384 / psflopunk_2d_48"
+ },
+ "g1_Wratio_2d": {
+  "value": "19.4",
+  "source": "w_ps(1024,2)/w_ps(256,2)"
+ },
+ "g1_Wratio_3d": {
+  "value": "9.15",
+  "source": "w_ps(128,3)/w_ps(64,3)"
+ },
+ "g1_cpu_dev": {
+  "value": "2.9e-16",
+  "source": "max relative deviation of the GB10 fingerprints from the CPU run (analysis/g1_*.json)"
+ },
+ "g1_ratio_2d": {
+  "value": "20.8",
+  "source": "analysis/g1_gpu.json tau(2D N=1024)/tau(2D N=256) on the GB10"
+ },
+ "g1_ratio_3d": {
+  "value": "8.74",
+  "source": "analysis/g1_gpu.json tau(3D N=128)/tau(3D N=64) on the GB10"
+ },
+ "gate2d_maxrel": {
+  "value": "9.8e-13",
+  "source": "analysis/a2_gate2d.json: max relative difference of CPU median/worst vs jcp-fom2d in-job (H200) scores"
+ },
+ "gate3d_maxrel": {
+  "value": "2.3e-11",
+  "source": "analysis/a2_e03d.json gate_N16_0.025 vs jcp-speed3d f1 per-case e, max relative difference (64 cases)"
+ },
+ "k2_2d": {
+  "value": "0.0493–0.706",
+  "source": "reports/2026-10-17-full-experiment-plan/final/report.md (text \"union speed-up 0.0493–0.706\")"
+ },
+ "k2_3d": {
+  "value": "0.00786–0.158",
+  "source": "reports/2026-10-17-full-experiment-plan/final/report.md (text \"3D 0.00786–0.158\")"
+ },
+ "kappa_384": {
+  "value": "42.7",
+  "source": "m/r for R384 gauss128 (model constant kappa)"
+ },
+ "kappa_hi": {
+  "value": "64",
+  "source": "max m/r over the P1 configurations"
+ },
+ "kappa_lo": {
+  "value": "33",
+  "source": "min m/r over the P1 configurations"
+ },
+ "model_check_hi": {
+  "value": "1.1",
+  "source": "same, max"
+ },
+ "model_check_lo": {
+  "value": "0.79",
+  "source": "analysis/a7_model.json check[*].ratio min (model / measured query time)"
+ },
+ "mr_Nprojp01_a": {
+  "value": "0.71",
+  "source": "multiple regression log N_proj on log a, log nu, log w: coefficient of log a"
+ },
+ "mr_Nprojp01_nu": {
+  "value": "-0.7",
+  "source": "same, coefficient of log nu"
+ },
+ "mr_Nprojp01_w": {
+  "value": "0.085",
+  "source": "same, coefficient of log w"
+ },
+ "predS_R128": {
+  "value": "0.22",
+  "source": "same for R128 LSPG-BE dt0"
+ },
+ "predS_R384": {
+  "value": "0.057",
+  "source": "analysis/a7_model.json pred_S[\"1024|R384|LSPG|CNR|1\"].S_model (lattice, N_joint)"
+ },
+ "ps2_N128_med": {
+  "value": "3.86e-4 %",
+  "source": "analysis/a4_match.json ps2_summary[\"128\"].median (CPU, dt 0.0025, 38 cases)"
+ },
+ "ps2_N128_worst": {
+  "value": "0.00251 %",
+  "source": "analysis/a4_match.json ps2_summary[\"128\"].worst"
+ },
+ "ps2_N16_med": {
+  "value": "0.0938 %",
+  "source": "analysis/a4_match.json ps2_summary[\"16\"].median (CPU, dt 0.0025, 38 cases)"
+ },
+ "ps2_N16_worst": {
+  "value": "14 %",
+  "source": "analysis/a4_match.json ps2_summary[\"16\"].worst"
+ },
+ "ps2_N24_med": {
+  "value": "0.00651 %",
+  "source": "analysis/a4_match.json ps2_summary[\"24\"].median (CPU, dt 0.0025, 38 cases)"
+ },
+ "ps2_N24_worst": {
+  "value": "6.4 %",
+  "source": "analysis/a4_match.json ps2_summary[\"24\"].worst"
+ },
+ "ps2_N32_med": {
+  "value": "0.00217 %",
+  "source": "analysis/a4_match.json ps2_summary[\"32\"].median (CPU, dt 0.0025, 38 cases)"
+ },
+ "ps2_N32_worst": {
+  "value": "3.14 %",
+  "source": "analysis/a4_match.json ps2_summary[\"32\"].worst"
+ },
+ "ps2_N48_med": {
+  "value": "5.45e-4 %",
+  "source": "analysis/a4_match.json ps2_summary[\"48\"].median (CPU, dt 0.0025, 38 cases)"
+ },
+ "ps2_N48_worst": {
+  "value": "0.843 %",
+  "source": "analysis/a4_match.json ps2_summary[\"48\"].worst"
+ },
+ "ps2_N64_med": {
+  "value": "4.29e-4 %",
+  "source": "analysis/a4_match.json ps2_summary[\"64\"].median (CPU, dt 0.0025, 38 cases)"
+ },
+ "ps2_N64_worst": {
+  "value": "0.243 %",
+  "source": "analysis/a4_match.json ps2_summary[\"64\"].worst"
+ },
+ "ps2_N96_med": {
+  "value": "3.78e-4 %",
+  "source": "analysis/a4_match.json ps2_summary[\"96\"].median (CPU, dt 0.0025, 38 cases)"
+ },
+ "ps2_N96_worst": {
+  "value": "0.0224 %",
+  "source": "analysis/a4_match.json ps2_summary[\"96\"].worst"
+ },
+ "ps2_P": {
+  "value": "1.44",
+  "source": "analysis/a6_cost.json fit_ps2.P / 1e12 (TFLOP/s)"
+ },
+ "ps2_alpha4k_24": {
+  "value": "7.52 ms",
+  "source": "analysis/a6_cost.json ps2_full[\"4096\"][\"24\"].alpha (full-field 4096^2 output)"
+ },
+ "ps2_alpha4k_256": {
+  "value": "9.7 ms",
+  "source": "analysis/a6_cost.json ps2_full[\"4096\"][\"256\"].alpha (full-field 4096^2 output)"
+ },
+ "ps2_alpha4k_48": {
+  "value": "7.5 ms",
+  "source": "analysis/a6_cost.json ps2_full[\"4096\"][\"48\"].alpha (full-field 4096^2 output)"
+ },
+ "ps2_alpha_24": {
+  "value": "2.04 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"24\"].alpha"
+ },
+ "ps2_alpha_256": {
+  "value": "4.45 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"256\"].alpha"
+ },
+ "ps2_alpha_48": {
+  "value": "2.09 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"48\"].alpha"
+ },
+ "ps2_dtmax_24": {
+  "value": "0.025",
+  "source": "analysis/a6_cost.json ps2_lattice[\"24\"].dt_max_admissible (38 cases)"
+ },
+ "ps2_dtmax_256": {
+  "value": "0.0125",
+  "source": "analysis/a6_cost.json ps2_lattice[\"256\"].dt_max_admissible (38 cases)"
+ },
+ "ps2_dtmax_48": {
+  "value": "0.0125",
+  "source": "analysis/a6_cost.json ps2_lattice[\"48\"].dt_max_admissible (38 cases)"
+ },
+ "ps2_resid": {
+  "value": "24 %",
+  "source": "analysis/a6_cost.json fit_ps2.max_rel_resid"
+ },
+ "ps2_tau0": {
+  "value": "0.15 ms",
+  "source": "analysis/a6_cost.json fit_ps2.tau0 (relative least squares)"
+ },
+ "ps2_tau_16": {
+  "value": "0.141 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"16\"].tau (H200, fom2d match-final costs regressed on steps)"
+ },
+ "ps2_tau_24": {
+  "value": "0.161 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"24\"].tau (H200, fom2d match-final costs regressed on steps)"
+ },
+ "ps2_tau_256": {
+  "value": "0.272 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"256\"].tau (H200, fom2d match-final costs regressed on steps)"
+ },
+ "ps2_tau_48": {
+  "value": "0.155 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"48\"].tau (H200, fom2d match-final costs regressed on steps)"
+ },
+ "ps2_tau_96": {
+  "value": "0.172 ms",
+  "source": "analysis/a6_cost.json ps2_lattice[\"96\"].tau (H200, fom2d match-final costs regressed on steps)"
+ },
+ "ps2a_P": {
+  "value": "1.63",
+  "source": "analysis/a6_cost.json fit_ps2_asym.P / 1e12"
+ },
+ "ps3_N10_med": {
+  "value": "0.522 %",
+  "source": "analysis/a4_match.json ps3_summary[\"10\"].median (CPU, dt 0.01, val64)"
+ },
+ "ps3_N10_worst": {
+  "value": "6.84 %",
+  "source": "analysis/a4_match.json ps3_summary[\"10\"].worst"
+ },
+ "ps3_N12_med": {
+  "value": "0.179 %",
+  "source": "analysis/a4_match.json ps3_summary[\"12\"].median (CPU, dt 0.01, val64)"
+ },
+ "ps3_N12_worst": {
+  "value": "5.04 %",
+  "source": "analysis/a4_match.json ps3_summary[\"12\"].worst"
+ },
+ "ps3_N14_med": {
+  "value": "0.0585 %",
+  "source": "analysis/a4_match.json ps3_summary[\"14\"].median (CPU, dt 0.01, val64)"
+ },
+ "ps3_N14_worst": {
+  "value": "3.7 %",
+  "source": "analysis/a4_match.json ps3_summary[\"14\"].worst"
+ },
+ "ps3_N16_med": {
+  "value": "0.02 %",
+  "source": "analysis/a4_match.json ps3_summary[\"16\"].median (CPU, dt 0.01, val64)"
+ },
+ "ps3_N16_worst": {
+  "value": "2.64 %",
+  "source": "analysis/a4_match.json ps3_summary[\"16\"].worst"
+ },
+ "ps3_N24_med": {
+  "value": "0.00272 %",
+  "source": "analysis/a4_match.json ps3_summary[\"24\"].median (CPU, dt 0.01, val64)"
+ },
+ "ps3_N24_worst": {
+  "value": "0.773 %",
+  "source": "analysis/a4_match.json ps3_summary[\"24\"].worst"
+ },
+ "ps3_N32_med": {
+  "value": "0.00253 %",
+  "source": "analysis/a4_match.json ps3_summary[\"32\"].median (CPU, dt 0.01, val64)"
+ },
+ "ps3_N32_worst": {
+  "value": "0.258 %",
+  "source": "analysis/a4_match.json ps3_summary[\"32\"].worst"
+ },
+ "ps3_N8_med": {
+  "value": "1.65 %",
+  "source": "analysis/a4_match.json ps3_summary[\"8\"].median (CPU, dt 0.01, val64)"
+ },
+ "ps3_N8_worst": {
+  "value": "10.5 %",
+  "source": "analysis/a4_match.json ps3_summary[\"8\"].worst"
+ },
+ "ps3_P": {
+  "value": "2.31",
+  "source": "analysis/a6_cost.json fit_ps3.P / 1e12 (TFLOP/s)"
+ },
+ "ps3_alpha_16": {
+  "value": "1.54 ms",
+  "source": "analysis/a6_cost.json ps3_lattice[\"16\"].alpha"
+ },
+ "ps3_alpha_32": {
+  "value": "1.52 ms",
+  "source": "analysis/a6_cost.json ps3_lattice[\"32\"].alpha"
+ },
+ "ps3_alpha_64": {
+  "value": "10.1 ms",
+  "source": "analysis/a6_cost.json ps3_lattice[\"64\"].alpha"
+ },
+ "ps3_resid": {
+  "value": "19 %",
+  "source": "analysis/a6_cost.json fit_ps3.max_rel_resid"
+ },
+ "ps3_tau0": {
+  "value": "0.265 ms",
+  "source": "analysis/a6_cost.json fit_ps3.tau0 (relative least squares)"
+ },
+ "ps3_tau_16": {
+  "value": "0.25 ms",
+  "source": "analysis/a6_cost.json ps3_lattice[\"16\"].tau (H200, speed3d f1 warm medians)"
+ },
+ "ps3_tau_32": {
+  "value": "0.417 ms",
+  "source": "analysis/a6_cost.json ps3_lattice[\"32\"].tau (H200, speed3d f1 warm medians)"
+ },
+ "ps3_tau_64": {
+  "value": "0.977 ms",
+  "source": "analysis/a6_cost.json ps3_lattice[\"64\"].tau (H200, speed3d f1 warm medians)"
+ },
+ "ps3a_P": {
+  "value": "2.17",
+  "source": "analysis/a6_cost.json fit_ps3_asym.P / 1e12"
+ },
+ "psW_2d_24": {
+  "value": "1.09e6",
+  "source": "a6_cost.w_ps(24, 2) (operation-count model)"
+ },
+ "psW_2d_256": {
+  "value": "1.97e8",
+  "source": "a6_cost.w_ps(256, 2) (operation-count model)"
+ },
+ "psW_2d_48": {
+  "value": "5.13e6",
+  "source": "a6_cost.w_ps(48, 2) (operation-count model)"
+ },
+ "ps_bytes48_kB": {
+  "value": "40",
+  "source": "a6_cost.bytes_ps(48, 2) / 1e3 (one padded f64 field)"
+ },
+ "ps_modes_ratio_256_48": {
+  "value": "29",
+  "source": "(255/47)^2: modes of N = 256 over N = 48"
+ },
+ "ps_perunk_48": {
+  "value": "0.0704",
+  "source": "ps2_lattice[\"48\"].tau / 47^2 in microseconds"
+ },
+ "ps_rate_256": {
+  "value": "0.73",
+  "source": "w_ps(256,2) / tau(256) / 1e12 TFLOP/s"
+ },
+ "ps_rate_48": {
+  "value": "0.033",
+  "source": "w_ps(48,2) / tau(48) / 1e12 TFLOP/s"
+ },
+ "ps_tau_ratio_256_48": {
+  "value": "1.7",
+  "source": "ps2_lattice tau(256)/tau(48)"
+ },
+ "psflopunk_2d_24": {
+  "value": "2.06e3",
+  "source": "w_ps(24,2) / (N-1)^2"
+ },
+ "psflopunk_2d_256": {
+  "value": "3.04e3",
+  "source": "w_ps(256,2) / (N-1)^2"
+ },
+ "psflopunk_2d_48": {
+  "value": "2.32e3",
+  "source": "w_ps(48,2) / (N-1)^2"
+ },
+ "q4_R128_S": {
+  "value": "0.471",
+  "source": "same .S (registered union speed-up, dev6 workload)"
+ },
+ "q4_R128_fom": {
+  "value": "11.7 ms",
+  "source": "same .fom_s (ps|N48|0.0125)"
+ },
+ "q4_R128_rom": {
+  "value": "24.9 ms",
+  "source": "analysis/a6_cost.json c2_queries[\"4096\"][\"R128|fib4181|frozen|BE|0.005|LSPG|prod\"].rom_s (fom2d stage 2)"
+ },
+ "q4_R384_S": {
+  "value": "0.121",
+  "source": "same .S (registered union speed-up, dev6 workload)"
+ },
+ "q4_R384_fom": {
+  "value": "11.7 ms",
+  "source": "same .fom_s (ps|N48|0.0125)"
+ },
+ "q4_R384_rom": {
+  "value": "97.1 ms",
+  "source": "analysis/a6_cost.json c2_queries[\"4096\"][\"R384|gauss128|frozen|CNR|0.005|LSPG|prod\"].rom_s (fom2d stage 2)"
+ },
+ "r3_W_C_W768_dec": {
+  "value": "0.421 ms",
+  "source": "rom3[\"W_C_W768\"].decode"
+ },
+ "r3_W_C_W768_evolve": {
+  "value": "28.5 ms",
+  "source": "rom3[\"W_C_W768\"].evolve"
+ },
+ "r3_W_C_W768_fused": {
+  "value": "29.3 ms",
+  "source": "analysis/a6_cost.json rom3[\"W_C_W768\"].fused (speed3d p1 H31)"
+ },
+ "r3_W_C_W768_proj": {
+  "value": "0.464 ms",
+  "source": "rom3[\"W_C_W768\"].project"
+ },
+ "r3_tau": {
+  "value": "1.9 ms",
+  "source": "rom3[\"W_C_W768\"].evolve / 15 steps"
+ },
+ "reg_Am_Nprojp001_max": {
+  "value": "77",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].N_proj[\"0.001\"] max over uncensored"
+ },
+ "reg_Am_Nprojp001_med": {
+  "value": "41",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].N_proj[\"0.001\"] median"
+ },
+ "reg_Am_Nprojp01_max": {
+  "value": "45",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].N_proj[\"0.01\"] max over uncensored"
+ },
+ "reg_Am_Nprojp01_med": {
+  "value": "24.5",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].N_proj[\"0.01\"] median"
+ },
+ "reg_Am_n": {
+  "value": "16",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am (rows)"
+ },
+ "reg_Am_sigma_t1_med": {
+  "value": "0.153",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].sigma[1] median"
+ },
+ "reg_Am_sigma_t5_med": {
+  "value": "0.131",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].sigma[5] median"
+ },
+ "reg_Am_smax": {
+  "value": "198",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].s max"
+ },
+ "reg_Am_smin": {
+  "value": "80.8",
+  "source": "analysis/a1_spectra.json cohorts.reg_Am[*].s min"
+ },
+ "reg_C1_Nprojp001_max": {
+  "value": "149",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].N_proj[\"0.001\"] max over uncensored"
+ },
+ "reg_C1_Nprojp001_med": {
+  "value": "104",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].N_proj[\"0.001\"] median"
+ },
+ "reg_C1_Nprojp01_max": {
+  "value": "84",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].N_proj[\"0.01\"] max over uncensored"
+ },
+ "reg_C1_Nprojp01_med": {
+  "value": "58.5",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].N_proj[\"0.01\"] median"
+ },
+ "reg_C1_n": {
+  "value": "16",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1 (rows)"
+ },
+ "reg_C1_sigma_t1_med": {
+  "value": "0.0985",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].sigma[1] median"
+ },
+ "reg_C1_sigma_t5_med": {
+  "value": "0.0574",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].sigma[5] median"
+ },
+ "reg_C1_smax": {
+  "value": "495",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].s max"
+ },
+ "reg_C1_smin": {
+  "value": "257",
+  "source": "analysis/a1_spectra.json cohorts.reg_C1[*].s min"
+ },
+ "reg_C2_Nprojp001_max": {
+  "value": "238",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].N_proj[\"0.001\"] max over uncensored"
+ },
+ "reg_C2_Nprojp001_med": {
+  "value": "206",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].N_proj[\"0.001\"] median"
+ },
+ "reg_C2_Nprojp01_max": {
+  "value": "175",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].N_proj[\"0.01\"] max over uncensored"
+ },
+ "reg_C2_Nprojp01_med": {
+  "value": "108",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].N_proj[\"0.01\"] median"
+ },
+ "reg_C2_n": {
+  "value": "16",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2 (rows)"
+ },
+ "reg_C2_sigma_t1_med": {
+  "value": "0.0457",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].sigma[1] median"
+ },
+ "reg_C2_sigma_t5_med": {
+  "value": "0.0387",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].sigma[5] median"
+ },
+ "reg_C2_smax": {
+  "value": "953",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].s max"
+ },
+ "reg_C2_smin": {
+  "value": "538",
+  "source": "analysis/a1_spectra.json cohorts.reg_C2[*].s min"
+ },
+ "reg_N0_Nprojp001_max": {
+  "value": "59",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].N_proj[\"0.001\"] max over uncensored"
+ },
+ "reg_N0_Nprojp001_med": {
+  "value": "18.5",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].N_proj[\"0.001\"] median"
+ },
+ "reg_N0_Nprojp01_max": {
+  "value": "35",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].N_proj[\"0.01\"] max over uncensored"
+ },
+ "reg_N0_Nprojp01_med": {
+  "value": "11.5",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].N_proj[\"0.01\"] median"
+ },
+ "reg_N0_n": {
+  "value": "16",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0 (rows)"
+ },
+ "reg_N0_sigma_t1_med": {
+  "value": "0.276",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].sigma[1] median"
+ },
+ "reg_N0_sigma_t5_med": {
+  "value": "0.385",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].sigma[5] median"
+ },
+ "reg_N0_smax": {
+  "value": "116",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].s max"
+ },
+ "reg_N0_smin": {
+  "value": "8.19",
+  "source": "analysis/a1_spectra.json cohorts.reg_N0[*].s min"
+ },
+ "rho_e0_1e2_max": {
+  "value": "5.2",
+  "source": "A3 E0 max of the same"
+ },
+ "rho_e0_1e2_med": {
+  "value": "1.1",
+  "source": "A3 E0 median of K_lap(1e-2)/r_bank(1e-2)"
+ },
+ "rho_e0_1e2_n": {
+  "value": "37",
+  "source": "A3 E0 cases where the bank reaches 1e-2 within 512"
+ },
+ "rho_need2": {
+  "value": "5.2e3 (at $N=1024$, 20 spectral and 50 ROM steps)",
+  "source": "analysis/a7_model.json rho_needed[\"d2|nps20|nrom50|N1024|fit\"].rho_S2 (smallest tabulated N with any S=2 solution)"
+ },
+ "rho_need3": {
+  "value": "1.5e3 (at $N=56$, 10 spectral and 15 ROM steps)",
+  "source": "analysis/a7_model.json rho_needed[\"d3|nps10|nrom15|N56|fit\"].rho_S2 (smallest tabulated N with any S=2 solution)"
+ },
+ "rho_ours_hi": {
+  "value": "5.7",
+  "source": "analysis/a7_model.json ours[*].rho max"
+ },
+ "rho_ours_lo": {
+  "value": "2.1",
+  "source": "analysis/a7_model.json ours[*].rho min"
+ },
+ "rom_P": {
+  "value": "29.8",
+  "source": "analysis/a6_cost.json fit_rom2.P / 1e12 (TFLOP/s)"
+ },
+ "rom_W_R128": {
+  "value": "1.16e9",
+  "source": "analysis/a6_cost.json rom2[\"R128|BE|frozen\"].W_step (model: n_J x 2 m M r)"
+ },
+ "rom_W_R256": {
+  "value": "1.82e10",
+  "source": "analysis/a6_cost.json rom2[\"R256|BE|frozen\"].W_step (model: n_J x 2 m M r)"
+ },
+ "rom_W_R384": {
+  "value": "4.10e10",
+  "source": "analysis/a6_cost.json rom2[\"R384|CNR|frozen\"].W_step (model: n_J x 2 m M r)"
+ },
+ "rom_bytesJ_R128": {
+  "value": "25.7",
+  "source": "bytes_per_jac / 1e6 (MB of f64 tables read per Jacobian, model)"
+ },
+ "rom_bytesJ_R256": {
+  "value": "201",
+  "source": "bytes_per_jac / 1e6 (MB of f64 tables read per Jacobian, model)"
+ },
+ "rom_bytesJ_R384": {
+  "value": "302",
+  "source": "bytes_per_jac / 1e6 (MB of f64 tables read per Jacobian, model)"
+ },
+ "rom_dec256_R128": {
+  "value": "0.135 ms",
+  "source": "P1 t_decode[\"256\"] for R128|BE|frozen"
+ },
+ "rom_dec256_R256": {
+  "value": "0.155 ms",
+  "source": "P1 t_decode[\"256\"] for R256|BE|frozen"
+ },
+ "rom_dec256_R384": {
+  "value": "0.177 ms",
+  "source": "P1 t_decode[\"256\"] for R384|CNR|frozen"
+ },
+ "rom_dec4k_R128": {
+  "value": "5.74 ms",
+  "source": "P1 t_decode[\"4096\"] for R128|BE|frozen"
+ },
+ "rom_dec4k_R256": {
+  "value": "10 ms",
+  "source": "P1 t_decode[\"4096\"] for R256|BE|frozen"
+ },
+ "rom_dec4k_R384": {
+  "value": "14.3 ms",
+  "source": "P1 t_decode[\"4096\"] for R384|CNR|frozen"
+ },
+ "rom_ev_R128": {
+  "value": "22 ms",
+  "source": "P1 t_evolve[\"1024\"] for R128|BE|frozen"
+ },
+ "rom_ev_R384": {
+  "value": "88.7 ms",
+  "source": "P1 t_evolve[\"1024\"] for R384|CNR|frozen"
+ },
+ "rom_flopunk_R128": {
+  "value": "9.08e6",
+  "source": "W_step / r (flops per unknown per step)"
+ },
+ "rom_flopunk_R256": {
+  "value": "7.11e7",
+  "source": "W_step / r (flops per unknown per step)"
+ },
+ "rom_flopunk_R384": {
+  "value": "1.07e8",
+  "source": "W_step / r (flops per unknown per step)"
+ },
+ "rom_init_R128": {
+  "value": "0.161 ms",
+  "source": "P1 t_init[\"1024\"] for R128|BE|frozen"
+ },
+ "rom_init_R256": {
+  "value": "0.186 ms",
+  "source": "P1 t_init[\"1024\"] for R256|BE|frozen"
+ },
+ "rom_init_R384": {
+  "value": "0.197 ms",
+  "source": "P1 t_init[\"1024\"] for R384|CNR|frozen"
+ },
+ "rom_nj": {
+  "value": "2.12",
+  "source": "analysis/a6_cost.json rom2[...].nj = 1 + mean LM iterations (P1 component run, R384 CN-R)"
+ },
+ "rom_perunk_R384": {
+  "value": "4.62",
+  "source": "tau / r in microseconds"
+ },
+ "rom_rate_R128": {
+  "value": "2.64",
+  "source": "W_step / tau / 1e12 (TFLOP/s, model flops over measured time)"
+ },
+ "rom_rate_R256": {
+  "value": "17.7",
+  "source": "W_step / tau / 1e12 (TFLOP/s, model flops over measured time)"
+ },
+ "rom_rate_R384": {
+  "value": "23.1",
+  "source": "W_step / tau / 1e12 (TFLOP/s, model flops over measured time)"
+ },
+ "rom_resid": {
+  "value": "2.5 %",
+  "source": "analysis/a6_cost.json fit_rom2.max_rel_resid"
+ },
+ "rom_tau0": {
+  "value": "0.403 ms",
+  "source": "analysis/a6_cost.json fit_rom2.tau0 (relative least squares)"
+ },
+ "rom_tau_R128": {
+  "value": "0.441 ms",
+  "source": "analysis/a6_cost.json rom2[\"R128|BE|frozen\"].tau = P1 t_evolve(1024)/50"
+ },
+ "rom_tau_R256": {
+  "value": "1.03 ms",
+  "source": "analysis/a6_cost.json rom2[\"R256|BE|frozen\"].tau = P1 t_evolve(1024)/50"
+ },
+ "rom_tau_R384": {
+  "value": "1.77 ms",
+  "source": "analysis/a6_cost.json rom2[\"R384|CNR|frozen\"].tau = P1 t_evolve(1024)/50"
+ },
+ "scross_eq_hi": {
+  "value": "7.4e3",
+  "source": "max s over the same"
+ },
+ "scross_eq_lo": {
+  "value": "1e3",
+  "source": "min s over equal-step scenarios with free unknowns (fit and envelope, c_min)"
+ },
+ "scross_eq_rho_none": {
+  "value": "none of the tested finite-$\\rho$ equal-step scenarios crosses over in the scanned range",
+  "source": "equal-step scenarios with finite rho (both N models, both c)"
+ },
+ "scross_fixed_hi": {
+  "value": "1.1e3",
+  "source": "max s over the same"
+ },
+ "scross_fixed_lo": {
+  "value": "2.3e2",
+  "source": "min s over fit/envelope, c_min, fixed-ROM-step scenarios with rho = inf or 1000"
+ },
+ "scross_fixed_med_hi": {
+  "value": "1.4e3",
+  "source": "same with c_med"
+ },
+ "scross_fixed_med_lo": {
+  "value": "2.9e2",
+  "source": "same with c_med"
+ },
+ "sfit_d2_eps0.001_alpha": {
+  "value": "0.75",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.001\"].alpha (N*_PS(eps) = c s^alpha, resolved cases)"
+ },
+ "sfit_d2_eps0.001_c": {
+  "value": "1.5",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.001\"].c"
+ },
+ "sfit_d2_eps0.001_cens": {
+  "value": "4",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.001\"].n_censored (no tested N reached eps)"
+ },
+ "sfit_d2_eps0.001_env": {
+  "value": "2",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.001\"].envelope (max over resolved cases of N / fit)"
+ },
+ "sfit_d2_eps0.01_alpha": {
+  "value": "0.73",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.01\"].alpha (N*_PS(eps) = c s^alpha, resolved cases)"
+ },
+ "sfit_d2_eps0.01_c": {
+  "value": "1",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.01\"].c"
+ },
+ "sfit_d2_eps0.01_cens": {
+  "value": "0",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.01\"].n_censored (no tested N reached eps)"
+ },
+ "sfit_d2_eps0.01_env": {
+  "value": "2",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.01\"].envelope (max over resolved cases of N / fit)"
+ },
+ "sfit_d2_eps0.01_n": {
+  "value": "102",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.01\"].n_cases"
+ },
+ "sfit_d2_eps0.01_smax": {
+  "value": "953",
+  "source": "analysis/a7_model.json s_crossover[\"d2|eps0.01\"].s_max_data (largest resolved s)"
+ },
+ "sfit_d3_eps0.001_cens": {
+  "value": "19",
+  "source": "analysis/a7_model.json s_crossover[\"d3|eps0.001\"].n_censored (no tested N reached eps)"
+ },
+ "sfit_d3_eps0.001_env": {
+  "value": "1.3",
+  "source": "analysis/a7_model.json s_crossover[\"d3|eps0.001\"].envelope (max over resolved cases of N / fit)"
+ },
+ "sfit_d3_eps0.01_alpha": {
+  "value": "0.33",
+  "source": "analysis/a7_model.json s_crossover[\"d3|eps0.01\"].alpha (N*_PS(eps) = c s^alpha, resolved cases)"
+ },
+ "sfit_d3_eps0.01_c": {
+  "value": "3",
+  "source": "analysis/a7_model.json s_crossover[\"d3|eps0.01\"].c"
+ },
+ "sfit_d3_eps0.01_cens": {
+  "value": "2",
+  "source": "analysis/a7_model.json s_crossover[\"d3|eps0.01\"].n_censored (no tested N reached eps)"
+ },
+ "sfit_d3_eps0.01_env": {
+  "value": "1.4",
+  "source": "analysis/a7_model.json s_crossover[\"d3|eps0.01\"].envelope (max over resolved cases of N / fit)"
+ },
+ "sfit_d3_eps0.01_smax": {
+  "value": "132",
+  "source": "analysis/a7_model.json s_crossover[\"d3|eps0.01\"].s_max_data (largest resolved s)"
+ },
+ "sp_Ncase_s": {
+  "value": "0.84",
+  "source": "Spearman(N*_case for R384 LSPG-CN-R 1024^2, s), 38 cases"
+ },
+ "sp_Nprojp01_a": {
+  "value": "0.37",
+  "source": "Spearman(N_proj, a)"
+ },
+ "sp_Nprojp01_nu": {
+  "value": "-0.91",
+  "source": "Spearman(N_proj, nu)"
+ },
+ "sp_Nprojp01_s": {
+  "value": "0.95",
+  "source": "Spearman(N_proj, s), same cases"
+ },
+ "sp_Nprojp01_w": {
+  "value": "-0.14",
+  "source": "Spearman(N_proj, w)"
+ },
+ "sp_bank_s": {
+  "value": "0.67",
+  "source": "Spearman(K_match/r at r = 384, s), all 2D cases of A3"
+ },
+ "sp_sigma_s": {
+  "value": "-0.92",
+  "source": "analysis/a1_spectra.json Spearman(sigma at t5, s), 2D all cohorts"
+ },
+ "stab_C1_n": {
+  "value": "16",
+  "source": "a2b C1: cases"
+ },
+ "stab_C1_n0125": {
+  "value": "3",
+  "source": "a2b C1: cases stable at dt 0.0125 for every N tested"
+ },
+ "stab_C2_n": {
+  "value": "16",
+  "source": "a2b C2: cases"
+ },
+ "stab_C2_n0125": {
+  "value": "0",
+  "source": "a2b C2: cases stable at dt 0.0125 for every N tested"
+ },
+ "stab_C2_nnone": {
+  "value": "3",
+  "source": "a2b C2: cases with no stable tested dt at some N"
+ },
+ "stab_N0_n": {
+  "value": "16",
+  "source": "a2b N0: cases"
+ },
+ "stab_excluded": {
+  "value": "C2|8 (s = 922: c < 2.88); C2|9 (s = 953: c < 2.98); C2|13 (s = 836: c < 2.61)",
+  "source": "a2b cases with no stable tested step at some N: upper limit c < min(dt) * s"
+ },
+ "syn_F1_an_hi": {
+  "value": "2.2",
+  "source": "same, max"
+ },
+ "syn_F1_an_lo": {
+  "value": "1.5",
+  "source": "analysis/a5_synthetic.json F1 rho_aniso (1 %) min"
+ },
+ "syn_F1_rho_hi": {
+  "value": "2.8e2",
+  "source": "same, max"
+ },
+ "syn_F3_rho_rng": {
+  "value": "2.3",
+  "source": "collapsed range of the same"
+ },
+ "syn_F4_an_hi": {
+  "value": "5.4e3",
+  "source": "same, max"
+ },
+ "syn_F4_an_lo": {
+  "value": "24",
+  "source": "analysis/a5_synthetic.json F4 rho_aniso (1 %) min"
+ },
+ "syn_F4_rho_hi": {
+  "value": "5.5e3",
+  "source": "same, max"
+ },
+ "syn_F4_rho_lo": {
+  "value": "24",
+  "source": "analysis/a5_synthetic.json F4 rho (square blocks, 1 %) min over resolved delta"
+ },
+ "syn_delim": {
+  "value": "---|---|---|---|---|---",
+  "source": "table delimiter row for tab_syn"
+ },
+ "syn_deltas": {
+  "value": "δ = 0.08 | δ = 0.04 | δ = 0.02 | δ = 0.01 | δ = 0.005",
+  "source": "analysis/a5_synthetic.json deltas"
+ },
+ "tab_bank": {
+  "value": "| E0 | 38 | 10.9–176 | 0.0282 % | 1 (5.4) | 0.63 (4.7) | 0.49 (3.8) |\n| N0 | 16 | 8.19–116 | 0.0392 % | 1.2 (5.6) | 0.86 (6.7) | 0.65 (5.4) |\n| A− | 16 | 80.8–198 | 0.585 % | 1.3 (6.4) | 1.3 (6.5) | 1.1 (5.2) |\n| C1 | 16 | 257–495 | 3.47 % | 1.4 (9.5) | 1.4 (13) | 1.3 (11) |\n| C2 | 16 | 538–953 | 9.88 % | 1.2 (13) | 1.1 (15) | 1 (13) |",
+  "source": "analysis/a3_bank.json rows[*].K_match_over_r (median (max)) and floor_bank[\"384\"] median"
+ },
+ "tab_check": {
+  "value": "| PS2 N16 n20 | 5.11 ms | – | 5.01 ms | 1.02 |\n| PS2 N24 n20 | 5.06 ms | – | 5.29 ms | 0.957 |\n| PS2 N48 n20 | 5.17 ms | – | 5.18 ms | 0.999 |\n| PS2 N96 n20 | 5.48 ms | – | 5.61 ms | 0.978 |\n| PS2 N128 n20 | 5.71 ms | – | 6.14 ms | 0.93 |\n| PS2 N256 n20 | 10.2 ms | – | 9.84 ms | 1.04 |\n| PS3 N16 n25 | 8.34 ms | – | 7.78 ms | 1.07 |\n| PS3 N32 n25 | 9.96 ms | – | 12 ms | 0.833 |\n| PS3 N64 n25 | 33.8 ms | – | 34.6 ms | 0.977 |\n| ROM2 R128 BE frozen lattice | 23 ms | 22.5 ms | 22.3 ms | 1.03 |\n| ROM2 R256 BE frozen lattice | 40.9 ms | 51 ms | 51.9 ms | 0.787 |\n| ROM2 R384 CNR frozen lattice | 89.2 ms | 89.2 ms | 89.1 ms | 1 |\n| ROM3 W_C_W768 | 29.4 ms | – | 29.3 ms | 1 |",
+  "source": "analysis/a7_model.json check"
+ },
+ "tab_cross": {
+  "value": "| 2D | 20 | 50 | 1× | 20.5 ms | 532–564 |\n| 2D | 20 | 50 | 2× | 20.5 ms | 828–876 |\n| 2D | 20 | 20 | 1× | 8.42 ms | 228–232 |\n| 2D | 20 | 20 | 2× | 8.42 ms | 456–484 |\n| 2D | 20 | 10 | 1× | 4.4 ms | ≤ 8 (any N) |\n| 2D | 20 | 10 | 2× | 4.4 ms | 232–240 |\n| 2D | 40 | 50 | 1× | 20.5 ms | 340–360 |\n| 2D | 40 | 50 | 2× | 20.5 ms | 572–608 |\n| 2D | 40 | 20 | 1× | 8.42 ms | 72–76 |\n| 2D | 40 | 20 | 2× | 8.42 ms | 276–292 |\n| 2D | 40 | 10 | 1× | 4.4 ms | ≤ 8 (any N) |\n| 2D | 40 | 10 | 2× | 4.4 ms | 96–100 |\n| 2D | 80 | 50 | 1× | 20.5 ms | 200–204 |\n| 2D | 80 | 50 | 2× | 20.5 ms | 372–396 |\n| 2D | 80 | 20 | 1× | 8.42 ms | ≤ 8 (any N) |\n| 2D | 80 | 20 | 2× | 8.42 ms | 136–144 |\n| 2D | 80 | 10 | 1× | 4.4 ms | ≤ 8 (any N) |\n| 2D | 80 | 10 | 2× | 4.4 ms | ≤ 8 (any N) |\n| 3D | 10 | 50 | 1× | 21 ms | 68 |\n| 3D | 10 | 50 | 2× | 21 ms | 100–102 |\n| 3D | 10 | 20 | 1× | 8.94 ms | 46 |\n| 3D | 10 | 20 | 2× | 8.94 ms | 62 |\n| 3D | 10 | 10 | 1× | 4.91 ms | 34 |\n| 3D | 10 | 10 | 2× | 4.91 ms | 50 |\n| 3D | 25 | 50 | 1× | 21 ms | 52 |\n| 3D | 25 | 50 | 2× | 21 ms | 72–74 |\n| 3D | 25 | 20 | 1× | 8.94 ms | 26–28 |\n| 3D | 25 | 20 | 2× | 8.94 ms | 50 |\n| 3D | 25 | 10 | 1× | 4.91 ms | ≤ 8 (any N) |\n| 3D | 25 | 10 | 2× | 4.91 ms | 32–34 |\n| 3D | 50 | 50 | 1× | 21 ms | 38 |\n| 3D | 50 | 50 | 2× | 21 ms | 56 |\n| 3D | 50 | 20 | 1× | 8.94 ms | ≤ 8 (any N) |\n| 3D | 50 | 20 | 2× | 8.94 ms | 32 |\n| 3D | 50 | 10 | 1× | 4.91 ms | ≤ 8 (any N) |\n| 3D | 50 | 10 | 2× | 4.91 ms | ≤ 8 (any N) |",
+  "source": "analysis/a7_model.json crossover_floor (N_c over the two throughput fits)"
+ },
+ "tab_match2d": {
+  "value": "| R128 LSPG BE 1 | 1.1 % | 4.84 % | 28 | 28 | 729 | 12 | 32 |\n| R128 LSPG CNR 1 | 0.45 % | 5.2 % | 28 | 28 | 729 | 14 | 32 |\n| R256 LSPG BE 1 | 0.983 % | 3.32 % | 32 | 32 | 961 | 12 | 40 |\n| R384 LSPG BE 1 | 0.978 % | 3.01 % | 40 | 40 | 1521 | 12 | 40 |\n| R384 LSPG CNR 1 | 0.198 % | 1.78 % | 40 | 40 | 1521 | 16 | 48 |\n| R384 GAL CN 1 | 0.0495 % | 1.85 % | 40 | 40 | 1521 | 20 | 48 |\n| R512 LSPG CNR 1 | 0.199 % | 2.17 % | 40 | 40 | 1521 | 16 | 48 |\n| R512 GAL CN 1 | 0.0753 % | 2.35 % | 40 | 40 | 1521 | 20 | 48 |\n| R128 LSPG BE 2.5 | 2.36 % | 6.73 % | 24 | 24 | 529 | 10 | 28 |",
+  "source": "analysis/a4_match.json rom2d[...] (FRONT-2D per-case errors at 1024^2 vs A2)"
+ },
+ "tab_match3d": {
+  "value": "| C_W1024 | 1.53 % | 4.45 % | 14 | 14 | 2197 |\n| C_old | 1.57 % | 4.43 % | 14 | 14 | 2197 |\n| W_C_W768 | 0.327 % | 4.46 % | 14 | 14 | 2197 |\n| W_C_old | 0.632 % | 4.25 % | 14 | 14 | 2197 |",
+  "source": "analysis/a4_match.json rom3d (speed3d m1 L=384 median/worst vs A2 3D)"
+ },
+ "tab_ours": {
+  "value": "| 1024 R128 LSPG BE 1 | 28 | 729 | 128 | 5.7 |\n| 1024 R384 LSPG CNR 1 | 40 | 1521 | 384 | 4 |\n| 1024 R512 LSPG CNR 1 | 40 | 1521 | 512 | 3 |\n| 1024 R384 GAL CN 1 | 40 | 1521 | 384 | 4 |\n| 3D C_W1024 | 14 | 2197 | 1024 | 2.1 |\n| 3D C_old | 14 | 2197 | 512 | 4.3 |\n| 3D W_C_W768 | 14 | 2197 | 512 | 4.3 |\n| 3D W_C_old | 14 | 2197 | 512 | 4.3 |",
+  "source": "analysis/a7_model.json ours"
+ },
+ "tab_reg": {
+  "value": "| N0 | 14 of 16 | 8.19–116 | 0.119 % / 0.617 % | 48 | 16 / 48 | 24 / 64 |\n| A− | 16 of 16 | 80.8–198 | 0.883 % / 3.44 % | 32 | 32 / 48 | 48 / 96 |\n| C1 | 16 of 16 | 257–495 | 5.68 % / 10.8 % | 32 | 64 / 96 | 128 / 192 |\n| C2 | 16 of 16 | 538–953 | 16.6 % / 30.4 % | 32 | 128 / 256 | 256 / >256 (4 cases) |",
+  "source": "analysis/a2_reg.json (CPU, dt per regime {'N0': 0.0025, 'Am': 0.0025, 'C1': 0.002, 'C2': 0.001}) and jcp-regimes checks/analysis.json configs[\"R384|LSPG_CNR_1\"].per_case (ROM e; same case IDs, eligible and valid only; C1/C2 unqualified)"
+ },
+ "tab_rho": {
+  "value": "| 2D | 256 | 65025 | 20 | 50 | 10.2 ms | none (ROM floor too slow) | none (ROM floor too slow) | – |\n| 2D | 512 | 261121 | 20 | 50 | 19.6 ms | none (ROM floor too slow) | none (ROM floor too slow) | – |\n| 2D | 768 | 588289 | 20 | 50 | 36.3 ms | 2.5e3–2.7e3 | none (ROM floor too slow) | 235 |\n| 2D | 1024 | 1046529 | 20 | 50 | 60.7 ms | 3.3e3–3.5e3 | 5.2e3–5.9e3 | 321 |\n| 2D | 2048 | 4190209 | 20 | 50 | 239 ms | 7.4e3–7.8e3 | 9.7e3–1e4 | 565 |\n| 2D | 256 | 65025 | 20 | 20 | 10.2 ms | 4.2e2–4.5e2 | none (ROM floor too slow) | 154 |\n| 2D | 512 | 261121 | 20 | 20 | 19.6 ms | 9.2e2–9.6e2 | 1.8e3–2.4e3 | 285 |\n| 2D | 768 | 588289 | 20 | 20 | 36.3 ms | 1.5e3–1.6e3 | 2.2e3–2.3e3 | 386 |\n| 2D | 1024 | 1046529 | 20 | 20 | 60.7 ms | 2.2e3–2.3e3 | 2.9e3–3.1e3 | 476 |\n| 2D | 2048 | 4190209 | 20 | 20 | 239 ms | 5.4e3–5.6e3 | 6.9e3–7.2e3 | 780 |\n| 3D | 16 | 3375 | 10 | 15 | 4.26 ms | none (ROM floor too slow) | none (ROM floor too slow) | – |\n| 3D | 32 | 29791 | 10 | 15 | 4.9 ms | none (ROM floor too slow) | none (ROM floor too slow) | – |\n| 3D | 48 | 103823 | 10 | 15 | 9.73 ms | 4.1e2 | none (ROM floor too slow) | 256 |\n| 3D | 64 | 250047 | 10 | 15 | 19.6 ms | 5.9e2–5.9e2 | 9.5e2–9.7e2 | 423 |\n| 3D | 96 | 857375 | 10 | 15 | 37.8 ms | 1.5e3–1.5e3 | 2e3–2.1e3 | 569 |\n| 3D | 128 | 2048383 | 10 | 15 | 75.3 ms | 2.7e3–2.8e3 | 3.5e3–3.6e3 | 742 |\n| 3D | 256 | 16581375 | 10 | 15 | 575 ms | 1.1e4–1.1e4 | 1.4e4–1.4e4 | 1.5e3 |\n| 3D | 16 | 3375 | 25 | 15 | 8.34 ms | 17–18 | none (ROM floor too slow) | 204 |\n| 3D | 32 | 29791 | 25 | 15 | 9.96 ms | 1.1e2–1.2e2 | none (ROM floor too slow) | 262 |\n| 3D | 48 | 103823 | 25 | 15 | 17.8 ms | 2.6e2 | 4.6e2–4.6e2 | 401 |\n| 3D | 64 | 250047 | 25 | 15 | 33.8 ms | 4.6e2–4.6e2 | 6.3e2–6.4e2 | 543 |\n| 3D | 96 | 857375 | 25 | 15 | 79.3 ms | 1.1e3–1.1e3 | 1.5e3–1.5e3 | 756 |\n| 3D | 128 | 2048383 | 25 | 15 | 173 ms | 2e3–2.1e3 | 2.6e3–2.6e3 | 997 |\n| 3D | 256 | 16581375 | 25 | 15 | 1.42e3 ms | 8e3–8.1e3 | 1e4–1e4 | 2.04e3 |",
+  "source": "analysis/a7_model.json rho_needed (both throughput fits)"
+ },
+ "tab_scross": {
+  "value": "| 2D | 0.01 | fit | ROM 50 steps | 1.1e3 (N = 164, 195 steps) | 1.1e3 (N = 164, 195 steps) | none | none |\n| 2D | 0.01 | fit | ROM 20 steps | 4.8e2 (N = 91, 90 steps) | 4.8e2 (N = 91, 90 steps) | 5.1e2 (N = 95, 95 steps) | none |\n| 2D | 0.01 | fit | ROM steps = spectral steps | 5.5e3 (N = 534, 985 steps) | none | none | none |\n| 2D | 0.01 | envelope | ROM 50 steps | 7.5e2 (N = 245, 135 steps) | 7.7e2 (N = 249, 140 steps) | none | none |\n| 2D | 0.01 | envelope | ROM 20 steps | 4.1e2 (N = 157, 75 steps) | 4.1e2 (N = 157, 75 steps) | none | none |\n| 2D | 0.01 | envelope | ROM steps = spectral steps | 2.2e3 (N = 529, 390 steps) | none | none | none |\n| 2D | 0.001 | fit | ROM 50 steps | 8.5e2 (N = 225, 155 steps) | 8.5e2 (N = 225, 155 steps) | none | none |\n| 2D | 0.001 | fit | ROM 20 steps | 4.3e2 (N = 136, 80 steps) | 4.3e2 (N = 136, 80 steps) | none | none |\n| 2D | 0.001 | fit | ROM steps = spectral steps | 2.7e3 (N = 528, 475 steps) | none | none | none |\n| 2D | 0.001 | envelope | ROM 50 steps | 5.4e2 (N = 322, 100 steps) | 5.7e2 (N = 332, 105 steps) | none | none |\n| 2D | 0.001 | envelope | ROM 20 steps | 3.1e2 (N = 214, 60 steps) | 3.1e2 (N = 214, 60 steps) | none | none |\n| 2D | 0.001 | envelope | ROM steps = spectral steps | 1e3 (N = 524, 190 steps) | none | none | none |\n| 3D | 0.01 | fit | ROM 50 steps | 7.4e2 (N = 28, 135 steps) | 7.4e2 (N = 28, 135 steps) | 1.2e3 (N = 32, 210 steps) | none |\n| 3D | 0.01 | fit | ROM 20 steps | 3.1e2 (N = 21, 60 steps) | 3.1e2 (N = 21, 60 steps) | 3.1e2 (N = 21, 60 steps) | none |\n| 3D | 0.01 | fit | ROM steps = spectral steps | 7.4e3 (N = 60, 1310 steps) | none | none | none |\n| 3D | 0.01 | envelope | ROM 50 steps | 6e2 (N = 36, 110 steps) | 6e2 (N = 36, 110 steps) | none | none |\n| 3D | 0.01 | envelope | ROM 20 steps | 2.8e2 (N = 28, 55 steps) | 2.8e2 (N = 28, 55 steps) | 4.5e2 (N = 32, 85 steps) | none |\n| 3D | 0.01 | envelope | ROM steps = spectral steps | 2.8e3 (N = 60, 505 steps) | none | none | none |\n| 3D | 0.001 | fit | ROM 50 steps | 5.8e2 (N = 37, 105 steps) | 6e2 (N = 37, 110 steps) | none | none |\n| 3D | 0.001 | fit | ROM 20 steps | 2.8e2 (N = 29, 55 steps) | 2.8e2 (N = 29, 55 steps) | none | none |\n| 3D | 0.001 | fit | ROM steps = spectral steps | 2.5e3 (N = 60, 440 steps) | none | none | none |\n| 3D | 0.001 | envelope | ROM 50 steps | 4.5e2 (N = 44, 85 steps) | 4.5e2 (N = 44, 85 steps) | none | none |\n| 3D | 0.001 | envelope | ROM 20 steps | 2.3e2 (N = 35, 45 steps) | 2.3e2 (N = 35, 45 steps) | none | none |\n| 3D | 0.001 | envelope | ROM steps = spectral steps | 1.1e3 (N = 59, 195 steps) | none | none | none |",
+  "source": "analysis/a7_model.json s_crossover[...][\"<typ|env>|c_min|<scenario>|rho<...>\"] (2x bar; first s on a geometric grid of 600 points in [5, 1e6])"
+ },
+ "tab_sens": {
+  "value": "| 2D | 20 | 50 | 828 | 540 | 1144 | 576 |\n| 2D | 20 | 20 | 456 | 232 | 628 | 352 |\n| 3D | 10 | 50 | 102 | 72 | 126 | 84 |\n| 3D | 10 | 20 | 62 | 50 | 74 | 62 |",
+  "source": "analysis/a7_model.json sensitivity"
+ },
+ "tab_syn": {
+  "value": "| F1 front, 1 parameter | 8 / 144 / 12 (18×, 1.5×) | 13 / 484 / 22 (37×, 1.7×) | 21 / 1521 / 39 (72×, 1.9×) | 34 / 4761 / 69 (1.4e2×, 2×) | 56 / 15625 / 125 (2.8e2×, 2.2×) |\n| F2 front, 2 parameters | 75 / 144 / 144 (1.9×, 1.9×) | >400 / 484 / 462 | >400 / 1444 / 1444 | >400 / 4761 / 4692 | >400 / 15129 / 15006 |\n| F3 bump, 2 parameters | 62 / 144 / 144 (2.3×, 2.3×) | 253 / 576 / 552 (2.3×, 2.2×) | >400 / 2116 / 2115 | >400 / 8464 / 8372 | >400 / 33489 / 33485 |\n| F4 bump width, 1 parameter | 5 / 121 / 121 (24×, 24×) | 6 / 529 / 483 (88×, 80×) | 6 / 2025 / 2021 (3.4e2×, 3.4e2×) | 6 / 8281 / 8099 (1.4e3×, 1.3e3×) | 6 / 32761 / 32399 (5.5e3×, 5.4e3×) |",
+  "source": "analysis/a5_synthetic.json rows[*] r_pod / K_block at eps = 1e-2 (rho)"
+ }
+}

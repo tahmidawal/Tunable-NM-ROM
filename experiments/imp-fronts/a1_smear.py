@@ -18,6 +18,7 @@ import fcommon as F
 
 OUT = F.HERE / 'runs/a1'
 STEPS = (0, 10, 20, 30, 40, 50)
+CLIP = 1e-14                     # relative floor clip (Amendment 1)
 
 
 def floors384_inrange():
@@ -123,11 +124,27 @@ def analyze():
             Q = np.linalg.svd(M, full_matrices=False)[0][:, :128]
             row[f'f_ref_pod_{src}'] = F.floor_Q(ref[cid], Q, n0)
             row[f'f_upw_pod_{src}'] = F.floor_Q(upw[cid], Q, np.linalg.norm(upw[cid][0]))
+        # constructed detector checks (Amendment 1): own upwind / own E0 fields + low sines, sizes 128 and 384
+        if cid in T6:
+            for r in (128, 384):
+                S = F.sine_cols(np.arange(r - 5))
+                for src, store in (('upw', upw), ('ref', ref)):
+                    Q = F.orth(np.concatenate([S, store[cid].reshape(6, -1)[1:].T], 1))
+                    row[f'f_ref_con{src}{r}'] = F.floor_Q(ref[cid], Q, n0)
+                    row[f'f_upw_con{src}{r}'] = F.floor_Q(upw[cid], Q, np.linalg.norm(upw[cid][0]))
+        for k in [k for k in row if k.startswith('f_')]:
+            if row[k] < CLIP:
+                row.setdefault('clipped', []).append(k)
+                row[k] = CLIP
         rho = lambda b: row[f'f_ref_{b}'] / row[f'f_upw_{b}']
         row['D_bank384'] = rho('bank384') / rho('sine384')
         row['D_bank128'] = rho('bank128') / rho('sine128')
         row['D_pod_upw'] = rho('pod_upw') / rho('sine128')
         row['D_pod_ref'] = rho('pod_ref') / rho('sine128')
+        if cid in T6:
+            for r in (128, 384):
+                row[f'D_conupw{r}'] = rho(f'conupw{r}') / rho(f'sine{r}')
+                row[f'D_conref{r}'] = rho(f'conref{r}') / rho(f'sine{r}')
         rows[cid] = row
         print(cid, {k: round(v, 3) for k, v in row.items() if k.startswith('D_')}, flush=True)
     # n = 256 sensitivity on T6 (native training grid)
@@ -148,7 +165,10 @@ def analyze():
     ctrl['C_A1plus_fires'] = ctrl['Dpos_med_T6'] >= 2
     ctrl['C_A1minus_quiet'] = ctrl['Dneg_med_T6'] <= 1.25
     ctrl['resolution_ok'] = ctrl['resolution_med_T6'] >= 2
-    ctrl['controls_pass'] = bool(ctrl['C_A1plus_fires'] and ctrl['C_A1minus_quiet'] and ctrl['resolution_ok'])
+    ctrl['constructed_upw_D_ge10_all_T6'] = all(rows[c][f'D_conupw{r}'] >= 10 for c in T6 for r in (128, 384))
+    ctrl['constructed_ref_D_le0.1_all_T6'] = all(rows[c][f'D_conref{r}'] <= 0.1 for c in T6 for r in (128, 384))
+    ctrl['controls_pass'] = bool(ctrl['C_A1plus_fires'] and ctrl['C_A1minus_quiet'] and ctrl['resolution_ok']
+                                 and ctrl['constructed_upw_D_ge10_all_T6'] and ctrl['constructed_ref_D_le0.1_all_T6'])
     Db = [rows[c]['D_bank384'] for c in T6]
     mD = float(np.median(Db))
     if not (gates['G1_ic_pass'] and gates['G2_newton_pass']):

@@ -62,18 +62,33 @@ def main():
                             rows=rows)
         print(key, {s: (round(100 * v['worst'], 4), {K: round(100 * v[f'dworst_{K}'], 5) for K in KS}) for s, v in sc.items()},
               'repro', repro, 'ident', ident, flush=True)
-    ctrl = dict(identity_all=all(c['identity_max_abs'] <= 1e-12 for c in configs.values()),
-                k16_trips_all=all(c['scopes']['in_range']['dworst_16'] > 1e-3 for c in configs.values()),
+    # constructed fixture (Amendment 1): u* = u_ref + h, h in Laplacian ranks 9217..20000, ||h(t_k)|| = 0.005 ||u(t0)||
+    rng = np.random.default_rng(20261021)
+    fx = {}
+    for cid, (u, n0) in refs.items():
+        if cid.split('|')[0] not in F.IN_RANGE:
+            continue
+        hc = np.zeros((6, F.NI * F.NI))
+        hc[1:, F.LAP_ORDER[9216:20000]] = rng.standard_normal((5, 20000 - 9216))
+        hf = np.zeros((6, 257, 257))
+        hf[1:, 1:-1, 1:-1] = F.idstn(hc[1:].reshape(5, F.NI, F.NI), type=1, norm='ortho', axes=(1, 2))
+        hf[1:] *= (0.005 * n0 / np.linalg.norm(hf[1:].reshape(5, -1), axis=1))[:, None, None]
+        us = u + hf
+        fx[cid] = (F.err(us, us, n0), F.err(F.sine_truncate(us, 9216), us, n0))
+    fixture_dworst = max(b for a, b in fx.values()) - max(a for a, b in fx.values())
+    ctrl = dict(fixture_dworst_9216=fixture_dworst, fixture_trips=bool(fixture_dworst > 1e-3),
+                identity_all=all(c['identity_max_abs'] <= 1e-12 for c in configs.values()),
                 repro_all=all(c['repro_max_abs'] <= 1e-9 for c in configs.values()))
-    ctrl['controls_pass'] = bool(all(ctrl.values()))
+    ctrl['controls_pass'] = bool(ctrl['fixture_trips'] and ctrl['identity_all'] and ctrl['repro_all'])
+    stress = {k: c['scopes']['in_range']['dworst_16'] for k, c in configs.items()}   # K = 16 empirical stress (reported)
     pc = configs[PRIMARY]
     verdict = ('INCONCLUSIVE (control failed)' if not ctrl['controls_pass'] else
                ('STOP F7 (worst error rises > 0.1 pp at K = 9216)' if pc['stop_K9216_in_range'] else 'F7 screen passes'))
-    out = dict(design='DESIGN.md §2 A3', provenance=F.provenance(), controls=ctrl, primary=PRIMARY, verdict=verdict,
+    out = dict(design='DESIGN.md §2 A3', provenance=F.provenance(), controls=ctrl, primary=PRIMARY, verdict=verdict, k16_stress_dworst_in_range=stress,
                verdict_all_regimes=('STOP' if pc['stop_K9216_all'] else 'pass'),
                timing_gate='deferred (GPU, not in this lane brief)', configs=configs)
     F.write_json('a3_trunc', out)
-    print(json.dumps(dict(controls=ctrl, verdict=verdict, all=out['verdict_all_regimes']), indent=1))
+    print(json.dumps(dict(controls=ctrl, verdict=verdict, k16_stress_dworst_in_range=stress, all=out['verdict_all_regimes']), indent=1))
 
 
 if __name__ == '__main__':

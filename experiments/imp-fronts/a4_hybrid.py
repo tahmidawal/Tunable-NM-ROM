@@ -26,17 +26,18 @@ def floors_t(u, Q, n0):
 
 
 def rule(fl, cohort='C1'):
-    w = {b: max(v[b] for c, v in fl.items() if c.split('|')[0] == cohort) for b in ('H', 'S1024', 'B512', 'Hhi')}
-    cont = lambda h: (w[h] <= 0.5 * w['S1024']) and (w[h] < w['B512'])
-    return w, dict(continue_hybrid=bool(cont('H')), continue_hhi=bool(cont('Hhi')))
+    w = {b: max(v[b] for c, v in fl.items() if c.split('|')[0] == cohort) for b in ('H', 'S1024', 'B512', 'Hhi', 'H0')}
+    cont = lambda h: (w[h] <= 0.5 * w['S1024']) and (w[h] < w['B512'] - 1e-12)
+    return w, dict(continue_hybrid=bool(cont('H')), continue_hhi_empirical=bool(cont('Hhi')), continue_null=bool(cont('H0')))
 
 
 def main():
     G512 = F.G(512)
     S512 = F.sine_cols(np.arange(512))
     bases = dict(B512=F.orth(G512), S512=S512, S1024=F.sine_cols(np.arange(1024)),
-                 H=qr_span(G512, S512), H384=qr_span(G(384) if False else F.G(384), S512),
-                 Hhi=qr_span(G512, F.sine_cols(np.arange(40000, 40512))))
+                 H=qr_span(G512, S512), H384=qr_span(F.G(384), S512),
+                 Hhi=qr_span(G512, F.sine_cols(np.arange(40000, 40512))),
+                 H0=F.orth(np.concatenate([G512, G512], 1)))           # guaranteed null enrichment (span = B512)
     dims = {k: int(v.shape[1]) for k, v in bases.items()}
     fl, cont_viol = {}, 0.
     for coh, c in F.all_cases(F.IN_RANGE + F.REGIMES):
@@ -53,8 +54,8 @@ def main():
         summ[coh] = dict(n=len(R), **{f'{b}_median': float(np.median([x[b] for x in R])) for b in bases},
                          **{f'{b}_worst': float(np.max([x[b] for x in R])) for b in bases})
     ctrl = dict(containment_max_violation=cont_viol, containment_ok=cont_viol <= 1e-12,
-                hhi_must_be_stopped=not dec['continue_hhi'])
-    ctrl['controls_pass'] = bool(ctrl['containment_ok'] and ctrl['hhi_must_be_stopped'])
+                null_must_be_stopped=not dec['continue_null'], hhi_empirical_stopped=not dec['continue_hhi_empirical'])
+    ctrl['controls_pass'] = bool(ctrl['containment_ok'] and ctrl['null_must_be_stopped'])
     verdict = ('INCONCLUSIVE (control failed)' if not ctrl['controls_pass'] else
                ('F15 continues' if dec['continue_hybrid'] else 'STOP F15'))
     out = dict(design='DESIGN.md §2 A4', provenance=F.provenance(), dims=dims, C1_worst=worst, decision=dec,

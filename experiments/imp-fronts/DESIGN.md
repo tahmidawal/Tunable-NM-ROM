@@ -460,3 +460,107 @@ the same with the low-ν upwind generator; (iii) `r2acc` round 1 of the §B5 pol
 too-small rule (fib4181) to exercise escalation and step paths, plus C-B1 and C-B6; (iv) `refjob` on FC2 dev case
 j = 0. Measured per-phase rates feed `resources.py` (jcp-speed3d pattern) with 1.25× contingency on training and 1.5×
 on references.
+
+---
+
+## Amendment 2 (2026-10-21, after `audits/codex-design-2.md`; supersedes the items named)
+
+**A1.** The own-field constructions become **empirical self-fit checks** (reported, not gating). Added an **exact D
+fixture (must hold)** at $r=128$ and $384$: with $B$ = bank-$r$, $S$ = sine-$r$ orthonormal bases, $y$ = a fixed sine of
+$S$ (Laplacian rank 5) and $z$ a seeded unit vector orthogonal to span($B\cup S$), $c=\lVert(I-P_B)y\rVert$:
+$u_{\rm upw}^{\rm syn}(t_k)=\alpha z$, $u_{\rm ref}^{\rm syn}(t_k)=\alpha z+\gamma y$ ($k=1..5$; $t_0$ any fixed field) gives
+$D=\sqrt{1+\gamma^2c^2/\alpha^2}$ exactly; with $\gamma$ chosen so that $D=10$, and the swapped construction $D=0.1$,
+the code's $D$ must match to $10^{-10}$ relative. The gating A1 controls remain the two empirical LOO POD comparators
+with their frozen thresholds.
+
+**A2.** The curvature is a **gradient-difference estimate** (not analytic): computed at $\delta=10^{-4},\,5\cdot10^{-5},\,
+2.5\cdot10^{-5}$; the value at $2.5\cdot10^{-5}$ is reported if its relative change from $5\cdot10^{-5}$ is ≤ $10^{-3}$, else
+"unconverged" (descriptive only; not used in the decision). The identity fixtures are frozen as coded (envelope closed
+form; 32 sines drawn by `default_rng(7)` among Laplacian ranks < 2000, normal coefficients; denominator = RMS interior
+5-point Laplacian of that sine sum; tolerance $10^{-8}$) plus the independent bank-values path (second difference of
+bank values at $\pm10^{-3}$, agreement ≤ $10^{-3}$ relative). $\omega$ is **unavailable** for a field whose high-pass
+energy is below $10^{-24}$ of its total energy over $t_1..t_5$; medians are over available cases, and if fewer than
+half the in-range cases are available the decision is INCONCLUSIVE. The controls use the perturbations $h_\pm$ alone
+(not $u_{\rm ref}+h_\pm$).
+
+**B0 (replaced again).** Diagnostic (∞-penalised) medians and **qualified success** are separate. An arm can CONTINUE
+on a ROM endpoint only if its terminal policy runs are numerically qualified (Q1 ∧ Q2 ∧ step-converged, §B5) on
+**every** eligible test case of the endpoint's cohort (the configuration-level contract); the medians compared are then
+the arm's errors against the control's diagnostic finite median.
+- (b) CONTINUE iff the arm is qualified on every eligible FC1 test case, $\hat e_{K1}<\infty$, and median
+  $e_b\le\hat e_{K1}/2$. Not qualified on every case → STOP (endpoint not certified). $\hat e_{K1}=\infty$ → INCONCLUSIVE.
+- (c) $m^*$ route: CONTINUE-eligible iff the arm has a certified selected rule and $m^*_c\le m^*_{K1}/2$ ($m^*_{K1}$ =
+  gauss160, from jcp-robust). Tail route: CONTINUE-eligible iff the arm is qualified on every eligible FI test case,
+  K1 has ≥ 6 valid FI policy runs, and median $\tau_{4096}$(arm) ≤ median $\tau_{4096}$(K1) / 3. Either route suffices.
+- (a) floor endpoint: no ROM qualification needed (bank-only); ≥ 5 eligible FN0s test cases.
+- **Precedence per arm:** (1) NOT RUN; (2) INCONCLUSIVE if a population minimum (FN0s ≥ 5, FC1 ≥ 6, FI ≥ 6 eligible)
+  or a control prerequisite is unavailable; (3) STOP (guard) if in-range worst floor > 2 × K1's; (4) STOP (endpoint)
+  if the endpoint bar is not met or not certified; (5) CONTINUE.
+
+**B1(c).** Arm (c) is expected to be deferred (B8). If A2 says RUN and a schedule funds it, an amendment registering
+initialisation, normalisation, $B$ masking, the rotation step and the derivative-test denominators (relative to the
+RMS interior Laplacian of the decoded field, zero-scale → test unavailable) precedes any arm-(c) code.
+
+**B2.** C-B6 fixture frozen: from one converged smoke LSPG-CN-R step, perturb the coefficients along the top right
+singular vector of the fresh Jacobian with magnitude giving $\lVert J\delta\rVert\ge100\lVert r^\*\rVert$; then
+$\gamma\approx\sigma_1/\lVert J\rVert_F\ge1/\sqrt{384}\gg10^{-3}$; the certificate must flag it (shown in the smoke).
+Tight/tighter anchors for the fresh populations: FI test $j=4,5$ and FC1 test $j=4,5$ (non-empty, frozen).
+
+**B3.** Development reference permitted and budgeted: FC2 dev $j=0$ and FC1 dev $j=0$ get E0-style references in the
+smoke (reference-path cost certification and adapter test); they are development data, never scored with the test
+split. Counts (schedule S1 below): draws FI 12, FN0s 12, FC1 12, FC2 8 (dev $j=0,1$; val $j=2,3$; test $j\ge4$) → test
+FI 8, FN0s 8, FC1 8, FC2 4 (28 test references).
+
+**B5 (replaced state machine).** State $(j,f)$: rule index $j$ on the bank's escalation chain (select2d ladder order
+after the selected rule, then gauss256 with successor gauss384), factor $f\in\{1,0.5,0.25\}$. Round $R(j,f)$ runs
+prod$(j,f)$, succ$(j,f)$ = rule $j+1$ at $f$, and half$(j,f/2)$ if $f>0.25$ (reused as prod$(j,f/2)$ later). Transitions:
+
+| condition at $(j,f)$ | next |
+|---|---|
+| prod invalid (non-finite, damping saturation, solver failure) | terminal INVALID, $e=\infty$ |
+| succ invalid / unavailable, or Q2 fails | $(j+1,f)$ if rule $j+1$ has a successor; else terminal Q2-FAIL (scored at prod) |
+| Q2 passes, $f=0.25$ | terminal STEP-UNCONVERGED (no finer check; scored at prod) |
+| Q2 passes, half invalid | terminal STEP-UNAVAILABLE (scored at prod) |
+| Q2 passes, step distance ≤ 2.5e-4 | terminal CONVERGED (scored at prod) |
+| Q2 passes, step distance > 2.5e-4 | $(j,f/2)$ |
+| no selected (certified) start rule | start at the chain's first rule (fib4181), labelled "uncertified start" |
+| round 10 reached | terminal ROUND-CAP (scored at the latest valid prod) |
+
+The longest path is (chain length ≤ 8) + 2 halvings = 10 rounds, so the cap is never binding for a complete path and
+the whole path is funded. A case is **numerically qualified** iff terminal CONVERGED and its terminal prod passes the
+Q1 certificate. Labels are reported separately (Q1, Q2, step). A Q2 check is "on own reached states" because succ is
+replayed from the prod run's own initial state at the same factor.
+
+**B7.** E9 is scored on **K1**'s terminal policy errors (arms descriptive). Paired fallback timing is run only if the
+certified projection leaves ≥ 0.3 GPU-h; it would time K1's policy queries and a PS FOM tuned to the declared target on
+the flagged families (FC1, FC2) in one job; otherwise E9 reports flagged fractions only and says the cost is
+unmeasured.
+
+**B8 (replaced).** Schedule **S1** (baseline):
+
+| item | GPU-h |
+|---|---|
+| arms (a), (b) retrains incl. data | 8.8 |
+| test references 28 cases × 6 min | 2.8 |
+| rule selection (a), (b) | 0.9 |
+| §B5 policy, 3 banks, worst-case full paths on FC1 + FC2 (12 test + 8 dev/val), typical paths elsewhere | 1.2 |
+| smoke incl. 2 dev references | 0.9 |
+| **total** | **14.6** |
+
+**S2:** S1 with test FC2 4 → 2 and FI 8 → 6 (−0.4). **S3:** S2 without arm (a) (−4.9). **S4:** no Phase B. Arm (c) is
+in no schedule (deferred to E10) unless A2 says RUN and S3 applies, in which case an "S3c" schedule (S3 + arm (c) at
+4.4 + 0.45 selection) is costed by an amendment before use. Spent smoke GPU-h are counted separately from the
+remaining projection.
+
+**B9 (replaced smoke inventory).**
+- CPU, local (no GPU): C-B2 stop evaluator and `policy.py` unit tests with synthetic run records driving **every**
+  transition and terminal state of the B5 table (injected failures); C-B4 on the complete parameter tables; C-B5
+  freshness with the injected val32|0; A1–A4 fixtures.
+- Cluster job SM-a (A100): arm (a) PS data for 576 + 4 032 trajectories (timed), C-B3 on all dev6 and PS
+  self-convergence, Stage A 2 000 steps incl. its final full-spatial phase, Stage B on full data with the head fit
+  capped, rotation; C-B1 hash-mismatch rejection.
+- Cluster job SM-b (A100): arm (b) upwind low-ν data for 576 + 4 032 trajectories (timed, Newton residuals), Stage A
+  2 000 steps, Stage B capped, rotation; then `r2acc` policy round 1 on 2 FC1 dev cases with the smoke bank and with
+  K1 (real solves), the C-B6 perturbation fixture; `refjob` on FC1 dev $j=0$ and FC2 dev $j=0$.
+- Certificate: measured per-phase rates × production sizes, contingency 1.25 (training), 1.5 (references and policy),
+  written by `resources.py` to `runs/COST-CERT.json`; submission only if spent + certified ≤ 15.

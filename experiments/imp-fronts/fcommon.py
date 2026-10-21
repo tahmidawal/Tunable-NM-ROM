@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from scipy.fft import dstn, idstn
+from scipy.fft import dstn, idstn  # noqa: F401  (idstn re-exported)
 
 ROOT = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude')
 CONS = ROOT / 'worktrees/2026-10-20-jcp-consolidated/experiments'

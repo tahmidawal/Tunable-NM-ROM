@@ -164,3 +164,79 @@ def run_valid(out, nsteps):
         if k in out:
             ok = ok and bool(np.isfinite(np.asarray(out[k])).all())
     return ok and bool(np.isfinite(np.asarray(st['states'])[:nsteps + 1]).all())
+
+
+# =============================================================== E5 stepper adapter (DESIGN E5R) ====
+# imp-faststep's fscore.py is copied byte-identically into e5/ (PROVENANCE.json); only the tables are built here.
+
+def _e5():
+    import sys
+    from pathlib import Path
+    p = str(Path(__file__).resolve().parent / 'e5')
+    if p not in sys.path:
+        sys.path.insert(0, p)
+    import fscore as F
+    return F
+
+
+def e5_basis_sine(base):
+    """(D, V) of Q^T Lambda Q, computed once per base (E5 precontract convention) and reused for every sine table."""
+    K = base.Qm.T @ (base.lam[:, None] * base.Qm)
+    return jnp.linalg.eigh(.5 * (K + K.T))
+
+
+def e5_tables(proj, d, aux, base, basis):
+    """Diffusion-coordinate tables (Bz, Dz, Pz, D, V, RinvV, VtRm) of an arm for fscore.make_evolve.
+    sine: fscore.precontract on the arm's (Gq, Gs, Psi = weighted tested rows) with the shared basis;
+    bank: generalised eigenproblem Stiff V = Mass V D with V^T Mass V = I, z = V^T Mass c, c = V z,
+          Bz = Gq V, Dz = Gs V, Pz = (w Gq) V  (so dz/dt = -Pz^T[(Bz z)(Dz z)] - nu D z)."""
+    F = _e5()
+    if proj == 'sine':
+        dg = dict(A=base.A, lam=base.lam, Qm=base.Qm, Rm=base.Rm, Gq=d['Gq'], Gs=d['Gs'], Psi=aux['T'])
+        tab, chk = F.precontract(dg, basis=basis)
+        return tab, chk
+    Mm, Km = basis
+    Lc = jnp.linalg.cholesky(Mm)
+    Linv = jax.scipy.linalg.solve_triangular(Lc, jnp.eye(Mm.shape[0]), lower=True)
+    S = Linv @ Km @ Linv.T
+    Dg, Wv = jnp.linalg.eigh(.5 * (S + S.T))
+    V = Linv.T @ Wv
+    tab = dict(Bz=d['Gq'] @ V, Dz=d['Gs'] @ V, Pz=aux['T'] @ V, D=Dg, V=V, RinvV=V, VtRm=V.T @ Mm)
+    r = Mm.shape[0]
+    chk = dict(D_min=float(Dg.min()), D_max=float(Dg.max()),
+               v_orth=float(jnp.max(jnp.abs(V.T @ Mm @ V - jnp.eye(r)))),
+               eig_resid=float(jnp.linalg.norm(Km @ V - Mm @ V * Dg[None]) / jnp.linalg.norm(Dg)), qr_orth=0.)
+    return jax.block_until_ready(tab), chk
+
+
+def make_query_e5(L, nrec):
+    """Same interface as make_query: init / evolve / decode / fused, with fscore's 'cn' stepper. stats are converted to
+    this lane's convention: states (c coordinates, rows 0..S), reason (1 tol, 0 budget, 2 non-finite), eta_rec."""
+    import engines as e
+    import hops as H
+    F = _e5()
+    ev = F.make_evolve('cn', F.adv_pre, F.jac_pre)
+
+    def initialize(u0, cold):
+        xy, wq, Qc, Rc, _, _, _ = cold
+        ui = e.sample_field(u0, xy, L) * wq
+        return jax.scipy.linalg.solve_triangular(Rc, Qc.T @ ui, lower=False)
+
+    def decode(W, G):
+        U_ = H.bank_apply(G, W.T).T.reshape(len(W), L - 1, L - 1)
+        return jnp.pad(U_, ((0, 0), (1, 1), (1, 1)))
+
+    def evolve(c0, nu, tab, sch):
+        W, st = ev(c0, nu, tab, sch)
+        Z = st['Z'][:nrec]
+        rs = st['reason']
+        out = dict(states=Z @ tab['RinvV'].T, it=st['it'], reason=jnp.where(rs == 3, 2, rs),
+                   eta_rec=st['tolratio'] * sch['tolf'], steps=st['steps'])
+        return W, out
+
+    def query(u0, nu, tab, G, cold, sch):
+        w0 = initialize(u0, cold)
+        W, st = evolve(w0, nu, tab, sch)
+        return dict(fields=decode(W, G), W=W, w0=w0, stats=st)
+
+    return dict(init=jax.jit(initialize), evolve=jax.jit(evolve), decode=jax.jit(decode), fused=jax.jit(query))

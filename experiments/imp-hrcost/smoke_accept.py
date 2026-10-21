@@ -51,7 +51,7 @@ if 'P3' in C:
     out['P3'] = dict(passed=bool(max(p3['dM'], p3['dK']) <= 2.5e-6 and p3['mass_min_eig'] > 0 and p3['stiff_min_eig'] > 0),
                      dM=p3['dM'], dK=p3['dK'])
 p4 = C['P4']
-out['P4'] = dict(passed=bool(p4['rhs_max'] <= 1e-12 and max(v for _, v in p4['jac']) <= 1e-10))
+out['P4'] = dict(passed=bool(p4['passed'] and p4['rhs_max'] <= 1e-12 and max(p4['jac_max'].values()) <= 1e-10), fixtures=p4['fixtures'])
 if 'P5' in C:
     p5 = C['P5']
     out['P5'] = dict(passed=bool(max(p5['rhs_np']) <= 1e-10 and max(p5['lap_identity']) <= 1e-5 and max(p5['energy']) <= 1e-6
@@ -60,7 +60,9 @@ if 'P5' in C:
 p6 = C['P6']
 out['P6'] = dict(passed=bool(p6['a_missed_tol'] and p6['a_label'] == 'fail' and p6['b_label'].startswith('unverified')
                              and p6['c_label'].startswith('unverified')))
-REQUIRED = ['C1_sine', 'C1_bank', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'P1', 'P3', 'P4', 'P5', 'P6']
+if 'P2' in C:
+    out['P2'] = dict(passed=bool(C['P2']['passed'] and C['P2']['max'] <= 1e-10), max=C['P2']['max'])
+REQUIRED = ['C1_sine', 'C1_bank', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6']
 missing = [k for k in REQUIRED if k not in out]
 for k in missing:
     out[k] = dict(fired=False, missing=True)

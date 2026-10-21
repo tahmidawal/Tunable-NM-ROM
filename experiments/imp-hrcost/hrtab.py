@@ -129,6 +129,7 @@ class Base:
             del gx, gy
         else:
             raise ValueError(proj)
+        d['T'] = aux['T']                    # weighted tested rows travel with the tables (E5 adapter needs Psi)
         d, aux = jax.block_until_ready((d, aux))
         meta = dict(proj=proj, rule=rule_name, m=int(len(X)), rule_sha256=sha(np.concatenate([X.ravel(), w])),
                     L=self.L, Rp=self.Rp, M=self.M, mode_hash=self.mode_hash, build_seconds=time.perf_counter() - t0)
@@ -152,8 +153,8 @@ def fitted(parent, parent_X, parent_w, idx, w_hat, name):
     d, aux, meta = parent
     idx = np.asarray(idx, int)
     sc = jnp.asarray(np.asarray(w_hat, float) / np.asarray(parent_w, float)[idx])[:, None]
-    out = dict(Gq=d['Gq'][idx], Gs=d['Gs'][idx], P=d['P'][idx] * sc, L0=d['L0'])
     ax = dict(T=aux['T'][idx] * sc)
+    out = dict(Gq=d['Gq'][idx], Gs=d['Gs'][idx], P=d['P'][idx] * sc, L0=d['L0'], T=ax['T'])
     out, ax = jax.block_until_ready((out, ax))
     m2 = dict(meta, rule=name, m=int(len(idx)), parent_rule=meta['rule'], parent_fingerprint=meta.get('fingerprint'),
               rule_sha256=sha(np.concatenate([np.asarray(parent_X)[idx].ravel(), np.asarray(w_hat, float)])),
@@ -165,16 +166,16 @@ def duplicated(parent):
     """C5: every row twice with half weight (same mathematics, 2x point work)."""
     d, aux, meta = parent
     cat = lambda a, f=1.: jnp.concatenate([f * a, f * a])
-    out = dict(Gq=cat(d['Gq']), Gs=cat(d['Gs']), P=cat(d['P'], .5), L0=d['L0'])
-    return out, dict(T=cat(aux['T'], .5)), dict(meta, rule=meta['rule'] + '-dup', m=2 * meta['m'],
+    out = dict(Gq=cat(d['Gq']), Gs=cat(d['Gs']), P=cat(d['P'], .5), L0=d['L0'], T=cat(aux['T'], .5))
+    return out, dict(T=out['T']), dict(meta, rule=meta['rule'] + '-dup', m=2 * meta['m'],
                                                 fingerprint=table_fingerprint(out), rule_sha256=None)
 
 
 def nan_injected(parent):
     """C4 / P6: one NaN in P (and in the tested rows)."""
     d, aux, meta = parent
-    out = dict(d, P=d['P'].at[0, 0].set(jnp.nan))
-    return out, dict(T=aux['T'].at[0, 0].set(jnp.nan)), dict(meta, rule=meta['rule'] + '-nan', fingerprint='nan-fixture',
+    out = dict(d, P=d['P'].at[0, 0].set(jnp.nan), T=aux['T'].at[0, 0].set(jnp.nan))
+    return out, dict(T=out['T']), dict(meta, rule=meta['rule'] + '-nan', fingerprint='nan-fixture',
                                                              rule_sha256=None)
 
 

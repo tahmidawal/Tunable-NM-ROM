@@ -578,3 +578,26 @@ its points and weights. Training-draw replacement uses rollout validity only (A1
 dev6, val32 and test64 descriptors. Timing uses the registered 5 repetitions and 3 burn-in queries per block, keeps the
 outputs of the actual timed invocations, and requires them to equal the scored coefficients ($10^{-12}$) before a speed
 predicate is evaluated ("tied timing"); ratios of separate medians are reported as well.
+
+## Amendment E5R (2026-10-21; reconciliation with imp-faststep's HANDOFF-E6.md, before any cluster job)
+
+- **Stepper.** R and every arm run in imp-faststep's `fscore.make_evolve('cn', adv_pre, jac_pre)` (arm 2, "G-CN"), copied
+  byte-identically to `e5/fscore.py` (sha256 `3626350c…cbec5`, as the hand-off states; `PROVENANCE-E5.json`). Newton with
+  the exact Jacobian and LU in diffusion coordinates, predictor $2z_n-z_{n-1}$, budget 30, tolerances
+  prod / tight / tighter $10^{-10}/10^{-12}/10^{-13}$ on $\lVert\rho\rVert/\lVert z_n\rVert$ (equal to A7.1).
+- **Tables.** Sine-tested arms (R, F3a, F3b): E5's own `fscore.precontract` on the arm's $(G_q, G_s, \Psi)$ — for fitted
+  rules the weighted support rows — with one shared eigenbasis $(D,V)$ of $Q^{\mathsf T}\Lambda Q$ (its `basis=` option).
+  Bank-tested arms (F2, F2+F3), lane code `gstep.e5_tables`: $\mathcal KV=\mathcal MVD$, $V^{\mathsf T}\mathcal MV=I$,
+  $z=V^{\mathsf T}\mathcal Mc$, $c=Vz$, $B_z=G_qV$, $D_z=G_sV$, $P_z=(WG_q)V$; the E5 stepper then integrates
+  $\dot z=-P_z^{\mathsf T}[(B_zz)\odot(D_zz)]-\nu Dz$, the bank Galerkin ODE. The checks (`eig_resid`, `v_orth`, `D_min>0`)
+  are recorded for every table. In both projections $\lVert z\rVert=\lVert c\rVert_{\mathcal G}$, so E5's residual norm
+  is exactly A1.3's Gram norm.
+- **Certificate.** This lane's A1.3 certificate (fresh forward-mode Jacobian of the c-coordinate CN residual, Gram norm,
+  bar $10^{-8}$) is used for every arm; E5's `make_cert_cn` reads the un-precontracted sine tables and does not apply to
+  the bank arms. G-cert compares it with E5's recorded `tolratio × tolf` ($=\lVert\rho\rVert/\lVert z_n\rVert$).
+- **P2** (now applicable): the lane stepper (`gstep.make_query`, tight $10^{-12}$) and E5's stepper (tight) on the same
+  tables, R and F2 at Gauss 96², dev2: relative difference of the outputs ≤ $10^{-10}$.
+- **Timing.** As E5: same compiled fused query for scoring and timing, tables prepared outside the timed region,
+  A–B–A; this lane keeps its registered 5 repetitions / 3 burn-ins (A1.7, A7.5) over all 38 cases.
+- E5's hand-off states its production numbers do not exist yet; if E5 later changes `fscore.py`, this lane keeps the
+  copied version and says so.

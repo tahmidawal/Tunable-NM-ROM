@@ -54,7 +54,14 @@ class Job:
         self.t0 = time.perf_counter()
         self.L, self.Rp, self.dt = int(cfg['mesh']), int(cfg['Rp']), float(cfg.get('dt', .005))
         self.S = int(round(.25 / self.dt))
-        self.sch = {k: GS.sched(self.dt, v, budget=cfg.get('budget', 50)) for k, v in TOL.items()}
+        self.stepper = cfg.get('stepper', 'e5')                # DESIGN E5R: imp-faststep's fscore 'cn' stepper
+        if self.stepper == 'e5':
+            F = GS._e5()
+            self.sch = {k: F.sched(self.dt, level=k) for k in TOL}
+            assert all(abs(float(self.sch[k]['tolf']) - TOL[k]) < 1e-20 for k in TOL), 'E5 tolerances differ from A7.1'
+        else:
+            self.sch = {k: GS.sched(self.dt, v, budget=cfg.get('budget', 50)) for k, v in TOL.items()}
+        self._e5c = {}
         self.tabs = {}
         self.keep = set()
 
@@ -73,7 +80,8 @@ class Job:
         t = time.perf_counter()
         cfg = self.cfg
         self.base = B = HT.Base(self.L, self.Rp, cfg.get('policy', 'frozen'))
-        self.Qy = GS.make_query(self.L, nrec=self.S + 1)
+        self.Qy = GS.make_query_e5(self.L, nrec=self.S + 1) if self.stepper == 'e5' else GS.make_query(self.L, nrec=self.S + 1)
+        self.Qlane = GS.make_query(self.L, nrec=self.S + 1)        # P2 comparison (lane stepper)
         self.cert = GS.make_certifier()
         self.U = {'sine': GS.gram_factor('sine', B)}
         cases = P.case_list(cfg)
@@ -122,9 +130,43 @@ class Job:
         for k in [k for k in self.tabs if k not in keep]:
             del self.tabs[k]
 
+    def basis(self, proj):
+        if proj not in self._e5c:
+            self._e5c[proj] = GS.e5_basis_sine(self.base) if proj == 'sine' else self.base.bank_ops()[:2]
+        return self._e5c[proj]
+
+    def tab(self, d, proj):
+        """E5 diffusion-coordinate tables of an arm (cached on the identity of its P array; DESIGN E5R)."""
+        key = (proj, id(d['P']))
+        hit = self._e5c.get(key)
+        if hit is None or hit[0] is not d['P']:
+            tb, chk = GS.e5_tables(proj, d, dict(T=d['T']), self.base, self.basis(proj))
+            self._e5c[key] = (d['P'], tb, chk)
+            self.rep.setdefault('e5_table_checks', []).append(dict(proj=proj, **{k: float(v) for k, v in chk.items()}))
+        return self._e5c[key][1]
+
+    def arg(self, d, proj):
+        """The table argument of the query: E5 tables for the e5 stepper, lane tables otherwise."""
+        return self.tab(d, proj) if self.stepper == 'e5' else d
+
+    def query(self, d, proj, u0, nu, sch):
+        if self.stepper == 'e5':
+            return self.Qy['fused'](u0, nu, self.tab(d, proj), self.base.G, self.base.cold, sch)
+        return self.Qy['fused'](u0, nu, d, self.U[proj], self.base.G, self.base.cold, sch)
+
+    def callables(self, d, proj, u0, nu, level='prod'):
+        """(fused query, evolution only) with every argument prepared, for timing."""
+        sch, G, cold = self.sch[level], self.base.G, self.base.cold
+        w0 = self.Qy['init'](u0, cold)
+        if self.stepper == 'e5':
+            tb = self.tab(d, proj)
+            return (lambda: self.Qy['fused'](u0, nu, tb, G, cold, sch)), (lambda: self.Qy['evolve'](w0, nu, tb, sch))
+        U = self.U[proj]
+        return (lambda: self.Qy['fused'](u0, nu, d, U, G, cold, sch)), (lambda: self.Qy['evolve'](w0, nu, d, U, sch))
+
     def run(self, d, proj, cid, level='prod', sch=None):
         u0, nu, n0 = self.U0[cid]
-        o = self.Qy['fused'](u0, nu, d, self.U[proj], self.base.G, self.base.cold, sch or self.sch[level])
+        o = self.query(d, proj, u0, nu, sch or self.sch[level])
         o = jax.device_get(o)
         f257 = P.restrict(o['fields'], self.L)
         st = o['stats']
@@ -237,7 +279,7 @@ class Job:
         while len(rows_used) < ndraw and j < ndraw + FT.MAX_REPL:
             ph = D[j]
             u0 = jnp.asarray(Q.e.initial(self.L, ph))
-            o = self.Qy['fused'](u0, float(ph[4]), d, self.U[proj], self.base.G, self.base.cold, self.sch['prod'])
+            o = self.query(d, proj, u0, float(ph[4]), self.sch['prod'])
             o = jax.device_get(o)
             if GS.run_valid(o, self.S):                      # A1.5: replaced only if the rollout is invalid
                 rows_used.append(j)
@@ -305,17 +347,13 @@ class Job:
         the evolution-only W against the fused W; burn-in immediately before each timed block."""
         dR, projR = ref
         res = {}
-        ev = self.Qy['evolve']
         dev_name = jax.devices()[0].device_kind
         for name, dB, projB in pairs:
             per = {}
             for cid in cases:
                 u0, nu, n0 = self.U0[cid]
-                fA = lambda: self.Qy['fused'](u0, nu, dR, self.U[projR], self.base.G, self.base.cold, self.sch['prod'])
-                fB = lambda: self.Qy['fused'](u0, nu, dB, self.U[projB], self.base.G, self.base.cold, self.sch['prod'])
-                w0 = self.Qy['init'](u0, self.base.cold)
-                eA = lambda: ev(w0, nu, dR, self.U[projR], self.sch['prod'])
-                eB = lambda: ev(w0, nu, dB, self.U[projB], self.sch['prod'])
+                fA, eA = self.callables(dR, projR, u0, nu)          # tables prepared outside the timed region
+                fB, eB = self.callables(dB, projB, u0, nu)
                 rec, last = {}, {}
                 for tag, a_, b_ in (('e2e', fA, fB), ('evo', eA, eB)):
                     for _ in range(burn):

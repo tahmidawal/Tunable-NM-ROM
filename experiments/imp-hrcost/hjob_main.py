@@ -253,6 +253,17 @@ def controls(J, runs_sine, runs_bank):
         a_, b_ = J.run(dR, 'sine', cid), J.run(dp, 'sine', cid)
         eq.append(float(np.linalg.norm(a_['W'] - b_['W']) / np.linalg.norm(a_['W'])))
     C['P1'] = dict(max_rel_diff=max(eq), passed=max(eq) <= 1e-12)
+    # ---- P2 (E5R): the lane stepper and E5's stepper on the same tables, tight level
+    if J.stepper == 'e5':
+        p2 = []
+        fx2 = [('R', dR, 'sine')] + ([('F2_gauss96', J.table('bank', 'gauss96')[0], 'bank')] if runs_bank is not None else [])
+        for nm, d, proj in fx2:
+            for cid in dev2:
+                u0, nu, _ = J.U0[cid]
+                a_ = jax.device_get(J.Qlane['fused'](u0, nu, d, J.U[proj], B.G, B.cold, GS.sched(J.dt, 1e-12, budget=50)))
+                b_ = J.run(d, proj, cid, 'tight')
+                p2.append((nm, cid, float(np.linalg.norm(np.asarray(a_['W']) - b_['W']) / np.linalg.norm(b_['W']))))
+        C['P2'] = dict(rows=p2, max=max(v for *_, v in p2), passed=bool(len(p2) == 2 * len(fx2) and max(v for *_, v in p2) <= 1e-10))
     # ---- P3
     if 'bank_ops' in J.rep['setup']:
         C['P3'] = dict(J.rep['setup']['bank_ops'], stiff_min_eig=float(np.linalg.eigvalsh(np.asarray(B.bank_ops()[1]))[0]))
@@ -291,7 +302,7 @@ def controls(J, runs_sine, runs_bank):
     # ---- P6 invalid anchors, successor, check
     cid = dev2[0]
     o = J.run(dR, 'sine', cid)
-    tt = J.run(dR, 'sine', cid, sch=GS.sched(J.dt, 1e-12, budget=1))
+    tt = J.run(dR, 'sine', cid, sch=dict(J.sch['tight'], budget=jnp.int32(1)))
     ks = np.nonzero(tt['reason'] == 0)[0]
     tR = _np_tables(dR)
     missed = bool(len(ks)) and any(_np_eta(tt['states'], int(k), J.U0[cid][1], tR, U, J.dt) > 1e-12 for k in ks[:5])

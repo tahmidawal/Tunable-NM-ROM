@@ -1,0 +1,32 @@
+{
+ "commands": [
+  {
+   "name": "sources",
+   "cmd": "$PY mmbuild.py sources configs/sources.json $OUT",
+   "timeout_s": 6600
+  }
+ ],
+ "sources": [
+  {
+   "L": 256,
+   "steps": "all"
+  },
+  {
+   "L": 1024,
+   "steps": "12"
+  }
+ ],
+ "ranks": [
+  128,
+  256,
+  384
+ ],
+ "kappas": [
+  4,
+  8
+ ],
+ "nnls_seconds": 2700,
+ "import_check": [
+  "mmbuild"
+ ]
+}

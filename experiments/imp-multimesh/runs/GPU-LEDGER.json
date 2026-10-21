@@ -6,16 +6,22 @@
    "job_id": "6158333",
    "limit_hours": 1.5833333333333335,
    "projected_hours": 1.0,
-   "state": "PENDING"
+   "state": "FAILED",
+   "node": "pax009",
+   "tres": "billing=8,cpu=8,gres/gpu=1,mem=240G,node=1",
+   "elapsed_hours": 0.0544
   },
   {
    "attempt": "j2",
    "job_id": "6158338",
    "limit_hours": 2.0833333333333335,
    "projected_hours": 1.2,
-   "state": "PENDING"
+   "state": "RUNNING",
+   "node": "pax010",
+   "tres": "billing=8,cpu=8,gres/gpu=1,mem=160G,node=1",
+   "elapsed_hours": 0.0692
   }
  ],
- "spent_gpu_hours": 0,
- "reserved_gpu_hours": 3.6667
+ "spent_gpu_hours": 0.0544,
+ "reserved_gpu_hours": 2.0833
 }

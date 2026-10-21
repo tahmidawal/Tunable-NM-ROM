@@ -1,0 +1,101 @@
+{
+ "mesh": 1024,
+ "job": "6158333",
+ "gpu": "NVIDIA H200",
+ "backend": "gpu",
+ "commit": "bc59a1236429d8f24b8bdc916d0fb0f270d7b76e",
+ "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+ "configs": {
+  "R128|BE": {
+   "per_case": [
+    {
+     "cohort": "dev6",
+     "case": 0,
+     "e": 0.00599605020751377,
+     "eps_ref": 1.2979413974249933e-06,
+     "eligible": true,
+     "e0": 0.010043533058687545
+    },
+    {
+     "cohort": "dev6",
+     "case": 1,
+     "e": 0.013353291674456567,
+     "eps_ref": 5.054166691346835e-06,
+     "eligible": true,
+     "e0": 0.0021606412834522105
+    },
+    {
+     "cohort": "dev6",
+     "case": 2,
+     "e": 0.030114301959136492,
+     "eps_ref": 7.308479841780376e-06,
+     "eligible": true,
+     "e0": 0.001403536999113708
+    },
+    {
+     "cohort": "dev6",
+     "case": 3,
+     "e": 0.014760013459176127,
+     "eps_ref": 3.7132195390691405e-06,
+     "eligible": true,
+     "e0": 0.04315501645549028
+    },
+    {
+     "cohort": "dev6",
+     "case": 4,
+     "e": 0.011675859283253886,
+     "eps_ref": 3.8383037767517785e-06,
+     "eligible": true,
+     "e0": 0.011097163443417614
+    },
+    {
+     "cohort": "dev6",
+     "case": 5,
+     "e": 0.014078232654246577,
+     "eps_ref": 4.947585007729046e-06,
+     "eligible": true,
+     "e0": 0.039397027240134455
+    }
+   ],
+   "worst": 0.030114301959136492,
+   "median": 0.013715762164351572,
+   "n_eligible": 6,
+   "q1": {
+    "n": 6,
+    "coverage_ok": true,
+    "npz_meta_ok": true,
+    "W_sha_ok": true,
+    "all_valid": true,
+    "tight_valid": true,
+    "gcert_ok": true,
+    "nonstat": 0,
+    "steps": 300,
+    "dist_tight": "PASS",
+    "anchor": "PASS",
+    "tighter_valid": true,
+    "budget_exits": 0,
+    "state": "PASS"
+   },
+   "q2": {
+    "n": 6,
+    "qp_valid": true,
+    "rho": "PASS",
+    "dist_qp": "PASS",
+    "qpp_runs": 6,
+    "qpp_valid": true,
+    "max_dist_qp_qpp": 4.153564954957479e-06,
+    "qpp": "PASS",
+    "state": "UNVERIFIED"
+   },
+   "status": "UNRESOLVED",
+   "W_sha": [
+    "52907aeea0a3a7a77f1858132e35e1250dfea75c484ad12b7ecc41117af7f914",
+    "87a040b911609709cab99c3cae9ee4809a4d1439b482e842fc3952b7a01a2d94",
+    "a5aa1d119256745d98640dd788d3cf6e42c864d411cacb1762a15583566ca007",
+    "74887f5f93e9c818609b0ed973c40662dc077c873ed521e916f62d9b66f8cfc3",
+    "734e7ae2c41d5a1cb9f168ac4f8fabb4bf0cd0d304cb50ccd510a82d505bc912",
+    "8d2eadd35d8cf273a8aca4123705a0babe2b7a5450e4a56f15e9d937e1f5490c"
+   ]
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "all_passed": false,
+ "controls": {
+  "2c_restriction": {
+   "passed": true,
+   "source": "smoke.json"
+  },
+  "2ab_prolongation": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "3_mapping": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "5_blocked": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "4_q1_mutation": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "6_case_identity": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "7_timing": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "4_fixture_qualified": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "pilot_shape": {
+   "passed": false,
+   "G_shape": null
+  },
+  "smoke_complete": {
+   "passed": false
+  },
+  "1_cpu_preflight": {
+   "passed": true,
+   "rc": "42"
+  },
+  "9_replication": {
+   "passed": true,
+   "max_diff_R128": 1.457167719820518e-16,
+   "min_diff_vs_R256": 1.908464952466403e-05
+  },
+  "8_decision_logic": {
+   "passed": false,
+   "error": "KeyError: 'fixture_records'"
+  }
+ }
+}

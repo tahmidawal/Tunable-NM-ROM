@@ -1,0 +1,49 @@
+stage MANIFEST OK
+host=pax009 source_commit=bc59a1236429d8f24b8bdc916d0fb0f270d7b76e
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB
+10.235.106.30:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+jax_backend=gpu
+=== 2026-10-21T18:02:34Z preflight_cpu
+jax_backend=cpu
+cpu_preflight_rc=42
+step_exit[preflight_cpu]=0
+=== 2026-10-21T18:02:35Z smoke
+14:02:39 jax_backend=gpu x64=True precision=highest device=NVIDIA H200
+14:02:43    snapshots 1/64 worst rel residual 3.46e-11 [2s]
+14:03:06    snapshots 64/64 worst rel residual 9.96e-11 [25s]
+14:03:21    basis[central]: n_snap 768 rank 720 orth 6.7e-15 optimal True
+14:03:54    source 1024 r=128: ecsw 20s supports {'k4': 512, 'k8': 1024}
+14:04:03 CONTROL 2c_restriction: PASS {'orth': 2.1094237467877974e-15, 'orth_raw': 0.05855980157305374, 'qr_recon': 2.261392356512072e-15, 'scaled_column_orth': 2.000001000146412e-06, 'code_err': 5.9224787805671186e-15, 'rank_ratio': 0.9617113534919243}
+step_exit[smoke]=1
+=== 2026-10-21T18:04:35Z repl
+jax_backend=gpu x64=True precision=highest
+SETUP 12.1 {'in_use': 4700404736, 'peak': 17278585600, 'limit': 138101653504}
+RUN R128 BE dev6 0 42.2
+RUN R128 BE dev6 1 42.5
+RUN R128 BE dev6 2 42.7
+RUN R128 BE dev6 3 42.9
+RUN R128 BE dev6 4 43.2
+RUN R128 BE dev6 5 43.4
+P1ACC COMPLETE 44.1
+step_exit[repl]=0
+=== 2026-10-21T18:05:24Z repl_score
+R128|BE worst 0.030114301959136492 median 0.013715762164351572 Q1 PASS Q2 UNVERIFIED UNRESOLVED
+step_exit[repl_score]=0
+=== 2026-10-21T18:05:28Z accept
+ACCEPT 2c_restriction PASS {'source': 'smoke.json'}
+ACCEPT 2ab_prolongation FAIL {'source': 'smoke.json'}
+ACCEPT 3_mapping FAIL {'source': 'smoke.json'}
+ACCEPT 5_blocked FAIL {'source': 'smoke.json'}
+ACCEPT 4_q1_mutation FAIL {'source': 'smoke.json'}
+ACCEPT 6_case_identity FAIL {'source': 'smoke.json'}
+ACCEPT 7_timing FAIL {'source': 'smoke.json'}
+ACCEPT 4_fixture_qualified FAIL {'source': 'smoke.json'}
+ACCEPT pilot_shape FAIL {'G_shape': None}
+ACCEPT smoke_complete FAIL {}
+ACCEPT 1_cpu_preflight PASS {'rc': '42'}
+ACCEPT 9_replication PASS {'max_diff_R128': 1.457167719820518e-16, 'min_diff_vs_R256': 1.908464952466403e-05}
+ACCEPT 8_decision_logic FAIL {'error': "KeyError: 'fixture_records'"}
+ACCEPT ALL False
+step_exit[accept]=1
+job_fail=1
+ALL-DONE

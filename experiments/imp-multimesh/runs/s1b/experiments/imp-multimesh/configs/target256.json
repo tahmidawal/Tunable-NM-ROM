@@ -1,0 +1,38 @@
+{
+ "commands": [
+  {
+   "name": "target256",
+   "cmd": "$PY mmbuild.py target configs/target256.json $OUT"
+  }
+ ],
+ "L": 256,
+ "ranks": [
+  128,
+  256,
+  384
+ ],
+ "kappas": [
+  4,
+  8
+ ],
+ "nnls_seconds": 2700,
+ "dense_max_L": 1024,
+ "cases": "all38",
+ "arms": [
+  {
+   "name": "PM-256",
+   "kind": "pm",
+   "source": 256,
+   "source_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src256"
+  },
+  {
+   "name": "CPR-1024",
+   "kind": "refit",
+   "source": 1024,
+   "source_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src1024"
+  }
+ ],
+ "import_check": [
+  "mmbuild"
+ ]
+}

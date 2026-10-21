@@ -51,15 +51,26 @@ def tail(w):
           f"(N = {a['A3']['targets']['0.03']['N_min']}) (PILOT).")
         hp = t3['H-A2p']
         if 'ratio' in hp:
-            w(f"- **Per nonlinear evaluation the ROM is near cost parity, so the per-unknown cost is the issue, not "
-              f"the count alone** (H-A2′ {hp['verdict']}): with the cheaper measured evaluation form per r, "
-              f"$r_{{\\min}}/r_\\times(N_{{\\min}})$ = {', '.join(g(x, '%.2f') for x in hp['ratio'])}; with the "
-              f"tensor alone (diagnostic) {', '.join(g(x, '%.2f') for x in t3.get('H-A2p_tensor_only', []))}. "
-              "The cheaper form is often a coarse grid rule whose own accuracy was not required here, so these are "
-              "optimistic for the ROM (PILOT). Since the matched whole-query ratio is far below these per-evaluation "
-              "ratios, the rest of the ROM query (the grid size actually needed, the initial projection, the "
-              "coefficient setup, the output decode and the step count) carries the gap; the pilot did not "
-              "decompose it.")
+            ev = []
+            for lv in L3:
+                cm = a[lv].get('cost_model') or {}
+                tt = a[lv]['targets']['0.03']
+                r, N = tt['r_min'], tt['N_min']
+                c = [cm['rom_t'][str(r)]] + [x for k, x in cm['rom_q'].items() if int(k.split('|')[0]) == r]
+                ev.append(cm['fom'][str(N)] / min(c))
+            w(f"- **Per nonlinear evaluation the ROM is close to the FOM** (H-A2′ {hp['verdict']}): with the cheaper "
+              f"measured evaluation form per r, $r_{{\\min}}/r_\\times(N_{{\\min}})$ = "
+              f"{', '.join(g(x, '%.2f') for x in hp['ratio'])} (tensor alone, diagnostic: "
+              f"{', '.join(g(x, '%.2f') for x in t3.get('H-A2p_tensor_only', []))}); the corresponding evaluation-time "
+              f"ratio FOM/ROM at $N_{{\\min}}$ and $r_{{\\min}}$ is {', '.join(g(x, '%.2f') for x in ev)} (PILOT). "
+              "The cheaper form is often a coarse grid rule whose own accuracy was not required, so these are "
+              "optimistic for the ROM. The whole-query S above is lower than these evaluation ratios; the pilot did not "
+              "decompose the query, so it does not say which other part (grid size actually needed, initial "
+              "projection, coefficient setup, decode, step count) accounts for the difference.")
+            un = [f"{lv} τ={t}" for lv in L3 for t in TS if a[lv]['targets'][t].get('N_min')
+                  and not (a[lv]['targets'][t].get('r_cross') or {}).get('value')]
+            if un:
+                w(f"- $r_\\times$ is unbracketed within the measured r ladder at {', '.join(un)} (PILOT).")
         w(f"- H-A1: α = {g(t3['H-A1']['alpha'], '%.2f')} ({t3['H-A1']['verdict']}); $N_{{\\min}}$ = "
           f"{', '.join(str(a[lv]['targets']['0.03']['N_min']) for lv in L3)} at 3 % and "
           f"{', '.join(str(a[lv]['targets']['0.001']['N_min']) for lv in L3)} at 0.1 % (PILOT): the spectral "
@@ -174,7 +185,9 @@ def tail(w):
     w("- **Amended exploratory design**: references and training for A1–A3 and an A1 debugging ladder ran before "
       "design amendment A3 was final; implementation records A5 (two addenda) and the post-hoc control A6 are in "
       "`DESIGN.md`. A3's first ROM job reached its 30-minute unit cap at r = 512, which then ran as a separate "
-      "checkpoint unit; by rule A2.6 (A4 only if all A3 stages finished) **A4 was not run**.")
+      "checkpoint unit. **A4 was not run, by the agent's decision**: A3's stages needed a recovery unit, A4's "
+      "reference and tensor work (N_ref = 768) was expected to exceed single 30-minute units, and the remaining local "
+      "budget went to the timing runs and the post-hoc AB control. The A1–A3 trend therefore has three levels.")
     w("- Allowance coverage: the A padding gate covers the two steepest test cases per level; the B time allowance "
       "extrapolates from a fine-grid check on 4 cases and an L = 512 check on 12. G6 (cohort disjointness) and D2 "
       "(no run below its floor, Part A and B, and the spectral floor) were asserted in the code. Diagnostics (G9, "
@@ -210,7 +223,7 @@ def tail(w):
         ('S', 'speed ratio t_FOM / t_ROM of the matched configurations (S > 1: the ROM is faster); K2 bar S ≥ 2.'),
         ('field / native contract', 'query ends with the six output fields on the scoring lattice / with the '
          'method\'s own coefficients.'),
-        ('$r_\\times(N)$', 'reduced size at which one ROM tensor evaluation costs as much as one FOM evaluation at N.'),
+        ('$r_\\times(N)$', 'reduced size at which one ROM nonlinear evaluation (the cheaper measured form: tensor or grid rule) costs as much as one FOM evaluation at N; a tensor-only version is reported as a diagnostic.'),
         ('F-IMEX, F-RK4, SBDF2', 'finite-difference solvers on the L-shape: implicit–explicit second-order backward '
          'differentiation with sparse LU solves, or explicit classical Runge–Kutta.'),
         ('G4, SW1–SW4, G7, G9, D1, D2', 'controls: tensor = direct ROM; matcher, reference-gate and tensor-corruption '

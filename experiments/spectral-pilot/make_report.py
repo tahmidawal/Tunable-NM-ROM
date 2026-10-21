@@ -199,6 +199,7 @@ def main():
 
     # ---- what ran
     w('## 2. What ran\n')
+    w('Table (PILOT): levels, references and gates.\n')
     w('| level | ν band | test steepness s (median, range) | $N_{\\rm ref}$ | allowance U | front sharpness t>0 (t=0) | remaining energy at t=0.25 | gates |')
     w('|---|---|---|---|---|---|---|---|')
     for lv in LVX:
@@ -209,9 +210,8 @@ def main():
         w(f"| {lv} | [{g(ref['nu'][0], '%.4g')}, {g(ref['nu'][1], '%.4g')}] | {g(e['s_median'], '%.0f')} "
           f"({g(e['s_range'][0], '%.0f')}–{g(e['s_range'][1], '%.0f')}) | {e['Nref']} | {g(e['U'], '%.1e')} | "
           f"{g(dg.get('sharp'), '%.1f')} ({g(dg.get('sharp_t0'), '%.1f')}) | {g(dg.get('energy'), '%.2f')} | {gates} |")
-    w(f"\nTable: PILOT. A4 (ν band [0.0022, 0.0044]) was **not run (time cap)**: rule A2.6 allows A4 only if all of "
-      "A3's stages finished; A3's first ROM job hit its 30-minute unit cap (its r = 512 part was re-run as a "
-      "separate unit). A3's reference generation took "
+    w(f"\nTable: PILOT. A4 (ν band [0.0022, 0.0044]) was **not run** (agent's decision, see §8; A3's first ROM job "
+      "hit its 30-minute unit cap and its r = 512 part was re-run as a separate unit). A3's reference generation took "
       f"{g(load(R / 'A' / 'A3' / 'ref.json')['seconds'] / 60, '%.0f')} minutes on the shared CPU. AB is the post-hoc "
       "control of A6. Gates per level: reference space/time/padding differences, SW1a/SW1b (matcher), SW2 "
       "(reference gate), G4 (tensor ROM = direct-evaluation ROM), SW4 (tensor-slice corruption), G7 (IC rule), D2 "
@@ -250,6 +250,7 @@ def main():
     w('\n![floors](plots/floors.png)\n\n![sweep](plots/sweep.png)\n\n![pareto](plots/pareto.png)\n')
 
     w('### 3.1 Verdicts per target (DESIGN A1.3, A2.1, A3.1; PILOT)\n')
+    w('Table (PILOT).\n')
     w('| τ | eligible levels | H-A1 α (N ∝ s^α) | H-A2: $r_{\\min}/(N_{\\min}-1)^2$ | H-A2′: $r_{\\min}/r_\\times(N_{\\min})$ (cheaper form; tensor only) | H-A3 category; S per level | slope of log S |')
     w('|---|---|---|---|---|---|---|')
     for t in TAUS:
@@ -269,7 +270,7 @@ def main():
     w('### 3.2 Cost per nonlinear evaluation (one core; PILOT)\n')
     cm = A['A'][LV[-1]].get('cost_model')
     if cm:
-        w(f'From the {LV[-1]} screen (median of 20 calls):\n')
+        w(f'Table (PILOT): from the {LV[-1]} screen (median of 20 calls).\n')
         w('| spectral FOM N | time | | ROM tensor r | time |')
         w('|---|---|---|---|---|')
         Ns = sorted(int(k) for k in cm['fom'])
@@ -291,6 +292,7 @@ def main():
     # ---- Part B
     w('## 4. Part B: L-shaped domain (PILOT)\n')
     if b:
+        w('Table (PILOT).\n')
         w('| τ (worst) | F-IMEX $L_{\\min}$ | F-RK4 $L_{\\min}$ | ROM $r_{\\min}$ | FD matched (family, L, steps, time) | ROM matched (r, steps, L_init, time) | S | reading |')
         w('|---|---|---|---|---|---|---|---|')
         for t in TAUS:
@@ -306,6 +308,7 @@ def main():
 
     # ---- controls
     w('## 5. Controls and timing quality (PILOT)\n')
+    w('Table (PILOT): controls.\n')
     w('| check | ' + ' | '.join(LVX) + ' | B |')
     w('|---|' + '---|' * (len(LVX) + 1))
     rows = [('SW1a error metric', lambda e: e['SW1a'], lambda: b and b['SW1']),
@@ -318,11 +321,12 @@ def main():
             ('timing valid (screen + final sentinel)', lambda e: e['timing_valid'], lambda: b and b['timing_valid'])]
     for name, fa, fb in rows:
         w(f"| {name} | " + ' | '.join(str(fa(A['A'][lv])) for lv in LVX) + f" | {fb()} |")
-    w('\nPhysical diagnostics (not asserted): coarse "references" ' + ', '.join(
+    w('\nPhysical diagnostics (not asserted; PILOT): coarse "references" ' + ', '.join(
         f"{lv}: N_ref/4 differs by {g(load(R / 'A' / lv / 'ref.json')['checks']['diag_coarse']['max'], '%.1e')}"
         for lv in LV) + '; random 128-dimensional span floors ' + ', '.join(
         f"{lv}: {g(load(R / 'A' / lv / 'rom.json')['floors']['random']['worst'][127], '%.2f')}" for lv in LV) + '.\n')
 
+    w('Table (PILOT): timing quality of the final (fresh) timings.\n')
     w('| level | τ | FOM spread (max/min) | FOM outliers | ROM spread | ROM outliers |')
     w('|---|---|---|---|---|---|')
     for lv in LVX:

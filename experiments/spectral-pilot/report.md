@@ -14,6 +14,8 @@
 
 ## 2. What ran
 
+Table (PILOT): levels, references and gates.
+
 | level | ν band | test steepness s (median, range) | $N_{\rm ref}$ | allowance U | front sharpness t>0 (t=0) | remaining energy at t=0.25 | gates |
 |---|---|---|---|---|---|---|---|
 | A1 | [0.06, 0.12] | 17 (11–32) | 128 | 2.7e-09 | 6.2 (14.6) | 0.18 | all pass |
@@ -21,7 +23,7 @@
 | A3 | [0.006667, 0.01333] | 149 (101–289) | 384 | 1.5e-08 | 21.5 (14.6) | 0.48 | all pass |
 | AB | [0.02013, 0.04995] | 52 (30–77) | 192 | 3.2e-09 | 11.2 (16.5) | 0.28 | all pass |
 
-Table: PILOT. A4 (ν band [0.0022, 0.0044]) was **not run (time cap)**: rule A2.6 allows A4 only if all of A3's stages finished; A3's first ROM job hit its 30-minute unit cap (its r = 512 part was re-run as a separate unit). A3's reference generation took 25 minutes on the shared CPU. AB is the post-hoc control of A6. Gates per level: reference space/time/padding differences, SW1a/SW1b (matcher), SW2 (reference gate), G4 (tensor ROM = direct-evaluation ROM), SW4 (tensor-slice corruption), G7 (IC rule), D2 (no run below its floor). Front sharpness is $\max|\nabla u|/\max|u|$, median over test cases of the max over $t_1..t_5$.
+Table: PILOT. A4 (ν band [0.0022, 0.0044]) was **not run** (agent's decision, see §8; A3's first ROM job hit its 30-minute unit cap and its r = 512 part was re-run as a separate unit). A3's reference generation took 25 minutes on the shared CPU. AB is the post-hoc control of A6. Gates per level: reference space/time/padding differences, SW1a/SW1b (matcher), SW2 (reference gate), G4 (tensor ROM = direct-evaluation ROM), SW4 (tensor-slice corruption), G7 (IC rule), D2 (no run below its floor). Front sharpness is $\max|\nabla u|/\max|u|$, median over test cases of the max over $t_1..t_5$.
 
 Part B (L-shape, ν ∈ [0.02, 0.05]): reference = SBDF2 + SuperLU at L = 1024; observed orders p₁ = 2.00, p₂ = 2.00 (gate passed); Richardson reference-error estimate 3.1e-05, time-gate difference 1.6e-06, allowance U = 3.2e-05 (conditional). The ROM's own operator (FD at L = 512) differs from the reference by 9.3e-05 (worst), a measured discretisation discrepancy that may limit the ROM's accuracy (PILOT).
 
@@ -56,6 +58,8 @@ Table (PILOT): smallest observed feasible sizes (any step count meets τ under t
 
 ### 3.1 Verdicts per target (DESIGN A1.3, A2.1, A3.1; PILOT)
 
+Table (PILOT).
+
 | τ | eligible levels | H-A1 α (N ∝ s^α) | H-A2: $r_{\min}/(N_{\min}-1)^2$ | H-A2′: $r_{\min}/r_\times(N_{\min})$ (cheaper form; tensor only) | H-A3 category; S per level | slope of log S |
 |---|---|---|---|---|---|---|
 | 0.03 | A1, A2, A3 | 0.63 (consistent) | 0.79, 0.85, 0.17 (consistent) | 0.91, 1.7, 1 (inconsistent); 1.3, 2.5, 3.1 | FOM faster throughout; 0.218, 0.102, 0.152 | -0.16 |
@@ -67,7 +71,7 @@ A target is *eligible* at a level only if both methods reached it and the timing
 
 ### 3.2 Cost per nonlinear evaluation (one core; PILOT)
 
-From the A3 screen (median of 20 calls):
+Table (PILOT): from the A3 screen (median of 20 calls).
 
 | spectral FOM N | time | | ROM tensor r | time |
 |---|---|---|---|---|
@@ -93,6 +97,8 @@ Equal-cost reduced size $r_\times(N_{\min})$ (the cheaper measured ROM evaluatio
 
 ## 4. Part B: L-shaped domain (PILOT)
 
+Table (PILOT).
+
 | τ (worst) | F-IMEX $L_{\min}$ | F-RK4 $L_{\min}$ | ROM $r_{\min}$ | FD matched (family, L, steps, time) | ROM matched (r, steps, L_init, time) | S | reading |
 |---|---|---|---|---|---|---|---|
 | 0.03 | 64 | 64 | 16 | RK4, 64, 160, 15.2 ms | 24, 5, 32, 0.519 ms | 29.3 | ROM >= 2x faster |
@@ -104,6 +110,8 @@ The claim is scoped to these two FD implementations (A1.8): multigrid, stabilise
 
 ## 5. Controls and timing quality (PILOT)
 
+Table (PILOT): controls.
+
 | check | A1 | A2 | A3 | AB | B |
 |---|---|---|---|---|---|
 | SW1a error metric | True | True | True | True | True |
@@ -114,7 +122,9 @@ The claim is scoped to these two FD implementations (A1.8): multigrid, stabilise
 | G7 IC rule | True | True | True | True | n/a (nodal IC) |
 | timing valid (screen + final sentinel) | True | True | True | True | True |
 
-Physical diagnostics (not asserted): coarse "references" A1: N_ref/4 differs by 3.7e-08, A2: N_ref/4 differs by 9.5e-06, A3: N_ref/4 differs by 1.2e-04; random 128-dimensional span floors A1: 0.47, A2: 0.68, A3: 0.85.
+Physical diagnostics (not asserted; PILOT): coarse "references" A1: N_ref/4 differs by 3.7e-08, A2: N_ref/4 differs by 9.5e-06, A3: N_ref/4 differs by 1.2e-04; random 128-dimensional span floors A1: 0.47, A2: 0.68, A3: 0.85.
+
+Table (PILOT): timing quality of the final (fresh) timings.
 
 | level | τ | FOM spread (max/min) | FOM outliers | ROM spread | ROM outliers |
 |---|---|---|---|---|---|
@@ -146,7 +156,8 @@ All statements in this section are about **this POD–Galerkin implementation, t
 
 - **No crossover observed.** At the only target reached at all three levels (worst error 3 %), the spectral FOM is faster at every level: S = 0.22, 0.10, 0.15 for A1, A2, A3 (median s = 17, 50, 149); the sequence is not monotone and the log-slope is -0.16 (PILOT). Over all eligible levels and targets the ROM is 5–13× slower. At A3 the ROM reached no tighter target with r ≤ 512 (censored, not evidence either way).
 - **The trained span needs fewer unknowns than the spectral block, increasingly so at A3** (H-A2 consistent by the registered endpoint rule; not monotone): $r_{\min}/(N_{\min}-1)^2$ = 0.79, 0.85, 0.17; at A3, r = 384 against 2209 sine modes (N = 48) (PILOT).
-- **Per nonlinear evaluation the ROM is near cost parity, so the per-unknown cost is the issue, not the count alone** (H-A2′ inconsistent): with the cheaper measured evaluation form per r, $r_{\min}/r_\times(N_{\min})$ = 0.91, 1.74, 1.05; with the tensor alone (diagnostic) 1.30, 2.47, 3.08. The cheaper form is often a coarse grid rule whose own accuracy was not required here, so these are optimistic for the ROM (PILOT). Since the matched whole-query ratio is far below these per-evaluation ratios, the rest of the ROM query (the grid size actually needed, the initial projection, the coefficient setup, the output decode and the step count) carries the gap; the pilot did not decompose it.
+- **Per nonlinear evaluation the ROM is close to the FOM** (H-A2′ inconsistent): with the cheaper measured evaluation form per r, $r_{\min}/r_\times(N_{\min})$ = 0.91, 1.74, 1.05 (tensor alone, diagnostic: 1.30, 2.47, 3.08); the corresponding evaluation-time ratio FOM/ROM at $N_{\min}$ and $r_{\min}$ is 1.24, 0.52, 0.97 (PILOT). The cheaper form is often a coarse grid rule whose own accuracy was not required, so these are optimistic for the ROM. The whole-query S above is lower than these evaluation ratios; the pilot did not decompose the query, so it does not say which other part (grid size actually needed, initial projection, coefficient setup, decode, step count) accounts for the difference.
+- $r_\times$ is unbracketed within the measured r ladder at A3 τ=0.001 (PILOT).
 - H-A1: α = 0.63 (consistent); $N_{\min}$ = 12, 16, 48 at 3 % and 16, 32, 96 at 0.1 % (PILOT): the spectral resolution needed grows with steepness, but from small values.
 - At the smooth end the POD span is not better than plain sines: the sine-ROM needs no more unknowns than the POD ROM at A1 τ=0.03, A1 τ=0.01, A1 τ=0.003, A1 τ=0.001, A2 τ=0.03 (PILOT).
 - The output contract matters: at A1, 3 %, S is 1.01 on the native contract (no decode to the 257² lattice) against 0.22 on the field contract (PILOT; native timings are batched, not call-interleaved).
@@ -187,7 +198,7 @@ All sizes, budgets and thresholds in this section are **planning estimates and d
 
 ## 8. Deviations, limitations, audits
 
-- **Amended exploratory design**: references and training for A1–A3 and an A1 debugging ladder ran before design amendment A3 was final; implementation records A5 (two addenda) and the post-hoc control A6 are in `DESIGN.md`. A3's first ROM job reached its 30-minute unit cap at r = 512, which then ran as a separate checkpoint unit; by rule A2.6 (A4 only if all A3 stages finished) **A4 was not run**.
+- **Amended exploratory design**: references and training for A1–A3 and an A1 debugging ladder ran before design amendment A3 was final; implementation records A5 (two addenda) and the post-hoc control A6 are in `DESIGN.md`. A3's first ROM job reached its 30-minute unit cap at r = 512, which then ran as a separate checkpoint unit. **A4 was not run, by the agent's decision**: A3's stages needed a recovery unit, A4's reference and tensor work (N_ref = 768) was expected to exceed single 30-minute units, and the remaining local budget went to the timing runs and the post-hoc AB control. The A1–A3 trend therefore has three levels.
 - Allowance coverage: the A padding gate covers the two steepest test cases per level; the B time allowance extrapolates from a fine-grid check on 4 cases and an L = 512 check on 12. G6 (cohort disjointness) and D2 (no run below its floor, Part A and B, and the spectral floor) were asserted in the code. Diagnostics (G9, H1, coarse references, random spans) are reported, not asserted.
 - Timing: one GB10 CPU core, f64, single-thread flags asserted; sentinels valid in every screen and final. `JAX_DEFAULT_MATMUL_PRECISION` was not set (recorded as null); on CPU with f64 it is not expected to change results, but it departs from the project rule. Native-contract timings are batched, not interleaved. Spreads and outlier counts are in the timing table above.
 - Not implemented (stated limitations): written memory projections, pre-stage benchmarks, D3, B corner-window and finer-lattice diagnostics, Part-B native timing and H1, rollouts for D1/random span.
@@ -210,7 +221,7 @@ All sizes, budgets and thresholds in this section are **planning estimates and d
 - **matched / cost-optimal**: the fastest timed configuration of a method that meets τ.
 - **S**: speed ratio t_FOM / t_ROM of the matched configurations (S > 1: the ROM is faster); K2 bar S ≥ 2.
 - **field / native contract**: query ends with the six output fields on the scoring lattice / with the method's own coefficients.
-- **$r_\times(N)$**: reduced size at which one ROM tensor evaluation costs as much as one FOM evaluation at N.
+- **$r_\times(N)$**: reduced size at which one ROM nonlinear evaluation (the cheaper measured form: tensor or grid rule) costs as much as one FOM evaluation at N; a tensor-only version is reported as a diagnostic.
 - **F-IMEX, F-RK4, SBDF2**: finite-difference solvers on the L-shape: implicit–explicit second-order backward differentiation with sparse LU solves, or explicit classical Runge–Kutta.
 - **G4, SW1–SW4, G7, G9, D1, D2**: controls: tensor = direct ROM; matcher, reference-gate and tensor-corruption fault injections; IC quadrature; padding diagnostic; data sensitivity; no run below its floor.
 - **censored**: a method did not reach the target inside its ladder; not evidence either way.

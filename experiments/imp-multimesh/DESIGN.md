@@ -367,3 +367,123 @@ J3 m1024 (0.5 h), J4 m4096 (1.4 h incl. the 8 PM-estimate trajectories), J5 ours
 (0.8 h): ≈ 5.9 GPU-h, cap 8. Defer order if the certificates exceed the remaining cap: (1) CPU-1024 at $4096^2$,
 (2) CPR-1024 at $4096^2$, (3) $r=384$ refits at $4096^2$; each deferral makes the affected workloads "not
 evaluable" for that arm only (the other CP arms still count).
+
+---
+
+## Amendment A2 (2026-10-21, before any code ran at size; answers `audits/codex-design-2.md`)
+
+A2 governs wherever it conflicts with sections 1–9 or A1.
+
+**A2.1 Accuracy matching (replaces the tie and median clauses of A1.1).**
+- *Primary (the stop rule's own metric):* the **aggregate worst-error comparison** $W_{\rm CP}(w) \le W_X(w)$,
+  strict, no allowance. This is what "equal or better worst error" names; it is labelled an aggregate comparison,
+  not the COMMON-BRIEF casewise rank rule.
+- *Reported beside it:* (i) the aggregate comparison with allowance $2\max_c\varepsilon_{\rm ref}(c)$
+  (sensitivity); (ii) **casewise dominance**: on every (mesh, case) pair of $w$,
+  $e_{\rm CP} \le e_X + 2\varepsilon_{\rm ref}(c)$ (the binding rank rule, case by case); (iii) the pooled median,
+  strict ($M_{\rm CP}\le M_X$). The lane brief's "accuracy-matched (worst and median)" claim is the
+  conjunction primary ∧ (iii); it is reported as a separate verdict from the verbatim stop rule.
+- *Three-valued logic per (workload $w$, configuration X).* MATCH if a measured, Q1-qualified CP combination is
+  admissible (accuracy) and costs $\le C_X(w)$ — regardless of other missing arms. NO-MATCH if every CP combination
+  of every registered CP variant is measured and none is both admissible and no more costly. Otherwise UNRESOLVED.
+  X's own status: QUALIFIED (Q1+Q2 in-job on every mesh of $w$), NOT-QUALIFIED (measured failure), or UNRESOLVED
+  (evidence missing — never treated as a failure).
+- *Stop rule outcome.* FIRES iff every (w, X) with X QUALIFIED is MATCH and no X is UNRESOLVED. NOT FIRED iff some
+  (w, X) with X QUALIFIED is NO-MATCH. Otherwise NOT EVALUABLE. A workload where every X is NOT-QUALIFIED is
+  reported as "vacuous" and does not block firing. These three outcomes and "vacuous" are reported separately.
+- *Language.* NOT FIRED is reported as "the stop rule did not fire", followed by the specific trade-off for every
+  NO-MATCH: the cheapest CP combination and why it fails (accuracy or cost), and the most accurate CP combination
+  and its cost. No sentence states a comparative cost advantage unless a CP combination that is accuracy-admissible
+  exists and costs more than X on that workload.
+- *Near-ties.* A cost comparison with $C_{\rm CP}/C_X \in [1/1.1, 1.1]$ is a **near-tie** (the registered timing
+  drift band); if an outcome depends only on near-ties this is stated. The bank-fit and head-fit projections carry
+  their own sensitivity variants (A2.2) and are not covered by this band.
+
+**A2.2 Our offline cost (replaces the bank-fit and dependency clauses of A1.2).**
+- *Head dependency (audit finding confirmed).* `qcore.Model.trust_linear` evaluates the checkpoint head on `Z_tr`
+  to set the LSPG trust radius (`p1common.Bank.cold_trust`), so the deployed configurations depend on the dn256b
+  head fit. Its producing work, from the dn256b log (job 2837431, A100 80GB PCIe): coefficient extraction 915.24 s
+  + the `full` head-fit variant that emitted the deployed pickle (log line 391) 2,675.56 s. The other two head-fit
+  variants (2,636.95 s, 2,696.54 s) are selection work (counted in A_sel). `Z_tr` comes from the bank job.
+- *Bank fit (H200).* $T_{\rm fit} = t_1 + 289{,}999\,\rho_{\rm sub} + \tau_{\rm tr} + 10{,}000\,\rho_{\rm full}
+  + t_{\rm done}$, with $\tau_{\rm tr}$ the one-off sub→full transition overhead. J2 runs the byte-identical script
+  with `STEPS=25000 FULL_LAST=10000` (full phase 15,000→25,000): $\rho_{\rm sub}$ from the logged window
+  5,000→15,000, $\rho_{\rm full}$ from the steady window 20,000→25,000, $\tau_{\rm tr}$ = (15,000→20,000 window) −
+  5,000 $\rho_{\rm full}$, $t_1$ and the 576-trajectory data generation directly, and $t_{\rm done}$ from the
+  step-25,000 line to the `done:` line (the process is stopped after that line). Validation on the A100 log with the
+  same decomposition ($\tau_{\rm tr}$ from 290,000→295,000 minus 295,000→300,000) must reproduce 10,684.65 s within
+  5 %.
+- *Head fit on the H200.* Not re-run. Primary: the A100-80GB seconds × the measured H200/A100-40GB ratio of
+  $\rho_{\rm sub}$ (a cross-GPU projection, labelled). Sensitivities: unscaled A100-80GB seconds; excluded.
+- *Still uncosted (counted 0, favour ours):* the rotation `rotation_R512.npz` (its producing job is in an
+  unmerged earlier branch and was not measured) and the selection of the frozen rules. Because of these, the total
+  is called **"full cost of the measured items"**, never simply "full cost". A sensitivity adds a stand-in equal to
+  the competitors' own selection work (A_sel) to ours, to show whether a selection cost of that size would change
+  the verdict.
+- *Sensitivities reported for every verdict:* A_100 (bank fit at the A100-measured 10,684.65 s, head at
+  A100-80GB seconds), A_nohead (head excluded), A_sel (competitor selection work added, and the stand-in for ours).
+
+**A2.3 Ledger with dependency keys (refines A1.2).** Artefacts are keyed by everything they depend on:
+`states[L]` (FOM trajectories of the 24 ECSW training cases on mesh L; basis-independent, shared by every arm
+that needs them), `snap[s]`, `pod[s]`, `codes[s→L, r]`, `resample[s→L]`, `contrib[basis, L, r]`,
+`nnls[basis, L, r]` (basis = PM-s or CP-s), `armdata[basis, L, r, κ]`, `compile[arm, L, cfg]`; ours
+`bankdata`, `bankfit`, `head`, `table[L]`, `ops[L]`, `setting[L, X]`, `compile[L, X]`. Rule construction for
+CPU-s needs `states[s]`, `contrib[CP-s, s, r]`, `nnls[CP-s, s, r]` only; `armdata`/`compile` at $s$ are charged
+only when $s\in\mathcal M$. Compilation is charged once, from an explicit ahead-of-time measurement
+(`jax.jit(...).lower(...).compile()` on a fresh jit object, wall seconds); setup/build timers exclude it.
+
+**A2.4 Resampling implementation details (A1.3 accepted; frozen here).** $R$ is the combined reconstruction factor
+of both sign-fixed QR passes ($\tilde\Phi = Q R$ with $R = S_2R_2S_1R_1$ as computed). Codes are transformed per
+deployed rank: $C_{L,r} = (L/s)\,C_s[:, :r]\,R[:r,:r]^\top$ (the prefix of an upper-triangular factorisation is
+the factorisation of the prefix). Rank acceptance: the condition number of $R[:r,:r]$ (from its singular values)
+≤ 1e10.
+
+**A2.5 Qualification and identity (refines A1.4).** The historical statement is corrected: jcp-p1-scaling covered
+Q1 on all 38 cases except $4096^2$ R128/R256 (16 cases) and Q2 on `sub16` only; this is prior evidence. J5 sets
+`cases = all38` and `q2_cases = all38` in **each** configuration, with the registered successor/check rules.
+Competitors: "Q1-qualified"; the κ=4 vs κ=8 comparison is a **rollout-agreement sensitivity**, not Q2.
+Timing identity (J6): ours is timed through the recording program (nrec = 51, jcp-p1-scaling's production
+program), and every timed run must reproduce the accuracy run's six outputs **and** every internal state, per-step
+exit reason and iteration count; competitors: the timed run's full trajectory $C$, per-step reasons and iteration
+counts must equal the accuracy run's (max relative difference ≤ 1e-10 on $C$, exact on integers).
+
+**A2.6 Controls (replaces A1.6 items 2, 4, 6–9).**
+- 2. Lattice/node consistency of prolongation and the mutations (a) shift, (b) transpose as in A1.6; (c) replaced:
+  the orthonormality checker must fail on the real restricted basis with one column scaled by $1+10^{-6}$; the raw
+  (pre-QR) defect of the real restriction is reported. QR reconstruction $\|QR-\tilde\Phi\|/\|\tilde\Phi\|\le
+  10^{-12}$ and the code transformation (an in-span field $\Phi_{s,r}c$ restricted: its codes in $\Phi_{L,r}$ equal
+  $(L/s)R[:r,:r]c$ to ≤ 1e-10) are checked on the real bases.
+- 4. Frozen fixture: CPR at $1024^2$ from the S1 source, $r=128$, $\kappa=4$, CNR, dev6. Mutation: LM budget 0. If
+  it does not trip Q1 on the fixture, the registered fallback mutation is a stepper that returns the previous state
+  unchanged ($c_{n+1}=c_n$), which is non-stationary wherever the dynamics move; the control result is recorded.
+- 6. Case identity: every run record carries (cohort, index, the full descriptor row $(c_x,c_y,w,a,\nu)$); scoring
+  asserts the descriptor row equals the cohort table row of the reference's case and that the reference $t_0$
+  equals the IC built from that row (`score.Refs`); *must fail:* a dev6 case-0 run presented as case 1 trips the
+  descriptor assertion (and its $e_0$ is reported).
+- 7. Timing injection: a host sleep of 0.25 × that configuration's A1 median added to **every** timed call of one
+  A2 block; the A2/A1 median ratio must leave the band.
+- 8. Decision logic on the smoke's real numbers, each against an expected outcome: (a) CP errors → +∞: NO-MATCH;
+  (b) every CP cost set to $C_X(w)\cdot 1.5 + 1$: NO-MATCH; (c) CP Q1 flags false: NO-MATCH; (d) with two
+  witnesses present, one witness removed: still MATCH; (e) every witness removed while unmeasured combinations
+  remain: UNRESOLVED; (f) X status removed: stop rule NOT EVALUABLE.
+- 9. Replication fixture: p1acc R128 BE at $1024^2$, dev6: errors equal p1 `e0_per_case` (≤ 1e-8). *Must fail:*
+  against p1's R256 BE errors, which differ by ≥ 1.9e-5 on every dev6 case (smallest gap, dev6 case 1:
+  0.0133533 vs 0.0133342; read from `jcp-p1-scaling/checks/analysis.json`).
+
+**A2.7 Smoke inputs and projections (refines A1.7).** S1 is self-contained: it builds a reduced source at
+$1024^2$ from 64 training trajectories (12 saved steps, 768 snapshots), POD to $r=384$, codes, 24-trajectory ECSW
+states at $1024^2$ (the production recipe), and uses it for every control and for the $4096^2$ memory pilot (whose
+NNLS uses 12 states, for memory only). Production NNLS run time at $4096^2$ is projected from J0's measured per-rank
+path times at $1024^2$ (same candidate count and state count; ×1.5); if a path hits its time limit the support
+reached is recorded and the configurations above it are "not constructible" (recorded, never silently dropped).
+Timing repetitions: competitors 2 timed observations per case (76 per configuration), ours one per case in A1 and
+one in A2 (76); every observation is saved; medians and means are reported, outliers (> 3 × median) counted.
+Input/output boundary, identical for every arm: the query starts from the full-field initial condition already on
+the device in the arm's native layout and ends when its six full-field outputs on the mesh are on the device
+(`block_until_ready`); host transfers and storage are excluded for every arm.
+
+**A2.8 PM at $4096^2$ (replaces A1.8 wording).** Reported as "**estimated** snapshot-only cost (576 × the mean of 8
+sampled trajectory times; sample range shown descriptively); remaining setup and accuracy not measured". No
+inequality or "loses regardless" statement is made from it.
+
+**A2.9 Budget.** J2 grows to 0.5 h (25,000 steps). Total ≈ 6.0 GPU-h projected, cap 8.

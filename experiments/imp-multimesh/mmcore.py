@@ -39,21 +39,21 @@ def sync(x):
 
 # ------------------------------------------------------------------------------------------ resampling ----
 
-def _dst1(x, mutate=False):
-    """Orthonormal self-inverse DST-I on the last axis (engines.dst1 arithmetic). mutate: control 2 (index shift)."""
+def _dst1(x, mutate=None):
+    """Orthonormal self-inverse DST-I on the last axis (engines.dst1 arithmetic). mutate='shift': control 2a."""
     n = x.shape[-1]
     zero = jnp.zeros(x.shape[:-1] + (1,), x.dtype)
     ext = jnp.concatenate((zero, x, zero, -x[..., ::-1]), axis=-1)
     y = -jnp.fft.fft(ext, axis=-1).imag
-    y = y[..., 2:n + 2] if mutate else y[..., 1:n + 1]
+    y = y[..., 2:n + 2] if mutate == 'shift' else y[..., 1:n + 1]
     return y / jnp.sqrt(2. * (n + 1))
 
 
-def _dst2(x, mutate=False):
+def _dst2(x, mutate=None):
     return _dst1(_dst1(x, mutate).swapaxes(-1, -2), mutate).swapaxes(-1, -2)
 
 
-def resample_fn(Ls, Lt, mutate=False):
+def resample_fn(Ls, Lt, mutate=None):
     """Jitted map of a block of modes (n_s, b) on mesh Ls to (n_t, b) on mesh Lt by the exact sine series:
     orthonormal DST-I coefficients, zero-padded (Lt > Ls) or truncated (Lt < Ls), inverse orthonormal DST-I.
     Prolongation is an isometry (Euclidean inner products preserved exactly in exact arithmetic)."""
@@ -62,6 +62,8 @@ def resample_fn(Ls, Lt, mutate=False):
     def f(V):
         b = V.shape[1]
         G = V.T.reshape(b, ms, ms)
+        if mutate == 'transpose':                       # control 2b: x/y swapped
+            G = G.swapaxes(1, 2)
         C = _dst2(G, mutate)
         if mt >= ms:
             C = jnp.pad(C, ((0, 0), (0, mt - ms), (0, mt - ms)))
@@ -71,7 +73,7 @@ def resample_fn(Ls, Lt, mutate=False):
     return jax.jit(f)
 
 
-def resample(Phi_s, Ls, Lt, block=8, mutate=False, out_device=True):
+def resample(Phi_s, Ls, Lt, block=8, mutate=None):
     """Phi_s (n_s, r) host or device -> Phi_t (n_t, r) on the device (built block by block into a preallocated
     buffer, so the peak is Phi_t + one block)."""
     r = Phi_s.shape[1]
@@ -105,18 +107,56 @@ def reorthonormalise(Phi):
     return sync(Q)
 
 
-def resample_basis(Phi_s, Ls, Lt, mutate=False):
-    """Resampled basis + certificate. Restriction (Lt < Ls) is re-orthonormalised; prolongation is not (isometry),
-    and both must pass ||Phi^T Phi - I||_max <= 1e-10."""
+def resample_basis(Phi_s, Ls, Lt, mutate=None, qr=None):
+    """Resampled basis + certificate (DESIGN A1.3). Restriction (Lt < Ls) is re-orthonormalised by QR (rank loss:
+    min|R_ii| / max|R_ii| < 1e-10 -> not constructible); prolongation is an isometry and is not. Returns
+    (Phi_t, R or None, info). qr=False forces no QR (control 2c)."""
     t0 = time.perf_counter()
     P = resample(Phi_s, Ls, Lt, mutate=mutate)
-    qr = Lt < Ls
+    do_qr = (Lt < Ls) if qr is None else qr
     dev_raw = orth_dev(P)
-    if qr:
-        P = reorthonormalise(P)
+    R = None
+    rank_ratio = None
+    if do_qr:
+        Q, R1 = jnp.linalg.qr(P)
+        s1 = jnp.where(jnp.sign(jnp.diag(R1)) == 0, 1., jnp.sign(jnp.diag(R1)))
+        Q, R1 = Q * s1[None, :], R1 * s1[:, None]
+        Q2, R2 = jnp.linalg.qr(Q)
+        s2 = jnp.where(jnp.sign(jnp.diag(R2)) == 0, 1., jnp.sign(jnp.diag(R2)))
+        Q2, R2 = Q2 * s2[None, :], R2 * s2[:, None]
+        R = np.asarray(R2 @ R1)                         # P = Q2 R (mode order kept, diag(R) > 0)
+        d = np.abs(np.diag(R))
+        rank_ratio = float(d.min() / d.max())
+        P = sync(Q2)
+        del Q, Q2
     dev = orth_dev(P)
-    return P, dict(Ls=Ls, Lt=Lt, qr=qr, orth_raw=dev_raw, orth=dev, orth_ok=bool(np.isfinite(dev) and dev <= ORTH_TOL),
-                   seconds=time.perf_counter() - t0, mutated=bool(mutate))
+    info = dict(Ls=Ls, Lt=Lt, qr=bool(do_qr), orth_raw=dev_raw, orth=dev, rank_ratio=rank_ratio,
+                orth_ok=bool(np.isfinite(dev) and dev <= ORTH_TOL and (rank_ratio is None or rank_ratio >= 1e-10)),
+                seconds=time.perf_counter() - t0, mutated=mutate)
+    return P, R, info
+
+
+def transform_codes(C_s, Ls, Lt, R=None):
+    """Codes of the same physical fields in the resampled basis (DESIGN A1.3): c_t = (Lt/Ls) c_s (prolongation),
+    c_t = (Lt/Ls) R c_s (restriction with P = Q R). C_s: (n_snap, r) rows."""
+    f = Lt / Ls
+    return f * (np.asarray(C_s) if R is None else np.asarray(C_s) @ np.asarray(R).T)
+
+
+def node_consistency(Phi_s, Ls, Phi_t, Lt, cols=None):
+    """Control 2: on the nodes of the coarser mesh (each is also a node of the finer, nested mesh),
+    (Lt/Ls) Phi_t == Phi_s. Exact for prolongation (the sine interpolant reproduces the source nodes); for
+    restriction it measures the low-pass difference (reported only). Relative Frobenius difference."""
+    Lc, Lf = min(Ls, Lt), max(Ls, Lt)
+    nc = (Lc - 1) ** 2
+    fine = jnp.asarray(map_nodes(np.arange(nc), Lc, Lf))
+    if Lt >= Ls:
+        a, b = jnp.asarray(Phi_t)[fine], jnp.asarray(Phi_s)
+    else:
+        a, b = jnp.asarray(Phi_t), jnp.asarray(Phi_s)[fine]
+    if cols is not None:
+        a, b = a[:, :cols], b[:, :cols]
+    return float(jnp.linalg.norm((Lt / Ls) * a - b) / jnp.linalg.norm(b))
 
 
 def roundtrip_error(Phi_s, Ls, Lt, cols=8):

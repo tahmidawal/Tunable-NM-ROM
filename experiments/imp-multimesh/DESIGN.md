@@ -487,3 +487,63 @@ sampled trajectory times; sample range shown descriptively); remaining setup and
 inequality or "loses regardless" statement is made from it.
 
 **A2.9 Budget.** J2 grows to 0.5 h (25,000 steps). Total ≈ 6.0 GPU-h projected, cap 8.
+
+---
+
+## Amendment A3 (2026-10-21, before any job; answers `audits/codex-design-3.md`)
+
+A3 governs wherever it conflicts with sections 1–9, A1 or A2.
+
+**A3.1 Configuration terminal states and searches.** Every registered competitor configuration ends in exactly one
+state: MEASURED-Q1 (measured, Q1 passed), MEASURED-FAIL (measured, Q1 failed), NOT-CONSTRUCTIBLE (demonstrated:
+basis certificate or rank check failed, or the NNLS path ended at a certified KKT optimum without a usable support
+— jcp-hr-baselines A23 fills a target from such an optimum, so this case is rare), or UNRESOLVED (NNLS time limit
+reached before the target, deferral, crash, missing file). Only MEASURED-Q1 configurations can be witnesses;
+MEASURED-FAIL and NOT-CONSTRUCTIBLE configurations are resolved non-witnesses; UNRESOLVED configurations keep a
+NO-MATCH from being proven. Each verdict (primary worst; worst with allowance; casewise; worst ∧ median;
+rollout-agreement sensitivity) runs its **own** enumeration of admissible combinations.
+
+**A3.2 Head dependency, corrected.** The deployed `Z_tr` is refitted by the head job (`sep_hfit_run.py` writes the
+fitted codes as `Z_tr`), so the head dependency is: coefficient extraction (915.24 s on A100-80GB, which includes
+its own data generation of 4,608 trajectories) + the producing `mid` arm of the `full` head-fit experiment
+(360.85 s recorded arm seconds). The `wide` and `k32` arms of `full` (2,305.51 s) and the `f576` / `f4096`
+experiments are selection work (A_sel). **Re-measured on the H200 in J2**: after the bank-fit probe, J2 runs the
+byte-identical dn256b code tree (its 34 staged files resolved by sha256; checkpoint = the r3a pickle, sha256
+`acc959e3…`) for the extraction with the dn256b environment, then `sep_hfit_run.py` with `ARMS=mid EMIT=mid` and
+otherwise the `full` environment; the H200 seconds are the extraction's `total_seconds` and the `mid` arm's seconds.
+The cross-GPU ratio projection of A2.2 is withdrawn; the A100-80GB values are kept only for the A_100 sensitivity.
+
+**A3.3 Compilation.** Build-phase timers are wall clock and include the compilation of their own kernels.
+Query compilation is the ahead-of-time compile of the deployed fused query (`lower().compile()`) measured in the
+timing process with the persistent compilation cache disabled; in-process autotuning caches may be warm, so this
+is labelled "warm-process compile". Every verdict is recomputed with all query-compile seconds × 0 and × 3; any
+verdict that changes is reported as compile-sensitive.
+
+**A3.4 Ledger canonicalisation.** PM-s and every CP-s artefact at mesh $s$ are the same artefacts (same keys); no
+cost is charged twice because of a label. A_sel adds, each once: the competitors' dev6 configuration runs that are
+not deployed (their tuning work), the non-producing head arms and head experiments (A3.2), and, for ours, the
+stand-in equal to the competitors' selection work (a scenario, not a bound on the rotation or rule-selection
+cost).
+
+**A3.5 Controls 4 and 8 (refined).**
+- 4: the control must fire (Q1 fails under the mutation) before any production job is submitted; if neither the
+  budget-0 nor the fallback mutation fails Q1 on the fixture, the Q1 checker is unverified and production stops.
+- 8: run on fixtures derived from the smoke's measured records, each with its stated precondition: (a)–(c) on a
+  fixture whose declared universe is exactly the measured configurations (so it is exhaustive): errors +∞ /
+  costs $1.5C_X+1$ / Q1 flags false → NO-MATCH; (d) a fixture with a measured witness duplicated under a second
+  identifier (two witnesses): one removed → MATCH; (e) every witness removed while one configuration is UNRESOLVED →
+  UNRESOLVED; (f) one X set UNRESOLVED while no other (w, X) is NO-MATCH → NOT EVALUABLE, and the same with another
+  X NO-MATCH → NOT FIRED; (g) every X NOT-QUALIFIED → "vacuous" flagged.
+
+**A3.6 NNLS memory and runtime.** The S1 $4096^2$ pilot builds the production-shaped contribution matrix (its 12
+real states tiled to 120 states, $r=384$, 32,768 candidates: 12.1 GB) and runs the NNLS on it for memory (device
+peak recorded with $\Phi_{384}$ resident). Run time: J0's measured path times × 1.5 is a planning estimate only;
+every path has `max_seconds`, and a path that stops on time leaves the unreached configurations UNRESOLVED (A3.1).
+
+**A3.7 Wording.** A "vacuous" outcome is reported with its reason (no qualified configuration of ours), never as an
+empirical CP match. A comparative cost advantage of X on $w$ is stated only when NO-MATCH is proven for that
+(w, X) and the least-cost admissible competitor combination (if any) is named with its cost under the stated
+accounting variant. The verdict is labelled "full cost of the measured items" and the uncosted items are listed
+next to it.
+
+**A3.8 Budget.** J2 adds the H200 head re-measurement (≈ 0.35 h): total ≈ 6.4 GPU-h projected, cap 8.

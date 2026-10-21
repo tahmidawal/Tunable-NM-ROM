@@ -136,11 +136,18 @@ def resample_basis(Phi_s, Ls, Lt, mutate=None, qr=None):
     return P, R, info
 
 
-def transform_codes(C_s, Ls, Lt, R=None):
-    """Codes of the same physical fields in the resampled basis (DESIGN A1.3): c_t = (Lt/Ls) c_s (prolongation),
-    c_t = (Lt/Ls) R c_s (restriction with P = Q R). C_s: (n_snap, r) rows."""
+def transform_codes(C_s, Ls, Lt, r, R=None):
+    """Codes of the same physical fields (low-pass projected under restriction) in the rank-r resampled basis
+    (DESIGN A1.3, A2.4): C_t = (Lt/Ls) C_s[:, :r] (prolongation); C_t = (Lt/Ls) C_s[:, :r] R[:r, :r]^T (restriction,
+    Phi~ = Q R). Nodal values of a resampled vector are (Ls/Lt) x the physical field. C_s: (n_snap, >= r) rows."""
     f = Lt / Ls
-    return f * (np.asarray(C_s) if R is None else np.asarray(C_s) @ np.asarray(R).T)
+    C = np.asarray(C_s)[:, :r]
+    return f * (C if R is None else C @ np.asarray(R)[:r, :r].T)
+
+
+def rank_ok(R, r, cond_max=1e10):
+    s = np.linalg.svd(np.asarray(R)[:r, :r], compute_uv=False)
+    return bool(s[-1] > 0 and s[0] / s[-1] <= cond_max), float(s[0] / s[-1]) if s[-1] > 0 else float('inf')
 
 
 def node_consistency(Phi_s, Ls, Phi_t, Lt, cols=None):
@@ -326,6 +333,20 @@ class budget_override:
         RM.make_common = self.orig
 
 
+def assert_case_identity(fams, refs, case, desc):
+    """Control 6 / A2.6: the run's descriptor row must be the cohort table row of the case it is scored against
+    (score.Refs already ties each reference's t0 to the IC built from that row)."""
+    coh, j = case
+    assert np.array_equal(np.asarray(desc, float), np.asarray(fams[coh].D[j], float)), ('case identity', case)
+    assert j in refs[coh].f, ('reference not loaded', case)
+
+
+def e0_of(ref, fields_lat, j):
+    """t0 output vs the reference t0 of case j, relative to n0 (reported identity diagnostic)."""
+    F = np.asarray(fields_lat, float)
+    return float(np.linalg.norm((F[0] - ref.f[j][0]).ravel()) / ref.n0(j))
+
+
 def run_config(cell, r, data, option, cases, fams, refs, tag=None):
     """One competitor configuration on `cases` [(cohort, j)]: prod run (timed, certified with a fresh Jacobian at
     every step), tight anchor on every case, tighter on the first two; E0 scores; Q1 (pipeline.q1_config).
@@ -336,6 +357,7 @@ def run_config(cell, r, data, option, cases, fams, refs, tag=None):
         coh, j = c
         u0, nu = fams[coh].ic(cell.L, j), fams[coh].nu(j)
         recs[c] = cell.run('ecsw', r, data, 'common', option, 'prod', u0, nu)
+        recs[c]['desc'] = np.asarray(fams[coh].D[j], float)
         tight[c] = cell.run('ecsw', r, data, 'common', option, 'tight', u0, nu)
         n0[c] = refs[coh].n0(j)
         if c in cases[:2]:
@@ -344,14 +366,19 @@ def run_config(cell, r, data, option, cases, fams, refs, tag=None):
     rows = []
     for c in cases:
         coh, j = c
+        assert_case_identity(fams, refs, c, recs[c]['desc'])
         sc = refs[coh].score_safe(recs[c]['fields_lat'], j)
         ce = recs[c]['cert']
         rows.append(dict(cohort=coh, case=int(j), e=sc['e'], eps_ref=sc['eps_ref'], eligible=sc['eligible'],
                          seconds=recs[c]['seconds'], valid=bool(ce['valid']), nonstat=int(ce['nonstat']),
                          steps=int(ce['steps']), dist_tight=float(q1.get('dist', {}).get(c, np.nan)),
-                         it_sum=int(np.sum(np.maximum(recs[c]['it'], 0)))))
+                         it_sum=int(np.sum(np.maximum(recs[c]['it'], 0))), e0=e0_of(refs[coh], recs[c]['fields_lat'], j),
+                         desc=recs[c]['desc'].tolist()))
     q1s = {k: v for k, v in q1.items() if k not in ('dist', 'anchor')}
     arrays = {f'W|{c[0]}|{c[1]}': np.asarray(recs[c]['W']) for c in cases}
+    arrays.update({f'C|{c[0]}|{c[1]}': np.asarray(recs[c]['C']) for c in cases})
+    arrays.update({f'it|{c[0]}|{c[1]}': np.asarray(recs[c]['it']) for c in cases})
+    arrays.update({f'reason|{c[0]}|{c[1]}': np.asarray(recs[c]['reason']) for c in cases})
     arrays.update({f'F|{c[0]}|{c[1]}': np.asarray(recs[c]['fields_lat']) for c in cases if c[0] == 'dev6'})
     return dict(tag=tag, r=int(r), option=list(option), q1=q1s, rows=rows), arrays
 

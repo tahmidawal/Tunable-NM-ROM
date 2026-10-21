@@ -45,14 +45,14 @@ def test_resample():
     # codes: physical field u_f = Pf c on 64; restricted field (low-pass) in the coarse basis
     c = np.random.default_rng(3).standard_normal(r)
     uf = Pf @ c
-    uc = np.asarray(M.resample(uf[:, None], 64, 32))[:, 0] * (64 / 32)      # physical nodal values on 32
+    uc = np.asarray(M.resample(uf[:, None], 64, 32))[:, 0] * (32 / 64)      # physical (low-pass) nodal values on 32
     cc = np.asarray(Pc).T @ uc
-    ct = M.transform_codes(c[None, :], 64, 32, Rr)[0]
+    ct = M.transform_codes(c[None, :], 64, 32, r, Rr)[0]
     assert np.max(np.abs(cc - ct)) <= 1e-10 * np.max(np.abs(cc)), (cc[:3], ct[:3])
     # codes under prolongation
     up = np.asarray(M.resample((P @ c)[:, None], Ls, Lt))[:, 0] * (Lt / Ls)
     cp = np.asarray(Pt).T @ up
-    assert np.max(np.abs(cp - M.transform_codes(c[None], Ls, Lt)[0])) <= 1e-10 * np.max(np.abs(cp))
+    assert np.max(np.abs(cp - M.transform_codes(c[None], Ls, Lt, r)[0])) <= 1e-10 * np.max(np.abs(cp))
     print('resample ok')
 
 

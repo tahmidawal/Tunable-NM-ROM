@@ -70,7 +70,7 @@ _T_START = time.perf_counter()
 def path_budget(cfg):
     """Code audit (job-6): NNLS max_seconds = min(per-path budget, remaining job budget - reserve)."""
     rem = cfg.get('wall_seconds', 1e9) - (time.perf_counter() - _T_START) - cfg.get('reserve_seconds', 600)
-    return max(0., min(float(cfg['nnls_seconds']), rem))
+    return max(0., min(float(cfg['nnls_seconds']), rem / 2))      # initial path + a possible registered retry
 
 
 def timed(rec, key, fn, *a, **k):
@@ -143,7 +143,12 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
     info['states_seconds'] = time.perf_counter() - t0
     info['ecsw'] = {}
     rules = {}
-    for r in [x for x in (ranks if ecsw_ranks is None else ecsw_ranks) if x in certified]:
+    todo = [x for x in (ranks if ecsw_ranks is None else ecsw_ranks) if x in certified]
+    for r in todo:                                   # pending ranks are persisted UNRESOLVED before construction
+        info['ecsw'][r] = dict(status='UNRESOLVED', reason='pending')
+    rec.d[key] = info
+    rec.save()
+    for r in todo:
         budget = nnls_s(r) if callable(nnls_s) else nnls_s
         if budget < 60:
             info['ecsw'][r] = dict(status='UNRESOLVED', reason='job budget exhausted before this path')
@@ -162,8 +167,10 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
                 rules[(r, k)] = (np.asarray(v['nodes']), np.asarray(v['weights']))
         log_(f'   source {s} r={r}: ecsw {info["ecsw"][r]["seconds"]:.0f}s supports '
              f'{ {k: (None if v is None else len(v["nodes"])) for k, v in rec_r.items()} }')
-        np.savez(od / 'rules.npz', **{f'n|{r_}|{k}': v[0] for (r_, k), v in rules.items()},
-                 **{f'w|{r_}|{k}': v[1] for (r_, k), v in rules.items()})        # after every rank
+        tmp = od / 'rules.tmp.npz'                                            # after every rank, atomically
+        np.savez(tmp, **{f'n|{r_}|{k}': v[0] for (r_, k), v in rules.items()},
+                 **{f'w|{r_}|{k}': v[1] for (r_, k), v in rules.items()})
+        os.replace(tmp, od / 'rules.npz')
         rec.d[key] = info
         rec.save()
     if not rules:

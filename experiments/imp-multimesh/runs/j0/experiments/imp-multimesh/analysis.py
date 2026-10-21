@@ -101,7 +101,8 @@ def comp_inputs(runs, timing):
         art[f'codes[{s}]'] = I['codes_seconds']
         art[f'states[{s}]'] = I['states_seconds']
         for r, e in I['ecsw'].items():
-            art[f'ecsw[{s}@{s},r{r}]'] = e['seconds']
+            if 'seconds' in e:
+                art[f'ecsw[{s}@{s},r{r}]'] = e['seconds']
     for L, T in tg.items():
         if 'states' in T:
             art[f'states[{L}]'] = T['states']['seconds']

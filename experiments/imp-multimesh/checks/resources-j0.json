@@ -1,9 +1,10 @@
 {
  "attempt": "j0",
  "kind": "prod",
- "projected_hours": 1.525,
- "basis": "1024: snapshots 232 s (s1b 64-traj rate x 9) + POD/check 65 + states 12 + ECSW r128/256/384 to kappa 16 2629 s (hr-baselines H200, upper bound for kappa 8); 256 all-step ~721 s; x1.5",
- "smoke": "s1b",
+ "projected_hours": 0.844,
+ "raw_seconds": 2024.6827825195107,
+ "smoke": "s1c",
+ "basis": "    python resources.py <attempt> <config> <smoke attempt>",
  "config": "configs/sources.json",
  "config_sha256": "0da1461bc0f998deccaf81b0df772d47b2077de82b6777464ab2909c533b5c9e"
 }

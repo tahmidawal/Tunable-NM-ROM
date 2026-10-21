@@ -31,9 +31,14 @@ def main():
     out = dict(mesh=L, job=rep.get('job_id'), gpu=rep.get('gpu'), backend=rep.get('backend'), commit=rep.get('commit'),
                checkpoint_sha256=rep.get('checkpoint_sha256'), configs={})
     assert int(rep['mesh']) == L, ('mesh mismatch', rep['mesh'], L)
+    sys.path.insert(0, str(HERE.parent / 'jcp-p1-scaling'))
+    import p1common as P1
     for coh in ('dev6', 'val32'):                        # descriptor identity: p1 cohort tables == hrcore tables
-        h = hashlib.sha256(np.ascontiguousarray(np.asarray(fams[coh].D)).tobytes()).hexdigest()
-        assert rep['cohorts'][coh] == h, ('cohort descriptor table differs', coh)
+        qc = np.asarray(P1.Q.cohort(coh))
+        # the job's hash is recorded (it matches only under the job's NumPy build: last-bit RNG differences across
+        # NumPy versions, jcp-budget A6); the binding check is the value identity of the two tables in this process
+        out.setdefault('cohort_hash_same_build', {})[coh] = rep['cohorts'][coh] == P1.sha(qc)
+        assert np.allclose(qc, np.asarray(fams[coh].D), rtol=0, atol=1e-12), ('cohort descriptor table differs', coh)
     expect = [f'dev6|{j}' for j in range(6)] + [f'val32|{j}' for j in range(32)]
 
     def fin(v):
@@ -45,21 +50,26 @@ def main():
             return 'UNVERIFIED'
         return 'PASS' if ok_pred(values) else 'FAIL'
 
+    sys.path.insert(0, str(HERE.parent / 'jcp-p1-scaling'))
+    import p1score as SCP          # byte-identical jcp-p1-scaling offline checker (NumPy decode, independent rho)
+    cases_all = [f'dev6|{j}' for j in range(6)] + [f'val32|{j}' for j in range(32)]
     for cc in rep['config']['configs']:
         for sc in cc['schemes']:
             key = f"{cc['name']}|{sc}"
-            R = np.load(src / f"R_{cc['name']}_{sc}.npz")
+            R = dict(np.load(src / f"R_{cc['name']}_{sc}.npz"))
             rr = [x for x in rows if x['config'] == cc['name'] and x['scheme'] == sc]
             ids = [str(c) for c in R['case_ids']]
-            rid = [f"{x['cohort']}|{x['case']}" for x in rr]
-            full = cc.get('cases') == 'all38'
-            coverage_ok = (sorted(ids) == sorted(expect) and sorted(rid) == sorted(expect)) if full else \
-                (len(set(ids)) == len(ids) and sorted(ids) == sorted(rid))
             meta_ok = bool(int(R['mesh']) == L and str(R['scheme']) == sc and int(R['Rp']) == int(cc['Rp']))
             wsha = {f"{x['cohort']}|{x['case']}": x['W_sha'] for x in rr}
             sha_ok = all(hashlib.sha256(np.ascontiguousarray(R['W'][i]).tobytes()).hexdigest() == wsha.get(c)
                          for i, c in enumerate(ids))
-            coverage_ok = bool(coverage_ok and meta_ok and sha_ok)
+            cases = SCP.case_set(cc['cases']) if isinstance(cc['cases'], str) else cases_all
+            expect = dict(cases=cases, dev=[x for x in SCP.case_set('dev6') if x in cases],
+                          q2=[x for x in SCP.case_set(cc.get('q2_cases', 'sub16')) if x in cases] if cc.get('qp') else [],
+                          qpp=bool(cc.get('qpp')))
+            tabs = (SCP.rule_tables(cc['rule'], cc['Rp'], R['kx'], R['ky'], L),
+                    SCP.rule_tables(cc['qp'], cc['Rp'], R['kx'], R['ky'], L)) if cc.get('qp') else None
+            q = SCP.qualify(R, rr, cc['Rp'], expect, rho_tables=tabs, rho_cases=expect['dev'])
             per = []
             for i, cid in enumerate(ids):
                 coh, j = cid.split('|')
@@ -68,45 +78,23 @@ def main():
                 e0 = float(np.linalg.norm((R['f257'][i][0] - refs[coh].f[j][0]).ravel()) / refs[coh].n0(j))
                 per.append(dict(cohort=coh, case=j, e=s_['e'], eps_ref=s_['eps_ref'], eligible=s_['eligible'], e0=e0))
             el = np.array([p['e'] for p in per if p['eligible']])
-            steps = 50 * len(rr)
-            nonstat = sum(x['nonstationary'] for x in rr)
-            g = np.asarray(R['gamma'])                      # recomputed from the saved certified gammas
-            ns_npz = int(np.sum(~(np.isfinite(g) & (g <= 1e-3))))
-            valid_npz = bool(np.all(R['valid'])) and bool(np.all(R['valid_tight']))
-            coverage_ok = bool(coverage_ok and ns_npz == nonstat and valid_npz == all(x['valid'] and x.get('tight_valid')
-                                                                                      for x in rr))
-            dev = [x for x in rr if x['cohort'] == 'dev6']
-            q1 = dict(n=len(rr), coverage_ok=coverage_ok, npz_meta_ok=meta_ok, W_sha_ok=sha_ok, all_valid=all(x['valid'] for x in rr),
-                      tight_valid=all(x.get('tight_valid') for x in rr), gcert_ok=all(x.get('gcert_ok') for x in rr),
-                      nonstat=nonstat, steps=steps,
-                      dist_tight=tri(lambda v: max(v) <= Q1_DIST, [x.get('dist_tight') for x in rr]),
-                      anchor=tri(lambda v: len(v) == 6 and max(v) <= Q1_ANCHOR, [x.get('dist_tight_tighter') for x in dev]),
-                      tighter_valid=all(x.get('tighter_valid') for x in dev) and len(dev) == 6,
-                      budget_exits=sum(x.get('budget_exits', 0) for x in rr))
-            q1['state'] = 'PASS' if (coverage_ok and q1['all_valid'] and q1['tight_valid'] and q1['gcert_ok']
-                                     and nonstat <= Q1_NONSTAT * steps and q1['dist_tight'] == 'PASS'
-                                     and q1['anchor'] == 'PASS' and q1['tighter_valid']) else \
-                ('UNVERIFIED' if 'UNVERIFIED' in (q1['dist_tight'], q1['anchor']) else 'FAIL')
-            q2r = [x for x in rr if 'rho_max' in x or 'dist_qp' in x]
-            q2 = dict(n=len(q2r), qp_valid=all(x.get('qp_valid') for x in q2r),
-                      rho=tri(lambda v: max(v) <= Q2_RHO, [x.get('rho_max') for x in q2r]),
-                      dist_qp=tri(lambda v: max(v) <= Q2_DIST, [x.get('dist_qp') for x in q2r]),
-                      qpp_runs=sum(1 for x in dev if 'qpp_valid' in x), qpp_valid=all(x.get('qpp_valid') for x in dev if 'qpp_valid' in x),
-                      max_dist_qp_qpp=max((x['dist_qp_qpp'] for x in dev if fin(x.get('dist_qp_qpp'))), default=None))
-            q2['qpp'] = tri(lambda v: len(v) == 6 and max(v) <= Q2_DIST, [x.get('dist_qp_qpp') for x in dev])
-            evid_ok = len(q2r) == 38 and q2['qpp_runs'] == 6 and q2['qp_valid'] and q2['qpp_valid']
-            st3 = (q2['rho'], q2['dist_qp'], q2['qpp'])
-            # a finer-rule (check) non-convergence leaves the label unverified (p1score), never a failure
-            q2['state'] = 'PASS' if (evid_ok and all(x == 'PASS' for x in st3)) else \
-                ('FAIL' if (evid_ok and 'FAIL' in st3[:2] and 'UNVERIFIED' not in st3[:2]) else 'UNVERIFIED')
-            status = 'QUALIFIED' if (q1['state'] == 'PASS' and q2['state'] == 'PASS') else \
-                ('NOT-QUALIFIED' if 'FAIL' in (q1['state'], q2['state']) else 'UNRESOLVED')
+            ident_ok = bool(meta_ok and sha_ok and ids == cases)
+            q2l = q['Q2'].get('label', '')
+            if not ident_ok or q['disagreements'] or q2l.startswith('unverified') or 'offline disagreement' in q2l:
+                status = 'UNRESOLVED' if (q['Q1'].get('pass') or not ident_ok or q['disagreements']) else 'NOT-QUALIFIED'
+            elif q['Q1']['pass'] and q2l == 'pass':
+                status = 'QUALIFIED'
+            else:
+                status = 'NOT-QUALIFIED'           # measured Q1 failure or Q2 'fail' (rollout / rho bar)
+            if q2l.startswith('unverified') and q['Q1']['pass']:
+                status = 'UNRESOLVED'
             out['configs'][key] = dict(per_case=per, worst=float(el.max()) if len(el) else None,
-                                       median=float(np.median(el)) if len(el) else None,
-                                       n_eligible=int(len(el)), q1=q1, q2=q2, status=status,
-                                       W_sha=[x['W_sha'] for x in rr])
-            print(key, 'worst', out['configs'][key]['worst'], 'median', out['configs'][key]['median'], 'Q1', q1['state'],
-                  'Q2', q2['state'], status, flush=True)
+                                       median=float(np.median(el)) if len(el) else None, n_eligible=int(len(el)),
+                                       identity=dict(meta_ok=meta_ok, W_sha_ok=sha_ok, population_ok=ids == cases),
+                                       Q1=q['Q1'], Q2={k: v for k, v in q['Q2'].items()},
+                                       disagreements=[str(d) for d in q['disagreements']][:20], status=status,
+                                       pooled_nonstationary=q['pooled_nonstationary'], pooled_steps=q['pooled_steps'])
+            print(key, 'worst', out['configs'][key]['worst'], 'Q1', q['Q1']['pass'], 'Q2', q2l, status, flush=True)
     outp.write_text(json.dumps(out, indent=1))
 
 

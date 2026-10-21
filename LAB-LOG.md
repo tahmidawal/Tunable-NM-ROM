@@ -19395,3 +19395,34 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - **Checks.** Every worktree was confirmed clean and in non-cone mode, with no process using it. Each previous sparse state is saved in `reports/2026-10-20-disk-space-sparse-before/` (with a copy in `~/disk-plan/sparse-before/`), so each change can be undone (plan §E). After the change, all 42 report a clean status, and the lane folders and ignored data are intact.
 - **Effect.** Free space on /home went from 28 GB to 641 GB.
 - **Still to do (needs approval):** the rest of the SAFE list (the October lanes, pip cache); archive-first removal of local-only data (about 1.4 TB); pushing the 7 unbacked branches (plan procedure A).
+
+## 2026-10-21
+
+### Spectral investigation: why spectral wins, where we could win, experimentalist pilot (side session; no cluster jobs)
+- **Why spectral wins:** `reports/2026-10-20-spectral-investigation/why-spectral/` (327614bf6). Codex: NEEDS-FIX ×3; the last two medium fixes were not re-reviewed.
+  - **Measured:**
+    - the solutions are smooth; 1 % error needs a median of N=11 sine modes per axis in 2D (max 45), 9 in 3D;
+    - E0's spectral solver at N=24–40 (2D) and 14 (3D) matches every qualified ROM;
+    - the ROM spends about 1.1e8 flops per unknown per step (r=384) against about 2.3e3 per mode; it takes 50 implicit LM steps against 20 explicit ETDRK4 steps;
+    - sines match the bank floor with 0.63·r on the median case;
+    - the N needed grows roughly as s^0.7 (s = a/ν).
+  - **Cost model** (fits measured times within 0.79–1.1×):
+    - a 2× ROM win needs a spectral N of about 460–900 (2D) or 60–100 (3D), even with free unknowns;
+    - it also needs about 1000× compression over sines (ours: 2–6×).
+    - Conditional scenarios only, not a validated boundary.
+- **Where we could win:** `.../where-we-win/` (ca61256f2). Codex: REJECT ×2, then ACCEPT-WITH-FIXES as an exploratory report.
+  - **Ranked:**
+    1. 3D cube with small holes (illustrative 0.5–18×; 40–80 GPU-h);
+    2. 2D geometry varying per query (outcome unknown; LiCROM prior art);
+    3. high-contrast variable diffusion (probably not 2×; cheap FOM-only benchmark first).
+  - **Dropped:** annulus/disk, L-shape alone, localized steep fronts, long time, high-dimensional parameters, periodic NS 3D.
+  - Training pays back only after about 6.5k–85k queries in the 3D illustration.
+- **Experimentalist pilot:** branch `exp/2026-10-20-spectral-pilot` (worktree `worktrees/2026-10-20-spectral-pilot`, last commit e105a79ef, mirror 5cd0bd591; pointer on main a612ade06). Codex: design READY (round 4), code READY-TO-TRUST (5), results CONFIRMED (3). **PILOT only:** the ROM is a stand-in (POD-Galerkin ETDRK4, CPU, 12 cases per level), not our bank.
+  - **(A) Box against steepness:** no crossover. S = 0.22 / 0.10 / 0.15 at 3 % (median s 17 / 50 / 149); the ROM is 5–13× slower everywhere. The steepest planned level (A4) was not run.
+  - **Post-hoc AB control:** with a narrow parameter family on the box, the ROM wins (S = 1.67–2.95 at loose targets, 0.62 at 0.1 %). **Family width looks like a stronger lever than steepness**; this is a confounded lead, not a finding.
+  - **(B) L-shape:** S = 17–115 against second-order FD. Second-order FD is a weak competitor, and AB shows part of the win comes from the narrow family. A high-order L-shape solver was not run.
+  - **Proposed cluster experiment:** about 150 GPU-h (180 with contingency).
+    - B′ first (L-shape and box with a hole, narrow and wide families, high-order and multigrid competitors; about 62 GPU-h; kill if S < 2 on the wide family);
+    - then A′ (4 family widths × 4 steepness levels, including the real bank, a front-tracking model and POD-ECSW; about 87 GPU-h).
+  - **Deviations:** JAX_DEFAULT_MATMUL_PRECISION was unset in the CPU jobs; amendments A5 and A6 came after the design audits; about 12 GB of arrays are outside git, listed by sha256 and regenerable.
+- **Synthesis.** On the smooth Dirichlet box, spectral wins by a margin no internal speed-up closes. A win needs a problem where (i) the competitor is forced to be fine or slow, (ii) the parameter family is narrow enough, or the features fixed enough, for a learned basis to compress hard, and (iii) the ROM keeps few, large steps.

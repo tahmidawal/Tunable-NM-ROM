@@ -189,9 +189,16 @@ def main():
                 sz = max(1, E // frac)
                 pick = np.sort(rng.choice(n, sz, replace=False))
                 agg = float(jnp.linalg.norm(columns(pick) @ jnp.full(sz, n / sz) - b) / bn)
-                ratio = agg / cps[f'k{k0}']['relres'] if cps[f'k{k0}']['relres'] > 0 else float('inf')
-                wit[f'E/{frac}'] = dict(size=sz, relres=agg, ratio=ratio, nodes_sha256=hashlib.sha256(pick.tobytes()).hexdigest())
-                if ratio >= 10:
+                ref = cps[f'k{k0}']['relres']
+                if not (np.isfinite(agg) and agg >= 0 and np.isfinite(ref) and ref >= 0):
+                    fired = False                     # non-finite values never demonstrate the detector
+                elif ref > 0:
+                    fired = agg >= 10 * ref
+                else:
+                    fired = agg > 0                   # exact reference fit: only a finite positive mutant residual counts
+                wit[f'E/{frac}'] = dict(size=sz, relres=agg, reference=ref, ratio=(agg / ref if ref > 0 else None), fired=bool(fired))
+                arrays[f'witness_E{frac}_nodes'] = pick
+                if fired:
                     wit['fires'] = True
                     break
             wit['kappa_ref'] = k0
@@ -205,7 +212,8 @@ def main():
         del G, b
     rep['c11_ok'] = c11_ok
     rep['memory'] = mem()
-    rep['complete'] = True
+    rep['construction_complete'] = True
+    rep['accepted'] = bool(c11_ok)
     json.dump(jclean(rep), open(out / 'ecsw.json', 'w'), indent=1)
     if not c11_ok:
         (out / 'C11_FAILED').write_text('C11 aggregate or witness failed\n')

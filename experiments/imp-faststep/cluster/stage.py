@@ -34,6 +34,24 @@ EXTRA = [f'{P1}/p1core.py', f'{P1}/p1common.py', f'{VQ}/qcore.py', f'{VQ}/qstudy
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
 
 
+REMOTE_SUBMIT = r'''#!/bin/bash
+# Runs on the login node under the campaign sbatch lock: bash .submit_remote.sh <upload dir> <job dir>
+set -o pipefail
+TMP=$1; REMOTE=$2
+test ! -e "$REMOTE" || exit 4
+q=$(squeue -u tawal01 -h -o '%j') || exit 70
+n=$(printf '%s\n' "$q" | grep -c .)
+[ "$n" -lt 8 ] || exit 75
+l=$(printf '%s\n' "$q" | grep -c '^ifs_')
+[ "$l" -lt 2 ] || exit 76
+mv "$TMP" "$REMOTE" || exit 71
+cd "$REMOTE" || exit 73
+jid=$(sbatch --parsable run.sbatch) || { cd /; rm -rf "$REMOTE"; exit 72; }
+echo "$jid" > JOBID
+echo "Submitted batch job $jid"
+'''
+
+
 def git(*a):
     return subprocess.check_output(['git', '-C', str(ROOT), *a])
 
@@ -127,8 +145,9 @@ exit $rc
     (out / 'RESERVATION.json').write_text(json.dumps(dict(job=a.job, gpu=a.gpu, time_limit_hours=h, driver=a.driver,
                                                           config=a.config, commit=commit), indent=1) + '\n')
     (out / 'logs').mkdir()
+    (out / '.submit_remote.sh').write_text(REMOTE_SUBMIT)
     manifest = [f'{hashlib.sha256(p_.read_bytes()).hexdigest()}  {p_.relative_to(out)}'
-                for p_ in sorted(out.rglob('*')) if p_.is_file() and p_.name != 'MANIFEST.sha256']
+                for p_ in sorted(out.rglob('*')) if p_.is_file() and p_ != out / 'MANIFEST.sha256']
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')
     print(out)
     print(remote, 'time limit', tl)

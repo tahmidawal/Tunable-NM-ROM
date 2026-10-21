@@ -5,8 +5,10 @@ missing from the receipts are added as 'unreconciled' and counted conservatively
     python cluster/ledger.py update
     python cluster/ledger.py check <hours>     # exit 1 unless spent + reserved + hours <= cap (hours finite, > 0)
 """
+import fcntl
 import json
 import math
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -36,6 +38,19 @@ def tl_hours(s):
 
 
 def update():
+    """Callers outside submit.sh take the lane submit lock (submit.sh holds it and sets LEDGER_LOCKED=1)."""
+    lk = None
+    if os.environ.get('LEDGER_LOCKED') != '1':
+        lk = open(LANE / 'runs' / '.submit.lock', 'w')
+        fcntl.flock(lk, fcntl.LOCK_EX)
+    try:
+        return _update()
+    finally:
+        if lk:
+            lk.close()
+
+
+def _update():
     L = json.loads(LED.read_text()) if LED.exists() else dict(cap_gpu_hours=CAP, jobs=[])
     known = {x['job_id'] for x in L['jobs']}
     for sub in sorted((LANE / 'runs').glob('*/SUBMIT.json')):
@@ -60,10 +75,20 @@ def update():
         if f is None:
             e['state'] = e.get('state', 'UNKNOWN')
             continue
-        e.update(state=f[2].split()[0], elapsed_hours=round(int(f[3] or 0) / 3600, 4), node=f[5], tres=f[6], name=f[1])
+        e.update(state=f[2].split()[0], elapsed_hours=round(int(f[3] or 0) / 3600, 4), node=f[5], tres=f[6], name=f[1],
+                 slurm_time_limit_hours=tl_hours(f[4]))
+        e['identity_ok'] = bool(f[1] == f"ifs_{e['job']}" and abs(tl_hours(f[4]) - e['time_limit_hours']) < 1e-6)
+    intents = []
+    for it in sorted((LANE / 'runs').glob('*/INTENT.json')):        # unresolved submissions: reserved until reconciled
+        if not (it.parent / 'SUBMIT.json').exists():
+            intents.append(json.loads(it.read_text()))
+    L['unresolved_intents'] = intents
     L['spent_gpu_hours'] = round(sum(x.get('elapsed_hours', 0.) for x in L['jobs'] if x.get('state') in TERMINAL), 4)
-    L['reserved_gpu_hours'] = round(sum(x['time_limit_hours'] for x in L['jobs'] if x.get('state') not in TERMINAL), 4)
-    LED.write_text(json.dumps(L, indent=1) + '\n')
+    L['reserved_gpu_hours'] = round(sum(x['time_limit_hours'] for x in L['jobs'] if x.get('state') not in TERMINAL)
+                                    + sum(float(x['time_limit_hours']) for x in intents), 4)
+    tmp = LED.with_suffix('.tmp')
+    tmp.write_text(json.dumps(L, indent=1) + '\n')
+    os.replace(tmp, LED)
     return L
 
 

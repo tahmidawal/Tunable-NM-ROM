@@ -19437,3 +19437,11 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - lanes branched from `exp/2026-10-20-jcp-consolidated`;
   - Codex gates on every step, 2 Codex watchdogs, final compilation.
 - The user starts it in a new session; this session monitors.
+
+### Improvement campaign launched, wave 1 (coordinator; prompt `reports/2026-10-21-improvement-campaign/AGENT-PROMPT.md`)
+- **Coordination files:** `reports/2026-10-21-improvement-campaign/campaign/` (`briefs/COMMON-BRIEF.md` binding for all lanes, per-lane briefs, `LANES.json`, `COORDINATOR-STATE.md`, `watchdog/`); interventions in `../INTERVENTIONS.md`.
+- **Worktrees created (all from `exp/2026-10-20-jcp-consolidated` @ 93f399faa, mirrored to `origin/codeonly/exp/2026-10-21-<slug>`):** `2026-10-21-imp-faststep` (E5), `-imp-hrcost` (E6), `-imp-multimesh` (E7), `-imp-varcoef` (E3, FOM-only first), `-imp-fronts` (E8 CPU diagnostics now, retrains on release; E9; E10 design-only), `-imp-geometry` (E2, design mode). Cluster namespaces `/cluster/tufts/paralab/tawal01/<slug>/`. Caps (GPU-h): 4, 3, 8, 15, 15, 62.
+- **Deviation from the prompt's sparse pattern (coordinator decision):** the new worktrees also exclude the heavy `runs/` folders of ten JCP lanes (5 GB per worktree instead of 45 GB; 629 GB free at launch). Lanes read those folders read-only from `worktrees/2026-10-20-jcp-consolidated` (same commit).
+- **Deviation (coordinator decision): E2 starts in wave 1 in design mode** (design, audits, code, competitor builds, ≤ 1 GPU-h smoke); production waits for the wave-1 gate, because E2's reduced stepper depends on E5 and the wave must be re-priced. The pilot recommended running B′ first.
+- **Defaults applied (prompt §7):** k = r = R′; sealed/OOD cohorts closed; no merges; strongest-tested-competitor labelling if high-order cannot be built.
+- Two read-only Codex watchdogs (25-min interval, staggered), relaunched every ~2 h.

@@ -145,8 +145,13 @@ def main():
     eb = float(jnp.linalg.norm(b0 - b1) / jnp.linalg.norm(b0)) if b0.shape == b1.shape else float('inf')
     G2, b2, _, _ = M.ecsw_contrib_blocked(states_s, Phi_s, 128, s, cand_nodes=c0, mutation='drop_adv_jac', log=None)
     em = float(jnp.linalg.norm(G0 - G2) / jnp.linalg.norm(G0))
-    ctl(rec, '5_blocked', same_c and eg <= 1e-10 and eb <= 1e-10 and em > 1e-6, same_candidates=same_c, G_rel=eg,
-        b_rel=eb, mutation_rel=em, kept_dense=i0.get('kept_states'), kept_blocked=i1.get('kept_states'),
+    kd = np.asarray(i0['block_norms']) >= max(1e-8 * float(np.median(i0['block_norms'])),
+                                               1e-14 * float(np.max(i0['block_norms'])), 1e-300)
+    same_keep = bool(np.array_equal(kd, np.asarray(i1['keep'])))
+    bn = float(np.max(np.abs(np.asarray(i0['block_norms']) - np.asarray(i1['block_norms'])) /
+                     np.max(np.asarray(i0['block_norms']))))
+    ctl(rec, '5_blocked', same_c and same_keep and eg <= 1e-10 and eb <= 1e-10 and bn <= 1e-10 and em > 1e-6,
+        same_candidates=same_c, same_keep=same_keep, G_rel=eg, b_rel=eb, block_norm_rel=bn, mutation_rel=em,
         seconds=time.perf_counter() - t0)
     del G0, G1, G2, b0, b1, b2
     gc.collect()
@@ -159,8 +164,15 @@ def main():
     with M.budget_override(0):
         cell0 = M.Cell(s, Phi_s, trust_s, log=log)
         bad, _ = M.run_config(cell0, 128, data, ('CNR', 0.005), dev6, fams, refs, tag='budget0')
-    ctl(rec, '4_q1_budget0', (not bad['q1']['q1']), fixture_q1=good['q1'], mutated_q1=bad['q1'],
-        fixture_summary=M.summarise(good['rows']), mutated_summary=M.summarise(bad['rows']))
+    fallback = None
+    if bad['q1']['q1']:                                  # A3.5: registered fallback mutation
+        with M.unsolved_override():
+            cell1 = M.Cell(s, Phi_s, trust_s, log=log)
+            fallback, _ = M.run_config(cell1, 128, data, ('CNR', 0.005), dev6, fams, refs, tag='unsolved')
+    fired = bool(good['q1']['q1']) and ((not bad['q1']['q1']) or (fallback is not None and not fallback['q1']['q1']))
+    ctl(rec, '4_q1_mutation', fired, fixture_q1=good['q1'], budget0_q1=bad['q1'],
+        fallback_q1=None if fallback is None else fallback['q1'], fixture_summary=M.summarise(good['rows']))
+    rec.d['fixture_records'] = good
     # ---------------------------------------------------------------- control 6: case identity -----
     ok_desc = bool(np.array_equal(fams['dev6'].D[0], fams['dev6'].D[0]))
     tripped = False
@@ -184,6 +196,22 @@ def main():
     a3 = TM.time_calls(lambda u, nu: q7(u, jnp.float64(nu), data, sch), xs)
     ok_clean = TM.in_band(np.median(a3) / med)
     ctl(rec, '7_timing', ok_clean and not TM.in_band(np.median(a2) / med), a1=a1, a2_injected=a2, a3=a3)
+    del cell, data
+    gc.collect()
+    # ---------------------------------------------------------------- ours: 4096^2 bank table pilot (A1.7) -----
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'jcp-p1-scaling'))
+    import p1common as P
+    t0 = time.perf_counter()
+    bank = P.Bank(Lf, [0, 128, 256, 384, 512])
+    bank.ops('frozen')
+    st = P.Setting(bank, 'R384', 384, 'gauss128', 'frozen', roles={}, nrec=51)
+    ph = P.case_list({})[0][2]
+    u0 = jnp.asarray(P.Q.e.initial(Lf, ph))
+    v = P.run_query(bank, st, 'main', 'LSPG', 'CNR', P.DT0, 'prod', u0, float(ph[4]))
+    jax.block_until_ready(v['W'])
+    rec.d['ours_pilot'] = dict(seconds=time.perf_counter() - t0, bank_bytes=bank.bytes, mem=B.dev_mem())
+    del bank, st, v, u0
+    gc.collect()
     rec.d['complete'] = True
     rec.save()
     log('MMSMOKE COMPLETE')

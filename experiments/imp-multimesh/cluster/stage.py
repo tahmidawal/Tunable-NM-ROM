@@ -74,13 +74,19 @@ def main():
     gres, constraint = GRES[a.gpu]
     hh, mm = divmod(a.minutes, 60)
     budget_s = a.minutes * 60 - 300
+    tot = sum(int(c.get('timeout_s', budget_s)) for c in cfg['commands'])
+    assert tot <= budget_s, f'command timeouts {tot}s exceed the allocation {budget_s}s (--minutes {a.minutes})'
     cmds = []
-    for c in cfg['commands']:
+    for i, c in enumerate(cfg['commands']):
         t = int(c.get('timeout_s', budget_s))
-        cmds.append(f'echo "=== $(date -u +%FT%TZ) {c["name"]}"\n'
-                    f'set +e; timeout --signal=TERM --kill-after=30 {t} {c["cmd"]}; rc=$?; set -e\n'
+        (out / 'cmds').mkdir(exist_ok=True)
+        (out / 'cmds' / f'{i:02d}_{c["name"]}.sh').write_text('set -uo pipefail\n' + c['cmd'] + '\n')
+        gate = '' if c.get('always_run') else 'if [ $FAIL -ne 0 ]; then echo "skip ' + c['name'] + ' (earlier failure)"; else\n'
+        cmds.append(f'echo "=== $(date -u +%FT%TZ) {c["name"]}"\n' + gate +
+                    f'timeout --signal=TERM --kill-after=30 {t} bash "$TASK_ROOT/cmds/{i:02d}_{c["name"]}.sh"; rc=$?\n'
                     f'echo "step_exit[{c["name"]}]=$rc"\n'
-                    + ('' if c.get('continue_on_fail') else '[ $rc -eq 0 ] || FAIL=1\n'))
+                    + ('' if c.get('continue_on_fail') else '[ $rc -eq 0 ] || FAIL=1\n')
+                    + ('' if c.get('always_run') else 'fi\n'))
     body = '\n'.join(cmds)
     script = f'''#!/bin/bash
 #SBATCH --job-name=imm_{a.attempt}
@@ -92,8 +98,8 @@ def main():
 #SBATCH --time={hh:02d}:{mm:02d}:00
 #SBATCH --output={remote}/logs/%j.out
 #SBATCH --error={remote}/logs/%j.err
-set -euo pipefail
-TASK_ROOT={remote}
+set -uo pipefail
+export TASK_ROOT={remote}
 export PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
@@ -105,11 +111,11 @@ export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp" CUDA_CACHE_PATH
 export PYTHONDONTWRITEBYTECODE=1 SOURCE_COMMIT=$(cat $TASK_ROOT/COMMIT.txt) OUT="$TASK_ROOT/output"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH" "$OUT"
 cd "$TASK_ROOT"
-sha256sum -c MANIFEST.sha256 --quiet && echo "stage MANIFEST OK"
+sha256sum -c MANIFEST.sha256 --quiet || {{ echo "MANIFEST FAILED"; exit 3; }}; echo "stage MANIFEST OK"
 echo "host=$(hostname) source_commit=$(cat COMMIT.txt)"
 nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
-"$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
+"$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)" || exit 42
 cd {LANE}
 FAIL=0
 {body}
@@ -117,6 +123,7 @@ cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 || true
 echo "job_fail=$FAIL"
 echo ALL-DONE
+exit $FAIL
 '''
     (out / 'run.sbatch').write_text(script)
     man = subprocess.check_output(['bash', '-c', 'find . -type f ! -name MANIFEST.sha256 -print0 | sort -z | '
@@ -127,12 +134,13 @@ echo ALL-DONE
     env = dict(os.environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='',
                PYTHONDONTWRITEBYTECODE='1')
     for mod in cfg.get('import_check', ['mmcore']):
-        chk = (f'import sys, {mod}; staged = {str(out)!r}; '
+        stmt = mod if ';' in mod else f'import {mod}'
+        chk = (f'import sys; sys.path.insert(0, "../jcp-p1-scaling"); {stmt}; staged = {str(out)!r}; '
                'mods = [m.__file__ for m in list(sys.modules.values()) if getattr(m, "__file__", None) and "/experiments/" in m.__file__]; '
                'bad = [f for f in mods if not f.startswith(staged)]; assert not bad, bad; print(len(mods), "modules staged")')
         r_ = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env,
                             capture_output=True, text=True)
-        assert r_.returncode == 0, r_.stderr[-3000:]
+        assert r_.returncode == 0, (mod, r_.stderr[-3000:])
         print(mod, r_.stdout.strip())
     print('staged', out, len(files), 'files; commit', commit[:9])
 

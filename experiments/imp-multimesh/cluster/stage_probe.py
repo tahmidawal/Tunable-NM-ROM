@@ -63,7 +63,7 @@ def resolve(manifest, by, cache):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('attempt')
-    ap.add_argument('--minutes', type=int, default=75)
+    ap.add_argument('--minutes', type=int, default=105)
     a = ap.parse_args()
     out = ROOT / LANE / 'runs' / a.attempt
     assert not out.exists()
@@ -87,6 +87,8 @@ def main():
     (out / 'COMMIT.txt').write_text(commit + '\n')
     (out / 'logs').mkdir()
     hh, mm = divmod(a.minutes, 60)
+    R3A_S, EX_S, HF_S = 2700, 1800, 1200
+    assert R3A_S + EX_S + HF_S + 300 <= a.minutes * 60, 'probe step budgets exceed the allocation'
     script = f'''#!/bin/bash
 #SBATCH --job-name=imm_{a.attempt}
 #SBATCH --partition=gpu
@@ -100,34 +102,44 @@ set -uo pipefail
 ROOT={remote}
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_DEFAULT_MATMUL_PRECISION=highest
-export XDG_CACHE_HOME="$ROOT/cache" TMPDIR="$ROOT/tmp"; mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$ROOT/out/r3a" "$ROOT/out/dn"
+export XDG_CACHE_HOME="$ROOT/cache" TMPDIR="$ROOT/tmp"; mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$ROOT/output/r3a" "$ROOT/output/dn"
+FAIL=0
 echo "host=$(hostname) gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}', flush=True); sys.exit(0 if b=='gpu' else 42)" || exit 42
-( cd "$ROOT" && sha256sum -c MANIFEST.sha256 --quiet && echo "stage MANIFEST OK" )
-# ---- (1) r3a bank fit, STEPS=25000 FULL_LAST=10000, stopped after the 'done:' line
+( cd "$ROOT" && sha256sum -c MANIFEST.sha256 --quiet ) || {{ echo "MANIFEST FAILED"; exit 3; }}
+echo "stage MANIFEST OK"
+now() {{ date +%s.%N; }}
+# ---- (1) r3a bank fit, STEPS=25000 FULL_LAST=10000, stopped after the 'done:' line (budget {R3A_S} s)
 cd "$ROOT/code_r3a"
-echo "=== r3a start $(date -u +%FT%TZ)"
-env {R3A_ENV} STEPS=25000 FULL_LAST=10000 OUT_PREFIX="$ROOT/out/r3a/" "$PY" -u sep_burgers_r3.py > "$ROOT/logs/r3a.log" 2>&1 &
+T0=$(now)
+env {R3A_ENV} STEPS=25000 FULL_LAST=10000 OUT_PREFIX="$ROOT/output/r3a/" "$PY" -u sep_burgers_r3.py > "$ROOT/output/r3a.log" 2>&1 &
 PID=$!
-for i in $(seq 1 2700); do
-  if grep -q "done: recon" "$ROOT/logs/r3a.log"; then echo "r3a done line seen"; break; fi
-  kill -0 $PID 2>/dev/null || {{ echo "r3a exited early"; break; }}
+SEEN=0
+for i in $(seq 1 {R3A_S // 2}); do
+  if grep -q "done: recon" "$ROOT/output/r3a.log"; then SEEN=1; break; fi
+  kill -0 $PID 2>/dev/null || break
   sleep 2
 done
+T1=$(now)
 kill $PID 2>/dev/null; sleep 5; kill -9 $PID 2>/dev/null
-echo "=== r3a stop $(date -u +%FT%TZ)"
-grep -E "gen: trajectories 576|step +(1|5000|15000|20000|25000)/|done: recon" "$ROOT/logs/r3a.log"
-# ---- (2) dn256b extraction, (3) head fit, producing arm only
+echo "r3a_marker_seen=$SEEN r3a_wall=$(awk "BEGIN{print $T1-$T0}")"
+[ $SEEN -eq 1 ] || FAIL=1
+grep -E "gen: trajectories 576|step +(1|5000|15000|20000|25000)/|done: recon" "$ROOT/output/r3a.log"
+# ---- (2) dn256b extraction, (3) head fit, producing arm only (complete invocations timed, A4.2)
 cd "$ROOT/code_dn"
-echo "=== extract start $(date -u +%FT%TZ)"
-env {DN_EXTRACT_ENV} CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/out/dn/" timeout 2400 "$PY" -u sep_coeff_extract.py > "$ROOT/logs/extract.log" 2>&1; echo "extract_exit=$?"
-tail -3 "$ROOT/logs/extract.log"
-echo "=== hfit start $(date -u +%FT%TZ)"
-env NPZ="$ROOT/out/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/out/dn/hfit_mid.json" ARMS=mid {DN_HFIT_ENV} EMIT=mid EMIT_PATH="$ROOT/out/dn/emit_mid.pkl" timeout 1800 "$PY" -u sep_hfit_run.py > "$ROOT/logs/hfit.log" 2>&1; echo "hfit_exit=$?"
-tail -3 "$ROOT/logs/hfit.log"
-echo "=== end $(date -u +%FT%TZ)"
-rm -f "$ROOT/out/dn/sep_coeff_N256_K16_R512.npz"
+T0=$(now)
+env {DN_EXTRACT_ENV} CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/output/dn/" timeout {EX_S} "$PY" -u sep_coeff_extract.py > "$ROOT/output/extract.log" 2>&1
+RC=$?; T1=$(now); echo "extract_exit=$RC extract_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
+tail -2 "$ROOT/output/extract.log"
+T0=$(now)
+env NPZ="$ROOT/output/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/output/dn/hfit_mid.json" ARMS=mid {DN_HFIT_ENV} EMIT=mid EMIT_PATH="$ROOT/output/dn/emit_mid.pkl" timeout {HF_S} "$PY" -u sep_hfit_run.py > "$ROOT/output/hfit.log" 2>&1
+RC=$?; T1=$(now); echo "hfit_exit=$RC hfit_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
+tail -2 "$ROOT/output/hfit.log"
+rm -f "$ROOT/output/dn/sep_coeff_N256_K16_R512.npz"
+cd "$ROOT" && find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+echo "job_fail=$FAIL"
 echo ALL-DONE
+exit $FAIL
 '''
     (out / 'run.sbatch').write_text(script)
     man = subprocess.check_output(['bash', '-c', 'find . -type f ! -name MANIFEST.sha256 -print0 | sort -z | xargs -0 sha256sum'],

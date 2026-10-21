@@ -40,6 +40,26 @@ def wname(w):
 
 # ---------------------------------------------------------------------------------------------- costs ----
 
+REG_CFGS = tuple(f'r{r}|k{k}|CNR' for r in (128, 256, 384) for k in (4, 8))
+
+
+def status(D, X, L):
+    """A2.1/A3.1: a missing status is UNRESOLVED, never a failure."""
+    return D['ours'][X]['status'].get(L, 'UNRESOLVED')
+
+
+def complete_universe(D, cfgs=REG_CFGS, arms=CP_ARMS, meshes=MESHES):
+    """Populate every registered (arm, mesh, configuration) that is absent as UNRESOLVED (code audit 1)."""
+    for arm in arms:
+        D['comp'].setdefault(arm, {})
+        for L in meshes:
+            D['comp'][arm].setdefault(L, {})
+            for k in cfgs:
+                D['comp'][arm][L].setdefault(k, dict(state='UNRESOLVED', err={}, t=float('nan'), compile=0., armdata=0.,
+                                                     needs=[], rollout_ok=None))
+    return D
+
+
 def ours_cost(D, X, w, var='A_dep', compile_scale=1.0):
     o = D['ours'][X]
     c = D['ours_offline'][var]
@@ -124,8 +144,8 @@ def stop_rule(D, verdict='worst', var='A_dep', compile_scale=1.0):
     vacuous = []
     for w in workloads():
         row = {}
-        qual = [X for X in D['ours'] if all(D['ours'][X]['status'].get(L) == 'QUALIFIED' for L in w[0])]
-        unres_x = [X for X in D['ours'] if any(D['ours'][X]['status'].get(L) == 'UNRESOLVED' for L in w[0])]
+        qual = [X for X in D['ours'] if all(status(D, X, L) == 'QUALIFIED' for L in w[0])]
+        unres_x = [X for X in D['ours'] if any(status(D, X, L) == 'UNRESOLVED' for L in w[0])]
         if unres_x:
             any_unres = True
         if not qual and not unres_x:
@@ -264,15 +284,16 @@ def selftest(D):
 
 
 def stop_rule_fixture(D, full_out=False):
-    """stop_rule restricted to the workloads whose meshes every present arm covers (fixture universe)."""
+    """stop_rule restricted to the workloads whose meshes every present arm covers (fixture universe); per-workload
+    vacuity (code audit 1)."""
     covered = [w for w in workloads() if all(all(a.get(L) for L in w[0]) for a in D['comp'].values())]
     any_nomatch = any_unres = False
     vacuous = []
     for w in covered:
-        qual = [X for X in D['ours'] if all(D['ours'][X]['status'].get(L) == 'QUALIFIED' for L in w[0])]
-        if any(any(D['ours'][X]['status'].get(L) == 'UNRESOLVED' for L in w[0]) for X in D['ours']):
-            any_unres = True
-        if not qual and not any_unres:
+        qual = [X for X in D['ours'] if all(status(D, X, L) == 'QUALIFIED' for L in w[0])]
+        unres_w = any(any(status(D, X, L) == 'UNRESOLVED' for L in w[0]) for X in D['ours'])
+        any_unres |= unres_w
+        if not qual and not unres_w:
             vacuous.append(wname(w))
         for X in qual:
             st = match(D, X, w, arms=tuple(D['comp']))[0]
@@ -280,6 +301,32 @@ def stop_rule_fixture(D, full_out=False):
             any_unres |= st == 'UNRESOLVED'
     out = 'NOT FIRED' if any_nomatch else ('NOT EVALUABLE' if any_unres else 'FIRES')
     return dict(outcome=out, vacuous=vacuous) if full_out else out
+
+
+def selftest_strict(D):
+    """selftest with the registered fixture preconditions enforced (A3.5): a missing precondition is a control
+    failure; also the absent-key variants of (f)."""
+    import copy
+    res = selftest(D)
+    need = ('8a_errors_inf', '8b_costs_inflated', '8c_q1_false', '8d_one_of_two_witnesses_removed',
+            '8e_witnesses_removed_one_unresolved', '8f1_x_unresolved_no_nomatch', '8f2_x_unresolved_other_nomatch',
+            '8g_vacuous')
+    for k in need:
+        res.setdefault(k, dict(expected='present', got='precondition missing', passed=False))
+    if len(D['ours']) < 2:
+        res['8f2_x_unresolved_other_nomatch'] = dict(expected='two X', got='precondition missing', passed=False)
+    X = next(iter(D['ours']))
+    Dk = copy.deepcopy(D)
+    Dk['ours'][X]['status'] = {}                      # absent keys, not explicit UNRESOLVED
+    Dk['ours_offline']['A_dep'] = 1e12
+    for a in Dk['comp'].values():
+        for L in a:
+            for r in a[L].values():
+                r['err'] = {c: 0. for c in r['err']}
+                r['state'] = 'MEASURED-Q1'
+    o = stop_rule_fixture(Dk)
+    res['8f3_absent_status'] = dict(expected='NOT EVALUABLE', got=o, passed=o == 'NOT EVALUABLE')
+    return res
 
 
 def dump(path, obj):

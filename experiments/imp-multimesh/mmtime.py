@@ -33,11 +33,11 @@ def in_band(x):
     return bool(np.isfinite(x) and BAND[0] <= x <= BAND[1])
 
 
-def time_calls(fn, xs, inject=0.0, burn_s=0.05, reps=1):
+def time_calls(fn, xs, inject=0.0, burn_s=0.05, reps=1, extract=None):
     """One timed call per input per rep; burn before each; `inject` seconds of host sleep inside the timed region
-    (control 7 only)."""
+    (control 7 only). extract(v) -> small host record, taken from the TIMED call after its timer stopped (A2.5)."""
     import pipeline as PL
-    out = []
+    out, ex = [], []
     for _ in range(reps):
         for u, nu in xs:
             PL.burn(burn_s)
@@ -47,8 +47,23 @@ def time_calls(fn, xs, inject=0.0, burn_s=0.05, reps=1):
             if inject:
                 time.sleep(inject)
             out.append(time.perf_counter() - t0)
+            if extract is not None:
+                ex.append(extract(v))
             del v
-    return out
+    return (out, ex) if extract is not None else out
+
+
+def rel(a, b):
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    if a.shape != b.shape or not (np.all(np.isfinite(a)) and np.all(np.isfinite(b))):
+        return float('inf')
+    return float(np.max(np.abs(a - b)) / max(np.max(np.abs(b)), 1e-300))
+
+
+def stats(obs):
+    o = np.asarray(obs)
+    return dict(mean=float(o.mean()), median=float(np.median(o)), n=int(len(o)),
+                outliers=int(np.sum(o > 3 * np.median(o))))
 
 
 def main():
@@ -81,6 +96,8 @@ def main():
         res['ops_seconds'] = time.perf_counter() - t0
         allc = P.case_list({})
         U = [(jnp.asarray(P.Q.e.initial(L, ph)), float(ph[4])) for (_, _, ph) in allc]
+        ids = [f'{coh}|{c}' for (coh, c, _) in allc]
+        assert mc.get('j5_dir'), 'J5 accuracy evidence is required (A2.5)'
         res['mem_bank'] = B.dev_mem()
         for X in mc['configs']:
             for sc in X['schemes']:                     # a fresh Setting (fresh jit objects) per scheme: A4.3
@@ -97,25 +114,23 @@ def main():
                 comp = None if cinfo is None else cinfo['seconds']
                 jax.block_until_ready(q(U[0][0], jnp.float64(U[0][1]), dat, st.cold, sch))
                 fn = lambda u, nu: q(u, jnp.float64(nu), dat, st.cold, sch)
-                obs = time_calls(fn, U, reps=reps)
-                ident = None
-                j5 = mc.get('j5_dir')
-                if j5 and tag == 'A1':
-                    Rz = np.load(Path(j5) / f"R_{X['name']}_{sc}.npz")
-                    bad = []
-                    for ci, (u, nu) in enumerate(U):
-                        v = q(u, jnp.float64(nu), dat, st.cold, sch)
-                        Wm = np.asarray(v['W'])
-                        sts = np.asarray(v['stats']['states'])
-                        dW = float(np.max(np.abs(Wm - Rz['W'][ci])) / max(np.max(np.abs(Rz['W'][ci])), 1e-300))
-                        dS = float(np.max(np.abs(sts - Rz['states'][ci])) / max(np.max(np.abs(Rz['states'][ci])), 1e-300))
-                        it_ok = bool(np.array_equal(np.asarray(v['stats']['step_it'])[:NREC - 1], Rz['it'][ci]))
-                        rs_ok = bool(np.array_equal(np.asarray(v['stats']['step_reason'])[:NREC - 1], Rz['reason'][ci]))
-                        if not (dW <= 1e-10 and dS <= 1e-10 and it_ok and rs_ok):
-                            bad.append(dict(case=ci, dW=dW, dS=dS, it_ok=it_ok, reason_ok=rs_ok))
-                    ident = dict(n=len(U), mismatches=bad, ok=not bad)
-                res[key] = dict(setup_seconds=setup, compile_seconds=comp, compile_info=cinfo, obs=obs, mean=float(np.mean(obs)),
-                                median=float(np.median(obs)), identity=ident, table_bytes=st.table_bytes)
+                ext = lambda v: dict(W=np.asarray(v['W']), S=np.asarray(v['stats']['states']),
+                                     it=np.asarray(v['stats']['step_it'])[:NREC - 1],
+                                     rs=np.asarray(v['stats']['step_reason'])[:NREC - 1])
+                obs, exs = time_calls(fn, U, reps=reps, extract=ext)
+                Rz = np.load(Path(mc['j5_dir']) / f"R_{X['name']}_{sc}.npz")
+                pos = {str(c): i for i, c in enumerate(Rz['case_ids'])}
+                bad = []
+                for n_, e_ in enumerate(exs):
+                    ci = pos[ids[n_ % len(U)]]
+                    dW, dS = rel(e_['W'], Rz['W'][ci]), rel(e_['S'], Rz['states'][ci])
+                    it_ok = bool(np.array_equal(e_['it'], Rz['it'][ci]))
+                    rs_ok = bool(np.array_equal(e_['rs'], Rz['reason'][ci]))
+                    if not (dW <= 1e-10 and dS <= 1e-10 and it_ok and rs_ok):
+                        bad.append(dict(call=n_, case=ids[n_ % len(U)], dW=dW, dS=dS, it_ok=it_ok, reason_ok=rs_ok))
+                ident = dict(n=len(exs), mismatches=bad[:10], n_bad=len(bad), ok=not bad)
+                res[key] = dict(setup_seconds=setup, compile_seconds=comp, compile_info=cinfo, obs=obs, **stats(obs),
+                                identity=ident, table_bytes=st.table_bytes)
                 log(f'  ours {tag} L={L} {key}: mean {res[key]["mean"]*1e3:.2f} ms compile {comp}s '
                     f'identity {None if ident is None else ident["ok"]}')
                 del st, q, dat
@@ -170,21 +185,20 @@ def main():
             cinfo = M.aot_compile(q, xs[0][0], jnp.float64(xs[0][1]), data, sch_c)
             comp = cinfo['seconds']
             jax.block_until_ready(q(xs[0][0], jnp.float64(xs[0][1]), data, sch_c)['fields'])
-            fn = lambda u, nu: q(u, jnp.float64(nu), data, sch_c)['fields']
-            obs = time_calls(fn, xs, reps=2)
+            fn = lambda u, nu: q(u, jnp.float64(nu), data, sch_c)
+            ext = lambda v: dict(C=np.asarray(v['C'])[:51], it=np.asarray(v['stats']['it']),
+                                 rs=np.asarray(v['stats']['reason']))
+            obs, exs = time_calls(fn, xs, reps=2, extract=ext)
             bad = []
-            for (coh, j), (u, nu) in zip(cases, xs):
-                v = q(u, jnp.float64(nu), data, sch_c)
-                Cm = np.asarray(v['C'])[:51]
-                Cr = z[f'C|{coh}|{j}']
-                dC = float(np.max(np.abs(Cm - Cr)) / max(np.max(np.abs(Cr)), 1e-300))
-                it_ok = bool(np.array_equal(np.asarray(v['stats']['it']), z[f'it|{coh}|{j}']))
-                rs_ok = bool(np.array_equal(np.asarray(v['stats']['reason']), z[f'reason|{coh}|{j}']))
+            for n_, e_ in enumerate(exs):
+                coh, j = cases[n_ % len(cases)]
+                dC = rel(e_['C'], z[f'C|{coh}|{j}'])
+                it_ok = bool(np.array_equal(e_['it'], z[f'it|{coh}|{j}']))
+                rs_ok = bool(np.array_equal(e_['rs'], z[f'reason|{coh}|{j}']))
                 if not (dC <= 1e-10 and it_ok and rs_ok):
-                    bad.append(dict(case=[coh, j], dC=dC, it_ok=it_ok, reason_ok=rs_ok))
-            res['configs'][cid] = dict(armdata_seconds=t_data, compile_seconds=comp, compile_info=cinfo, obs=obs, mean=float(np.mean(obs)),
-                                       median=float(np.median(obs)), identity=dict(ok=not bad, mismatches=bad),
-                                       outliers=int(np.sum(np.asarray(obs) > 3 * np.median(obs))))
+                    bad.append(dict(call=n_, case=[coh, j], dC=dC, it_ok=it_ok, reason_ok=rs_ok))
+            res['configs'][cid] = dict(armdata_seconds=t_data, compile_seconds=comp, compile_info=cinfo, obs=obs,
+                                       **stats(obs), identity=dict(ok=not bad, n_bad=len(bad), mismatches=bad[:10]))
             log(f'  {arm["name"]} L={L} {cid}: mean {res["configs"][cid]["mean"]*1e3:.2f} ms compile {comp:.1f}s '
                 f'identity {not bad}')
             del data, q
@@ -201,7 +215,7 @@ def main():
             log(f'MESH {L} attempt {attempt}')
             M_ = dict(attempt=attempt)
             M_['A1'] = ours_block(L, mc['ours'], 'A1')
-            rec.d['meshes'][Ls] = M_
+            rec.d['meshes'].setdefault(Ls, {})[f'attempt{attempt}'] = M_
             rec.save()
             sbank = P.Bank(L, [0, 128])
             sst = P.Setting(sbank, 'sentinel', 128, 'fib4181', 'frozen', roles={}, nrec=NREC)
@@ -221,8 +235,13 @@ def main():
             ratios = {k: M_['A2'][k]['median'] / M_['A1'][k]['median'] for k in M_['A1'] if isinstance(M_['A1'][k], dict)
                       and 'median' in M_['A1'][k]}
             M_['drift'] = dict(sentinel_ok=sent_ok, a2_a1=ratios, a_ok=all(in_band(v) for v in ratios.values()))
-            M_['valid'] = bool(sent_ok and M_['drift']['a_ok'])
-            rec.d['meshes'][Ls] = M_
+            ident_ok = all(v['identity']['ok'] for k, v in M_['A1'].items() if isinstance(v, dict) and 'identity' in v) and \
+                all(v['identity']['ok'] for k, v in M_['A2'].items() if isinstance(v, dict) and 'identity' in v) and \
+                all(c['identity']['ok'] for a in M_['arms'].values() for c in a['configs'].values()) and \
+                all(a['basis_identity'] <= 1e-12 for a in M_['arms'].values())
+            M_['identity_ok'] = bool(ident_ok)
+            M_['valid'] = bool(sent_ok and M_['drift']['a_ok'] and ident_ok)
+            rec.d['meshes'].setdefault(Ls, {})[f'attempt{attempt}'] = M_
             rec.save()
             if M_['valid']:
                 break

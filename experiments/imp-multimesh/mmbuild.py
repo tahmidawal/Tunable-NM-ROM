@@ -114,14 +114,15 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
     info = dict(s=s, steps=steps, n_snap=int(C.shape[0]), rows=len(rows), snap_seconds=t_snap, pod_seconds=t_pod,
                 codes_seconds=t_codes, gate=gate, trust=trust, sigma=sig[:rmax + 1].tolist(),
                 snapshots=sinfo, pod_timers=dict(T.t))
-    assert gate['orth_ok'] and gate['optimality_ok'], ('basis certificate failed', gate)
+    certified = [r for r in ranks if r in set(gate['constructible'])]
+    info['certified_ranks'] = certified          # A4.1: a failed certificate makes that rank NOT-CONSTRUCTIBLE
     cell.set_basis(Phi, trust)
     t0 = time.perf_counter()
     cell.ecsw_states(fam)
     info['states_seconds'] = time.perf_counter() - t0
     info['ecsw'] = {}
     rules = {}
-    for r in (ranks if ecsw_ranks is None else ecsw_ranks):
+    for r in [x for x in (ranks if ecsw_ranks is None else ecsw_ranks) if x in certified]:
         t0 = time.perf_counter()
         c0 = T.t.get('ecsw_contrib', 0.)
         n0_ = T.t.get('ecsw_nnls', 0.)
@@ -197,6 +198,13 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
     """One arm on target mesh L: basis, trust, rules, then every configuration."""
     name, kind, s = arm['name'], arm['kind'], int(arm['source'])
     A = rec.d['arms'].setdefault(name, dict(kind=kind, source=s, L=L, timers={}, configs={}))
+    for r in cfg['ranks']:                        # A3.1/A4.1: the registered universe starts UNRESOLVED
+        for k in cfg['kappas']:
+            A['configs'][f'r{r}|k{k}|CNR'] = dict(status='UNRESOLVED', reason='not run')
+    rec.save()
+    src_info = json.loads((Path(arm['source_dir']).parent / 'sources.json').read_text()) \
+        if (Path(arm['source_dir']).parent / 'sources.json').exists() else None
+    cert_s = None if src_info is None else src_info.get(f'src{s}', {}).get('certified_ranks')
     Phi_s, C_s, rules_s, trust_s = load_source(arm['source_dir'])
     rmax = max(cfg['ranks'])
     t0 = time.perf_counter()
@@ -209,12 +217,21 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
         A['timers']['resample'] = rinfo['seconds']
         if L > s:
             rinfo['node_consistency'] = M.node_consistency(np.asarray(Phi_s[:, :rmax]), s, Phi, L)
-        assert rinfo['orth_ok'], ('resampled basis failed its certificate', rinfo)
     A['resample'] = rinfo
+    if not rinfo.get('orth_ok', True):
+        for r in cfg['ranks']:
+            for k in cfg['kappas']:
+                A['configs'][f'r{r}|k{k}|CNR'] = dict(status='NOT-CONSTRUCTIBLE', reason='resampled basis certificate')
+        rec.save()
+        return
     t0 = time.perf_counter()
     trust = {}
     rank_info = {}
     for r in cfg['ranks']:
+        if cert_s is not None and r not in cert_s:
+            for k in cfg['kappas']:
+                A['configs'][f'r{r}|k{k}|CNR'] = dict(status='NOT-CONSTRUCTIBLE', reason='source basis certificate')
+            continue
         if s == L:
             trust[r] = trust_s[r]
             continue
@@ -228,14 +245,18 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
     A['timers']['codes'] = time.perf_counter() - t0
     A['trust'], A['rank'] = trust, rank_info
     cell = M.Cell(L, Phi, trust, log=log)
-    np.save(Path(out) / f'Phi_lat_{name}.npy', np.asarray(Phi[jnp.asarray(H.lattice_nodes(D, L))]))
     rec.save()
+    np.save(Path(out) / f'Phi_lat_{name}.npy', np.asarray(Phi[jnp.asarray(H.lattice_nodes(D, L))]))
     blocked = L > cfg.get('dense_max_L', 1024)
+    lat = jnp.asarray(H.lattice_nodes(D, L))
+    Phi_lat = np.asarray(Phi[lat])
     for r in cfg['ranks']:
         if r not in trust:
             for k in cfg['kappas']:
-                A['configs'][f'r{r}|k{k}|CNR'] = dict(status='NOT-CONSTRUCTIBLE', reason='rank check (A2.4)')
+                if A['configs'][f'r{r}|k{k}|CNR']['status'] == 'UNRESOLVED':
+                    A['configs'][f'r{r}|k{k}|CNR'] = dict(status='NOT-CONSTRUCTIBLE', reason='rank check (A2.4)')
             continue
+        Wk = {}
         if kind == 'refit' and s != L:
             rr, inf = contrib_and_nnls(states, Phi, r, L, cfg['kappas'], cfg['nnls_seconds'], blocked)
             A.setdefault('ecsw', {})[r] = inf
@@ -275,13 +296,28 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
             t0 = time.perf_counter()
             summ, arrs = M.run_config(cell, r, data, ('CNR', 0.005), cases_all(cfg.get('cases', 'all38')), fams, refs,
                                       tag=f'{name}|{cid}')
-            summ.update(status='ok', armdata_seconds=t_data, data_info=dinfo, run_seconds=time.perf_counter() - t0,
-                        summary=M.summarise(summ['rows']))
+            summ.update(status='MEASURED-Q1' if summ['q1']['q1'] else 'MEASURED-FAIL', armdata_seconds=t_data,
+                        data_info=dinfo, run_seconds=time.perf_counter() - t0, summary=M.summarise(summ['rows']))
+            Wk[k] = {key[2:]: v for key, v in arrs.items() if key.startswith('W|')}
             A['configs'][cid] = summ
             np.savez_compressed(Path(out) / f'W_{name}_r{r}_k{k}.npz', nodes=v[0], weights=v[1], **arrs)
             log(f'  {name} {cid}: worst {summ["summary"]["worst"]:.4g} median {summ["summary"]["median"]:.4g} '
                 f'Q1 {summ["q1"]["q1"]} [{summ["run_seconds"]:.0f}s]')
             del data
+            rec.save()
+        # rollout-agreement sensitivity (A2.5): kappa=4 vs kappa=8 at the same r, lattice distance on every case
+        ks = sorted(Wk)
+        if len(ks) == 2:
+            Pl = Phi_lat[:, :r]
+            dd = {}
+            for cs in Wk[ks[0]]:
+                coh, j = cs.split('|')
+                Fa = H.to_lattice(np.asarray(Wk[ks[0]][cs]) @ Pl.T, D)
+                Fb = H.to_lattice(np.asarray(Wk[ks[1]][cs]) @ Pl.T, D)
+                dd[cs] = SC.lattice_distance(Fa, Fb, refs[coh].n0(int(j)))
+            cid = f'r{r}|k{ks[0]}|CNR'
+            A['configs'][cid]['rollout'] = dict(vs=f'k{ks[1]}', max=max(dd.values()), per_case=dd,
+                                                ok=bool(all(np.isfinite(v) and v <= 2.5e-4 for v in dd.values())))
             rec.save()
     del cell, Phi
     gc.collect()
@@ -295,6 +331,7 @@ def pm_estimate(rec, L, n, seed):
     sch = H.sched('CNR', 0.005, save_steps=H.SNAP_STEPS)
     times = []
     for j in rows:
+        PL.burn(0.05)
         t0 = time.perf_counter()
         o = fom(fam.ic(L, int(j)), fam.nu(int(j)), sch, 1e-10, 1e-12)
         res = np.asarray(o['res'])

@@ -10,6 +10,7 @@ i (L-1) + j (x slowest). Basis Phi (n, r), n = (L-1)^2.
 """
 from __future__ import annotations
 
+import gc
 import sys
 import time
 from pathlib import Path
@@ -131,7 +132,7 @@ def resample_basis(Phi_s, Ls, Lt, mutate=None, qr=None):
         del Q, Q2
     dev = orth_dev(P)
     info = dict(Ls=Ls, Lt=Lt, qr=bool(do_qr), orth_raw=dev_raw, orth=dev, rank_ratio=rank_ratio,
-                orth_ok=bool(np.isfinite(dev) and dev <= ORTH_TOL and (rank_ratio is None or rank_ratio >= 1e-10)),
+                orth_ok=bool(np.isfinite(dev) and dev <= ORTH_TOL),     # rank acceptance is per prefix (rank_ok, A2.4)
                 seconds=time.perf_counter() - t0, mutated=mutate)
     return P, R, info
 
@@ -293,8 +294,8 @@ def ecsw_contrib_blocked(states, Phi, r, L, block=1 << 17, seed=BD.ECSW_SEED_CAN
         Gh, bh = Gh[rowsel], bh[rowsel]
     G = sync(jnp.asarray(Gh))
     b = jnp.asarray(bh)
-    info = dict(n_cand=int(nc), kept_states=int(keep.sum()), dropped_states=int((~keep).sum()), floor=floor,
-                blocked=True, block=int(block), seconds=time.perf_counter() - t0)
+    info = dict(n_cand=int(nc), dropped_blocks=int(np.sum(~keep)), block_norms=nb.tolist(), keep=keep.tolist(),
+                floor=floor, blocked=True, block=int(block), seconds=time.perf_counter() - t0)
     return G, b, cand_nodes, info
 
 
@@ -310,7 +311,16 @@ class Cell(PL.Cell):
         self.constructible_r = set(int(k) for k in trust)
 
     def phi_r(self, r):
-        return self.Phi if self.Phi.shape[1] == r else self.Phi[:, :r]
+        """The r-column basis for init/decode. A prefix of the device basis is a copy (one (n, r) buffer), so only
+        the most recent rank is cached; the caller releases arm data before moving to another rank."""
+        if self.Phi.shape[1] == r:
+            return self.Phi
+        if getattr(self, '_slice_r', None) != r:
+            self._slice = None
+            gc.collect()
+            self._slice = sync(self.Phi[:, :r])
+            self._slice_r = r
+        return self._slice
 
     def ecsw_data(self, r, nodes, weights):
         """(data for rom.make_query('ecsw'), info). data['Phi'] is the r-column basis used by init and decode."""
@@ -328,6 +338,22 @@ class budget_override:
     def __enter__(self):
         self.orig = RM.make_common
         RM.make_common = lambda rJ, trust: self.orig(rJ, trust, budget=self.budget)
+
+    def __exit__(self, *a):
+        RM.make_common = self.orig
+
+
+class unsolved_override:
+    """Control 4 fallback (DESIGN A6.2): every step returns half of its starting candidate, unsolved."""
+
+    def __enter__(self):
+        self.orig = RM.make_common
+
+        def mk(rJ, trust):
+            def solve(c0, args, tol, gtol, lam0):
+                return 0.5 * c0, jnp.int32(0), jnp.int32(2), lam0
+            return solve
+        RM.make_common = mk
 
     def __exit__(self, *a):
         RM.make_common = self.orig
@@ -353,6 +379,9 @@ def run_config(cell, r, data, option, cases, fams, refs, tag=None):
     fams / refs: per-cohort hrcore.Family / score.Refs. Returns (summary, arrays)."""
     recs, tight, tighter, n0 = {}, {}, {}, {}
     cases = sorted(cases)
+    cohs = sorted({c[0] for c in cases})
+    first2 = {coh: [c for c in cases if c[0] == coh][:2] for coh in cohs}        # each cohort's first two (3.4)
+    anchor_set = [c for coh in cohs for c in first2[coh]]
     for c in cases:
         coh, j = c
         u0, nu = fams[coh].ic(cell.L, j), fams[coh].nu(j)
@@ -360,9 +389,25 @@ def run_config(cell, r, data, option, cases, fams, refs, tag=None):
         recs[c]['desc'] = np.asarray(fams[coh].D[j], float)
         tight[c] = cell.run('ecsw', r, data, 'common', option, 'tight', u0, nu)
         n0[c] = refs[coh].n0(j)
-        if c in cases[:2]:
+        if c in anchor_set:
             tighter[c] = cell.run('ecsw', r, data, 'common', option, 'tighter', u0, nu)
-    q1 = PL.q1_config(recs, tight, tighter, n0, cases[:2], cases)
+    per = {}
+    for coh in cohs:
+        cc = [c for c in cases if c[0] == coh]
+        per[coh] = PL.q1_config({c: recs[c] for c in cc}, {c: tight[c] for c in cc},
+                                {c: tighter[c] for c in first2[coh]}, {c: n0[c] for c in cc}, first2[coh], cc)
+    ns = sum(recs[c]['cert']['nonstat'] for c in cases)
+    st = sum(recs[c]['cert']['steps'] for c in cases)
+    dist = {c: v for coh in cohs for c, v in per[coh].get('dist', {}).items()}
+    q1 = dict(per_cohort={coh: {k: v for k, v in per[coh].items() if k not in ('dist', 'anchor')} for coh in cohs},
+              all_valid=all(recs[c]['cert']['valid'] for c in cases), nonstat=ns, steps=st,
+              max_dist=max(dist.values()) if dist else float('inf'),
+              max_anchor=max(per[coh].get('max_anchor', float('inf')) for coh in cohs), dist=dist)
+    # pooled stationarity (COMMON-BRIEF 3); every other predicate per cohort, as pipeline.q1_config defines it
+    q1['q1'] = bool(st > 0 and ns <= PL.Q1_NONSTAT * st and q1['all_valid'] and all(
+        per[coh].get('anchors_ok') and per[coh].get('max_dist', 1.) <= PL.Q1_DIST and
+        per[coh].get('max_anchor', 1.) <= PL.Q1_ANCHOR and per[coh].get('reason') != 'incomplete anchors'
+        for coh in cohs))
     rows = []
     for c in cases:
         coh, j = c
@@ -374,7 +419,7 @@ def run_config(cell, r, data, option, cases, fams, refs, tag=None):
                          steps=int(ce['steps']), dist_tight=float(q1.get('dist', {}).get(c, np.nan)),
                          it_sum=int(np.sum(np.maximum(recs[c]['it'], 0))), e0=e0_of(refs[coh], recs[c]['fields_lat'], j),
                          desc=recs[c]['desc'].tolist()))
-    q1s = {k: v for k, v in q1.items() if k not in ('dist', 'anchor')}
+    q1s = {k: v for k, v in q1.items() if k != 'dist'}
     arrays = {f'W|{c[0]}|{c[1]}': np.asarray(recs[c]['W']) for c in cases}
     arrays.update({f'C|{c[0]}|{c[1]}': np.asarray(recs[c]['C']) for c in cases})
     arrays.update({f'it|{c[0]}|{c[1]}': np.asarray(recs[c]['it']) for c in cases})

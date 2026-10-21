@@ -1,0 +1,24 @@
+{
+ "job": "smk1",
+ "gpu": "h200",
+ "time_limit_hours": 3.0,
+ "runs": [
+  [
+   "checks_impl",
+   "configs/smk-impl.json"
+  ],
+  [
+   "vref",
+   "configs/smk-ref.json"
+  ],
+  [
+   "vladder",
+   "configs/smk-ladder.json"
+  ],
+  [
+   "vtime",
+   "configs/smk-time.json"
+  ]
+ ],
+ "commit": "3117fd59187d6412587985a72f41504027934604"
+}

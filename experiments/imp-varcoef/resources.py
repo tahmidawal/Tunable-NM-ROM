@@ -1,18 +1,20 @@
-"""Smoke-derived cost certificates and the budget plan (COMMON-BRIEF §7, DESIGN A1.20, A2.20, A3.20).
+"""Smoke-derived cost certificates and the budget plan (COMMON-BRIEF §7, DESIGN A1.20, A2.20, A3.20, A7).
 
     python resources.py cert --smoke runs/<smoke job> --job <job> --run vref:configs/ref100.json [--run ...]
-    python resources.py plan --smoke runs/<smoke job> --remaining '<json list of {job, runs}>'
+    python resources.py plan --smoke runs/<smoke job> --remaining '<json list>'
 
-Projection models (conservative; safety factor SAFETY on every projection):
-  vref    max over smoke case-contrasts of the per-case solve seconds (all three levels, retries, compile) x cases,
-          plus the max smoke cross-check seconds x cross-check cases;
-  vladder per configuration: compile (max smoke compile excess of its family) + runs x per-run seconds, per-run seconds
-          = (max over the family's smoke configurations of seconds / work) x work, work = res^2 x steps; runs = 8 dev +
-          24 val (no pruning assumed) per contrast, x (1 + EXT_FRAC) for extensions; screening = SCREEN_FRAC of the
-          configurations x (2 compiles + 8 full-field calls at MESH_FACTOR x the lattice per-run seconds); qualification =
-          36 candidates x 3 variants x 32 runs per contrast;
-  vtime   smoke elapsed x (production subjects x reps) / (smoke subjects x reps), plus the smoke bank build;
-  vtest   like vladder for its keys on 16 cases.
+Upper-bound models (every per-run cost is the largest observed compile-inclusive time, scaled by work; SAFETY on top):
+  vref    per level: (max over smoke cases of seconds / work at that level size) x work of the requested level, work =
+          L^2 x stages; the smoke's largest level rate is used for any larger level; x (1 + retry) with retry = max(observed
+          retry fraction, 0.5); plus cross-checks at the max smoke cross-check seconds;
+  vladder per configuration and contrast: every case (8 dev + 24 val, no pruning), extensions (x (1 + EXT_FRAC)), screening of
+          every configuration (2 compiles + 8 full-field calls at MESH_FACTOR), qualification of every configuration at most
+          once per contrast (candidate + tight + tighter/3N variants, 32 cases, VARIANT_FACTOR); per-run cost = family rate x
+          work, family rate = max over smoke runs of seconds / work (compile-inclusive);
+  vtime   per subject: (6 scoring + 6 warm-up + 2 stage-0 calls) x its call cost + stage-1 triplets (6) if shortlisted +
+          stage-2 triplets (6 x reps) if selected, triplet = 3 burns + 2 A + B, x RETRY (drift retries), plus the bank build;
+          FOM call cost = its ladder screening cost (full-field, from candidates.json); ROM call cost = inherited C2 seconds;
+  vtest   16 cases x family rate x work per key.
 """
 import argparse
 import hashlib
@@ -26,13 +28,20 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 SAFETY = 1.3
 EXT_FRAC = 0.5
-SCREEN_FRAC = 0.5
 MESH_FACTOR = 3.0
-QUAL = 36 * 3
+VARIANT_FACTOR = 3.0 * 3          # three variants (candidate, tight, tighter or 3N), each up to 3x the candidate's cost
+RETRY = 1.5
+CATEGORIES = ('ref100', 'ref10', 'fallback-reserve', 'ladder', 'timing', 'timing-retry-reserve', 'test-refs', 'test-run')
 
 
 def J(p):
     return json.loads(Path(p).read_text())
+
+
+def nstages_fd(dt):
+    import vkeys  # noqa: F401  (puts experiments/jcp-fom2d on sys.path)
+    import refcore as FC
+    return FC.n_stages(dt, 'cnr')
 
 
 def work(key):
@@ -43,90 +52,115 @@ def work(key):
 
 
 def fam(key):
-    return key.split('|')[0]
+    return key.split('@')[0].split('|')[-1] if key.startswith(('KERNEL|', 'SETUP|')) else key.split('|')[0]
 
 
-def ladder_model(smoke):
+def family_rates(smoke):
     lad = J(Path(smoke) / 'output/vladder_smk-ladder/result.json')
-    per, comp = {}, {}
-    byk = {}
+    rate = {}
     for r in lad['runs']:
-        if 'seconds' in r:
-            byk.setdefault(r['key'], []).append(r['seconds'])
-    for k, ts in byk.items():
-        steady = min(ts)
-        per.setdefault(fam(k), []).append(steady / work(k))
-        comp.setdefault(fam(k), []).append(max(ts) - steady)
-    return {f: max(v) for f, v in per.items()}, {f: max(comp[f]) for f in comp}
+        if r.get('seconds') is not None:
+            f = r['key'].split('|')[0]
+            rate[f] = max(rate.get(f, 0.0), r['seconds'] / work(r['key']))
+    missing = {'psi', 'etd', 'fdmg', 'ccv'} - set(rate)
+    assert not missing, ('no smoke timing for families', missing)
+    return rate
 
 
 def proj_vref(smoke, cfg):
     ref = J(Path(smoke) / 'output/vref_smk-ref/result.json')
-    per_case = [sum(l['seconds'] + l['compile_seconds'] for lv in c['levels'] for l in lv) for c in ref['cases'].values()]
-    xc = [sum(s['seconds'] for s in x['stats'].values()) for x in ref['crosscheck'].values()] or [0.0]
-    n = len(cfg['cases']) * len(cfg['contrasts'])
+    rates, retries, n = {}, 0, 0
+    for c in ref['cases'].values():
+        for lv in c['levels']:
+            n += 1
+            retries += len(lv) > 1
+            L, dt = lv[0]['L'], lv[0]['dt']
+            secs = sum(a['seconds'] for a in lv)                    # compile-inclusive (vref.level)
+            rates[L] = max(rates.get(L, 0.0), secs / (L * L * nstages_fd(dt)))
+    top = rates[max(rates)]
+    per_case = 0.0
+    for L, dt in cfg['levels']:
+        r = rates.get(L, top) if L <= max(rates) else top
+        per_case += r * L * L * nstages_fd(dt)
+    retry = max(retries / max(n, 1), 0.5)
+    xc = [sum(s['seconds'] for s in x['stats'].values()) for x in ref['crosscheck'].values()]
+    assert xc, 'smoke has no cross-check timing'
+    nc = len(cfg['cases']) * len(cfg['contrasts'])
     nx = len(cfg.get('crosscheck', [])) * len(cfg['contrasts'])
-    return (max(per_case) * n + max(xc) * nx) / 3600.0
+    return (per_case * (1 + retry) * nc + max(xc) * nx) / 3600.0
 
 
 def proj_vladder(smoke, cfg):
-    per, comp = ladder_model(smoke)
-    tot = 0.0
+    rate = family_rates(smoke)
     nC = len(cfg['contrasts'])
+    tot = 0.0
     for k in cfg['keys']:
-        f = fam(k)
-        t = per[f] * work(k)
-        tot += comp[f] + nC * (32 * t) * (1 + EXT_FRAC)
-        tot += SCREEN_FRAC * nC * (2 * comp[f] + 8 * MESH_FACTOR * t)
-    tq = np.mean([per[fam(k)] * work(k) for k in cfg['keys']])
-    tot += nC * QUAL * 32 * tq
+        t = rate[k.split('|')[0]] * work(k)
+        tot += nC * (32 * t * (1 + EXT_FRAC) + (2 * t + 8 * MESH_FACTOR * t) * (1 + EXT_FRAC) + 32 * t * VARIANT_FACTOR)
     return tot / 3600.0
 
 
-def proj_vtime(smoke, cfg):
+def proj_vtime(smoke, cfg, cands):
     tim = J(Path(smoke) / 'output/vtime_smk-time/result.json')
-    sm = J(HERE / 'configs/smk-time.json')
-    ns = len(sm['foms']) + len(sm['roms']) + 1
-    npd = len(cfg['foms']) + len(cfg['roms']) + 1
+    burn = float(tim['config']['burn'])
+    tA = float(np.median([.5 * (t['tA1'] + t['tA2']) for t in tim['stage2']]))
     build = float(tim['memory']['bank'].get('build_seconds', 0.0))
-    return (build + (tim['elapsed_seconds'] - build) * (npd * cfg['reps']) / (ns * sm['reps'])) / 3600.0
+    reps = int(cfg['reps'])
+    roms = {r['label']: r for r in cfg['roms']}
+    rb = {r['label']: r for r in J(HERE / 'checks/rom-box.json')['members']}
+    shortlisted = {k for g in cfg['groups'] for k in g['candidates']}
+    tot = build
+    for lb in list(roms) + list(cfg['foms']):
+        if lb in roms:
+            c = rb[lb]['seconds']
+        else:
+            base = lb.split('|', 1)[1] if lb.startswith(('KERNEL|', 'SETUP|')) else lb
+            base = base.replace('@C1', '@C100') if base.endswith('@C1') else base
+            c = cands['candidates'][base]['screening'] * MESH_FACTOR
+        trip = 3 * burn + 2 * tA + c
+        tot += 14 * (c + burn) + (6 * trip if lb in shortlisted else 0) + 6 * reps * trip
+    return tot * RETRY / 3600.0
 
 
 def proj_vtest(smoke, cfg):
-    per, comp = ladder_model(smoke)
-    return sum(comp[fam(k)] + 16 * per[fam(k)] * work(k.split('@')[0]) for k in cfg['keys']) / 3600.0
+    rate = family_rates(smoke)
+    return sum(16 * rate[k.split('@')[0].split('|')[0]] * work(k.split('@')[0]) for k in cfg['keys']) / 3600.0
 
 
-PROJ = dict(vref=proj_vref, vladder=proj_vladder, vtime=proj_vtime, vtest=proj_vtest)
+def project(smoke, r):
+    drv, cf = r.split(':', 1)
+    cfg = J(HERE / cf)
+    if drv == 'vtime':
+        return proj_vtime(smoke, cfg, J(HERE / cfg['bindings']['candidates']))
+    return dict(vref=proj_vref, vladder=proj_vladder, vtest=proj_vtest)[drv](smoke, cfg)
 
 
 def cert(smoke, job, runs):
-    tot, parts, cfgs = 0.0, {}, {}
-    for r in runs:
-        drv, cf = r.split(':', 1)
-        cfg = J(HERE / cf)
-        h = PROJ[drv](smoke, cfg) * SAFETY
-        parts[r] = h
-        tot += h
-        cfgs[cf] = hashlib.sha256((HERE / cf).read_bytes()).hexdigest()
+    parts = {r: project(smoke, r) * SAFETY for r in runs}
+    cfgs = {r.split(':', 1)[1]: hashlib.sha256((HERE / r.split(':', 1)[1]).read_bytes()).hexdigest() for r in runs}
     tim = J(Path(smoke) / 'output/vtime_smk-time/result.json')
-    out = dict(job=job, runs=runs, configs=cfgs, parts_hours=parts, projection_hours=tot, safety=SAFETY,
-               smoke=str(smoke), gpu=tim.get('gpu'), note='smoke-derived certificate (resources.py docstring)')
+    out = dict(job=job, runs=runs, configs=cfgs, parts_hours=parts, projection_hours=sum(parts.values()), safety=SAFETY,
+               smoke=str(smoke), gpu=tim.get('gpu'), note='smoke-derived upper-bound certificate (resources.py docstring)')
     (HERE / 'checks' / f'resources-{job}.json').write_text(json.dumps(out, indent=1) + '\n')
     print(json.dumps(out, indent=1))
     return out
 
 
 def plan(smoke, remaining):
+    """remaining: list of {category, job, runs | hours (+ basis) | deferred (+ reason)}; every CATEGORY must appear."""
     led = J(HERE / 'runs/GPU-LEDGER.json')
     spent = sum((j.get('gpu_hours') or 0.0) if j.get('final') else j['time_limit_hours'] for j in led['jobs'])
+    seen = {it['category'] for it in remaining}
+    missing = sorted(set(CATEGORIES) - seen)
+    assert not missing, ('budget plan lacks categories', missing)
     items = []
     for it in remaining:
-        if 'hours' in it:                       # reserve without a config yet (fallback, test-once)
-            items.append(dict(job=it['job'], hours=float(it['hours']), basis=it.get('basis', 'reserve')))
-            continue
-        h = sum(PROJ[r.split(':', 1)[0]](smoke, J(HERE / r.split(':', 1)[1])) * SAFETY for r in it['runs'])
-        items.append(dict(job=it['job'], hours=h, basis='certificate'))
+        if it.get('deferred'):
+            items.append(dict(it, hours=0.0))
+        elif 'hours' in it:
+            items.append(dict(it, hours=float(it['hours'])))
+        else:
+            items.append(dict(it, hours=sum(project(smoke, r) * SAFETY for r in it['runs']), basis='certificate'))
     tot = spent + sum(i['hours'] for i in items)
     out = dict(spent_committed=spent, remaining=items, spent_plus_remaining=tot, phase_cap=8.0, fits=bool(tot <= 8.0))
     (HERE / 'checks/budget-plan.json').write_text(json.dumps(out, indent=1) + '\n')

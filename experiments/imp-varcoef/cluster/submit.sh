@@ -1,12 +1,16 @@
 #!/bin/bash
-# Submit a staged imp-varcoef job. Under the campaign lock (fail-closed squeue): account < 8, lane < 2, the job directory
-# must not exist yet; then rsync into a fresh directory, manifest check and sbatch -- all inside the same lock.
-# squeue before/after; exactly one job per directory; ledger record (atomic).   usage: bash cluster/submit.sh <job>
+# Submit a staged imp-varcoef job. The whole script holds a local lane lock (runs/.submit.lock), so the GPU-hour check,
+# the submission and the ledger record are serialised across this lane's submissions. The code is rsynced into a private
+# .incoming directory and manifest-checked first; then under the campaign lock (fail-closed squeue): account < 8, lane < 2,
+# the final directory must not exist; move into place and sbatch. squeue before/after; one job per directory.
+#   usage: bash cluster/submit.sh <job>
 set -euo pipefail
 JOB=$1
 LANE=/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-varcoef/experiments/imp-varcoef
 NS=/cluster/tufts/paralab/tawal01/imp-varcoef
 SRC=$LANE/runs/$JOB
+exec 9>"$LANE/runs/.submit.lock"
+flock -w 900 9 || { echo "lane submit lock busy"; exit 77; }
 [ -f "$SRC/run.sbatch" ] || { echo "not staged: $JOB"; exit 2; }
 [ ! -f "$SRC/JOBID" ] || { echo "already submitted: $(cat $SRC/JOBID)"; exit 3; }
 /home/tahmid/Dev/.venv/bin/python $LANE/ledger.py update >/dev/null 2>&1 || true

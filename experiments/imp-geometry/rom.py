@@ -87,6 +87,43 @@ def etdrk4_coefs(Lam, dt, nc=32):
     return E, E2, Q, f1, f2, f3
 
 
+def _phi_series(z, k, terms=24):
+    """phi_k(z) = sum_m z^m / (m+k)! (series; used for |z| < 1)."""
+    import math as _m
+    out = jnp.zeros_like(z)
+    for m in range(terms - 1, -1, -1):
+        out = out * z + 1.0 / _m.factorial(m + k)
+    return out
+
+
+def _phi_closed(z, k):
+    e = jnp.exp(z)
+    if k == 1:
+        return (e - 1) / z
+    if k == 2:
+        return (e - 1 - z) / z ** 2
+    return (e - 1 - z - z * z / 2) / z ** 3
+
+
+def etd_coefs_direct(Lam, dt):
+    """Independent closed-form / series ETDRK4 coefficients (Cox-Matthews phi functions) for the A3.5 certificate."""
+    Lam = Lam.astype(jnp.complex128)
+    z = dt * Lam
+    small = jnp.abs(z) < 1.0
+    zs = jnp.where(small, z, 0.5)
+    zl = jnp.where(small, 2.0, z)
+    phi = {k: jnp.where(small, _phi_series(zs, k), _phi_closed(zl, k)) for k in (1, 2, 3)}
+    zh = z / 2
+    smallh = jnp.abs(zh) < 1.0
+    phi1h = jnp.where(smallh, _phi_series(jnp.where(smallh, zh, 0.5), 1), _phi_closed(jnp.where(smallh, 2.0, zh), 1))
+    E, E2 = jnp.exp(z), jnp.exp(zh)
+    Q = dt / 2 * phi1h
+    f1 = dt * (phi[1] - 3 * phi[2] + 4 * phi[3])
+    f2 = dt * (phi[2] - 2 * phi[3])
+    f3 = dt * (-phi[2] + 4 * phi[3])
+    return E, E2, Q, f1, f2, f3
+
+
 def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.N_OUT, Mt=None, cert=False,
                maxit=60, perturb_cert=0.0, zero_slice=None, out='lattice'):
     """Reduced query d -> (lattice outputs (n_out+1, P_lat), stats). stats (float vector):
@@ -158,6 +195,9 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
         def q(d):
             nu = d[4]
             E, E2, Q, f1, f2, f3 = etdrk4_coefs(-nu * lamj, dt)
+            dco = etd_coefs_direct(-nu * lamj, dt)
+            coef_cert = jnp.max(jnp.stack([jnp.max(jnp.abs(c_ - d_) / (jnp.abs(d_) + 1e-300))
+                                           for c_, d_ in zip((E, E2, Q, f1, f2, f3), dco)]))
             if not cplx:
                 E, E2, Q, f1, f2, f3 = (c_.real for c_ in (E, E2, Q, f1, f2, f3))
             z0 = z0_of(d)
@@ -196,7 +236,8 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
             c, outs = jax.lax.scan(block, (y0c, jnp.asarray(0.0), jnp.asarray(0.0)), None, length=n_out)
             O = jnp.concatenate([decode(z0)[None], outs])
             # stats: [n_nonstationary(=blow-ups), max_gamma, n_steps, n_nonfinite, max_iters, n_sat, n_unconverged]
-            return O, jnp.stack([c[2], jnp.asarray(0.0), jnp.asarray(float(nsteps)), c[1], jnp.asarray(0.0),
+            # stats: blow-ups (counted as non-stationary), coefficient certificate, steps, non-finite, -, -, -
+            return O, jnp.stack([c[2], coef_cert, jnp.asarray(float(nsteps)), c[1], jnp.asarray(0.0),
                                  jnp.asarray(0.0), jnp.asarray(0.0)])
         q_ = jax.jit(q)
         q_.info = dict(complex=cplx, condV=condV, Mt=Mt)
@@ -276,9 +317,14 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
                 if stepper == 'lspg_cnr':
                     gm = gamma(Jm, rv)
                     bad = (gm > 1e-3) | ~jnp.isfinite(gm)
-                else:
-                    gm = jnp.linalg.norm(rv) / (jnp.linalg.norm(Mtr @ (zc - z) / dt) + 1e-300)
-                    bad = ~jnp.isfinite(gm)
+                elif stepper == 'gal_cnr':
+                    gm = jnp.linalg.norm(rv) / (jnp.linalg.norm(Mtr @ (zc - z)) / dt + 1e-300)
+                    bad = (gm > 1e-8) | ~jnp.isfinite(gm)
+                else:                                   # linearised CN: residual of the one linear solve
+                    Rg = resid(guess, z, Nn, nu, th)
+                    Jg = jac(guess, nu, th)
+                    gm = jnp.linalg.norm(Jg @ (zc - guess) + Rg) / (jnp.linalg.norm(Rg) + 1e-300)
+                    bad = (gm > 1e-10) | ~jnp.isfinite(gm)
                 ns = ns + bad.astype(jnp.float64)
                 gmax = jnp.maximum(gmax, jnp.where(jnp.isfinite(gm), gm, jnp.inf))
             nf = nf + (~jnp.all(jnp.isfinite(zn))).astype(jnp.float64)

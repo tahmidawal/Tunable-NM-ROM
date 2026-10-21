@@ -73,7 +73,7 @@ def cols_op(gr, Phi, op):
     return out
 
 
-def pod_space(dom, n, Phi, n_init):
+def pod_space(dom, n, Phi, n_init, lat=G.LAT):
     gr = fd.Grid(dom, n)
     h = gr.h
     m = gr.mask_np
@@ -91,7 +91,7 @@ def pod_space(dom, n, Phi, n_init):
     Pi = Phi[flat_sub]
     wi = np.full(int(flat_sub.sum()), (s * h) ** 2)
     # decoder: lattice rows
-    I, J = gr.lat_idx()
+    I, J = gr.lat_idx(lat)
     pos = -np.ones(m.shape, int)
     pos[m] = np.arange(int(m.sum()))
     Pl = Phi[pos[I, J]]
@@ -143,4 +143,5 @@ def ecsw_fit(sp, r, Mt, Z, kappas=ECSW_KAPPA, seed=ECSW_SEED, n_cand=N_CAND, max
             x = dict(support=o['support'][pos], weights=o['weights'][pos], relres=o['relres'], size=int(pos.sum()))
         out[k] = None if x is None else dict(nodes=cand[x['support']], weights=np.asarray(x['weights']),
                                              relres=float(x['relres']), size=int(x['size']))
-    return out, dict(reason=o['reason'], n_cand=len(cand), rows=Gm.shape[0])
+    return out, dict(reason=o['reason'], n_cand=len(cand), rows=Gm.shape[0], support_reached=int(len(o['support'])),
+                     relres=float(o['relres']))

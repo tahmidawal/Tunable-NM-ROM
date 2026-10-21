@@ -1,4 +1,4 @@
-{"lane": "imp-geometry", "utc": "2026-10-21T18:17:09Z", "step": "2: codex design audit 2 (A1+A2); preparing cost probe",
- "waiting_on": {"slurm_jobs": [], "codex_output": "audits/codex-design-2.md", "codex_pid": 4038180, "local_pid": null},
- "expected_finish_utc": "2026-10-21T19:17:09Z", "last_commit": "be68060a1",
- "gpu_hours_spent": 0.4428, "gpu_hours_cap": 62, "notes": "smoke GPU-h 0.44 of 1"}
+{"lane": "imp-geometry", "utc": "2026-10-21T18:28:12Z", "step": "5: smoke5 cost probe on cluster; codex design audit 2 running",
+ "waiting_on": {"slurm_jobs": ["6158976"], "codex_output": "audits/codex-design-2.md", "codex_pid": 4038180, "local_pid": 4044855},
+ "expected_finish_utc": "2026-10-21T18:58:12Z", "last_commit": "2009ba080",
+ "gpu_hours_spent": 0.5742, "gpu_hours_cap": 62, "notes": "smoke GPU-h 0.57 of 1; smoke5 will be cancelled at 25 min if not done"}

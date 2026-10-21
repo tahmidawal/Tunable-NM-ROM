@@ -105,6 +105,11 @@ def stage_ref(a, out, D):
     O2 = LD.run_cohort(fd.make_sbdf2(a.dom, n, 2 * nt, 1e-10, maxit=60), Dt)[0]
     dt_ = float(np.max(np.linalg.norm(O1[:, 1:] - O2[:, 1:], axis=-1) / np.linalg.norm(O2[:, :1], axis=-1)))
     allow = SC.allowance(res['val']['rich'], dt_)
+    P128, I128, J128 = G.lattice(a.dom, 128)
+    s128 = n // 128
+    O128 = LD.run_cohort(fd.make_sbdf2(a.dom, n, nt, 1e-10, maxit=60, out_idx=(I128 * s128 - 1, J128 * s128 - 1)),
+                         D['val'][:8])[0]
+    np.savez(out / 'refs_val128.npz', U=O128)
     Uv = np.load(out / 'refs_val.npz')['U']
     zero = np.max(np.linalg.norm(Uv[:, 1:], axis=-1), axis=-1) / np.linalg.norm(Uv[:, 0], axis=-1)
     decay = np.linalg.norm(Uv[:, 5], axis=-1) / np.linalg.norm(Uv[:, 0], axis=-1)
@@ -307,8 +312,8 @@ def stage_ladder(a, out, D):
     log('ladder rows', len(L.done))
 
 
-def ecsw_population(Z, n_traj, n_use=12):
-    """12 training trajectories x 11 snapshots (t = 0.025 k): states are rows j*21 + 2*i."""
+def ecsw_population(Z, n_traj, n_use=6):
+    """6 training trajectories x 11 snapshots (t = 0.025 k; A4 memory bound): states are rows j*21 + 2*i."""
     idx = [j * 21 + 2 * i for j in range(min(n_use, n_traj)) for i in range(11)]
     return Z[idx]
 
@@ -371,7 +376,8 @@ def build_rom(sp, fam):
 # ----------------------------------------------------------------------------------------------- stage time ---
 
 def builders(a, out):
-    """fam -> build(cfg) for every family of this cell (spaces loaded once)."""
+    """fam -> build(cfg) for every family of this cell (spaces loaded once); '_space'(fam, cfg, lat) for diagnostics."""
+    import bank as BK
     dom = a.dom
     B = dict(fdmg=build_fdmg(dom), rk4=build_rk4(dom), sem=build_sem(dom), spec=build_spec())
     sp = pod_space(a, out)
@@ -381,55 +387,83 @@ def builders(a, out):
         for x in np.load(out / 'ecsw.npy', allow_pickle=True):
             ecsw[tuple(x['key'])] = x
 
-    def b_ecsw(c):
-        Mt = min(4 * c['r'], sp.R) if c['st'] == 'lspg_cnr' else c['r']
+    def ecsw_space(c, base):
+        Mt = min(4 * c['r'], base.R) if c['st'] == 'lspg_cnr' else c['r']
         x = ecsw[(c['r'], Mt, c['kappa'])]
-        return build_rom(sp.with_weights(x['nodes'], x['weights']), 'ecsw')(c)
-    B['ecsw'] = b_ecsw
+        return base.with_weights(x['nodes'], x['weights'])
+    B['ecsw'] = lambda c: build_rom(ecsw_space(c, sp), 'ecsw')(c)
+    B['_ecsw'] = ecsw
     spaces = None
+    bk = None
     if (out / 'bank.pkl').exists():
-        spaces, _ = bank_spaces(a, out)
+        spaces, bk = bank_spaces(a, out)
         B['bank'] = lambda c: build_rom(spaces[c['q']], 'bank')(c)
+
+    def space_at(fam, c, lat):
+        if fam in ('podg', 'ecsw'):
+            n, _ = DATA_GRID[a.lev]
+            n = 128 if a.smoke else n
+            base = PD.pod_space(dom, n, np.load(out / 'pod_Phi.npy'), n_init=min(128, n), lat=lat)
+            return base if fam == 'podg' else ecsw_space(c, base)
+        pts = G.lattice(dom, lat)[0]
+        return BK.bank_space(dom, bk['params'], bk['T'], bk['k_q'], c['q'], lattice_pts=pts)
+    B['_space'] = space_at
     return B, spaces
 
 
-def select(L, B, U, D_val, D_dev, Uv, Ud, spaces, fam, tau, stat, log_rows):
-    """Pre-registered finalist selection (A1.7): screen the K fastest-by-cohort-seconds candidates that meet tau,
-    then in screen order: unbatched official re-run (must still meet tau), Q1, Q2 (bank)."""
+def ecsw_q2(B, c, D, U):
+    """C-ECSW support successor (kappa -> 2 kappa) rollout distance, reported only (A3.4)."""
+    k2 = 2 * c['kappa']
+    Mt = min(4 * c['r'], 512) if c['st'] == 'lspg_cnr' else c['r']
+    if (c['r'], Mt, k2) not in B['_ecsw']:
+        return dict(available=False)
+    O1, _ = FZ.run_unbatched(B['ecsw'](c), D)
+    O2, _ = FZ.run_unbatched(B['ecsw'](dict(c, kappa=k2)), D)
+    return dict(available=True, rollout_max=float(np.max(FZ.dist(O1, O2, U))))
+
+
+def select(L, B, U, D_val, D_dev, Uv, Ud, spaces, fam, tau, stat, log_rows, n_final=2):
+    """A3.4 selection: screen the K_SCREEN cheapest-by-cohort-seconds candidates meeting tau (warm one-case median of
+    3); in screen order, unbatched official re-run (must still meet tau); the bank must pass Q1 and Q2; competitors
+    must be valid with converged solves (their Q1 is measured and reported). Returns up to n_final finalists."""
     rows = [r for r in L.done.values() if r['cfg'].get('fam') == fam and r.get('valid')
             and SC.three_way(r[stat], U, tau) == 'meets']
     rows = sorted(rows, key=lambda r: r['cohort_seconds'])
     screened = []
     for r in rows[:FZ.K_SCREEN]:
         try:
-            q = B[fam](r['cfg'])
-            screened.append((FZ.screen_time(q, D_val[0]), r))
+            screened.append((FZ.screen_time(B[fam](r['cfg']), D_val[0]), r))
         except Exception as ex:                                     # noqa: BLE001  (recorded)
             log_rows.append(dict(fam=fam, key=r['key'], screen_error=repr(ex)[:200]))
     screened.sort(key=lambda t: t[0])
+    finals = []
     for ts, r in screened:
+        if len(finals) >= n_final:
+            break
         q = B[fam](r['cfg'])
         O, st = FZ.run_unbatched(q, D_val)
         e = SC.err(O, Uv)
         sv = float(np.max(e) if stat == 'worst' else np.median(e))
-        meets = SC.three_way(sv, U, tau) == 'meets'
-        item = dict(fam=fam, tau=tau, stat=stat, key=r['key'], screen=ts, meets_unbatched=meets,
-                    worst=float(np.max(e)), median=float(np.median(e)))
-        if not meets:
+        item = dict(fam=fam, tau=tau, stat=stat, key=r['key'], screen=ts, worst=float(np.max(e)),
+                    median=float(np.median(e)), meets_unbatched=SC.three_way(sv, U, tau) == 'meets')
+        if not item['meets_unbatched']:
             log_rows.append(item)
             continue
-        Q1 = FZ.q1(fam, r['cfg'], B[fam], D_val, D_dev, Uv, Ud, O, st)
-        item['Q1'] = Q1
-        ok = Q1['passed']
-        if ok and fam == 'bank':
-            Dp = np.concatenate([D_dev, D_val[:8]])
-            Up = np.concatenate([Ud, Uv[:8]])
-            item['Q2'] = FZ.q2_bank(r['cfg'], spaces, Dp, Up)
-            ok = item['Q2']['passed']
+        item['Q1'] = FZ.q1(fam, r['cfg'], B[fam], D_val, D_dev, Uv, Ud, O, st)
+        if fam == 'bank':
+            ok = item['Q1']['passed']
+            if ok:
+                item['Q2'] = FZ.q2_bank(r['cfg'], spaces, np.concatenate([D_dev, D_val]), np.concatenate([Ud, Uv]))
+                ok = item['Q2']['passed']
+        else:
+            ok = bool(np.all(np.isfinite(O)) and (fam not in ('fdmg', 'sem') or float(st[:, 2].sum()) == 0))
+            if fam == 'ecsw':
+                item['Q2_reported'] = ecsw_q2(B, r['cfg'], D_val[:8], Uv[:8])
+        item['eligible'] = bool(ok)
         log_rows.append(item)
         if ok:
-            return dict(item, cfg=r['cfg'], e=e.tolist(), outputs=O)
-    return None
+            finals.append(dict(item, cfg=r['cfg'], e=e.tolist(), outputs=O))
+    return finals
 
 
 def stage_time(a, out, D):
@@ -444,9 +478,8 @@ def stage_time(a, out, D):
     for tau in SC.TAUS:
         for stat in ('worst', 'median'):
             for fam in fams + (['bank'] if 'bank' in B else []):
-                s = select(L, B, U, D_val, D_dev, Uv, Ud, spaces, fam, tau, stat, log_rows)
-                fin[(fam, tau, stat)] = s
-                log(f'finalist {fam} tau={tau} {stat}:', None if s is None else s['key'])
+                fin[(fam, tau, stat)] = select(L, B, U, D_val, D_dev, Uv, Ud, spaces, fam, tau, stat, log_rows)
+                log(f'finalists {fam} tau={tau} {stat}:', [s['key'] for s in fin[(fam, tau, stat)]])
     Dt = D_val[:FZ.N_TIME]
     cc = FZ.CompileCounter()
     logging.getLogger('jax').addHandler(cc)
@@ -459,38 +492,88 @@ def stage_time(a, out, D):
             # T-setup: warm-up with a nu different from every timed case
             jax.block_until_ready(qcache[k](jnp.asarray(Dt[0] * np.array([1, 1, 1, 1, 1.0001]))))
         return qcache[k]
-    timing = {}
+    timing, summary = {}, {}
     jax.config.update('jax_log_compiles', True)
     for tau in SC.TAUS:
         for stat in ('worst', 'median'):
-            sb = fin.get(('bank', tau, stat))
+            bks = fin.get(('bank', tau, stat)) or []
+            per_fam = {}
             for fam in fams:
-                sa = fin.get((fam, tau, stat))
-                if sa is None or sb is None:
-                    continue
-                qA, qB = getq(fam, sa), getq('bank', sb)
-                n_before = cc.n
-                p = FZ.paired(qA, qB, Dt)
-                p['compiles_during_timing'] = cc.n - n_before
-                oa = np.asarray(qA(jnp.asarray(Dt[0]))[0])
-                ob = np.asarray(qB(jnp.asarray(Dt[0]))[0])
-                p['T_id'] = float(max(np.max(np.abs(oa - sa['outputs'][0])) / np.max(np.abs(sa['outputs'][0])),
-                                      np.max(np.abs(ob - sb['outputs'][0])) / np.max(np.abs(sb['outputs'][0]))))
-                timing[f'{fam}|{tau}|{stat}'] = p
-                log(f'timing {fam} vs bank tau={tau} {stat}: S={p["S"]:.3g} tA={p["tA"]:.3g} tB={p["tB"]:.3g}')
+                for sa in fin.get((fam, tau, stat)) or []:
+                    for sb in bks:
+                        qA, qB = getq(fam, sa), getq('bank', sb)
+                        n_before = cc.n
+                        p = FZ.paired(qA, qB, Dt)
+                        p['compiles_during_timing'] = cc.n - n_before
+                        oa = np.asarray(qA(jnp.asarray(Dt[0]))[0])
+                        ob = np.asarray(qB(jnp.asarray(Dt[0]))[0])
+                        p['T_id'] = float(max(np.max(np.abs(oa - sa['outputs'][0])) / np.max(np.abs(sa['outputs'][0])),
+                                              np.max(np.abs(ob - sb['outputs'][0])) / np.max(np.abs(sb['outputs'][0]))))
+                        timing[f"{fam}|{tau}|{stat}|{sa['key']}|{sb['key']}"] = p
+                # family S: min over its finalists of (max over bank finalists = the bank's faster finalist)
+                vals = [max(timing[f"{fam}|{tau}|{stat}|{sa['key']}|{sb['key']}"]['S'] for sb in bks)
+                        for sa in fin.get((fam, tau, stat)) or []] if bks else []
+                if vals:
+                    per_fam[fam] = min(vals)
+            if per_fam:
+                best = min(per_fam, key=per_fam.get)
+                summary[f'{tau}|{stat}'] = dict(S=per_fam[best], best_competitor=best, per_family=per_fam,
+                                                within5pct=[f for f, v in per_fam.items() if v <= 1.05 * per_fam[best]])
+            else:
+                summary[f'{tau}|{stat}'] = dict(S=None, bank_matched=bool(bks),
+                                                competitor_matched=any(fin.get((f, tau, stat)) for f in fams))
+            log(f'S tau={tau} {stat}:', summary[f'{tau}|{stat}'])
     jax.config.update('jax_log_compiles', False)
     tdbl = {}
-    for (fam, tau, stat), s in fin.items():
-        if s is not None and stat == 'worst' and fam not in tdbl:
-            tdbl[fam] = FZ.t_dbl(getq(fam, s), Dt)
-    manifest = {f'{k[0]}|{k[1]}|{k[2]}': (None if v is None else dict(key=v['key'], cfg=v['cfg']))
-                for k, v in fin.items()}
+    for (fam, tau, stat), ss in fin.items():
+        if ss and fam not in tdbl:
+            tdbl[fam] = FZ.t_dbl(getq(fam, ss[0]), Dt)
+    # A3.7 finer-lattice diagnostic for every finalist (val[0:8])
+    finer = {}
+    if (out / 'refs_val128.npz').exists():
+        U128 = np.load(out / 'refs_val128.npz')['U']
+        pts128 = G.lattice(a.dom, 128)[0]
+        for (fam, tau, stat), ss in fin.items():
+            for s in ss:
+                if s['key'] in finer:
+                    continue
+                try:
+                    finer[s['key']] = FZ.finer_diag(a, out, fam, s['cfg'], B, D_val[:8], U128, pts128)
+                except Exception as ex:                                 # noqa: BLE001  (recorded)
+                    finer[s['key']] = dict(error=repr(ex)[:200])
+    manifest = {f'{k[0]}|{k[1]}|{k[2]}': [dict(key=s['key'], cfg=s['cfg']) for s in v] for k, v in fin.items()}
     (out / 'manifest.json').write_text(json.dumps(manifest, indent=1, sort_keys=True))
-    fins = {f'{k[0]}|{k[1]}|{k[2]}': (None if v is None else {kk: vv for kk, vv in v.items() if kk != 'outputs'})
+    fins = {f'{k[0]}|{k[1]}|{k[2]}': [{kk: vv for kk, vv in s.items() if kk != 'outputs'} for s in v]
             for k, v in fin.items()}
-    res = dict(U=U, finalists=fins, selection_log=log_rows, timing=timing, T_dbl=tdbl,
+    res = dict(U=U, finalists=fins, selection_log=log_rows, timing=timing, summary=summary, T_dbl=tdbl, finer=finer,
                manifest_sha=FZ.manifest_sha(out / 'manifest.json'), env=env_record())
     (out / 'final.json').write_text(json.dumps(res, indent=1, default=float))
+
+
+def interaction_split(a, out, D, split):
+    """A3.2: D_bnd (box evolution of the non-box IC), D_geo (box IC) and the IC mismatch, FD n = 256 (S1) / 512 (S2)."""
+    if a.dom == 'B':
+        return None
+    n, nt = (128, 1000) if a.smoke else {'S1': (256, 2000), 'S2': (512, 4000)}[a.lev]
+    P, I, J = G.lattice(a.dom)
+    s = n // G.LAT
+    qG = fd.make_sbdf2(a.dom, n, nt, 1e-10, out_idx=(I * s - 1, J * s - 1))
+    qBg = fd.make_sbdf2('B', n, nt, 1e-10, out_idx=(I * s - 1, J * s - 1), ic_dom=a.dom)
+    qB = fd.make_sbdf2('B', n, nt, 1e-10, out_idx=(I * s - 1, J * s - 1))
+    Dd = D[split]
+    OG, OBg, OB = (LD.run_cohort(q, Dd)[0] for q in (qG, qBg, qB))
+    n0 = np.linalg.norm(OG[:, 0], axis=-1)
+    dist_ = lambda X: np.max(np.linalg.norm(OG[:, 1:] - X[:, 1:], axis=-1), axis=-1) / n0
+    d_bnd, d_geo = dist_(OBg), dist_(OB)
+    ic_mis = np.linalg.norm(OG[:, 0] - OB[:, 0], axis=-1) / n0
+    return dict(split=split, n=n, nt=nt, D_bnd=d_bnd.tolist(), D_bnd_median=float(np.median(d_bnd)),
+                D_geo=d_geo.tolist(), D_geo_median=float(np.median(d_geo)), ic_mismatch_median=float(np.median(ic_mis)),
+                gate=bool(np.median(d_bnd) >= 0.05))
+
+
+def stage_inter(a, out, D):
+    res = interaction_split(a, out, D, 'val')
+    (out / 'inter.json').write_text(json.dumps(dict(val=res, env=env_record()), indent=1))
 
 
 def stage_test(a, out, D):
@@ -500,36 +583,37 @@ def stage_test(a, out, D):
         raise SystemExit('MF-LEAK: manifest missing or sha mismatch; test refused')
     M = json.loads(man.read_text())
     rj = json.loads((out / 'ref.json').read_text())
-    U = rj['allowance']['U']
+    rich_t = rj['splits']['test']['rich']
     Ut = np.load(out / 'refs_test.npz')['U']
+    U_t = SC.allowance(rich_t, rj['delta_t'])
     Ud = load_refs(out, 'dev')
     B, spaces = builders(a, out)
     res, qs = {}, {}
-    for k, v in M.items():
-        if v is None:
-            continue
-        fam = v['cfg']['fam']
-        q = B[fam](v['cfg'])
-        O, st = FZ.run_unbatched(q, D['test'])
-        e = SC.err(O, Ut)
-        tau, stat = float(k.split('|')[1]), k.split('|')[2]
-        sv = float(np.max(e) if stat == 'worst' else np.median(e))
-        item = dict(key=v['key'], e=e.tolist(), stat=sv, verdict=SC.three_way(sv, U, tau),
-                    Q1=FZ.q1(fam, v['cfg'], B[fam], D['test'], D['dev'], Ut, Ud, O, st))
-        if fam == 'bank':
-            item['Q2'] = FZ.q2_bank(v['cfg'], spaces, D['test'][:8], Ut[:8])
-        res[k] = item
-        qs[k] = q
+    for k, lst in M.items():
+        fam, tau, stat = k.split('|')
+        for v in lst:
+            q = B[fam](v['cfg'])
+            O, st = FZ.run_unbatched(q, D['test'])
+            e = SC.err(O, Ut)
+            sv = float(np.max(e) if stat == 'worst' else np.median(e))
+            item = dict(key=v['key'], e=e.tolist(), stat=sv, verdict=SC.three_way(sv, U_t['U'], float(tau)),
+                        Q1=FZ.q1(fam, v['cfg'], B[fam], D['test'], D['dev'], Ut, Ud, O, st))
+            if fam == 'bank':
+                item['Q2'] = FZ.q2_bank(v['cfg'], spaces, D['test'], Ut)
+            res[f"{k}|{v['key']}"] = item
+            qs[(fam, v['key'])] = q
     timing = {}
     Dt = D['test'][:FZ.N_TIME]
-    for k, v in M.items():
+    for k, lst in M.items():
         fam, tau, stat = k.split('|')
-        kb = f'bank|{tau}|{stat}'
-        if fam == 'bank' or v is None or M.get(kb) is None:
+        if fam == 'bank':
             continue
-        timing[k] = FZ.paired(qs[k], qs[kb], Dt)
-    (out / 'test.json').write_text(json.dumps(dict(results=res, timing=timing, U=U, env=env_record()), indent=1,
-                                              default=float))
+        for sa in lst:
+            for sb in M.get(f'bank|{tau}|{stat}', []):
+                timing[f"{k}|{sa['key']}|{sb['key']}"] = FZ.paired(qs[(fam, sa['key'])], qs[('bank', sb['key'])], Dt)
+    inter = interaction_split(a, out, D, 'test')
+    (out / 'test.json').write_text(json.dumps(dict(results=res, timing=timing, allowance_test=U_t, inter_test=inter,
+                                                   env=env_record()), indent=1, default=float))
 
 
 def main():
@@ -552,7 +636,7 @@ def main():
     D = cohorts(a.fam, a.lev, a.smoke)
     G.check_cohorts()
     marks = {'ref': 'ref.json', 'data': 'data.json', 'bank': 'bank.json', 'ladder': 'ladder.done', 'time': 'final.json',
-             'test': 'test.json'}
+             'test': 'test.json', 'inter': 'inter.json'}
     for st in a.stages.split(','):
         mk = out / marks.get(st, f'{st}.done')
         if mk.exists():
@@ -561,7 +645,7 @@ def main():
         t0 = time.perf_counter()
         log(f'stage {st}: start')
         dict(ref=stage_ref, data=stage_data, bank=stage_bank, ladder=stage_ladder, time=stage_time,
-             test=stage_test)[st](a, out, D)
+             test=stage_test, inter=stage_inter)[st](a, out, D)
         if st == 'ladder':
             mk.write_text('ok')
         with (out / 'stage_seconds.jsonl').open('a') as f:

@@ -79,8 +79,10 @@ def q1(fam, cfg, build, D_val, D_dev, Uv, Ud, O_prod, st_prod):
         stp = cfg['st']
         if stp == 'gal_etdrk4':
             it['nonfinite_steps'] = float(st_prod[:, 3].sum())
-            it['blowups'] = float(st_prod[:, 0].sum())
-            it['passed'] = valid and it['nonfinite_steps'] == 0 and it['blowups'] == 0
+            it['blowup_frac'] = float(st_prod[:, 0].sum() / max(st_prod[:, 2].sum(), 1))
+            it['coef_cert_max'] = float(st_prod[:, 1].max())
+            it['passed'] = bool(valid and it['nonfinite_steps'] == 0 and it['blowup_frac'] <= 0.01
+                                and it['coef_cert_max'] <= 1e-10)
             return it
         qc = build(dict(cfg, cert=True))
         Oc, stc = run_unbatched(qc, D_val)
@@ -184,3 +186,46 @@ def t_dbl(q, D):
 
 def manifest_sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def finer_diag(a, out, fam, cfg, B, D8, U128, pts128):
+    """A3.7: error of a matched configuration on the x = i/128 lattice (val[0:8]); FD by bilinear interpolation."""
+    import geom as G
+    import fd
+    import sem
+    import spec
+    import run_cell as RC
+    if fam in ('fdmg', 'rk4'):
+        g = fd.Grid(a.dom, cfg['n'])
+        I, J = np.nonzero(g.mask_np)
+        q = (fd.make_sbdf2(a.dom, cfg['n'], cfg['nsteps'], cfg['tol'], out_idx=(I, J)) if fam == 'fdmg'
+             else fd.make_rk4(a.dom, cfg['n'], cfg['nsteps'], out_idx=(I, J)))
+        O = []
+        for d in D8:
+            v = np.asarray(q(jnp.asarray(d))[0])
+            full = np.zeros((6, g.N1 + 2, g.N1 + 2))
+            full[:, I + 1, J + 1] = v
+            xs = pts128 * cfg['n']
+            i0 = np.floor(xs[:, 0]).astype(int)
+            j0 = np.floor(xs[:, 1]).astype(int)
+            tx, ty = xs[:, 0] - i0, xs[:, 1] - j0
+            O.append((1 - tx) * (1 - ty) * full[:, i0, j0] + tx * (1 - ty) * full[:, i0 + 1, j0]
+                     + (1 - tx) * ty * full[:, i0, j0 + 1] + tx * ty * full[:, i0 + 1, j0 + 1])
+        O = np.stack(O)
+        label = 'bilinear interpolation of the FD grid'
+    elif fam == 'sem':
+        q, _ = sem.make_sem(a.dom, cfg['p'], cfg['k'], cfg['nsteps'], cfg['tol'], order=cfg['ord'], grade=cfg['g'],
+                            dealias=cfg['dea'], solver=cfg['solver'], pts=pts128)
+        O, _ = run_unbatched(q, D8)
+        label = 'native (element interpolation)'
+    elif fam == 'spec':
+        q = spec.make_spec(cfg['N'], cfg['nsteps'], n_init=cfg['ni'], lat=128)
+        O, _ = run_unbatched(q, D8)
+        label = 'native (sine synthesis)'
+    else:
+        sp = B['_space'](fam, cfg, lat=128)
+        q = RM.make_query(sp, cfg['r'], cfg['st'], cfg['nsteps'], form=cfg['form'], tol=cfg['tol'])
+        O, _ = run_unbatched(q, D8)
+        label = 'native (lattice rows)'
+    e = SC.err(O, U128)
+    return dict(worst=float(np.max(e)), median=float(np.median(e)), e=e.tolist(), how=label)

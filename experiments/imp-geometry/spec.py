@@ -21,9 +21,9 @@ import pscore as PS       # noqa: E402
 import geom as G          # noqa: E402
 
 
-def make_spec(N, nsteps, n_init=256, n_out=G.N_OUT):
+def make_spec(N, nsteps, n_init=256, n_out=G.N_OUT, lat=G.LAT):
     s = G.SIDE
-    m_lat = int(round(s * G.LAT))
+    m_lat = int(round(s * lat))
     dt = G.T_END / s / nsteps                         # unit-box time step
     keep = nsteps // n_out
     assert keep * n_out == nsteps

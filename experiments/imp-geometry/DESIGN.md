@@ -538,3 +538,124 @@ $0.34375=22/64$ (so every $n\in64\mathbb N$ has grid lines there); the exclusion
 grid-aligned by design (Shortley–Weller).
 
 The cohort seeds, splits, levels, metrics, rules and controls of A1 are unchanged.
+
+---
+
+## Amendment A3 (2026-10-21, after Codex design audit 2 = NOT-READY; before any production run)
+
+Audit `audits/codex-design-2.md` (required fixes 1–8). A3 governs over everything above where they differ.
+
+### A3.1 Chronology and the frozen problem (fix 1)
+**Correction of A2's opening sentence.** A2 said "no ROM or competitor result exists". That is false. Before A2 was written,
+cluster smokes 1–2 (geometry variant v2, 4 val cases, smoke-size references, 12 training trajectories, a 2000-step bank)
+had produced FD, RK4, SEM, POD-Galerkin, ECSW and bank ladder rows (`runs/smoke/smoke2-cellL/ladder.jsonl`), bank
+reconstruction numbers and cell-control values (`runs/smoke/smoke2-cellL/controls_L.json`), and the agent **printed the
+three lowest-error rows per family** of that smoke ladder while debugging. The variant was chosen by the interaction
+diagnostic only (A2's table), but the selection is **diagnostic-guided problem development**, not an outcome-blind
+registration. Variants tried: v0 ($T=0.25,0.5$), v2 ($T=0.25,0.5$), v3, v4, v4a (all files in `runs/smoke/`).
+**Frozen problem = `geom.VARIANTS['v4a']`** (A2's table, with the L corner at $22/64$; A2 wrongly named it `v4`): exclusion
+zone = $\{c_x>LC-0.03\ \wedge\ c_y>LC-0.03\}\cup\{|c-(0.45,0.45)|<0.13\}$ with $LC=22/64$ (so the threshold is $0.31375$,
+not A2's 0.32); a rejected centre is redrawn from the same row generator (`geom.draw`). The descriptor arrays of every
+(family, level, split) and their sha256 are committed in `runs/descriptors.json` (`descriptors.py`), with acceptance
+rates. No further redesign happens after this amendment.
+
+### A3.2 Interaction: boundary effect separated from the initial condition (fix 2)
+- The wide family is a **conditional** distribution on the non-rectangular support "square minus exclusion zone"; the
+  narrow family is also moved (to $[0.22,0.30]^2$), so narrow vs wide differs in width **and** location (stated in the
+  report).
+- **Boundary diagnostic (primary, replaces A1.2's $D_{\rm geo}$ bar):** $D_{\rm bnd}=\max_{k\ge1}\lVert u_\Omega(t_k)-
+  \tilde u_B(t_k)\rVert_{{\rm lat}\cap\Omega}/\lVert u_\Omega(0)\rVert$, where $\tilde u_B$ is the **box** evolution started
+  from the non-box IC $u_{0,\Omega}$ extended by zero (same FD solver, $n=256$, $n_t=2000$ for S1 / $n=512$, 4000 for S2).
+  $D_{\rm geo}$ (box IC) is kept as the combined problem contrast; the IC mismatch $\lVert u_{0,\Omega}-u_{0,B}\rVert/
+  \lVert u_{0,\Omega}\rVert$ is reported.
+- **Gate:** a cell's geometry attribution requires median $D_{\rm bnd}\ge0.05$ on val32 **and** on test32 (test32 is
+  untouched by the variant selection, which used val[0:16]); computed in the cell job (val) and in the test job (test).
+- The SEM finalists report the IC interpolation error on the lattice (cutoff-resolution diagnostic).
+- v4a evidence so far: `runs/smoke/smoke4/interaction/interaction_v4a_T0.25.json` ($D_{\rm geo}$ only) and the v4a
+  geometry controls `runs/smoke/smoke4/geom/controls_*.json`.
+
+### A3.3 References for physical claims (fix 3)
+A target τ of a cell can support a WIN (validation) or a confirmation (test) **only if every one of the 32 cases** of that
+cohort is E0 or corner-limited (A1.4) and $U\le\tau/5$; otherwise τ is UNRESOLVED for that cohort. The "last difference"
+stand-in remains only for diagnostics.
+
+### A3.4 Decision table (fix 4) — governs over A1.1's outcome list
+Per wide cell and τ, on **val32** (worst error; median never creates a win):
+
+| val evidence at τ | label |
+|---|---|
+| reference not qualified (A3.3) | unresolved |
+| both bank and best competitor matched, $S\ge2$ | candidate win |
+| both matched, $S<2$ | loss |
+| bank censored, some competitor matched | loss |
+| bank matched, every competitor censored | candidate win ($S=\infty$) |
+| both censored | no evidence |
+
+A candidate win is **confirmed** iff on **test32** (test reference qualified, A3.3) the frozen bank and competitor finalists
+meet τ, the bank passes Q1/Q2 in-job, and the paired test re-timing gives $S_{\rm test}\ge2$; otherwise **not confirmed**.
+Cell outcome: **win** if ≥ 1 confirmed τ; else **loss** if ≥ 1 τ is loss or not confirmed; else **unresolved**.
+Geometry: **WIN** iff both levels win; **WITHDRAW** iff some level is loss; otherwise **UNRESOLVED**.
+**Attribution** (only for a geometry WIN), per level at its confirmed τ: the box control's finalists are selected on box
+val32 by the same rules and confirmed on box test32. *Kept* iff $S_{\rm box,val}<S_{\rm geom,val}/2$ **and**
+$S_{\rm box,test}<S_{\rm geom,test}/2$ **and** the cell's $D_{\rm bnd}$ gate passes (A3.2); *withdrawn* iff
+$S_{\rm box,val}\ge S_{\rm geom,val}/2$; otherwise *unestablished* (box bank or C-SPEC censored, box reference unqualified,
+box confirmation failed, $D_{\rm bnd}$ gate failed, box missing). A censored box bank is reported as a category, never as
+$S_{\rm box}=0$ (A1.1's rule is withdrawn). WIN-attributed iff both levels have a kept τ; else WIN-unattributed.
+**E2** = the best geometry outcome in the order WIN-attributed > WIN-unattributed > UNRESOLVED > WITHDRAW, every geometry
+reported.
+
+**Selection and the speed statistic (governs over §4 and A1.7):** per family and (τ, statistic), the candidates meeting τ
+are screened (warm one-case median of 3 on val[0]); the **two** screen-fastest that meet τ in the unbatched official re-run
+(and, for the bank, pass Q1/Q2) enter the paired timing. For each competitor finalist A and the bank finalist B,
+$S_A$ = median over the 40 A–B–A triplets (val[0:8] × 5) of $\tfrac12(t_{A,1}+t_{A,2})/t_B$; the family's S is the smaller of
+its two finalists; **S = min over competitor families** (the best competitor = the family attaining it; families within
+5 % are both reported). The bank side uses its faster finalist by the same paired comparison against the best
+competitor.
+
+**Competitor gating (deliberate asymmetry, favouring competitors):** a competitor configuration is eligible when it is valid
+(finite, no solver cap hit) and meets τ; its Q1 items (tight-solve distance etc.) are measured and **reported, not
+gated**, and C-ECSW's support-successor Q2 ($\kappa\to2\kappa$, ρ and rollout bars) is reported, not gated. Only the bank
+is gated on Q1/Q2. Excluding a fast but loosely solved competitor would inflate S; this choice is flagged for the
+coordinator as a narrowing of COMMON-BRIEF §3 for competitors.
+
+### A3.5 Q1 / Q2 for every selectable stepper (fix 5)
+- **ETDRK4 (bank or POD arms):** in-job (i) a per-query **coefficient certificate**: the contour-integral coefficients $E,
+  E_2,Q,f_1,f_2,f_3$ against an independent closed form (`expm1`-based for $|h\lambda|>0.2$, 8-term Taylor series below)
+  agree to $10^{-10}$ relative on every mode; (ii) every step: all stage values finite; (iii) every step: $\lVert z_{n+1}\rVert
+  \le10\max(\lVert z_0\rVert,\lVert z_n\rVert)$. Any failure in (i) invalidates the query; (ii)–(iii) failures count as
+  non-stationary steps (≤ 1 % pooled, else not qualified).
+- **Linearised CN:** every step, the linear-solve residual $\lVert J\delta+R\rVert/\lVert R\rVert\le10^{-10}$ (certificate),
+  plus the tight-solve rule (distance to fully converged Newton CN ≤ $2.5\times10^{-4}$ on every case; Newton tight vs
+  tighter ≤ $2.5\times10^{-5}$ on dev8).
+- **Galerkin CN (Newton):** every step $\lVert R(z)\rVert/(\lVert M(z-z_n)\rVert/\Delta t+10^{-300})\le10^{-8}$ (≤ 1 %
+  pooled), plus the tight/tighter rules.
+- **LSPG CN-R:** as A1.8 (γ with fresh Jacobian).
+- **Bank Q2:** rollout bar on **every** one of dev8 + val32 (40 cases) on validation and on test32 in confirmation; ρ on
+  the 6 output states of the same cases; states with $\lVert N_{q+2}\rVert\le10^{-12}\max$ skipped, and Q2 fails if more
+  than 5 % are skipped; M/K/IC bars as A1.8.
+
+### A3.6 Controls (fix 6)
+Convergence **demonstrations** (MF-SEM, MF-FD, MF-MG, MF-QUAD, MF-ENV) are reported as such. The v4a geometry controls all
+fire, including MF-FD on L (`runs/smoke/smoke4/geom/controls_L.json`); the smoke2 MF-FD failure was on variant v2,
+whose corner 0.45 is not a grid line of $n\in64\mathbb N$, i.e. the control correctly detected a staircase boundary.
+**Fault detections** now establish the violation independently first:
+- **MF-MATCH-real:** the best valid FD ladder output perturbed by exactly $2\tau$ (relative, every scored time) → must be
+  *misses* at τ = 0.01; the unperturbed recomputation must reproduce the recorded error (replaces the contingent version
+  that reported *meets* in smoke2).
+- **MF-Q1:** the perturbed iterate's γ is first computed independently (NumPy, dense Jacobian); the in-job certificate
+  must flag exactly the steps whose independent γ exceeds $10^{-3}$, and at least one such step must exist.
+- **MF-TENS:** the slice fault is implemented independently in point form (the k-th test function removed); tensor-fault
+  and point-fault rollouts must agree to $10^{-9}$, and differ from the clean rollout by ≥ $10^{-6}$.
+- **MF-Q2:** the zeroed-element rule's ρ is computed directly; the Q2 checker must report failure when it exceeds the bar.
+All controls are rerun on v4a in the final smoke.
+
+### A3.7 Search coverage and the finer-lattice diagnostic (fix 7)
+The A1.7 size-stop rule is **removed**: every registered size of every family is visited (its step ladder runs). The
+finer-lattice diagnostic ($x=i/128$, val[0:8]) is computed for **every** matched configuration: reduced arms and C-SEM
+natively, C-SPEC by synthesis, FD by bilinear interpolation of the grid solution (labelled; interpolation error is $O(h^2)$);
+the reference uses its finest level ($n\ge512$, a multiple of 128).
+
+### A3.8 Cost certificate (fix 8)
+Release requires `runs/cost/projection.json` from `resources.py`, built from the production-size probe on the production
+GPU type (`runs/smoke/smoke5/probe/*.json`) and the registered ladder sizes (row counts computed from the registered
+ladders, not from the smoke), including compilation, Q1/Q2, timing, test and box jobs, × 1.5 headroom; audited before release.

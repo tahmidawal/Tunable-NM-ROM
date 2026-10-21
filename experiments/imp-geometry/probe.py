@@ -59,6 +59,10 @@ def main():
         sem_sec(dom, D)
     if 'bank' in secs:
         bank_sec(dom, lev, D, n, gr, m)
+    if 'bankstep' in secs:
+        bankstep_sec(dom, lev, n, gr, m)
+    if 'ecsw' in secs:
+        ecsw_sec(dom, lev, D, n, gr)
     R['env'] = RC.env_record()
     R['gpu_mem_peak_bytes'] = max((d.memory_stats() or {}).get('peak_bytes_in_use', 0) for d in jax.devices())
     Path(a.out).mkdir(parents=True, exist_ok=True)
@@ -144,3 +148,41 @@ def bank_sec(dom, lev, D, n, gr, m):
 
 if __name__ == '__main__':
     main()
+
+
+def bankstep_sec(dom, lev, n, gr, m):
+    """Steady-state seconds per Stage-A step (sub-sampled and full-batch), excluding compilation."""
+    import bank as BK
+    nb = RC.BANK_SAMPLE[lev]
+    s_ = n // nb
+    sub = np.zeros_like(m)
+    sub[s_ - 1::s_, s_ - 1::s_] = True
+    sub &= m
+    Xb = np.stack([gr.X[sub], gr.Y[sub]], -1)
+    Ub = np.random.default_rng(2).standard_normal((4032, len(Xb))) * 0.1
+    R['bank_points'] = int(len(Xb))
+    for steps, full in ((50, 10), (1050, 10), (60, 60)):
+        BK.RECIPE['full_last'] = full
+        t0 = time.perf_counter()
+        BK.train(dom, Xb, Ub, 0, steps=steps, log_every=10 ** 9)
+        R[f'bank_train_{steps}_{full}'] = time.perf_counter() - t0
+        print(f'bank_train_{steps}_{full}: {R[f"bank_train_{steps}_{full}"]:.2f}s', flush=True)
+    # sub step = (t(1050,10) - t(50,10)) / 1000; full step = (t(60,60) - t(50,10) + 40 sub) / 50 (approximately)
+    sub_step = (R['bank_train_1050_10'] - R['bank_train_50_10']) / 1000
+    full_step = (R['bank_train_60_60'] - R['bank_train_50_10'] + 40 * sub_step) / 50
+    R['bank_sub_step_s'], R['bank_full_step_s'] = sub_step, full_step
+    print('bank sub step', sub_step, 'full step', full_step, flush=True)
+
+
+def ecsw_sec(dom, lev, D, n, gr):
+    n_in = int(gr.mask_np.sum())
+    S = np.random.default_rng(0).standard_normal((1024, n_in))
+    Phi, sv = PD.pod(S, gr.h, 512)
+    del S
+    sp = PD.pod_space(dom, n, Phi, 128)
+    Z = np.random.default_rng(1).standard_normal((66, 512)) * np.linspace(1, 0.01, 512)[None]
+    for Mt in (512,):
+        fit, info = tm(f'ecsw_fit_r384_Mt{Mt}_66states', PD.ecsw_fit, sp, 384, Mt, Z, max_seconds=150)
+        R[f'ecsw_info_Mt{Mt}'] = info
+        R[f'ecsw_sizes_Mt{Mt}'] = {k: (None if v is None else v['size']) for k, v in fit.items()}
+    R['gpu_mem_peak_bytes_ecsw'] = max((d.memory_stats() or {}).get('peak_bytes_in_use', 0) for d in jax.devices())

@@ -179,7 +179,7 @@ class MG:
 
 # ------------------------------------------------------------------------------------------------ solvers ------
 
-def make_sbdf2(dom, n, nsteps, tol, out_idx=None, n_out=G.N_OUT, stair=False, maxit=40, smoother=True):
+def make_sbdf2(dom, n, nsteps, tol, out_idx=None, n_out=G.N_OUT, stair=False, maxit=40, smoother=True, ic_dom=None):
     """C-FDMG query: d -> (outputs (n_out+1, P) on out_idx (default scoring lattice), stats).
     stats = (total V-cycles, max cycles in one solve, number of non-converged solves)."""
     mg = MG(dom, n, stair, smoother=smoother)
@@ -193,7 +193,7 @@ def make_sbdf2(dom, n, nsteps, tol, out_idx=None, n_out=G.N_OUT, stair=False, ma
 
     def q(d):
         nu = d[4]
-        u0 = g.ic(d)
+        u0 = g.ic(d) if ic_dom is None else g.mask * G.ic(ic_dom, d, jnp.asarray(g.X), jnp.asarray(g.Y), jnp)
         N0 = adv(c, u0)
         f1 = g.mask * (u0 / dt - N0)
         u1, it1, ok1, _ = mg.solve(1.0 / dt, nu, f1, u0, tol, maxit)
@@ -216,7 +216,7 @@ def make_sbdf2(dom, n, nsteps, tol, out_idx=None, n_out=G.N_OUT, stair=False, ma
     return jax.jit(q)
 
 
-def make_rk4(dom, n, nsteps, out_idx=None, n_out=G.N_OUT, stair=False):
+def make_rk4(dom, n, nsteps, out_idx=None, n_out=G.N_OUT, stair=False, ic_dom=None):
     g = Grid(dom, n, stair)
     c = g.c
     I, J = g.lat_idx() if out_idx is None else out_idx

@@ -61,8 +61,12 @@ if __name__ == '__main__':
     ap.add_argument('--n', type=int, default=256)
     ap.add_argument('--ncases', type=int, default=8)
     ap.add_argument('--nsteps', type=int, default=2000)
+    ap.add_argument('--variant', default=G.VARIANT)
+    ap.add_argument('--T', type=float, default=G.T_END)
     a = ap.parse_args()
+    G.configure(a.variant)
+    G.T_END = a.T
     r = run(a.n, a.ncases, a.nsteps)
     Path(a.out).mkdir(parents=True, exist_ok=True)
-    (Path(a.out) / 'interaction.json').write_text(json.dumps(dict(n=a.n, ncases=a.ncases, nsteps=a.nsteps, cells=r,
+    (Path(a.out) / f'interaction_{a.variant}_T{a.T}.json').write_text(json.dumps(dict(variant=a.variant, T=a.T, n=a.n, ncases=a.ncases, nsteps=a.nsteps, cells=r,
                                                                   backend=jax.default_backend()), indent=1))

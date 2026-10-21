@@ -15,11 +15,33 @@ import math
 import numpy as np
 
 SIDE = 1.0
-LC = 0.625
-HC = (0.7, 0.7)
-HR = 0.1
-HSQ = (0.55, 0.85)        # square block around the hole (SEM / quadrature mesh)
 DELTA = 0.05
+# geometry / family variants (DESIGN A2): v0 = features downstream of the family square; v2 = features inside it with a
+# shared rejection zone for bump centres (descriptors stay identical for L, H and B)
+VARIANTS = {
+    'v0': dict(LC=0.625, HC=(0.7, 0.7), HR=0.1, HSQ=(0.55, 0.85), wide_c0=0.15, narrow_c0=0.47, reject=None),
+    'v2': dict(LC=0.45, HC=(0.45, 0.45), HR=0.1, HSQ=(0.3, 0.6), wide_c0=0.15, narrow_c0=0.30, reject=0.03),
+}
+VARIANT = 'v2'
+
+
+def configure(variant):
+    global LC, HC, HR, HSQ, REJECT, VARIANT
+    v = VARIANTS[variant]
+    VARIANT = variant
+    LC, HC, HR, HSQ, REJECT = v['LC'], v['HC'], v['HR'], v['HSQ'], v['reject']
+    FAMS['wide']['c0'] = v['wide_c0']
+    FAMS['narrow']['c0'] = v['narrow_c0']
+
+
+def rejected(cx, cy):
+    """Bump centre inside the shared exclusion zone (union of the L quadrant and the hole, grown by REJECT)."""
+    if REJECT is None:
+        return False
+    m = REJECT
+    inq = (cx > LC - m) and (cy > LC - m)
+    inh = (cx - HC[0]) ** 2 + (cy - HC[1]) ** 2 < (HR + m) ** 2
+    return bool(inq or inh)
 T_END = 0.25
 N_OUT = 5
 LAT = 64                          # scoring lattice spacing 1/64 per unit length
@@ -35,6 +57,9 @@ W_RANGE = (0.035, 0.05)
 SPLITS = {'train': (1, 192), 'dev': (2, 8), 'val': (3, 32), 'test': (4, 32)}
 # every campaign / pilot seed we know of (asserted disjoint)
 CAMPAIGN_SEEDS = {0, 7090702, 911702, 20260927, 20260916, 923801, 923901, 3_000_001, 4_000_001, 3_000_000, 4_000_000}
+
+
+LC = HC = HR = HSQ = REJECT = None
 
 
 def seed_of(fam, lev, split):
@@ -53,6 +78,9 @@ def draw(fam, lev, split, n=None):
         r = np.random.default_rng([seed, j])
         cx = r.uniform(F['c0'], F['c0'] + F['W'])
         cy = r.uniform(F['c0'], F['c0'] + F['W'])
+        while rejected(cx, cy):
+            cx = r.uniform(F['c0'], F['c0'] + F['W'])
+            cy = r.uniform(F['c0'], F['c0'] + F['W'])
         w = r.uniform(*W_RANGE)
         a = r.uniform(*A_RANGE)
         nu = math.exp(r.uniform(math.log(lo), math.log(hi)))
@@ -99,7 +127,7 @@ def inside(dom, x, y, tol=1e-12):
 
 
 def area(dom):
-    return {'B': SIDE ** 2, 'L': 0.75 * SIDE ** 2, 'H': SIDE ** 2 - math.pi * HR * HR}[dom]
+    return {'B': SIDE ** 2, 'L': SIDE ** 2 - (SIDE - LC) ** 2, 'H': SIDE ** 2 - math.pi * HR * HR}[dom]
 
 
 def envelope_np(dom, x, y, box_only=False):
@@ -331,3 +359,6 @@ def rule_selfcheck(dom, k, q):
     return dict(area=a, area_exact=area(dom), area_relerr=abs(a - area(dom)) / area(dom),
                 phi2=i1, phi2_fine=i2, phi2_relerr=abs(i1 - i2) / abs(i2),
                 all_inside=bool(np.all(inside(dom, X[:, 0], X[:, 1]))))
+
+
+configure(VARIANT)

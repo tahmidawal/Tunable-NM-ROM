@@ -1,4 +1,4 @@
-{"lane": "imp-geometry", "utc": "2026-10-21T17:48:08Z", "step": "3: code written; waiting for a local slot / preparing cluster smoke",
- "waiting_on": {"slurm_jobs": [], "codex_output": null, "codex_pid": null, "local_pid": null},
- "expected_finish_utc": "", "last_commit": "d417cb2d6",
- "gpu_hours_spent": 0.0, "gpu_hours_cap": 62, "notes": "A1 appended; interaction check on unit geometry queued for a local slot"}
+{"lane": "imp-geometry", "utc": "2026-10-21T17:50:13Z", "step": "5: cluster smoke1 running (debug + controls + interaction)",
+ "waiting_on": {"slurm_jobs": ["6158037"], "codex_output": null, "codex_pid": null, "local_pid": null},
+ "expected_finish_utc": "2026-10-21T18:50:13Z", "last_commit": "96ceffb15",
+ "gpu_hours_spent": 0.0, "gpu_hours_cap": 62, "notes": "smoke allowance 1 GPU-h"}

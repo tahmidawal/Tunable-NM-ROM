@@ -79,7 +79,7 @@ def stage_ref(a, out, D):
     lev = a.lev
     levels = REF_LEVELS[lev]
     if a.smoke:
-        levels = tuple((n // 4, nt // 4) for n, nt in levels)
+        levels = ((64, 500), (128, 1000), (256, 2000))
     res = {}
     for split in ('dev', 'val', 'test'):
         Us, stats = [], []
@@ -124,7 +124,7 @@ def stage_data(a, out, D):
     n, nt = DATA_GRID[a.lev]
     nb = BANK_SAMPLE[a.lev]
     if a.smoke:
-        n, nt, nb = n // 4, nt // 4, nb // 2
+        n, nt, nb = 128, 1000, 64
     gr = fd.Grid(a.dom, n)
     m = gr.mask_np
     flat = jnp.asarray(np.where(m.ravel())[0])
@@ -196,7 +196,7 @@ def load_refs(out, split):
 def pod_space(a, out):
     n, _ = DATA_GRID[a.lev]
     if a.smoke:
-        n //= 4
+        n = 128
     Phi = np.load(out / 'pod_Phi.npy')
     return PD.pod_space(a.dom, n, Phi, n_init=min(128, n))
 

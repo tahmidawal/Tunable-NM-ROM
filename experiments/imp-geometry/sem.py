@@ -22,7 +22,7 @@ def gll(p):
     from numpy.polynomial import legendre as L
     c = np.zeros(p + 1)
     c[-1] = 1
-    inner = L.legroots(L.legder(c)) if p > 1 else np.array([])
+    inner = np.real(L.legroots(L.legder(c))) if p > 1 else np.array([])
     x = np.concatenate([[-1.0], np.sort(inner), [1.0]])
     Pp = L.legval(x, c)
     w = 2.0 / (p * (p + 1) * Pp ** 2)

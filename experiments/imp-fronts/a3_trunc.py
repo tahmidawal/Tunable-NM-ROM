@@ -104,7 +104,8 @@ def main():
         verdict_reg = 'INCONCLUSIVE'
     else:
         verdict_reg = 'STOP (descriptive)' if pc['stop_K9216_regimes'] else 'pass (descriptive)'
-    out = dict(design='DESIGN.md §2 A3 + Amendments 1, 6', provenance=F.provenance(), controls=ctrl, primary=PRIMARY,
+    out = dict(thresholds=dict(stop_rise=1e-3, K_stop=9216, identity=1e-12, repro=1e-9),
+               design='DESIGN.md §2 A3 + Amendments 1, 6', provenance=F.provenance(), controls=ctrl, primary=PRIMARY,
                verdict=verdict, verdict_regime_scope=verdict_reg, k16_stress_dworst_in_range=stress,
                excluded_ineligible=excluded, timing_gate='deferred (GPU, not in this lane brief)', configs=configs)
     F.write_json('a3_trunc', out)

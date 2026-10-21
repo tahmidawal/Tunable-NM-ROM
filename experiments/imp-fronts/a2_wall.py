@@ -247,8 +247,9 @@ def main():
     decision = ('INCONCLUSIVE' if not ctrl['controls_pass'] else ('RUN' if crit['tail_3x'] and crit['wall_share_half'] else 'DEFER'))
     rr = [r['retracted_fd_control_fires'] for r in rows.values() if 'retracted_fd_control_fires' in r]
     retracted = dict(n_in_range=len(rr), n_fired=int(sum(rr)),
-                     note='original A2 FD-stencil control C-A2+ (fire on every in-range case) replayed; dropped by Amendment 1')
-    out = dict(design='DESIGN.md A2 as replaced by Amendments 1-7', provenance=F.provenance(), retracted_control_replay=retracted,
+                     note='curvature condition of the retracted original control C-A2+ (FD stencil, >= 10x on every in-range case) replayed; its beta condition is not replayed; dropped by Amendment 1')
+    out = dict(thresholds=dict(tail_ratio=3, omega=0.5, omega_plus=0.5, omega_minus=0.25),
+               design='DESIGN.md A2 as replaced by Amendments 1-7', provenance=F.provenance(), retracted_control_replay=retracted,
                source=str(F.ROMDIR / 'R_R384_LSPG_CNR_1.npz'), excluded_ineligible=excluded, invalid_rom_runs=invalid,
                controls=ctrl, criteria=crit, decision_arm_c=decision, groups=groups, rows=rows)
     F.write_json('a2_wall', out)

@@ -71,7 +71,8 @@ def main():
     ctrl['controls_pass'] = bool(ctrl['containment_ok'] and ctrl['null_must_be_stopped'])
     verdict = ('INCONCLUSIVE (control failed or empty C1)' if not ctrl['controls_pass'] or dec['continue_hybrid'] is None else
                ('F15 continues' if dec['continue_hybrid'] else 'STOP F15'))
-    out = dict(design='DESIGN.md §2 A4 + Amendments 1, 6', provenance=F.provenance(), dims=dims, ranks=RANKS,
+    out = dict(thresholds=dict(factor_vs_sines=0.5, strict_tol=1e-12, containment=1e-12),
+               design='DESIGN.md §2 A4 + Amendments 1, 6', provenance=F.provenance(), dims=dims, ranks=RANKS,
                excluded_ineligible=excluded, C1_worst=worst, decision=dec,
                controls=ctrl, verdict=verdict, summary=summ, rows=fl)
     F.write_json('a4_hybrid', out)

@@ -215,7 +215,7 @@ def main():
         L.append('')
         L.append(f"**Outcome for arm (c): {a2['decision_arm_c']}** (a budget-prioritisation heuristic, Amendment 1).")
         L.append('')
-        L.append('| cohort | median $\\tau_{4096}$ decoded / reference | median $\\omega$ decoded |')
+        L.append('| cohort (conditional E0-style references) | median $\\tau_{4096}$ decoded / reference | median $\\omega$ decoded |')
         L.append('|---|---|---|')
         for coh in ('in_range', 'N0s', 'C1', 'C2'):
             gg = a2['groups'][coh]
@@ -237,10 +237,10 @@ def main():
         for k, cc in a3['configs'].items():
             ir, rg = cc['scopes']['in_range'], cc['scopes']['all_regimes']
             pp = lambda v: 'n/a' if v is None else f'{100 * v:+.3g} pp'
-            L.append(f"| {k} | {pct(ir['worst'])} | {pp(ir['dworst_2304'])} | {pp(ir['dworst_4096'])} | {pp(ir['dworst_9216'])} | "
-                     f"{pct(rg['worst'])} | {pp(rg['dworst_9216'])} |")
+            L.append(f"| {k} | {pct(ir.get('worst'))} | {pp(ir['dworst_2304'])} | {pp(ir['dworst_4096'])} | {pp(ir['dworst_9216'])} | "
+                     f"{pct(rg.get('worst'))} | {pp(rg['dworst_9216'])} |")
         L.append('')
-        L.append(f"**Outcome: {a3['verdict']}** (regime scope, descriptive: {a3['verdict_regime_scope']}). Controls: full-sine "
+        L.append(f"**Outcome: {a3['verdict']}** (regime scope, descriptive: {a3.get('verdict_regime_scope', 'n/a')}). Controls: full-sine "
                  f"identity {a3['controls']['identity_all']}, constructed fixture trips the rule {a3['controls']['fixture_trips']}, "
                  f"reproduction of jcp-regimes errors {a3['controls']['repro_all']}. A negative change means truncation removes "
                  'high-frequency ROM error; it is not an accuracy gain of the method. The GPU timing gate of F7 is deferred '
@@ -282,18 +282,20 @@ def main():
     L.append('')
     if a2 and ok(a2, 'retracted_control_replay'):
         rr = a2['retracted_control_replay']
-        L.append(f"- The original A2 finite-difference wall-curvature control (must fire on every in-range case) fires on "
-                 f"{rr['n_fired']} of {rr['n_in_range']} in-range cases when replayed; it was dropped before any A2 decision "
-                 '(Amendment 1), as design audit 1 had found.')
+        L.append(f"- The curvature condition of the retracted original A2 control (finite-difference stencil, must fire on every "
+                 f"in-range case) fires on {rr['n_fired']} of {rr['n_in_range']} in-range cases when replayed; the control was "
+                 'dropped before any A2 decision (Amendment 1), as design audit 1 had found.')
     if a2 and ok(a2, 'controls', 'identity'):
         idn = a2['controls']['identity']
         if 'original_dv_1em3_gap' in idn:
             L.append(f"- The registered bank-values check at spacing $10^{{-3}}$ gave a gap of {g(idn['original_dv_1em3_gap'])} against "
                      f"a bound of {g(idn['bank_path_bound'])} (value-path truncation); it was respecified (Amendments 6, 7): "
                      f"Richardson gap {g(idn['bank_path_gap'])}, pass {idn['bank_path_ok']}.")
-    L.append('- Code audits 1–3 found and the lane fixed: tail round-off from cumulative subtraction, NaN-tolerant A1 gates, '
-             'unverified A1 inputs (the upwind data were regenerated with persisted settings), A3 secondary-scope and '
-             'reproduction handling, and report robustness.')
+    L.append('- Phase-A code audits found and the lane fixed: tail round-off from cumulative subtraction, NaN-tolerant A1 gates, '
+             'unverified A1 inputs, A3 secondary-scope and reproduction handling, and report robustness.')
+    if a1 and ok(a1, 'inputs') and a1['inputs']['ok'] and a1['inputs'].get('settings_unpersisted') == 0:
+        L.append(f"- The A1 upwind data were regenerated with persisted generator settings and descriptors; all "
+                 f"{a1['inputs']['n_files']} files verified (manifest, generator hash, settings, descriptors, IC).")
     for nm, d in (('A1', a1), ('A2', a2), ('A3', a3), ('A4', a4)):
         if d and d.get('run_commit'):
             rc = d['run_commit']
@@ -310,11 +312,11 @@ def main():
         ('bank', 'the learned set of 512 ordered coordinate-network functions whose first r span the reduced model'),
         ('floor $f_B$', 'relative error of the best lattice fit of a reference field by basis $B$: '
                         '$\\max_{k=1..5}\\lVert u(t_k)-P_Bu(t_k)\\rVert/\\lVert u(t_0)\\rVert$'),
-        ('E0 / E0-style ST reference', 'second-order space-time references on fine meshes; ε_ref is their conditional Richardson '
-                                        'uncertainty estimate'),
-        ('dev6, val32', 'the development and validation cases of the training box (ν ∈ [0.01, 0.1], a ∈ [0.5, 2])'),
-        ('N0s', 'the stiff corner inside the training box (lowest ν, largest a)'),
-        ('C1, C2', 'cohorts with fronts steeper than training: s = a/ν in [250, 500] and [500, 1000]'),
+        ('E0 / E0-style ST reference', 'second-order space-time references on fine meshes; $\\varepsilon_{\\rm ref}$ is their '
+                                        'conditional Richardson uncertainty estimate'),
+        ('dev6, val32', 'the development and validation cases of the training box ($\\nu\\in[0.01,0.1]$, $a\\in[0.5,2]$)'),
+        ('N0s', 'the stiff corner inside the training box (lowest $\\nu$, largest $a$)'),
+        ('C1, C2', 'cohorts with fronts steeper than training: $s=a/\\nu$ in $[250,500]$ and $[500,1000]$'),
         ('$s$, $q$', '$s=a/\\nu$ nominal steepness; $q=ah/(2\\nu)$ numerical-viscosity ratio of first-order upwinding'),
         ('N0, Ap, Am, B1, B2', 'other jcp-regimes cohorts: N0 in range; Ap ν above range; Am ν below range; B1 two same-sign bumps; '
                                'B2 a signed pair of bumps'),
@@ -322,16 +324,17 @@ def main():
         ('Spearman', 'rank correlation coefficient between two per-case quantities'),
         ('containment violation', 'largest amount by which the hybrid floor exceeds the smaller of its two constituent floors; '
                                   'must be zero up to round-off because the hybrid span contains both'),
-        ('upwind generator', 'the incumbent training-data solver: first-order sign-upwind advection, backward Euler, Δt = 0.005, '
-                             '256 nodes per axis'),
+        ('upwind generator', 'the incumbent training-data solver: first-order sign-upwind advection, backward Euler, '
+                             '$\\Delta t=0.005$, 256 nodes per axis'),
         ('smearing excess D', 'how much more a basis prefers smeared (upwind) over sharp (reference) fields than the same number of '
                               'sines does'),
         ('LOO POD', 'leave-one-case-out proper orthogonal decomposition basis built from the other cases'),
         ('T6, X', 'the six target cases of A1 and its extended case set'),
         ('Laplacian sines $S_K$', 'the first $K$ products $\\sin(\\pi k_1x)\\sin(\\pi k_2y)$ ordered by $k_1^2+k_2^2$'),
         ('sine tail $\\tau_K$', 'relative norm of the part of a field beyond its first $K$ Laplacian sines'),
-        ('wall share ω', 'fraction of the beyond-4096 tail energy within 8 lattice nodes of the walls'),
-        ('wall curvature κ_a', 'RMS normal second derivative of a decoded field on the walls, relative to the interior Laplacian'),
+        ('wall share $\\omega$', 'fraction of the beyond-4096 tail energy within 8 lattice nodes of the walls'),
+        ('wall curvature $\\kappa_a$', 'RMS normal second derivative of a decoded field on the walls (gradient-difference '
+                                         'estimate), relative to the interior Laplacian'),
         ('LSPG-CN-R', 'least-squares Petrov–Galerkin ROM with Crank–Nicolson time stepping and Rannacher start'),
         ('arm (a), (b), (c)', 'Phase B single-change retrains: data fidelity, steep/low-ν coverage, boundary-compatible output'),
         ('INCONCLUSIVE', 'a pre-registered control did not behave as required, so the diagnostic is not read either way'),
@@ -340,14 +343,16 @@ def main():
         L.append(f'- **{t}**: {d}.')
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')
     exp = dict(lane='imp-fronts', phase='A (interim)', commit=commit(), reference_label='conditional E0 / E0-style ST',
-               A1=None if not a1 else dict(verdict=a1['verdict'], controls_pass=a1['controls']['controls_pass'], **a1['summary'],
-                                            source='checks/a1_smear.json'),
+               A1=None if not a1 else dict(verdict=a1.get('verdict'), controls_pass=(a1.get('controls') or {}).get('controls_pass'),
+                                            summary=a1.get('summary'), source='checks/a1_smear.json'),
                A2=None if not a2 else dict(decision_arm_c=a2['decision_arm_c'], controls_pass=a2['controls']['controls_pass'],
                                             in_range=a2['groups']['in_range'], source='checks/a2_wall.json'),
-               A3=None if not a3 else dict(verdict=a3['verdict'], verdict_regime_scope=a3['verdict_regime_scope'],
-                                            primary=a3['primary'], primary_scopes=a3['configs'][a3['primary']]['scopes'],
+               A3=None if not a3 else dict(verdict=a3.get('verdict'), verdict_regime_scope=a3.get('verdict_regime_scope'),
+                                            primary=a3.get('primary'),
+                                            primary_scopes=(a3.get('configs', {}).get(a3.get('primary')) or {}).get('scopes'),
                                             source='checks/a3_trunc.json'),
-               A4=None if not a4 else dict(verdict=a4['verdict'], C1_worst=a4['C1_worst'], source='checks/a4_hybrid.json'),
+               A4=None if not a4 else dict(verdict=a4.get('verdict'), C1_worst=a4.get('C1_worst'), source='checks/a4_hybrid.json'),
+               gpu_hours_phase_a=json.loads((HERE / 'runs/GPU-LEDGER.json').read_text()).get('cumulative_gpu_hours'),
                plots=figs)
     (HERE / 'EXPORT.json').write_text(json.dumps(exp, indent=1, default=float))
     print('report.md written;', figs)

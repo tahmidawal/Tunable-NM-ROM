@@ -181,10 +181,7 @@ def verify_inputs(T6, X):
     if (T6n, Xn) != (T6, X):
         bad.append('T6/X selection rule no longer reproduces sets.json')
     return dict(ok=not bad, problems=bad, n_files=len(need), settings_unpersisted=len(settings_unpersisted),
-                settings_note=('files written before settings were persisted: certified by the generator sha256 (constants '
-                               'DT, NUM_STEPS fixed in the file; NEWTON_ITERS, LIN_TOL, LIN_MAXITER env-overridable and '
-                               'not set in the gen environment) and by the G2 residual gate; descriptors cx, cy, w are '
-                               'certified by the G1 IC identity'))
+                settings_note='every file must carry persisted generator settings and all five descriptors (Amendment 6)')
 
 
 def analyze():
@@ -302,7 +299,9 @@ def analyze():
     else:
         verdict = 'ambiguous'
     from scipy.stats import spearmanr
-    out = dict(design='DESIGN.md §2 A1 + Amendments 1-6', provenance=F.provenance(), inputs=inputs,
+    out = dict(thresholds=dict(Dpos_min=2, Dneg_max=1.25, resolution_min=2, consistent_med=2, consistent_min_gt1=5,
+                               not_consistent_med=1.25, exact_D_tol=1e-10, G1=1e-12, G2=1e-8),
+               design='DESIGN.md §2 A1 + Amendments 1-6', provenance=F.provenance(), inputs=inputs,
                manifest=(OUT / 'MANIFEST.sha256').read_text(),
                counts=dict(X=len(X), T6=len(T6), excluded_ineligible=[f'{a}|{b}' for a, b in F.all_cases(F.IN_RANGE + ('N0s',))
                                                                      if f'{a}|{b}' not in X]),

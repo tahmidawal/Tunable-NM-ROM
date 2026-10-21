@@ -1,0 +1,126 @@
+{
+ "fresh_sha256": "13de3cca9ce32c8d6f1e5f56f30373b4b69b96494131671eaee1ddb5047c51c9",
+ "rtol": 1e-09,
+ "seed_root": {
+  "tag": 1229803590,
+  "differs_from_regimes_tag": true,
+  "tag_not_a_public_seed": true,
+  "regimes_tag": 1380271945,
+  "public_one_word_seeds": [
+   0,
+   1000,
+   911702,
+   923651,
+   923801,
+   923901,
+   5550001,
+   5550002,
+   7090702,
+   20260916,
+   20260927,
+   3100000001,
+   3100000002,
+   3100000003,
+   3100000004,
+   3100000005,
+   3100000006,
+   3100000007,
+   3100000008,
+   3100000101,
+   3100000102,
+   3100000103
+  ],
+  "effective_forms": {
+   "FI j=0": [
+    1229803590
+   ],
+   "FN0s/FC1/FC2 j=0": [
+    1229803590,
+    "g"
+   ],
+   "general": [
+    1229803590,
+    "g",
+    "j"
+   ]
+  },
+  "numpy_trailing_zero_equivalence": true,
+  "caveat": "E0 sealed / OOD 2D rows use default_rng([secret_seed, j]); with trailing-zero equivalence the fresh j=0 rows of g=1,2,3 coincide with such a stream only if a secret seed equals the tag and j equals g. The secret seeds are never opened by this lane; this residual possibility is recorded, not checked.",
+  "passed": true
+ },
+ "main": {
+  "passed": true,
+  "hits": [],
+  "within_fresh_duplicates": [],
+  "n_fresh": 44,
+  "counts": {
+   "E0_dev6_val32": 38,
+   "jcp_regimes": 88,
+   "train_incumbent_and_arm_a": 4608,
+   "train_arm_b_coverage": 4608
+  }
+ },
+ "two_bump_not_comparable": {
+  "B1": 16,
+  "B2": 16
+ },
+ "must_fail_injection": {
+  "label": "val32|0",
+  "flagged": true,
+  "hits": [
+   {
+    "fresh": "INJECT|val32|0",
+    "table": "E0_dev6_val32",
+    "other": "val32|0"
+   }
+  ],
+  "within_fresh_duplicates": []
+ },
+ "C_B5_pass": true,
+ "ranges": {
+  "FI": {
+   "s": [
+    18.415327630479474,
+    143.11245743765326
+   ],
+   "nu": [
+    0.011911951223326476,
+    0.07126233734682867
+   ],
+   "test": 8
+  },
+  "FN0s": {
+   "s": [
+    127.20983362183365,
+    184.8590426611259
+   ],
+   "nu": [
+    0.01015638437881763,
+    0.012517505061593524
+   ],
+   "test": 8
+  },
+  "FC1": {
+   "s": [
+    257.6380732301997,
+    415.02963558296034
+   ],
+   "nu": [
+    0.0035221739706343363,
+    0.006991791057422572
+   ],
+   "test": 8
+  },
+  "FC2": {
+   "s": [
+    511.50674673641,
+    632.8076053206987
+   ],
+   "nu": [
+    0.001951628651569416,
+    0.0033730683171556333
+   ],
+   "test": 4
+  }
+ }
+}

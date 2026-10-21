@@ -1,0 +1,18 @@
+A3 POD done 13.109066513134167 rmax 512 orth 1.800781745942004e-13
+A3 tensor built 478.3003852700349
+A3 ROM-T r=512 5:inf 10:inf 20:1.76e-02 40:1.76e-02 80:1.75e-02 160:1.75e-02 320:1.75e-02
+/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-spectral-pilot/experiments/spectral-pilot/romlib.py:198: RuntimeWarning: overflow encountered in square
+  d2 = np.sum((Z - Cref) ** 2, axis=-1) + floor2
+A3 ROM-Q r=512 Mq=16 5:inf 10:inf 20:inf 40:inf 80:inf 160:inf 320:inf 640:inf 1280:inf 2560:inf
+A3 ROM-Q r=512 Mq=24 5:inf 10:inf 20:inf 40:inf 80:inf 160:inf 320:inf 640:inf 1280:inf 2560:inf
+A3 ROM-Q r=512 Mq=32 5:inf 10:inf 20:inf 40:inf 80:inf 160:inf 320:inf 640:inf 1280:inf 2560:inf
+/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-spectral-pilot/experiments/spectral-pilot/rom_a.py:40: RuntimeWarning: overflow encountered in square
+  dd = np.sqrt(np.sum((Z - prev).reshape(Z.shape[0], Z.shape[1], -1) ** 2, axis=-1)) / den[:, None]
+A3 ROM-Q r=512 Mq=48 5:inf 10:inf 20:1.76e-02 40:1.76e-02 80:1.75e-02 160:1.75e-02 320:1.75e-02
+A3 ROM-Q r=512 Mq=64 5:inf 10:inf 20:1.76e-02 40:1.76e-02 80:1.75e-02 160:1.75e-02 320:1.75e-02
+A3 ROM-Q r=512 Mq=96 5:inf 10:inf 20:1.76e-02 40:1.76e-02 80:1.75e-02 160:1.75e-02 320:1.75e-02
+A3 ROM-Q r=512 Mq=128 5:inf 10:inf 20:1.76e-02 40:1.76e-02 80:1.75e-02 160:1.75e-02 320:1.75e-02
+A3 ROM-Q r=512 Mq=192 5:inf 10:inf 20:1.76e-02 40:1.76e-02 80:1.75e-02 160:1.75e-02 320:1.75e-02
+A3 ROM-Q r=512 Mq=256 5:inf 10:inf 20:1.76e-02 40:1.76e-02 80:1.75e-02 160:1.75e-02 320:1.75e-02
+A3 G9 {'r': 64, 'n': 160, 'max': 7.154563035142603e-16}
+A3 done

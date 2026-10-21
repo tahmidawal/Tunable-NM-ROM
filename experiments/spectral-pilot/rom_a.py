@@ -68,6 +68,7 @@ def main():
     ap.add_argument('--no-quad', action='store_true')
     ap.add_argument('--no-sine', action='store_true')
     ap.add_argument('--g9-only', action='store_true')
+    ap.add_argument('--only-r', type=int, default=None, help='checkpoint unit: run one r and merge into rom.json')
     a = ap.parse_args()
     lv = a.level
     d = C.RUNS / 'A' / lv
@@ -123,6 +124,11 @@ def main():
 
     rlist = [r for r in R_LADDER if r <= rmax]
     rom_t, rom_q, rom_s, gates = {}, {}, {}, {}
+    if a.only_r:
+        old = json.loads((d / 'rom.json').read_text())
+        rom_t = {int(k): v for k, v in old['rom_t'].items()}
+        rom_q, rom_s, gates = old['rom_q'], old['rom_sine'], old['gates']
+        rlist = [a.only_r]
     Bq_phi = {}
     if a.g9_only:
         old = json.loads((d / 'rom.json').read_text())

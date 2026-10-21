@@ -88,6 +88,7 @@ def main():
                     + ('' if c.get('continue_on_fail') else '[ $rc -eq 0 ] || FAIL=1\n')
                     + ('' if c.get('always_run') else 'fi\n'))
     body = '\n'.join(cmds)
+    acc_line = ('cp output/EARLY_EXIT.json output/ACCEPT.json' if cfg.get('acceptance') else ':')
     script = f'''#!/bin/bash
 #SBATCH --job-name=imm_{a.attempt}
 #SBATCH --partition=gpu
@@ -111,7 +112,8 @@ export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp" CUDA_CACHE_PATH
 export PYTHONDONTWRITEBYTECODE=1 SOURCE_COMMIT=$(cat $TASK_ROOT/COMMIT.txt) OUT="$TASK_ROOT/output"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH" "$OUT"
 cd "$TASK_ROOT"
-finalize() {{ cd "$TASK_ROOT"; mkdir -p output; echo "{{\"early_exit\": $1, \"reason\": \"$2\", \"all_passed\": false}}" > output/EARLY_EXIT.json
+finalize() {{ cd "$TASK_ROOT"; mkdir -p output; printf '{{"early_exit": %s, "reason": "%s", "all_passed": false}}\n' "$1" "$2" > output/EARLY_EXIT.json
+  {acc_line}
   find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256; echo "early_exit=$1 ($2)"; exit $1; }}
 sha256sum -c MANIFEST.sha256 --quiet || finalize 3 manifest; echo "stage MANIFEST OK"
 echo "host=$(hostname) source_commit=$(cat COMMIT.txt)"

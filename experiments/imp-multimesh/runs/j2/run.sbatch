@@ -14,7 +14,8 @@ export JAX_DEFAULT_MATMUL_PRECISION=highest
 export XDG_CACHE_HOME="$ROOT/cache" TMPDIR="$ROOT/tmp"; mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$ROOT/output/r3a" "$ROOT/output/dn"
 FAIL=0
 echo "host=$(hostname) gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
-finalize() { cd "$ROOT"; echo "{"early_exit": $1, "reason": "$2"}" > output/EARLY_EXIT.json
+finalize() { cd "$ROOT"; printf '{"early_exit": %s, "reason": "%s"}
+' "$1" "$2" > output/EARLY_EXIT.json
   find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256; echo "early_exit=$1 ($2)"; exit $1; }
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}', flush=True); sys.exit(0 if b=='gpu' else 42)" || finalize 42 gpu-preflight
 ( cd "$ROOT" && sha256sum -c MANIFEST.sha256 --quiet ) || finalize 3 manifest

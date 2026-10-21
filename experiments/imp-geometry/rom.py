@@ -47,9 +47,29 @@ class Space:
                      self.name + '-ecsw', dict(self.meta, ecsw_m=len(idx)))
 
 
-def tensor(Th, Ps, Ss, w):
-    """T[k, i, j] = sum_q w_q Th_qk Ps_qi Ss_qj (precontracted; exact contraction of the discrete rule)."""
-    return jnp.einsum('qk,qi,qj->kij', Th * w[:, None], Ps, Ss, precision='highest')
+def tensor(Th, Ps, Ss, w, chunk=1024):
+    """T[k, i, j] = sum_q w_q Th_qk Ps_qi Ss_qj (precontracted; exact contraction of the discrete rule), accumulated
+    over point chunks as (Th w)^T (Ps (x) Ss) so no (q, k, i) intermediate is formed."""
+    Th, Ps, Ss, w = (jnp.asarray(x) for x in (Th, Ps, Ss, w))
+    m, K = Th.shape
+    r1, r2 = Ps.shape[1], Ss.shape[1]
+
+    @jax.jit
+    def part(A, B, C):
+        BC = (B[:, :, None] * C[:, None, :]).reshape(B.shape[0], -1)
+        return jnp.matmul(A.T, BC, precision='highest')
+    T = jnp.zeros((K, r1 * r2))
+    for s in range(0, m, chunk):
+        e = min(s + chunk, m)
+        A = Th[s:e] * w[s:e, None]
+        if e - s < chunk:                        # pad the last chunk to the compiled shape
+            pad = chunk - (e - s)
+            A = jnp.pad(A, ((0, pad), (0, 0)))
+            B, C = jnp.pad(Ps[s:e], ((0, pad), (0, 0))), jnp.pad(Ss[s:e], ((0, pad), (0, 0)))
+        else:
+            B, C = Ps[s:e], Ss[s:e]
+        T = T + part(A, B, C)
+    return T.reshape(K, r1, r2)
 
 
 def etdrk4_coefs(Lam, dt, nc=32):

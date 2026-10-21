@@ -1,0 +1,60 @@
+{
+ "geometry": {
+  "MF-SEM": {
+   "curved": [
+    1.4324626415205752e-07,
+    1.4242296578204083e-14,
+    2.4069288229178198e-17
+   ],
+   "curved_decades": 9.774620056811553,
+   "fires": true
+  },
+  "MF-FD": {
+   "sw_err": [
+    3.6429202767069343e-07,
+    9.110719140302103e-08,
+    2.2778891541346165e-08
+   ],
+   "sw_order": [
+    1.9994585823429787,
+    1.9998673905685507
+   ],
+   "fires": true
+  },
+  "MF-MG": {
+   "cycles": 4,
+   "converged": true,
+   "contraction": 0.002622656479579945,
+   "noop_converged": false,
+   "noop_ratio": 1.0,
+   "fires": true
+  },
+  "MF-QUAD": {
+   "area_relerr": 0.0,
+   "all_inside": true,
+   "fires": true
+  },
+  "MF-ENV": {
+   "trace": 0.0,
+   "box_envelope_trace": 0.9023424775543213,
+   "ic_chi_trace": 0.0,
+   "fires": true
+  },
+  "MF-INTERP": {
+   "err_affine": 7.771561172376096e-16,
+   "err_wrong_element": 0.10345379588092274,
+   "fires": true
+  },
+  "score_fixtures": {
+   "SW1a": true,
+   "SW1b": true,
+   "MF-REF": true,
+   "fires": true
+  },
+  "G-COH": {
+   "fires": true
+  }
+ },
+ "all_fire": true,
+ "not_firing": []
+}

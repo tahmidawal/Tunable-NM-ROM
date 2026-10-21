@@ -29,19 +29,35 @@ N_CAND = 32768
 ECSW_KAPPA = (2, 4, 8)
 
 
-def pod(U, h, R):
-    """U (S, n) snapshots (interior nodes); returns Phi (n, R) orthonormal in h^2-weighted inner product, singular
-    values (all)."""
-    Uj = jnp.asarray(U)
-    C = (Uj @ Uj.T) * (h * h)
+def pod(U, h, R, chunk=32768):
+    """U (S, n) snapshots on the host (interior nodes); returns Phi (n, R) orthonormal in the h^2-weighted inner
+    product, and the singular values. Gram and basis are formed in column chunks on the device (memory-bounded)."""
+    U = np.asarray(U)
+    S, n = U.shape
+    C = jnp.zeros((S, S))
+    for j in range(0, n, chunk):
+        B = jnp.asarray(U[:, j:j + chunk])
+        C = C + B @ B.T
+    C = C * (h * h)
     lam, V = jnp.linalg.eigh(C)
     lam, V = lam[::-1], V[:, ::-1]
     R = min(R, int(jnp.sum(lam > lam[0] * 1e-26)))
-    Phi = (Uj.T @ V[:, :R]) / jnp.sqrt(lam[:R])[None, :]
-    # one re-orthonormalisation pass in the weighted inner product (Gram in f64)
-    Q, Rq = jnp.linalg.qr(Phi * h)
-    Phi = Q / h * jnp.sign(jnp.diag(Rq))[None, :]
-    return np.asarray(Phi), np.sqrt(np.maximum(np.asarray(lam), 0))
+    W = V[:, :R] / jnp.sqrt(lam[:R])[None, :]
+    Phi = np.zeros((n, R))
+    for j in range(0, n, chunk):
+        Phi[j:j + chunk] = np.asarray(jnp.asarray(U[:, j:j + chunk]).T @ W)
+    # one re-orthonormalisation pass in the weighted inner product (f64)
+    Q, Rq = jnp.linalg.qr(jnp.asarray(Phi) * h)
+    Phi = np.asarray(Q / h * jnp.sign(jnp.diag(Rq))[None, :])
+    return Phi, np.sqrt(np.maximum(np.asarray(lam), 0))
+
+
+def project(U, Phi, h, chunk=32768):
+    """Coefficients U Phi h^2 in column chunks (host arrays)."""
+    Z = np.zeros((U.shape[0], Phi.shape[1]))
+    for j in range(0, U.shape[1], chunk):
+        Z += np.asarray(jnp.asarray(U[:, j:j + chunk]) @ jnp.asarray(Phi[j:j + chunk]))
+    return Z * h * h
 
 
 def cols_op(gr, Phi, op):

@@ -147,7 +147,7 @@ def stage_data(a, out, D):
     Xin = np.stack([gr.X[m], gr.Y[m]], -1)
     S_all = U.reshape(-1, U.shape[-1])
     Phi, sv = PD.pod(S_all, gr.h, 512 if not a.smoke else 64)
-    Z = (S_all @ Phi) * gr.h ** 2                               # projected coefficients (states, R)
+    Z = PD.project(S_all, Phi, gr.h)                            # projected coefficients (states, R)
     # bank samples (values at the sub-lattice nodes), coordinates
     pos = -np.ones(m.shape, int)
     pos[m] = np.arange(int(m.sum()))

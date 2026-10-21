@@ -69,13 +69,31 @@ def selftest():
     return dict(rows=rows, all_fire=all(r['fires'] for r in rows))
 
 
+CASES = [f'dev6|{s}' for s in range(6)]
+REPS = (0, 1, 2)
+
+
 def cost_by_slot(stage2, label):
-    """{slot case id: median ratio over reps} for valid stage-2 triplets of `label`."""
-    by = {}
+    """{slot case id: median ratio over reps} for valid stage-2 triplets of `label`, and whether the coverage is exact:
+    every registered slot dev6|0..5 with repetitions {0, 1, 2} once each, valid, identity-checked."""
+    by, reps = {}, {}
     for t in stage2:
-        if t['B'] == label and t.get('valid'):
+        if t['B'] == label and t.get('valid') and t.get('hashes_ok', True):
             by.setdefault(t['case'], []).append(t['ratio'])
-    return {c: float(np.median(v)) for c, v in by.items()}, {c: len(v) for c, v in by.items()}
+            reps.setdefault(t['case'], []).append(t['rep'])
+    exact = set(by) == set(CASES) and all(sorted(reps[c]) == list(REPS) for c in CASES)
+    return {c: float(np.median(v)) for c, v in by.items()}, exact
+
+
+def scored_ok(subj):
+    rows = subj.get('scoring', [])
+    return bool(sorted(r_['case'] for r_ in rows) == CASES and all(r_.get('valid') is True and r_.get('repro') is True
+                                                                  for r_ in rows))
+
+
+def scored_ok_A(T):
+    rows = T['subjects'].get('A', {}).get('scoring', [])
+    return bool(sorted(r_['case'] for r_ in rows) == CASES and all(r_.get('valid') is True for r_ in rows))
 
 
 def boot(fs, rs, slots, rng):
@@ -106,7 +124,8 @@ def main():
     RB = json.loads(Path(a.rombox).read_text())
     HERE = Path(__file__).resolve().parent
     b_ = T['config'].get('bindings') or {}
-    chain = dict(timing_bindings_present=bool(b_))
+    chain = dict(timing_bindings_present=bool(b_) and set(b_.get('files', {})) == {
+        'checks/eligibility.json', 'checks/candidates.json', 'checks/rom-box.json'})
     for name_, h_ in (b_.get('files') or {}).items():
         chain[name_] = bool(hashlib.sha256((HERE / name_).read_bytes()).hexdigest() == h_)
     chain['rombox_frozen'] = bool(hashlib.sha256(Path(a.rombox).read_bytes()).hexdigest() ==
@@ -116,7 +135,7 @@ def main():
     chain['ladder_eligibility'] = bool(Lr.get('eligibility_sha256') == hashlib.sha256(Path(a.eligibility).read_bytes()).hexdigest())
     chain_ok = all(chain.values())
     cases = [f'{c}|{j}' for c, j in T['config']['cases']]
-    reps = int(T['config']['reps'])
+    assert cases == CASES and int(T['config']['reps']) == len(REPS), 'timing config is not the registered workload'
     veto = set(T.get('veto') or [])
     rng = np.random.default_rng(20261021)
     res = dict(sources={k: dict(path=v, sha256=hashlib.sha256(Path(v).read_bytes()).hexdigest())
@@ -151,33 +170,40 @@ def main():
                 continue
             row['rom'] = dict(label=rom['label'], worst=rom['worst'], inherited_ratio=rom['ratio_to_A'],
                               inherited_seconds=rom['seconds'], qualification='inherited (jcp-qualify FRONT-2D), prior evidence')
-            rs, rn = cost_by_slot(T['stage2'], rom['label'])
-            subj = T['subjects'].get(rom['label'], {})
-            scored_ok = bool(subj.get('repro_ok') and subj.get('repro_checked') == len(cases)
-                             and all(r_.get('valid') is True for r_ in subj.get('scoring', [])))
-            rom_ok = bool(rom['label'] not in veto and scored_ok and set(rs) == set(cases)
-                          and all(rn[c] == reps for c in cases))
+            rs, rexact = cost_by_slot(T['stage2'], rom['label'])
+            rom_ok = bool(rom['label'] not in veto and scored_ok(T['subjects'].get(rom['label'], {})) and rexact)
             row['rom']['in_job'] = rom_ok
             if not rom_ok:
                 rs = {c: rom['ratio_to_A'] for c in cases}
                 row['rom']['note'] = 'in-job re-measurement failed: inherited C2 ratio used (same GPU type, same convention)'
             row['rom']['cost'] = float(np.median([rs[c] for c in cases]))
-            row['rom']['vs_inherited'] = row['rom']['cost'] / rom['ratio_to_A']
-            row['rom']['consistent_20pct'] = bool(0.8 <= row['rom']['vs_inherited'] <= 1.2)
+            if rom_ok:
+                row['rom']['vs_inherited'] = row['rom']['cost'] / rom['ratio_to_A']
+                row['rom']['consistent_20pct'] = bool(0.8 <= row['rom']['vs_inherited'] <= 1.2)
+            else:
+                row['rom']['vs_inherited'] = row['rom']['consistent_20pct'] = 'not assessed (fallback)'
             if not fsel:
                 row.update(status='inconclusive', reason=f'no union winner: {sel.get("status")}')
                 res['targets'][key] = row
                 continue
-            fs, fn = cost_by_slot(T['stage2'], fsel)
-            fsub = T['subjects'].get(fsel, {})
-            f_scored = bool(fsub.get('repro_ok') and fsub.get('repro_checked') == len(cases)
-                            and all(r_.get('valid') is True for r_ in fsub.get('scoring', [])))
-            f_ok = bool(fsel not in veto and f_scored and set(fs) == set(cases) and all(fn[c] == reps for c in cases))
+            fs, fexact = cost_by_slot(T['stage2'], fsel)
+            qual = Lr['qualification'].get(fsel, {}).get('qualified') is True
+            f_ok = bool(fsel not in veto and scored_ok(T['subjects'].get(fsel, {})) and fexact and qual)
+            # A3.14 decomposition and the paired C = 1 reading (reported, not gating)
+            dec_ = {}
+            for pre in ('KERNEL', 'SETUP'):
+                lb = f'{pre}|{fsel}'
+                cs_, ex_ = cost_by_slot(T['stage2'], lb)
+                dec_[pre.lower()] = float(np.median([cs_[c] for c in cases])) if ex_ and lb not in veto else None
+            c1 = fsel.replace('@C100', '@C1') if fsel.endswith('@C100') and fsel.startswith('psi') else None
+            if c1:
+                cs_, ex_ = cost_by_slot(T['stage2'], c1)
+                dec_['C1_same_config'] = float(np.median([cs_[c] for c in cases])) if ex_ and c1 not in veto else None
             row['fom'] = dict(key=fsel, family=fsel.split('|')[0].upper(),
                               cost=float(np.median([fs[c] for c in cases])) if f_ok else None,
                               stage2_complete=f_ok, per_family={g_.split('|')[0]: T['selection'][g_].get('selected')
                                                                 for g_ in T['selection'] if g_.endswith(f'|{tau:g}|C{C:g}')
-                                                                and not g_.startswith('union')})
+                                                                and not g_.startswith('union')}, decomposition=dec_)
             if not f_ok:
                 row.update(status='inconclusive', reason='union winner vetoed or incomplete stage 2 (A2.26)')
                 res['targets'][key] = row
@@ -195,6 +221,7 @@ def main():
             res['targets'][key] = row
     dec = {t: res['targets'][f'{t:g}|C{GATE_C:g}'] for t in DECISIVE}
     timing_ok = bool(T.get('complete') is True and T.get('backend') == 'gpu' and T['gates'].get('A-valid') is True
+                     and 'A' not in veto and scored_ok_A(T)
                      and all(v.get('fires') for v in T['controls'].values()) and set(T['controls']) >= {'T-dbl', 'T-fault', 'T-id'}
                      and 'H200' in str(T.get('gpu')))
     res['timing_valid'] = timing_ok

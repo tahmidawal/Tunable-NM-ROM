@@ -231,7 +231,7 @@ def vref_solver(L, max_newton=20, lin_maxiter=None):
         KX, KY = faces(kp, L)
         return solve(u0, KX, KY, kp[0], sched, lam)
 
-    def solve(u0, KX, KY, nu, sched, lam):
+    def solve(u0, KX, KY, nu, sched, lam, den_pre=None):
 
         def F(u):
             g = u.reshape(shape)
@@ -246,7 +246,7 @@ def vref_solver(L, max_newton=20, lin_maxiter=None):
             Fn = F(un)
             const = (1 - th) * tau * Fn
             res = lambda u: u - un + th * tau * F(u) + const
-            den = 1 + th * tau * nu * lam
+            den = 1 + th * tau * nu * lam if den_pre is None else den_pre   # th * tau = dt/2 at every CN-R stage
 
             def pre(v):
                 return FC.dstn(FC.dstn(v.reshape(shape)) / den).reshape(-1)
@@ -319,10 +319,11 @@ def make_ccv(L, dt, level, out='lattice'):
 
     def setup(kp):
         KX, KY = faces(kp, L)
-        return dict(KX=KX, KY=KY, nu=kp[0])
+        # every CN-R stage has theta * tau = dt / 2 (four BE half steps: 1 * dt/2; CN: 1/2 * dt), so one denominator
+        return dict(KX=KX, KY=KY, nu=kp[0], den=1 + 0.5 * dt * kp[0] * lam)
 
     def core(u0, S_):
-        r = run.solve(jnp.asarray(u0).reshape(-1), S_['KX'], S_['KY'], S_['nu'], sched, lam)
+        r = run.solve(jnp.asarray(u0).reshape(-1), S_['KX'], S_['KY'], S_['nu'], sched, lam, S_['den'])
         F = jax.vmap(lambda f: fo(f.reshape(L - 1, L - 1)))(r['out'])
         return F, dict(res=r['res'], nwt=r['nwt'], umax=r['umax'], stages=r['stages'], nexp=jnp.int32(nexp),
                        ntol=jnp.float64(ntol))

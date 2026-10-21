@@ -33,6 +33,8 @@ def main():
         backend_gpu=bool('jax_backend=gpu' in log and imp['backend'] == 'gpu' and ref['backend'] == 'gpu'
                          and lad['backend'] == 'gpu' and tim['backend'] == 'gpu'),
         x64_highest=bool('x64+highest ok' in log),
+        impl_real_size=bool(imp.get('small') is False),
+        timing_pilots_ok=bool(tim.get('pilots_ok') is True and tim.get('pilot_foms')),
         impl_checks_pass=bool(imp['all_pass']),
         impl_controls_fire=bool(imp['controls_fire']),
         ref_controls_fire=bool(ref['controls'] and ref['controls'].get('all_fire') is True),

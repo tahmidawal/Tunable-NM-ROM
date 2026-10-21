@@ -40,7 +40,8 @@ def main():
         xcs = {k.split('|', 1)[1]: v for k, v in xc.items() if k.split('|')[0] == f'C{C}'}
         want_xc = {f'dev|{j}' for j in range(4)}
         xc_missing = sorted(want_xc - set(xcs))
-        xc_failed = bool(xc_missing) or any(not xcs[c]['passed'] for c in want_xc if c in xcs)
+        stale = sorted(c for c in want_xc if c in xcs and xcs[c].get('ref_sha256') != rows.get(c, {}).get('ref_sha256'))
+        xc_failed = bool(xc_missing) or bool(stale) or any(not xcs[c]['passed'] for c in want_xc if c in xcs)
         per = {}
         for cid, v in rows.items():
             ok = bool(v['judge']['outcome'] == 'accepted' and v['eps_ref'] is not None and v['eps_ref'] <= ELIG_EPS
@@ -56,7 +57,7 @@ def main():
         pooled = len(want_ids)
         exact = set(per) == want_ids
         out['contrasts'][C] = dict(cases=per, eligible=el, n_cases=len(per), n_pooled_expected=pooled,
-                                   exact_case_set=exact, crosscheck_missing=xc_missing,
+                                   exact_case_set=exact, crosscheck_missing=xc_missing, crosscheck_stale=stale,
                                    coverage=len(el), decidable=bool(len(el) >= COVERAGE and exact
                                                                      and not xc_failed and len(slots) == NSLOT),
                                    crosscheck={k: dict(passed=v['passed'], converged=v['converged'],

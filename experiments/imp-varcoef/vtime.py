@@ -133,8 +133,13 @@ def main():
             assert v_ == [x['fom'] for x in el_['contrasts'][C_]['slots']], ('slots differ from the frozen mask', C_)
         qual_ = set(ca_['candidates'])
         for g_ in cfg['groups']:
-            for k_ in g_['candidates']:
-                assert k_ in qual_, ('timing candidate not a qualified ladder candidate', k_)
+            fam_, tau_, C_ = g_['id'].split('|')
+            if fam_ == 'union':
+                want_ = sorted({f'{k}@{C_}' for f2 in ('PSI', 'ETD', 'FDMG', 'CCV')
+                                for k in ca_['groups'][C_[1:]].get(f'{f2}|{tau_}|{C_}', {}).get('candidates', [])})
+            else:
+                want_ = [f'{k}@{C_}' for k in ca_['groups'][C_[1:]][g_['id']]['candidates']]
+            assert sorted(g_['candidates']) == sorted(want_), ('group differs from the qualified ladder group', g_['id'])
         for k_, v_ in cfg['foms'].items():
             base_ = VK.split_key(k_)
             if base_[2] != 1.0 and base_[0] != 'SETUP':
@@ -158,7 +163,8 @@ def main():
 
     def fcase(k, c):
         pre, kk, C = VK.split_key(base(k))
-        cidf = slots[f'{C:g}'][[cid(x) for x in cases].index(cid(c))]
+        Cs = 100.0 if C == 1.0 else C                     # C = 1 cost reading uses the C = 100 physical cases (paired)
+        cidf = slots[f'{Cs:g}'][[cid(x) for x in cases].index(cid(c))]
         s_, j_ = cidf.split('|')
         return cidf, vcases[s_][int(j_)], C
 
@@ -196,6 +202,9 @@ def main():
             fs = [f_ for f_ in fs if f_.exists()]
             assert fs, ('no reference', cidf, C)
             z = np.load(fs[-1])
+            if cfg.get('bindings'):
+                want_ = json.loads((HERE / cfg['bindings']['eligibility']).read_text())['contrasts'][f'{C:g}']['cases'][cidf]['ref_sha256']
+                assert sha(np.ascontiguousarray(np.asarray(z['lat'], np.float64))) == want_, ('reference hash', cidf, C)
             REFS[(cidf, C)] = (z['lat'], float(np.linalg.norm(z['t0'].ravel())))
         return REFS[(cidf, C)]
 
@@ -289,7 +298,7 @@ def main():
     rep['gates']['A-valid'] = all(r_.get('valid') is True for r_ in rep['subjects'][cfg['A']['label']]['scoring'])
     rep['gates']['G-FR'] = all(rep['subjects'][k]['repro_ok'] and rep['subjects'][k]['repro_checked'] == len(cases)
                                and all(r_.get('valid') is True for r_ in rep['subjects'][k]['scoring'])
-                               for k in fkeys if VK.split_key(k)[0] is None and VK.split_key(k)[2] != 1.0)  # query subjects
+                               for k in fkeys if VK.split_key(k)[0] != 'SETUP' and VK.split_key(k)[2] != 1.0)  # query + KERNEL
     rep['memory']['scoring'] = P.mem()
     save()
 

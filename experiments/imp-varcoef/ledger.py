@@ -28,7 +28,8 @@ def save(d):
                                          for j in d['jobs']), 4)        # finished: actual; queued/running: time limit
     d['updated_utc'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     LED.parent.mkdir(exist_ok=True)
-    tmp = LED.with_suffix('.tmp')
+    import os
+    tmp = LED.with_suffix(f'.tmp.{os.getpid()}')
     tmp.write_text(json.dumps(d, indent=1) + '\n')
     tmp.replace(LED)                                                    # atomic replacement
 
@@ -58,6 +59,14 @@ def main():
         d['jobs'].append(dict(job=job, jobid=jid, gpu_request=res['gpu'], time_limit_hours=res['time_limit_hours'],
                               submitted_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), state='PENDING',
                               gpu_hours=0.0))
+    elif cmd == 'check':                         # budget check before a submission (A3.20): committed + this limit <= cap
+        job = sys.argv[2]
+        res = json.loads((HERE / 'runs' / job / 'RESERVATION.json').read_text())
+        committed = sum((j.get('gpu_hours') or 0.0) if j.get('final') else j['time_limit_hours'] for j in d['jobs'])
+        cap = float(sys.argv[3]) if len(sys.argv) > 3 else PHASE1_CAP
+        ok = committed + res['time_limit_hours'] <= cap + 1e-9
+        print(json.dumps(dict(committed=committed, request=res['time_limit_hours'], cap=cap, ok=ok)))
+        sys.exit(0 if ok else 75)
     elif cmd == 'update':
         for j in d['jobs']:
             if j.get('state') in TERMINAL and j.get('final'):

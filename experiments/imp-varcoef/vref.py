@@ -233,6 +233,7 @@ def main():
                 f'eps={eps} eligible={elig} elapsed={time.perf_counter() - T0:.0f}s')
             if [split, j] in cfg.get('crosscheck', []):
                 xc = crosscheck(case, kp, levels[-1]['lat'], rec['n0'], eps)
+                xc['ref_sha256'] = rec['ref_sha256']
                 rep['crosscheck'][cid] = xc
                 log(f'  XC conv={xc["converged"]} d1={xc["delta1"]:.2e} d2={xc["delta2"]:.2e} e1={xc["e1"]:.2e} '
                     f'e2={xc["e2"]:.2e} U={xc["U_xc"]:.2e} dist={xc["distance"]:.2e} bar={xc["bar"]:.2e} passed={xc["passed"]}')

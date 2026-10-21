@@ -34,6 +34,10 @@ def verify(cfg):
     assert r['frozen_selection_sha256'] == cfg['frozen_selection_sha256'], 'opening record bound to another selection'
     allowed = permitted(json.loads(fs.read_text()))
     assert sorted(r['permitted_keys']) == allowed, 'opening record keys differ from the frozen winners'
-    for k in cfg.get('keys', []):
-        assert k in allowed, ('key not a frozen winner', k)
+    if 'keys' in cfg:
+        assert sorted(cfg['keys']) == allowed, 'test-once keys must be exactly the frozen winners'
+    if 'contrast' in cfg:
+        assert float(cfg['contrast']) == 100.0, 'test-once is at C = 100'
+    if 'contrasts' in cfg:
+        assert [float(c) for c in cfg['contrasts']] == [100.0], 'test references are at C = 100 only'
     return allowed

@@ -9,6 +9,8 @@ NS=/cluster/tufts/paralab/tawal01/imp-varcoef
 SRC=$LANE/runs/$JOB
 [ -f "$SRC/run.sbatch" ] || { echo "not staged: $JOB"; exit 2; }
 [ ! -f "$SRC/JOBID" ] || { echo "already submitted: $(cat $SRC/JOBID)"; exit 3; }
+/home/tahmid/Dev/.venv/bin/python $LANE/ledger.py update >/dev/null 2>&1 || true
+/home/tahmid/Dev/.venv/bin/python $LANE/ledger.py check "$JOB" ${CAP:-8} || { echo "GPU-hour cap: refused"; exit 75; }
 H="ssh -o ConnectTimeout=20 tufts-login"
 echo "squeue before:"; timeout 60 $H 'squeue -u tawal01 -h -o "%i %j %T %M"'
 timeout 60 $H "mkdir -p $NS/.incoming"

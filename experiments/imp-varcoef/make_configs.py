@@ -174,10 +174,10 @@ def test_cfg(refdirs_test, frozen_src):
     import testgate
     dst = HERE / 'checks/FROZEN-SELECTION-4096.json'
     rec = HERE / 'checks/TEST-OPENED.json'
-    assert not rec.exists(), 'the test split has already been opened (A2.18: once)'
     shutil.copyfile(frozen_src, dst)
     keys = testgate.permitted(json.loads(dst.read_text()))
-    rec.write_text(json.dumps(dict(frozen_selection_sha256=sha(dst), permitted_keys=keys, purpose='Phase-1 FOM test-once',
+    with open(rec, 'x') as fh:                                   # exclusive create: the test split opens once (A2.18)
+        fh.write(json.dumps(dict(frozen_selection_sha256=sha(dst), permitted_keys=keys, purpose='Phase-1 FOM test-once',
                                    utc=_t.strftime('%Y-%m-%dT%H:%M:%SZ', _t.gmtime())), indent=1) + '\n')
     bind = dict(test_once=True, frozen_selection='checks/FROZEN-SELECTION-4096.json', frozen_selection_sha256=sha(dst),
                 opening_record='checks/TEST-OPENED.json', opening_record_sha256=sha(rec))

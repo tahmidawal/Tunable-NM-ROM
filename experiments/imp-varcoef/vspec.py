@@ -164,6 +164,8 @@ def make_psi(N, dt, scheme, tol, out='lattice', maxiter=200, Q=None):
 
         def interval(c, i):
             c = jax.lax.fori_loop(i * keep, (i + 1) * keep, step, c)
+            mt = PS.nonlinear(c[0], N, 2)[1]                    # accepted state at the interval end, native padded grid
+            c = (c[0], c[1], c[2], jnp.maximum(c[3], mt), c[4])
             return c, (synth(c[0]), c[0])
         st0 = dict(it_sum=jnp.int32(0), it_max=jnp.int32(0), res_max=jnp.float64(0.0), nbad=jnp.int32(0),
                    nst=jnp.int32(0), it_stage=jnp.full(5 * keep, -1, jnp.int32), res_stage=jnp.full(5 * keep, jnp.nan))
@@ -214,6 +216,7 @@ def make_etd(N, dt, kbar_mode, out='lattice', Q=None, Mc=32):
 
         def interval(c, _):
             c = jax.lax.fori_loop(0, keep, step, c)
+            c = (c[0], jnp.maximum(c[1], PS.nonlinear(c[0], N, 2)[1]))   # terminal accepted state, native grid
             return c, (synth(c[0]), c[0])
         (v, um), (outs, coefs) = jax.lax.scan(interval, (b0, jnp.float64(0.0)), None, length=5)
         fields = jnp.concatenate((synth(b0)[None], outs))

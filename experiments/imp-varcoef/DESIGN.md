@@ -452,3 +452,20 @@ A3 overrides A1/A2 where they differ. Numbers refer to the round-3 items.
   labelled "inherited, not re-measured". Outcome labels: **PASS-PROVISIONAL** (before any training the Phase-2 amendment must still
   requalify the denominators in-job and recompute $G$; a prudential rule of this lane), **FAIL** (per the lane-brief gate; denominators
   with inherited qualification), **UNRESOLVED**.
+
+---
+
+## Amendment A6 (2026-10-21, after Codex code audits 1–2; before any job)
+
+- **A6.1 Cheap-edge extension (restates A1.10/A2.21 for code audit 1 item 8).** Every dev-valid configuration that matches some
+  target on the eligible dev cases and sits on a cheap edge of a knob is extended one step beyond that edge (N 12 / L 32,
+  $\Delta t=0.05$, tol $10^{-2}$; CCv: a new tolerance level `4` = $(10^{-3},10^{-4})$, one step looser than t3, registered here). This is a
+  superset of the provisional-winner rule (it contains every extension that rule could trigger) and uses no latency to choose.
+  Its extra cost is included in the ladder certificate.
+- **A6.2 CCv setup.** Every CN-R stage has $\theta\tau=\Delta t/2$, so CCv's per-query setup (face coefficients and the one DST
+  denominator $1+\tfrac{\Delta t}{2}\nu\Lambda_h$) is prepared in `setup` and timed separately as A3.14 requires.
+- **A6.3 C = 1 reading.** The paired PSI cost reading at $C=1$ uses the same physical cases as the $C=100$ slots (κ ≡ ν); it is
+  validity-checked only (no reference at $C=1$) and reported, never gating.
+- **A6.4 Findings noted, not blocking (COMMON-BRIEF §8: forgery-only or single-submitter concurrency).** Replay of the test-once step
+  by a deliberate second invocation, concurrent staging by several submitters, and hand-edited result files: this lane has one
+  submitter acting sequentially; the opening record is created exclusively once, and every acceptance check recomputes from raw outputs.

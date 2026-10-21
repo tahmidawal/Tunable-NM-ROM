@@ -96,8 +96,10 @@ class Job:
                                  stepper_sha256=_fsha(Path(GS.__file__)), tables_sha256=_fsha(Path(HT.__file__)),
                                  A_sha=HT.sha(B.A), cond_Rm=float(np.linalg.cond(np.asarray(B.Rm))),
                                  n0={k: v[2] for k, v in self.U0.items()})
+        self.bank_ok = False
         if cfg.get('bank_arms', True):
             Mm, Km, L0, info = B.bank_ops()
+            self.bank_ok = bool(info['p3_pass'])           # A1.6 / A5: F2 and F2+F3 are "not built" otherwise
             self.U['bank'] = GS.gram_factor('bank', B)
             self.rep['setup']['bank_ops'] = info
             np.savez(self.out / 'arrays' / 'bank_ops.npz', Mass=np.asarray(Mm), Stiff=np.asarray(Km), A=np.asarray(B.A),

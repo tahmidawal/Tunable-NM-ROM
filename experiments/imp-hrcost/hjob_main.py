@@ -35,7 +35,9 @@ def run(J):
     J.phase('R', t)
     # ------------------------------------------------------------------------ F2 ladder (bank) ----
     lad = {}
-    if cfg.get('bank_arms', True):
+    if not J.bank_ok:
+        J.rep['F2'] = dict(status='not built (P3 failed or bank arms disabled)')
+    if J.bank_ok:
         t = time.perf_counter()
         J.keep.add(('bank', 'gauss128'))
         from hjob import ladders
@@ -79,7 +81,7 @@ def run(J):
     # ------------------------------------------------------------------------ fits ----
     fitted = {}
     fams = [('F3a', ('sine', 'gauss128')), ('F3b', ('sine', 'gauss128'))]
-    if cfg.get('bank_arms', True):
+    if J.bank_ok:
         fams.append(('F2F3', ('bank', 'gauss128')))
     for fam, pk in fams:
         if fam not in cfg.get('fits', ['F3a', 'F3b', 'F2F3']):
@@ -104,13 +106,13 @@ def run(J):
     # ------------------------------------------------------------------------ controls (smoke) ----
     if cfg.get('controls'):
         t = time.perf_counter()
-        controls(J, runs_sine, runs_bank if cfg.get('bank_arms', True) else None)
+        controls(J, runs_sine, runs_bank if J.bank_ok else None)
         J.phase('controls', t)
     # ------------------------------------------------------------------------ timing ----
     t = time.perf_counter()
     tc = cfg.get('timing', {})
     pairs = [('AA', dR, 'sine')]
-    if cfg.get('bank_arms', True):
+    if J.bank_ok:
         if J.rep['F2']['first_qualified']:
             q = J.rep['F2']['first_qualified']
             pairs.append((f'F2_{q}', J.table('bank', q)[0], 'bank'))

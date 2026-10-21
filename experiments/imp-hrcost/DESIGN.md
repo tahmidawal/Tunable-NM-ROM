@@ -506,3 +506,27 @@ evaluated, at least one false.
 supported; otherwise the running maximum with the phase order); `nvidia-smi memory.used` samples are observed sampled
 maxima, not guaranteed transient peaks; `ru_maxrss` is a process-lifetime host high-water mark (kB), not an isolated
 measurement of construction copies. The report and the cost certificate state these units and limitations.
+
+## Amendment A5 (2026-10-21; construction-only evidence, before any cluster job and before any verdict data)
+
+**What was seen.** A local GB10 construction diagnostic (`diag_mass.py`, bank only, no cohort data; output
+`checks/diag-mass-convergence-r384-gb10.json`; GB10 numbers are construction diagnostics, not results) shows that the bank's
+stiffness integral $\mathcal K$ converges slowly under Gauss tensor rules at $r=384$: successive relative differences
+$1.0\times10^{-2}$ (384² vs 256²), $7.6\times10^{-4}$ (512² vs 384²), $1.1\times10^{-5}$ (640²), $5.8\times10^{-6}$ (768²),
+$8.4\times10^{-7}$ (1024² vs 768²); $\mathcal M$: $2.0\times10^{-8}$ (768²), $2.0\times10^{-9}$ (1024²). The bank
+(Fourier features with an MLP) carries high-wavenumber content. The registered P3 bar ($10^{-10}$ at Gauss 384² with a
+448² ceiling) is unattainable; under A1.6 F2 and F2+F3 would be "not built" — a construction artefact of an over-strict
+bar, not a finding about bank-tested Galerkin.
+
+**Change (P3 restated).** $\mathcal M,\mathcal K$ are computed with **Gauss 1024²** and checked against **Gauss 768²**;
+bar: relative Frobenius difference $\le 2.5\times10^{-6}$ for both (1 % of the Q2 rollout bar: a relative perturbation
+$\varepsilon$ of the diffusion operator changes the rollout by at most about $\varepsilon$, so the linear terms are
+converged well below every registered bar); ceiling Gauss 1280² (checked against 1024²), after which F2 / F2+F3 are "not
+built". This is an offline cost only. Reported as "linear terms converged under the registered check" (A2.6), with the
+measured differences. P5's mesh-sum comparisons (mass $10^{-4}$, stiffness $10^{-3}$, FD right-hand side $10^{-3}$) are
+fixture assumptions that this spectral content may break (five-point Laplacian relative error $\sim(kh)^2/12$); if they
+fail in the smoke, the measured values are reported and the fixture is re-registered by amendment before the claim it
+protects (independent assembly of the bank operators) is used; P5(i) (host NumPy evaluation, $10^{-10}$) is unaffected.
+
+**Also noted for the reader.** The same spectral content enters the bank-tested advection integrand $G_i\,u\,s$ (a product
+of three bank functions with one derivative); this is the mechanism by which F2 may need many points (§10 hypothesis).

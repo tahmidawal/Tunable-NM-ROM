@@ -29,7 +29,7 @@ T2.CKPT = T2.HERE / 'inputs' / 'sep_hfit_dense_mid_N256_dense.pkl'    # lane cop
 import p1common as P  # noqa: E402
 from p1common import Q  # noqa: E402
 
-MASS_RULE, MASS_CHECK, MASS_FALLBACK, MASS_BAR = 'gauss384', 'gauss320', 'gauss448', 1e-10
+MASS_RULE, MASS_CHECK, MASS_FALLBACK, MASS_BAR = 'gauss1024', 'gauss768', 'gauss1280', 2.5e-6     # DESIGN A5
 
 
 def sha(a):

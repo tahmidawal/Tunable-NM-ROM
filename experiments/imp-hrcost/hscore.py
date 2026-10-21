@@ -283,8 +283,8 @@ def stop_rules(R, A, binding=True):
     out = {}
     # ---- F2
     F2 = R.get('F2')
-    if F2 is None:
-        out['F2'] = 'fired (incomplete evidence): F2 not run'
+    if F2 is None or 'candidates' not in F2:
+        out['F2'] = 'fired (incomplete evidence): F2 not run / not built'
     else:
         lab2 = 'label' if binding else 'label_projected'
         mstar, unresolved = None, False

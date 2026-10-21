@@ -678,3 +678,25 @@ on adaptive tight/tighter iterations. References: per-case bound = the maximum m
 jcp-regimes reference jobs that exercised refinement (their per-case `seconds` records), on the same GPU type, × 1.5.
 Any item without a measured or recorded bound is marked **uncertified** and deferred under S2–S4. The job ceilings of
 B8 hold the cap regardless of the certificate; the certificate predicts whether each item will complete.
+
+---
+
+## Amendment 5 (2026-10-21, after `audits/codex-design-5.md`; supersedes the items named)
+
+**B0 guard and floor route (replaced Amendment 4's dropping rule).** Guard PASS requires finite floors for both the
+arm and K1 on **every** eligible FI test case (≥ 6); any missing or non-finite floor makes the guard UNAVAILABLE,
+except that an observed violation on the available cases still gives STOP (guard). Route (a) requires finite arm and
+K1 floors on every eligible FN0s test case (≥ 5), else UNAVAILABLE. (Floors are CPU quantities computable for every
+eligible reference, so UNAVAILABLE indicates a defect, which is reported.)
+
+**B8 admission.** A job (first attempt or retry) is submitted only if spent GPU-h + the hard ceilings of every running
+or pending job + the proposed job's ceiling + the ceilings of every remaining scheduled item ≤ 15. Otherwise the
+ceilings are shortened (with their exhaustion outcomes) or work is deferred under S2–S4.
+
+**B9 / B5 Q1 scope.** Full Q1 certification (fresh-Jacobian stationarity per step **and** the tight-solve distance) is
+applied to every **prod** run (production candidate). Successor and half runs carry the in-job per-step
+fresh-Jacobian certificate (validity and γ fraction) but no tight comparison; when a half run is promoted to prod at
+$(j,f/2)$ its tight solve is run then. Tighter-anchor solves: one per anchor case (FI test 4, 5; FC1 test 4, 5) at its
+terminal state. Solve inventory per visited state: prod + its tight (1 + 1), succ (1), half (1, if $f>0.25$); per
+anchor: 1 tighter. The certificate's scaled timings are projections; the B8 ceilings and admission rule supply the
+enforceable protection.

@@ -197,7 +197,9 @@ def cell_controls(a, celldir):
         N1 = s16.P[:, :Mt].T @ (s16.w * (P @ z) * (S_ @ z))
         N2 = s16.P[:, :Mt].T @ (w2 * (P @ z) * (S_ @ z))
         rho = float(np.linalg.norm(N2 - N1) / np.linalg.norm(N1))
-        out['MF-Q2'] = dict(rho_faulted=rho, n_zeroed=int(len(top)), fires=bool(rho > 0.116))
+        import finalize as FZ
+        out['MF-Q2'] = dict(rho_faulted=rho, n_zeroed=int(len(top)), violation_established=bool(rho > 0.116),
+                            checker_flags=not FZ.rho_ok(rho), fires=bool(rho > 0.116 and not FZ.rho_ok(rho)))
     # MF-MATCH (real, deterministic fault): the best-resolved valid FD ladder output on val, perturbed by exactly 2 tau
     # (relative, at every scored time), must be scored 'misses' at tau = 0.01; unperturbed it is scored as recorded
     rows = [json.loads(l) for l in (celldir / 'ladder.jsonl').read_text().splitlines()]
@@ -214,11 +216,15 @@ def cell_controls(a, celldir):
                 dv = rng.standard_normal(Of.shape[-1])
                 Of[j, k] = Uv[j, k] + dv / np.linalg.norm(dv) * 0.02 * np.linalg.norm(Uv[j, 0])
         ef = SC.err(Of, Uv)
+        # independent recomputation of the faulted worst error (plain loops)
+        ef_ind = max(max(np.linalg.norm(Of[j, k] - Uv[j, k]) for k in range(1, 6)) / np.linalg.norm(Uv[j, 0])
+                     for j in range(len(Of)))
         Uall = rj['allowance']['U']
         out['MF-MATCH-real'] = dict(key=x['key'], worst_clean=float(e0.max()), recorded=x['worst'],
                                     worst_faulted=float(ef.max()), U=Uall,
                                     verdict_faulted=SC.three_way(float(ef.max()), Uall, 0.01),
-                                    fires=bool(SC.three_way(float(ef.max()), Uall, 0.01) == 'misses'
+                                    violation_established=bool(ef_ind - Uall > 0.01),
+                                    fires=bool(ef_ind - Uall > 0.01 and SC.three_way(float(ef.max()), Uall, 0.01) == 'misses'
                                                and abs(float(e0.max()) - x['worst']) <= 1e-6 * max(x['worst'], 1e-12)))
     return out
 

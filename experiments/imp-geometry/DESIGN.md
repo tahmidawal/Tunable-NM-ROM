@@ -659,3 +659,70 @@ the reference uses its finest level ($n\ge512$, a multiple of 128).
 Release requires `runs/cost/projection.json` from `resources.py`, built from the production-size probe on the production
 GPU type (`runs/smoke/smoke5/probe/*.json`) and the registered ladder sizes (row counts computed from the registered
 ladders, not from the smoke), including compilation, Q1/Q2, timing, test and box jobs, × 1.5 headroom; audited before release.
+
+---
+
+## Amendment A4 (2026-10-21, after Codex design audit 3 = NOT-READY; before any production run)
+
+Audit `audits/codex-design-3.md`. A4 governs over A3 where they differ.
+
+**A4.1 (fix to A3.1).** `runs/descriptors.json` holds, per (family, level, split), the seed, size, **sha256 of the
+descriptor array** and steepness range — not the arrays (they are regenerated deterministically by `geom.draw`). Its
+acceptance rates are **estimates** from a separate 20,000-centre probe per cohort, not counts observed while drawing.
+
+**A4.2 Decision table (replaces A3.4's).** Matching uses only *meets*; a configuration that is *unresolved* never matches.
+Per method side (bank; best competitor over all competitor families) at τ on a cohort: **matched**; **censored** (every
+valid configuration misses); **unresolved-match** (no config meets, at least one is unresolved); **invalid** (no valid
+configuration). Per wide cell and τ on val32:
+
+| reference | bank | competitor side | label |
+|---|---|---|---|
+| unqualified (A3.3) | any | any | no evidence (reference) |
+| qualified | matched | matched, $S\ge2$ | candidate win |
+| qualified | matched | matched, $S<2$ | loss |
+| qualified | censored | matched | loss |
+| qualified | matched | censored / unresolved-match / invalid | no evidence (no ratio; a speed win needs a matched competitor) |
+| qualified | unresolved-match / invalid | any | no evidence |
+| qualified | censored | not matched | no evidence |
+
+Confirmation of a candidate win on test32: test reference unqualified → **unconfirmable** (no evidence); else confirmed iff
+both frozen finalists meet τ, the bank passes Q1/Q2 in-job, and $S_{\rm test}\ge2$ (same max–min rule); a measured failure
+of any of these → **not confirmed**. Cell: **win** iff ≥ 1 confirmed τ; else **loss** iff ≥ 1 τ is loss or not confirmed;
+else **no evidence**. Geometry: **WIN** iff both wide levels win; **otherwise the geometry claim is WITHDRAWN** (the brief's
+"Otherwise withdraw"), sub-labelled *withdrawn (measured loss)* if some level is loss, else *withdrawn (insufficient
+evidence)*. **Attribution** (WIN only), per level at a confirmed τ: *withdrawn* if the box control gives
+$S_{\rm box}\ge S_{\rm geom}/2$ on **either** cohort where both are measured (val or test); *kept* iff both cohorts are
+measured with $S_{\rm box}<S_{\rm geom}/2$ and the $D_{\rm bnd}$ gate passes on both; otherwise *unestablished*.
+WIN-attributed iff each level has a kept τ; else WIN-unattributed. E2 = best over geometries of WIN-attributed >
+WIN-unattributed > WITHDRAWN.
+**Speed statistic (deterministic):** with competitor finalists $\mathcal A$ (≤ 2 per family, all families) and bank
+finalists $\mathcal B$ (≤ 2), $S=\max_{b\in\mathcal B}\min_{a\in\mathcal A}S(a,b)$, $S(a,b)$ = median paired ratio (A3.4);
+ties broken by the lexicographically smaller configuration key; single finalists are the degenerate case. Identical
+finalist pairs are timed once and reused across (τ, statistic).
+**Competitor eligibility** is benchmark eligibility (valid, converged, meets τ), distinct from numerical qualification;
+competitors' Q1/Q2 are reported (A3.4 wording "narrowing" withdrawn: COMMON-BRIEF §3 defines qualification, not
+benchmark admission).
+
+**A4.3 Certificates (replaces the ETDRK4 and CN parts of A3.5).**
+- *ETDRK4:* every step, (i) the update is recomputed by an **independent transcription** of the Cox–Matthews step with
+  the closed-form/series coefficients; per-step relative defect ≤ $10^{-9}$; (ii) the per-query coefficient certificate
+  (A3.5) ≤ $10^{-10}$; (iii) **any** non-finite stage or growth-bound violation invalidates the run (no 1 % allowance).
+  There is no algebraic tolerance in an explicit step; (i)–(ii) are its stated analogue of the tight/tighter check.
+- *Galerkin CN:* $\lVert R(z)\rVert/(\lVert M(z-z_n)\rVert/\Delta t+10^{-14}\lVert Mz\rVert/\Delta t+10^{-300})\le10^{-8}$.
+- *Linearised CN:* $\lVert J\delta+R\rVert/(\lVert R\rVert+10^{-14}\lVert Mz\rVert/\Delta t+10^{-300})\le10^{-10}$; a zero
+  residual passes.
+- *Q2 denominator:* the maximum is over the full population (all 40 cases × 6 output states) of $\lVert N_{q+2}\rVert$;
+  states below $10^{-12}$ of it are skipped; more than 5 % skipped fails Q2.
+
+**A4.4 Controls (fix to A3.6).** MF-MATCH-real fires only if an independent loop recomputation of the faulted worst error
+satisfies $e_{\rm fault}-U>\tau$ **and** the matcher returns *misses*. MF-Q2 fires only if the directly computed
+$\rho_{\rm fault}>0.116$ **and** the shared Q2 predicate (`finalize.rho_ok`) flags it. Both report
+`violation_established`. MF-Q1 and MF-TENS as A3.6. The final v4a cell-control evidence (local CPU smoke) is a release
+prerequisite and is listed in the ready note.
+
+**A4.5 Cost certificate status.** `runs/cost/projection.json` (`resources.py`) exists and is **provisional**: its listed
+unmeasured units (bank steady-state step time, ECSW NNLS fit time, the selection/timing stage) are estimates. The cluster
+smoke allowance (1 GPU-h) is spent (1.07 GPU-h, 0.07 over, recorded in the ledger), so the bank-step and ECSW probe
+(`cluster/bodies/smoke6.sh`, ≤ 0.15 GPU-h) is proposed as the first released job; production cells are submitted only
+after the projection is re-certified with it. Peak memories are taken from the probe JSONs per stage (all below 6 GB
+except POD/ECSW, bounded by the chunking of pod.py and A4's 66-state ECSW population).

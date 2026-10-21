@@ -492,7 +492,7 @@ def stage_time(a, out, D):
             # T-setup: warm-up with a nu different from every timed case
             jax.block_until_ready(qcache[k](jnp.asarray(Dt[0] * np.array([1, 1, 1, 1, 1.0001]))))
         return qcache[k]
-    timing, summary = {}, {}
+    timing, summary, pair_cache = {}, {}, {}
     jax.config.update('jax_log_compiles', True)
     for tau in SC.TAUS:
         for stat in ('worst', 'median'):
@@ -501,6 +501,10 @@ def stage_time(a, out, D):
             for fam in fams:
                 for sa in fin.get((fam, tau, stat)) or []:
                     for sb in bks:
+                        pk = (fam, sa['key'], sb['key'])
+                        if pk in pair_cache:               # identical finalist pair already timed (other tau/stat)
+                            timing[f"{fam}|{tau}|{stat}|{sa['key']}|{sb['key']}"] = pair_cache[pk]
+                            continue
                         qA, qB = getq(fam, sa), getq('bank', sb)
                         n_before = cc.n
                         p = FZ.paired(qA, qB, Dt)
@@ -510,18 +514,26 @@ def stage_time(a, out, D):
                         p['T_id'] = float(max(np.max(np.abs(oa - sa['outputs'][0])) / np.max(np.abs(sa['outputs'][0])),
                                               np.max(np.abs(ob - sb['outputs'][0])) / np.max(np.abs(sb['outputs'][0]))))
                         timing[f"{fam}|{tau}|{stat}|{sa['key']}|{sb['key']}"] = p
-                # family S: min over its finalists of (max over bank finalists = the bank's faster finalist)
-                vals = [max(timing[f"{fam}|{tau}|{stat}|{sa['key']}|{sb['key']}"]['S'] for sb in bks)
-                        for sa in fin.get((fam, tau, stat)) or []] if bks else []
-                if vals:
-                    per_fam[fam] = min(vals)
-            if per_fam:
-                best = min(per_fam, key=per_fam.get)
-                summary[f'{tau}|{stat}'] = dict(S=per_fam[best], best_competitor=best, per_family=per_fam,
-                                                within5pct=[f for f, v in per_fam.items() if v <= 1.05 * per_fam[best]])
+                        pair_cache[pk] = p
+                # A4 selection: S = max over bank finalists b of min over all competitor finalists a of S(a, b);
+                # ties broken by the lexicographically smaller key
+            pairs = {(f2, sa['key'], sb['key']): timing[f"{f2}|{tau}|{stat}|{sa['key']}|{sb['key']}"]['S']
+                     for f2 in fams for sa in fin.get((f2, tau, stat)) or [] for sb in bks}
+            if pairs:
+                per_b = {}
+                for sb in bks:
+                    cand = sorted((v, f2, ka) for (f2, ka, kb), v in pairs.items() if kb == sb['key'])
+                    per_b[sb['key']] = cand[0]
+                bkey = sorted(per_b, key=lambda k: (-per_b[k][0], k))[0]
+                v, best, akey = per_b[bkey]
+                per_fam = {f2: min(x for (g2, ka, kb), x in pairs.items() if g2 == f2 and kb == bkey)
+                           for f2 in {p[0] for p in pairs}}
+                summary[f'{tau}|{stat}'] = dict(S=v, best_competitor=best, competitor_key=akey, bank_key=bkey,
+                                                per_family=per_fam,
+                                                within5pct=[f2 for f2, x in per_fam.items() if x <= 1.05 * v])
             else:
                 summary[f'{tau}|{stat}'] = dict(S=None, bank_matched=bool(bks),
-                                                competitor_matched=any(fin.get((f, tau, stat)) for f in fams))
+                                                competitor_matched=any(fin.get((f2, tau, stat)) for f2 in fams))
             log(f'S tau={tau} {stat}:', summary[f'{tau}|{stat}'])
     jax.config.update('jax_log_compiles', False)
     tdbl = {}

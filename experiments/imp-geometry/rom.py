@@ -222,25 +222,42 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
 
             nz0 = jnp.linalg.norm(z0)
 
+            dE, dE2, dQ, df1, df2, df3 = (c_.real if not cplx else c_ for c_ in dco)
+
+            def st_indep(y):
+                # independent transcription of the Cox-Matthews ETDRK4 update with the closed-form coefficients
+                k1 = Ny(y)
+                s2 = dE2 * y + dQ * k1
+                k2 = Ny(s2)
+                s3 = dE2 * y + dQ * k2
+                k3 = Ny(s3)
+                s4 = dE2 * s2 + dQ * (2 * k3 - k1)
+                k4 = Ny(s4)
+                return dE * y + df1 * k1 + df2 * (2 * k2 + 2 * k3) + df3 * k4
+
             def st2(i, c):
-                y, bad, blow = c
+                y, bad, blow, dfx = c
                 yn = st(i, y)
+                yi = st_indep(y)
+                dfx = jnp.maximum(dfx, jnp.linalg.norm(yn - yi) / (jnp.linalg.norm(yn) + 1e-300))
                 zz = (Vj @ yn).real if cplx else Vj @ yn
                 zp = (Vj @ y).real if cplx else Vj @ y
                 bad = bad + (~jnp.all(jnp.isfinite(zz))).astype(jnp.float64)
                 blow = blow + (jnp.linalg.norm(zz) > 10 * jnp.maximum(nz0, jnp.linalg.norm(zp))).astype(jnp.float64)
-                return yn, bad, blow
+                return yn, bad, blow, dfx
 
             def block(c, _):
                 c = jax.lax.fori_loop(0, keep, st2, c)
                 z = (Vj @ c[0]).real if cplx else Vj @ c[0]
                 return c, decode(z)
             y0c = y0.astype(jnp.complex128) if cplx else y0
-            c, outs = jax.lax.scan(block, (y0c, jnp.asarray(0.0), jnp.asarray(0.0)), None, length=n_out)
+            c, outs = jax.lax.scan(block, (y0c, jnp.asarray(0.0), jnp.asarray(0.0), jnp.asarray(0.0)), None,
+                                   length=n_out)
             O = jnp.concatenate([decode(z0)[None], outs])
             # stats: [n_nonstationary(=blow-ups), max_gamma, n_steps, n_nonfinite, max_iters, n_sat, n_unconverged]
             # stats: blow-ups (counted as non-stationary), coefficient certificate, steps, non-finite, -, -, -
-            return O, jnp.stack([c[2], coef_cert, jnp.asarray(float(nsteps)), c[1], jnp.asarray(0.0),
+            # stats[4] = max per-step relative defect between the update and its independent recomputation
+            return O, jnp.stack([c[2], coef_cert, jnp.asarray(float(nsteps)), c[1], c[3],
                                  jnp.asarray(0.0), jnp.asarray(0.0)])
         q_ = jax.jit(q)
         q_.info = dict(complex=cplx, condV=condV, Mt=Mt)
@@ -321,12 +338,14 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
                     gm = gamma(Jm, rv)
                     bad = (gm > 1e-3) | ~jnp.isfinite(gm)
                 elif stepper == 'gal_cnr':
-                    gm = jnp.linalg.norm(rv) / (jnp.linalg.norm(Mtr @ (zc - z)) / dt + 1e-300)
+                    gm = jnp.linalg.norm(rv) / (jnp.linalg.norm(Mtr @ (zc - z)) / dt
+                                                + jnp.linalg.norm(Mtr @ zc) / dt * 1e-14 + 1e-300)
                     bad = (gm > 1e-8) | ~jnp.isfinite(gm)
                 else:                                   # linearised CN: residual of the one linear solve
                     Rg = resid(guess, z, Nn, nu, th)
                     Jg = jac(guess, nu, th)
-                    gm = jnp.linalg.norm(Jg @ (zc - guess) + Rg) / (jnp.linalg.norm(Rg) + 1e-300)
+                    gm = jnp.linalg.norm(Jg @ (zc - guess) + Rg) / (jnp.linalg.norm(Rg)
+                                                                     + jnp.linalg.norm(Mtr @ zc) / dt * 1e-14 + 1e-300)
                     bad = (gm > 1e-10) | ~jnp.isfinite(gm)
                 ns = ns + bad.astype(jnp.float64)
                 gmax = jnp.maximum(gmax, jnp.where(jnp.isfinite(gm), gm, jnp.inf))

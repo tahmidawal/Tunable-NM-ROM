@@ -81,8 +81,9 @@ def q1(fam, cfg, build, D_val, D_dev, Uv, Ud, O_prod, st_prod):
             it['nonfinite_steps'] = float(st_prod[:, 3].sum())
             it['blowup_frac'] = float(st_prod[:, 0].sum() / max(st_prod[:, 2].sum(), 1))
             it['coef_cert_max'] = float(st_prod[:, 1].max())
-            it['passed'] = bool(valid and it['nonfinite_steps'] == 0 and it['blowup_frac'] <= 0.01
-                                and it['coef_cert_max'] <= 1e-10)
+            it['update_defect_max'] = float(st_prod[:, 4].max())
+            it['passed'] = bool(valid and it['nonfinite_steps'] == 0 and it['blowup_frac'] == 0
+                                and it['coef_cert_max'] <= 1e-10 and it['update_defect_max'] <= 1e-9)
             return it
         qc = build(dict(cfg, cert=True))
         Oc, stc = run_unbatched(qc, D_val)
@@ -121,6 +122,11 @@ def q1(fam, cfg, build, D_val, D_dev, Uv, Ud, O_prod, st_prod):
     return it
 
 
+def rho_ok(rho):
+    """The Q2 rho predicate (shared by q2_bank and the MF-Q2 control)."""
+    return bool(np.isfinite(rho) and rho <= RHO_BAR)
+
+
 def q2_bank(cfg, spaces, D_pop, Upop):
     """Bank Q2: rule q vs q+2 on the arm's own reached states (A1.8)."""
     q, r, stp = cfg['q'], cfg['r'], cfg['st']
@@ -136,7 +142,7 @@ def q2_bank(cfg, spaces, D_pop, Upop):
         return sp.P[:, :Mt].T @ (sp.w * (P @ z) * (S @ z))
     rho, skipped = [], 0
     allN = [np.linalg.norm(Nvec(s2, z)) for z in Z1.reshape(-1, r)]
-    mx = max(allN)
+    mx = max(allN)                          # maximum over the whole population (all cases x 6 output states)
     for z, n2 in zip(Z1.reshape(-1, r), allN):
         if n2 <= 1e-12 * mx:
             skipped += 1
@@ -147,7 +153,9 @@ def q2_bank(cfg, spaces, D_pop, Upop):
     roll = dist(O1, O2, Upop)
     it = dict(rho_max=float(max(rho)) if rho else float('nan'), rho_skipped=skipped, dM=dM, dK=dK,
               rollout_max=float(np.max(roll)))
-    it['passed'] = bool(rho and it['rho_max'] <= RHO_BAR and dM <= 1e-6 and dK <= 1e-6 and it['rollout_max'] <= Q1_TIGHT)
+    it['skipped_frac'] = skipped / max(len(allN), 1)
+    it['passed'] = bool(rho and rho_ok(it['rho_max']) and it['skipped_frac'] <= 0.05 and dM <= 1e-6 and dK <= 1e-6
+                        and it['rollout_max'] <= Q1_TIGHT)
     return it
 
 

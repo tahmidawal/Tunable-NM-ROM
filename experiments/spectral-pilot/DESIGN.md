@@ -592,3 +592,20 @@ Every unit must fit the 36 GB `jaxrun` ceiling (CPU jobs also run under `jaxrun`
 factorisation storage, by a projection written before it runs; a unit that does not fit is split or skipped and
 reported. The 8-hour wall budget includes benchmarks, retries and the work done before this amendment; unit timeouts
 (30 min) and the total budget both apply.
+
+---
+
+## Amendment A4 (2026-10-20, after Codex design audit 4: OVERALL READY, no blocking item)
+
+Non-blocking restatements adopted from `audits/codex-design-4.md`:
+- An exact measured equality counts as a crossing for $r_\times$.
+- Each ROM candidate's initialiser ($N_{\rm init}$/$L_{\rm init}$) is selected and the candidate re-scored **before**
+  finalist selection, and that initialiser is what is timed; if this order is broken the report says so.
+- B fallback: on order-gate failure, raw errors against the numerical $L=1024$ field are reported and the three-way
+  rule is applied with $U=\delta_t$ for that numerical-reference comparison only; physical-target qualification is
+  unavailable.
+- A missing or non-finite gate makes $U$ unavailable (never an implicit zero); the level or part is then unresolved.
+- D2 is asserted with a documented tolerance (relative $10^{-9}$).
+- Provenance: this is an **amended exploratory design**: the reference/training generation (A1–A3) and an A1 ROM
+  ladder used for debugging ran before A3 was final; the report keeps that chronology and reads no verdict from the
+  debugging run.

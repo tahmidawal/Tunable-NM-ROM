@@ -6,10 +6,11 @@
 # Usage: collect.sh <attempt> <jobid>
 set -euo pipefail
 A="$1"; JID="$2"; LANE=$(cd "$(dirname "$0")/.." && pwd); PY=/home/tahmid/Dev/.venv/bin/python
+[[ "$A" =~ ^[a-zA-Z0-9]+$ ]] && [[ "$JID" =~ ^[0-9]+$ ]] || { echo "bad arguments"; exit 2; }
+"$PY" "$LANE/cluster/ledger.py" check "$A" "$JID" || { echo "($A, $JID) is not a ledger pair: refusing"; exit 5; }
 NS=/cluster/tufts/paralab/tawal01/imp-multimesh; ARC=/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh
 NM=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "sacct -j $JID -X -n -P -o JobName" | head -1)
 [ "$NM" = "imm_$A" ] || { echo "job $JID is '$NM', not imm_$A: refusing"; exit 4; }
-grep -q "\"job_id\": \"$JID\"" "$LANE/runs/GPU-LEDGER.json" || { echo "job $JID not in the ledger"; exit 5; }
 ST=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "sacct -j $JID -X -n -o State" | awk '{print $1}' | head -1)
 case "$ST" in COMPLETED|FAILED|CANCELLED*|TIMEOUT|OUT_OF_MEMORY|NODE_FAIL) ;; *) echo "job $JID not terminal ($ST)"; exit 2;; esac
 D="$LANE/runs/$A/pulled"; mkdir -p "$D"

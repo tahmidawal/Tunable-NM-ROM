@@ -194,12 +194,18 @@ def main():
     q7 = cell.query('ecsw', 128, 'common')
     xs = [(fams['dev6'].ic(s, j), fams['dev6'].nu(j)) for j in range(6)]
     sch = RM.schedule(D, 'CNR', 0.005, 'prod')
+    f7 = lambda u, nu: q7(u, jnp.float64(nu), data, sch)
+    jax.block_until_ready(f7(*xs[0]))
+    s0 = float(np.median(TM.time_calls(f7, [xs[0]] * 3)))          # sentinel before
     a1 = TM.time_calls(lambda u, nu: q7(u, jnp.float64(nu), data, sch), xs)
     med = float(np.median(a1))
     a2 = TM.time_calls(lambda u, nu: q7(u, jnp.float64(nu), data, sch), xs, inject=0.25 * med)
     a3 = TM.time_calls(lambda u, nu: q7(u, jnp.float64(nu), data, sch), xs)
+    s1 = float(np.median(TM.time_calls(f7, [xs[0]] * 3)))          # sentinel after
     ok_clean = TM.in_band(np.median(a3) / med)
-    ctl(rec, '7_timing', ok_clean and not TM.in_band(np.median(a2) / med), a1=a1, a2_injected=a2, a3=a3)
+    sent_ok = TM.in_band(s1 / s0)
+    ctl(rec, '7_timing', ok_clean and sent_ok and not TM.in_band(np.median(a2) / med), a1=a1, a2_injected=a2, a3=a3,
+        sentinel=[s0, s1], sentinel_ok=sent_ok)
     del cell, data
     gc.collect()
     # ---------------------------------------------------------------- ours: 4096^2 bank table pilot (A1.7) -----

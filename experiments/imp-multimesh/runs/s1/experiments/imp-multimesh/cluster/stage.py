@@ -120,7 +120,7 @@ cd {LANE}
 FAIL=0
 {body}
 cd "$TASK_ROOT"
-find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 || true
+find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 || FAIL=1
 echo "job_fail=$FAIL"
 echo ALL-DONE
 exit $FAIL

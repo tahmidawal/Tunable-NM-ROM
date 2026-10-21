@@ -7,6 +7,7 @@ spent = sum of measured hours of terminal jobs; every non-terminal job (RESERVED
 full time limit as a reservation (no double counting).
 """
 import fcntl
+import os
 import json
 import math
 import subprocess
@@ -31,7 +32,9 @@ def totals(d):
 
 def save(d):
     d['spent_gpu_hours'], d['reserved_gpu_hours'] = (round(x, 4) for x in totals(d))
-    P.write_text(json.dumps(d, indent=1) + '\n')
+    tmp = P.with_suffix('.tmp')
+    tmp.write_text(json.dumps(d, indent=1) + '\n')
+    os.replace(tmp, P)                                   # crash-atomic replacement
 
 
 def main():
@@ -53,9 +56,17 @@ def main():
             save(d)
         elif cmd == 'bind':
             a, jid = sys.argv[2], sys.argv[3]
-            j = next(j for j in d['jobs'] if j['attempt'] == a and j['state'] == 'RESERVED')
+            assert jid.isdigit() and not any(j.get('job_id') == jid for j in d['jobs']), ('duplicate or bad job id', jid)
+            j = next(j for j in d['jobs'] if j['attempt'] == a and j['state'] in ('RESERVED', 'AMBIGUOUS'))
             j.update(job_id=jid, state='PENDING')
             save(d)
+        elif cmd == 'ambiguous':
+            for j in d['jobs']:
+                if j['attempt'] == sys.argv[2] and j['state'] == 'RESERVED':
+                    j['state'] = 'AMBIGUOUS'                 # keeps its full reservation until reconciled
+            save(d)
+        elif cmd == 'check':                                  # collect.sh: the exact (attempt, job id) pair
+            sys.exit(0 if any(j['attempt'] == sys.argv[2] and j.get('job_id') == sys.argv[3] for j in d['jobs']) else 5)
         elif cmd == 'release':
             d['jobs'] = [j for j in d['jobs'] if not (j['attempt'] == sys.argv[2] and j['state'] == 'RESERVED')]
             save(d)

@@ -52,7 +52,15 @@ set -e
 echo "$OUT"
 JID=$(echo "$OUT" | awk '/Submitted batch job/ {print $4}')
 if [ -z "$JID" ]; then         # ambiguous: look the job up by its unique name before releasing anything
-  JID=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "sacct -n -X -P --name=imm_$A -S now-1hours -o JobID | tail -1" || true)
+  set +e
+  LK=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h -n imm_$A -o %i; sacct -n -X -P --name=imm_$A -S now-1hours -o JobID")
+  LRC=$?
+  set -e
+  if [ $LRC -ne 0 ]; then
+    "$PY" "$LANE/cluster/ledger.py" ambiguous "$A"
+    echo "submission status unknown (lookup failed): reservation KEPT as AMBIGUOUS; reconcile by hand"; exit 10
+  fi
+  JID=$(echo "$LK" | grep -E '^[0-9]+$' | sort -u | tail -1)
   if [ -z "$JID" ]; then
     "$PY" "$LANE/cluster/ledger.py" release "$A"
     echo "sbatch did not submit (rc=$RC; 75 = account at cap); reservation released"

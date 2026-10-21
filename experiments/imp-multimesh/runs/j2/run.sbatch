@@ -40,18 +40,18 @@ grep -E "gen: trajectories 576|step +(1|5000|15000|20000|25000)/|done: recon" "$
 # ---- (2) dn256b extraction, (3) head fit, producing arm only (complete invocations timed, A4.2)
 cd "$ROOT/code_dn"
 T0=$(now)
-env N=256 K=16 R=512 MAX_SNAPS=131072 T_EARLY=5 N_TEST=8 SEED0=0 LOOSE=1 EXTRA_SEED=1000 EXTRA_TRAJ=4032 GEN_CHUNK=64 PROJ_CHUNK=256 IDENT_ROWS=64 CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/output/dn/" timeout 1800 "$PY" -u sep_coeff_extract.py > "$ROOT/output/extract.log" 2>&1
+env N=256 K=16 R=512 MAX_SNAPS=131072 T_EARLY=5 N_TEST=8 SEED0=0 LOOSE=1 EXTRA_SEED=1000 EXTRA_TRAJ=4032 GEN_CHUNK=64 PROJ_CHUNK=256 IDENT_ROWS=64 CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/output/dn/" timeout --signal=TERM --kill-after=60 1800 "$PY" -u sep_coeff_extract.py > "$ROOT/output/extract.log" 2>&1
 RC=$?; T1=$(now); echo "extract_exit=$RC extract_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
 EXRC=$RC
 tail -2 "$ROOT/output/extract.log"
 if [ $EXRC -ne 0 ]; then echo "head fit skipped (extraction failed)"; else
 T0=$(now)
-env NPZ="$ROOT/output/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/output/dn/hfit_mid.json" ARMS=mid STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 ORACLE_ITERS=150 CODEDIAG_N=2048 CODEDIAG_ITERS=60 ENC_STEPS=12000 SEED0=0 EMIT=mid EMIT_PATH="$ROOT/output/dn/emit_mid.pkl" timeout 1200 "$PY" -u sep_hfit_run.py > "$ROOT/output/hfit.log" 2>&1
+env NPZ="$ROOT/output/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/output/dn/hfit_mid.json" ARMS=mid STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 ORACLE_ITERS=150 CODEDIAG_N=2048 CODEDIAG_ITERS=60 ENC_STEPS=12000 SEED0=0 EMIT=mid EMIT_PATH="$ROOT/output/dn/emit_mid.pkl" timeout --signal=TERM --kill-after=60 1200 "$PY" -u sep_hfit_run.py > "$ROOT/output/hfit.log" 2>&1
 RC=$?; T1=$(now); echo "hfit_exit=$RC hfit_wall=$(awk "BEGIN{print $T1-$T0}")"; [ $RC -eq 0 ] || FAIL=1
 tail -2 "$ROOT/output/hfit.log"
 fi
 [ $FAIL -eq 0 ] && rm -f "$ROOT/output/dn/sep_coeff_N256_K16_R512.npz"
-cd "$ROOT" && find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+cd "$ROOT" && { find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 || FAIL=1; }
 echo "job_fail=$FAIL"
 echo ALL-DONE
 exit $FAIL

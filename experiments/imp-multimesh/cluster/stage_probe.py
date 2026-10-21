@@ -88,7 +88,7 @@ def main():
     (out / 'logs').mkdir()
     hh, mm = divmod(a.minutes, 60)
     R3A_S, EX_S, HF_S = 3600, 1800, 1200
-    assert R3A_S + EX_S + HF_S + 300 <= a.minutes * 60, 'probe step budgets exceed the allocation'
+    assert R3A_S + EX_S + HF_S + 2 * 60 + 300 <= a.minutes * 60, 'probe step budgets exceed the allocation'
     script = f'''#!/bin/bash
 #SBATCH --job-name=imm_{a.attempt}
 #SBATCH --partition=gpu
@@ -131,18 +131,18 @@ grep -E "gen: trajectories 576|step +(1|5000|15000|20000|25000)/|done: recon" "$
 # ---- (2) dn256b extraction, (3) head fit, producing arm only (complete invocations timed, A4.2)
 cd "$ROOT/code_dn"
 T0=$(now)
-env {DN_EXTRACT_ENV} CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/output/dn/" timeout {EX_S} "$PY" -u sep_coeff_extract.py > "$ROOT/output/extract.log" 2>&1
+env {DN_EXTRACT_ENV} CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT_PREFIX="$ROOT/output/dn/" timeout --signal=TERM --kill-after=60 {EX_S} "$PY" -u sep_coeff_extract.py > "$ROOT/output/extract.log" 2>&1
 RC=$?; T1=$(now); echo "extract_exit=$RC extract_wall=$(awk "BEGIN{{print $T1-$T0}}")"; [ $RC -eq 0 ] || FAIL=1
 EXRC=$RC
 tail -2 "$ROOT/output/extract.log"
 if [ $EXRC -ne 0 ]; then echo "head fit skipped (extraction failed)"; else
 T0=$(now)
-env NPZ="$ROOT/output/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/output/dn/hfit_mid.json" ARMS=mid {DN_HFIT_ENV} EMIT=mid EMIT_PATH="$ROOT/output/dn/emit_mid.pkl" timeout {HF_S} "$PY" -u sep_hfit_run.py > "$ROOT/output/hfit.log" 2>&1
+env NPZ="$ROOT/output/dn/sep_coeff_N256_K16_R512.npz" CKPT="$ROOT/in/sep_burgers_r3_N256_K16_R512.pkl" OUT="$ROOT/output/dn/hfit_mid.json" ARMS=mid {DN_HFIT_ENV} EMIT=mid EMIT_PATH="$ROOT/output/dn/emit_mid.pkl" timeout --signal=TERM --kill-after=60 {HF_S} "$PY" -u sep_hfit_run.py > "$ROOT/output/hfit.log" 2>&1
 RC=$?; T1=$(now); echo "hfit_exit=$RC hfit_wall=$(awk "BEGIN{{print $T1-$T0}}")"; [ $RC -eq 0 ] || FAIL=1
 tail -2 "$ROOT/output/hfit.log"
 fi
 [ $FAIL -eq 0 ] && rm -f "$ROOT/output/dn/sep_coeff_N256_K16_R512.npz"
-cd "$ROOT" && find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+cd "$ROOT" && {{ find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 || FAIL=1; }}
 echo "job_fail=$FAIL"
 echo ALL-DONE
 exit $FAIL

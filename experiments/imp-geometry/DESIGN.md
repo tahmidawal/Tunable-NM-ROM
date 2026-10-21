@@ -506,3 +506,35 @@ At every matched configuration: error on the finer lattice $x=i/128$ (where the 
 decay $\lVert u(t_5)\rVert/\lVert u_0\rVert$ and the **zero-field baseline** $e_0=\max_k\lVert u_{\rm ref}(t_k)\rVert/
 \lVert u_{\rm ref}(0)\rVert$; a τ that the zero field meets (worst) is excluded. Every conclusion is scoped to this
 family, the field output contract, these implementations, and the stated qualification coverage.
+
+---
+
+## Amendment A2 (2026-10-21, after cluster smokes 1–3; before any ladder is read; no ROM or competitor result exists)
+
+**Why.** A1.2's interaction diagnostic, run in the cluster smokes on the A1.2 geometry (`runs/smoke/smoke2-interaction/
+interaction_v0_T0.25.json`, also $T=0.5$), passed for the narrow family but **failed for the wide family** (median
+$D_{\rm geo}\approx0$): with $W=0.4$ most bumps start 0.2–0.4 from a feature placed downstream of the family square and
+decay before reaching it. Variants were therefore compared on the diagnostic alone (FD, $n=256$, val[0:16], every
+family × level; files `runs/smoke/smoke{2,3}-interaction/interaction_v{0,2,3,4}_T*.json`). No solver, ROM or timing
+result entered this choice.
+
+**Adopted: variant v4, $T=0.25$ unchanged** (`geom.VARIANTS['v4']`; it governs over A1.2's geometry and families):
+
+| item | v4 |
+|---|---|
+| L | $\Omega_L=(0,1)^2\setminus[0.34375,1]^2$ (corner $(0.34375,0.34375)=(22/64,22/64)$; the diagnostic was run at 0.35, see below) |
+| H | $\Omega_H=(0,1)^2\setminus\overline B((0.45,0.45),0.1)$; SEM / quadrature block around the hole $[0.3,0.6]^2$ |
+| families | wide $c\in[0.15,0.55]^2$, narrow $c\in[0.22,0.30]^2$; centres falling in the **shared exclusion zone** (the L quadrant $[0.32,1]^2$ or the disk of radius $0.13$ about $(0.45,0.45)$, i.e. both features grown by 0.03) are redrawn from the same row generator, so L, H and B use identical descriptors |
+| IC | A1.2's $u_0=a\,e^{-|x-c|^2/(2w^2)}\chi_\Omega$, with $\chi$ built from v4's features |
+
+Diagnostic values for v4 are in `runs/smoke/smoke3-interaction/interaction_v4_T0.25.json`; every one of the eight
+(geometry, family, level) cells meets A1.2's bar (median $D_{\rm geo}\ge0.05$) there. The production references recompute
+it on val32 and the bar is applied to those (A1.2).
+
+**Grid alignment of the L corner.** With the corner at 0.35, FD grid lines fall on $x=0.35$ only when $0.35n$ is an
+integer. The FD ladders are therefore restricted to $n$ that are multiples of both 64 (scoring lattice) and 20, i.e.
+$n\in\{320,640,960,1280\}$ — too coarse a ladder. Instead the L corner is moved to the nearest lattice-aligned value
+$0.34375=22/64$ (so every $n\in64\mathbb N$ has grid lines there); the exclusion zone becomes $[0.31375,1]^2$. The hole is not
+grid-aligned by design (Shortley–Weller).
+
+The cohort seeds, splits, levels, metrics, rules and controls of A1 are unchanged.

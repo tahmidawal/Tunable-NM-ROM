@@ -170,14 +170,28 @@ def cell_controls(a, celldir):
         N2 = s16.P[:, :Mt].T @ (w2 * (P @ z) * (S_ @ z))
         rho = float(np.linalg.norm(N2 - N1) / np.linalg.norm(N1))
         out['MF-Q2'] = dict(rho_faulted=rho, n_zeroed=int(len(top)), fires=bool(rho > 0.116))
-    # MF-MATCH (real): the smallest FD configuration visited must be rejected at tau = 0.01
+    # MF-MATCH (real, deterministic fault): the best-resolved valid FD ladder output on val, perturbed by exactly 2 tau
+    # (relative, at every scored time), must be scored 'misses' at tau = 0.01; unperturbed it is scored as recorded
     rows = [json.loads(l) for l in (celldir / 'ladder.jsonl').read_text().splitlines()]
     fdr = [x for x in rows if x['cfg'].get('fam') == 'fdmg' and x.get('valid')]
     if fdr:
-        x = min(fdr, key=lambda x: (x['cfg']['n'], x['cfg']['nsteps']))
-        out['MF-MATCH-real'] = dict(key=x['key'], worst=x['worst'], U=rj['allowance']['U'],
-                                    verdict=SC.three_way(x['worst'], rj['allowance']['U'], 0.01),
-                                    fires=bool(SC.three_way(x['worst'], rj['allowance']['U'], 0.01) != 'meets'))
+        x = min(fdr, key=lambda x: x['worst'])
+        q = RC.build_fdmg(a.dom)(x['cfg'])
+        O = np.stack([np.asarray(q(jnp.asarray(d))[0]) for d in D['val'][:len(Uv)]])
+        e0 = SC.err(O, Uv)
+        rng = np.random.default_rng(5)
+        Of = O.copy()
+        for j in range(len(Of)):
+            for k in range(1, 6):
+                dv = rng.standard_normal(Of.shape[-1])
+                Of[j, k] = Uv[j, k] + dv / np.linalg.norm(dv) * 0.02 * np.linalg.norm(Uv[j, 0])
+        ef = SC.err(Of, Uv)
+        Uall = rj['allowance']['U']
+        out['MF-MATCH-real'] = dict(key=x['key'], worst_clean=float(e0.max()), recorded=x['worst'],
+                                    worst_faulted=float(ef.max()), U=Uall,
+                                    verdict_faulted=SC.three_way(float(ef.max()), Uall, 0.01),
+                                    fires=bool(SC.three_way(float(ef.max()), Uall, 0.01) == 'misses'
+                                               and abs(float(e0.max()) - x['worst']) <= 1e-6 * max(x['worst'], 1e-12)))
     return out
 
 

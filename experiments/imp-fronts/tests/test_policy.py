@@ -455,7 +455,7 @@ def test_selection_config_r384_group_identical_to_e2s1():
 def test_schedule_definition_and_policy_config_validation():
     import schedule as SCH
     import mkconfigs_pol as MP
-    assert abs(SCH.total('S1') - 15.55) < 1e-9 and abs(SCH.total('S3') - 9.85) < 1e-9 and SCH.total('S1') > SCH.CAP
+    assert abs(SCH.total('S1') - 15.75) < 1e-9 and abs(SCH.total('S3') - 10.05) < 1e-9 and SCH.total('S1') > SCH.CAP
     assert len(SCH.POLICY_IDS) == 40 and SCH.POLICY_IDS[:16] == SCH.DEVVAL_IDS and SCH.CEIL['policy_K1'] == .5
     c = MP.make('1', 'S3')
     assert c['cases'] == list(SCH.POLICY_IDS) and c['ceiling_hours'] == .5 and c['selected'] == 'gauss160'

@@ -23,7 +23,7 @@ Projection rules
   * training: K1's measured maximum retrain 4.17 GPU-h + max(0, arm - incumbent data-generation seconds) (Amendment 11);
     certified against 100 % of the 4.6 ceiling (no self-timer). The per-phase extrapolation is reported beside it.
   * references: 24 test cases x (MEAN per-case seconds of the jcp-regimes reference records on H200, never below the
-    smoke dev-reference mean) x 1.5; ceiling 3.2 (2 GPUs, 1.6 h wall).
+    smoke dev-reference mean) x 1.5; ceiling 3.25 (2 H200, 1.625 h wall; Amendment 13).
   * selection (R384 group): max(solve inventory at the pooled e2s1 + smoke rates, e2s1 measured R384 group + setup) x 1.5;
     ceiling 0.4.
   * policy per bank (Amendment 12): (mean per-case warm solve cost of the SM-r K1 dry run on the 16 fresh dev/val cases)
@@ -32,7 +32,7 @@ Projection rules
     policy, complete, no open case, every case charged). The K1 path distribution is ASSUMED to transfer to the arm
     banks (not verifiable in advance; arm jobs keep BUDGET-CAP). The worst-path cost projection is reported beside it.
   * every self-timed item passes only if projected <= 90 % of its ceiling (training: 100 %).
-Schedules (rom/schedule.py): S1 15.55 (over the cap -> never fundable), S3 9.85, S4 none; the first fundable schedule
+Schedules (rom/schedule.py): S1 15.75 (over the cap -> never fundable), S3 10.05, S4 none; the first fundable schedule
 whose items all pass is selected.
 Admission (Amendments 5, 12): see admit().
 
@@ -437,7 +437,7 @@ def selftest():
             (d / f'c{i:03d}.json').write_text(json.dumps(dict(seconds=sx, refined=r, job=dict(job_id='1', gpu='NVIDIA H200'))))
         T = lambda **k: {'SM-a': k.get('a', tim('SM-a')), 'SM-b': k.get('b', tim('SM-b'))}
         D = dryres(10.)
-        # (1) everything cheap -> S1 passes its items but is NOT fundable (15.55) -> S3 selected
+        # (1) everything cheap -> S1 passes its items but is NOT fundable (15.75) -> S3 selected
         c = certify(T(), rows(1e-9), td, hist_path=None, dry=D)
         assert c['schedules']['S1']['all_fit'] and not c['schedules']['S1']['fundable'] and c['selected'] == 'S3', c['selected']
         it = c['schedules']['S3']['items']
@@ -445,7 +445,7 @@ def selftest():
         assert abs(it['references']['per_case_seconds'] - 225.) < 1e-9 and it['references']['n_cases'] == 24
         pk = it['policy_K1']
         assert pk['n_cases'] == 40 and abs(pk['projected'] - (10 * 40 * 1.5 + pk['compile_seconds'] + pk['tighter_seconds']) / 3600) < 1e-12
-        assert abs(c['schedules']['S3']['ceiling_total'] - 9.85) < 1e-9 and abs(c['schedules']['S1']['ceiling_total'] - 15.55) < 1e-9
+        assert abs(c['schedules']['S3']['ceiling_total'] - 10.05) < 1e-9 and abs(c['schedules']['S1']['ceiling_total'] - 15.75) < 1e-9
         # (2) training increment pushes the arm over 4.6 (100 % cutoff) -> S4
         c = certify(T(b=tim('SM-b', inc_s=1600.)), rows(1e-9), td, hist_path=None, dry=D)
         assert c['schedules']['S3']['over_cutoff'] == ['train_b'] and c['selected'] == 'S4'
@@ -453,9 +453,9 @@ def selftest():
         for tt in (T(b=tim('SM-b', empty=True)), {'SM-a': tim('SM-a')}):
             c = certify(tt, rows(1e-9), td, hist_path=None, dry=D)
             assert 'train_b' in c['schedules']['S3']['uncertified'] and c['selected'] == 'S4'
-        # (4) 90 % cutoff: references at 95 % of 3.2 fail (24 x p x 1.5 = 3.04 -> p = 304 s from the smoke dev mean)
+        # (4) 90 % cutoff: references above 90 % of 3.25 fail (24 x p x 1.5 = 3.06 > 2.925 -> p = 306 s from the smoke dev mean)
         tb = tim('SM-b')
-        c = certify({'SM-a': tim('SM-a'), 'SM-b': tb, 'SM-r': dict(references=[dict(case='FC1|0', seconds=304.)])},
+        c = certify({'SM-a': tim('SM-a'), 'SM-b': tb, 'SM-r': dict(references=[dict(case='FC1|0', seconds=306.)])},
                     rows(1e-9), td, hist_path=None, dry=D)
         assert c['schedules']['S3']['over_cutoff'] == ['references'] and c['selected'] == 'S4'
         # (5) the dry-run contract: wrong ids / smoke round cap / open case / incomplete -> policy uncertified
@@ -481,7 +481,7 @@ def selftest():
         nofile = Path(td) / 'none.json'
         assert not admit(None, None, 'train_b', 4.6, nofile)['admit']                     # no certificate
         assert not admit(None, dict(selected='S4'), 'train_b', 4.6, nofile)['admit']      # S4
-        assert admit(None, None, 'SM-b', .25)['admit'] and admit(None, None, 'SM-r', .4)['admit']
+        assert admit(None, None, 'SM-b', .4)['admit'] and admit(None, None, 'SM-r', .4)['admit']
         assert not admit(None, None, 'SM-a', .2)['admit']                                  # SM-a only under S1
         r = admit(None, c, 'train_b', 4.6, nofile)
         assert not r['admit'] and any('evidence' in x for x in r['reasons'])               # evidence missing
@@ -500,7 +500,7 @@ def selftest():
         evp = Path(td) / 'ev.json'
         evp.write_text(json.dumps(ev))
         r = admit(None, c, 'train_b', 4.6, evp)
-        assert r['admit'] and abs(r['total'] - 9.85) < 1e-9, r                              # nothing spent: whole plan
+        assert r['admit'] and abs(r['total'] - 10.05) < 1e-9, r                              # nothing spent: whole plan
         assert not admit(None, c, 'train_a', 4.6, evp)['admit']                             # not in S3
         assert not admit(None, c, 'train_b', 4.4, evp)['admit']                             # wrong ceiling
         # tampering with a bound file breaks the evidence
@@ -509,13 +509,13 @@ def selftest():
         assert not admit(None, c, 'train_b', 4.6, evp)['admit']
         (o / 'fpolicy_smkpolK1' / 'result.json').write_text(json.dumps(dict(ctl, controls=dict(ctl['controls'], CB6=dict(ctl['controls']['CB6'], fired=True)))))
         # ledger: charges, live ceilings and outstanding smoke reservations count
-        led = dict(jobs=[dict(name='SM-b', item='SM-b', ceiling_gpu_h=.25, state='done', charged_gpu_h=.25)])
+        led = dict(jobs=[dict(name='SM-b', item='SM-b', ceiling_gpu_h=.4, state='done', charged_gpu_h=.4)])
         r = admit(led, c, 'train_b', 4.6, evp)
-        assert r['admit'] and abs(r['smoke_reserved'] - .4) < 1e-12 and abs(r['total'] - 9.85) < 1e-9
+        assert r['admit'] and abs(r['smoke_reserved'] - .4) < 1e-12 and abs(r['total'] - 10.05) < 1e-9
         led['jobs'].append(dict(name='T', item='train_b', ceiling_gpu_h=4.6, state='running'))
         assert not admit(led, c, 'train_b', 4.6, evp)['admit']                              # already started
         led['jobs'][0]['charged_gpu_h'] = 6.                                                # failed retries charged
-        r = admit(led, c, 'references', 3.2, evp)
+        r = admit(led, c, 'references', 3.25, evp)
         assert not r['admit'] and r['total'] > 15
     print('resources selftest OK')
 

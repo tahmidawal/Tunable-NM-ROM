@@ -845,3 +845,14 @@ retrain. Training has no partial result, so it gets **no self-timer** (`SELF_TIM
   archive but **invalid** in jcp-regimes `analysis.json` (budget exits), so reproduction "failed" (no lane error to
   compare). A3 now treats a run as invalid if either the archive flag or the lane's own per-case validity is false
   (counted under invalid runs), which is the lane's definition of the error it reports. This changes no threshold.
+
+---
+
+## Amendment 14 (2026-10-21; after the A2–A4 results audit `audits/codex-results-A-1.md`, all CORRECT)
+
+- **SM-b ceiling 0.4 GPU-h** (K1's own upwind generation took ≈ 125 + 906 s on A100; 0.25 h leaves 810 s of work time).
+  **S3 = 4.6 + 3.25 + 0.4 + 1.0 + (0.4 SM-b + 0.4 SM-r) = 10.05 GPU-h**; S1 (both arms) = 15.75, not fundable.
+- **A2 decided RUN for arm (c)** (budget eligibility under the heuristic, not causation). Arm (c) is in no fundable
+  schedule; its architecture amendment (B1(c)) is not written. Arm (c) is therefore deferred, and the E10 design (to be
+  written if E8 falls short) inherits the A2 evidence. If the coordinator funds more GPU-h, arm (c) competes with arm (a)
+  for it; that choice is the coordinator's.

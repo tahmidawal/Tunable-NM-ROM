@@ -1,0 +1,438 @@
+{
+ "note": "byte-identical copies of the jcp-robust r2acc / select2d import closure (verified against the git blob at the imp-fronts HEAD, which carries jcp-robust via the jcp-consolidated fork point). Never edit these files; imp-fronts additions live in separate files (policy_sm.py, bankguard.py, fcases.py, fpolicy.py, mkconfigs_sel.py, register_arm.py). Path note: p1core/qcore/npcheck derive ROOT from their own depth, which is one level too shallow here; the modules engines / iterative_paths (mr-burgers2d) and sep_common (separable-decoder) are therefore put on PYTHONPATH by env.sh (r2acc, select2d) or by fpolicy.py itself. The incumbent default checkpoint path (T2.CKPT, NC.CKPT) does not resolve from this copy: every run here names its bank explicitly (K0 is not ROM-scored, DESIGN Amendment 1 B8).",
+ "copied_at_head": "0cb8414500f7ff3e4251310288ef30b1e345867f",
+ "files": [
+  {
+   "path": "r2acc.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/r2acc.py",
+   "sha256": "c88624ce7553b264d548952908e7a1bc00cf58332fbf34b1ea16fef50cdca7e0",
+   "bytes": 20281
+  },
+  {
+   "path": "p1common.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/p1common.py",
+   "sha256": "3f78eb9f7f37ee276d0d7dc01f1700b09d1ece6c2274b1692cc74a285f6f692e",
+   "bytes": 16096
+  },
+  {
+   "path": "p1core.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/p1core.py",
+   "sha256": "eb4712f2e6db5573f7cae735041d892d98b55098bda9905e101ace6d1041ba0d",
+   "bytes": 18327
+  },
+  {
+   "path": "qcert.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/qcert.py",
+   "sha256": "f6692cef38b457c8adfc36c87a57e5c3968a637f2559941f4d9a34b801cce74f",
+   "bytes": 4024
+  },
+  {
+   "path": "rules2d.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/rules2d.py",
+   "sha256": "f2559430489f5d36aaa4256bb9735cf5199633825c7e134f49239ba8cc631c77",
+   "bytes": 2723
+  },
+  {
+   "path": "select2d.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/select2d.py",
+   "sha256": "8981b21165fceb54fa371ab2c2a1414b1116a2c0d6b32d4af49f7c2760409e7f",
+   "bytes": 4788
+  },
+  {
+   "path": "e1analyze.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/e1analyze.py",
+   "sha256": "d0f8a062588ce4fc39f28fbd03eb3ef4601b0f3b70b4ed6713213dcf34b958e8",
+   "bytes": 22300
+  },
+  {
+   "path": "e1stats.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/e1stats.py",
+   "sha256": "f77f90d7077433c328fa48a628337a8dd889ce47f3e33f1183e70fcd6578bd3c",
+   "bytes": 8865
+  },
+  {
+   "path": "qscore.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/qscore.py",
+   "sha256": "4011e5787e8ea2dce602ac7c20daf831f6e45821c2107556a1219ad8804c2940",
+   "bytes": 14396
+  },
+  {
+   "path": "p1score.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/p1score.py",
+   "sha256": "64a1ff5aafa654d383bbc094d48bff5ce84e9ac48b8dea8ee400e31182ced8a4",
+   "bytes": 16536
+  },
+  {
+   "path": "make_configs_e2.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/make_configs_e2.py",
+   "sha256": "38f2916a36962a64af79673a6e23921e6f9e58dc46a26432ca0277df0213bb36",
+   "bytes": 6538
+  },
+  {
+   "path": "e2bank.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/e2bank.py",
+   "sha256": "10d475750bac6002ec5883b383ce6ee82fc7accec0499e29cdf61e2f9f3365bc",
+   "bytes": 1955
+  },
+  {
+   "path": "npcheck.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/npcheck.py",
+   "sha256": "ab123dc10f1b015e052800cb1c9b3f61971b088cc2320f6313572a09314b4bb6",
+   "bytes": 4313
+  },
+  {
+   "path": "register_banks.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/register_banks.py",
+   "sha256": "5e4d8214bc2d89ad3e68ea8c26aeedd7cf2f7f0cb8e10ad43f7d2e956ebec647",
+   "bytes": 2948
+  },
+  {
+   "path": "configs/e2s1.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/configs/e2s1.json",
+   "sha256": "d5d65e7f0fd65d7beaafe2b43a9f62831172dbcffce76c9cbb8601a3d150c1f6",
+   "bytes": 3698
+  },
+  {
+   "path": "inputs/banks/s1/BANK.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/inputs/banks/s1/BANK.json",
+   "sha256": "492b08719d86dde937e3a9125c82ba0703ea10a365baf378ed51cd0cd8c5eb8f",
+   "bytes": 5874
+  },
+  {
+   "path": "inputs/banks/s1/ckpt.pkl",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/inputs/banks/s1/ckpt.pkl",
+   "sha256": "244e1107c33ae38a23d17517fc198d7f2f307f12d2bb20006d3ed7aada188954",
+   "bytes": 36401374
+  },
+  {
+   "path": "inputs/banks/s1/rotation_R512.npz",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/inputs/banks/s1/rotation_R512.npz",
+   "sha256": "73bb603b48f2883dfb7b40809cc67ceab86486d38dc23f2deea282356294af4d",
+   "bytes": 6296542
+  },
+  {
+   "path": "vendor/PROVENANCE.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/PROVENANCE.json",
+   "sha256": "131a5db75ffb2a8c271a755f3e8f2766c4c3e78453b742a7d78156e7ba39da0d",
+   "bytes": 21314
+  },
+  {
+   "path": "vendor/quad2d/.gitignore",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/.gitignore",
+   "sha256": "c0e4fb10af3bc24e84ff6081f96a1ce42220b2d3fddb1dadf09e8afe5f54a408",
+   "bytes": 125
+  },
+  {
+   "path": "vendor/quad2d/DESIGN.md",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/DESIGN.md",
+   "sha256": "f32d28d639e60db1a51265d3fee75c683c3caa499795c3e1e16bd17b83d9eaee",
+   "bytes": 28986
+  },
+  {
+   "path": "vendor/quad2d/audit_qs.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/audit_qs.py",
+   "sha256": "6ea611626d3736cc6853fad6b682c8551bc7da725a7534fba09ea1f524073e3a",
+   "bytes": 28381
+  },
+  {
+   "path": "vendor/quad2d/calib_gauss.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/calib_gauss.py",
+   "sha256": "4d09faaa7a5dcac0e113fd323e3cf2a9d1e230d92a641e750d9f0dce0faf81ff",
+   "bytes": 1748
+  },
+  {
+   "path": "vendor/quad2d/cluster/collect.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/cluster/collect.py",
+   "sha256": "887d5d98a02932a0bd1f7372b06025bd3edf36978c6a4e1851179ccc2d8fb65f",
+   "bytes": 1798
+  },
+  {
+   "path": "vendor/quad2d/cluster/stage.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/cluster/stage.py",
+   "sha256": "092e2fed095e6dace69b47b4aafaca988f6686ee7a53fe6f9c78226f6bdac787",
+   "bytes": 6310
+  },
+  {
+   "path": "vendor/quad2d/cluster/submit.sh",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/cluster/submit.sh",
+   "sha256": "4952f625106b33659be509d4b5dc2751d22981a7bab6bd759d0e0644fa0cb398",
+   "bytes": 1152
+  },
+  {
+   "path": "vendor/quad2d/configs/dv1024.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/dv1024.json",
+   "sha256": "d69427a25b173aded9086ca99b199ca304575ed63ef9b033e2c1680d338be686",
+   "bytes": 19340
+  },
+  {
+   "path": "vendor/quad2d/configs/dv256.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/dv256.json",
+   "sha256": "3f604f2263b4390b2bf327337a17871c11bc21165dc9a94777fab0e792e9eeca",
+   "bytes": 19251
+  },
+  {
+   "path": "vendor/quad2d/configs/dv4096.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/dv4096.json",
+   "sha256": "e493bfa03840a027a4a4a0905965ab11550dc90037850251569ea1e98f1a4e3d",
+   "bytes": 18970
+  },
+  {
+   "path": "vendor/quad2d/configs/fz4096.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/fz4096.json",
+   "sha256": "28dca4857b72475e4cc3ee3953d36ec00e1126764dc6232d805571000011a1b7",
+   "bytes": 18974
+  },
+  {
+   "path": "vendor/quad2d/configs/parity_targets.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/parity_targets.json",
+   "sha256": "10eeae3b7132c4e1bf48f3b675e936cc4e6c67fe23ac0a0224c2ec861cc37a3d",
+   "bytes": 414
+  },
+  {
+   "path": "vendor/quad2d/configs/refdv.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/refdv.json",
+   "sha256": "fb395973a97f86f645a3abeb5fbc5476954428b9f1025872e9729145041c7f25",
+   "bytes": 333
+  },
+  {
+   "path": "vendor/quad2d/configs/refsmk.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/refsmk.json",
+   "sha256": "a9ee6e8eb4d85fe5bd10377708641f5b99ea5cdc0a12a690d9a277ec5cb60a81",
+   "bytes": 334
+  },
+  {
+   "path": "vendor/quad2d/configs/reft.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/reft.json",
+   "sha256": "d21736d5191aa772bfa71c1511b5b3b86a6d314daeb4894adfc5b8a915e15d6c",
+   "bytes": 325
+  },
+  {
+   "path": "vendor/quad2d/configs/smk128.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/smk128.json",
+   "sha256": "7d0584667db64512d5b6e955a0747693c8e1aeba93f88a75e10e7b9118a31099",
+   "bytes": 6653
+  },
+  {
+   "path": "vendor/quad2d/configs/t1024.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/t1024.json",
+   "sha256": "0d496db2c4c17f4f1ec41afbbcfefd039e5ac5e1e2006cda329eee40ebd32f07",
+   "bytes": 18967
+  },
+  {
+   "path": "vendor/quad2d/configs/t256.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/t256.json",
+   "sha256": "75d5efd0fb07383372dbb79bd7514ab54b8365da378b7cf344738ebc7009d6a5",
+   "bytes": 18965
+  },
+  {
+   "path": "vendor/quad2d/configs/t4096.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/configs/t4096.json",
+   "sha256": "17c733590612bddcbe0c6bddfc93e37ff9c1018d9301cb4965a3fd33e78a9eb1",
+   "bytes": 19001
+  },
+  {
+   "path": "vendor/quad2d/inputs/rotation_R512.npz",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/inputs/rotation_R512.npz",
+   "sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+   "bytes": 6296542
+  },
+  {
+   "path": "vendor/quad2d/inputs/rule_q0_m1024_qrg304_reachable.npz",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/inputs/rule_q0_m1024_qrg304_reachable.npz",
+   "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+   "bytes": 11139
+  },
+  {
+   "path": "vendor/quad2d/make_configs.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/make_configs.py",
+   "sha256": "209926ee1512b049f5e5c8f11f0c9dbd75ac48b73fa57743248ac285930f5721",
+   "bytes": 8809
+  },
+  {
+   "path": "vendor/quad2d/npbank.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/npbank.py",
+   "sha256": "f3310a9bbb427fcb92c35d059dd4d9ff6d3827af39c889b457d491d6c2d444bb",
+   "bytes": 1558
+  },
+  {
+   "path": "vendor/quad2d/qcore.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/qcore.py",
+   "sha256": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b",
+   "bytes": 19073
+  },
+  {
+   "path": "vendor/quad2d/qstudy.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/qstudy.py",
+   "sha256": "58ec24ea916c062b96d1cae1adb1420e5c87f5b3408d3073d9c6bb9b5f3d35fe",
+   "bytes": 27180
+  },
+  {
+   "path": "vendor/quad2d/ref_summary.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/ref_summary.py",
+   "sha256": "42a7a994318164f0e105afc8ad92a3d047a3e51049ca14df75a423e98895ec50",
+   "bytes": 1635
+  },
+  {
+   "path": "vendor/quad2d/refjob.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/refjob.py",
+   "sha256": "6ce460a379cc7a128118d274d50b5c8cf4fc6fc6342e2e2ed295b387e9bb736b",
+   "bytes": 4204
+  },
+  {
+   "path": "vendor/quad2d/select_rule.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/select_rule.py",
+   "sha256": "58e33d8b2b3a79462ba632022abeb23eaf842bbdbbd1905a37e9ce3c93db59bf",
+   "bytes": 6136
+  },
+  {
+   "path": "vendor/quad2d/smoke.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/smoke.py",
+   "sha256": "93751cd6e9791fe7aa36d7bc7b058eb4bccb909ddaab4bf9af0a5dbffd61574b",
+   "bytes": 5451
+  },
+  {
+   "path": "vendor/quad2d/vendor/PROVENANCE.json",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/vendor/PROVENANCE.json",
+   "sha256": "ee824a6e7d9638fb3874eff7b34f4f66aa90fa6edb7bef9990706e983a2b26e8",
+   "bytes": 2536
+  },
+  {
+   "path": "vendor/quad2d/vendor/arms.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/vendor/arms.py",
+   "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+   "bytes": 15874
+  },
+  {
+   "path": "vendor/quad2d/vendor/bkfast.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/vendor/bkfast.py",
+   "sha256": "ccb6887006a93365e84030bfe835a5e2b9d7f65f4312beef006cbeb1bef12c82",
+   "bytes": 9055
+  },
+  {
+   "path": "vendor/quad2d/vendor/hari_quadrature.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/vendor/hari_quadrature.py",
+   "sha256": "c6403d05e25a4ea5e4f4cc8879e94ac23f582d81b018571cf1abdb8da5d99fb6",
+   "bytes": 5780
+  },
+  {
+   "path": "vendor/quad2d/vendor/hfast.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/vendor/hfast.py",
+   "sha256": "693b947c92ea4d65708eea4d1f6a17214901ce4712bc5e3dd8c4a91f3d339286",
+   "bytes": 12953
+  },
+  {
+   "path": "vendor/quad2d/vendor/hops.py",
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "cbf574373d0e2b0508765ac151736f7208d2929c",
+   "source_path": "experiments/jcp-robust/vendor/quad2d/vendor/hops.py",
+   "sha256": "99a331f8ea549ec307fdf3235d7f11b57c059305136f264c3f2f74ad3e505820",
+   "bytes": 9171
+  }
+ ]
+}

@@ -1,0 +1,74 @@
+#!/bin/bash
+# imp-fronts fresh TEST references (DESIGN B3, Amendment 2 B3/B8, Amendment 3 B8): 28 cases (FI 8, FN0s 8, FC1 8, FC2 4),
+# E0-style ST recipe (phaseb/frefs/refjob.py mode fd, tight allowance 0), ONE job on 2 GPUs.
+# Ceiling 2.8 GPU-h = 2 GPUs x 1.4 h wall (01:24:00). Each GPU lane stops starting new work at its own deadline
+# (wall - 6 min, kept for refslim + hashing); a case killed by the deadline has no .json -> ineligible (counted).
+# Order per GPU lane = lowest test indices first, round-robin over its cohorts (deterministic reduced subsets, Amendment 1 B3).
+# Rendered by cluster/refs/stage_refs.py (@...@ placeholders); never edited by hand after staging.
+#SBATCH --job-name=if_@ATTEMPT@
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:@GPUTYPE@:2
+@CONSTRAINT@
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=240G
+#SBATCH --time=01:24:00
+#SBATCH --output=@REMOTE@/logs/%j.out
+#SBATCH --error=@REMOTE@/logs/%j.err
+set -euo pipefail
+T_START=$(date +%s)
+TASK_ROOT=@REMOTE@
+case "$TASK_ROOT" in /cluster/tufts/paralab/tawal01/imp-fronts/*) ;; *) echo "bad namespace $TASK_ROOT"; exit 2;; esac
+PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
+export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
+export XLA_PYTHON_CLIENT_MEM_FRACTION=0.92
+export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
+export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
+export CUDA_CACHE_PATH="$TASK_ROOT/cache/cuda" PYTHONDONTWRITEBYTECODE=1
+export JAX_COMPILATION_CACHE_DIR="$TASK_ROOT/cache/jax"
+mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH" "$JAX_COMPILATION_CACHE_DIR" "$TASK_ROOT/output"
+cd "$TASK_ROOT"
+sha256sum -c MANIFEST.sha256 --quiet
+export SOURCE_COMMIT=$(cat COMMIT.txt)
+echo "host=$(hostname) source_commit=$SOURCE_COMMIT job=${SLURM_JOB_ID:-none}"
+nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
+df -h /cluster/tufts/paralab | tail -1
+for g in 0 1; do
+  CUDA_VISIBLE_DEVICES=$g "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b} gpu_index=$g',flush=True); sys.exit(0 if b=='gpu' else 42)"
+done
+echo "JAX_DEFAULT_MATMUL_PRECISION=$JAX_DEFAULT_MATMUL_PRECISION"
+cd experiments/imp-fronts/phaseb/frefs
+DEADLINE=$(( T_START + 84*60 - 6*60 ))
+
+lane() {   # lane <gpu> <config>...: sequential refjob steps on one GPU, each bounded by the shared deadline
+  local g=$1; shift
+  for cfg in "$@"; do
+    local now=$(date +%s); local left=$(( DEADLINE - now ))
+    if [ "$left" -le 60 ]; then echo "LANE $g DEADLINE: skipping $cfg (cases ineligible: budget exhausted)"; continue; fi
+    local stem=$(basename "$cfg" .json)
+    echo "STEP gpu=$g $cfg left=${left}s $(date -u +%FT%TZ)"
+    CUDA_VISIBLE_DEVICES=$g timeout --signal=TERM --kill-after=30 "$left" \
+      "$PY" refjob.py --config "../../cluster/refs/configs/$cfg" --out "$TASK_ROOT/output/refs_$stem" \
+      > "$TASK_ROOT/logs/refjob_$stem.log" 2>&1 || echo "STEP gpu=$g $cfg rc=$? (timeout 124 = deadline)"
+  done
+}
+lane 0 t_FC1_4_5.json t_FC2_4_5.json t_FC1_6_7.json t_FC2_6_7.json t_FC1_8_9.json t_FC1_10_11.json &
+P0=$!
+lane 1 t_FI_4_5.json t_FN0s_4_5.json t_FI_6_7.json t_FN0s_6_7.json t_FI_8_9.json t_FN0s_8_9.json t_FI_10_11.json t_FN0s_10_11.json &
+P1=$!
+wait $P0 || true
+wait $P1 || true
+grep -h "jax_backend=" "$TASK_ROOT"/logs/refjob_*.log | sort | uniq -c || true
+echo "STEP refslim $(date -u +%FT%TZ)"
+"$PY" - "$TASK_ROOT/output" <<'EOF'
+import json, pathlib, sys
+out = pathlib.Path(sys.argv[1])
+src = sorted(p.name for p in out.glob('refs_t_*') if p.is_dir())
+(out / 'refslim_config.json').write_text(json.dumps(dict(sources=src, allow_empty=True), indent=1))
+print('refslim sources', src)
+EOF
+JAX_PLATFORMS=cpu "$PY" refslim.py --config "$TASK_ROOT/output/refslim_config.json" --out "$TASK_ROOT/output/refslim"
+cd "$TASK_ROOT"
+find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+echo "elapsed_s=$(( $(date +%s) - T_START ))"
+echo ALL-DONE

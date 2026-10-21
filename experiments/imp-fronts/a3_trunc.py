@@ -38,7 +38,7 @@ def main():
             cid = str(cid)
             if cid not in refs:
                 continue
-            if not bool(Z['valid'][i]):
+            if not bool(Z['valid'][i]) or not np.isfinite(Z['W'][i]).all():
                 invalid.append(cid)
                 continue
             u, n0 = refs[cid]

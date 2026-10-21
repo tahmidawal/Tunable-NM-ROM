@@ -171,8 +171,20 @@ def floor_Q(u, Q, n0):
     return float(np.max(np.linalg.norm(res, axis=0)) / n0)
 
 
+def lane_commit():
+    import subprocess
+    try:
+        c = subprocess.check_output(['git', '-C', str(HERE), 'rev-parse', 'HEAD'], text=True).strip()
+        dirty = bool(subprocess.check_output(['git', '-C', str(HERE), 'status', '--porcelain', '--', '*.py'], text=True).strip())
+        return dict(commit=c, code_dirty=dirty)
+    except Exception:
+        return dict(commit='unknown', code_dirty=None)
+
+
 def write_json(name, obj):
     CHECKS.mkdir(exist_ok=True)
+    if isinstance(obj, dict):
+        obj = dict(obj, run_commit=lane_commit())
     p = CHECKS / f'{name}.json'
     p.write_text(json.dumps(obj, indent=1, default=float))
     return p

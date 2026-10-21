@@ -1,0 +1,56 @@
+#!/bin/bash
+# imp-fronts DEV-SMOKE references (Amendment 2 B3 / B9): FC1 dev j=0 and FC2 dev j=0, E0-style ST recipe, 1 GPU.
+# Development data only (reference-path cost certification and adapter test); never scored with the test split.
+# Charged to the smoke line (Amendment 3 B8: smoke SM-a + SM-b <= 0.9 GPU-h); wall 00:40:00 on 1 GPU = 0.67 GPU-h max.
+# The per-case timings (meta 'seconds', attempt records) feed resources.py's reference projection (x1.5 contingency).
+# Rendered by cluster/refs/stage_refs.py (@...@ placeholders).
+#SBATCH --job-name=if_@ATTEMPT@
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:@GPUTYPE@:1
+@CONSTRAINT@
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=160G
+#SBATCH --time=00:40:00
+#SBATCH --output=@REMOTE@/logs/%j.out
+#SBATCH --error=@REMOTE@/logs/%j.err
+set -euo pipefail
+T_START=$(date +%s)
+TASK_ROOT=@REMOTE@
+case "$TASK_ROOT" in /cluster/tufts/paralab/tawal01/imp-fronts/*) ;; *) echo "bad namespace $TASK_ROOT"; exit 2;; esac
+PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
+export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
+export XLA_PYTHON_CLIENT_MEM_FRACTION=0.92
+export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
+export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
+export CUDA_CACHE_PATH="$TASK_ROOT/cache/cuda" PYTHONDONTWRITEBYTECODE=1
+export JAX_COMPILATION_CACHE_DIR="$TASK_ROOT/cache/jax"
+mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH" "$JAX_COMPILATION_CACHE_DIR" "$TASK_ROOT/output"
+cd "$TASK_ROOT"
+sha256sum -c MANIFEST.sha256 --quiet
+export SOURCE_COMMIT=$(cat COMMIT.txt)
+echo "host=$(hostname) source_commit=$SOURCE_COMMIT job=${SLURM_JOB_ID:-none}"
+nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
+"$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
+echo "JAX_DEFAULT_MATMUL_PRECISION=$JAX_DEFAULT_MATMUL_PRECISION"
+cd experiments/imp-fronts/phaseb/frefs
+DEADLINE=$(( T_START + 40*60 - 4*60 ))
+for cfg in d_FC1_0.json d_FC2_0.json; do
+  left=$(( DEADLINE - $(date +%s) ))
+  if [ "$left" -le 60 ]; then echo "DEADLINE: skipping $cfg"; continue; fi
+  stem=$(basename "$cfg" .json)
+  echo "STEP $cfg left=${left}s $(date -u +%FT%TZ)"
+  timeout --signal=TERM --kill-after=30 "$left" "$PY" refjob.py --config "../../cluster/refs/configs/$cfg" \
+    --out "$TASK_ROOT/output/refs_$stem" || echo "STEP $cfg rc=$? (timeout 124 = deadline)"
+done
+"$PY" - "$TASK_ROOT/output" <<'EOF'
+import json, pathlib, sys
+out = pathlib.Path(sys.argv[1])
+src = sorted(p.name for p in out.glob('refs_d_*') if p.is_dir())
+(out / 'refslim_config.json').write_text(json.dumps(dict(sources=src, allow_empty=True), indent=1))
+EOF
+JAX_PLATFORMS=cpu "$PY" refslim.py --config "$TASK_ROOT/output/refslim_config.json" --out "$TASK_ROOT/output/refslim"
+cd "$TASK_ROOT"
+find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+echo "elapsed_s=$(( $(date +%s) - T_START ))"
+echo ALL-DONE

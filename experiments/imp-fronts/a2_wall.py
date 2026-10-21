@@ -86,6 +86,15 @@ def omega(V):
     return float(np.sum(hp[:, _band] ** 2) / tot)
 
 
+def fd_kappa(V):
+    """The RETRACTED one-sided FD wall-curvature ratio of the original A2 (DESIGN §2 A2), replayed for disclosure only."""
+    V = np.asarray(V)[1:]
+    w = []
+    for A_ in (V, V[:, ::-1], np.swapaxes(V, 1, 2), np.swapaxes(V, 1, 2)[:, ::-1]):
+        w.append((2 * A_[:, 0, 1:-1] - 5 * A_[:, 1, 1:-1] + 4 * A_[:, 2, 1:-1] - A_[:, 3, 1:-1]) / H ** 2)
+    return float(np.sqrt(np.mean(np.concatenate(w) ** 2))) / lap_rms(np.concatenate([np.zeros_like(V[:1]), V]))
+
+
 def identity_checks():
     """(i) closed form of the envelope curvature through the same central-difference-of-gradient path, using an exact
     gradient of e(x,y) = 16 x(1-x) y(1-y); (ii) zero wall curvature of a random sine sum, by the same path."""
@@ -180,6 +189,9 @@ def main():
                 row[name].update(kappa_a=None, kappa_a_deltas=None, kappa_converged=False)
         tau, beta = tails(u, n0)
         row['ref'] = dict(beta=beta, tau={str(K): t for K, t in tau.items()}, omega=omega(u))
+        if coh in F.IN_RANGE and L_ok:                                   # retracted-control replay (disclosure)
+            vplus = u + amp * env[None]
+            row['retracted_fd_control_fires'] = bool(fd_kappa(vplus) >= 10 * fd_kappa(u))
         row['ctrl_omega_plus'] = omega(hp)
         row['ctrl_omega_minus'] = omega(hm)
         rows[cid] = row
@@ -233,7 +245,10 @@ def main():
     tr, om = g['tau4096_ratio_rom_ref_med'], g['omega_med']['rom']
     crit = dict(tail_3x=bool(tr is not None and tr >= 3), wall_share_half=bool(om is not None and om >= 0.5))
     decision = ('INCONCLUSIVE' if not ctrl['controls_pass'] else ('RUN' if crit['tail_3x'] and crit['wall_share_half'] else 'DEFER'))
-    out = dict(design='DESIGN.md A2 as replaced by Amendments 1-6', provenance=F.provenance(),
+    rr = [r['retracted_fd_control_fires'] for r in rows.values() if 'retracted_fd_control_fires' in r]
+    retracted = dict(n_in_range=len(rr), n_fired=int(sum(rr)),
+                     note='original A2 FD-stencil control C-A2+ (fire on every in-range case) replayed; dropped by Amendment 1')
+    out = dict(design='DESIGN.md A2 as replaced by Amendments 1-7', provenance=F.provenance(), retracted_control_replay=retracted,
                source=str(F.ROMDIR / 'R_R384_LSPG_CNR_1.npz'), excluded_ineligible=excluded, invalid_rom_runs=invalid,
                controls=ctrl, criteria=crit, decision_arm_c=decision, groups=groups, rows=rows)
     F.write_json('a2_wall', out)

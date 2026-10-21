@@ -24,6 +24,8 @@ def load(name):
 def pct(x, d=3):
     if x is None:
         return 'n/a'
+    if isinstance(x, float) and np.isnan(x):
+        return 'n/a (NaN)'
     if not np.isfinite(x):
         return '∞'
     v = 100 * x
@@ -31,7 +33,24 @@ def pct(x, d=3):
 
 
 def g(x, d=3):
-    return 'n/a' if x is None else (f'{x:.{d}g}' if isinstance(x, (int, float)) and np.isfinite(x) else str(x))
+    if x is None:
+        return 'n/a'
+    if isinstance(x, bool):
+        return str(x)
+    if isinstance(x, (int, float)):
+        if np.isnan(x):
+            return 'n/a (NaN)'
+        return f'{x:.{d}g}' if np.isfinite(x) else '∞'
+    return str(x)
+
+
+def ok(d, *keys):
+    """True iff the nested keys exist and are not None (unavailable sections render as such)."""
+    for k in keys:
+        if not isinstance(d, dict) or d.get(k) is None:
+            return False
+        d = d[k]
+    return True
 
 
 def commit():
@@ -79,11 +98,13 @@ def plots(a1, a2, a3, a4):
         fig.savefig(PL / 'a1_smearing.png', dpi=150)
         plt.close(fig)
         out.append('plots/a1_smearing.png')
-    if a3:
+    if a3 and a3['primary'] in a3.get('configs', {}) and a3['configs'][a3['primary']]['scopes']['in_range']['n']:
         c = a3['configs'][a3['primary']]
         Ks = [k for k in (2304, 4096, 9216, 65025)]
         fig, ax = plt.subplots(figsize=(5.5, 3.4))
         for sc, lab in (('in_range', 'dev6 + val32 (decision)'), ('all_regimes', 'regime cohorts')):
+            if not c['scopes'][sc]['n']:
+                continue
             ax.plot(Ks, [100 * c['scopes'][sc][f'dworst_{K}'] for K in Ks], 'o-', label=lab)
         ax.axhline(0.1, color='r', lw=0.8, ls='--', label='stop bar +0.1 pp')
         ax.set_xscale('log')
@@ -125,7 +146,7 @@ def main():
     L.append('| diagnostic | pre-registered outcome | controls |')
     L.append('|---|---|---|')
     if a1:
-        L.append(f"| A1 smearing (bank 384, T6) | {a1['verdict']} | {'pass' if a1['controls']['controls_pass'] else 'FAILED'} |")
+        L.append(f"| A1 smearing (bank 384, T6) | {a1['verdict']} | {'pass' if ok(a1, 'controls') and a1['controls']['controls_pass'] else 'FAILED / unavailable'} |")
     if a2:
         L.append(f"| A2 arm-(c) decision | {a2['decision_arm_c']} | {'pass' if a2['controls']['controls_pass'] else 'FAILED'} |")
     if a3:
@@ -134,7 +155,9 @@ def main():
         L.append(f"| A4 F15 hybrid floors | {a4['verdict']} | {'pass' if a4['controls']['controls_pass'] else 'FAILED'} |")
     L.append('')
     # ---------------- A1
-    if a1:
+    if a1 and not ok(a1, 'summary'):
+        L.append(f"## A1. Smearing test\n\n**{a1.get('verdict', 'UNAVAILABLE')}.**\n")
+    if a1 and ok(a1, 'summary'):
         s, c = a1['summary'], a1['controls']
         L.append('## A1. Smearing test with a sine control')
         L.append('')
@@ -174,7 +197,7 @@ def main():
                  'hence $\\Delta u=0$). The bank multiplies an MLP by the envelope $16x(1-x)y(1-y)$, whose normal second '
                  'derivative is not zero. Decoded fields are the saved r = 384 LSPG-CN-R runs of jcp-regimes.')
         L.append('')
-        L.append('| quantity (in range: dev6 + val32) | decoded ROM | bank projection of E0 | E0 reference |')
+        L.append('| quantity (in range: dev6 + val32; conditional E0 references) | decoded ROM | bank projection of E0 | E0 reference |')
         L.append('|---|---|---|---|')
         km = gi['kappa_a_med']
         if isinstance(km, dict):
@@ -199,7 +222,9 @@ def main():
             L.append(f"| {coh} | {g(gg['tau4096_ratio_rom_ref_med'])} | {g(gg['omega_med']['rom'])} |")
         L.append('')
     # ---------------- A3
-    if a3:
+    if a3 and a3['primary'] not in a3.get('configs', {}):
+        L.append(f"## A3. F7 truncation screen\n\n**{a3['verdict']}** (primary configuration missing).\n")
+    if a3 and a3['primary'] in a3.get('configs', {}):
         c = a3['configs'][a3['primary']]
         L.append('## A3. F7 truncation screen (CPU part)')
         L.append('')
@@ -207,7 +232,7 @@ def main():
                  'rescored. Stop rule (ideation F7, verbatim): stop if the worst error rises by more than 0.1 percentage points '
                  'at K = 9216; decision population `R384|LSPG_CNR_1` on dev6 + val32 (Amendment 1).')
         L.append('')
-        L.append('| configuration | worst error dev6+val32 | change at K = 2304 | 4096 | 9216 | worst error, regimes | change at 9216, regimes |')
+        L.append('| configuration | worst error dev6+val32 (conditional) | change at K = 2304 | 4096 | 9216 | worst error, regimes (conditional) | change at 9216, regimes |')
         L.append('|---|---|---|---|---|---|---|')
         for k, cc in a3['configs'].items():
             ir, rg = cc['scopes']['in_range'], cc['scopes']['all_regimes']
@@ -232,7 +257,7 @@ def main():
                  '(1024 unknowns), the equal-size control of 1024 sines, and bank 512. Stop rule (ideation F15, verbatim): stop if '
                  "the hybrid's C1 worst floor is not ≥ 2× below the sine control and below the bank-512 floor.")
         L.append('')
-        L.append('| cohort | n | bank 512 median / worst | 1024 sines median / worst | hybrid median / worst |')
+        L.append('| cohort | n | bank 512 median / worst (conditional) | 1024 sines median / worst (conditional) | hybrid median / worst (conditional) |')
         L.append('|---|---|---|---|---|')
         for coh, s in a4['summary'].items():
             if not s.get('n'):
@@ -240,8 +265,11 @@ def main():
             L.append(f"| {coh} | {s['n']} | {pct(s['B512_median'])} / {pct(s['B512_worst'])} | {pct(s['S1024_median'])} / "
                      f"{pct(s['S1024_worst'])} | {pct(s['H_median'])} / {pct(s['H_worst'])} |")
         L.append('')
-        w = a4['C1_worst']
-        L.append(f"C1 worst floors: hybrid {pct(w['H'])}, 1024 sines {pct(w['S1024'])}, bank 512 {pct(w['B512'])}; the rule needs the "
+        w = a4['C1_worst'] or {}
+        if not w:
+            L.append(f"C1 unavailable. **Outcome: {a4['verdict']}.**")
+        else:
+          L.append(f"C1 worst floors: hybrid {pct(w['H'])}, 1024 sines {pct(w['S1024'])}, bank 512 {pct(w['B512'])}; the rule needs the "
                  f"hybrid at ≤ {pct(0.5 * w['S1024'])}. **Outcome: {a4['verdict']}.** Controls: containment violation "
                  f"{g(a4['controls']['containment_max_violation'])} (≤ 1e-12), duplicate-column null enrichment stopped: "
                  f"{a4['controls']['null_must_be_stopped']}." + (' The 1024-sine control alone has a lower C1 worst floor than '
@@ -252,13 +280,24 @@ def main():
             L.append('')
     L.append('## What was wrong or changed during Phase A (disclosed)')
     L.append('')
-    L.append('- Design audit 1 showed the original A2 finite-difference wall-curvature control fails on real data (24 of 38 '
-             'cases); A2 was replaced before any A2 verdict was computed (Amendment 1).')
-    L.append('- Code audit 1 found the A2 tail by cumulative subtraction lost small tails (round-off), the A2 bank-values '
-             'check was mis-specified (3 % truncation at spacing 1e-3), A1 gates could pass NaN residuals, and A3 reported the '
-             'secondary verdict on the wrong population; all were fixed (Amendments 6, 7) before the reported runs.')
-    L.append('- A3/A4 draft code was executed once as a debugging run before the code audit; those outputs were discarded and '
-             'regenerated.')
+    if a2 and ok(a2, 'retracted_control_replay'):
+        rr = a2['retracted_control_replay']
+        L.append(f"- The original A2 finite-difference wall-curvature control (must fire on every in-range case) fires on "
+                 f"{rr['n_fired']} of {rr['n_in_range']} in-range cases when replayed; it was dropped before any A2 decision "
+                 '(Amendment 1), as design audit 1 had found.')
+    if a2 and ok(a2, 'controls', 'identity'):
+        idn = a2['controls']['identity']
+        if 'original_dv_1em3_gap' in idn:
+            L.append(f"- The registered bank-values check at spacing $10^{{-3}}$ gave a gap of {g(idn['original_dv_1em3_gap'])} against "
+                     f"a bound of {g(idn['bank_path_bound'])} (value-path truncation); it was respecified (Amendments 6, 7): "
+                     f"Richardson gap {g(idn['bank_path_gap'])}, pass {idn['bank_path_ok']}.")
+    L.append('- Code audits 1–3 found and the lane fixed: tail round-off from cumulative subtraction, NaN-tolerant A1 gates, '
+             'unverified A1 inputs (the upwind data were regenerated with persisted settings), A3 secondary-scope and '
+             'reproduction handling, and report robustness.')
+    for nm, d in (('A1', a1), ('A2', a2), ('A3', a3), ('A4', a4)):
+        if d and d.get('run_commit'):
+            rc = d['run_commit']
+            L.append(f"- {nm} output generated at lane commit `{str(rc['commit'])[:9]}` (uncommitted code changes: {rc['code_dirty']}).")
     L.append('')
     L.append('## Phase B status')
     L.append('')
@@ -269,22 +308,28 @@ def main():
     L.append('')
     for t, d in (
         ('bank', 'the learned set of 512 ordered coordinate-network functions whose first r span the reduced model'),
-        ('floor $f_B$', 'relative error of the best lattice fit of a reference field by basis B: max over the five output times of '
-                        '‖u − P_B u‖ / ‖u(t₀)‖'),
+        ('floor $f_B$', 'relative error of the best lattice fit of a reference field by basis $B$: '
+                        '$\\max_{k=1..5}\\lVert u(t_k)-P_Bu(t_k)\\rVert/\\lVert u(t_0)\\rVert$'),
         ('E0 / E0-style ST reference', 'second-order space-time references on fine meshes; ε_ref is their conditional Richardson '
                                         'uncertainty estimate'),
         ('dev6, val32', 'the development and validation cases of the training box (ν ∈ [0.01, 0.1], a ∈ [0.5, 2])'),
         ('N0s', 'the stiff corner inside the training box (lowest ν, largest a)'),
         ('C1, C2', 'cohorts with fronts steeper than training: s = a/ν in [250, 500] and [500, 1000]'),
-        ('s, q', 's = a/ν nominal steepness; q = a h/(2ν) numerical-viscosity ratio of first-order upwinding'),
+        ('$s$, $q$', '$s=a/\\nu$ nominal steepness; $q=ah/(2\\nu)$ numerical-viscosity ratio of first-order upwinding'),
+        ('N0, Ap, Am, B1, B2', 'other jcp-regimes cohorts: N0 in range; Ap ν above range; Am ν below range; B1 two same-sign bumps; '
+                               'B2 a signed pair of bumps'),
+        ('$\\beta$', 'least-squares slope of $\\log\\tau_K$ against $\\log K$ over $K\\in[2304,16384]$ (more negative = faster decay)'),
+        ('Spearman', 'rank correlation coefficient between two per-case quantities'),
+        ('containment violation', 'largest amount by which the hybrid floor exceeds the smaller of its two constituent floors; '
+                                  'must be zero up to round-off because the hybrid span contains both'),
         ('upwind generator', 'the incumbent training-data solver: first-order sign-upwind advection, backward Euler, Δt = 0.005, '
                              '256 nodes per axis'),
         ('smearing excess D', 'how much more a basis prefers smeared (upwind) over sharp (reference) fields than the same number of '
                               'sines does'),
         ('LOO POD', 'leave-one-case-out proper orthogonal decomposition basis built from the other cases'),
         ('T6, X', 'the six target cases of A1 and its extended case set'),
-        ('Laplacian sines $S_K$', 'the first K products sin(πk₁x) sin(πk₂y) ordered by k₁² + k₂²'),
-        ('sine tail $\\tau_K$', 'relative norm of the part of a field beyond its first K Laplacian sines'),
+        ('Laplacian sines $S_K$', 'the first $K$ products $\\sin(\\pi k_1x)\\sin(\\pi k_2y)$ ordered by $k_1^2+k_2^2$'),
+        ('sine tail $\\tau_K$', 'relative norm of the part of a field beyond its first $K$ Laplacian sines'),
         ('wall share ω', 'fraction of the beyond-4096 tail energy within 8 lattice nodes of the walls'),
         ('wall curvature κ_a', 'RMS normal second derivative of a decoded field on the walls, relative to the interior Laplacian'),
         ('LSPG-CN-R', 'least-squares Petrov–Galerkin ROM with Crank–Nicolson time stepping and Rannacher start'),

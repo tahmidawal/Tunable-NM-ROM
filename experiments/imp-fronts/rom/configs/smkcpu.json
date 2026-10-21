@@ -1,0 +1,19 @@
+{
+ "attempt": "smkcpu",
+ "driver": "fpolicy",
+ "mesh": 256,
+ "edges": [0, 128, 256, 384, 512],
+ "Rp": 128,
+ "scheme": "CNR",
+ "bank": {"dir": "inputs/banks/s1"},
+ "bank_label": "1",
+ "selected": null,
+ "cases": ["FC1|0"],
+ "table": "tests/fixtures/fresh_cohorts_fixture.json",
+ "anchors": ["FC1|0"],
+ "ceiling_hours": 0.5,
+ "stop_fraction": 0.9,
+ "max_rounds": 1,
+ "controls": {"cb1": true, "cb6": {"case": "FC1|0", "step": 10}},
+ "allow_cpu_smoke": true
+}

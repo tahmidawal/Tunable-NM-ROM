@@ -46,6 +46,9 @@ def gen():
     import jax.numpy as jnp
     import burgers2d_film as BF
     assert jax.config.jax_enable_x64 and jax.default_backend() == 'cpu'
+    for k in ('NEWTON_ITERS', 'LIN_TOL', 'LIN_MAXITER', 'N_TRAIN', 'N_VAL'):
+        assert k not in os.environ, f'environment override {k} must not be set for the incumbent generator'
+    assert (BF.DT, BF.NUM_STEPS, BF.NEWTON_ITERS, BF.LIN_TOL, BF.LIN_MAXITER) == (0.005, 50, 8, 1e-10, 2000)
     T6, X, fl = select_sets()
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / 'sets.json').write_text(json.dumps(dict(T6=T6, X=X, floor384_E0=fl), indent=1))
@@ -122,6 +125,15 @@ def exact_d_fixture():
     return dict(rel_err=errs, prerequisites=prereq, ok=bool(prereq and all(e <= 1e-10 for e in errs.values())))
 
 
+def blob_ic_np(n, d):
+    """NumPy copy of burgers2d_film.blob_ic (Gaussian bump, zero walls) for input verification."""
+    x = np.linspace(0.0, 1.0, n)
+    Xg, Yg = np.meshgrid(x, x, indexing='ij')
+    m = np.ones((n, n))
+    m[0, :] = m[-1, :] = m[:, 0] = m[:, -1] = 0.0
+    return d['a'] * np.exp(-((Xg - d['cx']) ** 2 + (Yg - d['cy']) ** 2) / (2 * d['w'] ** 2)) * m
+
+
 def verify_inputs(T6, X):
     """Amendment 6: manifest hashes, embedded generator hash, descriptors, current eligibility and set rule."""
     man = dict(l.split()[::-1] for l in (OUT / 'MANIFEST.sha256').read_text().splitlines() if l.strip())
@@ -156,6 +168,13 @@ def verify_inputs(T6, X):
                 bad.append(f'{p.name}: generator settings {st}')
         else:
             settings_unpersisted.append(p.name)
+            bad.append(f'{p.name}: generator settings not persisted (uncertified)')
+        for k in ('cx', 'cy', 'w'):
+            if k not in z.files or not (np.isfinite(float(z[k])) and float(z[k]) == d['desc'][k]):
+                bad.append(f'{p.name}: descriptor {k} missing / mismatch / non-finite')
+        ic = blob_ic_np(n, d['desc'])
+        if np.linalg.norm(z['u'][0] - ic) > 1e-12 * np.linalg.norm(ic):
+            bad.append(f'{p.name}: saved IC differs from blob_ic(n, descriptor)')
         if not d['eligible']:
             bad.append(f'{cid}: no longer eligible')
     T6n, Xn, _ = select_sets()
@@ -172,7 +191,8 @@ def analyze():
     sets = json.loads((OUT / 'sets.json').read_text())
     T6, X = sets['T6'], sets['X']
     if not X or len(T6) != 6:
-        F.write_json('a1_smear', dict(design='DESIGN.md A1', verdict='UNAVAILABLE (empty population)', T6=T6, X=X))
+        F.write_json('a1_smear', dict(design='DESIGN.md A1', provenance=F.provenance(), verdict='UNAVAILABLE (empty population)',
+                                      T6=T6, X=X, controls=None, summary=None, rows={}))
         raise SystemExit('empty population')
     inputs = verify_inputs(T6, X)
     if not inputs['ok']:

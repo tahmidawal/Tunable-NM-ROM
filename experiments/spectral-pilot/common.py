@@ -38,20 +38,21 @@ PILOT = 'PILOT: small, not a result.'
 # ------------------------------------------------------------------------------------------------- cohorts ----
 
 LEVELS = {
-    # name: (nu_lo, nu_hi, N_ref, n_train, train_seed, test_seed)
-    'A1': (0.05, 0.10, 128, 96, 1_000_001, 2_000_001),
-    'A2': (0.015, 0.03, 192, 96, 1_000_002, 2_000_002),
-    'A3': (0.005, 0.01, 384, 96, 1_000_003, 2_000_003),
-    'A4': (0.0025, 0.005, 768, 48, 1_000_004, 2_000_004),
+    # name: (nu_lo, N_ref, n_train); nu = nu_lo * 2**u_nu (DESIGN A1.2: paired rows, factor 3 between levels)
+    'A1': (0.06, 128, 96),
+    'A2': (0.02, 192, 96),
+    'A3': (0.02 / 3, 384, 96),
+    'A4': (0.02 / 9, 768, 48),
 }
+TRAIN_SEED, TEST_SEED = 1_000_001, 2_000_001
 N_TEST = 12
-# IC family (DESIGN A1, compatible IC): a ~ U[1, 2], c ~ U[0.3, 0.7]^2, w ~ U[0.035, 0.05]
+# IC family (DESIGN A1.2, compatible IC): a ~ U[1, 2], c ~ U[0.3, 0.7]^2, w ~ U[0.035, 0.05]
 FAMILY = dict(a=(1.0, 2.0), c=(0.3, 0.7), w=(0.035, 0.05))
 CAMPAIGN_SEEDS = {7090702, 911702, 20260927, 20260916, 923651, 923801, 923901, 0, 5550001, 5550002}
 
 
-def draw(seed, n, nu_lo, nu_hi, fam=FAMILY):
-    """(n, 5) descriptors (cx, cy, w, a, nu); row j from default_rng([seed, j]) (prefix-stable)."""
+def draw_rows(seed, n, fam=FAMILY):
+    """(n, 5) rows (cx, cy, w, a, u_nu); row j from default_rng([seed, j]) (prefix-stable)."""
     assert seed not in CAMPAIGN_SEEDS
     rows = []
     for j in range(n):
@@ -59,15 +60,20 @@ def draw(seed, n, nu_lo, nu_hi, fam=FAMILY):
         cx, cy = r.uniform(*fam['c']), r.uniform(*fam['c'])
         w = r.uniform(*fam['w'])
         a = r.uniform(*fam['a'])
-        nu = math.exp(r.uniform(math.log(nu_lo), math.log(nu_hi)))
-        rows.append((cx, cy, w, a, nu))
+        rows.append((cx, cy, w, a, r.uniform()))
     return np.asarray(rows, float)
 
 
+def with_nu(rows, nu_lo):
+    D = rows.copy()
+    D[:, 4] = nu_lo * 2.0 ** rows[:, 4]
+    return D
+
+
 def level_cohorts(name):
-    nu_lo, nu_hi, Nref, ntr, s_tr, s_te = LEVELS[name]
-    tr = draw(s_tr, ntr, nu_lo, nu_hi)
-    te = draw(s_te, N_TEST, nu_lo, nu_hi)
+    nu_lo, Nref, ntr = LEVELS[name]
+    tr = with_nu(draw_rows(TRAIN_SEED, ntr), nu_lo)
+    te = with_nu(draw_rows(TEST_SEED, N_TEST), nu_lo)
     for t in te:                                          # G6: disjoint descriptors
         assert not np.any(np.all(np.isclose(tr, t), axis=1))
     return tr, te
@@ -117,6 +123,25 @@ def err_runs(F, R):
     den = jnp.sqrt(jnp.sum(R[..., 0, :, :] ** 2, axis=(-1, -2)))
     e = jnp.max(num[..., 1:], axis=-1) / den
     return jnp.where(jnp.all(jnp.isfinite(F), axis=(-1, -2, -3)), e, jnp.inf)
+
+
+def pad_to(B, Nref):
+    """(..., N-1, N-1) coefficients -> (..., Nref-1, Nref-1), zero-padded (or truncated if N > Nref)."""
+    n = B.shape[-1]
+    m = Nref - 1
+    if n >= m:
+        return B[..., :m, :m]
+    pw = [(0, 0)] * (B.ndim - 2) + [(0, m - n), (0, m - n)]
+    return jnp.pad(B, pw)
+
+
+def err_coef(B, Bref):
+    """Continuous L2 error (DESIGN A1.4), exact in coefficient space: B, Bref (..., 6, n, n) on the same grid of modes.
+    e = max_{k>=1} ||B_k - Bref_k|| / ||Bref_0||; non-finite runs -> inf."""
+    num = jnp.sqrt(jnp.sum((B - Bref) ** 2, axis=(-1, -2)))
+    den = jnp.sqrt(jnp.sum(Bref[..., 0, :, :] ** 2, axis=(-1, -2)))
+    e = jnp.max(num[..., 1:], axis=-1) / den
+    return jnp.where(jnp.all(jnp.isfinite(B), axis=(-1, -2, -3)), e, jnp.inf)
 
 
 # ------------------------------------------------------------------------------------------------ ETDRK4 -------

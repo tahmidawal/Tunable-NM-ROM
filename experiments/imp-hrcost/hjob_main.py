@@ -69,6 +69,9 @@ def run(J):
             for k in first:
                 if first[k] is None and labs[k].startswith('unverified'):
                     unres[k] = True
+        if 'F2_gauss128' not in J.rep['q1']:                   # descriptive arm and F2+F3 parent, always (DESIGN 3.3)
+            d, aux, meta, _, _ = J.table('bank', 'gauss128')
+            J.q1('F2_gauss128', 'bank', d, meta)
         J.rep['F2'] = dict(candidates=cands, status=status, first_qualified=first['label'],
                            first_qualified_projected=first['label_projected'],
                            mstar_identified=bool(first['label'] is not None and not unres['label']),

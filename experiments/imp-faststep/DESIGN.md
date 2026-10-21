@@ -464,3 +464,60 @@ every one of those members, including `P-E4-none` full-node evaluations.
   the median over cases. Drift outside [1/1.1, 1.1] after ≤ 2 retries or an identity-hash mismatch invalidates a
   triplet (counted); a statistic with fewer than 4 of the 6 cases valid is "timing incomplete", which **fires** the
   speed condition and suppresses the comparison.
+
+---
+
+## Amendment A3 (2026-10-21) — answers to Codex design audit 4 (`audits/codex-design-4.md`, NEEDS-RESTATEMENT)
+
+Items 1, 2, 3, 6, 7, 9 CORRECT. A3 governs over A2/A1.
+
+**A3.1 POD Q2 endpoints (item 4).** The successor of a POD member is the next available member with a **distinct rule**
+(sha256 of its sorted nodes and weights); duplicates (e.g. κ targets filled by the same KKT optimum) are skipped, and if no
+distinct larger-κ rule exists the successor is `P-E4-none`. If every force indicator of a member is trivial (both zero),
+its Q2-POD label is "unverified". `HR-free` (`P-E4-none`) has no quadrature error by construction and counts as
+Q2-satisfied for label aggregation, but still needs its own Q1 (reconstruction certificate). Members sharing a rule
+are reported once with all their κ names.
+
+**A3.2 Stability classification (item 5).** Refinements must be valid and pass their own certificate, else
+"unresolved". With $G_8, G_{16}$: "unresolved" if $|G_8 - G_{16}| > 0.005$, or $\min(G_8, G_{16}) \le 1.05 <
+\max(G_8, G_{16})$ (straddle), or $|G_8 - 1.05| \le 0.005$; "growth present in the tested refinements" if both
+> 1.055; "growth absent in the tested refinements" if both < 1.045. No causal attribution is claimed. The stop predicate
+is unchanged.
+
+**A3.3 Stop-rule reporting (item 7).** The all-38 and eligible-subset worst-error predicates are reported separately
+(each fired / not fired) so the reason for a stop is visible. F5's outcome stays separate from E5.
+
+**A3.4 Competitor matching and ties (item 8).**
+- Match statuses are reported **per population** — dev6, val32, all 38 — each requiring the competitor to be valid and
+  stable on every case of that population and its worst error there ≤ X's worst error there. "Validation-matched" =
+  matched on **val32**. Every speed claim names its population.
+- Ties: let $t^\*$ be the minimum dev6 median fused time over the eligible members; the tie set is
+  $\{t \le 1.01\,t^\*\}$; within it the order is lower dev6 worst error, then the unique configuration id
+  (`<family>|<r>|<hr>|<scheme>|<dt>`, lexicographic). The same rule selects the best stepper.
+- Excluding POD at 4096² limits the E5 scope; no H-base conclusion is drawn at 4096² (the 576-trajectory recipe is the
+  existing construction, not the only conceivable one).
+
+**A3.5 Budget wording (item 10).** 0.67 h is the **sum of the configured NNLS attempt budgets**, not a hard bound
+(`nnls.py` can overshoot and finalises residuals/KKT after the loop); overshoot and finalisation are priced from the
+measured `ecsw` job. 3.1 GPU-h is a planning estimate. If mandatory work cannot fit after the registered deferrals, the
+result is returned "incomplete" — certificates and competitors are never dropped silently.
+
+**A3.6 Timing (item 11), replacing the A2.9 coverage rule.**
+- Headline statistics need **all six dev6 timing cases with 3 valid repetitions each** (≤ 2 drift retries per
+  repetition). Any missing case or repetition → the statistic is "incomplete"; for the E5 speed condition that
+  **fires** it; for comparisons, the comparison is "incomplete".
+- An identity-hash mismatch (timed output ≠ scored output) is a **correctness failure**: the whole timing block is
+  "failed (identity)", every speed condition of the job fires, and the job must be re-run after the cause is found.
+- **In-job selection, then direct triplets.** Because E0 scoring is in-job (refstore on the cluster copy of the store),
+  the job first runs every accuracy run and the common-anchor screening triplets, then computes (by the frozen rules
+  above, on dev6 only) each $B^\*(X)$ and the best-stepper candidate, and then times **direct X–B–X fused-query
+  triplets** for every (X, $B^\*(X)$) pair and **direct arm-2–arm-4–arm-2** fused triplets for F5 (same six cases, same
+  repetition and drift rules). Headline full-query ratios come only from direct triplets; common-anchor ratios are
+  screening only. The offline checker recomputes every in-job selection from the raw data and must agree.
+- Evolve triplets for the E5 speed predicate are already direct (A = arm 1, B = the arm).
+
+**A3.7 Added controls (item 9).** **C21** the offline checker on an artifact list where two κ share one rule must skip
+the duplicate (A3.1). **C22** synthetic growth maxima (1.049, 1.053) must classify "unresolved". **C23** timing records
+with one case removed must give "incomplete" (and the speed condition fires); a forced hash mismatch must give
+"failed (identity)". **C24** a synthetic competitor matched on all 38 but not on val32 must get "val32: not matched".
+C19's fixture must change at least one successor (precondition asserted); C20 and C24 call the production matcher.

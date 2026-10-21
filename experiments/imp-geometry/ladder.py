@@ -19,7 +19,8 @@ import jax.numpy as jnp
 
 import score as SC
 
-N_CAP = 20480
+import os
+N_CAP = int(os.environ.get('IGEO_NCAP', 20480))
 DELTA_STOP = 1e-4
 
 

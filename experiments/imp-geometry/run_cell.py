@@ -214,7 +214,7 @@ def stage_ladder(a, out, D):
     Dv = D['val']
     L = LD.Ladder(out / 'ladder.jsonl', Uv, Dv, U_allow, tag='val')
     dom = a.dom
-    sizes = FD_SIZES[:4] if a.smoke else FD_SIZES
+    sizes = FD_SIZES[:2] if a.smoke else FD_SIZES
     # ---- C-FDMG (SBDF2 + MG): step ladders per size at tol 1e-8, then the tolerance ladder at the Pareto sizes
     if dom != 'B' or a.box_fd:
         for n in sizes:
@@ -229,7 +229,7 @@ def stage_ladder(a, out, D):
                 L.run(f"fdmg|n{c['n']}|tol{tol:.0e}|nt{c['nsteps']}", c, build_fdmg(dom))
     # ---- C-SEM
     if dom != 'B':
-        grades = (None, 0.5, 0.7) if dom == 'L' else (None,)
+        grades = ((None, 0.5) if a.smoke else (None, 0.5, 0.7)) if dom == 'L' else (None,)
         P_ = SEM_P[:2] if a.smoke else SEM_P
         K_ = SEM_K[:2] if a.smoke else SEM_K
         fine = SEM_FINE_STEPS // (8 if a.smoke else 1)
@@ -237,10 +237,13 @@ def stage_ladder(a, out, D):
         for p in P_:
             for k in K_:
                 for g in grades:
-                    for dea in (False, True):
-                        c = dict(fam='sem', p=p, k=k, g=g, dea=dea, ord=3, tol=1e-10, solver='pcg', nsteps=fine)
-                        row, _ = L.run(sem_key(c) + f'|nt{fine}', c, build_sem(dom))
-                        spatial.append(row)
+                    c = dict(fam='sem', p=p, k=k, g=g, dea=False, ord=3, tol=1e-10, solver='pcg', nsteps=fine)
+                    row, _ = L.run(sem_key(c) + f'|nt{fine}', c, build_sem(dom))
+                    spatial.append(row)
+        for row in space_pareto(spatial):                 # over-integration only on the spatial Pareto set (A3)
+            c = dict(row['cfg'], dea=True)
+            r2, _ = L.run(sem_key(c) + f'|nt{fine}', c, build_sem(dom))
+            spatial.append(r2)
         keep = space_pareto(spatial)
         for row in keep:
             for order in (2, 3):
@@ -263,8 +266,11 @@ def stage_ladder(a, out, D):
     # ---- reduced arms
     sp = pod_space(a, out)
     Rl = [r for r in R_LADDER if r <= sp.R]
+    steppers = RM.STEPPERS
+    if a.smoke:
+        Rl, steppers = Rl[:2], ('lspg_cnr', 'gal_etdrk4')
     for r in Rl:
-        for st in RM.STEPPERS:
+        for st in steppers:
             form = 'tensor'
             L.step_ladder(f'podg|r{r}|{st}|{form}', dict(fam='podg', r=r, st=st, form=form, tol='prod'),
                           build_rom(sp, 'podg'), 10)
@@ -272,7 +278,7 @@ def stage_ladder(a, out, D):
     ecsw_states = ecsw_population(Z, len(D['train']))
     ecsw = {}
     for r in Rl:
-        for st in ('lspg_cnr', 'gal_etdrk4'):
+        for st in (('gal_etdrk4',) if a.smoke else ('lspg_cnr', 'gal_etdrk4')):
             Mt = min(4 * r, sp.R) if st == 'lspg_cnr' else r
             fit, info = PD.ecsw_fit(sp, r, Mt, ecsw_states)
             for kap, x in fit.items():
@@ -287,10 +293,17 @@ def stage_ladder(a, out, D):
     if (out / 'bank.pkl').exists():
         sps, _ = bank_spaces(a, out)
         for r in Rl:
-            for q in Q_LADDER:
-                for st in a.bank_steppers.split(','):
-                    L.step_ladder(f'bank|r{r}|q{q}|{st}', dict(fam='bank', r=r, q=q, st=st, form='point', tol='prod'),
-                                  build_rom(sps[q], 'bank'), 10)
+            for st in a.bank_steppers.split(','):
+                rows = L.step_ladder(f'bank|r{r}|q8|{st}', dict(fam='bank', r=r, q=8, st=st, form='point', tol='prod'),
+                                     build_rom(sps[8], 'bank'), 10)
+                okn = [x['cfg']['nsteps'] for x in rows if x.get('valid')][-2:]   # step-converged rung and predecessor
+                for nt in okn:
+                    for q in Q_LADDER:
+                        if q == 8:
+                            continue
+                        c = dict(fam='bank', r=r, q=q, st=st, form='point', tol='prod', nsteps=nt)
+                        L.run(f'bank|r{r}|q{q}|{st}|nt{nt}', c, build_rom(sps[q], 'bank'))
+                        L.run(f'bank|r{r}|q{q}|{st}|tensor|nt{nt}', dict(c, form='tensor'), build_rom(sps[q], 'bank'))
     log('ladder rows', len(L.done))
 
 

@@ -494,3 +494,15 @@ if the counters are unavailable, `nvidia-smi` memory.used is polled per phase. H
 **A3.6 Wording carried into the report.** The report distinguishes: binding vs projected fitting targets and Q2 labels;
 an identified minimum vs a qualified upper bound; bounded runtime vs guaranteed completion; local-fallback evidence vs
 E5-equivalent evidence.
+
+## Amendment A4 (2026-10-21; answers `audits/codex-design-4.md`, verdict NEEDS-RESTATEMENT, no WRONG — design accepted)
+
+**A4.1 Missing F2 branches.** (i) No candidate with $m\le16384$ is qualified and at least one is unresolved →
+*fired (incomplete evidence)*. (ii) $m^\*$ is identified but its accuracy or timing evidence is missing (run not
+completed, scoring impossible) → *fired (incomplete evidence)*. A3.1's "otherwise" means: with both predicates
+evaluated, at least one false.
+
+**A4.2 Memory semantics.** `memory_stats` peaks are allocator high-water marks (phase-attributed only where reset is
+supported; otherwise the running maximum with the phase order); `nvidia-smi memory.used` samples are observed sampled
+maxima, not guaranteed transient peaks; `ru_maxrss` is a process-lifetime host high-water mark (kB), not an isolated
+measurement of construction copies. The report and the cost certificate state these units and limitations.

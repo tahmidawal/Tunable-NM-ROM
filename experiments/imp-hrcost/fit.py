@@ -77,7 +77,8 @@ def fit(C, b, Rp, log=None):
     t0 = time.perf_counter()
     res = NN.greedy_nnls(C, b, supports=[k * Rp for k in KAPPAS], cap=CAP, max_seconds=DEADLINE_S, log=log)
     out = dict(seconds=time.perf_counter() - t0, reason=res['reason'], relres_final=float(res['relres']),
-               support_final=int(len(res['support'])), rules={})
+               support_final=int(len(res['support'])), drift_ok=bool(res.get('drift_ok', False)),
+               drift_events=res.get('drift_events'), rules={})
     for k in KAPPAS:
         rec = res['records'].get(('s', k * Rp))
         if rec is None:
@@ -86,3 +87,25 @@ def fit(C, b, Rp, log=None):
             out['rules'][k] = dict(idx=np.asarray(rec['support'], int), w=np.asarray(rec['weights'], float),
                                    relres=float(rec['relres']), size=int(rec['size']))
     return out
+
+
+def check_residual(rows_unw, Gq, Gs, w_parent, snaps, idx, w_hat):
+    """A2.5: the fit residual recomputed by an independent path (support columns rebuilt from the raw tables, snapshot by
+    snapshot; target recomputed), relative to the normalised target, as the NNLS objective."""
+    idx = np.asarray(idx, int)
+    wp, wh = jnp.asarray(w_parent), jnp.asarray(w_hat)
+    num, den = 0., 0.
+    blocks = []
+    for c in np.asarray(snaps):
+        cj = jnp.asarray(c)
+        a = (Gq @ cj) * (Gs @ cj)
+        bj = rows_unw.T @ (wp * a)
+        blocks.append((a, bj, float(jnp.linalg.norm(bj))))
+    nmax = max(b_[2] for b_ in blocks)
+    for a, bj, nb in blocks:
+        if not nb > 1e-12 * nmax:            # the same drop rule as build_system
+            continue
+        fj = rows_unw[idx].T @ (wh * a[idx])
+        num += float(jnp.sum((fj - bj) ** 2)) / nb ** 2
+        den += 1.
+    return float(np.sqrt(num / den))

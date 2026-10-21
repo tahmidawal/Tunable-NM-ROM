@@ -49,7 +49,13 @@
   "native": [
    "ecsw|384|k8|CNR|0.005|common|central",
    "qdeim|256|512|CNR|0.005|common|central"
-  ]
+  ],
+  "phi_sha256": "8ae2be237bd849482c3bdf024e3f80c757544ec77bb746a67a60fcf632341a86",
+  "native_sha256": {
+   "HR~ecsw~384~k8.npz": "a9e34ec23f2d03d15748789f1509b7d3c61b0beb5a9b799feaa8024743b36d70",
+   "HR~qdeim~256~512.npz": "d5cfdcbbdc6f7fb2a01cdfcdaeb7f44a709da8dcbb39b9186b9413b943f0d76d",
+   "tune.json": "536163057eafa8f4e67d90ecbecc9718ed2332c9a3cb1cf30d549e343cfabe26"
+  }
  },
  "timing": {
   "reps": 3,
@@ -72,5 +78,6 @@
    0
   ]
  ],
- "controls": true
+ "controls": true,
+ "time_limit_hours": 1.0
 }

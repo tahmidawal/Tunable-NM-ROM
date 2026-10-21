@@ -2,7 +2,8 @@
 blob at HEAD (`git show`); a checked-out copy must equal its blob. The staged tree is import-checked on the local CPU
 (every lane module must resolve inside the staged tree). One job per directory under the lane namespace.
 
-    python cluster/stage.py <job> --driver fsrun|ecswjob --config configs/<x>.json --hours H [--gpu h200] [--mem 200G]
+    python cluster/stage.py <job> --driver fsrun|ecswjob --config configs/<x>.json [--gpu h200] [--mem 200G]
+The time limit is the config's `time_limit_hours` (the registered reservation; the ledger admits on it).
 """
 import argparse
 import hashlib
@@ -42,12 +43,13 @@ def main():
     p.add_argument('job')
     p.add_argument('--driver', required=True, choices=('fsrun', 'ecswjob'))
     p.add_argument('--config', required=True)
-    p.add_argument('--hours', type=float, required=True)
     p.add_argument('--gpu', default='h200', choices=sorted(GRES))
     p.add_argument('--mem', default='200G')
     p.add_argument('--extra', action='append', default=[], help='additional lane-relative committed inputs')
     a = p.parse_args()
     assert a.job.isalnum(), a.job
+    hours = float(json.loads((ROOT / LANE / a.config).read_text())['time_limit_hours'])
+    assert 0 < hours <= 3.0, hours
     commit = git('rev-parse', 'HEAD').decode().strip()
     dirty = git('status', '--porcelain', '--', LANE).decode()
     bad = [l for l in dirty.splitlines() if not any(l[3:].startswith(f'{LANE}/{s}') for s in ('runs', 'HEARTBEAT.json', 'audits'))]
@@ -71,12 +73,14 @@ def main():
     chk = (f'import sys, {mods}; staged = {str(out)!r}; '
            'ms = [m.__file__ for m in list(sys.modules.values()) if getattr(m, "__file__", None) and "/experiments/" in m.__file__]; '
            'bad = [f for f in ms if not f.startswith(staged)]; assert not bad, bad; print(len(ms), "lane modules from the staged tree")')
-    r_ = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env, capture_output=True, text=True)
+    slot = '/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-21-improvement-campaign/campaign/jaxslot.sh'
+    r_ = subprocess.run(['bash', slot, '900', 'jaxrun', '/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env,
+                        capture_output=True, text=True)
     assert r_.returncode == 0, r_.stderr[-3000:]
     print(r_.stdout.strip())
     remote = f'{NAMESPACE}/{a.job}'
     gres, constraint = GRES[a.gpu]
-    h = math.ceil(a.hours * 4) / 4
+    h = math.ceil(hours * 4) / 4
     tl = f'{int(h):02d}:{int(round((h - int(h)) * 60)):02d}:00'
     script = f'''#!/bin/bash
 #SBATCH --job-name=ifs_{a.job}
@@ -110,11 +114,14 @@ cd {LANE}
 echo "STEP {a.driver} {a.config} $(date -u +%FT%TZ)"
 set +e
 timeout --signal=TERM --kill-after=30 $(( {int(h * 60)} * 60 - 240 )) "$PY" {a.driver}.py --config {a.config} --out "$TASK_ROOT/output/{a.driver}_{a.job}"
-echo "driver_exit=$?"
+rc=$?
+echo "driver_exit=$rc"
 set -e
 cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
-echo ALL-DONE
+if [ $rc -eq 0 ] && [ ! -f "output/{a.driver}_{a.job}/COMPLETE" ]; then echo "no COMPLETE marker"; rc=5; fi
+echo "ALL-DONE rc=$rc"
+exit $rc
 '''
     (out / 'run.sbatch').write_text(script)
     (out / 'RESERVATION.json').write_text(json.dumps(dict(job=a.job, gpu=a.gpu, time_limit_hours=h, driver=a.driver,

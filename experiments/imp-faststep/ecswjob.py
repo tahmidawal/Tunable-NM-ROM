@@ -15,6 +15,7 @@ Outputs: GECSW_r<r>.npz (k<kappa>_nodes / _weights / _relres / _size / _optimum)
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -36,6 +37,8 @@ BUDGET = {128: 240., 256: 360., 384: 600.}
 
 
 def contributions(states, Phi_r, L, seed=BD.ECSW_SEED_CAND, n_cand=BD.CAND):
+    """Stacked, block-scaled Galerkin contribution matrix G (rows = retained states x r, columns = candidates), target b,
+    candidates, and the per-state data needed to rebuild columns for any node set (C11 witness)."""
     n = Phi_r.shape[0]
     r_ = Phi_r.shape[1]
     sh = (L - 1, L - 1)
@@ -53,32 +56,66 @@ def contributions(states, Phi_r, L, seed=BD.ECSW_SEED_CAND, n_cand=BD.CAND):
         imp += np.asarray(jnp.abs(N) * rowsn)
         Ns.append(N)
         bs.append(np.asarray(b))
-    rng = np.random.default_rng(seed)
-    half = n_cand // 2
-    uni = rng.choice(n, half, replace=False)
-    rest = np.setdiff1d(np.arange(n), uni)
-    pr = imp[rest] / imp[rest].sum()
-    k_imp = min(n_cand - half, int(np.sum(pr > 0)))
-    cand = np.sort(np.concatenate([uni, rng.choice(rest, k_imp, replace=False, p=pr)]))
-    cj = jnp.asarray(cand)
     nb = np.array([np.linalg.norm(b) for b in bs])
+    if not (np.isfinite(nb).all() and np.isfinite(imp).all()):
+        raise RuntimeError('ECSW construction failure: non-finite training contributions')
     floor = max(1e-8 * float(np.median(nb)), 1e-14 * float(np.max(nb)), 1e-300)
     keep = nb >= floor
     if not np.any(keep):
         raise RuntimeError('ECSW construction failure: every training target is below the floor')
+    if n <= n_cand:                                    # build.ecsw_contrib's all-node branch
+        cand = np.arange(n)
+    else:
+        rng = np.random.default_rng(seed)
+        half = n_cand // 2
+        uni = rng.choice(n, half, replace=False)
+        rest = np.setdiff1d(np.arange(n), uni)
+        mass = float(imp[rest].sum())
+        if not (np.isfinite(mass) and mass > 0):
+            raise RuntimeError('ECSW construction failure: zero importance mass outside the uniform half')
+        pr = imp[rest] / mass
+        k_imp = min(n_cand - half, int(np.sum(pr > 0)))
+        cand = np.sort(np.concatenate([uni, rng.choice(rest, k_imp, replace=False, p=pr)]))
     sc = 1. / np.maximum(nb, floor)
-    Gh = np.empty((int(keep.sum()) * r_, len(cand)))
-    bh = np.empty(int(keep.sum()) * r_)
-    Pc = Phi_r[cj]
-    q = 0
-    for i, (N, b) in enumerate(zip(Ns, bs)):
-        if not keep[i]:
-            continue
-        Gh[q * r_:(q + 1) * r_] = np.asarray((Pc * N[cj][:, None]).T) * sc[i]
-        bh[q * r_:(q + 1) * r_] = b * sc[i]
-        q += 1
-    return jnp.asarray(Gh), jnp.asarray(bh), cand, dict(dropped_blocks=int(np.sum(~keep)), n_cand=int(len(cand)),
-                                                        block_norm_min=float(nb.min()), block_norm_max=float(nb.max()))
+    blocks = [(N, b, sc[i]) for i, (N, b) in enumerate(zip(Ns, bs)) if keep[i]]
+
+    def columns(nodes):
+        nj = jnp.asarray(nodes)
+        Pc = Phi_r[nj]
+        return jnp.concatenate([(Pc * N[nj][:, None]).T * s_ for N, _, s_ in blocks], 0)
+    G = columns(cand)
+    b = jnp.asarray(np.concatenate([b_ * s_ for _, b_, s_ in blocks]))
+    info = dict(dropped_blocks=int(np.sum(~keep)), n_cand=int(len(cand)), floor=floor, block_norms=nb.tolist(),
+                keep=keep.tolist(), all_nodes=bool(n <= n_cand))
+    return G, b, cand, info, columns
+
+
+def jclean(x):
+    if isinstance(x, dict):
+        return {str(k): jclean(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [jclean(v) for v in x]
+    if isinstance(x, np.ndarray):
+        return jclean(x.tolist()) if x.size <= 64 else dict(shape=list(x.shape), sha256=hashlib.sha256(np.ascontiguousarray(x).tobytes()).hexdigest())
+    if isinstance(x, (np.floating, float)):
+        return float(x) if np.isfinite(x) else None
+    if isinstance(x, (np.integer,)):
+        return int(x)
+    if isinstance(x, np.bool_):
+        return bool(x)
+    if hasattr(x, 'shape'):
+        return jclean(np.asarray(x))
+    return x
+
+
+def mem():
+    import resource
+    try:
+        s = jax.devices()[0].memory_stats() or {}
+    except Exception:  # noqa: BLE001
+        s = {}
+    return dict(device_peak=int(s.get('peak_bytes_in_use', -1)), device_in_use=int(s.get('bytes_in_use', -1)),
+                host_maxrss_kb=int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
 
 
 def main():
@@ -98,6 +135,12 @@ def main():
     rep = dict(config=cfg, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
                gpu=jax.devices()[0].device_kind, ranks={}, timers={})
     t0 = time.perf_counter()
+    h = hashlib.sha256()
+    with open(tdir / 'artifacts' / 'Phi.npz', 'rb') as f_:
+        for blk in iter(lambda: f_.read(1 << 24), b''):
+            h.update(blk)
+    rep['phi_sha256'] = h.hexdigest()
+    assert rep['phi_sha256'] == cfg['phi_sha256'], 'POD basis differs from the pinned digest'
     zf = np.load(tdir / 'artifacts' / 'Phi.npz')
     rmax = max(cfg['ranks'])
     Phi = jnp.asarray(np.asarray(zf['Phi'])[:, :rmax])
@@ -108,9 +151,10 @@ def main():
     states, sinfo = BD.ecsw_states(2, L, fam, None)
     rep['states'] = sinfo
     rep['timers']['states'] = time.perf_counter() - t0
+    c11_ok = True
     for r in cfg['ranks']:
         t1 = time.perf_counter()
-        G, b, cand, cinfo = contributions(states, Phi[:, :r], L)
+        G, b, cand, cinfo, columns = contributions(states, Phi[:, :r], L)
         jax.block_until_ready(G)
         tc = time.perf_counter() - t1
         t2 = time.perf_counter()
@@ -123,41 +167,50 @@ def main():
                 cps[f'k{k}'] = None
                 continue
             Sv = jnp.asarray(np.searchsorted(cand, v['nodes']))
+            assert np.array_equal(np.asarray(cand)[np.asarray(Sv)], np.asarray(v['nodes']))
             agg = float(jnp.linalg.norm(G[:, Sv] @ jnp.asarray(v['weights']) - b) / bn)
+            rr_ = float(v['relres'])
+            agree = bool(abs(agg - rr_) <= 1e-8 * rr_) if rr_ > 0 else bool(agg <= 1e-300)
             arrays.update({f'k{k}_nodes': np.asarray(v['nodes']), f'k{k}_weights': np.asarray(v['weights']),
-                           f'k{k}_relres': np.float64(v['relres']), f'k{k}_size': np.int64(v['size']),
+                           f'k{k}_relres': np.float64(rr_), f'k{k}_size': np.int64(v['size']),
                            f'k{k}_optimum': np.bool_(v.get('optimum', False))})
-            cps[f'k{k}'] = dict(size=int(v['size']), relres=float(v['relres']), aggregate_recomputed=agg,
-                                agree=bool(abs(agg - v['relres']) <= 1e-8 * max(v['relres'], 1e-300) + 1e-14),
+            cps[f'k{k}'] = dict(size=int(v['size']), relres=rr_, aggregate_recomputed=agg, agree=agree,
                                 optimum=bool(v.get('optimum', False)))
-        # C11 witness: uniform weights on |E| (then |E|/4) uniformly random nodes, |E| = kappa 8 support (or largest)
+            c11_ok = c11_ok and agree
+        # C11 witness (A2.7): uniform weights n/|E| on |E| (then |E|/4) nodes drawn uniformly from ALL n nodes
         avail = [k for k in (8, 16, 4, 2) if cps.get(f'k{k}')]
-        wit = {}
+        wit = dict(fires=False)
         if avail:
-            k0 = avail[0]
+            k0 = 8 if cps.get('k8') else max(k for k in (2, 4, 8, 16) if cps.get(f'k{k}'))
             E = cps[f'k{k0}']['size']
             rng = np.random.default_rng(20261021)
             n = Phi.shape[0]
             for frac in (1, 4):
                 sz = max(1, E // frac)
-                pick = np.sort(rng.choice(len(cand), sz, replace=False))
-                xi = jnp.full(sz, n / sz)
-                agg = float(jnp.linalg.norm(G[:, jnp.asarray(pick)] @ xi - b) / bn)
-                wit[f'E/{frac}'] = dict(size=sz, relres=agg, ratio=agg / max(cps[f'k{k0}']['relres'], 1e-300))
-            wit['fires'] = any(v['ratio'] >= 10 for v in wit.values() if isinstance(v, dict))
+                pick = np.sort(rng.choice(n, sz, replace=False))
+                agg = float(jnp.linalg.norm(columns(pick) @ jnp.full(sz, n / sz) - b) / bn)
+                ratio = agg / cps[f'k{k0}']['relres'] if cps[f'k{k0}']['relres'] > 0 else float('inf')
+                wit[f'E/{frac}'] = dict(size=sz, relres=agg, ratio=ratio, nodes_sha256=hashlib.sha256(pick.tobytes()).hexdigest())
+                if ratio >= 10:
+                    wit['fires'] = True
+                    break
             wit['kappa_ref'] = k0
-        np.savez_compressed(out / f'GECSW_r{r}.npz', cand=cand, **arrays)
-        sel = summ['attempts'][summ['selected']]
+        c11_ok = c11_ok and bool(wit['fires'])
+        np.savez_compressed(out / f'GECSW_r{r}.npz', cand=cand, keep=np.asarray(cinfo['keep']), **arrays)
         rep['ranks'][str(r)] = dict(contrib=cinfo, contrib_seconds=tc, nnls_seconds=tn, checkpoints=cps, witness=wit,
-                                    nnls=dict(selected=summ['selected'], reason=sel['reason'], final_relres=sel['final_relres'],
-                                              final_support=sel['final_support'], banned=sel['banned'],
-                                              elapsed=sel.get('elapsed_seconds'), budget=BUDGET.get(r, 120.),
-                                              attempts=list(summ['attempts'])))
-        json.dump(rep, open(out / 'ecsw.json', 'w'), indent=1, default=float)
-        print('RANK', r, 'contrib', round(tc, 1), 'nnls', round(tn, 1), json.dumps(cps), flush=True)
+                                    budget_per_attempt=BUDGET.get(r, 120.), selected=summ['selected'],
+                                    attempts=jclean(summ['attempts']), memory=mem())
+        json.dump(jclean(rep), open(out / 'ecsw.json', 'w'), indent=1)
+        print('RANK', r, 'contrib', round(tc, 1), 'nnls', round(tn, 1), json.dumps(cps), 'witness', json.dumps(wit), flush=True)
         del G, b
+    rep['c11_ok'] = c11_ok
+    rep['memory'] = mem()
     rep['complete'] = True
-    json.dump(rep, open(out / 'ecsw.json', 'w'), indent=1, default=float)
+    json.dump(jclean(rep), open(out / 'ecsw.json', 'w'), indent=1)
+    if not c11_ok:
+        (out / 'C11_FAILED').write_text('C11 aggregate or witness failed\n')
+        print('ECSW C11 FAILED', flush=True)
+        sys.exit(3)
     (out / 'COMPLETE').write_text('complete\n')
     print('ECSW COMPLETE', flush=True)
 

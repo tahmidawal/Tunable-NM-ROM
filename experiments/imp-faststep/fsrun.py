@@ -278,9 +278,11 @@ def main():
                     row.update(valid=g_valid(v, kind), growth=v['growth'], stage_max=v['stage_max'], steps=v['steps'],
                                stage_finite=bool(np.isfinite(v['stage_max'])), cert=cert,
                                out_vs_states=float(np.max(np.abs(v['z_out'][1:] - v['Z'][[v['steps'] // 5 * k for k in range(1, 6)]]))))
-                    A_.setdefault('Z', np.full((n, F.NMAX, Rp), np.nan))[j] = v['Z']
+                    S_ = v['steps']
+                    A_.setdefault('Z', np.full((n, S_ + 1, Rp), np.nan))[j] = v['Z'][:S_ + 1]
                     if kind == 'cn':
-                        A_.setdefault('it', np.full((n, F.NMAX), -1))[j] = v['it']
+                        A_.setdefault('it', np.full((n, S_), -1))[j] = v['it'][:S_]
+                        A_.setdefault('tolratio', np.full((n, S_), np.nan))[j] = v['tolratio'][:S_]
                         vt = g_run(kind, dt, ci, level='tight')
                         ct = g_cert(vt, kind, dt, level='tight')
                         A_['W_tight'][j] = vt['W']

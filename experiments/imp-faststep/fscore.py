@@ -34,7 +34,7 @@ import jax  # noqa: E402
 import jax.numpy as jnp  # noqa: E402
 from jax.scipy.linalg import solve_triangular  # noqa: E402
 
-NMAX = 401                       # state buffer (longest schedule: 400 steps at dt0 / 4 ... dt0/8 needs 400 steps)
+NMAX = 801                       # state buffer (longest schedule: 800 steps, dt0 / 16 in the A3.2 refinements)
 MUTATIONS = (None, 'neg_nu', 'f2_as_f1', 'f3_scale', 'newton0', 'jzero', 'half_update', 'late_out', 'wrong_nu')
 TOL_CN = {'prod': 1e-10, 'tight': 1e-12, 'tighter': 1e-13}        # arm 2 levels (A1.3)
 CN_BUDGET = 30
@@ -98,13 +98,17 @@ def etd_coefs_indep(Lk, h):
 
 # ------------------------------------------------------------------ precontraction ----
 
-def precontract(dg, mutation=None):
+def precontract(dg, mutation=None, basis=None):
     """dg: the t2core GAL data dict of one (mesh, r, rule) (A, lam, Qm, Rm, Gq, Gs, Psi, ...). Returns the diffusion-
-    coordinate tables and the A1.1 checks. mutation 'wrong_congruence' (control C1m): Pz built with Q Rm^{-T}."""
+    coordinate tables and the A1.1 checks. basis=(D, V): reuse the main rule's eigenpairs (successor-rule tables share
+    A, Q, Rm, lambda, so K is identical). mutation 'wrong_congruence' (control C1m): Pz built with Q Rm^{-T}."""
     Qm, Rm, lam = dg['Qm'], dg['Rm'], dg['lam']
     K = Qm.T @ (lam[:, None] * Qm)
     K = .5 * (K + K.T)
-    D, V = jnp.linalg.eigh(K)
+    if basis is None:
+        D, V = jnp.linalg.eigh(K)
+    else:
+        D, V = basis
     RinvV = solve_triangular(Rm, V, lower=False)
     VtRm = V.T @ Rm
     QV = Qm @ V
@@ -346,3 +350,24 @@ def rhs_agreement(Zs, nu, dg, tab, nl):
         a, b = f(jnp.asarray(z), nu, dg, tab)
         worst = max(worst, float(jnp.linalg.norm(a - b) / (jnp.linalg.norm(b) + 1e-300)))
     return worst
+
+
+def make_cert_etd_adv(adv):
+    """Per-step ETDRK4 reconstruction for an arbitrary independent advection evaluator adv(z, tb) (POD arm, A1.3):
+    cert(Z, tb, co, steps) -> ||z_{k+1}^rec - z_{k+1}|| / ||z_{k+1}|| for every step; co from etd_coefs_indep."""
+    def cert(Z, tb, co, steps):
+        Nf = lambda z: -adv(z, tb)
+
+        def one_(k):
+            zn = Z[k]
+            Nv = Nf(zn)
+            a = co['E2'] * zn + co['Q'] * Nv
+            Na = Nf(a)
+            b = co['E2'] * zn + co['Q'] * Na
+            Nb = Nf(b)
+            cc = co['E2'] * a + co['Q'] * (2 * Nb - Nv)
+            Nc = Nf(cc)
+            z1 = co['E'] * zn + Nv * co['f1'] + 2 * (Na + Nb) * co['f2'] + Nc * co['f3']
+            return jnp.linalg.norm(z1 - Z[k + 1]) / (jnp.linalg.norm(Z[k + 1]) + 1e-300)
+        return jax.lax.map(one_, jnp.arange(steps))
+    return jax.jit(cert, static_argnums=(3,))

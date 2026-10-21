@@ -521,3 +521,22 @@ the duplicate (A3.1). **C22** synthetic growth maxima (1.049, 1.053) must classi
 with one case removed must give "incomplete" (and the speed condition fires); a forced hash mismatch must give
 "failed (identity)". **C24** a synthetic competitor matched on all 38 but not on val32 must get "val32: not matched".
 C19's fixture must change at least one successor (precondition asserted); C20 and C24 call the production matcher.
+
+---
+
+## Amendment A4 (2026-10-21) — Codex design audit 5 (`audits/codex-design-5.md`: NEEDS-RESTATEMENT, **no WRONG**)
+
+**A4.1 Exhaustive stability classifier (replaces the A3.2 list; diagnostic only).** In this order: an invalid or
+uncertified refinement, or $|G_8 - G_{16}| > 0.005$ → "unresolved"; both $> 1.055$ → "growth present in the tested
+refinements"; both $< 1.045$ → "growth absent in the tested refinements"; otherwise (boundary equalities, straddles,
+pairs within the band) → "unresolved". **C22** is extended with the pairs (1.057, 1.054), (1.054, 1.057), (1.049, 1.053),
+(1.045, 1.044), (1.055, 1.056), (1.06, 1.07) and their expected labels (unresolved, unresolved, unresolved, unresolved,
+unresolved, unresolved because the difference exceeds 0.005), calling the production classifier.
+
+**A4.2 Reporting.** dev6 timing is reported separately from the dev6 / val32 / all-38 accuracy-match statuses.
+
+## Acceptance record (2026-10-21) — design
+
+Design audits: 1 WRONG (→ A1), 2 void (wrong lane), 3 WRONG on A1.10 (→ A2), 4 NEEDS-RESTATEMENT (→ A3),
+5 NEEDS-RESTATEMENT with no WRONG (→ A4, a diagnostic-only classifier fix). The design is accepted for coding; A4 is
+re-checked inside the first code audit.

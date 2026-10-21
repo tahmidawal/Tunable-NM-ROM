@@ -780,3 +780,28 @@ Replaced ceilings and schedules:
 - **S1** (both arms): 8.8 + 2.9 + 0.7 + 1.5 + 0.9 = **14.8 GPU-h**. **S3** (arm (b) only + K1): 4.4 + 2.9 + 0.35 +
   1.0 + 0.9 = **9.55**. S2 is withdrawn (S1 already uses the reduced reference set). S4: no Phase B.
 - Submission of each production item still follows the Amendment 5 admission rule against these ceilings.
+
+---
+
+## Amendment 11 (2026-10-21; training and smoke costs from the train2d build; before any Phase B job)
+
+Measured facts (jcp-robust records): the three K1-recipe retrains took 3.69, 4.17 and 3.76 GPU-h (A100-80G); K1's own
+smoke took 1 429 s (Stage A 382, Stage B 1 027, rotation 20). Consequences: a 0.45 h smoke cannot hold training plus
+the ROM and reference smoke steps, and a 4.4 h training ceiling with a 90 % self-timer would have killed one K1
+retrain. Training has no partial result, so it gets **no self-timer** (`SELF_TIMER_FRAC=1`), only the hard wall.
+- Training ceiling **4.6 GPU-h per arm** (wall 4.6 h, 1 GPU): K1's measured maximum 4.17 h plus the arm's measured
+  data-generation increment from its smoke; if the projection (K1 max + increment) exceeds 4.6 the arm is not run.
+- Smoke split: **SM-a 0.2** (fid: full 576 + 4 032 PS generation timed, C-B3, a 500-step Stage A chaining slice),
+  **SM-b 0.25** (cov: full low-ν upwind generation timed with Newton residuals, chaining slice), **SM-r 0.4** (ROM
+  round 1 with K1 and the C-B1 / C-B6 controls, the 16-case K1 policy dry run, the 2 dev references on H200).
+  Smoke step counts follow `run_seed.sh`'s own smoke mode for any training slice (Amendment 4's "2 000 steps" is
+  superseded).
+- Schedules: **S1** (both arms) = 9.2 + 2.9 + 0.7 + 1.5 + 0.85 = **15.15 GPU-h > 15: not fundable under the cap.**
+  **S3** (arm (b) only + K1) = 4.6 + 2.9 + 0.35 + 1.0 + 0.65 (SM-b + SM-r) = **9.5 GPU-h** — the fundable schedule.
+  Arm (a) needs ≈ 5.65 GPU-h more (training 4.6, selection 0.35, policy 0.5, SM-a 0.2); it runs only if the
+  coordinator raises the lane cap to ≥ 15.15 + contingency, or if S3's measured spend leaves room under 15 by the
+  admission rule. Choice of (b) over (a) for S3 is pre-registered (Amendment 3: (b) targets the primary C1 failure).
+- Defaults recorded (from the build): fid's IC projection is pscore's quadrature of the continuous Gaussian (as E0 and
+  jcp-fom2d); smoothtrain's R0 fingerprint gate runs only for the incumbent generator and is replaced by the arm gate
+  (`arm_gate.py`: fid = finite + C-B3 + self-convergence; cov = C-B4 + Newton residual), disclosed in PROVENANCE; the
+  arms also change Stage B's 8-trajectory test-floor diagnostic cohort (diagnostic only).

@@ -1,0 +1,16 @@
+W0924 17:30:32.495167 1177833 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 3.90GiB (rounded to 4193088512)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0924 17:30:32.495822 1177833 bfc_allocator.cc:525] *************************************************************************************************___
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/pb4096/src/experiments/burgers-bank-knob/bankknob.py", line 585, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/pb4096/src/experiments/burgers-bank-knob/bankknob.py", line 216, in main
+    jax.block_until_ready(v)
+    ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2512, in block_until_ready
+    xc.batched_block_until_ready(arrays)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 3.90GiB. [executable_name='jit_query'] [tf-allocator-allocation-error='']

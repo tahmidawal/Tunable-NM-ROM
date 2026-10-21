@@ -1,0 +1,23 @@
+record unet-s from tr_256c
+record tsol-s from tr_256c
+no result.json for fno-s in tr_256fp (kept: result.json)
+no result.json for don-s in tr_256dp (kept: result.json)
+/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/pn_poisson256/code/configs/panel_poisson256.json [('don-s', 'no micro-batch fits (OOM at micro-batch 1)'), ('fno-s', 'no micro-batch fits (OOM at micro-batch 1)'), ('tsol-s', 'ok'), ('unet-s', 'ok')]
+host=pax010 job=4296944 config=configs/panel_poisson256.json jax_fraction=0.6
+NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T  4.2T  369G  93% /cluster/tufts/paralab
+jax_backend=gpu
+[18:00:00] building poisson 256
+torch_backend=cuda NVIDIA H200
+[18:00:35] accuracy pass: 10 arms x 16 cases
+[18:00:39] case 0: nmrom_accurate_R128_linear=0.1442%, nmrom_fast_R64_linear=0.2411%, fom_cg_rtol0.3=2.1722%, fom_cg_rtol0.1=0.5198%, fom_cg_rtol0.03=0.1645%, fom_cg_rtol0.01=0.0489%, fom_cg_rtol0.003=0.0148%, fom_cg_rtol0.001=0.0047%, op_transolver_tsol-s=4.8027%, op_unet_unet-s=27.9084%
+[18:00:48] case 8: nmrom_accurate_R128_linear=0.0527%, nmrom_fast_R64_linear=0.0793%, fom_cg_rtol0.3=1.6828%, fom_cg_rtol0.1=0.3861%, fom_cg_rtol0.03=0.1363%, fom_cg_rtol0.01=0.0411%, fom_cg_rtol0.003=0.0136%, fom_cg_rtol0.001=0.0039%, op_transolver_tsol-s=3.4084%, op_unet_unet-s=14.2797%
+[18:00:56] reproduction gate passed=True max gap 1.4705986041832477e-15
+[18:00:59] timing: 10 arms x 16 cases x 3 rounds
+[18:01:25] timing round 0 done
+[18:01:51] timing round 1 done
+[18:02:16] timing round 2 done
+[18:02:16] PANEL DONE {"nmrom_accurate_R128_linear": [0.1442, 5.962], "nmrom_fast_R64_linear": [0.2411, 3.361], "fom_cg_rtol0.3": [2.5932, 76.627], "fom_cg_rtol0.1": [0.5198, 99.412], "fom_cg_rtol0.03": [0.1645, 120.18], "fom_cg_rtol0.01": [0.0489, 141.423], "fom_cg_rtol0.003": [0.0168, 160.238], "fom_cg_rtol0.001": [0.0077, 184.683], "op_transolver_tsol-s": [4.8027, 6.351], "op_unet_unet-s": [43.6916, 306.321]}
+[18:02:16] FOM fom_cg_rtol0.01 gates {'reproduction': True, 'drift_selected': True, 'fom_found': True}
+RUN_EXIT=0
+ALL-DONE

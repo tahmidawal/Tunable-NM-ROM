@@ -1,0 +1,73 @@
+{
+ "complete": true,
+ "name": "unet",
+ "family": "unet",
+ "problem": "square",
+ "mesh": 1024,
+ "mem_share": 0.5,
+ "co_scheduled_on_same_gpu": [
+  "unet",
+  "deeponet"
+ ],
+ "data": {
+  "seconds": 0.5129704857245088
+ },
+ "config": {
+  "family": "unet",
+  "base": 32,
+  "groups": 8,
+  "dtype": "float32",
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "smoke_overrides": {
+   "base": 8,
+   "epochs": 2
+  }
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 32470542336,
+ "best_epoch": 6,
+ "best_step": 2289,
+ "epochs_completed": 8,
+ "optimisation_steps": 2328,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3002.1152524570934,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.03709490921537841,
+   0.04310522198441337,
+   0.07119418545365595,
+   0.03875356894738634,
+   0.04155305878615658,
+   0.07569221110683688,
+   0.0637930433997846,
+   0.0508612219708906,
+   0.0790080739717169,
+   0.04374601511513823,
+   0.04471481126508768,
+   0.04362595145736023,
+   0.035281440584891965,
+   0.07473589582604966,
+   0.0460452881560947,
+   0.05921900859795685
+  ],
+  "mean": 0.05302649411492494,
+  "median": 0.04538004971059119,
+  "worst": 0.0790080739717169
+ },
+ "best_checkpoint_sha256": "05d5291a946c8c26003f4f8de0910e82e96c57080f308a03ef79c485293d9eef",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 7763041,
+ "normalization": [
+  0.02113886827259319,
+  0.11590062968039329,
+  0.002435305342803056
+ ],
+ "peak_allocated_bytes": 32532660224
+}

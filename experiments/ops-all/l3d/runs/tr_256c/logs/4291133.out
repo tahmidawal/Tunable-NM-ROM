@@ -1,0 +1,12 @@
+host=pax010 job=4291133 probes=poisson:256:fno-s:0.95 poisson:256:don-s:0.95 heat:256:fno-s:0.95 heat:256:don-s:0.95 specs=heat:256:unet-s:0.3 poisson:256:unet-s:0.3 heat:256:tsol-s:0.15 poisson:256:tsol-s:0.15
+NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB
+jax_backend=gpu
+PROBE-EXIT poisson256-fno-s 0
+PROBE-EXIT poisson256-don-s 0
+PROBE-EXIT heat256-fno-s 0
+PROBE-EXIT heat256-don-s 0
+EXIT heat256-unet-s 0
+EXIT poisson256-unet-s 0
+EXIT heat256-tsol-s 0
+EXIT poisson256-tsol-s 0
+ALL-DONE

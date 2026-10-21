@@ -1,0 +1,99 @@
+{
+ "problem": "square",
+ "intervals": 2048,
+ "cg_maxiter": 200000,
+ "order_seed": 20262972,
+ "repetitions": 3,
+ "cg_repetitions": 2,
+ "burn_seconds": 0.1,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "table1": {
+  "source_job": 4199318,
+  "accurate": "R512_linear",
+  "fast": "R128_linear",
+  "named_fom": "cg_0.1",
+  "R512_linear": {
+   "worst": 0.0074194417461643045,
+   "median": 0.0005800979729064877,
+   "gpu_ms": 12.014209758490324
+  },
+  "R128_linear": {
+   "worst": 0.023060130533623276,
+   "median": 0.0021797368975015018,
+   "gpu_ms": 3.7361127324402332
+  },
+  "cg_0.03": {
+   "worst": 0.0016178789744188155,
+   "median": 0.0007217564159954825,
+   "gpu_ms": 746.2591261137277
+  },
+  "cg_0.1": {
+   "worst": 0.006088666412608817,
+   "median": 0.0020991889026645227,
+   "gpu_ms": 650.2399798482656
+  }
+ },
+ "nmrom_R": [
+  512,
+  128
+ ],
+ "rows_per_chunk": 256,
+ "eval_rows": 64,
+ "cg_tols": [
+  0.7,
+  0.5,
+  0.4,
+  0.3,
+  0.2,
+  0.1,
+  0.03,
+  0.01,
+  0.001,
+  0.0001
+ ],
+ "expected_nmrom_worst": {
+  "R512_linear": 0.0074194417461643045,
+  "R128_linear": 0.023060130533623276
+ },
+ "operators": {
+  "fno": {
+   "job": "s2048fc",
+   "job_id": "4293930",
+   "config": "fno.json",
+   "co_scheduled": [
+    "fno"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s2048fc/output/fno/fno/best.pt"
+  },
+  "unet": {
+   "job": "s2048ub",
+   "job_id": "4292541",
+   "config": "unet.json",
+   "co_scheduled": [
+    "unet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s2048ub/output/unet/unet/best.pt"
+  },
+  "transolver": {
+   "job": "s2048b",
+   "job_id": "4294149",
+   "config": "transolver.json",
+   "co_scheduled": [
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s2048b/output/transolver/transolver/best.pt"
+  },
+  "deeponet": {
+   "job": "s2048b",
+   "job_id": "4294149",
+   "config": "deeponet.json",
+   "co_scheduled": [
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s2048b/output/deeponet/deeponet/best.pt"
+  }
+ }
+}

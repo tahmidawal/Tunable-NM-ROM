@@ -1,0 +1,13 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"arm": "tsol-s", "problem": "poisson", "mesh": 128, "micro_batch": 8, "real_parameter_count": 6570480}
+{"arm": "tsol-s", "epoch": 0, "steps": 56, "train": 0.8107064249805537, "val_mean": 0.6301625932615789, "val_worst": 0.6982296163437985, "lr": 0.0003498247154426088, "wall": 47.6}
+{"arm": "tsol-s", "epoch": 1, "steps": 112, "train": 0.18502034921135296, "val_mean": 0.2992340611431983, "val_worst": 0.3833333740005345, "lr": 0.0006983171749442965, "wall": 98.8}
+{"arm": "tsol-s", "epoch": 2, "steps": 168, "train": 0.07799103611769212, "val_mean": 0.22787267895305005, "val_worst": 0.32599193159587414, "lr": 0.0009942676712514267, "wall": 150.0}
+{"arm": "tsol-s", "epoch": 3, "steps": 224, "train": 0.05833319751203715, "val_mean": 0.20121362291285572, "val_worst": 0.2793677507357968, "lr": 0.0009895770898776463, "wall": 200.9}
+{"arm": "tsol-s", "epoch": 4, "steps": 280, "train": 0.04680739763190398, "val_mean": 0.18201311298090905, "val_worst": 0.25265727895382123, "lr": 0.0009834980923745249, "wall": 251.8}
+{"arm": "tsol-s", "epoch": 10, "steps": 616, "train": 0.01789315091687349, "val_mean": 0.12182617388892972, "val_worst": 0.1993836502959674, "lr": 0.000919013635451858, "wall": 558.6}
+{"arm": "tsol-s", "epoch": 20, "steps": 1176, "train": 0.007374025798729165, "val_mean": 0.0754977177184764, "val_worst": 0.13868158239692505, "lr": 0.0007231314833264051, "wall": 1068.8}
+{"arm": "tsol-s", "epoch": 30, "steps": 1736, "train": 0.001651693998092654, "val_mean": 0.03941048900116631, "val_worst": 0.06934904422540936, "lr": 0.00045696810662602776, "wall": 1597.5}
+{"arm": "tsol-s", "epoch": 40, "steps": 2296, "train": 0.001212890539212301, "val_mean": 0.03140211822496887, "val_worst": 0.04590659661809983, "lr": 0.0002053222901684381, "wall": 2125.7}
+{"arm": "tsol-s", "epoch": 50, "steps": 2856, "train": 0.0007452329981268069, "val_mean": 0.026815423621046976, "val_worst": 0.03900971480354895, "lr": 4.296622961008831e-05, "wall": 2654.2}
+TRAIN DONE {"arm": "tsol-s", "problem": "poisson", "mesh": 128, "stop_reason": "wall_budget", "epochs_completed": 58, "optimisation_steps": 3225, "best_epoch": 55} val_mean 0.026292372356437256 val_worst 0.03822779247344341

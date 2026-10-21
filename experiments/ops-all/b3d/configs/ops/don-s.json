@@ -1,0 +1,26 @@
+{
+ "family": "deeponet",
+ "width": 32,
+ "rank": 256,
+ "trunk_width": 384,
+ "levels": 3,
+ "pool_bins": 4,
+ "trunk_frequencies": [
+  1,
+  2,
+  3,
+  4
+ ],
+ "dtype": "float32",
+ "smoke_overrides": {
+  "width": 4,
+  "rank": 8,
+  "trunk_width": 8
+ },
+ "batch_size": 8,
+ "learning_rate": 0.001,
+ "weight_decay": 0.0001,
+ "epochs": 4000,
+ "patience": 250,
+ "seed": 20260914
+}

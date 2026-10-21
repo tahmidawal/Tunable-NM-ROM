@@ -1,0 +1,25 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+CG data 32 / 256 485.6
+CG data 64 / 256 966.9
+CG data 96 / 256 1452.5
+CG data 128 / 256 1931.7
+CG data 160 / 256 2414.1
+CG data 192 / 256 2895.1
+CG data 224 / 256 3377.4
+CG data 256 / 256 3859.5
+DATA READY {"seconds": 4111.078102954198, "data_seconds": 4110.320818913635} [0.03191754910612882, 0.15171432699740064, 0.0018147967767274274]
+probe micro-batch 8 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 772.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 26.89 GiB is free. Process 1811714 has 12.57 GiB memory in use. Including non-PyTorch memory, this pr
+probe after cleanup: allocated 33589248
+probe micro-batch 4 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 6.01 GiB. GPU 0 has a total capacity of 79.25 GiB of which 30.57 GiB is free. Process 1811714 has 12.57 GiB memory in use. Including non-PyTorch memory, this proc
+probe after cleanup: allocated 43157504
+probe after cleanup: allocated 51677184
+{"arm": "deeponet", "epoch": 0, "steps": 32, "train": 0.8022939535698356, "val_mean": 0.9146028123766877, "val_worst": 3.035449558355367, "lr": 0.000966151214334389, "wall": 374.2}
+{"arm": "deeponet", "epoch": 1, "steps": 64, "train": 0.46264001604993765, "val_mean": 0.7439860264933378, "val_worst": 2.154704893801927, "lr": 0.0008659057526488869, "wall": 738.4}
+{"arm": "deeponet", "epoch": 2, "steps": 96, "train": 0.3300061316689893, "val_mean": 0.6723521112691213, "val_worst": 2.407115700065906, "lr": 0.0007139282116300264, "wall": 1102.6}
+{"arm": "deeponet", "epoch": 3, "steps": 128, "train": 0.26746956578342396, "val_mean": 0.6004880295357817, "val_worst": 1.9491895724476533, "lr": 0.0005324570030159921, "wall": 1465.9}
+{"arm": "deeponet", "epoch": 4, "steps": 160, "train": 0.2442194816935664, "val_mean": 0.565714675182224, "val_worst": 1.4599917483971907, "lr": 0.0003463658582391341, "wall": 1830.2}
+{"arm": "deeponet", "epoch": 5, "steps": 192, "train": 0.212366668588436, "val_mean": 0.497675803472837, "val_worst": 1.472953211300555, "lr": 0.00018331651513382364, "wall": 2194.3}
+{"arm": "deeponet", "epoch": 6, "steps": 224, "train": 0.18314746911937727, "val_mean": 0.49165328047383966, "val_worst": 1.4703009630083106, "lr": 6.657295108749069e-05, "wall": 2557.9}
+{"arm": "deeponet", "epoch": 7, "steps": 256, "train": 0.1741834411512721, "val_mean": 0.4765008132829489, "val_worst": 1.3160035628161504, "lr": 1.25999132167787e-05, "wall": 2920.8}
+{"arm": "deeponet", "epoch": 8, "steps": 264, "train": 0.19853456153839413, "val_mean": 0.47491557511968796, "val_worst": 1.3076314883914901, "lr": 1.000145238800388e-05, "wall": 3016.5}
+TRAIN OP COMPLETE

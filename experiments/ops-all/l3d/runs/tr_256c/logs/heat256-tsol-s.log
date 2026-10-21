@@ -1,0 +1,8 @@
+torch_backend=cuda NVIDIA H200
+{"arm": "tsol-s", "problem": "heat", "mesh": 256, "micro_batch": 2, "real_parameter_count": 12816368}
+{"arm": "tsol-s", "epoch": 0, "steps": 224, "train": 0.4020375236017807, "val_mean": 0.2965946022908946, "val_worst": 0.38139115528518536, "lr": 0.000976730287987852, "wall": 326.8}
+{"arm": "tsol-s", "epoch": 1, "steps": 448, "train": 0.04202645394531061, "val_mean": 0.22427886808563705, "val_worst": 0.3515560819128832, "lr": 0.0008989401385464217, "wall": 653.9}
+{"arm": "tsol-s", "epoch": 2, "steps": 672, "train": 0.03125324633993646, "val_mean": 0.19819126597914097, "val_worst": 0.3555682189350666, "lr": 0.000775288474420905, "wall": 981.3}
+{"arm": "tsol-s", "epoch": 3, "steps": 896, "train": 0.025286745444806278, "val_mean": 0.15634232970116427, "val_worst": 0.20842876244583317, "lr": 0.0006201569115417064, "wall": 1308.6}
+{"arm": "tsol-s", "epoch": 4, "steps": 1120, "train": 0.014062289451022903, "val_mean": 0.09880427361876973, "val_worst": 0.16679484181762003, "lr": 0.0004517737755495058, "wall": 1635.6}
+TRAIN DONE {"arm": "tsol-s", "problem": "heat", "mesh": 256, "stop_reason": "wall_budget", "epochs_completed": 10, "optimisation_steps": 2088, "best_epoch": 9} val_mean 0.06832633934808915 val_worst 0.14959218653084558

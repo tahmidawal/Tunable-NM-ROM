@@ -1,0 +1,4 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"arm": "don-s", "problem": "heat", "mesh": 128, "micro_batch": 1, "real_parameter_count": 4755909}
+{"arm": "don-s", "epoch": 0, "steps": 206, "train": 0.34572626285443897, "val_mean": 0.5079796892661987, "val_worst": 0.7173397429025202, "lr": 1.0008927220952487e-05, "wall": 3071.4}
+TRAIN DONE {"arm": "don-s", "problem": "heat", "mesh": 128, "stop_reason": "wall_budget", "epochs_completed": 1, "optimisation_steps": 206, "best_epoch": 0} val_mean 0.5079796892661987 val_worst 0.7173397429025202

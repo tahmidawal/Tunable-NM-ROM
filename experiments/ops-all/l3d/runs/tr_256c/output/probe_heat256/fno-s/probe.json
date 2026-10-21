@@ -1,0 +1,33 @@
+{
+ "arm": "fno-s",
+ "problem": "heat",
+ "mesh": 256,
+ "config": {
+  "family": "fno",
+  "width": 24,
+  "modes": 12,
+  "layers": 4,
+  "dtype": "float64",
+  "smoke_overrides": {
+   "width": 4,
+   "modes": 4,
+   "layers": 2
+  },
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 4000,
+  "patience": 250,
+  "seed": 20260914,
+  "cin": 4,
+  "cout": 5
+ },
+ "memory_fraction": 0.95,
+ "budget_bytes": 142604759859.19998,
+ "probe_peak_bytes": {
+  "1": 96397828096
+ },
+ "fits_micro_batch_1": true,
+ "job_id": "4291133",
+ "gpu": "NVIDIA H200"
+}

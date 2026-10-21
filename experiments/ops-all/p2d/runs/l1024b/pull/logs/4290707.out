@@ -1,0 +1,16 @@
+host=pax106 job=4290707
+NVIDIA A100 80GB PCIe, GPU-958eaf8d-bc37-c972-8632-fe73352de1ac, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  371G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda=True
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l1024b/logs/deeponet.log <==
+{"arm": "deeponet", "epoch": 24, "steps": 3200, "train": 0.021345309050958845, "val_mean": 0.19171986952871758, "val_worst": 0.6256890007144117, "lr": 1.0549253235576994e-05, "wall": 2957.9}
+{"arm": "deeponet", "epoch": 25, "steps": 3247, "train": 0.021309399091087693, "val_mean": 0.19093113616530338, "val_worst": 0.6132153588215374, "lr": 1.000000366844892e-05, "wall": 3002.6}
+TRAIN OP COMPLETE
+
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l1024b/logs/unet.log <==
+{"arm": "unet", "epoch": 17, "steps": 2304, "train": 0.033684337559077175, "val_mean": 0.21311326797129215, "val_worst": 0.6571452577830461, "lr": 1.1376141887296679e-05, "wall": 2932.1}
+{"arm": "unet", "epoch": 18, "steps": 2359, "train": 0.0325818989004828, "val_mean": 0.20978327951268655, "val_worst": 0.6231371525038738, "lr": 1.0000002683092898e-05, "wall": 3002.9}
+TRAIN OP COMPLETE
+members rc=0
+ALL-DONE

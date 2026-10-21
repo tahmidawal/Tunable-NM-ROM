@@ -1,0 +1,10 @@
+host=pax050 job=4302300
+NVIDIA A100 80GB PCIe, GPU-c58462eb-c0bf-1c85-741e-f8dc31e64312, 81920 MiB
+10.235.106.34:/projects/paralab  4.6T  4.2T  365G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda=True
+{"arm": "unet", "epoch": 14, "steps": 4905, "train": 0.0011655646710544553, "val_mean": 0.030659650747005066, "val_worst": 0.05295041022899387, "lr": 1.3941112058140271e-05, "wall": 2880.6}
+{"arm": "unet", "epoch": 15, "steps": 5109, "train": 0.001106111171369215, "val_mean": 0.030718409280421695, "val_worst": 0.052435222581580884, "lr": 1.0000072729762163e-05, "wall": 3000.9}
+TRAIN OP COMPLETE
+members rc=0
+ALL-DONE

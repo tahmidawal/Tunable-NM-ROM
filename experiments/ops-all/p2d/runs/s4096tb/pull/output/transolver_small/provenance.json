@@ -1,0 +1,48 @@
+{
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "problem": "square",
+ "mesh": 4096,
+ "train_count": 2611,
+ "fit_split_size": 2611,
+ "val_count": 16,
+ "train_sha": "d53751cea762c354cf3ada8bceea8e83530a48587ff970069f5d6295375ad551",
+ "sources": {
+  "families.py": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+  "pops.py": "d75c232238a872f64844b30222e7cf490afe96c358a1c22cd3ddbef5740b00ad",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_ops.py": "00236be5bb9ae74bed393baf6464cd9981e9a45a4aacab41de7c8597b975632d"
+ },
+ "config": {
+  "family": "transolver",
+  "dim": 128,
+  "layers": 8,
+  "heads": 8,
+  "slices": 64,
+  "mlp_ratio": 2,
+  "patch": 64,
+  "ref": 8,
+  "dtype": "float32",
+  "warmup_epochs": 10,
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914
+ },
+ "config_sha256": "093149b71c513c2f42a1da202efb8d7cd11be4014c7e0b1a0a6833b856366e8b",
+ "wall_seconds": 3000.0,
+ "job_id": "4292269",
+ "node": "pax049",
+ "evaluation_cohort_used_for_training": false,
+ "mem_share": 1.0,
+ "co_scheduled_on_same_gpu": [
+  "transolver_small"
+ ]
+}

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096deep/src/experiments/heat-compare-hires/ops/train_ops.py", line 236, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096deep/src/experiments/heat-compare-hires/ops/train_ops.py", line 228, in main
+    results[name] = train_arm(name, cfg, n, train, val, norm, args.out, args.wall_seconds, args.smoke)
+                    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096deep/src/experiments/heat-compare-hires/ops/train_ops.py", line 115, in train_arm
+    micro, probe_peak = probe_micro(config, n, train, norm, (1,) if smoke else (8, 4, 2, 1))
+                        ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096deep/src/experiments/heat-compare-hires/ops/train_ops.py", line 107, in probe_micro
+    raise RuntimeError('no micro-batch fits')
+RuntimeError: no micro-batch fits

@@ -1,0 +1,68 @@
+{
+ "complete": true,
+ "name": "unet",
+ "family": "unet",
+ "problem": "square",
+ "mesh": 256,
+ "data": {
+  "seconds": 0.32019893219694495
+ },
+ "config": {
+  "family": "unet",
+  "base": 32,
+  "groups": 8,
+  "dtype": "float32",
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "smoke_overrides": {
+   "base": 8,
+   "epochs": 2
+  }
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 5969594880,
+ "best_epoch": 132,
+ "best_step": 43491,
+ "epochs_completed": 135,
+ "optimisation_steps": 44076,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3000.1345376963727,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.0034163437549509157,
+   0.0035959501583679686,
+   0.007496598477903289,
+   0.002495796432892748,
+   0.003878773524461054,
+   0.0045667087702922545,
+   0.008194490314416368,
+   0.005863432635170071,
+   0.006496994852929579,
+   0.0034121531579514174,
+   0.004048998272848027,
+   0.0040299510343021015,
+   0.0023233300329612077,
+   0.007992696598735466,
+   0.004366603030506998,
+   0.004467812441048412
+  ],
+  "mean": 0.0047904145931086176,
+  "median": 0.0042078006516775126,
+  "worst": 0.008194490314416368
+ },
+ "best_checkpoint_sha256": "26a2b30865067415c96bbe2209c9ed67c90f8c75a36cc2515957a21fc6970405",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 7763041,
+ "normalization": [
+  0.02126182643724136,
+  0.11623014438131317,
+  0.0024425211230707368
+ ],
+ "peak_allocated_bytes": 6031712768
+}

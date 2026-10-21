@@ -1,0 +1,44 @@
+{
+ "arm": "fno-s",
+ "problem": "heat",
+ "mesh": 256,
+ "family": "fno",
+ "config": {
+  "family": "fno",
+  "width": 24,
+  "modes": 12,
+  "layers": 4,
+  "dtype": "float64",
+  "smoke_overrides": {
+   "width": 4,
+   "modes": 4,
+   "layers": 2
+  },
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 4000,
+  "patience": 250,
+  "seed": 20260914,
+  "cin": 4,
+  "cout": 5
+ },
+ "memory_fraction": 0.36,
+ "probe_peak_bytes": {
+  "8": "oom",
+  "4": "oom",
+  "2": "oom",
+  "1": "oom"
+ },
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA H200",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "job_id": "4288846",
+ "node": "pax010",
+ "complete": false,
+ "failure": "no micro-batch fits (OOM at micro-batch 1)"
+}

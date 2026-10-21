@@ -1,0 +1,28 @@
+{
+ "spec": {
+  "note": "g2d: one network per job; config verbatim from burgers-compare-hires (the 1024^2/2048^2 operator panels), 3000 s budget",
+  "per_arm_seconds": 3000,
+  "arms": [
+   {
+    "name": "don-small",
+    "config": "inputs/opconfigs/don-small.json"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "arm": "don-small",
+   "config": "inputs/opconfigs/don-small.json",
+   "exit_code": 0,
+   "started_unix": 1790272588.7632308,
+   "ended_unix": 1790275507.7045207,
+   "job_id": "4288587",
+   "epochs": 824,
+   "stop_reason": "early_stopping",
+   "validation_mean_case_max": 0.15015381529886657,
+   "validation_worst_case_max": 0.5456419701480598,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "3b733306e2eba13acab4768d277e05fb36d12024951bb205fd32c50108bebba8"
+  }
+ ]
+}

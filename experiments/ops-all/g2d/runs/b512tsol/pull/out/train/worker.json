@@ -1,0 +1,28 @@
+{
+ "spec": {
+  "note": "g2d: one network per job; config verbatim from burgers-compare-hires (the 1024^2/2048^2 operator panels), 3000 s budget",
+  "per_arm_seconds": 3000,
+  "arms": [
+   {
+    "name": "tsol-refine",
+    "config": "inputs/opconfigs/tsol-refine.json"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "arm": "tsol-refine",
+   "config": "inputs/opconfigs/tsol-refine.json",
+   "exit_code": 0,
+   "started_unix": 1790269095.2395568,
+   "ended_unix": 1790272125.2508197,
+   "job_id": "4285948",
+   "epochs": 538,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.02775225455895086,
+   "validation_worst_case_max": 0.11358463380917645,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "03d6de4938c58b2eadcef1eb007fef5f0425b5babb0530614aea0ea5a8a485a8"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "kind": "train",
+ "problem": "square",
+ "mesh": 256,
+ "family": "deeponet",
+ "config": "deeponet.json",
+ "train_count": 0,
+ "cg_batch": 32,
+ "job": "s256d",
+ "remote": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s256d",
+ "gpu_constraint": "a100-80G|h100-80G|h200-141G",
+ "mem": "128G",
+ "time": "02:45:00"
+}

@@ -1,0 +1,24 @@
+host=pax105 job=4288794 config=configs/panel_poisson32.json jax_fraction=0.6
+NVIDIA A100 80GB PCIe, GPU-662eb49d-1d4d-a693-a62c-7fbfef041e73, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  369G  93% /cluster/tufts/paralab
+jax_backend=gpu
+[13:56:22] building poisson 32
+torch_backend=cuda NVIDIA A100 80GB PCIe
+[13:56:35] accuracy pass: 12 arms x 64 cases
+[13:56:37] case 0: nmrom_accurate_R128_linear=0.0291%, nmrom_fast_R64_linear=0.0447%, fom_cg_rtol0.3=6.3804%, fom_cg_rtol0.1=1.6641%, fom_cg_rtol0.03=0.2319%, fom_cg_rtol0.01=0.1066%, fom_cg_rtol0.003=0.0242%, fom_cg_rtol0.001=0.0126%, op_deeponet_don-s=1.7190%, op_fno_fno-l=0.4100%, op_transolver_tsol-s=2.1312%, op_unet_unet-l=0.3505%
+[13:56:38] case 8: nmrom_accurate_R128_linear=0.0588%, nmrom_fast_R64_linear=0.1061%, fom_cg_rtol0.3=8.0903%, fom_cg_rtol0.1=1.4143%, fom_cg_rtol0.03=0.3083%, fom_cg_rtol0.01=0.1264%, fom_cg_rtol0.003=0.0337%, fom_cg_rtol0.001=0.0117%, op_deeponet_don-s=2.7540%, op_fno_fno-l=0.2905%, op_transolver_tsol-s=2.5835%, op_unet_unet-l=0.3085%
+[13:56:38] case 16: nmrom_accurate_R128_linear=0.2240%, nmrom_fast_R64_linear=0.4035%, fom_cg_rtol0.3=12.5158%, fom_cg_rtol0.1=2.2332%, fom_cg_rtol0.03=0.4691%, fom_cg_rtol0.01=0.1566%, fom_cg_rtol0.003=0.0399%, fom_cg_rtol0.001=0.0151%, op_deeponet_don-s=6.3882%, op_fno_fno-l=2.0833%, op_transolver_tsol-s=4.5118%, op_unet_unet-l=1.2915%
+[13:56:39] case 24: nmrom_accurate_R128_linear=0.0338%, nmrom_fast_R64_linear=0.0411%, fom_cg_rtol0.3=7.8462%, fom_cg_rtol0.1=1.9545%, fom_cg_rtol0.03=0.2774%, fom_cg_rtol0.01=0.1242%, fom_cg_rtol0.003=0.0290%, fom_cg_rtol0.001=0.0145%, op_deeponet_don-s=2.2908%, op_fno_fno-l=0.4093%, op_transolver_tsol-s=2.3078%, op_unet_unet-l=0.2995%
+[13:56:39] case 32: nmrom_accurate_R128_linear=0.0477%, nmrom_fast_R64_linear=0.0788%, fom_cg_rtol0.3=6.1258%, fom_cg_rtol0.1=1.0928%, fom_cg_rtol0.03=0.2658%, fom_cg_rtol0.01=0.1093%, fom_cg_rtol0.003=0.0291%, fom_cg_rtol0.001=0.0108%, op_deeponet_don-s=2.0784%, op_fno_fno-l=0.4772%, op_transolver_tsol-s=3.3346%, op_unet_unet-l=0.5176%
+[13:56:40] case 40: nmrom_accurate_R128_linear=0.0527%, nmrom_fast_R64_linear=0.0876%, fom_cg_rtol0.3=7.5194%, fom_cg_rtol0.1=1.3159%, fom_cg_rtol0.03=0.3259%, fom_cg_rtol0.01=0.1131%, fom_cg_rtol0.003=0.0350%, fom_cg_rtol0.001=0.0129%, op_deeponet_don-s=2.2930%, op_fno_fno-l=0.2774%, op_transolver_tsol-s=2.4697%, op_unet_unet-l=0.3206%
+[13:56:40] case 48: nmrom_accurate_R128_linear=0.0609%, nmrom_fast_R64_linear=0.1346%, fom_cg_rtol0.3=8.2811%, fom_cg_rtol0.1=1.8427%, fom_cg_rtol0.03=0.2972%, fom_cg_rtol0.01=0.1151%, fom_cg_rtol0.003=0.0321%, fom_cg_rtol0.001=0.0146%, op_deeponet_don-s=2.7096%, op_fno_fno-l=0.4513%, op_transolver_tsol-s=2.7936%, op_unet_unet-l=0.3404%
+[13:56:40] case 56: nmrom_accurate_R128_linear=0.0723%, nmrom_fast_R64_linear=0.1246%, fom_cg_rtol0.3=9.8943%, fom_cg_rtol0.1=1.8044%, fom_cg_rtol0.03=0.3344%, fom_cg_rtol0.01=0.1359%, fom_cg_rtol0.003=0.0359%, fom_cg_rtol0.001=0.0150%, op_deeponet_don-s=3.2519%, op_fno_fno-l=0.4125%, op_transolver_tsol-s=3.0166%, op_unet_unet-l=0.4030%
+[13:56:41] reproduction gate passed=True max gap 7.513302928597032e-15
+[13:56:41] timing: 12 arms x 64 cases x 3 rounds
+[13:57:23] timing round 0 done
+[13:58:05] timing round 1 done
+[13:58:47] timing round 2 done
+[13:58:47] PANEL DONE {"nmrom_accurate_R128_linear": [0.2308, 0.517], "nmrom_fast_R64_linear": [0.4751, 0.501], "fom_cg_rtol0.3": [12.5158, 0.792], "fom_cg_rtol0.1": [2.836, 1.097], "fom_cg_rtol0.03": [0.4691, 1.352], "fom_cg_rtol0.01": [0.1566, 1.536], "fom_cg_rtol0.003": [0.0399, 1.761], "fom_cg_rtol0.001": [0.017, 1.92], "op_deeponet_don-s": [7.4425, 3.693], "op_fno_fno-l": [2.0833, 3.757], "op_transolver_tsol-s": [4.8445, 16.936], "op_unet_unet-l": [1.2915, 15.012]}
+[13:58:47] FOM fom_cg_rtol0.01 gates {'reproduction': True, 'drift_selected': True, 'fom_found': True}
+RUN_EXIT=0
+ALL-DONE

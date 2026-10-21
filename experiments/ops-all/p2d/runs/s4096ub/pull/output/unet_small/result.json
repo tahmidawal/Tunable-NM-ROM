@@ -1,0 +1,68 @@
+{
+ "complete": true,
+ "name": "unet_small",
+ "family": "unet",
+ "problem": "square",
+ "mesh": 4096,
+ "mem_share": 1.0,
+ "co_scheduled_on_same_gpu": [
+  "unet_small"
+ ],
+ "data": {
+  "seconds": 1.1589774969033897
+ },
+ "config": {
+  "family": "unet",
+  "base": 24,
+  "groups": 8,
+  "dtype": "float32",
+  "warmup_epochs": 0,
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914
+ },
+ "micro_batch": 1,
+ "probe_peak_bytes": 52211456512,
+ "best_epoch": 0,
+ "best_step": 268,
+ "epochs_completed": 1,
+ "optimisation_steps": 268,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3018.944041992072,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.2892731723742172,
+   0.21130733699906232,
+   0.4665242886688921,
+   0.29293862736697535,
+   0.3925955684947165,
+   0.3682848176404945,
+   0.3635130697373503,
+   0.3883684115292151,
+   0.6298218495322322,
+   0.38131100798005263,
+   0.2672039504958068,
+   0.36844605564880184,
+   0.30708773648006954,
+   0.5119868092664269,
+   0.4708356522506031,
+   0.5419488722986502
+  ],
+  "mean": 0.39071545167272287,
+  "median": 0.3748785318144272,
+  "worst": 0.6298218495322322
+ },
+ "best_checkpoint_sha256": "e2693001e7aa558f62395d5deba3ca2b69e80545b4ead417a4b7a03779a4eab0",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 4368073,
+ "normalization": [
+  0.021108289574801223,
+  0.11581853661053229,
+  0.002433517928917575
+ ],
+ "peak_allocated_bytes": 52263885312
+}

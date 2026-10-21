@@ -1,0 +1,949 @@
+{
+  "schema_version": 1,
+  "pde": "burgers",
+  "kind": "matched-neural-operator-dataset",
+  "split": "validation",
+  "count": 32,
+  "mesh": 256,
+  "complete": true,
+  "protocol_sha256": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+  "provenance": {
+    "source_commit": "5169c0950e95eb666ada753f358032be2c5a9585",
+    "source_sha256": {
+      "experiments/neural-operator-burgers/data.py": "8d491d5ea25b10f67183ddedf469c69ba5fee0ff90061901b664cc096bba5ca7",
+      "experiments/neural-operator-burgers/protocol.json": "212bc8980229b93606449a1df814632da9aa1f403bbcc69e31ce995255239861",
+      "experiments/mr-burgers2d/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "experiments/separable-decoder/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "experiments/neural-operator-burgers/protocol-refined.json": "dec2ba4112f9ee49155f35f593d8f8781fc2ec0f10ed1080eaf74658232385d0",
+      "experiments/neural-operator-burgers/refine.py": "6f2e1a244812a0105e0e5f58236668a52725921d1bd9cee152aafe9260b9a81c"
+    },
+    "job_id": "3702709",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "f64": true,
+    "matmul_precision": "highest",
+    "python": "3.13.2 (main, Jun 27 2025, 16:52:43) [GCC 12.4.0]",
+    "platform": "Linux-5.14.0-570.60.1+21.1.el9_6_ciq.x86_64-x86_64-with-glibc2.34",
+    "packages": {
+      "jax": "0.10.2",
+      "jaxlib": "0.10.2",
+      "numpy": "2.5.0",
+      "scipy": "1.18.0",
+      "optax": "0.2.8"
+    }
+  },
+  "records": [
+    {
+      "case_id": "burgers-validation-00000",
+      "split": "validation",
+      "case_index": 0,
+      "seed": 1044997471,
+      "path": "burgers-validation-00000.npz",
+      "sha256": "9efd490adfe49fe47d3d595577305db0fb1082a8f2025e59e738684203fc69ac",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6561003448727452,
+        "cy": 0.2030336467722093,
+        "width": 0.14223504484444943,
+        "amplitude": 0.9347715725425874,
+        "nu": 0.031336320627261376
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 4.938402187839926e-12,
+        "wall_seconds_including_first_compile": 116.25381509307772,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00000.solver.npz",
+        "sha256": "252b069eae826f7c02d227c8a2402d0cfa49a0cbdac4d0e39cfb555c5a95b388"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00001",
+      "split": "validation",
+      "case_index": 1,
+      "seed": 3797609774,
+      "path": "burgers-validation-00001.npz",
+      "sha256": "f4282eb2c70f62a3b0b0bbf2149bc630def84197cdb71c5fe8f460c87b4f135c",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5195798216958761,
+        "cy": 0.21330751930047043,
+        "width": 0.16150219469124885,
+        "amplitude": 1.2202627778986652,
+        "nu": 0.04264725564047183
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.540232670589752e-12,
+        "wall_seconds_including_first_compile": 115.8386849820381,
+        "total_newton_iterations": 3202,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00001.solver.npz",
+        "sha256": "8009cb0cd3990c4256cff51d37032b51d2f1d2cb7ca3bd7946021794a1728d5d"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00002",
+      "split": "validation",
+      "case_index": 2,
+      "seed": 2771836162,
+      "path": "burgers-validation-00002.npz",
+      "sha256": "3fce5d0e52d9bd0b1cc912b00c18590e5439fea078c8b46e06a7a4e12c8186b6",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5788876100317234,
+        "cy": 0.671441533601872,
+        "width": 0.062488312298883804,
+        "amplitude": 1.2807604015605762,
+        "nu": 0.061608886805415305
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 7.391908946227626e-14,
+        "wall_seconds_including_first_compile": 117.64927082799841,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00002.solver.npz",
+        "sha256": "b3b904e6ca8a9213319a8cbd0814f959b3f5dd1b4c0133561a16f138671673f4"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00003",
+      "split": "validation",
+      "case_index": 3,
+      "seed": 2021712575,
+      "path": "burgers-validation-00003.npz",
+      "sha256": "6ff41fd1e0e1b2003704ee9db580dce133f2c77cbfe7167c0b1f93e6660bdea8",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.22533411449254814,
+        "cy": 0.4510650227792625,
+        "width": 0.07213321768769686,
+        "amplitude": 1.1223086373277402,
+        "nu": 0.08315248013713716
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 9.979023634024175e-14,
+        "wall_seconds_including_first_compile": 115.6404480279889,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00003.solver.npz",
+        "sha256": "75d716912db4bfaf6b5aeb06e1eb4f8bfb68569b3dce3657cf9a51da107f7e3d"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00004",
+      "split": "validation",
+      "case_index": 4,
+      "seed": 1366272061,
+      "path": "burgers-validation-00004.npz",
+      "sha256": "85e9bf832ac810e52ebb87cb01518ef18c7d510d4432876ddd0fd420d1f59b3f",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.17246581723950372,
+        "cy": 0.18915392274016032,
+        "width": 0.13972407993439825,
+        "amplitude": 0.9755154882591095,
+        "nu": 0.05001665757742035
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 9.664049314909293e-12,
+        "wall_seconds_including_first_compile": 114.75357190007344,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00004.solver.npz",
+        "sha256": "8de31a714abd1e36c7a47f6f142201bdb5de736f4a14cfa21db0ad9958e93eb9"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00005",
+      "split": "validation",
+      "case_index": 5,
+      "seed": 855373498,
+      "path": "burgers-validation-00005.npz",
+      "sha256": "68c40005ace8b8eb56be48309bdcd2ae01b9bf0fcfa035c8a82e3add542a7c09",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.32154279712953926,
+        "cy": 0.833974117706739,
+        "width": 0.1342399110968576,
+        "amplitude": 1.4360417428534635,
+        "nu": 0.011435951946490901
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 3.1735353920255657e-12,
+        "wall_seconds_including_first_compile": 166.51670829497743,
+        "total_newton_iterations": 3203,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00005.solver.npz",
+        "sha256": "1b8f5bb15cae6be098cf930d6c71dfa9fb6a2b9480c2e57562d6aae0a7fe91f5"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00006",
+      "split": "validation",
+      "case_index": 6,
+      "seed": 352056143,
+      "path": "burgers-validation-00006.npz",
+      "sha256": "c84d8fb50a2bc157a888ad95770a2dc100541622c6c445a92093bd205627f48c",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.7845741919563173,
+        "cy": 0.8048881440447033,
+        "width": 0.1964668781569166,
+        "amplitude": 1.932337290770348,
+        "nu": 0.022232449313186395
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 3.5857499240396693e-12,
+        "wall_seconds_including_first_compile": 165.52533791598398,
+        "total_newton_iterations": 3204,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00006.solver.npz",
+        "sha256": "8cff5172f408b9ead367b766d571bfc443a212fbe0dcb91b4d357d9a59841ded"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00007",
+      "split": "validation",
+      "case_index": 7,
+      "seed": 966142033,
+      "path": "burgers-validation-00007.npz",
+      "sha256": "605948e2eafd3e461142a21c274dea0c5aa8181cdfbea0b56e8a3bacd71a1645",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5840613033876495,
+        "cy": 0.46356145260617876,
+        "width": 0.1643709382915787,
+        "amplitude": 0.6281584916554421,
+        "nu": 0.011354588310188374
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.8306853281450965e-13,
+        "wall_seconds_including_first_compile": 113.46641362004448,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00007.solver.npz",
+        "sha256": "ae172ea899084a50b81f1a3346e01b6fc067a2546b8fd0a2e07bbdc78099aea6"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00008",
+      "split": "validation",
+      "case_index": 8,
+      "seed": 2632051304,
+      "path": "burgers-validation-00008.npz",
+      "sha256": "be6a5db72677d250edb62d57f57c120a4400cafdad89e1aecbef93d6a49d73df",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.7277332805915943,
+        "cy": 0.6805977703745645,
+        "width": 0.08672747874949913,
+        "amplitude": 1.3190643969884663,
+        "nu": 0.04059675229558192
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 4.874504738947467e-14,
+        "wall_seconds_including_first_compile": 122.30299681308679,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00008.solver.npz",
+        "sha256": "8ec9e530dcff5cdc8b77a501690d9d42dea5b2cd8fe38b8e169839341e8c0d3e"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00009",
+      "split": "validation",
+      "case_index": 9,
+      "seed": 672788269,
+      "path": "burgers-validation-00009.npz",
+      "sha256": "1d1f2ce8743be264b299d43cc437153b0a787aaa279af9c5e3d0cc32b6d097bb",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6764962313077306,
+        "cy": 0.5219069792066444,
+        "width": 0.13575999809783879,
+        "amplitude": 1.2950709879527331,
+        "nu": 0.09492936415416055
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 7.136081381893962e-13,
+        "wall_seconds_including_first_compile": 115.0531603290001,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00009.solver.npz",
+        "sha256": "fb75df1b27d2f8b0e333dcb3777d545f8f32a09e9bca568b4e81ab1abc32d6c3"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00010",
+      "split": "validation",
+      "case_index": 10,
+      "seed": 801282023,
+      "path": "burgers-validation-00010.npz",
+      "sha256": "783ab1384334bab20fe14330f383fb6798a742db51b7c551e318336ccd18eb58",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5307795292703591,
+        "cy": 0.486650156353001,
+        "width": 0.07167186590135426,
+        "amplitude": 1.851141305484781,
+        "nu": 0.02081117009713322
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.5011252684593487e-14,
+        "wall_seconds_including_first_compile": 149.37200959795155,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00010.solver.npz",
+        "sha256": "a01ca32f84115b875391789dc6739013c2d84177908c548d00fef7e33b542c4d"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00011",
+      "split": "validation",
+      "case_index": 11,
+      "seed": 561377755,
+      "path": "burgers-validation-00011.npz",
+      "sha256": "59197dd585a5f1be5476411b881eb4a16e845c083be8f7dc34128bafb86cde27",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.48801460173309197,
+        "cy": 0.837238917640599,
+        "width": 0.1431122674020755,
+        "amplitude": 0.5167660195615001,
+        "nu": 0.09627815310088096
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 6.956271769166664e-13,
+        "wall_seconds_including_first_compile": 113.49796486401465,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00011.solver.npz",
+        "sha256": "3c8c06f7564fd20b255f11d38cfacf6212d4ed425d79f51d2458e6ee66776a8e"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00012",
+      "split": "validation",
+      "case_index": 12,
+      "seed": 1410606118,
+      "path": "burgers-validation-00012.npz",
+      "sha256": "30449d1756a6b2a97e3e281cf9fc6ddb422df5342c9396e82c730c0e21e2468b",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6313168878522137,
+        "cy": 0.28917779920947995,
+        "width": 0.15310604098006342,
+        "amplitude": 0.8255224205871778,
+        "nu": 0.016208709150787343
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 3.9822092269474383e-13,
+        "wall_seconds_including_first_compile": 113.49058032990433,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00012.solver.npz",
+        "sha256": "78080e04fb95531659926d68f1596b81ff75eae7cb78102bf3234d50eb5d0249"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00013",
+      "split": "validation",
+      "case_index": 13,
+      "seed": 59003622,
+      "path": "burgers-validation-00013.npz",
+      "sha256": "2639979277114a00621dc68a4b3319d98c5bd2bf10da3060fc9cfd108a05a897",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.671214047164635,
+        "cy": 0.5597333110589686,
+        "width": 0.09663535816007567,
+        "amplitude": 1.6054268813856252,
+        "nu": 0.0858327524525539
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.0299709720446687e-13,
+        "wall_seconds_including_first_compile": 118.68591829400975,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00013.solver.npz",
+        "sha256": "5f4302ae371de573c2320cdb10fcded90e5633ae02ee1dd962d1127252e6e5b8"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00014",
+      "split": "validation",
+      "case_index": 14,
+      "seed": 2251482023,
+      "path": "burgers-validation-00014.npz",
+      "sha256": "be8ba7bd5e5085fff38851c13b630013eac97222649a93bc483b7ac3e5f6d2a1",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.8259913516322938,
+        "cy": 0.7294662526083056,
+        "width": 0.14561707035612473,
+        "amplitude": 1.4456448152201948,
+        "nu": 0.03238456284097165
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 4.761447452959623e-12,
+        "wall_seconds_including_first_compile": 132.1938187199412,
+        "total_newton_iterations": 3202,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00014.solver.npz",
+        "sha256": "f205a7c97e190d3347753f6324dec4ab13c22d3ad32623fde53d787affad570c"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00015",
+      "split": "validation",
+      "case_index": 15,
+      "seed": 96675545,
+      "path": "burgers-validation-00015.npz",
+      "sha256": "4a5f4a8483b2a42074642b0e0edd3fbb88388a2c0e72133d746e3bb675d79635",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5388583887447032,
+        "cy": 0.36106445821239763,
+        "width": 0.05372185978815813,
+        "amplitude": 1.2200474739286762,
+        "nu": 0.08349336965326638
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.0012856401677239e-13,
+        "wall_seconds_including_first_compile": 115.99983345496003,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00015.solver.npz",
+        "sha256": "a74d7f6224d3aef26d0e1dea365e2bd478fd453585ff43cf8f609650d12347e3"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00016",
+      "split": "validation",
+      "case_index": 16,
+      "seed": 3653011254,
+      "path": "burgers-validation-00016.npz",
+      "sha256": "3808492e91ca7a85d0f0a58b2b555169e7649bdfd5a8c64d9da02cb292419bb3",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.7536972434102893,
+        "cy": 0.3924352219208753,
+        "width": 0.17922407194966705,
+        "amplitude": 0.5114636273582984,
+        "nu": 0.010270305155137861
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.845471376230494e-12,
+        "wall_seconds_including_first_compile": 114.37028108700179,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00016.solver.npz",
+        "sha256": "64e113df4a488cb18a50cbfe19e83efa4a1611b9ca1be5121ef6ce12a0db499d"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00017",
+      "split": "validation",
+      "case_index": 17,
+      "seed": 2866081749,
+      "path": "burgers-validation-00017.npz",
+      "sha256": "72357714eb40050b0be33001517da04ddf78df59145d46a993df8d561a262801",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5579102184492952,
+        "cy": 0.6702136084904566,
+        "width": 0.12311654778839877,
+        "amplitude": 0.8716524543805718,
+        "nu": 0.012080947087747276
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.1177590593295538e-13,
+        "wall_seconds_including_first_compile": 139.75337441300508,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00017.solver.npz",
+        "sha256": "94edfc6336b37a4dc66a9023a37c50d0d5beb58993e71bc80ebb0918b210abf9"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00018",
+      "split": "validation",
+      "case_index": 18,
+      "seed": 1397814590,
+      "path": "burgers-validation-00018.npz",
+      "sha256": "b178ed7c3faa8983473a5f5fc9dde22fe21bc4d717e4bf7d75a7255d7167fc23",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.5065364499622214,
+        "cy": 0.6970221805565993,
+        "width": 0.10138410862932382,
+        "amplitude": 1.7199450187829082,
+        "nu": 0.01073335730161557
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 3.394935387594972e-14,
+        "wall_seconds_including_first_compile": 166.35564490105025,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00018.solver.npz",
+        "sha256": "7bad8dc30584d4281313fb820fbc72af66fa50c022ffe0af6e5727e43bb60797"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00019",
+      "split": "validation",
+      "case_index": 19,
+      "seed": 4018776733,
+      "path": "burgers-validation-00019.npz",
+      "sha256": "c5393e3156edbb629009abc97b0b1fd8d8ca4e181295b0eecfeb6b6d6a3554e1",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6017730858999871,
+        "cy": 0.6440949287504083,
+        "width": 0.1489030295368568,
+        "amplitude": 1.7002113114116504,
+        "nu": 0.014011418042525129
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 4.023494090514067e-14,
+        "wall_seconds_including_first_compile": 166.2978974620346,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00019.solver.npz",
+        "sha256": "505bc842d3ec5065ffaf76f5fcbdd89646611adb3c702eb7a97cfb131fb330f5"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00020",
+      "split": "validation",
+      "case_index": 20,
+      "seed": 1360796936,
+      "path": "burgers-validation-00020.npz",
+      "sha256": "cc217c4796bdd924362ae6e40a1b38dc475f344ec302e31e9e34f58c095ce538",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6619915561824739,
+        "cy": 0.3922371755884292,
+        "width": 0.11074187494954625,
+        "amplitude": 1.4857940858932577,
+        "nu": 0.024454795439387896
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.954958680371638e-14,
+        "wall_seconds_including_first_compile": 147.5402364350157,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00020.solver.npz",
+        "sha256": "33cb3cf5fbfe2cd01af90c523e25d4c7a419a88fac6d041f446b1c5796081d54"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00021",
+      "split": "validation",
+      "case_index": 21,
+      "seed": 1847656864,
+      "path": "burgers-validation-00021.npz",
+      "sha256": "8089a0dcdb860eb489fe982be064eadc49a63eaad10ee95dd6006fa4a7322625",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6702826498417839,
+        "cy": 0.710225489435474,
+        "width": 0.08846768986275541,
+        "amplitude": 1.3855733310752438,
+        "nu": 0.04621223710115065
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 5.5484334906106856e-14,
+        "wall_seconds_including_first_compile": 121.81331122398842,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00021.solver.npz",
+        "sha256": "f1169df36d15b5e804059d0f8485562ddb3bd63756706940a684253706d92838"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00022",
+      "split": "validation",
+      "case_index": 22,
+      "seed": 1688939329,
+      "path": "burgers-validation-00022.npz",
+      "sha256": "09a089f49f8b724b60da008b22b60c779b9010260be82725f4bc5cb90a2bf934",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.2672337263842542,
+        "cy": 0.6766167870163592,
+        "width": 0.11555911915511366,
+        "amplitude": 1.1464834896743736,
+        "nu": 0.0913765655316485
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.431509541725935e-12,
+        "wall_seconds_including_first_compile": 114.67420947889332,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00022.solver.npz",
+        "sha256": "4b5ddf65ed99eda2ba35811acff26acb1018fee699cbb98bd7fcb68893d36be0"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00023",
+      "split": "validation",
+      "case_index": 23,
+      "seed": 2982055104,
+      "path": "burgers-validation-00023.npz",
+      "sha256": "7c8f338f47aca81b623ac435451f6cbb8a2d88d9bb48b2f41100a7990710b145",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.2722314026338989,
+        "cy": 0.5072653288087052,
+        "width": 0.06080374391772526,
+        "amplitude": 0.6181551586131223,
+        "nu": 0.023947470985872413
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 2.875312396780558e-14,
+        "wall_seconds_including_first_compile": 115.06206359399948,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00023.solver.npz",
+        "sha256": "0995eaa11e088557596800743b40534fcb8e6201aaf95253c36ddcc5c3ba775e"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00024",
+      "split": "validation",
+      "case_index": 24,
+      "seed": 1888822779,
+      "path": "burgers-validation-00024.npz",
+      "sha256": "1fa3b2426e1e1d13a5401f52d32b91890b3585ede07dedcabfa999923b512f46",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.6572858958126425,
+        "cy": 0.5419534834435991,
+        "width": 0.06479419802626059,
+        "amplitude": 0.6136062341961956,
+        "nu": 0.01609709347283376
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.9344316342826636e-14,
+        "wall_seconds_including_first_compile": 116.20410159300081,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00024.solver.npz",
+        "sha256": "447c66fdd1a71589bb02e404c2843f65e9aff4b1567de22a80d11982a54caefb"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00025",
+      "split": "validation",
+      "case_index": 25,
+      "seed": 4188872719,
+      "path": "burgers-validation-00025.npz",
+      "sha256": "3a2e06391b016fa0729e86b7cd968937399cbc2f2e53f1b63e557cf8be8695d0",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.3043228476108286,
+        "cy": 0.21519434193211734,
+        "width": 0.14543719706445427,
+        "amplitude": 0.5185453072660945,
+        "nu": 0.014594859035474722
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.8965072297652655e-12,
+        "wall_seconds_including_first_compile": 113.49376056506298,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00025.solver.npz",
+        "sha256": "08496fe475785f4a7ecd376aa19403a29a868ab722e853e7cd616ffbea25b794"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00026",
+      "split": "validation",
+      "case_index": 26,
+      "seed": 1225124115,
+      "path": "burgers-validation-00026.npz",
+      "sha256": "173c45e9f93328d5f97706850b495f1fb4f6d529fa32606366b34fc849d2f8de",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.8338741519158345,
+        "cy": 0.6011313207289298,
+        "width": 0.1752836987358728,
+        "amplitude": 0.5275279908630494,
+        "nu": 0.03253480592325466
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 5.6429057988864136e-12,
+        "wall_seconds_including_first_compile": 114.24687321903184,
+        "total_newton_iterations": 3201,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00026.solver.npz",
+        "sha256": "97b2abe6aed4c5fd0b39a2b433b5d125ee0107c86540d175775a3662b4e3b384"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00027",
+      "split": "validation",
+      "case_index": 27,
+      "seed": 2527049696,
+      "path": "burgers-validation-00027.npz",
+      "sha256": "2682fa80ba46a0d3fa6a4330502c5f6fc4be15f6a60c665e51dfb0cfb5aa0da4",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.48790750665607874,
+        "cy": 0.4486926177378546,
+        "width": 0.12158366653076143,
+        "amplitude": 0.7817296165750343,
+        "nu": 0.07558233224023823
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 9.066542781924765e-14,
+        "wall_seconds_including_first_compile": 113.46267896099016,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00027.solver.npz",
+        "sha256": "d125802a141afedcbed553bb7a286bc9cabaf4683799a10cbea8f6ff5272eb92"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00028",
+      "split": "validation",
+      "case_index": 28,
+      "seed": 3440483241,
+      "path": "burgers-validation-00028.npz",
+      "sha256": "31b24e78407ff107e72ccb81c0684bc8ca98627869731a7b5a928b02770f11cd",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.48277967817990763,
+        "cy": 0.6131746283947414,
+        "width": 0.15335736256142687,
+        "amplitude": 1.3084977885465878,
+        "nu": 0.04783535073977079
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 3.8818066033755727e-13,
+        "wall_seconds_including_first_compile": 119.63380338496063,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00028.solver.npz",
+        "sha256": "8bd78914515ffdec5ae2da89b795d4f8b5146afa88cc86d326eb5527e420f031"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00029",
+      "split": "validation",
+      "case_index": 29,
+      "seed": 1774060670,
+      "path": "burgers-validation-00029.npz",
+      "sha256": "b00ca7af6bb020eb929a29627845951dab3b511c30ff66a72cfca0661fd5ca88",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.664182323809047,
+        "cy": 0.6031170674058841,
+        "width": 0.06959624157099079,
+        "amplitude": 0.6600675711002153,
+        "nu": 0.053852347679294
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 6.460511215590282e-14,
+        "wall_seconds_including_first_compile": 113.94125435396563,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00029.solver.npz",
+        "sha256": "3a96c2182f499d4e5432b2802ba7442f2a9f5c08f0c14aa72a2459c231ec31d1"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00030",
+      "split": "validation",
+      "case_index": 30,
+      "seed": 502181974,
+      "path": "burgers-validation-00030.npz",
+      "sha256": "41a293efcfcafed3274c44bc8d534dd20dc0d1fd663dff2b5f0cdac3892978de",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.542972976445331,
+        "cy": 0.5144028574959337,
+        "width": 0.18708369271253839,
+        "amplitude": 1.4885866362121671,
+        "nu": 0.04557528748890239
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.2201399994542449e-12,
+        "wall_seconds_including_first_compile": 128.0676381830126,
+        "total_newton_iterations": 3200,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00030.solver.npz",
+        "sha256": "8758bbcd1a58b85af8dc9a2d1ce307deda29b4357f347a3ddbcbad971b3e3ead"
+      }
+    },
+    {
+      "case_id": "burgers-validation-00031",
+      "split": "validation",
+      "case_index": 31,
+      "seed": 3925023829,
+      "path": "burgers-validation-00031.npz",
+      "sha256": "115d11298bdb7785bfd2d566cfc667b6a37b71b163badac897f9607616038c99",
+      "mesh": 256,
+      "generation_descriptors": {
+        "cx": 0.7354682424531004,
+        "cy": 0.5769882861075073,
+        "width": 0.1888424621283148,
+        "amplitude": 1.477912551215439,
+        "nu": 0.03818573591179347
+      },
+      "reference": {
+        "intervals": 4096,
+        "dt": 0.00015625,
+        "max_relative_residual": 1.2663053485019269e-12,
+        "wall_seconds_including_first_compile": 135.23398196697235,
+        "total_newton_iterations": 3202,
+        "calibration_sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2"
+      },
+      "solver_audit": {
+        "path": "burgers-validation-00031.solver.npz",
+        "sha256": "b09b0a73fb5a1bb521158bfba5cbcf2d89a10d0f4169b6fc44bf8bec8169bc20"
+      }
+    }
+  ],
+  "calibration": {
+    "path": "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/refinement/index.json",
+    "sha256": "894daa5c66b464f3d09ddc27117b36b2c1be5fe2adf49388ccfe44d1909e8eb2",
+    "interpretation": "space/time refinement differences are empirical development evidence, not rigorous continuum error bounds",
+    "worst_empirical_margin": 0.0009588159542496009
+  },
+  "reference_setting": {
+    "intervals": 4096,
+    "dt": 0.00015625,
+    "passing": true,
+    "worst_empirical_margin": 0.0009588159542496009,
+    "work_proxy": 26843545600
+  },
+  "physical_accuracy_status": "empirically calibrated on independent development cases; not a per-case continuum certificate",
+  "descriptors_are_model_inputs": false,
+  "final_cohort": "sealed"
+}

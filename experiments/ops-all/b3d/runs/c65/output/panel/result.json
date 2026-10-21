@@ -1,0 +1,236 @@
+{
+ "config": {
+  "audit_lattice": 16,
+  "gtol": 0.001,
+  "trust_fraction": 0.05,
+  "rho_bar": 0.116,
+  "ref_ntol": 1e-10,
+  "ref_ltol": 1e-11,
+  "fom_grid": [
+   [
+    0.005,
+    0.1,
+    0.5
+   ],
+   [
+    0.005,
+    0.1,
+    0.1
+   ],
+   [
+    0.005,
+    0.03,
+    0.5
+   ],
+   [
+    0.005,
+    0.03,
+    0.1
+   ],
+   [
+    0.005,
+    0.01,
+    0.5
+   ],
+   [
+    0.005,
+    0.01,
+    0.1
+   ],
+   [
+    0.005,
+    0.003,
+    0.5
+   ],
+   [
+    0.005,
+    0.003,
+    0.1
+   ],
+   [
+    0.005,
+    0.001,
+    0.5
+   ],
+   [
+    0.005,
+    0.001,
+    0.1
+   ],
+   [
+    0.005,
+    0.0001,
+    0.5
+   ],
+   [
+    0.005,
+    0.0001,
+    0.1
+   ],
+   [
+    0.01,
+    0.1,
+    0.5
+   ],
+   [
+    0.01,
+    0.1,
+    0.1
+   ],
+   [
+    0.01,
+    0.03,
+    0.5
+   ],
+   [
+    0.01,
+    0.03,
+    0.1
+   ],
+   [
+    0.01,
+    0.01,
+    0.5
+   ],
+   [
+    0.01,
+    0.01,
+    0.1
+   ],
+   [
+    0.01,
+    0.003,
+    0.5
+   ],
+   [
+    0.01,
+    0.003,
+    0.1
+   ],
+   [
+    0.01,
+    0.001,
+    0.5
+   ],
+   [
+    0.01,
+    0.001,
+    0.1
+   ],
+   [
+    0.01,
+    0.0001,
+    0.5
+   ],
+   [
+    0.01,
+    0.0001,
+    0.1
+   ],
+   [
+    0.025,
+    0.01,
+    0.5
+   ],
+   [
+    0.025,
+    0.001,
+    0.5
+   ]
+  ],
+  "reps": 3,
+  "arms": [
+   {
+    "kind": "span",
+    "Rp": 512,
+    "solver": "fsc",
+    "dt": 0.005
+   },
+   {
+    "kind": "span",
+    "Rp": 192,
+    "solver": "fsc",
+    "dt": 0.01
+   }
+  ],
+  "expected_model_sha256": {
+   "bank.pkl": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9"
+  },
+  "model": "lanes/burgers3d-retry/inputs/model_M2",
+  "mesh": 65,
+  "mode": "panel",
+  "cohort_seed": 923901,
+  "cohort_count": 32,
+  "audit_arms": [],
+  "sealed": true,
+  "selection_sha256": "c342bf72f0f160588408eb25e77e09624f99af12eb5975f240dd58261e79d1c2",
+  "operators": [
+   "fno-l",
+   "unet-l",
+   "tsol-l",
+   "don-s"
+  ],
+  "expected_cohort_sha256": "f20a1aac4d506891595da155380399a0796191b374a2355f9395f389b9417b37",
+  "expected_nmrom_worst": {
+   "span_R512_fsc_dt0.005": 0.01007257704693527,
+   "span_R192_fsc_dt0.01": 0.033720961985511486
+  },
+  "table1_job": 4253861
+ },
+ "mode": "panel",
+ "mesh": 65,
+ "commit": "766c3247ecbc55d8850b22e312b535a223916878",
+ "job_id": "4286423",
+ "backend": "gpu",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "nvidia_smi": [
+  "GPU 0: NVIDIA A100 80GB PCIe (UUID: GPU-c52a7f04-fc38-6157-cf19-5c7ff0945752)"
+ ],
+ "x64": true,
+ "precision": "highest",
+ "jax_version": "0.10.2",
+ "model_sha256": {
+  "bank.pkl": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9"
+ },
+ "gates": {
+  "bank_condition": 1.000000000000256,
+  "gram_condition": 1.000000000000512,
+  "A_dst_vs_explicit": 5.3541872302052214e-15,
+  "cholesky_reconstruction": 3.5527136788004978e-15,
+  "tensor_vs_direct": 2.7726477756686313e-16
+ },
+ "arms": {
+  "span_R512_fsc_dt0.005": {
+   "spec": {
+    "kind": "span",
+    "Rp": 512,
+    "solver": "fsc",
+    "dt": 0.005,
+    "gtol": 0.001,
+    "name": "span_R512_fsc_dt0.005",
+    "rule": "tensor",
+    "M": 2052,
+    "trust": 0.005882959239393264
+   }
+  },
+  "span_R192_fsc_dt0.01": {
+   "spec": {
+    "kind": "span",
+    "Rp": 192,
+    "solver": "fsc",
+    "dt": 0.01,
+    "gtol": 0.001,
+    "name": "span_R192_fsc_dt0.01",
+    "rule": "tensor",
+    "M": 771,
+    "trust": 0.005882492368858914
+   }
+  }
+ },
+ "fom": {},
+ "timing": {},
+ "certificates": {},
+ "complete": false,
+ "timing_contract": "GPU query: supplied dense initial interior field resident on the GPU -> six dense GPU output fields, block_until_ready on the whole output; compilation excluded",
+ "table_seconds": 20.100638126023114
+}

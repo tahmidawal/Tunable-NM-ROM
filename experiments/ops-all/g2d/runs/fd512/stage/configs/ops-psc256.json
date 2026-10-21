@@ -1,0 +1,47 @@
+{
+ "mesh": 256,
+ "operators": [
+  {
+   "name": "fno-w96f32-N128",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s128f/out/train/fno-w96f32/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s128f/out/train/fno-w96f32/result.json",
+   "copy": false,
+   "source": "g2d training job s128f"
+  },
+  {
+   "name": "unet-b64-N128",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s128u/out/train/unet-b64/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s128u/out/train/unet-b64/result.json",
+   "copy": false,
+   "source": "g2d training job s128u"
+  },
+  {
+   "name": "fno-w96f32-N576",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s576f/out/train/fno-w96f32/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s576f/out/train/fno-w96f32/result.json",
+   "copy": false,
+   "source": "g2d training job s576f"
+  },
+  {
+   "name": "unet-b64-N576",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s576u/out/train/unet-b64/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s576u/out/train/unet-b64/result.json",
+   "copy": false,
+   "source": "g2d training job s576u"
+  },
+  {
+   "name": "fno-w96f32-N2048",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s2048f/out/train/fno-w96f32/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s2048f/out/train/fno-w96f32/result.json",
+   "copy": false,
+   "source": "g2d training job s2048f"
+  },
+  {
+   "name": "unet-b64-N2048",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s2048u/out/train/unet-b64/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/s2048u/out/train/unet-b64/result.json",
+   "copy": false,
+   "source": "g2d training job s2048u"
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+  "family": "unet",
+  "base": 32,
+  "groups": 8,
+  "dtype": "float32",
+  "warmup_epochs": 0,
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "refines_capacity": "medium",
+  "selected_by": "validation mean case-maximum fixed-initial error"
+}

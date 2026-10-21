@@ -1,0 +1,76 @@
+{
+ "complete": true,
+ "name": "fno",
+ "family": "fno",
+ "problem": "lshape",
+ "mesh": 2048,
+ "mem_share": 1.0,
+ "co_scheduled_on_same_gpu": [
+  "fno"
+ ],
+ "data": {
+  "seconds": 1815.015531418845,
+  "data_seconds": 1814.5521773132496
+ },
+ "config": {
+  "family": "fno",
+  "width": 64,
+  "modes": 32,
+  "layers": 4,
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "smoke_overrides": {
+   "width": 8,
+   "modes": 8,
+   "layers": 2,
+   "epochs": 2
+  },
+  "checkpoint_blocks": true
+ },
+ "micro_batch": 1,
+ "probe_peak_bytes": 67018620416,
+ "best_epoch": 3,
+ "best_step": 123,
+ "epochs_completed": 4,
+ "optimisation_steps": 123,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3019.4448981452733,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.19343507617149244,
+   0.3856525598714577,
+   0.2303899004692068,
+   0.2356125308829983,
+   0.3867589580779064,
+   0.2626539539773287,
+   0.19757764272684405,
+   0.4569738769878044,
+   0.46391396186765,
+   0.43088851327648925,
+   0.36583423245418545,
+   0.9899868533864601,
+   2.539402544526339,
+   0.21849286157432848,
+   0.2732040438206361,
+   0.2982955937625655
+  ],
+  "mean": 0.4955670689896058,
+  "median": 0.3320649131083755,
+  "worst": 2.539402544526339
+ },
+ "best_checkpoint_sha256": "576687eb49f1fd011f667f4bac67d5768f1ab2e44f09eebf9b43da141a4a8c91",
+ "parameter_dtype": "torch.float64",
+ "real_parameter_count": 17876673,
+ "normalization": [
+  0.03191754910612882,
+  0.15171432699740064,
+  0.0018147967767274274
+ ],
+ "peak_allocated_bytes": 67411911168
+}

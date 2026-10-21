@@ -1,0 +1,16 @@
+host=pax106 job=4294149
+NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  372G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda=True
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s2048b/logs/deeponet.log <==
+probe after cleanup: allocated 51677184
+{"arm": "deeponet", "epoch": 0, "steps": 277, "train": 0.22016982309647246, "val_mean": 0.33601721800865697, "val_worst": 0.45360992279475826, "lr": 1.001287063571766e-05, "wall": 3003.8}
+TRAIN OP COMPLETE
+
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s2048b/logs/transolver.log <==
+{"arm": "transolver", "epoch": 18, "steps": 6213, "train": 0.0736159916336525, "val_mean": 0.26527397629796445, "val_worst": 0.4775412278348269, "lr": 1.1562384716889392e-05, "wall": 2925.1}
+{"arm": "transolver", "epoch": 19, "steps": 6373, "train": 0.07481478145274474, "val_mean": 0.26274886881934484, "val_worst": 0.489555292805918, "lr": 1.0000006322077467e-05, "wall": 3001.1}
+TRAIN OP COMPLETE
+members rc=0
+ALL-DONE

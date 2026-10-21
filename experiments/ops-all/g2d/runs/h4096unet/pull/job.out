@@ -1,0 +1,15 @@
+host=pax010 job_id=4290468
+NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB, 575.57.08
+10.235.106.33:/projects/paralab  4.6T  4.2T  372G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda True NVIDIA H200
+torch_backend=cuda NVIDIA H200
+probe micro-batch 8 does not fit: OutOfMemoryError
+probe micro-batch 4 does not fit: OutOfMemoryError
+{"arm": "unet", "epoch": 0, "steps": 64, "train": 0.07842099238450446, "val_mean_case_max": 0.20139034199625727, "val_worst": 0.4578107361000202, "lr": 0.0008502303712701238, "wall": 785.4}
+{"arm": "unet", "epoch": 1, "steps": 128, "train": 0.008247541738849912, "val_mean_case_max": 0.0748085321889173, "val_worst": 0.12781577089463245, "lr": 0.0004800555118357803, "wall": 1570.5}
+{"arm": "unet", "epoch": 2, "steps": 192, "train": 0.00269057605456982, "val_mean_case_max": 0.06137461751074071, "val_worst": 0.10260235802936175, "lr": 0.0001258146240349649, "wall": 2355.7}
+{"arm": "unet", "epoch": 3, "steps": 246, "train": 0.002035973695967237, "val_mean_case_max": 0.05766004887413051, "val_worst": 0.09097595613165979, "lr": 1.0002025483365967e-05, "wall": 3019.6}
+ARM DONE unet {"stop_reason": "wall_budget", "epochs_completed": 4, "optimisation_steps": 246, "micro_batch": 1} val_mean_case_max 0.05766004887413051
+TRAIN OPS COMPLETE
+run_exit=0

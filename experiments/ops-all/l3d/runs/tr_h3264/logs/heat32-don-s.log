@@ -1,0 +1,13 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"arm": "don-s", "problem": "heat", "mesh": 32, "micro_batch": 8, "real_parameter_count": 4755909}
+{"arm": "don-s", "epoch": 0, "steps": 224, "train": 0.262575447891627, "val_mean": 0.3377319666110622, "val_worst": 0.5683342946610123, "lr": 0.000999220138199965, "wall": 58.3}
+{"arm": "don-s", "epoch": 1, "steps": 448, "train": 0.061051213704437925, "val_mean": 0.28147566327166695, "val_worst": 0.5267088654412057, "lr": 0.0009965465098601132, "wall": 117.5}
+{"arm": "don-s", "epoch": 2, "steps": 672, "train": 0.040830615762076077, "val_mean": 0.22101476564194306, "val_worst": 0.4377873439966264, "lr": 0.0009920167893784479, "wall": 176.3}
+{"arm": "don-s", "epoch": 3, "steps": 896, "train": 0.02774254509459042, "val_mean": 0.19238167575997572, "val_worst": 0.45027442030791076, "lr": 0.000985599707776177, "wall": 235.6}
+{"arm": "don-s", "epoch": 4, "steps": 1120, "train": 0.48934465703592994, "val_mean": 0.5536689233350928, "val_worst": 0.808370516994393, "lr": 0.0009773296085717296, "wall": 294.7}
+{"arm": "don-s", "epoch": 10, "steps": 2464, "train": 0.011793642431269223, "val_mean": 0.134826249568134, "val_worst": 0.30156924998356055, "lr": 0.0008915528887521428, "wall": 648.9}
+{"arm": "don-s", "epoch": 20, "steps": 4704, "train": 0.010234916715282916, "val_mean": 0.13237382827389585, "val_worst": 0.3140273429507188, "lr": 0.0006412224091890395, "wall": 1238.4}
+{"arm": "don-s", "epoch": 30, "steps": 6944, "train": 0.004889755187198647, "val_mean": 0.09659493473575491, "val_worst": 0.2507640442716027, "lr": 0.000340371556422907, "wall": 1828.4}
+{"arm": "don-s", "epoch": 40, "steps": 9184, "train": 0.0031716225846930013, "val_mean": 0.08151682646586933, "val_worst": 0.2236346824013626, "lr": 0.00010030149148780259, "wall": 2418.6}
+{"arm": "don-s", "epoch": 50, "steps": 11406, "train": 0.0027401069778682325, "val_mean": 0.0771686819290019, "val_worst": 0.2208069721814667, "lr": 1.00000113494451e-05, "wall": 3004.3}
+TRAIN DONE {"arm": "don-s", "problem": "heat", "mesh": 32, "stop_reason": "wall_budget", "epochs_completed": 51, "optimisation_steps": 11406, "best_epoch": 50} val_mean 0.0771686819290019 val_worst 0.2208069721814667

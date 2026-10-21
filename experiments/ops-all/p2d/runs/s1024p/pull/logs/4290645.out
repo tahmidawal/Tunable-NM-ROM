@@ -1,0 +1,36 @@
+host=pax106 job=4290645
+NVIDIA A100 80GB PCIe, GPU-10ba5789-de43-27ff-bc59-837e30b7d4d0, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  370G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda=True
+jax_backend=gpu x64=True precision=highest
+NM-ROM + CG BUILT 17.0
+torch_backend=cuda NVIDIA A100 80GB PCIe
+WARMUP 4.9 ['op_fno', 'op_transolver', 'op_unet', 'op_deeponet']
+PHASE A1 0 60.2
+PHASE A1 1 88.3
+PHASE A1 2 116.4
+PHASE B 0 177.5
+PHASE B 1 231.3
+PHASE A2 0 266.2
+PHASE A2 1 294.0
+PHASE A2 2 321.9
+GATES {'nmrom_reproduces_table1': True, 'nmrom_cg_deterministic': True, 'cg_converged': True, 'device_guard': True, 'drift_A2_over_A1': True}
+R512_linear    worst    0.742% median    0.058% gpu      3.413 ms
+R128_linear    worst    2.306% median    0.218% gpu      1.521 ms
+op_fno         worst   11.651% median    4.740% gpu     97.328 ms
+op_transolver  worst   45.341% median   12.886% gpu     16.275 ms
+op_unet        worst    8.447% median    4.467% gpu     54.329 ms
+op_deeponet    worst   24.890% median    7.188% gpu     49.674 ms
+cg_0.7         worst   16.490% median    3.554% gpu     61.712 ms
+cg_0.5         worst    9.016% median    2.114% gpu     66.930 ms
+cg_0.4         worst    7.251% median    1.564% gpu     69.534 ms
+cg_0.3         worst    5.555% median    1.119% gpu     73.288 ms
+cg_0.2         worst    2.200% median    0.635% gpu     78.604 ms
+cg_0.1         worst    0.769% median    0.289% gpu     85.901 ms
+cg_0.03        worst    0.220% median    0.096% gpu     99.641 ms
+cg_0.01        worst    0.072% median    0.030% gpu    111.585 ms
+cg_0.001       worst    0.007% median    0.002% gpu    136.894 ms
+cg_0.0001      worst    0.000% median    0.000% gpu    156.751 ms
+P2D PANEL COMPLETE
+ALL-DONE

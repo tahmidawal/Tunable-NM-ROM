@@ -1,0 +1,73 @@
+{
+ "complete": true,
+ "name": "transolver_small",
+ "family": "transolver",
+ "problem": "square",
+ "mesh": 4096,
+ "mem_share": 1.0,
+ "co_scheduled_on_same_gpu": [
+  "transolver_small"
+ ],
+ "data": {
+  "seconds": 1.5043370458297431
+ },
+ "config": {
+  "family": "transolver",
+  "dim": 128,
+  "layers": 8,
+  "heads": 8,
+  "slices": 64,
+  "mlp_ratio": 2,
+  "patch": 64,
+  "ref": 8,
+  "dtype": "float32",
+  "warmup_epochs": 10,
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 12683929088,
+ "best_epoch": 36,
+ "best_step": 12099,
+ "epochs_completed": 38,
+ "optimisation_steps": 12309,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3000.5301279299892,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.07916146541972825,
+   0.11280620500793866,
+   0.301423327457491,
+   0.07939958152030699,
+   0.21902514103289086,
+   0.16890437307521564,
+   0.16656861500699968,
+   0.22204355572763623,
+   0.3339461959683972,
+   0.18535742836615485,
+   0.14520087117897607,
+   0.14272366130694597,
+   0.11818736352596512,
+   0.29399820402314675,
+   0.23890690730775638,
+   0.2793632284844293
+  ],
+  "mean": 0.19293850777562369,
+  "median": 0.17713090072068524,
+  "worst": 0.3339461959683972
+ },
+ "best_checkpoint_sha256": "16ecda72fdc222636231ba4867aab06085bfdc6c71952371a93daf23ca626ca9",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 4666688,
+ "normalization": [
+  0.021108289574801223,
+  0.11581853661053229,
+  0.002433517928917575
+ ],
+ "peak_allocated_bytes": 12729794560
+}

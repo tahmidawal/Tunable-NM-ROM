@@ -1,0 +1,124 @@
+{
+ "unet-refine": {
+  "ok": true,
+  "worst_evolved_percent": 21.872442728614523,
+  "median_evolved_percent": 15.512300597801138,
+  "median_gpu_ms": 623.5305638983846,
+  "median_of_case_medians_ms": 623.5128019470721,
+  "host_transfer_median_ms": 187.5490715028718,
+  "gpu_name": "NVIDIA H200",
+  "best_epoch": 10,
+  "checkpoint_sha256": "ca748bf0a6edff1b49bca2a45daecd85ef156e22f0990b83c7870b3260b24ff6",
+  "real_parameter_count": 7763461,
+  "config": {
+   "family": "unet",
+   "base": 32,
+   "groups": 8,
+   "dtype": "float32",
+   "warmup_epochs": 0,
+   "epochs": 4000,
+   "patience": 250,
+   "batch_size": 8,
+   "learning_rate": 0.0003,
+   "weight_decay": 0.0001,
+   "seed": 20260914,
+   "refines_capacity": "medium",
+   "selected_by": "validation mean case-maximum fixed-initial error"
+  },
+  "t0_returned_exactly": true,
+  "repetitions": [
+   5,
+   5,
+   5,
+   5,
+   5,
+   5
+  ],
+  "per_case": [
+   {
+    "case": 0,
+    "same_grid_per_time": [
+     0.0,
+     0.13936286713208673,
+     0.13003984712209912,
+     0.1125934651147655,
+     0.1591149258474292,
+     0.13632697188403725
+    ],
+    "same_grid_evolved": 0.1591149258474292,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 1,
+    "same_grid_per_time": [
+     0.0,
+     0.15113108610859355,
+     0.10419223683948013,
+     0.09646509667530535,
+     0.08302079719995215,
+     0.08568221050379836
+    ],
+    "same_grid_evolved": 0.15113108610859355,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 2,
+    "same_grid_per_time": [
+     0.0,
+     0.09949475192129884,
+     0.12763638268922145,
+     0.11447322837666032,
+     0.13995852682555976,
+     0.18413100245350975
+    ],
+    "same_grid_evolved": 0.18413100245350975,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 3,
+    "same_grid_per_time": [
+     0.0,
+     0.18403296288148707,
+     0.21872442728614522,
+     0.19129957491984953,
+     0.1538058088626465,
+     0.1258017754317879
+    ],
+    "same_grid_evolved": 0.21872442728614522,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 4,
+    "same_grid_per_time": [
+     0.0,
+     0.12605836661703876,
+     0.11457034891039553,
+     0.11791748159491916,
+     0.12929523011348185,
+     0.13471178802075895
+    ],
+    "same_grid_evolved": 0.13471178802075895,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 5,
+    "same_grid_per_time": [
+     0.0,
+     0.1103301641260117,
+     0.12880021985916662,
+     0.14602931060412286,
+     0.1495896604430613,
+     0.13882922599001826
+    ],
+    "same_grid_evolved": 0.1495896604430613,
+    "t0_error": 0.0,
+    "finite": true
+   }
+  ]
+ }
+}

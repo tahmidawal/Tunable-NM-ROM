@@ -1,0 +1,164 @@
+host=pax105 job=4286429 mesh=129 arms=fno-l,unet-l,tsol-l,don-s ntrain=1536 nval=64 jfrac=0.6
+NVIDIA A100 80GB PCIe, GPU-a9dcc2dc-2ba8-5c5c-ed4c-ff7b876e8fee, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  365G  93% /cluster/tufts/paralab
+jax_backend=gpu
+[296s] generated train 128/1536 (163s)
+[468s] generated train 256/1536 (336s)
+[638s] generated train 384/1536 (505s)
+[809s] generated train 512/1536 (676s)
+[969s] generated train 640/1536 (837s)
+[1134s] generated train 768/1536 (1002s)
+[1303s] generated train 896/1536 (1171s)
+[1473s] generated train 1024/1536 (1340s)
+[1636s] generated train 1152/1536 (1504s)
+[1800s] generated train 1280/1536 (1667s)
+[1971s] generated train 1408/1536 (1839s)
+[2141s] generated train 1536/1536 (2009s)
+[2228s] data generated in 2095s: {'max_rel_residual': 9.999671508876435e-09, 'max_newton': 3, 'cap_hits': 0}
+torch_backend=cuda NVIDIA A100 80GB PCIe
+[2243s] === arm fno-l {'family': 'fno', 'width': 32, 'modes': 16, 'layers': 4, 'dtype': 'float64', 'smoke_overrides': {'width': 4, 'modes': 4, 'layers': 2}, 'batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'epochs': 4000, 'patience': 250, 'seed': 20260914}
+[2256s] fno-l: micro 4 params 18887909 probe {'8': 'oom', '4': 63588389888}
+{"arm": "fno-l", "epoch": 0, "steps": 192, "train": 0.07679897958519614, "val_mean": 0.09442517866949852, "val_worst": 0.2696741396502553, "lr": 0.0005094983453978484, "wall": 1504.7}
+{"arm": "fno-l", "epoch": 1, "steps": 384, "train": 0.0050117512121350205, "val_mean": 0.08118349655592565, "val_worst": 0.19440339364742149, "lr": 1.000669037648564e-05, "wall": 3008.4}
+[5272s] TRAIN DONE fno-l stop wall_budget epochs 2 steps 384 best_epoch 1 val_mean 0.08118 val_worst 0.1944
+[5272s] === arm unet-l {'family': 'unet', 'base': 32, 'dtype': 'float32', 'smoke_overrides': {'base': 8}, 'batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'epochs': 4000, 'patience': 250, 'seed': 20260914}
+[5282s] unet-l: micro 8 params 22581861 probe {'8': 48918626816}
+{"arm": "unet-l", "epoch": 0, "steps": 192, "train": 0.04811460158098723, "val_mean": 0.11517178270737519, "val_worst": 0.23359767210898305, "lr": 0.0008028148054931889, "wall": 901.2}
+{"arm": "unet-l", "epoch": 1, "steps": 384, "train": 0.004583334719412521, "val_mean": 0.06172258203531715, "val_worst": 0.1610601874490392, "lr": 0.00035936600275208395, "wall": 1802.9}
+{"arm": "unet-l", "epoch": 2, "steps": 576, "train": 0.002443651384306208, "val_mean": 0.05222962122627943, "val_worst": 0.14204028400704377, "lr": 3.635297268055048e-05, "wall": 2704.7}
+{"arm": "unet-l", "epoch": 3, "steps": 640, "train": 0.0019400272837778966, "val_mean": 0.05159541349836659, "val_worst": 0.1407625305909076, "lr": 1.0003419026757098e-05, "wall": 3014.1}
+[8310s] TRAIN DONE unet-l stop wall_budget epochs 4 steps 640 best_epoch 3 val_mean 0.0516 val_worst 0.1408
+[8310s] === arm tsol-l {'family': 'transolver', 'dim': 192, 'layers': 8, 'heads': 8, 'slices': 64, 'mlp_ratio': 2, 'ref': 8, 'warmup_steps': 160, 'dtype': 'float32', 'smoke_overrides': {'dim': 16, 'layers': 1, 'heads': 2, 'slices': 4, 'ref': 2, 'warmup_steps': 2}, 'batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'epochs': 4000, 'patience': 250, 'seed': 20260914, 'patch': 8}
+[8311s] tsol-l: micro 8 params 19190464 probe {'8': 8033077760}
+{"arm": "tsol-l", "epoch": 0, "steps": 192, "train": 0.23829907808613318, "val_mean": 0.25876438091958553, "val_worst": 0.39882937898798954, "lr": 0.0009975351634991254, "wall": 98.7}
+{"arm": "tsol-l", "epoch": 1, "steps": 384, "train": 0.04121679571858055, "val_mean": 0.2151933801530033, "val_worst": 0.2943159728263767, "lr": 0.0009898149158752137, "wall": 197.4}
+{"arm": "tsol-l", "epoch": 2, "steps": 576, "train": 0.03384788100480092, "val_mean": 0.17886349236421553, "val_worst": 0.2611850381140278, "lr": 0.0009769328230968448, "wall": 296.0}
+{"arm": "tsol-l", "epoch": 3, "steps": 768, "train": 0.022469816877925163, "val_mean": 0.17554793066313512, "val_worst": 0.2939683903493476, "lr": 0.000959054888673211, "wall": 394.5}
+{"arm": "tsol-l", "epoch": 4, "steps": 960, "train": 0.03654927769426303, "val_mean": 0.1777556056723138, "val_worst": 0.32235398395247794, "lr": 0.0009362554117172712, "wall": 493.2}
+{"arm": "tsol-l", "epoch": 5, "steps": 1152, "train": 0.02244483198348804, "val_mean": 0.15595176639518, "val_worst": 0.24313433849917185, "lr": 0.0009088753523647915, "wall": 592.0}
+{"arm": "tsol-l", "epoch": 6, "steps": 1344, "train": 0.0225861353350852, "val_mean": 0.17898449822108622, "val_worst": 0.32003923437656356, "lr": 0.0008772801376808705, "wall": 690.3}
+{"arm": "tsol-l", "epoch": 7, "steps": 1536, "train": 0.02539023053684032, "val_mean": 0.20775147797067112, "val_worst": 0.38382467529523856, "lr": 0.0008416985706578655, "wall": 788.9}
+{"arm": "tsol-l", "epoch": 8, "steps": 1728, "train": 0.022696246168100592, "val_mean": 0.15101955379709797, "val_worst": 0.25019271038345514, "lr": 0.0008026095862607377, "wall": 887.4}
+{"arm": "tsol-l", "epoch": 9, "steps": 1920, "train": 0.018240943186255205, "val_mean": 0.1496380627777614, "val_worst": 0.2501318052932255, "lr": 0.0007606942858019193, "wall": 984.9}
+{"arm": "tsol-l", "epoch": 10, "steps": 2112, "train": 0.018211320501472665, "val_mean": 0.144256854197777, "val_worst": 0.23496506806385156, "lr": 0.0007162898671739879, "wall": 1082.2}
+{"arm": "tsol-l", "epoch": 11, "steps": 2304, "train": 0.01918642689322011, "val_mean": 0.14369142667608176, "val_worst": 0.2279676237443257, "lr": 0.0006697200737091595, "wall": 1179.3}
+{"arm": "tsol-l", "epoch": 12, "steps": 2496, "train": 0.017525809863375194, "val_mean": 0.14398120904042605, "val_worst": 0.22251812434640608, "lr": 0.0006215211450573258, "wall": 1276.2}
+{"arm": "tsol-l", "epoch": 13, "steps": 2688, "train": 0.01717661308561742, "val_mean": 0.13607819520301992, "val_worst": 0.21200585937967467, "lr": 0.0005721928100630895, "wall": 1373.2}
+{"arm": "tsol-l", "epoch": 14, "steps": 2880, "train": 0.014779204448045391, "val_mean": 0.133368737324999, "val_worst": 0.2168349801668446, "lr": 0.0005220620311417833, "wall": 1470.4}
+{"arm": "tsol-l", "epoch": 15, "steps": 3072, "train": 0.014318666860399315, "val_mean": 0.13357634182321998, "val_worst": 0.21241321000449875, "lr": 0.0004717208185888222, "wall": 1567.4}
+{"arm": "tsol-l", "epoch": 16, "steps": 3264, "train": 0.028211693112553744, "val_mean": 0.18131175138607483, "val_worst": 0.30778532555828086, "lr": 0.0004218205055281571, "wall": 1664.4}
+{"arm": "tsol-l", "epoch": 17, "steps": 3456, "train": 0.018379479729281778, "val_mean": 0.13855536043398714, "val_worst": 0.22634845485418068, "lr": 0.00037281686453539026, "wall": 1761.3}
+{"arm": "tsol-l", "epoch": 18, "steps": 3648, "train": 0.014583746943282063, "val_mean": 0.1334962479824833, "val_worst": 0.21807028167576648, "lr": 0.00032518103121810944, "wall": 1858.1}
+{"arm": "tsol-l", "epoch": 19, "steps": 3840, "train": 0.013324149517748012, "val_mean": 0.1267584860269799, "val_worst": 0.2102111644120983, "lr": 0.0002793987762937564, "wall": 1955.1}
+{"arm": "tsol-l", "epoch": 20, "steps": 4032, "train": 0.015562546522845139, "val_mean": 0.13375923174027682, "val_worst": 0.2351538861819421, "lr": 0.00023591949883491076, "wall": 2051.9}
+{"arm": "tsol-l", "epoch": 21, "steps": 4224, "train": 0.014761193032656625, "val_mean": 0.12976674687016437, "val_worst": 0.22017692348380405, "lr": 0.00019522575758968336, "wall": 2148.8}
+{"arm": "tsol-l", "epoch": 22, "steps": 4416, "train": 0.014050372920234222, "val_mean": 0.14027138398470576, "val_worst": 0.22857990433785788, "lr": 0.00015769269164027432, "wall": 2245.8}
+{"arm": "tsol-l", "epoch": 23, "steps": 4608, "train": 0.013484215568266652, "val_mean": 0.12708044628126342, "val_worst": 0.2145220906466216, "lr": 0.00012374242425255999, "wall": 2342.7}
+{"arm": "tsol-l", "epoch": 24, "steps": 4800, "train": 0.012490990243797582, "val_mean": 0.12491904579418732, "val_worst": 0.20540892102207792, "lr": 9.371220917123742e-05, "wall": 2439.8}
+{"arm": "tsol-l", "epoch": 25, "steps": 4992, "train": 0.011962104235938876, "val_mean": 0.12439060919950744, "val_worst": 0.20239198516788834, "lr": 6.787907282218043e-05, "wall": 2536.9}
+{"arm": "tsol-l", "epoch": 26, "steps": 5184, "train": 0.011651431088835854, "val_mean": 0.12348113111235762, "val_worst": 0.20125369266133222, "lr": 4.6559406263783966e-05, "wall": 2634.0}
+{"arm": "tsol-l", "epoch": 27, "steps": 5376, "train": 0.011442627239489278, "val_mean": 0.1227303172256016, "val_worst": 0.19953366772244055, "lr": 2.9976293736695936e-05, "wall": 2731.1}
+{"arm": "tsol-l", "epoch": 28, "steps": 5568, "train": 0.011318393626614465, "val_mean": 0.12238998281688898, "val_worst": 0.19987248382962852, "lr": 1.830235878771891e-05, "wall": 2828.1}
+{"arm": "tsol-l", "epoch": 29, "steps": 5760, "train": 0.011229112720891147, "val_mean": 0.12200869561271657, "val_worst": 0.19894048471320486, "lr": 1.1653205969385495e-05, "wall": 2925.2}
+{"arm": "tsol-l", "epoch": 30, "steps": 5913, "train": 0.011209338586041236, "val_mean": 0.12256873402704131, "val_worst": 0.19950938259615245, "lr": 1.0000002860959715e-05, "wall": 3003.0}
+[11318s] TRAIN DONE tsol-l stop wall_budget epochs 31 steps 5913 best_epoch 29 val_mean 0.122 val_worst 0.1989
+[11318s] === arm don-s {'family': 'deeponet', 'width': 32, 'rank': 256, 'trunk_width': 384, 'levels': 3, 'pool_bins': 4, 'trunk_frequencies': [1, 2, 3, 4], 'dtype': 'float32', 'smoke_overrides': {'width': 4, 'rank': 8, 'trunk_width': 8}, 'batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'epochs': 4000, 'patience': 250, 'seed': 20260914}
+[11321s] don-s: micro 8 params 4756773 probe {'8': 25829796864}
+{"arm": "don-s", "epoch": 0, "steps": 192, "train": 0.34945842561553264, "val_mean": 0.48867478867172554, "val_worst": 0.690911988073298, "lr": 0.0009771131725345508, "wall": 301.7}
+{"arm": "don-s", "epoch": 1, "steps": 384, "train": 0.10505637366512148, "val_mean": 0.3836130731437439, "val_worst": 0.6494911769845769, "lr": 0.0009076801101040931, "wall": 602.8}
+{"arm": "don-s", "epoch": 2, "steps": 576, "train": 0.07725931198527307, "val_mean": 0.3287442877325782, "val_worst": 0.6067879771556554, "lr": 0.0007985256918007399, "wall": 904.0}
+{"arm": "don-s", "epoch": 3, "steps": 768, "train": 0.05662098412171201, "val_mean": 0.274999015028019, "val_worst": 0.5013674444423082, "lr": 0.0006603790147416188, "wall": 1205.2}
+{"arm": "don-s", "epoch": 4, "steps": 960, "train": 0.03811706596455208, "val_mean": 0.24690881257045286, "val_worst": 0.4681709856705164, "lr": 0.0005068989632123083, "wall": 1506.5}
+{"arm": "don-s", "epoch": 5, "steps": 1152, "train": 0.030641692066084802, "val_mean": 0.22516774337781573, "val_worst": 0.44630466420001863, "lr": 0.0003532361170723867, "wall": 1807.7}
+{"arm": "don-s", "epoch": 6, "steps": 1344, "train": 0.027157478425780573, "val_mean": 0.21606492068232314, "val_worst": 0.42458039781058776, "lr": 0.00021454579014999054, "wall": 2109.0}
+{"arm": "don-s", "epoch": 7, "steps": 1536, "train": 0.02435625451063055, "val_mean": 0.204974237119879, "val_worst": 0.41450954179704996, "lr": 0.00010452851506120457, "wall": 2410.2}
+{"arm": "don-s", "epoch": 8, "steps": 1728, "train": 0.02259017962037399, "val_mean": 0.20033325838440563, "val_worst": 0.4085339032808044, "lr": 3.402534437406126e-05, "wall": 2711.4}
+{"arm": "don-s", "epoch": 9, "steps": 1918, "train": 0.021729710158556056, "val_mean": 0.19867784522778373, "val_worst": 0.4056975868092968, "lr": 1.0000090887048637e-05, "wall": 3009.6}
+[14340s] TRAIN DONE don-s stop wall_budget epochs 10 steps 1918 best_epoch 9 val_mean 0.1987 val_worst 0.4057
+[14340s] ALL ARMS DONE
+TRAIN_EXIT=0
+panel sources:
+9370679351a0be57e9f570e4a3d69cfd82272728c4313c379e3d0b0350a94864  panel_b3d.py
+ec8d30d396839c302ea2933e62004f519f9df35dbfbb31a4fd7c5bd5e5e4388d  opsb3d.py
+2ced1f72c75f62f7c221baca92e18c56fb33c263928a83dab5f09cdfaf85e676  ops3d.py
+edc811b592cf68e4e76eb9eb4c6b8c86171425e7685ca4ccbbe02c4bff3d8b4d  lanes/burgers3d-retry/tables.py
+670475259683ef77f7af454d8b2b04fdd5ee3543373aa4a11353df4363c484b6  lanes/burgers3d-span/common.py
+jax_backend=gpu x64=True precision=highest
+[8.9s] [mesh 129] bank rows [(192, 2048383), (320, 2048383)] 8.2s
+[15.4s] [mesh 129] Gram cond 1.0011, A (2049, 512) 14.7s
+[89.3s] [mesh 129] tensor (2049, 512, 512) 88.6s
+[97.2s] table gates {'bank_condition': 1.0011383652927262, 'gram_condition': 1.002278026460992, 'A_dst_vs_explicit': 3.344963487717207e-15, 'cholesky_reconstruction': 5.772592176692206e-15, 'tensor_vs_direct': 2.462063033507486e-16}
+[161.8s] references done, worst residual 9.90e-11
+[162.3s] cohort identity vs Table 1: u0 max abs diff 5.55e-16, reference fields max rel diff 4.00e-16
+[182.0s] ARM span_R512_fsc_dt0.005: worst evolved 1.4640% median 0.0792% its/query 51 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 1600}
+[190.9s] ARM span_R192_fsc_dt0.01: worst evolved 4.2597% median 0.8822% its/query 26 reasons {'0': 0, '1': 0, '2': 0, '3': 0, '4': 800}
+[194.4s] FOM fom_dt0.005_nt0.1_lt0.5: worst evolved 81.1021%
+[197.9s] FOM fom_dt0.005_nt0.1_lt0.1: worst evolved 81.1021%
+[201.8s] FOM fom_dt0.005_nt0.03_lt0.5: worst evolved 63.2158%
+[205.7s] FOM fom_dt0.005_nt0.03_lt0.1: worst evolved 63.2158%
+[212.6s] FOM fom_dt0.005_nt0.01_lt0.5: worst evolved 25.9084%
+[219.5s] FOM fom_dt0.005_nt0.01_lt0.1: worst evolved 25.9084%
+[227.0s] FOM fom_dt0.005_nt0.003_lt0.5: worst evolved 2.4408%
+[234.3s] FOM fom_dt0.005_nt0.003_lt0.1: worst evolved 2.0440%
+[242.6s] FOM fom_dt0.005_nt0.001_lt0.5: worst evolved 1.0759%
+[250.8s] FOM fom_dt0.005_nt0.001_lt0.1: worst evolved 1.0759%
+[263.0s] FOM fom_dt0.005_nt0.0001_lt0.5: worst evolved 0.0588%
+[274.3s] FOM fom_dt0.005_nt0.0001_lt0.1: worst evolved 0.0588%
+[278.0s] FOM fom_dt0.01_nt0.1_lt0.5: worst evolved 69.6385%
+[281.6s] FOM fom_dt0.01_nt0.1_lt0.1: worst evolved 69.6385%
+[286.4s] FOM fom_dt0.01_nt0.03_lt0.5: worst evolved 43.8362%
+[291.0s] FOM fom_dt0.01_nt0.03_lt0.1: worst evolved 43.8362%
+[296.4s] FOM fom_dt0.01_nt0.01_lt0.5: worst evolved 2.8612%
+[301.7s] FOM fom_dt0.01_nt0.01_lt0.1: worst evolved 1.4676%
+[307.8s] FOM fom_dt0.01_nt0.003_lt0.5: worst evolved 1.4850%
+[313.5s] FOM fom_dt0.01_nt0.003_lt0.1: worst evolved 1.4676%
+[320.8s] FOM fom_dt0.01_nt0.001_lt0.5: worst evolved 1.3927%
+[327.8s] FOM fom_dt0.01_nt0.001_lt0.1: worst evolved 1.3871%
+[337.3s] FOM fom_dt0.01_nt0.0001_lt0.5: worst evolved 1.4055%
+[345.3s] FOM fom_dt0.01_nt0.0001_lt0.1: worst evolved 1.4043%
+[350.2s] FOM fom_dt0.025_nt0.01_lt0.5: worst evolved 4.7269%
+[356.3s] FOM fom_dt0.025_nt0.001_lt0.5: worst evolved 4.7250%
+torch_backend=cuda NVIDIA A100 80GB PCIe
+[365.4s] OP fno-l: worst evolved 11.9539% median 6.7523%
+[373.8s] OP unet-l: worst evolved 9.3878% median 4.2101%
+[377.1s] OP tsol-l: worst evolved 14.3918% median 11.0494%
+[383.0s] OP don-s: worst evolved 34.0891% median 15.9344%
+[448.1s] timing phase A1 done (576 invocations)
+[690.8s] timing phase B done (2496 invocations)
+[755.7s] timing phase A2 done (576 invocations)
+[755.7s] timing gates drift 1.015 neighbour 1.002 / 1.004 determinism 0.00e+00
+[755.7s] TIME span_R512_fsc_dt0.005: 195.48 ms
+[755.7s] TIME span_R192_fsc_dt0.01: 19.45 ms
+[755.7s] TIME fno-l: 75.99 ms
+[755.7s] TIME unet-l: 194.48 ms
+[755.7s] TIME tsol-l: 35.22 ms
+[755.7s] TIME don-s: 125.87 ms
+[755.7s] TIME fom_dt0.005_nt0.1_lt0.5: 6.99 ms
+[755.7s] TIME fom_dt0.005_nt0.1_lt0.1: 7.00 ms
+[755.7s] TIME fom_dt0.005_nt0.03_lt0.5: 9.42 ms
+[755.7s] TIME fom_dt0.005_nt0.03_lt0.1: 9.86 ms
+[755.7s] TIME fom_dt0.005_nt0.01_lt0.5: 123.97 ms
+[755.7s] TIME fom_dt0.005_nt0.01_lt0.1: 123.99 ms
+[755.7s] TIME fom_dt0.005_nt0.003_lt0.5: 124.08 ms
+[755.7s] TIME fom_dt0.005_nt0.003_lt0.1: 124.03 ms
+[755.7s] TIME fom_dt0.005_nt0.001_lt0.5: 147.23 ms
+[755.7s] TIME fom_dt0.005_nt0.001_lt0.1: 147.43 ms
+[755.7s] TIME fom_dt0.005_nt0.0001_lt0.5: 258.15 ms
+[755.7s] TIME fom_dt0.005_nt0.0001_lt0.1: 242.92 ms
+[755.7s] TIME fom_dt0.01_nt0.1_lt0.5: 3.73 ms
+[755.7s] TIME fom_dt0.01_nt0.1_lt0.1: 3.73 ms
+[755.7s] TIME fom_dt0.01_nt0.03_lt0.5: 47.15 ms
+[755.7s] TIME fom_dt0.01_nt0.03_lt0.1: 43.77 ms
+[755.7s] TIME fom_dt0.01_nt0.01_lt0.5: 62.86 ms
+[755.7s] TIME fom_dt0.01_nt0.01_lt0.1: 62.63 ms
+[755.7s] TIME fom_dt0.01_nt0.003_lt0.5: 77.85 ms
+[755.7s] TIME fom_dt0.01_nt0.003_lt0.1: 71.89 ms
+[755.7s] TIME fom_dt0.01_nt0.001_lt0.5: 117.83 ms
+[755.7s] TIME fom_dt0.01_nt0.001_lt0.1: 112.54 ms
+[755.7s] TIME fom_dt0.01_nt0.0001_lt0.5: 184.67 ms
+[755.7s] TIME fom_dt0.01_nt0.0001_lt0.1: 137.69 ms
+[755.7s] TIME fom_dt0.025_nt0.01_lt0.5: 39.47 ms
+[755.7s] TIME fom_dt0.025_nt0.001_lt0.5: 81.59 ms
+PANEL COMPLETE
+PANEL_EXIT=0
+ALL-DONE

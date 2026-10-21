@@ -1,0 +1,27 @@
+{
+ "family": "transolver",
+ "dim": 256,
+ "layers": 8,
+ "heads": 8,
+ "slices": 64,
+ "mlp_ratio": 2,
+ "patch": 4,
+ "ref": 8,
+ "dtype": "float32",
+ "epochs": 4000,
+ "patience": 250,
+ "batch_size": 8,
+ "learning_rate": 0.001,
+ "weight_decay": 0.0001,
+ "seed": 20260914,
+ "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+ "warmup_steps": 160,
+ "patch_rule": "n // 64 (set by train_ops.py)",
+ "smoke_overrides": {
+  "dim": 32,
+  "layers": 2,
+  "heads": 4,
+  "slices": 8,
+  "epochs": 2
+ }
+}

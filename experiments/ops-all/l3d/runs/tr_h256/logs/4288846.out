@@ -1,0 +1,9 @@
+host=pax010 job=4288846 specs=heat:256:fno-s:0.36 heat:256:unet-s:0.2 heat:256:tsol-s:0.08 heat:256:don-s:0.3
+NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+EXIT heat256-fno-s 1
+EXIT heat256-unet-s 1
+EXIT heat256-tsol-s 1
+EXIT heat256-don-s 1
+ALL-DONE

@@ -1,0 +1,28 @@
+{
+ "spec": {
+  "note": "g2d: one network per job; config verbatim from burgers-compare-hires (the 1024^2/2048^2 operator panels), 3000 s budget",
+  "per_arm_seconds": 3000,
+  "arms": [
+   {
+    "name": "fno-large",
+    "config": "inputs/opconfigs/fno-large.json"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "arm": "fno-large",
+   "config": "inputs/opconfigs/fno-large.json",
+   "exit_code": 0,
+   "started_unix": 1790269099.2144957,
+   "ended_unix": 1790272132.2131581,
+   "job_id": "4285933",
+   "epochs": 201,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.024580123225250064,
+   "validation_worst_case_max": 0.06550171738134944,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "1d6ab5c66d374ca83c8e751276f1243c5c3713a36290a52685b025620838c207"
+  }
+ ]
+}

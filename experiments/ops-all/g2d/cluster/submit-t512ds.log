@@ -1,0 +1,12 @@
+--- squeue before
+4301409 g2d_t512tl PENDING 0:00 (Priority)
+4301388 g2d_t512fl RUNNING 0:13 pax105
+4301403 g2d_t512ub64 RUNNING 0:13 pax106
+4301382 g2d_pl256 RUNNING 0:44 pax105
+Submitted batch job 4301417
+--- squeue after
+4301417 g2d_t512ds PENDING 0:00 (Priority)
+4301409 g2d_t512tl PENDING 0:00 (Priority)
+4301388 g2d_t512fl RUNNING 0:21 pax105
+4301403 g2d_t512ub64 RUNNING 0:21 pax106
+4301382 g2d_pl256 RUNNING 0:52 pax105

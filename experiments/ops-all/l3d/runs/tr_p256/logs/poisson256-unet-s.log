@@ -1,0 +1,52 @@
+torch_backend=cuda NVIDIA H200
+{"arm": "unet-s", "problem": "poisson", "mesh": 256, "micro_batch": 1, "real_parameter_count": 5647681}
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/train_l3d.py", line 257, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/train_l3d.py", line 214, in main
+    metrics = evaluate(net)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/train_l3d.py", line 114, in evaluate
+    errs.append(prob.errors(prob.predict(net, x, norm), y, x).cpu().numpy())
+                            ~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/problems.py", line 108, in predict
+    out = model(self.features(x, norm[0]))[:, :, 1:, 1:, 1:] * norm[1]
+          ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/ops_l3d.py", line 61, in forward
+    return self.network(x.to(self.parameter_dtype)).to(torch.float64)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/ops_l3d.py", line 104, in forward
+    x = block(torch.cat((up(x), skip), dim=1))
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/container.py", line 253, in forward
+    input = module(input)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py", line 327, in forward
+    return F.group_norm(input, self.num_groups, self.weight, self.bias, self.eps)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/functional.py", line 2990, in group_norm
+    return torch.group_norm(
+           ~~~~~~~~~~~~~~~~^
+        input, num_groups, weight, bias, eps, torch.backends.cudnn.enabled
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.00 GiB. GPU 0 has a total capacity of 139.80 GiB of which 112.55 GiB is free. Including non-PyTorch memory, this process has 27.24 GiB memory in use. 27.96 GiB allowed; Of the allocated memory 26.46 GiB is allocated by PyTorch, and 163.04 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

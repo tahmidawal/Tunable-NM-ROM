@@ -1,0 +1,84 @@
+{
+ "complete": true,
+ "name": "transolver",
+ "family": "transolver",
+ "problem": "lshape",
+ "mesh": 1024,
+ "mem_share": 0.5,
+ "co_scheduled_on_same_gpu": [
+  "fno",
+  "transolver"
+ ],
+ "data": {
+  "seconds": 1980.6863068672828,
+  "data_seconds": 1980.1279251510277
+ },
+ "config": {
+  "family": "transolver",
+  "dim": 256,
+  "layers": 8,
+  "heads": 8,
+  "slices": 64,
+  "mlp_ratio": 2,
+  "patch": 16,
+  "ref": 8,
+  "dtype": "float32",
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "warmup_steps": 160,
+  "patch_rule": "n // 64 (set by train_ops.py)",
+  "smoke_overrides": {
+   "dim": 32,
+   "layers": 2,
+   "heads": 4,
+   "slices": 8,
+   "epochs": 2
+  }
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 5087114752,
+ "best_epoch": 58,
+ "best_step": 7552,
+ "epochs_completed": 60,
+ "optimisation_steps": 7618,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3000.8447781610303,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.18615301612492852,
+   0.5514875736747378,
+   0.31650681278450443,
+   0.30624003603187533,
+   0.3689827854644921,
+   0.4678253810317102,
+   0.28094775543583694,
+   0.4407694618859306,
+   0.55132960152937,
+   0.2655187294867735,
+   0.20626421698499944,
+   0.6433137114258065,
+   0.650006092510123,
+   0.185221654870151,
+   0.2739863789988754,
+   0.31182483267885847
+  ],
+  "mean": 0.3753986275574358,
+  "median": 0.3141658227316815,
+  "worst": 0.650006092510123
+ },
+ "best_checkpoint_sha256": "4f065239427aecba8034a3827e4dc519050ee6c43e1259a05bc9284b47a97afd",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 12482880,
+ "normalization": [
+  0.03194863482390429,
+  0.1517897745599483,
+  0.0018159422476291553
+ ],
+ "peak_allocated_bytes": 5195509760
+}

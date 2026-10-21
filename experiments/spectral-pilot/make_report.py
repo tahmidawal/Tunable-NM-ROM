@@ -23,6 +23,7 @@ PL = H / 'plots'
 PL.mkdir(exist_ok=True)
 A = json.loads((R / 'ANALYSIS.json').read_text())
 LV = [lv for lv in ('A1', 'A2', 'A3', 'A4') if A['A'].get(lv, {}).get('status') == 'run']
+LVX = LV + (['AB'] if A['A'].get('AB', {}).get('status') == 'run' else [])
 TAUS = [str(t) for t in SC.TARGETS]
 PILOT = '**PILOT: small, not a result.**'
 
@@ -51,13 +52,13 @@ def tau_s(t):
 # ------------------------------------------------------------------------------------------------- plots -----
 
 def plot_floors():
-    fig, axs = plt.subplots(1, len(LV), figsize=(4.2 * len(LV), 3.6), sharey=True)
-    for ax, lv in zip(np.atleast_1d(axs), LV):
+    fig, axs = plt.subplots(1, len(LVX), figsize=(4.2 * len(LVX), 3.6), sharey=True)
+    for ax, lv in zip(np.atleast_1d(axs), LVX):
         rom = load(R / 'A' / lv / 'rom.json')
         fl = rom['floors']
         r = np.arange(1, len(fl['pod']['worst']) + 1)
         ax.loglog(r, fl['pod']['worst'], label='POD span (96 traj.)')
-        ax.loglog(r, fl['pod48']['worst'], '--', label='POD span (48 traj.)')
+        ax.loglog(np.arange(1, len(fl['pod48']['worst']) + 1), fl['pod48']['worst'], '--', label='POD span (48 traj.)')
         rs = np.arange(1, len(fl['sine']['worst']) + 1)
         ax.loglog(rs, fl['sine']['worst'], ':', label='first r sines (Laplacian order)')
         Ns = sorted(int(k) for k in fl['spectral'])
@@ -77,8 +78,8 @@ def plot_floors():
 
 
 def plot_pareto():
-    fig, axs = plt.subplots(1, len(LV) + 1, figsize=(4.2 * (len(LV) + 1), 3.6))
-    for ax, lv in zip(axs, LV):
+    fig, axs = plt.subplots(1, len(LVX) + 1, figsize=(4.2 * (len(LVX) + 1), 3.6))
+    for ax, lv in zip(axs, LVX):
         ts = load(R / 'A' / lv / 'time_screen.json')
         if not ts or 'targets' not in ts:
             continue
@@ -187,7 +188,7 @@ def main():
       '**POD–Galerkin feasibility comparator** (POD span + exact quadratic tensor or grid rule + ETDRK4), not the '
       'coordinate-network bank: a loss means this implementation loses, a win only licenses the full experiment '
       '(DESIGN A1.1). Errors are against numerical references (conditional allowances, DESIGN A2.5/A3.4). '
-      'Design: `DESIGN.md` (amended exploratory design, amendments A1–A5); audits in `audits/`.\n')
+      'Design: `DESIGN.md` (amended exploratory design, amendments A1–A6; A6 = post-hoc control AB); audits in `audits/`.\n')
 
     # ---- in brief (filled after analysis)
     w('## 1. In brief\n')
@@ -200,7 +201,7 @@ def main():
     w('## 2. What ran\n')
     w('| level | ν band | test steepness s (median, range) | $N_{\\rm ref}$ | allowance U | front sharpness t>0 (t=0) | remaining energy at t=0.25 | gates |')
     w('|---|---|---|---|---|---|---|---|')
-    for lv in LV:
+    for lv in LVX:
         e = A['A'][lv]
         ref = load(R / 'A' / lv / 'ref.json')
         dg = e['diag'] or {}
@@ -230,7 +231,7 @@ def main():
       '"–" = not reached inside the ladder (censored) or not timed.\n')
     w('| level | τ (worst) | FOM $N_{\\min}$ [$(N-1)^2$] | ROM $r_{\\min}$ | sine-ROM $r_{\\min}$ | floor: block $N$ | floor: POD r (96 / 48 traj.) | FOM matched (N, steps, time) | ROM matched (form, r, steps, time) | S | S native |')
     w('|---|---|---|---|---|---|---|---|---|---|---|')
-    for lv in LV:
+    for lv in LVX:
         for t in TAUS:
             x = A['A'][lv]['targets'][t]
             Nm = x['N_min']
@@ -298,8 +299,8 @@ def main():
 
     # ---- controls
     w('## 5. Controls\n')
-    w('| check | ' + ' | '.join(LV) + ' | B |')
-    w('|---|' + '---|' * (len(LV) + 1))
+    w('| check | ' + ' | '.join(LVX) + ' | B |')
+    w('|---|' + '---|' * (len(LVX) + 1))
     rows = [('SW1a error metric', lambda e: e['SW1a'], lambda: b and b['SW1']),
             ('SW1b three-way matcher', lambda e: e['SW1b'], lambda: b and b['SW1']),
             ('SW2 reference gate rejects a perturbed reference', lambda e: e['SW2'],
@@ -309,13 +310,13 @@ def main():
             ('G7 IC rule', lambda e: e['controls']['G7'], lambda: 'n/a (nodal IC)'),
             ('timing valid (screen + final sentinel)', lambda e: e['timing_valid'], lambda: b and b['timing_valid'])]
     for name, fa, fb in rows:
-        w(f"| {name} | " + ' | '.join(str(fa(A['A'][lv])) for lv in LV) + f" | {fb()} |")
+        w(f"| {name} | " + ' | '.join(str(fa(A['A'][lv])) for lv in LVX) + f" | {fb()} |")
     w('\nPhysical diagnostics (not asserted): coarse "references" ' + ', '.join(
         f"{lv}: N_ref/4 differs by {g(load(R / 'A' / lv / 'ref.json')['checks']['diag_coarse']['max'], '%.1e')}"
         for lv in LV) + '; random 128-dimensional span floors ' + ', '.join(
         f"{lv}: {g(load(R / 'A' / lv / 'rom.json')['floors']['random']['worst'][127], '%.2f')}" for lv in LV) + '.\n')
 
-    w(open(H / 'report_tail.md').read() if (H / 'report_tail.md').exists() else '')
+    tail(w)
     (H / 'report.md').write_text('\n'.join(L) + '\n')
     print('report written')
 
@@ -337,8 +338,15 @@ def brief_lines():
         for t in TAUS:
             x = b['targets'][t]
             if x.get('S') is not None:
-                out.append(f"Part B, τ = {tau_s(t)}: {x['verdict']} (S = {g(x['S'], '%.2g')}; PILOT).")
+                out.append(f"Part B (L-shape vs FD), τ = {tau_s(t)}: {x['verdict']} (S = {g(x['S'], '%.2g')}; PILOT).")
+    ab = A['A'].get('AB')
+    if ab and ab.get('status') == 'run':
+        out.append('Post-hoc control AB (Part-B cases on the box vs the spectral FOM): S = ' + ', '.join(
+            f"{g(ab['targets'][t].get('S'), '%.2g')} (τ={tau_s(t)})" for t in TAUS) + '; PILOT.')
     return out
+
+
+from report_text import tail  # noqa: E402
 
 
 if __name__ == '__main__':

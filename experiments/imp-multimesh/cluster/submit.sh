@@ -51,22 +51,21 @@ RC=$?
 set -e
 echo "$OUT"
 JID=$(echo "$OUT" | awk '/Submitted batch job/ {print $4}')
-if [ -z "$JID" ]; then         # ambiguous: look the job up by its unique name before releasing anything
+if [ -z "$JID" ]; then
+  if [ $RC -eq 75 ] && [ -z "$OUT" ]; then          # the remote cap check refused before sbatch ran: not submitted
+    "$PY" "$LANE/cluster/ledger.py" release "$A"; echo "account at cap (75): not submitted; reservation released"; exit 7
+  fi
   set +e
-  LK=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h -n imm_$A -o %i; sacct -n -X -P --name=imm_$A -S now-1hours -o JobID")
-  LRC=$?
+  Q1=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h -n imm_$A -o %i"); R1=$?
+  Q2=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "sacct -n -X -P --name=imm_$A -S now-1hours -o JobID"); R2=$?
   set -e
-  if [ $LRC -ne 0 ]; then
+  C=$(printf "%s\n%s\n" "$Q1" "$Q2" | grep -E '^[0-9]+$' | sort -u)
+  if [ $R1 -eq 0 ] && [ $R2 -eq 0 ] && [ "$(echo "$C" | grep -c .)" -eq 1 ]; then
+    JID="$C"; echo "recovered job id $JID by name after an ambiguous sbatch response"
+  else
     "$PY" "$LANE/cluster/ledger.py" ambiguous "$A"
-    echo "submission status unknown (lookup failed): reservation KEPT as AMBIGUOUS; reconcile by hand"; exit 10
+    echo "submission status unknown (rc=$RC, lookups $R1/$R2, candidates: $C): reservation KEPT as AMBIGUOUS"; exit 10
   fi
-  JID=$(echo "$LK" | grep -E '^[0-9]+$' | sort -u | tail -1)
-  if [ -z "$JID" ]; then
-    "$PY" "$LANE/cluster/ledger.py" release "$A"
-    echo "sbatch did not submit (rc=$RC; 75 = account at cap); reservation released"
-    exit 7
-  fi
-  echo "recovered job id $JID by name after an ambiguous sbatch response"
 fi
 "$PY" "$LANE/cluster/ledger.py" bind "$A" "$JID"
 echo "--- squeue after"; timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -o "%.10i %.24j %.8T %.10M %R"'

@@ -213,6 +213,7 @@ def screen(lv):
         alt = [x for pair in zip(fc, rc) for x in pair] + fc[len(rc):] + rc[len(fc):]
         xs = [jnp.asarray(te[c]) for c in TIMING_CASES]
         times, one, pruned = TU.roundrobin(alt, xs, REPS)
+        entry['leaders'] = TU.roundrobin.last
         for key in pruned:
             entry['not_timed_heuristic']['fom' if key[0] == 'F' else 'rom'].append(dict(key=str(key), t_one=one[key]))
         for key, ts in times.items():
@@ -283,8 +284,10 @@ def final(lv, attempt=1):
         fn_ = C.make_fom(bf['N'], bf['n'], 5, lattice=False)
         qfn = lambda dd: fn_(dd[None])
         qrn = ops[br['r']].query(br['form'], br['n'], br['Ninit'], br['Mq'], native=True)
-        nf = float(np.median([np.median(tmed(qfn, jnp.asarray(te[c]))) for c in TIMING_CASES]))
-        nr = float(np.median([np.median(tmed(qrn, jnp.asarray(te[c]))) for c in TIMING_CASES]))
+        nfr = [tmed(qfn, jnp.asarray(te[c])) for c in TIMING_CASES]
+        nrr = [tmed(qrn, jnp.asarray(te[c])) for c in TIMING_CASES]
+        nf = float(np.median([np.median(x) for x in nfr]))
+        nr = float(np.median([np.median(x) for x in nrr]))
 
         def outl(ts):
             ts = np.asarray(ts).ravel()
@@ -294,7 +297,7 @@ def final(lv, attempt=1):
                                    rom=dict(form=br['form'], r=br['r'], Mq=br['Mq'], n=br['n'], Ninit=br['Ninit'],
                                             times=tr, t=mr, spread=float(np.max(tr) / np.min(tr)), outliers=outl(tr),
                                             worst=br['worst']),
-                                   S=mf / mr, native=dict(fom=nf, rom=nr, S=nf / nr), order_changed=bool((mf / mr >= 1) != (e['S_screen'] >= 1)))
+                                   S=mf / mr, native=dict(fom=nf, rom=nr, S=nf / nr, fom_times=nfr, rom_times=nrr), order_changed=bool((mf / mr >= 1) != (e['S_screen'] >= 1)))
         print(lv, 'final tau', tau, 'S=%.3g' % (mf / mr), flush=True)
     s1 = [tmed(sent, jnp.asarray(te[c])) for c in TIMING_CASES]
     m0, m1 = float(np.median(s0)), float(np.median(s1))

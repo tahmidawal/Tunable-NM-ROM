@@ -170,6 +170,7 @@ def screen():
         rc = [c for c in cands if c[1] == 'R']
         alt = [x for pair in zip(fc, rc) for x in pair] + fc[len(rc):] + rc[len(fc):]
         times, one, pruned = TU.roundrobin(alt, xs, REPS)
+        e['leaders'] = TU.roundrobin.last
         e['skipped'] = [dict(key=str(k), t_one=one[k]) for k in pruned]
         for key, ts in times.items():
             t = float(np.median([np.median(x) for x in ts]))

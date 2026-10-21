@@ -41,6 +41,10 @@ def roundrobin(cands, cases, reps, prune=3.0):
             leaders[c[1]] = c
     lt = _rounds(list(leaders.values()), cases, reps)
     full_best = {m: _med(lt[c[0]]) for m, c in leaders.items()}
-    kept = [c for c in cands if one[c[0]] <= prune * full_best[c[1]]]
-    pruned = [c[0] for c in cands if one[c[0]] > prune * full_best[c[1]]]
-    return _rounds(kept, cases, reps), one, pruned
+    lead_keys = {c[0] for c in leaders.values()}                  # fully timed leaders are always kept (audit 4)
+    kept = [c for c in cands if c[0] in lead_keys or one[c[0]] <= prune * full_best[c[1]]]
+    pruned = [c[0] for c in cands if c not in kept]
+    times = _rounds(kept, cases, reps)
+    times_leaders = {str(k): v for k, v in lt.items()}
+    roundrobin.last = dict(leader_times=times_leaders, full_best=full_best)
+    return times, one, pruned

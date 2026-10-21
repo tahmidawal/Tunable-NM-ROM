@@ -6,15 +6,25 @@
   "precision": null,
   "xla_flags": null,
   "jax": "0.10.1",
-  "commit": "b1e9a26dbef043ef63591d9151ccfb31827643f9",
+  "commit": "713afaf00feeffa0fe3c163ef4dfbad43af89674",
   "host": "spark-d69e",
-  "time": "2026-10-20T21:55:54",
+  "time": "2026-10-20T22:36:33",
   "label": "PILOT: small, not a result."
  },
  "Nref": 128,
- "U": 2.7426342893100213e-09,
+ "U": 2.7426342893100217e-09,
  "U_has_pad": true,
+ "gates": {
+  "space": true,
+  "time": true,
+  "pad": true,
+  "SW2": true,
+  "SW1a": true,
+  "SW1b": true,
+  "train": true
+ },
  "label": "PILOT: small, not a result.",
+ "basis_label": "qualified",
  "SW1a": {
   "rows": [
    {
@@ -152,7 +162,7 @@
      "dist": 3.218246889496884e-06
     }
    ],
-   "seconds": 15.287973072146997
+   "seconds": 28.46152010606602
   },
   "12": {
    "rows": [
@@ -257,7 +267,7 @@
      "dist": 1.8371160456599685e-06
     }
    ],
-   "seconds": 18.207721574930474
+   "seconds": 34.24462332599796
   },
   "16": {
    "rows": [
@@ -362,7 +372,7 @@
      "dist": 4.176618870609617e-06
     }
    ],
-   "seconds": 13.864493640139699
+   "seconds": 21.253383442992344
   },
   "24": {
    "rows": [
@@ -467,7 +477,7 @@
      "dist": 7.864952456772365e-06
     }
    ],
-   "seconds": 24.95002565300092
+   "seconds": 30.56228553596884
   }
  },
  "unexplored": [
@@ -475,5 +485,6 @@
   48,
   64,
   96
- ]
+ ],
+ "size_stop_rule": "heuristic (A5): stop after two consecutive sizes meet every target"
 }

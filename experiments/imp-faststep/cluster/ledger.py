@@ -77,14 +77,19 @@ def _update():
             continue
         e.update(state=f[2].split()[0], elapsed_hours=round(int(f[3] or 0) / 3600, 4), node=f[5], tres=f[6], name=f[1],
                  slurm_time_limit_hours=tl_hours(f[4]))
-        e['identity_ok'] = bool(f[1] == f"ifs_{e['job']}" and abs(tl_hours(f[4]) - e['time_limit_hours']) < 1e-6)
+        gpus = [int(t.split('=')[1]) for t in f[6].split(',') if t.startswith('gres/gpu') and '=' in t and ':' not in t.split('=')[0]]
+        e['gpu_count'] = gpus[0] if gpus else None
+        e['identity_ok'] = bool(f[1] == f"ifs_{e['job']}" and abs(tl_hours(f[4]) - e['time_limit_hours']) < 1e-6
+                                and e['gpu_count'] in (None, 1))
     intents = []
     for it in sorted((LANE / 'runs').glob('*/INTENT.json')):        # unresolved submissions: reserved until reconciled
         if not (it.parent / 'SUBMIT.json').exists():
             intents.append(json.loads(it.read_text()))
     L['unresolved_intents'] = intents
     L['spent_gpu_hours'] = round(sum(x.get('elapsed_hours', 0.) for x in L['jobs'] if x.get('state') in TERMINAL), 4)
-    L['reserved_gpu_hours'] = round(sum(x['time_limit_hours'] for x in L['jobs'] if x.get('state') not in TERMINAL)
+    L['identity_problems'] = [x['job_id'] for x in L['jobs'] if x.get('identity_ok') is False or x.get('unreconciled')]
+    L['reserved_gpu_hours'] = round(sum(max(x['time_limit_hours'], x.get('slurm_time_limit_hours', 0.)) * max(1, x.get('gpu_count') or 1)
+                                        for x in L['jobs'] if x.get('state') not in TERMINAL)
                                     + sum(float(x['time_limit_hours']) for x in intents), 4)
     tmp = LED.with_suffix('.tmp')
     tmp.write_text(json.dumps(L, indent=1) + '\n')
@@ -101,6 +106,8 @@ if __name__ == '__main__':
         need = float(sys.argv[2])
         if not (math.isfinite(need) and need > 0):
             sys.exit('hours must be finite and > 0')
-        ok = L['spent_gpu_hours'] + L['reserved_gpu_hours'] + need <= CAP + 1e-9
+        ok = L['spent_gpu_hours'] + L['reserved_gpu_hours'] + need <= CAP + 1e-9 and not L['identity_problems']
+        if L['identity_problems']:
+            print('identity / time-limit / GPU-count mismatch or unreconciled job:', L['identity_problems'])
         print('admit' if ok else 'REFUSE', need)
         sys.exit(0 if ok else 1)

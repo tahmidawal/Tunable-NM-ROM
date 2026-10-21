@@ -34,7 +34,7 @@ if [ -z "$JID" ]; then                    # reconcile through the remote receipt
   JID=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "cat $REMOTE/JOBID 2>/dev/null" || true)
 fi
 if [ -z "$JID" ]; then
-  if [ "$RC" -eq 75 ] || [ "$RC" -eq 76 ] || [ "$RC" -eq 70 ] || [ "$RC" -eq 72 ] || [ "$RC" -eq 4 ]; then
+  if [ "$RC" -eq 75 ] || [ "$RC" -eq 76 ] || [ "$RC" -eq 70 ] || [ "$RC" -eq 4 ]; then   # failed before the move: definite
     timeout 60 ssh -o ConnectTimeout=20 tufts-login "rm -rf $TMP" || true
     rm -f "$LANE_DIR/runs/$JOB/INTENT.json"   # definite non-submission
   fi

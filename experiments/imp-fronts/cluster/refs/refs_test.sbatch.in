@@ -2,7 +2,7 @@
 # imp-fronts fresh TEST references (DESIGN B3, Amendment 2 B3/B8, Amendment 3 B8): 28 cases (FI 8, FN0s 8, FC1 8, FC2 4),
 # E0-style ST recipe (phaseb/frefs/refjob.py mode fd, tight allowance 0), ONE job on 2 GPUs.
 # Ceiling 2.8 GPU-h = 2 GPUs x 1.4 h wall (01:24:00). Each GPU lane stops starting new work at its own deadline
-# (wall - 6 min, kept for refslim + hashing); a case killed by the deadline has no .json -> ineligible (counted).
+# (90 % of the wall limit, Amendment 4 B8; the last 10 % is the finalisation reserve for refslim + hashing); a case killed by the deadline has no .json -> ineligible (counted).
 # Order per GPU lane = lowest test indices first, round-robin over its cohorts (deterministic reduced subsets, Amendment 1 B3).
 # Rendered by cluster/refs/stage_refs.py (@...@ placeholders); never edited by hand after staging.
 #SBATCH --job-name=if_@ATTEMPT@
@@ -38,7 +38,7 @@ for g in 0 1; do
 done
 echo "JAX_DEFAULT_MATMUL_PRECISION=$JAX_DEFAULT_MATMUL_PRECISION"
 cd experiments/imp-fronts/phaseb/frefs
-DEADLINE=$(( T_START + 84*60 - 6*60 ))
+DEADLINE=$(( T_START + 84*60*9/10 ))   # Amendment 4 B8: stop new work at 90 % of the wall limit
 
 lane() {   # lane <gpu> <config>...: sequential refjob steps on one GPU, each bounded by the shared deadline
   local g=$1; shift

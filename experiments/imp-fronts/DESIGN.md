@@ -739,3 +739,27 @@ entered the arm-(c) decision, so the curvature identity and path checks now gate
 incomplete evidence is allowed only when the observed arm maximum floor exceeds 2 × the **complete** eligible-population
 K1 maximum (K1 floors are CPU quantities and must be complete for every eligible FI test case); otherwise incomplete
 arm evidence gives guard UNAVAILABLE. The population minimum (FI ≥ 6) stays explicit.
+
+---
+
+## Amendment 9 (2026-10-21, from the Phase-B code build; before any Phase B job)
+
+Findings while implementing the certificate: (i) Amendment 4's reference bound (per-case **maximum** × 1.5 applied to
+every case) projects ≈ 19.5 GPU-h for 28 references, while the measured jcp-regimes means are ≈ 384 s/case (A100) and
+≈ 252 s/case (H200); (ii) its tight-solve multiplier (iteration cap 600 / measured mean) inflates tight solves ≈ 300×,
+far beyond any measured job; (iii) the jcp-robust selection jobs measured 0.453–0.484 GPU-h on A100-80G for three
+prefixes, above the 0.45 ceiling. Replacements (the B8 ceilings remain the enforceable protection; the certificate
+predicts completion):
+- **References**: projection = (measured mean per-case time on the same GPU type in the jcp-regimes jobs) × 1.5;
+  references run on H200 when available (A100 otherwise, with its own mean). Ceiling unchanged (2.8 GPU-h, 2 GPUs,
+  1.4 h wall); unfinished cases are ineligible and counted. If the projection exceeds the ceiling, S2 applies.
+- **Tight / tighter solves**: projection = the measured per-solve time of the jcp-robust `e2s1` selection job (which
+  contains tight solves at the same mesh, $1024^2$) scaled by node count and step count, × 1.5, cross-checked against
+  the smoke's measured tight solves (the larger of the two is used).
+- **Rule selection runs only the R384 group** (the only prefix any Phase B endpoint or policy uses); `select2d.py` and
+  the group's ladder, target, check and arms are unchanged. Ceiling 0.3 GPU-h per arm (one third of the measured
+  three-group job, plus compilation). Schedule S1 total: 8.8 + 2.8 + 0.6 + 1.2 + 0.9 = **14.3 GPU-h**.
+- The selection job runs under `timeout` at 90 % of its wall; an incomplete selection is refused by `select2d` and
+  counts as "no certified rule" (policy then starts uncertified at fib4181, Amendment 4).
+- "Numerically qualified" additionally requires the job-wide pooled non-stationary fraction ≤ 1 % over all scored
+  prod runs of that bank (the common-brief contract is pooled).

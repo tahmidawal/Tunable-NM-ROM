@@ -349,3 +349,24 @@ def test_e9_score_synthetic():
     assert 'unmeasured' in out['routing']['cost']
     with pytest.raises(ValueError):
         E9.score({'FI|0': dict(e=0.1, valid=True, eligible=True)}, frozen=frozen, fresh=fresh)
+
+
+# ------------------------------------------------------------------------------------- reference adapter ---
+def test_reference_adapter_allow_list():
+    if not FC.OUT.exists():
+        pytest.skip('fresh_cohorts.json not yet written')
+    sys.path.insert(0, str(LANE / 'phaseb' / 'frefs'))
+    import fresh as FR
+    assert FR.admissible_cases('FI', 'test') == list(range(4, 12))
+    assert FR.admissible_cases('FC2', 'test') == [4, 5, 6, 7]
+    assert FR.admissible_cases('FC1', 'dev-smoke') == [0] and FR.admissible_cases('FI', 'dev-smoke') == []
+    for bad in ('val', 'dev', None):
+        with pytest.raises(FR.FreshError):
+            FR.admissible_cases('FI', bad)
+    for name in ('N0', 'val32', 'dev6', 'sealed128', 'ood32'):
+        with pytest.raises(FR.FreshError):
+            FR.Cohort(2, name)
+    c = FR.Cohort(2, 'FC1')
+    tab = FC.load()
+    assert c.nu(5) == tab['cohorts']['FC1'][5]['nu'] and c.full_ic(256, 5).shape == (257, 257)
+    assert c.full_ic(256, 5)[0].max() == 0. and c.ic(256, 5).shape == (255, 255)

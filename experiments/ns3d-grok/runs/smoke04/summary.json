@@ -1,0 +1,119 @@
+{
+  "config": {
+    "dev_cases": 2,
+    "dev_seed": 202609202,
+    "dt_truth": 0.01,
+    "final_seed_closed": 202609203,
+    "gram_block": 4,
+    "horizon": 0.05,
+    "n": 8,
+    "ranks": [
+      4
+    ],
+    "rollout_dts": [
+      0.01
+    ],
+    "target_relative": 0.05,
+    "timing_cases": 1,
+    "timing_repetitions": 2,
+    "train_cases": 4,
+    "train_seed": 202609201
+  },
+  "device": "[CudaDevice(id=0)]",
+  "elapsed_seconds": 2.8615689277648926,
+  "final_cohort_opened": false,
+  "job_id": null,
+  "pod": {
+    "available_rank": 4,
+    "orth_error": 5.017861126610512e-14
+  },
+  "ranks": {
+    "4": {
+      "0p0100": {
+        "dt": 0.01,
+        "errors": [
+          [
+            0.08364866405205378,
+            0.08287111904218852,
+            0.10829820870544188,
+            0.14318784121386224,
+            0.18533858244202941,
+            0.23450856196287595
+          ],
+          [
+            0.050580358934234196,
+            0.05075432773952993,
+            0.06752883672615838,
+            0.09026693902775601,
+            0.1168440673306439,
+            0.1467674240971858
+          ]
+        ],
+        "stats": {
+          "all_times_median_of_case_max": 0.19063799303003087,
+          "all_times_worst": 0.23450856196287595,
+          "cases": 2,
+          "cases_evolved_over_target": 2,
+          "cases_grew": 2,
+          "cases_initial_over_target": 2,
+          "evolved_mean": 0.19063799303003087,
+          "evolved_median": 0.19063799303003087,
+          "evolved_worst": 0.23450856196287595,
+          "initial_median": 0.06711451149314399,
+          "initial_worst": 0.08364866405205378,
+          "max_evolved_minus_initial": 0.15085989791082216,
+          "median_evolved_minus_initial": 0.12352348153688689,
+          "per_time_median": [
+            0.06711451149314399,
+            0.06681272339085922,
+            0.08791352271580014,
+            0.11672739012080913,
+            0.15109132488633664,
+            0.19063799303003087
+          ],
+          "per_time_worst": [
+            0.08364866405205378,
+            0.08287111904218852,
+            0.10829820870544188,
+            0.14318784121386224,
+            0.18533858244202941,
+            0.23450856196287595
+          ],
+          "times": 6
+        }
+      }
+    }
+  },
+  "schema": "ns3d-grok-diag04-v1",
+  "scheme": "Fused scan of the Galerkin startup step plus a ROM-centroid shift. Not multistep CNAB2.",
+  "smoke": true,
+  "smoke_python_gap": 6.857971439501683e-16,
+  "source_commit": null,
+  "timing": {
+    "fom": {
+      "0p0100": {
+        "dt": 0.01,
+        "max_ms": 0.9912350215017796,
+        "median_ms": 0.9703155374154449,
+        "min_ms": 0.9493960533291101,
+        "repetitions": [
+          0.9912350215017796,
+          0.9493960533291101
+        ]
+      }
+    },
+    "tracked": {
+      "r4_0p0100": {
+        "dt": 0.01,
+        "max_ms": 2.6061369571834803,
+        "median_ms": 2.595369005575776,
+        "min_ms": 2.584601053968072,
+        "rank": 4,
+        "repetitions": [
+          2.584601053968072,
+          2.6061369571834803
+        ]
+      }
+    }
+  }
+}

@@ -146,9 +146,8 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
                 tb = dict(PhiW=Phi @ Wm, Phi=Phi, W=Wm, D=D, VtRm=Wm.T, RinvV=Wm)
             TB[m['hid']] = (jax.block_until_ready(tb), F.table_fingerprint(tb))
 
-        def guard(tb, hid=None):
-            fp = F.table_fingerprint(tb)
-            if fp not in {v[1] for v in TB.values()}:
+        def guard(tb, fps=frozenset(v[1] for v in TB.values())):
+            if F.table_fingerprint(tb) not in fps:
                 raise ValueError('POD table differs from its manifest')
         succ = {}
         for i_, m in enumerate(members[:-1]):

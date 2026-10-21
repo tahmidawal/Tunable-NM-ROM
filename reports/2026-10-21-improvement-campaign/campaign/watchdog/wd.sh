@@ -15,12 +15,12 @@ while [ "$(date +%s)" -lt "$deadline" ]; do
   timeout 900 codex exec -C "$ROOT" -o "$out" "$(cat $D/prompt.txt)" < /dev/null > "$D/.wd$i-last.log" 2>&1
   if [ ! -s "$out" ]; then
     fails=$((fails+1)); echo "$ts wd$i codex call failed ($fails)" >> $D/wd-events.log
-    if [ $fails -ge 2 ]; then echo "WATCHDOG wd$i EXIT: two consecutive codex failures"; exit 2; fi
+    if [ $fails -ge 2 ]; then echo "$ts wd$i TWO-CODEX-FAILURES" >> $D/ACTION-NEEDED.log; [ "${WD_CONTINUE:-0}" = 1 ] || { echo "WATCHDOG wd$i EXIT: two consecutive codex failures"; exit 2; }; fails=0; fi
   else
     fails=0
     last=$(grep -E '^OVERALL:' "$out" | tail -1)
     echo "$ts wd$i $last" >> $D/wd-events.log
-    if echo "$last" | grep -q 'ACTION-NEEDED'; then echo "WATCHDOG wd$i EXIT: ACTION-NEEDED in $out"; exit 1; fi
+    if echo "$last" | grep -q 'ACTION-NEEDED'; then echo "$ts wd$i ACTION-NEEDED $out" >> $D/ACTION-NEEDED.log; [ "${WD_CONTINUE:-0}" = 1 ] || { echo "WATCHDOG wd$i EXIT: ACTION-NEEDED in $out"; exit 1; }; fi
   fi
   sleep "$interval"
 done

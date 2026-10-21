@@ -13,4 +13,4 @@ its HEARTBEAT.json and last commits first.
 | imp-fronts (E8/E9/E10) | af015423829cd4b32 | Phase A (CPU); Phase B on release |
 | imp-geometry (E2) | a4c7eaaf4c7697b94 | design mode; production on release |
 
-Watchdogs: `campaign/watchdog/wd.sh <i> <offset> 1500 2` relaunched every ~2 h (tool limit).
+Watchdogs: detached `WD_CONTINUE=1 setsid nohup bash campaign/watchdog/wd.sh <i> <offset> 1500 96` (check `ps -eo pid,args | grep "[w]d.sh"`); alarms in `watchdog/ACTION-NEEDED.log`.

@@ -29,6 +29,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 import fscore as F  # noqa: E402  (puts jcp-p1-scaling on sys.path)
+import fsselect as FS  # noqa: E402
 import p1common as P  # noqa: E402
 from p1common import Q, QS, T2, DT0, sha  # noqa: E402
 import jax  # noqa: E402
@@ -140,6 +141,7 @@ def main():
         return EV[key]
 
     timing_subjects = {}
+    REFS = {}
     for spec in cfg['ranks']:
         Rp = int(spec['Rp'])
         t_r = time.perf_counter()
@@ -158,7 +160,9 @@ def main():
         cert_cn, cert_etd, cert_ros = F.make_cert_cn(nl), F.make_cert_etd(nl), F.make_cert_ros(nl)
         lcert = T2.make_certifier(nl, Rp)
 
-        def check_tab(t, role):                                  # C12 guard
+        def check_tab(t, role):                                  # C12 guard (control roles such as 'c7' are unchecked)
+            if role not in ('main', 'qp'):
+                return
             if F.table_fingerprint(t) != manifest['tab_fp' if role == 'main' else 'tab_qp_fp']:
                 raise ValueError('precontracted table differs from the manifest (substituted or wrong-mesh data)')
             st.check(role, bank)
@@ -309,6 +313,8 @@ def main():
                 row['e0'] = e0(f, coh, c)
                 row['stable'] = bool(row['growth'] <= GROWTH and row['stage_finite'])
                 A_['W'][j], A_['n0'][j], A_['nu'][j] = W, n0, nu
+                if ci in dev:
+                    REFS[(arm, Rp, ci)] = np.asarray(W)
                 Fl['f257'][j] = f
                 rows.append(row)
                 rep['runs'].append(row)
@@ -352,9 +358,10 @@ def main():
             if kind == 'lspg':
                 cls.append(dict(arm=r_['arm'], case=r_['case'], note='LSPG refined classification not run (descriptive)'))
                 continue
-            g8, g16 = (g_run(kind, dt / f_, ci)['growth'] for f_ in (8, 16))
-            lab = 'unresolved' if abs(g8 - g16) > .005 else ('model growth (refined trips too)' if g8 > GROWTH else 'integrator-induced')
-            cls.append(dict(arm=r_['arm'], case=r_['case'], g8=g8, g16=g16, label=lab))
+            v8, v16 = (g_run(kind, dt / f_, ci) for f_ in (8, 16))
+            ok_ = all(g_valid(v_, kind) and g_cert(v_, kind, dt / f_)['ok'] for v_, f_ in ((v8, 8), (v16, 16)))
+            cls.append(dict(arm=r_['arm'], case=r_['case'], g8=v8['growth'], g16=v16['growth'], refined_ok=ok_,
+                            label=FS.classify_growth(v8['growth'], v16['growth'], ok_)))
         blk['stability_classification'] = cls
         save()
 
@@ -370,7 +377,9 @@ def main():
         # ---------------------------------------------------- timing subjects of this rank ----
         if cfg.get('timing'):
             import fstiming as FT
-            timing_subjects[Rp] = FT.subjects(st, settings, tabs, arm_list, evolver, bank)
+            U0d = {ci: U0[ci] for ci in dev}
+            refs_r = {(a_, ci): W_ for (a_, r_, ci), W_ in REFS.items() if r_ == Rp}
+            timing_subjects.update(FT.bank_subjects(st, settings, tabs, arm_list, evolver, U0d, refs_r, Rp))
         rep['memory'][f'R{Rp}'] = P.mem()
         rep['elapsed'][f'rank|{Rp}'] = time.perf_counter() - t_r
         if not cfg.get('timing'):
@@ -390,8 +399,10 @@ def main():
     if cfg.get('timing'):
         import fstiming as FT
         t_b = time.perf_counter()
-        pod_subj = PA.timing_subjects() if cfg.get('pod') else {}
-        rep['timing'] = FT.run(cfg, timing_subjects, pod_subj, U0, dev, cases)
+        subj = dict(timing_subjects)
+        if cfg.get('pod'):
+            subj.update(FT.pod_subjects(PA.timing_subjects()))
+        rep['timing'] = FT.run(cfg, subj, U0, dev, cases, lambda screen: select_pairs(rep, screen, dev, cases, cfg))
         rep['elapsed']['timing'] = time.perf_counter() - t_b
         save()
     rep['memory']['end'] = P.mem()
@@ -400,6 +411,36 @@ def main():
     save()
     (out / 'COMPLETE').write_text('complete\n')
     print('FSRUN COMPLETE', el(), flush=True)
+
+
+def subject_rows(rep):
+    """{subject id: [{case, valid, stable, e}]} for the bank arms and the POD pool (in-job selection inputs)."""
+    out = {}
+    for r_ in rep['runs']:
+        out.setdefault(f"{r_['arm']}|{r_['Rp']}", []).append(dict(case=r_['case'], valid=r_['valid'], stable=r_['stable'],
+                                                                  e=r_['e0']['e']))
+    pool = {}
+    for grp in ('members', 'native'):
+        for mid, m in (rep.get('pod') or {}).get(grp, {}).items():
+            pool[mid] = [dict(case=x['case'], valid=x['valid'], stable=x['stable'], e=x['e0']['e']) for x in m['rows']]
+    return out, pool
+
+
+def select_pairs(rep, screen, dev, cases, cfg):
+    """A3.6 in-job frozen selection: B*(X) for every bank subject X (dev6 only), plus the F5 pairs (G-CN, G-R1)."""
+    devc = [f'{cases[i][0]}|{cases[i][1]}' for i in dev]
+    bank_rows, pool = subject_rows(rep)
+    pairs, sel = [], {}
+    for X, rows in bank_rows.items():
+        B = FS.matched_competitor(rows, pool, screen, devc) if pool else None
+        sel[X] = B
+        if B is not None:
+            pairs.append((X, B))
+    for r_ in [s_['Rp'] for s_ in cfg['ranks']]:
+        if f'G-CN|{r_}' in bank_rows and f'G-R1|{r_}' in bank_rows:
+            pairs.append((f'G-CN|{r_}', f'G-R1|{r_}'))
+    rep['selection'] = dict(matched=sel, pairs=pairs, screen={k: v for k, v in screen.items()})
+    return pairs
 
 
 def rows_all(rep, Rp):

@@ -187,7 +187,7 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, el):
                     Z_all.append(Z)
                     if ci in dev:
                         _TIMING.setdefault(mid, dict(r=r, dt=dt, kind=kind, ev=ev, tb=tb, Phi=Phi, init=init, decode=decode,
-                                                     U0i=U0i, U0=U0, ref={}))['ref'][ci] = F.sha(np.concatenate([np.asarray(W).ravel(), Z.ravel()]))
+                                                     U0i=U0i, U0=U0, ref={}))['ref'][ci] = np.asarray(W)
                 rec['members'][mid] = dict(r=r, kappa=k, dt=dt, kind=kind, rule=hid, rows=rows,
                                            successor=None if kind == 'none' else
                                            f'pod-{succ[(kind, k)][0]}|{r}|{"k%d" % succ[(kind, k)][1] if succ[(kind, k)][1] else "-"}|ETDRK4|{dt}',
@@ -248,11 +248,10 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, el):
                 ot = q(U0i[ci], jnp.float64(nu), dat, RM.schedule(2, scheme, dt, 'tight'))
                 row['dist_tight'] = P.fdist(f, to_lat(ot['fields']), n0)
                 _TIMING.setdefault(mid, dict(r=r, dt=dt, kind='native', q=q, dat=dat, sch=sch, U0i=U0i, U0=U0, ref={}))['ref'][ci] = \
-                    F.sha(np.asarray(o['W']))
+                    np.asarray(o['W'])
             rows.append(row)
         rec['native'][mid] = dict(r=r, rows=rows, labels=['anchors on dev6 only', 'hr-baselines registered pick, replayed'])
         print('NATIVE', mid, round(max(rw['e0']['e'] for rw in rows), 5), el(), flush=True)
-        del dat
     del Phi_all
     return rec
 

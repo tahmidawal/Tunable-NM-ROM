@@ -1,0 +1,76 @@
+{
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384
+ ],
+ "ranks": [
+  {
+   "Rp": 128,
+   "rule": "fib4181",
+   "qp": "fib6765"
+  },
+  {
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160"
+  }
+ ],
+ "arms": [
+  "L-CNR",
+  "G-CN",
+  "G-E4a",
+  "G-E4b",
+  "G-R1",
+  "L-CNR-M1152"
+ ],
+ "order": true,
+ "max_classify": 8,
+ "pod": {
+  "tune_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t2d1024a/output",
+  "gecsw": "inputs/gecsw/GECSW_r{r}.npz",
+  "ranks": [
+   128,
+   256,
+   384
+  ],
+  "kappas": [
+   2,
+   4,
+   8,
+   16
+  ],
+  "dts": [
+   0.0125,
+   0.025
+  ],
+  "native": [
+   "ecsw|384|k8|CNR|0.005|common|central",
+   "qdeim|256|512|CNR|0.005|common|central"
+  ]
+ },
+ "timing": {
+  "reps": 3,
+  "burn": 0.05,
+  "seed": 20261021,
+  "anchor": "L-CNR|384"
+ },
+ "attempt": "smk1",
+ "cases": [
+  [
+   "dev6",
+   0
+  ],
+  [
+   "dev6",
+   1
+  ],
+  [
+   "val32",
+   0
+  ]
+ ],
+ "controls": true
+}

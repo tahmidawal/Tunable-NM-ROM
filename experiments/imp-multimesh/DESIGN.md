@@ -208,3 +208,162 @@ at $4096^2$, (2) CPR-1024 at $4096^2$, (3) $r=384$ refits at $4096^2$, (4) A_sel
 `DESIGN.md`, `audits/`, code (`mmcore.py`, `mmbuild.py`, `mmtime.py`, `cost.py`, `make_report.py`, cluster
 scripts), `runs/GPU-LEDGER.json`, `report.md` (generated), `EXPORT.json`, PNG plots (cost vs $q$ per mesh set;
 cost ratio map over workloads), `HEARTBEAT.json`.
+
+---
+
+## Amendment A1 (2026-10-21, before any code ran; answers `audits/codex-design-1.md`)
+
+A1 governs wherever it conflicts with sections 1–9.
+
+**A1.1 Decision rule (audit item 1).**
+- *Joint selection.* For each workload and each competitor arm, the configuration choice is made **jointly** over
+  the meshes of the workload: every combination of per-mesh configurations (≤ 6 per mesh) is enumerated, and its
+  cost charges every shared artefact (source basis, source ECSW path of each distinct $r$, ECSW states of a mesh)
+  exactly once (§A1.2 ledger). The cheapest admissible combination is used.
+- *Tie (casewise).* "Equal or better worst error" is decided on the case–mesh pair where the competitor attains its
+  worst error, $(L^\dagger, c^\dagger)$: admissible iff $W_{\rm CP} \le W_X + 2\varepsilon_{\rm ref}(c^\dagger)$
+  (the binding 2 ε_ref rank rule applied to the case that defines the competitor's worst; ε_ref labelled
+  conditional). The strict variant $W_{\rm CP}\le W_X$ is reported beside it; any verdict that differs between the
+  two is stated.
+- *Median.* The stop rule uses the worst error (as worded). A second, reported verdict requires the competitor to
+  match on worst **and** median (pooled median ≤ ours' pooled median under the same tie rule). Per-mesh worst and
+  median are reported for every arm.
+- *Accuracy population.* All 38 cases on every mesh. Reference-ineligible cases (E0 store) are listed and excluded
+  from worst/median for **both** sides; a solver failure (invalid run) is never excluded: a configuration with an
+  invalid run is not Q1-qualified.
+- *Missing / deferred / unqualified.* A competitor configuration that is missing, deferred, not constructible, or
+  not Q1-qualified cannot be used (it never matches). If one of our configurations X is not qualified (Q1+Q2) on a
+  mesh of $w$, X is not part of "us" on $w$; if no X is qualified on $w$, $w$ counts as matched (there is no
+  qualified configuration of ours to claim an advantage with) and this is flagged. If any comparison needed for the
+  verdict is missing, the outcome is "stop rule **not evaluable**" (never "not fired").
+- *Interpretation.* "Not fired" means only that on at least one workload no tested continuous-POD configuration
+  matched one of our configurations; it is reported as "comparative multi-mesh cost advantage survives against the
+  strongest **tested** continuous-POD control on workloads …", never as proof of a general advantage.
+- *Cost uncertainty.* Costs are compared with $\le$ as worded. A comparison with
+  $|C_{\rm CP}/C_X - 1| < 0.05$ is labelled a **near-tie** (5 % = the timing drift band); if the verdict on any
+  workload depends only on near-ties, this is stated.
+
+**A1.2 Cost model and ledger (audit item 2).**
+- *Bank fit.* The A100 log (job 2835788) has two regimes: steps 1–290,000 sub-sampled (≈ 0.0265 s/step) and the last
+  `FULL_LAST` = 10,000 full-batch steps (≈ 0.300 s/step; 7,683 s at step 290,000, 10,681 s at 300,000). The
+  projection is phase-wise:
+  $T_{\rm fit} = t_1 + 289{,}999\,\rho_{\rm sub} + 10{,}000\,\rho_{\rm full} + t_{\rm done}$, with $t_1$ the
+  step-1 timestamp (compilation and first step), $\rho_{\rm sub}$ the rate over the logged window 5,000→15,000,
+  $\rho_{\rm full}$ the rate over a logged full-batch window of 5,000 steps, $t_{\rm done}$ the time from the last
+  step to the "done" line. *Validation (CPU, from the A100 log alone):* the formula with A100 rates (full window
+  290,000→300,000) must reproduce the recorded 10,684.65 s within 5 %. *H200 probe (J2):* the byte-identical script
+  (the 26 staged files of job 2835788, each resolved by its sha256) with `STEPS=20000 FULL_LAST=5000` and every
+  other environment value of job 2835788; $\rho_{\rm sub}$ from 5,000→15,000, $\rho_{\rm full}$ from
+  15,000→20,000, data generation (576 FOM trajectories) and $t_1$ measured directly; the process is stopped after the
+  step-20,000 line. Label: "H200 bank-fit cost projected phase-wise from measured H200 rates".
+  The deployed checkpoint's other dependencies were checked: LSPG linear-span settings use the bank parameters
+  `g`, `B` (bitwise equal in r3a and dn256b), `rotation_R512.npz`, the generated rules and the cold-start Gauss
+  rule built in `Bank` setup (counted in $P(L)$); the head `h` and `Z_tr` are not used by `p1core` LSPG (to be
+  confirmed in the code audit by grep).
+- *Ledger.* Every arm's cost is a sum over named artefacts, each with its measured seconds and the job that measured
+  it: `snap[L]`, `pod[L]` (incl. certificate), `codes[L]` (trust radii), `states[L]`, `contrib[L,r]`,
+  `nnls[L,r]` (incl. any registered retry), `resample[s→L,r_max]` (incl. QR), `armdata[L,cfg]`,
+  `compile[L,cfg]`; ours: `bankdata`, `bankfit`, `table[L]`, `ops[L]`, `setting[L,X]`, `compile[L,X]`. A workload
+  charges the union of the artefacts it needs, each once. Source-mesh preparation of CP (states, contributions,
+  NNLS, arm data, compilation) is charged whenever the source rule is used (CPU, or $s\in\mathcal M$).
+- Omissions and their direction, stated next to the numbers: rotation and our rule selection counted 0 (favour
+  ours); competitor Q2 not gated (favours competitors); competitor grid omissions (favour ours); A_sel charges
+  competitors' validation runs while ours' selection is unmeasured (favours ours).
+
+**A1.3 Resampling, codes and reuse (audit item 3).** Corrections to §3.3:
+- The transform is the repository's orthonormal self-inverse DST-I (`engines.dst1`, odd-extension FFT). With
+  orthonormal 2D transforms $U_s, U_L$ and coefficient embedding $E$ (zero-pad) or truncation $T$:
+  $\Phi_L = U_L E U_s\Phi_s$ (prolongation) or $\tilde\Phi_L = U_L T U_s \Phi_s$ (restriction). **No extra
+  $s/L$ factor**: the orthonormal transforms already give Euclidean orthonormality, and the nodal values of
+  $\Phi_L$ equal $(s/L)$ × the source sine interpolant. (The "scaled by $s/L$" clause of §3.3 is withdrawn.)
+- Restriction: $\tilde\Phi_L = Q R$ (two QR passes, signs fixed, mode order kept). **Rank loss**: if
+  $\min_i |R_{ii}| / \max_i |R_{ii}| < 10^{-10}$ the rank $r$ is not constructible on that mesh. Restriction is a
+  low-pass projection, not evaluation of the source series at the coarse nodes; this is stated.
+- *Codes and trust radii.* The same physical field has codes $c_L = (L/s)\,c_s$ under prolongation and
+  $c_L = (L/s)\,R\,c_s$ under restriction ($R$ from the QR above). The LM trust radii are recomputed from the
+  transformed source snapshot codes $C_L$ (rows) with the jcp-hr-baselines rule (`trust_radii`); the source codes
+  $C_s$ are saved by J0.
+- *Node mapping (zero-based flat index $p$ on mesh $s$):* $i = \lfloor p/(s-1)\rfloor + 1$,
+  $j = (p \bmod (s-1)) + 1$, $p' = (iL/s - 1)(L-1) + (jL/s - 1)$.
+- Reuse keeps the same sampling measure (nodes, weights); the FD stencil and residual at those nodes are the
+  target mesh's, so reuse accuracy is a **measured** property, not assumed. LM damping/stopping behaviour under
+  reuse is covered by the in-job Q1 certification.
+
+**A1.4 Qualification (audit item 4).**
+- *Ours:* jcp-p1-scaling's certificates are prior evidence only (Q1 covered all 38 cases, Q2 only `sub16`). **J5 is
+  replaced** by one job that runs byte-identical `p1acc.py` at $256^2$, $1024^2$ and $4096^2$ (three sequential
+  processes, one H200) for the three settings × {BE, CNR} with `cases = all38` and **`q2_cases = all38`**, and
+  successor/check rules as registered by jcp-p1-scaling. In-job Q1 + Q2 verdicts are computed from its outputs by
+  the lane's checker with the COMMON-BRIEF §3 bars (non-stationary ≤ 1 % pooled, distance to tight ≤ 2.5e-4 every
+  case, tight/tighter ≤ 2.5e-5 on dev6, ρ ≤ 0.116 and successor-rule rollout distance ≤ 2.5e-4 on every case).
+  The p1 errors are a replication check only. The timing job J6 additionally checks that every timed run of ours
+  reproduces J5's coefficients (max relative difference ≤ 1e-10), every internal state not being recorded there.
+- *Competitors:* labelled **Q1-qualified** (not "numerically qualified"); the Q2 analogue (rollout distance
+  between $\kappa=4$ and $\kappa=8$ at the same $r$ and mesh) is reported. A sensitivity verdict restricted to
+  competitor configurations whose Q2 analogue is ≤ 2.5e-4 on every case is reported beside the primary one.
+- Conclusions are "against the strongest **tested** competitor" (grid of §3.2; the omissions favour ours).
+
+**A1.5 Scoring (audit item 5).** Fields are restricted with zero walls to the $257^2$ lattice (`Cell.lattice` =
+`hrcore.lattice_nodes` + `to_lattice`; ours: `p1common.restrict` of the padded full field). Per-mesh results are
+reported beside the pooled ones; the pooled median counts each physical case once per mesh (stated).
+
+**A1.6 Must-fail controls, replaced (audit item 6).** Each is run in S1 on real data with its expected predicate:
+1. GPU preflight with `JAX_PLATFORMS=cpu` exits 42.
+2. *Physical consistency of prolongation:* on the 255² scoring-lattice interior nodes (common to every mesh),
+   $(L/s)\,\Phi_L = \Phi_s$ to $\le 10^{-12}$ relative (sine interpolation is exact at the source nodes), and
+   orthonormality ≤ 1e-10. *Must fail:* (a) a coefficient index shift (`mutate`) and (b) an x/y-transposed reshape
+   each violate the lattice equality; (c) a restricted basis **without** the QR fails orthonormality.
+   Trust-radius consistency: the trust radii computed from the transformed codes equal $(L/s)$ × source radii
+   under prolongation to $\le 10^{-12}$ relative.
+3. *Rule mapping:* mapped node coordinates equal the source coordinates exactly, and
+   $(L/s)\,\Phi_L[p'] = \Phi_s[p]$ at every sampled node (≤ 1e-12). *Must fail:* unmapped indices violate both.
+   Reuse accuracy versus refit is measured and reported, not gated.
+4. *Q1:* the same configuration with LM budget 0 (the predictor state returned unsolved) fails Q1 on dev6
+   (non-stationary steps > 1 %); shown on real cases.
+5. *Blocked contributions* at $1024^2$, $r=128$, all 120 states: identical candidate sets drawn independently by
+   each builder, kept-state mask identical, $G$ and $b$ equal to ≤ 1e-10 relative (Frobenius). *Must fail:* the
+   `drop_adv_jac` mutation exceeds 1e-6 relative; shown.
+6. *Case identity:* for every scored run, the $t_0$ output (projected IC) is within $e_0 \le 0.1$ of the reference
+   $t_0$ of the same case; *must fail:* scoring dev6 case 0 against dev6 case 1's reference gives $e_0 > 0.1$.
+7. *Timing drift:* sentinel and A1/A2 medians within $[1/1.1, 1.1]$; *must fail:* a host sleep of 0.25 × the
+   measured median, inside the timed region of one A2 block, trips it.
+8. *Decision logic on the smoke's real numbers:* separately, (a) competitor errors set to $+\infty$, (b) competitor
+   costs × 10⁶, (c) competitor Q1 flags false, (d) one competitor measurement removed → no match ((d): "not
+   evaluable"); (e) our costs × 10⁶ with real competitor numbers → match on every workload the competitor has
+   admissible configurations for.
+9. *Replication fixture:* p1acc for R128 at $1024^2$ on dev6 (BE): errors equal p1 `e0_per_case` (≤ 1e-8);
+   *must fail:* compared against p1's R256 errors.
+
+**A1.7 Feasibility (audit item 7).** S1 runs a $4096^2$ memory and time pilot: resample $\Phi_{384}$ from
+$1024^2$, blocked contributions for 12 states at $r=384$, the $r=384$ NNLS path to $\kappa=8$ (time recorded), one
+ECSW query, and ours' bank table at $4096^2$ (sequentially, not co-resident). J0 records the NNLS path times at the
+source meshes. A smoke-derived certificate (phase seconds × counts × 1.5) gates every production job; each job
+has a wall-clock limit and writes partial results after every configuration. Timing protocol (J6): per mesh,
+sequential blocks with the arm's arrays loaded only for its block and freed after (`del` + `gc` + device memory
+check), `burn(0.05)` before every timed call, compile measured as cold first call − warm mean (persistent
+compilation cache disabled), ours A1 → competitors B (in blocks of ≤ 6 configurations, each followed by an ours
+**sentinel**: R128-BE dev6 case 0, 3 repetitions) → ours A2; each configuration timed once per case on all 38
+cases (A1 and A2 for ours). Drift: every sentinel and the A2/A1 median ratio within $[1/1.1, 1.1]$, else the
+mesh's blocks are repeated once, then labelled invalid. Timed outputs must reproduce the accuracy jobs'
+coefficients (≤ 1e-10 relative). A deferred competitor makes the verdict "not evaluable" on the workloads it
+affects, never evidence for ours.
+
+**A1.8 PM at $4096^2$ (audit item 8).** Relabelled: **estimated snapshot-only cost** for the registered recipe =
+576 × mean measured time of 8 randomly chosen training trajectories (seed 20261021) run with the snapshot recipe
+(CNR, Δt = 0.005, saved steps 0…50 of the 12-step list) at $4096^2$, with the min–max of the 8 times × 576 as the
+range. POD and ECSW are not costed (the dense snapshot matrix does not fit; an out-of-core build is possible but
+not run). It never enters the CP stop rule; PM rows on workloads containing $4096^2$ say "PM ≥ estimated snapshot
+cost (accuracy not measured)".
+
+**A1.9 Interpretation (audit item 9).** The conclusion is scoped to this implementation, this problem, this
+query contract (full-field Gaussian input on the mesh, six full-field outputs on the mesh) and the tested
+competitors. The CP control pays fine-grid initial projection and FD residual evaluation at sampled nodes; a
+stronger mesh-transferable POD (e.g. precomputed reduced operators, cheaper initialisation) may exist and is not
+tested. Break-even is reported as the lower envelope of cost lines in $q$ (possibly several switches, or none in
+the range), not a single $q^\*$.
+
+**A1.10 Jobs and budget (replaces §8 table).** S1 (0.5 h), J0 sources (0.7 h), J1 m256 (0.4 h), J2 probe (0.4 h),
+J3 m1024 (0.5 h), J4 m4096 (1.4 h incl. the 8 PM-estimate trajectories), J5 ours (1.2 h, three meshes), J6 time
+(0.8 h): ≈ 5.9 GPU-h, cap 8. Defer order if the certificates exceed the remaining cap: (1) CPU-1024 at $4096^2$,
+(2) CPR-1024 at $4096^2$, (3) $r=384$ refits at $4096^2$; each deferral makes the affected workloads "not
+evaluable" for that arm only (the other CP arms still count).

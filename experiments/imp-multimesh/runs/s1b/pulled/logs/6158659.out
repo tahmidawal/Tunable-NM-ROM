@@ -1,0 +1,71 @@
+stage MANIFEST OK
+host=pax009 source_commit=25d8bebda3268010ea9bc0db1b3b6fa78e73b93c
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB
+10.235.106.23:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+jax_backend=gpu
+=== 2026-10-21T18:15:44Z preflight_cpu
+jax_backend=cpu
+cpu_preflight_rc=42
+step_exit[preflight_cpu]=0
+=== 2026-10-21T18:15:45Z smoke
+14:15:48 jax_backend=gpu x64=True precision=highest device=NVIDIA H200
+14:15:51    snapshots 1/64 worst rel residual 3.46e-11 [1s]
+14:16:14    snapshots 64/64 worst rel residual 9.96e-11 [25s]
+14:16:28    basis[central]: n_snap 768 rank 720 orth 6.7e-15 optimal True
+14:17:02    source 1024 r=128: ecsw 21s supports {'k4': 512, 'k8': 1024}
+14:17:11 CONTROL 2c_restriction: PASS {'orth': 2.3314683517128287e-15, 'orth_raw': 0.05855980157305363, 'qr_recon': 2.261392356512072e-15, 'scaled_column_orth': 2.000001000146412e-06, 'code_err': 5.9224787805671186e-15, 'rank_ratio': 0.9617113534919243}
+14:17:16 CONTROL 2ab_prolongation: PASS {'orth': 1.5543122344752192e-15, 'node_consistency': 5.721617334659942e-16, 'trust_ratio_dev': 0.0, 'mutated': {'shift': 1.171455889610304, 'transpose': 1.235661519795445}}
+14:17:16 CONTROL 3_mapping: PASS {'coord_ok': True, 'value_err': 4.928262927998102e-16, 'unmapped_value_err': 0.9149235475288383, 'unmapped_coords_differ': True}
+14:17:42    blocked contrib state 1/120 [3s]
+14:17:56    blocked contrib state 31/120 [17s]
+14:18:10    blocked contrib state 61/120 [31s]
+14:18:24    blocked contrib state 91/120 [45s]
+14:18:38    blocked contrib state 120/120 [59s]
+14:23:16    pm-estimate traj 440: 5.4s
+14:23:20    pm-estimate traj 123: 3.8s
+14:23:36 CONTROL 5_blocked: PASS {'same_candidates': True, 'same_keep': True, 'G_rel': 1.0545446667814728e-14, 'b_rel': 2.321465688082555e-15, 'block_norm_rel': 7.862018606894306e-16, 'mutation_rel': 0.0006657502360890816, 'seconds': 15.885827105492353}
+14:23:39 CONTROL 4_q1_mutation: FAIL {'fixture_q1': {'per_cohort': {'dev6': {'q1': False, 'all_valid': True, 'nonstat': 0, 'steps': 300, 'anchors_ok': False, 'max_dist': 0.00020876452301792471, 'max_anchor': 1.1704989375505491e-07, 'subset': [('dev6', 0), ('dev6', 1)]}}, 'all_valid': True, 'nonstat': 0, 'steps': 300, 'max_dist': 0.00020876452301792471, 'max_anchor': 1.1704989375505491e-07, 'q1': False}, 'budget0_q1': {'per_cohort': {'dev6': {'q1': False, 'all_valid': True, 'nonstat': 300, 'steps': 300, 'anchors_ok': False, 'max_dist': 0.0, 'max_anchor': 0.0, 'subset': [('dev6', 0), ('dev6', 1)]}}, 'all_valid': True, 'nonstat': 300, 'steps': 300, 'max_dist': 0.0, 'max_anchor': 0.0, 'q1': False}, 'fallback_q1': None, 'fixture_summary': {'worst': 0.05706627539587951, 'median': 0.019645170506286967, 'n': 6, 'eps_star': 7.308479841780376e-06}}
+14:23:39 CONTROL 6_case_identity: PASS {'tripped': True, 'e0_true': 0.008887861324539226, 'e0_wrong': 1.3772269384912892}
+14:23:41 CONTROL 7_timing: PASS {'a1': [0.013035242445766926, 0.013355596922338009, 0.012655702419579029, 0.013342064805328846, 0.013202900998294353, 0.01339629478752613], 'a2_injected': [0.016436629928648472, 0.016738761216402054, 0.015974060632288456, 0.016717479564249516, 0.016087624244391918, 0.016190567053854465], 'a3': [0.01367977261543274, 0.013969343155622482, 0.01258920319378376, 0.01369426492601633, 0.012685480527579784, 0.013434730470180511], 'sentinel': [0.013065006583929062, 0.01314025279134512], 'sentinel_ok': True}
+14:24:14 MMSMOKE COMPLETE
+step_exit[smoke]=0
+=== 2026-10-21T18:24:15Z repl
+jax_backend=gpu x64=True precision=highest
+SETUP 12.0 {'in_use': 4700404736, 'peak': 17278585600, 'limit': 138101653504}
+RUN R128 BE dev6 0 41.5
+RUN R128 BE dev6 1 41.8
+RUN R128 BE dev6 2 42.0
+RUN R128 BE dev6 3 42.3
+RUN R128 BE dev6 4 42.5
+RUN R128 BE dev6 5 42.7
+P1ACC COMPLETE 43.4
+step_exit[repl]=0
+=== 2026-10-21T18:25:03Z repl_score
+R128|BE worst 0.03011430195913659 median 0.013715762164351566 Q1 PASS Q2 UNVERIFIED UNRESOLVED
+step_exit[repl_score]=0
+=== 2026-10-21T18:25:06Z accept
+ACCEPT 2c_restriction PASS {'source': 'smoke.json'}
+ACCEPT 2ab_prolongation PASS {'source': 'smoke.json'}
+ACCEPT 3_mapping PASS {'source': 'smoke.json'}
+ACCEPT 5_blocked PASS {'source': 'smoke.json'}
+ACCEPT 4_q1_mutation FAIL {'source': 'smoke.json'}
+ACCEPT 6_case_identity PASS {'source': 'smoke.json'}
+ACCEPT 7_timing PASS {'source': 'smoke.json'}
+ACCEPT 4_fixture_qualified FAIL {'source': 'smoke.json'}
+ACCEPT pilot_shape PASS {'G_shape': [46080, 32768]}
+ACCEPT smoke_complete PASS {}
+ACCEPT 1_cpu_preflight PASS {'rc': '42'}
+ACCEPT 9_replication PASS {'max_diff_R128': 2.498001805406602e-16, 'min_diff_vs_R256': 1.908464952466403e-05}
+ACCEPT 8:8a_errors_inf PASS {'expected': 'NO-MATCH', 'got': 'NO-MATCH'}
+ACCEPT 8:8b_costs_inflated PASS {'expected': 'NO-MATCH', 'got': 'NO-MATCH'}
+ACCEPT 8:8c_q1_false PASS {'expected': 'NO-MATCH', 'got': 'NO-MATCH'}
+ACCEPT 8:8d_one_of_two_witnesses_removed FAIL {'expected': 'MATCH', 'got': 'no witness in fixture'}
+ACCEPT 8:8f1_x_unresolved_no_nomatch PASS {'expected': 'NOT EVALUABLE', 'got': 'NOT EVALUABLE'}
+ACCEPT 8:8f2_x_unresolved_other_nomatch PASS {'expected': 'NOT FIRED', 'got': 'NOT FIRED'}
+ACCEPT 8:8g_vacuous PASS {'expected': 'vacuous flagged', 'got': 3}
+ACCEPT 8:8e_witnesses_removed_one_unresolved FAIL {'expected': 'present', 'got': 'precondition missing'}
+ACCEPT 8:8f3_absent_status PASS {'expected': 'NOT EVALUABLE', 'got': 'NOT EVALUABLE'}
+ACCEPT ALL False
+step_exit[accept]=1
+job_fail=1
+ALL-DONE

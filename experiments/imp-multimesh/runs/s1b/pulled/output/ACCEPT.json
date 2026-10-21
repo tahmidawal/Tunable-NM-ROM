@@ -1,0 +1,101 @@
+{
+ "all_passed": false,
+ "controls": {
+  "2c_restriction": {
+   "passed": true,
+   "source": "smoke.json"
+  },
+  "2ab_prolongation": {
+   "passed": true,
+   "source": "smoke.json"
+  },
+  "3_mapping": {
+   "passed": true,
+   "source": "smoke.json"
+  },
+  "5_blocked": {
+   "passed": true,
+   "source": "smoke.json"
+  },
+  "4_q1_mutation": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "6_case_identity": {
+   "passed": true,
+   "source": "smoke.json"
+  },
+  "7_timing": {
+   "passed": true,
+   "source": "smoke.json"
+  },
+  "4_fixture_qualified": {
+   "passed": false,
+   "source": "smoke.json"
+  },
+  "pilot_shape": {
+   "passed": true,
+   "G_shape": [
+    46080,
+    32768
+   ]
+  },
+  "smoke_complete": {
+   "passed": true
+  },
+  "1_cpu_preflight": {
+   "passed": true,
+   "rc": "42"
+  },
+  "9_replication": {
+   "passed": true,
+   "max_diff_R128": 2.498001805406602e-16,
+   "min_diff_vs_R256": 1.908464952466403e-05
+  },
+  "8:8a_errors_inf": {
+   "expected": "NO-MATCH",
+   "got": "NO-MATCH",
+   "passed": true
+  },
+  "8:8b_costs_inflated": {
+   "expected": "NO-MATCH",
+   "got": "NO-MATCH",
+   "passed": true
+  },
+  "8:8c_q1_false": {
+   "expected": "NO-MATCH",
+   "got": "NO-MATCH",
+   "passed": true
+  },
+  "8:8d_one_of_two_witnesses_removed": {
+   "expected": "MATCH",
+   "got": "no witness in fixture",
+   "passed": false
+  },
+  "8:8f1_x_unresolved_no_nomatch": {
+   "expected": "NOT EVALUABLE",
+   "got": "NOT EVALUABLE",
+   "passed": true
+  },
+  "8:8f2_x_unresolved_other_nomatch": {
+   "expected": "NOT FIRED",
+   "got": "NOT FIRED",
+   "passed": true
+  },
+  "8:8g_vacuous": {
+   "expected": "vacuous flagged",
+   "got": 3,
+   "passed": true
+  },
+  "8:8e_witnesses_removed_one_unresolved": {
+   "expected": "present",
+   "got": "precondition missing",
+   "passed": false
+  },
+  "8:8f3_absent_status": {
+   "expected": "NOT EVALUABLE",
+   "got": "NOT EVALUABLE",
+   "passed": true
+  }
+ }
+}

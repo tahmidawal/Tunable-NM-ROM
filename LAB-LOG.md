@@ -19430,3 +19430,10 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 ### 7 unbacked branches pushed (plan procedure A)
 - Direct pushes, confirmed: exp/2026-08-12-coord-decoder and exp/2026-08-26-codesign.
 - Code-only mirrors rebuilt with pinned bases, each verified to contain exactly the new paths with identical content: paper-b3d 4892528c8, paper-ns3d a3d57c2f2, ns3d-grok 0de70bfcb, burgers-repanel a264850e2, operators-all-pdes bac0f6331.
+
+### Improvement campaign prompt written (side session)
+- Prompt `reports/2026-10-21-improvement-campaign/AGENT-PROMPT.md`, for a new coordinator session:
+  - experiments E1–E10 in three waves, covering the spectral gap, the POD gap and steep fronts;
+  - lanes branched from `exp/2026-10-20-jcp-consolidated`;
+  - Codex gates on every step, 2 Codex watchdogs, final compilation.
+- The user starts it in a new session; this session monitors.

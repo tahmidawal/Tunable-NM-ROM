@@ -564,3 +564,78 @@ remaining projection.
   K1 (real solves), the C-B6 perturbation fixture; `refjob` on FC1 dev $j=0$ and FC2 dev $j=0$.
 - Certificate: measured per-phase rates × production sizes, contingency 1.25 (training), 1.5 (references and policy),
   written by `resources.py` to `runs/COST-CERT.json`; submission only if spent + certified ≤ 15.
+
+---
+
+## Amendment 3 (2026-10-21, after `audits/codex-design-3.md`; supersedes the items named)
+
+**A1 fixture prerequisites.** Frozen: seed 424242, $t_0$ field = all-ones (nonzero), $\alpha=1$, $y$ = sine of Laplacian
+rank 5, $z$ orthogonalised twice against orth($B\cup S$). Prerequisites asserted: $c\ge10^{-3}$ and all four floors
+$>10\cdot$CLIP. If a prerequisite fails, the fixture **fails** (A1 controls fail → INCONCLUSIVE); no fallback.
+
+**A2 comparisons.** All curvature numbers are already normalised by $L$ = RMS interior 5-point Laplacian of
+$u_{\rm ref}$; a case with $L=0$ or non-finite is unavailable. Refinement test: $|\kappa_{2.5}-\kappa_{5}|\le
+10^{-3}\max(|\kappa_5|,10^{-6})$. Bank-path check (labelled a **fixed-spacing discretisation check**, not refined):
+$\max|a-b|\le10^{-3}\max|b|+10^{-6}L$ over the wall nodes and $t_1..t_5$. $\omega$: computed on the original field
+$v$ from its own DST coefficients beyond rank 4096; **unavailable** if the total energy of $v$ over $t_1..t_5$ is zero or
+non-finite, or its tail energy is below $10^{-24}$ of that total. The decision quantity is $\omega(v)$ (Amendment 1's
+"$\omega(v-S_{4096}v)$" means exactly this). An unavailable control statistic ($\omega(h_\pm)$ median) → INCONCLUSIVE.
+
+**B0 precedence (replaced).** Per arm, endpoints and the guard are evaluated separately as PASS / FAIL / UNAVAILABLE:
+
+| step | rule |
+|---|---|
+| 1 | arm not trained → NOT RUN |
+| 2 | guard evaluable (≥ 6 eligible FI test cases) and violated (in-range worst floor > 2 × K1's) → STOP (guard) |
+| 3 | every endpoint route FAIL → STOP (endpoint) |
+| 4 | guard PASS and at least one route PASS → CONTINUE |
+| 5 | otherwise → INCONCLUSIVE |
+
+Routes and their own prerequisites (missing prerequisite → that route UNAVAILABLE): (a) floor route: ≥ 5 eligible
+FN0s test cases, K1 floors on the same cases. (b) ROM route: ≥ 6 eligible FC1 test cases, $\hat e_{K1}$ finite; PASS iff
+the arm is numerically qualified on every eligible FC1 test case and median $e_b\le\hat e_{K1}/2$; not qualified on every
+case → FAIL. (c) $m^*$ route: $m^*_{K1}$ = gauss160 (25 600 nodes); PASS iff the arm has a certified selected rule with
+$m^*_c\le12\,800$; no certified rule → FAIL. (c) tail route: ≥ 6 eligible FI test cases with K1 valid runs; PASS iff
+the arm is qualified on every eligible FI test case and median $\tau_{4096}$(arm) ≤ median $\tau_{4096}$(K1)/3.
+
+**C-B6 fixture (replaced).** Frozen: the smoke K1 run on FC1 dev $j=0$, LSPG-CN-R, the accepted state of step 10.
+Search, in order, $\epsilon\in\{10^{-3},10^{-2},10^{-1}\}\cdot\lVert c\rVert$, signs $+$ then $-$, along the top right
+singular vector of the fresh Jacobian there; at each candidate recompute the **actual** nonlinear residual and a fresh
+Jacobian and measure $\gamma$. The fixture is the first candidate with measured $\gamma>10^{-3}$, and the in-job
+certificate code must flag it. If none of the six candidates has $\gamma>10^{-3}$, Q1 certification is blocked
+(no production ROM job).
+
+**B5 (repaired).** Two maps, both from `select2d.py`'s registered ladder, extended by gauss256 (Q2 successor gauss384):
+`next_candidate` (ladder order: fib4181 → fib6765 → gauss96 → fib10946 → gauss128 → gauss160 → gauss192 → gauss256)
+and `q2_successor` (the registered successor of each rule: fib4181→fib6765, fib6765→fib10946, gauss96→gauss128,
+fib10946→fib17711, gauss128→gauss160, gauss160→gauss192, gauss192→gauss256, gauss256→gauss384). Q2 at $(j,f)$ uses
+`q2_successor[j]` at the same factor, replayed from prod's own initial state, and checks **both** the rollout distance
+(≤ 2.5e-4) and $\rho$ evaluated at prod's own reached states (≤ 0.116), as `r2acc` does. Check precedence at each
+state: (1) prod missing / invalid / non-finite → INVALID; (2) Q2 evidence missing or non-finite, or Q2 fails →
+escalate to `next_candidate`, or Q2-FAIL if none; (3) $f=0.25$ → STEP-UNCONVERGED; (4) half missing / invalid /
+non-finite distance → STEP-UNAVAILABLE; (5) step distance ≤ 2.5e-4 → CONVERGED; (6) else $(j,f/2)$. Round 10 is
+evaluated fully before the cap applies; the cap can then only label states left non-terminal (none, by the bound
+1 + 7 + 2 = 10). The policy loop runs **inside one job per bank** (no per-round queueing), with a pre-registered
+GPU-time ceiling of 0.4 h per bank: cases still non-terminal when it is reached get terminal BUDGET-CAP (unqualified,
+scored at their latest valid prod), counted and reported.
+
+**B8 (replaced): ceilings, not estimates.** Each production job has a hard time limit equal to its line below; work
+not finished inside it gets the pre-registered budget-exhaustion outcome, so the cap cannot be exceeded:
+
+| item | ceiling GPU-h | exhaustion outcome |
+|---|---|---|
+| arm (a) training (1 GPU, A100/H100) | 4.4 | arm NOT RUN |
+| arm (b) training | 4.4 | arm NOT RUN |
+| test references (one job, ≤ 2 GPUs) | 2.8 | unfinished cases ineligible (counted) |
+| rule selection (a), (b) | 0.45 each | no certified rule → $m^*$ route FAIL; arm's ROM routes UNAVAILABLE |
+| §B5 policy, K1 + (a) + (b) | 0.4 each | BUDGET-CAP cases (unqualified) |
+| smoke (SM-a + SM-b) | 0.9 | Phase B not submitted until the smoke completes |
+| **total** | **14.6** | |
+
+The smoke's cost certificate (`resources.py`) projects every production item from measured rates: data generation
+and Stage A/B per-step rates from SM-a/SM-b at full data size; selection and policy from the smoke `r2acc` runs scaled
+by rule size (node count) and factor (step count) to the largest rule (gauss384 for tight/tighter targets) and the
+finest factor; references from the two dev references and jcp-regimes' measured per-case maxima (8.5 min/case
+A100, 5.4 H200) with refinement at the measured ratio; compilation per distinct (rule, factor) shape. If any
+projected item exceeds its ceiling, the frozen schedules S2 / S3 / S4 apply in order (S3 saves 4.85 GPU-h). Smoke
+GPU-h are counted once, in the smoke line.

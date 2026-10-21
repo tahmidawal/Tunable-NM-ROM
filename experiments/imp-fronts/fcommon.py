@@ -3,7 +3,7 @@
 Inputs (never written):
   * incumbent bank: the vendored NumPy evaluator of jcp-regimes (consolidated worktree) -> dn256b ckpt + rotation_R512;
   * E0 ST references dev6/val32 via jcp-references/refstore.py on the local store copy (manifest-verified);
-  * jcp-regimes regime references store/2d/<cohort>/ST/cNNN.npz (array a2_L8192) + eligibility from checks/analysis.json;
+  * jcp-regimes regime references store/2d/<cohort>/ST/cNNN.npz (finest final level meta['final'][2], as rscore.py) + eligibility from checks/analysis.json;
   * jcp-regimes saved ROM coefficient outputs runs/rom1024/output/qacc_rom1024/R_*.npz.
 """
 from __future__ import annotations
@@ -108,7 +108,7 @@ def load_ref(cohort, case):
     z = np.load(REG / f'store/2d/{cohort}/ST/c{case:03d}.npz')
     meta = json.loads((REG / f'store/2d/{cohort}/ST/c{case:03d}.json').read_text())
     pc = _regime_elig().get(f'{cohort}|{case}', {})
-    f = np.asarray(z['a2_L8192'])
+    f = np.asarray(z[meta['final'][2]], float)
     return f, dict(n0=float(np.linalg.norm(f[0])), n0_judge=meta['judge']['n0'], eps_ref=meta['judge']['eps_ref'],
                    eligible=bool(pc.get('eligible', False)), desc=meta['desc'])
 

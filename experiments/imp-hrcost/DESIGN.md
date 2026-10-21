@@ -352,7 +352,7 @@ E5's POD-ECSW result is cross-job and labelled so.
 
 **A1.8 (item 8) E5 dependency.** HANDOFF-E6.md is polled at least every 30 min with an overall deadline
 **2026-10-23T16:30Z** (48 h after lane start); until it exists the heartbeat says
-`"waiting_on": "handoff: imp-faststep HANDOFF-E6.md"`. On hand-off, **Amendment A2 (mandatory, Codex-audited)**
+`"waiting_on": "handoff: imp-faststep HANDOFF-E6.md"`. On hand-off, **Amendment A3 (mandatory, Codex-audited; numbered A2 before A2 was taken)**
 reconciles the interface, tolerances, certificate and mode list before any dependent code runs at real size. If the
 deadline passes without a hand-off, the lane's own precontracted GAL-CN stepper (A1.3 settings) is R, the report
 says "E5 hand-off not received; R is the lane's own precontracted GAL-CN", and P2 does not apply. §1.1's "positive
@@ -371,3 +371,90 @@ fingerprints, stepper source sha256. **If R is not numerically qualified**, F2/F
 "diagnostic: reference unqualified" and no stop rule is reported as "not fired". The optional "sketching control" is
 renamed **row-sketched fit (additional fitting experiment, optional)**; it is not the ideation's sketched-LSPG control
 and is first in the defer order.
+
+## Amendment A2 (2026-10-21, before any lane code ran; answers `audits/codex-design-2.md`, verdict WRONG on full Q2)
+
+The E5 reconciliation amendment that A1.8 calls "A2" is renumbered **A3**.
+
+**A2.1 Binding Q2 = the inherited tested-vector contract (replaces A1.4's gate).** For every arm, Q2 (binding, used by
+every stop rule) requires, on the 16-case population: the rollout bar ($2.5\times10^{-4}$, every case, valid successor),
+the check-rule convergence on dev6, and the **inherited tested-vector ρ gate** $\rho_{\max}\le0.116$ on the arm's own six
+output states, where the tested vector is
+- sine-tested arms (R, F3): the full $M$-vector $N(c)=\Psi^{\mathsf T}[(G_qc)\odot(G_sc)]$ (exactly jcp-qualify's ρ);
+- bank-tested arms (F2, F2+F3): the bank-tested vector $T(c)=G_q^{\mathsf T}W[(G_qc)\odot(G_sc)]\in\mathbb R^r$ (the same
+  object with the $r$ bank functions as the test functions); Euclidean norms in both cases.
+A1.4's Galerkin-tested (Gram-norm projected) ρ is kept as a **non-binding** indicator, label "Q2-projected". The report
+gives every stop-rule outcome under binding Q2, and, separately and labelled non-binding, what it would be under
+Q2-projected. A1.4's justification sentence is withdrawn as incomplete (jcp-qualify gated its GAL arms on the full
+vector too).
+
+**A2.2 F3 is two fitted families (so that a fitted rule can meet the binding gate).** The NNLS target norm is matched to
+the gate norm:
+- **F3a** (projected target): rows per snapshot $=Q^{\mathsf T}(L\psi(x_q))\,u_qs_q\in\mathbb R^r$ (orthonormal Galerkin
+  tests); 176 snapshots (16 draws × 11 times), $C\in\mathbb R^{67584\times16384}$.
+- **F3b** (full tested-vector target): rows per snapshot $=L\psi(x_q)\,u_qs_q\in\mathbb R^M$; 64 snapshots (16 draws ×
+  times $0, 0.05, 0.15, 0.25$), $C\in\mathbb R^{98304\times16384}$ (12.9 GB).
+- **F2+F3** (bank tested vector): rows per snapshot $=G(x_q)\,u_qs_q\in\mathbb R^r$; 176 snapshots.
+Each snapshot block is divided by its target norm $\lVert b_j\rVert$. The F3 stop rule is evaluated over the union of
+F3a and F3b candidates (κ ∈ {4, 8, 16} each). Three fits in total per job.
+
+**A2.3 Outcome precedence (replaces the A1.2 list).**
+- **F3:** *not fired* if at least one fully evaluated candidate (F3a or F3b, any κ) satisfies all three predicates;
+  otherwise *fired (tested failure)* if every registered candidate was fully evaluated; otherwise *fired (incomplete
+  evidence)*.
+- **F2:** (a) is *not fired* if some candidate with $m\le16384$ is numerically qualified; $m^\*$ is **identified** only if
+  every smaller registered candidate is resolved (fully evaluated and not qualified); otherwise the report says
+  "a qualified rule exists at $m$; $m^\*$ not identified ($\le m$)". (b) and (c) are evaluated on the smallest qualified
+  candidate. The F2 outcome is *fired (tested failure)* if (a) fails with every candidate resolved, or (b) or (c) fails;
+  *fired (incomplete evidence)* if (a) fails with unresolved candidates; *not fired* otherwise.
+- **Reference unqualified:** if R is not numerically qualified, every outcome above is reported as
+  "**undecided: reference unqualified**" (a fourth category), with the predicate values given as diagnostics.
+- **Unresolved, not failed:** a candidate whose successor or check run is invalid, whose fixture could not be built, or
+  whose ρ population is all-trivial (every indicator excluded) is **unverified**, not failed; it counts as unresolved.
+  Only a demonstrated bar exceedance (valid runs) is a quadrature *fail*.
+- Fibonacci deferred → the F2 claim reads "Gauss ladder only".
+
+**A2.4 Q1 restatements.** $A^{\mathsf T}A$ is the Gram of the **retained sine projection** of the bank, not the full
+$L^2$ Gram of $G$ ($\mathcal M$ is the latter, up to rule convergence). Zero scale follows qcert: $\lVert c_n\rVert_{\mathcal G}=0$
+and residual exactly 0 → certified; zero scale with non-zero residual → not certified. The equality with jcp-qualify's
+η is algebraic, not bitwise.
+
+**A2.5 Fitting provenance and acceptance.** Recorded and hashed per fit: the draw table, the rows actually used (with
+replacements), the snapshot array, the parent configuration (rule, tables fingerprint, stepper sha). QR drift: a support
+checkpoint recorded after a drift event with `drift_ok = False` is **not built (drift)** (incomplete evidence for that
+κ). Every retained support is checked: weights finite and $>0$, size $\ge\kappa r$ (first crossing), and the fit residual
+is recomputed by an independent device path (fresh matvec of the support columns built from the raw tables, not the
+solver's internals) to $10^{-8}$ relative agreement. All blocks dropped → not built. **The smoke fits are not reused**:
+production recomputes the three fits by the identical frozen procedure; the smoke measures their cost for the
+certificate.
+
+**A2.6 Controls are credited only when demonstrated.** A control counts as passed only after the smoke shows it firing
+on real data with its fixture independently verified; a non-firing control **blocks** the qualification claim it
+protects until a replacement fixture is registered by amendment and demonstrated. Revisions:
+- **C1:** both the rollout bar and the ρ gate must fire (each shown); fixture list Gauss $\{16^2,24^2,32^2\}$ as in A1.6.
+- **C2:** credited only if it actually fails Q2 in the smoke; a non-failure is reported (not a code bug by itself).
+- **C3:** fixture = a certified production run (every η ≤ bar before perturbation); the code verifies independently
+  (NumPy recomputation) that each intended residual crosses the bar after the perturbation; (a) and (b) as A1.6;
+  **(c)** perturb states $k\in\{10,20,30,40\}$ of every dev6 case: the pooled non-converged fraction must exceed 1 % and
+  configuration Q1 must fail.
+- **C5:** the microbenchmark draws a different state $c$ from a stored stack on every call, sums each output into an
+  accumulator returned at the end, synchronises with `block_until_ready`; ≥ 1.5 required; a failure is reported as an
+  unsuitable fixture, not as evidence about the timer.
+- **P3** is renamed "linear terms converged under the registered check" (not "exact").
+- **P4** covers both projections: analytic vs AD Jacobian of $f$ for R, F2 (Gauss $96^2$) and one fitted rule.
+- **P5** adds a **direct bank mass-form RHS comparison**: (i) $f_{\rm bank}(c)$ against the host NumPy evaluation
+  $\mathcal M^{-1}[-T(c)-\nu\mathcal Kc]$ with $T$ from `npcheck` tables (independent bank evaluator), $10^{-10}$
+  relative; (ii) against the mesh Galerkin projection of the finite-difference PDE right-hand side,
+  $M_h^{-1}h^2G_h^{\mathsf T}[-u(D_xu+D_yu)+\nu\Delta_hu]$ (central differences, 1024²), relative $\le10^{-3}$ at the six
+  dev6 output states — a sign/assembly check whose threshold is a fixture assumption (discretisation error $O(h^2)$).
+- **P6:** (a) a tight anchor run with budget 1: the code first verifies independently that it missed its tolerance
+  (reason budget, recomputed η > tight tol), then the Q1 code must reject it; (b) a successor table with a NaN → Q2 label
+  "unverified" (not pass); (c) a check-rule table with a NaN → "unverified".
+
+**A2.7 Resources and fallback.** The smoke is submitted with a bounded reservation (time limit 1.25 h, ledgered) covering
+three full fits to the κ = 16 target with their deadlines and the NNLS tail, all controls and the measurement phases. The
+smoke records **peak device bytes** (`memory_stats` peak, reset per phase where supported) per phase, including the bank,
+tables, $C$, the QR buffers and temporaries; F3a, F3b and F2+F3 fit costs are measured separately. If mandatory work
+cannot fit under the cap after the §8 deferrals, the lane stops with incomplete evidence; qualification coverage is never
+reduced silently. If the E5 deadline passes without a hand-off, results against the lane's own R are labelled
+"**local ablation; equivalence to E5's arm not established**".

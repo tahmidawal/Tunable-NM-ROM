@@ -232,3 +232,142 @@ time for all arms; m-ladder Q2 distances).
   gain will be smaller than the point ratio (ideation estimate, not a result).
 - Fitted rules have historically won only at coarse $m$ and were checkpoint-dependent (2026-08-25/26); a Q2 failure of
   F3 at every κ is a plausible outcome.
+
+## Amendment A1 (2026-10-21, before any lane code ran; answers `audits/codex-design-1.md`, verdict WRONG)
+
+Item numbers refer to the audit. Where A1 and the text above conflict, A1 governs.
+
+**A1.1 (item 2) Cost statement.** Replace "any F2/F3 saving must come from a smaller $m$" by: *the leading
+advection-value arithmetic ($6mr$) differs between arms only through $m$; projection changes can also change
+conditioning, Newton iterations and convergence.* Every arm reports separately: Newton iterations per step (mean, max),
+Jacobian evaluations, failed steps, evolution time, end-to-end time, and a step-Jacobian assembly microbenchmark
+(A1.6, C5).
+
+**A1.2 (item 3) Stop-rule reading.**
+- "Equal worst error" is operationalised as **no distinguishable worsening under the registered conditional tolerance**
+  ($2\varepsilon^\*$, §4), not literal equality. The two defining cases and the per-case worsen / tie / improve counts
+  (2ε_ref rule, common eligible set) are reported with every such verdict.
+- F3's "≥ 1.5× gain" is a **point-estimate criterion** (median paired ratio ≥ 1.5) plus evidence of some speed-up
+  (bootstrap lower bound > 1); it does not establish a statistically supported 1.5×. Because three κ are searched, all
+  per-arm intervals are labelled **exploratory, in-sample, unadjusted for selection**.
+- Each stop rule reports one of: **not fired**; **fired (tested failure)**; **fired (incomplete evidence)** — the
+  last when a registered candidate could not be built, fitted or run (construction failure, unreached NNLS support,
+  budget). Incomplete evidence is never described as "no such rule exists".
+- **$m^\*$ is defined among the registered candidate rules only** (§2.1). Both minima are recorded: $m^\*_{Q2}$ (Q2
+  only) and $m^\*$ (Q1 + Q2, the one the stop rule uses), so a solver failure is not misread as a quadrature-size need.
+  If the Fibonacci ladder is deferred (§8), the claim is restricted to the Gauss ladder.
+
+**A1.3 (item 4, Q1) Certificate — a registered deviation, not a transcription.** For every arm the CN step residual in
+coefficient form is $\rho_n(c)=c-c_n-\tfrac{\Delta t}{2}[f(c)+f(c_n)]$. The certificate is the **relative Galerkin
+residual in the arm's own trial-space $L^2$ Gram norm**
+$$\eta_n=\frac{\lVert\rho_n(c_{n+1})\rVert_{\mathcal G}}{\lVert c_n\rVert_{\mathcal G}},\qquad
+\lVert v\rVert_{\mathcal G}=\sqrt{v^{\mathsf T}\mathcal Gv},\quad
+\mathcal G=\begin{cases}A^{\mathsf T}A=R_m^{\mathsf T}R_m & \text{sine-tested (R, F3)}\\ \mathcal M & \text{bank-tested (F2, F2+F3)}\end{cases}$$
+For the sine-tested arms this **equals** jcp-qualify's $\eta=\lVert Q^{\mathsf T}\mathcal R_n\rVert/\lVert Ac_n\rVert$
+(since $Q^{\mathsf T}\mathcal R_n = R_m\rho_n$ and $\lVert Ac_n\rVert=\lVert R_mc_n\rVert$); for the bank-tested arms it is
+the same quantity (relative $L^2$ norm of the residual field $G\rho_n$) in the bank's Gram. This is registered here as
+this lane's certificate. Bar $\eta_{\rm bar}=10^{-8}$; non-finite or $\lVert c_n\rVert_{\mathcal G}=0$ → not certified
+(counted). Certification runs **in the allocated GPU job**, from every saved internal state $c_0..c_S$ of every
+production run, with a **fresh forward-mode AD Jacobian** of $\rho_n$ at every step (its condition number recorded,
+Q3). **G-cert** is restored: the in-job certificate must agree with the solver's own recorded per-step residual
+(converted to the same norm, or recomputed by the certifier in the solver's own norm when the solver uses another one)
+to $10^{-6}$ relative $+10^{-13}$. Solver settings (if the E5 stepper does not register its own): Newton on $\rho_n$
+with the exact Jacobian, predictor $2c_n-c_{n-1}$, budget 50 iterations, production tolerance $10^{-10}$ in the same
+relative Gram norm; **tight** $10^{-13}$, **tighter** $10^{-15}$ (jcp-qualify GAL levels); a tight or tighter anchor
+that is invalid (non-finite, budget exit without tolerance) makes its case Q1-unqualified. If E5 registers and audits
+a different certificate for its stepper, Amendment A2 states which one is used; this definition is then computed too and
+reported.
+
+**A1.4 (item 4, Q2) ρ gate.** The gating ρ is measured on the **Galerkin-tested advection**, in the same Gram norm:
+$$\rho=\frac{\lVert v_q(c)-v_{q^+}(c)\rVert_{\mathcal G}}{\lVert v_{q^+}(c)\rVert_{\mathcal G}},\qquad v(c)=P^{\mathsf T}[(G_qc)\odot(G_sc)],$$
+which for the sine-tested arms is $\lVert Q^{\mathsf T}(N_q-N_{q^+})\rVert/\lVert Q^{\mathsf T}N_{q^+}\rVert$ (the
+tested vector projected on the orthonormal Galerkin test basis; no $R_m^{-1}$ weighting), and for the bank-tested arms
+the relative $L^2$ error of the projected advection. **Stated deviation:** jcp-qualify gated on the full $M$-vector
+$N(c)$, because its LSPG arms use all $M$ tests. A Galerkin arm uses only $Q^{\mathsf T}N$; an error in
+$\ker Q^{\mathsf T}$ does not enter its dynamics. The bar 0.116 is a borrowed threshold and is not claimed to transfer
+with a calibrated meaning; the rollout bar ($2.5\times10^{-4}$, every case, own states) is the dynamic check. The
+inherited full-$M$-vector ρ is computed for R and F3 and **reported next to the gate**, and any arm that passes the gate
+but has inherited ρ > 0.116 is flagged "passes Galerkin-tested ρ only". ρ is recomputed offline with independent NumPy
+tables on the dev6 states (A1.3-style agreement $10^{-9}$ rel). Zero-denominator states: both zero → excluded and
+counted; denominator zero, numerator non-zero → +inf; non-finite → inf. Successor and check runs must be valid, else
+the label is "fail" (successor) or "unverified" (check). For a fitted rule, Q2 certifies **compression relative to the
+parent rule**; the parent's own Gauss $128^2$ → $160^2$ (rollout) and $160^2$ → $192^2$ (check) convergence is required
+in addition (a fitted arm cannot pass Q2 if its parent is not converged).
+
+**A1.5 (item 5) Fitting, frozen now.** "Support-targeted greedy NNLS" (Lawson–Hanson path of `nnls.greedy_nnls`,
+single-index additions, `frac = 0`, `max_drops = 3`, `refactor_every = 1024`, rank tolerance $10^{-12}$, cap 6400,
+deadline 40 min per fit; first crossings are not global optima). Draw table: the full
+`train_draw_2d(seed=0, count=576)` (sha256 recorded), rows 0–15 (hashed); disjointness checked on the descriptors
+(C7). If a parent rollout of a draw is invalid it is replaced by the next unused row (16, 17, …), recorded; more than 4
+replacements → that fit is "not built" (incomplete evidence). Snapshot blocks with $\lVert b_j\rVert\le10^{-12}\max_j\lVert b_j\rVert$
+are dropped (counted); any non-finite entry aborts the fit (incomplete evidence). Rank-deficient appends are refused by
+the solver's rank test. A κ whose support target is not reached within the cap/deadline is "not reached" (incomplete
+evidence for that κ). No retry with other settings; no fitting choice is revisited after validation data are seen. Two
+fits in total (sine-tested pool for F3, bank-tested pool for F2+F3), each one path to $s=6144$, giving the κ = 4, 8, 16
+first crossings. Each fit records rows, columns, bytes, wall time, final residual and support.
+
+**A1.6 (item 6) Controls, revised.**
+- **C1** fixture: the coarsest of Gauss $\{16^2,24^2,32^2\}$ (successor: the next of $\{24^2,32^2,48^2\}$) whose own
+  and successor runs are valid on all 16 cases, for R and F2. Must fire: the rollout bar **and** the ρ gate, each
+  shown separately. If either does not fire, the fixture is defective and is reported; the code is investigated
+  before any verdict.
+- **C2**: κ = 8 F3 weights permuted over the support (numpy seed 0); fixture validity: permuted weights differ from the
+  fitted ones by ≥ 50 % relative $\ell_2$. Must fail Q2 (rollout or ρ). It tests sensitivity to the weight–point
+  association, not independence from fitting.
+- **C3** (replaces the old C3): (a) perturb the **final** saved state $c_S$ by $10^{-6}\lVert c_S\rVert$ along a fixed
+  random unit direction (seed 0): exactly step $S-1$ must be flagged; (b) perturb an interior state $c_{k}$, $k=25$:
+  steps $k-1$ and $k$ must be flagged and no others.
+- **C4**: NaN in $P[0,0]$ → the production validity path marks the run invalid and Q1 fails.
+- **C5** (replaces the old C5): duplicated rule (every R point twice, half weight): outputs equal R's to $10^{-12}$
+  relative; a **step-Jacobian assembly microbenchmark** ($P^{\mathsf T}[\operatorname{diag}(s)G_q+\operatorname{diag}(u)G_s]$,
+  $4mr^2$ flops, 200 timed calls after 20 warm calls) shows duplicated / original median time ≥ 1.5. Query-time
+  ratios of the duplicate are reported descriptively only.
+- **C6** A–A: R against R, median paired ratio in [0.9, 1.1] (sanity check only).
+- **C7**: a fit set containing the descriptor row of dev6 case 0 → assertion raises (descriptor-level check).
+- **C8**: a field scored under a swapped case id (requested identity kept) → `IdentityError`.
+- **P1**: F3 machinery with all 16384 parent points and parent weights equals R to $10^{-12}$ relative (outputs).
+- **P2**: (only if a lane generalisation of E5's stepper is used) equals E5's code on R to $10^{-12}$.
+- **P3**: $\mathcal M,\mathcal K$ rule convergence ≤ $10^{-10}$; symmetry (exact by construction) and positive
+  definiteness ($\lambda_{\min}(\mathcal M)>0$, $\lambda_{\min}(\mathcal K)>0$) checked. Ceiling: Gauss $448^2$; if the
+  bar still fails, F2 and F2+F3 are "not built".
+- **P4** (new): the precontracted sine RHS equals the uncontracted jcp-qualify form
+  $-R_m^{-1}Q^{\mathsf T}[N(c)+\nu\Lambda Ac]$ (vendored `tested_value`, `form_data`) to $10^{-12}$ relative at the six
+  dev6 output states; analytic step Jacobian equals the AD Jacobian to $10^{-10}$ relative.
+- **P5** (new): independent bank operators: $\mathcal M$ and $\mathcal K$ against the run-mesh sums
+  $h^2\sum_{ij}G^{\mathsf T}G$ and $h^2\sum G^{\mathsf T}(-\Delta_h G)$ (five-point Laplacian on the decoded bank,
+  1024²) to relative $10^{-4}$ ($\mathcal M$) and $10^{-3}$ ($\mathcal K$); and the device $P$ of a bank-tested rule
+  against a host NumPy solve from the same $G_q$, $w$, $\mathcal M$ to $10^{-12}$.
+- **P6** (new): an invalid tight anchor (budget 1 iteration at tight tolerance) is rejected by the Q1 code.
+"A control that cannot fire" is reported as either an implementation bug or a defective fixture, after investigation.
+
+**A1.7 (item 7) Timing.** Burn-in of 3 queries of each arm of a pair **immediately before each timed A–B–A block**, and
+all fitting finished before the first timed block. Every repetition time, the A/B order, device name/UUID and the count
+of repetitions > 3× the case median are saved. The timed invocations use the same tables (fingerprint) as the scored
+production runs; the timed outputs are checked equal to the scored outputs (to $10^{-12}$). The statistic is the
+**median over cases of per-case paired ratios** $S_{\rm case}$; ratios of separate medians are also reported, labelled.
+Worst and median errors use a **common eligible case set** (E0 eligibility ∩ the 38 cases); an invalid run on an eligible
+case makes that arm's worst error $+\infty$. **Scope (COMMON-BRIEF §5):** this lane is an ablation *inside our method*
+against E5's arm; it makes **no claim against any competitor** (POD-ECSW, spectral FOM). Any later comparison with
+E5's POD-ECSW result is cross-job and labelled so.
+
+**A1.8 (item 8) E5 dependency.** HANDOFF-E6.md is polled at least every 30 min with an overall deadline
+**2026-10-23T16:30Z** (48 h after lane start); until it exists the heartbeat says
+`"waiting_on": "handoff: imp-faststep HANDOFF-E6.md"`. On hand-off, **Amendment A2 (mandatory, Codex-audited)**
+reconciles the interface, tolerances, certificate and mode list before any dependent code runs at real size. If the
+deadline passes without a hand-off, the lane's own precontracted GAL-CN stepper (A1.3 settings) is R, the report
+says "E5 hand-off not received; R is the lane's own precontracted GAL-CN", and P2 does not apply. §1.1's "positive
+control P1" reads "P2". The "defer order §9" references read §8.
+
+**A1.9 (item 8) Resources.** The smoke measures each phase (table builds, $\mathcal M/\mathcal K$, parent training
+rollouts, one NNLS fit to the κ = 16 target with its actual device bytes, Q2 replays, certification, timing per query)
+and a cost certificate (`resources.py`) projects production from those measurements; production is submitted only if
+spent + projection ≤ 3 GPU-h, reserving all mandatory items (R, F2 ladder Gauss, F3, controls) first; deferrable items
+(§8 defer order) are dropped in that order. NNLS memory: $C$ ≈ 8.9 GB plus a QR buffer ≈ 4.4 GB (cap rounded to 8192)
+per fit; one fit is resident at a time.
+
+**A1.10 (item 9) Identities and edge cases.** Every output records: checkpoint sha256, rotation sha256, mesh hash,
+mode-list hash, rule sha256 (points+weights), cold-start table sha256, $\mathcal M/\mathcal K$ sha256, table
+fingerprints, stepper source sha256. **If R is not numerically qualified**, F2/F3 verdicts against it are reported as
+"diagnostic: reference unqualified" and no stop rule is reported as "not fired". The optional "sketching control" is
+renamed **row-sketched fit (additional fitting experiment, optional)**; it is not the ideation's sketched-LSPG control
+and is first in the defer order.

@@ -25,8 +25,12 @@ HERE = Path(__file__).resolve().parent
 CHECKS = HERE / 'checks'
 ROMDIR = REG / 'runs/rom1024/output/qacc_rom1024'
 
-os.environ.setdefault('JCPREF_STORE', str(E0STORE))
-os.environ.setdefault('JCPREF_META', str(E0STORE))
+for _k in ('JCPREF_STORE', 'JCPREF_META'):
+    if os.environ.get(_k, str(E0STORE)) != str(E0STORE):
+        raise RuntimeError(f'{_k} override {os.environ[_k]!r} rejected (Phase A reads only {E0STORE})')
+    os.environ[_k] = str(E0STORE)
+REF_LABEL = ('dev6/val32: E0 ST store (finest a2_L8192); regimes: jcp-regimes E0-style ST (finest final level); '
+             'eps_ref is a conditional Richardson estimate')
 sys.path.insert(0, str(CONS / 'jcp-regimes'))
 sys.path.insert(0, str(CONS / 'jcp-references'))
 import npcheck as NC  # noqa: E402
@@ -43,7 +47,8 @@ def sha(p):
 
 
 def provenance():
-    return dict(bank_ckpt=str(NC.CKPT), bank_ckpt_sha256=sha(NC.CKPT), rotation=str(NC.ROT), rotation_sha256=sha(NC.ROT),
+    return dict(reference_label=REF_LABEL, e0_store=str(E0STORE), regimes_lane=str(REG), rom_dir=str(ROMDIR),
+                metric_id='2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1', bank_ckpt=str(NC.CKPT), bank_ckpt_sha256=sha(NC.CKPT), rotation=str(NC.ROT), rotation_sha256=sha(NC.ROT),
                 e0_store_version=RS.store_version(), regimes_analysis_sha256=sha(REG / 'checks/analysis.json'))
 
 
@@ -84,6 +89,23 @@ def sine_truncate(F, K):
     return out
 
 
+def sine_highpass(F, K):
+    """Lattice field made of the Laplacian-ordered DST-I coefficients of rank >= K only (synthesised directly)."""
+    F = np.asarray(F, float)
+    C = dstn(F[:, 1:-1, 1:-1], type=1, norm='ortho', axes=(1, 2)).reshape(len(F), -1)
+    C[:, LAP_ORDER[:K]] = 0.
+    out = np.zeros_like(F)
+    out[:, 1:-1, 1:-1] = idstn(C.reshape(len(F), NI, NI), type=1, norm='ortho', axes=(1, 2))
+    return out
+
+
+def tail_norms(F, Ks):
+    """{K: per-time ||(I - S_K) F(t)||} by direct summation of the retained coefficients (no cancellation)."""
+    C2 = dst_coef(F) ** 2
+    rc = np.cumsum(C2[..., ::-1], -1)[..., ::-1]                # rc[..., K] = sum_{rank >= K}
+    return {K: np.sqrt(rc[..., K]) if K < C2.shape[-1] else np.zeros(C2.shape[:-1]) for K in Ks}
+
+
 def sine_cols(idx):
     """Lattice columns (66049, len(idx)) of the sines with Laplacian ranks idx (orthonormal on the interior)."""
     idx = np.asarray(idx)
@@ -95,7 +117,7 @@ def sine_cols(idx):
 
 # ---------------------------------------------------------------- references
 def e0_cases(cohort):
-    return [c for c in range(len(list((E0STORE / f'2d/{cohort}/ST').glob('c*.npz'))))]
+    return sorted(int(p.stem[1:]) for p in (E0STORE / f'2d/{cohort}/ST').glob('c*.npz'))
 
 
 def load_ref(cohort, case):

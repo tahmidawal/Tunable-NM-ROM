@@ -15,9 +15,16 @@ import fcommon as F
 
 
 def qr_span(*blocks):
-    Q, R = np.linalg.qr(np.concatenate(blocks, 1))
-    d = np.abs(np.diag(R))
-    return Q[:, d > d.max() * 1e-12]
+    """Orthonormal basis of the union by SVD with relative cut 1e-13 (Amendment 6); records rank and margin."""
+    M = np.concatenate(blocks, 1)
+    U, sv, _ = np.linalg.svd(M, full_matrices=False)
+    keep = sv > sv[0] * 1e-13
+    RANKS.append(dict(cols=int(M.shape[1]), rank=int(keep.sum()), smin_kept_rel=float(sv[keep][-1] / sv[0]),
+                      smax_dropped_rel=float(sv[~keep][0] / sv[0]) if (~keep).any() else None))
+    return U[:, keep]
+
+
+RANKS = []
 
 
 def floors_t(u, Q, n0):
@@ -26,6 +33,8 @@ def floors_t(u, Q, n0):
 
 
 def rule(fl, cohort='C1'):
+    if not any(c.split('|')[0] == cohort for c in fl):
+        return None, dict(continue_hybrid=None, continue_hhi_empirical=None, continue_null=None)
     w = {b: max(v[b] for c, v in fl.items() if c.split('|')[0] == cohort) for b in ('H', 'S1024', 'B512', 'Hhi', 'H0')}
     cont = lambda h: (w[h] <= 0.5 * w['S1024']) and (w[h] < w['B512'] - 1e-12)
     return w, dict(continue_hybrid=bool(cont('H')), continue_hhi_empirical=bool(cont('Hhi')), continue_null=bool(cont('H0')))
@@ -37,12 +46,13 @@ def main():
     bases = dict(B512=F.orth(G512), S512=S512, S1024=F.sine_cols(np.arange(1024)),
                  H=qr_span(G512, S512), H384=qr_span(F.G(384), S512),
                  Hhi=qr_span(G512, F.sine_cols(np.arange(40000, 40512))),
-                 H0=F.orth(np.concatenate([G512, G512], 1)))           # guaranteed null enrichment (span = B512)
+                 H0=qr_span(G512, G512))                                # guaranteed null enrichment (span = B512)
     dims = {k: int(v.shape[1]) for k, v in bases.items()}
-    fl, cont_viol = {}, 0.
+    fl, cont_viol, excluded = {}, 0., []
     for coh, c in F.all_cases(F.IN_RANGE + F.REGIMES):
         u, m = F.load_ref(coh, c)
         if not m['eligible']:
+            excluded.append(f'{coh}|{c}')
             continue
         ft = {b: floors_t(u, Q, m['n0']) for b, Q in bases.items()}
         cont_viol = max(cont_viol, float(np.max(ft['H'] - np.minimum(ft['B512'], ft['S512']))))
@@ -51,18 +61,24 @@ def main():
     summ = {}
     for coh in F.IN_RANGE + F.REGIMES:
         R = [v for c, v in fl.items() if c.split('|')[0] == coh]
+        if not R:
+            summ[coh] = dict(n=0, unavailable=True)
+            continue
         summ[coh] = dict(n=len(R), **{f'{b}_median': float(np.median([x[b] for x in R])) for b in bases},
                          **{f'{b}_worst': float(np.max([x[b] for x in R])) for b in bases})
     ctrl = dict(containment_max_violation=cont_viol, containment_ok=cont_viol <= 1e-12,
-                null_must_be_stopped=not dec['continue_null'], hhi_empirical_stopped=not dec['continue_hhi_empirical'])
+                null_must_be_stopped=dec['continue_null'] is False, hhi_empirical_stopped=dec['continue_hhi_empirical'] is False)
     ctrl['controls_pass'] = bool(ctrl['containment_ok'] and ctrl['null_must_be_stopped'])
-    verdict = ('INCONCLUSIVE (control failed)' if not ctrl['controls_pass'] else
+    verdict = ('INCONCLUSIVE (control failed or empty C1)' if not ctrl['controls_pass'] or dec['continue_hybrid'] is None else
                ('F15 continues' if dec['continue_hybrid'] else 'STOP F15'))
-    out = dict(design='DESIGN.md §2 A4', provenance=F.provenance(), dims=dims, C1_worst=worst, decision=dec,
+    out = dict(design='DESIGN.md §2 A4 + Amendments 1, 6', provenance=F.provenance(), dims=dims, ranks=RANKS,
+               excluded_ineligible=excluded, C1_worst=worst, decision=dec,
                controls=ctrl, verdict=verdict, summary=summ, rows=fl)
     F.write_json('a4_hybrid', out)
     print(json.dumps(dict(dims=dims, C1_worst=worst, controls=ctrl, verdict=verdict), indent=1))
     for coh, s in summ.items():
+        if s['n'] == 0:
+            continue
         print(coh, s['n'], {b: (round(100 * s[f'{b}_median'], 4), round(100 * s[f'{b}_worst'], 3)) for b in bases})
 
 

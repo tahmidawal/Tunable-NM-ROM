@@ -60,10 +60,9 @@ def lap_rms(u):
 
 
 def tails(V, n0):
-    C = F.dst_coef(np.asarray(V)[1:])
-    cum = np.cumsum(C ** 2, 1)
-    tot = cum[:, -1]
-    tau = {K: max(float(np.max(np.sqrt(np.maximum(tot - cum[:, K - 1], 0.)))) / n0, CLIP) for K in KS}
+    """Direct summation of the retained DST coefficients (Amendment 6), clipped at CLIP."""
+    tn = F.tail_norms(np.asarray(V)[1:], KS)
+    tau = {K: max(float(np.max(tn[K])) / n0, CLIP) for K in KS}
     beta = float(np.polyfit(np.log(FIT), np.log([tau[K] for K in FIT]), 1)[0])
     return tau, beta
 
@@ -73,13 +72,14 @@ _band[:BAND + 1, :] = _band[-BAND - 1:, :] = _band[:, :BAND + 1] = _band[:, -BAN
 
 
 def omega(V):
-    """Wall share of the >4096 high-pass energy, pooled over t1..t5; None (unavailable) if that energy is below
-    OMEGA_FLOOR of the field's total energy (Amendment 2)."""
+    """Wall share of the rank >= 4096 high-pass energy (synthesised directly from its own DST coefficients), pooled over
+    t1..t5; None (unavailable) if the field's total energy is zero / non-finite or the tail energy is below
+    OMEGA_FLOOR of it (Amendments 2, 3, 6)."""
     V = np.asarray(V, float)[1:]
     E = float(np.sum(V ** 2))
     if not (np.isfinite(E) and E > 0):
         return None
-    hp = V - F.sine_truncate(V, 4096)
+    hp = F.sine_highpass(V, 4096)
     tot = float(np.sum(hp ** 2))
     if not (np.isfinite(tot) and tot >= OMEGA_FLOOR * E):
         return None
@@ -112,49 +112,61 @@ def identity_checks():
     return dict(envelope_closed_form_rel=e1, envelope_ok=e1 <= 1e-6, sine_zero_rel=e2, sine_ok=e2 <= 1e-8)
 
 
-def bank_path_check(W, L, dv=1e-3):
-    """Independent path: second difference of bank VALUES across the wall (bank defined outside the box) vs bank_dnn."""
+def bank_path_check(W, L):
+    """Amendment 6: second difference of bank VALUES across the wall at dv = 1e-4 and 5e-5 vs the gradient-difference
+    estimate at delta = 2.5e-5; raw derivatives, absolute infinity norm over interior wall nodes and t1..t5."""
     P, T = F.NC.bank()
     pts, nrm = wall_points()
     val = lambda q: F.NC.NB.features_grad(P, q)[0] @ T[:, :384]
-    D2v = (val(pts + dv * nrm) - 2 * val(pts) + val(pts - dv * nrm)) / dv ** 2
-    a, b = (np.asarray(W) @ D2v.T)[1:], bank_dnn(W)[1:]
-    gap, bound = float(np.max(np.abs(a - b))), 1e-3 * float(np.max(np.abs(b))) + 1e-6 * L
-    return dict(bank_values_vs_gradient_path_maxabs=gap, bank_path_bound=bound, bank_path_ok=bool(gap <= bound),
-                bank_path_note='fixed-spacing discretisation check (Amendment 3), not refined')
+    a = {dv: (np.asarray(W) @ ((val(pts + dv * nrm) - 2 * val(pts) + val(pts - dv * nrm)) / dv ** 2).T)[1:] for dv in (1e-4, 5e-5)}
+    b = bank_dnn(W, DELTAS[2])[1:]
+    bound = 1e-3 * float(np.max(np.abs(b))) + 1e-6 * L
+    aR = (4 * a[5e-5] - a[1e-4]) / 3                                      # Amendment 7: Richardson
+    gap = float(np.max(np.abs(aR - b)))
+    gap_dv = float(np.max(np.abs(a[1e-4] - a[5e-5])))
+    a3 = (np.asarray(W) @ ((val(pts + 1e-3 * nrm) - 2 * val(pts) + val(pts - 1e-3 * nrm)) / 1e-6).T)[1:]
+    return dict(bank_path_fixture='dev6|0', bank_path_gap=gap, bank_path_gap_dv=gap_dv, bank_path_bound=bound,
+                bank_path_ok=bool(gap <= bound), gap_unextrapolated_5em5=float(np.max(np.abs(a[5e-5] - b))),
+                original_dv_1em3_gap=float(np.max(np.abs(a3 - b))),
+                note='Amendment 6 respecification; the original dv = 1e-3 check failed (truncation of the value path)')
 
 
 def main():
     Z = np.load(F.ROMDIR / 'R_R384_LSPG_CNR_1.npz', allow_pickle=True)
     G = F.G(384)
-    Q = F.orth(G)
+    Gp = np.linalg.pinv(G, rcond=1e-13)                                   # one SVD policy (cut 1e-13, as F.orth)
     env = 16 * np.outer(X * (1 - X), X * (1 - X))
-    rows, skipped = {}, []
+    rows, excluded, invalid = {}, [], []
     for i, cid in enumerate(Z['case_ids']):
         cid = str(cid)
         coh, c = cid.split('|')
         if coh not in COHORTS:
             continue
         u, m = F.load_ref(coh, int(c))
-        if not m['eligible'] or not bool(Z['valid'][i]):
-            skipped.append(dict(case=cid, eligible=m['eligible'], valid=bool(Z['valid'][i])))
+        if not m['eligible']:
+            excluded.append(cid)
             continue
-        n0 = m['n0']
-        v = (Z['W'][i] @ G.T).reshape(6, 257, 257)
-        cp = np.linalg.lstsq(G, u.reshape(6, -1).T, rcond=None)[0].T          # (6, 384) projection coefficients
-        pu = (G @ cp.T).T.reshape(6, 257, 257)
         L = lap_rms(u)
         if not (np.isfinite(L) and L > 0):
-            skipped.append(dict(case=cid, reason='zero or non-finite interior Laplacian scale'))
+            excluded.append(cid + ' (zero/non-finite interior Laplacian)')
             continue
+        n0 = m['n0']
+        cp = (Gp @ u.reshape(6, -1).T).T                                   # (6, 384) projection coefficients
+        pu = (G @ cp.T).T.reshape(6, 257, 257)
         amp = 0.01 * np.abs(u[0]).max()
         d = m['desc']
         hp = amp * np.broadcast_to(env, (6, 257, 257))
         hm = amp * np.broadcast_to(np.exp(-((X[:, None] - 0.5) ** 2 + (X[None] - 0.5) ** 2) / (2 * 0.03 ** 2)), (6, 257, 257))
-        row = dict(case=cid, cohort=coh, s=d['a'] / d['nu'])
-        for name, W_, V in (('rom', Z['W'][i], v), ('proj', cp, pu)):
-            kk = [float(np.sqrt(np.mean(bank_dnn(W_, d)[1:] ** 2)) / L) for d in DELTAS]
-            conv = abs(kk[2] - kk[1]) <= 1e-3 * max(abs(kk[1]), 1e-6)       # Amendment 3
+        row = dict(case=cid, cohort=coh, s=d['a'] / d['nu'], rom_valid=bool(Z['valid'][i]))
+        fields = [('proj', cp, pu)]
+        if row['rom_valid'] and np.isfinite(Z['W'][i]).all():
+            fields.insert(0, ('rom', Z['W'][i], (Z['W'][i] @ G.T).reshape(6, 257, 257)))
+        else:
+            invalid.append(cid)
+            row['rom'] = None
+        for name, W_, V in fields:
+            kk = [float(np.sqrt(np.mean(bank_dnn(W_, dl)[1:] ** 2)) / L) for dl in DELTAS]
+            conv = abs(kk[2] - kk[1]) <= 1e-3 * max(abs(kk[1]), 1e-6)
             tau, beta = tails(V, n0)
             row[name] = dict(kappa_a=kk[2] if conv else None, kappa_a_deltas=kk, kappa_converged=bool(conv), beta=beta,
                              tau={str(K): t for K, t in tau.items()}, omega=omega(V))
@@ -163,19 +175,27 @@ def main():
         row['ctrl_omega_plus'] = omega(hp)
         row['ctrl_omega_minus'] = omega(hm)
         rows[cid] = row
+
     def grp(cohs):
         R = [r for r in rows.values() if r['cohort'] in cohs]
         def med(f):
-            v = [f(r) for r in R]
-            v = [x for x in v if x is not None]
+            v = []
+            for r in R:
+                try:
+                    x = f(r)
+                except (TypeError, KeyError):
+                    x = None
+                if x is not None:
+                    v.append(x)
             return float(np.median(v)) if v else None
-        return dict(n=len(R),
-                    kappa_a_med={k: med(lambda r: r[k]['kappa_a']) for k in ('rom', 'proj')},
-                    kappa_unconverged={k: sum(not r[k]['kappa_converged'] for r in R) for k in ('rom', 'proj')},
-                    omega_available={k: sum(r[k]['omega'] is not None for r in R) for k in ('rom', 'proj', 'ref')},
-                    beta_med={k: med(lambda r: r[k]['beta']) for k in ('rom', 'proj', 'ref')},
-                    tau4096_med={k: med(lambda r: r[k]['tau']['4096']) for k in ('rom', 'proj', 'ref')},
-                    omega_med={k: med(lambda r: r[k]['omega']) for k in ('rom', 'proj', 'ref')},
+        get = lambda k, key: (lambda r: r[k][key] if r[k] is not None else None)
+        return dict(n_eligible=len(R), n_rom_valid=sum(r['rom'] is not None for r in R),
+                    kappa_a_med={k: med(get(k, 'kappa_a')) for k in ('rom', 'proj')},
+                    kappa_unconverged={k: sum(r[k] is not None and not r[k]['kappa_converged'] for r in R) for k in ('rom', 'proj')},
+                    omega_available={k: sum(r[k] is not None and r[k]['omega'] is not None for r in R) for k in ('rom', 'proj', 'ref')},
+                    beta_med={k: med(get(k, 'beta')) for k in ('rom', 'proj', 'ref')},
+                    tau4096_med={k: med(lambda r, k=k: r[k]['tau']['4096']) for k in ('rom', 'proj', 'ref')},
+                    omega_med={k: med(get(k, 'omega')) for k in ('rom', 'proj', 'ref')},
                     tau4096_ratio_rom_ref_med=med(lambda r: r['rom']['tau']['4096'] / r['ref']['tau']['4096']),
                     tau4096_ratio_proj_ref_med=med(lambda r: r['proj']['tau']['4096'] / r['ref']['tau']['4096']),
                     ctrl_omega_plus_med=med(lambda r: r['ctrl_omega_plus']),
@@ -183,21 +203,23 @@ def main():
     groups = {'in_range': grp(F.IN_RANGE), **{c: grp((c,)) for c in ('N0s', 'C1', 'C2')}}
     g = groups['in_range']
     ident = identity_checks()
-    i0 = next(i for i, c in enumerate(Z['case_ids']) if str(c) in rows)
-    coh0, c0 = str(Z['case_ids'][i0]).split('|')
-    u0_ = F.load_ref(coh0, int(c0))[0]
-    ident.update(bank_path_check(Z['W'][i0], lap_rms(u0_)))
+    i0 = [str(c) for c in Z['case_ids']].index('dev6|0')
+    ident.update(bank_path_check(Z['W'][i0], lap_rms(F.load_ref('dev6', 0)[0])))
     ctrl = dict(identity=ident,
                 omega_plus_ok=g['ctrl_omega_plus_med'] is not None and g['ctrl_omega_plus_med'] >= 0.5,
-                omega_minus_ok=g['ctrl_omega_minus_med'] is not None and g['ctrl_omega_minus_med'] <= 0.25)
-    ctrl['controls_pass'] = bool(ident['envelope_ok'] and ident['sine_ok'] and ident['bank_path_ok'] and ctrl['omega_plus_ok'] and ctrl['omega_minus_ok'])
-    ctrl['omega_rom_available_half'] = g['omega_available']['rom'] >= g['n'] / 2
-    ctrl['controls_pass'] = bool(ctrl['controls_pass'] and ctrl['omega_rom_available_half'])
-    crit = dict(tail_3x=bool(g['tau4096_ratio_rom_ref_med'] >= 3),
-                wall_share_half=bool(g['omega_med']['rom'] is not None and g['omega_med']['rom'] >= 0.5))
+                omega_minus_ok=g['ctrl_omega_minus_med'] is not None and g['ctrl_omega_minus_med'] <= 0.25,
+                omega_rom_available_half=bool(g['n_eligible'] > 0 and g['omega_available']['rom'] >= g['n_eligible'] / 2))
+    ctrl['kappa_reportable'] = bool(ident['envelope_ok'] and ident['sine_ok'] and ident['bank_path_ok'])   # Amendment 7
+    ctrl['controls_pass'] = bool(ctrl['omega_plus_ok'] and ctrl['omega_minus_ok'] and ctrl['omega_rom_available_half'])
+    if not ctrl['kappa_reportable']:
+        for gg in groups.values():
+            gg['kappa_a_med'] = 'withheld (curvature identity/path check failed)'
+    tr, om = g['tau4096_ratio_rom_ref_med'], g['omega_med']['rom']
+    crit = dict(tail_3x=bool(tr is not None and tr >= 3), wall_share_half=bool(om is not None and om >= 0.5))
     decision = ('INCONCLUSIVE' if not ctrl['controls_pass'] else ('RUN' if crit['tail_3x'] and crit['wall_share_half'] else 'DEFER'))
-    out = dict(design='DESIGN.md Amendment 1, A2', provenance=F.provenance(), source=str(F.ROMDIR / 'R_R384_LSPG_CNR_1.npz'),
-               skipped=skipped, controls=ctrl, criteria=crit, decision_arm_c=decision, groups=groups, rows=rows)
+    out = dict(design='DESIGN.md A2 as replaced by Amendments 1-6', provenance=F.provenance(),
+               source=str(F.ROMDIR / 'R_R384_LSPG_CNR_1.npz'), excluded_ineligible=excluded, invalid_rom_runs=invalid,
+               controls=ctrl, criteria=crit, decision_arm_c=decision, groups=groups, rows=rows)
     F.write_json('a2_wall', out)
     print(json.dumps(dict(controls=ctrl, criteria=crit, decision=decision, groups=groups), indent=1))
 

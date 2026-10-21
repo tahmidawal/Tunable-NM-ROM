@@ -700,3 +700,37 @@ $(j,f/2)$ its tight solve is run then. Tighter-anchor solves: one per anchor cas
 terminal state. Solve inventory per visited state: prod + its tight (1 + 1), succ (1), half (1, if $f>0.25$); per
 anchor: 1 tighter. The certificate's scaled timings are projections; the B8 ceilings and admission rule supply the
 enforceable protection.
+
+---
+
+## Amendment 6 (2026-10-21, after the Phase-A code audit `audits/codex-code-A-1.md`; before any A2 verdict was read)
+
+**A2 bank-values path check — respecified.** The audit found the registered fixed-spacing check fails on real data
+(dev6|0: gap 234.6 vs bound 1.41). Diagnosis (CPU): at $dv=10^{-3}$ the second difference of bank **values** carries a
+≈ 3 % truncation error from the bank's high-frequency Fourier content (both paths agree to ≈ 1e-4 relative at
+$dv=10^{-4}$ and to ≈ 1e-6 at $10^{-5}$). The check was mis-specified, not the estimator. Replaced by: value second
+difference at $dv\in\{10^{-4},5\cdot10^{-5}\}$; the check passes iff, at $dv=5\cdot10^{-5}$,
+$\lVert a-b\rVert_\infty\le10^{-3}\lVert b\rVert_\infty+10^{-6}L$ with $b$ the gradient-difference estimate at
+$\delta=2.5\cdot10^{-5}$, and the two value spacings agree to the same bound. Fixture identity frozen: case dev6|0,
+times $t_1..t_5$. The original failure is reported in the A2 output.
+
+**Phase A accounting (from the code audit, no threshold changes).** Tails are summed directly from the retained DST
+coefficients (no cumulative subtraction). A2's availability denominator is the number of **eligible** in-range cases
+(invalid ROM runs count as unavailable for ROM statistics; reference and projection statistics are still computed for
+them). Every script records excluded-reference and invalid-run counts and the reference label ("E0 ST / E0-style ST;
+ε_ref is a conditional Richardson estimate"); an empty population gives UNAVAILABLE, not an error. A1's $q$ uses
+$h=1/256$ for the primary 257-node fields ($q_{\rm train}$ with $h=1/255$ is reported beside it). A1's G2 requires a
+finite residual at every step of every run at both resolutions (a non-finite state propagates into that step's
+residual norm, so finite residuals at all 50 steps imply all 51 states finite). A1 re-verifies the run manifest, the
+embedded generator hash, the descriptors and current eligibility of T6 and X before analysis. A3's secondary verdict
+uses the regime scope (not "everything") and inherits INCONCLUSIVE from failed controls; its reproduction check fails
+if any scored regime case lacks the lane's recorded error. A4 orthonormalises unions by SVD (cut $10^{-13}$) and records
+ranks and singular-value margins.
+
+**Amendment 7 (2026-10-21, same session, before any A2 decision was computed).** Testing Amendment 6's value-path
+check on dev6|0 showed the value second difference at $dv=10^{-4}$ still carries $O(dv^2)$ truncation (gap between
+the two spacings 2.96 vs bound 1.41, while the $5\cdot10^{-5}$ value agrees with the gradient estimate: 0.50). Replaced:
+the value path is Richardson-extrapolated, $a_R=(4a_{5\cdot10^{-5}}-a_{10^{-4}})/3$, and the check passes iff
+$\lVert a_R-b\rVert_\infty\le10^{-3}\lVert b\rVert_\infty+10^{-6}L$. Scope change: $\kappa_a$ is descriptive and never
+entered the arm-(c) decision, so the curvature identity and path checks now gate **only the reporting of $\kappa_a$**
+(withheld if any fails); the decision's controls are C-A2w±, the $\omega$ availability rule and the tail computation.

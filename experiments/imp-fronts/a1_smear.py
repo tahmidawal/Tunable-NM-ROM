@@ -119,9 +119,41 @@ def exact_d_fixture():
     return dict(rel_err=errs, prerequisites=prereq, ok=bool(prereq and all(e <= 1e-10 for e in errs.values())))
 
 
+def verify_inputs(T6, X):
+    """Amendment 6: manifest hashes, embedded generator hash, descriptors, current eligibility and set rule."""
+    man = dict(l.split()[::-1] for l in (OUT / 'MANIFEST.sha256').read_text().splitlines() if l.strip())
+    gsha = F.sha(F.HERE / 'deps/burgers2d_film.py')
+    prov = json.loads((F.HERE / 'deps/PROVENANCE.json').read_text())['files'][0]['sha256']
+    bad = []
+    if gsha != prov:
+        bad.append('generator sha != PROVENANCE')
+    need = [(c, 257) for c in X] + [(c, 256) for c in T6]
+    for cid, n in need:
+        coh, c = cid.split('|')
+        p = OUT / f'upw_{coh}_{int(c):03d}_n{n}.npz'
+        if p.name not in man or F.sha(p) != man[p.name]:
+            bad.append(f'{p.name}: manifest mismatch')
+            continue
+        z = np.load(p)
+        d = F.load_ref(coh, int(c))[1]
+        if str(z['gen_sha256']) != gsha:
+            bad.append(f'{p.name}: generator hash')
+        if abs(float(z['nu']) - d['desc']['nu']) > 1e-15 * d['desc']['nu'] or abs(float(z['a']) - d['desc']['a']) > 1e-15:
+            bad.append(f'{p.name}: descriptor mismatch')
+        if not d['eligible']:
+            bad.append(f'{cid}: no longer eligible')
+    T6n, Xn, _ = select_sets()
+    if (T6n, Xn) != (T6, X):
+        bad.append('T6/X selection rule no longer reproduces sets.json')
+    return dict(ok=not bad, problems=bad, n_files=len(need))
+
+
 def analyze():
     sets = json.loads((OUT / 'sets.json').read_text())
     T6, X = sets['T6'], sets['X']
+    inputs = verify_inputs(T6, X)
+    if not inputs['ok']:
+        raise SystemExit(f'input verification failed: {inputs["problems"][:5]}')
     ref, upw, meta = {}, {}, {}
     gates = dict(ic_rel_max=0., newton_res_max=0., all_finite=True)
     for cid in X:
@@ -130,18 +162,26 @@ def analyze():
         z = np.load(OUT / f'upw_{coh}_{int(c):03d}_n257.npz')
         ref[cid], upw[cid], meta[cid] = u, z['u'], m
         gates['ic_rel_max'] = max(gates['ic_rel_max'], float(np.linalg.norm(z['u'][0] - u[0]) / np.linalg.norm(u[0])))
-        gates['newton_res_max'] = max(gates['newton_res_max'], float(z['res'].max()))
-        gates['all_finite'] &= bool(np.isfinite(z['u']).all())
+        res = np.asarray(z['res'], float)
+        gates['all_finite'] &= bool(np.isfinite(z['u']).all() and np.isfinite(res).all() and res.size == 50)
+        gates['newton_res_max'] = max(gates['newton_res_max'], float(np.max(res)) if np.isfinite(res).all() else float('inf'))
+    for cid in T6:                                        # G2 at the n = 256 sensitivity resolution too
+        coh, c = cid.split('|')
+        z = np.load(OUT / f'upw_{coh}_{int(c):03d}_n256.npz')
+        res = np.asarray(z['res'], float)
+        gates['all_finite'] &= bool(np.isfinite(z['u']).all() and np.isfinite(res).all() and res.size == 50)
+        gates['newton_res_max'] = max(gates['newton_res_max'], float(np.max(res)) if np.isfinite(res).all() else float('inf'))
     gates['G1_ic_pass'] = gates['ic_rel_max'] <= 1e-12
-    gates['G2_newton_pass'] = gates['newton_res_max'] <= 1e-8 and gates['all_finite']
+    gates['G2_newton_pass'] = bool(gates['newton_res_max'] <= 1e-8 and gates['all_finite'])
+    gates['G2_note'] = 'finite residual at all 50 steps implies all 51 states finite (non-finite states propagate into the residual norm)'
     bases = {f'bank{r}': F.orth(F.G(r)) for r in (128, 384)}
     bases.update({f'sine{K}': F.sine_cols(np.arange(K)) for K in (128, 384)})
     rows = {}
-    h = 1 / 255
     for cid in X:
         n0 = meta[cid]['n0']
         d = meta[cid]['desc']
-        row = dict(case=cid, a=d['a'], nu=d['nu'], s=d['a'] / d['nu'], q=d['a'] * h / 2 / d['nu'],
+        row = dict(case=cid, a=d['a'], nu=d['nu'], s=d['a'] / d['nu'], q=d['a'] / 256 / 2 / d['nu'],
+                   q_train=d['a'] / 255 / 2 / d['nu'],
                    e_upw_vs_ref=F.err(upw[cid], ref[cid], n0))
         for b, Q in bases.items():
             row[f'f_ref_{b}'] = F.floor_Q(ref[cid], Q, n0)
@@ -183,7 +223,7 @@ def analyze():
         coh, c = cid.split('|')
         z = np.load(OUT / f'upw_{coh}_{int(c):03d}_n256.npz')['u']
         n0u = np.linalg.norm(z[0])
-        fu = {b: F.floor_Q(z, Q, n0u) for b, Q in b256.items()}
+        fu = {b: max(F.floor_Q(z, Q, n0u), CLIP) for b, Q in b256.items()}
         r = rows[cid]
         sens[cid] = dict(D_bank384=(r['f_ref_bank384'] / fu['bank384']) / (r['f_ref_sine384'] / fu['sine384']),
                          D_bank128=(r['f_ref_bank128'] / fu['bank128']) / (r['f_ref_sine128'] / fu['sine128']),
@@ -213,7 +253,10 @@ def analyze():
     else:
         verdict = 'ambiguous'
     from scipy.stats import spearmanr
-    out = dict(design='DESIGN.md §2 A1', provenance=F.provenance(), manifest=(OUT / 'MANIFEST.sha256').read_text(),
+    out = dict(design='DESIGN.md §2 A1 + Amendments 1-6', provenance=F.provenance(), inputs=inputs,
+               manifest=(OUT / 'MANIFEST.sha256').read_text(),
+               counts=dict(X=len(X), T6=len(T6), excluded_ineligible=[f'{a}|{b}' for a, b in F.all_cases(F.IN_RANGE + ('N0s',))
+                                                                     if f'{a}|{b}' not in X]),
                T6=T6, X=X, gates=gates, controls=ctrl,
                summary=dict(D_bank384_med_T6=mD, D_bank384_gt1_T6=int(sum(d > 1 for d in Db)),
                             D_bank128_med_T6=med('D_bank128', T6),

@@ -20,11 +20,13 @@ PRIMARY = 'R384|LSPG_CNR_1'
 
 def main():
     A = json.loads((F.REG / 'checks/analysis.json').read_text())['configs']
-    refs = {}
+    refs, excluded = {}, []
     for coh, c in F.all_cases(F.IN_RANGE + F.REGIMES):
         u, m = F.load_ref(coh, c)
         if m['eligible']:
             refs[f'{coh}|{c}'] = (u, m['n0'])
+        else:
+            excluded.append(f'{coh}|{c}')
     configs = {}
     for p in sorted(F.ROMDIR.glob('R_*.npz')):
         Z = np.load(p, allow_pickle=True)
@@ -47,21 +49,25 @@ def main():
             rows[cid] = row
         def scope(cohs):
             R = {c: x for c, x in rows.items() if c.split('|')[0] in cohs}
+            if not R:
+                return dict(n=0, unavailable=True, **{f'dworst_{K}': None for K in KS}, **{f'maxrise_{K}': None for K in KS})
             w = max(x['e'] for x in R.values())
             return dict(n=len(R), worst=w,
                         **{f'dworst_{K}': max(x[f'e{K}'] for x in R.values()) - w for K in KS},
                         **{f'maxrise_{K}': max(x[f'e{K}'] - x['e'] for x in R.values()) for K in KS})
         sc = dict(in_range=scope(F.IN_RANGE), all_regimes=scope(F.REGIMES), everything=scope(F.IN_RANGE + F.REGIMES))
-        repro = max(abs(x['e'] - x['lane_e']) for x in rows.values() if x['lane_e'] is not None)
+        missing = [c for c, x in rows.items() if c.split('|')[0] in F.REGIMES and x['lane_e'] is None]
+        repro = (float('inf') if missing else
+                 max([abs(x['e'] - x['lane_e']) for x in rows.values() if x['lane_e'] is not None] or [float('inf')]))
         ident = max(abs(x['e65025'] - x['e']) for x in rows.values())
         configs[key] = dict(r=int(r), n_invalid=len(invalid), invalid=invalid, scopes=sc, repro_max_abs=repro,
+                            repro_missing=missing,
                             identity_max_abs=ident,
-                            stop_K9216_in_range=bool(sc['in_range']['dworst_9216'] > 1e-3),
-                            stop_K9216_all=bool(sc['everything']['dworst_9216'] > 1e-3),
-                            pass_K={str(K): bool(sc['in_range'][f'dworst_{K}'] <= 1e-3) for K in KS},
+                            stop_K9216_in_range=(None if sc['in_range']['n'] == 0 else bool(sc['in_range']['dworst_9216'] > 1e-3)),
+                            stop_K9216_regimes=(None if sc['all_regimes']['n'] == 0 else bool(sc['all_regimes']['dworst_9216'] > 1e-3)),
+                            pass_K={str(K): (None if sc['in_range']['n'] == 0 else bool(sc['in_range'][f'dworst_{K}'] <= 1e-3)) for K in KS},
                             rows=rows)
-        print(key, {s: (round(100 * v['worst'], 4), {K: round(100 * v[f'dworst_{K}'], 5) for K in KS}) for s, v in sc.items()},
-              'repro', repro, 'ident', ident, flush=True)
+        print(key, 'repro', repro, 'ident', ident, flush=True)
     # constructed fixture (Amendment 1): u* = u_ref + h, h in Laplacian ranks 9217..20000, ||h(t_k)|| = 0.005 ||u(t0)||
     rng = np.random.default_rng(20261021)
     fx = {}
@@ -85,7 +91,7 @@ def main():
     verdict = ('INCONCLUSIVE (control failed)' if not ctrl['controls_pass'] else
                ('STOP F7 (worst error rises > 0.1 pp at K = 9216)' if pc['stop_K9216_in_range'] else 'F7 screen passes'))
     out = dict(design='DESIGN.md §2 A3', provenance=F.provenance(), controls=ctrl, primary=PRIMARY, verdict=verdict, k16_stress_dworst_in_range=stress,
-               verdict_all_regimes=('STOP' if pc['stop_K9216_all'] else 'pass'),
+               verdict_regime_scope=verdict_reg, excluded_ineligible=excluded,
                timing_gate='deferred (GPU, not in this lane brief)', configs=configs)
     F.write_json('a3_trunc', out)
     print(json.dumps(dict(controls=ctrl, verdict=verdict, k16_stress_dworst_in_range=stress, all=out['verdict_all_regimes']), indent=1))

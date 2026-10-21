@@ -244,3 +244,147 @@ spent + certified projection ≤ 4. **Defer order if the cap binds (brief):** 40
 
 No claim against the spectral FOM (K2; ideation F1 estimates S ≈ 0.38–0.49, not a K2 fix). POD comparisons are
 developmental and in-sample. Timing ratios are against the strongest tested competitor in this job.
+
+---
+
+## Amendment A1 (2026-10-21) — answers to Codex design audit 1 (`audits/codex-design-1.md`, overall WRONG)
+
+Items 1–3 (algebra, ETDRK4 coefficients, one-pass order) were CORRECT; items 4, 5, 6, 8 WRONG; 7, 9, 10, 11
+NEEDS-RESTATEMENT. Every point is answered below; where A1 conflicts with §§1–11, A1 governs.
+
+**A1.1 Notation and table checks (item 1).** The semi-discretisation is $Q^\top[A\dot c + N(c) + \nu\Lambda Ac] = 0$
+(the rectangular equation of §3 is not itself the GAL ODE). The maps use triangular solves ($R_m^{-1}V$ by
+`solve_triangular`). Recorded per (mesh, r, rule): rank and condition number of $A$, $\|Q^\top Q - I\|_{\max}$, the
+eigen-residual $\|Q^\top\Lambda QV - VD\|_F/\|D\|_F$, $\min D > 0$ (asserted), $\|V^\top V - I\|_{\max}$.
+
+**A1.2 ETDRK4 recurrence frozen and timed (item 2).** The recurrence is psjax2d's
+$a = E_2z + QN_z$, $b = E_2z + QN_a$, $c = E_2a + Q(2N_b - N_z)$, $z^+ = Ez + f_1N_z + 2f_2(N_a + N_b) + f_3N_c$ with
+`etdrk4_coefs(-nu*D, dt, 32)`; the coefficient construction and both coordinate maps ($c_0\mapsto z_0$, $z\mapsto c$)
+are **inside the timed evolve call**. Every stage value's finiteness is recorded (stage maximum $|z|$).
+
+**A1.3 Q1 analogues, restated (item 4).** Every certificate runs on **every case** of every production run, from the
+saved per-step states, with evaluators that use only the original tables ($A$, $Q$, $R_m$, $\Lambda$, `tested_value`)
+and coefficients recomputed independently:
+- *Arm 2 (Newton GAL-CN):* fresh residual $r_k$ as §4. Production tolerance and certificate allowance are separate:
+  a step is unconverged iff $\|r_k\| > (1 + 10^{-6})\,\text{tolf}\,\|Ac_k\|$ or non-finite (no absolute floor). Arm 2's
+  own levels: prod $10^{-10}$, tight $10^{-12}$, tighter $10^{-13}$ (all above the round-off level of a quadratically
+  convergent Newton in f64; the GAL levels of `tol_of` were for the LM solver). Tight and tighter anchors must be
+  **valid** (every step certified at their own level) to count; an invalid anchor makes the case fail Q1. Wording fix:
+  with the $10^{-300}$ denominator $\gamma$ returns 0 at an exact root; $\gamma$ is still not a convergence measure for a
+  square system and is recorded only.
+- *Arm 3 (ETDRK4) — per-step reconstruction certificate:* for every step $k$ of every case, recompute the full step from
+  the saved $z_k$ with the original-table RHS and $\varphi$-coefficients evaluated independently (closed forms
+  $\varphi_1(x) = (e^x - 1)/x$ etc. in f64 with a 12-term Taylor series for $|x| < 0.2$, not the contour mean) and
+  require $\|z_{k+1}^{\rm rec} - z_{k+1}\| \le 10^{-10}\|z_{k+1}\|$ on every step. This certifies the stage arithmetic,
+  the update and the coefficients (Q1-ETD = validity + stage finiteness + reconstruction on every step). The dev6 twin
+  (§4(c)) is kept as a supplement. Implementation equivalence is **not** presented as time accuracy; the time error is
+  measured separately (step halving, dev6; and the converged same-ODE reference, §A1.6).
+- *Arm 4 (one-pass):* per step, from the saved $z_k$: fresh autodiff Jacobian $J^{\rm f}$ of the original-table $g$;
+  certificates (i) $\|J_{\rm used} - J^{\rm f}\|_F \le 10^{-9}\|J^{\rm f}\|_F$ ($J_{\rm used}$ recomputed from the
+  precontracted tables at $z_k$), (ii) the **saved increment** $\delta_k = z_{k+1} - z_k$ satisfies
+  $\|(I + \tfrac{\Delta t}{2}J^{\rm f})\delta_k + \Delta t\,g^{\rm f}(z_k)\| \le 10^{-9}\|\Delta t\,g^{\rm f}(z_k)\|$.
+- *Arm 5 (POD ETDRK4):* the same per-step reconstruction certificate with the un-precontracted ECSW evaluator
+  ($\sum_e\xi_e\Phi_{e,:}^\top N_{h,e}$ from the stencil rows, then $W^\top$), threshold $10^{-10}$.
+- *Arms 1, 6:* the LSPG contract as §4, with valid tight/tighter anchors required (p1 `anchor` semantics:
+  every step $\gamma\le$ the level's gtol or residual $\le$ tol).
+- COMMON-BRIEF mapping: "fresh Jacobian at every step" → fresh residual (arm 2), reconstruction with independent
+  coefficients (arms 3, 5), fresh Jacobian + increment (arm 4); "non-stationary ≤ 1 % pooled" → unconverged ≤ 1 %
+  pooled (arm 2), reconstruction failures = 0 (arms 3–5; explicit maps have no tolerance, so no allowance);
+  "distance to tight solve ≤ 2.5e-4 every case" → arm 2 as stated, not applicable to arms 3–5 (no algebraic solve);
+  "tight/tighter ≤ 2.5e-5 on the subset" → arm 2 as stated; arms 3–5 the dev6 twin ≤ 2.5e-5.
+
+**A1.4 Q2, restated (item 5).** Successor-rule rollouts on **all 38 cases** for every arm and r (arms 1–4, 6); bars
+(both on every case): own-state $\rho \le 0.116$ at the six output states — both forces evaluated at the **same
+main-rule state** — and rollout distance main vs successor ≤ 2.5e-4; successor runs must be valid (and, for arm 2,
+certified). The six output states are a declared sampling choice. **POD HR ladder (arm 5):** Q2-POD for a member
+$(r, \kappa, \Delta t)$ = rollout distance to the next-larger κ of the same (r, Δt) (κ = 16: to `P-E4-none`) ≤ 2.5e-4 and
+own-state force ratio $\rho$ (ECSW force vs the next member's force at the member's own output states) ≤ 0.116 on every
+case; failing members carry "HR-unqualified".
+
+**A1.5 Stability monitor, restated (item 6).** The bound $\|Ac_k\|\le1.05\|Ac_0\|$ is an **empirical, conservative
+amplitude-growth rejection threshold**, not a theorem: $\tfrac12\tfrac{d}{dt}\|z\|^2 = -(Ac)^\top N(c) - \nu z^\top Dz$ and
+the advection term has no guaranteed sign in the reduced (tested, quadrature) model or for central-difference POD.
+For the stop rule, "unstable" = monitor trip **or** any non-finite stage value (conservative: a monitor trip of a
+converged model also stops the arm). Diagnostics reported beside it: the maximum ratio, the alternation index of the
+increments (p1core definition, applied to $z$), and, for any tripped run, the distance to the converged same-ODE
+trajectory (ETDRK4 at $\Delta t_0/8$) to classify "reduced-model growth" (converged trajectory also trips) vs
+"integrator instability".
+
+**A1.6 Order references (items 3, 9, 11).** Every "converged reduced reference" (C3m, C5, the F5 order test) is
+ETDRK4 at $\Delta t_0/8$ checked against $\Delta t_0/16$: accepted only if their distance is ≤ 10⁻³ × the smallest error
+it is used to measure; otherwise the order test is "reference not converged" (not a method failure). Per-case slopes and
+failures are reported, not only medians.
+
+**A1.7 Stop rule, restated (item 7).**
+- The all-38 strict worst-error comparison is the literal stop predicate. Ranking claims use **eligible cases only**:
+  per-case resolved comparisons (better / worse / tie by $2\varepsilon_{\rm ref}$) on the eligible cases are reported;
+  the "cases attaining the maxima" wording is withdrawn.
+- A missing or non-finite error counts as $+\infty$ (the condition fires); an incomplete configuration (any case or
+  timing case missing) fires its condition; nothing passes vacuously. An empty eligible set makes only the ranking
+  report "not evaluable".
+- If any cell is deferred, the outcome is "fixed / not fixed **on the completed scope**", and the full-grid conclusion is
+  "incomplete".
+- F5's kill outcome is reported separately; if arm 4 fails F5 it is not recommended as the F5 implementation even if it
+  passes the E5 predicate.
+
+**A1.8 POD competitors, restated (item 8).**
+- Galerkin ECSW contributions are computed by a new routine with **its own** importance distribution
+  $\sum_s\|g_i(s)\|$ of the new contributions, and `ecsw_contrib`'s positive block-norm floor and dropped-block
+  handling; candidates 32,768 (half uniform, half importance), seed 20261018; NNLS `ecsw_weights` unchanged with
+  κ ∈ {2, 4, 8, 16}, per-rank wall cap `max_seconds = 600`. A checkpoint that is not reached does not exist (recorded).
+- **POD ladder (1024²):** ranks r_P ∈ {128, 256, 384} (prefixes of the hr-baselines basis), κ ∈ {2, 4, 8, 16}
+  (available ones), Δt ∈ {0.0125, 0.025}, plus `P-E4-none` per (r_P, Δt); and the two hr-baselines registered picks
+  replayed in their native form (**5L**): `ecsw|384|k8|CNR|0.005|common|central` and `qdeim|256|512|CNR|0.005|common|central`
+  (the ideation §2.2 comparators). Every member: 38 cases, validity, stability, certificate, E0 errors, timing on dev6.
+- **Accuracy-matched competitor (dev6 selection, frozen now):** for each of our arms X (r ∈ {128, 384}, 1024²), the
+  matched competitor $B^\*(X)$ is the member of the whole pool (POD ladder + 5L) that is valid and stable on all dev6
+  cases, has dev6 worst error ≤ X's dev6 worst error, and has the lowest dev6 median fused-query time (timed in the same
+  job). Its validation outcome is then reported frozen (38-case worst error, val32 included). No member matching →
+  "no accuracy-matched competitor in the tested ladder". The speed-up of X over $B^\*(X)$ is labelled an **upper bound**
+  (finite ladder) and "against the strongest tested competitor".
+- The same-rank, same-Δt shared-integrator comparison (arm 3 vs POD-ECSW ETDRK4 at its HR pick) is kept as a mechanism
+  control; the old "1.1 × P-E4-none" rule is retained only to define that diagnostic pick. Labels carried forward from
+  hr-baselines: the 1024² basis is **snapshot-limited** (its A1.3 check failed) and the 2D tuning-budget band is
+  **unresolved**; all POD comparisons are developmental, in-sample, unadjusted. H-base is **not** assessed at 4096².
+
+**A1.9 Controls, restated and added (item 9).**
+- C1: fixed seed 20261021; states = 5 random states scaled to $\|z_0\|$ plus the reached output states of the smoke
+  runs; norm $\|\cdot\|_2$ relative.
+- C2: arm 2 vs t2core GAL **CN** (`make_evolve(form='GAL')`, scheme 'CN', the same $c_0$), both at their tight levels
+  with valid anchors; distance ≤ 1e-8.
+- C3m: a real dev6 case, nondegenerate $\nu$; reference ETDRK4 at Δt = 0.025/32 verified by A1.6; mutation `f2 → f1`
+  (they differ for $\mathcal L \ne 0$); the mutant must be caught by the reconstruction certificate (always) and give a
+  slope < 3.5 (expected; reported).
+- C4m: dev6[0], $\nu\to-\nu$; "fires" = monitor trip or non-finite stage (either).
+- C6m: in addition to stationarity, the direct analytic-vs-autodiff Jacobian comparison for arm 1 (`make_jac`): the
+  `jflip` mutant must exceed 1e-6 relative; stationarity firing is reported, not required.
+- C7m: arm 3a, r = 384, dev6: own-state ρ at the main-rule states against `gauss32`; fires if ρ > 0.116 or distance
+  > 2.5e-4; fallback witness `gauss16` if gauss32 does not fire (recorded).
+- C10: real-data perturbation: X = arm 1's fields with the worst case replaced by $f + (f - R)$ (error doubled) must
+  fire; X = arm 1 itself must not.
+- C11: the exact stacked, block-scaled aggregate $\|G\xi - b\|/\|b\|$ recomputed must equal the NNLS-reported relres
+  (≤ 1e-8 relative); mutant: uniform weights $\xi_e = n/|E|$ on |E| uniformly random nodes (|E| = the κ = 8 support) —
+  its aggregate relres must be ≥ 10× the NNLS one (witness shown in `ecsw`).
+- C12: a manifest per transformed table set: fingerprints of $B_z, D_z, P_z, V, D, R_m$ (and ECSW/POD tables), rule
+  sha256, r, M, mesh hash, POD artifact sha256; the query wrapper refuses a mismatch; a wrong-mesh mutant must raise.
+- New: **C13** wrong stage/update on a val32 case (arm 3 with `f3` scaled by 1.01) → reconstruction fires.
+  **C14** wrong ν in the coefficients (another case's ν) → reconstruction fires. **C15** arm 4 with update
+  $z_n + \tfrac12\delta$ → increment certificate fires. **C16** invalid anchor: arm 2 tight anchor with Newton budget 1
+  → flagged invalid. **C17** offline checker with one Q2 case removed → raises. **C18** output-schedule mismatch (outputs
+  stored one step late, p1core `late_out` analogue) → the output-vs-recorded-state check fires.
+
+**A1.10 Budget (item 10).** The `ecsw` job is the measured NNLS pilot (cap 600 s per rank, three ranks; time limit
+1.25 h). A **4096² memory pilot** `smk4096` (dev6[0], r = 384, every 4096² arm, actual device peak) precedes `f4096`.
+Prior evidence: p1 `acc4096` peaked at 96.6 GB of 142.6 GB on H200 with edges to 512. Revised estimates (GPU-h): ecsw
+0.8, smk1 0.3, smk4096 0.2, f1024 1.0, f4096 0.6 — 2.9, reserve 1.1. The ledger reserves the time limit of every
+queued/running job; submit only if spent + reserved + certified projection ≤ 4.
+
+**A1.11 Other (item 11).**
+- **Best stepper** eligibility and choice on **dev6 only** (the three conditions evaluated on dev6 runs, dev6 worst
+  errors, dev6 timing), then confirmed on val32 and the full 38 (reported).
+- Arm 6: a lane `Setting` variant with an explicit M override, its own mode hash and checked metadata.
+- Timing: raw A–B–A records kept; burn-in and drift retries as p1time; every timed output must hash-equal its scored
+  output; the POD fused query is init ($\Phi^\top u_0$, full field) + evolve + decode ($\Phi W$, full field), the bank
+  fused query init (cold-point fit) + evolve + decode (full field).
+- Claims: §11's last sentence is replaced by: E5 speed ratios are **against the incumbent (arm 1)**; matched-competitor
+  ratios are against the strongest tested competitor and are upper bounds; shared-integrator comparisons are controls.

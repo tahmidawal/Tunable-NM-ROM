@@ -22,6 +22,7 @@ import jax.numpy as jnp
 import common as C
 import fd_l as F
 import score as SC
+import bgate as BG
 from gen_b import run, sub
 
 L_LADDER = [32, 64, 128, 192, 256, 320, 384, 448, 512]
@@ -52,12 +53,11 @@ def main():
     ref = json.loads((d / 'ref.json').read_text())
     te = np.asarray(ref['test_desc'])
     R256 = np.load(d / 'ref_lat256.npy')
-    U = ref['U_B'] if ref['U_B'] is not None else ref['U_numerical']
-    if U is not None and not np.isfinite(U):
-        U = None
+    al = BG.allowance(ref)
+    U = al['U'] if al['SW2_fired'] else None
     R64 = R256[..., sub(256, 64)]
     sw1a = SC.sw1a(R64, lambda Fv, Rv: jnp.asarray(F.err_lat(np.asarray(Fv), np.asarray(Rv))))
-    rep = dict(env=C.env_record(), label=C.PILOT, U=U, scoring=ref['scoring'], families={}, unexplored={},
+    rep = dict(env=C.env_record(), label=C.PILOT, U=U, scoring=al['mode'], allowance=al, families={}, unexplored={},
                SW1a=sw1a, SW1b=SC.sw1b(), basis_label='unestablished (A3.4)',
                search_heuristics='size stop after two consecutive sizes meet every target (A5); F-RK4 starts at the '
                                  'first n above the RK4 diffusion limit (A5)')

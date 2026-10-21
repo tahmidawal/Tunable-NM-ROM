@@ -1,2 +1,3 @@
 /usr/lib/python3.12/multiprocessing/popen_fork.py:66: RuntimeWarning: os.fork() was called. os.fork() is incompatible with multithreaded code, and JAX is multithreaded, so this will likely lead to a deadlock.
   self.pid = os.fork()
+order {'lat64': {'d128_256': 0.001489798305300489, 'd256_512': 0.00037126915293338674, 'd512_1024': 9.274320995933978e-05, 'p1': 2.004579667921365, 'p2': 2.001151887015456}, 'lat128': {'d128_256': 0.001489798305417367, 'd256_512': 0.0003712691529412154, 'd512_1024': 9.274320996047707e-05, 'p1': 2.0045796680041272, 'p2': 2.0011518870281853}} gate True e_ref 3.088151466868439e-05 delta_t 1.5566003697028525e-06

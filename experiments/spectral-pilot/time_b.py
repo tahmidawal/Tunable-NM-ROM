@@ -27,6 +27,7 @@ import common as C
 import fd_l as F
 import romlib as RL
 import score as SC
+import tutil as TU
 from rom_b import lat_rows
 from time_a import check_env, REPS, TIMING_CASES
 
@@ -116,11 +117,15 @@ def screen():
     m512, _, _ = F.mask(512)
     for j, d in enumerate(te):
         u0n[j] = np.linalg.norm(F.ic(512, d)[m512])
-    cache, roms = {}, {}
+    roms = {}
+    m512 = F.mask(512)[0]
+    from rom_b import lat_rows as _lr
+    u0lat = {j: np.linalg.norm(F.lat_vals(F.ic(512, d), 512)) for j, d in enumerate(te)}
+    xs = [te[c] for c in TIMING_CASES]
     for tau in SC.TARGETS:
         e = dict(fom={}, rom={}, skipped=[])
+        cands, meta = [], {}
         for fam, sizes in fom['families'].items():
-            best = None
             for L, v in sorted(sizes.items(), key=lambda kv: int(kv[0])):
                 if v['diagnostic_only']:
                     continue
@@ -128,19 +133,9 @@ def screen():
                 if not ok:
                     continue
                 n = min(ok)
-                key = (fam, int(L), n)
-                q = fom_query(fam, int(L), n)
-                if key not in cache:
-                    t1 = t_np(q, te[0], reps=1)[0]
-                    if best is not None and t1 > 3 * best:
-                        e['skipped'].append(dict(fam=fam, L=int(L), n=n, t_one=t1))
-                        continue
-                    cache[key] = [t_np(q, te[c]) for c in TIMING_CASES]
-                t = float(np.median([np.median(x) for x in cache[key]]))
-                worst = min(r['worst'] for r in v['rows'] if r['n'] == n)
-                e['fom'][f'{fam}|{L}|{n}'] = dict(fam=fam, L=int(L), n=n, t=t, times=cache[key], worst=worst)
-                best = t if best is None else min(best, t)
-        best = None
+                key = ('F', fam, int(L), n)
+                meta[key] = dict(fam=fam, L=int(L), n=n, worst=min(r['worst'] for r in v['rows'] if r['n'] == n))
+                cands.append((key, 'F', fom_query(fam, int(L), n)))
         for r, v in sorted(rom['rom_t'].items(), key=lambda kv: int(kv[0])):
             r = int(r)
             ok = [x['n'] for x in v['rows'] if SC.classify(x['worst'], U, tau) == 'meets']
@@ -150,12 +145,13 @@ def screen():
             if r not in roms:
                 roms[r] = RomB(r)
             o = roms[r]
-            # L_init selection (A2.3/A3.2/A4), then re-score before timing
+            # L_init selection in the scoring norm (decoded lattice values / ||u0|| on the lattice), then re-score (A4)
             zfull = np.stack([o.z0_np(d, 512) for d in te])
             Li = 512
             for Lc in LINIT:
                 zc = np.stack([o.z0_np(d, Lc) for d in te])
-                if np.all(np.linalg.norm(zc - zfull, axis=1) / np.array([u0n[j] for j in range(len(te))]) <= tau / 20):
+                dl = np.linalg.norm((zc - zfull) @ o.Plat.T, axis=1) / np.array([u0lat[j] for j in range(len(te))])
+                if np.all(dl <= tau / 20):
                     Li = Lc
                     break
             for Lc in [x for x in LINIT if x >= Li]:
@@ -168,16 +164,17 @@ def screen():
             else:
                 continue
             key = ('R', r, n, Li)
-            q = o.query(n, Li)
-            if key not in cache:
-                t1 = t_np(q, te[0], reps=1)[0]
-                if best is not None and t1 > 3 * best:
-                    e['skipped'].append(dict(r=r, n=n, t_one=t1))
-                    continue
-                cache[key] = [t_np(q, te[c]) for c in TIMING_CASES]
-            t = float(np.median([np.median(x) for x in cache[key]]))
-            e['rom'][f'{r}|{n}|{Li}'] = dict(r=r, n=n, Linit=Li, t=t, times=cache[key], worst=w)
-            best = t if best is None else min(best, t)
+            meta[key] = dict(r=r, n=n, Linit=Li, worst=w)
+            cands.append((key, 'R', o.query(n, Li)))
+        fc = [c for c in cands if c[1] == 'F']
+        rc = [c for c in cands if c[1] == 'R']
+        alt = [x for pair in zip(fc, rc) for x in pair] + fc[len(rc):] + rc[len(fc):]
+        times, one, pruned = TU.roundrobin(alt, xs, REPS)
+        e['skipped'] = [dict(key=str(k), t_one=one[k]) for k in pruned]
+        for key, ts in times.items():
+            t = float(np.median([np.median(x) for x in ts]))
+            tgt = e['fom'] if key[0] == 'F' else e['rom']
+            tgt['|'.join(map(str, key[1:]))] = dict(meta[key], t=t, times=ts)
         bf = min(e['fom'].values(), key=lambda x: x['t']) if e['fom'] else None
         br = min(e['rom'].values(), key=lambda x: x['t']) if e['rom'] else None
         e['fom_best'], e['rom_best'] = bf, br
@@ -188,6 +185,7 @@ def screen():
         C.dump(D_ / 'time_screen.json', rep)
     rep['sentinel_end'] = [t_np(sent, te[c]) for c in TIMING_CASES]
     rep['sentinel_drift'] = abs(np.median(rep['sentinel_end']) / np.median(rep['sentinel_start']) - 1)
+    rep['screen_valid'] = bool(rep['sentinel_drift'] <= 0.10)
     C.dump(D_ / 'time_screen.json', rep)
 
 
@@ -195,7 +193,8 @@ def final(attempt=1):
     ref = json.loads((D_ / 'ref.json').read_text())
     scr = json.loads((D_ / 'time_screen.json').read_text())
     te = np.asarray(ref['test_desc'])
-    rep = dict(env=C.env_record(), threads=check_env(), label=C.PILOT, targets={})
+    rep = dict(env=C.env_record(), threads=check_env(), label=C.PILOT, targets={},
+               screen_valid=scr.get('screen_valid', False), native_contract='not implemented for Part B (A6)')
     sent = fom_query('IMEX', 128, 80)
     s0 = [t_np(sent, te[c]) for c in TIMING_CASES]
     for tau, e in scr['targets'].items():

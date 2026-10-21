@@ -638,3 +638,14 @@ round. Changes and deviations, each disclosed:
   instead; all stages ran under the 36 GB `jaxrun` ceiling or well below it); D1 and the random-span diagnostic are
   floors only (no ROM rollout); D3 (envelope representability) and the B corner-window and finer-lattice diagnostics
   are not run; snapshots are held in memory (≤ 3.2 GB), not streamed.
+
+### A5 addendum (after Codex code audit 2)
+- Timing screens are now call-level interleaved round-robins over all candidates (`tutil.roundrobin`); a screen whose
+  sentinel drifts above 10 % is invalid, and `analyze.py` forms a speed ratio only when both the screen and the final
+  timing are valid.
+- A failed G4, an available-but-failed SW4, or a failed G7 makes the level (or Part B) unresolved in `analyze.py`.
+- Part B's allowance is recomputed by `bgate.py` from the stored differences (each component validated before use)
+  with an SW2 check; the B initialiser rule uses the scoring-lattice norm.
+- Still not implemented (limitations): Part B native-output timing and the B H1 diagnostic; pre-stage time benchmarks
+  and enforced unit budgets (unit timeouts are enforced by `timeout 1800`; stage wall times are recorded where the
+  scripts write them).

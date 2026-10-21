@@ -70,13 +70,20 @@ def main():
     for lv in LEVELS:
         d = C.RUNS / 'A' / lv
         ref, fom, rom = load(d / 'ref.json'), load(d / 'fom.json'), load(d / 'rom.json')
+        tf, ts, diag = load(d / 'time_final.json'), load(d / 'time_screen.json'), load(d / 'diag.json')
         if not (ref and fom and rom):
             out['A'][lv] = dict(status='not run')
             continue
-        tf, ts, diag = load(d / 'time_final.json'), load(d / 'time_screen.json'), load(d / 'diag.json')
         pad = load(d / 'pad.json')
         U = fom['U']
-        e = dict(status='run', Nref=ref['Nref'], accepted=ref['accepted'], U=U, U_has_pad=fom['U_has_pad'],
+        g = rom.get('gates', {})
+        ctrl = dict(G4=all(g[k]['G4_pass'] for k in ('32', '128') if k in g),
+                    SW4=all(g[k]['SW4_fired'] or not g[k].get('SW4_available', True) for k in ('32', '128') if k in g),
+                    G7=bool(diag and diag['G7_pass']), gates=fom.get('gates'))
+        timing_ok = bool(tf and tf.get('timing_valid') and tf.get('screen_valid'))
+        if not (ctrl['G4'] and ctrl['SW4'] and ctrl['G7']):
+            U = None                                    # a failed control makes the level unresolved (A5)
+        e = dict(status='run', controls=ctrl, timing_valid=timing_ok, basis_label=fom.get('basis_label'), Nref=ref['Nref'], accepted=ref['accepted'], U=U, U_has_pad=fom['U_has_pad'],
                  pad=pad and pad['max'], s_median=float(np.median(ref['s_test'])),
                  s_range=[float(min(ref['s_test'])), float(max(ref['s_test']))], diag=diag and dict(
                      sharp_t0=diag['sharp_t0_median'], sharp=diag['sharp_max_median'], energy=diag['energy_median'],
@@ -92,7 +99,7 @@ def main():
             r_by.setdefault(k[1], []).extend(rows)
         for tau in SC.TARGETS:
             t = {}
-            t['N_min'] = min_size(fom['sizes'], U, tau)
+            t['N_min'] = min_size({N: v['rows'] for N, v in fom['sizes'].items()}, U, tau)
             t['r_min'] = min_size(r_by, U, tau)
             t['r_min_sine'] = min_size(rom['rom_sine'], U, tau) if rom.get('rom_sine') else None
             t['N_floor'] = floor_size({N: v['worst'] for N, v in rom['floors']['spectral'].items()}, tau)
@@ -101,10 +108,17 @@ def main():
             t['r_floor_sine'] = floor_size({i + 1: w for i, w in enumerate(rom['floors']['sine']['worst'])}, tau)
             if ts:
                 t['r_cross'] = r_cross(ts['cost_model'], t['N_min']) if t['N_min'] else None
-            if tf and str(tau) in tf['targets']:
+            # spectral-floor D2 (worst over cases): every FOM run's worst error >= the truncation floor's worst
+            for N, v in fom['sizes'].items():
+                fl_ = rom['floors']['spectral'].get(str(N))
+                if fl_:
+                    for row in v['rows']:
+                        assert (not math.isfinite(row['worst'])) or row['worst'] >= fl_['worst'] * (1 - 1e-9), ('D2-spec', N)
+            if tf and str(tau) in tf['targets'] and U is not None and timing_ok:
                 x = tf['targets'][str(tau)]
                 t['S'] = x.get('S')
                 if x.get('S') is not None:
+                    t['native_S'] = x.get('native', {}).get('S')
                     t['fom'] = {k: x['fom'][k] for k in ('N', 'n', 't', 'worst', 'spread', 'outliers')}
                     t['rom'] = {k: x['rom'][k] for k in ('form', 'r', 'Mq', 'n', 'Ninit', 't', 'worst', 'spread', 'outliers')}
                 else:
@@ -148,16 +162,21 @@ def main():
     d = C.RUNS / 'B'
     ref, fom, rom, tf = (load(d / f) for f in ('ref.json', 'fom.json', 'rom.json', 'time_final.json'))
     if ref and fom and rom:
+        gb = rom['gates']
+        ctrl_b = all(gb[k]['G4_pass'] and (gb[k]['SW4_fired'] or not gb[k]['SW4_available']) for k in gb)
+        timing_ok_b = bool(tf and tf.get('timing_valid') and tf.get('screen_valid'))
+        Ub = fom['U'] if ctrl_b else None
         b = dict(order=ref['order'], order_gate=ref['order_gate'], e_ref=ref['e_ref_hat'], delta_t=ref['delta_t'],
-                 U=fom['U'], scoring=ref['scoring'], fd512=ref['fd512_err_vs_ref'], train_diag=ref.get('train_diag'),
+                 U=Ub, controls_ok=ctrl_b, timing_valid=timing_ok_b, allowance=fom.get('allowance'),
+                 SW1=fom['SW1a']['passed'] and fom['SW1b']['passed'], basis_label='unestablished (A3.4)', scoring=ref['scoring'], fd512=ref['fd512_err_vs_ref'], train_diag=ref.get('train_diag'),
                  gates=rom['gates'], floors=rom['floors'], targets={}, unexplored=fom['unexplored'])
         for tau in SC.TARGETS:
             t = {}
             for fam, sizes in fom['families'].items():
                 t[f'L_min_{fam}'] = min_size({L: v['rows'] for L, v in sizes.items() if not v['diagnostic_only']},
-                                             fom['U'], tau)
-            t['r_min'] = min_size({r: v['rows'] for r, v in rom['rom_t'].items()}, fom['U'], tau)
-            if tf and str(tau) in tf['targets']:
+                                             Ub, tau)
+            t['r_min'] = min_size({r: v['rows'] for r, v in rom['rom_t'].items()}, Ub, tau)
+            if tf and str(tau) in tf['targets'] and Ub is not None and timing_ok_b:
                 x = tf['targets'][str(tau)]
                 t['S'] = x.get('S')
                 if x.get('S') is not None:

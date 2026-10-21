@@ -29,6 +29,7 @@ import jax.numpy as jnp
 import common as C
 import romlib as RL
 import score as SC
+import tutil as TU
 
 REPS = 5
 TIMING_CASES = [0, 1, 2]
@@ -168,7 +169,6 @@ def screen(lv):
     fom_rows = {int(k): v['rows'] for k, v in fom['sizes'].items()}
     romt_rows = {('T', int(r), None): v['rows'] for r, v in rom['rom_t'].items()}
     romq_rows = {('Q', int(r), int(Mq)): rows for r, dd in rom['rom_q'].items() for Mq, rows in dd.items()}
-    timed = {}
     for tau in SC.TARGETS:
         cf = candidates(fom_rows, U, tau)
         cr = candidates({**romt_rows, **romq_rows}, U, tau)
@@ -200,48 +200,31 @@ def screen(lv):
                     if st == 'meets':
                         break
             rescored[k] = dict(Ninit=Ni, worst=w, status=st)
-        # (3) interleaved whole-query timing of the kept candidates
-        jobs = [('F', N) for N in keep_f]
-        rj = [('R', k) for k in keep_r if rescored[k]['status'] == 'meets']
-        order = []
-        for i in range(max(len(jobs), len(rj))):
-            if i < len(jobs):
-                order.append(jobs[i])
-            if i < len(rj):
-                order.append(rj[i])
-        best = {'F': None, 'R': None}
-        for kind, k in order:
-            if kind == 'F':
-                key = ('F', k, cf[k])
-                if key not in timed:
-                    q = fom_query(k, cf[k])
-                    t1 = tmed(q, jnp.asarray(te[0]), reps=1)[0]           # whole-query one-rep screen (A5)
-                    if best['F'] is not None and t1 > 3 * best['F']:
-                        entry['not_timed_heuristic']['fom'].append(dict(N=k, n=cf[k], t_one=t1))
-                        continue
-                    timed[key] = [tmed(q, jnp.asarray(te[c])) for c in TIMING_CASES]
-                ts = timed[key]
-                entry['fom_timed'].append(dict(N=k, n=cf[k], times=ts, t=float(np.median([np.median(x) for x in ts])),
-                                               worst=min(r['worst'] for r in fom_rows[k] if r['n'] == cf[k])))
-                tt = entry['fom_timed'][-1]['t']
-                best['F'] = tt if best['F'] is None else min(best['F'], tt)
-            else:
+        # (3) call-level interleaved whole-query timing of all candidates (tutil.roundrobin; one-rep pruning, A5)
+        cands = []
+        for N in keep_f:
+            cands.append((('F', N), 'F', fom_query(N, cf[N])))
+        for k in keep_r:
+            if rescored[k]['status'] == 'meets':
                 form, r, Mq = k
-                Ni = rescored[k]['Ninit']
-                key = ('R', form, r, Mq, cr[k], Ni)
-                if key not in timed:
-                    q = ops[r].query(form, cr[k], Ni, Mq)
-                    t1 = tmed(q, jnp.asarray(te[0]), reps=1)[0]
-                    if best['R'] is not None and t1 > 3 * best['R']:
-                        entry['not_timed_heuristic']['rom'].append(dict(key='|'.join(map(str, k)), t_one=t1))
-                        continue
-                    timed[key] = [tmed(q, jnp.asarray(te[c])) for c in TIMING_CASES]
-                ts = timed[key]
-                entry['rom_timed'].append(dict(form=form, r=r, Mq=Mq, n=cr[k], Ninit=Ni, times=ts,
-                                               t=float(np.median([np.median(x) for x in ts])),
-                                               worst=rescored[k]['worst']))
-                tt = entry['rom_timed'][-1]['t']
-                best['R'] = tt if best['R'] is None else min(best['R'], tt)
+                cands.append((('R',) + k, 'R', ops[r].query(form, cr[k], rescored[k]['Ninit'], Mq)))
+        fc = [c for c in cands if c[1] == 'F']
+        rc = [c for c in cands if c[1] == 'R']
+        alt = [x for pair in zip(fc, rc) for x in pair] + fc[len(rc):] + rc[len(fc):]
+        xs = [jnp.asarray(te[c]) for c in TIMING_CASES]
+        times, one, pruned = TU.roundrobin(alt, xs, REPS)
+        for key in pruned:
+            entry['not_timed_heuristic']['fom' if key[0] == 'F' else 'rom'].append(dict(key=str(key), t_one=one[key]))
+        for key, ts in times.items():
+            t = float(np.median([np.median(x) for x in ts]))
+            if key[0] == 'F':
+                N = key[1]
+                entry['fom_timed'].append(dict(N=N, n=cf[N], times=ts, t=t,
+                                               worst=min(r['worst'] for r in fom_rows[N] if r['n'] == cf[N])))
+            else:
+                k = key[1:]
+                entry['rom_timed'].append(dict(form=k[0], r=k[1], Mq=k[2], n=cr[k], Ninit=rescored[k]['Ninit'],
+                                               times=ts, t=t, worst=rescored[k]['worst']))
         entry['rescored'] = {'|'.join(map(str, k)): v for k, v in rescored.items()}
         bf = min(entry['fom_timed'], key=lambda x: x['t']) if entry['fom_timed'] else None
         br = min(entry['rom_timed'], key=lambda x: x['t']) if entry['rom_timed'] else None
@@ -254,6 +237,7 @@ def screen(lv):
     s1 = [tmed(sent, jnp.asarray(te[c])) for c in TIMING_CASES]
     rep['sentinel_end'] = s1
     rep['sentinel_drift'] = abs(np.median(s1) / np.median(rep['sentinel_start']) - 1)
+    rep['screen_valid'] = bool(rep['sentinel_drift'] <= 0.10)
     C.dump(d / 'time_screen.json', rep)
 
 
@@ -263,7 +247,8 @@ def final(lv, attempt=1):
     scr = json.loads((d / 'time_screen.json').read_text())
     Nref = ref['Nref']
     te = np.asarray(ref['test_desc'])
-    rep = dict(level=lv, env=C.env_record(), threads=check_env(), label=C.PILOT, targets={})
+    rep = dict(level=lv, env=C.env_record(), threads=check_env(), label=C.PILOT, targets={},
+               screen_valid=scr.get('screen_valid', False))
     sent = fom_query(32, 80)
     s0 = [tmed(sent, jnp.asarray(te[c])) for c in TIMING_CASES]
     ops = {}

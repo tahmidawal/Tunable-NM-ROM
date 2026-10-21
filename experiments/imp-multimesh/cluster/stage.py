@@ -134,7 +134,7 @@ exit $FAIL
     env = dict(os.environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='',
                PYTHONDONTWRITEBYTECODE='1')
     for mod in cfg.get('import_check', ['mmcore']):
-        stmt = mod if ';' in mod else f'import {mod}'
+        stmt = mod if (';' in mod or mod.startswith('import ')) else f'import {mod}'
         chk = (f'import sys; sys.path.insert(0, "../jcp-p1-scaling"); {stmt}; staged = {str(out)!r}; '
                'mods = [m.__file__ for m in list(sys.modules.values()) if getattr(m, "__file__", None) and "/experiments/" in m.__file__]; '
                'bad = [f for f in mods if not f.startswith(staged)]; assert not bad, bad; print(len(mods), "modules staged")')

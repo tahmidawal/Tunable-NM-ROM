@@ -1,0 +1,36 @@
+{
+ "p1a": {
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/runs/c2grid/archive/output/W_R512.npz",
+  "source_sha256": "b6f9ef9451939a476482be164be62f652a5a66169f20ac0898a88faffd6acc0d",
+  "run": "LSPG|CNR|0.005|prod",
+  "run_index": 15,
+  "outputs": [
+   1,
+   5
+  ],
+  "config_check": {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192"
+  },
+  "file_sha256": "8dd4cba95af4a26f0c6a51d28899058f662ffa7c3f5c4536fe72c2b9b03b8547"
+ },
+ "p1b": {
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/runs/c3grid/archive/output/W_grid.npz",
+  "source_sha256": "64911abbd1611ce543686057c1bb797a9ceefcf5644ca8c13442599b59c1f23e",
+  "key": "W1024|lat65536|fs|BE|0.01|K1",
+  "outputs": [
+   1,
+   5
+  ],
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "file_sha256": "9a064688319fbb7cc29afd0c8598f50b0e8960d3e995bc6ff9a74c1840c9345e"
+ }
+}

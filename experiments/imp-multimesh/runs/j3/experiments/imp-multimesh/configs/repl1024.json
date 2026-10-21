@@ -1,0 +1,28 @@
+{
+ "attempt": "repl",
+ "driver": "p1acc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "blocks": [],
+ "configs": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "dev6",
+   "q2_cases": "dev6",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  }
+ ]
+}

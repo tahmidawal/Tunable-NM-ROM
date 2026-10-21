@@ -1,0 +1,115 @@
+{
+ "attempt": "smkacc",
+ "driver": "p1acc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "configs": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "dev2",
+   "q2_cases": "dev2",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "dev2",
+   "q2_cases": "dev2",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "name": "R512",
+   "Rp": 512,
+   "rule": "gauss192",
+   "policy": "frozen",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "dev2",
+   "q2_cases": "dev2",
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "name": "H640",
+   "Rp": 384,
+   "rule": "gauss640",
+   "policy": "frozen",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "dev2"
+  }
+ ],
+ "blocks": [
+  {
+   "config": "R384",
+   "kind": "controls",
+   "cases": "dev6",
+   "ur_scheme": "BE",
+   "under_resolved": "gauss32",
+   "under_resolved_successor": "gauss64",
+   "b0_scheme": "CNR",
+   "b0_cases": "dev6"
+  },
+  {
+   "config": "R384",
+   "kind": "order",
+   "case": [
+    "dev6",
+    0
+   ],
+   "factors": [
+    1,
+    0.5,
+    0.25
+   ],
+   "anchor": 0.0625,
+   "anchor2": 0.03125,
+   "qplus": "gauss160",
+   "qplusplus": "gauss192"
+  },
+  {
+   "config": "R384",
+   "kind": "vendor",
+   "cases": "dev6",
+   "rules": [
+    "gauss128",
+    "gauss32",
+    "gauss64",
+    "gauss96",
+    "fib6765",
+    "gauss640"
+   ]
+  },
+  {
+   "config": "R128",
+   "kind": "p1e",
+   "failing": "gauss32",
+   "successor": "gauss64",
+   "cases": "dev2",
+   "scheme": "BE"
+  }
+ ]
+}

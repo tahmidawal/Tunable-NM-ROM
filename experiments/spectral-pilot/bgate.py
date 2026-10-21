@@ -16,19 +16,33 @@ def order_gate(d1, d2, d3):
     return dict(gate=ok, p1=p1, p2=p2, e_ref=d3 / (2 ** p2 - 1) if ok else None)
 
 
+def _fin(x, pos=False):
+    return isinstance(x, (int, float)) and math.isfinite(x) and (x > 0 if pos else x >= 0)
+
+
 def allowance(ref):
-    o = ref['order']['lat64']
-    g = order_gate(o['d128_256'], o['d256_512'], o['d512_1024'])
-    tg = ref['time_gate']
-    dts = [tg['d1024_4cases'], tg['d512_12cases']]
-    t_ok = all(isinstance(x, (int, float)) and math.isfinite(x) and x >= 0 for x in dts)
+    o = (ref.get('order') or {}).get('lat64') or {}
+    ds = [o.get('d128_256'), o.get('d256_512'), o.get('d512_1024')]
+    tg = ref.get('time_gate') or {}
+    dts = [tg.get('d1024_4cases'), tg.get('d512_12cases')]
+    t_ok = all(_fin(x) for x in dts)
+    sw2 = sw2_fixture()
+    if not all(_fin(x, pos=True) for x in ds) or not t_ok:
+        return dict(U=None, mode='unavailable (space or time evidence missing or non-finite)', order=None,
+                    delta_t=None, SW2_fired=sw2)
+    g = order_gate(*ds)
     delta_t = max(dts) if t_ok else None
     if g['gate'] and t_ok:
         U, mode = g['e_ref'] + delta_t, 'conditional physical allowance'
     elif t_ok:
         U, mode = delta_t, 'numerical reference only (order gate failed); physical accuracy unqualified'
     else:
-        U, mode = None, 'unavailable (time gate missing or non-finite)'
-    # SW2 for B: a difference set whose finest difference is inflated 5x must fail the order gate
-    sw2 = not order_gate(o['d128_256'], o['d256_512'], 5 * o['d512_1024'])['gate']
+        U, mode = None, 'unavailable'
     return dict(U=U, mode=mode, order=g, delta_t=delta_t, SW2_fired=sw2)
+
+
+def sw2_fixture():
+    """SW2 for B on fixed fixtures: equal differences (no convergence) and a mismatched-order set must be rejected;
+    a clean second-order set must be accepted."""
+    return bool((not order_gate(1e-3, 1e-3, 1e-3)['gate']) and (not order_gate(4e-3, 1e-3, 5e-4)['gate'])
+                and order_gate(4e-3, 1e-3, 2.5e-4)['gate'])

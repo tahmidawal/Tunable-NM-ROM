@@ -77,10 +77,12 @@ def main():
         pad = load(d / 'pad.json')
         U = fom['U']
         g = rom.get('gates', {})
-        ctrl = dict(G4=all(g[k]['G4_pass'] for k in ('32', '128') if k in g),
-                    SW4=all(g[k]['SW4_fired'] or not g[k].get('SW4_available', True) for k in ('32', '128') if k in g),
+        req = ('32', '128')                             # required control ranks; absent controls fail (code audit 3)
+        ctrl = dict(G4=all(k in g and g[k]['G4_pass'] for k in req),
+                    SW4=all(k in g and (g[k]['SW4_fired'] or not g[k].get('SW4_available', True)) for k in req),
                     G7=bool(diag and diag['G7_pass']), gates=fom.get('gates'))
-        timing_ok = bool(tf and tf.get('timing_valid') and tf.get('screen_valid'))
+        timing_ok = bool(tf and ts and tf.get('timing_valid') and ts.get('screen_valid')
+                         and tf.get('screen_time') == ts['env']['time'])
         if not (ctrl['G4'] and ctrl['SW4'] and ctrl['G7']):
             U = None                                    # a failed control makes the level unresolved (A5)
         e = dict(status='run', controls=ctrl, timing_valid=timing_ok, basis_label=fom.get('basis_label'), Nref=ref['Nref'], accepted=ref['accepted'], U=U, U_has_pad=fom['U_has_pad'],
@@ -106,7 +108,7 @@ def main():
             t['r_floor'] = floor_size({i + 1: w for i, w in enumerate(rom['floors']['pod']['worst'])}, tau)
             t['r_floor48'] = floor_size({i + 1: w for i, w in enumerate(rom['floors']['pod48']['worst'])}, tau)
             t['r_floor_sine'] = floor_size({i + 1: w for i, w in enumerate(rom['floors']['sine']['worst'])}, tau)
-            if ts:
+            if ts and ts.get('screen_valid'):
                 t['r_cross'] = r_cross(ts['cost_model'], t['N_min']) if t['N_min'] else None
             # spectral-floor D2 (worst over cases): every FOM run's worst error >= the truncation floor's worst
             for N, v in fom['sizes'].items():
@@ -163,8 +165,11 @@ def main():
     ref, fom, rom, tf = (load(d / f) for f in ('ref.json', 'fom.json', 'rom.json', 'time_final.json'))
     if ref and fom and rom:
         gb = rom['gates']
-        ctrl_b = all(gb[k]['G4_pass'] and (gb[k]['SW4_fired'] or not gb[k]['SW4_available']) for k in gb)
-        timing_ok_b = bool(tf and tf.get('timing_valid') and tf.get('screen_valid'))
+        tsb = load(d / 'time_screen.json')
+        ctrl_b = all(k in gb and gb[k]['G4_pass'] and (gb[k]['SW4_fired'] or not gb[k]['SW4_available'])
+                     for k in ('32', '128'))
+        timing_ok_b = bool(tf and tsb and tf.get('timing_valid') and tsb.get('screen_valid')
+                           and tf.get('screen_time') == tsb['env']['time'])
         Ub = fom['U'] if ctrl_b else None
         b = dict(order=ref['order'], order_gate=ref['order_gate'], e_ref=ref['e_ref_hat'], delta_t=ref['delta_t'],
                  U=Ub, controls_ok=ctrl_b, timing_valid=timing_ok_b, allowance=fom.get('allowance'),

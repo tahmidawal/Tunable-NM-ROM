@@ -649,3 +649,13 @@ round. Changes and deviations, each disclosed:
 - Still not implemented (limitations): Part B native-output timing and the B H1 diagnostic; pre-stage time benchmarks
   and enforced unit budgets (unit timeouts are enforced by `timeout 1800`; stage wall times are recorded where the
   scripts write them).
+
+### A5 addendum 2 (after Codex code audit 3)
+- Screening pruning now follows the registered rule exactly: a candidate is pruned only if its single call exceeds 3×
+  its method's best *fully timed* median (the best-single-call candidate of each method is fully timed first).
+- Absent required controls (G4/SW4 at r = 32 and 128) fail qualification; `r_cross` is read only from a valid screen;
+  a final timing is used only together with the exact screen it selected from (matched by the screen's timestamp).
+- B SW2 uses fixed fixtures (equal differences and a mismatched-order set must be rejected; a clean second-order set
+  accepted); missing or non-finite space evidence makes the B allowance unavailable.
+- Remaining stated limitations: the Part A native-output timing is FOM-then-ROM batched (not call-interleaved; a
+  secondary contract only); `highest` matmul precision is recorded, not asserted (all runs are CPU f64).

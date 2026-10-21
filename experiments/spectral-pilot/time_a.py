@@ -248,7 +248,7 @@ def final(lv, attempt=1):
     Nref = ref['Nref']
     te = np.asarray(ref['test_desc'])
     rep = dict(level=lv, env=C.env_record(), threads=check_env(), label=C.PILOT, targets={},
-               screen_valid=scr.get('screen_valid', False))
+               screen_valid=scr.get('screen_valid', False), screen_time=scr['env']['time'])
     sent = fom_query(32, 80)
     s0 = [tmed(sent, jnp.asarray(te[c])) for c in TIMING_CASES]
     ops = {}

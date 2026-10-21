@@ -194,7 +194,7 @@ def final(attempt=1):
     scr = json.loads((D_ / 'time_screen.json').read_text())
     te = np.asarray(ref['test_desc'])
     rep = dict(env=C.env_record(), threads=check_env(), label=C.PILOT, targets={},
-               screen_valid=scr.get('screen_valid', False), native_contract='not implemented for Part B (A6)')
+               screen_valid=scr.get('screen_valid', False), screen_time=scr['env']['time'], native_contract='not implemented for Part B (A6)')
     sent = fom_query('IMEX', 128, 80)
     s0 = [t_np(sent, te[c]) for c in TIMING_CASES]
     for tau, e in scr['targets'].items():

@@ -12,23 +12,35 @@ def call(fn, x):
     return time.perf_counter() - t
 
 
+def _rounds(cands, cases, reps):
+    times = {k: [[] for _ in cases] for k, _, _ in cands}
+    for _ in range(reps):
+        for ci, x in enumerate(cases):
+            for k, _, fn in cands:
+                times[k][ci].append(call(fn, x))
+    return times
+
+
+def _med(ts):
+    s = sorted(sorted(x)[len(x) // 2] for x in ts)
+    return s[len(s) // 2]
+
+
 def roundrobin(cands, cases, reps, prune=3.0):
-    """cands: list of (key, method, fn). Warm-up (compile) every candidate, then one call each on cases[0]
-    (alternating order as given); a candidate is pruned if that single time exceeds `prune` x the best single time of
-    its method (A5 heuristic). The kept candidates are then timed call-by-call in rounds: for each repetition, for each
-    case, one call of every kept candidate in turn. Returns (times {key: [[t per rep] per case]}, one {key: t},
-    pruned [key])."""
+    """cands: list of (key, method, fn). (1) warm-up (compile) every candidate and time one call each on cases[0];
+    (2) fully time, call-level interleaved, the best-single-call candidate of each method; (3) prune a candidate only
+    if its single call exceeds `prune` x its method's best FULLY-timed median (A5); (4) fully time every kept
+    candidate in call-level interleaved rounds (fresh times for all, including those of step 2).
+    Returns (times {key: [[t per rep] per case]}, one {key: t}, pruned [key])."""
     for _, _, fn in cands:
         jax.block_until_ready(fn(cases[0]))
     one = {k: call(fn, cases[0]) for k, _, fn in cands}
-    best = {}
-    for k, m, _ in cands:
-        best[m] = min(best.get(m, float('inf')), one[k])
-    kept = [(k, m, fn) for k, m, fn in cands if one[k] <= prune * best[m]]
-    pruned = [k for k, m, _ in cands if one[k] > prune * best[m]]
-    times = {k: [[] for _ in cases] for k, _, _ in kept}
-    for _ in range(reps):
-        for ci, x in enumerate(cases):
-            for k, _, fn in kept:
-                times[k][ci].append(call(fn, x))
-    return times, one, pruned
+    leaders = {}
+    for c in cands:
+        if c[1] not in leaders or one[c[0]] < one[leaders[c[1]][0]]:
+            leaders[c[1]] = c
+    lt = _rounds(list(leaders.values()), cases, reps)
+    full_best = {m: _med(lt[c[0]]) for m, c in leaders.items()}
+    kept = [c for c in cands if one[c[0]] <= prune * full_best[c[1]]]
+    pruned = [c[0] for c in cands if one[c[0]] > prune * full_best[c[1]]]
+    return _rounds(kept, cases, reps), one, pruned

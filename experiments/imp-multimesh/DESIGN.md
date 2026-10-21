@@ -638,3 +638,16 @@ withheld as "compile-dependent" (with both outcomes shown). A missing compile en
 **A6.2 Control 4 fallback (refines A2.6).** The fallback mutation is a stepper whose every step returns half of
 its starting candidate, unsolved (`mmcore.unsolved_override`); the control also requires the unmutated fixture to
 pass Q1.
+
+---
+
+## Amendment A7 (2026-10-21; answers `audits/codex-design-7.md`)
+
+**A7.1 Compilation (replaces A6.1's unconditional rule).** Every cost verdict is labelled **conditional on the
+compilation projections** (the in-process AOT measurements with a recorded backend-compile event; the fresh-process
+probes reported beside them). In addition each (w, X) verdict is tested under the two **adverse assignments**,
+with $B$ = 10 × the largest compile time measured anywhere in the lane: (i) our query-compile values 0 and every
+competitor query-compile value $B$ (adverse to MATCH); (ii) ours $B$ and competitors 0 (adverse to NO-MATCH). A
+verdict unchanged under both is reported as "compile-robust within $B$" (still conditional on $B$ bounding the
+true compile cost); otherwise "compile-dependent", with the outcomes shown. Missing compile entries take the
+adverse values in both tests.

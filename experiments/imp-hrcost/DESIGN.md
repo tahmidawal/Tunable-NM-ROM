@@ -550,3 +550,31 @@ defective fixture (A5 anticipated this). It is replaced, before any cluster job,
   evaluator (`npcheck.values_grads`, NumPy Gauss–Legendre points) at Gauss 768², against the device Gauss 768² check
   matrices, relative $10^{-11}$.
 - The mesh sums (mass, stiffness, FD right-hand side) at the run mesh are **reported descriptively** (no bar).
+
+## Amendment A7 (2026-10-21; answers `audits/codex-code-1.md`, NOT READY — design-level items; before any cluster job)
+
+**A7.1 Tight / tighter tolerances.** The anchors use **$10^{-12}$ (tight) and $10^{-13}$ (tighter)** in the relative
+Gram norm, replacing A1.3's $10^{-13}/10^{-15}$. Reason: those were jcp-qualify's levels for its LM solver; for an
+exact-Jacobian LU Newton in f64 the residual floor is near $10^{-14}$–$10^{-15}$ of $\lVert c_n\rVert_{\mathcal G}$, so a
+$10^{-15}$ anchor would be reached only by chance and an "invalid anchor" would reflect round-off, not the solve. E5
+(imp-faststep DESIGN A1.3, Codex-audited) registered the same levels for the same Newton GAL-CN step for this reason.
+Production stays $10^{-10}$; the certificate bar stays $10^{-8}$.
+
+**A7.2 Verdict scope.** Stop-rule outcomes are verdicts only for the production population (1024², r = 384,
+$\Delta t_0$, dev6 + val32 = 38 cases, Q2 population sub16); any other run (smoke, debug) is labelled "not a verdict"
+by `hscore.py`. Every production arm must cover the full registered population, else it is not qualified.
+
+**A7.3 Q2 label precedence (implementation of A2.3).** In order: own run invalid → unverified; successor invalid →
+unverified; check-rule run invalid → unverified; all ρ trivial → unverified; rollout or ρ bar exceeded → **fail**;
+check-rule distance > bar → unverified (finer rule not converged); else pass. A fitted rule's label (each reading) is
+downgraded to "unverified (parent not converged)" unless its parent's label of the **same reading** is pass.
+
+**A7.4 Q1 "demonstrated" failures.** A Q1 failure counts as resolved (a demonstrated failure) when it rests on an invalid
+production run, a non-converged fraction above 1 %, or a distance bar exceeded with valid anchors; a failure resting
+only on invalid or missing anchors (or a G-cert disagreement) is unresolved evidence for the stop-rule precedence.
+
+**A7.5 Fixture bookkeeping.** Fitted, duplicated and NaN tables carry fresh fingerprints; a fitted rule's hash is over
+its points and weights. Training-draw replacement uses rollout validity only (A1.5). The leakage assertion covers the
+dev6, val32 and test64 descriptors. Timing uses the registered 5 repetitions and 3 burn-in queries per block, keeps the
+outputs of the actual timed invocations, and requires them to equal the scored coefficients ($10^{-12}$) before a speed
+predicate is evaluated ("tied timing"); ratios of separate medians are reported as well.

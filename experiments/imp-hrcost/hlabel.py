@@ -31,20 +31,27 @@ def gcert_ok(eta_cert, eta_rec):
 
 def q1_label(cases, dev):
     """cases: {cid: dict(valid, eta (S,), eta_rec (S,), tight_valid, dist_tight, [tighter_valid, dist_tt])};
-    dev: case ids that need the tight/tighter check. Returns dict(label, reasons, nonconv_frac, ...)."""
-    reasons = []
+    dev: case ids that need the tight/tighter check. Returns dict(label, reasons, demonstrated, nonconv_frac, ...).
+    demonstrated = the failure rests on a bar exceedance or an invalid production run (evidence of failure), not only on
+    invalid / missing anchors (unresolved evidence; DESIGN A2.3)."""
+    reasons, demo = [], False
+    if not cases:
+        return dict(label='fail', reasons=['empty population'], demonstrated=False, nonconv_frac=float('nan'), steps=0)
     steps = sum(len(v['eta']) for v in cases.values())
     bad = sum(int((~certified(v['eta'])).sum()) for v in cases.values())
     frac = bad / max(steps, 1)
     if not all(v['valid'] for v in cases.values()):
         reasons.append('invalid run')
+        demo = True
     if frac > NONCONV_FRAC:
         reasons.append(f'non-converged steps {frac:.4f} > 1%')
+        demo = True
     for cid, v in cases.items():
         if not v['tight_valid']:
             reasons.append(f'{cid}: tight anchor invalid')
         elif not (np.isfinite(v['dist_tight']) and v['dist_tight'] <= BAR_Q1):
             reasons.append(f'{cid}: distance to tight {v["dist_tight"]:.3e}')
+            demo = True
         if not gcert_ok(v['eta'], v['eta_rec']):
             reasons.append(f'{cid}: G-cert disagreement')
     for cid in dev:
@@ -55,15 +62,23 @@ def q1_label(cases, dev):
             reasons.append(f'{cid}: tighter anchor invalid')
         elif not (np.isfinite(v['dist_tt']) and v['dist_tt'] <= BAR_TT):
             reasons.append(f'{cid}: tight/tighter {v["dist_tt"]:.3e}')
-    return dict(label='pass' if not reasons else 'fail', reasons=reasons, nonconv_frac=frac, steps=steps)
+            demo = True
+    return dict(label='pass' if not reasons else 'fail', reasons=reasons, demonstrated=bool(reasons and demo),
+                nonconv_frac=frac, steps=steps)
 
 
 def q2_label(own_valid, succ_valid, dist_succ, rho_states, chk_succ_valid, chk_valid, dist_chk, bar_rho=BAR_RHO):
     """Binding Q2 (A2.1, A2.3). own/succ arrays over the 16-case population; rho_states (16, 6) tested-vector rho at the
     arm's own output states; chk_* over dev6 (q+ vs q++). Labels: pass / fail / unverified (...)."""
     out = dict(rollout_max=float('nan'), rho_max=float('nan'), chk_max=float('nan'), trivial=0)
+    if not all(own_valid):
+        out['label'] = 'unverified (own run invalid)'
+        return out
     if not all(succ_valid):
         out['label'] = 'unverified (successor invalid)'
+        return out
+    if not (all(chk_succ_valid) and all(chk_valid)):
+        out['label'] = 'unverified (check invalid)'
         return out
     d = np.asarray(dist_succ, float)
     out['rollout_max'] = float(np.inf if not np.isfinite(d).all() else d.max())
@@ -74,14 +89,11 @@ def q2_label(own_valid, succ_valid, dist_succ, rho_states, chk_succ_valid, chk_v
         return out
     rr = r[~np.isnan(r)]
     out['rho_max'] = float(rr.max())
-    fail_roll = not all(own_valid) or not (out['rollout_max'] <= BAR_Q2)
+    fail_roll = not (out['rollout_max'] <= BAR_Q2)
     fail_rho = not (out['rho_max'] <= bar_rho)
     out['fail_rollout'], out['fail_rho'] = bool(fail_roll), bool(fail_rho)
     if fail_roll or fail_rho:
         out['label'] = 'fail'
-        return out
-    if not (all(chk_succ_valid) and all(chk_valid)):
-        out['label'] = 'unverified (check invalid)'
         return out
     c = np.asarray(dist_chk, float)
     out['chk_max'] = float(np.inf if not np.isfinite(c).all() else c.max())

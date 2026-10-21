@@ -30,7 +30,7 @@ def run(J):
     t = time.perf_counter()
     J.keep.add(('sine', 'gauss128'))
     runs_sine = J.ladder('sine', R_LADDER, lambda q: 'R' if q == 'gauss128' else f'sine_{q}')
-    dR, auxR, metaR, wR = J.table('sine', 'gauss128')
+    dR, auxR, metaR, wR, XR = J.table('sine', 'gauss128')
     J.q1('R', 'sine', dR, metaR)
     J.phase('R', t)
     # ------------------------------------------------------------------------ F2 ladder (bank) ----
@@ -50,33 +50,30 @@ def run(J):
         J.phase('F2_q2', t)
         t = time.perf_counter()
         cands = sorted([q for rules in lad.values() for q in rules[:-2] if m_of(q) <= cfg.get('mmax', 16384)], key=m_of)
-        status, mstar, unresolved_below = {}, None, False
+        status, first = {}, {'label': None, 'label_projected': None}
+        unres = {'label': False, 'label_projected': False}
         for q in cands:
-            lab = J.rep['q2'][f'F2_{q}']['label']
-            if lab == 'pass':
-                if mstar is None or q == 'gauss128':
-                    d, aux, meta, _ = J.table('bank', q)
-                    l1 = J.q1(f'F2_{q}', 'bank', d, meta)
-                    status[q] = 'qualified' if l1 == 'pass' else 'not qualified (Q1)'
-                    if l1 == 'pass' and mstar is None:
-                        mstar = q
-                    if q != 'gauss128':
-                        J.drop(keep=list(J.keep))
-                else:
-                    status[q] = 'not evaluated (larger than first qualified)'
-            elif lab == 'fail':
-                status[q] = 'not qualified (Q2)'
+            labs = {k: J.rep['q2'][f'F2_{q}'][k] for k in first}
+            need = any(labs[k] == 'pass' and first[k] is None for k in first) or q == 'gauss128'
+            if need:
+                d, aux, meta, _, _ = J.table('bank', q)
+                l1 = J.q1(f'F2_{q}', 'bank', d, meta)
+                for k in first:
+                    if labs[k] == 'pass' and l1 == 'pass' and first[k] is None:
+                        first[k] = q
+                status[q] = dict(q2=labs['label'], q2_projected=labs['label_projected'], q1=l1)
+                if q != 'gauss128':
+                    J.drop(keep=list(J.keep))
             else:
-                status[q] = f'unresolved ({lab})'
-                if mstar is None:
-                    unresolved_below = True
-        if 'F2_gauss128' not in J.rep['q1']:
-            d, aux, meta, _ = J.table('bank', 'gauss128')
-            J.q1('F2_gauss128', 'bank', d, meta)
-        J.rep['F2'] = dict(candidates=cands, status=status, first_qualified=mstar,
-                           mstar_identified=bool(mstar is not None and not unresolved_below),
-                           unresolved_below=unresolved_below, ladders=lad,
-                           mstar_q2=next((q for q in cands if J.rep['q2'][f'F2_{q}']['label'] == 'pass'), None))
+                status[q] = dict(q2=labs['label'], q2_projected=labs['label_projected'], q1='not evaluated')
+            for k in first:
+                if first[k] is None and labs[k].startswith('unverified'):
+                    unres[k] = True
+        J.rep['F2'] = dict(candidates=cands, status=status, first_qualified=first['label'],
+                           first_qualified_projected=first['label_projected'],
+                           mstar_identified=bool(first['label'] is not None and not unres['label']),
+                           unresolved_below=unres['label'], unresolved_below_projected=unres['label_projected'],
+                           ladders=lad)
         J.phase('F2_q1', t)
     # ------------------------------------------------------------------------ fits ----
     fitted = {}
@@ -95,9 +92,8 @@ def run(J):
             name = f'{fam}_k{k}'
             own = J.own_runs(proj, None, J.q2_set, d=d)
             lab = J.q2(name, proj, (d, aux, meta), own, J.table(*pk)[:3], par_runs['gauss128'], par_runs['gauss160'])
-            plab = J.rep['q2'][par_name]['label']
-            for key in ('label', 'label_projected'):
-                if J.rep['q2'][name][key] == 'pass' and plab != 'pass':
+            for key in ('label', 'label_projected'):          # the parent's label of the same reading (code audit 1)
+                if J.rep['q2'][name][key] == 'pass' and J.rep['q2'][par_name][key] != 'pass':
                     J.rep['q2'][name][key] = 'unverified (parent not converged)'
             J.q1(name, proj, d, meta)
             fitted[name] = (proj, d, aux, meta)
@@ -113,16 +109,20 @@ def run(J):
     tc = cfg.get('timing', {})
     pairs = [('AA', dR, 'sine')]
     if J.bank_ok:
-        if J.rep['F2']['first_qualified']:
-            q = J.rep['F2']['first_qualified']
-            pairs.append((f'F2_{q}', J.table('bank', q)[0], 'bank'))
-        if 'F2_gauss128' not in [p_[0] for p_ in pairs]:
-            pairs.append(('F2_gauss128', J.table('bank', 'gauss128')[0], 'bank'))
+        for q in dict.fromkeys([J.rep['F2']['first_qualified'], J.rep['F2']['first_qualified_projected'], 'gauss128']):
+            if q is not None:
+                pairs.append((f'F2_{q}', J.table('bank', q)[0], 'bank'))
     for name, (proj, d, aux, meta) in fitted.items():
         pairs.append((name, d, proj))
     dup = HT.duplicated((dR, auxR, metaR))
     pairs.append(('dup', dup[0], 'sine'))
-    J.timing((dR, 'sine'), pairs, J.sets[tc.get('cases', 'all38')], tc.get('reps', 3), tc.get('burn', 2))
+    scored = {}
+    for name in [p_[0] for p_ in pairs] + ['R']:
+        f = J.out / 'arrays' / f'q1_{"R" if name == "AA" else name}.npz'
+        if f.exists():
+            z = np.load(f)
+            scored[name] = {str(c): z['W'][i] for i, c in enumerate(z['case_ids'])}
+    J.timing((dR, 'sine'), pairs, J.sets[tc.get('cases', 'all38')], tc.get('reps', 5), tc.get('burn', 3), scored=scored)
     J.rep['jac_bench'] = dict(R=J.jac_bench(dR), dup=J.jac_bench(dup[0]))
     J.rep['jac_bench']['ratio'] = J.rep['jac_bench']['dup'][0] / J.rep['jac_bench']['R'][0]
     J.phase('timing', t)
@@ -147,7 +147,7 @@ def _np_eta(states, k, nu, t, U, dt):
 def controls(J, runs_sine, runs_bank):
     C = J.rep['controls']
     B = J.base
-    dR, auxR, metaR, wR = J.table('sine', 'gauss128')
+    dR, auxR, metaR, wR, XR = J.table('sine', 'gauss128')
     dev2 = J.sets['dev2']
     # ---- C1 coarse rules
     for proj, runs0 in (('sine', runs_sine), ('bank', runs_bank)):
@@ -157,8 +157,8 @@ def controls(J, runs_sine, runs_bank):
         own = {q: J.own_runs(proj, q, J.q2_set) for q in lad}
         pick = None
         for i in range(3):
-            q, qp = lad[i], lad[i + 1]
-            if all(own[q][c]['valid'] for c in J.q2_set) and all(own[qp][c]['valid'] for c in J.q2_set):
+            q, qp, qpp_ = lad[i], lad[i + 1], lad[min(i + 2, 3)]
+            if all(own[x][c]['valid'] for x in (q, qp, qpp_) for c in J.q2_set):
                 pick = i
                 break
         if pick is None:
@@ -179,11 +179,11 @@ def controls(J, runs_sine, runs_bank):
         perm = np.random.default_rng(0).permutation(len(z['w']))
         wperm = z['w'][perm]
         dist = float(np.linalg.norm(wperm - z['w']) / np.linalg.norm(z['w']))
-        d2, a2, m2 = HT.fitted((dR, auxR, metaR), wR, z['idx'], wperm, f'{fx}-perm')
+        d2, a2, m2 = HT.fitted((dR, auxR, metaR), XR, wR, z['idx'], wperm, f'{fx}-perm')
         own = J.own_runs('sine', None, J.q2_set, d=d2)
         J.q2('C2', 'sine', (d2, a2, m2), own, (dR, auxR, metaR), runs_sine['gauss128'], runs_sine['gauss160'])
         C['C2'] = dict(fixture=fx, weight_change=dist, fixture_valid=dist >= .5,
-                       label=J.rep['q2']['C2']['label'], fired=J.rep['q2']['C2']['label'] == 'fail')
+                       label=J.rep['q2']['C2']['label'], fired=bool(J.rep['q2']['C2']['label'] == 'fail' and dist >= .5))
     else:
         C['C2'] = dict(fired=False, fixture='no k8 fit built')
     # ---- C3 corrupted states (R, dev cases)
@@ -211,6 +211,7 @@ def controls(J, runs_sine, runs_bank):
             np_cross = all(_np_eta(st, kk, nu, tR, U, J.dt) > HL.ETA_BAR for kk in want)
             rr[tag] = dict(flagged=flagged, expected=want, ok=bool(flagged == want and np_cross),
                            eta_perturbed=np.asarray(eta).tolist())
+            np.savez(J.out / 'arrays' / f'C3_{cid.replace("|", "_")}_{tag}.npz', states=st, eta=np.asarray(eta), ks=np.asarray(ks))
         res[cid] = dict(base_certified=base_ok, **rr)
     rows = {cid: dict(valid=True, eta=np.asarray(res[cid]['c']['eta_perturbed']), eta_rec=np.asarray(res[cid]['c']['eta_perturbed']),
                       tight_valid=True, dist_tight=0., tighter_valid=True, dist_tt=0.) for cid in J.dev}
@@ -231,8 +232,9 @@ def controls(J, runs_sine, runs_bank):
     for cid in dev2:
         a_, b_ = J.run(dR, 'sine', cid), J.run(dd[0], 'sine', cid)
         eq.append(float(np.linalg.norm(a_['W'] - b_['W']) / np.linalg.norm(a_['W'])))
-    tb = J.jac_bench(dR)[0], J.jac_bench(dd[0])[0]
-    C['C5'] = dict(max_rel_diff=max(eq), jac_R=tb[0], jac_dup=tb[1], ratio=tb[1] / tb[0],
+    bR, bD = J.jac_bench(dR), J.jac_bench(dd[0])
+    tb = bR[0], bD[0]
+    C['C5'] = dict(max_rel_diff=max(eq), jac_R=tb[0], jac_dup=tb[1], ratio=tb[1] / tb[0], reps_R=bR[2], reps_dup=bD[2],
                    fired=bool(max(eq) <= 1e-12 and tb[1] / tb[0] >= 1.5))
     # ---- C7 leakage
     try:
@@ -242,7 +244,7 @@ def controls(J, runs_sine, runs_bank):
     except AssertionError as e:
         C['C7'] = dict(fired=True, msg=str(e))
     # ---- P1 fitted machinery at parent weights
-    dp, ap, mp = HT.fitted((dR, auxR, metaR), wR, np.arange(len(wR)), wR, 'parent-as-fit')
+    dp, ap, mp = HT.fitted((dR, auxR, metaR), XR, wR, np.arange(len(wR)), wR, 'parent-as-fit')
     eq = []
     for cid in dev2:
         a_, b_ = J.run(dR, 'sine', cid), J.run(dp, 'sine', cid)
@@ -271,13 +273,15 @@ def controls(J, runs_sine, runs_bank):
     if fx4:
         fixtures.append((fx4, J.fitted[fx4][1]))
     for nm, d in fixtures:
-        for c in states[0]:
+        for c in np.concatenate(states):
             cj = jnp.asarray(c)
             Ja = GS.rhs_jac(cj, .05, d)
             Jd = jax.jacfwd(lambda x: GS.rhs(x, .05, d))(cj)
             p4['jac'].append((nm, float(jnp.linalg.norm(Ja - Jd) / jnp.linalg.norm(Jd))))
-    C['P4'] = dict(rhs_max=max(p4['rhs']), jac=p4['jac'],
-                   passed=bool(max(p4['rhs']) <= 1e-12 and max(v for _, v in p4['jac']) <= 1e-10))
+    need = 3 if runs_bank is not None else 2
+    C['P4'] = dict(rhs_max=max(p4['rhs']), jac_max={nm: max(v for n_, v in p4['jac'] if n_ == nm) for nm, _ in fixtures},
+                   fixtures=[nm for nm, _ in fixtures],
+                   passed=bool(len(fixtures) == need and max(p4['rhs']) <= 1e-12 and max(v for _, v in p4['jac']) <= 1e-10))
     # ---- P5 independent bank operators
     if runs_bank is not None:
         C['P5'] = p5(J, states)
@@ -317,7 +321,8 @@ def p5(J, states):
     d = J.table('bank', 'gauss96')[0]
     Gq, Gx, Gy = NC.values_grads(X, J.Rp)
     nu = .05
-    for c in states[0]:
+    allst = np.concatenate(states)                                        # every dev6 output state (A6, code audit 1)
+    for c in allst:
         u, s_ = Gq @ c, (Gx + Gy) @ c
         ref = np.linalg.solve(Mm_, -(w[:, None] * Gq).T @ (u * s_) - nu * Km_ @ c)
         got = np.asarray(GS.rhs(jnp.asarray(c), nu, d))
@@ -335,18 +340,18 @@ def p5(J, states):
             tot = tot + jax.jvp(g, (x,), (e,))[1]
         return tot
     lapv = jax.jit(jax.vmap(lap1))
-    C6 = jnp.asarray(np.stack(states[0]))                                  # (6, r)
-    GtLap = jnp.zeros((6, J.Rp))
-    Tc = jnp.zeros((6, J.Rp))
+    C6 = jnp.asarray(allst)                                                 # (n, r)
+    GtLap = jnp.zeros((len(allst), J.Rp))
+    Tc = jnp.zeros((len(allst), J.Rp))
     for s0 in range(0, len(X), 16384):
         Xs = X[s0:s0 + 16384]
         ws = jnp.asarray(w[s0:s0 + 16384])
         g, gx, gy = mdl.values_grads(Xs, J.Rp)
         lg = lapv(jnp.asarray(Xs)) @ Tp
-        U, Lu, S_ = C6 @ g.T, C6 @ lg.T, C6 @ (gx + gy).T              # (6, chunk)
+        U, Lu, S_ = C6 @ g.T, C6 @ lg.T, C6 @ (gx + gy).T              # (n, chunk)
         GtLap = GtLap + (ws[None] * Lu) @ g
         Tc = Tc + (ws[None] * U * S_) @ g
-    for j in range(6):
+    for j in range(len(allst)):
         c = C6[j]
         out['lap_identity'].append(float(jnp.linalg.norm(GtLap[j] + Km @ c) / jnp.linalg.norm(Km @ c)))
         out['energy'].append(float(jnp.abs(c @ Tc[j]) / (jnp.linalg.norm(c) * jnp.linalg.norm(Tc[j]))))
@@ -365,7 +370,25 @@ def p5(J, states):
     L, h = J.L, 1. / J.L
     Gm = np.asarray(H.bank_apply(B.G, jnp.eye(J.Rp)))
     out['mesh_mass_rel'] = float(np.linalg.norm(h * h * Gm.T @ Gm - Mm_) / np.linalg.norm(Mm_))
-    del Gm
+    # descriptive only (A6): five-point stiffness and the FD right-hand side projected on the mesh (dev case 0 states)
+    G3 = Gm.reshape(L - 1, L - 1, J.Rp)
+    Gp = np.pad(G3, ((1, 1), (1, 1), (0, 0)))
+    lapG = ((Gp[2:, 1:-1] + Gp[:-2, 1:-1] + Gp[1:-1, 2:] + Gp[1:-1, :-2] - 4 * G3) / h ** 2).reshape(-1, J.Rp)
+    Kh = -h * h * Gm.T @ lapG
+    out['mesh_stiff_rel'] = float(np.linalg.norm(.5 * (Kh + Kh.T) - Km_) / np.linalg.norm(Km_))
+    del Gp, lapG, Kh
+    Mh = h * h * Gm.T @ Gm
+    dbank = J.table('bank', 'gauss128')[0]
+    out['mesh_fd_rhs_rel'] = []
+    for c in states[0]:
+        U_ = (Gm @ c).reshape(L - 1, L - 1)
+        Up = np.pad(U_, 1)
+        ds = (Up[2:, 1:-1] - Up[:-2, 1:-1] + Up[1:-1, 2:] - Up[1:-1, :-2]) / (2 * h)
+        lu = (Up[2:, 1:-1] + Up[:-2, 1:-1] + Up[1:-1, 2:] + Up[1:-1, :-2] - 4 * U_) / h ** 2
+        cm = np.linalg.solve(Mh, h * h * Gm.T @ (-U_ * ds + nu * lu).reshape(-1))
+        got = np.asarray(GS.rhs(jnp.asarray(c), nu, dbank))
+        out['mesh_fd_rhs_rel'].append(float(np.linalg.norm(got - cm) / np.linalg.norm(cm)))
+    del Gm, G3
     out['passed'] = bool(max(out['rhs_np']) <= 1e-10 and max(out['lap_identity']) <= 1e-5 and max(out['energy']) <= 1e-6
                          and out['host_mass'] <= 1e-11 and out['host_stiff'] <= 1e-11)
     return out

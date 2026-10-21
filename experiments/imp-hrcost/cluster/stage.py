@@ -29,6 +29,21 @@ def main():
     p.add_argument('--mem-fraction', default='0.92')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
+    lane = ROOT / LANE
+    led = json.loads((lane / 'runs' / 'GPU-LEDGER.json').read_text()) if (lane / 'runs' / 'GPU-LEDGER.json').exists() \
+        else dict(total_gpu_hours=0., reservations={})
+    spent = float(led['total_gpu_hours']) + sum(led.get('reservations', {}).values())
+    cfg = json.loads((lane / a.config).read_text())
+    assert cfg['attempt'] == a.attempt, ('config attempt differs', cfg['attempt'], a.attempt)
+    if a.attempt.startswith('smk'):
+        assert a.hours <= 1.5 + 1e-9, 'smoke reservation is 1.5 h (DESIGN A3.5)'
+    else:       # production: smoke-derived certificate bound to this exact config (code audit 1)
+        c_ = json.loads((lane / 'checks' / f'resources-{a.attempt}.json').read_text())
+        assert c_['ok'] and c_['config_sha256'] == hashlib.sha256((lane / a.config).read_bytes()).hexdigest(), 'certificate'
+        acc = json.loads((lane / 'checks' / f'smoke-accept-{c_["smoke_attempt"]}.json').read_text())
+        assert acc['accepted'], 'smoke not accepted'
+        assert a.hours >= c_['projection_hours'] - 1e-9, ('time limit below projection', a.hours, c_['projection_hours'])
+    assert spent + a.hours <= 3.0 + 1e-9, ('GPU-hour cap', spent, a.hours)
     out = ROOT / LANE / 'runs' / a.attempt
     out.mkdir(parents=True, exist_ok=False)
     remote = f'{NAMESPACE}/{a.attempt}'

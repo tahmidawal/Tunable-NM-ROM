@@ -115,7 +115,7 @@ class Job:
         if k not in self.tabs:
             d, aux, meta, (X, w) = self.base.tables(proj, rule)
             meta['fingerprint'] = HT.table_fingerprint(d)
-            self.tabs[k] = (d, aux, meta, w)
+            self.tabs[k] = (d, aux, meta, w, X)
         return self.tabs[k]
 
     def drop(self, keep=()):
@@ -168,10 +168,15 @@ class Job:
         lab = HL.q2_label(*args, np.asarray(rho_b), *chk_args)
         labp = HL.q2_label(*args, np.asarray(rho_p), *chk_args)
         self.rep['q2'][name] = dict(proj=proj, own=own_tab[2]['rule'], succ=succ_tab[2]['rule'], m=own_tab[2]['m'],
+                                    own_fingerprint=own_tab[2].get('fingerprint'), succ_fingerprint=succ_tab[2].get('fingerprint'),
                                     label=lab['label'], detail=lab, label_projected=labp['label'], detail_projected=labp,
                                     rows=rows, chk=chk)
         np.savez(self.out / 'arrays' / f'q2_{name}.npz', W=np.stack([own_runs[c]['W'] for c in self.q2_set]),
-                 Ws=np.stack([succ_runs[c]['W'] for c in self.q2_set]), case_ids=np.array(self.q2_set))
+                 Ws=np.stack([succ_runs[c]['W'] for c in self.q2_set]), case_ids=np.array(self.q2_set),
+                 Wc=np.stack([chk_runs[c]['W'] for c in dev]), dev_ids=np.array(dev),
+                 own_valid=np.array([own_runs[c]['valid'] for c in self.q2_set]),
+                 succ_valid=np.array([succ_runs[c]['valid'] for c in self.q2_set]),
+                 chk_valid=np.array([chk_runs[c]['valid'] for c in dev]))
         return lab['label']
 
     def ladder(self, proj, rules, name_of):
@@ -222,9 +227,9 @@ class Job:
         """A1.5 / A2.2 / A2.5: training rollouts of the parent arm, ECSW system, greedy NNLS; returns {kappa: tables}."""
         t = time.perf_counter()
         proj, rule = parent_key
-        d, aux, meta, w = self.table(proj, rule)
+        d, aux, meta, w, _X = self.table(proj, rule)
         D = FT.train_draw_2d(seed=0, count=576)
-        FT.assert_not_dev_val(D[:FT.NDRAW + FT.MAX_REPL], np.stack([c[2] for c in self.cases]))
+        FT.assert_not_dev_val(D[:FT.NDRAW + FT.MAX_REPL], np.concatenate([Q.cohort(k) for k in ('dev6', 'val32', 'test64')]))
         steps = FT.SNAP_STEPS[fam]
         rows_used, snaps, repl = [], [], 0
         j = 0
@@ -234,7 +239,7 @@ class Job:
             u0 = jnp.asarray(Q.e.initial(self.L, ph))
             o = self.Qy['fused'](u0, float(ph[4]), d, self.U[proj], self.base.G, self.base.cold, self.sch['prod'])
             o = jax.device_get(o)
-            if GS.run_valid(o, self.S) and np.all(np.asarray(o['stats']['reason'])[:self.S] == 1):
+            if GS.run_valid(o, self.S):                      # A1.5: replaced only if the rollout is invalid
                 rows_used.append(j)
                 snaps.append(np.asarray(o['stats']['states'])[list(steps)])
             else:
@@ -247,7 +252,9 @@ class Job:
             self.rep['fits'][fam] = info
             return {}
         snaps = np.concatenate(snaps)
-        info['snap_sha'] = HT.sha(snaps)
+        info.update(snap_sha=HT.sha(snaps), rows_sha=HT.sha(D[rows_used]), stepper_sha256=_fsha(Path(GS.__file__)),
+                    parent_meta={k: v for k, v in meta.items() if k != 'build_seconds'})
+        np.savez(self.out / 'arrays' / f'snaps_{fam}.npz', snaps=snaps, rows=np.asarray(rows_used))
         info['rollout_seconds'] = time.perf_counter() - t
         rows_unw = self.base.fit_rows(fam, aux, w)
         t1 = time.perf_counter()
@@ -258,13 +265,14 @@ class Job:
             self.rep['fits'][fam] = info
             return {}
         info.update(system=sinfo, system_seconds=time.perf_counter() - t1, mem_system=P.mem())
-        if sinfo['snapshots'] == 0:
+        if sinfo['snapshots'] == 0 or C is None:
             info['status'] = 'not built (all blocks dropped)'
             self.rep['fits'][fam] = info
             return {}
         res = FT.fit(C, b, self.Rp, log=lambda s: print(fam, s, flush=True), kappas=tuple(self.cfg.get('kappas', FT.KAPPAS)))
         info.update({k: v for k, v in res.items() if k != 'rules'}, mem_fit=P.mem())
-        del C
+        if C is not None:
+            del C
         drift_bad = not res.get('drift_ok', True)
         out = {}
         info['rules'] = {}
@@ -283,7 +291,7 @@ class Job:
                                     w_sum=float(rr['w'].sum()))
             np.savez(self.out / 'arrays' / f'fit_{fam}_k{k}.npz', idx=rr['idx'], w=rr['w'])
             if st == 'built':
-                out[k] = HT.fitted((d, aux, meta), w, rr['idx'], rr['w'], f'{fam}k{k}')
+                out[k] = HT.fitted((d, aux, meta), self.tabs[parent_key][4], w, rr['idx'], rr['w'], f'{fam}k{k}')
         info['status'] = 'done'
         info['seconds'] = time.perf_counter() - t
         self.rep['fits'][fam] = info
@@ -291,11 +299,14 @@ class Job:
         return out
 
     # ------------------------------------------------------------------------------------------ timing ----
-    def timing(self, ref, pairs, cases, reps, burn):
-        """Paired A-B-A per case (A = ref = R): end-to-end fused query and evolution only (A1.7)."""
+    def timing(self, ref, pairs, cases, reps, burn, scored=None):
+        """Paired A-B-A per case (A = ref = R): end-to-end fused query and evolution only (A1.7). The outputs of the last
+        timed B invocation are kept and checked against the scored production coefficients (scored[name][cid], 1e-12) and
+        the evolution-only W against the fused W; burn-in immediately before each timed block."""
         dR, projR = ref
         res = {}
         ev = self.Qy['evolve']
+        dev_name = jax.devices()[0].device_kind
         for name, dB, projB in pairs:
             per = {}
             for cid in cases:
@@ -305,28 +316,42 @@ class Job:
                 w0 = self.Qy['init'](u0, self.base.cold)
                 eA = lambda: ev(w0, nu, dR, self.U[projR], self.sch['prod'])
                 eB = lambda: ev(w0, nu, dB, self.U[projB], self.sch['prod'])
-                rec = {}
+                rec, last = {}, {}
                 for tag, a_, b_ in (('e2e', fA, fB), ('evo', eA, eB)):
                     for _ in range(burn):
                         jax.block_until_ready(a_())
                         jax.block_until_ready(b_())
                     tA1, tB, tA2 = [], [], []
                     for _ in range(reps):
-                        for lst, f in ((tA1, a_), (tB, b_), (tA2, a_)):
+                        for lst, f, isb in ((tA1, a_, False), (tB, b_, True), (tA2, a_, False)):
                             s = time.perf_counter()
-                            jax.block_until_ready(f())
+                            o = jax.block_until_ready(f())
                             lst.append(time.perf_counter() - s)
+                            if isb:
+                                last[tag] = o
                     a1, bb, a2 = np.median(tA1), np.median(tB), np.median(tA2)
-                    rec[tag] = dict(A1=tA1, B=tB, A2=tA2, ratio=float(.5 * (a1 + a2) / bb),
-                                    outliers=int(sum(x > 3 * np.median(l_) for l_ in (tA1, tB, tA2) for x in l_)))
-                ob = jax.device_get(fB())
-                rec['timed_W_sha'] = HT.sha(np.asarray(ob['W']))
+                    rec[tag] = dict(A1=tA1, B=tB, A2=tA2, ratio=float(.5 * (a1 + a2) / bb), medA=float(.5 * (a1 + a2)),
+                                    medB=float(bb), outliers=int(sum(x > 3 * np.median(l_) for l_ in (tA1, tB, tA2) for x in l_)),
+                                    order='A1,B,A2 per repetition')
+                ob = jax.device_get(last['e2e'])
+                Wt = np.asarray(ob['W'])
+                We = np.asarray(jax.device_get(last['evo'])[0])
                 rec['timed_valid'] = GS.run_valid(ob, self.S)
+                rec['evo_vs_fused'] = float(np.linalg.norm(We - Wt) / max(np.linalg.norm(Wt), 1e-300))
+                if scored is not None and name in scored and cid in scored[name]:
+                    Ws = scored[name][cid]
+                    rec['timed_vs_scored'] = float(np.linalg.norm(Wt - Ws) / max(np.linalg.norm(Ws), 1e-300))
                 per[cid] = rec
             r_e = np.array([per[c]['e2e']['ratio'] for c in cases])
             r_v = np.array([per[c]['evo']['ratio'] for c in cases])
+            sm = lambda tag: float(np.median([per[c][tag]['medA'] for c in cases]) / np.median([per[c][tag]['medB'] for c in cases]))
             res[name] = dict(per_case=per, e2e_median=float(np.median(r_e)), evo_median=float(np.median(r_v)),
-                             e2e_ci=_boot(r_e), evo_ci=_boot(r_v))
+                             e2e_ci=_boot(r_e), evo_ci=_boot(r_v), e2e_ratio_of_medians=sm('e2e'),
+                             evo_ratio_of_medians=sm('evo'), device=dev_name, fingerprint_B=HT.table_fingerprint(dB),
+                             fingerprint_A=HT.table_fingerprint(dR), reps=reps, burn=burn,
+                             timed_valid_all=bool(all(per[c]['timed_valid'] for c in cases)),
+                             timed_vs_scored_max=max((per[c].get('timed_vs_scored', np.nan) for c in cases), default=np.nan),
+                             evo_vs_fused_max=max(per[c]['evo_vs_fused'] for c in cases))
             print('TIMING', name, res[name]['e2e_median'], res[name]['evo_median'], flush=True)
             self.rep['timing'][name] = res[name]
             self.save()
@@ -345,7 +370,7 @@ class Job:
             s = time.perf_counter()
             acc = jax.block_until_ready(f(cs[i], acc, d))
             ts.append(time.perf_counter() - s)
-        return float(np.median(ts)), float(acc)
+        return float(np.median(ts)), float(acc), ts
 
 
 _JB = jax.jit(lambda c, acc, d: acc + jnp.sum(GS.rhs_jac(c, .05, d)))      # tables are arguments, never captured

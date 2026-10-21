@@ -74,7 +74,8 @@ def make_evolve(nrec=NSTEP_MAX + 1, mutation=None):
             rn = gnorm(U, rv)
             fin = jnp.all(jnp.isfinite(c)) & jnp.isfinite(rn)
             reason = jnp.where(~fin, 2, jnp.where(rn <= tol, 1, 0))
-            return c, it, reason, rn / (scale + 1e-300)
+            eta = jnp.where(scale > 0, rn / jnp.where(scale > 0, scale, 1.), jnp.where(rn == 0, 0., jnp.inf))
+            return c, it, reason, eta
 
         out0 = jnp.zeros((6, r)).at[0].set(c0)
         st0 = dict(states=jnp.full((nrec, r), jnp.nan).at[0].set(c0), it=jnp.full(NSTEP_MAX, -1, jnp.int32),
@@ -133,8 +134,9 @@ def make_certifier():
         J = jax.jacfwd(res)(c1)
         rn = jnp.linalg.norm(rv)
         sv = jnp.linalg.svd(J, compute_uv=False)
-        eta = gnorm(U, rv) / (gnorm(U, cn) + 1e-300)
-        eta = jnp.where(gnorm(U, cn) > 0, eta, jnp.inf)
+        sc, rg = gnorm(U, cn), gnorm(U, rv)
+        # A2.4: zero scale with zero residual -> certified (0); zero scale with non-zero residual -> inf
+        eta = jnp.where(sc > 0, rg / jnp.where(sc > 0, sc, 1.), jnp.where(rg == 0, 0., jnp.inf))
         gam = jnp.linalg.norm(J.T @ rv) / (jnp.linalg.norm(J) * rn + 1e-300)
         return eta, gam, sv[0] / sv[-1]
 

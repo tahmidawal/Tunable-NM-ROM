@@ -7,7 +7,8 @@ with an arm-specific point set and tables (Gq, Gs, P (m, r); L0 (r, r)), built o
   sine-tested (arms R, F3):   A = Qm Rm (thin QR of the mesh-projected A, M = 4r frozen modes),
                               P = Psi Qm Rm^{-T}, Psi = L w psi (qcore.offmesh_data 'point'),
                               L0 = -Rm^{-1} Qm^T Lambda A
-  bank-tested (arms F2, F2+F3): Mass = int G^T G, Stiff = int grad G^T grad G (Gauss 384^2, checked against 320^2),
+  bank-tested (arms F2, F2+F3): Mass = int G^T G, Stiff = int grad G^T grad G (Gauss 1024^2, checked against 768^2,
+                              bar 2.5e-6, ceiling 1280^2: DESIGN A5),
                               P = diag(w) Gq Mass^{-1},  L0 = -Mass^{-1} Stiff
 
 Fitted rules (F3, F2+F3) are row subsets of the Gauss 128^2 parent tables with new weights:
@@ -145,16 +146,19 @@ class Base:
         raise ValueError(family)
 
 
-def fitted(parent, parent_w, idx, w_hat, name):
-    """Row subset of parent tables with new non-negative weights (F3, F2+F3). parent = (d, aux, meta)."""
+def fitted(parent, parent_X, parent_w, idx, w_hat, name):
+    """Row subset of parent tables with new non-negative weights (F3, F2+F3). parent = (d, aux, meta). The metadata get a
+    fresh fingerprint and the rule hash of the fitted points and weights (code audit 1)."""
     d, aux, meta = parent
     idx = np.asarray(idx, int)
     sc = jnp.asarray(np.asarray(w_hat, float) / np.asarray(parent_w, float)[idx])[:, None]
     out = dict(Gq=d['Gq'][idx], Gs=d['Gs'][idx], P=d['P'][idx] * sc, L0=d['L0'])
     ax = dict(T=aux['T'][idx] * sc)
-    m2 = dict(meta, rule=name, m=int(len(idx)), parent_rule=meta['rule'],
-              rule_sha256=sha(np.concatenate([idx.astype(float), np.asarray(w_hat, float)])))
-    return jax.block_until_ready((out, ax)) + (m2,)
+    out, ax = jax.block_until_ready((out, ax))
+    m2 = dict(meta, rule=name, m=int(len(idx)), parent_rule=meta['rule'], parent_fingerprint=meta.get('fingerprint'),
+              rule_sha256=sha(np.concatenate([np.asarray(parent_X)[idx].ravel(), np.asarray(w_hat, float)])),
+              fingerprint=table_fingerprint(out))
+    return out, ax, m2
 
 
 def duplicated(parent):
@@ -162,14 +166,16 @@ def duplicated(parent):
     d, aux, meta = parent
     cat = lambda a, f=1.: jnp.concatenate([f * a, f * a])
     out = dict(Gq=cat(d['Gq']), Gs=cat(d['Gs']), P=cat(d['P'], .5), L0=d['L0'])
-    return out, dict(T=cat(aux['T'], .5)), dict(meta, rule=meta['rule'] + '-dup', m=2 * meta['m'])
+    return out, dict(T=cat(aux['T'], .5)), dict(meta, rule=meta['rule'] + '-dup', m=2 * meta['m'],
+                                                fingerprint=table_fingerprint(out), rule_sha256=None)
 
 
 def nan_injected(parent):
     """C4 / P6: one NaN in P (and in the tested rows)."""
     d, aux, meta = parent
-    return (dict(d, P=d['P'].at[0, 0].set(jnp.nan)), dict(T=aux['T'].at[0, 0].set(jnp.nan)),
-            dict(meta, rule=meta['rule'] + '-nan'))
+    out = dict(d, P=d['P'].at[0, 0].set(jnp.nan))
+    return out, dict(T=aux['T'].at[0, 0].set(jnp.nan)), dict(meta, rule=meta['rule'] + '-nan', fingerprint='nan-fixture',
+                                                             rule_sha256=None)
 
 
 def table_fingerprint(d):

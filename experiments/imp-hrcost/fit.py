@@ -44,7 +44,8 @@ def sha(a):
 
 
 def assert_not_dev_val(rows, dev_val_desc):
-    """C7: no fitting row equals (to 1e-12) any dev6 / val32 / test64 descriptor row."""
+    """C7: no fitting row equals (to 1e-12) any descriptor row of dev_val_desc (the caller passes dev6, val32 and
+    test64)."""
     rows = np.asarray(rows, float)
     for j, r_ in enumerate(np.asarray(dev_val_desc, float)):
         assert not np.any(np.all(np.abs(rows - r_[None]) <= 1e-12, axis=1)), ('fit leakage', j)
@@ -64,9 +65,13 @@ def build_system(rows_unw, Gq, Gs, w_parent, snaps):
     keep = np.asarray(nb > 1e-12 * jnp.max(nb))
     if not np.isfinite(np.asarray(bj)).all():
         raise FloatingPointError('non-finite ECSW target')
+    if not keep.any():
+        return None, None, dict(snapshots=0, dropped=int((~keep).sum()))       # "not built (all blocks dropped)"
     a, bj, nb = a[keep], bj[keep], nb[keep]
     n, r = bj.shape
     C = (rows_unw.T[None, :, :] * (a / nb[:, None])[:, None, :]).reshape(n * r, -1)
+    if not bool(jnp.all(jnp.isfinite(C))):
+        raise FloatingPointError('non-finite ECSW system entry')
     b = np.asarray((bj / nb[:, None]).reshape(-1))
     info = dict(rows=int(C.shape[0]), cols=int(C.shape[1]), bytes=int(C.size * 8), dropped=int((~keep).sum()),
                 snapshots=int(n))

@@ -91,9 +91,28 @@ def resample(Phi_s, Ls, Lt, block=8, mutate=None):
     return sync(out)
 
 
-def orth_dev(Phi, block=64):
-    """max |Phi^T Phi - I| computed in column blocks (no (r, r) host copy of Phi)."""
-    G = sync(Phi.T @ Phi)
+@jax.jit
+def _gram_block(P, a):
+    B = jax.lax.dynamic_slice_in_dim(P, a, _GB, axis=0)
+    return jnp.einsum('ni,nj->ij', B, B)
+
+
+_GB = 1 << 18
+
+
+def orth_dev(Phi):
+    """max |Phi^T Phi - I|, accumulated over row blocks inside jit (an eager Phi.T materialises a transposed copy of
+    the basis, 48 GB at 4096^2, smoke S1)."""
+    n = Phi.shape[0]
+    G = jnp.zeros((Phi.shape[1], Phi.shape[1]))
+    a = 0
+    while a + _GB <= n:
+        G = G + _gram_block(Phi, a)
+        a += _GB
+    if a < n:
+        B = Phi[a:]
+        G = G + jnp.einsum('ni,nj->ij', B, B)
+    G = sync(G)
     return float(jnp.max(jnp.abs(G - jnp.eye(G.shape[0]))))
 
 
@@ -232,7 +251,7 @@ def ecsw_contrib_blocked(states, Phi, r, L, block=1 << 17, seed=BD.ECSW_SEED_CAN
     n = (L - 1) ** D
     ev = make_block_eval(L, mutation)
     be = jnp.asarray(H.BE_CO)
-    proj = jax.jit(lambda P, u: (P.T @ u)[:r])
+    proj = jax.jit(lambda P, u: (u @ P)[:r])
     rows = []
     for s in states:
         sc, dt = s['option']

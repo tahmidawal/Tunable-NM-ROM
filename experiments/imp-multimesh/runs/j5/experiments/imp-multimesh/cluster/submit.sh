@@ -30,7 +30,7 @@ print(c['projected_hours'])
 PYEOF
 )
 if [ "$KIND" = prod ]; then
-  ACC="$LANE/runs/s1/pulled/output/ACCEPT.json"            # the registered S1 smoke attempt
+  ACC="$LANE/runs/$(cat "$LANE/checks/S1_ATTEMPT")/pulled/output/ACCEPT.json"   # the current S1 smoke attempt
   [ -f "$ACC" ] || ACC=""
   [ -n "$ACC" ] && "$PY" -c "import json,sys; sys.exit(0 if json.load(open('$ACC'))['all_passed'] else 1)" || { echo "S1 acceptance missing or failed"; exit 9; }
 fi

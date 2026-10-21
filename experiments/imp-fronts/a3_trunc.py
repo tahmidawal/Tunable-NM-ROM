@@ -38,7 +38,9 @@ def main():
             cid = str(cid)
             if cid not in refs:
                 continue
-            if not bool(Z['valid'][i]) or not np.isfinite(Z['W'][i]).all():
+            lrec = A.get(key, {}).get('per_case', {}).get(cid, {})
+            lane_invalid = isinstance(lrec, dict) and lrec.get('valid') is False      # Amendment 13: the lane's own validity
+            if not bool(Z['valid'][i]) or not np.isfinite(Z['W'][i]).all() or lane_invalid:
                 invalid.append(cid)
                 continue
             u, n0 = refs[cid]

@@ -10,7 +10,8 @@
 
 Banks: K0 = the incumbent through fcommon (dn256b checkpoint + rotation_R512, the jcp-regimes npcheck defaults); K1..K3 =
 jcp-robust inputs/banks/s{1,2,3}/ (ckpt.pkl + rotation_R512.npz, sha256 from BANK.json); an arm = its own BANK.json with
-ckpt / rotation (paths relative to the BANK.json directory unless absolute) and their sha256. Every file is hashed
+canonical keys 'ckpt' / 'rotation' (plain file names relative to the BANK.json directory; jcp-robust's format without
+them means ckpt.pkl / rotation_R512.npz beside it) and their sha256. Every file is hashed
 before use and npcheck's caches are reset (jcp-robust e2bank.use pattern), so no table of another bank survives.
 
 References: <refs>/2d/<cohort>/ST/c<j>.npz|json (the refslim layout of phaseb/frefs); cohorts FI, FN0s, FC1, FC2 only, test
@@ -57,16 +58,21 @@ def resolve_bank(spec):
     if spec in (None, 'K0'):
         return dict(name='K0', ckpt=str(_INC[0]), rotation=str(_INC[1]), ckpt_sha256=None, rotation_sha256=None,
                     bank_json=None)
-    if spec in ('K1', 'K2', 'K3'):
-        bj = ROBUST / f's{spec[1]}' / 'BANK.json'
-        meta = json.loads(bj.read_text())
-        return dict(name=spec, ckpt=str(bj.parent / 'ckpt.pkl'), rotation=str(bj.parent / 'rotation_R512.npz'),
-                    ckpt_sha256=meta['ckpt_sha256'], rotation_sha256=meta['rotation_sha256'], bank_json=str(bj),
-                    seed=meta.get('seed'))
-    bj = Path(spec)
+    bj = ROBUST / f's{spec[1]}' / 'BANK.json' if spec in ('K1', 'K2', 'K3') else Path(spec)
     meta = json.loads(bj.read_text())
-    res_ = lambda p: str(Path(p) if Path(p).is_absolute() else bj.parent / p)
-    return dict(name=meta.get('name', bj.parent.name), ckpt=res_(meta['ckpt']), rotation=res_(meta['rotation']),
+    # canonical keys 'ckpt' / 'rotation' = file names relative to the BANK.json directory (register_arm); jcp-robust's
+    # BANK.json has neither (its 'source_*' keys are cluster paths) and keeps ckpt.pkl + rotation_R512.npz beside it
+    def res_(key, default):
+        v = meta.get(key, default)
+        p = Path(v)
+        if p.is_absolute() or '..' in p.parts:
+            raise BankError(f'{bj}: {key} must be a plain relative file name, got {v!r}')
+        return str(bj.parent / p)
+    for k in ('ckpt_sha256', 'rotation_sha256'):
+        if not (isinstance(meta.get(k), str) and len(meta[k]) == 64):
+            raise BankError(f'{bj}: missing / malformed {k}')
+    return dict(name=spec if spec in ('K1', 'K2', 'K3') else meta.get('name', bj.parent.name),
+                ckpt=res_('ckpt', 'ckpt.pkl'), rotation=res_('rotation', 'rotation_R512.npz'),
                 ckpt_sha256=meta['ckpt_sha256'], rotation_sha256=meta['rotation_sha256'], bank_json=str(bj),
                 seed=meta.get('seed'))
 

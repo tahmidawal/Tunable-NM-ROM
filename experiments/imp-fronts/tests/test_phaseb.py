@@ -394,3 +394,74 @@ def test_rom_driver_loads_fresh_table():
     import fcases
     t, _ = fcases.load_table(FC.OUT)
     assert fcases.table_sha(t['cohorts']) == FC.load()['sha256']
+
+
+# ------------------------------------------------------------------------- audit codex-code-B-1 fixes ---
+def test_route_substitution_probe_refused():
+    """Unchanged arm-(a) evidence that STOPs must not become CONTINUE by supplying routes=['mstar'] (Amendment 12)."""
+    arm = bank(fn=1.0, nodes=9216)
+    arm['selection']['rule'] = 'gauss96'
+    inp = dict(arms=dict(a=arm), controls=dict(K1=bank()), eligible=ELIG)
+    assert V.verdict(inp)['arms']['a']['outcome'] == V.STOP_E
+    arm2 = dict(arm, routes=['mstar'])
+    with pytest.raises(V.InputError):
+        V.verdict(dict(inp, arms=dict(a=arm2)))
+    with pytest.raises(V.InputError):
+        V.evaluate('a', arm2, bank(), ELIG)
+    assert V.verdict(dict(inp, arms=dict(a=dict(arm, routes=['floor']))))['arms']['a']['outcome'] == V.STOP_E
+
+
+@pytest.mark.parametrize('elig', [dict(ELIG, FI=[4, 5, 5, 6, 7, 8]), dict(ELIG, FN0s=[2, 4, 5, 6, 7]),
+                                  dict(ELIG, FC1=['4', 'x']), dict(ELIG, BAD=[4])])
+def test_eligible_ids_validated(elig):
+    with pytest.raises((V.InputError, ValueError)):
+        V.verdict(dict(arms=dict(a=bank(fn=0.1)), controls=dict(K1=bank()), eligible=elig))
+
+
+def test_selection_rule_node_consistency():
+    assert V.rule_nodes('gauss160') == 25600 and V.rule_nodes('fib4181') == 4181
+    arm = bank(nodes=9216)
+    arm['selection']['rule'] = 'gauss128'                                             # 16384 != 9216
+    with pytest.raises(V.InputError):
+        V.verdict(dict(arms=dict(c=arm), controls=dict(K1=bank()), eligible=ELIG))
+    ctrl = bank(nodes=100)
+    with pytest.raises(V.InputError):
+        V.verdict(dict(arms=dict(a=bank(fn=0.1)), controls=dict(K1=ctrl), eligible=ELIG))
+    arm = bank(nodes=None, cert=False)                                                # uncertified: no check
+    V.verdict(dict(arms=dict(c=arm), controls=dict(K1=bank()), eligible=ELIG))
+
+
+def test_floors_bank_json_formats(tmp_path):
+    import json
+    import floors_b as B
+    b = B.resolve_bank('K1')                                                          # jcp-robust format
+    assert b['ckpt'].endswith('s1/ckpt.pkl') and b['rotation'].endswith('s1/rotation_R512.npz')
+    d = tmp_path / 'arm'
+    d.mkdir()
+    (d / 'BANK.json').write_text(json.dumps(dict(ckpt='bank.pkl', rotation='rot.npz', ckpt_sha256='a' * 64,
+                                                 rotation_sha256='b' * 64)))
+    b = B.resolve_bank(str(d / 'BANK.json'))
+    assert b['ckpt'] == str(d / 'bank.pkl') and b['rotation'] == str(d / 'rot.npz')
+    for bad in (dict(ckpt='/abs/x.pkl'), dict(ckpt='../x.pkl'), dict(ckpt_sha256='short')):
+        (d / 'BANK.json').write_text(json.dumps(dict(dict(ckpt='bank.pkl', rotation='rot.npz', ckpt_sha256='a' * 64,
+                                                          rotation_sha256='b' * 64), **bad)))
+        with pytest.raises(B.BankError):
+            B.resolve_bank(str(d / 'BANK.json'))
+
+
+def test_e9_routing_separates_input_and_failure():
+    fresh = dict(cohorts=dict(FI=[dict(j=j, split='test' if j >= 4 else 'dev', s=10.) for j in range(10)],
+                              FC1=[dict(j=j, split='test' if j >= 4 else 'dev', s=300.) for j in range(12)]))
+    frozen = dict(content_sha256='x', tau_s=150., target_A=dict(threshold=0.002), target_B=dict(threshold=0.01))
+    pol = {f'FI|{j}': dict(e=0.001, valid=True, eligible=True) for j in range(4, 10)}
+    pol['FI|4'] = dict(e=None, valid=False, eligible=True)                            # failure found after solving
+    pol.update({f'FC1|{j}': dict(e=0.05, valid=True, eligible=True) for j in range(4, 10)})
+    out = E9.score(pol, frozen=frozen, fresh=fresh)
+    assert out['input_flagged_fraction'] == 0.5 and abs(out['failure_fallback_fraction'] - 1 / 12) < 1e-15
+    assert abs(out['flagged_fraction'] - 7 / 12) < 1e-15 and 'unmeasured' in out['routing']['cost']
+    t = dict(rom_seconds=1., fom_seconds=10., gpu='H200', job_id='123', paired_same_job=True)
+    r = E9.score(pol, timing=t, frozen=frozen, fresh=fresh)['routing']
+    assert abs(r['input_routing_seconds_per_query'] - (0.5 * 10 + 0.5 * 1 + 10 / 12)) < 1e-12
+    assert abs(r['rom_then_fallback_seconds_per_query'] - (1 + (0.5 + 1 / 12) * 10)) < 1e-12
+    r = E9.score(pol, timing=dict(rom_seconds=1., fom_seconds=10., gpu='H200'), frozen=frozen, fresh=fresh)['routing']
+    assert 'unmeasured' in r['cost'] and 'timing_refused' in r

@@ -1,18 +1,21 @@
-"""imp-fronts train jobs: per-phase timing record of one run_seed.sh output directory (smoke or production).
+"""imp-fronts train jobs: timing record and the training projection (DESIGN Amendment 11).
 
-    python phase_times.py <outdir> <job> <arm> <mode> <wall_limit_s> <self_timer_s> <out.json>
+    smoke:       python phase_times.py <datagen.json> <job> <arm> smoke <wall_s> <timer_s> <out.json>
+    production:  python phase_times.py --production <run_seed outdir> <job> <arm> production <wall_s> <timer_s> <out.json>
 
-Reads only files run_seed.sh / smoothtrain / sep_coeff_extract / sep_hfit_run / make_rotation write (missing files ->
-null, so a partial run still gets a record). Phases:
-  A.data            Stage A data generation (576 seed-0 trajectories, train.json data.seconds; excludes the R0 gate)
-  A.r0_gate         the arm's R0 replacement gate (fid: PS C-B3 + self-convergence seconds; cov: C-B4, ~0)
-  A.train_sub/full  per-step rates of the point-subsampled and the final full-spatial phase (stageA.log stamps;
-                    the first full-phase interval includes the full step's compilation)
-  B.gen_seed0 / B.gen_seed1000   extraction generate+project time of the 576 canonical and the 4,032 appended
-                    trajectories (extract.log stamps at 576 and 4,608 trajectories)
-  B.extract_total, B.hfit (per arm steps, seconds), rotation, stage wall seconds (seconds.txt)
-plus a production projection at the recipe sizes (Stage A 290,000 sub + 10,000 full steps; head fit as measured
-per step x 200,000 steps capped at TIME_CAP = 1,500 s per arm; data and extraction as measured, they are full size).
+Smoke: measured data-generation seconds per population (smoke_datagen.py: seed 0 x 576, seed 1000 x 4032) and the
+training projection of Amendment 11:
+    projection = K1 measured maximum production time + measured data-generation increment over K1's data generation
+  K1 maximum = jcp-robust e2t2d seed 2 (job e2t2d, A100 80GB PCIe), run_record.json stage_seconds A 11099 + B 3901 +
+  rotation 18 = 15018 s = 4.172 GPU-h (runs/e2t2d/archive/output/train2d_s2/run_record.json, sha256 d5259149...).
+  K1 data generation in that run: Stage A data.seconds 124.96 s (576 trajectories: rollout + residual check + host
+  copy, the work smoke_datagen.py times) and Stage B extraction gen+proj 906 s at 4,608/4,608 (extract.log; it also
+  contains the projection, so using it as K1's generation time makes the increment conservative, i.e. larger).
+  The arm's production generation = Stage A seed0 + Stage B (seed0 + seed1000); increment = (arm_A - 124.96) +
+  (arm_B - 906), floored at 0 in the projection (a negative increment is reported but not credited).
+  Flag NOT FUNDABLE if the projection > 4.6 GPU-h (Amendment 11 ceiling); UNCERTIFIED if the generation was incomplete.
+Production: the per-phase record of a run_seed.sh output directory (stage seconds, Stage A rates, extraction and head
+fit seconds), for the ledger; no projection.
 """
 import json
 import re
@@ -34,8 +37,8 @@ def num(p):
         return None
 
 
-def main():
-    o, job, arm, mode, wall, timer, outp = sys.argv[1:8]
+def production(argv):
+    o, job, arm, mode, wall, timer, outp = argv
     o = Path(o)
     A = jload(o / 'stageA/train.json') or {}
     rec = dict(job=job, arm=arm, mode=mode, wall_limit_s=float(wall), self_timer_s=float(timer),
@@ -79,28 +82,50 @@ def main():
     ex['hfit_total_s'] = h.get('total_seconds')
     rec['B'] = ex
     rec['rotation'] = dict(seconds=num(o / 'rotation/seconds.txt'))
-    proj = {}
-    if rates and rec['A']['data_seconds'] is not None:
-        proj['stageA_s'] = (rec['A']['data_seconds'] + (rec['A']['r0_gate_seconds'] or 0) + rates['first_step_s']
-                            + 290000 * rates['sub_s_per_step'] + 10000 * rates['full_s_per_step'])
-    if ex.get('extract_total_s') is not None and ex['hfit']:
-        hf = sum(min(1500.0, v['seconds'] / max(v['steps_done'], 1) * 200000) for v in ex['hfit'].values())
-        proj['stageB_s'] = ex['extract_total_s'] + hf + max(0.0, (ex.get('hfit_total_s') or 0)
-                                                           - sum(v['seconds'] for v in ex['hfit'].values()))
-        proj['note_hfit'] = 'per arm: min(TIME_CAP 1500 s, measured s/step x 200,000); oracle/diag overheads as measured (smoke sizes, a lower bound)'
-    if rec['rotation']['seconds'] is not None:
-        proj['rotation_s'] = rec['rotation']['seconds']
-    if {'stageA_s', 'stageB_s', 'rotation_s'} <= set(proj):
-        proj['total_h'] = (proj['stageA_s'] + proj['stageB_s'] + proj['rotation_s']) / 3600
-        proj['total_h_x1.25'] = 1.25 * proj['total_h']
-        proj['ceiling_h'] = 4.4
-        proj['self_timer_h'] = 0.9 * 4.4
-    rec['production_projection'] = proj
     rec['exhausted'] = (o.parent / 'EXHAUSTED.json').exists()
     Path(outp).write_text(json.dumps(rec, indent=1, default=float) + '\n')
     print(json.dumps(dict(stage_seconds=rec['stage_seconds'], A_rates=rates, B={k: ex.get(k) for k in
-                          ('gen_seed0_s', 'gen_seed1000_s', 'extract_total_s')}, projection=proj), default=float))
+                          ('gen_seed0_s', 'gen_seed1000_s', 'extract_total_s')}), default=float))
+
+
+K1 = dict(record='jcp-robust runs/e2t2d/archive/output/train2d_s2/run_record.json', record_sha256=
+          'd525914941979abde3293e11b6df9e53e25d0efc5276364cfb23c56e239bf3bc', job='e2t2d', seed=2,
+          gpu='NVIDIA A100 80GB PCIe', stage_seconds=dict(stageA=11099, stageB=3901, rotation=18),
+          total_s=15018, stageA_data_s=124.96112990379333, stageB_genproj_4608_s=906.0)
+CEILING_H = 4.6
+
+
+def smoke(argv):
+    dg, job, arm, mode, wall, timer, outp = argv
+    d = json.loads(Path(dg).read_text())
+    P = d['populations']
+    s0, s1 = P['seed0'], P['seed1000']
+    rec = dict(job=job, arm=arm, mode=mode, wall_limit_s=float(wall), self_timer_s=float(timer),
+               backend=d.get('backend'), device=d.get('device'), datagen_passed=d.get('passed'),
+               datagen_seconds={k: dict(m=v['m'], done=v['done'], seconds=v['seconds'], s_per_traj=v['s_per_traj'],
+                                         finite=v['finite'], independent_residual=v['independent_residual'],
+                                         rollout_rel_res=v['rollout_rel_res']) for k, v in P.items()},
+               gate=d.get('C_B3') if arm == 'fid' else d.get('C_B4'), K1_reference=K1)
+    complete = bool(d.get('complete'))
+    arm_A = s0['seconds']
+    arm_B = s0['seconds'] + s1['seconds']
+    inc = (arm_A - K1['stageA_data_s']) + (arm_B - K1['stageB_genproj_4608_s'])
+    proj_s = K1['total_s'] + max(0.0, inc)
+    proj_h = proj_s / 3600
+    status = 'UNCERTIFIED (generation incomplete)' if not complete else (
+        'NOT FUNDABLE' if proj_h > CEILING_H else 'fundable')
+    rec['projection'] = dict(arm_stageA_gen_s=arm_A, arm_stageB_gen_s=arm_B, increment_s=inc,
+                             projection_s=proj_s, projection_gpu_h=proj_h, ceiling_gpu_h=CEILING_H, status=status,
+                             same_gpu_type_as_K1=(d.get('device') == 'NVIDIA A100 80GB PCIe'))
+    if not rec['projection']['same_gpu_type_as_K1']:
+        rec['projection']['note'] = 'smoke GPU type differs from K1 record: the increment mixes GPU types'
+    Path(outp).write_text(json.dumps(rec, indent=1, default=float) + '\n')
+    print(json.dumps(dict(datagen={k: (v['done'], round(v['seconds'], 1)) for k, v in P.items()},
+                          projection=rec['projection']), default=float))
 
 
 if __name__ == '__main__':
-    main()
+    if sys.argv[1] == '--production':
+        production(sys.argv[2:9])
+    else:
+        smoke(sys.argv[1:8])

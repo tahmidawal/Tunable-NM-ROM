@@ -19,8 +19,8 @@ LANE_DIR = HERE.parents[1]
 ROOT = HERE.parents[3]
 LANE = 'experiments/imp-fronts'
 NAMESPACE = '/cluster/tufts/paralab/tawal01/imp-fronts'
-KINDS = {'test': dict(template='refs_test.sbatch.in', gpus=2, wall_h=1.45, ceiling_gpu_h=2.9),   # Amendment 10
-         'smoke': dict(template='refs_smoke.sbatch.in', gpus=1, wall_h=0.45, ceiling_gpu_h=0.45)}
+KINDS = {'test': dict(template='refs_test.sbatch.in', gpus=2, wall_h=1.6, ceiling_gpu_h=3.2),   # Amendment 12
+         'smoke': dict(template='refs_smoke.sbatch.in', gpus=1, wall_h=0.4, ceiling_gpu_h=0.4)}   # standalone only; SM-r hosts it
 GRES = {'a100-80G': ('a100', '#SBATCH --constraint=a100-80G'), 'h100': ('h100', ''), 'h200': ('h200', '')}
 LANE_FILES = ('phaseb/frefs/', 'phaseb/fresh_cohorts.json', 'cluster/refs/')
 EXTRA = ['experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',

@@ -25,8 +25,8 @@
  "anchors": [
   "FC1|0"
  ],
- "ceiling_hours": 0.45,
- "stop_fraction": 0.9,
+ "ceiling_hours": 0.4,
+ "stop_fraction": 0.15,
  "max_rounds": 1,
  "controls": {
   "cb1": true,
@@ -35,5 +35,5 @@
    "step": 10
   }
  },
- "note": "SM-b smoke (DESIGN Amendment 2 B9, Amendment 3 C-B6): policy round 1 on the 2 FC1 dev cases, forced uncertified start fib4181 (selected=null) to exercise the escalation / step paths; anchor FC1|0 is a smoke-only anchor (exercises the tighter path); ceiling_hours = the SM-b wall, counted from job start (--t0-epoch)."
+ "note": "SM-r step 1 (Amendment 11): K1 policy round 1 on FC1 dev j = 0, 1, forced uncertified start fib4181 (selected=null), C-B1 and C-B6 (FC1|0 step 10); smoke-only anchor FC1|0 exercises the tighter path. ceiling_hours = the SM-r wall (0.4 h, from job start via --t0-epoch); stop_fraction 0.15 leaves the rest of the wall to the dry run and references."
 }

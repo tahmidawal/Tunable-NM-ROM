@@ -30,7 +30,8 @@ def write_bank(src_dir, dst, meta):
     dst.mkdir(parents=True, exist_ok=False)
     shutil.copyfile(src_dir / CK, dst / 'ckpt.pkl')
     shutil.copyfile(src_dir / ROT, dst / 'rotation_R512.npz')
-    meta = dict(meta, ckpt_sha256=sha(dst / 'ckpt.pkl'), rotation_sha256=sha(dst / 'rotation_R512.npz'),
+    meta = dict(meta, ckpt='ckpt.pkl', rotation='rotation_R512.npz',       # canonical relative file names (floors_b.py)
+                ckpt_sha256=sha(dst / 'ckpt.pkl'), rotation_sha256=sha(dst / 'rotation_R512.npz'),
                 source_ckpt_sha256=sha(src_dir / CK), source_rotation_sha256=sha(src_dir / ROT))
     assert meta['ckpt_sha256'] == meta['source_ckpt_sha256'] and meta['rotation_sha256'] == meta['source_rotation_sha256']
     rj = src_dir / 'rotation' / 'rotation_R512.json'

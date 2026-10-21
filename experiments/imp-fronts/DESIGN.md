@@ -834,3 +834,14 @@ retrain. Training has no partial result, so it gets **no self-timer** (`SELF_TIM
   same registration from its persisted per-case outputs only).
 - **B0 routes are fixed per arm** in code (`ARM_ROUTES`): (a) floor, (b) ROM, (c) $m^*$ + tail; inputs cannot
   substitute routes.
+
+---
+
+## Amendment 13 (2026-10-21)
+
+- **Reference ceiling 3.25 GPU-h** (2 H200, 1.625 h wall): 24 × 288.5 s × 1.5 = 2.885 GPU-h must be ≤ 90 % of the ceiling
+  (Amendment 12), which 3.2 misses by 0.005. **S1 = 15.6 (not fundable), S3 = 9.9 GPU-h.**
+- **A3 validity (Phase A).** The final A3 run showed `R384|GAL_CN_1` cases C2|8 and C2|13 marked valid in the saved
+  archive but **invalid** in jcp-regimes `analysis.json` (budget exits), so reproduction "failed" (no lane error to
+  compare). A3 now treats a run as invalid if either the archive flag or the lane's own per-case validity is false
+  (counted under invalid runs), which is the lane's definition of the error it reports. This changes no threshold.

@@ -2,7 +2,8 @@
 every solve and every round) it writes the exhaustion records: every case still open becomes BUDGET-CAP, scored at its
 latest valid prod, and the summary is computed by the same code as the driver's (fpolicy.summarise). CPU only, no JAX.
 
-    python fcollect.py <fpolicy out dir>          -> <out>/result.json (killed=true, complete=false) unless COMPLETE exists
+    python fcollect.py <fpolicy out dir> [<config.json>]   -> <out>/result.json (killed=true, complete=false) unless COMPLETE
+exists. Without progress.json the cases are rebuilt from RUN.json (or the given config): every case BUDGET-CAP, unscored.
 """
 import json
 import sys
@@ -28,7 +29,13 @@ def main():
     if (out / 'COMPLETE').exists():
         print('job completed normally: nothing to collect')
         return
-    pg = json.loads((out / 'progress.json').read_text())
+    if (out / 'progress.json').exists():
+        pg = json.loads((out / 'progress.json').read_text())
+    else:                                  # died before the driver wrote anything: rebuild the cases from the config
+        cfg = json.loads((out / 'RUN.json').read_text())['config'] if (out / 'RUN.json').exists() else \
+            json.loads(Path(sys.argv[2]).read_text())
+        pg = dict(cases=[SM.Case(c, cfg.get('selected')).as_dict() for c in cfg['cases']], records={}, rows=[],
+                  anchors=[], elapsed=None)
     store = pg['records']
     cases = [restore(d) for d in pg['cases']]
     for c in cases:
@@ -36,7 +43,9 @@ def main():
             SM.budget_cap(c, store)
     res = json.loads((out / 'result.json').read_text()) if (out / 'result.json').exists() else {}
     FP.summarise(res, cases, store, set(pg.get('anchors', [])), pg['rows'], True)
-    res.update(killed=True, complete=False, collected_from='progress.json', elapsed_seconds=pg.get('elapsed'))
+    res.update(killed=True, complete=False, collected_from=('progress.json' if (out / 'progress.json').exists() else 'config'),
+               elapsed_seconds=pg.get('elapsed'))
+    out.mkdir(parents=True, exist_ok=True)
     FP.dump(res, out / 'result.json')
     print('collected', res['counts'])
 

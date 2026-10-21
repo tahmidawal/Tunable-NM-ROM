@@ -37,9 +37,9 @@
  "table": "phaseb/fresh_cohorts.json",
  "test_once": false,
  "anchors": [],
- "ceiling_hours": 0.45,
- "stop_fraction": 0.9,
+ "ceiling_hours": 0.4,
+ "stop_fraction": 0.6,
  "max_rounds": 10,
  "controls": {},
- "note": "SM-b reference-free policy dry run (DESIGN Amendment 10): the full B5 policy with K1 (start gauss160) on the 16 fresh dev/val cases (j = 0..3 of FI, FN0s, FC1, FC2); its mean per-case path cost is the policy projection (resources.py --dry). No anchors (dev/val cases). ceiling_hours = the SM-b wall from job start (--t0-epoch)."
+ "note": "SM-r step 2 (Amendments 10-12): reference-free K1 policy dry run, full policy from gauss160 on the 16 fresh dev/val cases (no anchors); its mean per-case cost is the policy projection (resources.py --dry) and it must pass rom/evidence.check_dry. ceiling_hours = the SM-r wall from job start; stop_fraction 0.6 reserves the last 40 % for the two dev references."
 }

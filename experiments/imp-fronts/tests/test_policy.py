@@ -449,3 +449,104 @@ def test_selection_config_r384_group_identical_to_e2s1():
     assert [g['Rp'] for g in c['groups']] == [384]
     assert c['groups'] == [g for g in full['groups'] if g['Rp'] == 384]
     assert {k: v for k, v in c.items() if k != 'groups'} == {k: v for k, v in full.items() if k != 'groups'}
+
+
+# ----------------------------------------------------------------------------------------------- audit B-1 fixes
+def test_schedule_definition_and_policy_config_validation():
+    import schedule as SCH
+    import mkconfigs_pol as MP
+    assert abs(SCH.total('S1') - 15.55) < 1e-9 and abs(SCH.total('S3') - 9.85) < 1e-9 and SCH.total('S1') > SCH.CAP
+    assert len(SCH.POLICY_IDS) == 40 and SCH.POLICY_IDS[:16] == SCH.DEVVAL_IDS and SCH.CEIL['policy_K1'] == .5
+    c = MP.make('1', 'S3')
+    assert c['cases'] == list(SCH.POLICY_IDS) and c['ceiling_hours'] == .5 and c['selected'] == 'gauss160'
+    for bad in (dict(cases=c['cases'][:39]), dict(ceiling_hours=.4), dict(max_rounds=1), dict(schedule='S2'),
+                dict(bank_label='a', schedule='S3')):
+        with pytest.raises(ValueError):
+            SCH.check_policy_config(dict(c, **bad))
+    with pytest.raises(AssertionError):
+        MP.make('1', 'S2')
+
+
+def test_incomplete_selection_persists_explicit_null(tmp_path, monkeypatch):
+    import mkconfigs_pol as MP
+    import select2d_r384 as S384
+    out = tmp_path / 'r2acc_e2sb'
+    out.mkdir()
+    assert S384.incomplete(out, 'b') == 'result.json missing'
+    (out / 'result.json').write_text(json.dumps(dict(complete=False)))
+    assert 'not complete' in S384.incomplete(out, 'b')
+    monkeypatch.setattr(MP, 'HERE', tmp_path)
+    with pytest.raises(FileNotFoundError):
+        MP.selected_of('b')                                   # no persisted outcome -> refused, never silently null
+    (tmp_path / 'checks').mkdir()
+    (tmp_path / 'checks' / 'select2d-b.json').write_text(json.dumps(dict(selected={'384': dict(rule=None, outcome=S384.INCOMPLETE)})))
+    assert MP.selected_of('b') == (None, S384.INCOMPLETE)
+    (tmp_path / 'checks' / 'select2d-b.json').write_text(json.dumps(dict(selected={'384': dict(rule='gauss128', outcome='selected')})))
+    assert MP.selected_of('b')[0] == 'gauss128'
+    assert SM.start_state(None) == ('fib4181', 1., True)
+
+
+def test_collector_without_progress_json(tmp_path, monkeypatch):
+    import fcollect as FCL
+    cfg = dict(cases=['FC1|0', 'FC1|1'], selected=None)
+    (tmp_path / 'a').mkdir()
+    (tmp_path / 'a' / 'RUN.json').write_text(json.dumps(dict(config=cfg)))
+    monkeypatch.setattr(sys, 'argv', ['fcollect.py', str(tmp_path / 'a')])
+    FCL.main()
+    r = json.loads((tmp_path / 'a' / 'result.json').read_text())
+    assert r['counts']['BUDGET-CAP'] == 2 and r['collected_from'] == 'config' and all(p['scored'] is None for p in r['policy'])
+    cp = tmp_path / 'cfg.json'
+    cp.write_text(json.dumps(cfg))
+    monkeypatch.setattr(sys, 'argv', ['fcollect.py', str(tmp_path / 'b'), str(cp)])   # died before writing anything
+    FCL.main()
+    assert json.loads((tmp_path / 'b' / 'result.json').read_text())['counts']['BUDGET-CAP'] == 2
+
+
+def test_test_once_registration(tmp_path):
+    import testonce as TO
+    bank = dict(ckpt_sha256='a' * 64, rotation_sha256='b' * 64)
+    cfg = dict(attempt='pol1', test_once=True, cases=['FC1|4'])
+    reg = tmp_path / 'reg'
+    with pytest.raises(TO.TestOnceError):
+        TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', reg=reg)          # unregistered
+    k, _ = TO.register(bank, cfg, 'c' * 64, reg=reg)
+    with pytest.raises(TO.TestOnceError):
+        TO.register(bank, cfg, 'c' * 64, reg=reg)                          # second evaluation refused
+    assert TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', reg=reg) == k
+    (tmp_path / 'out').mkdir()
+    (tmp_path / 'out' / 'RUN.json').write_text('{}')
+    with pytest.raises(TO.TestOnceError):
+        TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', reg=reg)          # existing output refused
+    k2, _ = TO.key_of(bank, cfg, 'd' * 64)
+    assert k2 != k                                                           # another cohort table -> another key
+    assert TO.key_of(bank, dict(cfg, note='x'), 'c' * 64)[0] == k            # notes do not change the key
+
+
+def test_register_arm_writes_canonical_names(tmp_path):
+    import register_arm as RA
+    src = tmp_path / 'train2d_s1'
+    (src / 'stageB').mkdir(parents=True)
+    (src / 'rotation').mkdir()
+    (src / RA.CK).write_bytes(b'c')
+    (src / RA.ROT).write_bytes(b'r')
+    m = RA.write_bank(src, tmp_path / 'sb', dict(label='b', seed=1))
+    assert m['ckpt'] == 'ckpt.pkl' and m['rotation'] == 'rotation_R512.npz'
+    assert BG.verify({'dir': 'sb'}, tmp_path, expect_label='b')['ckpt_sha256'] == m['ckpt_sha256']
+    meta = json.loads((tmp_path / 'sb' / 'BANK.json').read_text())
+    (tmp_path / 'sb' / 'BANK.json').write_text(json.dumps(dict(meta, ckpt='../x.pkl')))
+    assert BG.must_reject({'dir': 'sb'}, tmp_path)['fired']
+
+
+def test_render_templates_are_valid_bash(tmp_path):
+    import subprocess
+    for args in (['sel', 'b'], ['pol', 'K1', 'pol1'], ['smr']):
+        t = subprocess.run([sys.executable, str(LANE / 'cluster' / 'rom' / 'render.py'), *args], capture_output=True,
+                           text=True, check=True).stdout
+        assert '{{' not in t and '}}' not in t and '--partition=gpu' in t and 'preempt' not in t
+        assert 'jax_backend' in t and 'exit(0 if b == ' in t and 'JAX_DEFAULT_MATMUL_PRECISION=highest' in t
+        f = tmp_path / 'x.sh'
+        f.write_text(t)
+        subprocess.run(['bash', '-n', str(f)], check=True)
+    smr = subprocess.run([sys.executable, str(LANE / 'cluster' / 'rom' / 'render.py'), 'smr'], capture_output=True,
+                         text=True, check=True).stdout
+    assert 'smkpolK1' in smr and 'smkdryK1' in smr and 'refjob.py' in smr and 'gpu:h200' in smr and '00:24:00' in smr

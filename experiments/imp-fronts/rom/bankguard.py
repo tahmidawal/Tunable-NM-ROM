@@ -35,7 +35,11 @@ def resolve(bank, root=HERE):
     root = Path(root)
     if 'dir' in bank:
         d = root / bank['dir']
-        ck, rot = d / 'ckpt.pkl', d / 'rotation_R512.npz'
+        meta = json.loads((d / 'BANK.json').read_text()) if (d / 'BANK.json').exists() else {}
+        names = [meta.get('ckpt', 'ckpt.pkl'), meta.get('rotation', 'rotation_R512.npz')]   # register_arm's canonical keys
+        if any(Path(n).is_absolute() or '..' in Path(n).parts or len(Path(n).parts) != 1 for n in names):
+            raise BankMismatch(f'{d}/BANK.json: ckpt / rotation must be plain file names')
+        ck, rot = d / names[0], d / names[1]
     else:
         ck, rot = root / bank['ckpt'], root / bank['rotation']
         d = ck.parent

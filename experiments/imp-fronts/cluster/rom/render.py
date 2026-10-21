@@ -1,26 +1,24 @@
-"""imp-fronts ROM sbatch templates (DESIGN B4, B5, B8 / B9 as amended by Amendments 3-5). Prints (or writes with --out) a
+"""imp-fronts ROM sbatch templates (DESIGN B4, B5, B8 / B9 as amended by Amendments 3-12). Prints (or writes with --out) a
 complete sbatch script; never submits. The staged tree under the job directory must mirror the repository layout
-(experiments/imp-fronts/rom/... plus experiments/mr-burgers2d/{engines,iterative_paths}.py and
-experiments/separable-decoder/sep_common.py, which rom/env.sh puts on PYTHONPATH) and carry MANIFEST.sha256 + COMMIT.txt.
+(experiments/imp-fronts/rom/..., experiments/imp-fronts/phaseb/frefs + cluster/refs/configs for SM-r, plus
+experiments/mr-burgers2d/{engines,iterative_paths}.py and experiments/separable-decoder/sep_common.py, which rom/env.sh
+puts on PYTHONPATH) and carry MANIFEST.sha256 + COMMIT.txt. Walls = ceilings (rom/schedule.py) / GPUs.
 
 Kinds
-  sel  <label>            SEL-<label>: r2acc on configs/e2s<label>.json (R384 group only, mkconfigs_sel.py --r384;
-                          select2d_r384.py runs locally on the pulled output).
-                          Wall = ceiling 0.35 GPU-h / 1 GPU (Amendment 10); r2acc has no self-timer, so it runs under
-                          `timeout` at 90 % of the wall (exhaustion: incomplete result -> select2d refuses -> no
-                          certified rule -> m* route FAIL, ROM routes run from the uncertified start, Amendment 4).
-  pol  <bank> <config>    POL-<bank>: fpolicy on configs/<config>.json, wall = ceiling 0.5 GPU-h (Amendment 10); fpolicy's self-timer
-                          stops new work at 90 % of the wall counted from job start (--t0-epoch); a killed job is
-                          finalised locally by rom/fcollect.py.
-  smb-rom                 the ROM part of SM-b as a shell FRAGMENT for the SM-b job (which owns the preamble, the wall
-                          0.45 h and the smoke-bank training): runtime registration of the smoke bank, fpolicy round 1
-                          on FC1 dev j = 0, 1 with K1 (+ C-B1, C-B6), the reference-free K1 policy dry run on the 16 fresh dev/val
-                          cases (Amendment 10: the policy projection), and round 1 with the smoke bank.
-  smb-rom-standalone      the same fragment wrapped in a full 0.45 h script (K1 part only works without the smoke bank).
+  sel <label>          SEL-<label> (A100, as the e2s1 history): r2acc on configs/e2s<label>.json (R384 group only,
+                       mkconfigs_sel.py --r384); wall 0.4 h; r2acc has no self-timer, so it runs under `timeout` at 90 %
+                       of the wall. Locally: select2d_r384.py (persists an explicit incomplete outcome if needed).
+  pol <bank> <config>  POL-<bank> (H200, the GPU type of the SM-r dry run that projects it): fpolicy, wall 0.5 h,
+                       self-timer at 90 % from job start (--t0-epoch); a killed job is finalised by rom/fcollect.py.
+  smr                  SM-r (H200, 0.4 h; Amendment 11): (1) K1 policy round 1 on FC1 dev j = 0, 1 with C-B1 and C-B6;
+                       (2) the 16-case reference-free K1 policy dry run; (3) the two dev references FC1|0, FC2|0 with the
+                       remaining wall (stopped at 90 %); (4) SM-r timing.json (reference seconds) and the in-job
+                       evidence preview. Locally after the pull: rom/evidence.py build runs/SM-r/output, then
+                       resources.py --rom .../fpolicy_smkpolK1/result.json --dry .../fpolicy_smkdryK1/result.json.
 
-    python render.py sel a [--out runs/SEL-a/run.sbatch]
-    python render.py pol K1 polK1
-    python render.py smb-rom
+    python render.py sel b [--out runs/SEL-b/run.sbatch]
+    python render.py pol K1 pol1
+    python render.py smr
 """
 import argparse
 import math
@@ -30,7 +28,9 @@ from pathlib import Path
 NS = '/cluster/tufts/paralab/tawal01/imp-fronts'
 VENV = '/cluster/tufts/paralab/tawal01/ae-research/venv'
 GRES = {'a100': 'a100', 'h100': 'h100', 'h200': 'h200', 'l40s': 'l40s'}
-CEIL = {'sel': .35, 'pol': .5, 'smb': .45}           # Amendment 10 ceilings = walls (1 GPU)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'rom'))
+import schedule as SCH  # noqa: E402
+CEIL = {'sel': SCH.CEIL['select_b'], 'pol': SCH.CEIL['policy_K1'], 'smr': SCH.SMOKE['SM-r']}
 
 
 def hms(hours):
@@ -102,47 +102,52 @@ def pol(bank, config):
     body = f'''echo "STEP fpolicy configs/{config}.json $(date -u +%FT%TZ)"
 "$PY" fpolicy.py --config configs/{config}.json --out "$TASK_ROOT/output/fpolicy_{config}" --t0-epoch "$T0"
 '''
-    return preamble(job, CEIL['pol']) + body + epilogue()
+    return preamble(job, CEIL['pol'], gpu='h200') + body + epilogue()
 
 
-def smb_fragment(with_smoke_bank=True):
-    sb = '''# (1) smoke bank trained earlier in this job -> runtime-registered bank dir (BANK.json, runtime_hashed)
-"$PY" register_arm.py --runtime "${{SMOKE_BANK_SRC:-$TASK_ROOT/output/train2d_s1}}" "$TASK_ROOT/output/smokebank" smkb
-''' if with_smoke_bank else ''
-    sb2 = '''# (3) policy round 1 on FC1 dev j = 0, 1 with the smoke bank
-"$PY" fpolicy.py --config configs/smkpolSB.json --out "$TASK_ROOT/output/fpolicy_smkpolSB" --t0-epoch "$T0" \\
-  || echo "smoke-bank policy round failed (recorded; K1 part stands)"
-''' if with_smoke_bank else ''
-    return f'''# ---- SM-b ROM part (imp-fronts cluster/rom/render.py smb-rom); needs T0, PY, TASK_ROOT from the SM-b preamble and
-# ---- the cwd experiments/imp-fronts/rom with rom/env.sh sourced.
-{sb}# (2) policy round 1 on FC1 dev j = 0, 1 with K1, forced uncertified start fib4181; C-B1 hash-mismatch rejection;
-#     C-B6 perturbation fixture on FC1|0 step 10 (Amendment 3)
-"$PY" fpolicy.py --config configs/smkpolK1.json --out "$TASK_ROOT/output/fpolicy_smkpolK1" --t0-epoch "$T0"
-"$PY" - <<'PYEOF'
-import json, os
-r = json.load(open(os.environ['TASK_ROOT'] + '/output/fpolicy_smkpolK1/result.json'))
-c = r['controls']
-print('C-B1 fired', c['cb1']['fired'], '| C-B6', c.get('CB6', {{}}).get('verdict'), '| backend', r['backend'])
+def smr():
+    body = r"""# (1) K1 policy round 1 on FC1 dev j = 0, 1 + C-B1 + C-B6 (stops new work at 15 % of the wall)
+"$PY" fpolicy.py --config configs/smkpolK1.json --out "$TASK_ROOT/output/fpolicy_smkpolK1" --t0-epoch "$T0" \
+  || echo "STEP smkpolK1 failed rc=$? (evidence will fail: Phase B blocked)"
+# (2) reference-free K1 policy dry run on the 16 fresh dev/val cases (stops new work at 60 % of the wall)
+"$PY" fpolicy.py --config configs/smkdryK1.json --out "$TASK_ROOT/output/fpolicy_smkdryK1" --t0-epoch "$T0" \
+  || echo "STEP smkdryK1 failed rc=$? (evidence will fail: policy uncertified)"
+# (3) the two dev references with the remaining wall (90 % cutoff)
+cd "$TASK_ROOT/experiments/imp-fronts/phaseb/frefs"
+for cfg in d_FC1_0.json d_FC2_0.json; do
+  L=$(left)
+  if [ "$L" -le 60 ]; then echo "DEADLINE: skipping $cfg"; continue; fi
+  stem=$(basename "$cfg" .json)
+  echo "STEP refjob $cfg left=${L}s $(date -u +%FT%TZ)"
+  timeout --signal=TERM --kill-after=30 "$L" "$PY" refjob.py --config "../../cluster/refs/configs/$cfg" \
+    --out "$TASK_ROOT/output/refs_$stem" || echo "STEP $cfg rc=$? (124 = deadline)"
+done
+cd "$TASK_ROOT/experiments/imp-fronts/rom"
+# (4) SM-r timing.json (per-case reference seconds) and an evidence preview (the binding record is rebuilt locally)
+"$PY" - "$TASK_ROOT/output" <<'PYEOF'
+import json, pathlib, sys
+out = pathlib.Path(sys.argv[1])
+refs = []
+for p in sorted(out.glob('refs_d_*/**/c*.json')):
+    d = json.loads(p.read_text())
+    if 'seconds' in d:
+        refs.append(dict(case=f"{d.get('cohort')}|{d.get('case')}", seconds=float(d['seconds']), refined=bool(d.get('refined')),
+                         gpu=d.get('job', {}).get('gpu'), source=str(p.relative_to(out))))
+(out / 'timing.json').write_text(json.dumps(dict(schema='imp-fronts-timing/2', job='SM-r', references=refs), indent=1))
+print('SM-r reference timings', refs)
 PYEOF
-# (2b) reference-free policy dry run: full policy with K1 on the 16 fresh dev/val cases -> resources.py --dry
-"$PY" fpolicy.py --config configs/smkdryK1.json --out "$TASK_ROOT/output/fpolicy_smkdryK1" --t0-epoch "$T0"
-{sb2}'''
+"$PY" evidence.py build "$TASK_ROOT/output" --out "$TASK_ROOT/output/SMOKE-EVIDENCE.preview.json" || true
+"""
+    return preamble('SM-r', CEIL['smr'], gpu='h200', mem='160G') + body + epilogue()
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('kind', choices=('sel', 'pol', 'smb-rom', 'smb-rom-standalone'))
+    ap.add_argument('kind', choices=('sel', 'pol', 'smr'))
     ap.add_argument('args', nargs='*')
     ap.add_argument('--out')
     a = ap.parse_args()
-    if a.kind == 'sel':
-        txt = sel(*a.args)
-    elif a.kind == 'pol':
-        txt = pol(*a.args)
-    elif a.kind == 'smb-rom':
-        txt = smb_fragment(True)
-    else:
-        txt = preamble('SM-b-rom', CEIL['smb']) + smb_fragment(False) + epilogue()
+    txt = {'sel': sel, 'pol': pol, 'smr': smr}[a.kind](*a.args)
     if a.out:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
         Path(a.out).write_text(txt)

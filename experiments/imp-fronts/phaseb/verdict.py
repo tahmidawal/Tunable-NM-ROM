@@ -216,12 +216,56 @@ def decide(trained, g, routes):
     return INCONC, 5
 
 
+class InputError(ValueError):
+    pass
+
+
+def rule_nodes(rule):
+    """Node count of a registered rule name: gaussN -> N^2 (tensor Gauss-Legendre), fibN -> N (Fibonacci lattice)."""
+    r = str(rule)
+    if r.startswith('gauss') and r[5:].isdigit():
+        return int(r[5:]) ** 2
+    if r.startswith('fib') and r[3:].isdigit():
+        return int(r[3:])
+    raise InputError(f'unknown rule name {rule!r}')
+
+
+def validate(inp):
+    """Audit codex-code-B-1: eligible lists are unique fresh TEST ids (j >= 4); a certified selection's node count
+    equals its rule's node count; input-supplied routes are refused (Amendment 12: routes fixed in ARM_ROUTES)."""
+    for coh, cases in (inp.get('eligible') or {}).items():
+        if coh not in ('FI', 'FN0s', 'FC1', 'FC2'):
+            raise InputError(f'eligible: unknown cohort {coh}')
+        js = [int(c) for c in cases]
+        if [str(c) for c in cases] != [str(j) for j in js]:
+            raise InputError(f'eligible {coh}: non-integer case ids {cases}')
+        if len(set(js)) != len(js):
+            raise InputError(f'eligible {coh}: duplicate case ids {cases}')
+        if any(j < 4 for j in js):
+            raise InputError(f'eligible {coh}: non-test case ids {[j for j in js if j < 4]}')
+    banks = dict((inp.get('arms') or {}), **{f'ctrl_{k}': v for k, v in (inp.get('controls') or {}).items()})
+    for name, b in banks.items():
+        if not b:
+            continue
+        if 'routes' in b and tuple(b['routes']) != ARM_ROUTES.get(name, tuple(b['routes'])):
+            raise InputError(f'{name}: input-supplied routes {b["routes"]} refused (fixed: {ARM_ROUTES.get(name)})')
+        sel = b.get('selection') or {}
+        if sel.get('certified'):
+            if sel.get('rule') is None or not _fin(_num(sel.get('nodes'))):
+                raise InputError(f'{name}: certified selection without rule / nodes')
+            if rule_nodes(sel['rule']) != int(_num(sel['nodes'])):
+                raise InputError(f'{name}: selection nodes {sel["nodes"]} != {rule_nodes(sel["rule"])} of {sel["rule"]}')
+    return True
+
+
 def evaluate(arm_name, arm, ctrl, elig, eps=None, mstar_bar=MSTAR_BAR):
     if not arm or not arm.get('trained', False):
         return dict(outcome=NOT_RUN, step=1, guard=None, routes={})
+    if 'routes' in arm and tuple(arm['routes']) != ARM_ROUTES[arm_name]:
+        raise InputError(f'arm {arm_name}: input-supplied routes refused')
     g = guard(arm, ctrl, elig, eps)
     routes = {}
-    for r in arm.get('routes') or ARM_ROUTES[arm_name]:
+    for r in ARM_ROUTES[arm_name]:                   # Amendment 12: never input-supplied
         routes[r] = (route_mstar(arm, bar=mstar_bar) if r == 'mstar' else ROUTE_FN[r](arm, ctrl, elig, eps))
     out, step = decide(True, g['status'], {k: v['status'] for k, v in routes.items()})
     return dict(outcome=out, step=step, guard=g, routes=routes)
@@ -229,6 +273,7 @@ def evaluate(arm_name, arm, ctrl, elig, eps=None, mstar_bar=MSTAR_BAR):
 
 def verdict(inp):
     """inp = dict(arms={a|b|c: bank}, controls={K1, K2, K3: bank}, eligible={FI, FN0s, FC1: [cases]}, eps_ref=...)."""
+    validate(inp)
     elig = inp.get('eligible', {})
     eps = inp.get('eps_ref', {})
     ctr = inp.get('controls', {})

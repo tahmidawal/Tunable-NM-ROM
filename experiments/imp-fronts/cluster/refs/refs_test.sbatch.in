@@ -1,7 +1,7 @@
 #!/bin/bash
 # imp-fronts fresh TEST references (DESIGN B3, Amendment 10): 24 cases (FI 6, FN0s 8, FC1 8, FC2 2; lowest test indices),
 # E0-style ST recipe (phaseb/frefs/refjob.py mode fd, tight allowance 0), ONE job on 2 GPUs.
-# Ceiling 2.9 GPU-h = 2 GPUs x 1.45 h wall (01:27:00), H200 (Amendment 10). Each GPU lane stops starting new work at its own deadline
+# Ceiling 3.2 GPU-h = 2 GPUs x 1.6 h wall (01:36:00), H200 (Amendment 12). Each GPU lane stops starting new work at its own deadline
 # (90 % of the wall limit, Amendment 4 B8; the last 10 % is the finalisation reserve for refslim + hashing); a case killed by the deadline has no .json -> ineligible (counted).
 # Order per GPU lane = lowest test indices first, round-robin over its cohorts (deterministic reduced subsets, Amendment 1 B3).
 # Rendered by cluster/refs/stage_refs.py (@...@ placeholders); never edited by hand after staging.
@@ -11,7 +11,7 @@
 @CONSTRAINT@
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=240G
-#SBATCH --time=01:27:00
+#SBATCH --time=01:36:00
 #SBATCH --output=@REMOTE@/logs/%j.out
 #SBATCH --error=@REMOTE@/logs/%j.err
 set -euo pipefail
@@ -38,7 +38,7 @@ for g in 0 1; do
 done
 echo "JAX_DEFAULT_MATMUL_PRECISION=$JAX_DEFAULT_MATMUL_PRECISION"
 cd experiments/imp-fronts/phaseb/frefs
-DEADLINE=$(( T_START + 87*60*9/10 ))   # Amendment 4 B8: stop new work at 90 % of the wall limit
+DEADLINE=$(( T_START + 96*60*9/10 ))   # Amendment 4 B8: stop new work at 90 % of the wall limit
 
 lane() {   # lane <gpu> <config>...: sequential refjob steps on one GPU, each bounded by the shared deadline
   local g=$1; shift

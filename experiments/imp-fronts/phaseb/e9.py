@@ -15,9 +15,10 @@ Score (once, at the end; K1's terminal policy errors on the fresh TEST cases, Am
   AUC (score s; invalid -> +inf), detection = P(alarm | bad) with its one-sided 95 % Clopper-Pearson LOWER bound,
   false alarm = P(alarm | good) with its one-sided 95 % Clopper-Pearson UPPER bound. Fewer than 30 good or 20 bad cases
   under a target -> "inconclusive (F12 minimum 30 good / 20 bad not met)", never a pass (necessarily so with 24 cases).
-  Routing reported both ways: ROM-then-fallback (every query runs the ROM; flagged ones also the FOM) and direct-to-FOM
-  (flagged queries skip the ROM; s is known before solving). Cost only if a paired same-GPU timing file is given,
-  else "unmeasured" (Amendment 2 B7). Flagged fractions overall and per cohort.
+  Routing (Amendment 12): input-based routing (s > tau_s known before solving -> FOM, no ROM cost) is separated from
+  failure fallback (invalid runs discovered after solving pay the ROM cost, then the FOM); a ROM-then-fallback variant
+  is reported beside it. Cost only from a paired same-job timing record (job_id, gpu, paired_same_job true); the
+  paired timing is deferred, so the cost is reported as "unmeasured". Flagged fractions overall and per cohort.
 """
 from __future__ import annotations
 
@@ -175,19 +176,30 @@ def score(policy, timing=None, frozen=None, fresh=None):
             label=('inconclusive (F12 minimum 30 good / 20 bad not met)' if (ng < MIN_GOOD or nb < MIN_BAD)
                    else 'evaluable (descriptive)'))
     coh = np.array([k.split('|')[0] for k in keys])
-    frac = float(alarm.mean())
-    out['flagged_fraction'] = frac
-    out['flagged_by_cohort'] = {c: float(alarm[coh == c].mean()) for c in sorted(set(coh))}
+    flag_in = s > frozen['tau_s']                    # input-based: known before solving (no ROM cost if routed away)
+    fail = inv & ~flag_in                            # failure fallback: discovered after the ROM solve (ROM cost paid)
+    f_in, f_fail = float(flag_in.mean()), float(fail.mean())
+    out['flagged_fraction'] = float(alarm.mean())    # detection statistics: alarm = input flag or invalid (B7)
+    out['input_flagged_fraction'] = f_in
+    out['failure_fallback_fraction'] = f_fail
+    out['flagged_by_cohort'] = {c: dict(alarm=float(alarm[coh == c].mean()), input=float(flag_in[coh == c].mean()),
+                                        failure=float(fail[coh == c].mean())) for c in sorted(set(coh))}
     out['n_invalid'] = int(inv.sum())
-    route = dict(rom_then_fallback='every query runs the ROM; flagged queries also run the accuracy-matched FOM',
-                 direct_to_fom='flagged queries go straight to the FOM (s is known before solving)')
-    if timing:
-        tr, tf, gpu = float(timing['rom_seconds']), float(timing['fom_seconds']), timing['gpu']
-        route['rom_then_fallback_seconds_per_query'] = frac * tf + tr
-        route['direct_to_fom_seconds_per_query'] = frac * tf + (1 - frac) * tr
-        route['gpu'] = gpu
-    else:
-        route['cost'] = 'unmeasured (no paired same-GPU timing job)'
+    route = dict(
+        input_routing='queries with s > tau_s go straight to the FOM (s is a known input; no ROM cost); the others run '
+                      'the ROM, and those whose run is invalid fall back to the FOM after paying the ROM cost',
+        rom_then_fallback='every query runs the ROM; input-flagged and failed queries also run the FOM')
+    tim_ok = bool(timing) and all(k in timing for k in ('rom_seconds', 'fom_seconds', 'gpu', 'job_id')) \
+        and timing.get('paired_same_job') is True
+    if tim_ok:                                       # Amendment 12: only a paired same-job timing record is accepted
+        tr, tf = float(timing['rom_seconds']), float(timing['fom_seconds'])
+        route['input_routing_seconds_per_query'] = f_in * tf + (1 - f_in) * tr + f_fail * tf
+        route['rom_then_fallback_seconds_per_query'] = tr + (f_in + f_fail) * tf
+        route['gpu'], route['timing_job_id'] = timing['gpu'], timing['job_id']
+    else:                                            # Amendment 12: paired fallback timing deferred
+        route['cost'] = 'unmeasured (paired fallback timing deferred, Amendment 12)'
+        if timing:
+            route['timing_refused'] = 'timing record lacks paired same-job provenance (job_id, gpu, paired_same_job)'
     out['routing'] = route
     out['note'] = 's is a known input on this family: the indicator is a safety feature, not a speed one'
     return out

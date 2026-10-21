@@ -55,6 +55,8 @@ import numpy as np  # noqa: E402
 import policy_sm as SM  # noqa: E402
 import bankguard as BG  # noqa: E402
 import fcases as FC  # noqa: E402
+import schedule as SCH  # noqa: E402
+import testonce as TO  # noqa: E402
 
 GAMMA, BAR_Q1, BAR_TT, NONST_POOLED = 1e-3, 2.5e-4, 2.5e-5, .01
 
@@ -415,19 +417,29 @@ def main():
                               longest=max(map(len, ps)), max_solves=max(len(SM.path_solves(p)) for p in ps))))
         return
     out = Path(a.out)
-    (out / 'runs').mkdir(parents=True, exist_ok=True)
     bcfg = BG.verify(cfg['bank'], HERE, expect_label=cfg.get('bank_label'))      # C-B1 hash guard (raises BankMismatch)
+    tbl_sha = FC.load_table(table)[0]['sha256'] if any(c[1] in FC.FRESH for c in cases) else None
+    tkey = None
+    if cfg.get('test_once'):                          # production: registered schedule + immutable test-once registration
+        SCH.check_policy_config(cfg)
+        tkey = TO.require(bcfg, cfg, tbl_sha, out)
+    (out / 'runs').mkdir(parents=True, exist_ok=True)
+    pcases = [SM.Case(c[0], cfg.get('selected')) for c in cases]
+    dump(dict(config=cfg, testonce_key=tkey, bank=bcfg, table_sha256=tbl_sha, started=time.time(),
+              policy_sha256=TO.policy_sha(cfg)), out / 'RUN.json')
+    dump(dict(cases=[c.as_dict() for c in pcases], records={}, rows=[], anchors=[], elapsed=0.,
+              stage='before setup'), out / 'progress.json')          # fcollect works from the first second on
     import jax
     import p1common as P
     P.check_env(cfg)
-    tbl_sha = FC.load_table(table)[0]['sha256'] if any(c[1] in FC.FRESH for c in cases) else None
     rep = dict(config=cfg, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
                backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=P.gpu_info(),
                jax_version=jax.__version__, precision=os.environ.get('JAX_DEFAULT_MATMUL_PRECISION'), bank=bcfg,
                table=str(table) if tbl_sha else None, table_sha256=tbl_sha,
                cases={c[0]: dict(cohort=c[1], j=c[2], split=c[4], desc=dict(zip(FC.KEYS, map(float, c[3])))) for c in cases},
                ceiling_hours=float(cfg.get('ceiling_hours', .4)), stop_fraction=float(cfg.get('stop_fraction', .9)),
-               max_rounds=max_rounds, setup={}, controls={}, complete=False)
+               max_rounds=max_rounds, testonce_key=tkey, policy_sha256=TO.policy_sha(cfg), setup={}, controls={},
+               complete=False)
     if (cfg.get('controls') or {}).get('cb1'):
         rep['controls']['cb1'] = cb1_controls(out, cfg['bank'])
     dump(rep, out / 'result.json')
@@ -435,7 +447,6 @@ def main():
     rep['setup'] = ex.setup(bcfg)
     rep['anchors'] = sorted(ex.anchors)
     dump(rep, out / 'result.json')
-    pcases = [SM.Case(c[0], cfg.get('selected')) for c in cases]
     ex.progress = lambda: dump(dict(cases=[c.as_dict() for c in pcases], records=ex.prev, rows=ex.rows,
                                     anchors=sorted(ex.anchors), elapsed=ex.elapsed()), out / 'progress.json')
     cb6 = (cfg.get('controls') or {}).get('cb6')

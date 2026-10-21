@@ -6,7 +6,7 @@
 #
 # Local:  experiments/imp-fronts/runs/train/<job>/ (refuses if it exists) =
 #           stage_arm.sh <arm> tree (experiments/imp-fronts/train2d/, PROVENANCE rewritten for the arm) + ARM-STAGED.json
-#           + run.sbatch (= cluster/train/<job>.sbatch) + train_body.sh + phase_times.py + COMMIT.txt + MANIFEST.sha256
+#           + run.sbatch (= cluster/train/<job>.sbatch) + train_body.sh + phase_times.py + smoke_datagen.py + COMMIT.txt + MANIFEST.sha256
 #         Every staged source must equal its blob at HEAD (commit first), so the job runs a committed tree.
 # --push: refuses if /cluster/tufts/paralab/tawal01/imp-fronts/<job> exists on tufts-login; rsyncs; verifies
 #         MANIFEST.sha256 remotely. Then submit by hand (duplicate-submit rule: squeue before and after):
@@ -28,7 +28,7 @@ DIRTY=$(git -C "$REPO" status --porcelain -- "$LANE/train2d" "$HERE")
 [ -z "$DIRTY" ] || { echo "uncommitted changes under train2d/ or cluster/train/: commit first" >&2; echo "$DIRTY" >&2; exit 4; }
 bash "$LANE/train2d/stage_arm.sh" "$ARM" "$LOCAL"
 cp "$HERE/$JOB.sbatch" "$LOCAL/run.sbatch"
-cp "$HERE/train_body.sh" "$HERE/phase_times.py" "$LOCAL/"
+cp "$HERE/train_body.sh" "$HERE/phase_times.py" "$HERE/smoke_datagen.py" "$LOCAL/"
 echo "$COMMIT" > "$LOCAL/COMMIT.txt"
 mkdir -p "$LOCAL/logs"
 ( cd "$LOCAL" && find . -type f ! -name MANIFEST.sha256 ! -path './logs/*' -printf '%P\n' | sort | xargs sha256sum > MANIFEST.sha256 )

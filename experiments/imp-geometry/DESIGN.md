@@ -309,3 +309,200 @@ the wide-family cells and their box controls are never deferred. Every deferral 
 - The GPU-hour cap (62) is never exceeded: a job is submitted only if spent + certified projection ≤ 62.
 - If any must-fail control cannot be made to fire, no production job runs.
 - If the reference fallback (§3) applies to every wide-family cell, the verdict is reported as conditional.
+
+---
+
+## Amendment A1 (2026-10-21, after Codex design audit 1 = NOT-READY; before any production run)
+
+Audit: `audits/codex-design-1.md` (items 1, 2, 4–11 WRONG, 3 NEEDS-RESTATEMENT). Every item is addressed below; A1
+governs over the text above where they differ. Local CPU checks run while amending are cited by file, never typed in.
+
+### A1.1 Win / withdraw rule (fixes audit 1)
+The brief's rule, verbatim (the §9 quotation inserted an "and"):
+
+> Win: $S \ge 2$ against the best competitor on the wide family. Otherwise withdraw the geometry claim. Also
+> withdraw any geometry attribution if the box control gives the ROM the same S against the spectral FOM.
+> If a high-order competitor cannot be built in budget: say so, use the strongest available, label S "against the
+> strongest tested competitor". The E2 verdict decides whether E4 (3D cube with small spherical holes) runs.
+
+Operational reading (replaces §9's):
+- **Competitor set** = C-SEM, C-FDMG, C-RK4, C-ECSW **and R-PODG** (every tested non-bank method). "The ROM" = R-BANK.
+- **Cell win at τ** (wide-family cell = geometry × level): on val32, $S_{\rm worst}(\tau)\ge2$ with both matched
+  configurations numerically qualified; then **confirmed on test-once**: the frozen finalists (committed manifest,
+  sha256) meet τ on test32 under the three-way rule, pass Q1 (and the bank Q2) in-job on test32, and their paired
+  re-timing on test[0:8] in the test job gives $S_{\rm test}(\tau)\ge2$. Any failure = "not confirmed" at that τ. The
+  validation-selected finalists are never replaced after any test number is produced.
+- **Geometry win:** both wide-family levels of the geometry have ≥ 1 confirmed winning τ.
+- **Attribution, per (cell, τ):** the box control of the same (family, level) at the same τ, same reduced arm (box
+  bank retrained), against C-SPEC. "Same S" is a **lane choice, not in the brief**: $S_{\rm box}(\tau)\ge
+  S_{\rm geom}(\tau)/2$ → attribution withdrawn at that τ; $S_{\rm box}<S_{\rm geom}/2$ → kept; box bank censored
+  while C-SPEC meets τ → $S_{\rm box}=0$ → kept; C-SPEC censored, box control failed or missing → **unestablished**.
+  A geometry win is **geometry-attributed** if each of its two levels has a winning τ whose attribution is kept and the
+  interaction diagnostic (A1.2) passes for that cell; otherwise it is reported as a **family speed win (attribution
+  withdrawn / unestablished)**.
+- **Outcomes** (per geometry, then E2): WIN-attributed; WIN-unattributed; WITHDRAW (demonstrated loss: at every τ
+  reached by both sides $S<2$, or the bank censored where a competitor meets τ); UNRESOLVED (missing evidence,
+  budget, reference fallback of A1.4, or an unqualified matched configuration). E2 = the best geometry outcome in that
+  order; E4 is recommended only for WIN-attributed on H.
+- Every S is an upper bound **relative to more thoroughly tuned competitors, with the selected bank fixed** (finite
+  ladders); it is not a statistical bound.
+
+### A1.2 Problem redesign: the solution must interact with the feature (fixes audit 2)
+Local checks (`runs/local/interaction_side2.txt`; a first redesign at side 1.75 with closer features, `runs/local/interaction_side175.txt`, also T = 0.5; coarse FD, n = 128) confirmed the audit: with the §1 geometry the bumps decay
+and spread before reaching the features (the L/H reference fields equal the box fields to better than the scoring
+precision). The geometry is therefore redesigned on the **unit square**, with the features next to the family and an
+initial condition that is compatible with every boundary **by construction** rather than by clearance:
+
+| id | domain |
+|---|---|
+| L | $\Omega_L=(0,1)^2\setminus[0.625,1]^2$ (re-entrant corner $(0.625,0.625)$, a grid line of every FD mesh) |
+| H | $\Omega_H=(0,1)^2\setminus\overline B((0.7,0.7),0.1)$ |
+| B | $(0,1)^2$ (box control) |
+
+- **IC:** $u_0=a\,e^{-|x-c|^2/(2w^2)}\,\chi_\Omega(x)$ with $\chi_\Omega=\psi(x)\psi(1-x)\psi(y)\psi(1-y)\cdot
+  \{\psi(\varphi_Q/2)\ (L),\ \psi(\varphi_h)\ (H),\ 1\ (B)\}$, $\psi(s)=1-e^{-(s/\delta)^4}$ ($s\le0\mapsto0$),
+  $\delta=0.05$, $\varphi_Q=f_1+f_2+\sqrt{f_1^2+f_2^2}$ ($f=0.625-x,\,0.625-y$), $\varphi_h=(|x-(0.7,0.7)|^2-0.01)/0.2$.
+  $u_0$ vanishes to fourth order on $\partial\Omega$ (so $u_0=\Delta u_0=0$ there), is $C^\infty$ except at the
+  re-entrant corner point ($C^3$). Every method evaluates this same function (FD/SEM nodes, rule points, spectral DST).
+- **Families** (bump widths and amplitudes unchanged): wide $W=0.4$, $c\in[0.15,0.55]^2$; narrow $W=0.08$,
+  $c\in[0.47,0.55]^2$ (the downstream end of the wide range, next to the features, as the pilot's narrow family sat
+  next to its corner). Bump centres keep ≥ 0.106 from the L quadrant and ≥ 0.112 from the hole.
+- Levels S1/S2, $T=0.25$, outputs, splits and seeds unchanged (§1–2). Scoring lattice $x=i/64$: 63² box points restricted
+  to Ω.
+- **Interaction diagnostic (pre-registered, from the production references):** per case
+  $D_{\rm geo}=\max_k\lVert u_\Omega(t_k)-u_B(t_k)\rVert_{{\rm lat}\cap\Omega}/\lVert u_\Omega(0)\rVert$ (box
+  reference of the same descriptor; note the ICs differ near the feature through $\chi$, so $k\ge1$ only), and the
+  feature-window energy fraction (lattice points within 0.2 of the corner / hole centre). A cell's geometry attribution
+  requires median $D_{\rm geo}\ge0.05$ over val32; else it is "unestablished (weak interaction)". The smoke reports
+  both on the redesigned problem before release (`runs/local/interaction_unit.txt`); if the wide cells fail the bar
+  there, the problem is revised again by amendment before any production job.
+
+### A1.3 Cohorts (audit 3)
+Levels use independent descriptors: S1 vs S2 is a distributional, not a paired, comparison. Seeds are checked against
+the campaign sources named in `geom.CAMPAIGN_SEEDS` only. Descriptor hashes, bank seeds and the finalist manifest are
+committed before the test job; test reference eligibility, test errors and test timings are never used to choose or
+replace any configuration. The Q2 population (dev8 + val[0:8]) is the stated scope of quadrature qualification.
+
+### A1.4 References (audit 4)
+- Ladders (unit square): S1 $n\in\{128,256,512\}$ per unit with $n_t=1000,2000,4000$ steps; S2 $n\in\{256,512,1024\}$
+  with $2000,4000,8000$; MG tolerance $10^{-10}$; every solve must converge (else the case is ineligible).
+- Order checks at **positive times only** ($k\ge1$); a zero or non-finite difference makes the case ineligible.
+- **Labels per case:** E0 if $p_k\in[1.8,2.2]$ for all $k\ge1$; **corner-limited** if all $p_k\in[1.3,2.5]$
+  (the $\rho^{2/3}$ corner and Shortley–Weller boundary can lower or perturb the observed order), $\varepsilon$ from the
+  observed $p$; otherwise **ineligible**, $\varepsilon:=\max_k d_{23}$ (conservative stand-in, labelled). Ineligible
+  cases stay in the cohort (worst over val32 is never over a shrunken set).
+- **Independent time check:** at the finest $h$, $n_t$ vs $2n_t$ on dev[0:4] + val[0:4]; $\delta_t$ = max normalised
+  difference.
+- $U=2\max_{\rm cases}\varepsilon+\delta_t$ (one scalar per cell, conditional).
+- **A WIN (A1.1) at τ needs ≥ 24 of 32 val cases E0 or corner-limited and $U\le\tau/5$**; otherwise that τ is
+  UNRESOLVED (numerical-reference diagnostics only).
+- **SEM cross-check:** the finest SEM setting vs the reference on dev8. A disagreement above $\max(2\varepsilon,10^{-3})$
+  flags both; it is resolved (one more FD level and a higher SEM order on two cases) before any verdict, and no fault is
+  assigned before that.
+- Box references use the same FD recipe (the C-SPEC finest setting is a second cross-check on B).
+
+### A1.5 Competitors fully specified (audit 5)
+- **C-SEM solver options** (both built, both tuned, the faster wins): `pcg` (Jacobi-PCG, warm start, iteration cap 500)
+  and `eig` — exact Helmholtz solves through the offline generalised eigendecomposition $K v=\lambda Bv$ on the
+  interior nodes ($V^\top BV=I$, ν-independent, offline): $(\beta/\Delta t\,B+\nu K)^{-1}b=V\,{\rm diag}(1/(\beta/\Delta t+\nu
+  \lambda))V^\top b$, two dense mat-vecs per step, allowed when the interior count $\le 20000$. Static condensation and
+  multilevel Schwarz are not built; the smoke reports PCG iterations per step and the `eig`/`pcg` time ratio. If, at a
+  matched configuration, PCG needs more than 50 iterations per step and `eig` is not admissible, S is labelled "against
+  the strongest tested competitor".
+- **Grading (L):** the $k$ subdivisions of every macro edge adjacent to the re-entrant corner are geometric with ratio
+  $g\in\{0.5,0.7\}$ toward the corner (`geom.graded_breaks`), conforming across the three macro squares; affine element maps.
+- **Over-integration:** $M=\lceil3(p+1)/2\rceil$ Gauss points per direction, exact-map metric terms at the Gauss points,
+  Galerkin projection on the GLL Lagrange tests, then the lumped-mass inverse.
+- **SBDF3 start:** SBDF1, SBDF2, then SBDF3, same Δt.
+- **C-FDMG:** hierarchy $n\to n/2$ while $n$ is a multiple of 16 and $n/2\ge8$; damped Jacobi ω = 0.8, V(2,2); coarsest
+  40 sweeps; full weighting; bilinear prolongation; coarse operators rediscretised (masks and Shortley–Weller fractions at
+  the coarse $h$); cap 40 cycles per solve; any non-converged solve invalidates the run. FD ladder
+  $n\in\{64,128,192,256,320,384,448,512,640,768\}$ (multiples of 64, so every scoring point is a node).
+- **C-SPEC:** $N\in\{16,24,32,48,64,96,128,192\}$, $n=5\cdot2^j$, IC by DST of the IC sampled on $n_{\rm init}\in\{64,128,256\}$.
+- **C-ECSW:** POD basis as R-PODG; fit population 12 training trajectories × 11 snapshots ($t=0.025k$) projected on
+  $\Phi_r$; target = the tested nonlinear vector (Mt rows), each state block normalised by its exact norm;
+  candidates = all nodes if ≤ 32768, else 16384 uniform + 16384 importance-sampled (∝ contribution norm), seed 7199001;
+  greedy NNLS (vendor/nnls.py) recorded at supports $\kappa r$, $\kappa\in\{2,4,8\}$; online, only the selected rows of
+  $\Phi$ and $D_h\Phi$ are used (precomputed; no neighbour values are needed).
+- **Steppers:** R-PODG and C-ECSW are tuned over all four steppers; R-BANK uses the incumbent CN-R LSPG, plus E5's winner
+  if it passes (brief). (This can only favour the competitors.)
+- C-RK4 starts its step ladder at the stability estimate `fd.rk4_stable_n`.
+
+### A1.6 Reduced-arm mathematics (audit 6)
+- $R_{\max}=512$ for every arm; LSPG tests $M_t=\min(4r,512)$: the full $4r$ only for $r\le128$ (saturation at $r>128$
+  stated next to every such row). **Independent residual diagnostic** (reported, not gated): the CN residual of the
+  reached states tested on the *other* arm's 512-wide span (bank ↔ POD).
+- **Bank basis frozen once:** $T$ from the reference rule $q_{\rm ref}=16$ at the cell's $k_q$; every rule $q$ forms its own
+  $M_q=\Psi_q^\top W_q\Psi_q$, $K_q$, tests and IC projection $z_0=M_q^{-1}\Psi_q^\top W_qu_0$ with that same $T$ (Q2 changes
+  only the rule). QR: thin QR of $W^{1/2}G$; SVD of the row-normalised $A=[R_Gc_i/\lVert R_Gc_i\rVert]$, right singular
+  vectors $V_s$; rank cut $\sigma_j>10^{-10}\sigma_1$; codes with $\lVert R_Gc_i\rVert\le10^{-14}\max$ dropped (count
+  reported); $T=R_G^{-1}V_s$.
+- **POD on H:** the projected Shortley–Weller Laplacian is non-symmetric (asymmetry reported). ETDRK4 uses the
+  eigendecomposition of $M^{-1}K$ (complex if needed) with ${\rm cond}(V)$ recorded; ETDRK4 is unavailable for an
+  (arm, r) with ${\rm cond}(V)>10^8$.
+- "Exact tensor" = exact contraction of the arm's discrete rule (not continuum integration).
+- **Bank training sampling:** per-unit $1/128$ (S1) and $1/256$ (S2) sub-lattices of the FD data grid (data grid per-unit
+  $1/512$ S1, $1/768$ S2); the full-batch phase uses a fixed 65,536-point subset when there are more points.
+
+### A1.7 Search, scoring and timing (audit 7)
+- **Search:** sizes in increasing order; per size the step rule of `ladder.py` (n = 5·2^j from the family's first rung;
+  stop when $\delta_n\le10^{-4}$, after two consecutive invalid rungs following a valid one, or at $n=20480$); the first
+  rung has no δ. The step distance is a **stopping heuristic**: every visited (size, n, tolerance) configuration is
+  scored and is a candidate for **both** the worst and the median matching (separate searches). A size ladder stops
+  after two consecutive sizes whose every visited configuration already meets τ = 0.01 on both statistics (larger sizes
+  can only cost more per step at equal steps; the cheaper-step side is covered by the step rule). Tolerance ladders run
+  at every step-feasible configuration of the size's Pareto front.
+- **Timing:** final paired timing on **val[0:8]**: per finalist pair (competitor A, bank B) triplets A–B–A, 5 repetitions
+  per case, ratio $t_A/t_B$ with $t_A$ = mean of the two A runs; $S$ = median ratio over the 40 triplets; every raw time
+  persisted. The outputs of the timed calls are stored and compared with the ladder outputs (T-id, ≤ $10^{-12}$
+  relative). Inputs are on the device before a timed call, outputs stay on the device (`block_until_ready`).
+- **Certificates are not charged**: they run in an untimed replay with identical inputs whose outputs must equal the
+  timed outputs (T-id).
+
+### A1.8 Qualification (audit 8)
+- **ETDRK4 (explicit):** in-job, every step: all four stage evaluations finite and $\lVert z_{n+1}\rVert\le10\max(\lVert
+  z_0\rVert,\lVert z_n\rVert)$ (no blow-up); there is no algebraic solve to certify, so this is the analogue; temporal
+  accuracy is left to the error metric (no step-halving requirement inside Q1).
+- **Linearised CN:** distance to the fully converged Newton CN (tight) ≤ $2.5\times10^{-4}$ on every val case; Newton
+  tight vs tighter ≤ $2.5\times10^{-5}$ on dev8.
+- **Iterative competitors (C-SEM `pcg`, C-FDMG):** every solve converged (cap hit = invalid run); production tolerance vs
+  $10^{-10}$ distance ≤ $2.5\times10^{-4}$ on every val case; $10^{-10}$ vs $10^{-12}$ ≤ $2.5\times10^{-5}$ on dev8.
+- **Bank Q2:** rules $q\in\{4,6,8,10,12\}$ (successor $q+2$; $q=14$ exists for checking $q=12$); ρ skips states with
+  $\lVert N_{q+2}\rVert\le10^{-12}\max$ (count reported); additionally $\lVert M_q-M_{q+2}\rVert/\lVert M\rVert$ and
+  $\lVert K_q-K_{q+2}\rVert/\lVert K\rVert\le10^{-6}$ and the IC projection difference ≤ $2.5\times10^{-4}\lVert z_0\rVert$.
+- **C-ECSW:** narrower contract, stated: Q1 (its stepper's algebraic certificate) only; hyper-reduction fidelity (distance
+  to R-PODG at equal r, stepper, n) reported, not gated. This favours the competitor.
+
+### A1.9 Controls (audit 9): predetermined, detectable faults
+Kept (each is a deterministic computation, shown in the smoke): MF-SEM (curved vs chordal manufactured solution),
+MF-FD (Shortley–Weller vs staircase orders), MF-MG (an identity smoother makes the V-cycle the identity in this code:
+no coarse correction can act), MF-QUAD (area on curved vs chordal rules), MF-ENV (box envelope on L/H has a non-zero
+trace). Replaced by fault injection on real computed states:
+- **MF-REF:** fixtures (clean second-order ladder → E0; finest := middle → ineligible; first-order ladder → ineligible)
+  plus the real-data version (finest replaced by the middle level).
+- **MF-Q1:** the certificate evaluated on an iterate perturbed by $10^{-3}\lVert z\rVert$ must flag every step.
+- **MF-Q2:** the reference rule with the weights of the elements carrying the largest share of $\lVert N\rVert$ zeroed
+  must exceed the ρ bar.
+- **MF-TENS:** the tensor slice with the largest measured contribution on a reached state zeroed must change the rollout
+  by ≥ $10^{-6}$.
+- **MF-INTERP:** SEM lattice interpolation of a degree-$p$ polynomial exact to $10^{-12}$; a wrong element index fails.
+- **MF-MATCH:** SW1a/SW1b fixtures (`score.selftest`) plus the real under-resolved FD configuration rejected at τ = 0.01.
+- **MF-LEAK:** the test runner refuses to start unless the finalist manifest exists, is committed, and its sha256 matches.
+- **T-dbl:** two *different* cases run back to back in one timed call (no compiler elimination), 1.8–2.2×.
+- **T-setup:** the timed calls use ν values different from the warm-up call, and the JAX compile count during timing must
+  be 0 (no hidden per-query compilation; ν-dependent setup is inside the timed function by construction).
+MF-RAND and MF-ECSW-random become **diagnostics** (failure is not mathematically ensured).
+
+### A1.10 Budget (audit 10)
+No production release without the smoke's certified cost projection (per stage, per cell, from measured cluster
+seconds on the production GPU type, compile and qualification included, × 1.5 headroom), written to
+`runs/cost/projection.json` and audited. Defer order (replaces §11's): (1) box banks of non-winning cells; (2) narrow-family
+S2 cells; (3) narrow-family S1 cells. Competitor-strength branches (SEM `eig`, dealias, SBDF3, grading) are never deferred
+while a strong-competitor claim is made. An incomplete wide-family panel is UNRESOLVED, not a negative result.
+
+### A1.11 Diagnostics and scope (audit 11)
+At every matched configuration: error on the finer lattice $x=i/128$ (where the method provides it: FD $n$ multiple of
+128, SEM interpolation, reduced lattice rows) and in the feature window (points within 0.2 of the corner / hole centre);
+decay $\lVert u(t_5)\rVert/\lVert u_0\rVert$ and the **zero-field baseline** $e_0=\max_k\lVert u_{\rm ref}(t_k)\rVert/
+\lVert u_{\rm ref}(0)\rVert$; a τ that the zero field meets (worst) is excluded. Every conclusion is scoped to this
+family, the field output contract, these implementations, and the stated qualification coverage.

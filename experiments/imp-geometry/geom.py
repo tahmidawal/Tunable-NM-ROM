@@ -21,6 +21,8 @@ DELTA = 0.05
 VARIANTS = {
     'v0': dict(LC=0.625, HC=(0.7, 0.7), HR=0.1, HSQ=(0.55, 0.85), wide_c0=0.15, narrow_c0=0.47, reject=None),
     'v2': dict(LC=0.45, HC=(0.45, 0.45), HR=0.1, HSQ=(0.3, 0.6), wide_c0=0.15, narrow_c0=0.30, reject=0.03),
+    'v3': dict(LC=0.40, HC=(0.45, 0.45), HR=0.1, HSQ=(0.3, 0.6), wide_c0=0.15, narrow_c0=0.27, reject=0.03),
+    'v4': dict(LC=0.35, HC=(0.45, 0.45), HR=0.1, HSQ=(0.3, 0.6), wide_c0=0.15, narrow_c0=0.22, reject=0.03),
 }
 VARIANT = 'v2'
 

@@ -5,10 +5,19 @@
    "name": "smoke1",
    "gpu": "a100",
    "purpose": "smoke (pre-release allowance <= 1 GPU-h)",
-   "gpu_hours": null,
+   "gpu_hours": 0.0267,
+   "state": "COMPLETED"
+  },
+  {
+   "job": "6158118",
+   "name": "smoke2",
+   "gpu": "a100",
+   "purpose": "smoke debug + interaction variants",
+   "gpu_hours": 0.0042,
    "state": "RUNNING"
   }
  ],
- "total_gpu_hours": 0.0,
- "cap": 62
+ "total_gpu_hours": 0.0309,
+ "cap": 62,
+ "smoke_gpu_hours": 0.0309
 }

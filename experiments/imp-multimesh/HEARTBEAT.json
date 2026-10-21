@@ -1,4 +1,4 @@
-{"lane": "imp-multimesh", "utc": "2026-10-21T18:03:22Z", "step": "6/7: S1 6158333 + J2 6158338 running; staging J0/J5",
- "waiting_on": {"slurm_jobs": ["6158333", "6158338"], "codex_output": "", "codex_pid": null, "local_pid": null},
- "expected_finish_utc": "", "last_commit": "95d7b012f",
- "gpu_hours_spent": 0, "gpu_hours_cap": 8, "notes": "smoke and probe running on H200"}
+{"lane": "imp-multimesh", "utc": "2026-10-21T18:15:41Z", "step": "7: S1b smoke + J2 probe running",
+ "waiting_on": {"slurm_jobs": ["6158338", "6158659"], "codex_output": "", "codex_pid": null, "local_pid": null},
+ "expected_finish_utc": "", "last_commit": "af22eaa5d",
+ "gpu_hours_spent": 0.0544, "gpu_hours_cap": 8, "notes": "s1 failed (OOM, fixed); s1b submitted"}

@@ -1,0 +1,98 @@
+{
+ "updated_utc": "2026-10-21T16:31:24Z",
+ "campaign_job_cap": 8,
+ "lanes": [
+  {
+   "lane": "imp-faststep",
+   "experiments": "E5",
+   "status": "active",
+   "wave": 1,
+   "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-faststep",
+   "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-faststep/experiments/imp-faststep/HEARTBEAT.json",
+   "namespace": "/cluster/tufts/paralab/tawal01/imp-faststep",
+   "branch": "exp/2026-10-21-imp-faststep",
+   "job_cap": 2,
+   "gpu_hours_cap": 4,
+   "launched_utc": "2026-10-21T16:31:24Z"
+  },
+  {
+   "lane": "imp-hrcost",
+   "experiments": "E6",
+   "status": "active",
+   "wave": 1,
+   "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-hrcost",
+   "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-hrcost/experiments/imp-hrcost/HEARTBEAT.json",
+   "namespace": "/cluster/tufts/paralab/tawal01/imp-hrcost",
+   "branch": "exp/2026-10-21-imp-hrcost",
+   "job_cap": 1,
+   "gpu_hours_cap": 3,
+   "launched_utc": "2026-10-21T16:31:24Z"
+  },
+  {
+   "lane": "imp-multimesh",
+   "experiments": "E7",
+   "status": "active",
+   "wave": 1,
+   "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-multimesh",
+   "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-multimesh/experiments/imp-multimesh/HEARTBEAT.json",
+   "namespace": "/cluster/tufts/paralab/tawal01/imp-multimesh",
+   "branch": "exp/2026-10-21-imp-multimesh",
+   "job_cap": 2,
+   "gpu_hours_cap": 8,
+   "launched_utc": "2026-10-21T16:31:24Z"
+  },
+  {
+   "lane": "imp-varcoef",
+   "experiments": "E3",
+   "status": "active",
+   "wave": 1,
+   "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-varcoef",
+   "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-varcoef/experiments/imp-varcoef/HEARTBEAT.json",
+   "namespace": "/cluster/tufts/paralab/tawal01/imp-varcoef",
+   "branch": "exp/2026-10-21-imp-varcoef",
+   "job_cap": 2,
+   "gpu_hours_cap": 15,
+   "launched_utc": "2026-10-21T16:31:24Z"
+  },
+  {
+   "lane": "imp-fronts",
+   "experiments": "E8+E9+E10",
+   "status": "active",
+   "wave": 1,
+   "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts",
+   "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/imp-fronts/HEARTBEAT.json",
+   "namespace": "/cluster/tufts/paralab/tawal01/imp-fronts",
+   "branch": "exp/2026-10-21-imp-fronts",
+   "job_cap": 2,
+   "gpu_hours_cap": 15,
+   "launched_utc": "2026-10-21T16:31:24Z"
+  },
+  {
+   "lane": "imp-geometry",
+   "experiments": "E2 (design mode)",
+   "status": "active",
+   "wave": 1,
+   "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-geometry",
+   "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-geometry/experiments/imp-geometry/HEARTBEAT.json",
+   "namespace": "/cluster/tufts/paralab/tawal01/imp-geometry",
+   "branch": "exp/2026-10-21-imp-geometry",
+   "job_cap": 3,
+   "gpu_hours_cap": 62,
+   "launched_utc": "2026-10-21T16:31:24Z"
+  }
+ ],
+ "planned": [
+  {
+   "lane": "imp-box",
+   "experiments": "E1",
+   "wave": 3,
+   "gpu_hours_cap": 87
+  },
+  {
+   "lane": "imp-holes3d",
+   "experiments": "E4 (only if E2 wins)",
+   "wave": 3,
+   "gpu_hours_cap": 80
+  }
+ ]
+}

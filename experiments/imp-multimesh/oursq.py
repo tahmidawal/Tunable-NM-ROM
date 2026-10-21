@@ -31,6 +31,9 @@ def main():
     out = dict(mesh=L, job=rep.get('job_id'), gpu=rep.get('gpu'), backend=rep.get('backend'), commit=rep.get('commit'),
                checkpoint_sha256=rep.get('checkpoint_sha256'), configs={})
     assert int(rep['mesh']) == L, ('mesh mismatch', rep['mesh'], L)
+    for coh in ('dev6', 'val32'):                        # descriptor identity: p1 cohort tables == hrcore tables
+        h = hashlib.sha256(np.ascontiguousarray(np.asarray(fams[coh].D)).tobytes()).hexdigest()
+        assert rep['cohorts'][coh] == h, ('cohort descriptor table differs', coh)
     expect = [f'dev6|{j}' for j in range(6)] + [f'val32|{j}' for j in range(32)]
 
     def fin(v):
@@ -67,6 +70,11 @@ def main():
             el = np.array([p['e'] for p in per if p['eligible']])
             steps = 50 * len(rr)
             nonstat = sum(x['nonstationary'] for x in rr)
+            g = np.asarray(R['gamma'])                      # recomputed from the saved certified gammas
+            ns_npz = int(np.sum(~(np.isfinite(g) & (g <= 1e-3))))
+            valid_npz = bool(np.all(R['valid'])) and bool(np.all(R['valid_tight']))
+            coverage_ok = bool(coverage_ok and ns_npz == nonstat and valid_npz == all(x['valid'] and x.get('tight_valid')
+                                                                                      for x in rr))
             dev = [x for x in rr if x['cohort'] == 'dev6']
             q1 = dict(n=len(rr), coverage_ok=coverage_ok, npz_meta_ok=meta_ok, W_sha_ok=sha_ok, all_valid=all(x['valid'] for x in rr),
                       tight_valid=all(x.get('tight_valid') for x in rr), gcert_ok=all(x.get('gcert_ok') for x in rr),
@@ -88,8 +96,9 @@ def main():
             q2['qpp'] = tri(lambda v: len(v) == 6 and max(v) <= Q2_DIST, [x.get('dist_qp_qpp') for x in dev])
             evid_ok = len(q2r) == 38 and q2['qpp_runs'] == 6 and q2['qp_valid'] and q2['qpp_valid']
             st3 = (q2['rho'], q2['dist_qp'], q2['qpp'])
+            # a finer-rule (check) non-convergence leaves the label unverified (p1score), never a failure
             q2['state'] = 'PASS' if (evid_ok and all(x == 'PASS' for x in st3)) else \
-                ('FAIL' if (evid_ok and 'FAIL' in st3 and 'UNVERIFIED' not in st3) else 'UNVERIFIED')
+                ('FAIL' if (evid_ok and 'FAIL' in st3[:2] and 'UNVERIFIED' not in st3[:2]) else 'UNVERIFIED')
             status = 'QUALIFIED' if (q1['state'] == 'PASS' and q2['state'] == 'PASS') else \
                 ('NOT-QUALIFIED' if 'FAIL' in (q1['state'], q2['state']) else 'UNRESOLVED')
             out['configs'][key] = dict(per_case=per, worst=float(el.max()) if len(el) else None,

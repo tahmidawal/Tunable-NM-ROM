@@ -64,6 +64,15 @@ class Rec:
         PL.dump(self.path, self.d)
 
 
+_T_START = time.perf_counter()
+
+
+def path_budget(cfg):
+    """Code audit (job-6): NNLS max_seconds = min(per-path budget, remaining job budget - reserve)."""
+    rem = cfg.get('wall_seconds', 1e9) - (time.perf_counter() - _T_START) - cfg.get('reserve_seconds', 600)
+    return max(0., min(float(cfg['nnls_seconds']), rem))
+
+
 def timed(rec, key, fn, *a, **k):
     t0 = time.perf_counter()
     out = fn(*a, **k)
@@ -98,13 +107,16 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
     save = tuple(range(51)) if steps == 'all' else H.SNAP_STEPS
     T = BD.Timer()
     cell = PL.Cell(D, s, log=log_, timer=T)
+    PL.burn(0.05)
     t0 = time.perf_counter()
     S, sinfo = BD.snapshots(D, s, fam, rows, save_steps=save, scheme='CNR', log=log_)
     t_snap = time.perf_counter() - t0
     rmax = max(ranks)
+    PL.burn(0.05)
     t0 = time.perf_counter()
     S, Phi, sig, trust = cell.basis_from(S, sinfo, rmax, ranks, 'central')
     t_pod = time.perf_counter() - t0
+    PL.burn(0.05)
     t0 = time.perf_counter()
     C = np.asarray(BD.project_codes(S, Phi, 1 << 16))
     t_codes = time.perf_counter() - t0
@@ -116,17 +128,33 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
                 snapshots=sinfo, pod_timers=dict(T.t))
     certified = [r for r in ranks if r in set(gate['constructible'])]
     info['certified_ranks'] = certified          # A4.1: a failed certificate makes that rank NOT-CONSTRUCTIBLE
+    od = Path(out) / f'src{s}'
+    od.mkdir(parents=True, exist_ok=True)
+    np.save(od / 'Phi.npy', np.asarray(Phi))                     # persisted before ECSW (job audit 6)
+    np.save(od / 'C.npy', C)
+    np.save(od / 'Phi_lat.npy', np.asarray(Phi[jnp.asarray(H.lattice_nodes(D, s))]))
+    (od / 'trust.json').write_text(json.dumps({str(k): v for k, v in trust.items()}))
+    rec.d[key] = info
+    rec.save()
     cell.set_basis(Phi, trust)
+    PL.burn(0.05)
     t0 = time.perf_counter()
     cell.ecsw_states(fam)
     info['states_seconds'] = time.perf_counter() - t0
     info['ecsw'] = {}
     rules = {}
     for r in [x for x in (ranks if ecsw_ranks is None else ecsw_ranks) if x in certified]:
+        budget = nnls_s(r) if callable(nnls_s) else nnls_s
+        if budget < 60:
+            info['ecsw'][r] = dict(status='UNRESOLVED', reason='job budget exhausted before this path')
+            rec.d[key] = info
+            rec.save()
+            continue
+        PL.burn(0.05)
         t0 = time.perf_counter()
         c0 = T.t.get('ecsw_contrib', 0.)
         n0_ = T.t.get('ecsw_nnls', 0.)
-        rec_r = cell.ecsw(r, kappas=tuple(kappas), max_seconds=nnls_s)
+        rec_r = cell.ecsw(r, kappas=tuple(kappas), max_seconds=budget)
         info['ecsw'][r] = dict(cell.info['ecsw'][r], seconds=time.perf_counter() - t0,
                                contrib_seconds=T.t['ecsw_contrib'] - c0, nnls_seconds=T.t['ecsw_nnls'] - n0_)
         for k, v in rec_r.items():
@@ -134,16 +162,12 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
                 rules[(r, k)] = (np.asarray(v['nodes']), np.asarray(v['weights']))
         log_(f'   source {s} r={r}: ecsw {info["ecsw"][r]["seconds"]:.0f}s supports '
              f'{ {k: (None if v is None else len(v["nodes"])) for k, v in rec_r.items()} }')
+        np.savez(od / 'rules.npz', **{f'n|{r_}|{k}': v[0] for (r_, k), v in rules.items()},
+                 **{f'w|{r_}|{k}': v[1] for (r_, k), v in rules.items()})        # after every rank
         rec.d[key] = info
         rec.save()
-    od = Path(out) / f'src{s}'
-    od.mkdir(parents=True, exist_ok=True)
-    np.save(od / 'Phi.npy', np.asarray(Phi))
-    np.save(od / 'C.npy', C)
-    np.save(od / 'Phi_lat.npy', np.asarray(Phi[jnp.asarray(H.lattice_nodes(D, s))]))
-    np.savez(od / 'rules.npz', **{f'n|{r}|{k}': v[0] for (r, k), v in rules.items()},
-             **{f'w|{r}|{k}': v[1] for (r, k), v in rules.items()})
-    (od / 'trust.json').write_text(json.dumps({str(k): v for k, v in trust.items()}))
+    if not rules:
+        np.savez(od / 'rules.npz')
     return dict(Phi=Phi, C=C, trust=trust, rules=rules, info=info, states=cell.states)
 
 
@@ -153,7 +177,7 @@ def mode_sources(cfg, out):
     for sc in cfg['sources']:
         s = int(sc['L'])
         log('SOURCE', s)
-        a = build_source(rec, f'src{s}', s, sc['steps'], cfg['ranks'], cfg['kappas'], cfg['nnls_seconds'], out)
+        a = build_source(rec, f'src{s}', s, sc['steps'], cfg['ranks'], cfg['kappas'], lambda r: path_budget(cfg), out)
         del a
         gc.collect()
     rec.d['complete'] = True
@@ -263,7 +287,12 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
             continue
         Wk = {}
         if kind == 'refit' and s != L:
-            rr, inf = contrib_and_nnls(states, Phi, r, L, cfg['kappas'], cfg['nnls_seconds'], blocked)
+            bud = path_budget(cfg)
+            if bud < 60:
+                for k in cfg['kappas']:
+                    A['configs'][f'r{r}|k{k}|CNR'].update(status='UNRESOLVED', reason='job budget exhausted')
+                continue
+            rr, inf = contrib_and_nnls(states, Phi, r, L, cfg['kappas'], bud, blocked)
             A.setdefault('ecsw', {})[r] = inf
         elif kind == 'reuse' and s != L:
             assert L > s

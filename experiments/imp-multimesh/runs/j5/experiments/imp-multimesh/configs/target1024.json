@@ -2,7 +2,8 @@
  "commands": [
   {
    "name": "target1024",
-   "cmd": "$PY mmbuild.py target configs/target1024.json $OUT"
+   "cmd": "$PY mmbuild.py target configs/target1024.json $OUT",
+   "timeout_s": 6600
   }
  ],
  "L": 1024,
@@ -15,7 +16,7 @@
   4,
   8
  ],
- "nnls_seconds": 2700,
+ "nnls_seconds": 1500,
  "dense_max_L": 1024,
  "cases": "all38",
  "arms": [
@@ -40,5 +41,7 @@
  ],
  "import_check": [
   "mmbuild"
- ]
+ ],
+ "wall_seconds": 6600,
+ "reserve_seconds": 600
 }

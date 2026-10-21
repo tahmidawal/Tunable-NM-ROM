@@ -651,3 +651,20 @@ competitor query-compile value $B$ (adverse to MATCH); (ii) ours $B$ and competi
 verdict unchanged under both is reported as "compile-robust within $B$" (still conditional on $B$ bounding the
 true compile cost); otherwise "compile-dependent", with the outcomes shown. Missing compile entries take the
 adverse values in both tests.
+
+---
+
+## Amendment A8 (2026-10-21, after smoke attempt s1b; before any production job)
+
+**A8.1 Smoke history.** S1 attempt `s1` (job 6158333) failed on device memory: an eager `Phi.T` in the
+orthonormality check materialised a 48 GB transposed copy at $4096^2$ (fixed: blocked Gram inside jit). Attempt
+`s1b` (job 6158659) passed controls 1, 2, 3, 5, 6, 7, 9 and the pilot shape, but control 4's unmutated fixture
+failed Q1 because its tight/tighter anchors were solved with the `common` LM solver, which did not certify
+γ ≤ 1e-7 at every step; jcp-hr-baselines (`tune.py:375`, `stageb.py:278`) solves the anchors with its **native**
+damped Gauss–Newton. **Anchors are now solved with the native solver**, as registered by jcp-hr-baselines and as
+§3.4 intends ("distance to the tight solve"); production configurations still run with the `common` LM solver.
+Control 8(d)/(e) failed only because the fixture record was MEASURED-FAIL for the same reason.
+**A8.2 Pilot evidence ($4096^2$, s1b).** Device peak 107.2 GB with $\Phi_{384}$, the production-shaped
+$46{,}080\times32{,}768$ contribution matrix and its NNLS (usable 138 GB); blocked contributions 75 s for 120
+states; NNLS 252 s (memory pilot only); host RSS 29 GB; ours' $4096^2$ bank table 68.7 GB with a query (31.6 s
+including setup). These feed the production certificates.

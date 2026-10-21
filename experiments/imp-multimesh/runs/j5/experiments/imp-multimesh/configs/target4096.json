@@ -2,7 +2,8 @@
  "commands": [
   {
    "name": "target4096",
-   "cmd": "$PY mmbuild.py target configs/target4096.json $OUT"
+   "cmd": "$PY mmbuild.py target configs/target4096.json $OUT",
+   "timeout_s": 12600
   }
  ],
  "L": 4096,
@@ -15,7 +16,7 @@
   4,
   8
  ],
- "nnls_seconds": 2700,
+ "nnls_seconds": 1500,
  "dense_max_L": 1024,
  "cases": "all38",
  "arms": [
@@ -50,5 +51,7 @@
  "pm_estimate": {
   "n": 8,
   "seed": 20261021
- }
+ },
+ "wall_seconds": 12600,
+ "reserve_seconds": 600
 }

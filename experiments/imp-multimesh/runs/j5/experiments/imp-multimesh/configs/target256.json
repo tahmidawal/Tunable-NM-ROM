@@ -2,7 +2,8 @@
  "commands": [
   {
    "name": "target256",
-   "cmd": "$PY mmbuild.py target configs/target256.json $OUT"
+   "cmd": "$PY mmbuild.py target configs/target256.json $OUT",
+   "timeout_s": 4800
   }
  ],
  "L": 256,
@@ -15,7 +16,7 @@
   4,
   8
  ],
- "nnls_seconds": 2700,
+ "nnls_seconds": 1500,
  "dense_max_L": 1024,
  "cases": "all38",
  "arms": [
@@ -34,5 +35,7 @@
  ],
  "import_check": [
   "mmbuild"
- ]
+ ],
+ "wall_seconds": 4800,
+ "reserve_seconds": 600
 }

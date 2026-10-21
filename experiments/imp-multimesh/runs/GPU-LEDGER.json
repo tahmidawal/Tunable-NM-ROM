@@ -16,19 +16,29 @@
    "job_id": "6158338",
    "limit_hours": 2.0833333333333335,
    "projected_hours": 1.2,
-   "state": "RUNNING",
+   "state": "COMPLETED",
    "node": "pax010",
    "tres": "billing=8,cpu=8,gres/gpu=1,mem=160G,node=1",
-   "elapsed_hours": 0.0692
+   "elapsed_hours": 0.4936
   },
   {
    "attempt": "s1b",
    "job_id": "6158659",
    "limit_hours": 1.5833333333333335,
    "projected_hours": 1.0,
+   "state": "FAILED",
+   "node": "pax009",
+   "tres": "billing=8,cpu=8,gres/gpu=1,mem=240G,node=1",
+   "elapsed_hours": 0.1586
+  },
+  {
+   "attempt": "s1c",
+   "job_id": "6159244",
+   "limit_hours": 1.5833333333333335,
+   "projected_hours": 0.4,
    "state": "PENDING"
   }
  ],
- "spent_gpu_hours": 0.0544,
- "reserved_gpu_hours": 3.6667
+ "spent_gpu_hours": 0.7066,
+ "reserved_gpu_hours": 1.5833
 }

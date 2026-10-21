@@ -1,0 +1,19 @@
+jax_backend=gpu device=cuda:0 x64=True ROUND3 N=256 K=16 R=512 steps=25000 max_snaps=16384 n_traj=0 pool=0 t_early=5 snap_norm=0 seed=0
+  pick: 16384 states (3456 early t<=5) from 576 trajectories; point pool 64516/64516
+   gen: trajectories 64/576  worst FOM rel residual 9.95e-13  [9s]
+   gen: trajectories 128/576  worst FOM rel residual 1.00e-12  [15s]
+   gen: trajectories 192/576  worst FOM rel residual 1.00e-12  [22s]
+   gen: trajectories 256/576  worst FOM rel residual 1.00e-12  [28s]
+   gen: trajectories 320/576  worst FOM rel residual 1.00e-12  [33s]
+   gen: trajectories 384/576  worst FOM rel residual 1.00e-12  [39s]
+   gen: trajectories 448/576  worst FOM rel residual 1.00e-12  [45s]
+   gen: trajectories 512/576  worst FOM rel residual 1.00e-12  [51s]
+   gen: trajectories 576/576  worst FOM rel residual 1.00e-12  [56s]
+  test data: 8 fresh trajectories, worst FOM rel residual 9.92e-13
+   train2[burgers r3 N=256 k=16 r=512] step      1/25000  rel-MSE 2.402e+00  [10s]
+   train2[burgers r3 N=256 k=16 r=512] step   5000/25000  rel-MSE 2.409e-03  [48s]
+   train2[burgers r3 N=256 k=16 r=512] step  10000/25000  rel-MSE 6.557e-04  [86s]
+   train2[burgers r3 N=256 k=16 r=512] step  15000/25000  rel-MSE 3.384e-04  [125s]
+   train2[burgers r3 N=256 k=16 r=512] step  20000/25000  rel-MSE 2.378e-04  [579s]
+   train2[burgers r3 N=256 k=16 r=512] step  25000/25000  rel-MSE 2.040e-04  [1025s]
+   train2[burgers r3 N=256 k=16 r=512] done: recon rel-L2 mean 1.699e-02 max 1.977e-01 (raw 1.699e-02 / ema 1.716e-02, used raw)  [1029s]

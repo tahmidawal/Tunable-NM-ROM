@@ -1,8 +1,9 @@
 {
  "attempt": "j5",
  "kind": "prod",
- "projected_hours": 1.3,
- "basis": "p1-scaling acc jobs 0.34-0.44 h per mesh with more configurations but sub16 Q2; here 3 settings x 2 schemes, all38 Q2 -> ~0.4 h per mesh",
+ "projected_hours": 1.875,
+ "basis": "p1acc per mesh <= 1500 s (p1-scaling acc jobs 1230-1580 s with more configurations, sub16 Q2; here 6 configs, all38 Q2, q3 off) x 3 meshes x 1.5",
+ "smoke": "s1b",
  "config": "configs/ours.json",
  "config_sha256": "d8971cd17e3d1dc7e08f683300331416dd414fbc41b2e544797c5f2d170efdcc"
 }

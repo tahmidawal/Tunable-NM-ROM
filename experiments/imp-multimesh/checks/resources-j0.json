@@ -1,8 +1,9 @@
 {
  "attempt": "j0",
  "kind": "prod",
- "projected_hours": 1.0,
- "basis": "hr-baselines H200 phases at 1024 (snapshots 208 s, POD+check 65 s, states 12 s, ECSW r128/256/384 paths 31/311/2287 s to kappa 16; kappa 8 path shorter) + 256 all-step (A100 phases 131+539+... s) -> < 1 h",
+ "projected_hours": 1.525,
+ "basis": "1024: snapshots 232 s (s1b 64-traj rate x 9) + POD/check 65 + states 12 + ECSW r128/256/384 to kappa 16 2629 s (hr-baselines H200, upper bound for kappa 8); 256 all-step ~721 s; x1.5",
+ "smoke": "s1b",
  "config": "configs/sources.json",
- "config_sha256": "d852bbd10a0089f55a9018bd9e4f3d9d8941f25872a5d0f1f4845363b4f65133"
+ "config_sha256": "0da1461bc0f998deccaf81b0df772d47b2077de82b6777464ab2909c533b5c9e"
 }

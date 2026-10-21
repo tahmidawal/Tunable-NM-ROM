@@ -406,10 +406,10 @@ def run_config(cell, r, data, option, cases, fams, refs, tag=None):
         u0, nu = fams[coh].ic(cell.L, j), fams[coh].nu(j)
         recs[c] = cell.run('ecsw', r, data, 'common', option, 'prod', u0, nu)
         recs[c]['desc'] = np.asarray(fams[coh].D[j], float)
-        tight[c] = cell.run('ecsw', r, data, 'common', option, 'tight', u0, nu)
+        tight[c] = cell.run('ecsw', r, data, 'native', option, 'tight', u0, nu)     # native GN anchors (hr-baselines)
         n0[c] = refs[coh].n0(j)
         if c in anchor_set:
-            tighter[c] = cell.run('ecsw', r, data, 'common', option, 'tighter', u0, nu)
+            tighter[c] = cell.run('ecsw', r, data, 'native', option, 'tighter', u0, nu)
     per = {}
     for coh in cohs:
         cc = [c for c in cases if c[0] == coh]

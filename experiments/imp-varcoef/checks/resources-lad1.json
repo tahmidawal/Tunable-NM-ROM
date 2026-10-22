@@ -1,0 +1,17 @@
+{
+ "job": "lad1",
+ "runs": [
+  "vladder:configs/lad1.json"
+ ],
+ "configs": {
+  "configs/lad1.json": "cb7a6bab9e386041f8c598ee661d7be21000ed1125b21fc68788d4410ada8dca"
+ },
+ "parts_hours": {
+  "vladder:configs/lad1.json": 2.4068815540908157
+ },
+ "projection_hours": 2.4068815540908157,
+ "safety": 1.3,
+ "smoke": "runs/smk1",
+ "gpu": "NVIDIA H200",
+ "note": "smoke-derived upper-bound certificate (resources.py docstring)"
+}

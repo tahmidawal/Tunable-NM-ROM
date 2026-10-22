@@ -118,8 +118,24 @@ def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
+def fallback_test(ref_test_result):
+    """A7.3 / A8.3 test fallback: every test case not accepted (or eps_ref > 1e-3) in the test reference result is rerun at
+    LEVELS_FALLBACK, with the same test-opening bindings as configs/ref-test.json."""
+    r = json.loads(Path(ref_test_result).read_text())
+    base = json.loads((CFG / 'ref-test.json').read_text())
+    bad = sorted(int(k.split('|')[2]) for k, v in r['cases'].items()
+                 if not (v['judge']['outcome'] == 'accepted' and v['eps_ref'] is not None and v['eps_ref'] <= 1e-3))
+    if not bad:
+        print('no test fallback needed')
+        return
+    cfg = dict(base, cases=[['test', j] for j in bad], levels=LEVELS_FALLBACK)
+    (CFG / 'reffb-test.json').write_text(json.dumps(cfg, indent=1) + '\n')
+    print('test fallback', bad)
+
+
 def fallback(job_results):
-    """A7.3 fallback references: every ineligible case of the frozen mask rerun at LEVELS_FALLBACK (one config per contrast)."""
+    """A7.3 fallback references (pooled dev + val): every ineligible case of the eligibility mask built from the first
+    reference jobs (checks/eligibility.json, before freezing the final mask) rerun at LEVELS_FALLBACK, one config per contrast."""
     el = json.loads((HERE / 'checks/eligibility.json').read_text())
     for C, v in el['contrasts'].items():
         bad = sorted(v['excluded'])
@@ -213,6 +229,8 @@ if __name__ == '__main__':
         base()
     elif cmd == 'fallback':
         fallback(sys.argv[2:])
+    elif cmd == 'fallback-test':
+        fallback_test(sys.argv[2])
     elif cmd == 'ladder':
         ladder(sys.argv[2:])
     elif cmd == 'time':

@@ -101,6 +101,19 @@ class Ladder:
                             Path(cfg['eligibility']).read_bytes()).hexdigest(), phases={}, extensions={},
                         temporal={}, screening={}, qualification={}, candidates={}, controls={})
         self.T0 = time.perf_counter()
+        if cfg.get('resume_from'):                       # A8.1 second ladder job: lattice runs of the first job are reused
+            raw = Path(cfg['resume_from']).read_bytes()
+            prev = json.loads(raw)
+            assert prev.get('phase') == 'L1' and prev['eligibility_sha256'] == self.rep['eligibility_sha256']
+            assert hashlib.sha256(raw).hexdigest() == cfg['resume_sha256'], 'resume source differs from the binding'
+            self.runs = {(r['key'], float(r['C']), r['case']): r for r in prev['runs']}
+            for k_ in ('extensions', 'temporal', 'controls', 'phases'):
+                self.rep[k_] = prev[k_]
+            self.rep['resumed_from'] = dict(path=cfg['resume_from'], sha256=cfg['resume_sha256'])
+            st_ = Path(cfg['resume_from']).parent / 'stages.npz'      # carry L1's per-stage evidence into L2's archive
+            if st_.exists():
+                z_ = np.load(st_)
+                self.stage_arrays = {k_: z_[k_] for k_ in z_.files}
 
     # -------------------------------------------------------------------------------------------- basics --------
     def ref(self, C, cid):
@@ -183,6 +196,12 @@ class Ladder:
             np.savez_compressed(self.out / 'stages.npz', **self.stage_arrays)
         self.rep['compile_seconds'] = self.compile
         self.rep['elapsed_seconds'] = time.perf_counter() - self.T0
+        try:                                                     # A8.4 resident memory with the shared program cache
+            ms = jax.devices()[0].memory_stats() or {}
+            self.rep['memory'] = dict(in_use=ms.get('bytes_in_use'), peak=ms.get('peak_bytes_in_use'), limit=ms.get('bytes_limit'),
+                                      n_programs=len(VS._BASE))
+        except Exception:                                        # noqa: BLE001
+            pass
         (self.out / 'result.json').write_text(json.dumps(self.rep, indent=1, default=float))
 
     # -------------------------------------------------------------------------------------------- phases --------
@@ -408,6 +427,8 @@ class Ladder:
             self.rep['phases'][f'{C:g}'] = dict(n_keys=len(keys), n_val=len(survive))
             self.ladder(survive, C, val, 'VAL')
             self.save()
+            if self.cfg.get('stop_after_val'):               # A8.1 first ladder job ends here
+                continue
             pooled = dev + val
             match = {}
             for k in survive:
@@ -453,6 +474,11 @@ class Ladder:
             self.fields = {k: v for k, v in self.fields.items() if k[1] != C}
             self.save()
         self.rep['complete'] = True
+        if self.cfg.get('stop_after_val'):
+            self.rep['phase'] = 'L1'
+            self.save()
+            (self.out / 'COMPLETE').write_text('complete L1\n')
+            return
         self.save()
         (self.out / 'candidates.json').write_text(json.dumps(dict(candidates=cands_out, groups=self.rep['candidates']),
                                                              indent=1, default=float))

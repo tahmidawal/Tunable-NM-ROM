@@ -5,8 +5,9 @@
 
 Upper-bound models (every per-run cost is the largest observed compile-inclusive time, scaled by work; SAFETY on top):
   vref    per level: (max over smoke cases of seconds / work at that level size) x work of the requested level, work =
-          L^2 x stages; the smoke's largest level rate is used for any larger level; x (1 + retry) with retry = max(observed
-          retry fraction, 0.5); plus cross-checks at the max smoke cross-check seconds;
+          L^2 x stages at the same contrast; the largest observed rate for unobserved levels; x (1 + retry) with retry =
+          max(observed retry fraction, 0.1) (fallback reruns are a separate reserve); plus cross-checks at the max smoke
+          cross-check seconds;
   vladder per configuration and contrast: every case (8 dev + 24 val, no pruning), extensions (x (1 + EXT_FRAC)), screening of
           every configuration (2 compiles + 8 full-field calls at MESH_FACTOR), qualification of every configuration at most
           once per contrast (candidate + tight + tighter/3N variants, 32 cases, VARIANT_FACTOR); per-run cost = family rate x
@@ -106,7 +107,7 @@ def proj_vref(smoke, cfg):
             L, dt = lv[0]['L'], lv[0]['dt']
             secs = sum(a['seconds'] for a in lv)                    # compile-inclusive (vref.level)
             rates[L] = max(rates.get(L, 0.0), secs / (L * L * nstages_fd(dt)))
-    top = rates[max(rates)]
+    top = max(rates.values())                         # the largest observed rate, for unobserved levels
     per_case = 0.0
     for L, dt in cfg['levels']:
         r = rates.get(L, top) if L <= max(rates) else top
@@ -130,22 +131,107 @@ def structural(key):
     return '|'.join(p[:3])
 
 
+def possible_extensions(keys):
+    """Every configuration the A2.21/A3.10/A4.10/A5.10/A6.1 extension rules could add (superset): dt/2 and dt/4 of every
+    row's finest step, and the cheap-edge step of every configuration on an edge."""
+    import vkeys as VK
+    sps = [VK.parse(k) for k in keys]
+    new = set()
+    rows = {}
+    for sp in sps:
+        r = dict(sp)
+        r.pop('dt')
+        rows.setdefault(json.dumps(r, sort_keys=True), []).append(sp)
+    for r, v in rows.items():
+        sp = min(v, key=lambda x: x['dt'])
+        for d in (2, 4):
+            new.add(VK.key(dict(sp, dt=sp['dt'] / d)))
+    for f in {sp['f'] for sp in sps}:
+        fs = [sp for sp in sps if sp['f'] == f]
+        rk = 'N' if 'N' in fs[0] else 'L'
+        for sp in fs:
+            if sp[rk] == min(x[rk] for x in fs):
+                new.add(VK.key(dict(sp, **{rk: 12 if rk == 'N' else 32})))
+            if sp['dt'] == max(x['dt'] for x in fs):
+                new.add(VK.key(dict(sp, dt=0.05)))
+            if 'tol' in sp and sp['tol'] == max(x['tol'] for x in fs):
+                new.add(VK.key(dict(sp, tol=1e-2)))
+            if 'level' in sp and sp['level'] == max((x['level'] for x in fs), key=int):
+                new.add(VK.key(dict(sp, level='4')))
+    return sorted(new - set(keys))
+
+
+def proj_vladder_split(smoke, cfg):
+    """A8.1 two-job ladder. L1 (stop_after_val): lattice programs + dev runs (base + every possible extension) at every
+    contrast + val runs of every configuration at full contrasts. L2 (resume_from): from the L1 runs, the configurations
+    matching some target (valid on all pooled cases, pooled eligible worst <= max tau): full-field compile + 8 screening
+    calls + burns each; qualification per (family, tau) of the 8 MOST expensive matching configurations (an upper bound on
+    the 8 attempts), three variants x 32 runs at up to 3x, + Q = 3N compiles; + reruns of the temporal/T-kappa checks."""
+    rate = family_rates(smoke)
+    full = [C for C in cfg['contrasts'] if not cfg.get('dev_only', {}).get(f'{float(C):g}')]
+    nC = len(cfg['contrasts'])
+    allk = list(cfg['keys']) + possible_extensions(cfg['keys'])
+    if cfg.get('stop_after_val'):
+        tot = sum(rate[f][1] for f in {structural(k): k.split('|')[0] for k in allk}.values())
+        tot += sum(run_cost(rate, k) * (8 * nC + 24 * len(full) + nC) for k in allk)
+        return tot / 3600.0
+    prev = J(HERE / cfg['resume_from_local'])
+    burn = float(cfg['screen']['burn']) * int(cfg['screen']['reps']) * 2
+    tot = 0.0
+    for C in full:
+        runs = [r for r in prev['runs'] if float(r['C']) == float(C)]
+        byk = {}
+        for r in runs:
+            byk.setdefault(r['key'], []).append(r)
+        match = {}
+        for k, rr in byk.items():
+            if len(rr) == 32 and all(r['valid'] for r in rr):
+                el = [r['e'] for r in rr if r['eligible']]
+                if el and max(el) <= max(cfg['taus']):
+                    match[k] = max(el)
+        # per-run cost from the L1 production measurements themselves; compiles are priced separately (rate[f][1])
+        meas = {k: (sorted(r.get('seconds') or 0.0 for r in rr)[-2] if len(rr) > 1 else (rr[0].get('seconds') or 0.0))
+                for k, rr in byk.items()}           # second-largest measured run time (the largest may hold a compile)
+        cost_l1 = lambda k: meas.get(k, 0.0)
+        mprog = {structural(k): k.split('|')[0] for k in match}
+        tot += sum(rate[f][1] for f in mprog.values())
+        tot += sum(8 * MESH_FACTOR * cost_l1(k) + burn for k in match)
+        qual = []                                   # per-group bounds summed WITHOUT de-duplication (audit codex-a7-2 item 8)
+        for f in ('psi', 'etd', 'fdmg', 'ccv'):
+            for tau in cfg['taus']:
+                ks = sorted((k for k in match if k.split('|')[0] == f and match[k] <= tau), key=lambda k: -cost_l1(k))
+                qual += ks[:int(cfg.get('max_tries', 8))]
+        tot += sum(32 * cost_l1(k) * VARIANT_FACTOR for k in qual)
+        tot += sum(rate[k.split('|')[0]][1] for k in qual if k.split('|')[0] in ('psi', 'etd'))   # Q = 3N programs
+        top = max(cost_l1(k) for k in byk)
+        tot += 4 * 4 * top + 8 * top                                                              # temporal / T-kappa reruns
+    return tot / 3600.0
+
+
 def proj_vladder(smoke, cfg):
+    if cfg.get('stop_after_val') or cfg.get('resume_from'):
+        return proj_vladder_split(smoke, cfg)
     rate = family_rates(smoke)
     nC = len(cfg['contrasts'])
     tot = 0.0
-    progs = {structural(k): k.split('|')[0] for k in cfg['keys']}
+    burn = float(cfg.get('screen', {}).get('burn', 0.1)) * int(cfg.get('screen', {}).get('reps', 3)) * 2
+    allk = list(cfg['keys']) + possible_extensions(cfg['keys'])
+    progs = {structural(k): k.split('|')[0] for k in allk}
     for s_, f in progs.items():                       # compiles: lattice + full-field + (spectral) Q = 3N, x extensions
-        tot += (1 + EXT_FRAC) * rate[f][1] * (2 + (1 if f in ('psi', 'etd') else 0))
+        tot += rate[f][1] * (2 + (1 if f in ('psi', 'etd') else 0))
     dev_only = cfg.get('dev_only', {})
     nfull = sum(1 for C in cfg['contrasts'] if not dev_only.get(f'{float(C):g}'))
     ndev = nC - nfull
-    for k in cfg['keys']:
+    for k in allk:
         t = run_cost(rate, k)
-        # full contrast: 32 runs (no pruning) with extensions; screening = 8 full-field calls; qualification at most once
-        # per configuration (three variants x 32 runs, each up to 3x) for a QUAL_FRAC share; dev-only contrast: 8 runs
-        tot += (1 + EXT_FRAC) * nfull * (32 * t + 8 * MESH_FACTOR * t) + QUAL_FRAC * nfull * 32 * t * VARIANT_FACTOR
-        tot += (1 + EXT_FRAC) * ndev * 8 * t + nC * t        # + the T-kappa / temporal-check runs (one per key bound)
+        # full contrast: 32 runs (no pruning); screening = 8 full-field calls + burns; dev-only contrast: 8 runs;
+        # + T-kappa / temporal-check runs (one per configuration bound)
+        tot += nfull * (32 * t + 8 * MESH_FACTOR * t + burn) + ndev * 8 * t + nC * t
+    # qualification: each configuration at most once per contrast; per family at most 8 attempts x 3 targets, bounded by
+    # the 24 most expensive configurations of the family (three variants x 32 runs, each up to 3x)
+    for f in ('psi', 'etd', 'fdmg', 'ccv'):
+        ts = sorted((run_cost(rate, k) for k in allk if k.split('|')[0] == f), reverse=True)[:24]
+        tot += nfull * sum(32 * t * VARIANT_FACTOR for t in ts)
     return tot / 3600.0
 
 

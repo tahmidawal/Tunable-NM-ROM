@@ -1,0 +1,398 @@
+{
+ "sources": {
+  "timing": {
+   "path": "runs/time/output/vtime_time/result.json",
+   "sha256": "e67bbfae5485cbafe69c76e4e18f1de276779bd2c42ef0784c984ac875043e6c"
+  },
+  "ladder": {
+   "path": "runs/lad2/output/vladder_lad2/result.json",
+   "sha256": "ce13a968c3dbab9ee6c24d78d4c48df2080b8fe63643c7e0e78de8e1c9cd0d6e"
+  },
+  "eligibility": {
+   "path": "checks/eligibility.json",
+   "sha256": "103ec15d9067e60da58d4a7dfa1712dfa20b7d0abf3c366643b4946ba109e20b"
+  },
+  "rombox": {
+   "path": "checks/rom-box.json",
+   "sha256": "d60c7a81afd88bd3482b919d16ac0b1f89caf0af2aa26cfc4f2259b2cfa0b582"
+  }
+ },
+ "timing_gates": {
+  "G-RR": true,
+  "A-valid": true,
+  "G-FR": false
+ },
+ "timing_controls": {
+  "T-dbl": true,
+  "T-fault": true,
+  "T-id": true
+ },
+ "selftest": {
+  "rows": [
+   {
+    "case": "3x pass",
+    "want": "PASS-PROVISIONAL",
+    "got": "PASS-PROVISIONAL",
+    "fires": true
+   },
+   {
+    "case": "exactly 2 pass",
+    "want": "PASS-PROVISIONAL",
+    "got": "PASS-PROVISIONAL",
+    "fires": true
+   },
+   {
+    "case": "1.9 fail",
+    "want": "FAIL",
+    "got": "FAIL",
+    "fires": true
+   },
+   {
+    "case": "1x fail",
+    "want": "FAIL",
+    "got": "FAIL",
+    "fires": true
+   },
+   {
+    "case": "missing ROM target",
+    "want": "UNRESOLVED",
+    "got": "UNRESOLVED",
+    "fires": true
+   },
+   {
+    "case": "empty FOM set",
+    "want": "UNRESOLVED",
+    "got": "UNRESOLVED",
+    "fires": true
+   },
+   {
+    "case": "coverage < 24 / reference failure",
+    "want": "UNRESOLVED",
+    "got": "UNRESOLVED",
+    "fires": true
+   },
+   {
+    "case": "one pass + other inconclusive",
+    "want": "PASS-PROVISIONAL",
+    "got": "PASS-PROVISIONAL",
+    "fires": true
+   },
+   {
+    "case": "one fail + other inconclusive",
+    "want": "UNRESOLVED",
+    "got": "UNRESOLVED",
+    "fires": true
+   },
+   {
+    "case": "pass blocked by unresolved family",
+    "want": "UNRESOLVED",
+    "got": "UNRESOLVED",
+    "fires": true
+   },
+   {
+    "case": "fail not blocked by unresolved family",
+    "want": "FAIL",
+    "got": "FAIL",
+    "fires": true
+   },
+   {
+    "case": "success at C = 10 only (C = 100 fails)",
+    "want": "FAIL",
+    "got": "FAIL",
+    "fires": true
+   }
+  ],
+  "all_fire": true
+ },
+ "targets": {
+  "0.01|C10": {
+   "tau": 0.01,
+   "C": 10.0,
+   "families": {
+    "PSI": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "ETD": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "FDMG": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    }
+   },
+   "unresolved_families": [
+    "PSI",
+    "ETD",
+    "FDMG"
+   ],
+   "status": "inconclusive",
+   "reason": "no qualified ROM at this target (inherited population)"
+  },
+  "0.03|C10": {
+   "tau": 0.03,
+   "C": 10.0,
+   "families": {
+    "PSI": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "ETD": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "FDMG": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    }
+   },
+   "unresolved_families": [
+    "PSI",
+    "ETD",
+    "FDMG"
+   ],
+   "rom": {
+    "label": "ckpt:18f0266ae6f0|R256|gauss128|frozen|CNR|0.0125|LSPG|prod",
+    "worst": 0.027137917096646782,
+    "inherited_ratio": 0.3300868335994475,
+    "inherited_seconds": 0.03241915674880147,
+    "qualification": "inherited (jcp-qualify FRONT-2D), prior evidence",
+    "in_job": true,
+    "cost": 0.326956209414297,
+    "vs_inherited": 0.9905157556543153,
+    "consistent_20pct": true
+   },
+   "status": "inconclusive",
+   "reason": "no union winner: None"
+  },
+  "0.1|C10": {
+   "tau": 0.1,
+   "C": 10.0,
+   "families": {
+    "PSI": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "ETD": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "FDMG": {
+     "status": "unresolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    }
+   },
+   "unresolved_families": [
+    "PSI",
+    "ETD",
+    "FDMG"
+   ],
+   "rom": {
+    "label": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.0125|LSPG|prod",
+    "worst": 0.06731736000788834,
+    "inherited_ratio": 0.15057886324019676,
+    "inherited_seconds": 0.014728466980159283,
+    "qualification": "inherited (jcp-qualify FRONT-2D), prior evidence",
+    "in_job": true,
+    "cost": 0.14785867018314236,
+    "vs_inherited": 0.9819350936876494,
+    "consistent_20pct": true
+   },
+   "status": "inconclusive",
+   "reason": "no union winner: None"
+  },
+  "0.01|C100": {
+   "tau": 0.01,
+   "C": 100.0,
+   "families": {
+    "PSI": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "ETD": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "FDMG": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    }
+   },
+   "unresolved_families": [],
+   "status": "inconclusive",
+   "reason": "no qualified ROM at this target (inherited population)",
+   "psi_C100_over_C1": {
+    "config": "psi|N64|0.0015625|CNAB2|1e-05@C100",
+    "ratio": null,
+    "note": "unavailable: C = 100 numerator invalid, vetoed or incomplete"
+   }
+  },
+  "0.03|C100": {
+   "tau": 0.03,
+   "C": 100.0,
+   "families": {
+    "PSI": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "ETD": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "FDMG": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    }
+   },
+   "unresolved_families": [],
+   "rom": {
+    "label": "ckpt:18f0266ae6f0|R256|gauss128|frozen|CNR|0.0125|LSPG|prod",
+    "worst": 0.027137917096646782,
+    "inherited_ratio": 0.3300868335994475,
+    "inherited_seconds": 0.03241915674880147,
+    "qualification": "inherited (jcp-qualify FRONT-2D), prior evidence",
+    "in_job": true,
+    "cost": 0.326956209414297,
+    "vs_inherited": 0.9905157556543153,
+    "consistent_20pct": true
+   },
+   "fom": {
+    "key": "etd|N48|0.003125|mid@C100",
+    "family": "ETD",
+    "cost": 0.280741898228017,
+    "stage2_complete": true,
+    "per_family": {
+     "PSI": "psi|N48|0.003125|CNAB2|1e-05@C100",
+     "ETD": "etd|N48|0.003125|mid@C100",
+     "FDMG": "fdmg|L128|0.003125|MG|1e-07@C100"
+    },
+    "decomposition": {
+     "kernel": 0.27687981668578965,
+     "setup": 0.017160172030013986
+    }
+   },
+   "status": "ok",
+   "G": 0.8586529025735055,
+   "G_ci95": [
+    0.799043857330506,
+    0.8996063058654945
+   ],
+   "marginal": false,
+   "fom_seconds": 0.02807146217674017,
+   "rom_seconds": 0.0323994574137032,
+   "seconds_ratio": 0.866417663058378,
+   "label": "anchor-normalised cost ratio; against the strongest tested competitor; finite-ladder upper bound on the ROM speed-up",
+   "psi_C100_over_C1": {
+    "config": "psi|N48|0.003125|CNAB2|1e-05@C100",
+    "ratio": 1.7413260743248375,
+    "note": "median over slots of cost(C=100)/cost(C=1)"
+   }
+  },
+  "0.1|C100": {
+   "tau": 0.1,
+   "C": 100.0,
+   "families": {
+    "PSI": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "ETD": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    },
+    "FDMG": {
+     "status": "resolved",
+     "all_runs_invalid": false,
+     "temporal": "accepted"
+    }
+   },
+   "unresolved_families": [],
+   "rom": {
+    "label": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.0125|LSPG|prod",
+    "worst": 0.06731736000788834,
+    "inherited_ratio": 0.15057886324019676,
+    "inherited_seconds": 0.014728466980159283,
+    "qualification": "inherited (jcp-qualify FRONT-2D), prior evidence",
+    "in_job": true,
+    "cost": 0.14785867018314236,
+    "vs_inherited": 0.9819350936876494,
+    "consistent_20pct": true
+   },
+   "fom": {
+    "key": "etd|N48|0.0125|mid@C100",
+    "family": "ETD",
+    "cost": 0.1364990241029282,
+    "stage2_complete": true,
+    "per_family": {
+     "PSI": "psi|N24|0.00625|SBDF2|1e-05@C100",
+     "ETD": "etd|N48|0.0125|mid@C100",
+     "FDMG": "fdmg|L64|0.003125|MG|1e-07@C100",
+     "CCV": "ccv|L64|0.05|t3@C100"
+    },
+    "decomposition": {
+     "kernel": 0.13069817970376393,
+     "setup": 0.01804484500762863
+    }
+   },
+   "status": "ok",
+   "G": 0.9231722693965544,
+   "G_ci95": [
+    0.8773920338329423,
+    0.9428484962359788
+   ],
+   "marginal": false,
+   "fom_seconds": 0.013390541076660156,
+   "rom_seconds": 0.014551663771271706,
+   "seconds_ratio": 0.9202068771748376,
+   "label": "anchor-normalised cost ratio; against the strongest tested competitor; finite-ladder upper bound on the ROM speed-up",
+   "psi_C100_over_C1": {
+    "config": "psi|N24|0.00625|SBDF2|1e-05@C100",
+    "ratio": 1.447950624741829,
+    "note": "median over slots of cost(C=100)/cost(C=1)"
+   }
+  }
+ },
+ "timing_valid": true,
+ "hash_chain": {
+  "timing_bindings_present": true,
+  "checks/eligibility.json": true,
+  "checks/candidates.json": true,
+  "checks/rom-box.json": true,
+  "rombox_frozen": true,
+  "eligibility_frozen": true,
+  "ladder_eligibility": true
+ },
+ "gate": {
+  "outcome": "FAIL",
+  "target_outcomes": {
+   "0.03": "fail",
+   "0.1": "fail"
+  },
+  "reference_decidable": true,
+  "contrast": 100.0,
+  "rule": "DESIGN \u00a79 + A2.2 + A4.10 + A5.12 + post-hoc A10 cross-check rule"
+ },
+ "gate_registered_rule": {
+  "outcome": "UNRESOLVED",
+  "reference_decidable": false,
+  "note": "registered A5.5 cross-check rule (eligibility-registered.json)"
+ }
+}

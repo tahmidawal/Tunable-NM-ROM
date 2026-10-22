@@ -19,10 +19,37 @@ COVERAGE = 24
 NSLOT = 6
 
 
+def a10(x):
+    """POST-HOC cross-check rule (DESIGN A10, adopted after the reference jobs, before any ladder): spatial evidence
+    r = delta2/delta1 <= 0.1 (tail delta2 r/(1-r)) or both deltas <= 2.5e-6 (tail delta1 + delta2); temporal evidence p in
+    [1.8, 2.2] (tail e1/(1-2^-p)) or both e <= 2.5e-6 (tail e1 + e2); all runs valid; passed iff
+    distance + U_xc <= 2.5e-4 (the cross-check certifies the reference to the 2.5e-4 resolution, conditionally)."""
+    d1, d2, e1, e2, p = x['delta1'], x['delta2'], x['e1'], x['e2'], x['p_time']
+    r = d2 / d1 if d1 > 0 else float('inf')
+    if d1 <= 2.5e-6 and d2 <= 2.5e-6:
+        sok, ts = True, d1 + d2
+    elif r <= 0.1:
+        sok, ts = True, d2 * r / (1 - r)
+    else:
+        sok, ts = False, None
+    if e1 <= 2.5e-6 and e2 <= 2.5e-6:
+        tok, tt = True, e1 + e2
+    elif p is not None and 1.8 <= p <= 2.2:
+        tok, tt = True, e1 / (1 - 2.0 ** (-p))
+    else:
+        tok, tt = False, None
+    U = (ts + tt + x['d_quad'] + x['d_tol']) if (sok and tok) else None
+    conv = bool(sok and tok and x['all_valid'])
+    passed = bool(conv and x['distance'] + U <= 2.5e-4)
+    return dict(x, rule='A10 (post hoc)', converged=conv, U_xc=U, bar=2.5e-4, passed=passed,
+                registered=dict(converged=x['converged'], passed=x['passed'], U_xc=x['U_xc']))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--results', nargs='+', required=True)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--rule', default='registered', choices=['registered', 'A10'])
     a = ap.parse_args()
     cases, xc = {}, {}
     srcs = []
@@ -34,7 +61,10 @@ def main():
         srcs.append(dict(path=r, sha256=hashlib.sha256(raw).hexdigest()))
         cases.update(d['cases'])
         xc.update(d['crosscheck'])
-    out = dict(sources=srcs, rule=dict(eps_max=ELIG_EPS, coverage_min=COVERAGE, nslot=NSLOT), contrasts={})
+    if a.rule == 'A10':
+        xc = {k: a10(v) for k, v in xc.items()}
+    out = dict(sources=srcs, rule=dict(eps_max=ELIG_EPS, coverage_min=COVERAGE, nslot=NSLOT, crosscheck_rule=a.rule),
+               contrasts={})
     for C in sorted({k.split('|')[0][1:] for k in cases}, key=float):
         rows = {k.split('|', 1)[1]: v for k, v in cases.items() if k.split('|')[0] == f'C{C}'}
         xcs = {k.split('|', 1)[1]: v for k, v in xc.items() if k.split('|')[0] == f'C{C}'}

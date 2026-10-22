@@ -1,0 +1,938 @@
+[
+ {
+  "source": "experiments/imp-varcoef/.gitignore",
+  "bytes": 80,
+  "sha256": "92801c05972ba7cb0711c9fb0a87163d01dfa51a6f89b623be2978995de6f701",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/DESIGN.md",
+  "bytes": 52084,
+  "sha256": "b6ec57dd4915654024f1182a54088d6cb9af21998ee62f3449531d97ac342779",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/README.md",
+  "bytes": 138,
+  "sha256": "70beb0026eb9611c5caa006004484e332582a9569416a4d590e7484ce9e4972d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/checks/budget-plan.json",
+  "bytes": 1707,
+  "sha256": "d6a518a7ff06ee4e0a71ebb8c87f077906c98d8c6c4fa979f6ff77737406bb88",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/checks/resources-ref10.json",
+  "bytes": 420,
+  "sha256": "90dd2d6b10f9b738bc08d0456cf0b1e299d17aaaaa82d54efd52839d37ec0a60",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/checks/resources-ref100.json",
+  "bytes": 424,
+  "sha256": "32b06b2a02e84259aa01e9dc02a9e1717960e831d66290af487e37839599da49",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/checks/rom-box.FROZEN",
+  "bytes": 149,
+  "sha256": "1d95824bff1a052ba69b038ca2cc60a1644dc298ccf72d52f28ed420a3871c78",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/checks/rom-box.json",
+  "bytes": 10653,
+  "sha256": "d60c7a81afd88bd3482b919d16ac0b1f89caf0af2aa26cfc4f2259b2cfa0b582",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/checks/smoke-accept.json",
+  "bytes": 780,
+  "sha256": "dae19dfcd68556153ecedfc77bc71d3b6f1264c6deec1a7fb96f2ce64fe5989a",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/checks_impl.py",
+  "bytes": 9543,
+  "sha256": "34a5419cce643d7c78118873f852e48c529c076ae91f8ecd338876074aede472",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/cluster/stage.py",
+  "bytes": 7509,
+  "sha256": "789d7df82d617f719942d3ca9d2e31de88c318e7f6bfd8ad184b62b4e0daafb7",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/cluster/submit.sh",
+  "bytes": 2483,
+  "sha256": "a47672688698b471e5124f32895405b0b20a984a723d0172c94bf6ca27ad8341",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/cluster/wait.sh",
+  "bytes": 934,
+  "sha256": "2b4f050a7fa19bdeb5bdb868b3e0c79fdecc8e7cfe977fee87394663acc18d7b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/configs/ladder-keys.json",
+  "bytes": 9590,
+  "sha256": "220cb66f1017601d8d910c3ac2df0055a9380fe0c8b567aaf42604947456fb8b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/configs/ref10.json",
+  "bytes": 1059,
+  "sha256": "93d6d81dea5bfe2031ff9ac1458c663f27c3abd4622dd03116c21e55e97cc7ee",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/configs/ref100.json",
+  "bytes": 1060,
+  "sha256": "409d2a11cf982249e6c743b60b1b0fe3fd9a0a4d325ac08851d0cee2cea87bb8",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/configs/smk-impl.json",
+  "bytes": 17,
+  "sha256": "bcb42c53d1b04330906f5162f598caaa459a0ed2307b3a172757717ccf5e7cca",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/configs/smk-ladder.json",
+  "bytes": 660,
+  "sha256": "7aa874a015c9a563c5228ae05b1a5c70eacc9973f3c2692abca084cc17adf99e",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/configs/smk-ref.json",
+  "bytes": 264,
+  "sha256": "16036f1e77cd9b134ddaa17801c31dc4b4c9be583ff726aebfe00b9bbb3465d3",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/configs/smk-time.json",
+  "bytes": 3167,
+  "sha256": "1e29d9762132ff4ba9d33130ca70901fdbbfb260b7f9d384189a253228a39644",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/elig.py",
+  "bytes": 4365,
+  "sha256": "57aec40879d99ba3e966022d8f319e427afccabade1228515a7f452f45c85ccf",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/gate.py",
+  "bytes": 15505,
+  "sha256": "a7bf7ce12c554a9b8a2ad7a7f1430e1f936c05831a704964bf99ec5e97ecda25",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/hb.sh",
+  "bytes": 1190,
+  "sha256": "c884272cdc90cd22f7b7dc978f1c97d4cbed3c1f2086c006b62fa1e71d668ec6",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/ledger.py",
+  "bytes": 3925,
+  "sha256": "9b9de08d1080afd29c5ab9aaef427ef7d101ae43d43ea855ff24c7eb75169c5d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/make_configs.py",
+  "bytes": 13185,
+  "sha256": "4d14aaf2f594209b18c8f5155caccc03c3dd3dc0d9dbc37df1fd61a0393b7aad",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/resources.py",
+  "bytes": 15451,
+  "sha256": "d564b8e6dc607a35dd9ca304f196a6122564749ced2c7ca3f9b780858621c65c",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/rom_box.py",
+  "bytes": 4531,
+  "sha256": "f8da14e217da16937ef740a7aef58f2cb45bb1481db02d73e14d004bba6eaa31",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/smoke_accept.py",
+  "bytes": 2781,
+  "sha256": "53ca498b365eaaefc5f7fcd443c1f46a5c43e67cd991ac0b9a06f6be92acf655",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/sync_github.sh",
+  "bytes": 2270,
+  "sha256": "a11bbd0222d2769db399ba3729ebccf9801d7a09ed130ce576af352508c4d24d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/testgate.py",
+  "bytes": 1965,
+  "sha256": "a9ed451745ef6c4c34effd341493e9eee583c64ba4ccf84eba125b92c0f39193",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vcoef.py",
+  "bytes": 4220,
+  "sha256": "1a620771c8918b95a75fc0cce1b77628db688e50a122328765807998c236370f",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vfd.py",
+  "bytes": 14558,
+  "sha256": "75ccf4ce5c5bff4d0603f788955ee95dd1ff22ddf09c6658b88e455cc8edbba0",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vkeys.py",
+  "bytes": 4988,
+  "sha256": "53f4a27435fcf0b9c48ccb9b21b6f173077106376617a7855eae8cb0371d23a1",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vladder.py",
+  "bytes": 24999,
+  "sha256": "697f1c436c2d074e9e127bfee7c69f5827ac2d1b36d3bb11b6fdf90ecd188d4e",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vref.py",
+  "bytes": 12092,
+  "sha256": "875a7c31612d22e14eabb4f2de9c5a109aaaf011bfd7deac9cc1774bf9716c20",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vspec.py",
+  "bytes": 10968,
+  "sha256": "92a660886f78571518eebac8dcbf5afd1393dc54ad0a8057ce0c2c1f6300a6bf",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vtest.py",
+  "bytes": 3087,
+  "sha256": "14557c77f10b43abd777231e8252be7c878dc9407a899c03e1596ae4ff5297e0",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/imp-varcoef/vtime.py",
+  "bytes": 25514,
+  "sha256": "9cdc0fd14bc43a118474ff4c6924697886cf7fae9c6daa3c11a7b847c3c524e5",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/.gitignore",
+  "bytes": 67,
+  "sha256": "77afbfd98a1b1b6fbfc7c5973fc91636b70689b4963949f59ad0e76003954c41",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/DESIGN.md",
+  "bytes": 50819,
+  "sha256": "a1a19f7c0c66051a52715360bcab940fe49f0e797d196f7d2c4ff61e653ae4a1",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/INHERITED.json",
+  "bytes": 2969,
+  "sha256": "a21deef24cff7e3c252b1e590f1723b254b6b72764d48974634e5a38d0d1819c",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/README.md",
+  "bytes": 632,
+  "sha256": "47a2974836ac5ec6f6519db12480707dd5dd887b0af735061d0b44d96bbbd3de",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/c2analyze.py",
+  "bytes": 13127,
+  "sha256": "df05407300456607b65297120b6f87ee03033836f2c606eecbb352acefb6bcba",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/c2time.py",
+  "bytes": 20018,
+  "sha256": "24fcf8799b90efeae48749c35cc795495e6e586cedb477d5b16b764739147b50",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/cluster/collect.py",
+  "bytes": 3664,
+  "sha256": "718144ef133c8f6c52f0ba9b7dc31131c4d99f0f7e282c2839f101f2e6941a64",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/cluster/stage.py",
+  "bytes": 6705,
+  "sha256": "0bd0b1afed05ee4b5f23f2ee73ece60ef78df74cb7f0979ba6c04cbd9ad11530",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/cluster/submit.sh",
+  "bytes": 4065,
+  "sha256": "6c5cfde5c7c2a6499857199066b9a8ba22a73765cbde6ae85e4e075af7dac8f0",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/cluster/submit_when_free.sh",
+  "bytes": 832,
+  "sha256": "e76722312f0e403c6aec9da56b68b7ef52003ab124a85eaba31271eef2a1f92b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/cluster/wait_front.sh",
+  "bytes": 1239,
+  "sha256": "b1de0bc375d8cf3ecca4a55cced82f8599fc8428f991af57056705c88ae0ed5e",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/cluster/wait_jobs.sh",
+  "bytes": 682,
+  "sha256": "eaea0389c3af3c7559ddbdad212694bf9bf9090b2a5bc4a99d1a1898817c67c6",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/cohorts.py",
+  "bytes": 8845,
+  "sha256": "59ee1afb7caf290e3209f366e7566f7b244e967c3fc391e446bcfc8d73eda767",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/c21024.json",
+  "bytes": 813757,
+  "sha256": "5e65e5eb38b77f0805a1fb91c06fcf753813e26e8ce6584109a05d1b8d705219",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/c2256.json",
+  "bytes": 814594,
+  "sha256": "a7f129a69165cf066e52fd2481ff9066cde762efcbe6785f981c7edc37ac6661",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/c24096.json",
+  "bytes": 814227,
+  "sha256": "bcfeffc5fdda2f962f433a31ec45ca8f9ab00ca4019509027075921e6baa9b55",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/fcc.json",
+  "bytes": 2022,
+  "sha256": "9545114c6c630cf34392fa978cafb5d936009785d460aa62be13fd0a3015e286",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/fps.json",
+  "bytes": 2563,
+  "sha256": "4312e7f812442051f0e29de5a3f2720f301692f291efa5cb64b3702b5408386b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/fub.json",
+  "bytes": 1837,
+  "sha256": "1f83bc87ca6823647b10a9c34be4bba0dfe7f22ae9a2b21d2a8ab354cfac707b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/fub4k.json",
+  "bytes": 594,
+  "sha256": "998375c4874afcfc163982dcdbe5b0bc8004a151a94f68e2b0a5c959ea6d1030",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/smk1.json",
+  "bytes": 2696,
+  "sha256": "3d143c753eff2778b74ee39b50af01ce902eb99eb407272a7b21069b4f7b4749",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/configs/smkc2.json",
+  "bytes": 2770,
+  "sha256": "c59c68b702f165ff508a969120665dcc39b954e95079c7e8933836fb3c2b5202",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/e0meta/MANIFEST.sha256",
+  "bytes": 73936,
+  "sha256": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/e0meta/STATUS.json",
+  "bytes": 839,
+  "sha256": "af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/fomrun2.py",
+  "bytes": 9217,
+  "sha256": "db7a05ead0ae3eabe89945af59dd2e0a9f189d650d88812546154b78617a275d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/gates.py",
+  "bytes": 6847,
+  "sha256": "0b67a374514734306de621c16622a961e1bc6f95f895b28ecae415357a4af750",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/hb.py",
+  "bytes": 1301,
+  "sha256": "a46f36eeb655f5ad96eabb84bb3458864c216c68c261240b038c245a85aab331",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/inputs/FRONT-2D.json",
+  "bytes": 2013320,
+  "sha256": "a51ac1a250f00d4b0006a84f2434ab3c96407b1f575f4ffff7a3eb25b7a8b77d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/ladder.py",
+  "bytes": 19054,
+  "sha256": "95f00cd6785cc5457ba860c5d593c5c3c7af6c37533ca2ba5aef702d96107fca",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/ledger.py",
+  "bytes": 8463,
+  "sha256": "77812f85328d9dd1aaf8d1174704022153c43e871e0ca2e92eae54af03b0fbd6",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/make_c2configs.py",
+  "bytes": 7635,
+  "sha256": "491e407c72950d34729aca246aa4aab7764530270b063f18e80bf57dcdcc9dc0",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/make_configs.py",
+  "bytes": 2025,
+  "sha256": "d3870089bc29937f2c8f4f96c8b960686499d1c01d160484d49d556271e050b0",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/make_report.py",
+  "bytes": 47037,
+  "sha256": "b80fc25be363badaa1fe9aa32754988de4738533cc56076bdcfb5e538c00233e",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/make_smkc2.py",
+  "bytes": 3060,
+  "sha256": "0464707eb6f726eea2a208eee7130ef938018eb94e62704780e74d0a6bf5c725",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/match2.py",
+  "bytes": 23389,
+  "sha256": "42667678a03cd2e15fb2a7fe1049b3e54c2f04945b00f11b76db28e3b91a89e7",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/p1common.py",
+  "bytes": 14836,
+  "sha256": "0fc4e8e182daba2a15abe37e504141161325c6242a2fc339c0a8ef16d1e8982d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/p1core.py",
+  "bytes": 18327,
+  "sha256": "eb4712f2e6db5573f7cae735041d892d98b55098bda9905e101ace6d1041ba0d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/pscore.py",
+  "bytes": 11086,
+  "sha256": "83d8a004c4914de456c02fef31a74050ebe90bfb74cc9e6ed2fa693730449548",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/psjax2d.py",
+  "bytes": 4855,
+  "sha256": "8669c89ec4cc1a5ea4697e67cd0773624d1d521468ba140d66fb288c801f96da",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/refcore.py",
+  "bytes": 10453,
+  "sha256": "dc42b15cb86782b23202b74be68768acc89996107f65747c0345f7d700014fdc",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/refstore.py",
+  "bytes": 10524,
+  "sha256": "91d905eb7a21d381d5990ba75e358d39a330e2ec7006064a9b6825a547361ef4",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/resources.py",
+  "bytes": 7281,
+  "sha256": "d1a538f347e23692a1db315fafc22ca4d4d858491d4efcc3255d26fd7fe87066",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/sync_github.sh",
+  "bytes": 2272,
+  "sha256": "d47b78fcf6f297fe9df3adde236984db32b1e0fcc1993a923a3e84f645294f37",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/targets.py",
+  "bytes": 9637,
+  "sha256": "4fd4a46f856de887430b37e3bc2a3e3b3908b7c5d541643def7712b029363477",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/PROVENANCE.json",
+  "bytes": 21314,
+  "sha256": "131a5db75ffb2a8c271a755f3e8f2766c4c3e78453b742a7d78156e7ba39da0d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/.gitignore",
+  "bytes": 125,
+  "sha256": "c0e4fb10af3bc24e84ff6081f96a1ce42220b2d3fddb1dadf09e8afe5f54a408",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/DESIGN.md",
+  "bytes": 28986,
+  "sha256": "f32d28d639e60db1a51265d3fee75c683c3caa499795c3e1e16bd17b83d9eaee",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/audit_qs.py",
+  "bytes": 28381,
+  "sha256": "6ea611626d3736cc6853fad6b682c8551bc7da725a7534fba09ea1f524073e3a",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/calib_gauss.py",
+  "bytes": 1748,
+  "sha256": "4d09faaa7a5dcac0e113fd323e3cf2a9d1e230d92a641e750d9f0dce0faf81ff",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/cluster/collect.py",
+  "bytes": 1798,
+  "sha256": "887d5d98a02932a0bd1f7372b06025bd3edf36978c6a4e1851179ccc2d8fb65f",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/cluster/stage.py",
+  "bytes": 6310,
+  "sha256": "092e2fed095e6dace69b47b4aafaca988f6686ee7a53fe6f9c78226f6bdac787",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/cluster/submit.sh",
+  "bytes": 1152,
+  "sha256": "4952f625106b33659be509d4b5dc2751d22981a7bab6bd759d0e0644fa0cb398",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/dv1024.json",
+  "bytes": 19340,
+  "sha256": "d69427a25b173aded9086ca99b199ca304575ed63ef9b033e2c1680d338be686",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/dv256.json",
+  "bytes": 19251,
+  "sha256": "3f604f2263b4390b2bf327337a17871c11bc21165dc9a94777fab0e792e9eeca",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/dv4096.json",
+  "bytes": 18970,
+  "sha256": "e493bfa03840a027a4a4a0905965ab11550dc90037850251569ea1e98f1a4e3d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/fz4096.json",
+  "bytes": 18974,
+  "sha256": "28dca4857b72475e4cc3ee3953d36ec00e1126764dc6232d805571000011a1b7",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/parity_targets.json",
+  "bytes": 414,
+  "sha256": "10eeae3b7132c4e1bf48f3b675e936cc4e6c67fe23ac0a0224c2ec861cc37a3d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/refdv.json",
+  "bytes": 333,
+  "sha256": "fb395973a97f86f645a3abeb5fbc5476954428b9f1025872e9729145041c7f25",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/refsmk.json",
+  "bytes": 334,
+  "sha256": "a9ee6e8eb4d85fe5bd10377708641f5b99ea5cdc0a12a690d9a277ec5cb60a81",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/reft.json",
+  "bytes": 325,
+  "sha256": "d21736d5191aa772bfa71c1511b5b3b86a6d314daeb4894adfc5b8a915e15d6c",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/smk128.json",
+  "bytes": 6653,
+  "sha256": "7d0584667db64512d5b6e955a0747693c8e1aeba93f88a75e10e7b9118a31099",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/t1024.json",
+  "bytes": 18967,
+  "sha256": "0d496db2c4c17f4f1ec41afbbcfefd039e5ac5e1e2006cda329eee40ebd32f07",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/t256.json",
+  "bytes": 18965,
+  "sha256": "75d5efd0fb07383372dbb79bd7514ab54b8365da378b7cf344738ebc7009d6a5",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/configs/t4096.json",
+  "bytes": 19001,
+  "sha256": "17c733590612bddcbe0c6bddfc93e37ff9c1018d9301cb4965a3fd33e78a9eb1",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/inputs/rotation_R512.npz",
+  "bytes": 6296542,
+  "sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/inputs/rule_q0_m1024_qrg304_reachable.npz",
+  "bytes": 11139,
+  "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/make_configs.py",
+  "bytes": 8809,
+  "sha256": "209926ee1512b049f5e5c8f11f0c9dbd75ac48b73fa57743248ac285930f5721",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/npbank.py",
+  "bytes": 1558,
+  "sha256": "f3310a9bbb427fcb92c35d059dd4d9ff6d3827af39c889b457d491d6c2d444bb",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/qcore.py",
+  "bytes": 19073,
+  "sha256": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/qstudy.py",
+  "bytes": 27180,
+  "sha256": "58ec24ea916c062b96d1cae1adb1420e5c87f5b3408d3073d9c6bb9b5f3d35fe",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/ref_summary.py",
+  "bytes": 1635,
+  "sha256": "42a7a994318164f0e105afc8ad92a3d047a3e51049ca14df75a423e98895ec50",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/refjob.py",
+  "bytes": 4204,
+  "sha256": "6ce460a379cc7a128118d274d50b5c8cf4fc6fc6342e2e2ed295b387e9bb736b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/select_rule.py",
+  "bytes": 6136,
+  "sha256": "58e33d8b2b3a79462ba632022abeb23eaf842bbdbbd1905a37e9ce3c93db59bf",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/smoke.py",
+  "bytes": 5451,
+  "sha256": "93751cd6e9791fe7aa36d7bc7b058eb4bccb909ddaab4bf9af0a5dbffd61574b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/vendor/PROVENANCE.json",
+  "bytes": 2536,
+  "sha256": "ee824a6e7d9638fb3874eff7b34f4f66aa90fa6edb7bef9990706e983a2b26e8",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/vendor/arms.py",
+  "bytes": 15874,
+  "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/vendor/bkfast.py",
+  "bytes": 9055,
+  "sha256": "ccb6887006a93365e84030bfe835a5e2b9d7f65f4312beef006cbeb1bef12c82",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/vendor/hari_quadrature.py",
+  "bytes": 5780,
+  "sha256": "c6403d05e25a4ea5e4f4cc8879e94ac23f582d81b018571cf1abdb8da5d99fb6",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/vendor/hfast.py",
+  "bytes": 12953,
+  "sha256": "693b947c92ea4d65708eea4d1f6a17214901ce4712bc5e3dd8c4a91f3d339286",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad2d/vendor/hops.py",
+  "bytes": 9171,
+  "sha256": "99a331f8ea549ec307fdf3235d7f11b57c059305136f264c3f2f74ad3e505820",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/.gitignore",
+  "bytes": 26,
+  "sha256": "75533bc07954fb276a8121089488a6b646bd431431a9f5d2906a71e486cef13d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/DESIGN.md",
+  "bytes": 28447,
+  "sha256": "09bff7a2707781946a0313c6ebae26e774e7dfd67b78088f335dc265784a7aed",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/audit_q.py",
+  "bytes": 10263,
+  "sha256": "0d5122d346a3fd7dcbf3e64f5a47f438726b0e2705f6eca7d7ed96f08cbd4479",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/cluster/stage.py",
+  "bytes": 4447,
+  "sha256": "f105e906e508b4a6a7bcdf64d7c68659c04cd8a19e1a23114200f271d80085f5",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/cluster/submit.sh",
+  "bytes": 1022,
+  "sha256": "47802211c460622a955904d5da7576869394a27cb17ba65f6b3020e7dfef3a8b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/ho_n129.json",
+  "bytes": 1564,
+  "sha256": "cb3ae4259a62957c70fb6f6637a09d954815286f1414b5d73bd2731dfe3d0c20",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/ho_n257.json",
+  "bytes": 1564,
+  "sha256": "8dd3fda4573036df43cff793ad4856af4a6c46ad25e0c240a76fe86716988935",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/ho_n65.json",
+  "bytes": 1567,
+  "sha256": "4db979f63a08c7c39b3801cad46c785516f3b97d78f3811bf55c8c75943b9005",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/local_smoke.json",
+  "bytes": 734,
+  "sha256": "541dd5f574219198ab8146fd5e17c4fa44677ef562f8f471ed6467f8d852cc65",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/ref_probe.json",
+  "bytes": 213,
+  "sha256": "99c6d4ba528e7217ac9be5a5472e50be142d2d124b1f195716024cd02760a3fe",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/ref_recheck.json",
+  "bytes": 216,
+  "sha256": "1e1f6b33d61568e6402fba807f01f0141d017d999473c5ce262116d86cf8b70a",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/ref_run.json",
+  "bytes": 177,
+  "sha256": "0af35ae8a20c0f46d55c938baae610408bc1a6dc35de2223e3c342d9314b08ea",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/smoke_n65.json",
+  "bytes": 1257,
+  "sha256": "7b2d393bc7776208cc57a4d451ed83a645ad8c4d474eec2c317bcacb33b0f78b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/val_n129.json",
+  "bytes": 1410,
+  "sha256": "55aee4fbdf9792ad6af88db3f98757eb32f0873e4033f413294aef4b78f2bfa9",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/val_n257.json",
+  "bytes": 1410,
+  "sha256": "988a38d8543ed59312dbf49ce90c53151951600841e5c1cc3a6d719bc804a8cd",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/configs/val_n65.json",
+  "bytes": 1413,
+  "sha256": "7230c934710b1dcefd3885a44312c4d7846acaa8144e37042afa846921e874a5",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/inputs/model_M2/bank.pkl",
+  "bytes": 29399165,
+  "sha256": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/inputs/model_M2/training.json",
+  "bytes": 34251,
+  "sha256": "1455a1a3cbb466b62c85d039a59f673765115f7cf6e109bd2f7c690686604dfc",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/make_configs.py",
+  "bytes": 2882,
+  "sha256": "8e6af549eeff650682ec3a9e9e2ed844a5c2dcfa4513ea080d5acea9d98a4883",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/make_report.py",
+  "bytes": 35345,
+  "sha256": "0535a192e4445f96c63a526dff54b6c5e87f00e562785ef038561e1c78889d9f",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/npcore.py",
+  "bytes": 4109,
+  "sha256": "c8f5b9e6b24b86f467ec8aded807d5d00d41b761149dfbf74f64acca50d033b1",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/offmesh.py",
+  "bytes": 12463,
+  "sha256": "c46656e48cec27c4d78d1a00f3d93e19b7911b6d34bae6bdf9e264d10d45cbb4",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/qpanel.py",
+  "bytes": 33039,
+  "sha256": "3dcff5d90522d61bc558e1f067a224091061873969f86c0896d07cbaa2f9b934",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/refine_q.py",
+  "bytes": 7348,
+  "sha256": "e9acda4299498b11dddb7d92424123b830b5f91eb7daeb86e7fa365b35c3539d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/refjob.py",
+  "bytes": 7844,
+  "sha256": "4ef49eb65248f89541aa1b8ec82f93fb687d78d7557628f1cd91d2a1a51846cf",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/rules.py",
+  "bytes": 8185,
+  "sha256": "1aaa4e5d5da2040d4b1e6704fd45af1ea224d4d8593ac68f3ecca67dce536934",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/rules/rules.json",
+  "bytes": 3875,
+  "sha256": "c5bd0ebf17a76cbae20caca1d35f42725c9d008b30c8b780ecc8e2df36b2d8f8",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/rules/rules.npz",
+  "bytes": 29505730,
+  "sha256": "099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/select_q.py",
+  "bytes": 10806,
+  "sha256": "8500950d1af3691f68714e4254efe23b9de2375e15029d154512d30faf79d1b7",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/selection.json",
+  "bytes": 143034,
+  "sha256": "ca69098a38b4f145178a4612c96bc12d425fe8f53aa47583eef2aaf55e5bf524",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/vendor/PROVENANCE.json",
+  "bytes": 1131,
+  "sha256": "14596d218ccef41be52421bc51114e691a14ec05b3217a7a0f45842ab3bb6f3c",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/vendor/burgers3d-retry/tables.py",
+  "bytes": 14587,
+  "sha256": "edc811b592cf68e4e76eb9eb4c6b8c86171425e7685ca4ccbbe02c4bff3d8b4d",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/vendor/burgers3d-span/common.py",
+  "bytes": 31499,
+  "sha256": "670475259683ef77f7af454d8b2b04fdd5ee3543373aa4a11353df4363c484b6",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/vendor/quad3d/vendor/paper-b3d/vendor/b3d_common.py",
+  "bytes": 46837,
+  "sha256": "c5e36b4c6fc148f795613b0d5547014b6ffd43ad4b1f62db3768d8d733a6814f",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-fom2d/verdict.py",
+  "bytes": 11104,
+  "sha256": "f004845931ddeb253a8ad5ea35c30a82cd8a7b3d24a18aa24b82fbd99ce9c0ba",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/mr-burgers2d/engines.py",
+  "bytes": 16058,
+  "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/separable-decoder/sep_common.py",
+  "bytes": 14780,
+  "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ },
+ {
+  "source": "experiments/jcp-references/verdict.py",
+  "bytes": 11104,
+  "sha256": "f004845931ddeb253a8ad5ea35c30a82cd8a7b3d24a18aa24b82fbd99ce9c0ba",
+  "commit": "4bde13457c82c6dddb4211649fe8f12e1e926b9a"
+ }
+]

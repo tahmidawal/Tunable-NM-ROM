@@ -1,0 +1,142 @@
+{
+ "tau_0.01": {
+  "G": null,
+  "G_ci95": null,
+  "fom": null,
+  "fom_cost": null,
+  "rom": null,
+  "rom_cost": null,
+  "rom_in_job": null,
+  "fom_seconds": null,
+  "rom_seconds": null,
+  "status": "inconclusive",
+  "unresolved_families": []
+ },
+ "tau_0.03": {
+  "G": 0.8586529025735055,
+  "G_ci95": [
+   0.799043857330506,
+   0.8996063058654945
+  ],
+  "fom": "etd|N48|0.003125|mid@C100",
+  "fom_cost": 0.280741898228017,
+  "rom": "ckpt:18f0266ae6f0|R256|gauss128|frozen|CNR|0.0125|LSPG|prod",
+  "rom_cost": 0.326956209414297,
+  "rom_in_job": true,
+  "fom_seconds": 0.02807146217674017,
+  "rom_seconds": 0.0323994574137032,
+  "status": "ok",
+  "unresolved_families": []
+ },
+ "tau_0.1": {
+  "G": 0.9231722693965544,
+  "G_ci95": [
+   0.8773920338329423,
+   0.9428484962359788
+  ],
+  "fom": "etd|N48|0.0125|mid@C100",
+  "fom_cost": 0.1364990241029282,
+  "rom": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.0125|LSPG|prod",
+  "rom_cost": 0.14785867018314236,
+  "rom_in_job": true,
+  "fom_seconds": 0.013390541076660156,
+  "rom_seconds": 0.014551663771271706,
+  "status": "ok",
+  "unresolved_families": []
+ },
+ "gate": "FAIL",
+ "gate_rule": "post-hoc A10 cross-check rule",
+ "gate_registered_rule": {
+  "outcome": "UNRESOLVED",
+  "reference_decidable": false,
+  "note": "registered A5.5 cross-check rule (eligibility-registered.json)"
+ },
+ "labels": [
+  "accuracy: conditional (lane references, conditional Richardson eps_ref)",
+  "speed: against the strongest tested competitor; finite-ladder upper bound on the ROM speed-up",
+  "ROM: inherited constant-kappa configuration and qualification (prior evidence); variable-kappa ROM unmeasured"
+ ],
+ "gate_detail": {
+  "outcome": "FAIL",
+  "target_outcomes": {
+   "0.03": "fail",
+   "0.1": "fail"
+  },
+  "reference_decidable": true,
+  "contrast": 100.0,
+  "rule": "DESIGN \u00a79 + A2.2 + A4.10 + A5.12 + post-hoc A10 cross-check rule"
+ },
+ "gpu_hours": 2.0372,
+ "references": {
+  "eligible_C100": 32,
+  "eligible_C10": 32,
+  "eps_ref_C100": [
+   2.2316668343718386e-05,
+   0.00013498417393190774
+  ]
+ },
+ "tkappa_C100": {
+  "median": 0.21362743370834772,
+  "worst": 0.3469524589687151
+ },
+ "sources": {
+  "ladder": {
+   "path": "runs/lad2/output/vladder_lad2/result.json",
+   "sha256": "ce13a968c3dbab9ee6c24d78d4c48df2080b8fe63643c7e0e78de8e1c9cd0d6e"
+  },
+  "l1": {
+   "path": "runs/lad1/output/vladder_lad1/result.json",
+   "sha256": "71fa94dfb5e902e0a4cd69ae6f40744d44b3bfd841d45c4ca8cc3b5b9dfdf01f"
+  },
+  "timing": {
+   "path": "runs/time/output/vtime_time/result.json",
+   "sha256": "e67bbfae5485cbafe69c76e4e18f1de276779bd2c42ef0784c984ac875043e6c"
+  },
+  "gate": {
+   "path": "checks/gate.json",
+   "sha256": "f74e270677b1c630c1f6e2308637e282d1f53b9f0d3f19f85fd93324a075c3ce"
+  },
+  "eligibility": {
+   "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-varcoef/experiments/imp-varcoef/checks/eligibility.json",
+   "sha256": "103ec15d9067e60da58d4a7dfa1712dfa20b7d0abf3c366643b4946ba109e20b"
+  },
+  "rombox": {
+   "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-varcoef/experiments/imp-varcoef/checks/rom-box.json",
+   "sha256": "d60c7a81afd88bd3482b919d16ac0b1f89caf0af2aa26cfc4f2259b2cfa0b582"
+  }
+ },
+ "test": {
+  "ccv|L64|0.05|t3@C100": {
+   "median": 0.06985477325928571,
+   "worst": 0.12280739620404489
+  },
+  "etd|N48|0.003125|mid@C100": {
+   "median": 8.823291765231175e-05,
+   "worst": 0.020447805721251516
+  },
+  "etd|N48|0.0125|mid@C100": {
+   "median": 0.002815056569536854,
+   "worst": 0.11660004742751982
+  },
+  "fdmg|L128|0.003125|MG|1e-07@C100": {
+   "median": 0.0006725942645610847,
+   "worst": 0.009988302930140969
+  },
+  "fdmg|L64|0.003125|MG|1e-07@C100": {
+   "median": 0.0023208694548032005,
+   "worst": 0.048845329270794415
+  },
+  "psi|N24|0.00625|SBDF2|1e-05@C100": {
+   "median": 0.0023420646074946254,
+   "worst": 0.13952295918429253
+  },
+  "psi|N48|0.003125|CNAB2|1e-05@C100": {
+   "median": 0.00041104582709697746,
+   "worst": 0.01147395181521418
+  }
+ },
+ "plots": [
+  "plots/fom_cost_vs_error.png",
+  "plots/gate.png"
+ ]
+}

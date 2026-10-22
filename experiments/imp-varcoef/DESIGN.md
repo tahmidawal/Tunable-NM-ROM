@@ -499,3 +499,54 @@ change or a step of the pre-registered §11 defer order.
   $L^2\times$stages at the same contrast (largest observed level rate for unobserved levels); ladder per-run cost = steps × the largest
   per-step time observed at a resolution ≥ its own (quadratic beyond the largest observed), plus per-program compiles,
   extensions (+50 %), screening, and qualification (50 % of configurations, three variants at up to 3×); safety 1.3.
+
+---
+
+## Amendment A8 (2026-10-21, after Codex audit `audits/codex-a7-1.md`; before any production job)
+
+- **A8.0 Restatement of A7.** A7's changes are post-smoke changes **informed by the smoke's development-case accuracy and cost**
+  (no production cohort run), made before production; A7.2's cap and A7.3's level shift are new amendments, not §11 deferrals
+  (only A7.4's three items are). The smoke references sit about 70–140 times below the eligibility bound; the predicted
+  $\epsilon_{\rm ref}\approx3$–$6\cdot10^{-5}$ and Péclet ≤ 1.4 at the shifted levels are **extrapolations**; acceptance at 512 is
+  re-checked case by case by `judge`, and fallback acceptance at (1024, 2048, 4096) is demonstrated only on the smoke cases.
+  A7.2 is a **search truncation**: "no qualified" means none found within the 8 attempted configurations.
+- **A8.1 Two ladder jobs.** The ladder runs as L1 (dev ladder at both contrasts, extensions, val at $C=100$; `stop_after_val`) and
+  L2 (screening and qualification at $C=100$, resuming from L1's lattice runs, `resume_from`, bound by sha256). L2's certificate is
+  computed from L1's actual runs (the matching set is then known), which bounds the qualification work by the 8 most expensive
+  matching configurations per group. Results are identical to one job (lattice runs are deterministic and reused).
+- **A8.2 Certificates (replaces A7.5's ladder model).** L1: every program compile + every base and every *possible* extension
+  configuration (the superset of all extension rules) on 8 dev cases per contrast + 24 val cases at $C=100$; L2 as A8.1;
+  references with the largest observed rate for unobserved levels. Safety 1.3.
+- **A8.3 Test fallback.** Test cases not accepted at the shifted levels are rerun at (1024, 2048, 4096) with the same test-opening
+  bindings (`make_configs.py fallback-test`).
+- **A8.4 Memory.** The ladder records device memory in use/peak and the number of cached programs at every save.
+
+---
+
+## Amendment A9 (2026-10-21, after `audits/codex-a7-2.md`)
+
+- **A9.1** A8.1's "results are identical to one job" is restated: the numerical workflow is the same given unchanged inputs (the
+  lattice runs are reused; screening latencies are measured afresh in L2, so rankings can differ from a hypothetical single job).
+  L2 carries L1's per-stage evidence archive (`stages.npz`).
+- **A9.2** L2's qualification bound sums the per-group bounds without de-duplication.
+- **A9.3 Reserves.** The pooled fallback reserve (0.7 GPU-h) covers at most 7 ineligible cases; further ineligible cases stay excluded
+  (the coverage rule then decides). A separate test-fallback reserve (0.25 GPU-h, ≤ 2 cases) is added. If any job's certificate
+  exceeds its reserve, the plan is regenerated, and if spent + remaining would exceed 8 GPU-h the §11 defer order is applied
+  (next item: the FDMG DST-preconditioned variant), never the cap.
+
+---
+
+## Amendment A10 (2026-10-21, POST HOC: adopted after the reference jobs ref100/ref10, before any ladder job)
+
+**What happened.** All 64 production references were accepted by the E0 predicates (ε_ref ≤ 1.35e-4), but the registered
+cross-check (A5.5) failed on dev cases 0 and 2 at both contrasts: its "spatial evidence" requires adjacent PSI differences either to
+decay by 10× per level or to be both ≤ 1e-7, and the observed differences were 1e-7–2.6e-7 with ratio ≈ 0.4 (a floor, about
+1000× below the 2.5e-4 validation resolution); on dev 2 at C = 100 the cross-check's own time-error indicator (2.6e-5) also exceeded the
+2.5e-5 bar. Distances between the cross-check and the reference were 3.0e-5–1.15e-4 on all eight cross-checks. Under the
+registered rule both contrasts are therefore **not decidable and the gate outcome is UNRESOLVED** (`checks/eligibility-registered.json`).
+**Post-hoc rule (labelled, like E0 A10).** The cross-check passes iff spatial and temporal evidence hold with the "resolved" floor
+raised to 2.5e-6 (one hundredth of the validation resolution; tail bounded by the sum of the two differences), all runs are valid,
+and **distance + U_xc ≤ 2.5e-4** — i.e. the cross-check certifies the reference to the 2.5e-4 resolution (conditionally), which is the
+purpose stated in A3.5/A4.5. Under A10 all eight cross-checks pass and 32/32 cases are eligible at each contrast
+(`checks/eligibility.json`, frozen). The ladder, timing and gate proceed on the A10 mask; the report states both outcomes:
+registered rule → UNRESOLVED; post-hoc A10 → the measured gate. No FOM result had been computed when A10 was adopted.

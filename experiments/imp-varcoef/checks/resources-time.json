@@ -1,0 +1,17 @@
+{
+ "job": "time",
+ "runs": [
+  "vtime:configs/time.json"
+ ],
+ "configs": {
+  "configs/time.json": "47aa55d6921d59758f3445c28dea448b243a84ebe956e0f1541aa837c32e7dec"
+ },
+ "parts_hours": {
+  "vtime:configs/time.json": 0.7594525371383943
+ },
+ "projection_hours": 0.7594525371383943,
+ "safety": 1.3,
+ "smoke": "runs/smk1",
+ "gpu": "NVIDIA H200",
+ "note": "smoke-derived upper-bound certificate (resources.py docstring)"
+}

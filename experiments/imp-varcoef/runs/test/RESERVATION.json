@@ -1,0 +1,16 @@
+{
+ "job": "test",
+ "gpu": "h200",
+ "time_limit_hours": 0.5,
+ "runs": [
+  [
+   "vref",
+   "configs/ref-test.json"
+  ],
+  [
+   "vtest",
+   "configs/test-run.json"
+  ]
+ ],
+ "commit": "ecf274d91ce1b29f85d33b641931b09d407ff2b0"
+}

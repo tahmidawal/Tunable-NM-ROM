@@ -136,6 +136,7 @@ def main():
     ap.add_argument('--eligibility', required=True)
     ap.add_argument('--rombox', required=True)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--eligibility-registered', default=None)
     a = ap.parse_args()
     T = json.loads(Path(a.timing).read_text())
     Lr = json.loads(Path(a.ladder).read_text())
@@ -262,6 +263,12 @@ def main():
                          for t, v in dec.items()}, ref_ok)
     res['gate'] = dict(outcome=gate, target_outcomes={f'{t:g}': o for t, o in outs.items()}, reference_decidable=ref_ok,
                        contrast=GATE_C, rule='DESIGN §9 + A2.2 + A4.10 + A5.12')
+    if a.eligibility_registered:                    # A10: report the registered-rule outcome beside the post-hoc one
+        Er = json.loads(Path(a.eligibility_registered).read_text())
+        okr = bool(Er['contrasts'][f'{GATE_C:g}']['decidable'])
+        res['gate_registered_rule'] = dict(outcome=gate if okr else 'UNRESOLVED', reference_decidable=okr,
+                                           note='registered A5.5 cross-check rule (eligibility-registered.json)')
+        res['gate']['rule'] += ' + post-hoc A10 cross-check rule'
     Path(a.out).write_text(json.dumps(res, indent=1, default=float))
     print(json.dumps(res['gate'], indent=1))
 

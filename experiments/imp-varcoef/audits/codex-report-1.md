@@ -1,0 +1,18 @@
+Read-only audit completed; no files changed.
+
+| Item | Verdict | Finding / fix |
+|---|---|---|
+| Gate arithmetic | **CORRECT** | Recomputed from timing triplets: **0.858653 [0.799044, 0.899606]** at 3%; **0.923172 [0.877392, 0.942848]** at 10%. Both fail the 2× gate. |
+| Other numerical summaries | **CORRECT** | Family-table errors agree at printed precision; documented recomputation drift is negligible. T-kappa, 4,336 C10 runs, ROM denominators and **2.0372 GPU-h** agree. All six exported source hashes match. |
+| Generator / hand-typed numbers | **NEEDS-RESTATEMENT** | In-memory regeneration reproduces both files exactly. Measured summaries are sourced, but counts and constants—including “16 test cases,” reference levels and the cap—are literals. Replace these with source-derived values or narrow “all numbers” to “measured results.” |
+| Registered versus post-hoc outcome | **CORRECT** in report; **NEEDS-RESTATEMENT** in export | Registered masks have **0 eligible cases** at both contrasts; A10 masks have **32 each**. Report plainly distinguishes **UNRESOLVED** from post-hoc **FAIL**. Export omits the registered outcome: include it explicitly. |
+| Conditional labels | **NEEDS-RESTATEMENT** | Caveats appear mainly in the preamble and §6, not beside each numerical table/figure. Add conditional-reference, inherited constant-κ qualification and strongest-tested/finite-ladder labels locally and in export metadata. |
+| Variable-κ ROM claim | **WRONG** | “Can only be slower or less accurate” is neither measured nor established; worse accuracy alone does not algebraically lower \(G\). Replace with: “The constant-κ ROM is an assumed optimistic comparator; variable-κ ROM cost and accuracy remain unmeasured.” |
+| CCV at 3% | **WRONG** as presented | “No qualified” is not true across the tested family: the qualified 1% CCV configuration has **0.228%** worst error and therefore meets 3%. The target-specific capped search exhausted eight candidates. Label that search outcome explicitly; distinguish it from absence of any qualified configuration. |
+| Test-once | **CORRECT**, disclosure **NEEDS-RESTATEMENT** | Recomputed all seven rows. Cases **test\|1 and test\|7** fail order; fallback was not run. State explicitly that 10% winners **CCV 12.281%, ETD 11.660%, PSI 13.952% fail** on eligible test cases; **FDMG 4.885% passes**. Add target/pass columns. |
+| Plots | **NEEDS-RESTATEMENT** | PNGs are legible and gate coordinates agree. Figure 1 overlays ladder screening seconds with inherited C2 seconds from another job; this cannot establish a paired speed comparison. Label the overlay illustrative and use Figure 2 for timing conclusions. Add local qualifications to both captions. |
+| Where-we-win / retractions | **NEEDS-RESTATEMENT** | The cited warm-start column does predict no ≥2× configuration, so qualitative consistency is supported. It is not validation of that synthetic model. Replace blanket “none of earlier reports’ numbers are contradicted” with a narrowly scoped statement about this comparison. |
+| Tables, math and diagram | **CORRECT** structurally | All table rows have consistent column counts; pipes are escaped. LaTeX delimiters and Mermaid structure appear sound. Renderer execution was not verified. |
+| Glossary | **NEEDS-RESTATEMENT** | Missing definitions include configuration fields **N/L/R, mid, t3**, solver acronyms, **A/C2/E0**, timing gates/controls, bootstrap and “all valid.” Define these in plain language. |
+
+**Overall verdict: NOT CLEAN — WRONG claims remain.**

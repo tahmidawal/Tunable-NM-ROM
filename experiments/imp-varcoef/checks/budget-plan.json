@@ -1,0 +1,45 @@
+{
+ "spent_committed": 1.6639,
+ "remaining": [
+  {
+   "category": "fallback-reserve",
+   "job": "reffb",
+   "hours": 0.0,
+   "basis": "not needed: 64/64 references accepted (A10 mask)"
+  },
+  {
+   "category": "timing",
+   "job": "time",
+   "hours": 0.7594525371383943,
+   "basis": "certificate"
+  },
+  {
+   "category": "timing-retry-reserve",
+   "job": "time-retry",
+   "hours": 0.25,
+   "basis": "reserve"
+  },
+  {
+   "category": "test-refs",
+   "job": "reftest",
+   "hours": 0.25,
+   "basis": "16 cases at ref100 per-case bound"
+  },
+  {
+   "category": "test-run",
+   "job": "test",
+   "hours": 0.05,
+   "basis": "16 cases x winners"
+  },
+  {
+   "category": "test-refs",
+   "job": "reffb-test",
+   "hours": 0.25,
+   "basis": "test fallback reserve, <= 2 cases at the old levels (A9.3)"
+  }
+ ],
+ "spent_plus_remaining": 3.2233525371383944,
+ "phase_cap": 8.0,
+ "fits": true,
+ "rules": "A9.3: reserves are caps per category; exceeding -> regenerate plan; over 8 GPU-h -> section 11 defer order; the plan is a projection, not a wall-time reservation: if lad2 runs past 4.4 h of actual GPU time the remaining reserves are re-planned (A9.3 defer order: timing retry reserve, then FDMG DST, then C=10 items), never the cap"
+}

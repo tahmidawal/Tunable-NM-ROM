@@ -1,0 +1,13 @@
+<section id="train" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">How is the bank trained?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:60px;font-weight:600;line-height:1.1;color:#14213D">On short simulations of single and multiple bumps</h2>
+</div>
+<table style="font-size:24px;color:#14213D"><tr><th style="width:26%"></th><th style="width:37%">2D</th><th style="width:37%">3D</th></tr><tr><td>Training simulations</td><td>576 trajectories, 50 steps each</td><td>1536 trajectories, 12 saved steps each</td></tr><tr><td>Initial conditions</td><td>one Gaussian bump; width 0.05–0.2, amplitude 0.5–2</td><td>1–3 blobs; width 0.10–0.20, amplitude 0.5–2</td></tr><tr><td>Viscosity ν</td><td>0.01–0.1 (log-uniform)</td><td>0.01–0.1 (log-uniform)</td></tr><tr><td>Solver making the data</td><td>upwind + backward Euler, 256², Δt 0.005</td><td>upwind + backward Euler on 33³, 65³, 129³</td></tr><tr><td>Loss</td><td>autodecoder: network + one code per snapshot, relative MSE + 1e-4 orthogonality penalty</td><td>projection loss: how much of each snapshot the shapes miss, + tail and whitening terms</td></tr><tr><td>Optimiser</td><td>AdamW, lr 1e-3, 300k steps</td><td>Adam, lr 1e-3, 12k steps</td></tr></table>
+
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">sep_common.py, sep_solvers.py, train2w.py · 10</p>
+<aside>The training data were made with a simple first-order solver on a modest grid. A control bank trained on even coarser 129-node data still reached 0.83 % worst error, so fine training data are not what makes the model accurate.</aside>
+</section>

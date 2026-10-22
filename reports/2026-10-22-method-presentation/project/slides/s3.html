@@ -1,0 +1,11 @@
+<section id="s3" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#F7F6F2;background:#1F6F8B;padding:10px 20px;border-radius:999px;white-space:nowrap">Step 3 of 6</p>
+<p style="font-size:32px;color:#4A5568">How do we compute u·∇u without the mesh?</p>
+</div>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:60px;font-weight:600;line-height:1.1">Evaluate the nonlinear term at m fixed points</h2>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;line-height:1.5;color:#14213D;background:#FFFFFF;border:1px solid #DDE1E4;border-left:8px solid #C8641E;border-radius:12px;padding:28px 36px">N(c) = Pᵀ [ (B·c) ⊙ (D·c) ]<br>B = G(x_q),  D = (∂x + ∂y) G(x_q),  P_qm = w_q·ψ_m(x_q)</p>
+<ul style="flex:1;font-size:30px;line-height:1.4;color:#4A5568;display:flex;flex-direction:column;gap:16px"><li>(x_q, w_q): a classical quadrature rule (Gauss or Fibonacci lattice), the same on every mesh</li><li>Derivatives D come from automatic differentiation of the network: exact, no finite differences</li><li>B and D are computed once offline; online it is two matrix–vector products and one multiply</li><li>This is Hari’s off-mesh quadrature; m is chosen per bank by a qualification test</li></ul>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">offmesh.py; quadrature-burgers3d DESIGN · 16</p>
+<aside>m is large: 4181 points at r = 128 up to 36,864 at r = 512 in 2D. That number drives cost, see Part 3.</aside>
+</section>

@@ -1,0 +1,13 @@
+<section id="arch3d" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">What do the 3D banks look like?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:60px;font-weight:600;line-height:1.1;color:#14213D">Same design, wider, with two sizes</h2>
+</div>
+<table style="font-size:28px;color:#14213D"><tr><th style="width:34%"></th><th style="width:22%">2D R512</th><th style="width:22%">3D M2</th><th style="width:22%">3D W1024</th></tr><tr><td>Shapes out (R)</td><td>512</td><td>512</td><td>1024</td></tr><tr><td>Hidden layers</td><td>1024 × 2</td><td>1024 × 3</td><td>2048 × 3</td></tr><tr><td>Fourier features</td><td>128, σ = 4</td><td>128, σ = 2</td><td>128, σ = 2</td></tr><tr><td>Envelope</td><td>16x(1−x)y(1−y)</td><td>64·Π x(1−x)</td><td>64·Π x(1−x)</td></tr><tr><td>Parameters</td><td>1.84 M</td><td>2.89 M</td><td>11.0 M</td></tr><tr><td>Training GPU, fit time</td><td>A100 (time not recorded)</td><td>H200, 2072 s</td><td>H200, 4104 s</td></tr><tr><td>Worst validation projection error</td><td>–</td><td>3.13 %</td><td>1.31 %</td></tr></table>
+
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">experiments/quadrature-burgers3d, jcp-wide-bank configs · 9</p>
+<aside>The 3D banks also have K = 16/32/64 heads trained, but they did not generalise (K = 16 validation worst 41 %), so they are unused. Only the 2D bank has a head in use, and only as a side experiment.</aside>
+</section>

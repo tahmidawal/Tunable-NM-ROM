@@ -1,0 +1,13 @@
+<section id="scoreboard2" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">Which smaller tests failed?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:60px;font-weight:600;line-height:1.1;color:#14213D">Four more, all tied to the solver rather than the bank</h2>
+</div>
+<table style="font-size:27px;color:#14213D"><tr><th style="width:24%">Test</th><th style="width:32%">Outcome</th><th style="width:44%">Best explanation</th></tr><tr><td>r 384 → 512 improves accuracy</td><td>No: worse on 22 of 38 cases (CN-R)</td><td><b>Measured:</b> time error dominates; floor barely moves (0.028 → 0.025 %). Link not tested</td></tr><tr><td>Cost follows textbook exponents</td><td>No: 1.17 / 1.08 / 1.92 / 1.24 against 1, 1, 2, 3</td><td><b>Hypothesis:</b> small GPU kernels are latency-bound (not profiled)</td></tr><tr><td>Early 3D speed-ups (5.4×, 17×)</td><td>Withdrawn: winners failed the quadrature check; qualified 2.95×</td><td><b>Measured:</b> cheap rules don’t converge to their finer successors</td></tr><tr><td>3D fixed-sweep CN at 2.5Δt</td><td>Ineligible in 10 of 10 cells</td><td><b>Descriptive:</b> too few sweeps or a binding trust clip at hard steps</td></tr></table>
+
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">p1-scaling; jcp-budget; jcp-qualify; jcp-dims; jcp-speed3d · 30</p>
+<aside>The 4× fewer points giving only 2.1× speed-up (imp-hrcost) supports the latency-floor hypothesis but doesn&#x27;t prove it.</aside>
+</section>

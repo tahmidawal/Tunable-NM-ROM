@@ -1,0 +1,11 @@
+<section id="s4" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#F7F6F2;background:#1F6F8B;padding:10px 20px;border-radius:999px;white-space:nowrap">Step 4 of 6</p>
+<p style="font-size:32px;color:#4A5568">How do we find c?</p>
+</div>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:60px;font-weight:600;line-height:1.1">Solve the small nonlinear system</h2>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;line-height:1.5;color:#14213D;background:#FFFFFF;border:1px solid #DDE1E4;border-left:8px solid #C8641E;border-radius:12px;padding:28px 36px">J = Pᵀ [ diag(D·c)·B + diag(B·c)·D ]<br>(JᵀJ + λI)·δ = −Jᵀ·r     (Cholesky)<br>stop when ‖Jᵀr‖ / (‖J‖·‖r‖) ≤ 10⁻³</p>
+<ul style="flex:1;font-size:30px;line-height:1.4;color:#4A5568;display:flex;flex-direction:column;gap:16px"><li>Levenberg–Marquardt: Gauss–Newton with damping λ carried between steps</li><li>Warm start from a quadratic prediction of the previous steps</li><li>Typical work: about 2 Jacobian builds per step</li><li>In 3D, after 3 adaptive steps we run one fixed sweep per step</li></ul>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">qcore.py:279–342; jcp-wide-bank DESIGN · 17</p>
+<aside>The Jacobian is exact and cheap because N is bilinear in the shapes. The per-step cost is roughly 2·m·M·r per Jacobian.</aside>
+</section>

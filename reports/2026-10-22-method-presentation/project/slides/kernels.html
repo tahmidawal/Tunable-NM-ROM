@@ -1,0 +1,15 @@
+<section id="kernels" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">How does each solver part scale with r?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:60px;font-weight:600;line-height:1.1;color:#14213D">Cost grows with r, but not at the textbook rates</h2>
+</div>
+<div style="display:flex;gap:48px;align-items:start">
+<img src="/_blob/aa2fb685f61bf33bc854ba6de263598a" alt="Per-call time of each kernel against r in 2D" style="width:1000px;height:480px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
+<ul style="flex:1;font-size:30px;line-height:1.4;color:#4A5568;display:flex;flex-direction:column;gap:16px"><li>Declared exponents: nonlinear term 1, Jacobian 1, normal equations 2, Cholesky 3</li><li>Measured in 2D: 1.17, 1.08, 1.92, 1.24</li><li>3D: 1.01, 1.03, 1.33, 1.03</li><li>At r ≤ 1024 the GPU is latency-bound, so Cholesky is much cheaper than r³</li></ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Lane p1-scaling · 24</p>
+<aside>The registered hypothesis H-cost-r fails as stated, but the practical conclusion is fine: cost is dominated by the m·M·r products, not by the Cholesky.</aside>
+</section>

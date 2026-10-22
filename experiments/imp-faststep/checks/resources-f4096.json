@@ -1,0 +1,48 @@
+{
+ "smoke": "runs/smk4096/archive/output/fsrun_smk4096/result.json",
+ "smoke_gpu": "NVIDIA H200",
+ "config": "configs/f4096.json",
+ "seconds": {
+  "setup": 17.1,
+  "arms": 792.455211294194,
+  "classification_allowance": 1010.3803944000974,
+  "rank_setup_and_blocks": 150.81613717228174,
+  "timing": 1049.9626057762653
+ },
+ "inventory": [
+  [
+   "L-CNR",
+   384,
+   219.5,
+   "measured"
+  ],
+  [
+   "G-CN",
+   384,
+   113.9,
+   "measured"
+  ],
+  [
+   "G-E4a",
+   384,
+   350.1,
+   "measured"
+  ],
+  [
+   "G-E4b",
+   384,
+   15.3,
+   "measured"
+  ],
+  [
+   "G-R1",
+   384,
+   93.6,
+   "measured"
+  ]
+ ],
+ "projection_hours": 1.2586309786011827,
+ "safety": 1.5,
+ "time_limit_hours": 1.5,
+ "covered": true
+}

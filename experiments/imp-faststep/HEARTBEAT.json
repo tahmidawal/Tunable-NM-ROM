@@ -1,18 +1,16 @@
 {
  "lane": "imp-faststep",
- "utc": "2026-10-21T18:55:34Z",
- "step": "5: CPU e2e (main code) + ecsw job running",
+ "utc": "2026-10-22T03:40:22Z",
+ "step": "DONE / hand-back",
  "waiting_on": {
-  "slurm_jobs": [
-   "6159327"
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": null,
-  "local_pid": 4166830
+  "local_pid": null
  },
  "expected_finish_utc": null,
- "last_commit": "a11a30440",
- "gpu_hours_spent": 0,
+ "last_commit": "a1fdd4632",
+ "gpu_hours_spent": 1.4076,
  "gpu_hours_cap": 4,
- "notes": ""
+ "notes": "E5 not fixed (worst-error condition fires for every arm); GitHub mirror push failing (gh token invalid) - commits local"
 }

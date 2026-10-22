@@ -1,0 +1,44 @@
+{
+ "mesh": 4096,
+ "edges": [
+  0,
+  128,
+  256,
+  384
+ ],
+ "ranks": [
+  {
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160"
+  }
+ ],
+ "arms": [
+  "L-CNR",
+  "G-CN",
+  "G-E4a",
+  "G-E4b",
+  "G-R1",
+  "L-CNR-M1152"
+ ],
+ "order": true,
+ "max_classify": 8,
+ "timing": {
+  "reps": 1,
+  "burn": 0.05,
+  "seed": 1,
+  "anchor": "L-CNR|384"
+ },
+ "attempt": "smk4096",
+ "cases": [
+  [
+   "dev6",
+   0
+  ]
+ ],
+ "controls": false,
+ "time_limit_hours": 0.5,
+ "e0_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+ "e0_metric_id": "2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1",
+ "headline": false
+}

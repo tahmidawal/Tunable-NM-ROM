@@ -84,6 +84,24 @@ def force_c(kind, L):
     return jax.jit(lambda c, tb: tb['Phi'].T @ H.adv_central((tb['Phi'] @ c).reshape(sh), L).reshape(-1))
 
 
+def successor_plan(rules):
+    """Production successor construction (A2.2/A3.1/A5.11), shared with the offline controls C19/C21: rules = available
+    [(kappa, nodes, weights)] in kappa order. Members = one per distinct rule (smallest kappa name, all names kept) plus
+    'none'; successor of a member (by rule id) = fsselect.pod_successors over the full ordered list."""
+    members, seen, order = [], {}, []
+    for k, nd, wt in rules:
+        hid = rule_id(nd, wt)
+        order.append((hid, hid))
+        if hid in seen:
+            seen[hid]['names'].append(k)
+            continue
+        seen[hid] = dict(kind='ecsw', k=k, nd=nd, wt=wt, hid=hid, names=[k])
+        members.append(seen[hid])
+    members.append(dict(kind='none', k=None, hid='none', names=[]))
+    succ = FS.pod_successors(order + [('none', 'none')])
+    return members, succ
+
+
 def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
     pc = cfg['pod']
     tdir = Path(pc['tune_dir'])
@@ -125,15 +143,7 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
         z = np.load(gpath)
         rules = [(k, np.asarray(z[f'k{k}_nodes']), np.asarray(z[f'k{k}_weights'])) for k in pc['kappas'] if f'k{k}_nodes' in z.files]
         rec['gecsw'][str(r)] = dict(file=str(pc['gecsw'].format(r=r)), sha256=sha_file(gpath), available=[k for k, _, _ in rules])
-        members, seen = [], {}
-        for k, nd, wt in rules:                                           # A3.1/A5.11: one member per distinct rule
-            hid = rule_id(nd, wt)
-            if hid in seen:
-                seen[hid]['names'].append(k)
-                continue
-            seen[hid] = dict(kind='ecsw', k=k, nd=nd, wt=wt, hid=hid, names=[k])
-            members.append(seen[hid])
-        members.append(dict(kind='none', k=None, hid='none', names=[]))
+        members, succ = successor_plan(rules)
         TB = {}
         for m in members:
             if m['kind'] == 'ecsw':
@@ -149,9 +159,6 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
         def guard(tb, fps=frozenset(v[1] for v in TB.values())):
             if F.table_fingerprint(tb) not in fps:
                 raise ValueError('POD table differs from its manifest')
-        succ = {}
-        for i_, m in enumerate(members[:-1]):
-            succ[m['hid']] = members[i_ + 1]['hid']                       # next distinct rule; the last -> none
         fc = {kd: force_c(kd, L) for kd in ('ecsw', 'none')}
         mname = lambda m, dt: f'pod-{m["kind"]}|{r}|{"k%d" % m["k"] if m["k"] else "-"}|ETDRK4|{dt}'
         for dt in pc['dts']:
@@ -208,7 +215,7 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
                     if rows[j]['stable']:
                         continue
                     _, nu, _ = U0[ci]
-                    gs, oks = [], []
+                    gs, oks, ev_ = [], [], {}
                     for f_ in (8, 16):
                         W2, s2 = ev(init(U0i[ci], Phi), jnp.float64(nu), tb, F.sched(dt / f_))
                         k2 = int(s2['steps'])
@@ -216,7 +223,10 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
                         co2 = {a: jnp.asarray(b) for a, b in F.etd_coefs_indep(-nu * np.asarray(D), dt / f_).items()}
                         m2 = np.asarray(cert(jnp.asarray(Z2), tb, co2, k2))
                         gs.append(float(s2['growth']))
-                        oks.append(bool(np.isfinite(Z2).all() and np.all(m2 <= 1e-10)))
+                        oks.append(bool(np.isfinite(Z2).all() and np.isfinite(float(s2['stage_max'])) and np.isfinite(np.asarray(W2)).all()
+                                        and np.all(m2 <= 1e-10)))
+                        ev_.update({f'Z_{f_}': Z2, f'W_{f_}': np.asarray(W2), f'mismatch_{f_}': m2, f'stage_max_{f_}': float(s2['stage_max'])})
+                    np.savez_compressed(out / f"CLS_{mid.replace('|', '_')}_{cid(ci).replace('|', '_')}.npz", **ev_)
                     rec['classification'].append(dict(member=mid, case=cid(ci), g8=gs[0], g16=gs[1], refined_ok=all(oks),
                                                       label=FS.classify_growth(gs[0], gs[1], all(oks))))
             # Q2-POD on own states (A2.2/A3.1): rollout distance to the successor and the force ratio at own states
@@ -253,7 +263,7 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
                        T3E=jnp.asarray(zz['T3E']), Phi=Phi)
         q = RM.make_query(kind, 2, L, solver, trust=trust[r])
         certf = RM.make_certifier(kind, 2, L, H.NMAX[2])
-        rows, Cs, Gs = [], [], []
+        rows, Cs, Gs, Ws, AC, AG, RS_, LM_ = [], [], [], [], {}, {}, [], []
         for ci in ids:
             _, nu, n0 = U0[ci]
             sch = RM.schedule(2, scheme, dt, 'prod')
@@ -263,25 +273,40 @@ def run(cfg, L, cases, ids, dev, U0, out, e0, rec_of, el):
             cr = RM.certify(o, gam, sch, 'prod')
             Cn = np.asarray(o['C'])[:int(sch['steps']) + 1]
             nC = np.linalg.norm(Cn, axis=1)
-            row = dict(member=mid, case=cid(ci), valid=cr['valid'], nonstat=cr['nonstat'], steps=cr['steps'],
+            kp = (len(Cn) - 1) // 5
+            sched_ok = bool(np.array_equal(np.asarray(o['W']), Cn[[kp * j for j in range(6)]]))
+            RS_.append(np.asarray(o['stats']['reason'])[:int(sch['steps'])])
+            LM_.append(np.asarray(o['stats']['lam'])[:int(sch['steps'])])
+            row = dict(member=mid, case=cid(ci), valid=bool(cr['valid'] and sched_ok), sched_ok=sched_ok, nonstat=cr['nonstat'],
+                       steps=cr['steps'],
                        growth=float(np.max(nC / nC[0])) if np.isfinite(nC).all() else float('inf'), e0=e0(f, rec_of(ci)))
             row['stable'] = bool(row['growth'] <= 1.05)
             Cs.append(Cn)
             Gs.append(np.asarray(gam)[:int(sch['steps'])])
+            Ws.append(np.asarray(o['W']))
             if ci in dev:
                 tt = {}
                 for lev in ('tight', 'tighter'):
                     sl = RM.schedule(2, scheme, dt, lev)
                     ol = q(U0i[ci], jnp.float64(nu), dat, sl)
-                    cl = RM.certify(ol, certf(ol['C'], jnp.float64(nu), dat, sl), sl, lev)
-                    tt[lev] = (to_lat(ol['fields']), cl['anchor_ok'])
+                    gl = certf(ol['C'], jnp.float64(nu), dat, sl)
+                    cl = RM.certify(ol, gl, sl, lev)
+                    Cl = np.asarray(ol['C'])[:int(sl['steps']) + 1]
+                    okl = bool(np.array_equal(np.asarray(ol['W']), Cl[[(len(Cl) - 1) // 5 * j for j in range(6)]]))
+                    tt[lev] = (to_lat(ol['fields']), bool(cl['anchor_ok'] and okl))
+                    AG[f'{lev}_reason_{cid(ci)}'] = np.asarray(ol['stats']['reason'])[:int(sl['steps'])]
+                    AG[f'{lev}_lam_{cid(ci)}'] = np.asarray(ol['stats']['lam'])[:int(sl['steps'])]
+                    AC[f'{lev}_C_{cid(ci)}'] = np.asarray(ol['C'])[:int(sl['steps']) + 1]
+                    AG[f'{lev}_gamma_{cid(ci)}'] = np.asarray(gl)[:int(sl['steps'])]
+                    AC[f'{lev}_W_{cid(ci)}'] = np.asarray(ol['W'])
                 row.update(dist_tight=P.fdist(f, tt['tight'][0], n0), tight_anchor_ok=tt['tight'][1],
                            dist_tight_tighter=P.fdist(tt['tight'][0], tt['tighter'][0], n0), tighter_anchor_ok=tt['tighter'][1])
                 _TIMING.setdefault(mid, dict(r=r, dt=dt, kind='native', q=q, dat=dat, sch=sch, U0i=U0i, U0=U0, ref={}))['ref'][ci] = \
                     dict(W=np.asarray(o['W']))
             rows.append(row)
-        np.savez_compressed(out / f'N_{mid.replace("|", "_")}.npz', C=np.stack(Cs), gamma=np.stack(Gs),
-                            case_ids=np.array([cid(i) for i in ids]))
+        np.savez_compressed(out / f'N_{mid.replace("|", "_")}.npz', C=np.stack(Cs), gamma=np.stack(Gs), W=np.stack(Ws),
+                            reason=np.stack(RS_), lam=np.stack(LM_),
+                            case_ids=np.array([cid(i) for i in ids]), **{k.replace('|', '_'): v for k, v in {**AC, **AG}.items()})
         rec['native'][mid] = dict(r=r, rows=rows, labels=['anchors on dev6 only', 'hr-baselines registered pick, replayed'])
         print('NATIVE', mid, round(max(rw['e0']['e'] for rw in rows), 5), el(), flush=True)
     del Phi_all

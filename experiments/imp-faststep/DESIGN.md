@@ -599,3 +599,27 @@ all their κ names.
 
 **A5.12 Native 5L anchors.** Tight and tighter anchors on dev6 with `rom.certify` anchor semantics, tight and
 tight/tighter distances, states and γ arrays persisted (descriptive Q1).
+
+---
+
+## Amendment A6 (2026-10-21) — smoke `smk1` (job 6173671): the C3m positive order bar (no verdict data)
+
+The real-size smoke (dev6[0,1] + val32[0], a smoke subset; no verdict is drawn from it) showed every must-fire control
+firing and every positive control passing **except** the C3m positive order bar at r = 384: the observed ETDRK4 slope on
+dev6[0] over Δt ∈ {0.025, 0.0125, 0.00625} (converged reference) is 2.03 at r = 384, against 3.77 at r = 128 (bar 3.5).
+The reconstruction certificate, the linear-exactness check C3 and the f2→f1 mutant detection all pass at both ranks, so
+the stepper implements the registered recurrence; the low slope is the known **stiff order reduction** of the
+Cox–Matthews ETDRK4 (Hochbruck & Ostermann 2005): at r = 384 the diffusion eigenvalues reach larger $\Delta t\,\nu D$.
+The C3m positive bar is therefore an implementation check in the non-stiff regime: it is applied to the job's
+**smallest rank** (r = 128), and the larger-rank slope is reported as a finding (observed finite-range order at the
+deployed rank), not as a control failure. Mutant detection stays required at every rank. Recorded before any
+production (verdict) job. Consequence for interpretation: ETDRK4's time error at r = 384 shrinks like Δt² in this
+range, not Δt⁴; the step-halving distances quantify it.
+
+## Note (2026-10-22) — provenance of design audit 3
+
+The coordinator reported that imp-multimesh overwrote the shared scratchpad prompt file early on, so `audits/codex-design-3.md`
+was run with a prompt partly containing imp-multimesh questions. Its content shows it audited **this lane's DESIGN.md and
+A1** ("I reviewed only the imp-faststep design… the multimesh questions … are unrelated to E5 and were not audited"); its
+findings were answered in A2. Design audits 4 and 5 used this lane's own committed prompt files (`audits/prompts/`) and
+cover A1–A3 again; audit 5 found no WRONG. No re-run was needed. All later prompts live in `audits/prompts/`.

@@ -68,3 +68,7 @@ Paired A–B–A in one job on one GPU, warm JIT, `qstudy.burn(0.05)` before eac
 `JAX_DEFAULT_MATMUL_PRECISION=highest`; the evolve call includes the coefficient construction and the coordinate maps.
 A timed evolve must be bitwise equal to the scored run (same compiled program and inputs). Drift band [1/1.1, 1.1],
 ≤ 2 retries; six dev6 cases × 3 repetitions; per-case median, then the median over cases.
+
+## Production update (after f1024 / f4096)
+
+Production ran with `fscore.py` sha256 3626350c4165d4db686db68f1be59730de31d8c4e6c06ee2876a8c19b86cbec5 and configs `configs/f1024.json` (sha256 cf42a84a37dba45a…) and `configs/f4096.json` (sha256 4096af7033c1855b…). Measured per-query init / evolve / decode times and per-step evolution cost of every arm are in `EXPORT.json` (`jobs.<job>.arms.<arm|r>.seconds`) and `report.md`. All Galerkin arms are Q1+Q2 qualified; the E5 stop rule fires on worst error for every arm (see report), so E6 should treat the precontracted Galerkin form as a numerically sound, faster stepper whose worst-case accuracy is slightly below the incumbent's on the hardest case.

@@ -34,6 +34,7 @@ if not (W / 'ecsw_out' / 'COMPLETE').exists():
 print('ecsw', round(time.time() - t0, 1), flush=True)
 import hashlib
 shaf = lambda p: hashlib.sha256(open(p, 'rb').read()).hexdigest()
+TWO = os.environ.get('TWO_RANKS') == '1'
 cfg = dict(attempt='cpu', mesh=L, e0_store_version='3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0',
            e0_metric_id='2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1', edges=[0, 128], cases=[['dev6', 0], ['dev6', 1], ['val32', 0]], allow_cpu_smoke=True,
            ranks=[dict(Rp=128, rule='fib4181', qp='fib6765')], arms=['L-CNR', 'G-CN', 'G-E4a', 'G-E4b', 'G-R1'],
@@ -43,6 +44,8 @@ cfg = dict(attempt='cpu', mesh=L, e0_store_version='3ec3b5492748a162c9d77e7c09cd
                     phi_sha256=shaf(tdir / 'artifacts' / 'Phi.npz'),
                     native_sha256={'HR~ecsw~32~k8.npz': shaf(tdir / 'artifacts' / 'HR~ecsw~32~k8.npz')}),
            timing=dict(reps=1, burn=.0, seed=1, anchor='L-CNR|128'))
+if TWO:
+    cfg.update(edges=[0, 128, 256], ranks=cfg['ranks'] + [dict(Rp=256, rule='fib4181', qp='fib6765')])
 (W / 'fs.json').write_text(json.dumps(cfg))
 import shutil
 shutil.rmtree(W / 'fs_out', ignore_errors=True)

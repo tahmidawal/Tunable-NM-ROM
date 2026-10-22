@@ -1,0 +1,86 @@
+{
+ "smoke": "runs/smk1/archive/output/fsrun_smk1/result.json",
+ "smoke_gpu": "NVIDIA H200",
+ "config": "configs/f1024.json",
+ "seconds": {
+  "setup": 12.0,
+  "arms": 287.64452296402226,
+  "classification_allowance": 336.594522964022,
+  "rank_setup_and_blocks": 132.77928833663464,
+  "controls": 200.9267956186086,
+  "pod": 1553.8728759034395,
+  "timing": 2215.362544482574
+ },
+ "inventory": [
+  [
+   "L-CNR",
+   128,
+   28.9,
+   "measured"
+  ],
+  [
+   "G-CN",
+   128,
+   15.4,
+   "measured"
+  ],
+  [
+   "G-E4a",
+   128,
+   33.1,
+   "measured"
+  ],
+  [
+   "G-E4b",
+   128,
+   4.6,
+   "measured"
+  ],
+  [
+   "G-R1",
+   128,
+   9.6,
+   "measured"
+  ],
+  [
+   "L-CNR",
+   384,
+   51.6,
+   "measured"
+  ],
+  [
+   "G-CN",
+   384,
+   38.4,
+   "measured"
+  ],
+  [
+   "G-E4a",
+   384,
+   32.2,
+   "measured"
+  ],
+  [
+   "G-E4b",
+   384,
+   4.9,
+   "measured"
+  ],
+  [
+   "G-R1",
+   384,
+   23.4,
+   "measured"
+  ],
+  [
+   "L-CNR-M1152",
+   384,
+   45.5,
+   "measured"
+  ]
+ ],
+ "projection_hours": 1.9746585626122086,
+ "safety": 1.5,
+ "time_limit_hours": 2.25,
+ "covered": true
+}

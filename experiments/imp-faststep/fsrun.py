@@ -172,7 +172,7 @@ def main():
         lcert = T2.make_certifier(nl, Rp)
         lrec801 = {}
 
-        def check_tab(t, role):                                  # C12 guard (control roles such as 'c7' are unchecked)
+        def check_tab(t, role, manifest=manifest, st=st):        # C12 guard; rank bound at definition (code audit 6)
             if role not in manifest['fp']:
                 return
             if F.table_fingerprint(t) != manifest['fp'][role]:
@@ -269,6 +269,12 @@ def main():
             ok_steps = (g <= gt) | (rn <= tf * v['scale'])
             return g, rn, bool(P.run_valid(v) and np.all(ok_steps)), int(np.sum(~ok_steps))
 
+        def lspg_sched_ok(v):
+            """Code audit 7: returned outputs must equal the scheduled recorded states (rows 0, keep, ..., 5 keep)."""
+            S_ = np.asarray(v['stats']['states'])
+            keep = (S_.shape[0] - 1) // 5
+            return bool(np.array_equal(np.asarray(v['W']), S_[[keep * k for k in range(6)]]))
+
         def lspg_growth(stx, states):
             Ast = np.asarray(stx.base['A'])
             nA = np.linalg.norm(np.asarray(states) @ Ast.T, axis=1)
@@ -299,11 +305,13 @@ def main():
                     v, f, sch = lspg_run(stx, ci)
                     stt = v['stats']
                     g, rn, _, _ = lspg_fresh(stx, v, ci, sch, 'prod')
+                    A_.setdefault('rn', np.full((n, NREC - 1), np.nan))[j] = rn
+                    A_.setdefault('scale', np.full(n, np.nan))[j] = v['scale']
                     W = np.asarray(v['W'])
                     w0n = np.asarray(v['w0'])
                     if arm == 'L-CNR':
                         W0REF.setdefault(Rp, {})[ci] = w0n
-                    row.update(valid=P.run_valid(v), nonstationary=int(np.sum(~(g <= GAMMA))), steps=len(g),
+                    row.update(valid=bool(P.run_valid(v) and lspg_sched_ok(v)), sched_ok=lspg_sched_ok(v), nonstationary=int(np.sum(~(g <= GAMMA))), steps=len(g),
                                gcert_ok=P.gcert_ok(g, np.asarray(stt['step_gn'])[:len(g)]), it_sum=int(stt['it_sum']),
                                budget_exits=P.budget_exits(v), growth=lspg_growth(stx, stt['states']),
                                stage_finite=bool(np.isfinite(np.asarray(stt['states'])).all()))
@@ -314,17 +322,22 @@ def main():
                     h_ev = F.sha(np.concatenate([W.ravel(), np.asarray(stt['states']).ravel(),
                                                  np.asarray(stt['step_reason'], float), np.asarray(stt['step_it'], float)]))
                     vt, ft, scht = lspg_run(stx, ci, level='tight')
-                    gt_, _, aok, abad = lspg_fresh(stx, vt, ci, scht, 'tight')
+                    gt_, rnt_, aok, abad = lspg_fresh(stx, vt, ci, scht, 'tight')
                     A_['W_tight'][j] = np.asarray(vt['W'])
                     A_.setdefault('gamma_tight', np.full((n, NREC - 1), np.nan))[j] = gt_
-                    row.update(dist_tight=P.fdist(f, ft, n0), tight_anchor_ok=aok, tight_anchor_bad_steps=abad)
+                    A_.setdefault('rn_tight', np.full((n, NREC - 1), np.nan))[j] = rnt_
+                    A_.setdefault('states_tight', np.full((n, NREC, Rp), np.nan))[j] = np.asarray(vt['stats']['states'])
+                    row.update(dist_tight=P.fdist(f, ft, n0), tight_anchor_ok=bool(aok and lspg_sched_ok(vt)), tight_anchor_bad_steps=abad)
                     if ci in dev:
                         k_ = dev.index(ci)
                         vtt, ftt, schtt = lspg_run(stx, ci, level='tighter')
-                        gtt_, _, aok2, abad2 = lspg_fresh(stx, vtt, ci, schtt, 'tighter')
+                        gtt_, rntt_, aok2, abad2 = lspg_fresh(stx, vtt, ci, schtt, 'tighter')
                         A_['W_tighter'][k_] = np.asarray(vtt['W'])
                         A_.setdefault('gamma_tighter', np.full((len(dev), NREC - 1), np.nan))[k_] = gtt_
-                        row.update(dist_tight_tighter=P.fdist(ft, ftt, n0), tighter_anchor_ok=aok2, tighter_anchor_bad_steps=abad2)
+                        A_.setdefault('rn_tighter', np.full((len(dev), NREC - 1), np.nan))[k_] = rntt_
+                        A_.setdefault('states_tighter', np.full((len(dev), NREC, Rp), np.nan))[k_] = np.asarray(vtt['stats']['states'])
+                        row.update(dist_tight_tighter=P.fdist(ft, ftt, n0), tighter_anchor_ok=bool(aok2 and lspg_sched_ok(vtt)),
+                                   tighter_anchor_bad_steps=abad2)
                         vh, fh, _ = lspg_run(stx, ci, dt=DT0 / 2, record=False)
                         A_['W_half'][k_] = np.asarray(vh['W'])
                         row.update(halving_dist=P.fdist(f, fh, n0), halving_valid=P.run_valid(vh))
@@ -332,7 +345,8 @@ def main():
                     vq, fq, schq = lspg_run(stx, ci, role='qp')
                     gq_, _, _, _ = lspg_fresh(stx, vq, ci, schq, 'prod', role='qp')
                     A_['W_qp'][j] = np.asarray(vq['W'])
-                    row.update(qp_valid=bool(P.run_valid(vq)), qp_nonstationary=int(np.sum(~(gq_ <= GAMMA))),
+                    row.update(qp_valid=bool(P.run_valid(vq) and lspg_sched_ok(vq) and np.sum(~(gq_ <= GAMMA)) <= .01 * len(gq_)),
+                               qp_nonstationary=int(np.sum(~(gq_ <= GAMMA))),
                                dist_qp=P.fdist(f, fq, n0))
                     A_['rho'][j] = own_rho(W, stx.data[('main', 'LSPG')], stx.data[('qp', 'LSPG')])
                     del v, vt, vq
@@ -355,7 +369,8 @@ def main():
                         A_.setdefault('reason', np.full((n, S_), -1))[j] = v['reason']
                         vt = g_run(kind, dt, ci, level='tight')
                         ct = g_cert(vt, kind, dt, level='tight')
-                        ct.pop('arrays')
+                        for nm_, ar_ in ct.pop('arrays').items():
+                            A_.setdefault(f'cert_tight_{nm_}', np.full((n, S_), np.nan))[j] = ar_
                         A_['W_tight'][j] = vt['W']
                         A_.setdefault('Z_tight', np.full((n, S_ + 1, Rp), np.nan))[j] = vt['Z']
                         row.update(dist_tight=P.fdist(f, vt['f'], n0),
@@ -365,8 +380,10 @@ def main():
                             k_ = dev.index(ci)
                             vtt = g_run(kind, dt, ci, level='tighter')
                             ctt = g_cert(vtt, kind, dt, level='tighter')
-                            ctt.pop('arrays')
+                            for nm_, ar_ in ctt.pop('arrays').items():
+                                A_.setdefault(f'cert_tighter_{nm_}', np.full((len(dev), S_), np.nan))[k_] = ar_
                             A_['W_tighter'][k_] = vtt['W']
+                            A_.setdefault('Z_tighter', np.full((len(dev), S_ + 1, Rp), np.nan))[k_] = vtt['Z']
                             row.update(dist_tight_tighter=P.fdist(vt['f'], vtt['f'], n0),
                                        tighter_anchor_ok=bool(g_valid(vtt, kind, ctt) and ctt['unconverged'] == 0),
                                        tighter_anchor_bad_steps=ctt['unconverged'])
@@ -433,20 +450,36 @@ def main():
                 key = stx.name
                 if key not in lrec801:
                     lrec801[key] = T2.make_split_query(Q, 'point', 'LSPG', Rp, L, stx.trust, nrec=801, nstep=801)
-                gs, oks = [], []
+                gs, oks, ev_ = [], [], {}
                 for f_ in (8, 16):
                     u0, nu, _ = U0[ci]
                     sch = stx.sched('LSPG', 'CNR', DT0 / f_, 'prod')
                     o = lrec801[key]['fused'](u0, nu, stx.data[('main', 'LSPG')], stx.cold, sch)
                     stt_ = o['stats']
                     k_ = int(stt_['steps'])
-                    gs.append(lspg_growth(stx, np.asarray(stt_['states'])[:k_ + 1]))
-                    oks.append(bool(np.isfinite(np.asarray(o['W'])).all() and np.asarray(stt_['exits'])[3] == 0))
+                    stx_ = np.asarray(stt_['states'])[:k_ + 1]
+                    gs.append(lspg_growth(stx, stx_))
+                    gref, rref = (np.asarray(x) for x in lcert(jnp.asarray(stx_), nu, stx.data[('main', 'LSPG')], sch))
+                    good = gref <= GAMMA                               # the production stationarity predicate
+                    ev_.update({f'states_{f_}': stx_, f'gamma_{f_}': gref, f'W_{f_}': np.asarray(o['W']),
+                                f'exits_{f_}': np.asarray(stt_['exits']), f'step_reason_{f_}': np.asarray(stt_['step_reason'])[:k_],
+                                f'step_gn_{f_}': np.asarray(stt_['step_gn'])[:k_]})
+                    oks.append(bool(np.isfinite(np.asarray(o['W'])).all() and np.asarray(stt_['exits'])[3] == 0
+                                    and np.isfinite(stx_).all() and np.isfinite(np.asarray(stt_['step_gn'])[:k_]).all()
+                                    and np.sum(~good) <= .01 * len(good)))
                 g8, g16, ok_ = gs[0], gs[1], all(oks)
             else:
                 v8, v16 = (g_run(kind, dt / f_, ci) for f_ in (8, 16))
-                ok_ = all(g_valid(v_, kind) and g_cert(v_, kind, dt / f_)['ok'] for v_, f_ in ((v8, 8), (v16, 16)))
+                ok_, ev_ = True, {}
+                for v_, f_ in ((v8, 8), (v16, 16)):
+                    c_ = g_cert(v_, kind, dt / f_)
+                    ok_ = ok_ and g_valid(v_, kind, c_) and c_['ok']
+                    ev_.update({f'Z_{f_}': v_['Z'], f'W_{f_}': v_['W'], f'stage_max_{f_}': v_['stage_max'],
+                                f'reason_{f_}': v_['reason'], f'it_{f_}': v_['it'], f'w0_{f_}': v_['w0'],
+                                f'checks_{f_}': np.array([v_['z0_check'], v_['W_check'], v_['out_vs_states']]),
+                                **{f'cert_{k_}_{f_}': a_ for k_, a_ in c_['arrays'].items()}})
                 g8, g16 = v8['growth'], v16['growth']
+            np.savez_compressed(out / f"CLS_{r_['arm']}_{Rp}_{r_['case'].replace('|', '_')}.npz", **ev_)
             cls.append(dict(arm=r_['arm'], case=r_['case'], g8=g8, g16=g16, refined_ok=ok_,
                             label=FS.classify_growth(g8, g16, ok_)))
         blk['stability_classification'] = cls
@@ -525,10 +558,14 @@ def dev_qualified(rows, devc):
         if not (r_.get('dist_qp', 1.) <= 2.5e-4 and r_.get('rho_max') is not None and r_['rho_max'] <= .116):
             return False
         cert = r_.get('cert')
-        if cert is not None and not cert['ok']:
+        if cert is not None and 'unconverged' not in cert and not cert['ok']:     # etd / ros: zero failures
             return False
-        if 'nonstationary' in r_ and r_['nonstationary'] > .01 * r_['steps']:
+    for key in ('nonstationary', 'unconverged'):                      # pooled over the dev6 steps (code audit 8)
+        ns = [(by[c].get('cert') or {}).get(key, by[c].get(key)) for c in devc]
+        if all(x is not None for x in ns) and sum(ns) > .01 * sum(by[c]['steps'] for c in devc):
             return False
+    for c in devc:
+        r_ = by[c]
         if 'tight_anchor_ok' in r_ and not (r_['tight_anchor_ok'] and r_.get('tighter_anchor_ok', False)
                                             and r_['dist_tight'] <= 2.5e-4 and r_.get('dist_tight_tighter', 1.) <= 2.5e-5):
             return False
@@ -569,13 +606,8 @@ def select_pairs(rep, screen, recs, dev, cases, cfg):
                 break
         X = f'{arm}|384'
         if ok and 384 in ranks and espeed.get(X) is not None and espeed[X] >= 3 and screen.get(X) is not None:
-            cands.append((arm, screen[X], FS.worst(simple[X], devc)))
-    order = {'G-E4b': 0, 'G-E4a': 1, 'G-R1': 2, 'G-CN': 3}
-    best = None
-    if cands:
-        ts = min(c[1] for c in cands)
-        tie = [c for c in cands if c[1] <= FS.TIE * ts]
-        best = sorted(tie, key=lambda c: (c[2], order[c[0]]))[0][0]
+            cands.append((X, screen[X], FS.worst(simple[X], devc)))
+    best = FS.pick_min(cands)                                  # A3.4: tie set, lower dev6 worst error, then config id
     rep['selection'] = dict(matched=sel, pairs=pairs, best_stepper=best, best_candidates=cands, evolve_speed_dev6=espeed,
                             screen=dict(screen), smoke_subset=not cfg.get('headline', False))
     return pairs

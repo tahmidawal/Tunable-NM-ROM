@@ -1,0 +1,16 @@
+host=pax009 source_commit=011f38036cf0f4bbd256f26bfb1666c5e26d0a1c
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+jax_backend=gpu
+STEP fsrun configs/smk4096.json 2026-10-22T00:16:57Z
+jax_backend=gpu x64=True precision=highest
+SETUP 17.1 {'in_use': 51674076672, 'peak': 81657369088, 'limit': 138101653504}
+RUN L-CNR 384 dev6|0 0.000796 57.1
+RUN G-CN 384 dev6|0 0.000253 65.7
+RUN G-E4a 384 dev6|0 0.000236 92.1
+RUN G-E4b 384 dev6|0 0.000259 93.3
+RUN G-R1 384 dev6|0 0.000248 100.4
+RUN L-CNR-M1152 384 dev6|0 0.000828 113.7
+FSRUN COMPLETE 173.3
+driver_exit=0
+ALL-DONE rc=0

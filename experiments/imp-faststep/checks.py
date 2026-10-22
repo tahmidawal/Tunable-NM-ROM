@@ -98,6 +98,15 @@ def bank_labels(rows, A, kind, rp, cases, dev):
     if kind in ('lspg', 'cn'):
         q1['anchors'] = all(by[c].get('tight_anchor_ok') for c in cases if c in by) and \
             all(by[c].get('tighter_anchor_ok') for c in dev if c in by)
+        if kind == 'lspg':                     # recomputed from the saved fresh gammas (tolf = 0 at both anchor levels)
+            q1['anchors_recomputed'] = bool(np.all(np.asarray(A['gamma_tight']) <= 1e-7) and np.all(np.asarray(A['gamma_tighter']) <= 1e-8))
+        else:
+            q1['anchors_recomputed'] = bool(np.all(np.asarray(A['cert_tight_rn']) <= (1 + 1e-6) * 1e-12 * np.asarray(A['cert_tight_nA']))
+                                            and np.all(np.asarray(A['cert_tighter_rn']) <= (1 + 1e-6) * 1e-13 * np.asarray(A['cert_tighter_nA'])))
+        if kind == 'lspg':                     # scheduled outputs vs recorded states (code audit 7)
+            St = np.asarray(A['states'])
+            kp = (St.shape[1] - 1) // 5
+            q1['schedule'] = bool(np.array_equal(np.asarray(A['W']), St[:, [kp * k for k in range(6)]]))
         q1['distance'] = dmax(by[c]['dist_tight'] for c in cases if c in by) <= BAR_Q1
         q1['tight_tighter'] = dmax(by[c].get('dist_tight_tighter') for c in dev if c in by) <= BAR_TT
     else:
@@ -182,9 +191,14 @@ def main():
         lab, dis = bank_labels(rows, A, kinds[arm], rp, cases, dev)
         res['labels'][f'{arm}|{rp}'] = {k: v for k, v in lab.items() if k != 'per_case'}
         res['disagreements'] += [(f'{arm}|{rp}',) + tuple(d) for d in dis]
-        if 'Z' in A.files:                                                # A2.3 alternation diagnostic (reported)
+        Zsrc = None
+        if 'Z' in A.files:
+            Zsrc = np.asarray(A['Z'])
+        elif arm == 'L-CNR':                                              # c -> z = V^T Rm c (same rank tables)
+            Zsrc = np.einsum('qr,ntr->ntq', np.asarray(A['V']).T @ np.asarray(A['Rm']), np.asarray(A['states']))
+        if Zsrc is not None:                                              # A2.3 alternation diagnostic (reported)
             D = np.asarray(A['D'])
-            Z = np.asarray(A['Z'])
+            Z = Zsrc
             mask = D > np.median(D)
             ai = []
             for j in range(len(Z)):
@@ -245,14 +259,17 @@ def main():
                     res_cmp['worse'] += 1
             cond['worst_all38'][rp]['ranking_vs_arm1'] = res_cmp
         sp = espeed.get(f'{arm}|384', dict(status='not run'))
-        cond['speed'] = dict(statistic=sp, identity_ok=ident_ok, headline=bool(tim.get('headline')),
-                             fired=bool(not (ident_ok and sp.get('status') == 'ok' and sp['value'] >= 3)))
+        hl = bool(tim.get('headline'))
+        cond['speed'] = dict(statistic=sp, identity_ok=ident_ok, headline=hl,
+                             fired=bool(not (hl and ident_ok and sp.get('status') == 'ok' and sp['value'] >= 3)))
         c2 = any(v['fired'] for v in cond['worst_all38'].values()) or any(v['fired'] for v in cond['worst_eligible'].values())
         cond['fired'] = dict(stability_validity=cond['unstable_or_invalid'], worst_error=c2, speed=cond['speed']['fired'])
         cond['passes'] = not any(cond['fired'].values())
         cond['qualified'] = all(res['labels'].get(f'{arm}|{rp}', {}).get('qualified') for rp in ranks)
         res['stop'][arm] = cond
-    res['E5_fixed_on_completed_scope'] = any(v['passes'] and v['qualified'] for v in res['stop'].values())
+    res['verdicts_suppressed'] = not bool(tim.get('headline'))          # A5.8: smoke subsets never give a verdict
+    res['E5_fixed_on_completed_scope'] = None if res['verdicts_suppressed'] else \
+        any(v['passes'] and v['qualified'] for v in res['stop'].values())
     res['E5_full_grid'] = 'see the per-mesh checks; incomplete if any registered cell was deferred'
     # ---------------------------------------------------- F5 (arm 4) ----
     for rp in ranks:
@@ -263,10 +280,11 @@ def main():
         sl = [o['slope'] for o in blk]
         d = [t for t in tim.get('records', {}).get('D', []) if t.get('pair') == f'G-CN|{rp}~G-R1|{rp}']
         gain = FS.case_ratio_stats(d, dev, reps) if tim else dict(status='not run')
-        g = 1. / gain['value'] if gain.get('status') == 'ok' and gain['value'] else None
+        g = float(np.median([1. / v for v in gain['per_case'].values()])) if (ident_ok and gain.get('status') == 'ok') else None
         w4, w2 = wv(rows_by.get(('G-R1', rp), []), cases), wv(rows_by.get(('G-CN', rp), []), cases)
-        res['f5'][rp] = dict(slopes=sl, median_slope=float(np.median(sl)), reference_converged=conv,
-                             order='unresolved' if not conv else ('pass' if np.median(sl) >= 1.8 else 'fail'),
+        res['f5'][rp] = dict(descriptive_smoke=not bool(tim.get('headline')), slopes=sl, median_slope=float(np.median(sl)), reference_converged=conv,
+                             order=('descriptive (smoke)' if not tim.get('headline') else
+                                    'unresolved' if not conv else ('pass' if np.median(sl) >= 1.8 else 'fail')),
                              worst_vs_arm2=dict(arm4=w4, arm2=w2, fired=bool(not w4 <= w2)), end_to_end_gain=g,
                              gain_fired=bool(g is None or g < 1.3))
     # ---------------------------------------------------- POD ----
@@ -289,9 +307,73 @@ def main():
                                    kappas=mem.get('kappas'))
             res['disagreements'] += [(mid,) + tuple(d_) for d_ in dis]
         for mid, mem in pod.get('native', {}).items():
-            res['pod'][mid] = dict(native=True, worst=FS.worst([dict(case=x['case'], e=x['e0']['e']) for x in mem['rows']], cases),
+            N_ = np.load(od / f'N_{mid.replace("|", "_")}.npz')
+            rN = mem['r']
+            for j, row in enumerate(mem['rows']):
+                v = np.asarray(N_['W'][j]) @ Phi_lat[:, :rN].T
+                e_off = e0_offline(np.pad(v.reshape(6, 255, 255), ((0, 0), (1, 1), (1, 1))), row['case'])
+                if not agree(e_off, row['e0']['e']):
+                    res['disagreements'].append((mid, row['case'], 'e0', e_off, row['e0']['e']))
+            Cn_ = np.asarray(N_['C'])
+            kp = (Cn_.shape[1] - 1) // 5
+            if not np.array_equal(np.asarray(N_['W']), Cn_[:, [kp * k for k in range(6)]]):
+                res['disagreements'].append((mid, 'schedule: W differs from the scheduled rows of C'))
+            gm, rs_, lm_ = np.asarray(N_['gamma']), np.asarray(N_['reason']), np.asarray(N_['lam'])
+            nat_valid = bool(np.isfinite(Cn_).all() and not np.any(rs_ == 3) and not np.any(rs_ == 5)
+                             and np.all(np.isfinite(lm_) & (lm_ < 1e14)))
+            anc = []
+            for row in mem['rows']:
+                if 'tight_anchor_ok' not in row:
+                    continue
+                for lev, gl in (('tight', 1e-7), ('tighter', 1e-8)):
+                    key = f"{lev}_gamma_{row['case'].replace('|', '_')}"
+                    g_, r__ = np.asarray(N_[key]), np.asarray(N_[f"{lev}_reason_{row['case'].replace('|', '_')}"])
+                    stall = (r__ == 3) & (g_ <= 100 * gl)
+                    anc.append(bool(np.all((g_ <= gl) | stall) and not np.any(r__ == 5)))
+            if nat_valid != all(x['valid'] for x in mem['rows']) or (anc and all(anc) != all(
+                    x.get('tight_anchor_ok') and x.get('tighter_anchor_ok') for x in mem['rows'] if 'tight_anchor_ok' in x)):
+                res['disagreements'].append((mid, 'native recomputed validity/anchors differ from the in-job rows'))
+            res['pod'].setdefault('_native_recomputed', {})[mid] = dict(valid=nat_valid, pooled_nonstationary=int(np.sum(~(gm <= 1e-3))),
+                                                                        steps=int(gm.size), anchors=all(anc) if anc else None)
+            res['pod'][mid] = dict(native=True,
+                                   nonstationary=sum(x['nonstat'] for x in mem['rows']), steps=sum(x['steps'] for x in mem['rows']),
+                                   dist_tight_dev6=dmax(x['dist_tight'] for x in mem['rows'] if 'dist_tight' in x),
+                                   dist_tight_tighter_dev6=dmax(x['dist_tight_tighter'] for x in mem['rows'] if 'dist_tight' in x), worst=FS.worst([dict(case=x['case'], e=x['e0']['e']) for x in mem['rows']], cases),
                                    valid=all(x['valid'] for x in mem['rows']), stable=all(x['stable'] for x in mem['rows']),
                                    anchors_dev6=all(x.get('tight_anchor_ok') and x.get('tighter_anchor_ok') for x in mem['rows'] if 'tight_anchor_ok' in x))
+    if pod:                                                                # A2.6 diagnostic same-rank pick (dev6)
+        diag = {}
+        for mid, mem in pod['members'].items():
+            if mem['kind'] != 'none':
+                continue
+            r_, dt_ = mem['r'], mem['dt']
+            wn = FS.worst([dict(case=x['case'], e=x['e0']['e']) for x in mem['rows']], dev)
+            cand = sorted((m2['kappa'], k2) for k2, m2 in pod['members'].items()
+                          if m2['kind'] == 'ecsw' and m2['r'] == r_ and m2['dt'] == dt_)
+            pick, lab = None, None
+            for kap, k2 in cand:
+                if FS.worst([dict(case=x['case'], e=x['e0']['e']) for x in pod['members'][k2]['rows']], dev) <= 1.1 * wn:
+                    pick, lab = k2, 'within 1.1 x P-E4-none'
+                    break
+            if pick is None and cand:
+                pick, lab = cand[-1][1], 'HR-limited'
+            diag[f'{r_}|{dt_}'] = dict(pick=pick, label=lab)
+        res['pod_diagnostic_pick'] = diag
+        shared = {}
+        bmap = {f'{a_}|{rp}': rr for (a_, rp), rr in rows_by.items()}
+        for key, dd in diag.items():
+            r_, dt_ = key.split('|')
+            arm = 'G-E4a' if abs(float(dt_) - .0125) < 1e-12 else 'G-E4b'
+            X = bmap.get(f'{arm}|{r_}')
+            if X is None or dd['pick'] is None:
+                continue
+            wx = FS.worst([dict(case=x['case'], e=x['e0']['e']) for x in X], cases)
+            wp = res['pod'].get(dd['pick'], {}).get('worst')
+            sp = (tim.get('screen', {}).get(dd['pick'], {}) or {}).get('value') if tim else None
+            shared[key] = dict(ours=f'{arm}|{r_}', pod_pick=dd['pick'], worst_ours=wx, worst_pod=wp,
+                               screen_ratio_ours=(tim.get('screen', {}).get(f'{arm}|{r_}', {}) or {}).get('value') if tim else None,
+                               screen_ratio_pod=sp, label='mechanism control (same rank, same ETDRK4 step); screening timing')
+        res['shared_integrator'] = shared
     # ---------------------------------------------------- selection recomputed (A3.4, A5.9) ----
     if tim:
         screen = {k: (v['value'] if v['status'] == 'ok' else None) for k, v in tim['screen'].items()}
@@ -315,13 +397,20 @@ def main():
                 continue
             st = FS.match_status(bank_rows[X], pool[B], dict(dev6=dev, val32=val, all38=cases))
             d = [t for t in tim['records']['D'] if t.get('pair') == f'{X}~{B}']
-            matches[X] = dict(B=B, status=st, direct=FS.case_ratio_stats(d, dev, reps))
+            dr = FS.case_ratio_stats(d, dev, reps) if ident_ok else dict(status='failed (identity)', value=None)
+            matches[X] = dict(B=B, status=st, direct=dr, descriptive_smoke=not bool(tim.get('headline')), upper_bound_label='against the strongest tested competitor (finite ladder)')
         res['selection']['matches'] = matches
     # ---------------------------------------------------- control gate (A5.10) ----
     C = {}
     for rp in ranks:
         cc = (R['blocks'].get(str(rp)) or {}).get('controls')
-        C[f'in_job_{rp}'] = bool(cc and cc['summary']['all_ok'])
+        ok_ = bool(cc and cc['summary']['all_ok'])
+        if cc and not ok_ and rp != min(ranks):               # A6: only the C3m positive slope may fail above the smallest rank
+            s_ = cc['summary']
+            ok_ = (all(s_['must_fire'].values()) and all(s_['positive'].values()) and all(s_['demonstrated'].values())
+                   and s_['positive_slopes']['C5'] and cc['C6m']['positive_ok'] and cc['C8']['positive_ok'])
+            res.setdefault('order_findings', {})[rp] = dict(C3m_slope=cc['C3m']['slope'], note='stiff order reduction (A6)')
+        C[f'in_job_{rp}'] = ok_
     for rp in ranks:                                                       # C9 self timing
         st_ = espeed.get(f'L-CNR|{rp}', {})
         C[f'C9_{rp}'] = bool(st_.get('status') == 'ok' and .9 <= st_['value'] <= 1.1)
@@ -345,9 +434,32 @@ def main():
         C['C17'] = any(d_[0] == 'population' for d_ in d17)
     except Exception:  # noqa: BLE001
         C['C17'] = False
-    mem_ = [('a', 'h1'), ('b', 'h2'), ('c', 'h3'), ('n', 'none')]
-    C['C19'] = FS.pod_successors([x for x in mem_ if x[0] != 'b']) == {'a': 'c', 'c': 'n'} and FS.pod_successors(mem_)['a'] == 'b'
-    C['C21'] = FS.pod_successors([('a', 'h1'), ('b', 'h1'), ('c', 'h2'), ('n', 'none')]) == {'a': 'c', 'b': 'c', 'c': 'n'}
+    import podarm as PA                                                    # the production successor builder
+    rl = lambda k, s_: (k, np.arange(4) + s_, np.ones(4) * (1 + s_))
+    full = [rl(2, 0), rl(4, 10), rl(8, 20), rl(16, 30)]
+    m1, s1 = PA.successor_plan(full)
+    m2, s2 = PA.successor_plan([x for x in full if x[0] != 4])
+    hid = {m['k']: m['hid'] for m in m1 if m['k']}
+    C['C19'] = bool(s1[hid[2]] == hid[4] and s2[hid[2]] == hid[8] and s1[hid[16]] == 'none')    # precondition: successor changes
+    if pod:                                       # C19 label replay on real data: remove kappa 4, recompute kappa 2's successor
+        Zl = np.load(a.phi_lat)
+        PL = np.asarray(Zl['Phi_lat'])
+        rep19 = {}
+        for mid, mem in pod['members'].items():
+            if mem['kind'] != 'ecsw' or mem['kappa'] != 2:
+                continue
+            k8 = mid.replace('|k2|', '|k8|')
+            if k8 not in pod['members']:
+                continue
+            Wa, Wb = (np.load(od / f'P_{x.replace("|", "_")}.npz')['W'] for x in (mid, k8))
+            dl = lambda Wx: np.pad((Wx @ PL[:, :mem['r']].T).reshape(6, 255, 255), ((0, 0), (1, 1), (1, 1)))
+            d = [NC.fdist(dl(Wa[j]), dl(Wb[j]), float(np.load(od / f'A_L-CNR_{ranks[0]}.npz')['n0'][j])) for j in range(len(Wa))]
+            rep19[mid] = dict(new_successor=k8, rollout_label='pass' if dmax(d) <= BAR_Q2 else 'HR-unqualified', worst=dmax(d))
+        res['C19_label_replay'] = dict(rep19, note='rollout part replayed offline from saved coefficients; the force-ratio part '
+                                                     'needs device tables and is reported from the in-job successor rows')
+    m3, s3 = PA.successor_plan([rl(2, 0), rl(4, 0), rl(8, 20), rl(16, 30)])                      # kappa 2 and 4 share a rule
+    h3 = {m['k']: m['hid'] for m in m3 if m['k']}
+    C['C21'] = bool(len(m3) == 4 and 4 not in h3 and [m for m in m3 if m['k'] == 2][0]['names'] == [2, 4] and s3[h3[2]] == h3[8])
     Xr = [dict(case=c, valid=True, stable=True, e=.01) for c in cases]
     Br = [dict(case=c, valid=True, stable=True, e=(.009 if c in dev else .011)) for c in cases]
     C['C20'] = FS.match_status(Xr, Br, dict(dev6=dev, val32=val, all38=cases)) == dict(dev6=True, val32=False, all38=False)
@@ -358,10 +470,40 @@ def main():
     trip = [dict(case=c, ratio=1., valid=True, identity_ok=True) for c in dev for _ in range(reps)]
     C['C23'] = (FS.case_ratio_stats(trip[reps:], dev, reps)['status'] == 'incomplete' and
                 FS.case_ratio_stats([dict(trip[0], identity_ok=False)] + trip[1:], dev, reps)['status'] == 'failed (identity)')
+    for rp in ranks:                                                       # recompute in-job controls from their witnesses
+        cc = (R['blocks'].get(str(rp)) or {}).get('controls')
+        if not cc:
+            continue
+        rc = dict(C1=cc['C1']['value'] <= 1e-11, C1m=not cc['C1m']['reconstruction'] <= 1e-10,
+                  C2=max(cc['C2']['values']) <= 1e-8 and all(cc['C2']['anchors_valid']) and all(cc['C2']['t2core_valid']),
+                  C2m=cc['C2m']['unconverged'] > .01 * cc['C2m']['steps'],
+                  C16=cc['C16']['attempts'][-1]['unconverged'] > 0, C3=cc['C3']['value'] <= 1e-12,
+                  C3m=cc['C3m']['ref_converged'] and (cc['C3m']['slope'] >= 3.5 or rp != min(ranks))
+                  and max(cc['C3m']['mutant_mismatch'].values()) > 1e-8,          # A6: positive bar at the smallest rank
+                  C4m=any(not (x['growth'] is not None and x['growth'] <= 1.05 and x['stage_max'] is not None) for x in cc['C4m']['attempts']),
+                  C5=cc['C5']['ref_converged'] and cc['C5']['slope'] >= 1.8 and not (cc['C5']['mutant_slope'] is not None and cc['C5']['mutant_slope'] >= 1.8),
+                  C6m=cc['C6m']['jflip_vs_autodiff'] > 1e-6 and cc['C6m']['analytic_vs_autodiff'] <= 1e-10,
+                  C7m=any(x['rho'] > .116 or x['dist'] > 2.5e-4 for x in cc['C7m']['attempts']),
+                  C8=cc['C8']['repeat_identical'] and cc['C8']['other_dt_differs'],
+                  C12=cc['C12']['table_swap'] and cc['C12']['wrong_mesh'] and cc['C12']['e0_case_swap'],
+                  C13=cc['C13']['mismatch'] > 1e-10, C14=cc['C14']['mismatch'] > 1e-10, C15=cc['C15']['worst_lin'] > 1e-9,
+                  C18=cc['C18']['out_vs_states'] > 0, C22=all(x['got'] == x['expected'] for x in cc['C22']['cases']))
+        C[f'recomputed_{rp}'] = all(bool(v) for v in rc.values())
+        res.setdefault('controls_recomputed', {})[rp] = {k: bool(v) for k, v in rc.items()}
+    if cfg.get('controls_from'):                  # f4096: controls demonstrated in the accepted smk1 checks (A5.10)
+        import hashlib
+        pth = HERE / cfg['controls_from']['path']
+        ok = pth.exists() and hashlib.sha256(pth.read_bytes()).hexdigest() == cfg['controls_from']['sha256']
+        C['linked_smk1_controls'] = bool(ok and json.loads(pth.read_text()).get('accepted'))
+        for k_ in [k for k in C if k.startswith('in_job_') or k.startswith('recomputed_')]:
+            C.pop(k_)
     res['controls'] = C
     res['controls_all_ok'] = all(v for v in C.values() if v is not None)
+    res['timing_identity_ok'] = bool(ident_ok) if tim else None
+    res['selection_agrees'] = (res.get('selection') or {}).get('agrees') if tim else None
     res['offline_agrees'] = not res['disagreements']
-    res['accepted'] = bool(R.get('executed') and res['controls_all_ok'] and res['offline_agrees'])
+    res['accepted'] = bool(R.get('executed') and res['controls_all_ok'] and res['offline_agrees']
+                           and (not tim or (res['timing_identity_ok'] and res['selection_agrees'])))
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=1, default=lambda x: x.tolist() if hasattr(x, 'tolist') else str(x)) + '\n')
     print(json.dumps(dict(accepted=res['accepted'], controls=C, disagreements=len(res['disagreements']),

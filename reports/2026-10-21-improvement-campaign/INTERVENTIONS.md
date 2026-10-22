@@ -56,3 +56,6 @@ Every coordinator intervention (resume, kill, re-run) on a watchdog notification
 - 17:15 UTC: watchdog flagged its own 22 h wd.sh loops as stale waiters; prompt now exempts wd.sh and coord-monitor.sh.
 - 18:29 UTC: imp-geometry L_wide_S1_r 6192623 COMPLETED; lane resumed to collect + test-once.
 - imp-geometry: L_wide_S1 scored incl. test-once (6202632): bank S = 0.015–0.21 vs best competitor (POD-Galerkin/POD+ECSW) on val, 0.013–0.09 test; S < 2 at every target on L. 25.16/62 GPU-h. Parked again on 6192666.
+## 2026-10-22 ~19:45 UTC — GitHub credentials restored (user); all mirrors re-synced
+- Prompted by the monitoring session (verified `gh auth status` myself). main pushed (aaf4b6e8b). Every lane's sync_github.sh re-run; `git ls-remote` confirms:
+  imp-faststep ed52f5477 (a3e417b1e) · imp-hrcost c891ee4cc (cf351b62a) · imp-multimesh 4ade95d16 (dd4cd7fc4) · imp-varcoef 6a98c018a (e8d39fa1a) · imp-fronts a2f64ebda (506dbd3a5) · imp-geometry 80067e490 (25f55bfc0) · imp-box c77739769.

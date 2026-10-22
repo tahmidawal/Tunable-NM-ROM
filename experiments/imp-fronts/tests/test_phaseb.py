@@ -35,6 +35,7 @@ def bank(fi=1.0, fn=1.0, e=1.0, tau=1.0, qual=True, nodes=25600, cert=True, rom=
 
 ELIG = dict(FI=[int(c) for c in FI], FN0s=[int(c) for c in FN], FC1=[int(c) for c in C1])
 K1 = bank()
+ELIG_V = dict(ELIG, FI=ELIG['FI'][:6])          # verdict(): scheduled references only (Amendment 10)
 
 
 def ev(name, arm, ctrl=None, elig=None):
@@ -262,7 +263,7 @@ def test_resolved_wins_ties_losses():
 
 
 def test_passes_against_all_K1_K3():
-    inp = dict(arms=dict(a=bank(fn=0.1)), controls=dict(K1=bank(), K2=bank(), K3=bank(fn=0.6)), eligible=ELIG)
+    inp = dict(arms=dict(a=bank(fn=0.1)), controls=dict(K1=bank(), K2=bank(), K3=bank(fn=0.6)), eligible=ELIG_V)
     out = V.verdict(inp)
     assert out['arms']['a']['outcome'] == V.CONT and out['arms']['a']['passes_against_all_K1_K3'] is True
     inp['controls']['K3'] = bank(fn=0.25)
@@ -401,7 +402,7 @@ def test_route_substitution_probe_refused():
     """Unchanged arm-(a) evidence that STOPs must not become CONTINUE by supplying routes=['mstar'] (Amendment 12)."""
     arm = bank(fn=1.0, nodes=9216)
     arm['selection']['rule'] = 'gauss96'
-    inp = dict(arms=dict(a=arm), controls=dict(K1=bank()), eligible=ELIG)
+    inp = dict(arms=dict(a=arm), controls=dict(K1=bank()), eligible=ELIG_V)
     assert V.verdict(inp)['arms']['a']['outcome'] == V.STOP_E
     arm2 = dict(arm, routes=['mstar'])
     with pytest.raises(V.InputError):
@@ -411,8 +412,10 @@ def test_route_substitution_probe_refused():
     assert V.verdict(dict(inp, arms=dict(a=dict(arm, routes=['floor']))))['arms']['a']['outcome'] == V.STOP_E
 
 
-@pytest.mark.parametrize('elig', [dict(ELIG, FI=[4, 5, 5, 6, 7, 8]), dict(ELIG, FN0s=[2, 4, 5, 6, 7]),
-                                  dict(ELIG, FC1=['4', 'x']), dict(ELIG, BAD=[4])])
+@pytest.mark.parametrize('elig', [dict(ELIG_V, FI=[4, 5, 5, 6, 7, 8]), dict(ELIG_V, FN0s=[2, 4, 5, 6, 7]),
+                                  dict(ELIG_V, FC1=['4', 'x']), dict(ELIG_V, BAD=[4]), dict(ELIG_V, FI=[4, 5, 6, 7, 8, 999]),
+                                  dict(ELIG_V, FI=['FI|999']), dict(ELIG_V, FI=[4, 5, 6, 7, 8, 10]),
+                                  dict(ELIG_V, FC2=[4, 6]), dict(ELIG_V, FC1=['FN0s|4']), dict(ELIG_V, FC1=[True])])
 def test_eligible_ids_validated(elig):
     with pytest.raises((V.InputError, ValueError)):
         V.verdict(dict(arms=dict(a=bank(fn=0.1)), controls=dict(K1=bank()), eligible=elig))
@@ -423,12 +426,12 @@ def test_selection_rule_node_consistency():
     arm = bank(nodes=9216)
     arm['selection']['rule'] = 'gauss128'                                             # 16384 != 9216
     with pytest.raises(V.InputError):
-        V.verdict(dict(arms=dict(c=arm), controls=dict(K1=bank()), eligible=ELIG))
+        V.verdict(dict(arms=dict(c=arm), controls=dict(K1=bank()), eligible=ELIG_V))
     ctrl = bank(nodes=100)
     with pytest.raises(V.InputError):
-        V.verdict(dict(arms=dict(a=bank(fn=0.1)), controls=dict(K1=ctrl), eligible=ELIG))
+        V.verdict(dict(arms=dict(a=bank(fn=0.1)), controls=dict(K1=ctrl), eligible=ELIG_V))
     arm = bank(nodes=None, cert=False)                                                # uncertified: no check
-    V.verdict(dict(arms=dict(c=arm), controls=dict(K1=bank()), eligible=ELIG))
+    V.verdict(dict(arms=dict(c=arm), controls=dict(K1=bank()), eligible=ELIG_V))
 
 
 def test_floors_bank_json_formats(tmp_path):
@@ -465,3 +468,190 @@ def test_e9_routing_separates_input_and_failure():
     assert abs(r['rom_then_fallback_seconds_per_query'] - (1 + (0.5 + 1 / 12) * 10)) < 1e-12
     r = E9.score(pol, timing=dict(rom_seconds=1., fom_seconds=10., gpu='H200'), frozen=frozen, fresh=fresh)['routing']
     assert 'unmeasured' in r['cost'] and 'timing_refused' in r
+
+
+def test_validation_accepts_scheduled_and_registered():
+    arm = bank(nodes=9216)
+    arm['selection']['rule'] = 'gauss96'
+    assert V.validate(dict(eligible=dict(FI=['FI|4', 5, '6', 7, 8, 9], FN0s=list(range(4, 12)), FC1=list(range(4, 12)),
+                                         FC2=[4, 5]), arms=dict(c=arm), controls=dict(K1=bank())))
+
+
+@pytest.mark.parametrize('rule,nodes', [('fib1', 1), ('gauss256', 65536), ('gauss384', 147456), ('gauss160', 25600.0),
+                                        ('gauss160', '25600'), ('gauss160', True), ('fib4181', 4180), ('gauss64', 4096)])
+def test_selection_rule_registered_and_exact(rule, nodes):
+    arm = bank()
+    arm['selection'] = dict(certified=True, rule=rule, nodes=nodes)
+    with pytest.raises(V.InputError):
+        V.verdict(dict(arms=dict(c=arm), controls=dict(K1=bank()), eligible=ELIG_V))
+
+
+def test_prefixed_and_numeric_ids_give_identical_verdicts():
+    def pref(b):
+        b = copy.deepcopy(b)
+        for key in ('floors', 'policy'):
+            b[key] = {coh: {f'{coh}|{c}': v for c, v in m.items()} for coh, m in b[key].items()}
+        return b
+    arms = dict(a=bank(fn=0.1), b=bank(e=0.4), c=bank(tau=0.2))
+    num = dict(arms=arms, controls=dict(K1=bank(), K2=bank(), K3=bank()), eligible=ELIG_V,
+               eps_ref={'FI': {c: 1e-6 for c in FI}})
+    pre = dict(arms={k: pref(v) for k, v in arms.items()},
+               controls={k: pref(bank()) for k in ('K1', 'K2', 'K3')},
+               eligible={coh: [f'{coh}|{j}' for j in js] for coh, js in ELIG_V.items()},
+               eps_ref={'FI': {f'FI|{c}': 1e-6 for c in FI}})
+    vn, vp = V.verdict(num), V.verdict(pre)
+    assert vn == vp
+    assert [vn['arms'][k]['outcome'] for k in 'abc'] == [V.CONT, V.CONT, V.CONT]
+    mixed = copy.deepcopy(num)
+    mixed['arms']['a']['floors']['FI']['FI|4'] = dict(f384=1.0)                      # same case given twice
+    with pytest.raises(V.InputError):
+        V.verdict(mixed)
+
+
+def test_reference_ledger_outcomes(tmp_path):
+    """Job audit refT-1: explicit per-case outcomes; deadline outcomes are not failures; empty refslim finalises."""
+    import subprocess
+    py, refs = sys.executable, LANE / 'cluster' / 'refs'
+    cfgs = sorted(str(p) for p in (refs / 'configs').glob('t_*.json'))
+    out, logs = tmp_path / 'output', tmp_path / 'logs'
+    (out / 'refs_t_FI_4_5/2d/FI/ST').mkdir(parents=True)
+    logs.mkdir()
+    (out / 'refs_t_FI_4_5/2d/FI/ST/c004.json').write_text('{"outcome": "accepted", "judge": {"eps_ref": 1e-6}}')
+    (out / 'refs_t_FI_4_5/2d/FI/ST/c005.json').write_text('{"outcome": "order-fail", "judge": {}}')
+    lines = [f'{Path(c).name}\t124\t1' for c in cfgs]
+    (logs / 'steps_gpu1.tsv').write_text('\n'.join(lines) + '\n')
+    run = lambda: subprocess.run([py, str(refs / 'ref_ledger.py'), str(out), str(logs / 'steps_gpu1.tsv'), '--configs',
+                                  *cfgs, '--out', str(tmp_path / 'L.json')], capture_output=True, text=True)
+    r = run()
+    import json
+    L = json.loads((tmp_path / 'L.json').read_text())
+    assert r.returncode == 0 and L['ok'] and L['counts']['scheduled'] == 24
+    assert L['counts']['accepted'] == 1 and L['counts']['ineligible'] == 1 and L['counts']['unfinished-at-deadline'] == 22
+    (logs / 'steps_gpu1.tsv').write_text('\n'.join(lines[1:]) + '\n')                # one step without a record
+    r = run()
+    L = json.loads((tmp_path / 'L.json').read_text())
+    assert r.returncode == 1 and L['counts']['failed'] >= 1 and not L['ok']
+
+
+def test_score_nonfinite_forces_invalid():
+    """Audit codex-code-B-5 row 7: non-finite coefficients / fields / errors -> invalid, e = inf, not qualified."""
+    import score_b as SB
+    u = np.zeros((6, 257, 257))
+    u[:, 100:110, 100:110] = 1.
+    W = np.zeros((6, 384))
+    ok = SB.decode_and_measure(W, u, 10., True, decode=lambda w: np.zeros((6, 257, 257)))
+    assert ok['valid'] and ok['qualified'] and math.isfinite(ok['e'])
+    Wn = W.copy()
+    Wn[3, 7] = np.nan
+    for args in ((Wn, None), (W, lambda w: np.full((6, 257, 257), np.inf)), (np.zeros((6, 10)), None)):
+        r = SB.decode_and_measure(args[0], u, 10., True, decode=args[1] or (lambda w: np.zeros((6, 257, 257))))
+        assert r['valid'] is False and r['qualified'] is False and r['e'] == math.inf
+
+
+def test_rom_route_invalid_case_cannot_pass():
+    arm = bank(e=0.01)
+    arm['policy']['FC1']['5'] = dict(e=INF, valid=False, qualified=True)             # stale qualified flag
+    assert ev('b', arm)['routes']['rom']['status'] == V.FAIL
+    arm = bank(e=0.01)
+    arm['policy']['FC1']['5'] = dict(e=float('nan'), valid=True, qualified=True)
+    assert ev('b', arm)['routes']['rom']['status'] == V.FAIL
+    arm = bank(tau=0.01)
+    arm['policy']['FI']['6'] = dict(tau=INF, valid=False, qualified=True)
+    assert ev('c', arm)['routes']['tail']['status'] == V.FAIL
+
+
+# ------------------------------------------------------------------------------- arm (c) architecture ---
+def _synthetic_sine_even(tmp_path, R=512, H=24, seed=3):
+    import pickle
+    r = np.random.default_rng(seed)
+    B0 = r.normal(0., 4., (2, 128))
+    g = [(r.normal(0, 1 / 16, (256, H)), r.normal(0, .1, H)), (r.normal(0, 1 / 5, (H, H)), r.normal(0, .1, H)),
+         (r.normal(0, 1 / 5, (H, R)), r.normal(0, .1, R))]
+    params = dict(B=B0, Kc=np.abs(np.round(2 * B0)), g=g, out_scale=np.float64(0.7))
+    f = tmp_path / 'ckpt.pkl'
+    pickle.dump(dict(params=params, Z_tr=np.zeros((4, 16)), cfg=dict(arch='sine_even', seed=1)), open(f, 'wb'))
+    return f, params
+
+
+def test_arm_c_bank_decodes_as_sine_even_ref(tmp_path):
+    """floors_b / score_b load an arm-(c) checkpoint through npbank_arch: decode == sine_even_ref exactly."""
+    import json
+    import hashlib
+    import floors_b as B
+    sys.path.insert(0, str(LANE / 'rom' / 'deps'))
+    import sine_even_ref as SE
+    f, params = _synthetic_sine_even(tmp_path)
+    rot = B.ROBUST / 's1' / 'rotation_R512.npz'
+    sh = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+    (tmp_path / 'rotation_R512.npz').write_bytes(rot.read_bytes())
+    (tmp_path / 'BANK.json').write_text(json.dumps(dict(ckpt='ckpt.pkl', rotation='rotation_R512.npz',
+                                                        ckpt_sha256=sh(f), rotation_sha256=sh(rot))))
+    try:
+        b = B.use(str(tmp_path / 'BANK.json'))
+        assert b['arch'] == 'sine_even'
+        T = np.load(rot)['T']
+        X = np.random.default_rng(5).uniform(0, 1, (300, 2))
+        got = B.F.NC.NB.features_grad(B.F.NC.bank()[0], X)
+        ref = SE.features_grad(params, X)
+        assert all(np.array_equal(a, c) for a, c in zip(got, ref))
+        W = np.random.default_rng(6).normal(size=(2, 384))
+        V = B.F.NC.decode257(W, 384)
+        x = np.arange(257) / 256.
+        L = np.stack(np.meshgrid(x, x, indexing='ij'), -1).reshape(-1, 2)
+        G = SE.features(params, L)
+        G[(L[:, 0] == 0) | (L[:, 0] == 1) | (L[:, 1] == 0) | (L[:, 1] == 1)] = 0.
+        Vr = (W @ (G @ T[:, :384]).T).reshape(2, 257, 257)
+        assert np.max(np.abs(V - Vr)) <= 1e-12 * np.max(np.abs(Vr))
+        # K1 (incumbent arch) unchanged by the dispatch: identical to the original npbank formula
+        b1 = B.use('K1')
+        assert b1['arch'] == 'bc16poly'
+        P = B.F.NC.bank()[0]
+        assert all(np.array_equal(a, c) for a, c in zip(B.F.NC.NB.features_grad(P, X), B.ORIG_FEATURES_GRAD(P, X)))
+    finally:
+        B.use('K0')
+
+
+# ------------------------------------------------------------------- audit codex-code-C-2 rows 12-13 ---
+def test_e10q_requires_validated_complete_evidence():
+    import json
+    import assemble as A
+    q = json.loads((A.CHK / 'e10q_every_step.json').read_text())
+    assert A.e10q_check(q) == (True, 'ok')
+    for mut in (lambda d: d['validation'].__setitem__('passed', False),
+                lambda d: d['validation'].__setitem__('max_rel_err', 1.0),
+                lambda d: d['validation'].__setitem__('tolerance', 1e-3),
+                lambda d: d.__setitem__('runs', d['runs'][1:]),
+                lambda d: d.__setitem__('result_sha256', '0' * 64),
+                lambda d: d['validation'].__setitem__('per_run', d['validation']['per_run'][1:]),
+                lambda d: d['runs'][0].__setitem__('finite_states', 0),
+                lambda d: d['summary'].__setitem__('states_over_bar', 5)):
+        d = copy.deepcopy(q)
+        mut(d)
+        assert A.e10q_check(d)[0] is False
+    assert A.e10q_check(None)[0] is False
+
+
+def test_e10_outcomes_need_verified_evidence(tmp_path, monkeypatch):
+    import json
+    import assemble as A
+    k1s = A.load('score_K1.json')
+    elig = {'FC1': list(range(4, 12))}
+    q = json.loads((A.CHK / 'e10q_every_step.json').read_text())
+    fake = copy.deepcopy(k1s)                                                         # E10-s: qualified, 10x better
+    for r in fake['cases']:
+        r.update(qualified=True, valid=True, terminal='CONVERGED', e=(A._f(r['e']) / 10.))
+    bad_q = copy.deepcopy(q)
+    bad_q['validation']['passed'] = False
+    store = {'score_e10s.json': fake, 'e10q_every_step.json': q}
+    monkeypatch.setattr(A, 'load', lambda n: store.get(n))
+    ev = tmp_path / 'E10-EVIDENCE.json'
+    ev.write_text(json.dumps({'passed': True}))                                      # the audit's unbound probe
+    out = A.e10(k1s, elig, str(ev))
+    assert out['E10-s']['outcome'] == 'INCONCLUSIVE' and out['E10-q']['outcome'] == 'STOP'
+    assert A.e10(k1s, elig, str(tmp_path / 'missing.json'))['E10-s']['outcome'] == 'INCONCLUSIVE'
+    monkeypatch.setattr(A, 'verify_e10s_evidence', lambda p=None: (True, 'ok'))
+    assert A.e10(k1s, elig, None)['E10-s']['outcome'] == 'CONTINUE'
+    store['e10q_every_step.json'] = bad_q
+    assert A.e10(k1s, elig, None)['E10-q']['outcome'] == 'INCONCLUSIVE'
+    store.pop('score_e10s.json')
+    assert A.e10(k1s, elig, None)['E10-s']['outcome'] == 'NOT RUN'

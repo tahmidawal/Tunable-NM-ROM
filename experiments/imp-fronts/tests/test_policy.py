@@ -158,9 +158,9 @@ class Synth:
         return self.flag
 
 
-def run_cases(outcome, selected='gauss160', n=1, **kw):
+def run_cases(outcome, selected='gauss160', n=1, fmin=SM.F_MIN, **kw):
     ex = Synth(outcome, kw.pop('budget_after', None))
-    cs = [SM.Case(f'FC1|{i}', selected) for i in range(n)]
+    cs = [SM.Case(f'FC1|{i}', selected, fmin) for i in range(n)]
     store = SM.drive(cs, ex, over_budget=ex.over, **kw)
     return cs, store, ex
 
@@ -263,7 +263,7 @@ def test_budget_cap_does_not_hit_finished_cases():
 OUTCOMES = ('ok', 'stepbad', 'q2bad', 'prodinv', 'halfinv')
 
 
-def all_paths(selected):
+def all_paths(selected, fmin=SM.F_MIN, max_rounds=SM.MAX_ROUNDS, depth=11):
     """Every outcome sequence (adversarial, per round) from a start: returns the set of (terminal, rounds)."""
     res = []
 
@@ -275,14 +275,11 @@ def all_paths(selected):
             if k not in _seen:
                 _seen[k] = _s[len(_seen)] if len(_seen) < len(_s) else 'ok'
             return _seen[k]
-        (c,), _, _ = run_cases(outcome, selected=selected)
+        (c,), _, _ = run_cases(outcome, selected=selected, fmin=fmin, max_rounds=max_rounds)
         res.append((c.terminal, c.rounds))
-        if c.rounds == len(prefix) and c.terminal is not None and len(prefix) < 12:
-            # the last scripted outcome decided the terminal: try every outcome at that depth instead (DFS over paths)
-            pass
         return c
-    # breadth: every script of length <= 10 over transition outcomes (terminals end early)
-    for n in range(1, 11):
+    # breadth: every script of length <= depth over transition outcomes (terminals end early)
+    for n in range(1, depth + 1):
         for s in itertools.product(('stepbad', 'q2bad'), repeat=n - 1):
             for last in OUTCOMES:
                 rec(s + (last,))
@@ -502,24 +499,45 @@ def test_collector_without_progress_json(tmp_path, monkeypatch):
     assert json.loads((tmp_path / 'b' / 'result.json').read_text())['counts']['BUDGET-CAP'] == 2
 
 
-def test_test_once_registration(tmp_path):
+def test_test_once_registration_and_atomic_claim(tmp_path, monkeypatch):
     import testonce as TO
     bank = dict(ckpt_sha256='a' * 64, rotation_sha256='b' * 64)
     cfg = dict(attempt='pol1', test_once=True, cases=['FC1|4'])
-    reg = tmp_path / 'reg'
+    reg, cl = tmp_path / 'reg', tmp_path / 'claims'
     with pytest.raises(TO.TestOnceError):
-        TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', reg=reg)          # unregistered
+        TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', cl, '1', reg=reg)      # unregistered
     k, _ = TO.register(bank, cfg, 'c' * 64, reg=reg)
     with pytest.raises(TO.TestOnceError):
-        TO.register(bank, cfg, 'c' * 64, reg=reg)                          # second evaluation refused
-    assert TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', reg=reg) == k
-    (tmp_path / 'out').mkdir()
-    (tmp_path / 'out' / 'RUN.json').write_text('{}')
+        TO.register(bank, cfg, 'c' * 64, reg=reg)                              # second registration refused
     with pytest.raises(TO.TestOnceError):
-        TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', reg=reg)          # existing output refused
-    k2, _ = TO.key_of(bank, cfg, 'd' * 64)
-    assert k2 != k                                                           # another cohort table -> another key
-    assert TO.key_of(bank, dict(cfg, note='x'), 'c' * 64)[0] == k            # notes do not change the key
+        TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', None, '1', reg=reg)    # no shared claims dir
+    k1, c1 = TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', cl, '101', reg=reg)
+    assert k1 == k and c1['job_id'] == '101' and c1['out'] == str((tmp_path / 'out').resolve())
+    with pytest.raises(TO.TestOnceError):
+        TO.require(bank, cfg, 'c' * 64, tmp_path / 'other_empty', cl, '102', reg=reg)   # second claim, other empty dir
+    with pytest.raises(TO.TestOnceError):
+        TO.require(bank, cfg, 'c' * 64, tmp_path / 'out', cl, '101', reg=reg)           # even the same dir
+    (tmp_path / 'full').mkdir()
+    (tmp_path / 'full' / 'x').write_text('1')
+    k2, _ = TO.register(bank, dict(cfg, attempt='polb'), 'c' * 64, reg=reg)
+    with pytest.raises(TO.TestOnceError):
+        TO.require(bank, dict(cfg, attempt='polb'), 'c' * 64, tmp_path / 'full', cl, '7', reg=reg)   # existing output
+    assert TO.key_of(bank, cfg, 'd' * 64)[0] != k and TO.key_of(bank, dict(cfg, note='x'), 'c' * 64)[0] == k
+    # collector: only the bound directory / job
+    import fcollect as FCL
+    o = tmp_path / 'out'
+    o.mkdir()
+    (o / 'RUN.json').write_text(json.dumps(dict(config=dict(cfg, selected=None), testonce_key=k, job_id='101')))
+    monkeypatch.setattr(sys, 'argv', ['fcollect.py', str(o)])
+    with pytest.raises(AssertionError):
+        FCL.main()                                                             # no --claim
+    (tmp_path / 'wrong.claim').write_text(json.dumps(dict(c1, job_id='999')))
+    monkeypatch.setattr(sys, 'argv', ['fcollect.py', str(o), '--claim', str(tmp_path / 'wrong.claim')])
+    with pytest.raises(TO.TestOnceError):
+        FCL.main()
+    monkeypatch.setattr(sys, 'argv', ['fcollect.py', str(o), '--claim', str(cl / f'{k}.claim')])
+    FCL.main()
+    assert json.loads((o / 'result.json').read_text())['counts']['BUDGET-CAP'] == 1
 
 
 def test_register_arm_writes_canonical_names(tmp_path):
@@ -550,3 +568,136 @@ def test_render_templates_are_valid_bash(tmp_path):
     smr = subprocess.run([sys.executable, str(LANE / 'cluster' / 'rom' / 'render.py'), 'smr'], capture_output=True,
                          text=True, check=True).stdout
     assert 'smkpolK1' in smr and 'smkdryK1' in smr and 'refjob.py' in smr and 'gpu:h200' in smr and '00:24:00' in smr
+
+
+def test_parse_key_keeps_case_ids_with_bars():
+    k = SM.run_key('FC1|0', 'prod', 'gauss160', .5)
+    assert SM.parse_key(k) == ('FC1|0', 'cert', 'gauss160', .5)
+    assert SM.parse_key(k.replace('|cert|', '|tighter|'))[0] == 'FC1|0'
+
+
+def test_smr_script_propagates_failures():
+    import subprocess
+    t = subprocess.run([sys.executable, str(LANE / 'cluster' / 'rom' / 'render.py'), 'smr'], capture_output=True, text=True,
+                       check=True).stdout
+    assert '|| true' not in t and '|| echo' not in t and 'CUDA_CACHE_PATH="$TASK_ROOT/cache/cuda"' in t
+    assert t.count('echo ALL-DONE') == 1 and 'if [ "$FAIL" = 0 ]; then echo ALL-DONE' in t
+    assert 'references_status' in t and 'timeout --signal=TERM' in t and 'evidence.py build' in t
+    pol = subprocess.run([sys.executable, str(LANE / 'cluster' / 'rom' / 'render.py'), 'pol', 'K1', 'pol1'], capture_output=True,
+                         text=True, check=True).stdout
+    assert 'timeout --signal=TERM' in pol and 'IMPF_TESTONCE_DIR' in pol
+
+
+def test_register_arm_seed_dir_requires_production_provenance(tmp_path):
+    import subprocess
+    d = tmp_path / 'job' / 'output' / 'train2d_s1'
+    (d / 'stageB').mkdir(parents=True)
+    (d / 'rotation').mkdir()
+    (d / 'stageB' / 'sep_hfit_dense_mid_N256_dense.pkl').write_bytes(b'c')
+    (d / 'rotation' / 'rotation_R512.npz').write_bytes(b'r')
+    log = tmp_path / 'job.out'
+    log.write_text('...\nALL-DONE\n')
+
+    def setup(mode='production', seed=1):
+        (d / 'run_record.json').write_text(json.dumps(dict(mode=mode, seed=seed)))
+        files = sorted(str(p.relative_to(d)) for p in d.rglob('*') if p.is_file() and p.name not in ('OUTPUTS.sha256', 'SEED-COMPLETE'))
+        (d / 'OUTPUTS.sha256').write_text(''.join(f'{BG.sha_file(d / f)}  {f}\n' for f in files))
+        (d / 'SEED-COMPLETE').write_text('x')
+
+    def reg(*extra, root=tmp_path / 'r'):
+        return subprocess.run([sys.executable, str(ROM / 'register_arm.py'), '--seed-dir', str(d), '1', 'b', '--root', str(root),
+                               *extra], capture_output=True, text=True)
+    for mode, seed in (('smoke', 1), ('dryrun', 1), ('production', 2)):
+        setup(mode, seed)
+        assert reg('--job-log', str(log)).returncode != 0                     # smoke / dry-run / wrong seed refused
+    setup()
+    assert reg().returncode != 0                                             # no job log
+    log.write_text('...\nFAILED\n')
+    assert reg('--job-log', str(log)).returncode != 0                         # job did not end ALL-DONE
+    log.write_text('...\nALL-DONE\n')
+    (tmp_path / 'job' / 'EXHAUSTED.json').write_text('{}')
+    assert reg('--job-log', str(log)).returncode != 0                         # exhausted training
+    (tmp_path / 'job' / 'EXHAUSTED.json').unlink()
+    r = reg('--job-log', str(log))
+    assert r.returncode == 0, r.stderr
+    assert BG.verify({'dir': 'inputs/banks/sb'}, tmp_path / 'r', expect_label='b')
+
+
+# ----------------------------------------------------------------------------------------------- E10-s (factor set)
+def test_e10s_factor_sets_registered():
+    assert SM.factor_set(None) == (.25, 10) and SM.factor_set([1, .5, .25, .125]) == (.125, 11)
+    for bad in ([1, .5], [1, .5, .25, .125, .0625], [.5, .25, .125]):
+        with pytest.raises(ValueError):
+            SM.factor_set(bad)
+
+
+def test_e10s_needed_and_decide_new_transitions():
+    f8 = .125
+    assert SM.needed('gauss160', .25, f8)[-1] == ('half', 'gauss160', .125)                 # 0.25 now gets a step check
+    assert SM.needed('gauss160', .125, f8) == [('prod', 'gauss160', .125), ('tight', 'gauss160', .125),
+                                              ('succ', 'gauss192', .125)]
+    assert SM.decide('gauss160', .25, P_OK, S_OK, H_OK, fmin=f8) == ('terminal', 'CONVERGED')
+    assert SM.decide('gauss160', .25, P_OK, S_OK, H_BAD, fmin=f8) == ('next', ('gauss160', .125))
+    assert SM.decide('gauss160', .25, P_OK, S_OK, None, fmin=f8) == ('terminal', 'STEP-UNAVAILABLE')
+    assert SM.decide('gauss160', .125, P_OK, S_OK, None, fmin=f8) == ('terminal', 'STEP-UNCONVERGED')
+    assert SM.decide('gauss160', .125, P_OK, None, None, fmin=f8) == ('next', ('gauss192', .125))   # Q2 at 0.125
+    assert SM.decide('gauss256', .125, P_OK, None, None, fmin=f8) == ('terminal', 'Q2-FAIL')
+    assert SM.decide('gauss160', .125, None, S_OK, None, fmin=f8) == ('terminal', 'INVALID')
+    assert SM.decide('gauss160', .25, P_OK, S_OK, None) == ('terminal', 'STEP-UNCONVERGED')      # Phase B unchanged
+
+
+def test_e10s_drive_paths():
+    (c,), _, ex = run_cases(lambda *a: 'stepbad', fmin=.125, max_rounds=11)
+    assert (c.terminal, c.rounds, c.scored) == ('STEP-UNCONVERGED', 4, 'FC1|0|cert|gauss160|0.125')
+    assert min(q['f'] for q in ex.calls) == .125 and 'FC1|0|tight|gauss160|0.125' in [q['key'] for q in ex.calls]
+    (c,), _, _ = run_cases(lambda cid, r, f: 'stepbad' if f > .25 else 'ok', fmin=.125, max_rounds=11)
+    assert (c.terminal, c.scored) == ('CONVERGED', 'FC1|0|cert|gauss160|0.25')            # newly step-converged at 0.25
+    (c,), _, _ = run_cases(lambda cid, r, f: 'stepbad' if f > .125 else 'q2bad', fmin=.125, max_rounds=11)
+    assert [h['value'] for h in c.history][-3:] == [('gauss192', .125), ('gauss256', .125), 'Q2-FAIL']
+    (c,), _, _ = run_cases(lambda cid, r, f: 'stepbad' if f >= .25 else 'halfinv', fmin=.125, max_rounds=11)
+    assert c.terminal in ('STEP-UNAVAILABLE', 'STEP-UNCONVERGED')
+
+
+@pytest.mark.parametrize('selected', [None, 'gauss160'])
+def test_e10s_eleven_round_bound_never_binding(selected):
+    res = all_paths(selected, fmin=.125, max_rounds=11, depth=12)
+    assert all(t != 'ROUND-CAP' and t in SM.TERMINALS for t, _ in res)
+    assert max(r for _, r in res) <= 11
+    if selected is None:
+        assert max(r for _, r in res) == 11                                  # 1 + 7 escalations + 3 halvings
+    assert max(map(len, SM.paths(selected, .125))) == (11 if selected is None else 6)
+
+
+def test_e10s_must_fail_control_and_config():
+    import evidence as EV
+    import schedule as SCH
+    import mkconfigs_pol as MP
+
+    def sme(fire):
+        def out(cid, r, f):
+            if cid == 'FC1|0' and r != 'gauss256' and f == 1.:
+                return 'q2bad'                                          # SM-r's path to the pinned state (gauss256, 0.5)
+            return 'stepbad' if (fire or f != .5) else 'ok'
+        cs, store, ex = run_cases(out, n=2, fmin=.125, max_rounds=11)
+        for c, cid in zip(cs, ('FC1|0', 'FC1|1')):
+            assert c.cid == f'FC1|{cid[-1]}'
+        return dict(config=dict(cases=['FC1|0', 'FC1|1'], factors=[1, .5, .25, .125], max_rounds=11, selected='gauss160'),
+                    policy=[c.as_dict() for c in cs], records=store, rows=[], complete=True, backend='gpu')
+    assert EV.check_e10_smoke(sme(True))['control_fired'] and EV.check_e10_smoke(sme(True))['all_four_factors']
+    assert not EV.check_e10_smoke(sme(False))['control_fired']             # a check that cannot fail is flagged
+    c = MP.make_e10s()
+    assert c['reused_test_cases'] and c['cases'] == list(SCH.POLICY_IDS) and c['max_rounds'] == 11 and c['ceiling_hours'] == .8
+    for bad in (dict(factors=[1, .5, .25]), dict(max_rounds=10), dict(reused_test_cases=False), dict(ceiling_hours=.5)):
+        with pytest.raises(ValueError):
+            SCH.check_e10s_config(dict(c, **bad))
+    with pytest.raises(ValueError):
+        SCH.check_policy_config(dict(MP.make('1', 'S3'), factors=[1, .5, .25, .125]))
+
+
+def test_e10s_testonce_key_separate_and_marked(tmp_path):
+    import testonce as TO
+    import mkconfigs_pol as MP
+    bank = dict(ckpt_sha256='a' * 64, rotation_sha256='b' * 64)
+    k1, _ = TO.register(bank, MP.make('1', 'S3'), 'c' * 64, reg=tmp_path)
+    k2, p2 = TO.register(bank, MP.make_e10s(), 'c' * 64, reg=tmp_path)
+    assert k1 != k2 and 'RE-USE' in json.loads(p2.read_text())['evaluation']

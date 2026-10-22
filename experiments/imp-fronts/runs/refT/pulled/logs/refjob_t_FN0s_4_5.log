@@ -1,0 +1,11 @@
+jax_backend=gpu x64=True precision=highest
+[     11.4s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     16.5s]   FN0s c4 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=7.42e-12 newton=414 compile=0.2s solve=3.8s peak=939287296
+[     41.7s]   FN0s c4 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=6.24e-12 newton=812 compile=0.8s solve=23.1s peak=3924748544
+[    225.4s]   FN0s c4 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=8.92e-12 newton=1610 compile=0.8s solve=180.7s peak=15734205184
+[    225.4s] CASE FN0s 4 ST: accepted eps=8.110084804136864e-06 p=[1.8784174287836484, 1.8565292865454068, 1.8793531311557334, 1.9631858635223387, 2.0312024940122697] 214s
+[    229.5s]   FN0s c5 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=9.84e-12 newton=478 compile=0.0s solve=4.0s peak=15734205184
+[    252.5s]   FN0s c5 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=7.45e-13 newton=805 compile=0.0s solve=22.7s peak=15734205184
+[    434.9s]   FN0s c5 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.26e-13 newton=1605 compile=0.0s solve=181.3s peak=16270945536
+[    434.9s] CASE FN0s 5 ST: accepted eps=5.58967655068785e-06 p=[2.0002816956813887, 1.9996638428417268, 1.9988694110516394, 1.99866431542333, 1.9979692026635805] 209s
+JOB COMPLETE

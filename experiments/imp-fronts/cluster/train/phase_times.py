@@ -1,21 +1,24 @@
-"""imp-fronts train jobs: timing record and the training projection (DESIGN Amendment 11).
+"""imp-fronts train jobs: the training timing record (DESIGN Amendments 11, 15) in the schema resources.train_item()
+reads, and the production per-phase record.
 
-    smoke:       python phase_times.py <datagen.json> <job> <arm> smoke <wall_s> <timer_s> <out.json>
-    production:  python phase_times.py --production <run_seed outdir> <job> <arm> production <wall_s> <timer_s> <out.json>
+    smoke:       python phase_times.py smoke <job output dir> <SM-a|SM-b> <fid|cov> <slurm job id>
+    SM-c:        python phase_times.py smokec <job output dir> <slurm job id>     (arm (c); see smokec())
+    production:  python phase_times.py --production <run_seed outdir> <job> <arm> production <wall_s> <stop_s> <out.json>
 
-Smoke: measured data-generation seconds per population (smoke_datagen.py: seed 0 x 576, seed 1000 x 4032) and the
-training projection of Amendment 11:
-    projection = K1 measured maximum production time + measured data-generation increment over K1's data generation
-  K1 maximum = jcp-robust e2t2d seed 2 (job e2t2d, A100 80GB PCIe), run_record.json stage_seconds A 11099 + B 3901 +
-  rotation 18 = 15018 s = 4.172 GPU-h (runs/e2t2d/archive/output/train2d_s2/run_record.json, sha256 d5259149...).
-  K1 data generation in that run: Stage A data.seconds 124.96 s (576 trajectories: rollout + residual check + host
-  copy, the work smoke_datagen.py times) and Stage B extraction gen+proj 906 s at 4,608/4,608 (extract.log; it also
-  contains the projection, so using it as K1's generation time makes the increment conservative, i.e. larger).
-  The arm's production generation = Stage A seed0 + Stage B (seed0 + seed1000); increment = (arm_A - 124.96) +
-  (arm_B - 906), floored at 0 in the projection (a negative increment is reported but not credited).
-  Flag NOT FUNDABLE if the projection > 4.6 GPU-h (Amendment 11 ceiling); UNCERTIFIED if the generation was incomplete.
-Production: the per-phase record of a run_seed.sh output directory (stage seconds, Stage A rates, extraction and head
-fit seconds), for the ledger; no projection.
+Smoke inputs (all in <job output dir>): datagen.json (smoke_datagen.py), chain.json (TRAIN2D_DRYRUN chaining slice),
+cb1.json (C-B1 guard rejection). Output: <job output dir>/timing.json, schema "imp-fronts-train-timing/3" (resources.py
+docstring; resources.train_item schema imp-fronts-train-timing/3), written ONLY if the record is valid; otherwise timing_INVALID.json with the reasons, and exit 1.
+  increment.{arm,incumbent}_datagen_seconds = seed0 seconds x 1152/576 (Stage A and Stage B each generate seed 0; Amendment 16) + seed1000 chunk seconds x 4032/576, both
+      generators timed in the same process after a burn-in (Amendment 15: scaled to 576 + 4 032 trajectories);
+  phases.datagen = the arm's two measured segments (units 576 -> production 1152 and 4032);
+  phases.stageA / stageB / rotation = K1's measured production stage seconds (jcp-robust e2t2d seed 2, the 4.17 h
+      record; Amendment 15: training-phase rates come from K1's records, identical training code), one segment each
+      (units = production_units = 1). These are diagnostic only (resources' per-phase extrapolation; note that K1's
+      stage seconds already contain K1's own data generation).
+  projection = (15018 s + max(0, arm - incumbent)) / 3600 (resources.train_item), certified against the 4.567 h cutoff (4.6 h - 120 s).
+Validity (all required): datagen passed (gates + complete paired timing + residuals), backend gpu, device kind equal
+to K1's GPU type (NVIDIA A100 80GB PCIe), datagen job_id equal to this job's SLURM_JOB_ID, chaining slice complete
+(SEED-COMPLETE), C-B1 fired.
 """
 import json
 import re
@@ -90,42 +93,153 @@ def production(argv):
 
 K1 = dict(record='jcp-robust runs/e2t2d/archive/output/train2d_s2/run_record.json', record_sha256=
           'd525914941979abde3293e11b6df9e53e25d0efc5276364cfb23c56e239bf3bc', job='e2t2d', seed=2,
-          gpu='NVIDIA A100 80GB PCIe', stage_seconds=dict(stageA=11099, stageB=3901, rotation=18),
-          total_s=15018, stageA_data_s=124.96112990379333, stageB_genproj_4608_s=906.0)
-CEILING_H = 4.6
+          gpu='NVIDIA A100 80GB PCIe', stage_seconds=dict(stageA=11099, stageB=3901, rotation=18), total_s=15018)
+CUTOFF_H = 4.6 - 120 / 3600.                                 # 4.567: run_seed.sh is stopped 120 s before the wall
+SCALE_0 = 1152 / 576                                      # seed 0 is generated in Stage A AND Stage B (Amendment 16)
+SCALE_1000 = 4032 / 576
 
 
 def smoke(argv):
-    dg, job, arm, mode, wall, timer, outp = argv
-    d = json.loads(Path(dg).read_text())
-    P = d['populations']
-    s0, s1 = P['seed0'], P['seed1000']
-    rec = dict(job=job, arm=arm, mode=mode, wall_limit_s=float(wall), self_timer_s=float(timer),
-               backend=d.get('backend'), device=d.get('device'), datagen_passed=d.get('passed'),
-               datagen_seconds={k: dict(m=v['m'], done=v['done'], seconds=v['seconds'], s_per_traj=v['s_per_traj'],
-                                         finite=v['finite'], independent_residual=v['independent_residual'],
-                                         rollout_rel_res=v['rollout_rel_res']) for k, v in P.items()},
-               gate=d.get('C_B3') if arm == 'fid' else d.get('C_B4'), K1_reference=K1)
-    complete = bool(d.get('complete'))
-    arm_A = s0['seconds']
-    arm_B = s0['seconds'] + s1['seconds']
-    inc = (arm_A - K1['stageA_data_s']) + (arm_B - K1['stageB_genproj_4608_s'])
-    proj_s = K1['total_s'] + max(0.0, inc)
-    proj_h = proj_s / 3600
-    status = 'UNCERTIFIED (generation incomplete)' if not complete else (
-        'NOT FUNDABLE' if proj_h > CEILING_H else 'fundable')
-    rec['projection'] = dict(arm_stageA_gen_s=arm_A, arm_stageB_gen_s=arm_B, increment_s=inc,
-                             projection_s=proj_s, projection_gpu_h=proj_h, ceiling_gpu_h=CEILING_H, status=status,
-                             same_gpu_type_as_K1=(d.get('device') == 'NVIDIA A100 80GB PCIe'))
-    if not rec['projection']['same_gpu_type_as_K1']:
-        rec['projection']['note'] = 'smoke GPU type differs from K1 record: the increment mixes GPU types'
-    Path(outp).write_text(json.dumps(rec, indent=1, default=float) + '\n')
-    print(json.dumps(dict(datagen={k: (v['done'], round(v['seconds'], 1)) for k, v in P.items()},
-                          projection=rec['projection']), default=float))
+    od, job, arm, slurm = Path(argv[0]), argv[1], argv[2], argv[3]
+    errs = []
+    d = jload(od / 'datagen.json') or {}
+    ch = jload(od / 'chain.json') or {}
+    cb = jload(od / 'cb1.json') or {}
+    T = d.get('timed') or {}
+    need = ('incumbent/seed0', 'arm/seed0', 'incumbent/seed1000', 'arm/seed1000')
+    if not d:
+        errs.append('datagen.json missing')
+    if d and d.get('passed') is not True:
+        errs.append('datagen not passed (gate, completeness or residuals)')
+    if any(k not in T or not T[k].get('complete') or not T[k].get('seconds', 0) > 0 or T[k].get('units') != 576
+           for k in need):
+        errs.append('paired timing incomplete')
+    if d.get('backend') != 'gpu':
+        errs.append(f"backend {d.get('backend')!r} is not gpu")
+    if d.get('device') != K1['gpu']:
+        errs.append(f"device {d.get('device')!r} differs from K1's GPU type {K1['gpu']!r}")
+    if not slurm or d.get('job_id') != slurm:
+        errs.append(f"datagen job_id {d.get('job_id')!r} != this job {slurm!r}")
+    if ch.get('seed_complete') is not True or ch.get('chain_rc') != 0:
+        errs.append(f'chaining slice not complete ({ch})')
+    if cb.get('C_B1_guard_rejects') is not True:
+        errs.append('C-B1 guard rejection not recorded')
+    rec = dict(schema='imp-fronts-train-timing/3', job=job, job_id=slurm, backend=d.get('backend'), device=d.get('device'),
+               gpu=d.get('device'), arm={'fid': 'a', 'cov': 'b'}[arm], errors=errs, K1_reference=K1,
+               gates_passed=bool((d.get('gate') or {}).get('passed') is True),
+               chaining_completed=bool(ch.get('seed_complete') is True and ch.get('chain_rc') == 0),
+               burn_in=bool(isinstance(d.get('burn_in_seconds'), (int, float)) and d['burn_in_seconds'] > 0),
+               cb1_fired=bool(cb.get('C_B1_guard_rejects') is True), datagen_record_sha256=None)
+    if not rec['burn_in']:
+        errs.append('burn-in not recorded')
+    if not rec['gates_passed']:
+        errs.append('arm gate not passed')
+    if (od / 'datagen.json').exists():
+        import hashlib
+        rec['datagen_record_sha256'] = hashlib.sha256((od / 'datagen.json').read_bytes()).hexdigest()
+    if not errs:
+        sec = {k: float(T[k]['seconds']) for k in need}
+        arm_s = sec['arm/seed0'] * SCALE_0 + sec['arm/seed1000'] * SCALE_1000
+        inc_s = sec['incumbent/seed0'] * SCALE_0 + sec['incumbent/seed1000'] * SCALE_1000
+        rec['phases'] = dict(
+            datagen=dict(fixed_seconds=0., source='this smoke (arm generator, paired with the incumbent)', segments=[
+                dict(name='arm/seed0', seconds=sec['arm/seed0'], units=576, production_units=1152),
+                dict(name='arm/seed1000', seconds=sec['arm/seed1000'], units=576, production_units=4032)]),
+            **{st: dict(fixed_seconds=0., source=f"K1 record {K1['record']} (Amendment 15)",
+                        segments=[dict(name=f'K1/{st}', seconds=float(K1['stage_seconds'][st]), units=1,
+                                       production_units=1)]) for st in ('stageA', 'stageB', 'rotation')})
+        rec['timing'] = dict(populations=dict(
+            seed0=dict(trajectories=576, production_trajectories=1152, incumbent_s=sec['incumbent/seed0'],
+                       arm_s=sec['arm/seed0']),
+            seed1000=dict(trajectories=576, production_trajectories=4032, incumbent_s=sec['incumbent/seed1000'],
+                          arm_s=sec['arm/seed1000'])))
+        rec['all_done'] = True
+        rec['increment'] = dict(arm_datagen_seconds=arm_s, incumbent_datagen_seconds=inc_s, measured=sec,
+                                chunk_seconds={k: T[k].get('chunk_seconds') for k in need},
+                                scale_seed0=SCALE_0, scale_seed1000=SCALE_1000, burn_in_seconds=d.get('burn_in_seconds'))
+        proj = (K1['total_s'] + max(0., arm_s - inc_s)) / 3600.
+        rec['projection'] = dict(projection_gpu_h=proj, increment_gpu_h=(arm_s - inc_s) / 3600., cutoff_gpu_h=CUTOFF_H,
+                                 status='fundable' if proj <= CUTOFF_H else 'NOT FUNDABLE')
+        (od / 'timing.json').write_text(json.dumps(rec, indent=1, default=float) + '\n')
+        print(json.dumps(dict(increment_s=arm_s - inc_s, projection=rec['projection']), default=float))
+        return 0
+    (od / 'timing_INVALID.json').write_text(json.dumps(rec, indent=1, default=float) + '\n')
+    print('TIMING INVALID: ' + '; '.join(errs))
+    return 1
+
+# ------------------------------------------------------------------ SM-c (arm (c) 'sine_even'), DESIGN Amendments 19-21
+K1C = dict(record='jcp-robust runs/e2t2d/archive/output/train2d_s1/run_record.json',
+           record_sha256='7dfb5856c81c02327d0afa5a0909916e657043432936be62e1284f40eab9cc74',
+           stageA_log_sha256='4d0addc31169699dd97182798e4abe3bde977a83c4679897328163fe45502160',
+           extract_log_sha256='5546517ff72b22fc79b53f61eb5ca671ee57d0e164cf861255c2389eb4c1ff40',
+           gpu='NVIDIA A100 80GB PCIe', stageA_s=9766., stageB_s=3501., rotation_s=19., data_A_s=119.68222498893738,
+           # stageA.log: step 1 at 7 s, step 290,000 at 6,884 s, step 300,000 at 9,612 s
+           t_sub=(6884. - 7.) / 289999., t_full=(9612. - 6884.) / 10000., extract_s=876.)
+N_SUB, N_FULL, CUTOFF_C_S = 290000, 10000, 16440.
+
+
+def smokec(argv):
+    """T = n_sub t_sub rho_sub + n_full t_full rho_full + T_B,gen+head + T_B,extract max(1, rho_ext) + T_rot
+         + data_A + remA max(1, rho_full) + T_compile                                     (Amendment 21; certified iff T <= 16,440 s)
+    K1 (seed 1) split: T_B,extract = 876 s (extract.log total; generation is interleaved with projection there and cannot be
+    separated, so the whole extraction is scaled, never credited below 1); T_B,gen+head = 3,501 - 876 s unscaled;
+    remA = Stage A total - data - n_sub t_sub - n_full t_full (first step, recon passes, LS rotation, save: full-grid
+    feature evaluations, scaled by max(1, rho_full)); T_compile = the arm's measured step_sub + step_full compilation.
+    certified iff projection_conservative_s = T + B_extract (extraction counted twice, audit codex-job-smC-2) <= 16,440 s."""
+    od, slurm = Path(argv[0]), argv[1]
+    errs = []
+    t = jload(od / 'smc_timing.json') or {}
+    idn = jload(od / 'identity.json') or {}
+    ch = jload(od / 'chain.json') or {}
+    cb = jload(od / 'cb1.json') or {}
+    if t.get('passed') is not True:
+        errs.append('SM-c timing not passed')
+    if t.get('small'):
+        errs.append('timing ran in --small mode')
+    if t.get('backend') != 'gpu' or t.get('device') != K1C['gpu']:
+        errs.append(f"timing device {t.get('device')!r}/{t.get('backend')!r} is not K1's GPU type")
+    if not slurm or t.get('job_id') != slurm:
+        errs.append(f"timing job_id {t.get('job_id')!r} != this job {slurm!r}")
+    if idn.get('fails') != [] or idn.get('backend') != 'gpu':
+        errs.append(f"identity tests not passed on GPU ({idn.get('fails')})")
+    if ch.get('seed_complete') is not True or ch.get('chain_rc') != 0:
+        errs.append(f'chaining slice not complete ({ch})')
+    if cb.get('C_B1_guard_rejects') is not True:
+        errs.append('C-B1 guard rejection not recorded')
+    rec = dict(schema='imp-fronts-train-timing-c/1', job='SM-c', job_id=slurm, arm='c', device=t.get('device'),
+               K1_reference=K1C, errors=errs, identity_stats=idn.get('stats'), bank_control=idn.get('bank_control'))
+    if not errs:
+        tr, ex = t['train'], t['extract']
+        rho_sub = tr['arm']['sub_s_per_step'] / tr['incumbent']['sub_s_per_step']
+        rho_full = tr['arm']['full_s_per_step'] / tr['incumbent']['full_s_per_step']
+        rho_ext = ex['arm']['median_s'] / ex['incumbent']['median_s']
+        remA = K1C['stageA_s'] - K1C['data_A_s'] - N_SUB * K1C['t_sub'] - N_FULL * K1C['t_full']
+        comp = tr['arm']['compile_sub_s'] + tr['arm']['compile_full_s']
+        parts = dict(sub=N_SUB * K1C['t_sub'] * rho_sub, full=N_FULL * K1C['t_full'] * rho_full, data_A=K1C['data_A_s'],
+                     remA=max(0., remA) * max(1., rho_full), B_gen_head=K1C['stageB_s'] - K1C['extract_s'],
+                     B_extract=K1C['extract_s'] * max(1., rho_ext), rotation=K1C['rotation_s'], compile=comp)
+        T = sum(parts.values())
+        # audit codex-job-smC-2: the 514-uniform-call extraction weighting is approximate (production: 498 full + 71
+        # partial + 8 test calls); registered conservative bound = the extraction term counted twice
+        Tc = T + parts['B_extract']
+        rec.update(rho=dict(sub=rho_sub, full=rho_full, extract=rho_ext), parts_s=parts, projection_s=T,
+                   projection_conservative_s=Tc, projection_gpu_h=T / 3600., projection_conservative_gpu_h=Tc / 3600.,
+                   cutoff_s=CUTOFF_C_S, certified=bool(Tc <= CUTOFF_C_S),
+                   status='fundable' if Tc <= CUTOFF_C_S else 'NOT FUNDABLE', all_done=True)
+        (od / 'timing_c.json').write_text(json.dumps(rec, indent=1, default=float) + '\n')
+        print(json.dumps(dict(rho=rec['rho'], projection_s=T, projection_conservative_s=Tc, status=rec['status']), default=float))
+        return 0
+    (od / 'timing_c_INVALID.json').write_text(json.dumps(rec, indent=1, default=float) + '\n')
+    print('SM-c TIMING INVALID: ' + '; '.join(errs))
+    return 1
 
 
 if __name__ == '__main__':
     if sys.argv[1] == '--production':
         production(sys.argv[2:9])
+    elif sys.argv[1] == 'smokec':
+        sys.exit(smokec(sys.argv[2:4]))
+    elif sys.argv[1] == 'smoke':
+        sys.exit(smoke(sys.argv[2:6]))
     else:
-        smoke(sys.argv[1:8])
+        sys.exit(f'usage: {sys.argv[0]} smoke|--production ...')

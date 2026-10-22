@@ -1,0 +1,54 @@
+{
+ "config": {
+  "attempt": "smke10s",
+  "driver": "fpolicy",
+  "mesh": 1024,
+  "edges": [
+   0,
+   128,
+   256,
+   384,
+   512
+  ],
+  "Rp": 384,
+  "scheme": "CNR",
+  "bank": {
+   "dir": "inputs/banks/s1"
+  },
+  "bank_label": "1",
+  "selected": "gauss160",
+  "factors": [
+   1,
+   0.5,
+   0.25,
+   0.125
+  ],
+  "max_rounds": 11,
+  "cases": [
+   "FC1|0",
+   "FC1|1"
+  ],
+  "table": "phaseb/fresh_cohorts.json",
+  "test_once": false,
+  "anchors": [],
+  "ceiling_hours": 0.3,
+  "stop_fraction": 0.9,
+  "controls": {},
+  "note": "SM-e (E10-DESIGN.md section 9): E10-s policy (factor set {1, .5, .25, .125}, round cap 11) with K1 from gauss160 on FC1 dev j = 0 (must-fail control: its step check at 0.5 must fail again) and FC1 dev j = 1 (expected to reach all four factors); its step wall clock / 2 projects POL-e10s (resources.e10_item). Dev cases only; no anchors."
+ },
+ "testonce_key": null,
+ "job_id": "6187130",
+ "bank": {
+  "ckpt": "inputs/banks/s1/ckpt.pkl",
+  "ckpt_sha256": "244e1107c33ae38a23d17517fc198d7f2f307f12d2bb20006d3ed7aada188954",
+  "rotation": "inputs/banks/s1/rotation_R512.npz",
+  "rotation_sha256": "73bb603b48f2883dfb7b40809cc67ceab86486d38dc23f2deea282356294af4d",
+  "bank_json": "inputs/banks/s1/BANK.json",
+  "bank_json_sha256": "492b08719d86dde937e3a9125c82ba0703ea10a365baf378ed51cd0cd8c5eb8f",
+  "label": 1,
+  "arch": "bc16poly"
+ },
+ "table_sha256": "1427a451bfa6f0a8a713c060ef442eac31bf5dc1627c796ca00e841e079aff47",
+ "started": 1792654770.3927736,
+ "policy_sha256": "ea64c7922b61a3756b6e73b9aef7c5432778c765316733b9eedab70122ad8f7d"
+}

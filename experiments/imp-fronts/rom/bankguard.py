@@ -66,10 +66,28 @@ def verify(bank, root=HERE, expect_label=None):
             raise BankMismatch(f'{k}: config {str(bank[k])[:12]} != BANK.json {meta[k][:12]}')
     if expect_label is not None and str(meta.get('label', meta.get('seed'))) != str(expect_label):
         raise BankMismatch(f'bank label {meta.get("label", meta.get("seed"))} != expected {expect_label}')
+    arch = check_arch(r['ckpt'])
     rel = lambda p: str(Path(p).relative_to(Path(root))) if str(p).startswith(str(Path(root))) else str(p)
     return dict(ckpt=rel(r['ckpt']), ckpt_sha256=got['ckpt_sha256'], rotation=rel(r['rotation']),
                 rotation_sha256=got['rotation_sha256'], bank_json=rel(r['meta_path']),
-                bank_json_sha256=sha_file(r['meta_path']), label=meta.get('label', meta.get('seed')))
+                bank_json_sha256=sha_file(r['meta_path']), label=meta.get('label', meta.get('seed')), arch=arch)
+
+
+def check_arch(ckpt):
+    """Arm (c): the checkpoint cfg 'arch' must agree with the presence of 'Kc' in params (npbank_arch.arch_of). A file
+    that is not a checkpoint pickle (unit-test fixtures) has no arch to check."""
+    import pickle
+    try:
+        ck = pickle.load(open(ckpt, 'rb'))
+    except Exception:  # noqa: BLE001
+        return None
+    if not (isinstance(ck, dict) and isinstance(ck.get('params'), dict)):
+        return None
+    import npbank_arch
+    try:
+        return npbank_arch.arch_of(ck)
+    except ValueError as e:
+        raise BankMismatch(str(e))
 
 
 def must_reject(bank, root=HERE, **kw):

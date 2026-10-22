@@ -1,0 +1,14 @@
+- **CORRECT — Status line/Mermaid:** arm (c) completed and STOP; arm (a) deferred; E10 run/data-resolution distinguished.
+- **WRONG — Phase B introduction:** still says arm (c) “deferred”; heading mentions only coverage (b), contradicting completed S3C.
+- **CORRECT — Arm (c) numbers:** diagnostic errors, floors, guard ratio 1.2653, 16,384-node rule and failed tail route match JSON evidence; STOP supported.
+- **CORRECT — E10-s:** FC1 median 8.29%, zero qualified cases, seven STEP-UNCONVERGED and one Q2-FAIL support STOP.
+- **CORRECT — E10-q:** every-step evidence covers 17,771 states; maximum ρ=0.0386336 <0.116, supporting no-trigger STOP without a job.
+- **CORRECT — Accounting:** E8=10.5451≤15; E10=0.1992≤10; combined=10.7443 GPU-h.
+- **CORRECT — Disclosures:** SM-c admission rejection and trained-bank wall residual exceeding the initial identity tolerance are disclosed.
+- **NEEDS-RESTATEMENT — Numerical provenance:** wall residual 2.75e−14 is hard-coded in `make_report.py`, traceable to the results audit rather than generated from check JSON; persist and source that measurement.
+- **WRONG — EXPORT.json:** still says `A + B (S3)` and E10 “design-only”; arm-c verdict exists, but its scores/routes/selection and both E10 results are absent.
+- **NEEDS-RESTATEMENT — Glossary:** arm (c) is named, but E10-s, E10-q, $m^*$, tail-route population/qualification and S3C lack definitions.
+- **WRONG — STEP-UNCONVERGED glossary:** quarter-step endpoint applies to Phase B; E10-s reaches an eighth step.
+- **NEEDS-RESTATEMENT — Cohort glossary:** “test cases are scored once” contradicts disclosed E10 reuse; scope that statement to original Phase B scoring.
+- **CORRECT — Plots/claims:** arm-c bars match diagnostic summaries; conditional-reference labels remain explicit; no qualified-success or speedup claim is made.
+- **CORRECT — Read-only:** no files, scratch, jobs, LAB-LOG or main changes.

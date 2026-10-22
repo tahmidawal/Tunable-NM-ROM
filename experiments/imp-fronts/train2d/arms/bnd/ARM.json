@@ -1,0 +1,52 @@
+{
+ "arm": "bnd",
+ "design": "DESIGN Amendments 19-20 (arm (c) boundary-compatible bank, bundled architecture replacement)",
+ "single_change": "bank architecture 'sine_even': envelope sin(pi x) sin(pi y), per-axis cosine channels cos(pi k x)/cos(pi k y) with fixed integer k = |round(2 B0)| (seed-1 init draw), everything else the K1 recipe; generator = incumbent",
+ "base_tree": "experiments/jcp-robust/train2d @ exp/2026-10-19-jcp-robust b94591b81 (byte-identical copy in experiments/imp-fronts/train2d)",
+ "seed": 1,
+ "unchanged": "generator (incumbent c521b36a, so smoothtrain R0 fingerprint gate runs and must pass), run_seed.sh, Stage B and rotation scripts, data, state picks, every recipe value",
+ "files": [
+  {
+   "src": "arms/bnd/smoothtrain.py",
+   "dst": "stageA/smoothtrain.py",
+   "kind": "edited",
+   "reason": "RECIPE arch adds arch='sine_even' (passed to init_separable) and cfg['arch']='sine_even' in the saved checkpoint; nothing else",
+   "sha256": "61a39b46d7a769d10af3d5cac70eec3d884db99e1612e6f7e274815552fd4402"
+  },
+  {
+   "src": "arms/bnd/sep_common_stageA.py",
+   "dst": "stageA/deps/sep_common.py",
+   "kind": "edited",
+   "reason": "arch flag 'sine_even' (DESIGN Amendments 19-20): features() dispatches on 'Kc' in params (absent = incumbent code path, unchanged); init_separable(arch='sine_even') adds Kc = |round(2 B0)| from the same init draw (B kept, unused). Reference formula: arms/bnd/sine_even_ref.py. Optimiser: Kc gets zero gradient (stop_gradient) and is outside the weight-decay mask (only g/h weights are decayed, as before); B gets zero gradient because it is unused; load_pkl refuses a checkpoint whose cfg['arch'] disagrees with Kc or whose Kc is malformed (check_arch, audit codex-code-C-1)",
+   "sha256": "0688375443b8d9717adbe1d38c5e4204c014072915971daa8cf653321e730641"
+  },
+  {
+   "src": "arms/bnd/sep_common_stageB.py",
+   "dst": "stageB/code/sep_common.py",
+   "kind": "edited",
+   "reason": "arch flag 'sine_even' (DESIGN Amendments 19-20): features() dispatches on 'Kc' in params (absent = incumbent code path, unchanged); init_separable(arch='sine_even') adds Kc = |round(2 B0)| from the same init draw (B kept, unused). Reference formula: arms/bnd/sine_even_ref.py (Stage B extraction and head fit read the bank through features()); load_pkl refuses a checkpoint whose cfg['arch'] disagrees with Kc or whose Kc is malformed (check_arch, audit codex-code-C-1)",
+   "sha256": "ce1cad73a1c3b92e63f77339223e5f8397649bb6874c6e2c77c2d458813de37f"
+  },
+  {
+   "src": "arms/bnd/sep_common_stageB.py",
+   "dst": "rotation/sep_common.py",
+   "kind": "edited",
+   "reason": "arch flag 'sine_even' (DESIGN Amendments 19-20): features() dispatches on 'Kc' in params (absent = incumbent code path, unchanged); init_separable(arch='sine_even') adds Kc = |round(2 B0)| from the same init draw (B kept, unused). Reference formula: arms/bnd/sine_even_ref.py (make_rotation evaluates the bank through features()); load_pkl refuses a checkpoint whose cfg['arch'] disagrees with Kc or whose Kc is malformed (check_arch, audit codex-code-C-1)",
+   "sha256": "ce1cad73a1c3b92e63f77339223e5f8397649bb6874c6e2c77c2d458813de37f"
+  },
+  {
+   "src": "arms/bnd/make_rotation.py",
+   "dst": "rotation/make_rotation.py",
+   "kind": "edited",
+   "reason": "after its pickle.load, sep_common.check_arch(params, cfg) refuses a checkpoint whose cfg['arch'] disagrees with Kc or whose Kc is malformed (audit codex-code-C-1); nothing else changed",
+   "sha256": "a03871a1c92e1f37d40f6393bc8468a87cc17ee73c3814a58fa9b8b5292a9b83"
+  },
+  {
+   "src": "arms/bnd/sep_hfit_run.py",
+   "dst": "stageB/code/sep_hfit_run.py",
+   "kind": "edited",
+   "reason": "after its pickle.load, sep_common.check_arch(params, cfg) refuses a checkpoint whose cfg['arch'] disagrees with Kc or whose Kc is malformed (audit codex-code-C-1); nothing else changed",
+   "sha256": "d1347a80caa73d772804687420b43e87d7f5b590bac0c865dd7aa17e1cb74149"
+  }
+ ]
+}

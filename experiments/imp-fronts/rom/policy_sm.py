@@ -36,6 +36,16 @@ BAR_Q2, BAR_RHO, BAR_STEP = 2.5e-4, .116, 2.5e-4
 FACTORS = (1., .5, .25)
 F_MIN = .25
 MAX_ROUNDS = 10
+# E10-s (E10-DESIGN.md sections 8-9): the single change is the factor set {1, .5, .25, .125}; round bound 1 + 7 + 3 = 11
+FACTOR_SETS = {(1., .5, .25): 10, (1., .5, .25, .125): 11}      # factor set -> its round cap
+
+
+def factor_set(factors=None):
+    """Validated factor set -> (fmin, round cap). Only the Phase B set and the E10-s set exist."""
+    fs = FACTORS if factors is None else tuple(float(x) for x in factors)
+    if fs not in FACTOR_SETS:
+        raise ValueError(f'factor set {fs} is not registered ({list(FACTOR_SETS)})')
+    return fs[-1], FACTOR_SETS[fs]
 
 # Amendment 3 B5, verbatim
 NEXT_CANDIDATE = {'fib4181': 'fib6765', 'fib6765': 'gauss96', 'gauss96': 'fib10946', 'fib10946': 'gauss128',
@@ -60,14 +70,14 @@ def start_state(selected):
     return selected, 1., False
 
 
-def half_factor(f):
-    return None if f <= F_MIN + 1e-15 else f / 2.
+def half_factor(f, fmin=F_MIN):
+    return None if f <= fmin + 1e-15 else f / 2.
 
 
-def needed(rule, f):
+def needed(rule, f, fmin=F_MIN):
     """Runs a round at (rule, f) needs: [(kind, rule, factor)]; kind in prod / tight / succ / half (in this order)."""
     out = [('prod', rule, f), ('tight', rule, f), ('succ', Q2_SUCCESSOR[rule], f)]
-    h = half_factor(f)
+    h = half_factor(f, fmin)
     if h is not None:
         out.append(('half', rule, h))
     return out
@@ -85,7 +95,7 @@ def q2_pass(succ):
     return finite(d) and finite(r) and d <= BAR_Q2 and r <= BAR_RHO
 
 
-def decide(rule, f, prod, succ, half, next_candidate=None):
+def decide(rule, f, prod, succ, half, next_candidate=None, fmin=F_MIN):
     """Transition at (rule, f) from the round's three records. Returns ('terminal', label) or ('next', (rule', f'))."""
     nc = NEXT_CANDIDATE if next_candidate is None else next_candidate
     if not run_ok(prod):                                                # (1)
@@ -93,20 +103,20 @@ def decide(rule, f, prod, succ, half, next_candidate=None):
     if not q2_pass(succ):                                               # (2)
         nxt = nc.get(rule)
         return ('next', (nxt, f)) if nxt is not None else ('terminal', 'Q2-FAIL')
-    if half_factor(f) is None:                                          # (3)
+    if half_factor(f, fmin) is None:                                    # (3) (E10-s: only at 0.125)
         return 'terminal', 'STEP-UNCONVERGED'
     if not run_ok(half) or not finite(half.get('dist_half')):           # (4)
         return 'terminal', 'STEP-UNAVAILABLE'
     if half['dist_half'] <= BAR_STEP:                                   # (5)
         return 'terminal', 'CONVERGED'
-    return 'next', (rule, half_factor(f))                               # (6)
+    return 'next', (rule, half_factor(f, fmin))                         # (6)
 
 
 class Case:
     """Per-case policy bookkeeping. history = [(round, rule, f, decision)], scored = run key of the scored prod."""
 
-    def __init__(self, cid, selected):
-        self.cid = cid
+    def __init__(self, cid, selected, fmin=F_MIN):
+        self.cid, self.fmin = cid, float(fmin)
         self.rule, self.f, self.uncertified_start = start_state(selected)
         self.history, self.terminal, self.scored, self.latest_valid_prod = [], None, None, None
         self.rounds = 0
@@ -117,7 +127,7 @@ class Case:
     def as_dict(self):
         return dict(case=self.cid, terminal=self.terminal, scored=self.scored, rounds=self.rounds,
                     uncertified_start=self.uncertified_start, history=self.history,
-                    final_state=[self.rule, self.f], latest_valid_prod=self.latest_valid_prod)
+                    final_state=[self.rule, self.f], latest_valid_prod=self.latest_valid_prod, fmin=self.fmin)
 
 
 def run_key(cid, kind, rule, f):
@@ -126,17 +136,23 @@ def run_key(cid, kind, rule, f):
     return f'{cid}|{cls}|{rule}|{f:g}'
 
 
+def parse_key(key):
+    """Inverse of run_key: (cid, cls, rule, f). The case id itself contains '|' ('FC1|0'), so split from the right."""
+    cid, cls, rule, f = key.rsplit('|', 3)
+    return cid, cls, rule, float(f)
+
+
 def advance(case, records, max_rounds=MAX_ROUNDS, next_candidate=None):
     """Evaluate one round of `case` from `records` (dict run_key -> record or missing). Mutates and returns the case."""
     assert case.terminal is None
     case.rounds += 1
     rule, f = case.state()
-    rk = {k: run_key(case.cid, k, r_, f_) for k, r_, f_ in needed(rule, f)}
+    rk = {k: run_key(case.cid, k, r_, f_) for k, r_, f_ in needed(rule, f, case.fmin)}
     prod, succ = records.get(rk['prod']), records.get(rk['succ'])
     half = records.get(rk['half']) if 'half' in rk else None
     if run_ok(prod):
         case.latest_valid_prod = rk['prod']
-    kind, val = decide(rule, f, prod, succ, half, next_candidate)
+    kind, val = decide(rule, f, prod, succ, half, next_candidate, case.fmin)
     case.history.append(dict(round=case.rounds, rule=rule, f=f, decision=kind, value=val,
                              prod=rk['prod'], succ=rk['succ'], half=rk.get('half')))
     if kind == 'terminal':
@@ -186,7 +202,7 @@ def drive(cases, execute, max_rounds=MAX_ROUNDS, over_budget=lambda: False, next
         req, seen = [], set()
         for c in open_:
             rule, f = c.state()
-            for kind, r_, f_ in needed(rule, f):
+            for kind, r_, f_ in needed(rule, f, c.fmin):
                 k = run_key(c.cid, kind, r_, f_)
                 if k not in store and k not in seen:
                     seen.add(k)
@@ -195,7 +211,7 @@ def drive(cases, execute, max_rounds=MAX_ROUNDS, over_budget=lambda: False, next
         store.update(execute(req))
         if over_budget() and any(q['key'] not in store for q in req):
             for c in open_:            # the round could not be completed: unfinished cases stop here
-                ks = [run_key(c.cid, k_, r_, f_) for k_, r_, f_ in needed(*c.state())]
+                ks = [run_key(c.cid, k_, r_, f_) for k_, r_, f_ in needed(*c.state(), c.fmin)]
                 if any(k not in store for k in ks):
                     budget_cap(c, store)
         for c in open_:
@@ -206,7 +222,7 @@ def drive(cases, execute, max_rounds=MAX_ROUNDS, over_budget=lambda: False, next
     return store
 
 
-def paths(selected):
+def paths(selected, fmin=F_MIN):
     """Every reachable state sequence from the start (each state either escalates, halves, or ends): used by the cost
     certificate (resources.py) to bound per-case solve inventories."""
     r0, f0, _ = start_state(selected)
@@ -217,17 +233,17 @@ def paths(selected):
         rule, f = p[-1]
         if NEXT_CANDIDATE.get(rule):
             stack.append(p + [(NEXT_CANDIDATE[rule], f)])
-        if half_factor(f) is not None:
-            stack.append(p + [(rule, half_factor(f))])
+        if half_factor(f, fmin) is not None:
+            stack.append(p + [(rule, half_factor(f, fmin))])
     return out
 
 
-def path_solves(path):
+def path_solves(path, fmin=F_MIN):
     """Solve inventory of a state path (Amendment 5): per visited state prod + tight + succ (+ half if f > 0.25), with a
     half run promoted to the next state's prod not re-solved. Returns [(kind, rule, f)]."""
     done, out = set(), []
     for rule, f in path:
-        for kind, r_, f_ in needed(rule, f):
+        for kind, r_, f_ in needed(rule, f, fmin):
             k = run_key('x', kind, r_, f_)
             if k not in done:
                 done.add(k)

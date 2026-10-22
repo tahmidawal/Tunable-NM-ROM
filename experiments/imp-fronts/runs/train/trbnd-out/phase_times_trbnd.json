@@ -1,0 +1,65 @@
+{
+ "job": "trbnd",
+ "arm": "bnd",
+ "mode": "production",
+ "wall_limit_s": 16560.0,
+ "self_timer_s": 16440.0,
+ "device": [
+  "NVIDIA A100 80GB PCIe, GPU-6481e68e-7435-8539-633a-66f852b4a8e9, 81920 MiB, 575.57.08",
+  "jax_backend=gpu"
+ ],
+ "stage_seconds": {
+  "stageA": 9832.0,
+  "stageB": 3611.0,
+  "rotation": 19.0
+ },
+ "A": {
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "backend": "gpu",
+  "precision": "highest",
+  "generator_sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+  "data_seconds": 118.9838981628418,
+  "max_fom_rel_residual": 9.998217878495552e-13,
+  "r0_gate_passed": null,
+  "r0_gate_seconds": null,
+  "r0_gate_summary": null,
+  "train_seconds": 9683.209900856018,
+  "steps": 300000,
+  "rates": {
+   "sub_s_per_step": 0.023855254673291977,
+   "full_s_per_step": 0.275,
+   "first_step_s": 11.0,
+   "full_last": 10000,
+   "boundary_step": 290000
+  }
+ },
+ "B": {
+  "gen_seed0_s": 125.0,
+  "gen_seed1000_s": 770.0,
+  "gen_all_s": 895.0,
+  "n_traj_logged": 4608,
+  "extract_total_s": 931.0,
+  "hfit": {
+   "mid": {
+    "steps": 200000,
+    "steps_done": 200000,
+    "seconds": 338.31582903862
+   },
+   "wide": {
+    "steps": 200000,
+    "steps_done": 200000,
+    "seconds": 1112.5440349578857
+   },
+   "k32": {
+    "steps": 200000,
+    "steps_done": 200000,
+    "seconds": 1139.8587465286255
+   }
+  },
+  "hfit_total_s": 2675.0537519454956
+ },
+ "rotation": {
+  "seconds": 19.0
+ },
+ "exhausted": false
+}

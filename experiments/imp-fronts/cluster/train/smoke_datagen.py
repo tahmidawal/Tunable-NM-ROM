@@ -1,18 +1,24 @@
-"""imp-fronts smoke (DESIGN Amendment 11): full-size training-data generation of one staged arm, timed per population.
+"""imp-fronts training smoke: gates + paired generator timing (DESIGN Amendments 11 and 15).
 
-    python smoke_datagen.py <train2d dir> <arm> <out.json> [--budget-s S]
+    python smoke_datagen.py <train2d dir> <incumbent burgers2d_film.py> <arm> <out.json> --budget-s S
 
-Generates the two training populations exactly as the pipeline draws them (seed 0 x 576 = Stage A's and Stage B's
-canonical draw, seed 1000 x 4032 = Stage B's appended draw) through the STAGED generator, in chunks of 64 (Stage A /
-Stage B GEN_CHUNK), with Stage A build_data's per-chunk work: rollout, the independent per-step residual check
-(cov: the upwind Newton residual; fid: the finiteness sentinel) and the device->host transfer. Nothing is stored.
-The timing therefore matches the definition of K1's Stage A `data.seconds` (generation + residual check, no
-projection), which phase_times.py uses as the K1 reference rate.
-  cov: Newton relative-residual statistics per population (max of rollout rel_res and of the independent check,
-       median / p99 / max over trajectories), finiteness; C-B4 on both tables (arm_gate.c_b4).
-  fid: finiteness; the arm gate's C-B3 on dev6 + PS self-convergence (arm_gate.check_dev6, timed separately).
---budget-s: stop starting new chunks after S seconds (records partial counts; a partial record is not a certificate).
+In one process on one GPU:
+  1. gates: fid = arm_gate.check_dev6() (C-B3 on dev6 + PS self-convergence); cov = arm_gate.c_b4() on both complete
+     parameter tables;
+  2. GPU burn-in: one UNTIMED 64-trajectory chunk through each generator (compilation and warm-up; the timed chunks
+     reuse the same jitted rollouts and the same chunk shape, so nothing recompiles);
+  3. paired timing (Amendment 15): the incumbent generator (sha256 c521b36a..., the K1 generator) and the arm generator
+     on the SAME 576-trajectory seed-0 population and the same first 576 trajectories of the seed-1000 population, in
+     the order inc/seed0, arm/seed0, inc/seed1000, arm/seed1000; each timed pass = rollout + the per-step residual check
+     (cov/incumbent: upwind Newton residual; fid: finiteness sentinel) + device->host copy, in chunks of 64 (Stage A /
+     Stage B GEN_CHUNK). Nothing is stored. Newton/sentinel statistics are recorded for every timed trajectory and the wall seconds of
+     every chunk are persisted (chunk_seconds arrays, Amendment 17).
+Writes <out.json> and exits 1 unless `passed` (gates passed, every timed pass complete inside the budget, all states
+finite, every residual <= 1e-8). The timing record carries the device kind and SLURM_JOB_ID (provenance check in
+phase_times.py).
 """
+import hashlib
+import importlib.util
 import json
 import os
 import sys
@@ -22,66 +28,101 @@ from pathlib import Path
 for v in ('N', 'K', 'R', 'SEED', 'SEED0', 'STEPS', 'N_TRAIN', 'N_VAL', 'N_TRAJ', 'N_TEST', 'HIDDEN', 'N_LAYERS',
           'NEWTON_ITERS', 'LIN_TOL', 'LIN_MAXITER', 'EXTRA_SEED', 'EXTRA_TRAJ'):
     os.environ.pop(v, None)
-T2, ARM, OUT = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
-BUDGET = float(sys.argv[sys.argv.index('--budget-s') + 1]) if '--budget-s' in sys.argv else float('inf')
+args = [a for a in sys.argv[1:] if a != '--budget-s']
+T2, INC, ARM, OUT = Path(args[0]), Path(args[1]), args[2], Path(args[3])
+BUDGET = float(sys.argv[sys.argv.index('--budget-s') + 1])
+INC_SHA = 'c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4'
+CHUNK, N_NODES, M_TIMED = 64, 256, 576
 sys.path.insert(0, str(T2 / 'stageA/deps'))
 import numpy as np                                   # noqa: E402
 import jax                                           # noqa: E402
 import jax.numpy as jnp                              # noqa: E402
-import burgers2d_film as bf                          # noqa: E402  (the staged arm generator)
+import burgers2d_film as bf                          # noqa: E402  (the staged ARM generator)
 import arm_gate                                      # noqa: E402
 
 T_START = time.time()
-dev = jax.devices()[0]
+assert hashlib.sha256(INC.read_bytes()).hexdigest() == INC_SHA, 'incumbent generator sha256 mismatch'
+assert hashlib.sha256((T2 / 'stageA/deps/burgers2d_film.py').read_bytes()).hexdigest() != INC_SHA, 'arm tree has the incumbent generator'
+spec = importlib.util.spec_from_file_location('bf_incumbent', INC)
+bfi = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(bfi)
 assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
-rec = dict(arm=ARM, backend=jax.default_backend(), device=getattr(dev, 'device_kind', str(dev)), n_nodes=256, chunk=64,
-           budget_s=BUDGET, populations={})
-print(f'jax_backend={jax.default_backend()} device={rec["device"]} arm={ARM}', flush=True)
+dev = jax.devices()[0]
+rec = dict(schema='imp-fronts-datagen/2', arm=ARM, backend=jax.default_backend(),
+           device=getattr(dev, 'device_kind', str(dev)), job_id=os.environ.get('SLURM_JOB_ID'),
+           host=os.uname().nodename, n_nodes=N_NODES, chunk=CHUNK, budget_s=BUDGET,
+           arm_generator_sha256=hashlib.sha256((T2 / 'stageA/deps/burgers2d_film.py').read_bytes()).hexdigest(),
+           incumbent_generator_sha256=INC_SHA, errors=[])
+print(f'jax_backend={rec["backend"]} device={rec["device"]} job={rec["job_id"]} arm={ARM}', flush=True)
+
+# ---------------------------------------------------------------- 1. gates
+t = time.time()
 if ARM == 'fid':
-    t = time.time()
     g = arm_gate.check_dev6()
     g.pop('u128')
-    rec['C_B3'] = dict(g, seconds_total=time.time() - t)
-    print(f"C-B3 worst {g['worst_err_vs_E0']:.3e} self-conv {g['worst_self_conv']:.3e} pass "
-          f"{g['C_B3_pass'] and g['self_conv_pass']} [{time.time() - t:.0f}s]", flush=True)
+    gate_ok = bool(g['C_B3_pass'] and g['self_conv_pass'])
 else:
-    rec['C_B4'] = arm_gate.c_b4(bf.sample_params)
-    print(f"C-B4 passed {rec['C_B4']['passed']}", flush=True)
+    g = arm_gate.c_b4(bf.sample_params)
+    gate_ok = bool(g['passed'])
+rec['gate'] = dict(g, passed=gate_ok, seconds=time.time() - t)
+print(f'gate ({ARM}) passed={gate_ok} [{time.time() - t:.0f}s]', flush=True)
 
-n = 256
-rollout, res_fn = bf.make_rollout(n)
-chk = jax.jit(jax.vmap(lambda u1, u0, nu_: jnp.linalg.norm(res_fn(u1, u0, nu_)) / jnp.linalg.norm(u0)))
-for name, seed, m in (('seed0', 0, 576), ('seed1000', 1000, 4032)):
-    cx, cy, w, a, nu, _ = bf.sample_params(seed=seed, m=m)
-    per_traj_rollout, per_traj_check, done, finite = [], [], 0, True
+
+def make(mod):
+    ro, res_fn = mod.make_rollout(N_NODES)
+    chk = jax.jit(jax.vmap(lambda u1, u0, nu_: jnp.linalg.norm(res_fn(u1, u0, nu_)) / jnp.linalg.norm(u0)))
+    return mod, ro, chk
+
+
+def run(gen, pop, idx):
+    """One pass over trajectories idx of population pop (seed, m) in chunks of 64; returns stats dict."""
+    mod, ro, chk = gen
+    cx, cy, w, a, nu, _ = mod.sample_params(seed=pop[0], m=pop[1])
+    rr_all, cc_all, finite, done, chunk_s = [], [], True, 0, []
     t0 = time.time()
-    for s in range(0, m, 64):
+    for s in range(0, len(idx), CHUNK):
         if time.time() - T_START > BUDGET:
             break
-        e = min(s + 64, m)
-        U0 = np.stack([bf.blob_ic(n, cx[i], cy[i], w[i], a[i]) for i in range(s, e)])
-        nu_j = jnp.asarray(nu[s:e])
-        snaps, res = rollout(jnp.asarray(U0), nu_j)
+        tc = time.time()
+        ii = idx[s:s + CHUNK]
+        U0 = np.stack([mod.blob_ic(N_NODES, cx[i], cy[i], w[i], a[i]) for i in ii])
+        nu_j = jnp.asarray(nu[ii])
+        snaps, res = ro(jnp.asarray(U0), nu_j)
         rr = np.asarray(jnp.max(res, axis=0))
-        cc = np.max(np.stack([np.asarray(chk(snaps[k + 1], snaps[k], nu_j)) for k in range(bf.NUM_STEPS)]), axis=0)
-        snaps_np = np.asarray(snaps)                                          # device -> host, as build_data
-        finite &= bool(np.isfinite(snaps_np).all())
-        per_traj_rollout += rr.tolist(); per_traj_check += cc.tolist(); done = e
-        del snaps, snaps_np
+        cc = np.max(np.stack([np.asarray(chk(snaps[k + 1], snaps[k], nu_j)) for k in range(mod.NUM_STEPS)]), axis=0)
+        sn = np.asarray(snaps)
+        finite &= bool(np.isfinite(sn).all())
+        rr_all += rr.tolist(); cc_all += cc.tolist(); done += len(ii)
+        del snaps, sn
+        chunk_s.append(time.time() - tc)
     sec = time.time() - t0
     q = lambda x: dict(max=float(np.max(x)), p99=float(np.percentile(x, 99)), median=float(np.median(x))) if x else None
-    rec['populations'][name] = dict(seed=seed, m=m, done=done, complete=done == m, seconds=sec,
-                                    s_per_traj=sec / max(done, 1), finite=finite,
-                                    rollout_rel_res=q(per_traj_rollout), independent_residual=q(per_traj_check),
-                                    residual_le_1e8=bool(done and np.isfinite(per_traj_check).all()
-                                                         and max(per_traj_check) <= 1e-8
-                                                         and max(per_traj_rollout) <= 1e-8))
-    print(f"{name}: {done}/{m} trajectories in {sec:.0f}s ({sec / max(done, 1):.3f} s/traj) finite {finite} "
-          f"residual max {rec['populations'][name]['independent_residual']}", flush=True)
+    ok = bool(done == len(idx) and finite and np.isfinite(cc_all).all() and np.isfinite(rr_all).all()
+              and max(cc_all) <= 1e-8 and max(rr_all) <= 1e-8)
+    return dict(seed=pop[0], population_m=pop[1], units=done, requested=len(idx), complete=done == len(idx),
+                seconds=sec, chunk_seconds=chunk_s, finite=finite, rollout_rel_res=q(rr_all), independent_residual=q(cc_all), ok=ok)
+
+
+# ---------------------------------------------------------------- 2. burn-in, 3. paired timing
+gens = dict(incumbent=make(bfi), arm=make(bf))
+idx = np.arange(M_TIMED)
+t = time.time()
+for k, gen in gens.items():
+    run(gen, (0, 576), idx[:CHUNK])                                      # untimed burn-in chunk
+rec['burn_in_seconds'] = time.time() - t
+rec['timed'] = {}
+for pname, pop in (('seed0', (0, 576)), ('seed1000', (1000, 4032))):
+    for k in ('incumbent', 'arm'):
+        r = run(gens[k], pop, idx)
+        rec['timed'][f'{k}/{pname}'] = r
+        print(f"{k}/{pname}: {r['units']}/{r['requested']} in {r['seconds']:.1f}s ok={r['ok']} "
+              f"resid max {r['independent_residual'] and r['independent_residual']['max']}", flush=True)
 rec['seconds_total'] = time.time() - T_START
-rec['complete'] = all(p['complete'] for p in rec['populations'].values())
-rec['passed'] = bool(rec['complete'] and all(p['finite'] and p['residual_le_1e8'] for p in rec['populations'].values())
-                     and (rec['C_B3']['C_B3_pass'] and rec['C_B3']['self_conv_pass'] if ARM == 'fid'
-                          else rec['C_B4']['passed']))
+rec['timing_complete'] = all(r['complete'] for r in rec['timed'].values())
+rec['passed'] = bool(gate_ok and rec['timing_complete'] and all(r['ok'] for r in rec['timed'].values())
+                     and rec['backend'] == 'gpu')
+if rec['backend'] != 'gpu':
+    rec['errors'].append('backend is not gpu: timing invalid')
 OUT.write_text(json.dumps(rec, indent=1, default=float) + '\n')
-print('DATAGEN', 'PASSED' if rec['passed'] else 'NOT PASSED', f"complete={rec['complete']}", flush=True)
+print('DATAGEN', 'PASSED' if rec['passed'] else 'NOT PASSED', flush=True)
+sys.exit(0 if rec['passed'] else 1)

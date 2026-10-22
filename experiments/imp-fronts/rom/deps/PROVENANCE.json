@@ -1,0 +1,18 @@
+{
+ "note": "imp-fronts arm (c) evaluator side (DESIGN Amendments 19-20). Byte-identical copies of the training side's committed files, so ROM path, NumPy evaluator and training share ONE formula. rom/deps is put FIRST on sys.path (fpolicy.py, env.sh), so the ROM path's `import sep_common` resolves to this copy; with no 'Kc' in params it runs the incumbent code path unchanged (the copy differs from experiments/separable-decoder/sep_common.py only by the arch dispatch and the Kc init).",
+ "files": [
+  {
+   "path": "deps/sep_common.py",
+   "source_path": "experiments/imp-fronts/train2d/arms/bnd/sep_common_stageB.py",
+   "source_commit": "ddd58f008984320538db05208428935047026561",
+   "sha256": "ce1cad73a1c3b92e63f77339223e5f8397649bb6874c6e2c77c2d458813de37f",
+   "note": "re-copied after the training side added load_pkl arch/Kc consistency (code audit C-1)"
+  },
+  {
+   "path": "deps/sine_even_ref.py",
+   "source_path": "experiments/imp-fronts/train2d/arms/bnd/sine_even_ref.py",
+   "source_commit": "521da7bef88c3ae92c547bffebd10676eb7b0337",
+   "sha256": "fd9bccf274268ad13fbac70146f9538e6f8715dcb7e70350c157e71700b73da4"
+  }
+ ]
+}

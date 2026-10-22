@@ -2,7 +2,11 @@
 # imp-fronts fresh TEST references (DESIGN B3, Amendment 10): 24 cases (FI 6, FN0s 8, FC1 8, FC2 2; lowest test indices),
 # E0-style ST recipe (phaseb/frefs/refjob.py mode fd, tight allowance 0), ONE job on 2 GPUs.
 # Ceiling 3.25 GPU-h = 2 GPUs x 1.625 h wall (01:37:30), H200 (Amendment 13). Each GPU lane stops starting new work at its own deadline
-# (90 % of the wall limit, Amendment 4 B8; the last 10 % is the finalisation reserve for refslim + hashing); a case killed by the deadline has no .json -> ineligible (counted).
+# (90 % of the wall limit, Amendment 4 B8): at that cutoff no new step starts AND a step still running is terminated
+# (timeout TERM, KILL 30 s later), so a case in progress is lost; the last 10 % is the finalisation reserve (refslim,
+# ledger, hashing). Every case gets an explicit outcome in output/REF-LEDGER.json: accepted / ineligible /
+# unfinished-at-deadline (recorded budget outcome, counted, not a failure) / failed. ALL-DONE only if refslim, the
+# ledger (no 'failed' case, configured set = the 24 scheduled) and OUTPUTS.sha256 all succeed.
 # Order per GPU lane = lowest test indices first, round-robin over its cohorts (deterministic reduced subsets, Amendment 1 B3).
 # Rendered by cluster/refs/stage_refs.py (@...@ placeholders); never edited by hand after staging.
 #SBATCH --job-name=if_@ATTEMPT@
@@ -44,12 +48,18 @@ lane() {   # lane <gpu> <config>...: sequential refjob steps on one GPU, each bo
   local g=$1; shift
   for cfg in "$@"; do
     local now=$(date +%s); local left=$(( DEADLINE - now ))
-    if [ "$left" -le 60 ]; then echo "LANE $g DEADLINE: skipping $cfg (cases ineligible: budget exhausted)"; continue; fi
+    if [ "$left" -le 60 ]; then
+      echo "LANE $g DEADLINE: skipping $cfg (cases unfinished-at-deadline)"
+      printf '%s\tskipped-deadline\t0\n' "$cfg" >> "$TASK_ROOT/logs/steps_gpu$g.tsv"; continue
+    fi
     local stem=$(basename "$cfg" .json)
     echo "STEP gpu=$g $cfg left=${left}s $(date -u +%FT%TZ)"
+    local t0=$(date +%s) rc=0
     CUDA_VISIBLE_DEVICES=$g timeout --signal=TERM --kill-after=30 "$left" \
       "$PY" refjob.py --config "../../cluster/refs/configs/$cfg" --out "$TASK_ROOT/output/refs_$stem" \
-      > "$TASK_ROOT/logs/refjob_$stem.log" 2>&1 || echo "STEP gpu=$g $cfg rc=$? (timeout 124 = deadline)"
+      > "$TASK_ROOT/logs/refjob_$stem.log" 2>&1 || rc=$?
+    echo "STEP gpu=$g $cfg rc=$rc (124/137 = terminated at the cutoff)"
+    printf '%s\t%s\t%s\n' "$cfg" "$rc" "$(( $(date +%s) - t0 ))" >> "$TASK_ROOT/logs/steps_gpu$g.tsv"
   done
 }
 lane 0 t_FC1_4_5.json t_FC2_4_5.json t_FC1_6_7.json t_FC1_8_9.json t_FC1_10_11.json &
@@ -67,8 +77,13 @@ src = sorted(p.name for p in out.glob('refs_t_*') if p.is_dir())
 (out / 'refslim_config.json').write_text(json.dumps(dict(sources=src, allow_empty=True), indent=1))
 print('refslim sources', src)
 EOF
-JAX_PLATFORMS=cpu "$PY" refslim.py --config "$TASK_ROOT/output/refslim_config.json" --out "$TASK_ROOT/output/refslim"
+RC_SLIM=0; JAX_PLATFORMS=cpu "$PY" refslim.py --config "$TASK_ROOT/output/refslim_config.json" --out "$TASK_ROOT/output/refslim" || RC_SLIM=$?
+echo "STEP refslim rc=$RC_SLIM"
+RC_LED=0; JAX_PLATFORMS=cpu "$PY" ../../cluster/refs/ref_ledger.py "$TASK_ROOT/output" "$TASK_ROOT"/logs/steps_gpu*.tsv \
+  --configs ../../cluster/refs/configs/t_*.json --out "$TASK_ROOT/output/REF-LEDGER.json" || RC_LED=$?
+echo "STEP ledger rc=$RC_LED (1 = a case failed or the configured set differs from the 24 scheduled)"
 cd "$TASK_ROOT"
-find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+RC_SUM=0; find output -type f -print0 | sort -z | xargs -0 -r sha256sum > OUTPUTS.sha256 || RC_SUM=$?
 echo "elapsed_s=$(( $(date +%s) - T_START ))"
-echo ALL-DONE
+if [ "$RC_SLIM" -eq 0 ] && [ "$RC_LED" -eq 0 ] && [ "$RC_SUM" -eq 0 ]; then echo ALL-DONE
+else echo "NOT-ALL-DONE refslim=$RC_SLIM ledger=$RC_LED outputs=$RC_SUM"; exit 1; fi

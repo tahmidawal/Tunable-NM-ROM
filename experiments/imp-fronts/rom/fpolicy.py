@@ -27,7 +27,8 @@ Config:
    "selected": "gauss160" | null,                  (null -> uncertified start at fib4181)
    "cases": ["FC1|0", ...], "table": "phaseb/fresh_cohorts.json" (lane-relative), "test_once": false,
    "anchors": null | ["FC1|0", ...]               (null -> the frozen fresh anchors FI|4, FI|5, FC1|4, FC1|5),
-   "ceiling_hours": 0.4, "stop_fraction": 0.9, "max_rounds": 10,   (max_rounds < 10 only in smoke attempts 'smk*')
+   "ceiling_hours": 0.4, "stop_fraction": 0.9, "max_rounds": 10,   (max_rounds < cap only in smoke attempts 'smk*')
+   "factors": [1, 0.5, 0.25] (default) | [1, 0.5, 0.25, 0.125] (E10-s, round cap 11),
    "controls": {"cb1": true, "cb6": {"case": "FC1|0", "step": 10}},
    "allow_cpu_smoke": false}
 
@@ -50,6 +51,7 @@ for _p in (ROOT / 'experiments' / 'separable-decoder', ROOT / 'experiments' / 'm
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE / 'deps'))      # arm (c): the arch-dispatching sep_common (deps/PROVENANCE.json)
 
 import numpy as np  # noqa: E402
 import policy_sm as SM  # noqa: E402
@@ -106,6 +108,8 @@ class Executor:
     """Runs policy requests with the r2acc closure; keeps per-run records, fields and coefficients in host memory."""
 
     def __init__(self, cfg, out, cases, begin):
+        import archrun
+        archrun.pin()                 # arm (c): the dispatching sep_common before engines.py can import the shared one
         import jax
         import jax.numpy as jnp
         import p1common as P
@@ -136,6 +140,18 @@ class Executor:
         self.cert = T2.make_certifier(self.nl, self.Rp)
         return dict(seconds=time.perf_counter() - t0, bank_bytes=self.bank.bytes, mode_hash=self.st.mode_hash,
                     M=self.st.M, mem=P.mem())
+
+    def burn_in(self, cid, rule):
+        """Explicit untimed burn-in (code audit SM-r-2): QS.burn as r2acc.main does, then one recorded prod-level solve of
+        the first case at the start rule and f = 1, outside the charged policy rows (its time is in driver_wall_seconds)."""
+        t0 = time.perf_counter()
+        self.P.QS.burn(.05)
+        self.load(rule, False)
+        u0, nu, _ = self.U0[cid]
+        v = self.RA.run(self.bank, self.st, 'd', 'LSPG', self.scheme, self.P.DT0, 'prod', u0, nu, record=True)
+        self.jax.block_until_ready(v)
+        self.unload()                 # (the query cache is cleared per rule group, so later shapes still compile once)
+        return dict(case=cid, rule=rule, seconds=time.perf_counter() - t0, valid=bool(self.P.run_valid(v)))
 
     def elapsed(self):
         return time.perf_counter() - self.begin
@@ -289,8 +305,8 @@ class Executor:
         for c in cases:
             if c.cid not in self.anchors or not c.scored or self.over_budget():
                 continue
-            _, cid, _, rule, f = c.scored.split('|')
-            f = float(f)
+            cid, cls, rule, f = SM.parse_key(c.scored)
+            assert cid == c.cid and cls == 'cert', (c.scored, c.cid)
             tk = c.scored.replace('|cert|', '|tight|')
             if tk not in self.fields:
                 continue
@@ -403,32 +419,39 @@ def main():
     ap.add_argument('--t0-epoch', type=float, default=None,
                     help='job start (date +%%s): the self-timer counts the wall limit from here, not from driver start')
     a = ap.parse_args()
-    begin = time.perf_counter() - (max(0., time.time() - a.t0_epoch) if a.t0_epoch else 0.)
+    t_driver = time.perf_counter()                    # this step's own wall clock (setup, burn-in, certificates, controls)
+    begin = t_driver - (max(0., time.time() - a.t0_epoch) if a.t0_epoch else 0.)
     cfg = json.loads(Path(a.config).read_text())
     smoke = str(cfg.get('attempt', '')).startswith('smk')
-    max_rounds = int(cfg.get('max_rounds', SM.MAX_ROUNDS))
-    assert max_rounds == SM.MAX_ROUNDS or smoke, 'the round cap is 10 except in smokes'
+    fmin, cap = SM.factor_set(cfg.get('factors'))     # Phase B {1, .5, .25} (cap 10) or E10-s {1, .5, .25, .125} (cap 11)
+    max_rounds = int(cfg.get('max_rounds', cap))
+    assert max_rounds == cap or smoke, f'the round cap of this factor set is {cap} except in smokes'
     assert (cfg.get('scheme', 'CNR') == 'CNR' and int(cfg.get('Rp', 384)) == 384) or smoke, 'production policy: r = 384, LSPG-CN-R'
     table = LANE / cfg.get('table', 'phaseb/fresh_cohorts.json')
     cases = FC.case_list(cfg['cases'], table, test_once=bool(cfg.get('test_once')))
     if a.dry_run:
-        ps = SM.paths(cfg.get('selected'))
-        print(json.dumps(dict(cases=len(cases), start=SM.start_state(cfg.get('selected')), n_paths=len(ps),
-                              longest=max(map(len, ps)), max_solves=max(len(SM.path_solves(p)) for p in ps))))
+        ps = SM.paths(cfg.get('selected'), fmin)
+        print(json.dumps(dict(cases=len(cases), start=SM.start_state(cfg.get('selected')), fmin=fmin, round_cap=max_rounds,
+                              n_paths=len(ps), longest=max(map(len, ps)),
+                              max_solves=max(len(SM.path_solves(p, fmin)) for p in ps))))
         return
     out = Path(a.out)
     bcfg = BG.verify(cfg['bank'], HERE, expect_label=cfg.get('bank_label'))      # C-B1 hash guard (raises BankMismatch)
     tbl_sha = FC.load_table(table)[0]['sha256'] if any(c[1] in FC.FRESH for c in cases) else None
     tkey = None
     if cfg.get('test_once'):                          # production: registered schedule + immutable test-once registration
-        SCH.check_policy_config(cfg)
-        tkey = TO.require(bcfg, cfg, tbl_sha, out)
+        (SCH.check_e10s_config if cfg.get('schedule') == 'E10' else SCH.check_policy_config)(cfg)
+        tkey, tclaim = TO.require(bcfg, cfg, tbl_sha, out, os.environ.get('IMPF_TESTONCE_DIR'),
+                                  os.environ.get('SLURM_JOB_ID'))
     (out / 'runs').mkdir(parents=True, exist_ok=True)
-    pcases = [SM.Case(c[0], cfg.get('selected')) for c in cases]
-    dump(dict(config=cfg, testonce_key=tkey, bank=bcfg, table_sha256=tbl_sha, started=time.time(),
+    pcases = [SM.Case(c[0], cfg.get('selected'), fmin) for c in cases]
+    dump(dict(config=cfg, testonce_key=tkey, job_id=os.environ.get('SLURM_JOB_ID'), bank=bcfg, table_sha256=tbl_sha,
+              started=time.time(),
               policy_sha256=TO.policy_sha(cfg)), out / 'RUN.json')
     dump(dict(cases=[c.as_dict() for c in pcases], records={}, rows=[], anchors=[], elapsed=0.,
               stage='before setup'), out / 'progress.json')          # fcollect works from the first second on
+    import archrun
+    archrun.pin()                     # arm (c): dispatching sep_common pinned before p1common -> engines imports it
     import jax
     import p1common as P
     P.check_env(cfg)
@@ -445,6 +468,7 @@ def main():
     dump(rep, out / 'result.json')
     ex = Executor(cfg, out, cases, begin)
     rep['setup'] = ex.setup(bcfg)
+    rep['burn_in'] = ex.burn_in(cases[0][0], SM.start_state(cfg.get('selected'))[0])
     rep['anchors'] = sorted(ex.anchors)
     dump(rep, out / 'result.json')
     ex.progress = lambda: dump(dict(cases=[c.as_dict() for c in pcases], records=ex.prev, rows=ex.rows,
@@ -460,7 +484,7 @@ def main():
                      on_round=lambda cs, st_: ex.progress())
     ex.tighter(pcases, store)
     summarise(rep, pcases, store, ex.anchors, ex.rows, ex.stopped)
-    rep.update(elapsed_seconds=ex.elapsed(), shapes=sorted(map(list, ex.shapes)), memory=P.mem(), complete=True)
+    rep.update(elapsed_seconds=ex.elapsed(), driver_wall_seconds=time.perf_counter() - t_driver, shapes=sorted(map(list, ex.shapes)), memory=P.mem(), complete=True)
     dump(rep, out / 'result.json')
     ex.progress()
     (out / 'COMPLETE').write_text('complete\n')

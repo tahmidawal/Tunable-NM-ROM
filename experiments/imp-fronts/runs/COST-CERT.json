@@ -1,0 +1,1087 @@
+{
+ "schema": "imp-fronts-cost-cert/3",
+ "amendment": 12,
+ "cap": 15.0,
+ "ceilings": {
+  "train_a": 4.6,
+  "train_b": 4.6,
+  "references": 3.25,
+  "select_a": 0.4,
+  "select_b": 0.4,
+  "policy_K1": 0.5,
+  "policy_a": 0.5,
+  "policy_b": 0.5,
+  "train_c": 4.6,
+  "select_c": 0.4,
+  "policy_c": 0.5
+ },
+ "cutoff": {
+  "train_a": 0.9927536231884058,
+  "train_b": 0.9927536231884058,
+  "references": 0.9,
+  "select_a": 0.9,
+  "select_b": 0.9,
+  "policy_K1": 0.9,
+  "policy_a": 0.9,
+  "policy_b": 0.9,
+  "train_c": 0.9927536231884058,
+  "select_c": 0.9,
+  "policy_c": 0.9
+ },
+ "smoke_ceilings": {
+  "SM-a": 0.2,
+  "SM-b": 0.4,
+  "SM-r": 0.4,
+  "SM-c": 0.45
+ },
+ "ledger": {
+  "spent": 6.4773,
+  "live": 0.0,
+  "n": 8,
+  "items": [
+   "SM-b",
+   "SM-c",
+   "SM-r",
+   "policy_K1",
+   "policy_b",
+   "references",
+   "select_b",
+   "train_b"
+  ]
+ },
+ "ref_gpu": "H200",
+ "history": {
+  "e2s1": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/e2s1/archive/output/r2acc_e2s1/result.json",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "elapsed_R384": 823.7693375004455,
+  "setup_seconds": 10.961005202494562
+ },
+ "smoke_rom_rows": 199,
+ "rates": {
+  "prod/False/gauss384": {
+   "rate": 2.405620080025983e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "prod/True/fib4181": {
+   "rate": 6.083376604071989e-07,
+   "n": 224,
+   "sources": [
+    "e2s1",
+    "smoke"
+   ]
+  },
+  "tight/False/fib4181": {
+   "rate": 6.109288639926477e-06,
+   "n": 224,
+   "sources": [
+    "e2s1",
+    "smoke"
+   ]
+  },
+  "prod/True/fib6765": {
+   "rate": 4.749589758675273e-07,
+   "n": 223,
+   "sources": [
+    "e2s1",
+    "smoke"
+   ]
+  },
+  "tight/False/fib6765": {
+   "rate": 6.181985492276334e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "prod/True/gauss96": {
+   "rate": 3.572998866729904e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "tight/False/gauss96": {
+   "rate": 4.861653158311835e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "prod/True/fib10946": {
+   "rate": 4.1108721043256353e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "tight/False/fib10946": {
+   "rate": 5.366247883803357e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "prod/True/gauss128": {
+   "rate": 3.0804385232841013e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "tight/False/gauss128": {
+   "rate": 4.1338861478834587e-07,
+   "n": 222,
+   "sources": [
+    "e2s1"
+   ]
+  },
+  "prod/True/gauss160": {
+   "rate": 2.735533285886049e-07,
+   "n": 260,
+   "sources": [
+    "e2s1",
+    "smoke"
+   ]
+  },
+  "tight/False/gauss160": {
+   "rate": 3.816789016127586e-07,
+   "n": 250,
+   "sources": [
+    "e2s1",
+    "smoke"
+   ]
+  },
+  "prod/True/gauss192": {
+   "rate": 2.64675395050694e-07,
+   "n": 266,
+   "sources": [
+    "e2s1",
+    "smoke"
+   ]
+  },
+  "tight/False/gauss192": {
+   "rate": 3.625650475037724e-07,
+   "n": 228,
+   "sources": [
+    "e2s1",
+    "smoke"
+   ]
+  },
+  "prod/True/gauss256": {
+   "rate": 1.5725707868341488e-07,
+   "n": 25,
+   "sources": [
+    "smoke"
+   ]
+  },
+  "tight/False/gauss256": {
+   "rate": 1.3418149791277756e-07,
+   "n": 14,
+   "sources": [
+    "smoke"
+   ]
+  },
+  "prod/True/gauss384": {
+   "rate": 7.627759550309242e-08,
+   "n": 14,
+   "sources": [
+    "smoke"
+   ]
+  }
+ },
+ "compile_seconds": 5.725347114726901,
+ "dry_run_expected": {
+  "cases": 16,
+  "start": "gauss160",
+  "low_gpu_h": 0.015369689967483282,
+  "high_gpu_h": 0.13135789573347817,
+  "per_case_low_s": 2.026843464002013,
+  "per_case_high_s": 22.04100845195353,
+  "worst_path": [
+   [
+    "gauss160",
+    1.0
+   ],
+   [
+    "gauss160",
+    0.5
+   ],
+   [
+    "gauss160",
+    0.25
+   ],
+   [
+    "gauss192",
+    0.25
+   ],
+   [
+    "gauss256",
+    0.25
+   ]
+  ]
+ },
+ "schedules": {
+  "S1": {
+   "items": {
+    "train_a": {
+     "projected": null,
+     "certified": false,
+     "basis": "no smoke timing record",
+     "ceiling": 4.6,
+     "cutoff": 0.9927536231884058,
+     "limit": 4.566666666666666,
+     "fits": false
+    },
+    "train_b": {
+     "projected": 4.3441601013475,
+     "certified": true,
+     "increment_s": 620.9763648509979,
+     "increment_credited_s": 620.9763648509979,
+     "k1_total_s": 15018.0,
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "job": "SM-b",
+     "basis": "Amendment 15: K1 slowest retrain + measured same-population generation increment",
+     "ceiling": 4.6,
+     "cutoff": 0.9927536231884058,
+     "limit": 4.566666666666666,
+     "fits": true
+    },
+    "references": {
+     "projected": 2.8849250548755663,
+     "certified": true,
+     "per_case_seconds": 432.73875823133494,
+     "regimes_mean_seconds": 288.4925054875566,
+     "smoke_dev_mean_seconds": 253.5847892044112,
+     "smoke_check": "ok",
+     "n_cases": 24,
+     "contingency": 1.5,
+     "gpu": "H200",
+     "gpus": 2,
+     "n_regimes_cases": 64,
+     "n_refined": 2,
+     "max_seconds": 1441.2778683099896,
+     "ceiling": 3.25,
+     "cutoff": 0.9,
+     "limit": 2.9250000000000003,
+     "fits": true
+    },
+    "select_a": {
+     "projected": 0.34780430945955837,
+     "certified": true,
+     "solves": 1768,
+     "shapes": 18,
+     "inventory_seconds": 749.2601269526917,
+     "e2s1_R384_seconds": 834.7303427029401,
+     "contingency": 1.5,
+     "groups": [
+      "R384"
+     ],
+     "ceiling": 0.4,
+     "cutoff": 0.9,
+     "limit": 0.36000000000000004,
+     "fits": true
+    },
+    "select_b": {
+     "projected": 0.34780430945955837,
+     "certified": true,
+     "solves": 1768,
+     "shapes": 18,
+     "inventory_seconds": 749.2601269526917,
+     "e2s1_R384_seconds": 834.7303427029401,
+     "contingency": 1.5,
+     "groups": [
+      "R384"
+     ],
+     "ceiling": 0.4,
+     "cutoff": 0.9,
+     "limit": 0.36000000000000004,
+     "fits": true
+    },
+    "policy_K1": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.403679238584203,
+      "worst_start": "gauss160",
+      "worst_path": [
+       [
+        "gauss160",
+        1.0
+       ],
+       [
+        "gauss160",
+        0.5
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 22.04100845195353,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": null,
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    },
+    "policy_a": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.7566241487953715,
+      "worst_start": null,
+      "worst_path": [
+       [
+        "fib4181",
+        1.0
+       ],
+       [
+        "fib4181",
+        0.5
+       ],
+       [
+        "fib4181",
+        0.25
+       ],
+       [
+        "fib6765",
+        0.25
+       ],
+       [
+        "gauss96",
+        0.25
+       ],
+       [
+        "fib10946",
+        0.25
+       ],
+       [
+        "gauss128",
+        0.25
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 40.06876215152384,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": "K1 dry-run path distribution assumed to transfer",
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    },
+    "policy_b": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.7566241487953715,
+      "worst_start": null,
+      "worst_path": [
+       [
+        "fib4181",
+        1.0
+       ],
+       [
+        "fib4181",
+        0.5
+       ],
+       [
+        "fib4181",
+        0.25
+       ],
+       [
+        "fib6765",
+        0.25
+       ],
+       [
+        "gauss96",
+        0.25
+       ],
+       [
+        "fib10946",
+        0.25
+       ],
+       [
+        "gauss128",
+        0.25
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 40.06876215152384,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": "K1 dry-run path distribution assumed to transfer",
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    }
+   },
+   "all_fit": false,
+   "ceiling_total": 15.75,
+   "committed": 15.75,
+   "fundable": false,
+   "projected_sum": 8.678735959151632,
+   "uncertified": [
+    "train_a"
+   ],
+   "over_cutoff": []
+  },
+  "S3C": {
+   "items": {
+    "train_b": {
+     "projected": 4.3441601013475,
+     "certified": true,
+     "increment_s": 620.9763648509979,
+     "increment_credited_s": 620.9763648509979,
+     "k1_total_s": 15018.0,
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "job": "SM-b",
+     "basis": "Amendment 15: K1 slowest retrain + measured same-population generation increment",
+     "ceiling": 4.6,
+     "cutoff": 0.9927536231884058,
+     "limit": 4.566666666666666,
+     "fits": true
+    },
+    "references": {
+     "projected": 2.8849250548755663,
+     "certified": true,
+     "per_case_seconds": 432.73875823133494,
+     "regimes_mean_seconds": 288.4925054875566,
+     "smoke_dev_mean_seconds": 253.5847892044112,
+     "smoke_check": "ok",
+     "n_cases": 24,
+     "contingency": 1.5,
+     "gpu": "H200",
+     "gpus": 2,
+     "n_regimes_cases": 64,
+     "n_refined": 2,
+     "max_seconds": 1441.2778683099896,
+     "ceiling": 3.25,
+     "cutoff": 0.9,
+     "limit": 2.9250000000000003,
+     "fits": true
+    },
+    "select_b": {
+     "projected": 0.34780430945955837,
+     "certified": true,
+     "solves": 1768,
+     "shapes": 18,
+     "inventory_seconds": 749.2601269526917,
+     "e2s1_R384_seconds": 834.7303427029401,
+     "contingency": 1.5,
+     "groups": [
+      "R384"
+     ],
+     "ceiling": 0.4,
+     "cutoff": 0.9,
+     "limit": 0.36000000000000004,
+     "fits": true
+    },
+    "policy_K1": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.403679238584203,
+      "worst_start": "gauss160",
+      "worst_path": [
+       [
+        "gauss160",
+        1.0
+       ],
+       [
+        "gauss160",
+        0.5
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 22.04100845195353,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": null,
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    },
+    "policy_b": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.7566241487953715,
+      "worst_start": null,
+      "worst_path": [
+       [
+        "fib4181",
+        1.0
+       ],
+       [
+        "fib4181",
+        0.5
+       ],
+       [
+        "fib4181",
+        0.25
+       ],
+       [
+        "fib6765",
+        0.25
+       ],
+       [
+        "gauss96",
+        0.25
+       ],
+       [
+        "fib10946",
+        0.25
+       ],
+       [
+        "gauss128",
+        0.25
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 40.06876215152384,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": "K1 dry-run path distribution assumed to transfer",
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    },
+    "train_c": {
+     "projected": 3.9610867111587558,
+     "certified": true,
+     "projection_s": 13337.011928361375,
+     "projection_conservative_s": 14259.912160171521,
+     "limit_s": 16440.0,
+     "rho": {
+      "sub": 1.0031002756258132,
+      "full": 0.992910098035796,
+      "extract": 1.0535390774088425
+     },
+     "parts_s": {
+      "sub": 6898.344382873141,
+      "full": 2708.6587474416515,
+      "data_A": 119.68222498893738,
+      "remA": 41.29406113618734,
+      "B_gen_head": 2625.0,
+      "B_extract": 922.900231810146,
+      "rotation": 19.0,
+      "compile": 2.1322801113128627
+     },
+     "job_id": "6187422",
+     "basis": "SM-c timing_c.json (phase_times.py smokec, Amendments 21-22; certified on the conservative bound, extraction x2)",
+     "ceiling": 4.6,
+     "cutoff": 0.9927536231884058,
+     "limit": 4.566666666666666,
+     "fits": true
+    },
+    "select_c": {
+     "projected": 0.34780430945955837,
+     "certified": true,
+     "solves": 1768,
+     "shapes": 18,
+     "inventory_seconds": 749.2601269526917,
+     "e2s1_R384_seconds": 834.7303427029401,
+     "contingency": 1.5,
+     "groups": [
+      "R384"
+     ],
+     "ceiling": 0.4,
+     "cutoff": 0.9,
+     "limit": 0.36000000000000004,
+     "fits": true
+    },
+    "policy_c": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.7566241487953715,
+      "worst_start": null,
+      "worst_path": [
+       [
+        "fib4181",
+        1.0
+       ],
+       [
+        "fib4181",
+        0.5
+       ],
+       [
+        "fib4181",
+        0.25
+       ],
+       [
+        "fib6765",
+        0.25
+       ],
+       [
+        "gauss96",
+        0.25
+       ],
+       [
+        "fib10946",
+        0.25
+       ],
+       [
+        "gauss128",
+        0.25
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 40.06876215152384,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": "K1 dry-run path distribution assumed to transfer",
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    }
+   },
+   "all_fit": true,
+   "ceiling_total": 16.0,
+   "committed": 11.9773,
+   "fundable": true,
+   "projected_sum": 12.639822670310387,
+   "uncertified": [],
+   "over_cutoff": []
+  },
+  "S3": {
+   "items": {
+    "train_b": {
+     "projected": 4.3441601013475,
+     "certified": true,
+     "increment_s": 620.9763648509979,
+     "increment_credited_s": 620.9763648509979,
+     "k1_total_s": 15018.0,
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "job": "SM-b",
+     "basis": "Amendment 15: K1 slowest retrain + measured same-population generation increment",
+     "ceiling": 4.6,
+     "cutoff": 0.9927536231884058,
+     "limit": 4.566666666666666,
+     "fits": true
+    },
+    "references": {
+     "projected": 2.8849250548755663,
+     "certified": true,
+     "per_case_seconds": 432.73875823133494,
+     "regimes_mean_seconds": 288.4925054875566,
+     "smoke_dev_mean_seconds": 253.5847892044112,
+     "smoke_check": "ok",
+     "n_cases": 24,
+     "contingency": 1.5,
+     "gpu": "H200",
+     "gpus": 2,
+     "n_regimes_cases": 64,
+     "n_refined": 2,
+     "max_seconds": 1441.2778683099896,
+     "ceiling": 3.25,
+     "cutoff": 0.9,
+     "limit": 2.9250000000000003,
+     "fits": true
+    },
+    "select_b": {
+     "projected": 0.34780430945955837,
+     "certified": true,
+     "solves": 1768,
+     "shapes": 18,
+     "inventory_seconds": 749.2601269526917,
+     "e2s1_R384_seconds": 834.7303427029401,
+     "contingency": 1.5,
+     "groups": [
+      "R384"
+     ],
+     "ceiling": 0.4,
+     "cutoff": 0.9,
+     "limit": 0.36000000000000004,
+     "fits": true
+    },
+    "policy_K1": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.403679238584203,
+      "worst_start": "gauss160",
+      "worst_path": [
+       [
+        "gauss160",
+        1.0
+       ],
+       [
+        "gauss160",
+        0.5
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 22.04100845195353,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": null,
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    },
+    "policy_b": {
+     "projected": 0.25134739466981654,
+     "certified": true,
+     "per_case_seconds": 14.904969307244755,
+     "n_cases": 40,
+     "contingency": 1.5,
+     "tighter_seconds": 10.552462376654148,
+     "dry_run": {
+      "counts": {
+       "INVALID": 0,
+       "Q2-FAIL": 2,
+       "STEP-UNCONVERGED": 12,
+       "STEP-UNAVAILABLE": 0,
+       "CONVERGED": 2,
+       "ROUND-CAP": 0,
+       "BUDGET-CAP": 0
+      },
+      "wall_seconds": 238.47950891591609,
+      "solve_seconds": 104.1123425969854,
+      "non_solve_fraction": 0.5634327533201451
+     },
+     "worst_path_projection": {
+      "projected": 0.7566241487953715,
+      "worst_start": null,
+      "worst_path": [
+       [
+        "fib4181",
+        1.0
+       ],
+       [
+        "fib4181",
+        0.5
+       ],
+       [
+        "fib4181",
+        0.25
+       ],
+       [
+        "fib6765",
+        0.25
+       ],
+       [
+        "gauss96",
+        0.25
+       ],
+       [
+        "fib10946",
+        0.25
+       ],
+       [
+        "gauss128",
+        0.25
+       ],
+       [
+        "gauss160",
+        0.25
+       ],
+       [
+        "gauss192",
+        0.25
+       ],
+       [
+        "gauss256",
+        0.25
+       ]
+      ],
+      "per_case_seconds": 40.06876215152384,
+      "basis": "worst-path cost projection (every case worst path)"
+     },
+     "transfer_assumption": "K1 dry-run path distribution assumed to transfer",
+     "basis": "dry-run step wall clock / 16 x 40 x 1.5 + 4 tighter at gauss256 f=.25",
+     "ceiling": 0.5,
+     "cutoff": 0.9,
+     "limit": 0.45,
+     "fits": true
+    }
+   },
+   "all_fit": true,
+   "ceiling_total": 10.05,
+   "committed": 6.4773,
+   "fundable": true,
+   "projected_sum": 8.079584255022258,
+   "uncertified": [],
+   "over_cutoff": []
+  },
+  "S4": {
+   "items": {},
+   "all_fit": true,
+   "ceiling_total": 0,
+   "committed": 6.4773,
+   "fundable": true,
+   "projected_sum": 0,
+   "uncertified": [],
+   "over_cutoff": []
+  }
+ },
+ "selected": "S3C",
+ "e10": {
+  "projected": 0.4789896351337848,
+  "certified": true,
+  "fits": true,
+  "limit": 0.7200000000000001,
+  "ceiling": 0.8,
+  "overhead": 2.353895476236443,
+  "solve_seconds": 481.2957462668419,
+  "tighter_seconds": 7.075609184801578,
+  "n_cases": 40,
+  "anchors": [
+   "FI|4",
+   "FI|5",
+   "FC1|4",
+   "FC1|5"
+  ],
+  "extended_cases": 33,
+  "control_fired": true,
+  "checks": {
+   "complete": true,
+   "backend_gpu": true,
+   "precision_highest": true,
+   "bank_is_K1": true,
+   "factor_set_e10s": true,
+   "start_gauss160": true,
+   "fc1_dev_cases": true,
+   "control_fired": true,
+   "all_four_factors": true,
+   "solves_match_history": true,
+   "mandatory_solves": true,
+   "replay_state_machine": true,
+   "step_wall_clock": true
+  },
+  "basis": "SM-e rates on K1's Phase B paths extended by 0.125 + anchors, x SM-e overhead x 1.5"
+ },
+ "inputs": {
+  "timings": [
+   "SM-b",
+   "SM-c",
+   "SM-r"
+  ],
+  "smr": "runs/rom/SM-r/output",
+  "rom": [
+   "runs/rom/SM-r/output/fpolicy_smkpolK1/result.json"
+  ],
+  "dry": "runs/rom/SM-r/output/fpolicy_smkdryK1/result.json",
+  "regimes": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/runs",
+  "history": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/runs/e2s1/archive/output/r2acc_e2s1/result.json"
+ }
+}

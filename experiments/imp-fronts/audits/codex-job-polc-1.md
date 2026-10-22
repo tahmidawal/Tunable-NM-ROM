@@ -1,0 +1,10 @@
+- **CORRECT** — All 142 staged manifest hashes verify.
+- **CORRECT** — `sc` checkpoint/rotation match TR-bnd outputs; training log confirms GPU and `ALL-DONE`.
+- **CORRECT** — `gauss128` matches certified `select2d-c.json`; POL-b also started at `gauss128`.
+- **CORRECT** — `archrun.pin()` pins arm-c’s architecture-dispatching `sep_common` before solver imports, preventing shadowing.
+- **CORRECT** — Same 40 ordered cases, R384, mesh 1024, CNR, anchors, factors and ten-round cap; policy paths/solve inventories match POL-b.
+- **CORRECT** — Registration `8157949a…` is committed; bank/config/policy/cohort hashes match; exclusive claim precedes setup.
+- **CORRECT** — GPU/H200, absolute venv, f64/highest, GPU preflight and cluster output paths; 0.5-hour ceiling with 90%/95% cutoffs.
+- **CORRECT** — Recorded total 10.6571 + proposed ceiling 0.5 = 11.1571 GPU-h, below 15.
+- **NEEDS-RESTATEMENT** — Differences also include S3→S3C and E10-support code changes; policy sources are not byte-identical, although default B5 behavior is preserved.
+- **NEEDS-RESTATEMENT** — No local blocker found; `BANK.json` job ID remains null (traceable to 6187640). Live queue, claim availability and fresh admission remain unverified.

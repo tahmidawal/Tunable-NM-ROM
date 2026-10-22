@@ -22,7 +22,12 @@ def incomplete(out, label):
     p = Path(out) / 'result.json'
     if not p.exists():
         return 'result.json missing'
-    r = json.loads(p.read_text())
+    try:
+        r = json.loads(p.read_text())
+    except (ValueError, OSError) as e:                       # truncated / malformed write (job audit SEL-b-1)
+        return f'result.json unreadable ({type(e).__name__})'
+    if not isinstance(r, dict):
+        return 'result.json malformed'
     return None if r.get('complete') is True else 'result.json not complete (self-timer or kill)'
 
 
@@ -36,6 +41,9 @@ if __name__ == '__main__':
         (HERE / 'checks' / f'select2d-{label}.json').write_text(json.dumps(rep, indent=1) + '\n')
         print('384', rep['selected']['384'])
         sys.exit(0)
+    import npcheck as NC
+    import npbank_arch
+    npbank_arch.install(NC.NB)             # arm (c): NumPy evaluator dispatches on the checkpoint arch
     import select2d
     select2d.RANKS = (384,)
     select2d.main()

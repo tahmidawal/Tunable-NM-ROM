@@ -167,6 +167,21 @@ def make_rollout(n):
         snaps = jnp.concatenate([U0_b[None], snaps], axis=0)  # (T+1, B, n*n)
         return snaps, res
 
+    # imp-fronts arm (b) 'cov', DESIGN Amendment 17: per-chunk data gate. Every generated chunk (Stage A build_data,
+    # Stage B extraction incl. the 4,032 seed-1000 and the 8 test trajectories) must be finite with relative Newton
+    # residual <= 1e-8; the first failing chunk aborts the run (SystemExit with the marker ARM-DATA-GATE-FAILED, which
+    # the job body records as arm NOT RUN). Data values are untouched; the callers' end-of-loop gates still apply.
+    _rollout_unchecked = rollout
+
+    def rollout(U0_b, nu_b):
+        snaps, res = _rollout_unchecked(U0_b, nu_b)
+        worst = float(jnp.max(res))
+        finite = bool(jnp.all(jnp.isfinite(snaps)))
+        if not (finite and np.isfinite(worst) and worst <= 1e-8):
+            raise SystemExit(f"ARM-DATA-GATE-FAILED (cov, Amendment 17): chunk of {int(np.shape(nu_b)[0])} "
+                             f"trajectories, finite={finite}, max Newton rel residual {worst:.3e} > 1e-8")
+        return snaps, res
+
     return rollout, residual
 
 

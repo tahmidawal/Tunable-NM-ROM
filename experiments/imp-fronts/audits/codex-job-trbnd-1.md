@@ -1,0 +1,15 @@
+- **CORRECT — Job configuration:** no blocking defect found in staged TR-bnd.
+- **CORRECT — Integrity:** manifest, provenance, overlay hashes and shell syntax pass; training tree matches SM-c byte-for-byte.
+- **CORRECT — Overlay:** exactly seven changed paths versus K1: six architecture/guard files plus generated provenance.
+- **CORRECT — Generator:** both training generators retain incumbent hash `c521b36a…`; no coverage modification.
+- **CORRECT — Recipe:** seed 1, 300k Stage A steps, data streams, optimization, Stage B and deployment rotation retain K1’s recipe.
+- **CORRECT — Architecture:** `sine_even`, fixed `Kc`, zero frequency gradients/no decay, and checkpoint architecture guards implement Amendments 19–22.
+- **NEEDS-RESTATEMENT — Single change:** one bundled architecture replacement; compatibility alone is not isolated. ARM.json’s “unchanged scripts” wording excludes the declared guard edits.
+- **CORRECT — Production:** explicitly forces `TRAIN2D_DRYRUN=0 TRAIN2D_SMOKE=0 STAGES=A,B,R`.
+- **CORRECT — Completion:** success requires execution/phase-recording success, `SEED-COMPLETE`, production seed-1 metadata and nonempty expected artifacts.
+- **CORRECT — Resources:** gpu partition, one A100-80G, f64/highest, GPU preflight; 04:36:00 wall with 120-second reserve and 60-second termination grace.
+- **CORRECT — SM-c:** GPU/chaining evidence passes; conservative projection 14,259.912 ≤ 16,440 seconds, leaving 2,180.088 seconds.
+- **CORRECT — Namespace:** outputs/caches/temp stay under `imp-fronts/trbnd`; ≥50-GiB prerequisite and output checksums retained.
+- **NEEDS-RESTATEMENT — Metadata:** shared-body seed-2 timing-anchor comment is stale for TR-bnd; its certificate uses K1 seed 1. Ledger’s arm-(c) deferral also predates release.
+- **NEEDS-RESTATEMENT — Timing:** “no self-timer” excludes fractional cutoff; inherited Stage B `TIME_CAP=1500` remains.
+- **CORRECT — Read-only:** no changes, jobs, SSH, scratch, main or LAB-LOG writes.

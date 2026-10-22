@@ -10,15 +10,15 @@
    "src": "arms/cov/burgers2d_film.py",
    "dst": "stageA/deps/burgers2d_film.py",
    "kind": "edited",
-   "reason": "sample_params viscosity range only (same RNG stream order; z normalisation unchanged); applies to every sample_params call",
-   "sha256": "58416ad8a9ec36b26d95dce08d1e5549f3b3eb128954ab902725f933491d8302"
+   "reason": "sample_params viscosity range only (same RNG stream order; z normalisation unchanged); applies to every sample_params call; plus the Amendment 17 per-chunk data gate in make_rollout (finite + Newton rel residual <= 1e-8 on every chunk, first failure aborts with ARM-DATA-GATE-FAILED; data values unchanged)",
+   "sha256": "2445e0d0a6da7b112af52a6b1537b72ae91f62a86b215775db6955279752b33f"
   },
   {
    "src": "arms/cov/burgers2d_film.py",
    "dst": "stageB/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py",
    "kind": "edited",
-   "reason": "same file as Stage A (seed 0 x 576, seed 1000 x 4,032, test seed 1 x 8)",
-   "sha256": "58416ad8a9ec36b26d95dce08d1e5549f3b3eb128954ab902725f933491d8302"
+   "reason": "same file as Stage A (seed 0 x 576, seed 1000 x 4,032, test seed 1 x 8); plus the Amendment 17 per-chunk data gate in make_rollout (finite + Newton rel residual <= 1e-8 on every chunk, first failure aborts with ARM-DATA-GATE-FAILED; data values unchanged)",
+   "sha256": "2445e0d0a6da7b112af52a6b1537b72ae91f62a86b215775db6955279752b33f"
   },
   {
    "src": "arms/cov/arm_gate.py",

@@ -1,0 +1,11 @@
+- **CORRECT — Integrity:** both staged manifests pass; shell syntax passes; refT provenance matches recorded Git blobs.
+- **CORRECT — TR-cov production:** explicitly forces `TRAIN2D_DRYRUN=0 TRAIN2D_SMOKE=0 STAGES=A,B,R`.
+- **CORRECT — TR-cov completion:** `ALL-DONE` now requires successful execution, phase recording, `SEED-COMPLETE`, production seed-1 metadata, and nonempty expected outputs.
+- **CORRECT — TR-cov ceiling:** one A100-80G, 04:36:00 = 4.6 GPU-h; work cutoff reserves 120 seconds, with 60-second termination grace.
+- **CORRECT — TR-cov clarifications:** distinguishes the seed-2 timing anchor and retained Stage B `TIME_CAP=1500`; adds a logged ≥50-GiB free-space prerequisite.
+- **CORRECT — refT empty finalization:** creates the slimming directory before writing its manifest, including zero completed cases.
+- **CORRECT — refT accounting:** explicit 24-case ledger records accepted, ineligible, unfinished, and failed cases; validates the scheduled set and gates `ALL-DONE`.
+- **CORRECT — refT ceiling:** two H200s × 01:37:30 = 3.25 GPU-h; shared 5,265-second cutoff plus 30-second grace fits the reservation.
+- **NEEDS-RESTATEMENT — Completion:** ceilings bound spending, not successful completion; refT may legitimately finish with unfinished cases.
+- **NEEDS-RESTATEMENT — Submission readiness:** prior WRONG items are fixed, but Amendment 12 admission remains unproven: the local ledger still lists SM-r as pending, without hash-bound passing C-B6/smoke evidence. Neither production job is cleared for submission on this evidence.
+- **CORRECT — Scope:** read-only local inspection; no writes, jobs, SSH, scratch, or sealed/OOD access.

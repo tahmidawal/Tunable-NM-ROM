@@ -856,3 +856,134 @@ retrain. Training has no partial result, so it gets **no self-timer** (`SELF_TIM
   schedule; its architecture amendment (B1(c)) is not written. Arm (c) is therefore deferred, and the E10 design (to be
   written if E8 falls short) inherits the A2 evidence. If the coordinator funds more GPU-h, arm (c) competes with arm (a)
   for it; that choice is the coordinator's.
+
+---
+
+## Amendment 15 (2026-10-21, after `audits/codex-code-B-2.md`; before any Phase B job)
+
+- **Training smoke slice.** The chaining slice in SM-a / SM-b is `run_seed.sh`'s `TRAIN2D_DRYRUN` mode (N = 64,
+  16 trajectories, 20 steps): a full-size slice (≈ 900 s of Stage-B extraction alone) cannot fit the smoke ceilings,
+  and the training-phase rates are taken from K1's measured production records (identical training code). The slice
+  only proves that the arm's staged tree chains through Stage A → Stage B → rotation.
+- **Training timing.** In the same smoke job, after a GPU burn-in (one untimed chunk), the incumbent generator and the
+  arm generator are timed on the **same** 576-trajectory seed-0 population and on one 576-trajectory chunk of the
+  seed-1000 population; the increment = (arm − incumbent) seconds scaled to the full 576 + 4 032 trajectories, floored
+  at 0. Training projection = 4.17 h (K1's slowest production retrain) + increment.
+- **Training cutoff.** `run_seed.sh` is stopped 120 s before the hard wall so `EXHAUSTED.json` can be written; the
+  projection is certified against (4.6 h − 120 s) = 4.567 h.
+- **Smoke failure propagation.** A smoke job's `ALL-DONE` marker is written only if generation completed, every gate
+  passed, the chaining slice completed and the timing record is valid; otherwise the item is uncertified.
+
+**Amendment 16 (2026-10-21).** Stage A and Stage B each generate the 576 seed-0 trajectories, so the training-timing
+increment scales the seed-0 measurement to **1 152** production trajectories (plus 4 032 seed-1000), i.e. 5 184 in all;
+Amendment 15's "576 + 4 032" undercounted.
+
+---
+
+## Amendment 17 (2026-10-21, Phase B released as S3 by the coordinator; after `audits/codex-job-smB-1.md`)
+
+- **SM-b scope.** Full generation of all 576 + 4 032 low-ν trajectories plus incumbent timing does not fit the 0.4 GPU-h
+  smoke (≈ 1 285 s at K1's rates against a 1 296 s work budget). SM-b therefore generates and residual-checks the
+  **timed subset** (576 seed-0 + the first 576 seed-1000, for both generators); the full-population check (all states
+  finite, relative Newton residual ≤ 1e-8) runs **inside the production job** on every generated chunk of both stages,
+  aborting the arm (NOT RUN, ledger-charged) on the first failure. C-B4 is checked on the complete parameter tables in
+  the smoke, as before.
+- The smoke records per-chunk timings (repetition arrays) and redirects `CUDA_CACHE_PATH` into the job namespace.
+
+**Amendment 18 (2026-10-21, after `audits/codex-job-SMr-3.md`, no WRONG).** The policy projection uses the dry-run
+step's whole wall clock (setup, burn-in, compilation, certification and controls included) ÷ 16 × 40 × 1.5 + 4 tighter
+solves; this replaces Amendment 12's separate per-shape compilation term (compilation is inside the measured wall; a
+bank whose chain reaches shapes the dry run did not is covered only by the 1.5 factor and the BUDGET-CAP ceiling).
+Unfinished SM-r dev references are recorded INCOMPLETE and the reference projection then uses the historical H200 mean
+(flagged); the reference job's own ceiling still enforces spending.
+
+---
+
+## Amendment 19 (2026-10-22, pre-data): arm (c) boundary-compatible bank — architecture, released by the coordinator
+
+Release: arm (c) runs inside E8's remaining budget (cap 15 GPU-h; 6.327 spent). This amendment replaces B1(c)'s
+four-reflection construction **before any arm-(c) code or data**, for cost: four network evaluations per point would make
+Stage A ≈ 4× the incumbent's 9 987 s (TR-cov record), ≈ 11 GPU-h, beyond the remaining budget.
+
+**Construction (one evaluation per point).** With $\mathbf{x}=(x,y)\in[0,1]^2$,
+$$u_r(\mathbf{x})=s\,\sin(\pi x)\sin(\pi y)\;g_r\big(\cos(\pi k^x_1x),\dots,\cos(\pi k^x_{128}x),\cos(\pi k^y_1y),\dots,\cos(\pi k^y_{128}y)\big),$$
+$g$ the incumbent's MLP (input width 256 = $2n_{ff}$, hidden 1024 × 2, SiLU, output $R=512$), $s$ the incumbent's
+`out_scale`. Each input is even and 2-periodic in its own variable, so $g$ is even and 2-periodic in $x$ and in $y$
+separately; the envelope is odd and 2-periodic in each; hence $u_r$ is odd and 2-periodic in each variable and smooth on
+$\mathbb{R}^2$, so $u_r=0$ and **every even normal derivative of $u_r$ vanishes on the walls** (the compatibility the
+PDE imposes, A2). The envelope $\sin\pi x\sin\pi y$ has the same maximum (1, at the centre) as $16x(1-x)y(1-y)$, so the
+incumbent's `out_scale` initialisation is kept unchanged.
+
+**Frozen choices (the single architecture intervention; disclosed as more than "compatibility only").**
+- Frequencies: $k^x_j=|\operatorname{round}(2B^{(0)}_{1j})|$, $k^y_j=|\operatorname{round}(2B^{(0)}_{2j})|$ from the incumbent
+  recipe's **seed-1 initial draw** $B^{(0)}$ (σ = 4, $n_{ff}=128$), so the per-axis frequency scale matches the incumbent's
+  ($2\pi B x=\pi(2B)x$). They are **fixed** (not trained; the incumbent trains $B$) and per-axis (the incumbent's features
+  mix $x$ and $y$ inside each sinusoid). Zero frequencies give constant inputs (allowed).
+- Everything else identical to the K1 recipe: seed 1, data (incumbent generator, seed-0 draws, state pick), Stage A
+  300k steps, learning-rate schedule, weight decay and its mask (now without $B$), MLP initialisation from the same keys,
+  Stage B extraction + head fit, rotation (`make_rotation.py` uses the bank's own features), K = 16, R = 512.
+- Implementation: an `arch` flag in the checkpoint `cfg` (`'bc16poly'` = incumbent default, `'sine_even'` = arm (c));
+  every consumer (Stage A/B/rotation `sep_common`, the ROM path's `sep_common`, the NumPy evaluator `npbank` with its hand
+  gradient) dispatches on it; absent flag = incumbent, so K0–K3 and arm (b) are unchanged byte-for-byte in behaviour.
+
+**Identity tests (must pass before any training job; tolerances relative to the field's RMS on the 257² lattice):**
+oddness $|u(-x,y)+u(x,y)|$ and $|u(x,-y)+u(x,y)|$ ≤ 1e-12; 2-periodicity $|u(x+2,y)-u(x,y)|$ ≤ 1e-12; wall value ≤ 1e-14;
+analytic wall normal second derivative (gradient-difference at δ = 2.5e-5, as A2) ≤ 1e-6 relative to the interior
+Laplacian scale; JAX vs NumPy values and gradients ≤ 1e-12. **Must-fail:** the same wall-curvature test on the incumbent
+K1 bank must fail (A2 measured ≈ 29× the interior scale on decoded fields).
+
+**Endpoints (registered arm-(c) rule, unchanged):** stop if $m^*$ is not ≥ 2× smaller (K1: gauss160, 25 600 nodes; PASS
+iff a certified rule with ≤ 12 800 nodes) **and** the median decoded 4096-sine tail on eligible FI test cases is not ≥ 3×
+smaller than K1's (qualification on every eligible FI case required for that route); stop if the in-range worst floor >
+2× K1's. FC1 diagnostic medians reported as for arm (b). Same fresh test cohorts and references (refT).
+
+**Budget (ceilings; admission rule of Amendment 5 against E8's cap):** smoke SM-c 0.45 (A100: identity tests on GPU,
+Stage A timing slice at full size for the per-step rate of the new features, chaining dry run), training 4.6 (wall, no
+self-timer; projection = K1's measured Stage A/B rates × the smoke-measured per-step cost ratio; not run if > 4.567 h),
+selection 0.4, policy 0.5. Total 5.95 ≤ 8.67 remaining.
+
+**Amendment 20 (2026-10-22, pre-data, after `audits/codex-design-8.md`; corrects Amendment 19).**
+- **Compatibility (corrected).** The PDE forces $u=0$ and $\partial_n^2u=0$ on the walls; it does **not** force the higher
+  even normal derivatives to vanish ($\nu u_{xxxx}$ at $x=0$ is generally non-zero). The arm-(c) bank imposes all even
+  normal derivatives zero, exactly like a Laplacian-sine series: it matches the true compatibility at order 2 and
+  over-constrains at order 4 and above, so it cannot represent the solution's fourth-order wall content exactly (the same
+  limitation as the sines, whose coefficients then decay like $k^{-5}$). The incumbent envelope violates order 2.
+- **Bundled replacement.** Arm (c) is a bundled bank-architecture replacement (envelope; per-axis instead of mixed
+  features; cosine-only channels; quantised, fixed frequencies — only ≈ 19 distinct values per axis among the 128,
+  duplicates kept), not an isolated compatibility experiment; the report says so.
+- **Normalisation (corrected).** `out_scale` keeps the K1 recipe's initialisation (RMS of the training data); equal envelope
+  maxima are not claimed to preserve RMS (continuum envelope RMS 8/15 → 1/2) or the Gram-penalty scale.
+- **Cost rationale (corrected).** K1's records: Stage A 9 766 s, Stage B 3 501 s, rotation 19 s (TR-cov's 9 987 s was arm
+  (b)). Four evaluations per point multiply the network part of Stage A and of extraction, not data generation or head
+  work; even a factor 2 on Stage A alone (≈ 5.4 h) exceeds the 4.567 h cutoff; "≈ 11 h" was a crude extrapolation.
+- **Identity tests (frozen fixtures).** 256 points drawn by `default_rng(20261022)` uniformly in $[-2,3]^2$ plus all
+  interior wall nodes of the 257² lattice on all four walls; aggregation = max absolute value divided by the RMS of the
+  bank output (per column, then max over the 512 columns) on the 257² lattice; both periodic shifts $(x+2,y)$, $(x,y+2)$;
+  gradients compared with JAX autodiff, normalised by the gradient RMS; wall $\partial_n^2$ by JAX autodiff Hessian
+  (≤ 1e-10 relative to the interior Laplacian RMS) **and** by the A2 gradient difference (≤ 1e-6) as an independent check;
+  zero RMS → test unavailable (blocks). Positive control: the polynomial $16x(1-x)y(1-y)$ must fail the wall-curvature
+  test; must-fail bank control: the K1 checkpoint (jcp-robust s1) with the coefficients of POL-K1's terminal run on FI
+  test case 4 at $t_5$, same statistic, must exceed 1e-3 (1 000× the arm's tolerance).
+- **Admission projection.** SM-c measures paired incumbent / arm-(c) timings after burn-in for Stage A subsampled steps,
+  full-grid steps and Stage B extraction (repetitions persisted); data generation, head fit and rotation are taken from
+  K1's records; projection = K1 Stage A × sub/full-step ratios + K1 Stage B with the extraction ratio + rotation, compared
+  with 16 440 s (4.567 h); missing evidence = uncertified (no training job), never silently STOP.
+
+**Amendment 21 (2026-10-22, pre-data, after `audits/codex-design-9.md`).**
+- Expressivity wording: an *infinite* sine series can still represent the solution (its termwise fourth derivative need not
+  converge at the walls); *finite* sums, and the finite arm-(c) bank, impose zero fourth-order wall content, and the
+  generic coefficient decay of a solution with non-zero $u_{xxxx}$ on a wall is $k^{-5}$ in that direction.
+- Must-fail bank control denominator: the RMS of the 5-point Laplacian of the **E0-style reference** field of FI test case
+  4 at $t_5$ over the 255² interior (the A2 convention); the decoded K1 field's wall $\partial_n^2$ by the A2 gradient
+  difference (δ = 2.5e-5) on all interior wall nodes; statistic = RMS over wall nodes / that denominator; must exceed 1e-3.
+- Admission projection, explicit: $T = n_{sub}\,t^{K1}_{sub}\,\rho_{sub} + n_{full}\,t^{K1}_{full}\,\rho_{full} + T^{K1}_{B,gen+head} +
+  T^{K1}_{B,extract}\,\rho_{ext} + T^{K1}_{rot} + T_{compile}$, with $\rho$ = (arm-c / incumbent) paired smoke ratios,
+  $n_{sub}=290\,000$, $n_{full}=10\,000$, K1's per-step rates and Stage-B split from its run record, data generation and head
+  fit unscaled, compilation measured in the smoke; certified iff $T\le16\,440$ s.
+
+**Amendment 22 (2026-10-22, pre-data for arm (c)).** SM-c projection, two conservative choices registered: K1's 876 s
+Stage-B extraction is scaled by max(1, ρ_ext) (generation cannot be separated from it in K1's log), and the 41 s Stage-A
+remainder (reconstruction passes, rotation, save) by max(1, ρ_full). Arm-(c) implementation facts: `Kc` stored in the
+checkpoint params (dispatch `'Kc' in params` ⇔ `cfg['arch']=='sine_even'`; a mismatch is refused), `Kc` has 19 distinct
+values per axis (max 20), zero gradient and no weight decay; `B` kept unused for format compatibility; the ROM path loads
+the arm-(c) `sep_common` first (`rom/archrun.py`) because the shared `engines.py` otherwise shadows it.

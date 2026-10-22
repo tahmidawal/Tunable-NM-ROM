@@ -1,0 +1,24 @@
+{
+ "schema": "imp-fronts-e10-evidence/1",
+ "root": "runs/rom/SM-e-out/output",
+ "file": {
+  "path": "fpolicy_smke10s/result.json",
+  "sha256": "296b6190db718a2dbff08a94f3486b840103611275dce9cffad23294d2843d1a"
+ },
+ "checks": {
+  "complete": true,
+  "backend_gpu": true,
+  "precision_highest": true,
+  "bank_is_K1": true,
+  "factor_set_e10s": true,
+  "start_gauss160": true,
+  "fc1_dev_cases": true,
+  "control_fired": true,
+  "all_four_factors": true,
+  "solves_match_history": true,
+  "mandatory_solves": true,
+  "replay_state_machine": true,
+  "step_wall_clock": true
+ },
+ "passed": true
+}

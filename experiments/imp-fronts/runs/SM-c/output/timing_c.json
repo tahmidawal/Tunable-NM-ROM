@@ -1,0 +1,64 @@
+{
+ "schema": "imp-fronts-train-timing-c/1",
+ "job": "SM-c",
+ "job_id": "6187422",
+ "arm": "c",
+ "device": "NVIDIA A100 80GB PCIe",
+ "K1_reference": {
+  "record": "jcp-robust runs/e2t2d/archive/output/train2d_s1/run_record.json",
+  "record_sha256": "7dfb5856c81c02327d0afa5a0909916e657043432936be62e1284f40eab9cc74",
+  "stageA_log_sha256": "4d0addc31169699dd97182798e4abe3bde977a83c4679897328163fe45502160",
+  "extract_log_sha256": "5546517ff72b22fc79b53f61eb5ca671ee57d0e164cf861255c2389eb4c1ff40",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "stageA_s": 9766.0,
+  "stageB_s": 3501.0,
+  "rotation_s": 19.0,
+  "data_A_s": 119.68222498893738,
+  "t_sub": 0.023713874875430606,
+  "t_full": 0.2728,
+  "extract_s": 876.0
+ },
+ "errors": [],
+ "identity_stats": {
+  "odd_x": 0.0,
+  "odd_y": 0.0,
+  "per_x": 6.611058452827763e-14,
+  "per_y": 7.2728203048825e-14,
+  "wall": 1.2565840689670587e-15,
+  "jaxnp_val": 2.0250047161376543e-14,
+  "jaxnp_gx": 2.569208109199959e-14,
+  "jaxnp_gy": 1.914852084203638e-14,
+  "hess": 3.50736175133444e-15,
+  "gd": 5.886255345324238e-13
+ },
+ "bank_control": {
+  "run": "FI__4__cert__gauss160__0p25.npz",
+  "terminal": "STEP-UNCONVERGED",
+  "stat": 18.212072723555387,
+  "denominator": 19.195762292252553,
+  "decode_vs_ref_t5": 0.0004508860076876615
+ },
+ "rho": {
+  "sub": 1.0031002756258132,
+  "full": 0.992910098035796,
+  "extract": 1.0535390774088425
+ },
+ "parts_s": {
+  "sub": 6898.344382873141,
+  "full": 2708.6587474416515,
+  "data_A": 119.68222498893738,
+  "remA": 41.29406113618734,
+  "B_gen_head": 2625.0,
+  "B_extract": 922.900231810146,
+  "rotation": 19.0,
+  "compile": 2.1322801113128627
+ },
+ "projection_s": 13337.011928361375,
+ "projection_conservative_s": 14259.912160171521,
+ "projection_gpu_h": 3.7047255356559377,
+ "projection_conservative_gpu_h": 3.9610867111587558,
+ "cutoff_s": 16440.0,
+ "certified": true,
+ "status": "fundable",
+ "all_done": true
+}

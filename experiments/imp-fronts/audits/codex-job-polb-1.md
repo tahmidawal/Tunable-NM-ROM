@@ -1,0 +1,12 @@
+- **CORRECT** — POL-b’s 128 manifest entries verify; policy/solver sources match audited POL-K1.
+- **CORRECT** — `sb` checkpoint and rotation match TR-cov outputs byte-for-byte; production seed-1 record matches, training ends `ALL-DONE`.
+- **CORRECT** — Start `gauss128` matches `select2d-b.json`; completed SEL-b uses the same bank hashes and certifies that selection.
+- **CORRECT** — Config otherwise matches pol1, except attempt/bank/selection metadata; all 40 cases and their order are identical.
+- **CORRECT** — R384, mesh 1024, CNR, S3, anchors, ten-round limit and test-once settings remain unchanged.
+- **CORRECT** — Registration `55060369…` is committed; bank, policy, cohort and config hashes recompute exactly; shared exclusive claim precedes setup.
+- **CORRECT** — Sbatch requests `gpu`, one H200, absolute venv, f64/highest, GPU preflight exit 42 and lane-local output/cache/temp paths.
+- **CORRECT** — Hard ceiling is 0.5 GPU-h; work cutoff 90%, outer timeout 95%, with persisted-output recovery.
+- **CORRECT** — Recorded spend 6.2428 + proposed ceiling 0.5 = 6.7428 GPU-h, below 15.
+- **NEEDS-RESTATEMENT** — Whole staged trees also differ in registration/selection utilities and added supporting artifacts; executable policy sources are unchanged.
+- **NEEDS-RESTATEMENT** — `sb/BANK.json` has `job_id: null`; TR-cov job 6177953 is traceable through its source directory, log and ledger.
+- **NEEDS-RESTATEMENT** — No local submission blocker found; live queue, claim availability and fresh admission checks remain unverified under the no-SSH restriction.

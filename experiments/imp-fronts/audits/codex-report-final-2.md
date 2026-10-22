@@ -1,0 +1,10 @@
+- **CORRECT — Stale status:** obsolete “awaiting release/submission” paragraph removed; S3 completion is clear.
+- **CORRECT — EXPORT accounting:** Phase A = 0; total = 6.327 GPU-h.
+- **NEEDS-RESTATEMENT — Deferral rationale:** new budget explanation is correct, but `report.md:191` still says “not funded” and implies extra budget is required despite 8.67 GPU-h remaining.
+- **CORRECT — Diagnostic labels:** entire Phase B error table now explicitly includes unqualified runs.
+- **CORRECT — Conditional labels:** repeated beside Phase B floors and E9 targets.
+- **WRONG — Glossary:** STEP-UNCONVERGED means the quarter-step limit lacks a finer certification check; it does not itself assert a measured quarter-versus-half discrepancy. AUC uses continuous steepness, not the binary flag.
+- **NEEDS-RESTATEMENT — Glossary provenance:** identify target A’s baseline explicitly as K0’s `R384|LSPG_CNR_1` over eligible, valid dev6+val32+N0 cases.
+- **NEEDS-RESTATEMENT — Verdict table:** diagnostic comparisons and unavailable K2/K3 comparisons are clarified, but raw dictionaries still lack fraction-versus-percent units.
+- **CORRECT — Numerical consistency:** per-case medians, maxima, qualification/terminal counts, exported scores, routes and E9 match their source JSONs; STOP remains supported.
+- Read-only throughout; no files, scratch, jobs, LAB-LOG or main changes.

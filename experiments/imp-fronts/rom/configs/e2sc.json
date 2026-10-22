@@ -1,0 +1,87 @@
+{
+ "attempt": "e2sc",
+ "driver": "r2acc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "all38",
+ "groups": [
+  {
+   "name": "R384",
+   "Rp": 384,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "fib4181",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    },
+    {
+     "label": "fib6765",
+     "rule": "fib6765",
+     "succ": "fib10946",
+     "level": "full"
+    },
+    {
+     "label": "gauss96",
+     "rule": "gauss96",
+     "succ": "gauss128",
+     "level": "full"
+    },
+    {
+     "label": "fib10946",
+     "rule": "fib10946",
+     "succ": "fib17711",
+     "level": "full"
+    },
+    {
+     "label": "gauss128",
+     "rule": "gauss128",
+     "succ": "gauss160",
+     "level": "full"
+    },
+    {
+     "label": "gauss160",
+     "rule": "gauss160",
+     "succ": "gauss192",
+     "level": "full"
+    },
+    {
+     "label": "gauss192",
+     "rule": "gauss192",
+     "succ": "gauss256",
+     "level": "full"
+    }
+   ]
+  }
+ ],
+ "bank": {
+  "ckpt": "inputs/banks/sc/ckpt.pkl",
+  "ckpt_sha256": "245e11f4c39d29f843861f4891059525d70ab454c16b989557663bc5ca9cf3d7",
+  "rotation": "inputs/banks/sc/rotation_R512.npz",
+  "rotation_sha256": "16db2b4dedb4a00dc9925a500dee8d8f0708e64428bd70566308b5ec77afa453",
+  "seed": 1,
+  "label": "c"
+ }
+}

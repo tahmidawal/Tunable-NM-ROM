@@ -2,7 +2,7 @@
 every solve and every round) it writes the exhaustion records: every case still open becomes BUDGET-CAP, scored at its
 latest valid prod, and the summary is computed by the same code as the driver's (fpolicy.summarise). CPU only, no JAX.
 
-    python fcollect.py <fpolicy out dir> [<config.json>]   -> <out>/result.json (killed=true, complete=false) unless COMPLETE
+    python fcollect.py <fpolicy out dir> [<config.json>] [--claim <claim file>]   (--claim required for test-once runs)   -> <out>/result.json (killed=true, complete=false) unless COMPLETE
 exists. Without progress.json the cases are rebuilt from RUN.json (or the given config): every case BUDGET-CAP, unscored.
 """
 import json
@@ -13,6 +13,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import policy_sm as SM  # noqa: E402
 import fpolicy as FP  # noqa: E402
+import testonce as TO  # noqa: E402
 
 
 def restore(d):
@@ -21,20 +22,29 @@ def restore(d):
     c.uncertified_start, c.history = d['uncertified_start'], d['history']
     c.rule, c.f = d['final_state'][0], float(d['final_state'][1])
     c.latest_valid_prod = d.get('latest_valid_prod')
+    c.fmin = float(d.get('fmin', SM.F_MIN))
     return c
 
 
 def main():
-    out = Path(sys.argv[1])
+    args = sys.argv[1:]
+    claim = args[args.index('--claim') + 1] if '--claim' in args else None
+    pos = [x for i, x in enumerate(args) if x != '--claim' and (i == 0 or args[i - 1] != '--claim')]
+    out = Path(pos[0])
     if (out / 'COMPLETE').exists():
         print('job completed normally: nothing to collect')
         return
+    run = json.loads((out / 'RUN.json').read_text()) if (out / 'RUN.json').exists() else {}
+    if run.get('testonce_key') or (run.get('config') or {}).get('test_once'):   # test-once: only the bound dir / job
+        assert claim, 'test-once recovery needs --claim <claim file>'
+        TO.bound(out / 'RUN.json', claim)
     if (out / 'progress.json').exists():
         pg = json.loads((out / 'progress.json').read_text())
     else:                                  # died before the driver wrote anything: rebuild the cases from the config
         cfg = json.loads((out / 'RUN.json').read_text())['config'] if (out / 'RUN.json').exists() else \
-            json.loads(Path(sys.argv[2]).read_text())
-        pg = dict(cases=[SM.Case(c, cfg.get('selected')).as_dict() for c in cfg['cases']], records={}, rows=[],
+            json.loads(Path(pos[1]).read_text())
+        fmin = SM.factor_set(cfg.get('factors'))[0]
+        pg = dict(cases=[SM.Case(c, cfg.get('selected'), fmin).as_dict() for c in cfg['cases']], records={}, rows=[],
                   anchors=[], elapsed=None)
     store = pg['records']
     cases = [restore(d) for d in pg['cases']]

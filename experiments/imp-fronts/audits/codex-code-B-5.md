@@ -1,0 +1,11 @@
+- **CORRECT — K1 errors:** independent decode reproduces FI|4 **0.001898588164**, FN0s|4 **0.012381221505**, FC1|4 **0.088116759775**; discrepancies ≤1.4e−16. Bank hashes and coefficient hashes match.
+- **CORRECT — qualification:** all 137 recorded policy transitions reproduce; Q1 flags reproduce from terminal/tight/anchor records. Pooled nonstationarity **0/7150**; qualified test counts FI/FN0s/FC1/FC2 = **2/0/0/0**.
+- **CORRECT — floors:** independently recomputed every FI/FN0s f384/f512 value for K0–K3 using QR projection; maximum discrepancy **4.6e−17**.
+- **CORRECT — E9:** 24 eligible cases, 19 flagged, zero invalid. A: 19 bad/5 good, AUC=1, detection lower bound **0.854131497**, false-alarm upper bound **0.450719728**. B: 17 bad/7 good, AUC=1, corresponding bounds **0.838433889 / 0.658738564**.
+- **CORRECT — freeze:** τs=**112.774210457252** reproduces from the frozen population; `e9_frozen.json` is byte-identical to its sole introducing commit `5168a5fac`. Both targets remain inconclusive; fallback cost remains unmeasured.
+- **CORRECT — assembly:** regenerated verdict JSON matches exactly. Fixed ARM_ROUTES apply; K1 controls b; K2/K3 supply floors with ROM comparisons UNAVAILABLE; K0 remains unmatched. All arms currently NOT RUN.
+- **WRONG — invalid-field qualification:** `score_b.py:87–104` preserves `qualified=true` when coefficients become nonfinite. An in-memory NaN probe confirms this; `verdict.route_rom` can then PASS with one invalid case because the median remains finite. Clear qualification on invalid/nonfinite decoded fields and require every endpoint case valid in the verdict. Current K1 numbers are unaffected.
+- **WRONG — production registration guard:** `register_arm.py:62–69` accepts completed smoke/dry-run outputs as production arm b and trusts the CLI seed without checking `run_record.seed/mode`. Those modes also emit SEED-COMPLETE. Require production provenance and matching seed before registration; `after_train_b.sh` inherits this gap.
+- **NEEDS-RESTATEMENT — missing-run handling:** scoring claims missing scored runs become e=∞, but a missing NPZ raises at line 94. Implement the documented behavior or describe it as an audit-blocking failure.
+
+Read-only throughout: no file changes, jobs, SSH, sealed/OOD access, or scratch files.

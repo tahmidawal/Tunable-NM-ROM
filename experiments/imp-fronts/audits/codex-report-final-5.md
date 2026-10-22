@@ -1,0 +1,11 @@
+- **CORRECT — Status/Mermaid and Phase B introduction:** completed arm (c), S3C and deferred arm (a) now agree.
+- **CORRECT — Arm (c):** scores, floors, guard, selection and failed routes support STOP.
+- **CORRECT — E10-s:** 8.29% FC1 median, zero qualified, seven STEP-UNCONVERGED and one Q2-FAIL.
+- **CORRECT — E10-q:** retained every-state evidence supports no-trigger STOP without a job.
+- **CORRECT — Accounting:** E8 10.5451 + E10 0.1992 = 10.7443 GPU-h.
+- **CORRECT — Disclosures/provenance:** admission deviation remains disclosed; wall measurement now comes from persisted JSON, with maximum 1.03e−13 explicitly reported.
+- **CORRECT — EXPORT.json:** S3C, arm-c scores/routes/selection and E10 results are present and match source JSONs.
+- **CORRECT — Glossary:** E10 arms, $m^*$, tail qualification, S3C, refinement endpoints and cohort reuse are fixed.
+- **CORRECT — Claims/plot inputs:** diagnostic qualification limits remain explicit; no qualified-success or speedup claim.
+- **NEEDS-RESTATEMENT — Title:** `report.md:1` still describes only Phase A and coverage retraining; include boundary-compatible arm (c) and E10.
+- **CORRECT — Read-only:** no files, scratch, jobs, LAB-LOG or main changes.

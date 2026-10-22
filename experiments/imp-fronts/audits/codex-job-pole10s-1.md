@@ -1,0 +1,12 @@
+- **CORRECT** — Staged manifest verifies; all recorded Git-source hashes match commit `6ad5d0dad`.
+- **CORRECT** — Same K1 bank, R384 LSPG-CN-R, mesh 1024, gauss160 start and 40 cases: 16 dev/val + 24 reused test.
+- **CORRECT** — Factors `{1,.5,.25,.125}` and cap 11 propagate through requests, transitions and budget handling.
+- **CORRECT** — Q1/Q2 rules, promoted-half tight solves, terminal anchors and pooled stationarity remain unchanged.
+- **NEEDS-RESTATEMENT** — Source differences also include architecture dispatch; its incumbent K1 branch preserves the original feature formula.
+- **CORRECT** — Reuse-labelled registration’s policy hash and key recompute; exclusive claim precedes setup and solves.
+- **CORRECT** — SM-e evidence hash verifies, all recorded checks pass, and staged ROM code matches the smoke except the added registration.
+- **CORRECT** — One H200, `gpu` partition, absolute venv, f64/highest, GPU preflight and isolated output/cache paths.
+- **CORRECT** — Ceiling 0.8 GPU-h; 90% cutoff 0.72 h; certified projection 0.47899 h fits, conditional on extended K1 paths.
+- **CORRECT** — Recorded E10 spend plus this ceiling is 0.8414 GPU-h, below the separate 10 GPU-h bucket.
+- **NEEDS-RESTATEMENT** — No static submission blocker found; live queue/admission checks remain required. Policy output still needs reference scoring for the endpoint.
+- **CORRECT** — Audit stayed read-only: no files, scratch, SSH, jobs or lab-log writes.

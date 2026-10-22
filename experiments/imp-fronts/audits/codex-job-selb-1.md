@@ -1,0 +1,12 @@
+- CORRECT — All 125 manifest entries verify; staged provenance matches commit `3195862aea97d6b351da34a786aa03fb8c8f1992`.
+- CORRECT — sb checkpoint `88377632…` and rotation `c6cacf13…` hashes match actual files, `BANK.json`, config, and `trcov-LARGE.sha256`.
+- CORRECT — `e2sb` contains exactly e2s1’s R384 group; other config changes are bank identity and attempt.
+- CORRECT — Mesh 1024², all 38 dev6+val32 cases, both arms, ladder, successors, target and checks preserved.
+- CORRECT — `select2d.py` is byte-identical to jcp-robust; the wrapper restricts selection to R384.
+- CORRECT — sbatch requests one A100, `gpu` partition, 24 minutes = 0.4 GPU-h; timeout targets 1296 seconds from batch start.
+- CORRECT — Absolute cluster Python, f64/highest precision, GPU preflight and manifest verification are present.
+- CORRECT — Explicit output, temporary and cache paths stay inside the SEL-b paralab namespace.
+- NEEDS-RESTATEMENT — Persisting “incomplete selection” requires the documented `after_train_b.sh post-sel` step; sbatch itself only logs timeout.
+- WRONG — `r2acc.py` overwrites `result.json` non-atomically; timeout during writing can leave malformed JSON. The wrapper’s unguarded `json.loads` then crashes without recording incomplete selection.
+- NEEDS-RESTATEMENT — Amendment 12 admission/control evidence is not established by the staged manifest; staging does not enforce admission.
+- WRONG — Submission readiness: fix malformed-result handling before submission. Audit remained read-only; no jobs, SSH, scratch, or file changes.

@@ -1,0 +1,61 @@
+{
+ "config": {
+  "attempt": "smkdryK1",
+  "driver": "fpolicy",
+  "mesh": 1024,
+  "edges": [
+   0,
+   128,
+   256,
+   384,
+   512
+  ],
+  "Rp": 384,
+  "scheme": "CNR",
+  "bank": {
+   "dir": "inputs/banks/s1"
+  },
+  "bank_label": "1",
+  "selected": "gauss160",
+  "cases": [
+   "FI|0",
+   "FI|1",
+   "FI|2",
+   "FI|3",
+   "FN0s|0",
+   "FN0s|1",
+   "FN0s|2",
+   "FN0s|3",
+   "FC1|0",
+   "FC1|1",
+   "FC1|2",
+   "FC1|3",
+   "FC2|0",
+   "FC2|1",
+   "FC2|2",
+   "FC2|3"
+  ],
+  "table": "phaseb/fresh_cohorts.json",
+  "test_once": false,
+  "anchors": [],
+  "ceiling_hours": 0.4,
+  "stop_fraction": 0.6,
+  "max_rounds": 10,
+  "controls": {},
+  "note": "SM-r step 2 (Amendments 10-12): reference-free K1 policy dry run, full policy from gauss160 on the 16 fresh dev/val cases (no anchors); its mean per-case cost is the policy projection (resources.py --dry) and it must pass rom/evidence.check_dry. ceiling_hours = the SM-r wall from job start; stop_fraction 0.6 reserves the last 40 % for the two dev references."
+ },
+ "testonce_key": null,
+ "job_id": "6174599",
+ "bank": {
+  "ckpt": "inputs/banks/s1/ckpt.pkl",
+  "ckpt_sha256": "244e1107c33ae38a23d17517fc198d7f2f307f12d2bb20006d3ed7aada188954",
+  "rotation": "inputs/banks/s1/rotation_R512.npz",
+  "rotation_sha256": "73bb603b48f2883dfb7b40809cc67ceab86486d38dc23f2deea282356294af4d",
+  "bank_json": "inputs/banks/s1/BANK.json",
+  "bank_json_sha256": "492b08719d86dde937e3a9125c82ba0703ea10a365baf378ed51cd0cd8c5eb8f",
+  "label": 1
+ },
+ "table_sha256": "1427a451bfa6f0a8a713c060ef442eac31bf5dc1627c796ca00e841e079aff47",
+ "started": 1792628799.0619974,
+ "policy_sha256": "0fd6d04833f82f48e26dcb0f62a4cb18eb3d957536d49c3212d5b1e207bf049a"
+}

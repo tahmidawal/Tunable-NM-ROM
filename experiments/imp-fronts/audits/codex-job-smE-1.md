@@ -1,0 +1,12 @@
+- **CORRECT — SM-e submission configuration:** audited staged commit `270195820fe6e81b4af3d02b559f615481afd82c`; manifest checks pass and all 131 provenance entries match that commit.
+- **CORRECT — scope:** K1, CNR, factors `{1,.5,.25,.125}`, round cap 11; only fresh FC1 dev cases `j=0,1`, with test access disabled.
+- **CORRECT — pinned control:** checker requires FC1 `j=0`, gauss256, factor `.5 → .25`; state-machine replay verifies that this transition reflects a failed step check.
+- **CORRECT — factor coverage:** acceptance requires a case’s history to cover all four factors, with solve consistency, mandatory-solve and replay checks.
+- **CORRECT — C-2 evidence fixes:** pinned rule, K1 checkpoint **and rotation** hashes, and `highest` precision are enforced in staged `rom/evidence.py`.
+- **CORRECT — C-2 verdict fixes:** committed `phaseb/assemble.py` uses `verify_e10`; rho evidence requires passing validation, tolerance checks, K1 result hash and coverage checks.
+- **CORRECT — sbatch:** `gpu` partition, one H200, 18 minutes = 0.3 GPU-h; absolute cluster venv, x64, highest precision, GPU preflight exit 42.
+- **CORRECT — namespace:** outputs, caches and temporary files stay under `/cluster/tufts/paralab/tawal01/imp-fronts/SM-e`.
+- **CORRECT — failure propagation:** driver/timeout errors and failed smoke checks produce nonzero job exit; shell syntax passes.
+- **CORRECT — downstream interface:** `output/fpolicy_smke10s/result.json` matches `evidence.py build-e10` and the resources tool’s default SM-e input; evidence construction is a separate post-pull step.
+- **NEEDS-RESTATEMENT — projection description:** config says “wall clock / 2”; implementation uses measured solve rates on 40 extended K1 paths, estimated tighter anchors, whole-driver overhead and ×1.5, checked against 0.72 GPU-h.
+- **CORRECT — audit boundary:** no submission blocker found in these checks; actual control firing and coverage remain runtime gates. No writes, jobs, SSH or scratch.

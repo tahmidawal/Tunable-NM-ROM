@@ -1,0 +1,195 @@
+{
+ "label": "c",
+ "arm": "c",
+ "seed": 1,
+ "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/imp-fronts/runs/train/trbnd-out/train2d_s1",
+ "job_id": null,
+ "ckpt": "ckpt.pkl",
+ "rotation": "rotation_R512.npz",
+ "ckpt_sha256": "245e11f4c39d29f843861f4891059525d70ab454c16b989557663bc5ca9cf3d7",
+ "rotation_sha256": "16db2b4dedb4a00dc9925a500dee8d8f0708e64428bd70566308b5ec77afa453",
+ "source_ckpt_sha256": "245e11f4c39d29f843861f4891059525d70ab454c16b989557663bc5ca9cf3d7",
+ "source_rotation_sha256": "16db2b4dedb4a00dc9925a500dee8d8f0708e64428bd70566308b5ec77afa453",
+ "rotation_json": {
+  "construction": "SVD of A = [(R_G h(z_i))^T / ||R_G h(z_i)||], z_i = every stored training code (ck[\"Z_tr\"]); T = R_G^{-1} V_s, L = V_s^T R_G; per-row normalised as in poisson-bank-knob; training data only",
+  "training_state_norm_range": [
+   2.517190766140242,
+   175.87231685839404
+  ],
+  "diagnostic_unnormalised_head_truncation_error": {
+   "32": {
+    "max": 0.6414629735350952,
+    "p99": 0.3788374098985652,
+    "median": 0.03422247637588457
+   },
+   "64": {
+    "max": 0.4293895154585004,
+    "p99": 0.16618493559699055,
+    "median": 0.010718669514626383
+   },
+   "128": {
+    "max": 0.19608151874386376,
+    "p99": 0.04069147111336178,
+    "median": 0.0031541168195410125
+   },
+   "256": {
+    "max": 0.00973649854092322,
+    "p99": 0.001720940607231371,
+    "median": 0.0003291431015536138
+   },
+   "384": {
+    "max": 0.0009318517485299869,
+    "p99": 0.00018439222457885027,
+    "median": 3.167242416929884e-05
+   },
+   "512": {
+    "max": 7.129971588269807e-08,
+    "p99": 3.879412694225365e-08,
+    "median": 0.0
+   }
+  },
+  "checkpoint_sha256": "245e11f4c39d29f843861f4891059525d70ab454c16b989557663bc5ca9cf3d7",
+  "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+  "train_mesh": 256,
+  "training_codes": 131072,
+  "K": 16,
+  "R": 512,
+  "R_G_condition_number": 19228.190169195535,
+  "L_times_T_identity_deviation": 8.587393212234275e-12,
+  "rotated_bank_orthonormality_deviation_at_train_mesh": 9.672452173302734e-12,
+  "cumulative_training_energy": {
+   "32": 0.9922073145431622,
+   "64": 0.9988272154955208,
+   "128": 0.9999266200454547,
+   "256": 0.9999997761216508,
+   "384": 0.9999999981505189,
+   "512": 0.999999999999999
+  },
+  "head_coefficient_truncation_error": {
+   "32": {
+    "max": 0.6132006325573351,
+    "p99": 0.33932360500907416,
+    "median": 0.03432511872197358
+   },
+   "64": {
+    "max": 0.3861533845977804,
+    "p99": 0.13405109534885423,
+    "median": 0.011851845748435029
+   },
+   "128": {
+    "max": 0.12747655595764892,
+    "p99": 0.032068958131063106,
+    "median": 0.0033296402644346214
+   },
+   "256": {
+    "max": 0.004877973817312906,
+    "p99": 0.0013659306275502234,
+    "median": 0.00033382804616694894
+   },
+   "384": {
+    "max": 0.0007474587825889493,
+    "p99": 0.00011025615938328731,
+    "median": 3.3005744082580625e-05
+   },
+   "512": {
+    "max": 6.989264130329237e-08,
+    "p99": 4.470348358154297e-08,
+    "median": 0.0
+   }
+  },
+  "correction_directions_energy_captured": {
+   "16": {
+    "32": 0.7726644829416689,
+    "64": 0.8758831324841202,
+    "128": 0.96583557336012,
+    "256": 0.9984985990744023,
+    "384": 0.9998333836585106,
+    "512": 1.0000000000000004
+   },
+   "48": {
+    "32": 0.757107628953963,
+    "64": 0.8740177001353008,
+    "128": 0.9674229702560502,
+    "256": 0.9986607725225721,
+    "384": 0.9998411794803297,
+    "512": 1.0000000000000004
+   },
+   "112": {
+    "32": 0.7533043728667048,
+    "64": 0.8774930499624986,
+    "128": 0.9694577435201335,
+    "256": 0.9987099570250247,
+    "384": 0.9998406355461501,
+    "512": 1.0000000000000002
+   },
+   "240": {
+    "32": 0.7566108045710465,
+    "64": 0.8755211370348971,
+    "128": 0.9683526320439714,
+    "256": 0.9987806895144729,
+    "384": 0.999841967183118,
+    "512": 1.0000000000000002
+   },
+   "256": {
+    "32": 0.7535247525797675,
+    "64": 0.87359092468708,
+    "128": 0.9681933245167752,
+    "256": 0.9987653087296477,
+    "384": 0.9998428055799414,
+    "512": 1.0000000000000004
+   }
+  },
+  "T_sha256": "de9a75104e2d26fb8b3a0e81bb5aa7085db7d73fbf195d8762f016b83ee3a093",
+  "L_sha256": "a2815fd91297cf0d9821ef07358de223e6bf76c950a865e7c5505da53989dc29",
+  "file_sha256": "16db2b4dedb4a00dc9925a500dee8d8f0708e64428bd70566308b5ec77afa453",
+  "seconds": 16.66497086000163,
+  "jax_backend": "gpu"
+ },
+ "run_record": {
+  "seed": 1,
+  "mode": "production",
+  "device": [
+   "NVIDIA A100 80GB PCIe, GPU-6481e68e-7435-8539-633a-66f852b4a8e9, 81920 MiB, 575.57.08",
+   "jax_backend=gpu"
+  ],
+  "stageA": {
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "steps_done": 300000,
+   "seconds": 9683.209900856018,
+   "recon_rel_l2_mean": 0.006853059885046631,
+   "R2a": [],
+   "data_R0": true,
+   "bank_sha256": "0a80294d213f55ed4dc734f02b0692709316d44f83f11a058eda748c571daec5"
+  },
+  "stageB_mid": {
+   "seed": 1,
+   "steps": 200000,
+   "steps_done": 200000,
+   "seconds": 338.31582903862,
+   "time_cap_s": 1500,
+   "time_cap_fired": false,
+   "final_loss": 7.201578741307092e-05,
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "extraction_gates": {
+    "gram_identity_rel_dev_max": 1.8167582641948082e-14,
+    "gram_identity_rel_dev_mean": 9.745917683765615e-16,
+    "gram_identity_rows": 64,
+    "gram_identity_implied_field_rel": 1.136819870487116e-15,
+    "span_floor_direct_vs_gram_rel_dev": 2.7022959824893737e-16
+   },
+   "note": "time_cap_fired=True is a recipe deviation for this seed (DESIGN A2.10)"
+  },
+  "rotation": {
+   "L_times_T_identity_deviation": 8.587393212234275e-12,
+   "orthonormality": 9.672452173302734e-12,
+   "R_G_condition_number": 19228.190169195535,
+   "file_sha256": "16db2b4dedb4a00dc9925a500dee8d8f0708e64428bd70566308b5ec77afa453",
+   "checkpoint_sha256": "245e11f4c39d29f843861f4891059525d70ab454c16b989557663bc5ca9cf3d7"
+  },
+  "stage_seconds": {
+   "stageA": 9832,
+   "stageB": 3611,
+   "rotation": 19
+  }
+ }
+}

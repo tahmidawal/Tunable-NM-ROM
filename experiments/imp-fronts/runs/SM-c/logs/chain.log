@@ -1,0 +1,148 @@
+[train2d seed=1 2026-10-22T03:55:22-04:00] mode=dryrun host=pax007 stages=A,B,R jobroot_commit=d8d47142a2ecb70e05baa093d5e339b3c729b5a0
+NVIDIA A100 80GB PCIe, GPU-6481e68e-7435-8539-633a-66f852b4a8e9, 81920 MiB, 575.57.08
+PROVENANCE sha256 OK
+[train2d seed=1 2026-10-22T03:55:23-04:00] Stage A: smoothtrain --arm base --sigma 4 --lam 0 --seed 1 --nodes 64 --n-traj 16 --steps 20 --log-every 10 --allow-cpu
+jax_backend=gpu device=NVIDIA A100 80GB PCIe arm=base sigma=4.0 lam=0.0 nodes=64 seed=1 steps=20
+   gen n=64: trajectories 16/16 worst FOM rel residual 9.96e-13 [2s]
+  data: (816, 3844) worst residual 9.96e-13 fingerprint {'sum': 306975.4453223606, 'sumsq': 137602.27620549224, 'shape': [16, 51, 4096]} sha 3aa281421870
+  FD-target uncertainty (D2 vs D4): {'median': 0.004371735385346747, 'p90': 0.011659367934249246, 'max': 0.1686614366784893}
+   train2[base] step      1/20  rel-MSE 2.567e+00  grad-rel-MSE 0.000e+00  [11s]
+   train2[base] step     10/20  rel-MSE 1.011e+00  grad-rel-MSE 0.000e+00  [11s]
+   train2[base] step     20/20  rel-MSE 8.244e-01  grad-rel-MSE 0.000e+00  [11s]
+   train2[base] done: recon mean 1.160e+00 max 7.472e+00 (used raw) [14s]
+  rotation: {"R_G_condition_number": 830.3993388555743, "train_ls_floor": {"mean": 0.06328053608033041, "median": 0.051667036679528044, "max": 0.18787836826109292}}
+DONE
+Stage A OK: steps_done 20 recon mean 1.1600986163693998 R2a checked False []
+[train2d seed=1 2026-10-22T03:55:47-04:00] Stage B extraction (data stream SEED0=0)
+jax_backend=gpu device=cuda:0 x64=True EXTRACT N=64 K=16 R=512 ckpt=/cluster/tufts/paralab/tawal01/imp-fronts/smC/output/train2d_s1/stageA/bank.pkl
+  UNALIGNED-CODES MODE: pick 512 != checkpoint codes 816: the state pick does not match the checkpoint's training set
+    (expected for a dense-sampling extraction; the identity gate (*) holds for ANY z, so it still tests what it tests, and the checkpoint reconstruction is simply not comparable)
+  bank rank(>1e-8) 512/512  cond(G) 8.304e+02
+  APPENDED 8 trajectories from seed 1000 to the canonical 576; canonical draw untouched
+   gen+proj: trajectories 16/16  worst FOM rel residual 9.96e-13  [5s]
+  GRAM IDENTITY gate on 64 training states: max rel deviation 3.467e-15 mean 7.857e-16  (full mean 1.236394e+00 vs gram mean 1.236394e+00)
+  span-floor direct-vs-Gram deviation on 64 rows: 2.101e-16  (direct mean 5.825702e-02)
+  checkpoint recon via (*): mean 1.158942e+00  (train span LS floor mean 6.431e-02)
+  fresh test span LS floor: mean 1.663e-01 max 3.321e-01  (test FOM residual 9.99e-13)
+EXTRACT done in 22s -> /cluster/tufts/paralab/tawal01/imp-fronts/smC/output/train2d_s1/stageB/sep_coeff_N64_K16_R512.npz
+[train2d seed=1 2026-10-22T03:56:11-04:00] Stage B head fit (full call, SEED0=1)
+jax_backend=gpu device=cuda:0 x64=True HFIT arms=['mid', 'wide', 'k32'] steps=20
+  whitening round-trip 7.961e-15   q == L^T h deviation 1.627e-15
+  span LS floor: train 6.4307e-02  fresh test 1.6634e-01  (S=512, R=512, K_ckpt=16)
+   hfit[mid]       1/20 loss 1.2964e+00 recon 1.1125e+00 [4s]
+  ARM mid: recon 9.7883e-01  oracle 9.3262e-01  oracle/floor 5.6x  oracle_nn 9.3262e-01  code-refit gain 1.142x
+  EMITTED refined decoder -> /cluster/tufts/paralab/tawal01/imp-fronts/smC/output/train2d_s1/stageB/sep_hfit_dense_mid_N64_dense.pkl
+   hfit[wide]       1/20 loss 1.2608e+00 recon 1.1013e+00 [5s]
+  ARM wide: recon 8.6897e-01  oracle 9.5437e-01  oracle/floor 5.7x  oracle_nn 9.2228e-01  code-refit gain 1.046x
+   hfit[k32]       1/20 loss 1.4789e+00 recon 1.1688e+00 [4s]
+  ARM k32: recon 8.8086e-01  oracle 9.4488e-01  oracle/floor 5.7x  oracle_nn 9.2622e-01  code-refit gain 1.120x
+HFIT done in 57s -> /cluster/tufts/paralab/tawal01/imp-fronts/smC/output/train2d_s1/stageB/hfit_full.json
+Stage B OK: {"steps_done": 20, "steps": 20, "seconds": 3.990562677383423, "time_cap_fired": false, "gpu": "NVIDIA A100 80GB PCIe"}
+[train2d seed=1 2026-10-22T03:57:11-04:00] Rotation (make_rotation.py, head-based, deployed procedure)
+{
+ "construction": "SVD of A = [(R_G h(z_i))^T / ||R_G h(z_i)||], z_i = every stored training code (ck[\"Z_tr\"]); T = R_G^{-1} V_s, L = V_s^T R_G; per-row normalised as in poisson-bank-knob; training data only",
+ "training_state_norm_range": [
+  0.8620763518666421,
+  2.864174866533209
+ ],
+ "diagnostic_unnormalised_head_truncation_error": {
+  "32": {
+   "max": 0.1471339703064538,
+   "p99": 0.1287545527930644,
+   "median": 0.07796478916639717
+  },
+  "64": {
+   "max": 0.09259413377608032,
+   "p99": 0.0736451984114096,
+   "median": 0.048738151905383525
+  },
+  "128": {
+   "max": 0.02281644648254347,
+   "p99": 0.02157390886753716,
+   "median": 0.014633122764809877
+  },
+  "256": {
+   "max": 0.0026532652151233225,
+   "p99": 0.002524362259992927,
+   "median": 0.0016389009359679004
+  },
+  "384": {
+   "max": 0.0008369600572992319,
+   "p99": 0.000591781970202985,
+   "median": 0.0002771271793368329
+  },
+  "512": {
+   "max": 4.173042982991354e-08,
+   "p99": 3.458361406973579e-08,
+   "median": 0.0
+  }
+ },
+ "checkpoint_sha256": "abd6933d4c3fd8191727464b871a2be526d99053d8c38cee5270bca0b9a2bf5e",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "train_mesh": 64,
+ "training_codes": 512,
+ "K": 16,
+ "R": 512,
+ "R_G_condition_number": 830.540004379261,
+ "L_times_T_identity_deviation": 3.8511948363342333e-13,
+ "rotated_bank_orthonormality_deviation_at_train_mesh": 3.8734270239202674e-13,
+ "cumulative_training_energy": {
+  "32": 0.9937213495960591,
+  "64": 0.9975607111070829,
+  "128": 0.9997857081464012,
+  "256": 0.9999974688500874,
+  "384": 0.9999999112557421,
+  "512": 1.0000000000000002
+ },
+ "correction_directions_energy_captured": {
+  "16": {
+   "32": 0.18445448640104678,
+   "64": 0.23604358298389608,
+   "128": 0.33157071022597084,
+   "256": 0.5282953148678721,
+   "384": 0.7501646864183725,
+   "512": 0.9999999999999999
+  },
+  "48": {
+   "32": 0.18500244830590745,
+   "64": 0.2375811101646051,
+   "128": 0.33736024130849374,
+   "256": 0.5404858831139017,
+   "384": 0.7613022558052553,
+   "512": 1.0
+  },
+  "112": {
+   "32": 0.20517005160638838,
+   "64": 0.2560996010573109,
+   "128": 0.3571286258766521,
+   "256": 0.5586850188076751,
+   "384": 0.771308181472625,
+   "512": 1.0
+  },
+  "240": {
+   "32": 0.21121884588874246,
+   "64": 0.2662501576303408,
+   "128": 0.367041644435102,
+   "256": 0.5612258618019211,
+   "384": 0.7792077460166184,
+   "512": 0.9999999999999999
+  },
+  "256": {
+   "32": 0.22075360120442095,
+   "64": 0.2749439526752722,
+   "128": 0.37263506639342897,
+   "256": 0.565130981217752,
+   "384": 0.7799402379800863,
+   "512": 1.0
+  }
+ },
+ "T_sha256": "b4453c4339d3514c68758bb64d478777a534816ab461bdc8e9347b038d792ca5",
+ "L_sha256": "ca6fa644b132b258872bcf365a6b183af2a2dee9809c9eb868fc9e2ce0a65f88",
+ "file_sha256": "b8bd8db0b6c5e1d8904ee2812b303297fdbe15b9edfe959c1e3e5c40b4e9766c",
+ "seconds": 5.003685374991619,
+ "jax_backend": "gpu"
+}
+trunc {"32": {"max": 0.13009487668422084, "p99": 0.12152690726550378, "median": 0.07773795651555412}, "64": {"max": 0.07318387130212804, "p99": 0.06698661845642766, "median": 0.04896644458710865}, "128": {"max": 0.02234098452375523, "p99": 0.021348971743620895, "median": 0.014278209644368968}, "256": {"max": 0.0020096425161909674, "p99": 0.0018984411374231675, "median": 0.0016044047327401106}, "384": {"max": 0.00042741118178742, "p99": 0.00041297266382794677, "median": 0.0002946812712004946}, "512": {"max": 4.344397704933062e-08, "p99": 3.161013638317052e-08, "median": 0.0}}
+trunc_unnormalised {"32": {"max": 0.1471339703064538, "p99": 0.1287545527930644, "median": 0.07796478916639717}, "64": {"max": 0.09259413377608032, "p99": 0.0736451984114096, "median": 0.048738151905383525}, "128": {"max": 0.02281644648254347, "p99": 0.02157390886753716, "median": 0.014633122764809877}, "256": {"max": 0.0026532652151233225, "p99": 0.002524362259992927, "median": 0.0016389009359679004}, "384": {"max": 0.0008369600572992319, "p99": 0.000591781970202985, "median": 0.0002771271793368329}, "512": {"max": 4.173042982991354e-08, "p99": 3.458361406973579e-08, "median": 0.0}}
+Rotation OK: ||LT-I|| = 3.8511948363342333e-13  orth dev = 3.8734270239202674e-13  cond(R_G) = 830.540004379261
+[train2d seed=1 2026-10-22T03:57:18-04:00] SEED-COMPLETE (/cluster/tufts/paralab/tawal01/imp-fronts/smC/output/train2d_s1)

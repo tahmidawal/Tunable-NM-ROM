@@ -1,0 +1,50 @@
+{
+ "backend": "gpu",
+ "Kc_distinct_per_axis": [
+  19,
+  19
+ ],
+ "bank": "seed-1 initial sine_even bank",
+ "stats": {
+  "odd_x": 0.0,
+  "odd_y": 0.0,
+  "per_x": 6.611058452827763e-14,
+  "per_y": 7.2728203048825e-14,
+  "wall": 1.2565840689670587e-15,
+  "jaxnp_val": 2.0250047161376543e-14,
+  "jaxnp_gx": 2.569208109199959e-14,
+  "jaxnp_gy": 1.914852084203638e-14,
+  "hess": 3.50736175133444e-15,
+  "gd": 5.886255345324238e-13
+ },
+ "load_guard": {
+  "valid/A": true,
+  "valid/B": true,
+  "kc_no_arch/A": true,
+  "kc_no_arch/B": true,
+  "kc_wrong_arch/A": true,
+  "kc_wrong_arch/B": true,
+  "arch_no_kc/A": true,
+  "arch_no_kc/B": true,
+  "kc_shape/A": true,
+  "kc_shape/B": true,
+  "kc_dtype/A": true,
+  "kc_dtype/B": true,
+  "kc_nonint/A": true,
+  "kc_nonint/B": true,
+  "incumbent/A": true,
+  "incumbent/B": true
+ },
+ "positive_control": {
+  "hess": 0.7130686117611666,
+  "gd": 0.713068611761088
+ },
+ "bank_control": {
+  "run": "FI__4__cert__gauss160__0p25.npz",
+  "terminal": "STEP-UNCONVERGED",
+  "stat": 18.212072723555387,
+  "denominator": 19.195762292252553,
+  "decode_vs_ref_t5": 0.0004508860076876615
+ },
+ "fails": []
+}

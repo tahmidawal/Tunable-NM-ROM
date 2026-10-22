@@ -1,0 +1,38 @@
+{
+ "arm": "cov",
+ "design": "DESIGN B1(b) (Amendment 1: both populations)",
+ "single_change": "sample_params' viscosity: log nu = log lo + (log 0.1 - log lo) U, lo = max(0.0016, a/1000), U the incumbent's uniform draw",
+ "base_tree": "experiments/jcp-robust/train2d @ exp/2026-10-19-jcp-robust b94591b81 (byte-identical copy in experiments/imp-fronts/train2d)",
+ "seed": 1,
+ "unchanged": "run_seed.sh, Stage B and rotation code, state picks, data seeds (0, 1000, test 1), every recipe value",
+ "files": [
+  {
+   "src": "arms/cov/burgers2d_film.py",
+   "dst": "stageA/deps/burgers2d_film.py",
+   "kind": "edited",
+   "reason": "sample_params viscosity range only (same RNG stream order; z normalisation unchanged); applies to every sample_params call; plus the Amendment 17 per-chunk data gate in make_rollout (finite + Newton rel residual <= 1e-8 on every chunk, first failure aborts with ARM-DATA-GATE-FAILED; data values unchanged)",
+   "sha256": "2445e0d0a6da7b112af52a6b1537b72ae91f62a86b215775db6955279752b33f"
+  },
+  {
+   "src": "arms/cov/burgers2d_film.py",
+   "dst": "stageB/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py",
+   "kind": "edited",
+   "reason": "same file as Stage A (seed 0 x 576, seed 1000 x 4,032, test seed 1 x 8); plus the Amendment 17 per-chunk data gate in make_rollout (finite + Newton rel residual <= 1e-8 on every chunk, first failure aborts with ARM-DATA-GATE-FAILED; data values unchanged)",
+   "sha256": "2445e0d0a6da7b112af52a6b1537b72ae91f62a86b215775db6955279752b33f"
+  },
+  {
+   "src": "arms/cov/arm_gate.py",
+   "dst": "stageA/deps/arm_gate.py",
+   "kind": "added",
+   "reason": "R0 replacement gate of arm cov: C-B4 on both complete parameter tables (+ must-fail on the incumbent tables) + Newton residual <= 1e-8",
+   "sha256": "6ba3233211d8b7e83af39b0935dd821685188f1b1e5bd49c0f85bddc0f8ecea5"
+  },
+  {
+   "src": "arms/shared/smoothtrain.py",
+   "dst": "stageA/smoothtrain.py",
+   "kind": "edited",
+   "reason": "R0 gate (r3a data fingerprint, fires at 256 nodes x 576 trajectories for every seed) applied only when deps/burgers2d_film.py is the incumbent generator (sha256 c521b36a...); for an arm generator R0 is replaced by that arm's deps/arm_gate.py (DESIGN B1, Amendment 1). Nothing else changed.",
+   "sha256": "d42d4d008656f4c3abb3c6542ef0db27d3b595e444f7c9eab1a4f7e9f491d14c"
+  }
+ ]
+}

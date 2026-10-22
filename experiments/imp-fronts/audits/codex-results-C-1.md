@@ -1,0 +1,15 @@
+- **CORRECT — Provenance:** deployed checkpoint and rotation hashes match `trbnd-LARGE.sha256`, training records, and POL-c’s recorded bank.
+- **CORRECT — Architecture:** checkpoint is `sine_even`, f64; each axis has 19 distinct integer frequencies, maximum 20. Five independently decoded columns show exact oddness and relative periodicity residual ≤1.75e−13.
+- **NEEDS-RESTATEMENT — Wall identity:** mathematically zero; raw trained-column wall residual reaches 2.75e−14 RMS, exceeding the stated 1e−14 tolerance. Saved passing identity tests concern the **initial** bank; scoring explicitly zeroes walls.
+- **CORRECT — Recomputed errors:** FI|4 = 0.00135366803049; FI|6 = 0.00842152559121; FC1|4 = 0.0931988308108. Maximum discrepancy from stored values: 5.6e−17.
+- **CORRECT — FI floors:** all six cases independently recomputed at both ranks; discrepancies <6e−18. Median/worst: r384 = 0.000390933888 / 0.005207628413; r512 = 0.000371384596 / 0.004908626866.
+- **CORRECT — m* route FAIL:** selection certifies gauss128 for both required schemes; 16,384 nodes >12,800.
+- **CORRECT — Tail route FAIL:** FI cases 4, 6, 8, 9 are unqualified. Recorded medians c/K1 = 0.000252266517 / 0.000373974668; also misses the threefold reduction threshold.
+- **CORRECT — Guard PASS:** complete six-case FI floors; worst-floor ratio = 0.005207628413 / 0.004115686426 = 1.26531224 ≤2.
+- **CORRECT — STOP (endpoint):** both routes FAIL; B0 step 3 applies despite guard PASS.
+- **CORRECT — Diagnostic FC1 medians:** c/K1 = 0.0754536585 / 0.0812151476; arm c qualifies on 0/8 cases, so this is not qualified success.
+- **CORRECT — GPU evidence:** SM-c 6187422, TR-bnd 6187640, SEL-c 6191938, POL-c 6192346 logs contain `jax_backend=gpu`; production evidence supports f64/highest precision.
+- **CORRECT — E8 cap:** ledger charges total 10.5451 GPU-h ≤15; elapsed-time reconstruction gives 10.5450. Separate E10 charges are 0.1992; combined ledger total 10.7443.
+- **WRONG — SM-c admission procedure:** submitted after admission rejection. The ledger discloses this; budget arithmetic passed, but that does not erase the procedural deviation.
+- **NEEDS-RESTATEMENT — Stale metadata:** verdict `schedule` still says c NOT RUN; ledger `deferred` still says c unfundable/carried to E10. Both contradict completed E8 evidence.
+- **CORRECT — Read-only audit:** no files changed, no jobs or SSH, no scratch files created; LAB-LOG and main untouched.

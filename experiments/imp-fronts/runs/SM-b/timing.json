@@ -1,0 +1,166 @@
+{
+ "schema": "imp-fronts-train-timing/3",
+ "job": "SM-b",
+ "job_id": "6174021",
+ "backend": "gpu",
+ "device": "NVIDIA A100 80GB PCIe",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "arm": "b",
+ "errors": [],
+ "K1_reference": {
+  "record": "jcp-robust runs/e2t2d/archive/output/train2d_s2/run_record.json",
+  "record_sha256": "d525914941979abde3293e11b6df9e53e25d0efc5276364cfb23c56e239bf3bc",
+  "job": "e2t2d",
+  "seed": 2,
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "stage_seconds": {
+   "stageA": 11099,
+   "stageB": 3901,
+   "rotation": 18
+  },
+  "total_s": 15018
+ },
+ "gates_passed": true,
+ "chaining_completed": true,
+ "burn_in": true,
+ "cb1_fired": true,
+ "datagen_record_sha256": "1f1122c5b675d318084c3f4f250f048dad0e1ede0932ecfd5053f06fe114fc49",
+ "phases": {
+  "datagen": {
+   "fixed_seconds": 0.0,
+   "source": "this smoke (arm generator, paired with the incumbent)",
+   "segments": [
+    {
+     "name": "arm/seed0",
+     "seconds": 172.09275245666504,
+     "units": 576,
+     "production_units": 1152
+    },
+    {
+     "name": "arm/seed1000",
+     "seconds": 168.72003555297852,
+     "units": 576,
+     "production_units": 4032
+    }
+   ]
+  },
+  "stageA": {
+   "fixed_seconds": 0.0,
+   "source": "K1 record jcp-robust runs/e2t2d/archive/output/train2d_s2/run_record.json (Amendment 15)",
+   "segments": [
+    {
+     "name": "K1/stageA",
+     "seconds": 11099.0,
+     "units": 1,
+     "production_units": 1
+    }
+   ]
+  },
+  "stageB": {
+   "fixed_seconds": 0.0,
+   "source": "K1 record jcp-robust runs/e2t2d/archive/output/train2d_s2/run_record.json (Amendment 15)",
+   "segments": [
+    {
+     "name": "K1/stageB",
+     "seconds": 3901.0,
+     "units": 1,
+     "production_units": 1
+    }
+   ]
+  },
+  "rotation": {
+   "fixed_seconds": 0.0,
+   "source": "K1 record jcp-robust runs/e2t2d/archive/output/train2d_s2/run_record.json (Amendment 15)",
+   "segments": [
+    {
+     "name": "K1/rotation",
+     "seconds": 18.0,
+     "units": 1,
+     "production_units": 1
+    }
+   ]
+  }
+ },
+ "timing": {
+  "populations": {
+   "seed0": {
+    "trajectories": 576,
+    "production_trajectories": 1152,
+    "incumbent_s": 101.68493056297302,
+    "arm_s": 172.09275245666504
+   },
+   "seed1000": {
+    "trajectories": 576,
+    "production_trajectories": 4032,
+    "incumbent_s": 100.1256468296051,
+    "arm_s": 168.72003555297852
+   }
+  }
+ },
+ "all_done": true,
+ "increment": {
+  "arm_datagen_seconds": 1525.2257537841797,
+  "incumbent_datagen_seconds": 904.2493889331818,
+  "measured": {
+   "incumbent/seed0": 101.68493056297302,
+   "arm/seed0": 172.09275245666504,
+   "incumbent/seed1000": 100.1256468296051,
+   "arm/seed1000": 168.72003555297852
+  },
+  "chunk_seconds": {
+   "incumbent/seed0": [
+    11.695799589157104,
+    12.144619464874268,
+    11.723549604415894,
+    11.393112182617188,
+    11.063462257385254,
+    10.636217594146729,
+    10.480495929718018,
+    12.55638337135315,
+    9.991233110427856
+   ],
+   "arm/seed0": [
+    19.330207347869873,
+    20.716599941253662,
+    19.579015731811523,
+    19.429720163345337,
+    19.179935455322266,
+    17.41680359840393,
+    18.32676124572754,
+    21.648098468780518,
+    16.465540885925293
+   ],
+   "incumbent/seed1000": [
+    11.703906059265137,
+    10.4260413646698,
+    10.606828212738037,
+    10.972015380859375,
+    10.817156791687012,
+    11.848457336425781,
+    10.96132230758667,
+    11.474834442138672,
+    11.315036535263062
+   ],
+   "arm/seed1000": [
+    19.83529806137085,
+    17.205039262771606,
+    18.35392999649048,
+    19.09353017807007,
+    17.960901021957397,
+    19.241740465164185,
+    18.39574408531189,
+    19.72152042388916,
+    18.912282943725586
+   ]
+  },
+  "scale_seed0": 2.0,
+  "scale_seed1000": 7.0,
+  "burn_in_seconds": 34.62583589553833
+ },
+ "projection": {
+  "projection_gpu_h": 4.3441601013475,
+  "increment_gpu_h": 0.17249343468083275,
+  "cutoff_gpu_h": 4.566666666666666,
+  "status": "fundable"
+ }
+}

@@ -1,0 +1,24 @@
+job=smB arm=cov mode=smoke host=pax007 commit=cb902dcbe1203b37de4d9f9833442142695ed5e7 slurm=6174021 wall_s=1440 self_timer_s=1296
+0, NVIDIA A100 80GB PCIe, GPU-6481e68e-7435-8539-633a-66f852b4a8e9, 575.57.08, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+jax_backend=gpu
+[train2d seed=1 2026-10-21T19:51:12-04:00] mode=production host=pax007 stages=none jobroot_commit=cb902dcbe1203b37de4d9f9833442142695ed5e7
+NVIDIA A100 80GB PCIe, GPU-6481e68e-7435-8539-633a-66f852b4a8e9, 81920 MiB, 575.57.08
+jax_backend=gpu
+PROVENANCE sha256 MISMATCH stageA/deps/burgers2d_film.py
+C-B1 guard rejection: FIRED (rc=1)
+smoke_datagen (cov): gates, burn-in, paired incumbent/arm timing; budget 1282s
+jax_backend=gpu device=NVIDIA A100 80GB PCIe job=6174021 arm=cov
+gate (cov) passed=True [0s]
+incumbent/seed0: 576/576 in 101.7s ok=True resid max 9.998217878495552e-13
+arm/seed0: 576/576 in 172.1s ok=True resid max 9.99291699840621e-13
+incumbent/seed1000: 576/576 in 100.1s ok=True resid max 9.999692796826327e-13
+arm/seed1000: 576/576 in 168.7s ok=True resid max 9.99810260233636e-13
+DATAGEN PASSED
+chaining slice (run_seed.sh TRAIN2D_DRYRUN=1; Amendment 15), stop 702s
+trunc_unnormalised {"32": {"max": 0.1331134917711292, "p99": 0.11753564711383284, "median": 0.07365443809209102}, "64": {"max": 0.07741264239569766, "p99": 0.06748552745922785, "median": 0.046975804204313465}, "128": {"max": 0.02487004940004229, "p99": 0.020202092434509822, "median": 0.013830956728225876}, "256": {"max": 0.002603858188070997, "p99": 0.0022920155028118335, "median": 0.0015630285491939513}, "384": {"max": 0.0006376341588397934, "p99": 0.0005548104833741494, "median": 0.00026854490508234567}, "512": {"max": 5.160209490518652e-08, "p99": 4.7104604014524534e-08, "median": 2.7019845862958345e-08}}
+Rotation OK: ||LT-I|| = 1.3576542777938004e-13  orth dev = 1.3781415174835105e-13  cond(R_G) = 204.8030608398962
+[train2d seed=1 2026-10-21T20:02:56-04:00] SEED-COMPLETE (/cluster/tufts/paralab/tawal01/imp-fronts/smB/output/train2d_s1)
+{"increment_s": 620.9763648509979, "projection": {"projection_gpu_h": 4.3441601013475, "increment_gpu_h": 0.17249343468083275, "cutoff_gpu_h": 4.566666666666666, "status": "fundable"}}
+smoke status: datagen_rc=0 chain_rc=0 timing_rc=0
+ALL-DONE

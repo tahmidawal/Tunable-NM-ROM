@@ -1,7 +1,7 @@
 #!/bin/bash
 # imp-fronts Phase B: lay out one single-change retrain job tree (DESIGN B1, Amendment 1).
 #
-#   bash experiments/imp-fronts/train2d/stage_arm.sh <arm> <jobdir>        arm = base | fid | cov
+#   bash experiments/imp-fronts/train2d/stage_arm.sh <arm> <jobdir>        arm = base | fid | cov | bnd
 #
 # Writes <jobdir>/experiments/imp-fronts/train2d/ = exactly the FILES.txt entries of the jcp-robust train2d copy next to
 # this script (run_seed.sh, PROVENANCE.json and the vendored code, paths mapped experiments/jcp-robust/train2d/ ->
@@ -12,9 +12,9 @@
 # (arm, declared paths, sha256 of every staged file) outside the train2d tree. Refuses an existing non-empty <jobdir>.
 # The job then runs:  PY=<python> bash experiments/imp-fronts/train2d/run_seed.sh 1 <outdir>   (from <jobdir>)
 set -euo pipefail
-[ $# -eq 2 ] || { echo "usage: $0 <base|fid|cov> <jobdir>" >&2; exit 2; }
+[ $# -eq 2 ] || { echo "usage: $0 <base|fid|cov|bnd> <jobdir>" >&2; exit 2; }
 ARM=$1; JOB=$2
-case "$ARM" in base|fid|cov) ;; *) echo "unknown arm $ARM" >&2; exit 2;; esac
+case "$ARM" in base|fid|cov|bnd) ;; *) echo "unknown arm $ARM" >&2; exit 2;; esac
 PYI="${PY:-/home/tahmid/Dev/.venv/bin/python}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -e "$JOB" ] && [ -n "$(ls -A "$JOB" 2>/dev/null)" ]; then echo "$JOB exists and is not empty: refusing" >&2; exit 3; fi

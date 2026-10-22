@@ -1,0 +1,26 @@
+jax_backend=gpu
+  ok   default init (no arch) = original sep_common init, bit for bit, no Kc
+  ok   Kc = |round(2 B0)| of the seed-1 init draw; B kept unchanged
+  Kc distinct values per axis: [19, 19]; max 20
+  ok   column RMS on the lattice positive (min 2.026e-01)
+  ok   odd_x: 0.000e+00 <= 1e-12
+  ok   odd_y: 0.000e+00 <= 1e-12
+  ok   per_x: 6.611e-14 <= 1e-12
+  ok   per_y: 7.273e-14 <= 1e-12
+  ok   wall: 1.257e-15 <= 1e-14
+  ok   jaxnp_val: 2.025e-14 <= 1e-12
+  ok   jaxnp_gx: 2.569e-14 <= 1e-12
+  ok   jaxnp_gy: 1.915e-14 <= 1e-12
+  ok   hess: 3.507e-15 <= 1e-10
+  ok   gd: 5.886e-13 <= 1e-06
+  ok   Stage A copy = Stage B/rotation copy (arm bank), bit for bit
+  ok   no Kc (K1 checkpoint): arm copies = original sep_common, bit for bit
+  ok   load_pkl guard (Stage A and Stage B/rotation copies): accepts valid sine_even and incumbent, refuses Kc/arch mismatches, bad shape, dtype, non-integer Kc (16/16)
+  ok   K1 checkpoint loads through the guarded load_pkl
+  ok   d loss / d Kc = d loss / d B = 0 exactly (fixed frequencies; B unused)
+  ok   C+ polynomial must fail: hess 7.131e-01 > 1e-10, gd 7.131e-01 > 1e-6
+  C- K1 decoded FI|4 t5 (FI__4__cert__gauss160__0p25.npz): decode-vs-reference 4.509e-04; wall gd RMS / ref Laplacian RMS 1.821e+01
+  ok   C- decode sanity: K1 decoded field within 5 % of the reference at t5 (4.509e-04)
+  ok   C- K1 bank must fail: 1.821e+01 > 1e-3
+
+0 failure(s)

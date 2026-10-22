@@ -1,0 +1,8 @@
+host=pax009 job=6187384 source_commit=88b30be594bc9a77a0b31c1aff930fbd12cb45a5 precision=highest
+0, NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 575.57.08, 143771 MiB
+10.235.106.28:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+jax_backend=gpu
+STEP fpolicy configs/pole10s.json 2026-10-22T08:17:30Z
+jax_backend=gpu x64=True precision=highest
+FPOLICY COMPLETE 567.1 {'INVALID': 0, 'Q2-FAIL': 5, 'STEP-UNCONVERGED': 21, 'STEP-UNAVAILABLE': 0, 'CONVERGED': 14, 'ROUND-CAP': 0, 'BUDGET-CAP': 0}
+ALL-DONE

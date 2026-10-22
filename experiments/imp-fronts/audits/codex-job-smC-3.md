@@ -1,0 +1,9 @@
+- **CORRECT:** Staged `smokec` computes `projection_conservative_s = projection_s + B_extract` and certifies against 16,440 s.
+- **CORRECT:** `resources.train_c_item` validates that identity and uses the conservative total for projected hours and certification.
+- **CORRECT:** Boundary probes accept 16,440 s; reject 16,500 s, missing bounds, and inconsistent bounds.
+- **CORRECT:** All 74 manifest entries verify; no unlisted payload files; Python parsing and shell syntax pass.
+- **CORRECT:** Staged timing, projection, and job-body scripts match their sources.
+- **CORRECT:** GPU preflight, f64/highest, positive timeout guards, and failure gates remain configured.
+- **NEEDS-RESTATEMENT:** Extraction ×2 supplies the requested allowance; it does not establish a measured upper bound on untested partial-shape compilation.
+- **NEEDS-RESTATEMENT:** Completion within 27 minutes remains unverified pending execution.
+- **CORRECT:** Audit remained read-only: no changes, jobs, SSH, scratch, or LAB-LOG writes.

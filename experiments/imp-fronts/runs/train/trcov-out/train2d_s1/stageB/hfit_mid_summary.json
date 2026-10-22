@@ -1,0 +1,18 @@
+{
+ "seed": 1,
+ "steps": 200000,
+ "steps_done": 200000,
+ "seconds": 337.96370911598206,
+ "time_cap_s": 1500,
+ "time_cap_fired": false,
+ "final_loss": 0.00027594960504381317,
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "extraction_gates": {
+  "gram_identity_rel_dev_max": 1.7668676487303903e-13,
+  "gram_identity_rel_dev_mean": 3.825116385016981e-15,
+  "gram_identity_rows": 64,
+  "gram_identity_implied_field_rel": 4.495295293136479e-15,
+  "span_floor_direct_vs_gram_rel_dev": 2.2014386762306007e-16
+ },
+ "note": "time_cap_fired=True is a recipe deviation for this seed (DESIGN A2.10)"
+}

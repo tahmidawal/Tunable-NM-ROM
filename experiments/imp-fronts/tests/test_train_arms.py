@@ -107,15 +107,21 @@ def static():
     RESULTS['base_tree'] = dict(n=len(got), identical=got == want)
 
     print('[S3] staged arm trees differ only in their declared files; staged PROVENANCE passes run_seed.sh guard')
-    for arm in ('fid', 'cov'):
+    for arm in ('fid', 'cov', 'bnd'):
         ja, ta = stage(arm)
         ga = tree(ta)
         spec = json.loads((T2 / 'arms' / arm / 'ARM.json').read_text())
         declared = {f['dst'] for f in spec['files']} | {'PROVENANCE.json'}
         diff = {p for p in set(ga) | set(want) if ga.get(p) != want.get(p)}
         check(diff == declared, f'{arm}: changed paths = declared ({len(declared)}): {sorted(diff)}')
-        check(ga['stageA/deps/burgers2d_film.py'] == ga[f'{GB}/burgers2d_film.py'] != INC_GEN,
-              f'{arm}: generator replaced in BOTH places (Stage A deps, Stage B burgers2d-coord-rom), identical copies')
+        if arm == 'bnd':
+            check(ga['stageA/deps/burgers2d_film.py'] == ga[f'{GB}/burgers2d_film.py'] == INC_GEN
+                  and ga['stageB/code/sep_common.py'] == ga['rotation/sep_common.py'] != want['stageB/code/sep_common.py']
+                  and ga['stageA/deps/sep_common.py'] != want['stageA/deps/sep_common.py'],
+                  'bnd: generator = incumbent in both places; sep_common replaced in Stage A, Stage B and rotation')
+        else:
+            check(ga['stageA/deps/burgers2d_film.py'] == ga[f'{GB}/burgers2d_film.py'] != INC_GEN,
+                  f'{arm}: generator replaced in BOTH places (Stage A deps, Stage B burgers2d-coord-rom), identical copies')
         p = json.loads((ta / 'PROVENANCE.json').read_text())
         ed = sorted(f['path'] for f in p['files'] if f.get('edited'))
         check(all(sha(ta / f['path']) == f['sha256'] for f in p['files']) and set(f['path'] for f in p['files'])

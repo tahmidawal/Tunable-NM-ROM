@@ -1,0 +1,150 @@
+{
+ "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/imp-fronts/runs/rom/SEL-b-out/output/r2acc_e2sb",
+ "bank": "b",
+ "job_id": "6184841",
+ "commit": "6d230eec2b9a67df8455f9ece8ee6758a5bd0410",
+ "selected": {
+  "384": {
+   "rule": "gauss128",
+   "outcome": "selected",
+   "smoke": false,
+   "target_certified": true,
+   "deployed": "gauss128",
+   "equals_deployed": true
+  }
+ },
+ "cells": {
+  "384": {
+   "LSPG_BE_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0015809129067496995,
+     "median_e": 0.010051446483462017,
+     "worst_e": 0.029290615291731558
+    },
+    "fib6765": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0009251025596961956,
+     "median_e": 0.010052275622012226,
+     "worst_e": 0.029282796264340626
+    },
+    "gauss96": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.00023683343245000884,
+     "median_e": 0.010052682574628808,
+     "worst_e": 0.02928368489156513
+    },
+    "fib10946": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0007594207460762146,
+     "median_e": 0.01005225944327774,
+     "worst_e": 0.029283555047060345
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 0.00010882800580509495,
+     "median_e": 0.010051767188521913,
+     "worst_e": 0.02928345074734519
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 6.560520571681367e-05,
+     "median_e": 0.010051808391277202,
+     "worst_e": 0.029283472016156574
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 3.400084584666078e-05,
+     "median_e": 0.010051991520406731,
+     "worst_e": 0.029283498803995646
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   },
+   "LSPG_CNR_1": {
+    "fib4181": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0017163030599137603,
+     "median_e": 0.0021984473954098703,
+     "worst_e": 0.01664820250017525
+    },
+    "fib6765": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0009850402208046191,
+     "median_e": 0.002200011921383066,
+     "worst_e": 0.016641698489162332
+    },
+    "gauss96": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.000289320645314454,
+     "median_e": 0.0022003704921059056,
+     "worst_e": 0.01663913084503355
+    },
+    "fib10946": {
+     "qualified": false,
+     "own": false,
+     "status": "ok",
+     "D": 0.0007654868486258074,
+     "median_e": 0.002199448992493707,
+     "worst_e": 0.016639746367169535
+    },
+    "gauss128": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 0.0001304435438371629,
+     "median_e": 0.0022015655407149545,
+     "worst_e": 0.01663926010119577
+    },
+    "gauss160": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 5.3824298245413756e-05,
+     "median_e": 0.0022003774277127557,
+     "worst_e": 0.016639249925777286
+    },
+    "gauss192": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 3.89421495854443e-05,
+     "median_e": 0.002199288047526829,
+     "worst_e": 0.016639225604293168
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,8 @@
+- **CORRECT — FC1|4:** independently decoded saved coefficients give \(e=0.09090127097431541\), matching the score. Terminal **STEP-UNCONVERGED**: Q2 passes at factor 0.125, but no finer step certificate exists.
+- **CORRECT — FC1|8:** recomputed \(e=0.08337876465938159\), matching the score. Terminal **Q2-FAIL** takes precedence: successor distance \(0.0002593566>0.00025\).
+- **CORRECT — E10-s STOP:** all 40 policy histories replay correctly. Eight eligible FC1 cases, prerequisites/control available, zero qualified; seven STEP-UNCONVERGED and one Q2-FAIL. Median \(0.08286403>0.04060757\), the K1-halving threshold.
+- **CORRECT — pinned control:** SM-e’s FC1|0, gauss256, factor 0.5 has half-step distance \(0.0052940946>0.00025\); it fires at the required state. Evidence-file hash matches.
+- **CORRECT — E10 spending:** SM-e + POL-e10s charge **0.1992 GPU-h**; elapsed-time recomputation gives 0.1991667. Combined ceilings 1.1 GPU-h; both below the **10 GPU-h** cap.
+- **CORRECT — E10-q STOP without a job:** source hash and coverage match all 171 saved trajectories: 17,600 accepted states plus 171 initial states; zero threshold exceedances. Maximum ρ is 0.03863361 overall / 0.01477027 on FC1, below 0.116.
+- **CORRECT — validation scope:** 137 runs cross-check against recorded output-state ρ, maximum relative discrepancy \(2.50049\times10^{-9}<10^{-6}\). Remaining 34 lack that cross-check; every-step maxima rely on the validated evaluator, not an independent recomputation in this audit.
+- Read-only throughout; no jobs, SSH, file changes, or scratch files.

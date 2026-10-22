@@ -59,6 +59,8 @@ def main():
         G.check_write(d / js.name).write_bytes(js.read_bytes())
         rows.append(dict(case=str(js.relative_to(src)), source_npz=sha(js.with_suffix('.npz')), source_json=sha(js),
                          slim_npz=sha(d / js.with_suffix('.npz').name), finest=meta['final'][2], outcome=meta['outcome']))
+    G.check_dir(out)                                   # imp-fronts edit F7 (job audit refT-1): exists even when empty
+    out.mkdir(parents=True, exist_ok=True)
     G.check_write(out / 'MANIFEST.json').write_text(json.dumps(rows, indent=1) + '\n')
     print('REFSLIM', len(rows), 'cases', flush=True)
     assert rows or cfg.get('allow_empty'), 'no reference files found'

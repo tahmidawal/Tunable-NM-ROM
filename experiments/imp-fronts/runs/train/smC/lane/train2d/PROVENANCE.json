@@ -1,0 +1,168 @@
+{
+ "note": "Byte-identical copies (edited=false for every file). stageB/code/ reproduces the dn256b job's staged code tree layout (cluster/make_stage.sh) for the import closure of sep_coeff_extract.py and sep_hfit_run.py; every stageB file equals its dn256b MANIFEST.sha256 entry. The incumbent rotation (burgers-bank-knob inputs/rotation_R512.json) used checkpoint sha256 18f0266a... and directions sha256 79d79458... (= rotation/inputs/directions_qtd02.npz).",
+ "files": [
+  {
+   "path": "stageA/smoothtrain.py",
+   "sha256": "fb4206687a040e278cb965f4893fa93aa616ea276a37c85eb3ec6d00ac67bcf0",
+   "bytes": 24380,
+   "source_branch": "exp/2026-10-08-jcp-smooth-bank",
+   "source_commit": "12f620782ea27deefe412c91da6f8fffa4e8004f",
+   "source_path": "experiments/jcp-smooth-bank/smoothtrain.py",
+   "edited": false
+  },
+  {
+   "path": "stageA/deps/burgers2d_film.py",
+   "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+   "bytes": 22619,
+   "source_branch": "exp/2026-10-08-jcp-smooth-bank",
+   "source_commit": "12f620782ea27deefe412c91da6f8fffa4e8004f",
+   "source_path": "experiments/jcp-smooth-bank/deps/burgers2d_film.py",
+   "edited": false
+  },
+  {
+   "path": "stageA/deps/sep_common.py",
+   "sha256": "1f1c27961967189a9c58d50e855ab245e668cf309baf500d8b4b120d0313b97f",
+   "bytes": 13817,
+   "source_branch": "exp/2026-10-08-jcp-smooth-bank",
+   "source_commit": "12f620782ea27deefe412c91da6f8fffa4e8004f",
+   "source_path": "experiments/jcp-smooth-bank/deps/sep_common.py",
+   "edited": false
+  },
+  {
+   "path": "stageB/code/sep_coeff_extract.py",
+   "sha256": "b16e9303609e7f3e7ce0d03f2fe7277ff70644ca5ce961eb191d6cf08b3d1019",
+   "bytes": 19526,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/separable-decoder/sep_coeff_extract.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/sep_coeff_extract.py"
+  },
+  {
+   "path": "stageB/code/sep_hfit_run.py",
+   "sha256": "a3c7d951224c2aeb458c735653b8f5fa4b0c25062495ce8ad8bb94239a6a1894",
+   "bytes": 21058,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/separable-decoder/sep_hfit_run.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/sep_hfit_run.py"
+  },
+  {
+   "path": "stageB/code/sep_hfit.py",
+   "sha256": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8",
+   "bytes": 12803,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/separable-decoder/sep_hfit.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/sep_hfit.py"
+  },
+  {
+   "path": "stageB/code/sep_common.py",
+   "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+   "bytes": 14780,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/separable-decoder/sep_common.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/sep_common.py"
+  },
+  {
+   "path": "stageB/code/deps/burgers2d-rom-latent-stepping/blat_common.py",
+   "sha256": "5f7f121cb8bb20b08d2279668db3647c8950a7847832c4bb95da9ab4d26bb7c0",
+   "bytes": 42914,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/burgers2d-rom-latent-stepping/blat_common.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/deps/burgers2d-rom-latent-stepping/blat_common.py"
+  },
+  {
+   "path": "stageB/code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py",
+   "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4",
+   "bytes": 22619,
+   "source_branch": "exp/2026-10-08-jcp-smooth-bank",
+   "source_commit": "12f620782ea27deefe412c91da6f8fffa4e8004f",
+   "source_path": "experiments/jcp-smooth-bank/deps/burgers2d_film.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/deps/burgers2d-rom-latent-stepping/deps/burgers2d-coord-rom/burgers2d_film.py"
+  },
+  {
+   "path": "stageB/code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py",
+   "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+   "bytes": 18723,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py"
+  },
+  {
+   "path": "stageB/code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_autodecoder.py",
+   "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f",
+   "bytes": 21740,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_autodecoder.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/deps/burgers2d-rom-latent-stepping/deps/multistage-precision/ms_autodecoder.py"
+  },
+  {
+   "path": "stageB/code/deps/nonlinear-decoder-architecture/nda_arch.py",
+   "sha256": "cccf0e698a634454c1871c0f774b1a378edf18694a88bb03627b69e568aff6fb",
+   "bytes": 8684,
+   "source_branch": "exp/2026-10-19-jcp-robust",
+   "source_commit": "769fd56927b369cb7b8c8357ba3c1cbdc385a2ab",
+   "source_path": "experiments/nonlinear-decoder-architecture/nda_arch.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/deps/nonlinear-decoder-architecture/nda_arch.py"
+  },
+  {
+   "path": "rotation/make_rotation.py",
+   "sha256": "e5b196e22e41a4d4c26774a6ac1b21ce38c72a8bcf5305adc75c250280e34cf3",
+   "bytes": 6862,
+   "source_branch": "exp/2026-09-23-burgers-bank-knob",
+   "source_commit": "340627cab9822f502295a842dad8336515c8b51a",
+   "source_path": "experiments/burgers-bank-knob/make_rotation.py",
+   "edited": false
+  },
+  {
+   "path": "rotation/arms.py",
+   "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+   "bytes": 15874,
+   "source_branch": "exp/2026-09-23-burgers-bank-knob",
+   "source_commit": "340627cab9822f502295a842dad8336515c8b51a",
+   "source_path": "experiments/head-ablation/arms.py",
+   "edited": false
+  },
+  {
+   "path": "rotation/engines.py",
+   "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+   "bytes": 16058,
+   "source_branch": "exp/2026-09-23-burgers-bank-knob",
+   "source_commit": "340627cab9822f502295a842dad8336515c8b51a",
+   "source_path": "experiments/mr-burgers2d/engines.py",
+   "edited": false
+  },
+  {
+   "path": "rotation/sep_common.py",
+   "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+   "bytes": 14780,
+   "source_branch": "exp/2026-09-23-burgers-bank-knob",
+   "source_commit": "340627cab9822f502295a842dad8336515c8b51a",
+   "source_path": "experiments/separable-decoder/sep_common.py",
+   "edited": false,
+   "matches_dn256b_MANIFEST": "experiments/separable-decoder/runs/dn256b/MANIFEST.sha256 :: code/sep_common.py"
+  },
+  {
+   "path": "rotation/inputs/directions_qtd02.npz",
+   "sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+   "bytes": 4041852,
+   "source_branch": "exp/2026-09-23-burgers-bank-knob",
+   "source_commit": "340627cab9822f502295a842dad8336515c8b51a",
+   "source_path": "experiments/b-panel/inputs/directions_qtd02.npz",
+   "edited": false
+  }
+ ]
+}

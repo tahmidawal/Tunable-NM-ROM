@@ -1,0 +1,10 @@
+- **WRONG:** Extraction weighting remains inaccurate: smoke assumes 514 identical 256-state calls; production makes 498 full + 71 partial training calls and eight 51-state test calls. Shape-dependent compilation/cost remains unmeasured; fix before submission.
+- **CORRECT:** Features, Gram and Cholesky are now built once per bank; projection uses production’s formula.
+- **CORRECT:** Extraction now has a recorded 20-second burn-in before timing.
+- **CORRECT:** Remaining-time arguments have positive guards; the `timeout 0` defect is fixed.
+- **CORRECT:** Manifest completeness, hashes, staged provenance, Python parsing and shell syntax pass.
+- **CORRECT:** Identity-tested bank implementations match the staged training copies.
+- **CORRECT:** A100-80G/gpu allocation, absolute venv, f64/highest and GPU preflight remain configured.
+- **CORRECT:** Identity/timing/chaining failures block completion; over-budget projections remain uncertified.
+- **NEEDS-RESTATEMENT:** Completion within 27 minutes remains unestablished; no execution evidence was collected.
+- **CORRECT:** Audit was read-only: no changes, jobs, SSH, scratch or LAB-LOG writes.

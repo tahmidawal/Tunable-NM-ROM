@@ -1,0 +1,9 @@
+host=pax008 job=6187130 source_commit=6e68a8b3cc9152ad3129df1841181a22a32d9362 precision=highest
+0, NVIDIA H200, GPU-aaf512b7-e3e2-7531-dd67-71a6810293b4, 575.57.08, 143771 MiB
+10.235.106.23:/projects/paralab  4.6T  1.3T  3.3T  29% /cluster/tufts/paralab
+jax_backend=gpu
+STEP fpolicy smke10s timeout=960s 2026-10-22T07:39:30Z
+jax_backend=gpu x64=True precision=highest
+FPOLICY COMPLETE 146.8 {'INVALID': 0, 'Q2-FAIL': 0, 'STEP-UNCONVERGED': 2, 'STEP-UNAVAILABLE': 0, 'CONVERGED': 0, 'ROUND-CAP': 0, 'BUDGET-CAP': 0}
+SM-e checks {'complete': True, 'backend_gpu': True, 'precision_highest': True, 'bank_is_K1': True, 'factor_set_e10s': True, 'start_gauss160': True, 'fc1_dev_cases': True, 'control_fired': True, 'all_four_factors': True, 'solves_match_history': True, 'mandatory_solves': True, 'replay_state_machine': True, 'step_wall_clock': True}
+ALL-DONE

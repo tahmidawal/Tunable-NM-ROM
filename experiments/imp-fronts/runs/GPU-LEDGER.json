@@ -1,1 +1,184 @@
-{"lane":"imp-fronts","cap_gpu_hours":15,"jobs":[],"cumulative_gpu_hours":0.0,"deferred":[]}
+{
+ "lane": "imp-fronts",
+ "cap_gpu_hours": 15,
+ "jobs": [
+  {
+   "name": "SM-b",
+   "item": "SM-b",
+   "job_id": "6174021",
+   "gpu": "a100-80G",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.4,
+   "state": "done",
+   "charged_gpu_h": 0.1989,
+   "commit": "cb902dcbe",
+   "elapsed": "00:11:56"
+  },
+  {
+   "name": "SM-r",
+   "item": "SM-r",
+   "job_id": "6174599",
+   "gpu": "h200",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.4,
+   "state": "done",
+   "charged_gpu_h": 0.2369,
+   "commit": "4f6230750",
+   "elapsed": "00:14:13"
+  },
+  {
+   "name": "TR-cov",
+   "item": "train_b",
+   "job_id": "6177953",
+   "gpu": "a100-80G",
+   "ngpu": 1,
+   "ceiling_gpu_h": 4.6,
+   "state": "done",
+   "charged_gpu_h": 3.9381,
+   "elapsed": "03:56:17"
+  },
+  {
+   "name": "refT",
+   "item": "references",
+   "job_id": "6177954",
+   "gpu": "h200",
+   "ngpu": 2,
+   "ceiling_gpu_h": 3.25,
+   "state": "done",
+   "charged_gpu_h": 1.5317,
+   "elapsed": "00:45:57"
+  },
+  {
+   "name": "POL-K1",
+   "item": "policy_K1",
+   "job_id": "6179582",
+   "gpu": "h200",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.5,
+   "state": "done",
+   "charged_gpu_h": 0.1014,
+   "elapsed": "00:06:05"
+  },
+  {
+   "name": "SEL-b",
+   "item": "select_b",
+   "job_id": "6184841",
+   "gpu": "a100-80G",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.4,
+   "state": "done",
+   "charged_gpu_h": 0.2358,
+   "elapsed": "00:14:09"
+  },
+  {
+   "name": "POL-b",
+   "item": "policy_b",
+   "job_id": "6185204",
+   "gpu": "h200",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.5,
+   "state": "done",
+   "charged_gpu_h": 0.0842,
+   "elapsed": "00:05:03"
+  },
+  {
+   "name": "SM-e",
+   "item": "SM-e",
+   "bucket": "E10",
+   "job_id": "6187130",
+   "gpu": "h200",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.3,
+   "state": "done",
+   "charged_gpu_h": 0.0414,
+   "elapsed_s": 149
+  },
+  {
+   "name": "POL-e10s",
+   "item": "policy_e10s",
+   "bucket": "E10",
+   "job_id": "6187384",
+   "gpu": "h200",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.8,
+   "state": "done",
+   "charged_gpu_h": 0.1578,
+   "elapsed_s": 568
+  },
+  {
+   "name": "SM-c",
+   "item": "SM-c",
+   "bucket": "E8",
+   "job_id": "6187422",
+   "gpu": "a100-80G",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.45,
+   "state": "done",
+   "charged_gpu_h": 0.1503,
+   "note": "submitted although resources.admit returned \"SM-c is not a smoke of the plan\" (selected plan S3; S3C not yet certified because SM-c itself measures train_c). Amendment-5 arithmetic holds: spent 6.327 + SM-c 0.45 + remaining arm-c ceilings 5.5 = 12.28 <= 15. Procedural deviation, disclosed.",
+   "elapsed_s": 541
+  },
+  {
+   "name": "TR-bnd",
+   "item": "train_c",
+   "bucket": "E8",
+   "job_id": "6187640",
+   "gpu": "a100-80G",
+   "ngpu": 1,
+   "ceiling_gpu_h": 4.6,
+   "state": "done",
+   "charged_gpu_h": 3.7414,
+   "elapsed": "03:44:29"
+  },
+  {
+   "name": "SEL-c",
+   "item": "select_c",
+   "bucket": "E8",
+   "job_id": "6191938",
+   "gpu": "a100-80G",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.4,
+   "state": "done",
+   "charged_gpu_h": 0.2392,
+   "elapsed_s": 861
+  },
+  {
+   "name": "POL-c",
+   "item": "policy_c",
+   "bucket": "E8",
+   "job_id": "6192346",
+   "gpu": "h200",
+   "ngpu": 1,
+   "ceiling_gpu_h": 0.5,
+   "state": "done",
+   "charged_gpu_h": 0.0872,
+   "elapsed_s": 314
+  }
+ ],
+ "cumulative_gpu_hours": 10.7443,
+ "deferred": [
+  {
+   "item": "arm (a) fidelity retrain",
+   "reason": "S1 over the 15 GPU-h cap (Amendments 11-14); coordinator release was S3 only"
+  },
+  {
+   "item": "K2/K3 ROM policy scoring",
+   "reason": "Amendment 8 defer order; floors only"
+  },
+  {
+   "item": "E9 paired FOM-fallback timing",
+   "reason": "Amendment 12; fallback cost unmeasured"
+  },
+  {
+   "item": "F7 GPU timing gate",
+   "reason": "not in the lane brief"
+  },
+  {
+   "item": "E10-q quadrature escalation job",
+   "reason": "resolved from every-step evidence without a job (E10-DESIGN \u00a710): STOP"
+  }
+ ],
+ "notes": [
+  "arm (c) was released by the coordinator after arm (b) stopped and ran under the E8 cap (schedule S3C)"
+ ]
+}

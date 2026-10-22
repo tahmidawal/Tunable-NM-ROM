@@ -1,0 +1,13 @@
+- **CORRECT** — Staged manifest verifies; checkpoint and rotation are byte-identical to jcp-robust s1.
+- **CORRECT** — S3 config: 16 dev/val + 24 test cases; test counts FI/FN0s/FC1/FC2 = 6/8/8/2, using lowest indices.
+- **CORRECT** — R384 LSPG-CN-R, mesh 1024, gauss160 start, registered candidate/successor maps, factors 1/0.5/0.25 and ten-round cap.
+- **CORRECT** — Prod Q1 includes tight comparison; default tighter anchors resolve to FI|4,5 and FC1|4,5; qualification applies the pooled ≤1% nonstationary fraction.
+- **CORRECT** — `gpu` partition, one H200, absolute cluster venv, f64/highest and GPU preflight exit 42; output/cache/temp paths use the lane namespace.
+- **CORRECT** — Hard ceiling 0.5 h; self-timer starts at batch entry and stops new solves at 90%; unfinished cases become BUDGET-CAP, with persisted-output recovery.
+- **CORRECT** — Registration hashes recompute exactly; exclusive shared claim occurs before setup, burn-in or any test solve.
+- **CORRECT** — SM-r evidence hashes verify; controls/dry-run pass, and checked policy/certificate sources match the smoke.
+- **CORRECT** — Amendment 18 expected cost 0.25135 h < 0.45 h cutoff; worst-path projection 0.40368 h. Neither guarantees completion.
+- **CORRECT** — Recorded admission accounting totals 9.6858 GPU-h including running and remaining S3 ceilings, below 15.
+- **NEEDS-RESTATEMENT** — Outputs supply K1’s policy states/coefficients, not the final stop-rule answer. Reference scoring must compute the median over **all eligible FC1 test cases**, invalid = ∞, without filtering K1 by qualification; ≥6 eligible cases and a finite median are required.
+- **NEEDS-RESTATEMENT** — Submission readiness remains conditional on fresh queue/admission checks; no SSH was used to verify live state.
+- **CORRECT** — No staged submission blocker found; audit remained read-only, with no jobs, scratch, sealed/OOD access or log writes.

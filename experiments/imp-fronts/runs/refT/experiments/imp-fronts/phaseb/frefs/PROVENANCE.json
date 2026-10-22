@@ -1,0 +1,90 @@
+[
+ {
+  "file": "refjob.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/refjob.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/refjob.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "0c994b87b462462a0cd74d03c79284626a95ae1dd3820ce1bebc316905f6655b",
+  "edited_sha256": "5e9152f551f4ff7dba82bf5623dd4d04004ddcf6716e339a6b393d9ddf7842de",
+  "edits": "F1 sys.path prelude for the read-only vendor modules (worktree experiments/mr-burgers2d, jcp-regimes vendor/quad3d/vendor/burgers3d-span); F2 rcohorts replaced by fresh.py (FI, FN0s, FC1, FC2 from ../fresh_cohorts.json, sha-verified); F3 mode_fd allow-list = the four fresh cohorts, split test (j>=4) or dev-smoke (FC1/FC2 j=0), tight allowance 0, split in the resume-config keys; F4 ps mode and any mode other than fd/gates refused; F5 namespace /cluster/tufts/paralab/tawal01/imp-fronts/; F6 dry_run config flag (import / allow-list check, before the gates, no solve)"
+ },
+ {
+  "file": "cohorts.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/cohorts.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/cohorts.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "59ee1afb7caf290e3209f366e7566f7b244e967c3fc391e446bcfc8d73eda767",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "gates.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/gates.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/gates.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "7d0196d043636ed8ada74baef7d91c7df74bea8d3a2406e97d66aa4bcd7c3395",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "pscore.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/pscore.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/pscore.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "83d8a004c4914de456c02fef31a74050ebe90bfb74cc9e6ed2fa693730449548",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "refcore.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/refcore.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/refcore.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "8c78b9406b4efea6320398be109a542887d954e2725356b2e1a2ea35ecf90d98",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "sealio.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/sealio.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/sealio.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "a99c237250026a6d27c5626e5114e714242ec179a1a2e2324249a0765cdf98b8",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "verdict.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/verdict.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/verdict.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "f004845931ddeb253a8ad5ea35c30a82cd8a7b3d24a18aa24b82fbd99ce9c0ba",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "guard.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/guard.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/guard.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "dd0a6718e3fb31f3bf834737e7c9ce0cebc45c5953a687737d350d16a60a8e95",
+  "edited_sha256": "840fdd755f48fe281e62e137f3e8a56f06265f87ce27f87c3ab9f7a67e51916b",
+  "edits": "F5 LANE_NS = /cluster/tufts/paralab/tawal01/imp-fronts/"
+ },
+ {
+  "file": "refslim.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/refslim.py",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/refslim.py (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "807476bb44ef27047223b21b1a7c5bd7ae3d8c486474f8f33124f30204d8ad1d",
+  "edited_sha256": "5fecd436fa5def5bada3ccb0de7e26aa6db3c44c297a78b0c8c35a76b89622b0",
+  "edits": "F2 allowed cohorts = fresh.NAMES; F5 namespace assertion; F7 output dir created before MANIFEST.json (empty-finalisation fix, job audit refT-1)"
+ },
+ {
+  "file": "checks/calib_2d.json",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/checks/calib_2d.json",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/calib_2d.json (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "1505d9b3ec815b8d8ce4cb54fade07b71b812ebea91fd4bf50dca55ee02aa513",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "checks/rng_golden.json",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/jcp-regimes/checks/rng_golden.json",
+  "source_note": "byte-identical to worktrees/2026-10-19-jcp-regimes/experiments/jcp-regimes/checks/rng_golden.json (branch exp/2026-10-19-jcp-regimes @70ce5f0f2) and to the consolidated copy in this worktree",
+  "sha256": "620b1ea38f86e800811a84c5a13d4ad6b26fff90aae276e51d366c4dbad9c4ce",
+  "status": "copied unchanged"
+ },
+ {
+  "file": "fresh.py",
+  "status": "new (imp-fronts)",
+  "sha256": "541188a3d6f3fce8208945cba95ec3b88673efb6e42cccb53e38890d930f9db9"
+ },
+ {
+  "note": "not copied (read-only imports at their worktree paths, staged with the job): experiments/mr-burgers2d/engines.py, experiments/separable-decoder/sep_common.py, experiments/jcp-regimes/vendor/quad3d/vendor/burgers3d-span/common.py and its paper-b3d vendor b3d_common.py"
+ }
+]

@@ -1,0 +1,64 @@
+{
+ "frozen_sha256": "5387280f8c0cf67c511f704d6edad472bc03a7a1e5765c969377fb618e381ef0",
+ "tau_s": 112.77421045725197,
+ "n_test": 24,
+ "n_missing": 0,
+ "n_ineligible": 0,
+ "n": 24,
+ "targets": {
+  "A": {
+   "threshold": 0.003834528307579255,
+   "n_bad": 19,
+   "n_good": 5,
+   "auc": 1.0,
+   "detection": 1.0,
+   "detection_cp95_lower": 0.8541314966877566,
+   "false_alarm": 0.0,
+   "false_alarm_cp95_upper": 0.450719728346941,
+   "label": "inconclusive (F12 minimum 30 good / 20 bad not met)"
+  },
+  "B": {
+   "threshold": 0.01,
+   "n_bad": 17,
+   "n_good": 7,
+   "auc": 1.0,
+   "detection": 1.0,
+   "detection_cp95_lower": 0.8384338887392598,
+   "false_alarm": 0.2857142857142857,
+   "false_alarm_cp95_upper": 0.658738563844664,
+   "label": "inconclusive (F12 minimum 30 good / 20 bad not met)"
+  }
+ },
+ "flagged_fraction": 0.7916666666666666,
+ "input_flagged_fraction": 0.7916666666666666,
+ "failure_fallback_fraction": 0.0,
+ "flagged_by_cohort": {
+  "FC1": {
+   "alarm": 1.0,
+   "input": 1.0,
+   "failure": 0.0
+  },
+  "FC2": {
+   "alarm": 1.0,
+   "input": 1.0,
+   "failure": 0.0
+  },
+  "FI": {
+   "alarm": 0.16666666666666666,
+   "input": 0.16666666666666666,
+   "failure": 0.0
+  },
+  "FN0s": {
+   "alarm": 1.0,
+   "input": 1.0,
+   "failure": 0.0
+  }
+ },
+ "n_invalid": 0,
+ "routing": {
+  "input_routing": "queries with s > tau_s go straight to the FOM (s is a known input; no ROM cost); the others run the ROM, and those whose run is invalid fall back to the FOM after paying the ROM cost",
+  "rom_then_fallback": "every query runs the ROM; input-flagged and failed queries also run the FOM",
+  "cost": "unmeasured (paired fallback timing deferred, Amendment 12)"
+ },
+ "note": "s is a known input on this family: the indicator is a safety feature, not a speed one"
+}

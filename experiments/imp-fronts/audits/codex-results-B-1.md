@@ -1,0 +1,13 @@
+- **CORRECT — Scores:** independently decoded arm b with bank sb for FC1 and FI cases 4, 5, 9. Errors match `score_b.json` within \(9\times10^{-17}\); corresponding K1 checks within \(1.3\times10^{-16}\).
+- **CORRECT — Floors:** independent QR projections reproduce \(f_{384}\) and \(f_{512}\) for those six cases across b and K0–K3 within \(3\times10^{-16}\). All saved cohort summaries reproduce.
+- **CORRECT — Provenance:** checked bank hashes agree across training, selection, policy, scores and floors. All 24 reference outcomes agree with REF-LEDGER; uncertainty remains conditional Richardson.
+- **CORRECT — Selection:** `selection_b.json` faithfully reports certified gauss128, 16,384 nodes. Selection cells reject all earlier candidates and qualify gauss128 under both schemes.
+- **CORRECT — Qualification:** all 48 scored b/K1 labels reproduce from policy records. Both banks have 0/8 qualified FC1 cases, all STEP-UNCONVERGED; FI has 2/6 qualified. Pooled nonstationarity: b 0/7,600; K1 0/7,150.
+- **CORRECT — Guard:** FI worst floor is 0.387578% versus K1’s 0.411569%; ratio 0.941710 passes the 2× guard.
+- **CORRECT — STOP (endpoint):** Amendment 3 precedence reaches step 3: guard passes, but the sole ROM route fails qualification on every eligible FC1 case.
+- **CORRECT — Diagnostic median bar:** 5.810054% versus 8.121515% is only 1.398× improvement; passing requires ≤4.060757%. Qualification aside, the 2× bar fails.
+- **CORRECT — E9:** threshold 112.774210; 19/24 flagged; AUC 1 for both targets. A: 19 bad/5 good, detection 100%, false alarms 0%; B: 17/7, detection 100%, false alarms 28.5714%. All four confidence bounds reproduce; both outcomes remain inconclusive.
+- **CORRECT — GPU accounting:** recorded elapsed × GPU count totals 6.326944 GPU-h, rounding to 6.327, below 15. Every charge agrees within rounding; refT correctly charges two GPUs. This verifies retained elapsed records, without independent scheduler access.
+- **CORRECT — Backend:** all seven top-level job logs and all twelve reference-worker logs contain `jax_backend=gpu`.
+- **NEEDS-RESTATEMENT — Deferral ledger:** `GPU-LEDGER.json` has `"deferred": []` despite deferred arms a/c, K2/K3 ROM scoring and E9 timing. Record these explicitly; this does not change STOP.
+- **Scope:** no files changed, jobs submitted, SSH, sealed/OOD access or scratch files created.

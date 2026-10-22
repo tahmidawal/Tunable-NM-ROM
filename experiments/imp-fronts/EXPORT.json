@@ -1,0 +1,518 @@
+{
+ "lane": "imp-fronts",
+ "phase": "A + B (S3C: arms b, c) + E10",
+ "commit": "1778805f7",
+ "reference_label": "conditional E0 / E0-style ST",
+ "A1": {
+  "verdict": "INCONCLUSIVE (control failed)",
+  "controls_pass": false,
+  "summary": {
+   "D_bank384_med_T6": 0.9280053934866557,
+   "D_bank384_gt1_T6": 2,
+   "D_bank128_med_T6": 1.0136558542312062,
+   "D_bank384_med_X": 1.1171427848193578,
+   "D_bank128_med_X": 1.0520854548622582,
+   "spearman_D384_q_X": 0.0035152636447733578,
+   "e_upw_vs_ref_med_X": 0.01474669540306414,
+   "e_upw_vs_ref_max_X": 0.06723160398605149,
+   "D_bank384_med_T6_n256": 0.9278515170531574
+  },
+  "source": "checks/a1_smear.json"
+ },
+ "A2": {
+  "decision_arm_c": "RUN",
+  "controls_pass": true,
+  "in_range": {
+   "n_eligible": 38,
+   "n_rom_valid": 38,
+   "n_laplacian_unavailable": 0,
+   "kappa_a_med": {
+    "rom": 29.26464270137678,
+    "proj": 25.543061938967107
+   },
+   "kappa_unconverged": {
+    "rom": 0,
+    "proj": 0
+   },
+   "omega_available": {
+    "rom": 38,
+    "proj": 38,
+    "ref": 38
+   },
+   "beta_med": {
+    "rom": -0.44919653008103055,
+    "proj": -0.40371256785420595,
+    "ref": -2.272119516087897
+   },
+   "tau4096_med": {
+    "rom": 0.00019329813661455225,
+    "proj": 9.782452324951524e-05,
+    "ref": 1.0631724482257921e-07
+   },
+   "omega_med": {
+    "rom": 0.950571355799446,
+    "proj": 0.931398870016603,
+    "ref": 0.6921457141690341
+   },
+   "tau4096_ratio_rom_ref_med": 2165.2113973877194,
+   "tau4096_ratio_proj_ref_med": 931.8649063864113,
+   "ctrl_omega_plus_med": 0.8130354355212993,
+   "ctrl_omega_minus_med": 0.046883626396934094
+  },
+  "source": "checks/a2_wall.json"
+ },
+ "A3": {
+  "verdict": "CPU truncation screen passed; F7 timing gate deferred",
+  "verdict_regime_scope": "pass (descriptive)",
+  "primary": "R384|LSPG_CNR_1",
+  "primary_scopes": {
+   "in_range": {
+    "n": 38,
+    "worst": 0.017752691043501787,
+    "dworst_16": 0.40162782809812014,
+    "dworst_2304": -0.004194765919755299,
+    "dworst_4096": -0.003724101398231802,
+    "dworst_9216": -0.002598190078563727,
+    "dworst_65025": 3.469446951953614e-18,
+    "maxrise_16": 0.414399884946873,
+    "maxrise_2304": -7.044746154012595e-07,
+    "maxrise_4096": -4.066477103849969e-07,
+    "maxrise_9216": -1.82555092189925e-07,
+    "maxrise_65025": 2.8189256484623115e-17
+   },
+   "all_regimes": {
+    "n": 115,
+    "worst": 0.3036740449157471,
+    "dworst_16": 0.3325061072629242,
+    "dworst_2304": -0.051041502382543236,
+    "dworst_4096": -0.03775709192021737,
+    "dworst_9216": -0.016361471805462657,
+    "dworst_65025": 0.0,
+    "maxrise_16": 0.5326563424113476,
+    "maxrise_2304": 0.019973131012495975,
+    "maxrise_4096": 0.009170754786140725,
+    "maxrise_9216": 0.0014663689413342215,
+    "maxrise_65025": 5.551115123125783e-17
+   },
+   "everything": {
+    "n": 153,
+    "worst": 0.3036740449157471,
+    "dworst_16": 0.3325061072629242,
+    "dworst_2304": -0.051041502382543236,
+    "dworst_4096": -0.03775709192021737,
+    "dworst_9216": -0.016361471805462657,
+    "dworst_65025": 0.0,
+    "maxrise_16": 0.5326563424113476,
+    "maxrise_2304": 0.019973131012495975,
+    "maxrise_4096": 0.009170754786140725,
+    "maxrise_9216": 0.0014663689413342215,
+    "maxrise_65025": 5.551115123125783e-17
+   }
+  },
+  "source": "checks/a3_trunc.json"
+ },
+ "A4": {
+  "verdict": "STOP F15",
+  "C1_worst": {
+   "H": 0.04352161134606242,
+   "S1024": 0.05850373062924003,
+   "B512": 0.06583685730904199,
+   "Hhi": 0.06583586121248934,
+   "H0": 0.06583685730904197
+  },
+  "source": "checks/a4_hybrid.json"
+ },
+ "gpu_hours_phase_a": 0.0,
+ "phase_b": {
+  "verdicts": {
+   "a": "NOT RUN",
+   "b": "STOP (endpoint)",
+   "c": "STOP (endpoint)"
+  },
+  "routes": {
+   "a": {},
+   "b": {
+    "rom": {
+     "status": "FAIL",
+     "why": "not numerically qualified on ['4', '5', '6', '7', '8', '9', '10', '11']",
+     "arm_median": 0.05810053891974609,
+     "ctrl_median": 0.08121514758583157,
+     "n": 8,
+     "resolved": {
+      "wins": 8,
+      "ties": 0,
+      "losses": 0,
+      "unresolved": 0,
+      "both_invalid": 0
+     }
+    }
+   },
+   "c": {
+    "mstar": {
+     "status": "FAIL",
+     "arm_nodes": 16384.0,
+     "bar": 12800.0,
+     "rule": "gauss128"
+    },
+    "tail": {
+     "status": "FAIL",
+     "why": "not numerically qualified on ['4', '6', '8', '9']",
+     "arm_median": 0.0002522665172930965,
+     "ctrl_median": 0.00037397466801837814,
+     "n": 6
+    }
+   }
+  },
+  "guards": {
+   "a": null,
+   "b": {
+    "status": "PASS",
+    "arm_worst": 0.003875781856845076,
+    "ctrl_worst": 0.004115686425730472,
+    "ratio": 0.9417097067003065,
+    "n": 6,
+    "resolved": {
+     "wins": 2,
+     "ties": 0,
+     "losses": 4,
+     "unresolved": 0,
+     "both_invalid": 0
+    }
+   },
+   "c": {
+    "status": "PASS",
+    "arm_worst": 0.005207628412899554,
+    "ctrl_worst": 0.004115686425730472,
+    "ratio": 1.2653122405882218,
+    "n": 6,
+    "resolved": {
+     "wins": 5,
+     "ties": 0,
+     "losses": 1,
+     "unresolved": 0,
+     "both_invalid": 0
+    }
+   }
+  },
+  "score_K1": {
+   "FI": {
+    "n_eligible": 6,
+    "median_e_diagnostic": 0.0006282756735077089,
+    "worst_e": 0.005969234401233436,
+    "qualified": 2,
+    "invalid": 0,
+    "terminals": {
+     "CONVERGED": 2,
+     "STEP-UNCONVERGED": 4
+    },
+    "median_tau4096": 0.00037397466801837814
+   },
+   "FN0s": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.012376233322832325,
+    "worst_e": 0.018915953784121833,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.009077966268424102
+   },
+   "FC1": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.08121514758583157,
+    "worst_e": 0.11082847354634125,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.047147534410396666
+   },
+   "FC2": {
+    "n_eligible": 2,
+    "median_e_diagnostic": 0.10144696829961422,
+    "worst_e": 0.1377279975745541,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "Q2-FAIL": 1,
+     "STEP-UNCONVERGED": 1
+    },
+    "median_tau4096": 0.05834059821341205
+   }
+  },
+  "score_b": {
+   "FI": {
+    "n_eligible": 6,
+    "median_e_diagnostic": 0.0011222526535734519,
+    "worst_e": 0.00735466115378483,
+    "qualified": 2,
+    "invalid": 0,
+    "terminals": {
+     "CONVERGED": 2,
+     "STEP-UNCONVERGED": 4
+    },
+    "median_tau4096": 0.0005339389218268691
+   },
+   "FN0s": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.009570239061154133,
+    "worst_e": 0.01296569981610067,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.005192731109956321
+   },
+   "FC1": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.05810053891974609,
+    "worst_e": 0.08108863070233124,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.028870310195843855
+   },
+   "FC2": {
+    "n_eligible": 2,
+    "median_e_diagnostic": 0.08819435157179911,
+    "worst_e": 0.11888942780214082,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 2
+    },
+    "median_tau4096": 0.04673706579304317
+   }
+  },
+  "score_c": {
+   "FI": {
+    "n_eligible": 6,
+    "median_e_diagnostic": 0.0004967376700724155,
+    "worst_e": 0.008421525591206507,
+    "qualified": 2,
+    "invalid": 0,
+    "terminals": {
+     "CONVERGED": 2,
+     "STEP-UNCONVERGED": 4
+    },
+    "median_tau4096": 0.0002522665172930965
+   },
+   "FN0s": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.01259772692918894,
+    "worst_e": 0.01702228614735763,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.007055915841864682
+   },
+   "FC1": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.07545365848035772,
+    "worst_e": 0.099713280074248,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.03979375555561504
+   },
+   "FC2": {
+    "n_eligible": 2,
+    "median_e_diagnostic": 0.11107614412354291,
+    "worst_e": 0.14731822695536295,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 2
+    },
+    "median_tau4096": 0.0671776490213208
+   }
+  },
+  "selection_b": {
+   "certified": true,
+   "rule": "gauss128",
+   "nodes": 16384,
+   "source": "rom/checks/select2d-b.json (SEL-b 6184841)"
+  },
+  "selection_c": {
+   "certified": true,
+   "rule": "gauss128",
+   "nodes": 16384,
+   "source": "rom/checks/select2d-c.json (SEL-c 6191938)"
+  },
+  "e9": {
+   "frozen_sha256": "5387280f8c0cf67c511f704d6edad472bc03a7a1e5765c969377fb618e381ef0",
+   "tau_s": 112.77421045725197,
+   "n_test": 24,
+   "n_missing": 0,
+   "n_ineligible": 0,
+   "n": 24,
+   "targets": {
+    "A": {
+     "threshold": 0.003834528307579255,
+     "n_bad": 19,
+     "n_good": 5,
+     "auc": 1.0,
+     "detection": 1.0,
+     "detection_cp95_lower": 0.8541314966877566,
+     "false_alarm": 0.0,
+     "false_alarm_cp95_upper": 0.450719728346941,
+     "label": "inconclusive (F12 minimum 30 good / 20 bad not met)"
+    },
+    "B": {
+     "threshold": 0.01,
+     "n_bad": 17,
+     "n_good": 7,
+     "auc": 1.0,
+     "detection": 1.0,
+     "detection_cp95_lower": 0.8384338887392598,
+     "false_alarm": 0.2857142857142857,
+     "false_alarm_cp95_upper": 0.658738563844664,
+     "label": "inconclusive (F12 minimum 30 good / 20 bad not met)"
+    }
+   },
+   "flagged_fraction": 0.7916666666666666,
+   "input_flagged_fraction": 0.7916666666666666,
+   "failure_fallback_fraction": 0.0,
+   "flagged_by_cohort": {
+    "FC1": {
+     "alarm": 1.0,
+     "input": 1.0,
+     "failure": 0.0
+    },
+    "FC2": {
+     "alarm": 1.0,
+     "input": 1.0,
+     "failure": 0.0
+    },
+    "FI": {
+     "alarm": 0.16666666666666666,
+     "input": 0.16666666666666666,
+     "failure": 0.0
+    },
+    "FN0s": {
+     "alarm": 1.0,
+     "input": 1.0,
+     "failure": 0.0
+    }
+   },
+   "n_invalid": 0,
+   "routing": {
+    "input_routing": "queries with s > tau_s go straight to the FOM (s is a known input; no ROM cost); the others run the ROM, and those whose run is invalid fall back to the FOM after paying the ROM cost",
+    "rom_then_fallback": "every query runs the ROM; input-flagged and failed queries also run the FOM",
+    "cost": "unmeasured (paired fallback timing deferred, Amendment 12)"
+   },
+   "note": "s is a known input on this family: the indicator is a safety feature, not a speed one"
+  },
+  "armc_wall": {
+   "max_rel_wall_rms": 1.0312413086149281e-13,
+   "median_rel_wall_rms": 1.9899787890118236e-14,
+   "registered_bar": 1e-14,
+   "note": "round-off of sin(pi x) at x = 1; the construction is exactly zero"
+  },
+  "source": "checks/phaseb_verdicts.json, checks/phaseb/*.json"
+ },
+ "e10_results": {
+  "verdicts": {
+   "E10-s": {
+    "fc1_median": 0.08286403341118181,
+    "k1_fc1_diagnostic_median": 0.08121514758583157,
+    "bar": 0.04060757379291578,
+    "n_fc1": 8,
+    "qualified_all": false,
+    "fc1_step_converged": 0,
+    "terminals": {
+     "4": "STEP-UNCONVERGED",
+     "5": "STEP-UNCONVERGED",
+     "6": "STEP-UNCONVERGED",
+     "7": "STEP-UNCONVERGED",
+     "8": "Q2-FAIL",
+     "9": "STEP-UNCONVERGED",
+     "10": "STEP-UNCONVERGED",
+     "11": "STEP-UNCONVERGED"
+    },
+    "outcome": "STOP",
+    "why": "not qualified on every eligible FC1 case"
+   },
+   "E10-q": {
+    "outcome": "STOP",
+    "why": "E10-DESIGN \u00a710: rho <= 0.116 on every accepted state of every K1 prod run, so E10-q executes exactly K1 solves (FC1 Q2-qualified, not step-converged); no job, 0 GPU-h",
+    "evidence": {
+     "rho_max_all": 0.0386336118107999,
+     "rho_max_FC1": 0.014770266811847536,
+     "states_over_bar": 0,
+     "runs_over_bar": 0,
+     "states_total": 17771,
+     "accepted_step_states": 17600,
+     "initial_fit_states": 171
+    }
+   }
+  },
+  "score_e10s": {
+   "FI": {
+    "n_eligible": 6,
+    "median_e_diagnostic": 0.0006282756735077259,
+    "worst_e": 0.005969234401233462,
+    "qualified": 6,
+    "invalid": 0,
+    "terminals": {
+     "CONVERGED": 6
+    },
+    "median_tau4096": 0.0003739746680183786
+   },
+   "FN0s": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.012439244238074628,
+    "worst_e": 0.01911676217074222,
+    "qualified": 2,
+    "invalid": 0,
+    "terminals": {
+     "CONVERGED": 2,
+     "STEP-UNCONVERGED": 6
+    },
+    "median_tau4096": 0.009151263661655657
+   },
+   "FC1": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.08286403341118181,
+    "worst_e": 0.11375108813999688,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "Q2-FAIL": 1,
+     "STEP-UNCONVERGED": 7
+    },
+    "median_tau4096": 0.0482916152216879
+   },
+   "FC2": {
+    "n_eligible": 2,
+    "median_e_diagnostic": 0.10188369240885435,
+    "worst_e": 0.137727997574554,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "Q2-FAIL": 1,
+     "STEP-UNCONVERGED": 1
+    },
+    "median_tau4096": 0.05848674120265162
+   }
+  },
+  "e10q_every_step": "checks/phaseb/e10q_every_step.json"
+ },
+ "gpu_hours_total": 10.7443,
+ "e10": "E10-DESIGN.md (E10-s run, E10-q resolved from data)",
+ "plots": [
+  "plots/a4_hybrid_floors.png",
+  "plots/a1_smearing.png",
+  "plots/a3_truncation.png",
+  "plots/phaseb_medians.png"
+ ]
+}

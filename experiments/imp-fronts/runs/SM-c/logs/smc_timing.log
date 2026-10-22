@@ -1,0 +1,9 @@
+jax_backend=gpu device=NVIDIA A100 80GB PCIe job=6187422
+   train2[timing] done: recon mean 1.001e+00 max 1.005e+00 (used raw) [49s]
+   train2[timing] done: recon mean 1.000e+00 max 1.001e+00 (used raw) [141s]
+incumbent: sub 0.02374 s/step, full 0.2755 s/step, compile sub 1.2s full 0.9s [142s]
+   train2[timing] done: recon mean 1.000e+00 max 1.001e+00 (used raw) [141s]
+arm: sub 0.02381 s/step, full 0.2735 s/step, compile sub 1.1s full 1.0s [141s]
+extraction incumbent: build 0.02s, chunk median 6.06 ms -> production-weighted 3.1s
+extraction arm: build 0.02s, chunk median 6.38 ms -> production-weighted 3.3s
+SMC-TIMING PASSED []

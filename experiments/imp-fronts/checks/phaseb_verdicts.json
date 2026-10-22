@@ -1,0 +1,483 @@
+{
+ "verdict": {
+  "arms": {
+   "a": {
+    "outcome": "NOT RUN",
+    "step": 1,
+    "guard": null,
+    "routes": {},
+    "passes_against_all_K1_K3": false,
+    "per_control": {
+     "K1": {
+      "available": true,
+      "guard": null,
+      "routes": {}
+     },
+     "K2": {
+      "available": true,
+      "guard": null,
+      "routes": {}
+     },
+     "K3": {
+      "available": true,
+      "guard": null,
+      "routes": {}
+     }
+    }
+   },
+   "b": {
+    "outcome": "STOP (endpoint)",
+    "step": 3,
+    "guard": {
+     "status": "PASS",
+     "arm_worst": 0.003875781856845076,
+     "ctrl_worst": 0.004115686425730472,
+     "ratio": 0.9417097067003065,
+     "n": 6,
+     "resolved": {
+      "wins": 2,
+      "ties": 0,
+      "losses": 4,
+      "unresolved": 0,
+      "both_invalid": 0
+     }
+    },
+    "routes": {
+     "rom": {
+      "status": "FAIL",
+      "why": "not numerically qualified on ['4', '5', '6', '7', '8', '9', '10', '11']",
+      "arm_median": 0.05810053891974609,
+      "ctrl_median": 0.08121514758583157,
+      "n": 8,
+      "resolved": {
+       "wins": 8,
+       "ties": 0,
+       "losses": 0,
+       "unresolved": 0,
+       "both_invalid": 0
+      }
+     }
+    },
+    "passes_against_all_K1_K3": false,
+    "per_control": {
+     "K1": {
+      "available": true,
+      "guard": "PASS",
+      "routes": {
+       "rom": "FAIL"
+      }
+     },
+     "K2": {
+      "available": true,
+      "guard": "PASS",
+      "routes": {
+       "rom": "UNAVAILABLE"
+      }
+     },
+     "K3": {
+      "available": true,
+      "guard": "PASS",
+      "routes": {
+       "rom": "UNAVAILABLE"
+      }
+     }
+    }
+   },
+   "c": {
+    "outcome": "STOP (endpoint)",
+    "step": 3,
+    "guard": {
+     "status": "PASS",
+     "arm_worst": 0.005207628412899554,
+     "ctrl_worst": 0.004115686425730472,
+     "ratio": 1.2653122405882218,
+     "n": 6,
+     "resolved": {
+      "wins": 5,
+      "ties": 0,
+      "losses": 1,
+      "unresolved": 0,
+      "both_invalid": 0
+     }
+    },
+    "routes": {
+     "mstar": {
+      "status": "FAIL",
+      "arm_nodes": 16384.0,
+      "bar": 12800.0,
+      "rule": "gauss128"
+     },
+     "tail": {
+      "status": "FAIL",
+      "why": "not numerically qualified on ['4', '6', '8', '9']",
+      "arm_median": 0.0002522665172930965,
+      "ctrl_median": 0.00037397466801837814,
+      "n": 6
+     }
+    },
+    "passes_against_all_K1_K3": false,
+    "per_control": {
+     "K1": {
+      "available": true,
+      "guard": "PASS",
+      "routes": {
+       "mstar": "FAIL",
+       "tail": "FAIL"
+      }
+     },
+     "K2": {
+      "available": true,
+      "guard": "PASS",
+      "routes": {
+       "mstar": "UNAVAILABLE",
+       "tail": "UNAVAILABLE"
+      }
+     },
+     "K3": {
+      "available": true,
+      "guard": "PASS",
+      "routes": {
+       "mstar": "UNAVAILABLE",
+       "tail": "UNAVAILABLE"
+      }
+     }
+    }
+   }
+  },
+  "rules": {
+   "min": {
+    "guard": 6,
+    "floor": 5,
+    "rom": 6,
+    "tail": 6
+   },
+   "factors": {
+    "guard": 2.0,
+    "floor": 3.0,
+    "rom": 2.0,
+    "mstar": 2.0,
+    "tail": 3.0
+   },
+   "mstar_bar_nodes": 12800.0
+  }
+ },
+ "schedule": "S3C (arms b and c vs K1; arm a NOT RUN)",
+ "eligible": {
+  "FI": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "FN0s": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ],
+  "FC1": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ],
+  "FC2": [
+   4,
+   5
+  ]
+ },
+ "ledger_counts": {
+  "accepted": 24,
+  "ineligible": 0,
+  "unfinished-at-deadline": 0,
+  "failed": 0,
+  "finished": 24,
+  "scheduled": 24
+ },
+ "k1": {
+  "selection": {
+   "certified": true,
+   "rule": "gauss160",
+   "nodes": 25600,
+   "source": "jcp-robust E2 (K1)"
+  },
+  "summary": {
+   "FI": {
+    "n_eligible": 6,
+    "median_e_diagnostic": 0.0006282756735077089,
+    "worst_e": 0.005969234401233436,
+    "qualified": 2,
+    "invalid": 0,
+    "terminals": {
+     "CONVERGED": 2,
+     "STEP-UNCONVERGED": 4
+    },
+    "median_tau4096": 0.00037397466801837814
+   },
+   "FN0s": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.012376233322832325,
+    "worst_e": 0.018915953784121833,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.009077966268424102
+   },
+   "FC1": {
+    "n_eligible": 8,
+    "median_e_diagnostic": 0.08121514758583157,
+    "worst_e": 0.11082847354634125,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "STEP-UNCONVERGED": 8
+    },
+    "median_tau4096": 0.047147534410396666
+   },
+   "FC2": {
+    "n_eligible": 2,
+    "median_e_diagnostic": 0.10144696829961422,
+    "worst_e": 0.1377279975745541,
+    "qualified": 0,
+    "invalid": 0,
+    "terminals": {
+     "Q2-FAIL": 1,
+     "STEP-UNCONVERGED": 1
+    },
+    "median_tau4096": 0.05834059821341205
+   }
+  },
+  "pooled": {
+   "fraction": 0.0,
+   "steps": 7150,
+   "bad": 0,
+   "ok": true
+  },
+  "floors": {
+   "FI": {
+    "f384": {
+     "median": 0.00047348623886950844,
+     "worst": 0.004115686425730472
+    },
+    "f512": {
+     "median": 0.00045302769700462757,
+     "worst": 0.0038784913126207222
+    }
+   },
+   "FN0s": {
+    "f384": {
+     "median": 0.008328732910723509,
+     "worst": 0.014106902207471905
+    },
+    "f512": {
+     "median": 0.007242168034180768,
+     "worst": 0.011455229607638952
+    }
+   },
+   "FC1": {
+    "f384": {
+     "median": 0.04702256493998157,
+     "worst": 0.0753351274336338
+    },
+    "f512": {
+     "median": 0.042335585969760434,
+     "worst": 0.07232333087672149
+    }
+   },
+   "FC2": {
+    "f384": {
+     "median": 0.06205454003708527,
+     "worst": 0.07475184027053128
+    },
+    "f512": {
+     "median": 0.05734179893909164,
+     "worst": 0.06900041823337373
+    }
+   }
+  }
+ },
+ "floors_unmatched_K0": {
+  "FI": {
+   "f384": {
+    "median": 0.0004585979800620861,
+    "worst": 0.003878744413108173
+   },
+   "f512": {
+    "median": 0.0004451919485196887,
+    "worst": 0.0036028574300075796
+   }
+  },
+  "FN0s": {
+   "f384": {
+    "median": 0.008988242463002595,
+    "worst": 0.014978683176320966
+   },
+   "f512": {
+    "median": 0.0073377927932271325,
+    "worst": 0.013677990290184872
+   }
+  },
+  "FC1": {
+   "f384": {
+    "median": 0.047808655288330226,
+    "worst": 0.07259987082916701
+   },
+   "f512": {
+    "median": 0.042241190991897146,
+    "worst": 0.06664212845170572
+   }
+  },
+  "FC2": {
+   "f384": {
+    "median": 0.06262299204688017,
+    "worst": 0.07545245520723724
+   },
+   "f512": {
+    "median": 0.05591740780829301,
+    "worst": 0.06477570767904263
+   }
+  }
+ },
+ "floors_K2_K3": {
+  "K2": {
+   "FI": {
+    "f384": {
+     "median": 0.00047229216879243573,
+     "worst": 0.00364637403300835
+    },
+    "f512": {
+     "median": 0.00045146210600179775,
+     "worst": 0.003292710912564505
+    }
+   },
+   "FN0s": {
+    "f384": {
+     "median": 0.008959225151596834,
+     "worst": 0.01363700996151327
+    },
+    "f512": {
+     "median": 0.007485067048743053,
+     "worst": 0.011222898792705117
+    }
+   },
+   "FC1": {
+    "f384": {
+     "median": 0.04622373569271812,
+     "worst": 0.07376667883989692
+    },
+    "f512": {
+     "median": 0.03828485796931818,
+     "worst": 0.06836955837435515
+    }
+   },
+   "FC2": {
+    "f384": {
+     "median": 0.06457355412371571,
+     "worst": 0.08118000535309228
+    },
+    "f512": {
+     "median": 0.05779354048469784,
+     "worst": 0.07259023580033519
+    }
+   }
+  },
+  "K3": {
+   "FI": {
+    "f384": {
+     "median": 0.00043452272157993254,
+     "worst": 0.0046297304518496275
+    },
+    "f512": {
+     "median": 0.00041925612069902446,
+     "worst": 0.004415251172403262
+    }
+   },
+   "FN0s": {
+    "f384": {
+     "median": 0.00864171666642051,
+     "worst": 0.014015466572253839
+    },
+    "f512": {
+     "median": 0.00764254079007942,
+     "worst": 0.012337515639644933
+    }
+   },
+   "FC1": {
+    "f384": {
+     "median": 0.0484676255356201,
+     "worst": 0.07040384078576727
+    },
+    "f512": {
+     "median": 0.044338818238384654,
+     "worst": 0.06361738245281227
+    }
+   },
+   "FC2": {
+    "f384": {
+     "median": 0.06264018129053335,
+     "worst": 0.07779778412612709
+    },
+    "f512": {
+     "median": 0.05611847212157294,
+     "worst": 0.07039979272849688
+    }
+   }
+  }
+ },
+ "arms_present": [
+  "b",
+  "c"
+ ],
+ "arch": {
+  "b": null,
+  "c": "sine_even"
+ },
+ "e10": {
+  "E10-s": {
+   "fc1_median": 0.08286403341118181,
+   "k1_fc1_diagnostic_median": 0.08121514758583157,
+   "bar": 0.04060757379291578,
+   "n_fc1": 8,
+   "qualified_all": false,
+   "fc1_step_converged": 0,
+   "terminals": {
+    "4": "STEP-UNCONVERGED",
+    "5": "STEP-UNCONVERGED",
+    "6": "STEP-UNCONVERGED",
+    "7": "STEP-UNCONVERGED",
+    "8": "Q2-FAIL",
+    "9": "STEP-UNCONVERGED",
+    "10": "STEP-UNCONVERGED",
+    "11": "STEP-UNCONVERGED"
+   },
+   "outcome": "STOP",
+   "why": "not qualified on every eligible FC1 case"
+  },
+  "E10-q": {
+   "outcome": "STOP",
+   "why": "E10-DESIGN \u00a710: rho <= 0.116 on every accepted state of every K1 prod run, so E10-q executes exactly K1 solves (FC1 Q2-qualified, not step-converged); no job, 0 GPU-h",
+   "evidence": {
+    "rho_max_all": 0.0386336118107999,
+    "rho_max_FC1": 0.014770266811847536,
+    "states_over_bar": 0,
+    "runs_over_bar": 0,
+    "states_total": 17771,
+    "accepted_step_states": 17600,
+    "initial_fit_states": 171
+   }
+  }
+ },
+ "note": "eps_ref = conditional Richardson estimate (E0-style ST references)"
+}

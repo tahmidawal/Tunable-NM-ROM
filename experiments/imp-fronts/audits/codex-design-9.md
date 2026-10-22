@@ -1,0 +1,13 @@
+**Verdict: NEEDS-RESTATEMENT.** Read-only; no files changed or jobs launched.
+- **CORRECT — Symmetry:** Separate oddness, periodicity and vanishing even wall derivatives remain valid.
+- **CORRECT — PDE compatibility:** Amendment 20 fixes the claim: the PDE requires second-order compatibility, not all higher even derivatives.
+- **NEEDS-RESTATEMENT — Expressivity:** Distinguish finite sine sums from infinite series: an infinite sine series can represent the solution without termwise fourth differentiation converging at the walls. State generic directional $k^{-5}$ decay, not a universal decay law; retain the finite-bank approximation caveat.
+- **CORRECT — Frequencies:** Integer mapping remains valid; fixed frequencies, duplicates and reduced diversity are disclosed.
+- **CORRECT — Intervention:** “Bundled bank-architecture replacement” fixes the causal interpretation.
+- **CORRECT — Normalisation:** Envelope RMS and unchanged recipe are now correctly distinguished.
+- **CORRECT — Identity tests:** Fixtures, aggregation, both shifts, gradient scaling, zero-scale blocking and separate Hessian/stencil checks address the prior finding; thresholds remain unvalidated.
+- **NEEDS-RESTATEMENT — Must-fail control:** Checkpoint/case/time and polynomial control are specified, but explicitly choose the reference-field versus decoded-field Laplacian denominator and its discretisation; “same statistic” leaves conflicting earlier definitions unresolved.
+- **CORRECT — Endpoints:** Factors, AND logic and floor guard remain correct when Amendments 3–4’s population, paired-set and UNAVAILABLE rules are inherited.
+- **CORRECT — Budget arithmetic:** 5.95 GPU-h fits the stated 8.673 remaining; smoke feasibility remains provisional.
+- **CORRECT — Runtime rationale:** K1 attribution and crude-extrapolation disclosure fix the prior error; doubling Stage A is a hypothetical, not a measured lower bound.
+- **NEEDS-RESTATEMENT — Admission projection:** Explicitly weight subsampled/full-grid compute separately, leave generation/head costs unscaled, and include compilation/setup. “K1 Stage A × sub/full-step ratios” still does not define that complete accounting.

@@ -1,0 +1,8 @@
+- **CORRECT — Stale status:** S3 completion is clear; obsolete pending status removed.
+- **CORRECT — EXPORT accounting:** Phase A = 0; total = 6.327 GPU-h.
+- **CORRECT — Deferral rationale:** lines 191–194 explain release/architecture constraints and remaining budget.
+- **CORRECT — Diagnostic labels; conditional labels:** both remain explicit beside the relevant results.
+- **CORRECT — Glossary:** STEP-UNCONVERGED now describes missing finer certification; AUC uses continuous steepness.
+- **CORRECT — Glossary provenance:** target A explicitly identifies K0, configuration, and eligible valid cohorts.
+- **CORRECT — Verdict table:** fractional units and unavailable K2/K3 ROM comparisons are explained.
+- **CORRECT — Numerical consistency:** checked summaries support STOP; read-only throughout, with no files, scratch, jobs, LAB-LOG or main changes.

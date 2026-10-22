@@ -1,0 +1,12 @@
+- CORRECT — All 139 manifest entries verify; 136 provenance files match recorded hashes and commit `555674f0a`.
+- CORRECT — sc checkpoint `245e11f4…` and rotation `16db2b4d…` match `BANK.json`, config and `trbnd-LARGE.sha256`.
+- CORRECT — Checkpoint contains `arch=sine_even` and `Kc`; staged decoder implements that dispatch.
+- CORRECT — `archrun.py` imports and asserts `rom/deps/sep_common.py` before running `r2acc`; subsequent imports reuse `sys.modules`, preventing legacy shadowing.
+- CORRECT — `e2sc` differs from audited `e2sb` only in attempt and bank identity.
+- CORRECT — R384, 1024², all38, both solver arms, seven candidates, successors and certification settings are preserved.
+- CORRECT — `r2acc.py` and `select2d.py` remain identical to the SEL-b audited versions.
+- CORRECT — One A100, gpu partition, 24-minute ceiling, absolute Python, f64/highest, GPU preflight and paralab output paths.
+- CORRECT — SEL-b’s malformed-result blocker is repaired: the selection wrapper handles unreadable JSON.
+- NEEDS-RESTATEMENT — Persisting incomplete selection still requires `after_train.sh c post-sel`; sbatch only logs timeout.
+- NEEDS-RESTATEMENT — Staged-code audit passes; admission/control evidence remains a separate submission prerequisite.
+- CORRECT — Audit was read-only: no file changes, jobs, SSH, scratch or lab-log writes.

@@ -1,0 +1,3 @@
+#!/bin/bash
+# Arm (b) wrapper kept for the existing runbook: bash rom/after_train_b.sh bank|post-sel <dir> [job log]  ==  after_train.sh b ...
+exec bash "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/after_train.sh" b "$@"

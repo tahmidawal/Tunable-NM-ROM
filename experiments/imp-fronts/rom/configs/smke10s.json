@@ -1,0 +1,37 @@
+{
+ "attempt": "smke10s",
+ "driver": "fpolicy",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "Rp": 384,
+ "scheme": "CNR",
+ "bank": {
+  "dir": "inputs/banks/s1"
+ },
+ "bank_label": "1",
+ "selected": "gauss160",
+ "factors": [
+  1,
+  0.5,
+  0.25,
+  0.125
+ ],
+ "max_rounds": 11,
+ "cases": [
+  "FC1|0",
+  "FC1|1"
+ ],
+ "table": "phaseb/fresh_cohorts.json",
+ "test_once": false,
+ "anchors": [],
+ "ceiling_hours": 0.3,
+ "stop_fraction": 0.9,
+ "controls": {},
+ "note": "SM-e (E10-DESIGN.md section 9): E10-s policy (factor set {1, .5, .25, .125}, round cap 11) with K1 from gauss160 on FC1 dev j = 0 (must-fail control: its step check at 0.5 must fail again) and FC1 dev j = 1 (expected to reach all four factors); its step wall clock / 2 projects POL-e10s (resources.e10_item). Dev cases only; no anchors."
+}

@@ -1,0 +1,47 @@
+{
+ "seed": 1,
+ "mode": "production",
+ "device": [
+  "NVIDIA A100 80GB PCIe, GPU-6481e68e-7435-8539-633a-66f852b4a8e9, 81920 MiB, 575.57.08",
+  "jax_backend=gpu"
+ ],
+ "stageA": {
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "steps_done": 300000,
+  "seconds": 9683.209900856018,
+  "recon_rel_l2_mean": 0.006853059885046631,
+  "R2a": [],
+  "data_R0": true,
+  "bank_sha256": "0a80294d213f55ed4dc734f02b0692709316d44f83f11a058eda748c571daec5"
+ },
+ "stageB_mid": {
+  "seed": 1,
+  "steps": 200000,
+  "steps_done": 200000,
+  "seconds": 338.31582903862,
+  "time_cap_s": 1500,
+  "time_cap_fired": false,
+  "final_loss": 7.201578741307092e-05,
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "extraction_gates": {
+   "gram_identity_rel_dev_max": 1.8167582641948082e-14,
+   "gram_identity_rel_dev_mean": 9.745917683765615e-16,
+   "gram_identity_rows": 64,
+   "gram_identity_implied_field_rel": 1.136819870487116e-15,
+   "span_floor_direct_vs_gram_rel_dev": 2.7022959824893737e-16
+  },
+  "note": "time_cap_fired=True is a recipe deviation for this seed (DESIGN A2.10)"
+ },
+ "rotation": {
+  "L_times_T_identity_deviation": 8.587393212234275e-12,
+  "orthonormality": 9.672452173302734e-12,
+  "R_G_condition_number": 19228.190169195535,
+  "file_sha256": "16db2b4dedb4a00dc9925a500dee8d8f0708e64428bd70566308b5ec77afa453",
+  "checkpoint_sha256": "245e11f4c39d29f843861f4891059525d70ab454c16b989557663bc5ca9cf3d7"
+ },
+ "stage_seconds": {
+  "stageA": 9832,
+  "stageB": 3611,
+  "rotation": 19
+ }
+}

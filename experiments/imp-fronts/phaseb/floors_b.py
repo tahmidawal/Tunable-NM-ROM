@@ -8,6 +8,8 @@
   tau_4096(v) = max_{k=1..5} ||v(t_k) - S_4096 v(t_k)|| / ||u_ref(t_0)||, from v's own orthonormal DST-I coefficients
                beyond Laplacian rank 4096, clipped below at 1e-14 (A2; the B0 tail endpoint of decoded policy fields).
 
+Architecture: rom/npbank_arch.install(npbank) is applied at import, so an arm-(c) checkpoint ('sine_even', 'Kc' in
+params) is decoded with sine_even_ref's formula and every other bank with the unchanged incumbent formula.
 Banks: K0 = the incumbent through fcommon (dn256b checkpoint + rotation_R512, the jcp-regimes npcheck defaults); K1..K3 =
 jcp-robust inputs/banks/s{1,2,3}/ (ckpt.pkl + rotation_R512.npz, sha256 from BANK.json); an arm = its own BANK.json with
 canonical keys 'ckpt' / 'rotation' (plain file names relative to the BANK.json directory; jcp-robust's format without
@@ -33,6 +35,10 @@ sys.path.insert(0, str(LANE))
 sys.path.insert(0, str(HERE))
 import fcommon as F  # noqa: E402
 import fcohorts as FC  # noqa: E402
+sys.path.insert(0, str(LANE / 'rom'))
+ORIG_FEATURES_GRAD = F.NC.NB.features_grad           # the incumbent formula (kept for the K1-unchanged test)
+import npbank_arch  # noqa: E402
+npbank_arch.install(F.NC.NB)                          # arm (c): dispatch on 'Kc' in params <=> cfg arch 'sine_even'
 
 ROBUST = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/inputs/banks')
 RS = (384, 512)
@@ -90,6 +96,7 @@ def use(spec):
     F.NC._G257.clear()
     _ORTH.clear()
     CURRENT.clear()
+    b['arch'] = F.NC.bank()[0]['arch']                # loads through npbank_arch (cfg / params agreement checked)
     CURRENT.update(b)
     return b
 

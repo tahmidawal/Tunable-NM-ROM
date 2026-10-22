@@ -45,6 +45,7 @@ from __future__ import annotations
 import json
 import math
 import sys
+from pathlib import Path
 
 import numpy as np
 
@@ -161,7 +162,9 @@ def route_rom(arm, ctrl, elig, eps=None):
     if not math.isfinite(e_hat):
         return dict(status=UNAV, why='e_hat_K1 is not finite', ctrl_median=e_hat)
     pa = _policy(arm, 'FC1')
-    qual = {c: bool(pa.get(c, {}).get('qualified', False)) for c in cases}
+    # audit codex-code-B-5: a case counts as qualified only with a valid run and a finite error
+    qual = {c: bool(pa.get(c, {}).get('qualified', False) and pa[c].get('valid', True)
+                    and _fin(_num(pa[c].get('e')))) for c in cases}
     ea = {c: (_num(pa[c].get('e')) if c in pa and pa[c].get('e') is not None and pa[c].get('valid', True)
               else float('inf')) for c in cases}
     rs = resolved(ea, ek, (eps or {}).get('FC1'))
@@ -189,7 +192,8 @@ def route_tail(arm, ctrl, elig, eps=None):
     common = [c for c in elig_fi if ok(pk, c) and ok(pa, c)]          # Amendment 4: both valid finite
     if len(common) < MIN['tail']:
         return dict(status=UNAV, why=f'{len(common)} eligible FI test cases with arm and K1 valid finite runs < {MIN["tail"]}')
-    qual = {c: bool(pa.get(c, {}).get('qualified', False)) for c in elig_fi}
+    qual = {c: bool(pa.get(c, {}).get('qualified', False) and pa[c].get('valid', False)
+                    and _fin(_num(pa[c].get('tau')))) for c in elig_fi}
     ta = {c: _num(pa[c]['tau']) for c in common}
     tk = {c: _num(pk[c]['tau']) for c in common}
     ma, mk = _med(list(ta.values())), _med(list(tk.values()))
@@ -220,29 +224,58 @@ class InputError(ValueError):
     pass
 
 
+SELECTION_LADDER = ('fib4181', 'fib6765', 'gauss96', 'fib10946', 'gauss128', 'gauss160', 'gauss192')   # select2d R384
+POLICY_RULES = SELECTION_LADDER + ('gauss256', 'gauss384')      # B5 escalation chain extension
+REFERENCED = {'FI': 6, 'FN0s': 8, 'FC1': 8, 'FC2': 2}            # Amendment 10: lowest test indices get references
+TABLE = Path(__file__).resolve().parent / 'fresh_cohorts.json'
+
+
 def rule_nodes(rule):
-    """Node count of a registered rule name: gaussN -> N^2 (tensor Gauss-Legendre), fibN -> N (Fibonacci lattice)."""
+    """Node count of a registered rule: gaussN -> N^2 (tensor Gauss-Legendre), fibN -> N (Fibonacci lattice)."""
     r = str(rule)
-    if r.startswith('gauss') and r[5:].isdigit():
-        return int(r[5:]) ** 2
-    if r.startswith('fib') and r[3:].isdigit():
-        return int(r[3:])
-    raise InputError(f'unknown rule name {rule!r}')
+    if r not in POLICY_RULES:
+        raise InputError(f'rule {rule!r} is not a registered rule {POLICY_RULES}')
+    return int(r[5:]) ** 2 if r.startswith('gauss') else int(r[3:])
 
 
-def validate(inp):
-    """Audit codex-code-B-1: eligible lists are unique fresh TEST ids (j >= 4); a certified selection's node count
-    equals its rule's node count; input-supplied routes are refused (Amendment 12: routes fixed in ARM_ROUTES)."""
+def scheduled_cases(table_path=TABLE):
+    """{cohort: [j, ...]}: the fresh TEST cases with references scheduled (Amendment 10), from fresh_cohorts.json."""
+    tab = json.loads(Path(table_path).read_text())
+    out = {}
+    for coh, n in REFERENCED.items():
+        out[coh] = [int(r['j']) for r in tab['cohorts'][coh] if r['split'] == 'test'][:n]
+    return out
+
+
+def _case_id(coh, c):
+    if isinstance(c, bool):
+        raise InputError(f'eligible {coh}: bad case id {c!r}')
+    if isinstance(c, str) and '|' in c:
+        cc, jj = c.split('|', 1)
+        if cc != coh:
+            raise InputError(f'eligible {coh}: case id {c!r} belongs to another cohort')
+        c = jj
+    if isinstance(c, int):
+        return c
+    if isinstance(c, str) and c.isdigit():
+        return int(c)
+    raise InputError(f'eligible {coh}: bad case id {c!r}')
+
+
+def validate(inp, table_path=TABLE):
+    """Audits codex-code-B-1/B-2: eligible ids are unique fresh TEST cases with scheduled references (fresh_cohorts.json,
+    Amendment 10); a certified selection names a rule of the registered select2d ladder and its node count is the exact
+    integer node count of that rule; input-supplied routes are refused (Amendment 12)."""
+    sched = scheduled_cases(table_path)
     for coh, cases in (inp.get('eligible') or {}).items():
-        if coh not in ('FI', 'FN0s', 'FC1', 'FC2'):
+        if coh not in sched:
             raise InputError(f'eligible: unknown cohort {coh}')
-        js = [int(c) for c in cases]
-        if [str(c) for c in cases] != [str(j) for j in js]:
-            raise InputError(f'eligible {coh}: non-integer case ids {cases}')
+        js = [_case_id(coh, c) for c in cases]
         if len(set(js)) != len(js):
             raise InputError(f'eligible {coh}: duplicate case ids {cases}')
-        if any(j < 4 for j in js):
-            raise InputError(f'eligible {coh}: non-test case ids {[j for j in js if j < 4]}')
+        bad = [j for j in js if j not in sched[coh]]
+        if bad:
+            raise InputError(f'eligible {coh}: {bad} are not scheduled test references {sched[coh]}')
     banks = dict((inp.get('arms') or {}), **{f'ctrl_{k}': v for k, v in (inp.get('controls') or {}).items()})
     for name, b in banks.items():
         if not b:
@@ -251,11 +284,42 @@ def validate(inp):
             raise InputError(f'{name}: input-supplied routes {b["routes"]} refused (fixed: {ARM_ROUTES.get(name)})')
         sel = b.get('selection') or {}
         if sel.get('certified'):
-            if sel.get('rule') is None or not _fin(_num(sel.get('nodes'))):
-                raise InputError(f'{name}: certified selection without rule / nodes')
-            if rule_nodes(sel['rule']) != int(_num(sel['nodes'])):
-                raise InputError(f'{name}: selection nodes {sel["nodes"]} != {rule_nodes(sel["rule"])} of {sel["rule"]}')
+            rule, nodes = sel.get('rule'), sel.get('nodes')
+            if rule not in SELECTION_LADDER:
+                raise InputError(f'{name}: certified rule {rule!r} not in the registered ladder {SELECTION_LADDER}')
+            if isinstance(nodes, bool) or not isinstance(nodes, (int, np.integer)) or int(nodes) != rule_nodes(rule):
+                raise InputError(f'{name}: selection nodes {nodes!r} != exact integer {rule_nodes(rule)} of {rule}')
     return True
+
+
+def _norm_map(coh, m, where):
+    out = {}
+    for k, v in (m or {}).items():
+        j = str(_case_id(coh, k))
+        if j in out:
+            raise InputError(f'{where} {coh}: case {j} given twice (after normalisation)')
+        out[j] = v
+    return out
+
+
+def normalize(inp):
+    """Audit codex-code-B-3: every case id ('FI|4', 4, '4') -> one canonical form str(j), once, at input: eligible lists,
+    eps_ref maps and every bank's floors / policy maps (guard and all routes read only the normalised copy)."""
+    out = dict(inp)
+    out['eligible'] = {coh: [str(_case_id(coh, c)) for c in cases] for coh, cases in (inp.get('eligible') or {}).items()}
+    out['eps_ref'] = {coh: _norm_map(coh, m, 'eps_ref') for coh, m in (inp.get('eps_ref') or {}).items()}
+
+    def nb(b, name):
+        if not b:
+            return b
+        b = dict(b)
+        for key in ('floors', 'policy'):
+            if key in b and b[key] is not None:
+                b[key] = {coh: _norm_map(coh, m, f'{name}.{key}') for coh, m in b[key].items()}
+        return b
+    out['arms'] = {k: nb(v, k) for k, v in (inp.get('arms') or {}).items()}
+    out['controls'] = {k: nb(v, k) for k, v in (inp.get('controls') or {}).items()}
+    return out
 
 
 def evaluate(arm_name, arm, ctrl, elig, eps=None, mstar_bar=MSTAR_BAR):
@@ -274,6 +338,7 @@ def evaluate(arm_name, arm, ctrl, elig, eps=None, mstar_bar=MSTAR_BAR):
 def verdict(inp):
     """inp = dict(arms={a|b|c: bank}, controls={K1, K2, K3: bank}, eligible={FI, FN0s, FC1: [cases]}, eps_ref=...)."""
     validate(inp)
+    inp = normalize(inp)                              # canonical case ids for the guard and every route
     elig = inp.get('eligible', {})
     eps = inp.get('eps_ref', {})
     ctr = inp.get('controls', {})

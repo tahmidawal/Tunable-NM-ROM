@@ -1,0 +1,40 @@
+host=pax009 source_commit=24ca66f86964be6462e563b6b8e1863e0bd6f5e2 job=6177954
+NVIDIA H200, GPU-9414f59f-8546-1c49-b2f9-c0bffc2ea441, 143771 MiB
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB
+10.235.106.30:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+jax_backend=gpu gpu_index=0
+jax_backend=gpu gpu_index=1
+JAX_DEFAULT_MATMUL_PRECISION=highest
+STEP gpu=0 t_FC1_4_5.json left=5252s 2026-10-22T01:53:10Z
+STEP gpu=1 t_FI_4_5.json left=5252s 2026-10-22T01:53:10Z
+STEP gpu=1 t_FI_4_5.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=1 t_FN0s_4_5.json left=4907s 2026-10-22T01:58:55Z
+STEP gpu=0 t_FC1_4_5.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=0 t_FC2_4_5.json left=4735s 2026-10-22T02:01:47Z
+STEP gpu=1 t_FN0s_4_5.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=1 t_FI_6_7.json left=4469s 2026-10-22T02:06:13Z
+STEP gpu=0 t_FC2_4_5.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=0 t_FC1_6_7.json left=4183s 2026-10-22T02:10:59Z
+STEP gpu=1 t_FI_6_7.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=1 t_FN0s_6_7.json left=4118s 2026-10-22T02:12:04Z
+STEP gpu=1 t_FN0s_6_7.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=1 t_FI_8_9.json left=3683s 2026-10-22T02:19:19Z
+STEP gpu=0 t_FC1_6_7.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=0 t_FC1_8_9.json left=3645s 2026-10-22T02:19:57Z
+STEP gpu=1 t_FI_8_9.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=1 t_FN0s_8_9.json left=3371s 2026-10-22T02:24:31Z
+STEP gpu=0 t_FC1_8_9.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=0 t_FC1_10_11.json left=3075s 2026-10-22T02:29:27Z
+STEP gpu=1 t_FN0s_8_9.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=1 t_FN0s_10_11.json left=2951s 2026-10-22T02:31:31Z
+STEP gpu=0 t_FC1_10_11.json rc=0 (124/137 = terminated at the cutoff)
+STEP gpu=1 t_FN0s_10_11.json rc=0 (124/137 = terminated at the cutoff)
+     12 jax_backend=gpu x64=True precision=highest
+STEP refslim 2026-10-22T02:38:49Z
+refslim sources ['refs_t_FC1_10_11', 'refs_t_FC1_4_5', 'refs_t_FC1_6_7', 'refs_t_FC1_8_9', 'refs_t_FC2_4_5', 'refs_t_FI_4_5', 'refs_t_FI_6_7', 'refs_t_FI_8_9', 'refs_t_FN0s_10_11', 'refs_t_FN0s_4_5', 'refs_t_FN0s_6_7', 'refs_t_FN0s_8_9']
+REFSLIM 24 cases
+STEP refslim rc=0
+REF-LEDGER {"accepted": 24, "ineligible": 0, "unfinished-at-deadline": 0, "failed": 0, "finished": 24, "scheduled": 24} ok
+STEP ledger rc=0 (1 = a case failed or the configured set differs from the 24 scheduled)
+elapsed_s=2757
+ALL-DONE

@@ -1,0 +1,54 @@
+{
+ "schema": "imp-fronts-smoke-evidence/2",
+ "root": "runs/rom/SM-r/output",
+ "files": {
+  "controls": {
+   "path": "fpolicy_smkpolK1/result.json",
+   "sha256": "0c5aa76ad6ca9b4023809bf62bd90673799b475ef6b0a9f17ed01652d347cbf4"
+  },
+  "dry_run": {
+   "path": "fpolicy_smkdryK1/result.json",
+   "sha256": "409680546523027f0cc47ee4ff289f09b1b41149971cf8dc69214b873c9272db"
+  }
+ },
+ "checks": {
+  "controls": {
+   "complete": true,
+   "backend_gpu": true,
+   "precision_highest": true,
+   "attempt": true,
+   "bank_is_K1": true,
+   "cb1_swapped_rejected": true,
+   "cb1_config_hash_rejected": true,
+   "cb1_matched_passes": true,
+   "cb6_fixture_found": true,
+   "cb6_fired": true,
+   "cb6_not_blocked": true,
+   "cb6_agree": true,
+   "cb6_case": true
+  },
+  "dry_run": {
+   "complete": true,
+   "backend_gpu": true,
+   "precision_highest": true,
+   "attempt": true,
+   "bank_is_K1": true,
+   "case_ids": true,
+   "policy_ids": true,
+   "start_gauss160": true,
+   "full_policy": true,
+   "no_open_cases": true,
+   "every_case_charged": true,
+   "solves_match_history": true,
+   "mandatory_solves": true,
+   "replay_state_machine": true,
+   "step_wall_clock": true,
+   "map_q2_successor": true,
+   "map_half": true
+  },
+  "coverage": {
+   "map_next_candidate": true
+  }
+ },
+ "passed": true
+}

@@ -1,0 +1,27 @@
+{
+ "run": "FC1|0|cert|fib4181|1",
+ "step": 10,
+ "gamma_accepted": 4.856277198813715e-05,
+ "residual_accepted": 1.96277500872233,
+ "c_norm": 53.49690128926431,
+ "sigma1": 4.1011396954918204,
+ "candidates": [
+  {
+   "eps_rel": 0.001,
+   "sign": 1.0,
+   "gamma": 0.006043815770848362,
+   "residual": 1.9751201649945216
+  }
+ ],
+ "fixture": {
+  "eps_rel": 0.001,
+  "sign": 1.0,
+  "gamma_measured": 0.006043815770848362,
+  "gamma_certificate": 0.006043815770848361,
+  "flagged": true,
+  "agree": true
+ },
+ "fired": true,
+ "blocked": false,
+ "verdict": "FIRED (certificate flags the perturbed state)"
+}

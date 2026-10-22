@@ -71,7 +71,14 @@ class Job:
 
     def phase(self, name, t):
         self.rep['phases'][name] = time.perf_counter() - t
-        self.rep['mem'][name] = dict(P.mem(), host_maxrss_kb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        m = dict(P.mem(), host_maxrss_kb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        try:                                                     # A3.5 fallback / cross-check: sampled nvidia-smi memory.used
+            import subprocess
+            m['nvsmi_used_mib'] = int(subprocess.check_output(['nvidia-smi', '--query-gpu=memory.used',
+                                                               '--format=csv,noheader,nounits'], text=True).split()[0])
+        except Exception:  # noqa: BLE001
+            m['nvsmi_used_mib'] = -1
+        self.rep['mem'][name] = m
         print(f'PHASE {name} {self.rep["phases"][name]:.1f}s mem={self.rep["mem"][name]}', flush=True)
         self.save()
 
@@ -101,7 +108,8 @@ class Job:
                                  policy=B.policy, ckpt_sha256=_fsha(ckpt), rotation_sha256=_fsha(Q.ROTATION),
                                  cold_sha256=HT.sha(np.concatenate([np.asarray(B.cold[0]).ravel(), np.asarray(B.cold[1])])),
                                  mesh_hash=B.bank.mesh_hash, cohort_hashes=P.cohort_hashes(),
-                                 stepper_sha256=_fsha(Path(GS.__file__)), tables_sha256=_fsha(Path(HT.__file__)),
+                                 stepper_sha256=_fsha(Path(GS.__file__)), fscore_sha256=_fsha(Path(GS.__file__).parent / 'e5' / 'fscore.py'),
+                                 stepper=self.stepper, tables_sha256=_fsha(Path(HT.__file__)),
                                  A_sha=HT.sha(B.A), cond_Rm=float(np.linalg.cond(np.asarray(B.Rm))),
                                  n0={k: v[2] for k, v in self.U0.items()})
         self.bank_ok = False
@@ -129,6 +137,9 @@ class Job:
     def drop(self, keep=()):
         for k in [k for k in self.tabs if k not in keep]:
             del self.tabs[k]
+        live = {id(v[0]['P']) for v in self.tabs.values()}
+        for k in [k for k in self._e5c if isinstance(k, tuple) and len(k) == 6 and k[3] not in live]:
+            del self._e5c[k]                                     # E5 tables of dropped rule tables
 
     def basis(self, proj):
         if proj not in self._e5c:
@@ -137,12 +148,18 @@ class Job:
 
     def tab(self, d, proj):
         """E5 diffusion-coordinate tables of an arm (cached on the identity of its P array; DESIGN E5R)."""
-        key = (proj, id(d['P']))
+        arrs = tuple(d[k] for k in ('Gq', 'Gs', 'P', 'T', 'L0'))
+        key = (proj,) + tuple(id(a) for a in arrs)
         hit = self._e5c.get(key)
-        if hit is None or hit[0] is not d['P']:
+        if hit is None or any(x is not y for x, y in zip(hit[0], arrs)):
             tb, chk = GS.e5_tables(proj, d, dict(T=d['T']), self.base, self.basis(proj))
-            self._e5c[key] = (d['P'], tb, chk)
-            self.rep.setdefault('e5_table_checks', []).append(dict(proj=proj, **{k: float(v) for k, v in chk.items()}))
+            bad = not (chk['eig_resid'] <= 1e-10 and chk['v_orth'] <= 1e-10 and chk['qr_orth'] <= 1e-10 and chk['D_min'] > 0)
+            fp = HT.P.sha(np.concatenate([np.asarray(HT.P._reduce(tb[k])) for k in sorted(tb)]))
+            self.rep.setdefault('e5_table_checks', []).append(dict(proj=proj, fingerprint=fp, gate_ok=not bad,
+                                                                   **{k: float(v) for k, v in chk.items()}))
+            if bad:
+                raise ValueError(f'E5 table gate failed: {chk}')
+            self._e5c[key] = (arrs, tb, chk)
         return self._e5c[key][1]
 
     def arg(self, d, proj):
@@ -294,7 +311,7 @@ class Job:
             self.rep['fits'][fam] = info
             return {}
         snaps = np.concatenate(snaps)
-        info.update(snap_sha=HT.sha(snaps), rows_sha=HT.sha(D[rows_used]), stepper_sha256=_fsha(Path(GS.__file__)),
+        info.update(snap_sha=HT.sha(snaps), rows_sha=HT.sha(D[rows_used]), stepper_sha256=_fsha(Path(GS.__file__)), fscore_sha256=_fsha(Path(GS.__file__).parent / 'e5' / 'fscore.py'),
                     parent_meta={k: v for k, v in meta.items() if k != 'build_seconds'})
         np.savez(self.out / 'arrays' / f'snaps_{fam}.npz', snaps=snaps, rows=np.asarray(rows_used))
         info['rollout_seconds'] = time.perf_counter() - t

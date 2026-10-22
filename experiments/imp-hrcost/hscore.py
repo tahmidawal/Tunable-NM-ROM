@@ -114,6 +114,14 @@ def offline_q1(run, name, R):
     rows, dis = {}, []
     r_job = R['q1'][name]['rows']
     Rp = z['W'].shape[-1]
+    S = int(round(.25 / R['setup']['dt']))
+    n = len(ids)
+    for k, shp in (('W', (n, 6, Rp)), ('W_tight', (n, 6, Rp)), ('states', (n, S + 1, Rp)), ('eta', (n, S)),
+                   ('eta_rec', (n, S)), ('reason', (n, S)), ('W_tighter', (len(dev), 6, Rp))):
+        if tuple(z[k].shape) != shp:
+            dis.append(('shape', k, tuple(z[k].shape), shp))
+    if sorted(dev) != sorted(c for c in ids if c.startswith('dev6')):
+        dis.append(('dev anchors', dev))
     kdev = 0
     for j, cid in enumerate(ids):
         f, ft = NC.decode257(z['W'][j], Rp), NC.decode257(z['W_tight'][j], Rp)
@@ -259,8 +267,11 @@ def main():
     for name in prod:
         A['q1'][name] = offline_q1(run, name, R)
         A['scores'][name] = score_arm(run, name, R)
+    sub16 = [f'dev6|{c}' for c in range(6)] + [f'val32|{c}' for c in range(10)]
     for name in R['q2']:
         A['q2'][name] = offline_q2(run, name, R, TB, rho_check=not name.startswith(('C1', 'C2', 'P6')))
+        if production and A['q2'][name]['case_ids'] != sub16:
+            A['q2'][name]['disagreements'].append(('Q2 population', A['q2'][name]['case_ids']))
     for name in A['q2']:                                       # parent-convergence downgrade (A1.4), per reading
         fam = name.split('_k')[0]
         if fam in FIT_FAMS:
@@ -301,7 +312,10 @@ def main():
             continue
         nw, eps = no_worse(a['errors'], ref['errors'], A['scores'][n], A['scores']['R'])
         a['vs_R'] = dict(no_worse=nw, eps_star=eps, counts=per_case_counts(A['scores'][n], A['scores']['R'], eligible))
-        if 'timing' in a and a['timing']['outputs_tied']:
+        jb = R.get('jac_bench', {})
+        c5p = bool(jb.get('ratio_quad', 0) >= 1.5)              # A9.1: timer resolution shown in this job
+        a['vs_R']['c5prime_fired'] = c5p
+        if 'timing' in a and a['timing']['outputs_tied'] and c5p:
             t = a['timing']
             a['vs_R'].update(faster=bool(t['e2e_median'] > 1 and t['e2e_ci'][0] > 1),
                              gain15=bool(t['e2e_median'] >= GAIN_F3 and t['e2e_ci'][0] > 1))

@@ -601,3 +601,33 @@ predicate is evaluated ("tied timing"); ratios of separate medians are reported 
   A–B–A; this lane keeps its registered 5 repetitions / 3 burn-ins (A1.7, A7.5) over all 38 cases.
 - E5's hand-off states its production numbers do not exist yet; if E5 later changes `fscore.py`, this lane keeps the
   copied version and says so.
+
+## Amendment A8 (2026-10-21; answers `audits/codex-code-2.md`, NOT READY; before any cluster job)
+
+Fixes: smoke acceptance keeps Q1 and Q2 evidence apart, rejects G-cert disagreements and requires the registered 5/3
+timing settings; the E5 table cache is keyed on every consumed array and evicted with its rule tables; E5 table gates
+(`eig_resid`, `v_orth`, `qr_orth` ≤ $10^{-10}$, $D_{\min}>0$) are enforced (a failing table stops the job); P2 requires
+both tight runs valid and converged; offline Q1 checks shapes (51 states, 50 residuals, 6 outputs) and the dev anchor set;
+production Q2 populations must equal sub16; the per-fit provenance binds `e5/fscore.py`; submission uses the venv Python;
+smoke staging validates the smoke config.
+
+**Kept, with the reason (audit item on F3/F2 precedence).** A candidate whose Q1 failure is *demonstrated* (A7.4: invalid
+production run, > 1 % non-converged steps, or a distance bar exceeded with valid anchors) cannot become numerically
+qualified whatever its Q2 label, so it is **resolved** for the stop rule even if its Q2 is unverified. "Unresolved"
+(A2.3) is reserved for candidates that could still pass with complete evidence. This reading is registered here.
+Control acceptance gates the *production submission* (staging refuses a production attempt without an accepted smoke);
+controls are not re-run in production, so per-arm qualification does not consume them separately.
+
+## Amendment A9 (2026-10-21; from the real-size smoke `smk1`, job 6171538, H200 — control fixtures only, no verdict)
+
+**A9.1 C5 fixture replaced.** The duplicated-rule Jacobian microbenchmark gave a median ratio of 1.39 (< 1.5) on the
+H200: doubling $m$ at $m=16384$, $r=384$ does not double the measured time (the kernels run below peak throughput). Per
+A2.6 this is an unsuitable fixture, not evidence about the timer, and the claim it protects (the timer resolves a cost
+change) is **blocked**. Replacement **C5′**: the same microbenchmark with every R point repeated **four** times (quarter
+weight), bar ≥ 1.5, measured **inside the production job**; the speed predicates ("faster", "≥ 1.5× gain") are evaluated
+only if C5′ fires there; otherwise they are "incomplete evidence". The doubled-rule ratio stays reported.
+
+**A9.2 C4 acceptance recomputation.** The NaN fixture is caught by E5's non-finite exit (reason 3 → lane reason 2) while
+the stored outputs stay finite (the stepper stops updating the state), so the acceptance script recomputes C4 from the
+saved per-step reasons (a non-finite step present) rather than from non-finite outputs. The in-job validity path and
+the Q1 label fired as registered.

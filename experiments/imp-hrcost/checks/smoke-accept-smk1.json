@@ -1,0 +1,156 @@
+{
+ "attempt": "smk1",
+ "accepted": true,
+ "items": {
+  "C1_sine": {
+   "fired": true,
+   "recomputed": {
+    "rollout_max": 0.11480916441951076,
+    "rho_max": 1.596383250674718,
+    "chk_max": NaN,
+    "trivial": 0,
+    "fail_rollout": true,
+    "fail_rho": true,
+    "label": "fail"
+   },
+   "job": {
+    "fixture": "gauss24",
+    "successor": "gauss32",
+    "fired": true,
+    "rollout_max": 0.11480916441951076,
+    "rho_max": 1.596383250674718
+   }
+  },
+  "C1_bank": {
+   "fired": true,
+   "recomputed": {
+    "rollout_max": 0.07062343252330729,
+    "rho_max": 1.1574660497163352,
+    "chk_max": NaN,
+    "trivial": 0,
+    "fail_rollout": true,
+    "fail_rho": true,
+    "label": "fail"
+   },
+   "job": {
+    "fixture": "gauss24",
+    "successor": "gauss32",
+    "fired": true,
+    "rollout_max": 0.07062343252330729,
+    "rho_max": 1.1574660497163352
+   }
+  },
+  "C2": {
+   "fired": true,
+   "recomputed": "fail"
+  },
+  "C3": {
+   "fired": true
+  },
+  "C4": {
+   "fired": true
+  },
+  "C5": {
+   "fired": false,
+   "ratio": 1.385766519734303
+  },
+  "C6": {
+   "fired": true,
+   "e2e_median": 0.9997124034660226
+  },
+  "C7": {
+   "fired": true
+  },
+  "C8": {
+   "fired": true
+  },
+  "P1": {
+   "passed": true,
+   "value": 0.0
+  },
+  "P3": {
+   "passed": true,
+   "dM": 1.9525286091408984e-09,
+   "dK": 8.435650338553803e-07
+  },
+  "P4": {
+   "passed": true,
+   "fixtures": [
+    "R",
+    "F2_gauss96",
+    "F3a_k8"
+   ]
+  },
+  "P5": {
+   "passed": true,
+   "mesh_mass_rel": 0.0007115876152605916
+  },
+  "P6": {
+   "passed": true
+  },
+  "P2": {
+   "passed": true,
+   "max": 9.741717371956102e-14
+  }
+ },
+ "blocked_claims": {
+  "C5": "timer resolution: speed predicates are evaluated only if C5-prime fires in the production job (A9.1)"
+ },
+ "predicate_provenance": {
+  "recomputed": [
+   "C1_sine",
+   "C1_bank",
+   "C2",
+   "C3",
+   "C5",
+   "C6",
+   "C4",
+   "C8"
+  ],
+  "job-reported (in-job assertion or comparison)": [
+   "C7",
+   "P1",
+   "P2",
+   "P3",
+   "P4",
+   "P5",
+   "P6"
+  ]
+ },
+ "offline_disagreements": {},
+ "gcert_failures": [],
+ "run": "runs/smk1/output/hjob",
+ "config": {
+  "attempt": "smk1",
+  "mesh": 1024,
+  "Rp": 384,
+  "policy": "frozen",
+  "dt": 0.005,
+  "cases": "dev6",
+  "q2_cases": "dev6",
+  "gauss": [
+   96,
+   112,
+   128,
+   160,
+   192
+  ],
+  "fib": false,
+  "mmax": 16384,
+  "fits": [
+   "F3a",
+   "F3b",
+   "F2F3"
+  ],
+  "controls": true,
+  "timing": {
+   "cases": "dev6",
+   "reps": 5,
+   "burn": 3
+  }
+ },
+ "source_commit": "a786b07bb5bbcf61f2f3d4be14ce78f9c07d9c98",
+ "stepper_sha256": "e7ad195b4d1f2b260d24ef21698d46589f0d9424ed74a58dde25a431cefacc75",
+ "fscore_sha256": "3626350c4165d4db686db68f1be59730de31d8c4e6c06ee2876a8c19b86cbec5",
+ "timing_settings_ok": true
+}

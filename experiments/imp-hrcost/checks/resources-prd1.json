@@ -1,0 +1,34 @@
+{
+ "attempt": "prd1",
+ "smoke": "runs/smk1/output/hjob",
+ "smoke_attempt": "smk1",
+ "estimate_seconds": {
+  "setup": 23.5392656782642,
+  "R": 241.94609312092263,
+  "F2_q2": 114.01719035506248,
+  "F2_q1": 591.144579693675,
+  "fits": 1272.0372794341915,
+  "controls": 0.0,
+  "timing": 2722.2635155690546
+ },
+ "safety": 1.5,
+ "projection_hours": 2.0687283016046543,
+ "spent_hours": 0.4469,
+ "cap": 3.0,
+ "device_peak_bytes": 51195935232,
+ "device_limit_bytes": 138101653504,
+ "mem_ok": true,
+ "deferred": [],
+ "ok": true,
+ "note": "deferred items require a new config; the certificate refuses a config that still contains them",
+ "config_sha256": "9da7b2b8ad2fd2d0f39a827e53037382319a9040f978978d80dfdf7f35523e84",
+ "smoke_gpu": [
+  "NVIDIA H200, GPU-a8a12c96-fc46-0791-d459-e18b81bc6b19, 143771 MiB"
+ ],
+ "smoke_source_commit": "a786b07bb5bbcf61f2f3d4be14ce78f9c07d9c98",
+ "smoke_result_sha256": "61d896fd6e40a6cfc7be37df34eb5e93455e00f828c9c776d92bfd3b38aa2ed6",
+ "ledger_jobs": [
+  "6171538"
+ ],
+ "memory_semantics": "allocator high-water marks (running maximum, phase order recorded; A4.2)"
+}

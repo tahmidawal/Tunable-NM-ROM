@@ -126,7 +126,9 @@ def run(J):
             z = np.load(f)
             scored[name] = {str(c): z['W'][i] for i, c in enumerate(z['case_ids'])}
     J.timing((dR, 'sine'), pairs, J.sets[tc.get('cases', 'all38')], tc.get('reps', 5), tc.get('burn', 3), scored=scored)
-    J.rep['jac_bench'] = dict(R=J.jac_bench(dR), dup=J.jac_bench(dup[0]))
+    quad = HT.duplicated(HT.duplicated((dR, auxR, metaR)))                # C5-prime (A9.1): 4x the point work
+    J.rep['jac_bench'] = dict(R=J.jac_bench(dR), dup=J.jac_bench(dup[0]), quad=J.jac_bench(quad[0]))
+    J.rep['jac_bench']['ratio_quad'] = J.rep['jac_bench']['quad'][0] / J.rep['jac_bench']['R'][0]
     J.rep['jac_bench']['ratio'] = J.rep['jac_bench']['dup'][0] / J.rep['jac_bench']['R'][0]
     J.phase('timing', t)
 
@@ -144,7 +146,8 @@ def _np_rhs(c, nu, t):
 def _np_eta(states, k, nu, t, U, dt):
     cn, c1 = states[k], states[k + 1]
     rv = c1 - cn - .5 * dt * (_np_rhs(c1, nu, t) + _np_rhs(cn, nu, t))
-    return float(np.linalg.norm(U @ rv) / np.linalg.norm(U @ cn))
+    sc, rg = float(np.linalg.norm(U @ cn)), float(np.linalg.norm(U @ rv))
+    return rg / sc if sc > 0 else (0. if rg == 0 else float('inf'))
 
 
 def controls(J, runs_sine, runs_bank):
@@ -262,6 +265,11 @@ def controls(J, runs_sine, runs_bank):
                 u0, nu, _ = J.U0[cid]
                 a_ = jax.device_get(J.Qlane['fused'](u0, nu, d, J.U[proj], B.G, B.cold, GS.sched(J.dt, 1e-12, budget=50)))
                 b_ = J.run(d, proj, cid, 'tight')
+                ok_ = GS.run_valid(a_, J.S) and bool(np.all(np.asarray(a_['stats']['reason'])[:J.S] == 1)) and \
+                    b_['valid'] and bool(np.all(b_['reason'] == 1))
+                if not ok_:
+                    p2.append((nm, cid, float('inf')))
+                    continue
                 p2.append((nm, cid, float(np.linalg.norm(np.asarray(a_['W']) - b_['W']) / np.linalg.norm(b_['W']))))
         C['P2'] = dict(rows=p2, max=max(v for *_, v in p2), passed=bool(len(p2) == 2 * len(fx2) and max(v for *_, v in p2) <= 1e-10))
     # ---- P3

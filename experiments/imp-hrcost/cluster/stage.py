@@ -37,6 +37,7 @@ def main():
     assert cfg['attempt'] == a.attempt, ('config attempt differs', cfg['attempt'], a.attempt)
     if a.attempt.startswith('smk'):
         assert a.hours <= 1.5 + 1e-9, 'smoke reservation is 1.5 h (DESIGN A3.5)'
+        assert cfg.get('controls') and cfg['cases'] == 'dev6' and cfg['mesh'] == 1024 and cfg['Rp'] == 384, 'smoke config'
     else:       # production: smoke-derived certificate bound to this exact config (code audit 1)
         c_ = json.loads((lane / 'checks' / f'resources-{a.attempt}.json').read_text())
         assert c_['ok'] and c_['config_sha256'] == hashlib.sha256((lane / a.config).read_bytes()).hexdigest(), 'certificate'

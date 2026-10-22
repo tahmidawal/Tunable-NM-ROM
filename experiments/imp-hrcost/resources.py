@@ -32,7 +32,7 @@ def n_cands(cfg):
 
 def project(R, cfg):
     ph, sc = R['phases'], R['config']
-    for k in ('setup', 'R', 'F2_q2', 'F2_q1', 'fit_F3a', 'fit_F3b', 'fit_F2F3', 'timing'):
+    for k in ('setup', 'R', 'F2_q2', 'F2_q1', 'fit_F3a', 'fit_F3b', 'fit_F2F3', 'controls', 'timing'):
         assert k in ph, f'smoke lacks phase {k}'
     f_case = NCASE[cfg['cases']] / NCASE[sc['cases']]
     f_q2 = NCASE[cfg['q2_cases']] / NCASE[sc['q2_cases']]
@@ -46,7 +46,11 @@ def project(R, cfg):
     est = dict(setup=ph['setup'], R=ph['R'] * max(f_case, f_q2),
                F2_q2=ph['F2_q2'] * f_q2 * n_ladder(cfg) / max(n_ladder(sc), 1),
                F2_q1=per_q1 * f_case * (n_cands(cfg) + 1),
-               fits=sum(ph[k] for k in ('fit_F3a', 'fit_F3b', 'fit_F2F3')) * max(f_case, f_q2),
+               # fit phases = case-independent fitting (training rollouts + NNLS, R['fits'][*]['seconds']) + Q2/Q1 of the
+               # fitted arms (scaled with the case count)
+               fits=sum(R['fits'][f]['seconds'] + (ph[f'fit_{f}'] - R['fits'][f]['seconds']) * max(f_case, f_q2)
+                        for f in ('F3a', 'F3b', 'F2F3')),
+               controls=ph['controls'] * f_case if cfg.get('controls') else 0.,
                timing=ph['timing'] * f_tim * n_arm_p / n_arm_s)
     return est, sum(est.values()) * SAFETY / 3600.
 
@@ -62,9 +66,12 @@ def main():
     assert acc['accepted'], 'smoke not accepted'
     led = json.loads((HERE / 'runs' / 'GPU-LEDGER.json').read_text())
     spent = float(led['total_gpu_hours'])
-    peak = max(v['peak'] for v in R['mem'].values() if v['peak'] > 0)
-    limit = max(v['limit'] for v in R['mem'].values())
-    mem_ok = peak <= .9 * limit
+    peaks = [v['peak'] for v in R['mem'].values() if v['peak'] > 0]
+    if peaks:
+        peak, limit = max(peaks), max(v['limit'] for v in R['mem'].values())
+    else:                                                 # A3.5 fallback: sampled nvidia-smi (MiB), H200 usable 143771 MiB
+        peak, limit = max(v.get('nvsmi_used_mib', -1) for v in R['mem'].values()) * 2 ** 20, 143771 * 2 ** 20
+    mem_ok = 0 < peak <= .9 * limit
     est, hours = project(R, cfg)
     deferred = []
     if spent + hours > CAP and cfg.get('fib', True):
@@ -76,7 +83,10 @@ def main():
                projection_hours=hours, spent_hours=spent, cap=CAP, device_peak_bytes=peak, device_limit_bytes=limit,
                mem_ok=mem_ok, deferred=deferred, ok=ok,
                note='deferred items require a new config; the certificate refuses a config that still contains them',
-               config_sha256=hashlib.sha256(cfgp.read_bytes()).hexdigest(),
+               config_sha256=hashlib.sha256(cfgp.read_bytes()).hexdigest(), smoke_gpu=R['gpu'],
+               smoke_source_commit=(run.parent.parent / 'COMMIT.txt').read_text().strip(),
+               smoke_result_sha256=hashlib.sha256((run / 'result.json').read_bytes()).hexdigest(),
+               ledger_jobs=[j['jobid'] for j in led['jobs']],
                memory_semantics='allocator high-water marks (running maximum, phase order recorded; A4.2)')
     (HERE / 'checks' / f'resources-{cfg["attempt"]}.json').write_text(json.dumps(out, indent=1))
     print(json.dumps(out, indent=1))

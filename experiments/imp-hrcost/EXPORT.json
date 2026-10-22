@@ -1,0 +1,390 @@
+{
+ "lane": "imp-hrcost",
+ "kappa_star": null,
+ "setup_cost": {
+  "phases_seconds": {
+   "setup": 23.195928625762463,
+   "R": 77.94223141577095,
+   "F2_q2": 75.49550228565931,
+   "F2_q1": 96.05107576679438,
+   "fit_F3a": 345.6446601059288,
+   "fit_F3b": 387.6881933165714,
+   "fit_F2F3": 298.1577946571633,
+   "timing": 2325.8177990866825
+  },
+  "fit_seconds": {
+   "F3a": 203.86269340198487,
+   "F3b": 258.7781789796427,
+   "F2F3": 156.2481733392924
+  },
+  "bank_ops_seconds": 4.704846853390336
+ },
+ "experiment": "E6",
+ "attempt": "prd1",
+ "production": true,
+ "gpu": "NVIDIA H200, GPU-9414f59f-8546-1c49-b2f9-c0bffc2ea441, 143771 MiB",
+ "gpu_hours_total": 1.4608,
+ "stop": {
+  "F2_mstar": "gauss96",
+  "F2": "fired (tested failure): m* = gauss96, no_worse=False, faster=False",
+  "F3": "fired (tested failure)",
+  "F3_detail": {
+   "F3a_k4": "q2=fail q1=pass no_worse=False gain15=False",
+   "F3a_k8": "q2=fail q1=pass no_worse=False gain15=False",
+   "F3a_k16": "q2=fail q1=pass no_worse=True gain15=False",
+   "F3b_k4": "q2=fail q1=pass no_worse=False gain15=False",
+   "F3b_k8": "q2=fail q1=pass no_worse=True gain15=False",
+   "F3b_k16": "q2=fail q1=pass no_worse=False gain15=False"
+  }
+ },
+ "stop_projected": {
+  "F2_mstar": "gauss96",
+  "F2": "fired (tested failure): m* = gauss96, no_worse=False, faster=False",
+  "F3": "fired (tested failure)",
+  "F3_detail": {
+   "F3a_k4": "q2=fail q1=pass no_worse=False gain15=False",
+   "F3a_k8": "q2=fail q1=pass no_worse=False gain15=False",
+   "F3a_k16": "q2=fail q1=pass no_worse=True gain15=False",
+   "F3b_k4": "q2=fail q1=pass no_worse=False gain15=False",
+   "F3b_k8": "q2=fail q1=pass no_worse=True gain15=False",
+   "F3b_k16": "q2=fail q1=pass no_worse=False gain15=False"
+  }
+ },
+ "F2": {
+  "candidates": [
+   "gauss64",
+   "fib4181",
+   "gauss80",
+   "fib6765",
+   "gauss96",
+   "fib10946",
+   "gauss112",
+   "gauss128"
+  ],
+  "first_qualified": "gauss96",
+  "mstar_identified": true
+ },
+ "jac_bench": {
+  "dup_ratio": 1.373800807782081,
+  "quad_ratio": 2.1386035594836357
+ },
+ "arms": {
+  "R": {
+   "m": 16384,
+   "q1": "pass",
+   "q2": "pass",
+   "q2_projected": "pass",
+   "qualified": true,
+   "worst": 0.01850973809729437,
+   "median": 0.0004947804067826699,
+   "e2e": null,
+   "e2e_ci": null,
+   "evo": null,
+   "vs_R": null
+  },
+  "F2_gauss96": {
+   "m": 9216,
+   "q1": "pass",
+   "q2": "pass",
+   "q2_projected": "pass",
+   "qualified": true,
+   "worst": 0.02131173991103396,
+   "median": 0.0028450405615300612,
+   "e2e": 1.0221530174721907,
+   "e2e_ci": [
+    0.992451990263966,
+    1.0680391888077718
+   ],
+   "evo": 1.0216478107368263,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 35,
+     "tie": 0,
+     "better": 3
+    },
+    "c5prime_fired": true,
+    "faster": false,
+    "gain15": false
+   }
+  },
+  "F2_gauss128": {
+   "m": 16384,
+   "q1": "pass",
+   "q2": "pass",
+   "q2_projected": "pass",
+   "qualified": true,
+   "worst": 0.02130549994015329,
+   "median": 0.002845780853007492,
+   "e2e": 0.9306892166827629,
+   "e2e_ci": [
+    0.9002389080681896,
+    0.9718725361290713
+   ],
+   "evo": 0.9302928143043444,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 35,
+     "tie": 0,
+     "better": 3
+    },
+    "c5prime_fired": true,
+    "faster": false,
+    "gain15": false
+   }
+  },
+  "F3a_k4": {
+   "m": 1536,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.01859079104382606,
+   "median": 0.0006269535484523115,
+   "e2e": 1.2406609509982247,
+   "e2e_ci": [
+    1.2402677437365643,
+    1.241010392539024
+   ],
+   "evo": 1.2419206414931114,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 30,
+     "tie": 4,
+     "better": 4
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F3a_k8": {
+   "m": 3072,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.018892287298600034,
+   "median": 0.0004959458315499269,
+   "e2e": 1.1777678197757189,
+   "e2e_ci": [
+    1.1772238473428738,
+    1.1781614435361427
+   ],
+   "evo": 1.1792896602797813,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 4,
+     "tie": 28,
+     "better": 6
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F3a_k16": {
+   "m": 6144,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.01851116843136141,
+   "median": 0.0004948257516648704,
+   "e2e": 1.148776320887769,
+   "e2e_ci": [
+    1.1486621307804312,
+    1.1489979052039834
+   ],
+   "evo": 1.1507532426270815,
+   "vs_R": {
+    "no_worse": true,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 1,
+     "tie": 35,
+     "better": 2
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F3b_k4": {
+   "m": 1536,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.05950678469833961,
+   "median": 0.0028095276758335576,
+   "e2e": 1.24109488509602,
+   "e2e_ci": [
+    1.2404106878589167,
+    1.2463058865492516
+   ],
+   "evo": 1.2424015635395749,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 34,
+     "tie": 2,
+     "better": 2
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F3b_k8": {
+   "m": 3072,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.01850661049050089,
+   "median": 0.0004935343320442759,
+   "e2e": 1.1785962233670946,
+   "e2e_ci": [
+    1.1781750181714745,
+    1.179006520066412
+   ],
+   "evo": 1.1801228862028907,
+   "vs_R": {
+    "no_worse": true,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 7,
+     "tie": 27,
+     "better": 4
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F3b_k16": {
+   "m": 6144,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.0185308407494902,
+   "median": 0.0004946630526519123,
+   "e2e": 1.1496402016768994,
+   "e2e_ci": [
+    1.1493933387551978,
+    1.1499206975392078
+   ],
+   "evo": 1.15145508505513,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 2,
+     "tie": 33,
+     "better": 3
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F2F3_k4": {
+   "m": 1536,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.02130433943371034,
+   "median": 0.0029964061432892096,
+   "e2e": 1.1488356942740818,
+   "e2e_ci": [
+    1.1144391772457598,
+    1.2054433153163442
+   ],
+   "evo": 1.1495314453147434,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 36,
+     "tie": 0,
+     "better": 2
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F2F3_k8": {
+   "m": 3072,
+   "q1": "pass",
+   "q2": "fail",
+   "q2_projected": "fail",
+   "qualified": false,
+   "worst": 0.02130521881189596,
+   "median": 0.002845437041577438,
+   "e2e": 1.096999341921767,
+   "e2e_ci": [
+    1.0607378125324676,
+    1.1450480927871813
+   ],
+   "evo": 1.0983034137461067,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 35,
+     "tie": 0,
+     "better": 3
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  },
+  "F2F3_k16": {
+   "m": 6144,
+   "q1": "pass",
+   "q2": "pass",
+   "q2_projected": "pass",
+   "qualified": true,
+   "worst": 0.021305502494119596,
+   "median": 0.0028457525676698187,
+   "e2e": 1.0699979597133296,
+   "e2e_ci": [
+    1.0349467796990293,
+    1.1179516915816439
+   ],
+   "evo": 1.0708251291647468,
+   "vs_R": {
+    "no_worse": false,
+    "eps_star": 6.015167685685166e-06,
+    "counts": {
+     "worse": 35,
+     "tie": 0,
+     "better": 3
+    },
+    "c5prime_fired": true,
+    "faster": true,
+    "gain15": false
+   }
+  }
+ },
+ "labels": "errors: conditional E0 estimates; speed-ups: exploratory, in-sample, unadjusted, internal vs R",
+ "sources": {
+  "analysis": "checks/analysis-prd1.json",
+  "result": "runs/prd1/output/hjob/result.json",
+  "ledger": "runs/GPU-LEDGER.json",
+  "report": "report.md"
+ }
+}

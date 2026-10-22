@@ -7,6 +7,13 @@ import hlabel as HL
 
 run, ana = Path(sys.argv[1]), json.loads(Path(sys.argv[2]).read_text())
 R = json.loads((run / 'result.json').read_text())
+# binding (code audit 2 / job audit smk1-1): the analysis must belong to this run and cover every scored arm
+assert Path(ana['source']).resolve() == run.resolve(), ('analysis belongs to another run', ana['source'])
+assert (run / 'COMPLETE').exists(), 'run not complete'
+assert set(ana['q1']) == {n for n in R['q1'] if not n.startswith('C4')} and set(ana['q2']) == set(R['q2']), 'analysis coverage'
+assert ana['q1'] and ana['q2'] and 'R' in ana['q1'], 'empty analysis'
+PROVENANCE = {'recomputed': ['C1_sine', 'C1_bank', 'C2', 'C3', 'C5', 'C6', 'C4', 'C8'],
+              'job-reported (in-job assertion or comparison)': ['C7', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6']}
 C, Q2 = R['controls'], R['q2']
 out = {}
 
@@ -35,9 +42,12 @@ for cid, v in c3['per_case'].items():
     for tag in ('a', 'b', 'c'):
         z = np.load(run / 'arrays' / f'C3_{cid.replace("|", "_")}_{tag}.npz')
         flagged = sorted(np.nonzero(~HL.certified(z['eta']))[0].tolist())
-        ok3 = ok3 and v['base_certified'] and flagged == v[tag]['expected'] and v[tag]['ok']
+        S_ = len(z['eta'])
+        want = sorted({int(k) - 1 for k in z['ks']} | {int(k) for k in z['ks'] if k < S_})
+        ok3 = ok3 and v['base_certified'] and flagged == want and v[tag]['ok']
 out['C3'] = dict(fired=bool(ok3 and c3['label_c'] == 'fail' and c3['pooled_c'] > .01))
-out['C4'] = dict(fired=bool((not C['C4']['valid']) and C['C4']['q1_label'] == 'fail'))
+z4 = np.load(run / 'arrays' / 'q1_C4.npz')
+out['C4'] = dict(fired=bool(np.any(z4['reason'] == 2) and C['C4']['q1_label'] == 'fail' and not C['C4']['valid']))   # A9.2
 r5 = float(np.median(C['C5']['reps_dup']) / np.median(C['C5']['reps_R']))
 out['C5'] = dict(fired=bool(C['C5']['max_rel_diff'] <= 1e-12 and r5 >= 1.5), ratio=r5)
 aa = R['timing'].get('AA', {})
@@ -66,10 +76,18 @@ REQUIRED = ['C1_sine', 'C1_bank', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'P1'
 missing = [k for k in REQUIRED if k not in out]
 for k in missing:
     out[k] = dict(fired=False, missing=True)
-ok = all(v.get('fired', v.get('passed')) for v in out.values()) and not missing
-res = dict(attempt=R['config'].get('attempt'), accepted=ok, items=out,
-           offline_disagreements={k: v['disagreements'] for k, v in {**ana['q1'], **ana['q2']}.items() if v.get('disagreements')})
-res['accepted'] = ok and not res['offline_disagreements']
+BLOCKABLE = {'C5': 'timer resolution: speed predicates are evaluated only if C5-prime fires in the production job (A9.1)'}
+blocked = {k: BLOCKABLE[k] for k, v in out.items() if k in BLOCKABLE and not v.get('fired', v.get('passed'))}
+ok = all(v.get('fired', v.get('passed')) for k, v in out.items() if k not in blocked) and not missing
+res = dict(attempt=R['config'].get('attempt'), accepted=ok, items=out, blocked_claims=blocked, predicate_provenance=PROVENANCE,
+           offline_disagreements={f'{ns}:{k}': v['disagreements'] for ns in ('q1', 'q2') for k, v in ana[ns].items()
+                                  if v.get('disagreements')},
+           gcert_failures=[k for k, v in ana['q1'].items() if any('G-cert' in r_ for r_ in v['reasons'])],
+           run=str(run), config=R['config'], source_commit=(run.parent.parent / 'COMMIT.txt').read_text().strip() if (run.parent.parent / 'COMMIT.txt').exists() else None,
+           stepper_sha256=R['setup'].get('stepper_sha256'), fscore_sha256=R['setup'].get('fscore_sha256'))
+tc = R['config'].get('timing', {})
+res['timing_settings_ok'] = bool(tc.get('reps', 5) == 5 and tc.get('burn', 3) == 3)
+res['accepted'] = bool(ok and not res['offline_disagreements'] and not res['gcert_failures'] and res['timing_settings_ok'])
 Path(__file__).resolve().parent.joinpath('checks', f"smoke-accept-{res['attempt']}.json").write_text(json.dumps(res, indent=1, default=str))
 print(json.dumps({k: v.get('fired', v.get('passed')) for k, v in out.items()}), 'accepted', res['accepted'])
 sys.exit(0 if res['accepted'] else 1)

@@ -726,3 +726,172 @@ smoke allowance (1 GPU-h) is spent (1.07 GPU-h, 0.07 over, recorded in the ledge
 (`cluster/bodies/smoke6.sh`, ≤ 0.15 GPU-h) is proposed as the first released job; production cells are submitted only
 after the projection is re-certified with it. Peak memories are taken from the probe JSONs per stage (all below 6 GB
 except POD/ECSW, bounded by the chunking of pod.py and A4's 66-state ECSW population).
+
+---
+
+## Amendment A5 (2026-10-21, after Codex design audit 4 = NOT-READY on certificates and cost; before production)
+
+Audit `audits/codex-design-4.md` (A4.2 and A4.4 CORRECT; A4.3 WRONG; A4.5 NEEDS-RESTATEMENT).
+
+**A5.1 ETDRK4 stage certificate (replaces A4.3's first bullet).** Every step, each of the three intermediate stages
+$s_2,s_3,s_4$ and the update are recomputed by the independent transcription with the closed-form/series coefficients;
+the per-step defect is $\max$ over the four vectors of $\lVert x-x'\rVert/(\lVert x'\rVert+10^{-14}\lVert y_n\rVert+10^{-300})$,
+bar $10^{-9}$ (frozen). **Q2 populations:** validation = dev8 + val32 (40 cases × 6 output states); confirmation = test32
+(32 × 6). States with $\lVert N_{q+2}\rVert=0$ or $\le10^{-12}$ of the population maximum are skipped; Q2 fails if more than
+5 % are skipped (so an all-zero population fails).
+
+**A5.2 Selected production panel and cost (replaces A4.5).** `runs/cost/projection.json` now uses **conservative bounds**
+for every unmeasured unit (bank 3.0 h per training, SEM screen 30 s per row, selection/Q1/Q2/timing stage = 1.0 × the
+ladder, S1 ladders = S2 ladders) and quantitative memory bounds (host training set 10.8 GB; device POD chunk 1.1 GB,
+POD QR 2.7 GB, ECSW matrix 8.9 GB, tensor chunk 1.8 GB, bank data 1.2 GB; all within an A100-80GB, job memory 120 GB).
+**Selected panel:** the four wide-family geometry cells, the two wide-family box cells, their test jobs and up to two
+conditional box banks; **all narrow-family cells are deferred** (defer items 2–3 of A1.10). Under the conservative bounds
+this panel projects above the cap (value in the JSON, `panel_selected_with_headroom_h`), so **production is not
+releasable on the current certificate**. Release sequence: (1) the measurement job `cluster/bodies/smoke6.sh` (bank
+steady-state step time, ECSW NNLS fit time; ≤ 0.15 GPU-h) replaces the two largest bounds by measurements; (2) the
+projection is re-certified; (3) if spent + projection still exceeds 62 GPU-h, the following pre-registered reductions are
+applied in order until it fits, each recorded in an amendment: (a) reduced-arm $r$ ladder $\{16,32,64,128,256,384\}$;
+(b) selection screen $K=3$; (c) C-SEM grading $g\in\{\text{off},0.5\}$; (d) the wide S2 H cell deferred (the H geometry
+verdict then rests on S1 and is UNRESOLVED at S2). Competitor families, their solver options and the paired timing protocol
+are never reduced.
+
+---
+
+## Amendment A6 (2026-10-21, after Codex code audit 1 = NEEDS-FIX; implementation record, before production)
+
+Audit `audits/codex-code-1.md`. Changes that touch the design (A6 governs where different):
+- **Search coverage.** C-SEM: the spatial screen at fine steps is the size ladder; step ladders (orders 2 and 3) and the
+  over-integration variant run on **every** spatial configuration whose fine-step error meets τ = 0.1 on either statistic
+  (a configuration that misses the loosest target with a converged step cannot meet it with fewer steps); the `eig`
+  solver and the bank's tensor form give the same outputs as `pcg` / point form to solver tolerance, so they are
+  **variants screened in selection** (for every candidate whose screen time is within 10× of the family's fastest) and
+  re-run officially if selected. C-ECSW runs all four steppers (Galerkin steppers share the $M_t=r$ fit). R-BANK runs the
+  step ladder at **every** rule $q$.
+- **Selection** orders candidates by a **warm single-query screen time** measured for every valid ladder row (median of
+  3 after compilation), not by batched compile-inclusive seconds; all candidates are considered in that order.
+- **Validity** everywhere (ladder, selection, confirmation) includes the solver statistics (`ladder.stats_valid`): no
+  unconverged MG/PCG solve; reduced Newton/LSPG: no non-finite step, no damping saturation, unconverged LM steps ≤ 1 %
+  (LSPG) / none (Galerkin); ETDRK4: no non-finite stage, no growth violation, $\mathrm{cond}(V)\le10^8$ enforced (else the
+  row is invalid). Q1 for Galerkin and linearised CN requires the certificate at **every** step.
+- **Certificates are untimed.** The ETDRK4 coefficient and stage certificates run only in the certificate replay, whose
+  outputs must equal the production outputs (T-id). Implementation of the independent coefficients: Cox–Matthews
+  $\varphi_1,\varphi_2,\varphi_3$, series (24 terms) for $|z|<1$, closed forms otherwise (replaces A3.5's "expm1 / 0.2 /
+  8-term" wording; same purpose, frozen as implemented).
+- **Q2** additionally checks the tested $M_t\times r$ mass and stiffness blocks and the IC projection (A1.8 bar).
+- **Timing integrity.** The outputs of the timed calls are stored and compared with the official outputs (T-id ≤
+  $10^{-12}$); a pair with T-id failure or any compilation during timing is excluded from S. T-dbl is serial (two blocked
+  calls in one timed region). A sentinel (first competitor finalist) is timed before and after; drift > 10 % marks the
+  timing invalid. Identical finalist pairs are timed once (validation and test).
+- **Test-once guard.** `stage_time` writes `frozen.json` (sha256 of manifest, bank, POD basis, ECSW weights, references,
+  descriptors; code commit). The test job runs only if the **committed** copy (staged with the code from `git archive
+  HEAD`) equals the job's `frozen.json` byte for byte and every artefact hash still matches; test reference labels are
+  computed only in the test stage.
+- **POD IC** is the full data-grid projection (A1.5 / A2.3 registered form; the 128-grid sub-lattice is removed).
+- **C-RK4** starts its ladder at the stability estimate with the correct Shortley–Weller fraction.
+- **ECSW candidates:** 16,384 uniform plus 16,384 importance-sampled from the remaining nodes, without truncation.
+- **Controls:** MF-MG bar 0.2 per cycle, measured at the **finest reference level** inside each production reference
+  stage (`ref.json:MF_MG_finest`); MF-QUAD adds $\int\varphi^2$ with bar $10^{-6}$ (the L envelope has a kink at the corner,
+  observed $3.6\times10^{-9}$ at the production rule); MF-Q1 compares flagged **step identities**; MF-MATCH perturbs the FD
+  field itself.
+- **Bank rule subdivision** $k_q=4$ is fixed (the §5.3 selection rule is withdrawn; Q2 qualifies the rule ladder at that
+  $k_q$). The **cross-span residual diagnostic** of A1.6 is dropped (not implemented). The training-data accuracy, the
+  SEM reference cross-check and the G-FLOOR check run in a `diag` stage on dev cases (reported).
+- **Cluster:** staging is `git archive HEAD` (an uncommitted lane refuses to submit); one campaign-lock section reserves
+  the job directory under both caps (lane 3, account 8) and another submits; the batch script fails when any stage fails;
+  an execution lock prevents two runs in one directory; every stage is a separate process.
+- **Decision table** implemented in `decide.py` (A4.2), using `final.json:side_status` for matched / censored /
+  unresolved-match / invalid.
+- **Release protocol (cost).** Because the certificate is provisional (A5.2), the first released production job is one
+  full wide cell (L | wide | S1) together with `smoke6`; its measured GPU-hours re-certify the remaining panel before any
+  further submission.
+
+---
+
+## Amendment A7 (2026-10-21, after Codex code audit 2 and the local CPU cell smoke; before production)
+
+- **Q2 gates = the brief's bars** (COMMON-BRIEF §3): ρ ≤ 0.116 on the arm's own reached states and rollout distance ≤
+  $2.5\times10^{-4}$ on every case, plus valid successor solves and the ≤ 5 % skip rule. The extra mass / stiffness / IC
+  difference bars of A1.8 / A3.5 become **reported** (the local smoke showed them failing at $10^{-6}$ while carrying no
+  information beyond the rollout bar).
+- **Bank rule ladder** extended (A6's fixed $k_q=4$ kept for $q\in\{4,6,8,10,12\}$) with a finer tier on $2k_q$ elements:
+  `f8`, `f12` (successors 14 → f8 → f12 → f16), so a rule-converged bank exists if the features need more points.
+- **T-dbl (replaces A1.9 / A6):** $t(d_1;d_2)/(t(d_1)+t(d_2))\in[0.9,1.1]$ (two different cases back to back vs the sum of the single calls); the 1.8–2.2× form is confounded by case-dependent iteration counts (local smoke: C-SEM 1.71).
+- **Smoke only:** `--smoke` adds τ = 0.2 and relaxes the bank's Q2 gate (recorded per item as `Q2_gate_relaxed_smoke`) so
+  the selection/timing path of an untrained smoke bank is exercised; production never relaxes it.
+- Code-audit-2 fixes (recorded in the code and commits): Q1 gates LSPG unconverged steps; Q2 replays must be valid
+  solves; every ETDRK4 stage checked finite; the max–min statistic requires a **complete** valid timing matrix for a bank
+  finalist (else that finalist is excluded; no S if none remains); T-id over every timed output; sentinel drift or a
+  failed T-dbl voids S; side status distinguishes *unqualified* (no evidence) from *censored*; the test stage recomputes
+  each (τ, statistic) verdict, gates its pairs on test accuracy / validity / bank Q1+Q2, counts compilations and runs
+  T-dbl; the freeze check requires the staged committed copy `code/runs/frozen/<cell>.json`, unchanged descriptors and
+  artefacts (incl. `ref.json`, dev references); submission archives the recorded commit and fails closed on queue errors.
+- **Local CPU smoke evidence (v4a, L | wide | S1, smoke sizes):** `runs/smoke/local-cellL/` — cell controls all fire
+  (`controls_L.json`), MF-MG at the finest smoke reference level and MF-REF on real data fire (`ref.json`).
+
+---
+
+## Amendment A8 (2026-10-21, coordinator decision; pre-data, before any production job)
+
+- **Registered production scope:** the four wide-family geometry cells (L, H × S1, S2), their two box controls, and
+  conditional box banks (only for cells whose geometry wins). **All narrow-family cells are deferred** (the win/withdraw
+  rule is judged on the wide family). Cap: 62 GPU-h in total, including the 1.07 GPU-h of smokes already spent.
+- **Order if the re-certified wide panel exceeds the remaining cap:** apply the A5.2 reductions (a) r ladder
+  {16,32,64,128,256,384}, (b) selection screen K = 3, (c) C-SEM grading {off, 0.5}; then defer the wide S2 H cell. Each
+  application is recorded in a dated amendment before the affected jobs run.
+- **First released step** (≤ 12 GPU-h): the measurement job `meas6` (isolated bank steady-state step timing) and the full
+  cell L | wide | S1 with the incumbent CN-R LSPG stepper. ECSW fit cost is measured inside that cell (per-fit wall times in
+  its ladder/stage records), not by a synthetic probe. Re-certification (`resources.py --measured`) then uses the cell's
+  measured stage seconds and peak memories. If E5's winner later passes, it is added as an extra bank arm only if the
+  budget allows.
+
+---
+
+## Amendment A9 (2026-10-22, after the first cell timed out; before any result is read)
+
+- **What happened:** job 6175736 (L | wide | S1) hit its 11.5 h limit inside the ladder stage (4974 rows; C-SEM 4.7 h,
+  C-ECSW 2.5 h, R-BANK 2.0 h at about 70 % of its ladder, R-PODG 1.0 h; ref / data / bank 0.86 h together, peak device
+  5.0 GB, host 14.8 GB). Everything is archived (`burgers-archive/imp-geometry/L_wide_S1`, SHA256SUMS) and collected
+  (`runs/cells/L_wide_S1/`). No selection, timing or test stage ran; no result was read.
+- **Reductions applied in the registered order (A5.2 / A8):** (a) reduced-arm $r\in\{16,32,64,128,256,384\}$;
+  (b) implementation variants screened only for the 3 fastest candidate rows; (c) C-SEM grading $\{\text{off},0.5\}$.
+  Ladder rows recorded before the reduction outside these sets never enter selection (`run_cell.registered`).
+- **Implementation (cost only, same numbers):** the bank ladder runs in tensor form from now on (identical outputs to
+  $10^{-9}$, MF-TENS; the point form is the screened variant); the ladder resumes from recorded rows (decisions replayed
+  from the stored rows; ECSW fits reused).
+- **Re-certification** (`runs/cost/projection_A9.json`, measured family costs + listed assumptions; remaining cap
+  62 − spent): the full wide panel and the panel minus the wide S2 hole cell do **not** fit with the 1.5 headroom; the
+  geometry cells L S1 (resume), H S1, L S2 do. **The wide S2 hole cell is deferred** (registered order). The box controls do
+  not fit in either case; whether to drop or make them conditional is the coordinator's decision (without them no
+  geometry attribution can be established, and with H S2 deferred geometry H cannot be a WIN under A4.2).
+- The resume job restores the archived cell and runs ladder → inter → time → diag → freeze.
+- **A9 addendum (after `audits/codex-job5-resume.md`):** the SEM / FD expansion frontiers use only base step-ladder
+  rows (base tolerance, `pcg`, registered grades), so a resumed run expands exactly the frontier an uninterrupted run under
+  the A9 rules would (on the archived checkpoint this adds 20 rows); selection pre-ranks by stored screens (top 12) and
+  re-screens those rows and their variants in the current job, ordering by the fresh screens. The resume job needs a
+  coordinator authorization beyond A8's 12 GPU-h step cap (11.62 h spent in step 1).
+- **A9 addendum 2 (after `audits/codex-job6-resume.md`):** selection re-screens, in the current job, every candidate whose
+  stored screen is within 3× of the family's best stored screen (6× if the fresh/stored ratios vary by more than 1.5×;
+  the drift is recorded); variants for the 3 fastest by fresh screen; ordering by fresh screens only (replaces the
+  "top 12" rule of the first addendum).
+- **A9 addendum 3 (after `audits/codex-job7-resume.md`):** selection re-screens **every** eligible candidate in the
+  current job (no window, no stored-screen ordering), with a per-job screen cache shared across targets and statistics;
+  measured screening proxy on the checkpoint ≈ 2.4 GPU-h, so the selection/timing stage is now taken as 4.0 h (S1).
+  Re-certified (`runs/cost/projection_A9.json`): only **one wide cell per geometry** (L S1 resumed + H S1) fits the
+  remaining cap with the 1.5 headroom; L S2 does not fit in addition. Under A4.2 a geometry WIN needs both levels, so with
+  this panel neither geometry can be a WIN (outcome at best WITHDRAWN (insufficient evidence)) unless the coordinator
+  changes the cap or the rule. This is stated plainly to the coordinator; no further cell is submitted without a decision.
+
+---
+
+## Amendment A10 (2026-10-22, coordinator decision; recorded BEFORE any S1 selection, timing or test data exists)
+
+- **Step 2 (authorized):** resume L | wide | S1, then H | wide | S1 (H job audited before submission); hard stop at
+  30 GPU-h spent in step 2. The win/withdraw rule (A1.1 / A4.2) is **unchanged**.
+- **S1 readout:** after both S1 cells are scored (selection, timing, test-once), S against the best competitor per target
+  and geometry is computed with the audited `decide.py`. If neither a WIN nor a withdraw is reached, it is reported as
+  **"S1-only, wide family; WIN not decidable without S2 and box controls"**.
+- **Pre-registered conditional:** if $S\ge2$ against the best competitor at some target (worst error, val32, both matched
+  configurations qualified and the target confirmed on test-once, as A4.2's "candidate win confirmed") on at least one
+  geometry at S1, the coordinator funds L | wide | S2 and the box controls for the S1 cells from the E4 reserve,
+  re-certified from step-2 measurements. If $S<2$ at every target on both geometries at S1 (A4.2 "loss" or "no evidence"
+  at every τ), the lane stops and reports the geometry claim as **"not supported at S1; S2 untested"**.

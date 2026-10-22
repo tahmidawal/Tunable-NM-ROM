@@ -67,12 +67,13 @@ def geometry_controls(dom, smoke):
     u0, it0, ok0, rr0 = mg0.solve(1.5 / 1.25e-4, 0.04, fj, jnp.zeros_like(fj), 1e-10, 50)
     contr = float(10 ** (np.log10(float(rr)) / max(int(it), 1)))
     out['MF-MG'] = dict(cycles=int(it), converged=bool(ok), contraction=contr, noop_converged=bool(ok0),
-                        noop_ratio=float(rr0), fires=bool(ok and contr <= 0.35 and not ok0))
+                        noop_ratio=float(rr0), fires=bool(ok and contr <= 0.2 and not ok0))   # demonstration; production check at the finest level in ref.json
     # MF-QUAD: composite rule area exact; chordal rule on H wrong
     X, w = G.composite_rule(dom, 4, 8)
-    rec = dict(area_relerr=float(abs(w.sum() - G.area(dom)) / G.area(dom)),
+    sc_ = G.rule_selfcheck(dom, 4, 8)
+    rec = dict(area_relerr=float(abs(w.sum() - G.area(dom)) / G.area(dom)), phi2_relerr=sc_['phi2_relerr'],
                all_inside=bool(np.all(G.inside(dom, X[:, 0], X[:, 1]))))
-    ok = rec['area_relerr'] <= 1e-12 and rec['all_inside']
+    ok = rec['area_relerr'] <= 1e-12 and rec['phi2_relerr'] <= 1e-6 and rec['all_inside']   # phi^2: kink-limited (A6)
     if dom == 'H':
         Xc, wc = G.composite_rule(dom, 4, 8, chordal=True)
         rec['chordal_area_relerr'] = float(abs(wc.sum() - G.area(dom)) / G.area(dom))
@@ -152,10 +153,11 @@ def cell_controls(a, celldir):
     r = min(32, sp.R)
     nt = 40
     qc = RM.make_query(sp, r, 'lspg_cnr', nt, form='tensor', cert=True)
-    qcp = RM.make_query(sp, r, 'lspg_cnr', nt, form='tensor', cert=True, perturb_cert=1e-3)
+    qcp = RM.make_query(sp, r, 'lspg_cnr', nt, form='tensor', cert=True, perturb_cert=1e-3, n_out=nt, trace=True)
     qz = RM.make_query(sp, r, 'lspg_cnr', nt, form='tensor', n_out=nt, out='z')
     s0 = np.asarray(qc(jnp.asarray(Dv[0]))[1])
-    s1 = np.asarray(qcp(jnp.asarray(Dv[0]))[1])
+    _, s1, gtr = qcp(jnp.asarray(Dv[0]))
+    s1, flagged = np.asarray(s1), np.asarray(gtr) > 1e-3
     Zs = np.asarray(qz(jnp.asarray(Dv[0]))[0])          # states after every step
     Mt = min(4 * r, sp.R)
     P, Sx, Th, w = sp.P[:, :r], sp.S[:, :r], sp.P[:, :Mt], sp.w
@@ -166,6 +168,7 @@ def cell_controls(a, celldir):
     def res(z, zn, th):
         return Mm @ (z - zn) / dt + th * (nu * Kk @ z + Nf(z)) + (1 - th) * (nu * Kk @ zn + Nf(zn))
     n_viol = 0
+    indep = []
     for i in range(nt):
         zn, z = Zs[i], Zs[i + 1]
         th = 1.0 if i < 2 else 0.5
@@ -174,9 +177,11 @@ def cell_controls(a, celldir):
         J = np.stack([(res(zc + 1e-7 * e, zn, th) - res(zc - 1e-7 * e, zn, th)) / 2e-7 for e in np.eye(r)], 1)
         g = np.linalg.norm(J.T @ rv) / (np.linalg.norm(J) * np.linalg.norm(rv) + 1e-300)
         n_viol += int(g > 1e-3)
+        indep.append(bool(g > 1e-3))
+    same = bool(np.array_equal(np.array(indep), flagged))
     out['MF-Q1'] = dict(clean_nonstationary=float(s0[0]), clean_max_gamma=float(s0[1]), faulted_flagged=float(s1[0]),
-                        independent_violations=n_viol, steps=nt,
-                        fires=bool(s0[0] / s0[2] <= 0.01 and n_viol >= 1 and int(s1[0]) == n_viol))
+                        independent_violations=n_viol, steps=nt, same_steps=same,
+                        fires=bool(s0[0] / s0[2] <= 0.01 and n_viol >= 1 and same))
     # MF-Q2: reference rule with the elements carrying the largest share of ||N|| zeroed must exceed the rho bar
     if (celldir / 'bank.pkl').exists():
         import bank as BK
@@ -214,7 +219,7 @@ def cell_controls(a, celldir):
         for j in range(len(Of)):
             for k in range(1, 6):
                 dv = rng.standard_normal(Of.shape[-1])
-                Of[j, k] = Uv[j, k] + dv / np.linalg.norm(dv) * 0.02 * np.linalg.norm(Uv[j, 0])
+                Of[j, k] = O[j, k] + dv / np.linalg.norm(dv) * 0.02 * np.linalg.norm(Uv[j, 0])   # FD field + 2 tau
         ef = SC.err(Of, Uv)
         # independent recomputation of the faulted worst error (plain loops)
         ef_ind = max(max(np.linalg.norm(Of[j, k] - Uv[j, k]) for k in range(1, 6)) / np.linalg.norm(Uv[j, 0])

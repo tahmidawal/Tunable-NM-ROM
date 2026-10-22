@@ -1,0 +1,22 @@
+13:51:39 stage ref: start
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/run_cell.py", line 560, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/run_cell.py", line 550, in main
+    dict(ref=stage_ref, data=stage_data, bank=stage_bank, ladder=stage_ladder, time=stage_time,
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         test=stage_test)[st](a, out, D)
+         ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/run_cell.py", line 87, in stage_ref
+    q = fd.make_sbdf2(a.dom, n, nt, 1e-10, maxit=60)
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/fd.py", line 188, in make_sbdf2
+    I, J = g.lat_idx() if out_idx is None else out_idx
+           ~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/fd.py", line 77, in lat_idx
+    return G.lat_from_grid(self.dom, self.n, lat)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/geom.py", line 163, in lat_from_grid
+    assert n % lat == 0
+           ^^^^^^^^^^^^
+AssertionError

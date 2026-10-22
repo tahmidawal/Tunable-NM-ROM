@@ -1,4 +1,4 @@
-{"lane": "imp-geometry", "utc": "2026-10-21T22:18:29Z", "step": "4: local CPU smoke (time stage + controls) and codex design audit 3 running",
- "waiting_on": {"slurm_jobs": [], "codex_output": "audits/codex-design-3.md", "codex_pid": 768931, "local_pid": 774101},
- "expected_finish_utc": "", "last_commit": "3da52d522",
- "gpu_hours_spent": 1.0742, "gpu_hours_cap": 62, "notes": "projection 88.5 h w/ headroom full; 47 h wide+box; banks unmeasured"}
+{"lane": "imp-geometry", "utc": "2026-10-22T18:44:42Z", "step": "parked: waiting on 6192666 (H_wide_S1); L_wide_S1 scored incl. test-once 6202632 (collected)",
+ "waiting_on": {"slurm_jobs": ["6192666"], "codex_output": null, "codex_pid": null, "local_pid": null},
+ "expected_finish_utc": "", "last_commit": "45e21f3a2",
+ "gpu_hours_spent": 25.1553, "gpu_hours_cap": 62, "notes": "next: collect H, commit frozen, audit + run H test-once, results audit, S1 decision, note"}

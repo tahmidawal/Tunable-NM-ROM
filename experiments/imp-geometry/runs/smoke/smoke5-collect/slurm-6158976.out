@@ -1,0 +1,68 @@
+NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+10.235.106.24:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+=== probe_L_S2_pod: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke5/out/probe --dom L --lev S2 --sections pod
+=== probe_L_S2_pod rc=1 173s
+pod_4032: 17.97s
+pod_space: 10.59s
+podg_r384_lspg_cnr_compile+32: 16.42s
+podg_r384_lspg_cnr_32: 11.10s
+podg_r384_gal_etdrk4_compile+32: 9.56s
+podg_r384_gal_etdrk4_32: 6.89s
+podg_r384_gal_cnr_compile+32: 11.99s
+podg_r384_gal_cnr_32: 9.34s
+    npy_value, did_copy = self._single_device_array_to_np_array_did_copy()
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 12.38GiB. [tf-allocator-allocation-error=''] [executable_name='jit__lambda']
+=== probe_L_S2_fd: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke5/out/probe --dom L --lev S2 --sections fd
+=== probe_L_S2_fd rc=0 85s
+fdmg_n768_nt1280_compile+32: 33.78s
+fdmg_n768_nt1280_32: 32.71s
+fdmg_n384_nt640_compile+32: 8.26s
+fdmg_n384_nt640_32: 7.43s
+fdmg_n768_nt1280_32: 32.71s
+fdmg_n384_nt640_compile+32: 8.26s
+fdmg_n384_nt640_32: 7.43s
+=== probe_L_S2_sem: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke5/out/probe --dom L --lev S2 --sections sem
+=== probe_L_S2_sem rc=0 196s
+sem_p12_k8_nt2560_compile+32: 66.07s
+sem_p12_k8_nt2560_32: 65.39s
+sem_p8_k4_nt2560_compile+32: 5.45s
+sem_p8_k4_nt2560_32: 5.04s
+sem_eig_factor_p10_k6: 41.03s
+sem_p8_k4_nt2560_compile+32: 5.45s
+sem_p8_k4_nt2560_32: 5.04s
+sem_eig_factor_p10_k6: 41.03s
+=== probe_L_S2_bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke5/out/probe --dom L --lev S2 --sections bank
+=== probe_L_S2_bank rc=0 72s
+bank_train_220steps: 34.52s
+bank_rotation: 4.10s
+bank_space_q12: 9.27s
+bank_r384_lspg_compile+32: 10.14s
+bank_r384_lspg_32: 4.35s
+bank_space_q12: 9.27s
+bank_r384_lspg_compile+32: 10.14s
+bank_r384_lspg_32: 4.35s
+=== probe_H_S2_sem: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke5/out/probe --dom H --lev S2 --sections sem
+=== probe_H_S2_sem rc=124 1200s
+sem_p12_k8_nt2560_compile+32: 45.28s
+sem_p12_k8_nt2560_32: 45.14s
+sem_p8_k4_nt2560_compile+32: 6.89s
+sem_p8_k4_nt2560_32: 6.39s
+sem_p12_k8_nt2560_32: 45.14s
+sem_p8_k4_nt2560_compile+32: 6.89s
+sem_p8_k4_nt2560_32: 6.39s
+=== probe_L_S1_ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke5/out/probe --dom L --lev S1 --sections ref
+=== probe_L_S1_ref rc=0 72s
+ref_n128_compile+8: 3.98s
+ref_n128_8: 3.04s
+ref_n256_compile+8: 6.02s
+ref_n256_8: 5.11s
+ref_n512_compile+8: 14.58s
+ref_n512_8: 13.49s
+data_8traj_compile: 14.64s
+data_8traj: 7.83s
+ref_n512_8: 13.49s
+data_8traj_compile: 14.64s
+data_8traj: 7.83s
+JOB DONE

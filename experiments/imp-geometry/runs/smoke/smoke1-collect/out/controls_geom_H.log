@@ -1,0 +1,34 @@
+/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/sem.py:34: ComplexWarning: Casting complex values to real discards the imaginary part
+  D[i, j] = Pp[i] / (Pp[j] * (x[i] - x[j]))
+/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/geom.py:301: ComplexWarning: Casting complex values to real discards the imaginary part
+  X, Ms, Mt = M.map(np.asarray(s, float), np.asarray(t, float))
+/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/sem.py:99: ComplexWarning: Casting complex values to real discards the imaginary part
+  np.add.at(Bg, self.conn, self.Bl)
+/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/sem.py:105: ComplexWarning: Casting complex values to real discards the imaginary part
+  np.add.at(Kd, self.conn, dK)
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/controls.py", line 206, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/controls.py", line 195, in main
+    res = dict(geometry=geometry_controls(a.dom, a.smoke))
+                        ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/controls.py", line 35, in geometry_controls
+    ec = [sem.mms_helmholtz(dom, p, 2)[0] for p in ps]
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/sem.py", line 336, in mms_helmholtz
+    u, it, ok = jax.jit(lambda b_: pcg(Aop, b_, jnp.zeros_like(b_), Minv, 1e-13, 20000))(b)
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/sem.py", line 336, in <lambda>
+    u, it, ok = jax.jit(lambda b_: pcg(Aop, b_, jnp.zeros_like(b_), Minv, 1e-13, 20000))(b)
+                                   ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke1/code/sem.py", line 261, in pcg
+    x, r, p, rz, it = jax.lax.while_loop(cond, body, (x0, r, p, rz, jnp.int32(0)))
+                      ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: while_loop body function carry input and carry output must have equal types, but they differ:
+
+The input carry component s[0] has type float64[704] but the corresponding output carry component has type complex128[704], so the dtypes do not match.
+
+Revise the function so that all output types match the corresponding input types.
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.

@@ -1,0 +1,10 @@
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+10.235.106.25:/projects/paralab  4.6T  1.4T  3.3T  29% /cluster/tufts/paralab
+=== restore: bash -c cp -a /cluster/tufts/paralab/tawal01/burgers-archive/imp-geometry/L_wide_S1/. /cluster/tufts/paralab/tawal01/imp-geometry/test_L_wide_S1/out/cell/ && cd /cluster/tufts/paralab/tawal01/imp-geometry/test_L_wide_S1/out/cell && sha256sum -c --quiet SHA256SUMS
+=== restore rc=0 5s
+=== test: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/test_L_wide_S1/out/cell --stages test --frozen runs/frozen/L_wide_S1.json
+=== test rc=0 663s
+14:32:35 stage test: start
+14:43:36 stage test: 661s
+JOB DONE

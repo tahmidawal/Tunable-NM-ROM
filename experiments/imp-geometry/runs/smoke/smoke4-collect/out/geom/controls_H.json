@@ -1,0 +1,76 @@
+{
+ "geometry": {
+  "MF-SEM": {
+   "curved": [
+    1.1450143140839114e-07,
+    4.663908419622748e-13,
+    1.2576745200831851e-16
+   ],
+   "curved_decades": 8.959242653527664,
+   "chordal": [
+    9.708662923627672e-05,
+    9.806235010207385e-05,
+    9.82608338737407e-05
+   ],
+   "chordal_decades": -0.005221022359366937,
+   "fires": true
+  },
+  "MF-FD": {
+   "sw_err": [
+    5.504047346117404e-06,
+    1.375176774709528e-06,
+    3.4369090676743264e-07
+   ],
+   "sw_order": [
+    2.0008757957039878,
+    2.0004334974352096
+   ],
+   "stair_err": [
+    5.328578257561648e-05,
+    2.7421540435265506e-05,
+    1.5895201781732256e-05
+   ],
+   "stair_order": [
+    0.9584410338600252,
+    0.7867182874852819
+   ],
+   "fires": true
+  },
+  "MF-MG": {
+   "cycles": 4,
+   "converged": true,
+   "contraction": 0.0028860595675051417,
+   "noop_converged": false,
+   "noop_ratio": 1.0,
+   "fires": true
+  },
+  "MF-QUAD": {
+   "area_relerr": 1.1462329962276671e-16,
+   "all_inside": true,
+   "chordal_area_relerr": 0.011786200959375128,
+   "fires": true
+  },
+  "MF-ENV": {
+   "trace": 6.90394873104245e-17,
+   "box_envelope_trace": 0.9965714862200761,
+   "ic_chi_trace": 0.0,
+   "fires": true
+  },
+  "MF-INTERP": {
+   "err_affine": 8.881784197001252e-16,
+   "err_wrong_element": 0.6376622737041285,
+   "fires": true
+  },
+  "score_fixtures": {
+   "SW1a": true,
+   "SW1b": true,
+   "MF-REF": true,
+   "fires": true
+  },
+  "G-COH": {
+   "fires": true
+  }
+ },
+ "all_fire": true,
+ "not_firing": []
+}

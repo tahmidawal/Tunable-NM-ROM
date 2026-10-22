@@ -125,7 +125,7 @@ def etd_coefs_direct(Lam, dt):
 
 
 def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.N_OUT, Mt=None, cert=False,
-               maxit=60, perturb_cert=0.0, zero_slice=None, out='lattice', zero_test=None):
+               maxit=60, perturb_cert=0.0, zero_slice=None, out='lattice', zero_test=None, trace=False):
     """Reduced query d -> (lattice outputs (n_out+1, P_lat), stats). stats (float vector):
     [n_nonstationary, max_gamma, n_steps, n_nonfinite, max_iters, n_damping_saturated, n_unconverged].
     cert=True computes gamma with a fresh Jacobian at every step (LSPG) / the Newton residual ratio (Galerkin).
@@ -189,6 +189,8 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
         lam, V = np.linalg.eig(A)
         cplx = bool(np.max(np.abs(lam.imag)) > 1e-10 * np.max(np.abs(lam)))
         condV = float(np.linalg.cond(V))
+        if condV > 1e8:
+            raise ValueError(f'ETDRK4 not admissible: cond(V) = {condV:.3e} > 1e8 (A1.6)')
         if not cplx:
             lam, V = lam.real, V.real
         Vi = np.linalg.inv(V)
@@ -198,9 +200,13 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
         def q(d):
             nu = d[4]
             E, E2, Q, f1, f2, f3 = etdrk4_coefs(-nu * lamj, dt)
-            dco = etd_coefs_direct(-nu * lamj, dt)
-            coef_cert = jnp.max(jnp.stack([jnp.max(jnp.abs(c_ - d_) / (jnp.abs(d_) + 1e-300))
-                                           for c_, d_ in zip((E, E2, Q, f1, f2, f3), dco)]))
+            if cert:                                   # certificates only in the untimed replay (A6)
+                dco = etd_coefs_direct(-nu * lamj, dt)
+                coef_cert = jnp.max(jnp.stack([jnp.max(jnp.abs(c_ - d_) / (jnp.abs(d_) + 1e-300))
+                                               for c_, d_ in zip((E, E2, Q, f1, f2, f3), dco)]))
+            else:
+                dco = (E, E2, Q, f1, f2, f3)
+                coef_cert = jnp.asarray(0.0)
             if not cplx:
                 E, E2, Q, f1, f2, f3 = (c_.real for c_ in (E, E2, Q, f1, f2, f3))
             z0 = z0_of(d)
@@ -210,7 +216,7 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
                 z = (Vj @ y).real if cplx else Vj @ y
                 return -(Vij @ Nt(z))
 
-            def st(i, y):
+            def st_stages(y):
                 Nv = Ny(y)
                 a_ = E2 * y + Q * Nv
                 Na = Ny(a_)
@@ -218,7 +224,10 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
                 Nb = Ny(b_)
                 c_ = E2 * a_ + Q * (2 * Nb - Nv)
                 Nc = Ny(c_)
-                return E * y + Nv * f1 + 2 * (Na + Nb) * f2 + Nc * f3
+                return E * y + Nv * f1 + 2 * (Na + Nb) * f2 + Nc * f3, (a_, b_, c_)
+
+            def st(i, y):
+                return st_stages(y)[0]
 
             nz0 = jnp.linalg.norm(z0)
 
@@ -233,13 +242,21 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
                 k3 = Ny(s3)
                 s4 = dE2 * s2 + dQ * (2 * k3 - k1)
                 k4 = Ny(s4)
-                return dE * y + df1 * k1 + df2 * (2 * k2 + 2 * k3) + df3 * k4
+                return dE * y + df1 * k1 + df2 * (2 * k2 + 2 * k3) + df3 * k4, (s2, s3, s4)
+
+            def defect(x, xi, y):
+                return jnp.linalg.norm(x - xi) / (jnp.linalg.norm(xi) + 1e-14 * jnp.linalg.norm(y) + 1e-300)
 
             def st2(i, c):
                 y, bad, blow, dfx = c
-                yn = st(i, y)
-                yi = st_indep(y)
-                dfx = jnp.maximum(dfx, jnp.linalg.norm(yn - yi) / (jnp.linalg.norm(yn) + 1e-300))
+                yn, stg = st_stages(y)
+                bad = bad + (~jnp.all(jnp.stack([jnp.all(jnp.isfinite(x_)) for x_ in stg]))).astype(jnp.float64)
+                if cert:
+                    yi, stgi = st_indep(y)
+                    d_ = defect(yn, yi, y)
+                    for x_, xi_ in zip(stg, stgi):                  # every stage, not only the update (A5)
+                        d_ = jnp.maximum(d_, defect(x_, xi_, y))
+                    dfx = jnp.maximum(dfx, d_)
                 zz = (Vj @ yn).real if cplx else Vj @ yn
                 zp = (Vj @ y).real if cplx else Vj @ y
                 bad = bad + (~jnp.all(jnp.isfinite(zz))).astype(jnp.float64)
@@ -324,7 +341,7 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
         z0 = z0_of(d)
 
         def st(i, c):
-            z, zp, ns, gmax, nst, nf, itmax, nsat, nunc = c
+            z, zp, ns, gmax, nst, nf, itmax, nsat, nunc, _gl = c
             th = jnp.where(i < 2, 1.0, 0.5)
             guess = jnp.where(i == 0, z, 2 * z - zp)
             zn, it, ok, sat, Nn = solve(z, nu, th, guess)
@@ -349,17 +366,22 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
                     bad = (gm > 1e-10) | ~jnp.isfinite(gm)
                 ns = ns + bad.astype(jnp.float64)
                 gmax = jnp.maximum(gmax, jnp.where(jnp.isfinite(gm), gm, jnp.inf))
+                glast = gm
+            else:
+                glast = jnp.asarray(0.0)
             nf = nf + (~jnp.all(jnp.isfinite(zn))).astype(jnp.float64)
             return (zn, z, ns, gmax, nst + 1, nf, jnp.maximum(itmax, it.astype(jnp.float64)),
-                    nsat + sat.astype(jnp.float64), nunc + (~ok).astype(jnp.float64))
+                    nsat + sat.astype(jnp.float64), nunc + (~ok).astype(jnp.float64), glast)
 
         def block(c, k):
             c = jax.lax.fori_loop(k * keep, (k + 1) * keep, st, c)
-            return c, decode(c[0])
-        c0 = (z0, z0) + tuple(jnp.asarray(0.0) for _ in range(7))
-        c, outs = jax.lax.scan(block, c0, jnp.arange(n_out))
+            return c, (decode(c[0]), c[9])
+        c0 = (z0, z0) + tuple(jnp.asarray(0.0) for _ in range(8))
+        c, (outs, gtr) = jax.lax.scan(block, c0, jnp.arange(n_out))
         O = jnp.concatenate([decode(z0)[None], outs])
-        return O, jnp.stack(list(c[2:]))
+        if trace:
+            return O, jnp.stack(list(c[2:9])), gtr
+        return O, jnp.stack(list(c[2:9]))
     q_ = jax.jit(q)
     q_.info = dict(Mt=Mt)
     return q_

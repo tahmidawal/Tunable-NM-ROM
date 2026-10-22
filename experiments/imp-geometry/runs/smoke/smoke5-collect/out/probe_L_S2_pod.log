@@ -1,0 +1,39 @@
+pod_4032: 17.97s
+pod_space: 10.59s
+podg_r384_lspg_cnr_compile+32: 16.42s
+podg_r384_lspg_cnr_32: 11.10s
+podg_r384_gal_etdrk4_compile+32: 9.56s
+podg_r384_gal_etdrk4_32: 6.89s
+podg_r384_gal_cnr_compile+32: 11.99s
+podg_r384_gal_cnr_32: 9.34s
+W1021 14:30:58.483702 1232225 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 12.38GiB (rounded to 13287555072)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1021 14:30:58.483981 1232225 bfc_allocator.cc:525] *________________***_____________****************************************************______________*
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke5/code/probe.py", line 146, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke5/code/probe.py", line 55, in main
+    pod_sec(dom, lev, D, n, gr)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke5/code/probe.py", line 96, in pod_sec
+    fit, info = tm(f'ecsw_fit_r384_Mt{Mt}', PD.ecsw_fit, sp, 384, Mt, Z, max_seconds=1200)
+                ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke5/code/probe.py", line 31, in tm
+    out = f(*a, **k)
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke5/code/pod.py", line 136, in ecsw_fit
+    o = NN.greedy_nnls(Gm, bv, supports=targets, cap=max(targets), max_seconds=max_seconds)
+  File "/cluster/tufts/paralab/tawal01/imp-geometry/smoke5/code/vendor/nnls.py", line 373, in greedy_nnls
+    wmax0 = float(np.max(np.abs(np.asarray(_bG(bj, G)))))
+                                ~~~~~~~~~~^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 414, in __array__
+    return np.asarray(self._value, dtype=dtype, **kwds)  # pyrefly: ignore[no-matching-overload]
+                      ^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/profiler.py", line 420, in wrapper
+    return func(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py", line 623, in _value
+    npy_value, did_copy = self._single_device_array_to_np_array_did_copy()
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 12.38GiB. [tf-allocator-allocation-error=''] [executable_name='jit__lambda']

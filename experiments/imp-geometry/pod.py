@@ -119,9 +119,10 @@ def ecsw_fit(sp, r, Mt, Z, kappas=ECSW_KAPPA, seed=ECSW_SEED, n_cand=N_CAND, max
     else:
         half = n_cand // 2
         uni = rng.choice(n, half, replace=False)
-        p = contrib_norm / contrib_norm.sum()
-        imp = rng.choice(n, n_cand, replace=False, p=p)
-        cand = np.unique(np.concatenate([uni, imp]))[:n_cand]
+        rest = np.setdiff1d(np.arange(n), uni)
+        p = contrib_norm[rest] + 1e-300
+        imp = rng.choice(rest, n_cand - half, replace=False, p=p / p.sum())   # importance sample of the remaining nodes
+        cand = np.sort(np.concatenate([uni, imp]))
     w = sp.w
     rows, b = [], []
     for zi in range(Zr.shape[0]):

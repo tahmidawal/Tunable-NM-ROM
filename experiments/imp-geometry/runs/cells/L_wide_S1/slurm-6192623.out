@@ -1,0 +1,30 @@
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+10.235.106.26:/projects/paralab  4.6T  1.4T  3.3T  30% /cluster/tufts/paralab
+=== restore: bash -c cp -a /cluster/tufts/paralab/tawal01/burgers-archive/imp-geometry/L_wide_S1/. /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1_r/out/cell/ && cd /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1_r/out/cell && sha256sum -c --quiet SHA256SUMS && rm SHA256SUMS
+=== restore rc=0 4s
+=== ladder: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1_r/out/cell --stages ladder --bank-steppers lspg_cnr
+=== ladder rc=0 9890s
+08:25:23 stage ladder: start
+11:10:10 ladder rows 5147
+11:10:10 stage ladder: 9887s
+=== inter: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1_r/out/cell --stages inter --bank-steppers lspg_cnr
+=== inter rc=0 31s
+11:10:13 stage inter: start
+11:10:42 stage inter: 29s
+=== time: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1_r/out/cell --stages time --bank-steppers lspg_cnr
+=== time rc=0 11496s
+14:19:11 S tau=0.03 worst: {'S': 0.03989773955628728, 'best_competitor': 'podg', 'competitor_key': 'podg|r64|gal_etdrk4|tensor|nt10', 'bank_key': 'bank|r64|qf12|lspg_cnr|nt20', 'per_family': {'sem': 0.10724956802790189, 'fdmg': 0.4707804726360543, 'rk4': 0.10614820812887917, 'ecsw': 0.041458736444260104, 'podg': 0.03989773955628728}, 'excluded': [], 'within5pct': ['ecsw', 'podg']}
+14:19:40 S tau=0.03 median: {'S': 0.060095751980935676, 'best_competitor': 'podg', 'competitor_key': 'podg|r64|gal_etdrk4|tensor|nt10', 'bank_key': 'bank|r32|q12|lspg_cnr|nt40', 'per_family': {'sem': 0.0924906310664886, 'fdmg': 0.7266737626610986, 'rk4': 0.16246805452579638, 'ecsw': 0.06061593838907904, 'podg': 0.060095751980935676}, 'excluded': [], 'within5pct': ['ecsw', 'podg']}
+14:20:03 S tau=0.1 worst: {'S': 0.09156126596524708, 'best_competitor': 'podg', 'competitor_key': 'podg|r32|gal_etdrk4|tensor|nt10', 'bank_key': 'bank|r32|q12|lspg_cnr|nt20', 'per_family': {'sem': 0.1075571082019578, 'fdmg': 1.3564806693457583, 'rk4': 0.29903074319822176, 'ecsw': 0.10520205889290299, 'podg': 0.09156126596524708}, 'excluded': [], 'within5pct': ['podg']}
+14:20:19 S tau=0.1 median: {'S': 0.21444877004411222, 'best_competitor': 'podg', 'competitor_key': 'podg|r16|gal_etdrk4|tensor|nt10', 'bank_key': 'bank|r16|q10|lspg_cnr|nt10|tensor', 'per_family': {'sem': 0.2976406480720116, 'fdmg': 3.591339185666391, 'rk4': 0.8371471029396607, 'ecsw': 0.24382087760821675, 'podg': 0.21444877004411222}, 'excluded': [], 'within5pct': ['podg']}
+14:22:16 stage time: 11493s
+=== diag: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1_r/out/cell --stages diag --bank-steppers lspg_cnr
+=== diag rc=0 162s
+14:22:21 stage diag: start
+14:24:59 stage diag: 158s
+=== freeze: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1_r/out/cell --stages freeze --bank-steppers lspg_cnr
+=== freeze rc=0 3s
+14:25:02 stage freeze: start
+14:25:03 stage freeze: 1s
+JOB DONE

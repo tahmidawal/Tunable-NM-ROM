@@ -1,0 +1,22 @@
+{
+ "ref_n128_compile+8": 3.9781139828264713,
+ "ref_n128_8": 3.0410016858950257,
+ "ref_n256_compile+8": 6.016493390314281,
+ "ref_n256_8": 5.110779197886586,
+ "ref_n512_compile+8": 14.577459932304919,
+ "ref_n512_8": 13.48905280046165,
+ "data_8traj_compile": 14.6360506946221,
+ "data_8traj": 7.825341835618019,
+ "env": {
+  "jax": "0.10.2",
+  "backend": "gpu",
+  "devices": [
+   "cuda:0"
+  ],
+  "precision": "highest",
+  "x64": true,
+  "host": "pax051",
+  "commit": "2009ba080"
+ },
+ "gpu_mem_peak_bytes": 661543936
+}

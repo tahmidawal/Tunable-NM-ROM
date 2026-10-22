@@ -6,99 +6,111 @@
    "ref": 248.72371436003596,
    "data": 216.36820405483246,
    "inter": 40.46715840138495,
-   "ladder": 5434.45672254771,
-   "time": 2717.228361273855,
-   "sem": 1434.0,
-   "bank_rows": 690.87172254771
+   "ladder": 17035.06311818808,
+   "time": 17035.06311818808,
+   "sem": 8100.0,
+   "bank_rows": 1919.0881181880832
   },
   "S2": {
    "ref": 1332.7199999999998,
    "data": 864.0000000000001,
    "inter": 268.38,
-   "ladder": 9057.42787091285,
-   "time": 4528.713935456425,
-   "sem": 2390.0,
-   "bank_rows": 1151.45287091285
+   "ladder": 17035.06311818808,
+   "time": 17035.06311818808,
+   "sem": 8100.0,
+   "bank_rows": 1919.0881181880832
   }
  },
- "bank_hours_estimate": 2.5,
+ "bank_hours_estimate": 3.0,
  "cells": [
   {
    "cell": "L|wide|S1",
-   "gpu_h": 4.904790044621617,
-   "bank_h": 2.5
+   "gpu_h": 12.604357031442337,
+   "bank_h": 3.0
   },
   {
    "cell": "L|wide|S2",
-   "gpu_h": 6.958678279547021,
-   "bank_h": 2.5
+   "gpu_h": 13.148673954548935,
+   "bank_h": 3.0
   },
   {
    "cell": "L|narrow|S1",
-   "gpu_h": 4.904790044621617,
-   "bank_h": 2.5
+   "gpu_h": 12.604357031442337,
+   "bank_h": 3.0
   },
   {
    "cell": "L|narrow|S2",
-   "gpu_h": 6.958678279547021,
-   "bank_h": 2.5
+   "gpu_h": 13.148673954548935,
+   "bank_h": 3.0
   },
   {
    "cell": "H|wide|S1",
-   "gpu_h": 4.685706711288283,
-   "bank_h": 2.5
+   "gpu_h": 11.366857031442338,
+   "bank_h": 3.0
   },
   {
    "cell": "H|wide|S2",
-   "gpu_h": 6.593539390658132,
-   "bank_h": 2.5
+   "gpu_h": 11.911173954548934,
+   "bank_h": 3.0
   },
   {
    "cell": "H|narrow|S1",
-   "gpu_h": 4.685706711288283,
-   "bank_h": 2.5
+   "gpu_h": 11.366857031442338,
+   "bank_h": 3.0
   },
   {
    "cell": "H|narrow|S2",
-   "gpu_h": 6.593539390658132,
-   "bank_h": 2.5
+   "gpu_h": 11.911173954548934,
+   "bank_h": 3.0
   },
   {
    "cell": "B|wide|S1",
-   "gpu_h": 1.5847260931053284,
+   "gpu_h": 5.000584663702144,
    "bank_h": 0.0
   },
   {
    "cell": "B|wide|S2",
-   "gpu_h": 2.9805342670205155,
+   "gpu_h": 5.481592464142458,
    "bank_h": 0.0
   },
   {
    "cell": "B|narrow|S1",
-   "gpu_h": 1.5847260931053284,
+   "gpu_h": 5.000584663702144,
    "bank_h": 0.0
   },
   {
    "cell": "B|narrow|S2",
-   "gpu_h": 2.9805342670205155,
+   "gpu_h": 5.481592464142458,
    "bank_h": 0.0
   }
  ],
  "test_jobs_h": 3.5999999999999996,
- "box_banks_conditional_h": 10.0,
- "total_registered_h": 59.015949572481794,
- "total_registered_with_headroom_h": 88.5239243587227,
- "after_defer_narrowS2_h": 63.72479645288419,
- "after_defer_narrowS2_S1_h": 46.96196217936135,
- "wide_only_with_box_banks_h": 51.76196217936134,
+ "box_banks_conditional_h": 12.0,
+ "total_registered_h": 134.6264781996543,
+ "total_registered_with_headroom_h": 201.93971729948143,
+ "after_defer_narrowS2_h": 156.12755673962093,
+ "after_defer_narrowS2_S1_h": 112.66985864974069,
+ "wide_only_with_box_banks_h": 100.96985864974071,
  "cap": 62,
  "spent_smoke_h": 1.0742,
+ "panel_selected": "wide-family geometry cells (4) + their box cells (2) + test jobs + conditional box banks (2); narrow-family cells deferred (A5); narrow S1 only if spent + re-certified remainder allows",
+ "panel_selected_with_headroom_h": 100.96985864974071,
+ "panel_plus_spent_h": 102.04405864974072,
+ "memory_bounds": {
+  "host_data_S2_GB": 10.782309888,
+  "device_pod_chunk_GB": 1.056964608,
+  "device_pod_qr_GB": 2.738364416,
+  "device_ecsw_G_GB": 8.858370048,
+  "device_tensor_chunk_GB": 1.8119393279999998,
+  "bank_U_GB": 1.187053056,
+  "probe_peaks_GB": "see runs/smoke/smoke5/probe/*.json"
+ },
  "unmeasured": [
-  "bank steady-state step time (estimated 2.5 h per bank)",
-  "ECSW NNLS fit time at r = 384",
-  "selection/Q1/Q2/timing stage (estimated 0.5 x ladder)",
-  "S1 ladder factor 0.6",
-  "SEM spatial screen average row cost 15 s (two measured rows: 5 s, 65 s)"
+  "bank steady-state step time (bound used: 3.0 h per bank)",
+  "ECSW NNLS fit time at r = 384 (90 s per fit assumed)",
+  "selection/Q1/Q2/timing stage (1.0 x ladder assumed)",
+  "S1 ladders = S2 ladders (assumed)",
+  "SEM screen 30 s per row (two measured rows: 5 s, 65 s); 30 feasible spatial configs assumed of 90 (L)"
  ],
- "status": "PROVISIONAL certificate: several units are estimates, not measurements (listed above)"
+ "status": "PROVISIONAL: the listed units are assumptions, not measured or proven bounds; peak memories are per-array, not simultaneous"
 }

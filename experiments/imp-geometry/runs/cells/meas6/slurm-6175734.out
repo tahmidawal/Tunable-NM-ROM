@@ -1,0 +1,14 @@
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+10.235.106.33:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+=== probe_bankstep_H_S2: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/meas6/out/probe --dom H --lev S2 --sections bankstep
+=== probe_bankstep_H_S2 rc=0 55s
+bank sub [0.00900703788199462, 0.009062571018002927] full [0.11228458396702384, 0.11272789790042831] projected train h 1.0431734928403145
+  bank[H] step 1/553 rel-MSE 1.348e+00 [1s]
+bank sub [0.00900703788199462, 0.009062571018002927] full [0.11228458396702384, 0.11272789790042831] projected train h 1.0431734928403145
+=== probe_bankstep_L_S1: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/meas6/out/probe --dom L --lev S1 --sections bankstep
+=== probe_bankstep_L_S1 rc=0 42s
+bank sub [0.00859915535399341, 0.008606279410014395] full [0.017118031099865524, 0.0171381553664105] projected train h 0.7408896062689665
+  bank[L] step 1/553 rel-MSE 1.051e+00 [1s]
+bank sub [0.00859915535399341, 0.008606279410014395] full [0.017118031099865524, 0.0171381553664105] projected train h 0.7408896062689665
+JOB DONE

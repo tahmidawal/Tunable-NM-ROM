@@ -1,0 +1,100 @@
+{
+ "geometry": {
+  "MF-SEM": {
+   "curved": [
+    1.4324626415205752e-07,
+    1.4247934429501008e-14,
+    3.252606517456513e-17
+   ],
+   "curved_decades": 9.64385177654253,
+   "fires": true
+  },
+  "MF-FD": {
+   "sw_err": [
+    3.6429202767080185e-07,
+    9.110719140377997e-08
+   ],
+   "sw_order": [
+    1.9994585823313902
+   ],
+   "fires": true
+  },
+  "MF-MG": {
+   "cycles": 3,
+   "converged": true,
+   "contraction": 0.0004229454271453181,
+   "noop_converged": false,
+   "noop_ratio": 1.0,
+   "fires": true
+  },
+  "MF-QUAD": {
+   "area_relerr": 0.0,
+   "phi2_relerr": 3.603046528605711e-09,
+   "all_inside": true,
+   "fires": true
+  },
+  "MF-ENV": {
+   "trace": 0.0,
+   "box_envelope_trace": 0.9023424775543213,
+   "ic_chi_trace": 0.0,
+   "fires": true
+  },
+  "MF-INTERP": {
+   "err_affine": 6.661338147750939e-16,
+   "err_wrong_element": 0.10345379588092274,
+   "fires": true
+  },
+  "score_fixtures": {
+   "SW1a": true,
+   "SW1b": true,
+   "MF-REF": true,
+   "fires": true
+  },
+  "G-COH": {
+   "fires": true
+  }
+ },
+ "cell": {
+  "MF-REF-real": {
+   "fires": true
+  },
+  "MF-TENS": {
+   "r32": {
+    "tensor_vs_point": 1.4464947323617995e-16,
+    "zeroed_slice": 4,
+    "zeroed_change": 0.02238678220447844,
+    "tensor_vs_point_fault": 2.4797052554773706e-16,
+    "fires": true
+   },
+   "fires": true
+  },
+  "MF-Q1": {
+   "clean_nonstationary": 0.0,
+   "clean_max_gamma": 0.0008193201831891316,
+   "faulted_flagged": 40.0,
+   "independent_violations": 40,
+   "steps": 40,
+   "same_steps": true,
+   "fires": true
+  },
+  "MF-Q2": {
+   "rho_faulted": 0.8841628745822389,
+   "n_zeroed": 2,
+   "violation_established": true,
+   "checker_flags": true,
+   "fires": true
+  },
+  "MF-MATCH-real": {
+   "key": "fdmg|n128|tol1e-04|nt160",
+   "worst_clean": 0.0010306899686482597,
+   "recorded": 0.0010306899686482597,
+   "worst_faulted": 0.02003716456351179,
+   "U": 0.000778268595328257,
+   "verdict_faulted": "misses",
+   "violation_established": true,
+   "fires": true
+  }
+ },
+ "all_fire": true,
+ "not_firing": []
+}

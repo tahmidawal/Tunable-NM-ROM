@@ -1,4 +1,4 @@
-"""imp-geometry interaction diagnostic (DESIGN A1.2): D_geo and feature-window energy of L / H against the box, FD
+"""HISTORICAL (variant selection, DESIGN A2/A3.1; superseded by run_cell.interaction_split / D_bnd). imp-geometry interaction diagnostic (DESIGN A1.2): D_geo and feature-window energy of L / H against the box, FD
 SBDF2 at per-unit n on val[0:ncases] of each (family, level). Writes <out>/interaction.json.
 
   python interaction.py --out <dir> [--n 256] [--ncases 8]

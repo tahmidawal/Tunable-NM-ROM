@@ -1,0 +1,24 @@
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+10.235.106.33:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+=== ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1/out/cell --stages ref --bank-steppers lspg_cnr
+=== ref rc=0 182s
+20:30:49 ref test n128 nt1000: 5s, mg max 5, unconverged 0
+20:31:00 ref test n256 nt2000: 10s, mg max 5, unconverged 0
+20:31:37 ref test n512 nt4000: 37s, mg max 5, unconverged 0
+20:32:28 ref allowance {'U': 0.0009204590156275762, 'n_eligible': 28, 'n_E0': 7, 'n_corner': 21, 'n_ineligible': 4, 'eps_max': 0.000460113089395918, 'delta_t': 2.3283683574010797e-07}
+20:32:28 stage ref: 180s
+=== data: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1/out/cell --stages data --bank-steppers lspg_cnr
+=== data rc=0 218s
+20:32:30 stage data: start
+20:36:05 data {'n': 512, 'nt': 4000, 'n_traj': 192, 'states': 4032, 'n_in': 148225, 'seconds': 197.55255291100184, 'bank_points': 9073, 'bank_sample': 128}
+20:36:05 stage data: 215s
+=== bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1/out/cell --stages bank --bank-steppers lspg_cnr
+=== bank rc=0 2697s
+21:17:54   bank[L] step 290000/300000 rel-MSE 4.017e-06 [2503s]
+21:19:28   bank[L] step 295000/300000 rel-MSE 3.995e-06 [2596s]
+21:20:55   bank[L] step 300000/300000 rel-MSE 3.958e-06 [2683s]
+21:21:02 bank 2686.6162934303284 recon 0.002287483018195081 0.02923481697923247 R_eff 273
+21:21:02 stage bank: 2694s
+=== ladder: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom L --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/L_wide_S1/out/cell --stages ladder --bank-steppers lspg_cnr
+[2026-10-22T08:04:40.006] error: *** JOB 6175736 ON pax007 CANCELLED AT 2026-10-22T08:04:40 DUE TO TIME LIMIT ***

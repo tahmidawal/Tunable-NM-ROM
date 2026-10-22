@@ -1,0 +1,33 @@
+NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+10.235.106.24:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+=== inter_v4a: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python interaction.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke4/out/interaction --n 256 --ncases 16 --nsteps 2000 --variant v4a --T 0.25
+=== inter_v4a rc=0 86s
+L narrow S1 D_geo median 0.110 min 0.056 max 0.159; feature energy median 0.969
+H narrow S1 D_geo median 0.082 min 0.039 max 0.133; feature energy median 0.291
+L narrow S2 D_geo median 0.108 min 0.072 max 0.190; feature energy median 0.991
+H narrow S2 D_geo median 0.104 min 0.042 max 0.156; feature energy median 0.519
+L wide S1 D_geo median 0.135 min 0.023 max 1.369; feature energy median 0.758
+H wide S1 D_geo median 0.109 min 0.014 max 0.398; feature energy median 0.367
+L wide S2 D_geo median 0.072 min 0.003 max 0.615; feature energy median 0.860
+H wide S2 D_geo median 0.070 min 0.001 max 0.235; feature energy median 0.430
+=== controls_geom_L: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python controls.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke4/out/geom --dom L --geometry-only
+=== controls_geom_L rc=0 13s
+{"all_fire": true, "not_firing": []}
+=== controls_geom_H: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python controls.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke4/out/geom --dom H --geometry-only
+=== controls_geom_H rc=0 15s
+{"all_fire": true, "not_firing": []}
+=== controls_geom_B: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python controls.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke4/out/geom --dom B --geometry-only
+=== controls_geom_B rc=0 7s
+{"all_fire": true, "not_firing": []}
+=== probe_L_S2: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python probe.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke4/out/probe --dom L --lev S2
+=== probe_L_S2 rc=1 340s
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/dispatch.py", line 88, in apply_primitive
+    outs = fun(*args)
+jax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %wrapped_transpose = f64[334273,4032]{1,0} fusion(%args_0_.1), kind=kInput, calls=%wrapped_transpose_computation, metadata={op_name="args[0]"}. Failed to pick best config: All configs failed during profiling.
+Failures (2):
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 10.04GiB. [tf-allocator-allocation-error='']
+EXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 10.04GiB. [tf-allocator-allocation-error='']
+--------------------
+For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+JOB DONE

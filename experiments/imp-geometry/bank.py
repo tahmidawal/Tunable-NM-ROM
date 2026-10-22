@@ -52,10 +52,12 @@ def features_grad(dom, p, xy, box_only=False):
     return val, jx, jy
 
 
-def train(dom, coords, U, seed, steps=None, log_every=5000, log=print):
+def train(dom, coords, U, seed, steps=None, log_every=5000, log=print, time_marks=(), full_last=None):
     """Stage A on states U (S, n_pts) at coords (n_pts, 2). Returns params, codes Z, info."""
     rc = dict(RECIPE)
     steps = rc['steps'] if steps is None else steps
+    if full_last is not None:
+        rc['full_last'] = full_last
     coords = jnp.asarray(coords, F64)
     U = jnp.asarray(U, F64)
     S, n_pts = U.shape
@@ -65,6 +67,8 @@ def train(dom, coords, U, seed, steps=None, log_every=5000, log=print):
     params = sc.init_separable(kp, rc['K'], rc['R'], out_scale=u_rms, **rc['arch'])
     Z = 0.1 * jax.random.normal(kz, (S, rc['K']), dtype=F64)
     u_ms = jnp.mean(U * U)
+    if full_last is None and rc['full_last'] == 10000 and steps < 20000:                   # short (smoke) runs keep a sub-sampled phase
+        rc['full_last'] = max(1, steps // 10)
     full_idx = jnp.arange(n_pts) if n_pts <= rc['full_cap'] else \
         jnp.sort(jax.random.choice(kf, n_pts, (rc['full_cap'],), replace=False))
     sched = optax.warmup_cosine_decay_schedule(0.0, rc['lr'], min(500, steps // 10 + 1), steps, rc['lr'] * 1e-2)
@@ -108,12 +112,16 @@ def train(dom, coords, U, seed, steps=None, log_every=5000, log=print):
     ema = pz
     t0 = time.time()
     hist = []
+    marks_t = {}
     for i in range(steps):
         if i < steps - rc['full_last']:
             key, k_ = jax.random.split(key)
             pz, state, ema, rel = step_sub(pz, state, ema, k_, U, coords)
         else:
             pz, state, ema, rel = step_full(pz, state, ema, U, coords, full_idx)
+        if (i + 1) in time_marks:                                         # measurement mode (A8): synchronised
+            jax.block_until_ready(rel)
+            marks_t[i + 1] = time.perf_counter()
         if (i + 1) % log_every == 0 or i == 0:
             rv = float(rel)
             hist.append(dict(step=i + 1, rel_mse=rv, seconds=time.time() - t0))
@@ -137,7 +145,7 @@ def train(dom, coords, U, seed, steps=None, log_every=5000, log=print):
     params, Z = ema if use_ema else pz
     info = dict(steps=steps, seconds=time.time() - t0, used_ema=bool(use_ema), recon_mean=min(em, rm),
                 recon_max=ex if use_ema else rx, n_states=int(S), n_points=int(n_pts), history=hist, seed=int(seed),
-                full_points=int(len(full_idx)))
+                full_points=int(len(full_idx)), time_marks=marks_t)
     return jax.tree_util.tree_map(np.asarray, params), np.asarray(Z), info
 
 
@@ -148,7 +156,7 @@ def rotation(dom, params, Z, Xq, wq, rank_tol=1e-10):
     Gq = np.asarray(features(dom, p, jnp.asarray(Xq)))
     Qm, Rg = np.linalg.qr(Gq * np.sqrt(wq)[:, None])
     d = np.abs(np.diag(Rg))
-    condR = float(d.max() / d.min())
+    condR = float(d.max() / d.min())      # ratio of |diag R_G| extremes (not a condition number)
     C = np.asarray(sc.head(p, jnp.asarray(Z)))                  # (S, R)
     A = C @ Rg.T
     nrm = np.linalg.norm(A, axis=1)

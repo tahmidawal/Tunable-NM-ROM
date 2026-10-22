@@ -1,0 +1,24 @@
+NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+10.235.106.23:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+=== inter_v3_0.25: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python interaction.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke3/out/interaction --n 256 --ncases 16 --nsteps 2000 --variant v3 --T 0.25
+=== inter_v3_0.25 rc=0 84s
+L narrow S1 D_geo median 0.102 min 0.050 max 0.155; feature energy median 0.960
+H narrow S1 D_geo median 0.171 min 0.089 max 0.248; feature energy median 0.625
+L narrow S2 D_geo median 0.111 min 0.065 max 0.188; feature energy median 0.986
+H narrow S2 D_geo median 0.180 min 0.132 max 0.296; feature energy median 0.776
+L wide S1 D_geo median 0.066 min 0.005 max 0.319; feature energy median 0.690
+H wide S1 D_geo median 0.109 min 0.014 max 0.398; feature energy median 0.367
+L wide S2 D_geo median 0.028 min 0.000 max 0.183; feature energy median 0.762
+H wide S2 D_geo median 0.088 min 0.001 max 0.307; feature energy median 0.458
+=== inter_v4_0.25: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python interaction.py --out /cluster/tufts/paralab/tawal01/imp-geometry/smoke3/out/interaction --n 256 --ncases 16 --nsteps 2000 --variant v4 --T 0.25
+=== inter_v4_0.25 rc=0 84s
+L narrow S1 D_geo median 0.109 min 0.053 max 0.167; feature energy median 0.964
+H narrow S1 D_geo median 0.082 min 0.039 max 0.133; feature energy median 0.291
+L narrow S2 D_geo median 0.137 min 0.074 max 0.217; feature energy median 0.988
+H narrow S2 D_geo median 0.104 min 0.042 max 0.156; feature energy median 0.519
+L wide S1 D_geo median 0.133 min 0.022 max 1.276; feature energy median 0.774
+H wide S1 D_geo median 0.109 min 0.014 max 0.398; feature energy median 0.367
+L wide S2 D_geo median 0.095 min 0.002 max 0.551; feature energy median 0.860
+H wide S2 D_geo median 0.070 min 0.001 max 0.235; feature energy median 0.430
+JOB DONE

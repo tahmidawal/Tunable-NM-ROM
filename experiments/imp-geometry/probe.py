@@ -71,10 +71,10 @@ def main():
 
 def ref_data(dom, lev, D8, n, nt, m):
     # references: each level, 8 cases batched (compile included in first, measured separately by a second call)
-    for (n, nt) in RC.REF_LEVELS[lev]:
-        q = fd.make_sbdf2(dom, n, nt, 1e-10, maxit=60)
-        tm(f'ref_n{n}_compile+8', lambda: LD.run_cohort(q, D8)[1])
-        tm(f'ref_n{n}_8', lambda: LD.run_cohort(q, D8)[1])
+    for (nr, ntr) in RC.REF_LEVELS[lev]:
+        q = fd.make_sbdf2(dom, nr, ntr, 1e-10, maxit=60)
+        tm(f'ref_n{nr}_compile+8', lambda: LD.run_cohort(q, D8)[1])
+        tm(f'ref_n{nr}_8', lambda: LD.run_cohort(q, D8)[1])
     # training data: 8 trajectories on the data grid with 21 outputs
     qd = fd.make_sbdf2(dom, n, nt, 1e-10, n_out=20, out_idx=np.nonzero(m), maxit=60)
     tm('data_8traj_compile', lambda: jax.vmap(qd)(jnp.asarray(D8))[0])
@@ -87,7 +87,7 @@ def pod_sec(dom, lev, D, n, gr):
     # POD at production size: random snapshot set of 4032 x n_in (memory + time)
     S = np.random.default_rng(0).standard_normal((4032, n_in))
     Phi, sv = tm('pod_4032', PD.pod, S, gr.h, 512)
-    sp = tm('pod_space', PD.pod_space, dom, n, Phi, 128)
+    sp = tm('pod_space', PD.pod_space, dom, n, Phi, n)
     del S
     # reduced queries at r = 384 (tensor, LSPG) on 32 cases
     for st, form in (('lspg_cnr', 'tensor'), ('gal_etdrk4', 'tensor'), ('gal_cnr', 'tensor')):
@@ -146,12 +146,9 @@ def bank_sec(dom, lev, D, n, gr, m):
     tm('bank_r384_lspg_32', lambda: LD.run_cohort(q, D)[1])
 
 
-if __name__ == '__main__':
-    main()
-
-
 def bankstep_sec(dom, lev, n, gr, m):
-    """Steady-state seconds per Stage-A step (sub-sampled and full-batch), excluding compilation."""
+    """A8: steady-state seconds per Stage-A step at production shapes, measured inside ONE training run with
+    synchronised marks: 20 warm sub-steps, 500 timed sub-steps, 3 warm full steps, 30 timed full steps; repeated twice."""
     import bank as BK
     nb = RC.BANK_SAMPLE[lev]
     s_ = n // nb
@@ -161,17 +158,17 @@ def bankstep_sec(dom, lev, n, gr, m):
     Xb = np.stack([gr.X[sub], gr.Y[sub]], -1)
     Ub = np.random.default_rng(2).standard_normal((4032, len(Xb))) * 0.1
     R['bank_points'] = int(len(Xb))
-    for steps, full in ((50, 10), (1050, 10), (60, 60)):
-        BK.RECIPE['full_last'] = full
-        t0 = time.perf_counter()
-        BK.train(dom, Xb, Ub, 0, steps=steps, log_every=10 ** 9)
-        R[f'bank_train_{steps}_{full}'] = time.perf_counter() - t0
-        print(f'bank_train_{steps}_{full}: {R[f"bank_train_{steps}_{full}"]:.2f}s', flush=True)
-    # sub step = (t(1050,10) - t(50,10)) / 1000; full step = (t(60,60) - t(50,10) + 40 sub) / 50 (approximately)
-    sub_step = (R['bank_train_1050_10'] - R['bank_train_50_10']) / 1000
-    full_step = (R['bank_train_60_60'] - R['bank_train_50_10'] + 40 * sub_step) / 50
-    R['bank_sub_step_s'], R['bank_full_step_s'] = sub_step, full_step
-    print('bank sub step', sub_step, 'full step', full_step, flush=True)
+    subs, fulls = [], []
+    for rep in range(2):
+        marks = (20, 520, 523, 553)
+        _, _, info = BK.train(dom, Xb, Ub, rep, steps=553, log_every=10 ** 9, time_marks=marks, full_last=33)
+        t = info['time_marks']
+        subs.append((t[520] - t[20]) / 500)
+        fulls.append((t[553] - t[523]) / 30)
+    R['bank_sub_step_s'], R['bank_full_step_s'] = subs, fulls
+    sec = 290000 * max(subs) + 10000 * max(fulls)
+    R['bank_train_projection_h'] = sec / 3600
+    print('bank sub', subs, 'full', fulls, 'projected train h', sec / 3600, flush=True)
 
 
 def ecsw_sec(dom, lev, D, n, gr):
@@ -179,10 +176,14 @@ def ecsw_sec(dom, lev, D, n, gr):
     S = np.random.default_rng(0).standard_normal((1024, n_in))
     Phi, sv = PD.pod(S, gr.h, 512)
     del S
-    sp = PD.pod_space(dom, n, Phi, 128)
+    sp = PD.pod_space(dom, n, Phi, n)
     Z = np.random.default_rng(1).standard_normal((66, 512)) * np.linspace(1, 0.01, 512)[None]
     for Mt in (512,):
         fit, info = tm(f'ecsw_fit_r384_Mt{Mt}_66states', PD.ecsw_fit, sp, 384, Mt, Z, max_seconds=150)
         R[f'ecsw_info_Mt{Mt}'] = info
         R[f'ecsw_sizes_Mt{Mt}'] = {k: (None if v is None else v['size']) for k, v in fit.items()}
     R['gpu_mem_peak_bytes_ecsw'] = max((d.memory_stats() or {}).get('peak_bytes_in_use', 0) for d in jax.devices())
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,94 @@
+{
+ "geometry": {
+  "MF-SEM": {
+   "curved": [
+    9.902850064470205e-08,
+    5.0187718564354e-15,
+    3.361026734705064e-17
+   ],
+   "curved_decades": 9.469288236598048,
+   "fires": true
+  },
+  "MF-FD": {
+   "sw_err": [
+    3.3419026101328184e-05,
+    3.3410801423914936e-05
+   ],
+   "sw_order": [
+    0.00035510196019682404
+   ],
+   "fires": false
+  },
+  "MF-MG": {
+   "cycles": 4,
+   "converged": true,
+   "contraction": 0.001077818733570927,
+   "noop_converged": false,
+   "noop_ratio": 1.0,
+   "fires": true
+  },
+  "MF-QUAD": {
+   "area_relerr": 1.5917175980288982e-16,
+   "all_inside": true,
+   "fires": true
+  },
+  "MF-ENV": {
+   "trace": 0.0,
+   "box_envelope_trace": 0.9899999901000001,
+   "ic_chi_trace": 0.0,
+   "fires": true
+  },
+  "MF-INTERP": {
+   "err_affine": 7.771561172376096e-16,
+   "err_wrong_element": 0.17578954217317444,
+   "fires": true
+  },
+  "score_fixtures": {
+   "SW1a": true,
+   "SW1b": true,
+   "MF-REF": true,
+   "fires": true
+  },
+  "G-COH": {
+   "fires": true
+  }
+ },
+ "cell": {
+  "MF-REF-real": {
+   "fires": true
+  },
+  "MF-TENS": {
+   "r32": {
+    "tensor_vs_point": 1.6836816745179478e-16,
+    "zeroed_slice": 10,
+    "zeroed_change": 0.027254400937207872,
+    "fires": true
+   },
+   "fires": true
+  },
+  "MF-Q1": {
+   "clean_nonstationary": 0.0,
+   "clean_max_gamma": 0.00014730298399560294,
+   "faulted_nonstationary": 40.0,
+   "steps": 40.0,
+   "fires": true
+  },
+  "MF-Q2": {
+   "rho_faulted": 0.6902720455036078,
+   "n_zeroed": 2,
+   "fires": true
+  },
+  "MF-MATCH-real": {
+   "key": "fdmg|n64|tol1e-08|nt40",
+   "worst": 0.007013847409122225,
+   "U": 0.0010977002443151782,
+   "verdict": "meets",
+   "fires": false
+  }
+ },
+ "all_fire": false,
+ "not_firing": [
+  "MF-FD",
+  "MF-MATCH-real"
+ ]
+}

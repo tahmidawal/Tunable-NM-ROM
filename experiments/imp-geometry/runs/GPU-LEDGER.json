@@ -39,9 +39,49 @@
    "purpose": "cost probe sections",
    "gpu_hours": 0.5,
    "state": "COMPLETED"
+  },
+  {
+   "job": "6175734",
+   "name": "meas6",
+   "gpu": "a100-80G",
+   "purpose": "release step 1 bank-step measurement",
+   "gpu_hours": 0.0294,
+   "state": "COMPLETED"
+  },
+  {
+   "job": "6175736",
+   "name": "L_wide_S1",
+   "gpu": "a100-80G",
+   "purpose": "release step 1 full cell",
+   "gpu_hours": 11.5889,
+   "state": "TIMEOUT"
+  },
+  {
+   "job": "6192623",
+   "name": "L_wide_S1_r",
+   "gpu": "a100-80G",
+   "purpose": "step 2 resume",
+   "gpu_hours": 6.0,
+   "state": "COMPLETED"
+  },
+  {
+   "job": "6192666",
+   "name": "H_wide_S1",
+   "gpu": "a100-80G",
+   "purpose": "step 2 full cell",
+   "gpu_hours": 6.2739,
+   "state": "RUNNING"
+  },
+  {
+   "job": "6202632",
+   "name": "test_L_wide_S1",
+   "gpu": "a100-80G",
+   "purpose": "step 2 test-once",
+   "gpu_hours": 0.1889,
+   "state": "COMPLETED"
   }
  ],
- "total_gpu_hours": 1.0742,
+ "total_gpu_hours": 25.1553,
  "cap": 62,
  "smoke_gpu_hours": 1.0742,
  "notes": "smoke allowance 1 GPU-h exceeded by 0.07: smoke5 (6158976) ran to its 30-min limit during a usage-limit pause, past the planned 25-min cancel; no further cluster smoke before release"

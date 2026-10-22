@@ -1,0 +1,94 @@
+<title>Burgers Improvement Campaign</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow reading column; a status ledger of experiments grouped by the three problems. */
+:root{
+  --bg:#f6f7f9; --fg:#1d2430; --muted:#5a6475; --rule:#d7dce4; --card:#ffffff; --accent:#2f5d8a;
+  --ok:#2e7d4f; --stop:#b4492f; --run:#8a6d1f; --wait:#6b6f80;
+  --display:"Fraunces",Georgia,serif; --body:"Source Sans 3","Segoe UI",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#12161d;--fg:#e4e8ef;--muted:#9aa4b5;--rule:#2b3340;--card:#181e27;--accent:#86b2dc;--ok:#6cc495;--stop:#ec8a6f;--run:#d8b65a;--wait:#a3a8b8;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161d;--fg:#e4e8ef;--muted:#9aa4b5;--rule:#2b3340;--card:#181e27;--accent:#86b2dc;--ok:#6cc495;--stop:#ec8a6f;--run:#d8b65a;--wait:#a3a8b8;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+main{max-width:44rem;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font:600 2rem/1.15 var(--display);margin:0;text-wrap:balance}
+h2{font:600 1.3rem/1.25 var(--display);margin:0 0 6px;text-wrap:balance}
+p{margin:0}
+.meta{font:0.8rem var(--mono);color:var(--muted);letter-spacing:.02em}
+.lede{display:flex;flex-direction:column;gap:10px}
+section{display:flex;flex-direction:column;gap:12px}
+.exp{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;justify-content:space-between}
+.name{font-weight:600}
+.code{font:500 .78rem var(--mono);color:var(--muted)}
+.pill{font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.stop{color:var(--stop)} .ok{color:var(--ok)} .run{color:var(--run)} .wait{color:var(--wait)}
+.exp p{color:var(--fg)} .exp .why{color:var(--muted);font-size:.93rem}
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--fg)}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:6px}
+.num{font-variant-numeric:tabular-nums}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:.93rem}
+dt{font-weight:600} dd{margin:0;color:var(--muted);min-width:0}
+</style>
+<main>
+  <header class="lede">
+    <p class="meta">Updated 2026-10-22 · after wave 1 of 3</p>
+    <h1>Burgers improvement campaign</h1>
+    <p>The finished Burgers campaign found three weak spots in our reduced model: a coarse spectral solver is faster at equal accuracy, a tuned standard reduced model (POD with hyper-reduction) beats us, and we fail on fronts steeper than training. This campaign tries to fix each one. Each experiment was registered in advance with a rule that says when to stop.</p>
+    <p class="note">So far: four experiments have finished and every one hit its stop rule. One paper claim is withdrawn (a cost advantage when one model serves several meshes). Three experiments are still running.</p>
+  </header>
+
+  <section>
+    <h2>Problem 1 · a coarse spectral solver is faster</h2>
+    <div class="exp"><div class="row"><span class="name">Variable diffusion coefficient</span><span class="pill stop">gate failed</span></div><span class="code">E3 · 2.0 GPU-h</span>
+      <p>With a strongly varying viscosity, the fastest tuned full solver (an exponential integrator) still costs only 0.86–0.92× our model's time, so it is not slower. The plan required it to be at least 2× slower before training a model, so no model was trained.</p></div>
+    <div class="exp"><div class="row"><span class="name">Domains without a fast transform</span><span class="pill run">running</span></div><span class="code">E2 · L-shape and box with a hole</span>
+      <p>Built against spectral elements, multigrid finite differences and POD. The full plan priced above its budget, so it now runs the wide-family cells only. The first cell is running on the cluster.</p></div>
+    <div class="exp"><div class="row"><span class="name">Box: family width × steepness</span><span class="pill run">running</span></div><span class="code">E1 · 16 cells, wide family first</span>
+      <p>Tests whether the reduced model wins once the family of initial conditions is narrow enough. Just started (design stage).</p></div>
+    <div class="exp"><div class="row"><span class="name">3D cube with small holes</span><span class="pill wait">waits on E2</span></div><span class="code">E4</span>
+      <p>Runs only if the geometry experiment wins.</p></div>
+  </section>
+
+  <section>
+    <h2>Problem 2 · tuned POD with hyper-reduction beats us</h2>
+    <div class="exp"><div class="row"><span class="name">Faster time step</span><span class="pill stop">stop rule fired</span></div><span class="code">E5 · 1.4 GPU-h</span>
+      <p>A Galerkin model with an exponential (ETDRK4) step evolves 14–24× faster than our current solver and is more accurate on 36 of 38 cases. But its worst case is slightly worse (1.82 % against 1.78 %), which the rule does not allow. POD with the same step is still faster.</p></div>
+    <div class="exp"><div class="row"><span class="name">Cheaper nonlinear term</span><span class="pill stop">both stop rules fired</span></div><span class="code">E6 · 1.5 GPU-h</span>
+      <p>Smaller quadrature rules either fail the accuracy check or lose accuracy. Best gain 1.24× (1.5× needed). Fewer points do not save much because the per-step cost is not driven by the number of points.</p></div>
+    <div class="exp"><div class="row"><span class="name">Cost over several meshes</span><span class="pill stop">claim withdrawn</span></div><span class="code">E7 · 3.2 GPU-h</span>
+      <p>A plain POD basis built once on the coarse mesh and resampled to the others is as accurate as ours at about one tenth of our total cost, on every workload tested (1–3 meshes, 10–1000 queries). The paper drops the comparative multi-mesh cost claim; mesh-independent cost stays as a property of the method.</p></div>
+  </section>
+
+  <section>
+    <h2>Problem 3 · steeper fronts than training</h2>
+    <div class="exp"><div class="row"><span class="name">Diagnostics, then a better-trained bank</span><span class="pill run">retrain running</span></div><span class="code">E8 + E9 · CPU checks done</span>
+      <p>The CPU checks found that the learned functions put large high-frequency content right at the walls, where the true solution has none. Adding sine functions to the bank did not bring the steep-front error low enough. Now retraining the bank with steeper, lower-viscosity training data and comparing it against a control retrain.</p>
+      <p class="why">Two other retrain ideas (cleaner training data, a wall-compatible bank) do not fit the budget and are deferred.</p></div>
+  </section>
+
+  <section>
+    <h2>Things to know</h2>
+    <ul>
+      <li>All errors are measured against second-order reference solutions and carry their small, estimated error. POD comparisons are in-sample.</li>
+      <li class="num">Compute so far: about 9 GPU-hours, against roughly 30 planned for wave 1.</li>
+      <li>GitHub backup stopped on 21 October because the login on the lab machine expired. Every result is saved locally; backups resume after a new login.</li>
+      <li>The account usage limit paused all experiments twice; each resumed where it stopped.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Words used here</h2>
+    <dl>
+      <dt>Reduced model</dt><dd>A fast approximate solver that works with a few hundred unknowns instead of millions of grid values.</dd>
+      <dt>Bank</dt><dd>Our set of learned functions that the reduced model combines to build a solution.</dd>
+      <dt>POD</dt><dd>The standard way to build a reduced model: a basis taken from snapshots of full solutions.</dd>
+      <dt>Hyper-reduction</dt><dd>Evaluating the nonlinear term at a small set of weighted points (ECSW is one method).</dd>
+      <dt>Spectral solver</dt><dd>A full solver built on sine waves and fast transforms; very efficient on a square box.</dd>
+      <dt>Worst error</dt><dd>The largest error over all test cases; the campaign's main accuracy measure.</dd>
+      <dt>Stop rule</dt><dd>A condition written down before the experiment; if it fires, that line of work ends.</dd>
+      <dt>GPU-hour</dt><dd>One hour of one cluster GPU.</dd>
+    </dl>
+  </section>
+</main>

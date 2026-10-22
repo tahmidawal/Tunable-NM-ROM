@@ -1,0 +1,81 @@
+stage MANIFEST OK
+host=pax009 source_commit=4b25b65b4ccd759c7b752793944a216a880c45af
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB
+10.235.106.30:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+jax_backend=gpu
+=== 2026-10-22T02:56:30Z time
+22:56:33 jax_backend=gpu x64=True precision=highest device=NVIDIA H200
+22:56:34 MESH 4096 attempt 1
+22:57:20   ours A1 L=4096 R128|BE: mean 24.34 ms compile 2.9587483052164316s identity True
+22:57:25   ours A1 L=4096 R128|CNR: mean 24.50 ms compile 1.0285110622644424s identity True
+22:57:39   ours A1 L=4096 R256|BE: mean 58.60 ms compile 3.6638515377417207s identity True
+22:57:45   ours A1 L=4096 R256|CNR: mean 58.62 ms compile 0.9791789017617702s identity True
+22:58:00   ours A1 L=4096 R384|BE: mean 97.46 ms compile 3.8611339339986444s identity True
+22:58:07   ours A1 L=4096 R384|CNR: mean 97.25 ms compile 1.0552410129457712s identity True
+22:58:39   CPR-256 L=4096 r128|k4|CNR: mean 19.30 ms compile 1.7s identity True
+22:58:46   CPR-256 L=4096 r128|k8|CNR: mean 19.58 ms compile 1.3s identity True
+22:58:58   CPR-256 L=4096 r256|k4|CNR: mean 31.99 ms compile 2.3s identity True
+22:59:07   CPR-256 L=4096 r256|k8|CNR: mean 35.18 ms compile 1.9s identity True
+22:59:22   CPR-256 L=4096 r384|k8|CNR: mean 52.42 ms compile 3.2s identity True
+22:59:44   CPU-256 L=4096 r128|k4|CNR: mean 19.39 ms compile 0.7s identity True
+22:59:50   CPU-256 L=4096 r128|k8|CNR: mean 19.76 ms compile 0.7s identity True
+22:59:59   CPU-256 L=4096 r256|k4|CNR: mean 32.05 ms compile 0.8s identity True
+23:00:06   CPU-256 L=4096 r256|k8|CNR: mean 35.18 ms compile 0.7s identity True
+23:00:17   CPU-256 L=4096 r384|k4|CNR: mean 48.49 ms compile 1.4s identity True
+23:00:26   CPU-256 L=4096 r384|k8|CNR: mean 52.65 ms compile 0.8s identity True
+23:00:47   CPR-1024 L=4096 r128|k4|CNR: mean 19.97 ms compile 0.7s identity True
+23:00:54   CPR-1024 L=4096 r128|k8|CNR: mean 20.05 ms compile 0.9s identity True
+23:01:02   CPR-1024 L=4096 r256|k8|CNR: mean 35.25 ms compile 0.7s identity True
+23:01:13   CPR-1024 L=4096 r384|k8|CNR: mean 52.57 ms compile 0.7s identity True
+23:01:34   CPU-1024 L=4096 r128|k4|CNR: mean 19.64 ms compile 0.8s identity True
+23:01:41   CPU-1024 L=4096 r128|k8|CNR: mean 19.97 ms compile 0.7s identity True
+23:01:49   CPU-1024 L=4096 r256|k4|CNR: mean 32.17 ms compile 0.7s identity True
+23:01:57   CPU-1024 L=4096 r256|k8|CNR: mean 35.25 ms compile 0.7s identity True
+23:02:07   CPU-1024 L=4096 r384|k4|CNR: mean 48.49 ms compile 0.8s identity True
+23:02:16   CPU-1024 L=4096 r384|k8|CNR: mean 52.61 ms compile 0.8s identity True
+23:02:40   ours A2 L=4096 R128|BE: mean 24.70 ms compile Nones identity True
+23:02:45   ours A2 L=4096 R128|CNR: mean 24.67 ms compile Nones identity True
+23:02:52   ours A2 L=4096 R256|BE: mean 58.97 ms compile Nones identity True
+23:02:58   ours A2 L=4096 R256|CNR: mean 58.61 ms compile Nones identity True
+23:03:06   ours A2 L=4096 R384|BE: mean 97.95 ms compile Nones identity True
+23:03:14   ours A2 L=4096 R384|CNR: mean 97.31 ms compile Nones identity True
+23:03:14 MMTIME COMPLETE
+step_exit[time]=0
+=== 2026-10-22T03:03:15Z compile_ours_R128_256
+{"side": "ours", "L": 256, "Rp": 128, "rule": "fib4181", "scheme": "BE", "seconds": 3.0992211317643523, "backend_events": 1, "backend_seconds": 2.9499452114105225, "cache_hit_suspected": false, "process_seconds": 26.090235501527786}
+step_exit[compile_ours_R128_256]=0
+=== 2026-10-22T03:03:43Z compile_ours_R384_256
+{"side": "ours", "L": 256, "Rp": 384, "rule": "gauss128", "scheme": "CNR", "seconds": 3.9849706115201116, "backend_events": 1, "backend_seconds": 3.8435418605804443, "cache_hit_suspected": false, "process_seconds": 25.44535162486136}
+step_exit[compile_ours_R384_256]=0
+=== 2026-10-22T03:04:09Z compile_PM-256_r128k4_256
+{"side": "comp", "L": 256, "arm": "PM-256", "r": 128, "k": 4, "seconds": 1.8148329621180892, "backend_events": 1, "backend_seconds": 1.693772792816162, "cache_hit_suspected": false, "process_seconds": 4.058191298507154}
+step_exit[compile_PM-256_r128k4_256]=0
+=== 2026-10-22T03:04:15Z compile_PM-256_r384k8_256
+{"side": "comp", "L": 256, "arm": "PM-256", "r": 384, "k": 8, "seconds": 2.363928289152682, "backend_events": 1, "backend_seconds": 2.242051124572754, "cache_hit_suspected": false, "process_seconds": 4.684322659857571}
+step_exit[compile_PM-256_r384k8_256]=0
+=== 2026-10-22T03:04:20Z compile_ours_R128_1024
+{"side": "ours", "L": 1024, "Rp": 128, "rule": "fib4181", "scheme": "BE", "seconds": 3.021633133292198, "backend_events": 1, "backend_seconds": 2.8789255619049072, "cache_hit_suspected": false, "process_seconds": 25.796171153895557}
+step_exit[compile_ours_R128_1024]=0
+=== 2026-10-22T03:04:48Z compile_ours_R384_1024
+{"side": "ours", "L": 1024, "Rp": 384, "rule": "gauss128", "scheme": "CNR", "seconds": 4.047577548772097, "backend_events": 1, "backend_seconds": 3.906587839126587, "cache_hit_suspected": false, "process_seconds": 26.56955875363201}
+step_exit[compile_ours_R384_1024]=0
+=== 2026-10-22T03:05:16Z compile_PM-1024_r128k4_1024
+{"side": "comp", "L": 1024, "arm": "PM-1024", "r": 128, "k": 4, "seconds": 1.8396229445934296, "backend_events": 1, "backend_seconds": 1.7198567390441895, "cache_hit_suspected": false, "process_seconds": 4.57187461014837}
+step_exit[compile_PM-1024_r128k4_1024]=0
+=== 2026-10-22T03:05:22Z compile_PM-1024_r384k8_1024
+{"side": "comp", "L": 1024, "arm": "PM-1024", "r": 384, "k": 8, "seconds": 2.732553943991661, "backend_events": 1, "backend_seconds": 2.6131432056427, "cache_hit_suspected": false, "process_seconds": 5.6254504369571805}
+step_exit[compile_PM-1024_r384k8_1024]=0
+=== 2026-10-22T03:05:29Z compile_ours_R128_4096
+{"side": "ours", "L": 4096, "Rp": 128, "rule": "fib4181", "scheme": "BE", "seconds": 2.9377644024789333, "backend_events": 1, "backend_seconds": 2.79160737991333, "cache_hit_suspected": false, "process_seconds": 31.201709541492164}
+step_exit[compile_ours_R128_4096]=0
+=== 2026-10-22T03:06:02Z compile_ours_R384_4096
+{"side": "ours", "L": 4096, "Rp": 384, "rule": "gauss128", "scheme": "CNR", "seconds": 4.02862630225718, "backend_events": 1, "backend_seconds": 3.8800888061523438, "cache_hit_suspected": false, "process_seconds": 32.63481086585671}
+step_exit[compile_ours_R384_4096]=0
+=== 2026-10-22T03:06:36Z compile_CPR-256_r128k4_4096
+{"side": "comp", "L": 4096, "arm": "CPR-256", "r": 128, "k": 4, "seconds": 1.9863035446032882, "backend_events": 1, "backend_seconds": 1.8684210777282715, "cache_hit_suspected": false, "process_seconds": 7.472066851332784}
+step_exit[compile_CPR-256_r128k4_4096]=0
+=== 2026-10-22T03:06:45Z compile_CPR-256_r384k8_4096
+{"side": "comp", "L": 4096, "arm": "CPR-256", "r": 384, "k": 8, "seconds": 3.21087783575058, "backend_events": 1, "backend_seconds": 3.091229200363159, "cache_hit_suspected": false, "process_seconds": 9.238068908452988}
+step_exit[compile_CPR-256_r384k8_4096]=0
+job_fail=0
+ALL-DONE

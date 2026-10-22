@@ -1,0 +1,97 @@
+stage MANIFEST OK
+host=pax009 source_commit=cba438acec06102a97909324f5657e1f41e9a30e
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB
+10.235.106.30:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+jax_backend=gpu
+=== 2026-10-22T02:38:58Z time
+22:39:02 jax_backend=gpu x64=True precision=highest device=NVIDIA H200
+22:39:03 MESH 256 attempt 1
+22:39:31   ours A1 L=256 R128|BE: mean 19.48 ms compile 2.992819924838841s identity True
+22:39:35   ours A1 L=256 R128|CNR: mean 19.65 ms compile 1.0403755092993379s identity True
+22:39:49   ours A1 L=256 R256|BE: mean 49.59 ms compile 3.7939092069864273s identity True
+22:39:54   ours A1 L=256 R256|CNR: mean 49.62 ms compile 1.051693676970899s identity True
+22:40:09   ours A1 L=256 R384|BE: mean 84.16 ms compile 3.8708647191524506s identity True
+22:40:16   ours A1 L=256 R384|CNR: mean 83.92 ms compile 1.0549441436305642s identity True
+22:40:30   PM-256 L=256 r128|k4|CNR: mean 11.35 ms compile 1.2s identity True
+22:40:36   PM-256 L=256 r128|k8|CNR: mean 11.81 ms compile 1.3s identity True
+22:40:43   PM-256 L=256 r256|k4|CNR: mean 16.39 ms compile 1.7s identity True
+22:40:51   PM-256 L=256 r256|k8|CNR: mean 19.32 ms compile 1.9s identity True
+22:40:59   PM-256 L=256 r384|k4|CNR: mean 24.44 ms compile 1.9s identity True
+22:41:07   PM-256 L=256 r384|k8|CNR: mean 28.62 ms compile 1.9s identity True
+22:41:31   CPR-1024 L=256 r128|k4|CNR: mean 11.36 ms compile 0.7s identity True
+22:41:37   CPR-1024 L=256 r128|k8|CNR: mean 11.80 ms compile 0.7s identity True
+22:41:43   CPR-1024 L=256 r256|k8|CNR: mean 19.59 ms compile 0.7s identity True
+22:41:50   CPR-1024 L=256 r384|k8|CNR: mean 28.69 ms compile 0.8s identity True
+22:41:57   ours A2 L=256 R128|BE: mean 19.87 ms compile Nones identity True
+22:42:01   ours A2 L=256 R128|CNR: mean 19.84 ms compile Nones identity True
+22:42:08   ours A2 L=256 R256|BE: mean 49.86 ms compile Nones identity True
+22:42:13   ours A2 L=256 R256|CNR: mean 49.43 ms compile Nones identity True
+22:42:21   ours A2 L=256 R384|BE: mean 84.69 ms compile Nones identity True
+22:42:28   ours A2 L=256 R384|CNR: mean 84.13 ms compile Nones identity True
+22:42:28 MESH 1024 attempt 1
+22:42:41   ours A1 L=1024 R128|BE: mean 20.31 ms compile 1.2992943562567234s identity True
+22:42:46   ours A1 L=1024 R128|CNR: mean 20.30 ms compile 1.1157581638544798s identity True
+22:42:53   ours A1 L=1024 R256|BE: mean 50.66 ms compile 1.575312309898436s identity True
+22:42:59   ours A1 L=1024 R256|CNR: mean 50.46 ms compile 1.0900510670617223s identity True
+22:43:08   ours A1 L=1024 R384|BE: mean 85.34 ms compile 2.119706965982914s identity True
+22:43:15   ours A1 L=1024 R384|CNR: mean 84.80 ms compile 1.014871645718813s identity True
+22:43:28   PM-1024 L=1024 r128|k4|CNR: mean 12.28 ms compile 0.9s identity True
+22:43:34   PM-1024 L=1024 r128|k8|CNR: mean 12.69 ms compile 0.8s identity True
+22:43:40   PM-1024 L=1024 r256|k4|CNR: mean 17.42 ms compile 1.3s identity True
+22:43:47   PM-1024 L=1024 r256|k8|CNR: mean 20.56 ms compile 0.7s identity True
+22:43:55   PM-1024 L=1024 r384|k4|CNR: mean 25.94 ms compile 1.4s identity True
+22:44:02   PM-1024 L=1024 r384|k8|CNR: mean 30.07 ms compile 0.8s identity True
+22:44:12   CPR-256 L=1024 r128|k4|CNR: mean 12.04 ms compile 0.8s identity True
+22:44:18   CPR-256 L=1024 r128|k8|CNR: mean 12.39 ms compile 0.8s identity True
+22:44:24   CPR-256 L=1024 r256|k4|CNR: mean 17.66 ms compile 0.8s identity True
+22:44:30   CPR-256 L=1024 r256|k8|CNR: mean 20.51 ms compile 0.7s identity True
+22:44:37   CPR-256 L=1024 r384|k4|CNR: mean 26.17 ms compile 0.8s identity True
+22:44:45   CPR-256 L=1024 r384|k8|CNR: mean 30.04 ms compile 0.8s identity True
+22:44:53   CPU-256 L=1024 r128|k4|CNR: mean 12.03 ms compile 0.8s identity True
+22:44:59   CPU-256 L=1024 r128|k8|CNR: mean 12.38 ms compile 0.9s identity True
+22:45:05   CPU-256 L=1024 r256|k4|CNR: mean 17.43 ms compile 0.8s identity True
+22:45:11   CPU-256 L=1024 r256|k8|CNR: mean 20.45 ms compile 0.7s identity True
+22:45:18   CPU-256 L=1024 r384|k4|CNR: mean 25.84 ms compile 0.9s identity True
+22:45:26   CPU-256 L=1024 r384|k8|CNR: mean 30.05 ms compile 0.7s identity True
+22:45:33   ours A2 L=1024 R128|BE: mean 20.23 ms compile Nones identity True
+22:45:37   ours A2 L=1024 R128|CNR: mean 20.27 ms compile Nones identity True
+22:45:44   ours A2 L=1024 R256|BE: mean 50.60 ms compile Nones identity True
+22:45:50   ours A2 L=1024 R256|CNR: mean 50.20 ms compile Nones identity True
+22:45:58   ours A2 L=1024 R384|BE: mean 85.55 ms compile Nones identity True
+22:46:05   ours A2 L=1024 R384|CNR: mean 84.89 ms compile Nones identity True
+22:46:05 MESH 4096 attempt 1
+22:46:36   ours A1 L=4096 R128|BE: mean 24.79 ms compile 1.3209002828225493s identity True
+22:46:40   ours A1 L=4096 R128|CNR: mean 24.63 ms compile 0.9824203047901392s identity True
+22:46:48   ours A1 L=4096 R256|BE: mean 59.08 ms compile 1.6926246723160148s identity True
+22:46:54   ours A1 L=4096 R256|CNR: mean 58.70 ms compile 1.0999244432896376s identity True
+22:47:04   ours A1 L=4096 R384|BE: mean 97.82 ms compile 1.7912083305418491s identity True
+22:47:11   ours A1 L=4096 R384|CNR: mean 97.25 ms compile 1.1095123877748847s identity True
+22:47:43   CPR-256 L=4096 r128|k4|CNR: mean 19.58 ms compile 1.2s identity True
+22:47:49   CPR-256 L=4096 r128|k8|CNR: mean 19.73 ms compile 0.7s identity True
+step_exit[time]=1
+=== 2026-10-22T02:47:51Z compile_ours_R128_256
+skip compile_ours_R128_256 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_ours_R384_256
+skip compile_ours_R384_256 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_PM-256_r128k4_256
+skip compile_PM-256_r128k4_256 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_PM-256_r384k8_256
+skip compile_PM-256_r384k8_256 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_ours_R128_1024
+skip compile_ours_R128_1024 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_ours_R384_1024
+skip compile_ours_R384_1024 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_PM-1024_r128k4_1024
+skip compile_PM-1024_r128k4_1024 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_PM-1024_r384k8_1024
+skip compile_PM-1024_r384k8_1024 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_ours_R128_4096
+skip compile_ours_R128_4096 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_ours_R384_4096
+skip compile_ours_R384_4096 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_CPR-256_r128k4_4096
+skip compile_CPR-256_r128k4_4096 (earlier failure)
+=== 2026-10-22T02:47:51Z compile_CPR-256_r384k8_4096
+skip compile_CPR-256_r384k8_4096 (earlier failure)
+job_fail=1
+ALL-DONE

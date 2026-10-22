@@ -1,0 +1,201 @@
+{
+ "commands": [
+  {
+   "name": "time",
+   "cmd": "$PY mmtime.py configs/time_4096.json $OUT",
+   "timeout_s": 5400
+  },
+  {
+   "name": "compile_ours_R128_256",
+   "cmd": "mkdir -p $OUT/compile && $PY mmcompile.py ours 256 128 fib4181 BE $OUT/compile/ours_256_R128.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_ours_R384_256",
+   "cmd": "$PY mmcompile.py ours 256 384 gauss128 CNR $OUT/compile/ours_256_R384.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_PM-256_r128k4_256",
+   "cmd": "$PY mmcompile.py comp 256 PM-256 256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j1/output 128 4 $OUT/compile/comp_256_PM-256_r128k4.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_PM-256_r384k8_256",
+   "cmd": "$PY mmcompile.py comp 256 PM-256 256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j1/output 384 8 $OUT/compile/comp_256_PM-256_r384k8.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_ours_R128_1024",
+   "cmd": "mkdir -p $OUT/compile && $PY mmcompile.py ours 1024 128 fib4181 BE $OUT/compile/ours_1024_R128.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_ours_R384_1024",
+   "cmd": "$PY mmcompile.py ours 1024 384 gauss128 CNR $OUT/compile/ours_1024_R384.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_PM-1024_r128k4_1024",
+   "cmd": "$PY mmcompile.py comp 1024 PM-1024 1024 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src1024 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j3/output 128 4 $OUT/compile/comp_1024_PM-1024_r128k4.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_PM-1024_r384k8_1024",
+   "cmd": "$PY mmcompile.py comp 1024 PM-1024 1024 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src1024 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j3/output 384 8 $OUT/compile/comp_1024_PM-1024_r384k8.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_ours_R128_4096",
+   "cmd": "mkdir -p $OUT/compile && $PY mmcompile.py ours 4096 128 fib4181 BE $OUT/compile/ours_4096_R128.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_ours_R384_4096",
+   "cmd": "$PY mmcompile.py ours 4096 384 gauss128 CNR $OUT/compile/ours_4096_R384.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_CPR-256_r128k4_4096",
+   "cmd": "$PY mmcompile.py comp 4096 CPR-256 256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j4/output 128 4 $OUT/compile/comp_4096_CPR-256_r128k4.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  },
+  {
+   "name": "compile_CPR-256_r384k8_4096",
+   "cmd": "$PY mmcompile.py comp 4096 CPR-256 256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src256 /cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j4/output 384 8 $OUT/compile/comp_4096_CPR-256_r384k8.json",
+   "timeout_s": 300,
+   "continue_on_fail": true,
+   "always_run": true
+  }
+ ],
+ "meshes": {
+  "4096": {
+   "ours": {
+    "edges": [
+     0,
+     128,
+     256,
+     384,
+     512
+    ],
+    "configs": [
+     {
+      "name": "R128",
+      "Rp": 128,
+      "rule": "fib4181",
+      "schemes": [
+       "BE",
+       "CNR"
+      ]
+     },
+     {
+      "name": "R256",
+      "Rp": 256,
+      "rule": "gauss128",
+      "schemes": [
+       "BE",
+       "CNR"
+      ]
+     },
+     {
+      "name": "R384",
+      "Rp": 384,
+      "rule": "gauss128",
+      "schemes": [
+       "BE",
+       "CNR"
+      ]
+     }
+    ],
+    "j5_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j5/output/ours4096"
+   },
+   "arms": [
+    {
+     "name": "CPR-256",
+     "kind": "refit",
+     "source": 256,
+     "source_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src256",
+     "build_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j4/output",
+     "configs": [
+      "r128|k4|CNR",
+      "r128|k8|CNR",
+      "r256|k4|CNR",
+      "r256|k8|CNR",
+      "r384|k8|CNR"
+     ]
+    },
+    {
+     "name": "CPU-256",
+     "kind": "reuse",
+     "source": 256,
+     "source_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src256",
+     "build_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j4/output",
+     "configs": [
+      "r128|k4|CNR",
+      "r128|k8|CNR",
+      "r256|k4|CNR",
+      "r256|k8|CNR",
+      "r384|k4|CNR",
+      "r384|k8|CNR"
+     ]
+    },
+    {
+     "name": "CPR-1024",
+     "kind": "refit",
+     "source": 1024,
+     "source_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src1024",
+     "build_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j4/output",
+     "configs": [
+      "r128|k4|CNR",
+      "r128|k8|CNR",
+      "r256|k8|CNR",
+      "r384|k8|CNR"
+     ]
+    },
+    {
+     "name": "CPU-1024",
+     "kind": "reuse",
+     "source": 1024,
+     "source_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j0/output/src1024",
+     "build_dir": "/cluster/tufts/paralab/tawal01/burgers-archive/imp-multimesh/j4/output",
+     "configs": [
+      "r128|k4|CNR",
+      "r128|k8|CNR",
+      "r256|k4|CNR",
+      "r256|k8|CNR",
+      "r384|k4|CNR",
+      "r384|k8|CNR"
+     ]
+    }
+   ]
+  }
+ },
+ "retry_after_seconds": 0,
+ "import_check": [
+  "mmtime",
+  "mmcompile",
+  "import p1common"
+ ]
+}

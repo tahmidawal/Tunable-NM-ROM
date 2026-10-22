@@ -1,0 +1,78 @@
+stage MANIFEST OK
+host=pax008 source_commit=4855d220e7b5e1fd386be746665efd1a72e5b1f4
+NVIDIA H200, GPU-a8a12c96-fc46-0791-d459-e18b81bc6b19, 143771 MiB
+10.235.106.26:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+jax_backend=gpu
+=== 2026-10-22T00:34:36Z target4096
+20:34:38 jax_backend=gpu x64=True precision=highest device=NVIDIA H200
+20:39:13 states at 4096: 274s
+20:39:13 ARM CPR-256
+20:39:23    blocked contrib state 1/120 [3s]
+20:39:32    blocked contrib state 31/120 [12s]
+20:39:40    blocked contrib state 61/120 [20s]
+20:39:48    blocked contrib state 91/120 [28s]
+20:39:56    blocked contrib state 120/120 [36s]
+20:41:59   CPR-256 r128|k4|CNR: worst 0.1163 median 0.01126 Q1 True [89s]
+20:43:35   CPR-256 r128|k8|CNR: worst 0.07104 median 0.00657 Q1 True [95s]
+20:43:39    blocked contrib state 1/120 [3s]
+20:43:51    blocked contrib state 31/120 [15s]
+20:44:03    blocked contrib state 61/120 [27s]
+20:44:15    blocked contrib state 91/120 [39s]
+20:44:27    blocked contrib state 120/120 [51s]
+20:46:52   CPR-256 r256|k4|CNR: worst 0.2531 median 0.01099 Q1 True [75s]
+20:47:40   CPR-256 r256|k8|CNR: worst 0.02758 median 0.002142 Q1 True [47s]
+20:47:44    blocked contrib state 1/120 [3s]
+20:47:59    blocked contrib state 31/120 [17s]
+20:48:13    blocked contrib state 61/120 [32s]
+20:48:28    blocked contrib state 91/120 [46s]
+20:48:41    blocked contrib state 120/120 [60s]
+20:51:21   CPR-256 r384|k4|CNR: worst 1.669 median 0.01989 Q1 False [52s]
+20:51:59   CPR-256 r384|k8|CNR: worst 0.0134 median 0.001949 Q1 True [37s]
+20:52:00 ARM CPU-256
+20:52:23   CPU-256 r128|k4|CNR: worst 0.1041 median 0.007096 Q1 True [21s]
+20:52:46   CPU-256 r128|k8|CNR: worst 0.07072 median 0.006571 Q1 True [22s]
+20:53:13   CPU-256 r256|k4|CNR: worst 0.03281 median 0.002443 Q1 True [26s]
+20:53:40   CPU-256 r256|k8|CNR: worst 0.02753 median 0.002141 Q1 True [27s]
+20:54:12   CPU-256 r384|k4|CNR: worst 0.01516 median 0.001971 Q1 True [31s]
+20:54:48   CPU-256 r384|k8|CNR: worst 0.01337 median 0.001948 Q1 True [35s]
+20:54:49 ARM CPR-1024
+20:55:00    blocked contrib state 1/120 [1s]
+20:55:08    blocked contrib state 31/120 [9s]
+20:55:17    blocked contrib state 61/120 [18s]
+20:55:26    blocked contrib state 91/120 [27s]
+20:55:35    blocked contrib state 120/120 [36s]
+20:56:18   CPR-1024 r128|k4|CNR: worst 0.2365 median 0.03503 Q1 True [21s]
+20:56:41   CPR-1024 r128|k8|CNR: worst 0.06287 median 0.01284 Q1 True [22s]
+20:56:43    blocked contrib state 1/120 [1s]
+20:56:55    blocked contrib state 31/120 [13s]
+20:57:07    blocked contrib state 61/120 [25s]
+20:57:19    blocked contrib state 91/120 [37s]
+20:57:30    blocked contrib state 120/120 [48s]
+20:58:38   CPR-1024 r256|k4|CNR: worst 0.2904 median 0.02851 Q1 False [25s]
+20:59:06   CPR-1024 r256|k8|CNR: worst 0.02777 median 0.002738 Q1 True [27s]
+20:59:09    blocked contrib state 1/120 [2s]
+20:59:24    blocked contrib state 31/120 [17s]
+20:59:38    blocked contrib state 61/120 [31s]
+20:59:53    blocked contrib state 91/120 [45s]
+21:00:06    blocked contrib state 120/120 [59s]
+21:02:28   CPR-1024 r384|k4|CNR: worst 158.4 median 0.172 Q1 False [46s]
+21:03:04   CPR-1024 r384|k8|CNR: worst 0.01381 median 0.001981 Q1 True [35s]
+21:03:04 ARM CPU-1024
+21:03:28   CPU-1024 r128|k4|CNR: worst 0.1054 median 0.01597 Q1 True [21s]
+21:03:51   CPU-1024 r128|k8|CNR: worst 0.06289 median 0.0128 Q1 True [22s]
+21:04:17   CPU-1024 r256|k4|CNR: worst 0.1744 median 0.005256 Q1 True [26s]
+21:04:45   CPU-1024 r256|k8|CNR: worst 0.02779 median 0.002734 Q1 True [27s]
+21:05:17   CPU-1024 r384|k4|CNR: worst 0.1076 median 0.002602 Q1 True [30s]
+21:05:52   CPU-1024 r384|k8|CNR: worst 0.0138 median 0.001981 Q1 True [34s]
+21:05:58    pm-estimate traj 74: 3.9s
+21:06:03    pm-estimate traj 220: 5.0s
+21:06:09    pm-estimate traj 14: 5.8s
+21:06:14    pm-estimate traj 445: 4.7s
+21:06:18    pm-estimate traj 122: 4.4s
+21:06:22    pm-estimate traj 471: 4.3s
+21:06:27    pm-estimate traj 435: 4.4s
+21:06:31    pm-estimate traj 93: 4.3s
+21:06:31 MMBUILD COMPLETE
+step_exit[target4096]=0
+job_fail=0
+ALL-DONE

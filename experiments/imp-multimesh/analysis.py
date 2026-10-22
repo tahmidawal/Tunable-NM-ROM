@@ -31,6 +31,14 @@ def find(runs, rel):
 
 
 def probe_numbers(runs):
+    """J2 numbers from runs/j2/pulled/output/probe_numbers.json (written once from J2's logs by extract_probe.py,
+    because J2 emits its training and head timers only in logs)."""
+    d = jl(Path(runs) / 'j2' / 'pulled' / 'output' / 'probe_numbers.json')
+    d['a100'] = jl(Path(runs).parent / 'inputs' / 'historical.json')['records']
+    return d
+
+
+def probe_from_logs(runs):
     """J2 (A2.2, A3.2, A4.2): phase-wise H200 bank fit, data generation, head (complete invocations)."""
     d = Path(runs) / 'j2' / 'pulled'
     log = (d / 'output' / 'r3a.log').read_text()
@@ -48,7 +56,8 @@ def probe_numbers(runs):
     ex = float(re.search(r'extract_wall=([0-9.]+)', job).group(1))
     hf = float(re.search(r'hfit_wall=([0-9.]+)', job).group(1))
     return dict(rho_sub=rs, rho_full=rf, tau=tau, t1=t1, t_done=tdone - t25, gen=gen, bankfit=fit, extract=ex, hfit=hf,
-                head=ex + hf, a100=dict(gen=126., bankfit=10684.65, head=915.24 + 360.85 + 9.20))
+                head=ex + hf,
+                sources=dict(h200=str(d / 'output' / 'r3a.log') + ' + ' + str(next((d / 'logs').glob('*.out')))))
 
 
 def ours_inputs(runs, timing, probe):
@@ -83,6 +92,7 @@ def ours_inputs(runs, timing, probe):
                 ours[X]['status'][L] = 'UNRESOLVED'
                 continue
             ours[X]['t'][L] = float(np.mean(r1['obs'] + r2['obs']))
+            ours[X]['median'][L] = float(np.median(r1['obs'] + r2['obs']))
             ours[X]['setup'][L] = a['A1']['bank_seconds'] + a['A1']['ops_seconds'] + r1['setup_seconds']
             ci = r1.get('compile_info') or {}
             ours[X]['compile'][L] = None if ci.get('cache_hit_suspected', True) else r1['compile_seconds']
@@ -108,9 +118,10 @@ def comp_inputs(runs, timing):
             art[f'states[{L}]'] = T['states']['seconds']
         for name, A in T['arms'].items():
             s = A['source']
-            if s != L:
-                art[f'resample[{s}->{L}]'] = A['timers'].get('resample', float('nan'))
-                art[f'trust[{s}->{L}]'] = A['timers'].get('codes', 0.)
+            if s != L:                     # an artefact measured by two arms: the larger measurement (results audit 1)
+                k1, k2 = f'resample[{s}->{L}]', f'trust[{s}->{L}]'
+                art[k1] = max(art.get(k1, 0.), A['timers'].get('resample', float('nan')))
+                art[k2] = max(art.get(k2, 0.), A['timers'].get('codes', 0.))
             for r, e in A.get('ecsw', {}).items():
                 if 'contrib_seconds' in e:
                     art[f'ecsw[{s}@{L},r{r}]'] = e['contrib_seconds'] + e['nnls_seconds']
@@ -163,6 +174,7 @@ def comp_inputs(runs, timing):
                             rec['state'] = 'UNRESOLVED'               # no valid timing -> cost unresolved
                         else:
                             rec['t'] = tc['mean']
+                            rec['t_median'] = tc['median']
                             rec['armdata'] = tc['armdata_seconds']
                             ci = tc.get('compile_info') or {}
                             rec['compile'] = None if ci.get('cache_hit_suspected', True) else tc['compile_seconds']
@@ -179,7 +191,11 @@ def compile_max(timing, comp, ours, fresh):
 
 
 def build(runs):
-    timing = jl(find(runs, 'time.json'))
+    timing = dict(meshes={})
+    for tp in sorted(Path(runs).glob('*/pulled/output/time.json')):     # later jobs supply meshes the first lacked
+        for L_, m in jl(tp)['meshes'].items():
+            if any(v.get('valid') for k, v in m.items() if k.startswith('attempt')) or L_ not in timing['meshes']:
+                timing['meshes'][L_] = m
     probe = probe_numbers(runs)
     ours, eps = ours_inputs(runs, timing, probe)
     comp, art, src, tg = comp_inputs(runs, timing)
@@ -201,6 +217,19 @@ def main():
     for verdict in C.VERDICTS:
         for var in ('A_dep', 'A_100', 'A_nohead'):
             res['verdicts'][f'{verdict}|{var}'] = C.stop_rule(D, verdict, var)
+    res['breakeven'] = {}
+    for k in (1, 2, 3):
+        import itertools
+        for ms in itertools.combinations(C.MESHES, k):
+            for X in D['ours']:
+                if all(C.status(D, X, L) == 'QUALIFIED' for L in ms):
+                    b = C.breakeven(D, X, ms)
+                    res['breakeven'][f"{'+'.join(map(str, ms))}|{X}"] = dict(crossings=b['crossings'],
+                                                                           sign_at_1=b['diff'][0], sign_at_end=b['diff'][-1])
+    # A_sel (A5.2, descriptive): every competitor target-job configuration run, our J5 accuracy job
+    sel = sum((x.get('run_seconds') or 0.) + (x.get('armdata_seconds') or 0.) for T in aux['targets'].values()
+              for A in T['arms'].values() for x in A['configs'].values())
+    res['A_sel'] = dict(competitor_runs_seconds=sel, note='descriptive; mixed with historical A100 head arms in the report')
     C.dump(outp, dict(res, D=D))
     print('stop rule (worst, A_dep):', res['verdicts']['worst|A_dep']['outcome'])
 

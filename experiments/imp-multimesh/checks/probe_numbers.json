@@ -1,0 +1,45 @@
+{
+ "rho_sub": 0.0077,
+ "rho_full": 0.0892,
+ "tau": 8.0,
+ "t1": 10.0,
+ "t_done": 4.0,
+ "gen": 56.0,
+ "bankfit": 3146.9923,
+ "extract": 479.898,
+ "hfit": 180.783,
+ "head": 660.681,
+ "sources": {
+  "h200": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-multimesh/experiments/imp-multimesh/runs/j2/pulled/output/r3a.log + /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-multimesh/experiments/imp-multimesh/runs/j2/pulled/logs/6158338.out"
+ },
+ "extracted_from": [
+  "runs/j2/pulled/output/r3a.log",
+  "runs/j2/pulled/logs/*.out"
+ ],
+ "a100": {
+  "gen": 126.0,
+  "bankfit": 10684.647980690002,
+  "head": 1285.2980980873108,
+  "extract": 915.243616104126,
+  "mid": 360.85348176956177,
+  "outside": 9.201000213623047,
+  "head_selection": 7639.002492904663,
+  "sources": {
+   "bankfit": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/separable-decoder/runs/push_r3a/out/sep_burgers_r3_N256_K16_R512.json:train.seconds",
+   "gen": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/separable-decoder/runs/push_r3a/logs/2835788.out (gen line)",
+   "extract": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/separable-decoder/runs/dn256b/out/sep_coeff_N256_K16_R512.json",
+   "head": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/separable-decoder/runs/dn256b/out/hfit_dn256b_full.json",
+   "head_selection": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/separable-decoder/runs/dn256b/out/hfit_dn256b_{full,f576,f4096}.json"
+  }
+ },
+ "a100_validation": {
+  "rho_sub": 0.0265,
+  "rho_full": 0.2982,
+  "tau": 16.0,
+  "projected": 10698.9735,
+  "recorded": 10684.647980690002,
+  "rel": 0.0013407572561947578,
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-20-jcp-consolidated/experiments/separable-decoder/runs/push_r3a/logs/2835788.out"
+ },
+ "note": "J2 emits these timers only in its logs; extracted by analysis.probe_numbers"
+}

@@ -1,0 +1,39 @@
+{
+ "commands": [
+  {
+   "name": "p1acc256",
+   "cmd": "$PY ../jcp-p1-scaling/p1acc.py --config configs/ours256.json --out $OUT/ours256",
+   "timeout_s": 1500
+  },
+  {
+   "name": "oursq256",
+   "cmd": "env JAX_PLATFORMS=cpu $PY oursq.py $OUT/ours256 256 $OUT/ours256/oursq.json",
+   "timeout_s": 600
+  },
+  {
+   "name": "p1acc1024",
+   "cmd": "$PY ../jcp-p1-scaling/p1acc.py --config configs/ours1024.json --out $OUT/ours1024",
+   "timeout_s": 2400
+  },
+  {
+   "name": "oursq1024",
+   "cmd": "env JAX_PLATFORMS=cpu $PY oursq.py $OUT/ours1024 1024 $OUT/ours1024/oursq.json",
+   "timeout_s": 600
+  },
+  {
+   "name": "p1acc4096",
+   "cmd": "$PY ../jcp-p1-scaling/p1acc.py --config configs/ours4096.json --out $OUT/ours4096",
+   "timeout_s": 3600
+  },
+  {
+   "name": "oursq4096",
+   "cmd": "env JAX_PLATFORMS=cpu $PY oursq.py $OUT/ours4096 4096 $OUT/ours4096/oursq.json",
+   "timeout_s": 600
+  }
+ ],
+ "import_check": [
+  "mmcore",
+  "oursq",
+  "import p1acc"
+ ]
+}

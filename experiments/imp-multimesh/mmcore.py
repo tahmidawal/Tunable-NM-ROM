@@ -333,6 +333,7 @@ class Cell(PL.Cell):
         """The r-column basis for init/decode. A prefix of the device basis is a copy (one (n, r) buffer), so only
         the most recent rank is cached; the caller releases arm data before moving to another rank."""
         if self.Phi.shape[1] == r:
+            self.release_slice()
             return self.Phi
         if getattr(self, '_slice_r', None) != r:
             self._slice = None
@@ -340,6 +341,10 @@ class Cell(PL.Cell):
             self._slice = sync(self.Phi[:, :r])
             self._slice_r = r
         return self._slice
+
+    def release_slice(self):
+        self._slice, self._slice_r = None, None
+        gc.collect()
 
     def ecsw_data(self, r, nodes, weights):
         """(data for rom.make_query('ecsw'), info). data['Phi'] is the r-column basis used by init and decode."""

@@ -85,8 +85,8 @@ def main():
     NREC = 51
     sch_c = RM.schedule(D, 'CNR', 0.005, 'prod')
 
-    def ours_block(L, mc, tag, reps=1):
-        res = {}
+    def ours_block(L, mc, tag, reps=1, res=None):
+        res = {} if res is None else res
         t0 = time.perf_counter()
         bank = P.Bank(L, mc['edges'])
         res['bank_seconds'] = time.perf_counter() - t0
@@ -118,7 +118,8 @@ def main():
                                      it=np.asarray(v['stats']['step_it'])[:NREC - 1],
                                      rs=np.asarray(v['stats']['step_reason'])[:NREC - 1])
                 obs, exs = time_calls(fn, U, reps=reps, extract=ext)
-                Rz = np.load(Path(mc['j5_dir']) / f"R_{X['name']}_{sc}.npz")
+                Rz = {k_: v_ for k_, v_ in np.load(Path(mc['j5_dir']) / f"R_{X['name']}_{sc}.npz").items()
+                      if k_ in ('case_ids', 'W', 'states', 'it', 'reason')}
                 pos = {str(c): i for i, c in enumerate(Rz['case_ids'])}
                 bad = []
                 for n_, e_ in enumerate(exs):
@@ -131,6 +132,7 @@ def main():
                 ident = dict(n=len(exs), mismatches=bad[:10], n_bad=len(bad), ok=not bad)
                 res[key] = dict(setup_seconds=setup, compile_seconds=comp, compile_info=cinfo, obs=obs, **stats(obs),
                                 identity=ident, table_bytes=st.table_bytes)
+                rec.save()                                   # persisted after every configuration (A1.7)
                 log(f'  ours {tag} L={L} {key}: mean {res[key]["mean"]*1e3:.2f} ms compile {comp}s '
                     f'identity {None if ident is None else ident["ok"]}')
                 del st, q, dat
@@ -150,34 +152,39 @@ def main():
         o = time_calls(fn, [U0] * 3)
         return float(np.median(o))
 
-    def arm_block(L, arm, sb, U0):
-        res = dict(configs={})
+    def arm_block(L, arm, sb, U0, res=None):
+        res = dict(configs={}) if res is None else res
+        res.setdefault('configs', {})
         Phi_s, C_s, rules_s, trust_s = B.load_source(arm['source_dir'])
         s = int(arm['source'])
-        rmax = max(int(c.split('|')[0][1:]) for c in arm['configs'])
-        t0 = time.perf_counter()
-        if s == L:
-            Phi = jax.block_until_ready(jnp.asarray(np.asarray(Phi_s[:, :rmax])))
-            R = None
-        else:
-            Phi, R, info = M.resample_basis(np.asarray(Phi_s[:, :rmax]), s, L)
-            assert info['orth_ok']
-        res['basis_seconds'] = time.perf_counter() - t0
         lat = np.load(Path(arm['build_dir']) / f"Phi_lat_{arm['name']}.npy", mmap_mode='r')
-        mine = np.asarray(Phi[jnp.asarray(H.lattice_nodes(D, L))])
-        res['basis_identity'] = float(np.max(np.abs(mine - np.asarray(lat[:, :rmax]))))
-        trust = {}
-        for cid in arm['configs']:
-            r = int(cid.split('|')[0][1:])
-            if r in trust:
-                continue
-            trust[r] = trust_s[r] if s == L else BD.trust_radii(M.transform_codes(C_s, s, L, r, R), [r], D)[r]
-        cell = M.Cell(L, Phi, trust, log=log)
         xs = [(jnp.asarray(fams[coh].ic(L, j)), fams[coh].nu(j)) for coh, j in cases]
+        res['basis_seconds'], res['basis_identity'] = {}, 0.
+
+        def basis_for(r):
+            """the r-column basis only (no wider basis plus prefix copy alive: autotuning headroom at 4096^2, J6)"""
+            t0 = time.perf_counter()
+            if s == L:
+                Ph, Rr = jax.block_until_ready(jnp.asarray(np.asarray(Phi_s[:, :r]))), None
+            else:
+                Ph, Rr, info = M.resample_basis(np.asarray(Phi_s[:, :r]), s, L)
+                assert info['orth_ok']
+            res['basis_seconds'][r] = time.perf_counter() - t0
+            mine = np.asarray(Ph[jnp.asarray(H.lattice_nodes(D, L))])
+            res['basis_identity'] = max(res['basis_identity'], float(np.max(np.abs(mine - np.asarray(lat[:, :r])))))
+            tr = trust_s[r] if s == L else BD.trust_radii(M.transform_codes(C_s, s, L, r, Rr), [r], D)[r]
+            return M.Cell(L, Ph, {r: tr}, log=log), tr
+        cur_r, cell = None, None
+        trust = {}
         for cid in arm['configs']:
             r = int(cid.split('|')[0][1:])
             k = int(cid.split('|')[1][1:])
             z = np.load(Path(arm['build_dir']) / f"W_{arm['name']}_r{r}_k{k}.npz")
+            if r != cur_r:
+                cell = None
+                gc.collect()
+                cell, trust[r] = basis_for(r)
+                cur_r = r
             t0 = time.perf_counter()
             data, _ = cell.ecsw_data(r, z['nodes'], z['weights'])
             t_data = time.perf_counter() - t0
@@ -199,23 +206,28 @@ def main():
                     bad.append(dict(call=n_, case=[coh, j], dC=dC, it_ok=it_ok, reason_ok=rs_ok))
             res['configs'][cid] = dict(armdata_seconds=t_data, compile_seconds=comp, compile_info=cinfo, obs=obs,
                                        **stats(obs), identity=dict(ok=not bad, n_bad=len(bad), mismatches=bad[:10]))
+            rec.save()
             log(f'  {arm["name"]} L={L} {cid}: mean {res["configs"][cid]["mean"]*1e3:.2f} ms compile {comp:.1f}s '
                 f'identity {not bad}')
             del data, q
             gc.collect()
         res['mem_peak'] = B.dev_mem()
-        del cell, Phi
+        del cell
         gc.collect()
         res['sentinel_after'] = sentinel(sb, L, U0)
         return res
 
+    t_job = time.perf_counter()
     for Ls, mc in cfg['meshes'].items():
         L = int(Ls)
         for attempt in (1, 2):
             log(f'MESH {L} attempt {attempt}')
-            M_ = dict(attempt=attempt)
-            M_['A1'] = ours_block(L, mc['ours'], 'A1')
+            if attempt == 2 and time.perf_counter() - t_job > cfg.get('retry_after_seconds', 1e9):
+                log(f'MESH {L}: no time for a retry; the first attempt stays invalid')
+                break
+            M_ = dict(attempt=attempt, A1={}, arms={})
             rec.d['meshes'].setdefault(Ls, {})[f'attempt{attempt}'] = M_
+            ours_block(L, mc['ours'], 'A1', res=M_['A1'])
             rec.save()
             sbank = P.Bank(L, [0, 128])
             sst = P.Setting(sbank, 'sentinel', 128, 'fib4181', 'frozen', roles={}, nrec=NREC)
@@ -223,13 +235,14 @@ def main():
             ph = P.case_list({})[0][2]
             U0 = (jnp.asarray(P.Q.e.initial(L, ph)), float(ph[4]))
             M_['sentinel0'] = sentinel(sb, L, U0)
-            M_['arms'] = {}
             for arm in mc['arms']:
-                M_['arms'][arm['name']] = arm_block(L, arm, sb, U0)
+                M_['arms'][arm['name']] = {}
+                arm_block(L, arm, sb, U0, res=M_['arms'][arm['name']])
                 rec.save()
             del sb, sbank, sst
             gc.collect()
-            M_['A2'] = ours_block(L, mc['ours'], 'A2')
+            M_['A2'] = {}
+            ours_block(L, mc['ours'], 'A2', res=M_['A2'])
             s0 = M_['sentinel0']
             sent_ok = all(in_band(a['sentinel_after'] / s0) for a in M_['arms'].values())
             ratios = {k: M_['A2'][k]['median'] / M_['A1'][k]['median'] for k in M_['A1'] if isinstance(M_['A1'][k], dict)

@@ -1,0 +1,26 @@
+stage MANIFEST OK
+host=pax008 source_commit=315dd2f3f747c1cd33f894e389070138691c80ce
+NVIDIA H200, GPU-a8a12c96-fc46-0791-d459-e18b81bc6b19, 143771 MiB
+10.235.106.26:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+jax_backend=gpu
+=== 2026-10-22T00:28:48Z target256
+20:28:50 jax_backend=gpu x64=True precision=highest device=NVIDIA H200
+20:28:57 states at 256: 6s
+20:28:57 ARM PM-256
+20:29:06   PM-256 r128|k4|CNR: worst 0.1038 median 0.006871 Q1 True [7s]
+20:29:14   PM-256 r128|k8|CNR: worst 0.07014 median 0.006364 Q1 True [7s]
+20:29:26   PM-256 r256|k4|CNR: worst 0.03261 median 0.002399 Q1 True [11s]
+20:29:40   PM-256 r256|k8|CNR: worst 0.0274 median 0.002171 Q1 True [12s]
+20:29:57   PM-256 r384|k4|CNR: worst 0.01499 median 0.002018 Q1 True [16s]
+20:30:17   PM-256 r384|k8|CNR: worst 0.01341 median 0.002003 Q1 True [20s]
+20:30:18 ARM CPR-1024
+20:31:04   CPR-1024 r128|k4|CNR: worst 0.214 median 0.01876 Q1 True [6s]
+20:31:11   CPR-1024 r128|k8|CNR: worst 0.05294 median 0.006425 Q1 True [6s]
+20:32:08   CPR-1024 r256|k4|CNR: worst 0.3233 median 0.03578 Q1 False [9s]
+20:32:19   CPR-1024 r256|k8|CNR: worst 0.02418 median 0.002313 Q1 True [11s]
+20:34:09   CPR-1024 r384|k4|CNR: worst 0.7841 median 0.02335 Q1 False [14s]
+20:34:28   CPR-1024 r384|k8|CNR: worst 0.01192 median 0.002001 Q1 True [18s]
+20:34:29 MMBUILD COMPLETE
+step_exit[target256]=0
+job_fail=0
+ALL-DONE

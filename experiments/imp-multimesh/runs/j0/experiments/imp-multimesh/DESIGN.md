@@ -668,3 +668,20 @@ Control 8(d)/(e) failed only because the fixture record was MEASURED-FAIL for th
 $46{,}080\times32{,}768$ contribution matrix and its NNLS (usable 138 GB); blocked contributions 75 s for 120
 states; NNLS 252 s (memory pilot only); host RSS 29 GB; ours' $4096^2$ bank table 68.7 GB with a query (31.6 s
 including setup). These feed the production certificates.
+
+---
+
+## Amendment A9 (2026-10-21, before J0/J5; answers `audits/codex-job-9.md`, `codex-job-10.md`)
+
+**A9.1 Smoke result.** S1 attempt `s1c` (job 6159244, H200) passed every registered control (`runs/s1c/pulled/
+output/ACCEPT.json`, all_passed = true): 1, 2a–c, 3, 4 (with the unmutated fixture Q1-qualified), 5, 6, 7 (with
+sentinel), 8a–g (+ absent-key variant), 9, and the production-shaped $4096^2$ pilot.
+**A9.2 Resource certificates (deviation recorded).** The certificates (`resources.py`) are planning projections from
+the most relevant **measured** same-recipe phases (jcp-hr-baselines H200/A100 phase timers, jcp-p1-scaling job
+hours, smoke s1c), × 1.5. The audits judged them not fully phase-itemised. They are not used for any scientific
+quantity; the binding protections against GPU-hour waste are (i) each job's time limit, reserved in full in the
+ledger against the 8 GPU-h cap before submission, (ii) per-command timeouts inside the job, (iii) incremental
+persistence, so that work done before a timeout survives and unfinished configurations are UNRESOLVED (A4.1).
+**A9.3 NNLS deadline.** The per-path NNLS allowance is now evaluated **after** the contributions are built:
+min(nnls_seconds, (remaining job budget − 60 s)/2), shared by the initial path and its possible registered retry,
+in both the source and the target jobs.

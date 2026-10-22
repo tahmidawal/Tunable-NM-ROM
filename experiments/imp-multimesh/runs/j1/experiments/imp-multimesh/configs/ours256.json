@@ -1,0 +1,60 @@
+{
+ "attempt": "ours256",
+ "driver": "p1acc",
+ "mesh": 256,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "blocks": [],
+ "configs": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "all38",
+   "q2_cases": "all38",
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "q3": false
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "all38",
+   "q2_cases": "all38",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "q3": false
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "all38",
+   "q2_cases": "all38",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "q3": false
+  }
+ ]
+}

@@ -1,0 +1,316 @@
+{
+ "attempt": "time",
+ "driver": "p1time",
+ "meshes": {
+  "256": {
+   "edges": [
+    0,
+    128,
+    256,
+    384,
+    512
+   ]
+  },
+  "1024": {
+   "edges": [
+    0,
+    128,
+    256,
+    384,
+    512
+   ]
+  },
+  "4096": {
+   "edges": [
+    0,
+    128,
+    256,
+    384,
+    512
+   ]
+  }
+ },
+ "A": {
+  "mesh": 1024,
+  "Rp": 384,
+  "rule": "gauss128",
+  "policy": "frozen",
+  "scheme": "CNR",
+  "qp": "gauss160",
+  "qpp": "gauss192"
+ },
+ "subjects": [
+  {
+   "mesh": 256,
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 256,
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "mesh": 256,
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 256,
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 256,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 256,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss256",
+   "qpp": "gauss320"
+  },
+  {
+   "mesh": 256,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "nominal",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 256,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "nominal",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "nominal",
+   "scheme": "BE",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "mesh": 4096,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "nominal",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  }
+ ],
+ "cases": "dev6",
+ "reps": 3,
+ "burn": 0.1,
+ "seed": 20261017,
+ "doubled": [
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "cases": "dev6"
+  },
+  {
+   "mesh": 256,
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "scheme": "BE",
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "cases": "dev6"
+  }
+ ],
+ "components": [
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "case": [
+    "dev6",
+    0
+   ],
+   "reps": 30
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "rule": "gauss192",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss256",
+   "qpp": "gauss320",
+   "case": [
+    "dev6",
+    0
+   ],
+   "reps": 30
+  }
+ ]
+}

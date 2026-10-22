@@ -1,0 +1,74 @@
+W1021 22:47:50.188865 2461078 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 32.00GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E1021 22:47:50.189308 2460862 config_assigner.cc:383] Could not get config for HLO: %input_reduce_fusion.24 = f64[4095,256]{1,0} fusion(%data__Phi__.1, %u0.1), kind=kInput, calls=
+(param_0.600: f64[16769025,256], param_1.658: f64[16769025]) -> f64[4095,256] {
+  %param_0.600 = f64[16769025,256]{1,0} parameter(0)
+  %param_1.658 = f64[16769025]{0} parameter(1)
+  %broadcast.445.3 = f64[16769025,256]{1,0} broadcast(%param_1.658), dimensions={0}, metadata={op_name="jit(query)/dot_general" stack_frame_id=232}
+  %multiply.61.3 = f64[16769025,256]{1,0} multiply(%param_0.600, %broadcast.445.3), metadata={op_name="jit(query)/dot_general" stack_frame_id=232}
+  %bitcast.147.1 = f64[4095,4095,256]{2,1,0} bitcast(%multiply.61.3), metadata={op_name="jit(query)/dot_general" stack_frame_id=232}
+  %constant.157.5 = f64[] constant(0)
+  ROOT %reduce.90.1 = f64[4095,256]{1,0} reduce(%bitcast.147.1, %constant.157.5), dimensions={1}, to_apply=
+  (reduce_sum.98: f64[], reduce_sum.99: f64[]) -> f64[] {
+    %reduce_sum.98 = f64[] parameter(0), metadata={op_name="reduce_sum"}
+    %reduce_sum.99 = f64[] parameter(1), metadata={op_name="reduce_sum"}
+    ROOT %reduce_sum.100.0 = f64[] add(%reduce_sum.98, %reduce_sum.99), metadata={op_name="reduce_sum"}
+  }, metadata={op_name="jit(query)/dot_general" stack_frame_id=232}
+}, metadata={op_name="jit(query)/dot_general" stack_frame_id=232}. Status: INTERNAL: Autotuning failed for HLO: %input_reduce_fusion.24 = f64[4095,256]{1,0} fusion(%data__Phi__.1, %u0.1), kind=kInput, calls=%fused_reduce.25, metadata={op_name="jit(query)/dot_general" stack_frame_id=232}. Failed to profile configs: Out of memory while trying to allocate 32.00GiB.
+W1021 22:47:50.540245 2461075 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 32.00GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E1021 22:47:50.540779 2460862 config_assigner.cc:383] Could not get config for HLO: %gemm_fusion_dot_general.23 = f64[6,16769025]{1,0} fusion(%while.43.0, %data__Phi__.1), kind=kCustom, calls=
+(parameter_0.2: f64[6,256], parameter_1.2: f64[16769025,256]) -> f64[6,16769025] {
+  %parameter_1.2 = f64[16769025,256]{1,0} parameter(1)
+  %parameter_0.2 = f64[6,256]{1,0} parameter(0)
+  %dot.10 = f64[16769025,6]{0,1} dot(%parameter_1.2, %parameter_0.2), lhs_contracting_dims={1}, rhs_contracting_dims={1}, operand_precision={highest,highest}, metadata={op_name="jit(query)/dot_general" stack_frame_id=238}
+  ROOT %bitcast.97 = f64[6,16769025]{1,0} bitcast(%dot.10), metadata={op_name="jit(query)/dot_general" stack_frame_id=238}
+}, metadata={op_name="jit(query)/dot_general" stack_frame_id=238}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Status: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot_general.23 = f64[6,16769025]{1,0} fusion(%while.43.0, %data__Phi__.1), kind=kCustom, calls=%gemm_fusion_dot_general.23_computation, metadata={op_name="jit(query)/dot_general" stack_frame_id=238}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 32.00GiB.
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/imp-multimesh/j6/experiments/imp-multimesh/mmtime.py", line 263, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/imp-multimesh/j6/experiments/imp-multimesh/mmtime.py", line 236, in main
+    arm_block(L, arm, sb, U0, res=M_['arms'][arm['name']])
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/imp-multimesh/j6/experiments/imp-multimesh/mmtime.py", line 188, in arm_block
+    cinfo = M.aot_compile(q, xs[0][0], jnp.float64(xs[0][1]), data, sch_c)
+  File "/cluster/tufts/paralab/tawal01/imp-multimesh/j6/experiments/imp-multimesh/mmcore.py", line 483, in aot_compile
+    jitted.lower(*args).compile()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/stages.py", line 592, in compile
+    return Compiled(self._lowering.compile(**kw), self._lowering.const_args,
+                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/pxla.py", line 1239, in compile
+    executable = UnloadedMeshExecutable.from_hlo(
+        self._name, self._hlo, **self.compile_args,
+        compiler_options_kvs=compiler_options_kvs,
+        device_list=compilation_device_list)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/pxla.py", line 1733, in from_hlo
+    xla_executable = _cached_compilation(
+        hlo, name, tuple_args, allow_prop_to_inputs, allow_prop_to_outputs,
+        tuple(host_callbacks), backend, device_list, compiler_options_kvs,
+        pgle_profiler)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/pxla.py", line 1516, in _cached_compilation
+    xla_executable = compiler.compile_or_get_cached(
+        backend, computation, dev, compile_options, host_callbacks,
+        da, pgle_profiler)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py", line 422, in compile_or_get_cached
+    return backend_compile_and_load(
+        backend, computation, executable_devices, compile_options,
+        host_callbacks)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/profiler.py", line 420, in wrapper
+    return func(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py", line 363, in backend_compile_and_load
+    raise e
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py", line 353, in backend_compile_and_load
+    return backend.compile_and_load(
+           ~~~~~~~~~~~~~~~~~~~~~~~~^
+        module,
+        ^^^^^^^
+        executable_devices=executable_devices,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        compile_options=options,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+jax.errors.JaxRuntimeError: INTERNAL: Failed to get configs for: 2 out of 52 instructions. See logs for all failures. Example failure: 
+Autotuning failed for HLO: %input_reduce_fusion.24 = f64[4095,256]{1,0} fusion(%data__Phi__.1, %u0.1), kind=kInput, calls=%fused_reduce.25, metadata={op_name="jit(query)/dot_general" stack_frame_id=232}. Failed to profile configs: Out of memory while trying to allocate 32.00GiB.

@@ -70,7 +70,7 @@ _T_START = time.perf_counter()
 def path_budget(cfg):
     """Code audit (job-6): NNLS max_seconds = min(per-path budget, remaining job budget - reserve)."""
     rem = cfg.get('wall_seconds', 1e9) - (time.perf_counter() - _T_START) - cfg.get('reserve_seconds', 600)
-    return max(0., min(float(cfg['nnls_seconds']), (rem - 300) / 2))   # contributions (<= 300 s) + path + retry
+    return max(0., min(float(cfg['nnls_seconds']), (rem - 60) / 2))    # evaluated after contributions: path + retry
 
 
 def timed(rec, key, fn, *a, **k):
@@ -149,22 +149,15 @@ def build_source(rec, key, s, steps, ranks, kappas, nnls_s, out, ntraj=None, log
     rec.d[key] = info
     rec.save()
     for r in todo:
-        budget = nnls_s(r) if callable(nnls_s) else nnls_s
-        if budget < 60:
-            info['ecsw'][r] = dict(status='UNRESOLVED', reason='job budget exhausted before this path')
-            rec.d[key] = info
-            rec.save()
-            continue
         PL.burn(0.05)
         t0 = time.perf_counter()
-        c0 = T.t.get('ecsw_contrib', 0.)
-        n0_ = T.t.get('ecsw_nnls', 0.)
-        rec_r = cell.ecsw(r, kappas=tuple(kappas), max_seconds=budget)
-        info['ecsw'][r] = dict(cell.info['ecsw'][r], seconds=time.perf_counter() - t0,
-                               contrib_seconds=T.t['ecsw_contrib'] - c0, nnls_seconds=T.t['ecsw_nnls'] - n0_)
-        for k, v in rec_r.items():
+        rr_, inf_ = contrib_and_nnls(cell.states, Phi, r, s, kappas, nnls_s if not callable(nnls_s) else
+                                     (lambda: nnls_s(r)), blocked=False)
+        info['ecsw'][r] = dict(inf_, seconds=time.perf_counter() - t0)
+        rec_r = {k: (None if v is None else dict(nodes=v[0], weights=v[1])) for k, v in rr_.items()}
+        for k, v in rr_.items():
             if v is not None:
-                rules[(r, k)] = (np.asarray(v['nodes']), np.asarray(v['weights']))
+                rules[(r, k)] = v
         log_(f'   source {s} r={r}: ecsw {info["ecsw"][r]["seconds"]:.0f}s supports '
              f'{ {k: (None if v is None else len(v["nodes"])) for k, v in rec_r.items()} }')
         tmp = od / 'rules.tmp.npz'                                            # after every rank, atomically
@@ -214,8 +207,13 @@ def contrib_and_nnls(states, Phi_dev, r, L, kappas, nnls_s, blocked):
         G, b, cand, cinfo = BD.ecsw_contrib(states, Phi_dev[:, :r], D, L)
         jax.block_until_ready(G)
     tc = time.perf_counter() - t0
+    bud = nnls_s() if callable(nnls_s) else nnls_s            # evaluated after the contributions (shared deadline)
+    if bud < 60:
+        del G, b
+        return {f'k{k}': None for k in kappas}, dict(contrib_seconds=tc, nnls_seconds=0., status='UNRESOLVED',
+                                                    reason='job budget exhausted', paths=dict(selected=None, attempts={}))
     t0 = time.perf_counter()
-    recr, summ = BD.ecsw_weights(G, b, cand, r, tuple(kappas), max_seconds=nnls_s)
+    recr, summ = BD.ecsw_weights(G, b, cand, r, tuple(kappas), max_seconds=bud)
     tn = time.perf_counter() - t0
     del G, b
     rules = {f'k{k}': (None if v is None else (np.asarray(v['nodes']), np.asarray(v['weights'])))
@@ -294,12 +292,7 @@ def run_arm(rec, arm, L, cfg, fams, refs, states, out):
             continue
         Wk = {}
         if kind == 'refit' and s != L:
-            bud = path_budget(cfg)
-            if bud < 60:
-                for k in cfg['kappas']:
-                    A['configs'][f'r{r}|k{k}|CNR'].update(status='UNRESOLVED', reason='job budget exhausted')
-                continue
-            rr, inf = contrib_and_nnls(states, Phi, r, L, cfg['kappas'], bud, blocked)
+            rr, inf = contrib_and_nnls(states, Phi, r, L, cfg['kappas'], lambda: path_budget(cfg), blocked)
             A.setdefault('ecsw', {})[r] = inf
         elif kind == 'reuse' and s != L:
             assert L > s

@@ -668,3 +668,56 @@ Control 8(d)/(e) failed only because the fixture record was MEASURED-FAIL for th
 $46{,}080\times32{,}768$ contribution matrix and its NNLS (usable 138 GB); blocked contributions 75 s for 120
 states; NNLS 252 s (memory pilot only); host RSS 29 GB; ours' $4096^2$ bank table 68.7 GB with a query (31.6 s
 including setup). These feed the production certificates.
+
+---
+
+## Amendment A9 (2026-10-21, before J0/J5; answers `audits/codex-job-9.md`, `codex-job-10.md`)
+
+**A9.1 Smoke result.** S1 attempt `s1c` (job 6159244, H200) passed every registered control (`runs/s1c/pulled/
+output/ACCEPT.json`, all_passed = true): 1, 2a–c, 3, 4 (with the unmutated fixture Q1-qualified), 5, 6, 7 (with
+sentinel), 8a–g (+ absent-key variant), 9, and the production-shaped $4096^2$ pilot.
+**A9.2 Resource certificates (deviation recorded).** The certificates (`resources.py`) are planning projections from
+the most relevant **measured** same-recipe phases (jcp-hr-baselines H200/A100 phase timers, jcp-p1-scaling job
+hours, smoke s1c), × 1.5. The audits judged them not fully phase-itemised. They are not used for any scientific
+quantity; the binding protections against GPU-hour waste are (i) each job's time limit, reserved in full in the
+ledger against the 8 GPU-h cap before submission, (ii) per-command timeouts inside the job, (iii) incremental
+persistence, so that work done before a timeout survives and unfinished configurations are UNRESOLVED (A4.1).
+**A9.3 NNLS deadline.** The per-path NNLS allowance is now evaluated **after** the contributions are built:
+min(nnls_seconds, (remaining job budget − 60 s)/2), shared by the initial path and its possible registered retry,
+in both the source and the target jobs.
+
+---
+
+## Amendment A10 (2026-10-21; answers `audits/codex-job-12.md`)
+
+**A10.1** An exhausted NNLS allowance leaves both κ configurations of that rank UNRESOLVED (no crash).
+**A10.2** The NNLS allowance passed to `build.ecsw_weights` applies per attempt (initial path, and the registered
+retry if more than 1 % of candidates were banned): each attempt gets min(1,500 s, (remaining − 60 s)/2), so the
+pair never exceeds the remaining job budget.
+**A10.3** The rank-prefix copy of the basis is released before each rank's contributions and whenever the full
+rank is requested ($4096^2$ memory: $\Phi_{384}$ + at most one prefix copy, never during construction).
+**A10.4** J4's scope is set from J1's measured per-configuration run time: if the projected J4 time does not fit
+the remaining cap, CPU-1024 at $4096^2$ is deferred first (registered defer order), then CPR-1024; deferred arms
+are UNRESOLVED for their workloads (the other CP arms still count).
+
+---
+
+## Amendment A11 (2026-10-21; answers `audits/codex-job-17.md`)
+
+The timing job runs **one** A1–B–A2 pass per mesh (the drift retry of A1.7 is disabled to stay within the
+certified time and the GPU-hour cap). A mesh whose sentinel or A2/A1 drift leaves the band, or whose identity check
+fails, is an invalid timing panel; every cost on that mesh is then UNRESOLVED (no verdict is proven from it).
+Results are persisted after every configuration.
+
+---
+
+## Amendment A12 (2026-10-22, after J6)
+
+J6 (job 6178413) produced **valid** timing panels at $256^2$ and $1024^2$ (sentinels and A2/A1 within the band,
+every timed run identical to its accuracy run) and then failed at $4096^2$: XLA's autotuner ran out of device
+memory compiling a competitor query while the rank-384 basis, a rank-256 prefix copy and the sentinel prefix bank
+were resident. Fix: the timing job builds, for each rank, the basis with exactly that many columns (resampling is
+column-wise, and the QR prefix property makes the restricted basis identical), so no wider basis is alive
+alongside a prefix copy. J6b repeats the full A1–B–A2 protocol for $4096^2$ only (ours and every competitor arm in
+the same job) and runs all twelve fresh-process compile probes (J6 skipped them after the failure). The $256^2$ and
+$1024^2$ panels of J6 are used as measured.

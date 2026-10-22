@@ -71,7 +71,7 @@ def ours_cost(D, X, w, var='A_dep', compile_scale=1.0, ours_compile=None):
     o = D['ours'][X]
     c = D['ours_offline'][var]
     for L in w[0]:
-        c += o['setup'][L] + compile_scale * _cmp(o['compile'].get(L), ours_compile) + w[1] * o['t'][L]
+        c += o['setup'].get(L, math.nan) + compile_scale * _cmp(o['compile'].get(L), ours_compile) + w[1] * o['t'].get(L, math.nan)
     return c
 
 
@@ -361,3 +361,17 @@ def dump(path, obj):
             return x.tolist()
         return str(x)
     Path(path).write_text(json.dumps(obj, indent=1, default=conv))
+
+
+def combos(D, w, arms=CP_ARMS):
+    """Every measured Q1 combination over the CP variants for workload w: (arm, choice, cost, worst, median)."""
+    out = []
+    for arm in arms:
+        per = []
+        for L in sorted(w[0]):
+            per.append([(L, k) for k, r in D['comp'][arm][L].items() if r['state'] == 'MEASURED-Q1'])
+        for combo in itertools.product(*per):
+            ch = dict(combo)
+            e = [x for L, k in ch.items() for x in D['comp'][arm][L][k]['err'].values()]
+            out.append((arm, ch, comp_cost(D, arm, ch, w), max(e), float(np.median(e))))
+    return out

@@ -1,0 +1,41 @@
+stage MANIFEST OK
+host=pax008 source_commit=fc9de7e5dd7b8e15174b78e9289e7fefde852c96
+NVIDIA H200, GPU-a8a12c96-fc46-0791-d459-e18b81bc6b19, 143771 MiB
+10.235.106.26:/projects/paralab  4.6T  1.3T  3.4T  28% /cluster/tufts/paralab
+jax_backend=gpu
+=== 2026-10-21T23:36:20Z sources
+19:36:22 jax_backend=gpu x64=True precision=highest device=NVIDIA H200
+19:36:22 SOURCE 256
+19:36:26    snapshots 1/576 worst rel residual 3.32e-11 [1s]
+19:36:35    snapshots 65/576 worst rel residual 9.94e-11 [10s]
+19:36:42    snapshots 129/576 worst rel residual 1.00e-10 [18s]
+19:36:50    snapshots 193/576 worst rel residual 1.00e-10 [25s]
+19:36:58    snapshots 257/576 worst rel residual 1.00e-10 [33s]
+19:37:06    snapshots 321/576 worst rel residual 1.00e-10 [41s]
+19:37:14    snapshots 385/576 worst rel residual 1.00e-10 [49s]
+19:37:22    snapshots 449/576 worst rel residual 1.00e-10 [57s]
+19:37:30    snapshots 513/576 worst rel residual 1.00e-10 [66s]
+19:37:38    snapshots 576/576 worst rel residual 1.00e-10 [74s]
+19:41:53    basis[central]: n_snap 29376 rank 15251 orth 1.6e-15 optimal True
+19:42:26    source 256 r=128: ecsw 25s supports {'k4': 512, 'k8': 1024}
+19:43:14    source 256 r=256: ecsw 48s supports {'k4': 1024, 'k8': 2048}
+19:44:35    source 256 r=384: ecsw 81s supports {'k4': 1536, 'k8': 3072}
+19:44:35 SOURCE 1024
+19:44:37    snapshots 1/576 worst rel residual 3.46e-11 [1s]
+19:45:09    snapshots 65/576 worst rel residual 9.96e-11 [33s]
+19:45:40    snapshots 129/576 worst rel residual 9.99e-11 [65s]
+19:46:12    snapshots 193/576 worst rel residual 9.99e-11 [96s]
+19:46:45    snapshots 257/576 worst rel residual 9.99e-11 [129s]
+19:48:56    snapshots 321/576 worst rel residual 9.99e-11 [260s]
+19:50:51    snapshots 385/576 worst rel residual 9.99e-11 [376s]
+19:52:38    snapshots 449/576 worst rel residual 9.99e-11 [482s]
+19:54:56    snapshots 513/576 worst rel residual 9.99e-11 [620s]
+19:56:37    snapshots 576/576 worst rel residual 9.99e-11 [722s]
+20:00:52    basis[central]: n_snap 6912 rank 4156 orth 5.1e-15 optimal True
+20:01:44    source 1024 r=128: ecsw 17s supports {'k4': 512, 'k8': 1024}
+20:02:29    source 1024 r=256: ecsw 45s supports {'k4': 1024, 'k8': 2048}
+20:03:54    source 1024 r=384: ecsw 84s supports {'k4': 1536, 'k8': 3072}
+20:03:54 MMBUILD COMPLETE
+step_exit[sources]=0
+job_fail=0
+ALL-DONE

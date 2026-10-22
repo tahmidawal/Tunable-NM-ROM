@@ -32,6 +32,18 @@ def main():
         # 0.3381 h (H200), each with more configurations than here but sub16 Q2; here all38 Q2 adds 22 successor runs
         # per configuration-scheme (~+30 %); plus the offline checker (CPU) ~120 s per mesh.
         t = (0.4389 + 0.3694 + 0.3381) * 3600 * 1.3 + 3 * 120
+    elif att.startswith('j6'):
+        # per mesh: three bank builds (s1c 4096 bank pilot 31.6 s incl. setup) + every timed configuration: 76 timed
+        # calls x (0.05 s burn + <= 0.15 s query) + AOT compile <= 40 s; 12 fresh-process compile probes <= 120 s each
+        ncomp = sum(sum(len(a['configs']) for a in m['arms']) for m in cfg['meshes'].values())
+        nours = 2 * 6 * len(cfg['meshes'])                    # A1 and A2, 38 calls each (+ 38 identity-free)
+        # one attempt per mesh: the drift retry is disabled (retry_after_seconds = 0, DESIGN A11)
+        t = 3 * 3 * 40 + ncomp * (76 * 0.2 + 40) + nours * (38 * 0.2 + 40) + 12 * 120
+    elif att == 'j4':
+        # J1 (job 6174908, H200) measured per-configuration 38-case run times 7-20 s at 256^2; 120 s per configuration
+        # is allowed at 4096^2. Smoke s1c 4096^2 pilot: 2-trajectory states 22 s (x 12 for 24), blocked contributions
+        # 75 s and NNLS 252 s per (source, rank) refit; PM estimate 8 trajectories x 5 s.
+        t = pl['states_seconds'] * 12 + 6 * (pl['contrib_seconds'] + pl['nnls_seconds']) + 24 * 120 + 8 * 5
     else:
         L = cfg['L']
         st = {256: src['states_seconds'] / 4, 1024: src['states_seconds'], 4096: pl['states_seconds'] * 12}[L]

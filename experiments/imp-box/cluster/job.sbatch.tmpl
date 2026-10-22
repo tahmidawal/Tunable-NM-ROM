@@ -1,0 +1,47 @@
+#!/bin/bash
+#SBATCH --job-name=ibox-__NAME__
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:__GPU__:1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=__MEM__
+#SBATCH --time=__TIME__
+#SBATCH --output=__DIR__/slurm-%j.out
+set -euo pipefail
+exec 9>__DIR__/.exec.lock
+flock -n 9 || { echo "another execution holds __DIR__"; exit 3; }
+cd __DIR__/code
+source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
+export JAX_DEFAULT_MATMUL_PRECISION=highest
+export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export LANE_COMMIT=__COMMIT__
+PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
+[ -n "${CUDA_VISIBLE_DEVICES:-}" ] || { echo "CUDA_VISIBLE_DEVICES unset: cannot identify the allocated GPU"; exit 43; }
+GPUSEL=${CUDA_VISIBLE_DEVICES%%,*}
+nvidia-smi -i "$GPUSEL" --query-gpu=uuid,name --format=csv,noheader | tee __DIR__/allocated_gpu.txt
+grep -q H200 __DIR__/allocated_gpu.txt || { echo "allocated GPU is not an H200: refusing (imp-box timing contract)"; exit 43; }
+$PY -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b == 'gpu' else 42)" || exit 42
+df -h /cluster/tufts/paralab | tail -1
+unset IGEO_NCAP IMPBOX_TINY IMPBOX_BANK_STEPS
+# external memory sampling (survives SIGKILL / OOM of the Python process; job audit 1)
+# columns: epoch, allocated-GPU uuid, its memory.used MiB, job cgroup memory bytes (sampled usage, not exact peaks)
+CGP=$(awk -F: '$2 ~ /memory/ || $1 == "0" {print $3; exit}' /proc/self/cgroup)
+CGF=""; for f in /sys/fs/cgroup$CGP/memory.current /sys/fs/cgroup/memory$CGP/memory.usage_in_bytes; do [ -r "$f" ] && { CGF=$f; break; }; done
+SID=$(ps -o sid= $$ | tr -d ' ')
+echo "cuda_visible=$CUDA_VISIBLE_DEVICES gpu=$GPUSEL cgroup_file=${CGF:-none} session=$SID (samples every 30 s; not exact peaks)" > __DIR__/mem_samples.log
+# host column: job cgroup memory bytes when readable, else the summed RSS (KiB) of this job's process session
+( while true; do H=$( [ -n "$CGF" ] && echo "cg:$(cat $CGF)" || echo "rss_kib:$(ps -eo rss=,sid= | awk -v s=$SID '$2==s{t+=$1} END{print t}')" ); echo "$(date +%s) $(nvidia-smi -i "$GPUSEL" --query-gpu=uuid,memory.used --format=csv,noheader,nounits | tr -d ' ') $H"; sleep 30; done ) >> __DIR__/mem_samples.log 2>&1 &
+MEMPID=$!
+FAILED=0
+set +e +o pipefail   # (no pipefail: display pipelines like grep | tail must not count as failures); the body counts failures itself (run() increments FAILED); any other failing command too:
+set -E           # errtrace: the ERR trap is inherited by functions and subshells
+rm -f __DIR__/.failures
+trap 'echo "$BASH_COMMAND" >> __DIR__/.failures' ERR   # inherited (set -E) by subshells and command substitutions
+__BODY__
+# bodies may only call run() (make_body.sh / bodies/*.sh); a failure anywhere in a run() step is also caught from its
+# recorded exit code, so a failure inside a subshell or command substitution cannot be lost
+NFAIL=$(grep -c '^=== .* rc=[1-9]' "__DIR__/slurm-${SLURM_JOB_ID}.out" || true)
+NERR=$(cat __DIR__/.failures 2>/dev/null | wc -l)
+kill $MEMPID 2>/dev/null || true
+if [ "$FAILED" -ne 0 ] || [ "$NFAIL" -ne 0 ] || [ "$NERR" -ne 0 ]; then echo "JOB FAILED ($FAILED counted, $NFAIL recorded)"; exit 1; fi
+echo "JOB DONE"

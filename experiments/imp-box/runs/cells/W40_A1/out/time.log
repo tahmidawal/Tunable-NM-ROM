@@ -1,0 +1,145 @@
+10:44:38 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax010', 'commit': '6d1969b88', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+10:44:38 stage time: start
+E1022 10:46:52.471307 1764560 cuda_timer.cc:88] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+10:51:10 pair spec|N10|dense|nt5 vs podg|r64|qT12|nt10: S 0.914 valid True
+10:51:16 pair spec|N10|dense|nt5 vs podg|r96|qT12|nt10: S 0.801 valid True
+10:51:21 pair spec|N10|dense|nt10 vs podg|r64|qT12|nt10: S 1.15 valid True
+10:51:26 pair spec|N10|dense|nt10 vs podg|r96|qT12|nt10: S 1 valid True
+10:51:31 pair specad|N10|tol1e-03|dense vs podg|r64|qT12|nt10: S 2.06 valid True
+10:51:36 pair specad|N10|tol1e-03|dense vs podg|r96|qT12|nt10: S 1.79 valid True
+10:51:41 pair specad|N12|tol1e-03|dense vs podg|r64|qT12|nt10: S 2.33 valid True
+10:51:45 pair specad|N12|tol1e-03|dense vs podg|r96|qT12|nt10: S 2.05 valid True
+10:53:18 pair spec|N10|dense|nt5 vs podg|r128|qT12|nt10: S 0.72 valid True
+10:53:24 pair spec|N10|dense|nt5 vs podg|r128|q6|nt10: S 0.624 valid True
+10:53:29 pair spec|N10|dense|nt10 vs podg|r128|qT12|nt10: S 0.909 valid True
+10:53:34 pair spec|N10|dense|nt10 vs podg|r128|q6|nt10: S 0.784 valid True
+10:53:38 pair specad|N10|tol1e-03|dense vs podg|r128|qT12|nt10: S 1.63 valid True
+10:53:43 pair specad|N10|tol1e-03|dense vs podg|r128|q6|nt10: S 1.4 valid True
+10:53:48 pair specad|N12|tol1e-03|dense vs podg|r128|qT12|nt10: S 1.82 valid True
+10:53:53 pair specad|N12|tol1e-03|dense vs podg|r128|q6|nt10: S 1.57 valid True
+10:54:17 pair spec|N8|dense|nt5 vs podg|r48|qT12|nt10: S 0.927 valid True
+10:54:22 pair spec|N8|dense|nt5 vs podg|r64|qT12|nt10: S 0.906 valid True
+10:54:26 pair spec|N10|dense|nt5 vs podg|r48|qT12|nt10: S 0.932 valid True
+10:54:31 pair specad|N8|tol1e-03|dense vs podg|r48|qT12|nt10: S 2 valid True
+10:54:36 pair specad|N8|tol1e-03|dense vs podg|r64|qT12|nt10: S 1.95 valid True
+10:54:41 pair specad|N10|tol1e-03|dense vs podg|r48|qT12|nt10: S 2.09 valid True
+10:55:21 pair spec|N8|dense|nt5 vs podg|r16|qT12|nt10: S 1.09 valid True
+10:55:26 pair spec|N8|dense|nt5 vs podg|r24|qT12|nt10: S 1.01 valid True
+10:55:30 pair spec|N10|dense|nt5 vs podg|r16|qT12|nt10: S 1.11 valid True
+10:55:35 pair spec|N10|dense|nt5 vs podg|r24|qT12|nt10: S 1.04 valid True
+10:55:39 pair specad|N8|tol1e-03|dense vs podg|r16|qT12|nt10: S 2.5 valid True
+10:55:44 pair specad|N8|tol1e-03|dense vs podg|r24|qT12|nt10: S 2.24 valid True
+10:55:49 pair specad|N10|tol1e-03|dense vs podg|r16|qT12|nt10: S 2.64 valid True
+10:55:53 pair specad|N10|tol1e-03|dense vs podg|r24|qT12|nt10: S 2.39 valid True
+10:56:07 pair spec|N8|dense|nt5 vs podg|r32|qT12|nt10: S 1.03 valid True
+10:56:11 pair spec|N10|dense|nt5 vs podg|r32|qT12|nt10: S 1.04 valid True
+10:56:16 pair specad|N8|tol1e-03|dense vs podg|r32|qT12|nt10: S 2.22 valid True
+10:56:21 pair specad|N10|tol1e-03|dense vs podg|r32|qT12|nt10: S 2.34 valid True
+10:59:27 pair spec|N10|dense|nt5 vs ecsw|r64|k8|nt10: S 0.829 valid True
+10:59:33 pair spec|N10|dense|nt5 vs ecsw|r96|k8|nt10: S 0.764 valid True
+10:59:38 pair spec|N10|dense|nt10 vs ecsw|r64|k8|nt10: S 1.04 valid True
+10:59:42 pair spec|N10|dense|nt10 vs ecsw|r96|k8|nt10: S 0.958 valid True
+10:59:47 pair specad|N10|tol1e-03|dense vs ecsw|r64|k8|nt10: S 1.86 valid True
+10:59:52 pair specad|N10|tol1e-03|dense vs ecsw|r96|k8|nt10: S 1.74 valid True
+10:59:56 pair specad|N12|tol1e-03|dense vs ecsw|r64|k8|nt10: S 2.08 valid True
+11:00:01 pair specad|N12|tol1e-03|dense vs ecsw|r96|k8|nt10: S 1.92 valid True
+11:02:29 pair spec|N10|dense|nt5 vs ecsw|r128|k4|nt10: S 0.733 valid True
+11:02:36 pair spec|N10|dense|nt5 vs ecsw|r128|k8|nt10: S 0.704 valid True
+11:02:40 pair spec|N10|dense|nt10 vs ecsw|r128|k4|nt10: S 0.92 valid True
+11:02:45 pair spec|N10|dense|nt10 vs ecsw|r128|k8|nt10: S 0.885 valid True
+11:02:50 pair specad|N10|tol1e-03|dense vs ecsw|r128|k4|nt10: S 1.64 valid True
+11:02:55 pair specad|N10|tol1e-03|dense vs ecsw|r128|k8|nt10: S 1.57 valid True
+11:02:59 pair specad|N12|tol1e-03|dense vs ecsw|r128|k4|nt10: S 1.8 valid True
+11:03:04 pair specad|N12|tol1e-03|dense vs ecsw|r128|k8|nt10: S 1.77 valid True
+11:03:56 pair spec|N8|dense|nt5 vs ecsw|r48|k8|nt10: S 0.85 valid True
+11:04:01 pair spec|N8|dense|nt5 vs ecsw|r64|k8|nt10: S 0.83 valid True
+11:04:06 pair spec|N10|dense|nt5 vs ecsw|r48|k8|nt10: S 0.854 valid True
+11:04:10 pair specad|N8|tol1e-03|dense vs ecsw|r48|k8|nt10: S 1.8 valid True
+11:04:15 pair specad|N8|tol1e-03|dense vs ecsw|r64|k8|nt10: S 1.78 valid True
+11:04:20 pair specad|N10|tol1e-03|dense vs ecsw|r48|k8|nt10: S 1.89 valid True
+11:05:55 pair spec|N8|dense|nt5 vs ecsw|r32|k8|nt10: S 0.988 valid True
+11:06:00 pair spec|N10|dense|nt5 vs ecsw|r32|k8|nt10: S 1.02 valid True
+11:06:04 pair specad|N8|tol1e-03|dense vs ecsw|r32|k8|nt10: S 2.15 valid True
+11:06:09 pair specad|N10|tol1e-03|dense vs ecsw|r32|k8|nt10: S 2.27 valid True
+11:07:00 pair spec|N8|dense|nt5 vs trans|r16|qT12|nt10: S 0.989 valid True
+11:07:04 pair spec|N8|dense|nt5 vs trans|r24|qT12|nt10: S 0.888 valid True
+11:07:09 pair spec|N10|dense|nt5 vs trans|r16|qT12|nt10: S 1.02 valid True
+11:07:14 pair spec|N10|dense|nt5 vs trans|r24|qT12|nt10: S 0.912 valid True
+11:07:18 pair specad|N8|tol1e-03|dense vs trans|r16|qT12|nt10: S 2.37 valid True
+11:07:23 pair specad|N8|tol1e-03|dense vs trans|r24|qT12|nt10: S 2.12 valid True
+11:07:28 pair specad|N10|tol1e-03|dense vs trans|r16|qT12|nt10: S 2.46 valid True
+11:07:32 pair specad|N10|tol1e-03|dense vs trans|r24|qT12|nt10: S 2.2 valid True
+11:10:57 pair spec|N10|dense|nt5 vs bank|r64|qT12|lspg_cnr|nt40: S 0.0615 valid True
+11:11:05 pair spec|N10|dense|nt5 vs bank|r96|qT12|lspg_cnr|nt40: S 0.0435 valid True
+11:11:10 pair spec|N10|dense|nt10 vs bank|r64|qT12|lspg_cnr|nt40: S 0.0768 valid True
+11:11:16 pair spec|N10|dense|nt10 vs bank|r96|qT12|lspg_cnr|nt40: S 0.0548 valid True
+11:11:21 pair specad|N10|tol1e-03|dense vs bank|r64|qT12|lspg_cnr|nt40: S 0.139 valid True
+11:11:27 pair specad|N10|tol1e-03|dense vs bank|r96|qT12|lspg_cnr|nt40: S 0.0985 valid True
+11:11:32 pair specad|N12|tol1e-03|dense vs bank|r64|qT12|lspg_cnr|nt40: S 0.156 valid True
+11:11:38 pair specad|N12|tol1e-03|dense vs bank|r96|qT12|lspg_cnr|nt40: S 0.109 valid True
+11:13:39 pair spec|N10|dense|nt5 vs bank|r128|qT12|lspg_cnr|nt40: S 0.0336 valid True
+11:13:46 pair spec|N10|dense|nt10 vs bank|r128|qT12|lspg_cnr|nt40: S 0.0422 valid True
+11:13:52 pair specad|N10|tol1e-03|dense vs bank|r128|qT12|lspg_cnr|nt40: S 0.077 valid True
+11:13:59 pair specad|N12|tol1e-03|dense vs bank|r128|qT12|lspg_cnr|nt40: S 0.085 valid True
+11:15:12 pair spec|N8|dense|nt5 vs bank|r32|qT12|lspg_cnr|nt20: S 0.152 valid True
+11:15:18 pair spec|N8|dense|nt5 vs bank|r48|qT12|lspg_cnr|nt20: S 0.126 valid True
+11:15:23 pair spec|N10|dense|nt5 vs bank|r32|qT12|lspg_cnr|nt20: S 0.155 valid True
+11:15:28 pair spec|N10|dense|nt5 vs bank|r48|qT12|lspg_cnr|nt20: S 0.133 valid True
+11:15:33 pair specad|N8|tol1e-03|dense vs bank|r32|qT12|lspg_cnr|nt20: S 0.333 valid True
+11:15:37 pair specad|N8|tol1e-03|dense vs bank|r48|qT12|lspg_cnr|nt20: S 0.277 valid True
+11:15:42 pair specad|N10|tol1e-03|dense vs bank|r32|qT12|lspg_cnr|nt20: S 0.345 valid True
+11:15:47 pair specad|N10|tol1e-03|dense vs bank|r48|qT12|lspg_cnr|nt20: S 0.289 valid True
+11:17:59 pair spec|N10|dense|nt5 vs bank|r64|qT12|lspg_cnr|nt20: S 0.108 valid True
+11:18:07 pair spec|N10|dense|nt5 vs bank|r96|qT12|lspg_cnr|nt20: S 0.0761 valid True
+11:18:12 pair spec|N10|dense|nt10 vs bank|r64|qT12|lspg_cnr|nt20: S 0.134 valid True
+11:18:17 pair spec|N10|dense|nt10 vs bank|r96|qT12|lspg_cnr|nt20: S 0.0956 valid True
+11:18:22 pair specad|N10|tol1e-03|dense vs bank|r64|qT12|lspg_cnr|nt20: S 0.243 valid True
+11:18:27 pair specad|N10|tol1e-03|dense vs bank|r96|qT12|lspg_cnr|nt20: S 0.174 valid True
+11:18:32 pair specad|N12|tol1e-03|dense vs bank|r64|qT12|lspg_cnr|nt20: S 0.272 valid True
+11:18:37 pair specad|N12|tol1e-03|dense vs bank|r96|qT12|lspg_cnr|nt20: S 0.193 valid True
+11:19:19 pair spec|N8|dense|nt5 vs bank|r16|qT12|lspg_cnr|nt10: S 0.311 valid True
+11:19:24 pair spec|N8|dense|nt5 vs bank|r24|qT12|lspg_cnr|nt10: S 0.285 valid True
+11:19:29 pair spec|N10|dense|nt5 vs bank|r16|qT12|lspg_cnr|nt10: S 0.318 valid True
+11:19:33 pair spec|N10|dense|nt5 vs bank|r24|qT12|lspg_cnr|nt10: S 0.286 valid True
+11:19:38 pair specad|N8|tol1e-03|dense vs bank|r16|qT12|lspg_cnr|nt10: S 0.735 valid True
+11:19:43 pair specad|N8|tol1e-03|dense vs bank|r24|qT12|lspg_cnr|nt10: S 0.64 valid True
+11:19:47 pair specad|N10|tol1e-03|dense vs bank|r16|qT12|lspg_cnr|nt10: S 0.757 valid True
+11:19:52 pair specad|N10|tol1e-03|dense vs bank|r24|qT12|lspg_cnr|nt10: S 0.65 valid True
+11:20:17 pair spec|N8|dense|nt5 vs bank|r32|qT12|lspg_cnr|nt10: S 0.245 valid True
+11:20:22 pair spec|N10|dense|nt5 vs bank|r32|qT12|lspg_cnr|nt10: S 0.25 valid True
+11:20:27 pair specad|N8|tol1e-03|dense vs bank|r32|qT12|lspg_cnr|nt10: S 0.541 valid True
+11:20:32 pair specad|N10|tol1e-03|dense vs bank|r32|qT12|lspg_cnr|nt10: S 0.569 valid True
+11:26:55 pair spec|N10|dense|nt5 vs bank|r64|qT12|gal_etdrk4|nt10: S 0.918 valid True
+11:27:01 pair spec|N10|dense|nt5 vs bank|r96|qT12|gal_etdrk4|nt10: S 0.807 valid True
+11:27:06 pair spec|N10|dense|nt10 vs bank|r64|qT12|gal_etdrk4|nt10: S 1.15 valid True
+11:27:11 pair spec|N10|dense|nt10 vs bank|r96|qT12|gal_etdrk4|nt10: S 1 valid True
+11:27:15 pair specad|N10|tol1e-03|dense vs bank|r64|qT12|gal_etdrk4|nt10: S 2.05 valid True
+11:27:20 pair specad|N10|tol1e-03|dense vs bank|r96|qT12|gal_etdrk4|nt10: S 1.79 valid True
+11:27:25 pair specad|N12|tol1e-03|dense vs bank|r64|qT12|gal_etdrk4|nt10: S 2.28 valid True
+11:27:29 pair specad|N12|tol1e-03|dense vs bank|r96|qT12|gal_etdrk4|nt10: S 1.99 valid True
+11:28:10 pair spec|N10|dense|nt5 vs bank|r128|qT12|gal_etdrk4|nt10: S 0.721 valid True
+11:28:14 pair spec|N10|dense|nt10 vs bank|r128|qT12|gal_etdrk4|nt10: S 0.91 valid True
+11:28:19 pair specad|N10|tol1e-03|dense vs bank|r128|qT12|gal_etdrk4|nt10: S 1.63 valid True
+11:28:24 pair specad|N12|tol1e-03|dense vs bank|r128|qT12|gal_etdrk4|nt10: S 1.82 valid True
+11:28:44 pair spec|N8|dense|nt5 vs bank|r24|qT12|gal_etdrk4|nt10: S 1.04 valid True
+11:28:49 pair spec|N8|dense|nt5 vs bank|r32|qT12|gal_etdrk4|nt10: S 1.03 valid True
+11:28:53 pair spec|N10|dense|nt5 vs bank|r24|qT12|gal_etdrk4|nt10: S 1.07 valid True
+11:28:58 pair spec|N10|dense|nt5 vs bank|r32|qT12|gal_etdrk4|nt10: S 1.03 valid True
+11:29:03 pair specad|N8|tol1e-03|dense vs bank|r24|qT12|gal_etdrk4|nt10: S 2.25 valid True
+11:29:07 pair specad|N8|tol1e-03|dense vs bank|r32|qT12|gal_etdrk4|nt10: S 2.21 valid True
+11:29:12 pair specad|N10|tol1e-03|dense vs bank|r24|qT12|gal_etdrk4|nt10: S 2.43 valid True
+11:29:17 pair specad|N10|tol1e-03|dense vs bank|r32|qT12|gal_etdrk4|nt10: S 2.33 valid True
+11:29:27 pair spec|N8|dense|nt5 vs bank|r16|qT12|gal_etdrk4|nt10: S 1.16 valid True
+11:29:32 pair spec|N10|dense|nt5 vs bank|r16|qT12|gal_etdrk4|nt10: S 1.13 valid True
+11:29:37 pair specad|N8|tol1e-03|dense vs bank|r16|qT12|gal_etdrk4|nt10: S 2.48 valid True
+11:29:41 pair specad|N10|tol1e-03|dense vs bank|r16|qT12|gal_etdrk4|nt10: S 2.63 valid True
+E1022 11:33:23.190532 1764564 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E1022 11:35:33.722864 1764119 slow_operation_alarm.cc:140] The operation took 4m10.532406026s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+11:46:38 stage time: 3720s

@@ -1,0 +1,88 @@
+{
+ "approved": {
+  "smk-A2": {
+   "body_sha256": "c8048595b033af8e9c9a12e13ae16e2ab6ce27cc3867ceaf9007edb292a4973c",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "12:00:00",
+   "basis": "registered smoke (A5.8); bounded exposure 12 GPU-h; audits/codex-job-smk-1.md + -2.md"
+  },
+  "smk-A4": {
+   "body_sha256": "6064fc7e5f4ae58e54641163e1783a9848d1905d53b927a26356fbf56354dca1",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "24:00:00",
+   "basis": "registered smoke (A5.8); bounded exposure 24 GPU-h; audits/codex-job-smk-1.md + -2.md"
+  },
+  "smk2-A2": {
+   "body_sha256": "c8048595b033af8e9c9a12e13ae16e2ab6ce27cc3867ceaf9007edb292a4973c",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "12:00:00",
+   "basis": "A9 re-smoke; bounded exposure; audits/codex-job-smk2-*.md"
+  },
+  "smk2-A4": {
+   "body_sha256": "6064fc7e5f4ae58e54641163e1783a9848d1905d53b927a26356fbf56354dca1",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "24:00:00",
+   "basis": "A9 re-smoke; bounded exposure; audits/codex-job-smk2-*.md"
+  },
+  "W40_A1": {
+   "body_sha256": "3e1907ad76f314718f5ad07ee4fcb6a732ded50787b2872fcabdb661b7dbf249",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "A12 wave-1 certificate runs/certificate-wave1.json (64.7 <= 87); job audit codex-job-wave1-*.md"
+  },
+  "W40_A2": {
+   "body_sha256": "c8048595b033af8e9c9a12e13ae16e2ab6ce27cc3867ceaf9007edb292a4973c",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "A12 wave-1 certificate runs/certificate-wave1.json (64.7 <= 87); job audit codex-job-wave1-*.md"
+  },
+  "W28_A1": {
+   "body_sha256": "b764fc840a2e973d05fc1e381e8c971ee0017595c663f7a917052019599084cc",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "A12 wave-1 certificate runs/certificate-wave1.json (64.7 <= 87); job audit codex-job-wave1-*.md"
+  },
+  "W28_A2": {
+   "body_sha256": "98eeedd93ab1dfad86fdbd3844208fb259051a21d3ad1b5b1d37b6fc5a6fdd9b",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "A12 wave-1 certificate runs/certificate-wave1.json (64.7 <= 87); job audit codex-job-wave1-*.md"
+  },
+  "W08_A1": {
+   "body_sha256": "029b5c57ef912c7e20e340410b46315fdec776742c5554e532b4ddece2dac6c9",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "wave-2 certificate runs/certificate-wave2.json; job audit codex-job-wave2-*.md"
+  },
+  "W08_A2": {
+   "body_sha256": "403812be5c966fdc744708f73d55895f4af994e31e8d07186a84fbab093811b9",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "wave-2 certificate runs/certificate-wave2.json; job audit codex-job-wave2-*.md"
+  },
+  "W40_A3": {
+   "body_sha256": "7bfff3c96da00c6d093ae404568f751b329bde5caf93051c2559270d445bddd1",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "A14 exposure-bounded; runs/certificate-wave3.json 76.8 <= 87; job audit codex-job-wave3-*.md"
+  },
+  "W28_A3": {
+   "body_sha256": "8b745b9e332efba297a07a183522ecb32b608a9e4efd043e84c06968d068e715",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "A14 exposure-bounded; runs/certificate-wave3.json 76.8 <= 87; job audit codex-job-wave3-*.md"
+  }
+ }
+}

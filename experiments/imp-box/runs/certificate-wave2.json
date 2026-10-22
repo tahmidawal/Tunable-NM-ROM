@@ -1,0 +1,61 @@
+{
+ "spent": 9.0919,
+ "committed": 36.455,
+ "remaining": 18.682499999999997,
+ "headroom": 1.15,
+ "failed_job_allowance": 6.227499999999999,
+ "projected_total": 73.259275,
+ "cap": 87.0,
+ "release": true,
+ "bounds": {
+  "A1": {
+   "cell": 6.227499999999999,
+   "test": 2.7541189003499067,
+   "stages": {
+    "ref": 0.03032951623977472,
+    "data": 0.01829173174453899,
+    "pod": 0.02001685067700843,
+    "bank": 0.42071835506746236,
+    "ladder": 3.005395095021619,
+    "time": 2.633093371698633,
+    "controls": 0.0906960124114994
+   },
+   "source": "smk2-A2",
+   "factor": 1.5
+  },
+  "A2": {
+   "cell": 6.227499999999999,
+   "test": 2.7541189003499067,
+   "stages": {
+    "ref": 0.03032951623977472,
+    "data": 0.01829173174453899,
+    "pod": 0.02001685067700843,
+    "bank": 0.42071835506746236,
+    "ladder": 3.005395095021619,
+    "time": 2.633093371698633,
+    "controls": 0.0906960124114994
+   },
+   "source": "smk2-A2",
+   "factor": 1.5
+  }
+ },
+ "notes": [
+  {
+   "smoke": "smk2-A2",
+   "policy_changed": [
+    "diag.py",
+    "ladders.py",
+    "timing.py"
+   ],
+   "factor": 1.5
+  },
+  {
+   "smoke": "smk2-A2",
+   "source_changed": [
+    "builders.py",
+    "spec.py"
+   ],
+   "factor": 1.5
+  }
+ ]
+}

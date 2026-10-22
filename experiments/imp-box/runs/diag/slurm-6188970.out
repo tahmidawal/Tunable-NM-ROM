@@ -1,0 +1,41 @@
+NVIDIA H200
+jax_backend=gpu
+8 5 {'cases_bad': 0, 'max_bad': 0.0}
+8 40 {'cases_bad': 0, 'max_bad': 0.0}
+10 5 {'cases_bad': 0, 'max_bad': 0.0}
+10 40 {'cases_bad': 0, 'max_bad': 0.0}
+12 5 {'cases_bad': 32, 'max_bad': 4.0}
+12 40 {'cases_bad': 32, 'max_bad': 39.0}
+14 5 {'cases_bad': 0, 'max_bad': 0.0}
+14 40 {'cases_bad': 0, 'max_bad': 0.0}
+16 5 {'cases_bad': 0, 'max_bad': 0.0}
+16 40 {'cases_bad': 0, 'max_bad': 0.0}
+24 5 {'cases_bad': 0, 'max_bad': 0.0}
+24 40 {'cases_bad': 0, 'max_bad': 0.0}
+RESULT {"mode": "nocache", "backend": "gpu", "jax": "0.10.2", "cache_files_before": null, "8|5": {"cases_bad": 0, "max_bad": 0.0}, "8|40": {"cases_bad": 0, "max_bad": 0.0}, "10|5": {"cases_bad": 0, "max_bad": 0.0}, "10|40": {"cases_bad": 0, "max_bad": 0.0}, "12|5": {"cases_bad": 32, "max_bad": 4.0}, "12|40": {"cases_bad": 32, "max_bad": 39.0}, "14|5": {"cases_bad": 0, "max_bad": 0.0}, "14|40": {"cases_bad": 0, "max_bad": 0.0}, "16|5": {"cases_bad": 0, "max_bad": 0.0}, "16|40": {"cases_bad": 0, "max_bad": 0.0}, "24|5": {"cases_bad": 0, "max_bad": 0.0}, "24|40": {"cases_bad": 0, "max_bad": 0.0}, "cache_files_after": null, "first_failure": [12, 5, 0], "stage_finite_per_step": [[true, true, true, true], [false, false, false, false], [false, false, false, false], [false, false, false, false], [false, false, false, false]], "first_failing_step": 1, "NL_device_vs_independent": 2.51207198585608e-15, "NL_device_finite": true, "eager_step_finite": [true, true, true]}
+8 5 {'cases_bad': 0, 'max_bad': 0.0}
+8 40 {'cases_bad': 0, 'max_bad': 0.0}
+10 5 {'cases_bad': 0, 'max_bad': 0.0}
+10 40 {'cases_bad': 0, 'max_bad': 0.0}
+12 5 {'cases_bad': 32, 'max_bad': 4.0}
+12 40 {'cases_bad': 32, 'max_bad': 39.0}
+14 5 {'cases_bad': 0, 'max_bad': 0.0}
+14 40 {'cases_bad': 0, 'max_bad': 0.0}
+16 5 {'cases_bad': 0, 'max_bad': 0.0}
+16 40 {'cases_bad': 0, 'max_bad': 0.0}
+24 5 {'cases_bad': 0, 'max_bad': 0.0}
+24 40 {'cases_bad': 0, 'max_bad': 0.0}
+RESULT {"mode": "cache", "backend": "gpu", "jax": "0.10.2", "cache_files_before": 0, "8|5": {"cases_bad": 0, "max_bad": 0.0}, "8|40": {"cases_bad": 0, "max_bad": 0.0}, "10|5": {"cases_bad": 0, "max_bad": 0.0}, "10|40": {"cases_bad": 0, "max_bad": 0.0}, "12|5": {"cases_bad": 32, "max_bad": 4.0}, "12|40": {"cases_bad": 32, "max_bad": 39.0}, "14|5": {"cases_bad": 0, "max_bad": 0.0}, "14|40": {"cases_bad": 0, "max_bad": 0.0}, "16|5": {"cases_bad": 0, "max_bad": 0.0}, "16|40": {"cases_bad": 0, "max_bad": 0.0}, "24|5": {"cases_bad": 0, "max_bad": 0.0}, "24|40": {"cases_bad": 0, "max_bad": 0.0}, "cache_files_after": 35, "first_failure": [12, 5, 0], "stage_finite_per_step": [[true, true, true, true], [false, false, false, false], [false, false, false, false], [false, false, false, false], [false, false, false, false]], "first_failing_step": 1, "NL_device_vs_independent": 2.51207198585608e-15, "NL_device_finite": true, "eager_step_finite": [true, true, true]}
+8 5 {'cases_bad': 0, 'max_bad': 0.0}
+8 40 {'cases_bad': 0, 'max_bad': 0.0}
+10 5 {'cases_bad': 0, 'max_bad': 0.0}
+10 40 {'cases_bad': 0, 'max_bad': 0.0}
+12 5 {'cases_bad': 32, 'max_bad': 4.0}
+12 40 {'cases_bad': 32, 'max_bad': 39.0}
+14 5 {'cases_bad': 0, 'max_bad': 0.0}
+14 40 {'cases_bad': 0, 'max_bad': 0.0}
+16 5 {'cases_bad': 0, 'max_bad': 0.0}
+16 40 {'cases_bad': 0, 'max_bad': 0.0}
+24 5 {'cases_bad': 0, 'max_bad': 0.0}
+24 40 {'cases_bad': 0, 'max_bad': 0.0}
+RESULT {"mode": "cache", "backend": "gpu", "jax": "0.10.2", "cache_files_before": 101, "8|5": {"cases_bad": 0, "max_bad": 0.0}, "8|40": {"cases_bad": 0, "max_bad": 0.0}, "10|5": {"cases_bad": 0, "max_bad": 0.0}, "10|40": {"cases_bad": 0, "max_bad": 0.0}, "12|5": {"cases_bad": 32, "max_bad": 4.0}, "12|40": {"cases_bad": 32, "max_bad": 39.0}, "14|5": {"cases_bad": 0, "max_bad": 0.0}, "14|40": {"cases_bad": 0, "max_bad": 0.0}, "16|5": {"cases_bad": 0, "max_bad": 0.0}, "16|40": {"cases_bad": 0, "max_bad": 0.0}, "24|5": {"cases_bad": 0, "max_bad": 0.0}, "24|40": {"cases_bad": 0, "max_bad": 0.0}, "cache_files_after": 101, "first_failure": [12, 5, 0], "stage_finite_per_step": [[true, true, true, true], [false, false, false, false], [false, false, false, false], [false, false, false, false], [false, false, false, false]], "first_failing_step": 1, "NL_device_vs_independent": 2.51207198585608e-15, "NL_device_finite": true, "eager_step_finite": [true, true, true]}

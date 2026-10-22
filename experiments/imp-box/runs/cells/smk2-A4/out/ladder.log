@@ -1,0 +1,44 @@
+05:00:13 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': '89518ca79', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+05:00:13 stage ladder: start
+/cluster/tufts/paralab/tawal01/imp-box/smk2-A4/code/score.py:16: RuntimeWarning: overflow encountered in square
+  num = np.sqrt(np.sum((F - R) ** 2, axis=-1))
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/numpy/_core/fromnumeric.py:83: RuntimeWarning: overflow encountered in reduce
+  return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+05:30:46 fom ladder rows 133
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.02GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (3.44GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py:833: UserWarning: Error writing persistent compilation cache entry for 'jit_q': JaxRuntimeError: RESOURCE_EXHAUSTED: Failed to serialize message of type xla.gpu.GpuExecutableProto because its size must be smaller than 2GiB: 2836506773; at byte 0; at uncompressed byte 0; at byte 1660
+	failed to serialize the rest of the fields in GpuExecutableProto split proto (all fields except asm_text, binary, dnn_compiled_graphs, and constants)
+  warnings.warn(
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.49GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py:833: UserWarning: Error writing persistent compilation cache entry for 'jit_q': JaxRuntimeError: RESOURCE_EXHAUSTED: Failed to serialize message of type xla.gpu.GpuExecutableProto because its size must be smaller than 2GiB: 2691240903; at byte 0; at uncompressed byte 0; at byte 1576
+	failed to serialize the rest of the fields in GpuExecutableProto split proto (all fields except asm_text, binary, dnn_compiled_graphs, and constants)
+  warnings.warn(
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.04GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py:833: UserWarning: Error writing persistent compilation cache entry for 'jit_q': JaxRuntimeError: RESOURCE_EXHAUSTED: Failed to serialize message of type xla.gpu.GpuExecutableProto because its size must be smaller than 2GiB: 2243000006; at byte 0; at uncompressed byte 0; at byte 1669
+	failed to serialize the rest of the fields in GpuExecutableProto split proto (all fields except asm_text, binary, dnn_compiled_graphs, and constants)
+  warnings.warn(
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.05GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py:833: UserWarning: Error writing persistent compilation cache entry for 'jit_q': JaxRuntimeError: RESOURCE_EXHAUSTED: Failed to serialize message of type xla.gpu.GpuExecutableProto because its size must be smaller than 2GiB: 2247726458; at byte 0; at uncompressed byte 0; at byte 1660
+	failed to serialize the rest of the fields in GpuExecutableProto split proto (all fields except asm_text, binary, dnn_compiled_graphs, and constants)
+  warnings.warn(
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.06GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py:833: UserWarning: Error writing persistent compilation cache entry for 'jit_q': JaxRuntimeError: RESOURCE_EXHAUSTED: Failed to serialize message of type xla.gpu.GpuExecutableProto because its size must be smaller than 2GiB: 2257176894; at byte 0; at uncompressed byte 0; at byte 1674
+	failed to serialize the rest of the fields in GpuExecutableProto split proto (all fields except asm_text, binary, dnn_compiled_graphs, and constants)
+  warnings.warn(
+07:50:53 pod/ecsw ladder rows 338
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py:833: UserWarning: Error writing persistent compilation cache entry for 'jit_q': JaxRuntimeError: RESOURCE_EXHAUSTED: Failed to serialize message of type xla.gpu.GpuExecutableProto because its size must be smaller than 2GiB: 2564263537; at byte 0; at uncompressed byte 0; at byte 1600
+	failed to serialize the rest of the fields in GpuExecutableProto split proto (all fields except asm_text, binary, dnn_compiled_graphs, and constants)
+  warnings.warn(
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/compiler.py:833: UserWarning: Error writing persistent compilation cache entry for 'jit_q': JaxRuntimeError: RESOURCE_EXHAUSTED: Failed to serialize message of type xla.gpu.GpuExecutableProto because its size must be smaller than 2GiB: 2564263538; at byte 0; at uncompressed byte 0; at byte 1600
+	failed to serialize the rest of the fields in GpuExecutableProto split proto (all fields except asm_text, binary, dnn_compiled_graphs, and constants)
+  warnings.warn(
+08:53:14 trans ladder rows 419
+10:51:15 bank ladder rows 609
+10:51:15 stage ladder: 21062s

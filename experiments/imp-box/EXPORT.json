@@ -1,0 +1,732 @@
+{
+ "lane": "imp-box",
+ "stage": "checkpoint",
+ "cells": {
+  "W40_A1": {
+   "N_ref": 128,
+   "U": 6.9079087148610305e-09,
+   "eligible": {
+    "dev": "8 of 8",
+    "val": "32 of 32"
+   },
+   "training_qualified": {
+    "train": true,
+    "train_c": true
+   },
+   "entries": {
+    "podg|0.01|median": {
+     "status": "finalist",
+     "S": 0.914339255733503,
+     "arm_key": "podg|r64|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "ecsw|0.01|median": {
+     "status": "finalist",
+     "S": 0.8292147548869293,
+     "arm_key": "ecsw|r64|k8|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "trans|0.01|median": {
+     "status": "arm-censored",
+     "S": null,
+     "arm_key": null,
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": null,
+     "excluded": null
+    },
+    "bank_lspg|0.01|median": {
+     "status": "finalist",
+     "S": 0.061511898643437805,
+     "arm_key": "bank|r64|qT12|lspg_cnr|nt40",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "bank_e4|0.01|median": {
+     "status": "finalist",
+     "S": 0.918019505440435,
+     "arm_key": "bank|r64|qT12|gal_etdrk4|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "podg|0.01|worst": {
+     "status": "finalist",
+     "S": 0.7201353899801846,
+     "arm_key": "podg|r128|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "ecsw|0.01|worst": {
+     "status": "finalist",
+     "S": 0.7331706608209434,
+     "arm_key": "ecsw|r128|k4|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "trans|0.01|worst": {
+     "status": "arm-censored",
+     "S": null,
+     "arm_key": null,
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": null,
+     "excluded": null
+    },
+    "bank_lspg|0.01|worst": {
+     "status": "finalist",
+     "S": 0.04350653519466641,
+     "arm_key": "bank|r96|qT12|lspg_cnr|nt40",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "bank_e4|0.01|worst": {
+     "status": "finalist",
+     "S": 0.8065127695162846,
+     "arm_key": "bank|r96|qT12|gal_etdrk4|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "podg|0.03|median": {
+     "status": "finalist",
+     "S": 0.9267180469797662,
+     "arm_key": "podg|r48|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "ecsw|0.03|median": {
+     "status": "finalist",
+     "S": 0.850266182518681,
+     "arm_key": "ecsw|r48|k8|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "trans|0.03|median": {
+     "status": "finalist",
+     "S": 0.9894202747974039,
+     "arm_key": "trans|r16|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "bank_lspg|0.03|median": {
+     "status": "finalist",
+     "S": 0.15175399879117346,
+     "arm_key": "bank|r32|qT12|lspg_cnr|nt20",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "bank_e4|0.03|median": {
+     "status": "finalist",
+     "S": 1.0385416273537693,
+     "arm_key": "bank|r24|qT12|gal_etdrk4|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "podg|0.03|worst": {
+     "status": "finalist",
+     "S": 0.8014132437766619,
+     "arm_key": "podg|r96|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "ecsw|0.03|worst": {
+     "status": "finalist",
+     "S": 0.7639358693760228,
+     "arm_key": "ecsw|r96|k8|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "trans|0.03|worst": {
+     "status": "arm-censored",
+     "S": null,
+     "arm_key": null,
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": null,
+     "excluded": null
+    },
+    "bank_lspg|0.03|worst": {
+     "status": "finalist",
+     "S": 0.10806996494369558,
+     "arm_key": "bank|r64|qT12|lspg_cnr|nt20",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "bank_e4|0.03|worst": {
+     "status": "finalist",
+     "S": 0.918019505440435,
+     "arm_key": "bank|r64|qT12|gal_etdrk4|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "podg|0.1|median": {
+     "status": "finalist",
+     "S": 1.0940959074396717,
+     "arm_key": "podg|r16|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "ecsw|0.1|median": {
+     "status": "finalist",
+     "S": 0.9884807504224598,
+     "arm_key": "ecsw|r32|k8|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "trans|0.1|median": {
+     "status": "finalist",
+     "S": 0.9894202747974039,
+     "arm_key": "trans|r16|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "bank_lspg|0.1|median": {
+     "status": "finalist",
+     "S": 0.31140608711879425,
+     "arm_key": "bank|r16|qT12|lspg_cnr|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "bank_e4|0.1|median": {
+     "status": "finalist",
+     "S": 1.1316722633063332,
+     "arm_key": "bank|r16|qT12|gal_etdrk4|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N10|dense|nt5",
+     "excluded": []
+    },
+    "podg|0.1|worst": {
+     "status": "finalist",
+     "S": 1.0255711248725248,
+     "arm_key": "podg|r32|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "ecsw|0.1|worst": {
+     "status": "finalist",
+     "S": 0.9884807504224598,
+     "arm_key": "ecsw|r32|k8|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "trans|0.1|worst": {
+     "status": "finalist",
+     "S": 0.9894202747974039,
+     "arm_key": "trans|r16|qT12|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "bank_lspg|0.1|worst": {
+     "status": "finalist",
+     "S": 0.28467088925412665,
+     "arm_key": "bank|r24|qT12|lspg_cnr|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    },
+    "bank_e4|0.1|worst": {
+     "status": "finalist",
+     "S": 1.0385416273537693,
+     "arm_key": "bank|r24|qT12|gal_etdrk4|nt10",
+     "controls_accepted": true,
+     "fom_status": {
+      "spec": "finalist",
+      "specad": "finalist"
+     },
+     "qualification": "PROVISIONAL: conditional spectral references (lane deviation, A2.2); upper bound on our speed-up vs the tested FOM ladder; val32 selection, eligible subset",
+     "competitor_key": "spec|N8|dense|nt5",
+     "excluded": []
+    }
+   },
+   "bank_rx": {
+    "0.01|median": {
+     "fom_key": "spec|N10|dense|nt5",
+     "N": 10,
+     "t_F": 5.3666066378355026e-05,
+     "comparator_rule": "smallest val[0:4] rescreen time (A5.4)",
+     "fom_selection": {
+      "spec": {
+       "status": "finalist",
+       "boundary_labels": []
+      },
+      "specad": {
+       "status": "finalist",
+       "boundary_labels": []
+      }
+     },
+     "r_x": 32,
+     "form": "tensor-gal",
+     "t_b": 5.316920578479767e-05,
+     "floor": 0.017146663582233906,
+     "verdict": "above",
+     "query": {
+      "t_F": 0.0005498849786818027,
+      "r_x": 16,
+      "row": "bank|r16|qT12|gal_etdrk4|nt10",
+      "note": "validity only (stats_valid); numerical qualification not required (A2.7)"
+     }
+    },
+    "0.01|worst": {
+     "fom_key": "spec|N10|dense|nt5",
+     "N": 10,
+     "t_F": 5.3499359637498856e-05,
+     "comparator_rule": "smallest val[0:4] rescreen time (A5.4)",
+     "fom_selection": {
+      "spec": {
+       "status": "finalist",
+       "boundary_labels": []
+      },
+      "specad": {
+       "status": "finalist",
+       "boundary_labels": []
+      }
+     },
+     "r_x": 32,
+     "form": "tensor-gal",
+     "t_b": 5.316920578479767e-05,
+     "floor": 0.05091025739652748,
+     "verdict": "above",
+     "query": {
+      "t_F": 0.0005498849786818027,
+      "r_x": 16,
+      "row": "bank|r16|qT12|gal_etdrk4|nt10",
+      "note": "validity only (stats_valid); numerical qualification not required (A2.7)"
+     }
+    },
+    "0.03|median": {
+     "fom_key": "spec|N8|dense|nt5",
+     "N": 8,
+     "t_F": 5.353381857275963e-05,
+     "comparator_rule": "smallest val[0:4] rescreen time (A5.4)",
+     "fom_selection": {
+      "spec": {
+       "status": "finalist",
+       "boundary_labels": []
+      },
+      "specad": {
+       "status": "finalist",
+       "boundary_labels": []
+      }
+     },
+     "r_x": 32,
+     "form": "tensor-gal",
+     "t_b": 5.316920578479767e-05,
+     "floor": 0.017146663582233906,
+     "verdict": "below",
+     "query": {
+      "t_F": 0.0005275974981486797,
+      "r_x": 16,
+      "row": "bank|r16|qT12|gal_etdrk4|nt10",
+      "note": "validity only (stats_valid); numerical qualification not required (A2.7)"
+     }
+    },
+    "0.03|worst": {
+     "fom_key": "spec|N10|dense|nt5",
+     "N": 10,
+     "t_F": 5.275337025523186e-05,
+     "comparator_rule": "smallest val[0:4] rescreen time (A5.4)",
+     "fom_selection": {
+      "spec": {
+       "status": "finalist",
+       "boundary_labels": []
+      },
+      "specad": {
+       "status": "finalist",
+       "boundary_labels": []
+      }
+     },
+     "r_x": null,
+     "verdict": "no affordable tested rank",
+     "query": {
+      "t_F": 0.0005498849786818027,
+      "r_x": 16,
+      "row": "bank|r16|qT12|gal_etdrk4|nt10",
+      "note": "validity only (stats_valid); numerical qualification not required (A2.7)"
+     }
+    },
+    "0.1|median": {
+     "fom_key": "spec|N8|dense|nt5",
+     "N": 8,
+     "t_F": 5.359062924981117e-05,
+     "comparator_rule": "smallest val[0:4] rescreen time (A5.4)",
+     "fom_selection": {
+      "spec": {
+       "status": "finalist",
+       "boundary_labels": []
+      },
+      "specad": {
+       "status": "finalist",
+       "boundary_labels": []
+      }
+     },
+     "r_x": 32,
+     "form": "tensor-gal",
+     "t_b": 5.316920578479767e-05,
+     "floor": 0.017146663582233906,
+     "verdict": "below",
+     "query": {
+      "t_F": 0.0005275974981486797,
+      "r_x": 16,
+      "row": "bank|r16|qT12|gal_etdrk4|nt10",
+      "note": "validity only (stats_valid); numerical qualification not required (A2.7)"
+     }
+    },
+    "0.1|worst": {
+     "fom_key": "spec|N8|dense|nt5",
+     "N": 8,
+     "t_F": 5.289632827043533e-05,
+     "comparator_rule": "smallest val[0:4] rescreen time (A5.4)",
+     "fom_selection": {
+      "spec": {
+       "status": "finalist",
+       "boundary_labels": []
+      },
+      "specad": {
+       "status": "finalist",
+       "boundary_labels": []
+      }
+     },
+     "r_x": null,
+     "verdict": "no affordable tested rank",
+     "query": {
+      "t_F": 0.0005275974981486797,
+      "r_x": 16,
+      "row": "bank|r16|qT12|gal_etdrk4|nt10",
+      "note": "validity only (stats_valid); numerical qualification not required (A2.7)"
+     }
+    }
+   },
+   "stage_hours": {
+    "ref": 0.02005599583628484,
+    "data": 0.011445853688702401,
+    "pod": 0.010955006329394463,
+    "bank": 0.28520544634200634,
+    "ladder": 1.8210398187286532,
+    "time": 1.0332354402635247,
+    "controls": 0.10916416315258377
+   },
+   "host_peak_GiB": 17.04265594482422,
+   "device_peak_GiB": 16.804481506347656
+  }
+ },
+ "sources": {
+  "W40_A1": "runs/cells/W40_A1/out/cell"
+ },
+ "qualification": "all errors against conditional spectral references (lane deviation, DESIGN A2.2); every S is an upper bound vs the tested FOM ladder; registered widths/targets/thresholds are design values",
+ "stop_rule": {
+  "speed": "NOT FIRED",
+  "scoped": "NOT FIRED",
+  "bank": "NOT FIRED",
+  "max_S": 1.1316722633063332,
+  "n_match": 27,
+  "missing": [
+   "('bank_e4', 'W40_A2', 0.01, 'median')",
+   "('bank_e4', 'W40_A2', 0.01, 'worst')",
+   "('bank_e4', 'W40_A2', 0.03, 'median')",
+   "('bank_e4', 'W40_A2', 0.03, 'worst')",
+   "('bank_e4', 'W40_A2', 0.1, 'median')",
+   "('bank_e4', 'W40_A2', 0.1, 'worst')",
+   "('bank_e4', 'W40_A3', 0.01, 'median')",
+   "('bank_e4', 'W40_A3', 0.01, 'worst')",
+   "('bank_e4', 'W40_A3', 0.03, 'median')",
+   "('bank_e4', 'W40_A3', 0.03, 'worst')",
+   "('bank_e4', 'W40_A3', 0.1, 'median')",
+   "('bank_e4', 'W40_A3', 0.1, 'worst')",
+   "('bank_e4', 'W40_A4', 0.01, 'median')",
+   "('bank_e4', 'W40_A4', 0.01, 'worst')",
+   "('bank_e4', 'W40_A4', 0.03, 'median')",
+   "('bank_e4', 'W40_A4', 0.03, 'worst')",
+   "('bank_e4', 'W40_A4', 0.1, 'median')",
+   "('bank_e4', 'W40_A4', 0.1, 'worst')",
+   "('bank_lspg', 'W40_A2', 0.01, 'median')",
+   "('bank_lspg', 'W40_A2', 0.01, 'worst')",
+   "('bank_lspg', 'W40_A2', 0.03, 'median')",
+   "('bank_lspg', 'W40_A2', 0.03, 'worst')",
+   "('bank_lspg', 'W40_A2', 0.1, 'median')",
+   "('bank_lspg', 'W40_A2', 0.1, 'worst')",
+   "('bank_lspg', 'W40_A3', 0.01, 'median')",
+   "('bank_lspg', 'W40_A3', 0.01, 'worst')",
+   "('bank_lspg', 'W40_A3', 0.03, 'median')",
+   "('bank_lspg', 'W40_A3', 0.03, 'worst')",
+   "('bank_lspg', 'W40_A3', 0.1, 'median')",
+   "('bank_lspg', 'W40_A3', 0.1, 'worst')",
+   "('bank_lspg', 'W40_A4', 0.01, 'median')",
+   "('bank_lspg', 'W40_A4', 0.01, 'worst')",
+   "('bank_lspg', 'W40_A4', 0.03, 'median')",
+   "('bank_lspg', 'W40_A4', 0.03, 'worst')",
+   "('bank_lspg', 'W40_A4', 0.1, 'median')",
+   "('bank_lspg', 'W40_A4', 0.1, 'worst')",
+   "('ecsw', 'W28_A1', 0.01, 'median')",
+   "('ecsw', 'W28_A1', 0.01, 'worst')",
+   "('ecsw', 'W28_A1', 0.03, 'median')",
+   "('ecsw', 'W28_A1', 0.03, 'worst')",
+   "('ecsw', 'W28_A1', 0.1, 'median')",
+   "('ecsw', 'W28_A1', 0.1, 'worst')",
+   "('ecsw', 'W28_A2', 0.01, 'median')",
+   "('ecsw', 'W28_A2', 0.01, 'worst')",
+   "('ecsw', 'W28_A2', 0.03, 'median')",
+   "('ecsw', 'W28_A2', 0.03, 'worst')",
+   "('ecsw', 'W28_A2', 0.1, 'median')",
+   "('ecsw', 'W28_A2', 0.1, 'worst')",
+   "('ecsw', 'W28_A3', 0.01, 'median')",
+   "('ecsw', 'W28_A3', 0.01, 'worst')",
+   "('ecsw', 'W28_A3', 0.03, 'median')",
+   "('ecsw', 'W28_A3', 0.03, 'worst')",
+   "('ecsw', 'W28_A3', 0.1, 'median')",
+   "('ecsw', 'W28_A3', 0.1, 'worst')",
+   "('ecsw', 'W28_A4', 0.01, 'median')",
+   "('ecsw', 'W28_A4', 0.01, 'worst')",
+   "('ecsw', 'W28_A4', 0.03, 'median')",
+   "('ecsw', 'W28_A4', 0.03, 'worst')",
+   "('ecsw', 'W28_A4', 0.1, 'median')",
+   "('ecsw', 'W28_A4', 0.1, 'worst')",
+   "('ecsw', 'W40_A2', 0.01, 'median')",
+   "('ecsw', 'W40_A2', 0.01, 'worst')",
+   "('ecsw', 'W40_A2', 0.03, 'median')",
+   "('ecsw', 'W40_A2', 0.03, 'worst')",
+   "('ecsw', 'W40_A2', 0.1, 'median')",
+   "('ecsw', 'W40_A2', 0.1, 'worst')",
+   "('ecsw', 'W40_A3', 0.01, 'median')",
+   "('ecsw', 'W40_A3', 0.01, 'worst')",
+   "('ecsw', 'W40_A3', 0.03, 'median')",
+   "('ecsw', 'W40_A3', 0.03, 'worst')",
+   "('ecsw', 'W40_A3', 0.1, 'median')",
+   "('ecsw', 'W40_A3', 0.1, 'worst')",
+   "('ecsw', 'W40_A4', 0.01, 'median')",
+   "('ecsw', 'W40_A4', 0.01, 'worst')",
+   "('ecsw', 'W40_A4', 0.03, 'median')",
+   "('ecsw', 'W40_A4', 0.03, 'worst')",
+   "('ecsw', 'W40_A4', 0.1, 'median')",
+   "('ecsw', 'W40_A4', 0.1, 'worst')",
+   "('podg', 'W28_A1', 0.01, 'median')",
+   "('podg', 'W28_A1', 0.01, 'worst')",
+   "('podg', 'W28_A1', 0.03, 'median')",
+   "('podg', 'W28_A1', 0.03, 'worst')",
+   "('podg', 'W28_A1', 0.1, 'median')",
+   "('podg', 'W28_A1', 0.1, 'worst')",
+   "('podg', 'W28_A2', 0.01, 'median')",
+   "('podg', 'W28_A2', 0.01, 'worst')",
+   "('podg', 'W28_A2', 0.03, 'median')",
+   "('podg', 'W28_A2', 0.03, 'worst')",
+   "('podg', 'W28_A2', 0.1, 'median')",
+   "('podg', 'W28_A2', 0.1, 'worst')",
+   "('podg', 'W28_A3', 0.01, 'median')",
+   "('podg', 'W28_A3', 0.01, 'worst')",
+   "('podg', 'W28_A3', 0.03, 'median')",
+   "('podg', 'W28_A3', 0.03, 'worst')",
+   "('podg', 'W28_A3', 0.1, 'median')",
+   "('podg', 'W28_A3', 0.1, 'worst')",
+   "('podg', 'W28_A4', 0.01, 'median')",
+   "('podg', 'W28_A4', 0.01, 'worst')",
+   "('podg', 'W28_A4', 0.03, 'median')",
+   "('podg', 'W28_A4', 0.03, 'worst')",
+   "('podg', 'W28_A4', 0.1, 'median')",
+   "('podg', 'W28_A4', 0.1, 'worst')",
+   "('podg', 'W40_A2', 0.01, 'median')",
+   "('podg', 'W40_A2', 0.01, 'worst')",
+   "('podg', 'W40_A2', 0.03, 'median')",
+   "('podg', 'W40_A2', 0.03, 'worst')",
+   "('podg', 'W40_A2', 0.1, 'median')",
+   "('podg', 'W40_A2', 0.1, 'worst')",
+   "('podg', 'W40_A3', 0.01, 'median')",
+   "('podg', 'W40_A3', 0.01, 'worst')",
+   "('podg', 'W40_A3', 0.03, 'median')",
+   "('podg', 'W40_A3', 0.03, 'worst')",
+   "('podg', 'W40_A3', 0.1, 'median')",
+   "('podg', 'W40_A3', 0.1, 'worst')",
+   "('podg', 'W40_A4', 0.01, 'median')",
+   "('podg', 'W40_A4', 0.01, 'worst')",
+   "('podg', 'W40_A4', 0.03, 'median')",
+   "('podg', 'W40_A4', 0.03, 'worst')",
+   "('podg', 'W40_A4', 0.1, 'median')",
+   "('podg', 'W40_A4', 0.1, 'worst')",
+   "('trans', 'W40_A2', 0.01, 'median')",
+   "('trans', 'W40_A2', 0.01, 'worst')",
+   "('trans', 'W40_A2', 0.03, 'median')",
+   "('trans', 'W40_A2', 0.03, 'worst')",
+   "('trans', 'W40_A2', 0.1, 'median')",
+   "('trans', 'W40_A2', 0.1, 'worst')",
+   "('trans', 'W40_A3', 0.01, 'median')",
+   "('trans', 'W40_A3', 0.01, 'worst')",
+   "('trans', 'W40_A3', 0.03, 'median')",
+   "('trans', 'W40_A3', 0.03, 'worst')",
+   "('trans', 'W40_A3', 0.1, 'median')",
+   "('trans', 'W40_A3', 0.1, 'worst')",
+   "('trans', 'W40_A4', 0.01, 'median')",
+   "('trans', 'W40_A4', 0.01, 'worst')",
+   "('trans', 'W40_A4', 0.03, 'median')",
+   "('trans', 'W40_A4', 0.03, 'worst')",
+   "('trans', 'W40_A4', 0.1, 'median')",
+   "('trans', 'W40_A4', 0.1, 'worst')"
+  ],
+  "deferred": [],
+  "source": "runs/stoprule.json"
+ }
+}

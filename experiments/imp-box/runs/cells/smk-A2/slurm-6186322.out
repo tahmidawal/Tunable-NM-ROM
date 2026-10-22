@@ -1,0 +1,34 @@
+NVIDIA H200, 143771 MiB
+GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, NVIDIA H200
+jax_backend=gpu
+10.235.106.35:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+=== ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A2/out/cell --stages ref
+=== ref rc=0 109s
+03:02:42 stage ref: start
+03:03:31 ref dev N192 n320: d34 max 2.99e-10 d12 max 2.02e-09 dt max 3.74e-09 dp max 5.29e-11 eligible 8/8 [49s]
+03:04:18 ref val N192 n320: d34 max 1.76e-10 d12 max 1.19e-09 dt max 5.25e-09 dp max 3.02e-11 eligible 32/32 [47s]
+03:04:28 ref U 1.0813079459566217e-08 scorable True G7 3.662688411021314e-14 MF-IC 19.16004388159078 MF-REF True MF-PAD True
+03:04:28 stage ref: 106s
+=== data: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A2/out/cell --stages data
+=== data rc=0 66s
+03:04:31 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': 'd149f94e0', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+03:04:31 stage data: start
+03:05:02 data train: (96, 21, 191, 191) 30s gate True (space 3.9e-11, time 5.0e-08)
+03:05:30 data train_c: (96, 21, 191, 191) 27s gate True (space 1.1e-12, time 5.0e-08)
+03:05:35 stage data: 63s
+=== pod: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A2/out/cell --stages pod
+=== pod rc=0 43s
+03:05:37 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': 'd149f94e0', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+03:05:37 stage pod: start
+03:06:01 pod pod: R 512 k_q 16 M_dev 1.1e-10 K_rel 3.4e-11 [23s]
+03:06:15 pod podc: R 57 k_q 32 M_dev 6.2e-15 K_rel 6.6e-16 [13s]
+03:06:18 stage pod: 40s
+=== bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A2/out/cell --stages bank
+=== bank rc=0 1011s
+03:17:34   bank[B] step 290000/300000 rel-MSE 3.662e-06 [667s]
+03:20:13   bank[B] step 295000/300000 rel-MSE 3.625e-06 [827s]
+03:22:46   bank[B] step 300000/300000 rel-MSE 3.585e-06 [980s]
+03:23:09 bank 984.084486246109 recon 0.0020001600365072464 0.006985687902008074 R_eff 273 k_q 16
+03:23:09 stage bank: 1008s
+=== ladder: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A2/out/cell --stages ladder
+[2026-10-22T03:35:39.868] error: *** JOB 6186322 ON pax009 CANCELLED AT 2026-10-22T03:35:39 DUE to SIGNAL Terminated ***

@@ -1,0 +1,27 @@
+NVIDIA H200, 143771 MiB
+GPU-4a83be81-02ff-dbdc-5bd9-cc82c722caa3, NVIDIA H200
+jax_backend=gpu
+10.235.106.26:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+=== ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A4 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A4/out/cell --stages ref
+=== ref rc=0 444s
+03:02:21 stage ref: start
+03:04:54 ref dev N768 n1280: d34 max 1.46e-09 d12 max 7.02e-07 dt max 4.36e-08 dp max 1.20e-15 eligible 8/8 [153s]
+03:09:31 ref val N768 n1280: d34 max 5.88e-09 d12 max 1.68e-06 dt max 5.77e-08 dp max 1.31e-15 eligible 32/32 [276s]
+03:09:43 ref U 1.2724314769927443e-07 scorable True G7 7.07023456609949e-14 MF-IC 76.03798519722163 MF-REF True MF-PAD True
+03:09:43 stage ref: 442s
+=== data: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A4 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A4/out/cell --stages data
+=== data rc=0 461s
+03:09:45 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax010', 'commit': 'd149f94e0', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+03:09:45 stage data: start
+03:13:29 data train: (96, 21, 767, 767) 211s gate True (space 9.0e-09, time 3.8e-08)
+03:17:08 data train_c: (96, 21, 767, 767) 206s gate True (space 9.1e-09, time 3.8e-08)
+03:17:24 stage data: 459s
+=== pod: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A4 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A4/out/cell --stages pod
+=== pod rc=0 158s
+03:17:27 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax010', 'commit': 'd149f94e0', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+03:17:27 stage pod: start
+03:19:15 pod pod: R 512 k_q 64 M_dev 4.4e-13 K_rel 1.8e-14 [105s]
+03:19:59 pod podc: R 260 k_q 64 M_dev 1.2e-09 K_rel 3.0e-10 [43s]
+03:20:02 stage pod: 155s
+=== bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A4 --out /cluster/tufts/paralab/tawal01/imp-box/smk-A4/out/cell --stages bank
+[2026-10-22T03:35:39.887] error: *** JOB 6186325 ON pax010 CANCELLED AT 2026-10-22T03:35:39 DUE to SIGNAL Terminated ***

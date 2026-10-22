@@ -1,0 +1,47 @@
+{
+ "source_branch": "exp/2026-10-21-imp-geometry",
+ "source_commit": "620942e86",
+ "source_dir": "experiments/imp-geometry",
+ "files": {
+  "vendor/nnls.py": {
+   "sha256": "c0c5792e7e0eb9d5e36e3c4d7ab848e9ec9631b6639560cf78ade2a59f6ac498",
+   "modified": false
+  },
+  "vendor/pscore.py": {
+   "sha256": "83d8a004c4914de456c02fef31a74050ebe90bfb74cc9e6ed2fa693730449548",
+   "modified": false
+  },
+  "vendor/sep_common.py": {
+   "sha256": "1f1c27961967189a9c58d50e855ab245e668cf309baf500d8b4b120d0313b97f",
+   "modified": false
+  },
+  "rom.py": {
+   "sha256": "f940a9293db3660d8b1dd93f0c90cbdef0c24ffb81a310c8d4b5acadd6f116fe",
+   "modified": true,
+   "changes": "fault-injection hooks (slice_scale, perturb_coef, nan_stage at global step 1); ETDRK4 block loop uses the global step index (same arithmetic); precontracted-tensor cache keyed by space identity, entries hold the space (clear_cache); default results unchanged"
+  },
+  "bank.py": {
+   "sha256": "4977d9fa7227983c92d7f7f8be4b7ebc9f7bff12fd1dfc79540f04bf5230cb20",
+   "modified": false
+  },
+  "score.py": {
+   "sha256": "1430d5504aa7ddb2b8ff9a152ca7f397d718126da2836e8ddd75fee5753c6c44",
+   "modified": false
+  },
+  "ladder.py": {
+   "sha256": "5a2b9c188ddbc411359e46f2e73bf74b4084efe35d626e84e856cd66224e4b0c",
+   "modified": true,
+   "changes": "stats_valid: imp-box families spec/specad (spec.fom_valid) and trans (as podg); step_ladder: hopeless-rung prune (DESIGN A5); run(): screen exceptions recorded as screen_error"
+  },
+  "finalize.py": {
+   "sha256": "4502a7889604034c504e91cd640bc046af86fff248b6c07862da34c25ab7e130",
+   "modified": true,
+   "changes": "q1: LSPG tight/tighter anchors run with cert=True and must pass the certificate (A2.6); q1 also accepts fam trans"
+  },
+  "pod.py": {
+   "sha256": "ca8820ffc913299601f618bf7d8643bf63ee629e48cb5049d639f0ac17dac80c",
+   "modified": false
+  }
+ },
+ "note": "byte-identical copies at copy time; any later edit sets modified=true and is listed in DESIGN amendments"
+}

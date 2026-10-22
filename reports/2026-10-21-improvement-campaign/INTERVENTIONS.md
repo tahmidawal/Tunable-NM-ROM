@@ -37,3 +37,22 @@ Every coordinator intervention (resume, kill, re-run) on a watchdog notification
 - **Coordinator ruling on the post-hoc A10 cross-check rule:** accepted as a *post-hoc label carried forward* (like E0 A10), adopted before any solver result; the final report states both outcomes (A10: gate fails; registered rule: UNRESOLVED). Either way no ROM is trained, so the conclusion does not depend on it.
 - Wave 1 closed (E5, E6, E7, E3 done; E8 Phase A done). Measured wave-1 GPU-h ≈ 8.3 vs ≈ 30 planned.
 - 05:40 UTC: launched imp-box (E1) early in wave 3 (independent of E2/E8 verdicts; stop rule evaluated on wide cells first, coordinator checkpoint there). Lab-log + page update for wave 1.
+## 2026-10-22 ~07:40 UTC — imp-fronts Phase B done: arm (b) STOPS; E10 activated
+- Arm (b) coverage retrain: FC1 median 5.81 % vs K1 8.12 % (1.40×, bar 2×) and 0/8 FC1 cases numerically qualified → stop rule (b) fires. In-range guard passed. E9 descriptive only (s > 112.77 flags 79 % of 24 test cases; below the 30/20 minimum). 6.327 / 15 GPU-h.
+- **Coordinator decision:** release arm (c) boundary-compatible bank within E8's remaining 8.67 GPU-h (amendment + audit first); release E10 (step refinement, state-triggered quadrature escalation; single-change vs K1) with its own 10 GPU-h cap. The prompt makes E10 conditional on E8 falling short, which it did.
+- 12:01 UTC: imp-geometry job 6175736 (L_wide_S1) ended TIMEOUT at 11.5 h. Lane set active and resumed to collect partial outputs and re-certify.
+## 2026-10-22 — imp-fronts done: Problem 3 not fixed
+- Arm (c) boundary-compatible bank STOPS (rule gauss128 = 16 384 nodes vs bar ≤ 12 800; tail 1.48× vs 3×; guard passes). E10-s (step to 1/8) STOPS (FC1 0/8 qualified, median 8.29 % vs bar 4.06 %). E10-q STOPS without a job (its trigger never fires: max ρ 0.039 over 17 600 states → quadrature is not binding). E8 10.545 / 15, E10 0.199 / 10 GPU-h.
+- **Deviation:** SM-c was submitted although the lane's own `resources.admit` refused it (budget arithmetic still held); the results audit marks it WRONG as a procedure breach; disclosed. E10 reused Phase B test cases (not test-once for E10).
+- **Coordinator decision:** no further steep-front design is released in this campaign (the lane's suggested next step — an embedded adaptive integrator or a shift/local-basis bank — is not a single change and is recorded as an open item for the paper / a later campaign).
+## 2026-10-22 ~14:00 UTC — imp-geometry: first cell TIMEOUT diagnosed; step 2 authorized
+- L_wide_S1 overran in the ladder stage (10.5 h, unfinished; SEM 4.7 h). Fixes A9 (registered reductions, tensor-form bank ladder, resumable ladder). Spent 12.69 / 62. Re-certified: full wide panel 97.6, minus S2 hole 72.5, one wide cell per geometry 24.9 GPU-h (with 1.5 headroom).
+- **Coordinator decision:** authorize step 2 = resume L_wide_S1 + H_wide_S1 (≤ 30 GPU-h this step), cap unchanged. Win/withdraw rule unchanged. Pre-registered conditional (amendment before S1 selection data): if S ≥ 2 vs the best competitor at some target on ≥ 1 geometry at S1, raise the cap from the E4 reserve to fund L_wide_S2 + box controls; if S < 2 everywhere at S1, stop and report "not supported at S1; S2 untested".
+- 14:40 UTC: imp-geometry agent ended its turn with step-2 jobs 6192623/6192666 running (its waiter hit the 2 h tool limit). Lane parked again; coord-monitor watches both jobs.
+## 2026-10-22 ~16:40 UTC — imp-box (E1) checkpoint: stop rules not fired; continue
+- W40_A1: 21/27 matched comparisons S ≥ 0.5 (max 1.13; POD arms and bank-ETDRK4 0.7–1.1; bank LSPG 0.04–0.31) → SPEED-STOP cannot fire; BANK-STOP not fired. Provisional (val selection, results audit pending).
+- A11: a dense-matrix FOM (same discretisation) is faster than the FFT FOM at batch 1 on H200 and halves the ROM advantage (smoke S 1.6–2.3 → 0.7–1.1) — the fair competitor. A10: H200/JAX 0.10.2 gives non-finite FFT at N = 12 (correct on A100); excluded.
+- Coordinator: continue wide cells then narrow cells within 87 GPU-h; smk2-A4 cancelled at 14 h if uncertified. 9.09 GPU-h spent.
+- 17:15 UTC: watchdog flagged its own 22 h wd.sh loops as stale waiters; prompt now exempts wd.sh and coord-monitor.sh.
+- 18:29 UTC: imp-geometry L_wide_S1_r 6192623 COMPLETED; lane resumed to collect + test-once.
+- imp-geometry: L_wide_S1 scored incl. test-once (6202632): bank S = 0.015–0.21 vs best competitor (POD-Galerkin/POD+ECSW) on val, 0.013–0.09 test; S < 2 at every target on L. 25.16/62 GPU-h. Parked again on 6192666.

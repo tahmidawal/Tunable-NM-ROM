@@ -73,15 +73,20 @@
   {
    "lane": "imp-fronts",
    "experiments": "E8+E9+E10",
-   "status": "active",
+   "status": "done",
    "wave": 1,
    "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts",
    "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-fronts/experiments/imp-fronts/HEARTBEAT.json",
    "namespace": "/cluster/tufts/paralab/tawal01/imp-fronts",
    "branch": "exp/2026-10-21-imp-fronts",
    "job_cap": 2,
-   "gpu_hours_cap": 15,
-   "launched_utc": "2026-10-21T16:31:24Z"
+   "gpu_hours_cap": 25,
+   "launched_utc": "2026-10-21T16:31:24Z",
+   "gpu_hours_spent": 10.744,
+   "note": "Phase B arm (b) STOPPED; now arm (c) (E8 cap rest 8.67) + E10 arms (cap 10)",
+   "last_commit": "506dbd3a5",
+   "mirror": "12e983cba (behind; gh auth)",
+   "verdict": "NOT fixed: arms b, c, E10-s, E10-q all STOP; binding failure = time-step certification on steep states"
   },
   {
    "lane": "imp-geometry",
@@ -95,7 +100,7 @@
    "job_cap": 3,
    "gpu_hours_cap": 62,
    "launched_utc": "2026-10-21T16:31:24Z",
-   "note": "agent idle; coordinator monitors job 6175736 and resumes the lane when it ends"
+   "note": "agent idle; coordinator watches 6192623, 6192666 and resumes on each end"
   },
   {
    "lane": "imp-box",

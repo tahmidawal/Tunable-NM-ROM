@@ -14,3 +14,6 @@ its HEARTBEAT.json and last commits first.
 | imp-geometry (E2) | a4c7eaaf4c7697b94 | design mode; production on release |
 
 Watchdogs: detached `WD_CONTINUE=1 setsid nohup bash campaign/watchdog/wd.sh <i> <offset> 1500 96` (check `ps -eo pid,args | grep "[w]d.sh"`); alarms in `watchdog/ACTION-NEEDED.log`.
+| imp-box (E1) | ad17a93504184c2d7 | launched 2026-10-22 05:40 UTC; checkpoint after wide-family cells |
+
+Status 2026-10-22 05:40 UTC: done = imp-faststep, imp-hrcost, imp-multimesh, imp-varcoef; imp-fronts Phase B running; imp-geometry parked on job 6175736 (watched via watchdog/parked-jobs.txt by coord-monitor.sh).

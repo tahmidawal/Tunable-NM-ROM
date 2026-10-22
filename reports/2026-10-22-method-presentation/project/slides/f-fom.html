@@ -13,6 +13,6 @@
 <ul style="font-size:24px;line-height:1.35;color:#4A5568;display:flex;flex-direction:column;gap:10px"><li><b><span style="color:#1F6F8B">Measured:</span></b> a 1 % fit needs only a median 11 sine modes per axis (2D), 9 (3D)</li><li><b><span style="color:#1F6F8B">Measured:</span></b> each ROM unknown costs 1.07×10⁸ flops per step against 2.3×10³ per spectral mode</li><li><b><span style="color:#1F6F8B">Measured:</span></b> we take 50 implicit steps with ~2.1 Jacobians each; spectral takes 20 explicit ETDRK4 steps</li><li><b><span style="color:#1F6F8B">Measured:</span></b> our 4096² decode alone (14.3 ms) is longer than the whole spectral query</li><li><b><span style="color:#8A6A12">Derived:</span></b> to win 2× we’d need ~1000× compression over sines; we have 2–6×</li></ul>
 </div>
 </div>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">why-spectral report; final report §3.4 · 31</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">why-spectral report; final report §3.4 · 33</p>
 <aside>This is structural, not a tuning problem. Even with free evolution, decode caps the r = 384 speed-up near 0.8. A win needs a problem without a fast transform, or with a narrow family; the pilot hinted at 1.7–3× in a narrow family but with a POD stand-in, not our bank.</aside>
 </section>

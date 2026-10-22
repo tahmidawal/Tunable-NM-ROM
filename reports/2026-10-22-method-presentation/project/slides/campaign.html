@@ -8,6 +8,6 @@
 </div>
 <table style="font-size:25px;color:#14213D"><tr><th style="width:20%">Lane</th><th style="width:34%">Idea</th><th style="width:46%">Outcome</th></tr><tr><td>E5 fast step</td><td>cheaper steppers (Galerkin, ETDRK4)</td><td>14–24× faster evolve; worst 1.82–1.93 % vs 1.78 %</td></tr><tr><td>E6 cheap quadrature</td><td>bank-native tests; fitted weights</td><td>best qualified 1.07×; fitted weights fail check</td></tr><tr><td>E7 many meshes</td><td>one bank amortised over meshes</td><td>POD matches us 126/126 at 0.10–0.13× cost</td></tr><tr><td>E3 variable coeff.</td><td>harder PDE for the full solver</td><td>full solver stays cheap (gate 0.86, needs 2)</td></tr><tr><td>E8/E10 fronts</td><td>steep data, wall-safe bank, Δt/8</td><td>1.4× better (needs 2×); steps unconverged</td></tr><tr><td>E2 geometry</td><td>no fast transform on an L-shape</td><td>SEM and POD faster: S 0.015–0.21 (provisional)</td></tr><tr><td>E1 box sweep</td><td>narrow families in the box</td><td>running; bank + ETDRK4 S 0.81–1.38 (interim)</td></tr></table>
 
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Improvement campaign lane reports, 22 Oct · 35</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Improvement campaign lane reports, 22 Oct · 37</p>
 <aside>Every stop rule was pre-registered before results were read. E2 and E1 are still running and their numbers are not yet audited. S is our speed-up against the best competitor; above 1 means we are faster.</aside>
 </section>

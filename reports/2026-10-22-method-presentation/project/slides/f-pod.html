@@ -13,6 +13,6 @@
 <ul style="font-size:24px;line-height:1.35;color:#4A5568;display:flex;flex-direction:column;gap:10px"><li><b><span style="color:#1F6F8B">Measured:</span></b> per step 1.74 ms (ours) against 0.61 ms; our Jacobian kernel alone is 0.53 ms and runs twice</li><li><b><span style="color:#1F6F8B">Measured:</span></b> we use 33–43 quadrature points per unknown; ECSW uses 4–8</li><li><b><span style="color:#1F6F8B">Measured:</span></b> POD’s time barely moves with its point count: it sits on the GPU latency floor</li><li><b><span style="color:#C8641E">Hypothesis:</span></b> POD snapshots come from the target mesh with central differences; the bank learned from upwind 256² data</li></ul>
 </div>
 </div>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">hr-baselines; improvement-ideation §2.2 · 32</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">hr-baselines; improvement-ideation §2.2 · 34</p>
 <aside>Developmental, in-sample, unadjusted comparison. The two fixes this suggested (fewer Jacobians, fewer points) were tried in the improvement campaign and did not close the gap.</aside>
 </section>

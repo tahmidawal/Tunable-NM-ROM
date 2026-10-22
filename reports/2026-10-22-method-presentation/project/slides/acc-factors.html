@@ -8,6 +8,6 @@
 </div>
 <table style="font-size:28px;color:#14213D"><tr><th style="width:28%">Factor</th><th style="width:52%">Effect (2D, 1024², median / worst error)</th><th style="width:20%">Source</th></tr><tr><td>Time step and scheme</td><td>BE 0.98 % / 3.0 % against CN-R 0.20 % / 1.8 % at r = 384</td><td>P1</td></tr><tr><td>Bank width r</td><td>CN-R: r = 128 0.45 % → 256 0.21 % → 384 0.20 % → 512 0.20 %</td><td>P1</td></tr><tr><td>Steepness a/ν beyond training</td><td>in range 0.03 % best fit; steeper fronts 3.5 % and 9.9 %</td><td>regimes</td></tr><tr><td>Quadrature points m</td><td>must pass qualification, else the rollout drifts; past it, extra points change nothing</td><td>qualify</td></tr><tr><td>The mesh</td><td>no effect: 8 of 8 settings flat from 256² to 4096²</td><td>P1</td></tr></table>
 
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">final report §3 · 21</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">final report §3 · 23</p>
 <aside>The bank stops being the bottleneck around r = 384; past that, the time step dominates. Mesh has no effect.</aside>
 </section>

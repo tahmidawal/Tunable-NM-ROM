@@ -11,7 +11,7 @@ F=dict(quad2d=B+'5a45d65254b84a7dda451a013793f24b', mem3d=B+'a0f89463a6706a3cfed
  budget=B+'9995b5caf186ee6332f024a7377b6ca3', order=B+'7d770047426694545ace2b560b30c268', regimes=B+'a7c31457145b86ea55330524c7cbfccc',
  union=B+'34969ed4e26104fa830e31ddaee422cd', pod=B+'31e7f75087b82842a2f5a3c059f02494', heads=B+'0e232166420af711b63fa8f11df9140a',
  costmesh=B+'ed0543359adee3808726ee0017acda63', family=B+'c211e5272035e27b68096d069808345f', seeds=B+'4e4e4a17cebffda7ea6fb34d3e0cb0fe',
- longrun=B+'ca383406263021b285f711eb06a9bfde', h2q=B+'9ba3304b7b68dd9118bb0428a8adbb14')
+ longrun=B+'ca383406263021b285f711eb06a9bfde', h2q=B+'9ba3304b7b68dd9118bb0428a8adbb14', meshit=B+'7d54add23cbf07c8401d55f49010bd56')
 slides=[]; N=[0]
 def add(id,s): slides.append((id,s))
 def foot(src):
@@ -189,11 +189,25 @@ step("s4",4,"Solve the small nonlinear system","How do we find c?",
  ["Levenberg–Marquardt: Gauss–Newton with damping λ carried between steps","Warm start from a quadratic prediction of the previous steps","Typical work: about 2 Jacobian builds per step","In 3D, after 3 adaptive steps we run one fixed sweep per step"],
  "qcore.py:279–342; jcp-wide-bank DESIGN",
  "The Jacobian is exact and cheap because N is bilinear in the shapes. The per-step cost is roughly 2·m·M·r per Jacobian.",eqsize=32)
-step("s5",5,"March in time","Which time scheme, and how big a step?",
- ["BE: first order    CN-R: Crank–Nicolson after 2 BE start-up steps    BDF2: second order"],
- ["2D: Δt = 0.005, 50 steps to T = 0.25; 3D: Δt = 0.01, 25 steps","Measured order: BE 1.0, CN-R 1.74–1.96, Galerkin-CN 2.0","Time stepping is the largest error source in the deployed model (Part 3)"],
- "t2core.py; FR:168–178",
- "CN-R is the accurate setting. The two backward-Euler start-up steps damp the early transient but cost a little order.",eqsize=30)
+sch_rows=[["BE","1, −1, 0","1, 0","none","everything at the new time; very stable, damps errors","1.0"],
+ ["CN","1, −1, 0","½, ½","none","averages old and new F; can ring at a sharp start","–"],
+ ["<b>CN-R</b> (deployed)","1, −1, 0","½, ½","2 BE steps","CN after two damping BE steps","1.74–1.96"],
+ ["BDF2","3/2, −2, ½","1, 0","1 BE step","uses two past states; mainly 3D","–"],
+ ["TH06","1, −1, 0","0.6, 0.4","none","between BE and CN; diagnostic","–"]]
+th="".join(f'<th style="width:{w}%">{h}</th>' for h,w in zip(["Scheme","a₀, a₁, a₂","b₀, b₁","Start-up","What it does","Order"],[17,14,11,13,33,12]))
+tr="".join("<tr>"+"".join(f"<td>{c}</td>" for c in r)+"</tr>" for r in sch_rows)
+add("s5",f"""<section id="s5" data-transition="fade" style="{SEC}">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:{LIGHT};background:{TEAL};padding:10px 20px;border-radius:999px;white-space:nowrap">Step 5 of 6</p>
+<p style="font-size:32px;color:{SOFT}">Which time scheme, and how is it applied?</p>
+</div>
+<h2 style="font-family:{SERIF};font-size:60px;font-weight:600;line-height:1.1">One residual; each scheme only changes five weights</h2>
+{eqbox(["Rₙ(c) = A·(a₀c + a₁cₙ + a₂cₙ₋₁) + Δt·(b₀F(c) + b₁F(cₙ)),   F(c) = N(c) + νΛAc"],28)}
+<table style="font-size:24px;color:{INK}"><tr>{th}</tr>{tr}</table>
+<p style="font-size:26px;color:{SOFT}">Same Levenberg–Marquardt solve every step (minimise ‖D·Rₙ‖, D = 1/(a₀ + Δt·b₀·νΛ)). 2D: Δt 0.005, 50 steps; 3D: Δt 0.01, 25 steps.</p>
+{foot("jcp-combined t2core.py:6,36; final report §3 (order)")}
+<aside>The a-weights build the time derivative; the b-weights say where the right-hand side F is evaluated (new time b0, old time b1). Scheme sets accuracy: at r = 384, BE gives 0.98 % median / 3.0 % worst, CN-R 0.20 % / 1.8 %. It barely changes cost, because each step is still one small nonlinear solve of the same size (iterations per 50 steps: 51.5 to 54.3 for both schemes). CN-R's order is below 2 because of the two first-order start-up steps. GAL-CN (square Galerkin tests instead of least squares) reaches order 2.0 but is a diagnostic only.</aside>
+</section>""")
 step("s6",6,"Decode on whatever mesh you want","How do we get a field back?",
  ["u(x) = G(x)·c     for any set of points x"],
  ["The same c decodes to 256², 4096², or scattered points","At r = 384, 1024²: decode 0.95 ms of a 85 ms query; at 4096²: 13.8 ms of 97 ms","Decoding is the only part that grows with the mesh"],
@@ -202,6 +216,14 @@ step("s6",6,"Decode on whatever mesh you want","How do we get a field back?",
 
 # ---------------- Part 3
 divider("p3","Part 3","What accuracy and speed depend on","Measured, not modelled: four knobs set the accuracy, three set the cost.")
+fig("mesh-cost","Does the cost depend on the mesh?","No: solve cost is flat in 2D and 3D",F['costmesh'],"Solve time relative to a reference mesh, flat across meshes in 2D and 3D",
+ ["<b>2D:</b> 256² → 4096² (256× more nodes): every setting within 1.01–1.02 of its 1024² time; band 0.8–1.25","<b>3D:</b> 64³ → 384³ (216× more nodes): 4 of 4 ROMs within 1.01–1.09","3D is timed mesh-free (inputs and outputs at the method’s own points)"],
+ "final report §3.1 (P1, speed3d)",
+ "Every line is normalised by its own time at the reference mesh, so this shows flatness, not absolute speed. Absolute times are on the next slide.",w=1040)
+fig("mesh-iters","Do iterations or decoding depend on the mesh?","Iterations are flat; only writing the output grows",F['meshit'],"Three panels: solve time, iterations per run, and decode time against mesh, per bank width and scheme",
+ ["<b>Solve:</b> r 128 ≈ 22 ms, r 256 ≈ 52 ms, r 384 ≈ 88 ms at every mesh","<b>Iterations:</b> 51.5–54.3 Levenberg–Marquardt iterations per 50 steps, same on every mesh; at most 5 in any step","<b>Decode:</b> 0.13–0.18 ms at 256² → 5.7–14.3 ms at 4096²","Solid BE, dashed CN-R: schemes overlap"],
+ "P1 timing job 5352971 (H200), frozen test modes, 6 dev cases × 3 repeats; Codex-checked",
+ "Iteration counts are Levenberg–Marquardt trial iterations per time step summed over the run (rejected trials included; a step can need 0 if the predictor is already converged). Each step also builds one Jacobian before iterating, so Jacobian builds = 50 + iterations ≈ 104 per run ≈ 2.1 per step at r = 384. Mesh flatness is shown for r = 128–384; r = 512 was timed only at 1024². the solver never sees the mesh after the initial fit, so they cannot change with it. Decode is the six output fields on the full mesh, which is the only mesh-dependent part.",w=1000)
 table("acc-factors","What sets the accuracy?","Four things, in order of importance",
  ["Factor","Effect (2D, 1024², median / worst error)","Source"],
  [["Time step and scheme","BE 0.98 % / 3.0 % against CN-R 0.20 % / 1.8 % at r = 384","P1"],
@@ -219,7 +241,7 @@ table("cost-factors","What sets the cost?","Points × tests × width, not the me
  [["Quadrature points m","4181 (r 128) → 9216 → 16,384 → 36,864 (r 512)","grows faster than r"],
   ["Bank width r","kernel exponents 1.17 / 1.08 / 1.92 / 1.24 (declared 1, 1, 2, 3)","GPU far from large-matrix regime"],
   ["Tests M = 4r","query elasticity 0.53 in M, 0.65 in m, 0.65 in r","all three matter about equally"],
-  ["Time steps","50 (2D) or 25 (3D); 84 ms evolve at r = 384","fixed Δt, about 2 Jacobians per step"],
+  ["Time steps","50 (2D) or 25 (3D); 84 ms evolve at r = 384","≈ 1.1 LM iterations + 1 = ≈ 2.1 Jacobians per step"],
   ["Mesh","solve ratio 4096²/256² = 1.01–1.02","only decode grows"]],[24,48,28],
  "final report §3.1; wide-bank report; imp-faststep report","Work per step ≈ 2·m·M·r per Jacobian. Because m and M both grow with r, cost rises steeply with r even though the GPU hides part of it.",size=27)
 fig("kernels","How does each solver part scale with r?","Cost grows with r, but not at the textbook rates",F['kern'],"Per-call time of each kernel against r in 2D",

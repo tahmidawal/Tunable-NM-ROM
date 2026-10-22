@@ -8,6 +8,6 @@
 </div>
 <table style="font-size:27px;color:#14213D"><tr><th style="width:24%">Test</th><th style="width:30%">Outcome</th><th style="width:46%">Best explanation</th></tr><tr><td>Faster than best full solver</td><td>No: 0.05–0.71× (2D), 0.008–0.16× (3D)</td><td><b>Measured:</b> spectral needs ~11 modes per axis; each of our unknowns costs 4.6×10⁴× more</td></tr><tr><td>Beat tuned POD + ECSW</td><td>No: dominated 8/8 (2D), 7/9 (3D)</td><td><b>Measured:</b> 2 Jacobians per step; 33–43 points per unknown against 4–8</td></tr><tr><td>Steeper fronts than training</td><td>No: 0/8 qualified; bank floor 3.5–9.9 %</td><td><b>Measured:</b> steps can’t be certified on steep states, even at Δt/8</td></tr><tr><td>Nonlinear head (K)</td><td>No: linear r = 128 better at 0.59× cost</td><td><b>Hypothesis:</b> the head moves only inside the frozen span</td></tr></table>
 
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Failure-explanation sweep over all lane reports · 29</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Failure-explanation sweep over all lane reports · 31</p>
 <aside>Measured means a diagnostic in the lane shows it; hypothesis means it is plausible but nobody has tested it by ablation. Each of these four gets its own slide next.</aside>
 </section>

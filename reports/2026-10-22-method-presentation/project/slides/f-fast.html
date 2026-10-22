@@ -13,6 +13,6 @@
 <ul style="font-size:24px;line-height:1.35;color:#4A5568;display:flex;flex-direction:column;gap:10px"><li><b><span style="color:#1F6F8B">Measured:</span></b> the failure is one case (val32 #19), the in-range case with the worst bank floor</li><li><b><span style="color:#C8641E">Hypothesis:</span></b> Galerkin in this span can’t get the worst case below ~1.5 % (the converged Galerkin endpoint is 1.54 %)</li><li><b><span style="color:#1F6F8B">Measured:</span></b> at 4096² decode (13.8 ms) is most of the 18.2 ms ETDRK4 query</li><li><b><span style="color:#1F6F8B">Measured:</span></b> a POD + ETDRK4 competitor is still faster (0.62–0.80× our time), though it fails its own quadrature check</li></ul>
 </div>
 </div>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">imp-faststep report and EXPORT · 36</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">imp-faststep report and EXPORT · 38</p>
 <aside>This is the closest call. If the paper reports median error, ETDRK4 is a large win; under the registered worst-case rule it is not.</aside>
 </section>

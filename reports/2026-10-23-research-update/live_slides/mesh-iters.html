@@ -1,0 +1,15 @@
+<section id="mesh-iters" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">Do iterations or decoding depend on the mesh?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:60px;font-weight:600;line-height:1.1;color:#14213D">Iterations are flat; only writing the output grows</h2>
+</div>
+<div style="display:flex;gap:48px;align-items:start">
+<img src="/_blob/7d54add23cbf07c8401d55f49010bd56" alt="Three panels: solve time, iterations per run, and decode time against mesh, per bank width and scheme" style="width:1000px;height:480px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
+<ul style="flex:1;font-size:30px;line-height:1.4;color:#4A5568;display:flex;flex-direction:column;gap:16px"><li><b>Solve:</b> r 128 ≈ 22 ms, r 256 ≈ 52 ms, r 384 ≈ 88 ms at every mesh</li><li><b>Iterations:</b> 51.5–54.3 Levenberg–Marquardt iterations per 50 steps, same on every mesh; at most 5 in any step</li><li><b>Decode:</b> 0.13–0.18 ms at 256² → 5.7–14.3 ms at 4096²</li><li>Solid BE, dashed CN-R: schemes overlap</li></ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">P1 timing job 5352971 (H200), frozen test modes, 6 dev cases × 3 repeats; Codex-checked · 22</p>
+<aside>Iteration counts are Levenberg–Marquardt trial iterations per time step summed over the run (rejected trials included; a step can need 0 if the predictor is already converged). Each step also builds one Jacobian before iterating, so Jacobian builds = 50 + iterations ≈ 104 per run ≈ 2.1 per step at r = 384. Mesh flatness is shown for r = 128–384; r = 512 was timed only at 1024². the solver never sees the mesh after the initial fit, so they cannot change with it. Decode is the six output fields on the full mesh, which is the only mesh-dependent part.</aside>
+</section>

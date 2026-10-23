@@ -70,3 +70,5 @@ Every coordinator intervention (resume, kill, re-run) on a watchdog notification
 ## 2026-10-23 — imp-box (E1) done: stop rules not fired; partial crossing
 - 95 matches, 80 with S ≥ 0.5, max S 2.14 (W08_A2, 1 % worst; R-PODG, ECSW and bank-ETDRK4 similar); S ≥ 1 on narrow families / A2, < 1 on wide families at A1 1 % and much of A3. Bank with LSPG 0.04–0.4. Test-once S close to validation (2.14 → 2.05). 48.97 / 87 GPU-h. All S vs the dense-matrix FOM (A11); finalists often at ladder minima.
 - **Coordinator rulings:** (1) spectral conditional references accepted as a labelled lane deviation (A2.2) — carried into the final report; (2) no downward ladder extension (campaign closing; truncation labelled); (3) A4 cells deferred, A16 fix untested at A4.
+- 2026-10-23T07:03 UTC: all lanes done; both Codex watchdog loops stopped (kill by PID 4114309, 4114310); coordinator alarm monitor not re-armed.
+- Published: page https://claude.ai/artifact/QKS6qn2F89zKCFydnoVWVh, deck https://claude.ai/artifact/9rzvTAVMAFNeQVhdtJHiq9, PDF final/page/improvement-campaign-results.pdf. Campaign closed.

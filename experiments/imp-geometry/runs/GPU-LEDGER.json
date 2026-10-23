@@ -69,8 +69,8 @@
    "name": "H_wide_S1",
    "gpu": "a100-80G",
    "purpose": "step 2 full cell",
-   "gpu_hours": 6.2739,
-   "state": "RUNNING"
+   "gpu_hours": 11.5425,
+   "state": "COMPLETED"
   },
   {
    "job": "6202632",
@@ -79,9 +79,17 @@
    "purpose": "step 2 test-once",
    "gpu_hours": 0.1889,
    "state": "COMPLETED"
+  },
+  {
+   "job": "6209321",
+   "name": "test_H_wide_S1",
+   "gpu": "a100-80G",
+   "purpose": "step 2 test-once",
+   "gpu_hours": 0.255,
+   "state": "COMPLETED"
   }
  ],
- "total_gpu_hours": 25.1553,
+ "total_gpu_hours": 30.6789,
  "cap": 62,
  "smoke_gpu_hours": 1.0742,
  "notes": "smoke allowance 1 GPU-h exceeded by 0.07: smoke5 (6158976) ran to its 30-min limit during a usage-limit pause, past the planned 25-min cancel; no further cluster smoke before release"

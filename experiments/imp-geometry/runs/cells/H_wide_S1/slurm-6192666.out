@@ -1,0 +1,49 @@
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+10.235.106.26:/projects/paralab  4.6T  1.4T  3.3T  30% /cluster/tufts/paralab
+=== ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages ref --bank-steppers lspg_cnr
+=== ref rc=0 226s
+08:29:18 ref test n128 nt1000: 5s, mg max 5, unconverged 0
+08:29:29 ref test n256 nt2000: 12s, mg max 5, unconverged 0
+08:30:20 ref test n512 nt4000: 51s, mg max 5, unconverged 0
+08:31:21 ref allowance {'U': 0.0002727955993295698, 'n_eligible': 32, 'n_E0': 32, 'n_corner': 0, 'n_ineligible': 0, 'eps_max': 0.00013627169115516227, 'delta_t': 2.522170192452277e-07}
+08:31:21 stage ref: 224s
+=== data: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages data --bank-steppers lspg_cnr
+=== data rc=0 297s
+08:31:24 stage data: start
+08:36:18 data {'n': 512, 'nt': 4000, 'n_traj': 192, 'states': 4032, 'n_in': 252879, 'seconds': 271.68802915501874, 'bank_points': 15611, 'bank_sample': 128}
+08:36:18 stage data: 295s
+=== bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages bank --bank-steppers lspg_cnr
+=== bank rc=0 2947s
+09:20:14   bank[H] step 290000/300000 rel-MSE 4.783e-06 [2629s]
+09:22:49   bank[H] step 295000/300000 rel-MSE 4.726e-06 [2784s]
+09:25:17   bank[H] step 300000/300000 rel-MSE 4.682e-06 [2932s]
+09:25:26 bank 2935.6782484054565 recon 0.0021224587772452706 0.019381606087094248 R_eff 273
+09:25:26 stage bank: 2945s
+=== ladder: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages ladder --bank-steppers lspg_cnr
+=== ladder rc=0 25642s
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+16:32:44 ladder rows 2387
+16:32:44 stage ladder: 25636s
+=== inter: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages inter --bank-steppers lspg_cnr
+=== inter rc=0 33s
+16:32:50 stage inter: start
+16:33:21 stage inter: 31s
+=== time: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages time --bank-steppers lspg_cnr
+=== time rc=0 12227s
+19:50:30 S tau=0.03 worst: {'S': 0.06767461119220144, 'best_competitor': 'ecsw', 'competitor_key': 'ecsw|r128|k2|gal_etdrk4|nt10', 'bank_key': 'bank|r64|q10|lspg_cnr|nt40', 'per_family': {'sem': 0.1524804838855521, 'fdmg': 0.6531355006656371, 'rk4': 4.291715829913885, 'ecsw': 0.06767461119220144, 'podg': 0.08906887304916032}, 'excluded': [], 'within5pct': ['ecsw']}
+19:51:34 S tau=0.03 median: {'S': 0.09494954954391865, 'best_competitor': 'podg', 'competitor_key': 'podg|r64|gal_etdrk4|tensor|nt10', 'bank_key': 'bank|r64|qf8|lspg_cnr|nt20', 'per_family': {'sem': 0.1459253019493647, 'fdmg': 1.1207180949634798, 'rk4': 7.336412982628624, 'ecsw': 0.09513043830057813, 'podg': 0.09494954954391865}, 'excluded': [], 'within5pct': ['ecsw', 'podg']}
+19:52:39 S tau=0.1 worst: {'S': 0.1192087189253482, 'best_competitor': 'podg', 'competitor_key': 'podg|r32|gal_etdrk4|tensor|nt10', 'bank_key': 'bank|r32|q8|lspg_cnr|nt20', 'per_family': {'sem': 0.234335188966185, 'fdmg': 1.7654557853697257, 'rk4': 11.77120990673976, 'ecsw': 0.1365993711432425, 'podg': 0.1192087189253482}, 'excluded': [], 'within5pct': ['podg']}
+19:53:39 S tau=0.1 median: {'S': 0.21609993316136333, 'best_competitor': 'podg', 'competitor_key': 'podg|r16|gal_etdrk4|tensor|nt10', 'bank_key': 'bank|r16|qf8|lspg_cnr|nt10', 'per_family': {'sem': 0.30353684076067733, 'fdmg': 3.658831012256213, 'rk4': 24.02819546691293, 'ecsw': 0.24585018710479029, 'podg': 0.21609993316136333}, 'excluded': [], 'within5pct': ['podg']}
+19:57:06 stage time: 12223s
+=== diag: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages diag --bank-steppers lspg_cnr
+=== diag rc=0 176s
+19:57:10 stage diag: start
+20:00:03 stage diag: 173s
+=== freeze: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python run_cell.py --dom H --fam wide --lev S1 --out /cluster/tufts/paralab/tawal01/imp-geometry/H_wide_S1/out/cell --stages freeze --bank-steppers lspg_cnr
+=== freeze rc=0 3s
+20:00:05 stage freeze: start
+20:00:06 stage freeze: 1s
+JOB DONE

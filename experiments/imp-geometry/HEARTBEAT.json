@@ -1,4 +1,4 @@
-{"lane": "imp-geometry", "utc": "2026-10-22T18:44:42Z", "step": "parked: waiting on 6192666 (H_wide_S1); L_wide_S1 scored incl. test-once 6202632 (collected)",
- "waiting_on": {"slurm_jobs": ["6192666"], "codex_output": null, "codex_pid": null, "local_pid": null},
- "expected_finish_utc": "", "last_commit": "45e21f3a2",
- "gpu_hours_spent": 25.1553, "gpu_hours_cap": 62, "notes": "next: collect H, commit frozen, audit + run H test-once, results audit, S1 decision, note"}
+{"lane": "imp-geometry", "utc": "2026-10-23T00:27:08Z", "step": "DONE / hand-back",
+ "waiting_on": {"slurm_jobs": [], "codex_output": null, "codex_pid": null, "local_pid": null},
+ "expected_finish_utc": "", "last_commit": "98e2fdb9c",
+ "gpu_hours_spent": 30.6789, "gpu_hours_cap": 62, "notes": "A10: not supported at S1; S2 untested. H WITHDRAWN (measured loss); L not decidable (refs ineligible)"}

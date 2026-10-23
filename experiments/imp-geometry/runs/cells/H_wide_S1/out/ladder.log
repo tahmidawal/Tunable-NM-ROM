@@ -1,0 +1,18 @@
+09:25:28 stage ladder: start
+E1022 12:05:01.707168 1082580 slow_operation_alarm.cc:73] Constant folding an instruction is taking > 1s:
+
+  %pad = f64[128,252928]{1,0} pad(%constant.28, %constant.226), padding=0_0x0_49
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+E1022 12:05:02.275531 1082492 slow_operation_alarm.cc:140] The operation took 1.568460064s
+Constant folding an instruction is taking > 1s:
+
+  %pad = f64[128,252928]{1,0} pad(%constant.28, %constant.226), padding=0_0x0_49
+
+This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.
+
+If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+16:32:44 ladder rows 2387
+16:32:44 stage ladder: 25636s

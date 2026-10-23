@@ -65,3 +65,8 @@ Every coordinator intervention (resume, kill, re-run) on a watchdog notification
 - **E4 (3D cube with holes) not run** (conditional on an E2 win). Its 80 GPU-h reserve is released unspent.
 - Disclosed in the lane: geometry variant chosen after inspecting smoke ladder rows (A3.1 retraction of the "no results existed" claim); static condensation / multi-domain Chebyshev not built (S is "against the strongest tested competitor").
 - imp-box parked on W08_A2 6211151, W16_A1 6211172 (43.7/87 GPU-h; wide set: 95 comparisons, max S 2.14; stop rules not fired; A16 compile fault fixed; A4 deferred).
+- 2026-10-23T04:02 UTC: imp-box W16_A1 6211172 COMPLETED (lane's detached waiter collects); resume the lane when W08_A2 6211151 ends.
+- 2026-10-23T04:18 UTC: imp-box W08_A2 6211151 COMPLETED; lane resumed for collection, freeze, test-once, report.
+## 2026-10-23 — imp-box (E1) done: stop rules not fired; partial crossing
+- 95 matches, 80 with S ≥ 0.5, max S 2.14 (W08_A2, 1 % worst; R-PODG, ECSW and bank-ETDRK4 similar); S ≥ 1 on narrow families / A2, < 1 on wide families at A1 1 % and much of A3. Bank with LSPG 0.04–0.4. Test-once S close to validation (2.14 → 2.05). 48.97 / 87 GPU-h. All S vs the dense-matrix FOM (A11); finalists often at ladder minima.
+- **Coordinator rulings:** (1) spectral conditional references accepted as a labelled lane deviation (A2.2) — carried into the final report; (2) no downward ladder extension (campaign closing; truncation labelled); (3) A4 cells deferred, A16 fix untested at A4.

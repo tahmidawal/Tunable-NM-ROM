@@ -1,9 +1,9 @@
 {
  "git.head.imp-box": {
   "value": {
-   "commit": "576ad56771eaf3ca9690859822062c0bcecc0127",
-   "date": "2026-10-22T20:34:40-04:00",
-   "subject": "hb"
+   "commit": "9c35fdd83aff197bf656e7daa2f1c853a77ba1e4",
+   "date": "2026-10-23T02:40:43-04:00",
+   "subject": "imp-box: report audit 2 CLEAN; heartbeat done"
   },
   "source": "git",
   "command": "git log -1 --format=%H|%cI|%s exp/2026-10-22-imp-box"
@@ -93,7 +93,7 @@
   "command": "git ls-remote origin 'refs/heads/codeonly/exp/2026-10-2*-imp-*'"
  },
  "git.mirror.imp-box": {
-  "value": "c7773976948e0975d4058628e5cc6e317f560f16",
+  "value": "17e4876d6184fe894ca919602781283efa5903a0",
   "source": "git",
   "command": "git ls-remote origin 'refs/heads/codeonly/exp/2026-10-2*-imp-*'"
  },
@@ -2629,29 +2629,335 @@
   "sha256": "bd9bfcc542594ec2a4f8e8de6dce325e4cfb21db2cd0fc7e3a03809796dd25e4"
  },
  "e1.gpu": {
-  "value": 41.3547,
+  "value": 48.9678,
   "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/runs/GPU-LEDGER.json",
   "key_path": [
    "total_gpu_hours"
   ],
-  "sha256": "253f7a70f096493f916b83b1cda1587ae4e9619bc4ee5f9261f76dc44f800fb6"
+  "sha256": "9ec619a074108396c704cb36e1c202ef59b2528b10e1f26292e810f18ebe47dd"
  },
- "e1.interim.stop_speed": {
-  "value": "NOT FIRED",
+ "e1.stop_rule": {
+  "value": {
+   "speed": "NOT FIRED",
+   "scoped": "NOT FIRED",
+   "bank": "NOT FIRED",
+   "max_S": 2.1437823699078313,
+   "n_match": 95,
+   "missing": [
+    "('bank_e4', 'W40_A3', 0.01, 'median')",
+    "('bank_e4', 'W40_A3', 0.01, 'worst')",
+    "('bank_e4', 'W40_A3', 0.03, 'worst')",
+    "('bank_lspg', 'W40_A3', 0.01, 'median')",
+    "('bank_lspg', 'W40_A3', 0.01, 'worst')",
+    "('bank_lspg', 'W40_A3', 0.03, 'worst')",
+    "('ecsw', 'W28_A3', 0.01, 'median')",
+    "('ecsw', 'W28_A3', 0.01, 'worst')",
+    "('ecsw', 'W28_A3', 0.03, 'median')",
+    "('ecsw', 'W28_A3', 0.03, 'worst')",
+    "('ecsw', 'W28_A3', 0.1, 'median')",
+    "('ecsw', 'W28_A3', 0.1, 'worst')",
+    "('ecsw', 'W40_A3', 0.01, 'median')",
+    "('ecsw', 'W40_A3', 0.01, 'worst')",
+    "('ecsw', 'W40_A3', 0.03, 'median')",
+    "('ecsw', 'W40_A3', 0.03, 'worst')",
+    "('ecsw', 'W40_A3', 0.1, 'median')",
+    "('ecsw', 'W40_A3', 0.1, 'worst')",
+    "('podg', 'W28_A3', 0.01, 'median')",
+    "('podg', 'W28_A3', 0.01, 'worst')",
+    "('podg', 'W28_A3', 0.03, 'worst')",
+    "('podg', 'W40_A3', 0.01, 'median')",
+    "('podg', 'W40_A3', 0.01, 'worst')",
+    "('podg', 'W40_A3', 0.03, 'worst')",
+    "('trans', 'W40_A3', 0.01, 'median')",
+    "('trans', 'W40_A3', 0.01, 'worst')",
+    "('trans', 'W40_A3', 0.03, 'worst')"
+   ],
+   "deferred": [
+    "*:W40_A4",
+    "*:W28_A4"
+   ],
+   "source": "runs/stoprule.json"
+  },
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "stop_rule"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.stop_rule.max_S": {
+  "value": 2.1437823699078313,
   "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
   "key_path": [
    "stop_rule",
-   "speed"
+   "max_S"
   ],
-  "sha256": "4b879b64455f7f518ed2a519ee9716f645c6f313c9e44779e359344dda3a2339"
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
  },
- "e1.stage": {
-  "value": "interim",
+ "e1.scope": {
+  "value": {
+   "W08_A1": "collected",
+   "W08_A2": "collected",
+   "W08_A3": "deferred: A15 (cap)",
+   "W08_A4": "deferred: A14 / A15",
+   "W16_A1": "collected",
+   "W16_A2": "deferred: A15 (cap; defer order: W = 0.16)",
+   "W16_A3": "deferred: A15 (cap)",
+   "W16_A4": "deferred: A14 / A15",
+   "W28_A1": "collected",
+   "W28_A2": "collected",
+   "W28_A3": "collected",
+   "W28_A4": "deferred: A14 (defer order: A4)",
+   "W40_A1": "collected",
+   "W40_A2": "collected",
+   "W40_A3": "collected",
+   "W40_A4": "deferred: A14 (defer order: A4)"
+  },
   "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
   "key_path": [
-   "stage"
+   "scope"
   ],
-  "sha256": "4b879b64455f7f518ed2a519ee9716f645c6f313c9e44779e359344dda3a2339"
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W40_A3.trans|0.01|median": {
+  "value": 3.318997407188012,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W40_A3",
+   "entries",
+   "trans|0.01|median",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W40_A3.trans|0.01|median": {
+  "value": 3.304465167619074,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W40_A3",
+   "pairs",
+   "trans|0.01|median",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W40_A3.trans|0.01|worst": {
+  "value": 3.2736378828853754,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W40_A3",
+   "entries",
+   "trans|0.01|worst",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W40_A3.trans|0.01|worst": {
+  "value": 3.237562129344778,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W40_A3",
+   "pairs",
+   "trans|0.01|worst",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W40_A3.trans|0.03|median": {
+  "value": 2.1437823699078313,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W40_A3",
+   "entries",
+   "trans|0.03|median",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W40_A3.trans|0.03|median": {
+  "value": 2.1966430039160336,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W40_A3",
+   "pairs",
+   "trans|0.03|median",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W40_A3.trans|0.03|worst": {
+  "value": 2.261765949249319,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W40_A3",
+   "entries",
+   "trans|0.03|worst",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W40_A3.trans|0.03|worst": {
+  "value": 2.2691675990157814,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W40_A3",
+   "pairs",
+   "trans|0.03|worst",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W40_A3.trans|0.1|worst": {
+  "value": 2.1437823699078313,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W40_A3",
+   "entries",
+   "trans|0.1|worst",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W40_A3.trans|0.1|worst": {
+  "value": 2.163983882280645,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W40_A3",
+   "pairs",
+   "trans|0.1|worst",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W08_A2.podg|0.01|worst": {
+  "value": 2.140504759735189,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W08_A2",
+   "entries",
+   "podg|0.01|worst",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W08_A2.podg|0.01|worst": {
+  "value": 2.048901592289635,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W08_A2",
+   "pairs",
+   "podg|0.01|worst",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W08_A2.ecsw|0.01|worst": {
+  "value": 2.009344769893545,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W08_A2",
+   "entries",
+   "ecsw|0.01|worst",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W08_A2.ecsw|0.01|worst": {
+  "value": 1.9964642306925406,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W08_A2",
+   "pairs",
+   "ecsw|0.01|worst",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S.W08_A2.bank_e4|0.01|worst": {
+  "value": 2.068727994314186,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "cells",
+   "W08_A2",
+   "entries",
+   "bank_e4|0.01|worst",
+   "S"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.S_test.W08_A2.bank_e4|0.01|worst": {
+  "value": 2.042736408183286,
+  "file": "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json",
+  "key_path": [
+   "test",
+   "W08_A2",
+   "pairs",
+   "bank_e4|0.01|worst",
+   "S_test"
+  ],
+  "sha256": "fce31da7d1b6e5098480696e3c617de9f75fcf507f59175802e0ef6d1132274c"
+ },
+ "e1.bank_lspg.S.min": {
+  "value": 0.02444266417034955,
+  "derived_from": [
+   "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json:cells[*].entries[bank_lspg|*].S (finalist)"
+  ],
+  "derivation": "min"
+ },
+ "e1.bank_lspg.S.max": {
+  "value": 0.39632264521132843,
+  "derived_from": [
+   "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json:cells[*].entries[bank_lspg|*].S (finalist)"
+  ],
+  "derivation": "max"
+ },
+ "e1.bank_lspg.n": {
+  "value": 28,
+  "derived_from": [
+   "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json:cells[*].entries[bank_lspg|*]"
+  ],
+  "derivation": "count finalist entries"
+ },
+ "e1.bank_e4.wide.S.max": {
+  "value": 1.455409025916449,
+  "derived_from": [
+   "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json:cells[W28*,W40*].entries[bank_e4|*].S (finalist, complete FOM search)"
+  ],
+  "derivation": "max"
+ },
+ "e1.a16.fom_dense.min": {
+  "value": 0.8983889452384811,
+  "derived_from": [
+   "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json:a16_timing[*].fom_dense.ratio"
+  ],
+  "derivation": "min"
+ },
+ "e1.a16.fom_dense.max": {
+  "value": 0.9058926806629772,
+  "derived_from": [
+   "worktrees/2026-10-22-imp-box/experiments/imp-box/EXPORT.json:a16_timing[*].fom_dense.ratio"
+  ],
+  "derivation": "max"
+ },
+ "e1.S2.complete.n_ladder_min": {
+  "value": 5,
+  "derived_from": [
+   "e1.S.*"
+  ],
+  "derivation": "count complete S>=2 entries with a ladder-minimum label"
  },
  "e6.F3a_k4.m": {
   "value": 1536,
@@ -2763,7 +3069,7 @@
   "derivation": "sum"
  },
  "ledger.total_all": {
-  "value": 90.8437,
+  "value": 98.45679999999999,
   "derived_from": [
    "ledger.total_done",
    "e1.gpu"
@@ -2821,6 +3127,14 @@
   "imp-geometry__S_per_family.png": {
    "source": "worktrees/2026-10-21-imp-geometry/experiments/imp-geometry/plots/S_per_family.png",
    "sha256": "3f86376241c282f689fd6ef5eac8f5339450e676858c18d3242bef4dc833e78d"
+  },
+  "imp-box__S_vs_W_median.png": {
+   "source": "worktrees/2026-10-22-imp-box/experiments/imp-box/plots/S_vs_W_median.png",
+   "sha256": "9860605e96b2d680388ce8400a51d385df1279828267fec4067bbec71f90763e"
+  },
+  "imp-box__S_vs_W_worst.png": {
+   "source": "worktrees/2026-10-22-imp-box/experiments/imp-box/plots/S_vs_W_worst.png",
+   "sha256": "d00fb8223ca30fb11c84a223b5c9e0a85429e049b1db91ec887fcb057a16024e"
   }
  }
 }

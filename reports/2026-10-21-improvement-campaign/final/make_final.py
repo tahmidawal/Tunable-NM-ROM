@@ -349,7 +349,42 @@ BL = LD['imp-box'] / 'runs' / 'GPU-LEDGER.json'
 e1_gpu = R.get('e1.gpu', BL, 'total_gpu_hours') if BL.exists() else None
 if E1_FINAL:
     e1_sr = R.get('e1.stop_rule', BX, 'stop_rule')
-    e1_maxS = e1_sr.get('max_S')
+    e1_maxS = R.get('e1.stop_rule.max_S', BX, 'stop_rule', 'max_S')
+    e1_scope = R.get('e1.scope', BX, 'scope')
+    e1_cells = R.load(BX)['cells']
+    e1_test = R.load(BX)['test']
+    ARMN = {'podg': 'R-PODG (POD-Galerkin)', 'ecsw': 'R-ECSW (POD + ECSW)', 'trans': 'R-TRANS (translation model)',
+            'bank_lspg': 'B-LSPG (our bank, deployed LSPG stepper)', 'bank_e4': 'B-E4 (our bank, Galerkin ETDRK4)'}
+    e1_rows, e1_inc = [], []   # S >= 2 with complete FOM search / with incomplete FOM search
+    e1_by_arm = {}
+    for c, d in e1_cells.items():
+        for k, v in d['entries'].items():
+            S = v.get('S')
+            arm = k.split('|')[0]
+            if S is None or v.get('status') != 'finalist':
+                continue
+            complete = all(x == 'finalist' for x in v['fom_status'].values())
+            e1_by_arm.setdefault(arm, []).append((S, c, k, complete))
+            if S >= 2:
+                R.get(f'e1.S.{c}.{k}', BX, 'cells', c, 'entries', k, 'S')
+                t = e1_test.get(c, {}).get('pairs', {}).get(k, {})
+                st = R.get(f'e1.S_test.{c}.{k}', BX, 'test', c, 'pairs', k, 'S_test') if t.get('matched') else None
+                row = (c, k, S, st, v['competitor_key'], v.get('ladder_minimum') or [], v['fom_status'])
+                (e1_rows if complete else e1_inc).append(row)
+    e1_lspg = [x[0] for x in e1_by_arm.get('bank_lspg', [])]
+    e1_lspg_min = R.derive('e1.bank_lspg.S.min', min(e1_lspg), [rel(BX) + ':cells[*].entries[bank_lspg|*].S (finalist)'], 'min')
+    e1_lspg_max = R.derive('e1.bank_lspg.S.max', max(e1_lspg), [rel(BX) + ':cells[*].entries[bank_lspg|*].S (finalist)'], 'max')
+    e1_lspg_n = R.derive('e1.bank_lspg.n', len(e1_lspg), [rel(BX) + ':cells[*].entries[bank_lspg|*]'], 'count finalist entries')
+    def _wide(c):
+        return int(c[1:3]) >= 28
+    e1_e4w = [x[0] for x in e1_by_arm.get('bank_e4', []) if _wide(x[1]) and x[3]]
+    e1_e4w_max = R.derive('e1.bank_e4.wide.S.max', max(e1_e4w), [rel(BX) + ':cells[W28*,W40*].entries[bank_e4|*].S (finalist, complete FOM search)'], 'max')
+    e1_a16 = R.load(BX)['a16_timing']
+    e1_a16d = [e1_a16[c]['fom_dense']['ratio'] for c in e1_a16]
+    e1_a16_min = R.derive('e1.a16.fom_dense.min', min(e1_a16d), [rel(BX) + ':a16_timing[*].fom_dense.ratio'], 'min')
+    e1_a16_max = R.derive('e1.a16.fom_dense.max', max(e1_a16d), [rel(BX) + ':a16_timing[*].fom_dense.ratio'], 'max')
+    e1_lm_n = R.derive('e1.S2.complete.n_ladder_min', sum(bool(r[5]) for r in e1_rows), ['e1.S.*'], 'count complete S>=2 entries with a ladder-minimum label')
+    e1_arms2 = sorted({r[1].split('|')[0] for r in e1_rows})
 else:
     e1_sr = None
     e1_interim_speed = R.get('e1.interim.stop_speed', BX, 'stop_rule', 'speed') if BX.exists() else None
@@ -359,13 +394,15 @@ else:
 def v_e1():
     if not E1_FINAL:
         return 'pending'
-    if e1_sr['speed'].startswith('FIRED') or e1_sr['speed'] == 'FIRED':
+    if e1_sr['speed'] != 'NOT FIRED':
         return 'stop (speed)'
-    return 'see E1 section'
+    return 'partly (see §2)' if e1_rows else 'no'
 
 
+e3_fail = e3_gate != 'PASS'
 p1 = 'not fixed so far (E2, E3 negative; E4 not run; E1 pending)' if not E1_FINAL else (
-    'partly fixed (box only)' if (e1_maxS or 0) >= 1 and not e2_win else 'not fixed')
+    'partly fixed (box only, under conditions; see E1)' if (e1_rows and not e2_win and e3_fail) else
+    ('not fixed' if not e1_rows else 'see E1'))
 p2 = 'fixed' if (e5_fixed or not e6_F2_fired or not e6_F3_fired) else 'not fixed'
 p3 = 'fixed' if (e8_fixed or e10_fixed) else 'not fixed'
 if p2 == 'not fixed':
@@ -379,10 +416,10 @@ now = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC'
 status = ('**provisional** — E1 (box, family width × steepness) is still running and every E1 entry is "pending"'
           if not E1_FINAL else '**final** for every lane')
 w('# Improvement campaign (2026-10-21): can the three known weaknesses of the off-mesh bank ROM be fixed?\n')
-w(f'**Status (compiled {now} by `make_final.py`):** {status}. All other lanes (E2, E3, E5–E10) are final; E4 was '
-  'not run. Accuracy numbers are conditional estimates against second-order (E0 ST) or lane spectral references '
+w(f'**Status (compiled {now} by `make_final.py`):** {status}. E4 was not run. Accuracy numbers are conditional estimates against second-order (E0 ST) or lane spectral references '
   '(conditional Richardson $\\varepsilon_{\\rm ref}$; the E0 A10 and combined A10/A11/A15 labels carry forward). '
-  'POD comparisons are developmental, in-sample (dev6 + val32) and unadjusted; every speed-up against a tuned ladder '
+  'POD comparisons are developmental and unadjusted: in-sample on dev6 + val32 in E5–E7; in E1 selected on val32 with the '
+  'frozen pairs checked once on a fresh test32 cohort; every speed-up against a tuned ladder '
   'is an upper bound "against the strongest tested competitor". Every number below is read from a lane output and '
   'registered in `PROVENANCE.json`; bars such as 2×, 3×, 0.5 are registered constants of the plan.\n')
 
@@ -396,16 +433,17 @@ w('```mermaid\nflowchart LR\n'
   '  P3 --> E9["E9 out-of-regime flag"]\n  P3 --> E10["E10 numerics near fronts"]\n'
   '  classDef prob fill:#e5e7eb,stroke:#374151;\n  classDef stop fill:#fee2e2,stroke:#991b1b;\n'
   '  classDef pend fill:#fef3c7,stroke:#92400e;\n  classDef skip fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray: 4 3;\n'
-  f'  class E2,E3,E5,E6,E7,E8,E10 stop;\n  class {"E1" if not E1_FINAL else "E9"} pend;\n  class E4 skip;\n'
-  + ('  class E9 pend;\n' if not E1_FINAL else '') + '```\n')
-w('*Red: negative or unsupported outcome under the reported rules (E3: FAIL under the post-hoc A10 rule, UNRESOLVED under the registered rule; E2: H withdrawn, L descriptive only). Amber: pending or descriptive only. Dashed: not run.*\n')
+  '  classDef part fill:#dcfce7,stroke:#166534;\n'
+  f'  class E2,E3,E5,E6,E7,E8,E10 stop;\n  class {"E1," if not E1_FINAL else ""}E9 pend;\n  class E4 skip;\n'
+  + ('  class E1 part;\n' if E1_FINAL else '') + '```\n')
+w('*Red: negative or unsupported outcome under the reported rules (E3: FAIL under the post-hoc A10 rule, UNRESOLVED under the registered rule; E2: H withdrawn, L descriptive only). Green: partly (E1: $S\\ge2$ in a few cells, under conditions). Amber: pending or descriptive only. Dashed: not run.*\n')
 
 w('## 1. In one paragraph\n')
-w(f'None of the three weaknesses is fixed by the experiments that have finished. **Problem 1** (spectral FOM faster): '
+w(f'{"Problem 1 is only partly addressed, and Problems 2 and 3 are not fixed." if E1_FINAL and e1_rows else "None of the three weaknesses is fixed by the experiments that have finished."} **Problem 1** (spectral FOM faster): '
   f'without a fast transform (E2) the bank is still slower than the strongest tested competitor on both geometries '
   f'(largest validation $S$ = {f3(e2_Smax_all)}, bar 2), and on a high-contrast variable coefficient (E3) the fastest '
   f'tuned FOM already costs only {f3(e3["0.03"]["G"])}–{f3(e3["0.1"]["G"])} of our box ROM (bar: ≥ 2× slower), so no '
-  f'ROM was trained; E4 was not run; E1 is {"pending" if not E1_FINAL else "final (see §2)"}. **Problem 2** (POD + '
+  f'ROM was trained; E4 was not run; {"E1 is pending" if not E1_FINAL else ("on the box (E1) a reduced model beats the dense spectral FOM by $S\\ge2$ only in a few cells: our bank only with the ETDRK4 step on the narrow, low-steepness family, where POD arms do as well, and on the wide family only the translation model (our deployed LSPG bank stays at " + f3(e1_lspg_min) + "–" + f3(e1_lspg_max) + ")" if e1_rows else "E1 finds no $S\\ge2$")}. **Problem 2** (POD + '
   f'ECSW dominates): a precontracted Galerkin ETDRK4 step makes the $r=384$ evolution {f3(e5_e4_min)}–'
   f'{f3(e5_e4_max)}× faster than LSPG CN-R but its worst error is slightly higher, so E5 fails its rule; neither '
   f'bank tests nor fitted weights make the nonlinear term cheaper (E6, best fitted-weight gain {xr(e6_f3_best_e2e)}, '
@@ -426,8 +464,52 @@ if not E1_FINAL:
       'spectral conditional references (DESIGN A2.2); a dense-matrix FOM of the same discretisation was added as the '
       'fair competitor (A11); H200 FFT runs at $N=12$ returned non-finite values and are excluded (A10).\n')
 else:
-    w(f'Stop rule (speed): {e1_sr["speed"]}; scoped: {e1_sr["scoped"]}; bank: {e1_sr["bank"]}; largest matched '
-      f'$S$ = {f3(e1_maxS)} over {e1_sr["n_match"]} matched comparisons (upper bound vs the tested FOM ladder). '
+    w('Burgers 2D on the unit box; family width $W$ (0.08 narrow … 0.40 wide; the stop rule judges the wide family, '
+      '$W\\ge0.28$) × steepness level A1–A4 (A4 steepest). Arms: the tuned sine pseudo-spectral FOM (fixed or adaptive '
+      'ETDRK4, FFT or dense transform; every $S$ is against the faster, which was the dense transform, A11), our bank '
+      'with the deployed LSPG stepper (B-LSPG) and with the Galerkin ETDRK4 step from E5 (B-E4), POD-Galerkin (R-PODG, '
+      'the pilot stand-in), POD + ECSW (R-ECSW) and a translation model (R-TRANS). $S$ = FOM time / reduced-model time '
+      'at matched median or worst error $\\tau\\in\\{1,3,10\\}\\,\\%$, val32 selection. **Provisional throughout:** '
+      'errors are against conditional spectral references (lane deviation A2.2, accepted by the coordinator); every '
+      '$S$ is an upper bound against the tested FOM ladder; ladders were not extended below their minima, and '
+      'entries sitting at a minimum are labelled (accepted by the coordinator).\n')
+    collected = [c for c, st in e1_scope.items() if st == 'collected']
+    deferred = [f'{c} ({st})' for c, st in e1_scope.items() if st != 'collected']
+    w(f'Cells collected: {", ".join(collected)}. Deferred (coordinator ruling, cap): {", ".join(deferred)}.\n')
+    w(f'Stop rules: SPEED-STOP **{e1_sr["speed"]}** (largest matched wide-family $S$ = {f3(e1_maxS)} over '
+      f'{e1_sr["n_match"]} matched comparisons), scoped reading {e1_sr["scoped"]}, BANK-STOP {e1_sr["bank"]}.\n')
+    w('Entries with $S\\ge2$ and a complete FOM search (validation; test-once $S$ of the same frozen pair):\n')
+    w('| cell | arm | target | $S$ val | $S$ test | FOM finalist | labels |')
+    w('|---|---|---|---|---|---|---|')
+    for c, k, S, st, fk, lab, fs in e1_rows:
+        a, t, stt = k.split('|')
+        w(f'| {c} | {ARMN[a]} | {pct(float(t), 0)} {stt} | {f3(S)} | {f3(st) if st is not None else "not matched"} | '
+          f'`{esc(fk)}` | {"; ".join(lab) or "none"} |')
+    w('')
+    if e1_inc:
+        w('Larger values with an **incomplete** adaptive-FOM search (a faster FOM may exist, so these are weaker upper '
+          'bounds): ' + '; '.join(f'{c} {ARMN[k.split("|")[0]]} {esc(k.split("|", 1)[1])}: {f3(S)}'
+                                 + (f' (test {f3(st)})' if st is not None else '') for c, k, S, st, fk, lab, fs in e1_inc)
+          + '.\n')
+    bank2 = [r for r in e1_rows if r[1].startswith('bank')]
+    w('Reading: ' + (f'the bank reaches $S\\ge2$ only with the ETDRK4 step and only in '
+                     f'{", ".join(sorted({r[0] for r in bank2}))} (narrow family $W=0.08$, low steepness), at one target '
+                     f'({", ".join(sorted({esc(r[1].split("|", 1)[1]) for r in bank2}))}), where the POD arms do as well '
+                     f'(the same cell and target: ' + ', '.join(f'{ARMN[r[1].split("|")[0]]} {f3(r[2])}'
+                     for r in e1_rows if r[0] in {b[0] for b in bank2} and r[1].split("|", 1)[1] in
+                     {b[1].split("|", 1)[1] for b in bank2}) + '). ' if bank2 else 'the bank never reaches $S\\ge2$. ')
+      + f'On the wide family the bank with ETDRK4 reaches at most $S$ = {f3(e1_e4w_max)}. The bank with its deployed '
+      f'LSPG stepper stays at $S$ = {f3(e1_lspg_min)}–{f3(e1_lspg_max)} over its {e1_lspg_n} matched entries. '
+      'The only wide-family arm at $S\\ge2$ is ' + (', '.join(sorted({ARMN[r[1].split("|")[0]] for r in e1_rows
+                                                          if int(r[0][1:3]) >= 28})) or 'none')
+      + f', which is not our method. {e1_lm_n} of the {len(e1_rows)} complete-search $S\\ge2$ entries carry the '
+      'reduced-model ladder-minimum label (a smaller, possibly faster reduced configuration was not tried). '
+      '"Complete" means both the fixed-step and the adaptive FOM searches returned a finalist; within each '
+      'six-candidate screening batch the ordering is recorded only for the attempted candidates, so superiority over '
+      'unattempted batch members cannot be independently reconstructed (lane search limitation). Timing caveat (A16): '
+      f'some cells were timed with constants hoisted as arguments and others embedded in the compiled program; the '
+      f'dense-FOM hoisted/embedded time ratio is {f3(e1_a16_min)}–{f3(e1_a16_max)}, so comparisons of $S$ across cells '
+      'timed differently (including the width plots) carry this uncertainty; within-cell comparisons do not. '
       f'GPU-hours {gh(e1_gpu)} of {lane_cap["imp-box"]}.\n')
     w(img('imp-box', 'S_vs_W_median.png', 'S against family width, median-error targets'))
     w(img('imp-box', 'S_vs_W_worst.png', 'S against family width, worst-error targets'))
@@ -629,7 +711,15 @@ w('\n**Kept (unchanged by this campaign):** the properties established before it
   'reported (E5 arm 1 is the incumbent LSPG CN-R; E6 reproduces E5\'s precontracted Galerkin CN arm as its reference R). The finding that tuned POD + ECSW dominates our solve cost '
   'stands and should be reported, with the E5 Galerkin ETDRK4 evolution speed-up as a mechanism result that does not '
   'change the comparison.')
-w(f'\n**Open:** the box regime map (E1) is {"pending; the spectral-FOM claim is undecided until it hands back" if not E1_FINAL else "final, see §2"}.\n')
+if not E1_FINAL:
+    w('\n**Open:** the box regime map (E1) is pending; the spectral-FOM claim is undecided until it hands back.\n')
+else:
+    w('\n**Problem 1 on the box (E1), narrowed:** the paper may say that on the box a reduced model beats the tuned '
+      'dense spectral FOM by $S\\ge2$ only in the cells and targets listed in §2 (upper bounds, conditional '
+      'references, ladder-minimum labels); that our bank does so only with the Galerkin ETDRK4 step, only on the '
+      'narrow, low-steepness family, where POD-Galerkin and POD + ECSW do as well; and that the deployed LSPG bank '
+      f'stays at $S$ = {f3(e1_lspg_min)}–{f3(e1_lspg_max)}. A general "faster than a spectral solver" claim is not '
+      'supported.\n')
 
 # ---------------------------------------------------------------- retractions/deviations
 w('## 7. Retractions and deviations\n')
@@ -651,6 +741,12 @@ w('- **E7 / E5 shared-scratchpad collision:** imp-multimesh overwrote a shared p
   'with a partly foreign prompt; it audited the right design (DESIGN note 2026-10-22) and audits 4–5 re-covered it.')
 w('- **E5 pkill incident:** a `pkill -f codex-design-4.md` may have terminated another lane\'s Codex audit '
   '(`imp-faststep/audits/NOTE-pkill-incident.txt`); dead audits were re-run by rule; lanes use private work dirs since.')
+if E1_FINAL:
+    w('- **E1 spectral conditional references** (lane deviation A2.2 from the E0 second-order recipe): accepted by the '
+      'coordinator as a labelled deviation. **No downward ladder extension:** FOM and reduced ladders were not '
+      'extended below their minima; entries at a minimum are labelled as truncated (coordinator ruling). A '
+      'dense-transform FOM of the same discretisation was added as the fair competitor (A11); H200 FFT runs at $N=12$ '
+      'gave non-finite values and were excluded (A10). Query timing changed mid-lane from embedded to hoisted constants (A16); cross-cell $S$ comparisons carry the measured ratio (§2).')
 w('- **E8 released early:** Phase B retrains started before the other wave-1 lanes handed back (independent, capped).')
 w('- **E10 reused Phase B test cases** (not test-once for E10).')
 w('- **Interruptions:** two account usage-limit stops halted every lane agent (2026-10-21 ~19:30 UTC and 2026-10-22 '
@@ -675,7 +771,12 @@ w('\n**Provisional labels carried in this report:** conditional E0 references (a
 
 # ---------------------------------------------------------------- deferred
 w('## 8. Deferred items\n')
-w('- E1: all of it until the lane hands back (running).')
+if E1_FINAL:
+    w('- E1: cells ' + ', '.join(f'{c} ({st})' for c, st in e1_scope.items() if st != 'collected')
+      + ' (coordinator ruling: the A4 cells, W16_A2/A3 and W08_A3 deferred under the cap); the second training-data '
+      'size; no downward ladder extension below the ladder minima.')
+else:
+    w('- E1: all of it until the lane hands back (running).')
 w('- E2: narrow family, S2 steepness, box attribution controls; static condensation and multi-domain Chebyshev '
   'competitors.')
 w('- E3: a variable-κ ROM (never trained: gate failed); Krylov/Leja exponentials, reused factorisations, AMG and POD-ECSW FOM competitors; $C=10$ timing and validation ladder; CCv at $L=512$; the A8.3 test-reference fallback.')
@@ -702,8 +803,8 @@ done_total = R.derive('ledger.total_done', sum(v for k, v in spent.items() if k 
 all_total = R.derive('ledger.total_all', done_total + (e1_gpu or 0), ['ledger.total_done', 'e1.gpu'], 'sum')
 cap_total = R.derive('ledger.cap_total', sum(lane_cap[l] for l in spent), [rel(LANESJ) + ':lanes[*].gpu_hours_cap'],
                      'sum')
-w(f'| **total** | | {cap_total} | {gh(all_total)} ({gh(done_total)} in finished lanes'
-  f'{"; E1 interim" if not E1_FINAL else ""}) | |')
+w(f'| **total** | | {cap_total} | {gh(all_total)}'
+  + (f' ({gh(done_total)} in finished lanes; E1 interim)' if not E1_FINAL else '') + ' | |')
 w('\nE4 (cap 80) was not run and its reserve was not spent. Sources: each lane\'s `runs/GPU-LEDGER.json`.\n')
 
 # ---------------------------------------------------------------- lanes
@@ -756,6 +857,10 @@ G = [
     ('$\\rho$', 'E10-q quadrature indicator: relative change of the nonlinear term under a finer rule; escalation triggers above a registered bar.'),
     ('CI', '95 % bootstrap confidence interval.'),
     ('GPU-h, cap', 'GPU-hours charged by the cluster; the budget a lane may not exceed.'),
+    ('$W$, A1–A4 (E1)', 'E1 family width (bump centres drawn in a square of side $W$; 0.08 narrow, 0.40 wide) and steepness levels (viscosity bands a factor 3 apart; A4 steepest); a cell is one (W, level) pair, e.g. W08_A2.'),
+    ('B-LSPG / B-E4, R-PODG / R-ECSW / R-TRANS', 'E1 arms: our bank with the deployed LSPG stepper / with the Galerkin ETDRK4 step; POD-Galerkin; POD + ECSW; static translation model (POD of centred bumps decoded at the true centre).'),
+    ('dense transform, FOM finalist', 'E1: the spectral FOM implemented with a dense transform matrix instead of an FFT (faster here); the fastest qualified FOM configuration (`spec|N…|dense|nt…`: modes, transform, time steps).'),
+    ('ladder minimum, search-incomplete', 'the selected configuration is the smallest one tried, so a cheaper one may exist; the adaptive-FOM search hit its attempt cap before finishing.'),
     ('mirror (codeonly)', 'the filtered GitHub backup branch of a lane, without large archive files.'),
 ]
 for k, v in G:

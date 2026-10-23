@@ -1,6 +1,6 @@
 # Improvement campaign (2026-10-21): can the three known weaknesses of the off-mesh bank ROM be fixed?
 
-**Status (compiled 2026-10-23 01:18 UTC by `make_final.py`):** **provisional** — E1 (box, family width × steepness) is still running and every E1 entry is "pending". All other lanes (E2, E3, E5–E10) are final; E4 was not run. Accuracy numbers are conditional estimates against second-order (E0 ST) or lane spectral references (conditional Richardson $\varepsilon_{\rm ref}$; the E0 A10 and combined A10/A11/A15 labels carry forward). POD comparisons are developmental, in-sample (dev6 + val32) and unadjusted; every speed-up against a tuned ladder is an upper bound "against the strongest tested competitor". Every number below is read from a lane output and registered in `PROVENANCE.json`; bars such as 2×, 3×, 0.5 are registered constants of the plan.
+**Status (compiled 2026-10-23 06:51 UTC by `make_final.py`):** **final** for every lane. E4 was not run. Accuracy numbers are conditional estimates against second-order (E0 ST) or lane spectral references (conditional Richardson $\varepsilon_{\rm ref}$; the E0 A10 and combined A10/A11/A15 labels carry forward). POD comparisons are developmental and unadjusted: in-sample on dev6 + val32 in E5–E7; in E1 selected on val32 with the frozen pairs checked once on a fresh test32 cohort; every speed-up against a tuned ladder is an upper bound "against the strongest tested competitor". Every number below is read from a lane output and registered in `PROVENANCE.json`; bars such as 2×, 3×, 0.5 are registered constants of the plan.
 
 ```mermaid
 flowchart LR
@@ -18,23 +18,50 @@ flowchart LR
   classDef stop fill:#fee2e2,stroke:#991b1b;
   classDef pend fill:#fef3c7,stroke:#92400e;
   classDef skip fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray: 4 3;
+  classDef part fill:#dcfce7,stroke:#166534;
   class E2,E3,E5,E6,E7,E8,E10 stop;
-  class E1 pend;
-  class E4 skip;
   class E9 pend;
+  class E4 skip;
+  class E1 part;
 ```
 
-*Red: negative or unsupported outcome under the reported rules (E3: FAIL under the post-hoc A10 rule, UNRESOLVED under the registered rule; E2: H withdrawn, L descriptive only). Amber: pending or descriptive only. Dashed: not run.*
+*Red: negative or unsupported outcome under the reported rules (E3: FAIL under the post-hoc A10 rule, UNRESOLVED under the registered rule; E2: H withdrawn, L descriptive only). Green: partly (E1: $S\ge2$ in a few cells, under conditions). Amber: pending or descriptive only. Dashed: not run.*
 
 ## 1. In one paragraph
 
-None of the three weaknesses is fixed by the experiments that have finished. **Problem 1** (spectral FOM faster): without a fast transform (E2) the bank is still slower than the strongest tested competitor on both geometries (largest validation $S$ = 0.216, bar 2), and on a high-contrast variable coefficient (E3) the fastest tuned FOM already costs only 0.859–0.923 of our box ROM (bar: ≥ 2× slower), so no ROM was trained; E4 was not run; E1 is pending. **Problem 2** (POD + ECSW dominates): a precontracted Galerkin ETDRK4 step makes the $r=384$ evolution 14.3–24.1× faster than LSPG CN-R but its worst error is slightly higher, so E5 fails its rule; neither bank tests nor fitted weights make the nonlinear term cheaper (E6, best fitted-weight gain 1.24×, none Q2-qualified); and a continuous POD built once matches us on 126/126 multi-mesh workload pairs at 0.0991–0.131 of our cost (E7), so the comparative multi-mesh cost claim is dropped. **Problem 3** (steep fronts): neither the coverage retrain (FC1 median 1.40× lower, bar 2×) nor the boundary-compatible bank nor a finer time step (E10-s) qualifies a single FC1 case; the binding failure is time-step certification on steep states, not quadrature (E10-q).
+Problem 1 is only partly addressed, and Problems 2 and 3 are not fixed. **Problem 1** (spectral FOM faster): without a fast transform (E2) the bank is still slower than the strongest tested competitor on both geometries (largest validation $S$ = 0.216, bar 2), and on a high-contrast variable coefficient (E3) the fastest tuned FOM already costs only 0.859–0.923 of our box ROM (bar: ≥ 2× slower), so no ROM was trained; E4 was not run; on the box (E1) a reduced model beats the dense spectral FOM by $S\ge2$ only in a few cells: our bank only with the ETDRK4 step on the narrow, low-steepness family, where POD arms do as well, and on the wide family only the translation model (our deployed LSPG bank stays at 0.0244–0.396). **Problem 2** (POD + ECSW dominates): a precontracted Galerkin ETDRK4 step makes the $r=384$ evolution 14.3–24.1× faster than LSPG CN-R but its worst error is slightly higher, so E5 fails its rule; neither bank tests nor fitted weights make the nonlinear term cheaper (E6, best fitted-weight gain 1.24×, none Q2-qualified); and a continuous POD built once matches us on 126/126 multi-mesh workload pairs at 0.0991–0.131 of our cost (E7), so the comparative multi-mesh cost claim is dropped. **Problem 3** (steep fronts): neither the coverage retrain (FC1 median 1.40× lower, bar 2×) nor the boundary-compatible bank nor a finer time step (E10-s) qualifies a single FC1 case; the binding failure is time-step certification on steep states, not quadrature (E10-q).
 
-## 2. Problem 1 — a coarse spectral solver is faster at equal accuracy · verdict: **not fixed so far (E2, E3 negative; E4 not run; E1 pending)**
+## 2. Problem 1 — a coarse spectral solver is faster at equal accuracy · verdict: **partly fixed (box only, under conditions; see E1)**
 
 ### E1 — box: family width × steepness (imp-box)
 
-**Pending.** The lane is still running (LANES.json status `active`; its EXPORT.json is stage `interim`). No E1 number is reported here until the lane hands back a final export. GPU-hours to date: 41.35 of 87 (interim, ledger read at compile time). Interim deviations recorded by the coordinator (INTERVENTIONS.md, 2026-10-22 ~16:40 UTC): the lane uses spectral conditional references (DESIGN A2.2); a dense-matrix FOM of the same discretisation was added as the fair competitor (A11); H200 FFT runs at $N=12$ returned non-finite values and are excluded (A10).
+Burgers 2D on the unit box; family width $W$ (0.08 narrow … 0.40 wide; the stop rule judges the wide family, $W\ge0.28$) × steepness level A1–A4 (A4 steepest). Arms: the tuned sine pseudo-spectral FOM (fixed or adaptive ETDRK4, FFT or dense transform; every $S$ is against the faster, which was the dense transform, A11), our bank with the deployed LSPG stepper (B-LSPG) and with the Galerkin ETDRK4 step from E5 (B-E4), POD-Galerkin (R-PODG, the pilot stand-in), POD + ECSW (R-ECSW) and a translation model (R-TRANS). $S$ = FOM time / reduced-model time at matched median or worst error $\tau\in\{1,3,10\}\,\%$, val32 selection. **Provisional throughout:** errors are against conditional spectral references (lane deviation A2.2, accepted by the coordinator); every $S$ is an upper bound against the tested FOM ladder; ladders were not extended below their minima, and entries sitting at a minimum are labelled (accepted by the coordinator).
+
+Cells collected: W08_A1, W08_A2, W16_A1, W28_A1, W28_A2, W28_A3, W40_A1, W40_A2, W40_A3. Deferred (coordinator ruling, cap): W08_A3 (deferred: A15 (cap)), W08_A4 (deferred: A14 / A15), W16_A2 (deferred: A15 (cap; defer order: W = 0.16)), W16_A3 (deferred: A15 (cap)), W16_A4 (deferred: A14 / A15), W28_A4 (deferred: A14 (defer order: A4)), W40_A4 (deferred: A14 (defer order: A4)).
+
+Stop rules: SPEED-STOP **NOT FIRED** (largest matched wide-family $S$ = 2.14 over 95 matched comparisons), scoped reading NOT FIRED, BANK-STOP NOT FIRED.
+
+Entries with $S\ge2$ and a complete FOM search (validation; test-once $S$ of the same frozen pair):
+
+| cell | arm | target | $S$ val | $S$ test | FOM finalist | labels |
+|---|---|---|---|---|---|---|
+| W40_A3 | R-TRANS (translation model) | 3 % median | 2.14 | 2.2 | `spec\|N24\|dense\|nt10` | reduced model truncated at the ladder minimum |
+| W40_A3 | R-TRANS (translation model) | 10 % worst | 2.14 | 2.16 | `spec\|N24\|dense\|nt10` | reduced model truncated at the ladder minimum |
+| W08_A2 | R-PODG (POD-Galerkin) | 1 % worst | 2.14 | 2.05 | `spec\|N48\|dense\|nt10` | reduced model truncated at the ladder minimum |
+| W08_A2 | R-ECSW (POD + ECSW) | 1 % worst | 2.01 | 2 | `spec\|N48\|dense\|nt10` | reduced model truncated at the ladder minimum |
+| W08_A2 | B-E4 (our bank, Galerkin ETDRK4) | 1 % worst | 2.07 | 2.04 | `spec\|N48\|dense\|nt10` | reduced model truncated at the ladder minimum |
+
+Larger values with an **incomplete** adaptive-FOM search (a faster FOM may exist, so these are weaker upper bounds): W40_A3 R-TRANS (translation model) 0.01\|median: 3.32 (test 3.3); W40_A3 R-TRANS (translation model) 0.01\|worst: 3.27 (test 3.24); W40_A3 R-TRANS (translation model) 0.03\|worst: 2.26 (test 2.27).
+
+Reading: the bank reaches $S\ge2$ only with the ETDRK4 step and only in W08_A2 (narrow family $W=0.08$, low steepness), at one target (0.01\|worst), where the POD arms do as well (the same cell and target: R-PODG (POD-Galerkin) 2.14, R-ECSW (POD + ECSW) 2.01, B-E4 (our bank, Galerkin ETDRK4) 2.07). On the wide family the bank with ETDRK4 reaches at most $S$ = 1.46. The bank with its deployed LSPG stepper stays at $S$ = 0.0244–0.396 over its 28 matched entries. The only wide-family arm at $S\ge2$ is R-TRANS (translation model), which is not our method. 5 of the 5 complete-search $S\ge2$ entries carry the reduced-model ladder-minimum label (a smaller, possibly faster reduced configuration was not tried). "Complete" means both the fixed-step and the adaptive FOM searches returned a finalist; within each six-candidate screening batch the ordering is recorded only for the attempted candidates, so superiority over unattempted batch members cannot be independently reconstructed (lane search limitation). Timing caveat (A16): some cells were timed with constants hoisted as arguments and others embedded in the compiled program; the dense-FOM hoisted/embedded time ratio is 0.898–0.906, so comparisons of $S$ across cells timed differently (including the width plots) carry this uncertainty; within-cell comparisons do not. GPU-hours 48.97 of 87.
+
+![S against family width, median-error targets](figs/imp-box__S_vs_W_median.png)
+
+*Figure (imp-box): S against family width, median-error targets*
+
+![S against family width, worst-error targets](figs/imp-box__S_vs_W_worst.png)
+
+*Figure (imp-box): S against family width, worst-error targets*
 
 ### E2 — geometry without a fast transform (imp-geometry)
 
@@ -189,7 +216,7 @@ E10 reused the Phase B test cases (not test-once for E10). GPU-hours (E10 bucket
 
 | exp | problem | lane | registered stop / win rule | outcome | fixed? |
 |---|---|---|---|---|---|
-| E1 | 1 | imp-box | stop if every reduced model has $S<0.5$ at every target on the wide family | pending (running) | pending |
+| E1 | 1 | imp-box | stop if every reduced model has $S<0.5$ at every target on the wide family | NOT FIRED | partly (see §2) |
 | E2 | 1 | imp-geometry | win: $S\ge2$ vs best competitor on the wide family, else withdraw | not supported at S1; S2 untested; H WITHDRAWN (measured loss); L not decidable | no |
 | E3 | 1 | imp-varcoef | train a ROM only if the fastest FOM is ≥ 2× slower | gate FAIL (A10 rule) / UNRESOLVED (registered); $G$ = 0.859, 0.923 | no |
 | E4 | 1 | – | only if E2 wins | not run | – |
@@ -212,7 +239,7 @@ E10 reused the Phase B test cases (not test-once for E10). GPU-hours (E10 bucket
 
 **Kept (unchanged by this campaign):** the properties established before it — mesh-independent evolution cost and mesh-free evaluation (E7 keeps them as properties); the incumbent configuration and its accuracy as previously reported (E5 arm 1 is the incumbent LSPG CN-R; E6 reproduces E5's precontracted Galerkin CN arm as its reference R). The finding that tuned POD + ECSW dominates our solve cost stands and should be reported, with the E5 Galerkin ETDRK4 evolution speed-up as a mechanism result that does not change the comparison.
 
-**Open:** the box regime map (E1) is pending; the spectral-FOM claim is undecided until it hands back.
+**Problem 1 on the box (E1), narrowed:** the paper may say that on the box a reduced model beats the tuned dense spectral FOM by $S\ge2$ only in the cells and targets listed in §2 (upper bounds, conditional references, ladder-minimum labels); that our bank does so only with the Galerkin ETDRK4 step, only on the narrow, low-steepness family, where POD-Galerkin and POD + ECSW do as well; and that the deployed LSPG bank stays at $S$ = 0.0244–0.396. A general "faster than a spectral solver" claim is not supported.
 
 ## 7. Retractions and deviations
 
@@ -226,6 +253,7 @@ E10 reused the Phase B test cases (not test-once for E10). GPU-hours (E10 bucket
 - **E2 scope reduced:** the first L cell timed out in the ladder stage; registered reductions (A9) were applied and the cell resumed; the narrow family, S2 and box controls were deferred under the 62 GPU-h cap.
 - **E7 / E5 shared-scratchpad collision:** imp-multimesh overwrote a shared prompt file, so E5 design audit 3 ran with a partly foreign prompt; it audited the right design (DESIGN note 2026-10-22) and audits 4–5 re-covered it.
 - **E5 pkill incident:** a `pkill -f codex-design-4.md` may have terminated another lane's Codex audit (`imp-faststep/audits/NOTE-pkill-incident.txt`); dead audits were re-run by rule; lanes use private work dirs since.
+- **E1 spectral conditional references** (lane deviation A2.2 from the E0 second-order recipe): accepted by the coordinator as a labelled deviation. **No downward ladder extension:** FOM and reduced ladders were not extended below their minima; entries at a minimum are labelled as truncated (coordinator ruling). A dense-transform FOM of the same discretisation was added as the fair competitor (A11); H200 FFT runs at $N=12$ gave non-finite values and were excluded (A10). Query timing changed mid-lane from embedded to hoisted constants (A16); cross-cell $S$ comparisons carry the measured ratio (§2).
 - **E8 released early:** Phase B retrains started before the other wave-1 lanes handed back (independent, capped).
 - **E10 reused Phase B test cases** (not test-once for E10).
 - **Interruptions:** two account usage-limit stops halted every lane agent (2026-10-21 ~19:30 UTC and 2026-10-22 ~01:00 UTC; resumed after reset); GitHub credentials expired 2026-10-21 ~23:40 UTC, so mirrors were not pushed until the user restored them (2026-10-22 ~19:45 UTC), when every lane was re-synced. Self-matching `pgrep` waiters and a dead detached waiter were killed or replaced (INTERVENTIONS.md).
@@ -244,7 +272,7 @@ E10 reused the Phase B test cases (not test-once for E10). GPU-hours (E10 bucket
 
 ## 8. Deferred items
 
-- E1: all of it until the lane hands back (running).
+- E1: cells W08_A3 (deferred: A15 (cap)), W08_A4 (deferred: A14 / A15), W16_A2 (deferred: A15 (cap; defer order: W = 0.16)), W16_A3 (deferred: A15 (cap)), W16_A4 (deferred: A14 / A15), W28_A4 (deferred: A14 (defer order: A4)), W40_A4 (deferred: A14 (defer order: A4)) (coordinator ruling: the A4 cells, W16_A2/A3 and W08_A3 deferred under the cap); the second training-data size; no downward ladder extension below the ladder minima.
 - E2: narrow family, S2 steepness, box attribution controls; static condensation and multi-domain Chebyshev competitors.
 - E3: a variable-κ ROM (never trained: gate failed); Krylov/Leja exponentials, reused factorisations, AMG and POD-ECSW FOM competitors; $C=10$ timing and validation ladder; CCv at $L=512$; the A8.3 test-reference fallback.
 - E4: not run (conditional on E2).
@@ -261,14 +289,14 @@ E10 reused the Phase B test cases (not test-once for E10). GPU-hours (E10 bucket
 
 | lane | experiments | cap (GPU-h) | spent (GPU-h) | status |
 |---|---|---|---|---|
-| imp-box | E1 | 87 | 41.35 | running (interim) |
+| imp-box | E1 | 87 | 48.97 | final |
 | imp-geometry | E2 | 62 | 30.68 | final |
 | imp-varcoef | E3 | 15 | 2.04 | final |
 | imp-faststep | E5 | 4 | 1.41 | final |
 | imp-hrcost | E6 | 3 | 1.46 | final |
 | imp-multimesh | E7 | 8 | 3.16 | final |
 | imp-fronts | E8, E9, E10 | 25 | 10.74 (E8 10.55 of 15, E10 0.20 of 10) | final |
-| **total** | | 204 | 90.84 (49.49 in finished lanes; E1 interim) | |
+| **total** | | 204 | 98.46 | |
 
 E4 (cap 80) was not run and its reserve was not spent. Sources: each lane's `runs/GPU-LEDGER.json`.
 
@@ -276,7 +304,7 @@ E4 (cap 80) was not run and its reserve was not spent. Sources: each lane's `run
 
 | lane | branch | last local commit | GitHub mirror (`origin/codeonly/<branch>`) | status |
 |---|---|---|---|---|
-| imp-box (E1) | `exp/2026-10-22-imp-box` | `576ad5677` (2026-10-22T20:34 -04:00) | `c77739769` | active |
+| imp-box (E1) | `exp/2026-10-22-imp-box` | `9c35fdd83` (2026-10-23T02:40 -04:00) | `17e4876d6` | done |
 | imp-geometry (E2) | `exp/2026-10-21-imp-geometry` | `0dc801d2b` (2026-10-22T20:27 -04:00) | `b89dbd615` | done |
 | imp-varcoef (E3) | `exp/2026-10-21-imp-varcoef` | `e8d39fa1a` (2026-10-22T00:21 -04:00) | `6a98c018a` | done |
 | imp-faststep (E5) | `exp/2026-10-21-imp-faststep` | `a3e417b1e` (2026-10-21T23:40 -04:00) | `ed52f5477` | done |
@@ -284,7 +312,7 @@ E4 (cap 80) was not run and its reserve was not spent. Sources: each lane's `run
 | imp-multimesh (E7) | `exp/2026-10-21-imp-multimesh` | `dd4cd7fc4` (2026-10-21T23:38 -04:00) | `4ade95d16` | done |
 | imp-fronts (E8, E9, E10) | `exp/2026-10-21-imp-fronts` | `506dbd3a5` (2026-10-22T08:19 -04:00) | `a2f64ebda` | done |
 
-Mirror heads were read with `git ls-remote origin` when this report was compiled (an auditor without network access can corroborate them against the local `refs/remotes/origin/codeonly/...` refs). Mirror commits are code-only filtered copies, so their hashes differ from the local commits by design. **Branches awaiting the user's merge decision:** all seven lane branches above (no branch was merged in this campaign); imp-box only once it finishes.
+Mirror heads were read with `git ls-remote origin` when this report was compiled (an auditor without network access can corroborate them against the local `refs/remotes/origin/codeonly/...` refs). Mirror commits are code-only filtered copies, so their hashes differ from the local commits by design. **Branches awaiting the user's merge decision:** all seven lane branches above (no branch was merged in this campaign).
 
 ## 11. Glossary
 
@@ -323,5 +351,9 @@ Mirror heads were read with `git ls-remote origin` when this report was compiled
 - **$\rho$**: E10-q quadrature indicator: relative change of the nonlinear term under a finer rule; escalation triggers above a registered bar.
 - **CI**: 95 % bootstrap confidence interval.
 - **GPU-h, cap**: GPU-hours charged by the cluster; the budget a lane may not exceed.
+- **$W$, A1–A4 (E1)**: E1 family width (bump centres drawn in a square of side $W$; 0.08 narrow, 0.40 wide) and steepness levels (viscosity bands a factor 3 apart; A4 steepest); a cell is one (W, level) pair, e.g. W08_A2.
+- **B-LSPG / B-E4, R-PODG / R-ECSW / R-TRANS**: E1 arms: our bank with the deployed LSPG stepper / with the Galerkin ETDRK4 step; POD-Galerkin; POD + ECSW; static translation model (POD of centred bumps decoded at the true centre).
+- **dense transform, FOM finalist**: E1: the spectral FOM implemented with a dense transform matrix instead of an FFT (faster here); the fastest qualified FOM configuration (`spec|N…|dense|nt…`: modes, transform, time steps).
+- **ladder minimum, search-incomplete**: the selected configuration is the smallest one tried, so a cheaper one may exist; the adaptive-FOM search hit its attempt cap before finishing.
 - **mirror (codeonly)**: the filtered GitHub backup branch of a lane, without large archive files.
 

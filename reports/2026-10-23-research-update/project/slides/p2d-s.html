@@ -10,6 +10,6 @@
 <img src="/_blob/1045285ee59ea88117766f439f8b7ca0" alt="Speed-up over the matched full solver against mesh for every qualified LSPG configuration" style="width:1080px;height:500px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
 <ul style="flex:1;font-size:26px;line-height:1.38;color:#4A5568;display:flex;flex-direction:column;gap:14px"><li>Speed-up S = full-solver cost ÷ our cost at the same accuracy; above 1 means we are faster</li><li>At 4096²: S = 0.049–0.71 across 21 configurations; none reaches the 2× bar</li><li>S rises with the mesh because our solve cost is flat while the full solver's grows</li><li>Smaller r (blue, r = 128) is closest to break-even</li></ul>
 </div>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">jcp-fom2d; final report §3.4 · 8</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">jcp-fom2d; final report §3.4 · 9</p>
 <aside>Every S is an upper bound on our speed-up, because the full-solver ladder is finite. Kill criterion K2 (no 2× win at the largest mesh) fires.</aside>
 </section>

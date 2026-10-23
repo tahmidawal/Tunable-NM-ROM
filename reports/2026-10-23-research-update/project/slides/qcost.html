@@ -1,0 +1,15 @@
+<section id="qcost" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">What do the quadrature points cost, and does that depend on the mesh?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#14213D">Cost grows with the number of points, never with the mesh</h2>
+</div>
+<div style="display:flex;gap:44px;align-items:start">
+<img src="/_blob/bae25b691332b768c521140afaa983b9" alt="Solve time per query against mesh for each quadrature rule, accurate and fast settings, all lines flat" style="width:1080px;height:500px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
+<ul style="flex:1;font-size:26px;line-height:1.38;color:#4A5568;display:flex;flex-direction:column;gap:14px"><li><b>Accurate:</b> r = 384, 1536 tests; <b>fast:</b> r = 128, 512 tests</li><li>Every rule is flat from 256² to 4096²: ratio 0.94–1.06 over all 40 measured arms</li><li>More points cost more: Gauss 64² (4,096) → 96² (9,216) → 128² (16,384) → Fibonacci 17,711</li><li>At 4096²: Gauss 96² 54.5 ms against the old 63² lattice 46.3 ms (accurate); Fibonacci 1597 13.3 ms against 18.7 ms (fast)</li></ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Off-mesh quadrature study 2D, one H200 job, dev6 × 3 repeats; solve = query − decode · 6</p>
+<aside>Solve time is the median query time minus the median decode time, on one GPU, so it is the reduced-space work only. The old 63-by-63 mesh lattice (dashed) is on the mesh, so it is not a matched equal-accuracy comparison; the off-mesh rules are measured against the continuum and the lattice against the mesh. In the accurate setting the off-mesh rule needed to pass the quadrature check (Gauss 96²) costs a little more than the old lattice; in the fast setting Fibonacci 1597 is cheaper.</aside>
+</section>

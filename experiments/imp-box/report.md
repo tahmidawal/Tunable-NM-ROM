@@ -14,6 +14,8 @@ On the unit box, for which family width $W$ and steepness level does a reduced m
 | SPEED-STOP (scoped reading, not a substitute) | NOT FIRED | arms infeasible at every required entry: none |
 | BANK-STOP | **NOT FIRED** | entries: ('W40_A1', 0.01, 'median'): above, ('W40_A1', 0.01, 'worst'): above, ('W40_A1', 0.03, 'median'): below, ('W40_A1', 0.03, 'worst'): no affordable tested rank, ('W40_A1', 0.1, 'median'): below, ('W40_A1', 0.1, 'worst'): no affordable tested rank, ('W40_A2', 0.01, 'median'): above, ('W40_A2', 0.01, 'worst'): below, ('W40_A2', 0.03, 'median'): no affordable tested rank, ('W40_A2', 0.03, 'worst'): no affordable tested rank, ('W40_A2', 0.1, 'median'): no affordable tested rank, ('W40_A2', 0.1, 'worst'): no affordable tested rank, ('W40_A3', 0.01, 'median'): missing, ('W40_A3', 0.01, 'worst'): missing, ('W40_A3', 0.03, 'median'): below, ('W40_A3', 0.03, 'worst'): missing, ('W40_A3', 0.1, 'median'): no affordable tested rank, ('W40_A3', 0.1, 'worst'): no affordable tested rank |
 
+**Fair competitor (A11).** In 27 of 27 ladder-screen comparisons the dense-transform FOM is faster than the FFT one, the FFT taking 1.54–2.02× as long (section A11 below; screening diagnostics, not paired ROM speed-ups). Every S here is measured against the faster of the two; against an FFT-only FOM the speed-ups would have been larger by up to about that factor (screen basis).
+
 ## Scope: what ran, what was deferred (A13–A17)
 
 | cell | status |
@@ -39,7 +41,7 @@ Also deferred: the second data size (384 trajectories; defer order item 4). Smok
 
 ## A16 comparability: hoisted vs embedded query timing (G-HOIST)
 
-A1/A2 cells and W08_A1 were selected and timed with embedded-constant queries, the A3 cells (and later cells) with hoisted ones (A16). Ratio = hoisted / embedded single-query time on val[0] (median of 10):
+Cells W08_A1, W28_A1, W28_A2, W40_A1, W40_A2 were selected and timed with embedded-constant queries; cells W08_A2, W16_A1, W28_A3, W40_A3 (run after A16) with hoisted ones, and only they carry the G-HOIST comparison. Ratio = hoisted / embedded single-query time on val[0] (median of 10):
 
 | cell | fom | fom_dense | fom_ad | podg_point | podg_tensor | lspg | trans |
 |---|---|---|---|---|---|---|---|
@@ -48,7 +50,7 @@ A1/A2 cells and W08_A1 were selected and timed with embedded-constant queries, t
 | W28_A3 | 1 | 0.906 | 1.02 | 1.02 | 1.01 | 1.01 | 1.01 |
 | W40_A3 | 1.01 | 0.898 | 1.02 | 1.03 | 1 | 1.01 | 1 |
 
-The dense-transform FOM runs about 10 % faster hoisted; the reduced queries within ±3 %. Cross-cell S comparisons spanning the A16 change (A1/A2 vs A3) carry this uncertainty.
+Range over these cells, per query: `fom` 1.003–1.017; `fom_dense` 0.898–0.906; `fom_ad` 1.021–1.024; `podg_point` 1.022–1.031; `podg_tensor` 0.999–1.007; `lspg` 0.983–1.006; `trans` 1.002–1.009. Cross-cell S comparisons spanning the A16 change (embedded vs hoisted cells) carry this timing difference.
 
 ## Results per cell (val32, PROVISIONAL: conditional references; one trained bank per cell)
 
@@ -69,12 +71,12 @@ Bank equal-cost size (evaluation contract, A2.7/A3.3/A5.4) and projection floor 
 
 | τ | stat | FOM comparator | $r_\times$ | cheapest form | floor | verdict | $r_\times^{\rm query}$ |
 |---|---|---|---|---|---|---|---|
-| 1 % | median | spec|N10|dense|nt5 | 32 | tensor-gal | 1.71 % | above | 16 |
-| 1 % | worst | spec|N10|dense|nt5 | 32 | tensor-gal | 5.09 % | above | 16 |
-| 3 % | median | spec|N8|dense|nt5 | 32 | tensor-gal | 1.71 % | below | 16 |
-| 3 % | worst | spec|N10|dense|nt5 | – | – | – | no affordable tested rank | 16 |
-| 10 % | median | spec|N8|dense|nt5 | 32 | tensor-gal | 1.71 % | below | 16 |
-| 10 % | worst | spec|N8|dense|nt5 | – | – | – | no affordable tested rank | 16 |
+| 1 % | median | spec\|N10\|dense\|nt5 | 32 | tensor-gal | 1.71 % | above | 16 |
+| 1 % | worst | spec\|N10\|dense\|nt5 | 32 | tensor-gal | 5.09 % | above | 16 |
+| 3 % | median | spec\|N8\|dense\|nt5 | 32 | tensor-gal | 1.71 % | below | 16 |
+| 3 % | worst | spec\|N10\|dense\|nt5 | – | – | – | no affordable tested rank | 16 |
+| 10 % | median | spec\|N8\|dense\|nt5 | 32 | tensor-gal | 1.71 % | below | 16 |
+| 10 % | worst | spec\|N8\|dense\|nt5 | – | – | – | no affordable tested rank | 16 |
 
 Stage hours: ref 0.02, data 0.01, pod 0.01, bank 0.29, ladder 1.82, time 1.03, controls 0.11; host peak 17 GiB, device peak 16.8 GiB.
 
@@ -95,12 +97,12 @@ Bank equal-cost size (evaluation contract, A2.7/A3.3/A5.4) and projection floor 
 
 | τ | stat | FOM comparator | $r_\times$ | cheapest form | floor | verdict | $r_\times^{\rm query}$ |
 |---|---|---|---|---|---|---|---|
-| 1 % | median | spec|N16|dense|nt5 | 16 | tensor-gal | 10.8 % | above | 128 |
-| 1 % | worst | spec|N32|dense|nt10 | 256 | point4-gal | 0.251 % | below | 192 |
-| 3 % | median | spec|N16|dense|nt5 | – | – | – | no affordable tested rank | 128 |
-| 3 % | worst | spec|N16|dense|nt5 | – | – | – | no affordable tested rank | 128 |
-| 10 % | median | spec|N10|dense|nt5 | – | – | – | no affordable tested rank | 16 |
-| 10 % | worst | spec|N16|dense|nt5 | – | – | – | no affordable tested rank | 128 |
+| 1 % | median | spec\|N16\|dense\|nt5 | 16 | tensor-gal | 10.8 % | above | 128 |
+| 1 % | worst | spec\|N32\|dense\|nt10 | 256 | point4-gal | 0.251 % | below | 192 |
+| 3 % | median | spec\|N16\|dense\|nt5 | – | – | – | no affordable tested rank | 128 |
+| 3 % | worst | spec\|N16\|dense\|nt5 | – | – | – | no affordable tested rank | 128 |
+| 10 % | median | spec\|N10\|dense\|nt5 | – | – | – | no affordable tested rank | 16 |
+| 10 % | worst | spec\|N16\|dense\|nt5 | – | – | – | no affordable tested rank | 128 |
 
 Stage hours: ref 0.02, data 0.01, pod 0.01, bank 0.29, ladder 2.37, time 2.10, controls 0.10; host peak 22.7 GiB, device peak 25.5 GiB.
 
@@ -121,12 +123,12 @@ Bank equal-cost size (evaluation contract, A2.7/A3.3/A5.4) and projection floor 
 
 | τ | stat | FOM comparator | $r_\times$ | cheapest form | floor | verdict | $r_\times^{\rm query}$ |
 |---|---|---|---|---|---|---|---|
-| 1 % | median | spec|N32|dense|nt20 (FOM search: finalist, search-incomplete) | 128 | tensor-lspg | 2.33 % | above | 192 |
-| 1 % | worst | spec|N48|dense|nt40 (FOM search: finalist, search-incomplete) | 128 | tensor-lspg | 8.49 % | above | 256 |
-| 3 % | median | spec|N24|dense|nt10 | 128 | tensor-lspg | 2.33 % | below | 128 |
-| 3 % | worst | spec|N32|dense|nt20 (FOM search: finalist, search-incomplete) | 128 | tensor-lspg | 8.49 % | above | 192 |
-| 10 % | median | spec|N16|dense|nt5 | – | – | – | no affordable tested rank | 96 |
-| 10 % | worst | spec|N24|dense|nt10 | – | – | – | no affordable tested rank | 128 |
+| 1 % | median | spec\|N32\|dense\|nt20 (FOM search: finalist, search-incomplete) | 128 | tensor-lspg | 2.33 % | above | 192 |
+| 1 % | worst | spec\|N48\|dense\|nt40 (FOM search: finalist, search-incomplete) | 128 | tensor-lspg | 8.49 % | above | 256 |
+| 3 % | median | spec\|N24\|dense\|nt10 | 128 | tensor-lspg | 2.33 % | below | 128 |
+| 3 % | worst | spec\|N32\|dense\|nt20 (FOM search: finalist, search-incomplete) | 128 | tensor-lspg | 8.49 % | above | 192 |
+| 10 % | median | spec\|N16\|dense\|nt5 | – | – | – | no affordable tested rank | 96 |
+| 10 % | worst | spec\|N24\|dense\|nt10 | – | – | – | no affordable tested rank | 128 |
 
 Stage hours: ref 0.05, data 0.04, pod 0.02, bank 0.29, ladder 3.87, time 1.23, controls 0.13; host peak 35 GiB, device peak 25.5 GiB.
 
@@ -207,12 +209,12 @@ Bank equal-cost size (evaluation contract, A2.7/A3.3/A5.4) and projection floor 
 
 | τ | stat | FOM comparator | $r_\times$ | cheapest form | floor | verdict | $r_\times^{\rm query}$ |
 |---|---|---|---|---|---|---|---|
-| 1 % | median | spec|N10|dense|nt5 | 32 | tensor-gal | 0.0971 % | below | 16 |
-| 1 % | worst | spec|N16|dense|nt5 | 32 | tensor-gal | 0.281 % | below | 96 |
-| 3 % | median | spec|N8|dense|nt5 | 32 | tensor-gal | 0.0971 % | below | – |
-| 3 % | worst | spec|N10|dense|nt5 | – | – | – | no affordable tested rank | 16 |
-| 10 % | median | spec|N8|dense|nt5 | – | – | – | no affordable tested rank | – |
-| 10 % | worst | spec|N8|dense|nt5 | – | – | – | no affordable tested rank | – |
+| 1 % | median | spec\|N10\|dense\|nt5 | 32 | tensor-gal | 0.0971 % | below | 16 |
+| 1 % | worst | spec\|N16\|dense\|nt5 | 32 | tensor-gal | 0.281 % | below | 96 |
+| 3 % | median | spec\|N8\|dense\|nt5 | 32 | tensor-gal | 0.0971 % | below | – |
+| 3 % | worst | spec\|N10\|dense\|nt5 | – | – | – | no affordable tested rank | 16 |
+| 10 % | median | spec\|N8\|dense\|nt5 | – | – | – | no affordable tested rank | – |
+| 10 % | worst | spec\|N8\|dense\|nt5 | – | – | – | no affordable tested rank | – |
 
 Stage hours: ref 0.02, data 0.01, pod 0.01, bank 0.29, ladder 1.69, time 0.98, controls 0.11; host peak 19 GiB, device peak 9.86 GiB.
 
@@ -233,80 +235,80 @@ Bank equal-cost size (evaluation contract, A2.7/A3.3/A5.4) and projection floor 
 
 | τ | stat | FOM comparator | $r_\times$ | cheapest form | floor | verdict | $r_\times^{\rm query}$ |
 |---|---|---|---|---|---|---|---|
-| 1 % | median | spec|N16|dense|nt5 | 24 | tensor-lspg | 0.462 % | below | 96 |
-| 1 % | worst | spec|N32|dense|nt10 | 128 | tensor-lspg | 0.0219 % | below | 128 |
-| 3 % | median | spec|N16|dense|nt5 | 24 | tensor-lspg | 0.462 % | below | 96 |
-| 3 % | worst | spec|N16|dense|nt5 | 24 | tensor-lspg | 1.64 % | below | 96 |
-| 10 % | median | spec|N10|dense|nt5 | – | – | – | no affordable tested rank | 16 |
-| 10 % | worst | spec|N16|dense|nt5 | 24 | tensor-lspg | 1.64 % | below | 96 |
+| 1 % | median | spec\|N16\|dense\|nt5 | 24 | tensor-lspg | 0.462 % | below | 96 |
+| 1 % | worst | spec\|N32\|dense\|nt10 | 128 | tensor-lspg | 0.0219 % | below | 128 |
+| 3 % | median | spec\|N16\|dense\|nt5 | 24 | tensor-lspg | 0.462 % | below | 96 |
+| 3 % | worst | spec\|N16\|dense\|nt5 | 24 | tensor-lspg | 1.64 % | below | 96 |
+| 10 % | median | spec\|N10\|dense\|nt5 | – | – | – | no affordable tested rank | 16 |
+| 10 % | worst | spec\|N16\|dense\|nt5 | 24 | tensor-lspg | 1.64 % | below | 96 |
 
 Stage hours: ref 0.02, data 0.01, pod 0.01, bank 0.30, ladder 0.79, time 0.88, controls 0.12; host peak 12.7 GiB, device peak 9.86 GiB.
 
 ## Where S crosses 1 and 2 (per level, target, statistic, arm; PROVISIONAL)
 
-Measured widths per level are those of the collected cells; a transition is listed between adjacent measured widths; "≥c everywhere" / "<c everywhere" when no transition occurs; censored or missing cells break the bracket. R-TRANS (only W = 0.4) and the bank (W = 0.08, 0.4) have fewer widths.
+Measured widths per level are those of the collected cells; a transition is listed between adjacent measured widths; "≥c everywhere" / "<c everywhere" when no transition occurs; censored or missing cells break the bracket. R-TRANS (only W = 0.4) and the bank (W = 0.08, 0.4) have fewer widths. A point labelled F-min / R-min has its FOM / reduced member at the ladder minimum (A13, search truncated), and "FOM search a/b" marks an incomplete FOM search; a crossing bracketed by labelled points is located only up to that truncation (a smaller FOM could lower S and move the crossing to narrower widths; a smaller reduced model could raise S).
 
 | level | τ | stat | arm | S by width (W: S) | crosses 1 | crosses 2 |
 |---|---|---|---|---|---|---|
-| A1 | 1 % | median | R-PODG | 0.08: 1.06, 0.16: 1.03, 0.28: 0.927, 0.4: 0.914 | [0.16, 0.28] down | <2 everywhere |
-| A1 | 1 % | median | R-ECSW | 0.08: 1.03, 0.16: 0.975, 0.28: 0.836, 0.4: 0.829 | [0.08, 0.16] down | <2 everywhere |
-| A1 | 1 % | median | B-LSPG | 0.08: 0.0998, 0.4: 0.0615 | <1 everywhere | <2 everywhere |
-| A1 | 1 % | median | B-E4 | 0.08: 1.2, 0.4: 0.918 | [0.08, 0.4] down | <2 everywhere |
-| A1 | 1 % | worst | R-PODG | 0.08: 1.54, 0.16: 1.34, 0.28: 1.18, 0.4: 0.72 | [0.28, 0.4] down | <2 everywhere |
-| A1 | 1 % | worst | R-ECSW | 0.08: 1.49, 0.16: 1.28, 0.28: 1.18, 0.4: 0.733 | [0.28, 0.4] down | <2 everywhere |
-| A1 | 1 % | worst | B-LSPG | 0.08: 0.113, 0.4: 0.0435 | <1 everywhere | <2 everywhere |
-| A1 | 1 % | worst | B-E4 | 0.08: 1.52, 0.4: 0.807 | [0.08, 0.4] down | <2 everywhere |
-| A1 | 3 % | median | R-PODG | 0.08: 1.14, 0.16: 1.12, 0.28: 1.02, 0.4: 0.927 | [0.28, 0.4] down | <2 everywhere |
-| A1 | 3 % | median | R-ECSW | 0.08: 1.03, 0.16: 0.932, 0.28: 0.983, 0.4: 0.85 | [0.08, 0.16] down | <2 everywhere |
-| A1 | 3 % | median | B-LSPG | 0.08: 0.179, 0.4: 0.152 | <1 everywhere | <2 everywhere |
-| A1 | 3 % | median | B-E4 | 0.08: 1.15, 0.4: 1.04 | ≥1 everywhere | <2 everywhere |
-| A1 | 3 % | worst | R-PODG | 0.08: 1.14, 0.16: 1.04, 0.28: 0.927, 0.4: 0.801 | [0.16, 0.28] down | <2 everywhere |
-| A1 | 3 % | worst | R-ECSW | 0.08: 1.03, 0.16: 0.965, 0.28: 0.836, 0.4: 0.764 | [0.08, 0.16] down | <2 everywhere |
-| A1 | 3 % | worst | B-LSPG | 0.08: 0.179, 0.4: 0.108 | <1 everywhere | <2 everywhere |
-| A1 | 3 % | worst | B-E4 | 0.08: 1.2, 0.4: 0.918 | [0.08, 0.4] down | <2 everywhere |
-| A1 | 10 % | median | R-PODG | 0.08: 1.14, 0.16: 1.12, 0.28: 1.09, 0.4: 1.09 | ≥1 everywhere | <2 everywhere |
-| A1 | 10 % | median | R-ECSW | 0.08: 1.03, 0.16: 0.932, 0.28: 0.988, 0.4: 0.988 | [0.08, 0.16] down | <2 everywhere |
-| A1 | 10 % | median | B-LSPG | 0.08: 0.264, 0.4: 0.311 | <1 everywhere | <2 everywhere |
-| A1 | 10 % | median | B-E4 | 0.08: 1.15, 0.4: 1.13 | ≥1 everywhere | <2 everywhere |
-| A1 | 10 % | worst | R-PODG | 0.08: 1.14, 0.16: 1.12, 0.28: 1.04, 0.4: 1.03 | ≥1 everywhere | <2 everywhere |
-| A1 | 10 % | worst | R-ECSW | 0.08: 1.03, 0.16: 0.932, 0.28: 0.988, 0.4: 0.988 | [0.08, 0.16] down | <2 everywhere |
-| A1 | 10 % | worst | B-LSPG | 0.08: 0.264, 0.4: 0.285 | <1 everywhere | <2 everywhere |
-| A1 | 10 % | worst | B-E4 | 0.08: 1.15, 0.4: 1.04 | ≥1 everywhere | <2 everywhere |
-| A2 | 1 % | median | R-PODG | 0.08: 1.46, 0.28: 1.29, 0.4: 1.18 | ≥1 everywhere | <2 everywhere |
-| A2 | 1 % | median | R-ECSW | 0.08: 1.46, 0.28: 1.2, 0.4: 1.13 | ≥1 everywhere | <2 everywhere |
-| A2 | 1 % | median | B-LSPG | 0.08: 0.131, 0.4: 0.0676 | <1 everywhere | <2 everywhere |
-| A2 | 1 % | median | B-E4 | 0.08: 1.46, 0.4: 1.17 | ≥1 everywhere | <2 everywhere |
-| A2 | 1 % | worst | R-PODG | 0.08: 2.14, 0.28: 1.49, 0.4: 1.13 | ≥1 everywhere | [0.08, 0.28] down |
-| A2 | 1 % | worst | R-ECSW | 0.08: 2.01, 0.28: 1.44, 0.4: 1.15 | ≥1 everywhere | [0.08, 0.28] down |
+| A1 | 1 % | median | R-PODG | 0.08: 1.06 (finalist; F-min,R-min), 0.16: 1.03 (finalist; F-min,R-min), 0.28: 0.927 (finalist; F-min,R-min), 0.4: 0.914 (finalist; F-min,R-min) | [0.16, 0.28] down | <2 everywhere |
+| A1 | 1 % | median | R-ECSW | 0.08: 1.03 (finalist; F-min,R-min), 0.16: 0.975 (finalist; F-min,R-min), 0.28: 0.836 (finalist; F-min,R-min), 0.4: 0.829 (finalist; F-min,R-min) | [0.08, 0.16] down | <2 everywhere |
+| A1 | 1 % | median | B-LSPG | 0.08: 0.0998 (finalist; F-min,R-min), 0.4: 0.0615 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A1 | 1 % | median | B-E4 | 0.08: 1.2 (finalist; F-min,R-min), 0.4: 0.918 (finalist; F-min,R-min) | [0.08, 0.4] down | <2 everywhere |
+| A1 | 1 % | worst | R-PODG | 0.08: 1.54 (finalist; F-min,R-min), 0.16: 1.34 (finalist; F-min,R-min), 0.28: 1.18 (finalist; F-min,R-min), 0.4: 0.72 (finalist; F-min,R-min) | [0.28, 0.4] down | <2 everywhere |
+| A1 | 1 % | worst | R-ECSW | 0.08: 1.49 (finalist; F-min,R-min), 0.16: 1.28 (finalist; F-min,R-min), 0.28: 1.18 (finalist; F-min,R-min), 0.4: 0.733 (finalist; F-min,R-min) | [0.28, 0.4] down | <2 everywhere |
+| A1 | 1 % | worst | B-LSPG | 0.08: 0.113 (finalist; F-min), 0.4: 0.0435 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A1 | 1 % | worst | B-E4 | 0.08: 1.52 (finalist; F-min,R-min), 0.4: 0.807 (finalist; F-min,R-min) | [0.08, 0.4] down | <2 everywhere |
+| A1 | 3 % | median | R-PODG | 0.08: 1.14 (finalist; F-min,R-min), 0.16: 1.12 (finalist; F-min,R-min), 0.28: 1.02 (finalist; F-min,R-min), 0.4: 0.927 (finalist; F-min,R-min) | [0.28, 0.4] down | <2 everywhere |
+| A1 | 3 % | median | R-ECSW | 0.08: 1.03 (finalist; F-min,R-min), 0.16: 0.932 (finalist; F-min,R-min), 0.28: 0.983 (finalist; F-min,R-min), 0.4: 0.85 (finalist; F-min,R-min) | [0.08, 0.16] down | <2 everywhere |
+| A1 | 3 % | median | B-LSPG | 0.08: 0.179 (finalist; F-min,R-min), 0.4: 0.152 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A1 | 3 % | median | B-E4 | 0.08: 1.15 (finalist; F-min,R-min), 0.4: 1.04 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A1 | 3 % | worst | R-PODG | 0.08: 1.14 (finalist; F-min,R-min), 0.16: 1.04 (finalist; F-min,R-min), 0.28: 0.927 (finalist; F-min,R-min), 0.4: 0.801 (finalist; F-min,R-min) | [0.16, 0.28] down | <2 everywhere |
+| A1 | 3 % | worst | R-ECSW | 0.08: 1.03 (finalist; F-min,R-min), 0.16: 0.965 (finalist; F-min,R-min), 0.28: 0.836 (finalist; F-min,R-min), 0.4: 0.764 (finalist; F-min,R-min) | [0.08, 0.16] down | <2 everywhere |
+| A1 | 3 % | worst | B-LSPG | 0.08: 0.179 (finalist; F-min,R-min), 0.4: 0.108 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A1 | 3 % | worst | B-E4 | 0.08: 1.2 (finalist; F-min,R-min), 0.4: 0.918 (finalist; F-min,R-min) | [0.08, 0.4] down | <2 everywhere |
+| A1 | 10 % | median | R-PODG | 0.08: 1.14 (finalist; F-min,R-min), 0.16: 1.12 (finalist; F-min,R-min), 0.28: 1.09 (finalist; F-min,R-min), 0.4: 1.09 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A1 | 10 % | median | R-ECSW | 0.08: 1.03 (finalist; F-min,R-min), 0.16: 0.932 (finalist; F-min,R-min), 0.28: 0.988 (finalist; F-min,R-min), 0.4: 0.988 (finalist; F-min,R-min) | [0.08, 0.16] down | <2 everywhere |
+| A1 | 10 % | median | B-LSPG | 0.08: 0.264 (finalist; F-min,R-min), 0.4: 0.311 (finalist; F-min,R-min) | <1 everywhere | <2 everywhere |
+| A1 | 10 % | median | B-E4 | 0.08: 1.15 (finalist; F-min,R-min), 0.4: 1.13 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A1 | 10 % | worst | R-PODG | 0.08: 1.14 (finalist; F-min,R-min), 0.16: 1.12 (finalist; F-min,R-min), 0.28: 1.04 (finalist; F-min,R-min), 0.4: 1.03 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A1 | 10 % | worst | R-ECSW | 0.08: 1.03 (finalist; F-min,R-min), 0.16: 0.932 (finalist; F-min,R-min), 0.28: 0.988 (finalist; F-min,R-min), 0.4: 0.988 (finalist; F-min,R-min) | [0.08, 0.16] down | <2 everywhere |
+| A1 | 10 % | worst | B-LSPG | 0.08: 0.264 (finalist; F-min,R-min), 0.4: 0.285 (finalist; F-min,R-min) | <1 everywhere | <2 everywhere |
+| A1 | 10 % | worst | B-E4 | 0.08: 1.15 (finalist; F-min,R-min), 0.4: 1.04 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 1 % | median | R-PODG | 0.08: 1.46 (finalist; F-min,R-min), 0.28: 1.29 (finalist; F-min,R-min), 0.4: 1.18 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 1 % | median | R-ECSW | 0.08: 1.46 (finalist; F-min,R-min), 0.28: 1.2 (finalist; F-min,R-min), 0.4: 1.13 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 1 % | median | B-LSPG | 0.08: 0.131 (finalist; F-min), 0.4: 0.0676 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A2 | 1 % | median | B-E4 | 0.08: 1.46 (finalist; F-min,R-min), 0.4: 1.17 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 1 % | worst | R-PODG | 0.08: 2.14 (finalist; R-min), 0.28: 1.49 (finalist; R-min), 0.4: 1.13 (finalist; R-min) | ≥1 everywhere | [0.08, 0.28] down |
+| A2 | 1 % | worst | R-ECSW | 0.08: 2.01 (finalist; R-min), 0.28: 1.44 (finalist; R-min), 0.4: 1.15 (finalist; R-min) | ≥1 everywhere | [0.08, 0.28] down |
 | A2 | 1 % | worst | B-LSPG | 0.08: 0.128, 0.4: 0.0462 | <1 everywhere | <2 everywhere |
-| A2 | 1 % | worst | B-E4 | 0.08: 2.07, 0.4: 1.12 | ≥1 everywhere | [0.08, 0.4] down |
-| A2 | 3 % | median | R-PODG | 0.08: 1.6, 0.28: 1.51, 0.4: 1.38 | ≥1 everywhere | <2 everywhere |
-| A2 | 3 % | median | R-ECSW | 0.08: 1.42, 0.28: 1.25, 0.4: 1.13 | ≥1 everywhere | <2 everywhere |
-| A2 | 3 % | median | B-LSPG | 0.08: 0.258, 0.4: 0.112 | <1 everywhere | <2 everywhere |
-| A2 | 3 % | median | B-E4 | 0.08: 1.62, 0.4: 1.38 | ≥1 everywhere | <2 everywhere |
-| A2 | 3 % | worst | R-PODG | 0.08: 1.46, 0.28: 1.29, 0.4: 1.07 | ≥1 everywhere | <2 everywhere |
-| A2 | 3 % | worst | R-ECSW | 0.08: 1.46, 0.28: 1.2, 0.4: 1.04 | ≥1 everywhere | <2 everywhere |
-| A2 | 3 % | worst | B-LSPG | 0.08: 0.193, 0.4: 0.0537 | <1 everywhere | <2 everywhere |
-| A2 | 3 % | worst | B-E4 | 0.08: 1.46, 0.4: 1.06 | ≥1 everywhere | <2 everywhere |
-| A2 | 10 % | median | R-PODG | 0.08: 1.19, 0.28: 1.14, 0.4: 1.04 | ≥1 everywhere | <2 everywhere |
-| A2 | 10 % | median | R-ECSW | 0.08: 1.02, 0.28: 0.859, 0.4: 0.752 | [0.08, 0.28] down | <2 everywhere |
-| A2 | 10 % | median | B-LSPG | 0.08: 0.286, 0.4: 0.0958 | <1 everywhere | <2 everywhere |
-| A2 | 10 % | median | B-E4 | 0.08: 1.14, 0.4: 1.04 | ≥1 everywhere | <2 everywhere |
-| A2 | 10 % | worst | R-PODG | 0.08: 1.6, 0.28: 1.51, 0.4: 1.38 | ≥1 everywhere | <2 everywhere |
-| A2 | 10 % | worst | R-ECSW | 0.08: 1.42, 0.28: 1.25, 0.4: 1.13 | ≥1 everywhere | <2 everywhere |
-| A2 | 10 % | worst | B-LSPG | 0.08: 0.396, 0.4: 0.127 | <1 everywhere | <2 everywhere |
-| A2 | 10 % | worst | B-E4 | 0.08: 1.62, 0.4: 1.38 | ≥1 everywhere | <2 everywhere |
+| A2 | 1 % | worst | B-E4 | 0.08: 2.07 (finalist; R-min), 0.4: 1.12 (finalist; R-min) | ≥1 everywhere | [0.08, 0.4] down |
+| A2 | 3 % | median | R-PODG | 0.08: 1.6 (finalist; F-min,R-min), 0.28: 1.51 (finalist; F-min,R-min), 0.4: 1.38 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 3 % | median | R-ECSW | 0.08: 1.42 (finalist; F-min,R-min), 0.28: 1.25 (finalist; F-min,R-min), 0.4: 1.13 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 3 % | median | B-LSPG | 0.08: 0.258 (finalist; F-min,R-min), 0.4: 0.112 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A2 | 3 % | median | B-E4 | 0.08: 1.62 (finalist; F-min,R-min), 0.4: 1.38 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 3 % | worst | R-PODG | 0.08: 1.46 (finalist; F-min,R-min), 0.28: 1.29 (finalist; F-min,R-min), 0.4: 1.07 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 3 % | worst | R-ECSW | 0.08: 1.46 (finalist; F-min,R-min), 0.28: 1.2 (finalist; F-min,R-min), 0.4: 1.04 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 3 % | worst | B-LSPG | 0.08: 0.193 (finalist; F-min), 0.4: 0.0537 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A2 | 3 % | worst | B-E4 | 0.08: 1.46 (finalist; F-min,R-min), 0.4: 1.06 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 10 % | median | R-PODG | 0.08: 1.19 (finalist; F-min,R-min), 0.28: 1.14 (finalist; F-min,R-min), 0.4: 1.04 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 10 % | median | R-ECSW | 0.08: 1.02 (finalist; F-min,R-min), 0.28: 0.859 (finalist; F-min,R-min), 0.4: 0.752 (finalist; F-min,R-min) | [0.08, 0.28] down | <2 everywhere |
+| A2 | 10 % | median | B-LSPG | 0.08: 0.286 (finalist; F-min,R-min), 0.4: 0.0958 (finalist; F-min) | <1 everywhere | <2 everywhere |
+| A2 | 10 % | median | B-E4 | 0.08: 1.14 (finalist; F-min,R-min), 0.4: 1.04 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 10 % | worst | R-PODG | 0.08: 1.6 (finalist; F-min,R-min), 0.28: 1.51 (finalist; F-min,R-min), 0.4: 1.38 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 10 % | worst | R-ECSW | 0.08: 1.42 (finalist; F-min,R-min), 0.28: 1.25 (finalist; F-min,R-min), 0.4: 1.13 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
+| A2 | 10 % | worst | B-LSPG | 0.08: 0.396 (finalist; F-min,R-min), 0.4: 0.127 (finalist; F-min,R-min) | <1 everywhere | <2 everywhere |
+| A2 | 10 % | worst | B-E4 | 0.08: 1.62 (finalist; F-min,R-min), 0.4: 1.38 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
 | A3 | 1 % | median | R-PODG | 0.28: 0.769 (finalist; FOM search finalist/search-incomplete), 0.4: 0.54 (finalist; FOM search finalist/search-incomplete) | <1 everywhere | <2 everywhere |
 | A3 | 1 % | median | R-ECSW | 0.28: search-incomplete; FOM search finalist/search-incomplete, 0.4: search-incomplete; FOM search finalist/search-incomplete | [0.28, 0.4] unresolved (censored/missing) | [0.28, 0.4] unresolved (censored/missing) |
 | A3 | 1 % | worst | R-PODG | 0.28: arm-censored; FOM search finalist/search-incomplete, 0.4: arm-censored; FOM search finalist/search-incomplete | [0.28, 0.4] unresolved (censored/missing) | [0.28, 0.4] unresolved (censored/missing) |
 | A3 | 1 % | worst | R-ECSW | 0.28: arm-censored; FOM search finalist/search-incomplete, 0.4: arm-censored; FOM search finalist/search-incomplete | [0.28, 0.4] unresolved (censored/missing) | [0.28, 0.4] unresolved (censored/missing) |
-| A3 | 3 % | median | R-PODG | 0.28: 1.62, 0.4: 1.46 | ≥1 everywhere | <2 everywhere |
+| A3 | 3 % | median | R-PODG | 0.28: 1.62 (finalist; R-min), 0.4: 1.46 (finalist; R-min) | ≥1 everywhere | <2 everywhere |
 | A3 | 3 % | median | R-ECSW | 0.28: search-incomplete, 0.4: search-incomplete | [0.28, 0.4] unresolved (censored/missing) | [0.28, 0.4] unresolved (censored/missing) |
 | A3 | 3 % | worst | R-PODG | 0.28: 0.531 (finalist; FOM search finalist/search-incomplete), 0.4: 0.421 (finalist; FOM search finalist/search-incomplete) | <1 everywhere | <2 everywhere |
 | A3 | 3 % | worst | R-ECSW | 0.28: arm-unqualified; FOM search finalist/search-incomplete, 0.4: arm-unqualified; FOM search finalist/search-incomplete | [0.28, 0.4] unresolved (censored/missing) | [0.28, 0.4] unresolved (censored/missing) |
-| A3 | 10 % | median | R-PODG | 0.28: 1.42, 0.4: 1.27 | ≥1 everywhere | <2 everywhere |
+| A3 | 10 % | median | R-PODG | 0.28: 1.42 (finalist; F-min,R-min), 0.4: 1.27 (finalist; F-min,R-min) | ≥1 everywhere | <2 everywhere |
 | A3 | 10 % | median | R-ECSW | 0.28: search-incomplete, 0.4: search-incomplete | [0.28, 0.4] unresolved (censored/missing) | [0.28, 0.4] unresolved (censored/missing) |
-| A3 | 10 % | worst | R-PODG | 0.28: 1.62, 0.4: 0.886 | [0.28, 0.4] down | <2 everywhere |
+| A3 | 10 % | worst | R-PODG | 0.28: 1.62 (finalist; R-min), 0.4: 0.886 (finalist; R-min) | [0.28, 0.4] down | <2 everywhere |
 | A3 | 10 % | worst | R-ECSW | 0.28: search-incomplete, 0.4: search-incomplete | [0.28, 0.4] unresolved (censored/missing) | [0.28, 0.4] unresolved (censored/missing) |
 
 ## The dense-transform FOM (A11): how much the fair competitor matters
@@ -349,15 +351,15 @@ A pair is "matched on test" only if both frozen members meet τ on test32 (three
 
 | cell | test eligible | U_test | pairs | matched on test | S_val → S_test (matched) |
 |---|---|---|---|---|---|
-| W08_A1 | 32 of 32 | 5.67e-09 | 24 | 24 | podg|0.01|median: 1.06→1.02 [F-min,R-min]; podg|0.01|worst: 1.54→1.42 [F-min,R-min]; podg|0.03|median: 1.14→1.05 [F-min,R-min]; podg|0.03|worst: 1.14→1.1 [F-min,R-min]; podg|0.1|median: 1.14→1.06 [F-min,R-min]; podg|0.1|worst: 1.14→1.07 [F-min,R-min] … |
-| W08_A2 | 32 of 32 | 6.19e-09 | 24 | 24 | podg|0.01|median: 1.46→1.49 [F-min,R-min]; podg|0.01|worst: 2.14→2.05 [R-min]; podg|0.03|median: 1.6→1.59 [F-min,R-min]; podg|0.03|worst: 1.46→1.48 [F-min,R-min]; podg|0.1|median: 1.19→1.21 [F-min,R-min]; podg|0.1|worst: 1.6→1.7 [F-min,R-min] … |
-| W16_A1 | 32 of 32 | 5.68e-09 | 12 | 12 | podg|0.01|median: 1.03→0.995 [F-min,R-min]; podg|0.01|worst: 1.34→1.29 [F-min,R-min]; podg|0.03|median: 1.12→1.05 [F-min,R-min]; podg|0.03|worst: 1.04→0.993 [F-min,R-min]; podg|0.1|median: 1.12→1.06 [F-min,R-min]; podg|0.1|worst: 1.12→1.07 [F-min,R-min] … |
-| W28_A1 | 32 of 32 | 5.7e-09 | 12 | 12 | podg|0.01|median: 0.927→0.977 [F-min,R-min]; podg|0.01|worst: 1.18→1.12 [F-min,R-min]; podg|0.03|median: 1.02→1.01 [F-min,R-min]; podg|0.03|worst: 0.927→0.978 [F-min,R-min]; podg|0.1|median: 1.09→1.09 [F-min,R-min]; podg|0.1|worst: 1.04→0.96 [F-min,R-min] … |
-| W28_A2 | 32 of 32 | 6.19e-09 | 12 | 12 | podg|0.01|median: 1.29→1.24 [F-min,R-min]; podg|0.01|worst: 1.49→1.41 [R-min]; podg|0.03|median: 1.51→1.43 [F-min,R-min]; podg|0.03|worst: 1.29→1.25 [F-min,R-min]; podg|0.1|median: 1.14→1.2 [F-min,R-min]; podg|0.1|worst: 1.51→1.42 [F-min,R-min] … |
-| W28_A3 | 32 of 32 | 1.1e-08 | 5 | 5 | podg|0.01|median: 0.769→0.79 [FOM-search finalist/search-incomplete]; podg|0.03|median: 1.62→1.61 [R-min]; podg|0.03|worst: 0.531→0.541 [FOM-search finalist/search-incomplete]; podg|0.1|median: 1.42→1.46 [F-min,R-min]; podg|0.1|worst: 1.62→1.61 [R-min] |
-| W40_A1 | 32 of 32 | 5.74e-09 | 27 | 12 | podg|0.03|median: 0.927→0.933 [F-min,R-min]; podg|0.03|worst: 0.801→0.821 [F-min,R-min]; podg|0.1|median: 1.09→1.1 [F-min,R-min]; ecsw|0.03|median: 0.85→0.842 [F-min,R-min]; ecsw|0.03|worst: 0.764→0.784 [F-min,R-min]; trans|0.03|median: 0.989→1 [F-min,R-min] … |
-| W40_A2 | 32 of 32 | 6.2e-09 | 29 | 27 | podg|0.01|median: 1.18→1.13 [F-min,R-min]; podg|0.01|worst: 1.13→1 [R-min]; podg|0.03|worst: 1.07→1.02 [F-min,R-min]; podg|0.1|median: 1.04→0.978 [F-min,R-min]; ecsw|0.01|median: 1.13→1.07 [F-min,R-min]; ecsw|0.01|worst: 1.15→1.13 [R-min] … |
-| W40_A3 | 32 of 32 | 1.1e-08 | 19 | 14 | podg|0.01|median: 0.54→0.541 [FOM-search finalist/search-incomplete]; podg|0.03|worst: 0.421→0.422 [FOM-search finalist/search-incomplete]; podg|0.1|median: 1.27→1.26 [F-min,R-min]; podg|0.1|worst: 0.886→0.885 [R-min]; trans|0.01|median: 3.32→3.3 [FOM-search finalist/search-incomplete,R-min]; trans|0.01|worst: 3.27→3.24 [FOM-search finalist/search-incomplete] … |
+| W08_A1 | 32 of 32 | 5.67e-09 | 24 | 24 | podg\|0.01\|median: 1.06→1.02 [F-min,R-min]; podg\|0.01\|worst: 1.54→1.42 [F-min,R-min]; podg\|0.03\|median: 1.14→1.05 [F-min,R-min]; podg\|0.03\|worst: 1.14→1.1 [F-min,R-min]; podg\|0.1\|median: 1.14→1.06 [F-min,R-min]; podg\|0.1\|worst: 1.14→1.07 [F-min,R-min] … |
+| W08_A2 | 32 of 32 | 6.19e-09 | 24 | 24 | podg\|0.01\|median: 1.46→1.49 [F-min,R-min]; podg\|0.01\|worst: 2.14→2.05 [R-min]; podg\|0.03\|median: 1.6→1.59 [F-min,R-min]; podg\|0.03\|worst: 1.46→1.48 [F-min,R-min]; podg\|0.1\|median: 1.19→1.21 [F-min,R-min]; podg\|0.1\|worst: 1.6→1.7 [F-min,R-min] … |
+| W16_A1 | 32 of 32 | 5.68e-09 | 12 | 12 | podg\|0.01\|median: 1.03→0.995 [F-min,R-min]; podg\|0.01\|worst: 1.34→1.29 [F-min,R-min]; podg\|0.03\|median: 1.12→1.05 [F-min,R-min]; podg\|0.03\|worst: 1.04→0.993 [F-min,R-min]; podg\|0.1\|median: 1.12→1.06 [F-min,R-min]; podg\|0.1\|worst: 1.12→1.07 [F-min,R-min] … |
+| W28_A1 | 32 of 32 | 5.7e-09 | 12 | 12 | podg\|0.01\|median: 0.927→0.977 [F-min,R-min]; podg\|0.01\|worst: 1.18→1.12 [F-min,R-min]; podg\|0.03\|median: 1.02→1.01 [F-min,R-min]; podg\|0.03\|worst: 0.927→0.978 [F-min,R-min]; podg\|0.1\|median: 1.09→1.09 [F-min,R-min]; podg\|0.1\|worst: 1.04→0.96 [F-min,R-min] … |
+| W28_A2 | 32 of 32 | 6.19e-09 | 12 | 12 | podg\|0.01\|median: 1.29→1.24 [F-min,R-min]; podg\|0.01\|worst: 1.49→1.41 [R-min]; podg\|0.03\|median: 1.51→1.43 [F-min,R-min]; podg\|0.03\|worst: 1.29→1.25 [F-min,R-min]; podg\|0.1\|median: 1.14→1.2 [F-min,R-min]; podg\|0.1\|worst: 1.51→1.42 [F-min,R-min] … |
+| W28_A3 | 32 of 32 | 1.1e-08 | 5 | 5 | podg\|0.01\|median: 0.769→0.79 [FOM-search finalist/search-incomplete]; podg\|0.03\|median: 1.62→1.61 [R-min]; podg\|0.03\|worst: 0.531→0.541 [FOM-search finalist/search-incomplete]; podg\|0.1\|median: 1.42→1.46 [F-min,R-min]; podg\|0.1\|worst: 1.62→1.61 [R-min] |
+| W40_A1 | 32 of 32 | 5.74e-09 | 27 | 12 | podg\|0.03\|median: 0.927→0.933 [F-min,R-min]; podg\|0.03\|worst: 0.801→0.821 [F-min,R-min]; podg\|0.1\|median: 1.09→1.1 [F-min,R-min]; ecsw\|0.03\|median: 0.85→0.842 [F-min,R-min]; ecsw\|0.03\|worst: 0.764→0.784 [F-min,R-min]; trans\|0.03\|median: 0.989→1 [F-min,R-min] … |
+| W40_A2 | 32 of 32 | 6.2e-09 | 29 | 27 | podg\|0.01\|median: 1.18→1.13 [F-min,R-min]; podg\|0.01\|worst: 1.13→1 [R-min]; podg\|0.03\|worst: 1.07→1.02 [F-min,R-min]; podg\|0.1\|median: 1.04→0.978 [F-min,R-min]; ecsw\|0.01\|median: 1.13→1.07 [F-min,R-min]; ecsw\|0.01\|worst: 1.15→1.13 [R-min] … |
+| W40_A3 | 32 of 32 | 1.1e-08 | 19 | 14 | podg\|0.01\|median: 0.54→0.541 [FOM-search finalist/search-incomplete]; podg\|0.03\|worst: 0.421→0.422 [FOM-search finalist/search-incomplete]; podg\|0.1\|median: 1.27→1.26 [F-min,R-min]; podg\|0.1\|worst: 0.886→0.885 [R-min]; trans\|0.01\|median: 3.32→3.3 [FOM-search finalist/search-incomplete,R-min]; trans\|0.01\|worst: 3.27→3.24 [FOM-search finalist/search-incomplete] … |
 
 Of the 142 pairs matched on test, 9 carry an incomplete FOM search from validation (labelled where printed; all labels are in EXPORT.json `test`). The table prints at most six matched pairs per cell.
 
@@ -376,12 +378,12 @@ Of the 142 pairs matched on test, 9 carry an incomplete FOM search from validati
 
 - **W**: family width: bump centres are drawn uniformly in a square of side W centred at (0.5, 0.5).
 - **A1–A4**: steepness levels: viscosity bands differing by a factor 3 per level; A4 is the steepest.
-- **τ**: error target for the median or the worst case over the eligible validation cases of the cell.
-- **N, n, tol**: FOM: N − 1 sine modes per direction; n time steps; tol the adaptive local-error tolerance.
-- **r, q, tensor, κ, n**: reduced models: r basis functions; q the Gauss points per element of the quadrature rule (or the exact precontracted tensor); κ the ECSW sample size per basis function; n time steps.
+- **$\tau$**: error target for the median or the worst case over the eligible validation cases of the cell.
+- **$N$, $n$, tol**: FOM: N − 1 sine modes per direction; n time steps; tol the adaptive local-error tolerance.
+- **$r$, $q$, tensor, $\kappa$, $n$**: reduced models: r basis functions; q the Gauss points per element of the quadrature rule (or the exact precontracted tensor); κ the ECSW sample size per basis function; n time steps.
 - **boundary labels**: the selected FOM configuration sits at the edge of its tested ladder (search truncated).
 - **F-min / R-min**: test-once table labels: the FOM / reduced member of the pair sits at its ladder minimum (A13), so a smaller, possibly faster configuration was not tried.
-- **S_val → S_test**: speed-up of the same frozen validation-selected pair measured on val32 and, once, on the test32 cohort.
+- **$S_{\rm val} \to S_{\rm test}$**: speed-up of the same frozen validation-selected pair measured on val32 and, once, on the test32 cohort.
 - **finalist-partial / missing-construction / operator-check-failed**: an arm whose search or construction was incomplete (partial evidence) / produced no valid configuration / whose basis failed its operator checks.
 - **arm-unqualified / search-incomplete / timing invalid**: configurations met τ but none passed numerical qualification / the qualification attempt cap was reached / the paired timing failed its validity checks (identical outputs, no compilation, doubled-query check).
 - **registered values**: widths, levels, targets and thresholds printed here are design values from DESIGN.md, not measurements; every measured number is read from the cell JSONs.
@@ -395,5 +397,17 @@ Of the 142 pairs matched on test, 9 carry an incomplete FOM search from validati
 - **arm-censored**: no configuration of the arm reached τ (not speed evidence either way).
 - **$r_\times$**: equal-cost size: the largest bank size whose one nonlinear evaluation is no slower than one FOM evaluation.
 - **floor**: projection floor: the best possible error of the bank’s first r functions on the reference fields.
-- **U, ε_ref**: conditional reference-error allowance and estimate (spectral convergence differences).
+- **$U$, $\varepsilon_{\rm ref}$**: conditional reference-error allowance and estimate (spectral convergence differences).
+- **$r_\times^{\rm query}$**: diagnostic equal-cost size from whole-query screen times (FOM finalist vs the cheapest valid bank configuration at each size, on four validation cases); not used by the stop rule.
+- **FOM comparator**: the FOM finalist (family, N, transform, steps) against whose one nonlinear evaluation the bank cost is compared.
+- **cheapest form**: the cheaper evaluation of the bank nonlinearity at $r_\times$: `tensor` = precontracted exact tensor, `point<q>` = pointwise on a q-point Gauss rule; suffix `-gal` / `-lspg` = Galerkin / least-squares residual evaluation.
+- **verdict**: above / below = the projection floor at $r_\times$ is above / below τ; "no affordable tested rank" = no tested bank size is as cheap as the FOM evaluation.
+- **A16 query names**: `fom` / `fom_dense` / `fom_ad` = fixed-step FFT, fixed-step dense, adaptive FOM; `podg_point` / `podg_tensor` = POD–Galerkin with a Gauss rule / exact tensor; `lspg` = bank least-squares stepper; `trans` = translation model.
+- **hoisted / embedded**: two ways of compiling a query: constants passed as arguments (hoisted, A16) or baked into the compiled program (embedded).
+- **eligible**: a validation/test case whose spectral reference passes the convergence gate; ineligible cases are excluded from scoring and counted.
+- **test eligible, U_test, pairs, matched on test**: eligible test32 cases; reference allowance on test32; number of frozen validation pairs; number that met τ and qualified on test with valid timing.
+- **FFT**: fast Fourier (here sine) transform; the alternative FOM implementation multiplies by a dense transform matrix instead.
+- **POD**: proper orthogonal decomposition: the leading singular vectors of training snapshots, used as the linear reduced basis.
+- **ETDRK4**: fourth-order exponential time differencing Runge–Kutta: integrates the stiff linear diffusion exactly and the nonlinearity explicitly.
+- **val32 / test32**: the 32-case validation cohort used for all selection, and the 32-case test cohort opened once for frozen pairs.
 - **Q1 / Q2**: numerical qualification: solver/update correctness certificate; quadrature agreement between successive rules.

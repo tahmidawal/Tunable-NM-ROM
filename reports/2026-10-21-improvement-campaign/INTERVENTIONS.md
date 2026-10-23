@@ -64,3 +64,4 @@ Every coordinator intervention (resume, kill, re-run) on a watchdog notification
 - A10 condition → stop: bank S vs best tested competitor (POD-Galerkin / POD+ECSW) 0.015–0.22 (val) and 0.013–0.12 (test) on both L and H at S1; vs SEM 0.09–0.23; vs FD+multigrid > 1 only at τ = 10 % (1.36 / 1.77). H WITHDRAWN (measured loss); L not decidable (4/32 references fail the order gate). 30.68 / 62 GPU-h.
 - **E4 (3D cube with holes) not run** (conditional on an E2 win). Its 80 GPU-h reserve is released unspent.
 - Disclosed in the lane: geometry variant chosen after inspecting smoke ladder rows (A3.1 retraction of the "no results existed" claim); static condensation / multi-domain Chebyshev not built (S is "against the strongest tested competitor").
+- imp-box parked on W08_A2 6211151, W16_A1 6211172 (43.7/87 GPU-h; wide set: 95 comparisons, max S 2.14; stop rules not fired; A16 compile fault fixed; A4 deferred).

@@ -345,19 +345,21 @@ Fastest ladder row meeting τ (worst error) per FOM implementation, by the singl
 
 ## Test-once (frozen validation pairs on the sealed-by-seed test32 cohort; opened once)
 
-A pair is "matched on test" only if both frozen members meet τ on test32 (three-way rule with the test allowance) and are numerically qualified on test reached states, and the re-timing is valid; S_test is the speed-up of the validation-selected pair, not a re-selection.
+A pair is "matched on test" only if both frozen members meet τ on test32 (three-way rule with the test allowance) and are numerically qualified on test reached states, and the re-timing is valid; S_test is the speed-up of the validation-selected pair, not a re-selection. Each S keeps the search qualifications of its validation counterpart (incomplete FOM search; A13 ladder minima): numerical matching on test does not complete the competitor search, so a labelled S_test is not a speed-up over a completed FOM search. Bracketed labels: F-min / R-min = the FOM / reduced member sits at its ladder minimum (A13); FOM-search a/b = status of the fixed-step / adaptive FOM search when either is not a finalist.
 
 | cell | test eligible | U_test | pairs | matched on test | S_val → S_test (matched) |
 |---|---|---|---|---|---|
-| W08_A1 | 32 of 32 | 5.67e-09 | 24 | 24 | podg|0.01|median: 1.06→1.02; podg|0.01|worst: 1.54→1.42; podg|0.03|median: 1.14→1.05; podg|0.03|worst: 1.14→1.1; podg|0.1|median: 1.14→1.06; podg|0.1|worst: 1.14→1.07 … |
-| W08_A2 | 32 of 32 | 6.19e-09 | 24 | 24 | podg|0.01|median: 1.46→1.49; podg|0.01|worst: 2.14→2.05; podg|0.03|median: 1.6→1.59; podg|0.03|worst: 1.46→1.48; podg|0.1|median: 1.19→1.21; podg|0.1|worst: 1.6→1.7 … |
-| W16_A1 | 32 of 32 | 5.68e-09 | 12 | 12 | podg|0.01|median: 1.03→0.995; podg|0.01|worst: 1.34→1.29; podg|0.03|median: 1.12→1.05; podg|0.03|worst: 1.04→0.993; podg|0.1|median: 1.12→1.06; podg|0.1|worst: 1.12→1.07 … |
-| W28_A1 | 32 of 32 | 5.7e-09 | 12 | 12 | podg|0.01|median: 0.927→0.977; podg|0.01|worst: 1.18→1.12; podg|0.03|median: 1.02→1.01; podg|0.03|worst: 0.927→0.978; podg|0.1|median: 1.09→1.09; podg|0.1|worst: 1.04→0.96 … |
-| W28_A2 | 32 of 32 | 6.19e-09 | 12 | 12 | podg|0.01|median: 1.29→1.24; podg|0.01|worst: 1.49→1.41; podg|0.03|median: 1.51→1.43; podg|0.03|worst: 1.29→1.25; podg|0.1|median: 1.14→1.2; podg|0.1|worst: 1.51→1.42 … |
-| W28_A3 | 32 of 32 | 1.1e-08 | 5 | 5 | podg|0.01|median: 0.769→0.79; podg|0.03|median: 1.62→1.61; podg|0.03|worst: 0.531→0.541; podg|0.1|median: 1.42→1.46; podg|0.1|worst: 1.62→1.61 |
-| W40_A1 | 32 of 32 | 5.74e-09 | 27 | 12 | podg|0.03|median: 0.927→0.933; podg|0.03|worst: 0.801→0.821; podg|0.1|median: 1.09→1.1; ecsw|0.03|median: 0.85→0.842; ecsw|0.03|worst: 0.764→0.784; trans|0.03|median: 0.989→1 … |
-| W40_A2 | 32 of 32 | 6.2e-09 | 29 | 27 | podg|0.01|median: 1.18→1.13; podg|0.01|worst: 1.13→1; podg|0.03|worst: 1.07→1.02; podg|0.1|median: 1.04→0.978; ecsw|0.01|median: 1.13→1.07; ecsw|0.01|worst: 1.15→1.13 … |
-| W40_A3 | 32 of 32 | 1.1e-08 | 19 | 14 | podg|0.01|median: 0.54→0.541; podg|0.03|worst: 0.421→0.422; podg|0.1|median: 1.27→1.26; podg|0.1|worst: 0.886→0.885; trans|0.01|median: 3.32→3.3; trans|0.01|worst: 3.27→3.24 … |
+| W08_A1 | 32 of 32 | 5.67e-09 | 24 | 24 | podg|0.01|median: 1.06→1.02 [F-min,R-min]; podg|0.01|worst: 1.54→1.42 [F-min,R-min]; podg|0.03|median: 1.14→1.05 [F-min,R-min]; podg|0.03|worst: 1.14→1.1 [F-min,R-min]; podg|0.1|median: 1.14→1.06 [F-min,R-min]; podg|0.1|worst: 1.14→1.07 [F-min,R-min] … |
+| W08_A2 | 32 of 32 | 6.19e-09 | 24 | 24 | podg|0.01|median: 1.46→1.49 [F-min,R-min]; podg|0.01|worst: 2.14→2.05 [R-min]; podg|0.03|median: 1.6→1.59 [F-min,R-min]; podg|0.03|worst: 1.46→1.48 [F-min,R-min]; podg|0.1|median: 1.19→1.21 [F-min,R-min]; podg|0.1|worst: 1.6→1.7 [F-min,R-min] … |
+| W16_A1 | 32 of 32 | 5.68e-09 | 12 | 12 | podg|0.01|median: 1.03→0.995 [F-min,R-min]; podg|0.01|worst: 1.34→1.29 [F-min,R-min]; podg|0.03|median: 1.12→1.05 [F-min,R-min]; podg|0.03|worst: 1.04→0.993 [F-min,R-min]; podg|0.1|median: 1.12→1.06 [F-min,R-min]; podg|0.1|worst: 1.12→1.07 [F-min,R-min] … |
+| W28_A1 | 32 of 32 | 5.7e-09 | 12 | 12 | podg|0.01|median: 0.927→0.977 [F-min,R-min]; podg|0.01|worst: 1.18→1.12 [F-min,R-min]; podg|0.03|median: 1.02→1.01 [F-min,R-min]; podg|0.03|worst: 0.927→0.978 [F-min,R-min]; podg|0.1|median: 1.09→1.09 [F-min,R-min]; podg|0.1|worst: 1.04→0.96 [F-min,R-min] … |
+| W28_A2 | 32 of 32 | 6.19e-09 | 12 | 12 | podg|0.01|median: 1.29→1.24 [F-min,R-min]; podg|0.01|worst: 1.49→1.41 [R-min]; podg|0.03|median: 1.51→1.43 [F-min,R-min]; podg|0.03|worst: 1.29→1.25 [F-min,R-min]; podg|0.1|median: 1.14→1.2 [F-min,R-min]; podg|0.1|worst: 1.51→1.42 [F-min,R-min] … |
+| W28_A3 | 32 of 32 | 1.1e-08 | 5 | 5 | podg|0.01|median: 0.769→0.79 [FOM-search finalist/search-incomplete]; podg|0.03|median: 1.62→1.61 [R-min]; podg|0.03|worst: 0.531→0.541 [FOM-search finalist/search-incomplete]; podg|0.1|median: 1.42→1.46 [F-min,R-min]; podg|0.1|worst: 1.62→1.61 [R-min] |
+| W40_A1 | 32 of 32 | 5.74e-09 | 27 | 12 | podg|0.03|median: 0.927→0.933 [F-min,R-min]; podg|0.03|worst: 0.801→0.821 [F-min,R-min]; podg|0.1|median: 1.09→1.1 [F-min,R-min]; ecsw|0.03|median: 0.85→0.842 [F-min,R-min]; ecsw|0.03|worst: 0.764→0.784 [F-min,R-min]; trans|0.03|median: 0.989→1 [F-min,R-min] … |
+| W40_A2 | 32 of 32 | 6.2e-09 | 29 | 27 | podg|0.01|median: 1.18→1.13 [F-min,R-min]; podg|0.01|worst: 1.13→1 [R-min]; podg|0.03|worst: 1.07→1.02 [F-min,R-min]; podg|0.1|median: 1.04→0.978 [F-min,R-min]; ecsw|0.01|median: 1.13→1.07 [F-min,R-min]; ecsw|0.01|worst: 1.15→1.13 [R-min] … |
+| W40_A3 | 32 of 32 | 1.1e-08 | 19 | 14 | podg|0.01|median: 0.54→0.541 [FOM-search finalist/search-incomplete]; podg|0.03|worst: 0.421→0.422 [FOM-search finalist/search-incomplete]; podg|0.1|median: 1.27→1.26 [F-min,R-min]; podg|0.1|worst: 0.886→0.885 [R-min]; trans|0.01|median: 3.32→3.3 [FOM-search finalist/search-incomplete,R-min]; trans|0.01|worst: 3.27→3.24 [FOM-search finalist/search-incomplete] … |
+
+Of the 142 pairs matched on test, 9 carry an incomplete FOM search from validation (labelled where printed; all labels are in EXPORT.json `test`). The table prints at most six matched pairs per cell.
 
 **Search limitations (stated):** ladders were not extended below their minima (A13): FOM $N=8$ and $n=5$, reduced $r=16$ and $n=10$; entries whose S-attaining pair sits at a minimum are labelled. Finalist ordering within a six-candidate screening batch is recorded only for the attempted candidates, so that every selected candidate beat every unattempted member of its batch is not independently re-checkable from the JSONs (results audit 1).
 
@@ -378,6 +380,8 @@ A pair is "matched on test" only if both frozen members meet τ on test32 (three
 - **N, n, tol**: FOM: N − 1 sine modes per direction; n time steps; tol the adaptive local-error tolerance.
 - **r, q, tensor, κ, n**: reduced models: r basis functions; q the Gauss points per element of the quadrature rule (or the exact precontracted tensor); κ the ECSW sample size per basis function; n time steps.
 - **boundary labels**: the selected FOM configuration sits at the edge of its tested ladder (search truncated).
+- **F-min / R-min**: test-once table labels: the FOM / reduced member of the pair sits at its ladder minimum (A13), so a smaller, possibly faster configuration was not tried.
+- **S_val → S_test**: speed-up of the same frozen validation-selected pair measured on val32 and, once, on the test32 cohort.
 - **finalist-partial / missing-construction / operator-check-failed**: an arm whose search or construction was incomplete (partial evidence) / produced no valid configuration / whose basis failed its operator checks.
 - **arm-unqualified / search-incomplete / timing invalid**: configurations met τ but none passed numerical qualification / the qualification attempt cap was reached / the paired timing failed its validity checks (identical outputs, no compilation, doubled-query check).
 - **registered values**: widths, levels, targets and thresholds printed here are design values from DESIGN.md, not measurements; every measured number is read from the cell JSONs.

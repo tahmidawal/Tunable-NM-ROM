@@ -374,17 +374,38 @@ def main():
                   f"{best['fft'] / best['dense']:.3g} |")
     w('')
     # ---- test-once (A3.7): frozen validation pairs evaluated once on test32
-    T = {}
+    T, TSRC = {}, {}
     for key in sorted(found):
-        tf = cells / f'test_{key}' / 'out' / 'cell' / 'test.json'
-        if tf.exists():
-            T[key] = json.loads(tf.read_text())
+        tf_ = cells / f'test_{key}' / 'out' / 'cell' / 'test.json'
+        if tf_.exists():
+            T[key] = json.loads(tf_.read_text())
+            TSRC[key] = str(tf_).replace(str(HERE) + '/', '')
+
+    def test_labels(key, k):
+        """Validation search qualifications carried onto a test pair (DESIGN §11): FOM-search status of (tau, stat) and
+        A13 ladder-minimum labels of the validation S-attaining pair."""
+        fz = C[key]['final']
+        _, tau, stat = k.split('|')
+        fsx = {f: fz['selection'].get(f'{f}|{tau}|{stat}', {}).get('status') for f in ('spec', 'specad')}
+        labs = []
+        if any(x not in ('finalist', None) for x in fsx.values()):
+            labs.append('FOM search: ' + ', '.join(str(x) for x in fsx.values()))
+        labs += ladder_min(fz, fz['S'].get(k) or {})
+        return fsx, labs
+
+    def short_lab(x):
+        return ('F-min' if x.startswith('FOM truncated') else 'R-min' if x.startswith('reduced model truncated')
+                else 'FOM-search ' + x.split(': ', 1)[1].replace(', ', '/') if x.startswith('FOM search') else x)
     if T:
         w('## Test-once (frozen validation pairs on the sealed-by-seed test32 cohort; opened once)')
         w('')
         w('A pair is "matched on test" only if both frozen members meet τ on test32 (three-way rule with the test '
           'allowance) and are numerically qualified on test reached states, and the re-timing is valid; S_test is the '
-          'speed-up of the validation-selected pair, not a re-selection.')
+          'speed-up of the validation-selected pair, not a re-selection. Each S keeps the search qualifications of its '
+          'validation counterpart (incomplete FOM search; A13 ladder minima): numerical matching on test does not complete '
+          'the competitor search, so a labelled S_test is not a speed-up over a completed FOM search. Bracketed labels: F-min '
+          '/ R-min = the FOM / reduced member sits at its ladder minimum (A13); FOM-search a/b = status of the fixed-step / '
+          'adaptive FOM search when either is not a finalist.')
         w('')
         w('| cell | test eligible | U_test | pairs | matched on test | S_val → S_test (matched) |')
         w('|---|---|---|---|---|---|')
@@ -394,12 +415,21 @@ def main():
             m = {k: v for k, v in pr.items() if v.get('matched_on_test')}
             cc = t.get('claim_context', {})
             w(f"| {key} | {cc.get('test', '–')} | {g(t.get('U_test'))} | {len(pr)} | {len(m)} | "
-              f"{'; '.join(f'{k}: {g(v.get('S_val'))}→{g(v.get('S_test'))}' for k, v in list(m.items())[:6])}{' …' if len(m) > 6 else ''} |")
+              f"{'; '.join(f'{k}: {g(v.get('S_val'))}→{g(v.get('S_test'))}' + (f' [{",".join(short_lab(x) for x in test_labels(key, k)[1])}]' if test_labels(key, k)[1] else '') for k, v in list(m.items())[:6])}{' …' if len(m) > 6 else ''} |")
             X['test'][key] = dict(scorable=t.get('scorable'), U_test=t.get('U_test'), n_pairs=len(pr),
                                   n_matched=len(m), pairs={k: dict(S_val=v.get('S_val'), S_test=v.get('S_test'),
                                                                    matched=v.get('matched_on_test'),
-                                                                   reason=v.get('reason')) for k, v in pr.items()},
-                                  source=str(tf).replace(str(HERE) + '/', ''))
+                                                                   reason=v.get('reason'),
+                                                                   fom_status=test_labels(key, k)[0],
+                                                                   labels=test_labels(key, k)[1]) for k, v in pr.items()},
+                                  n_matched_fom_search_incomplete=sum(1 for k in m if any(
+                                      x not in ('finalist', None) for x in test_labels(key, k)[0].values())),
+                                  source=TSRC[key])
+        nfi = sum(v['n_matched_fom_search_incomplete'] for v in X['test'].values())
+        nm = sum(v['n_matched'] for v in X['test'].values())
+        w('')
+        w(f'Of the {nm} pairs matched on test, {nfi} carry an incomplete FOM search from validation (labelled where '
+          'printed; all labels are in EXPORT.json `test`). The table prints at most six matched pairs per cell.')
         w('')
     w('**Search limitations (stated):** ladders were not extended below their minima (A13): FOM $N=8$ and $n=5$, reduced '
       '$r=16$ and $n=10$; entries whose S-attaining pair sits at a minimum are labelled. Finalist ordering within a '
@@ -433,6 +463,8 @@ def main():
             ('r, q, tensor, κ, n', 'reduced models: r basis functions; q the Gauss points per element of the quadrature rule (or '
              'the exact precontracted tensor); κ the ECSW sample size per basis function; n time steps.'),
             ('boundary labels', 'the selected FOM configuration sits at the edge of its tested ladder (search truncated).'),
+            ('F-min / R-min', 'test-once table labels: the FOM / reduced member of the pair sits at its ladder minimum (A13), so a smaller, possibly faster configuration was not tried.'),
+            ('S_val → S_test', 'speed-up of the same frozen validation-selected pair measured on val32 and, once, on the test32 cohort.'),
             ('finalist-partial / missing-construction / operator-check-failed', 'an arm whose search or construction was '
              'incomplete (partial evidence) / produced no valid configuration / whose basis failed its operator checks.'),
             ('arm-unqualified / search-incomplete / timing invalid', 'configurations met τ but none passed numerical '

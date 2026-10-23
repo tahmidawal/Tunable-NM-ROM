@@ -59,3 +59,8 @@ Every coordinator intervention (resume, kill, re-run) on a watchdog notification
 ## 2026-10-22 ~19:45 UTC — GitHub credentials restored (user); all mirrors re-synced
 - Prompted by the monitoring session (verified `gh auth status` myself). main pushed (aaf4b6e8b). Every lane's sync_github.sh re-run; `git ls-remote` confirms:
   imp-faststep ed52f5477 (a3e417b1e) · imp-hrcost c891ee4cc (cf351b62a) · imp-multimesh 4ade95d16 (dd4cd7fc4) · imp-varcoef 6a98c018a (e8d39fa1a) · imp-fronts a2f64ebda (506dbd3a5) · imp-geometry 80067e490 (25f55bfc0) · imp-box c77739769.
+- 2026-10-23T00:01 UTC: imp-geometry H_wide_S1 6192666 COMPLETED; lane resumed for collect, test-once, results audit, S1 decision.
+## 2026-10-23 — imp-geometry (E2) done: geometry claim not supported; E4 not run
+- A10 condition → stop: bank S vs best tested competitor (POD-Galerkin / POD+ECSW) 0.015–0.22 (val) and 0.013–0.12 (test) on both L and H at S1; vs SEM 0.09–0.23; vs FD+multigrid > 1 only at τ = 10 % (1.36 / 1.77). H WITHDRAWN (measured loss); L not decidable (4/32 references fail the order gate). 30.68 / 62 GPU-h.
+- **E4 (3D cube with holes) not run** (conditional on an E2 win). Its 80 GPU-h reserve is released unspent.
+- Disclosed in the lane: geometry variant chosen after inspecting smoke ladder rows (A3.1 retraction of the "no results existed" claim); static condensation / multi-domain Chebyshev not built (S is "against the strongest tested competitor").

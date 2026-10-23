@@ -1,0 +1,41 @@
+{
+ "compiled_utc": "2026-10-23 01:18 UTC",
+ "E1_final": false,
+ "problem_verdicts": {
+  "1": "not fixed so far (E2, E3 negative; E4 not run; E1 pending)",
+  "2": "not fixed",
+  "3": "not fixed"
+ },
+ "experiments": {
+  "E1": "pending",
+  "E2": "not supported at S1; S2 untested",
+  "E3": "FAIL",
+  "E4": "not run",
+  "E5": "stop fired (worst error, every arm)",
+  "E6": {
+   "F2": "fired (tested failure): m* = gauss96, no_worse=False, faster=False",
+   "F3": "fired (tested failure)"
+  },
+  "E7": "FIRES",
+  "E8": {
+   "a": "NOT RUN",
+   "b": "STOP (endpoint)",
+   "c": "STOP (endpoint)"
+  },
+  "E9": "inconclusive (F12 minimum 30 good / 20 bad not met)",
+  "E10": {
+   "E10-s": "STOP",
+   "E10-q": "STOP"
+  }
+ },
+ "gpu_hours": {
+  "imp-faststep": 1.4076,
+  "imp-hrcost": 1.4608,
+  "imp-multimesh": 3.1602,
+  "imp-varcoef": 2.0372,
+  "imp-fronts": 10.7443,
+  "imp-geometry": 30.6789,
+  "imp-box": 41.3547,
+  "total": 90.8437
+ }
+}

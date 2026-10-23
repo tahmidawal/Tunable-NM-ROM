@@ -91,7 +91,7 @@
   {
    "lane": "imp-geometry",
    "experiments": "E2 (design mode)",
-   "status": "parked",
+   "status": "done",
    "wave": 1,
    "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-geometry",
    "heartbeat": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-21-imp-geometry/experiments/imp-geometry/HEARTBEAT.json",
@@ -100,7 +100,11 @@
    "job_cap": 3,
    "gpu_hours_cap": 62,
    "launched_utc": "2026-10-21T16:31:24Z",
-   "note": "agent idle; coordinator watches 6192623, 6192666 and resumes on each end"
+   "note": "agent idle; coordinator watches 6192623, 6192666 and resumes on each end",
+   "gpu_hours_spent": 30.68,
+   "last_commit": "0dc801d2b",
+   "mirror": "b89dbd615",
+   "verdict": "geometry claim not supported at S1; S2 untested: bank S=0.013-0.22 vs best competitor (POD-Galerkin/POD+ECSW) on L and H; H WITHDRAWN (measured loss); L not decidable (4/32 refs fail order gate)"
   },
   {
    "lane": "imp-box",
@@ -121,7 +125,8 @@
    "lane": "imp-holes3d",
    "experiments": "E4 (only if E2 wins)",
    "wave": 3,
-   "gpu_hours_cap": 80
+   "gpu_hours_cap": 80,
+   "status": "not run: E2 did not win"
   }
  ]
 }

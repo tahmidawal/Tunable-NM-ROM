@@ -18,3 +18,4 @@ Watchdogs: detached `WD_CONTINUE=1 setsid nohup bash campaign/watchdog/wd.sh <i>
 
 Status 2026-10-22 05:40 UTC: done = imp-faststep, imp-hrcost, imp-multimesh, imp-varcoef; imp-fronts Phase B running; imp-geometry parked on job 6175736 (watched via watchdog/parked-jobs.txt by coord-monitor.sh).
 - Results page: https://claude.ai/artifact/NB5epQrD3gwVBSAoLzbwts (source reports/2026-10-21-improvement-campaign/page/index.html); update after each wave.
+| final compilation | acd05d841b5f3c98c | launched 2026-10-23 01:05 UTC; builds final/make_final.py with E1 pending |

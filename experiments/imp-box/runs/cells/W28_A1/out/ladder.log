@@ -1,0 +1,7 @@
+13:35:50 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': 'b227f55c6', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+13:35:50 stage ladder: start
+/cluster/tufts/paralab/tawal01/imp-box/W28_A1/code/score.py:16: RuntimeWarning: overflow encountered in square
+  num = np.sqrt(np.sum((F - R) ** 2, axis=-1))
+14:19:16 fom ladder rows 219
+14:48:20 pod/ecsw ladder rows 391
+14:48:21 stage ladder: 4351s

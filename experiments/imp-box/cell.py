@@ -88,7 +88,8 @@ def nref(a):
 # ----------------------------------------------------------------------------------------- runners (batched) ---
 
 def run_cohort(q, D, chunk=8):
-    vq = jax.jit(jax.vmap(q))
+    import hoist as HZ                                    # A16: hoisted vmapped query (code audit 12)
+    vq = HZ.hoisted(jax.vmap(q), example=jax.ShapeDtypeStruct((chunk, 5), jnp.float64))
     outs, sts = [], []
     for s in range(0, len(D), chunk):
         part = D[s:s + chunk]
@@ -101,8 +102,15 @@ def run_cohort(q, D, chunk=8):
 
 
 def synth_cohort(B, N, lat=G.LAT):
-    f = jax.jit(jax.vmap(jax.vmap(SP.synth_fn(N, lat))))
-    return np.concatenate([np.asarray(f(jnp.asarray(B[s:s + 4]))) for s in range(0, len(B), 4)])
+    S = P_lattice_S(N, lat)
+    f = jax.jit(jax.vmap(jax.vmap(lambda b, S_: jnp.pad(S_ @ b @ S_.T, 1).reshape(-1), in_axes=(0, None)),
+                         in_axes=(0, None)))                # synthesis matrix passed as an argument (A16)
+    return np.concatenate([np.asarray(f(jnp.asarray(B[s:s + 4]), S)) for s in range(0, len(B), 4)])
+
+
+def P_lattice_S(N, lat):
+    import pscore as P_
+    return P_.lattice_S(N, lat)
 
 
 # ------------------------------------------------------------------------------------------------ stage ref ----

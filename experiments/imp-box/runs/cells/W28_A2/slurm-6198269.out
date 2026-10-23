@@ -1,0 +1,47 @@
+NVIDIA H200, 143771 MiB
+GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, NVIDIA H200
+jax_backend=gpu
+10.235.106.30:/projects/paralab  4.6T  1.4T  3.2T  30% /cluster/tufts/paralab
+=== ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A2/out/cell --stages ref
+=== ref rc=0 79s
+11:56:13 stage ref: start
+11:57:01 ref dev N192 n320: d34 max 2.95e-11 d12 max 1.98e-10 dt max 3.74e-09 dp max 4.80e-12 eligible 8/8 [48s]
+11:57:12 ref val N192 n320: d34 max 2.72e-11 d12 max 1.84e-10 dt max 5.25e-09 dp max 4.89e-12 eligible 32/32 [10s]
+11:57:30 ref U 1.0521869585114335e-08 scorable True G7 3.5600227966248754e-14 MF-IC 16.706787267402195 MF-REF True MF-PAD True
+11:57:30 stage ref: 77s
+=== data: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A2/out/cell --stages data
+=== data rc=0 34s
+11:57:33 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '7e9480531', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+11:57:33 stage data: start
+11:58:05 data train: (96, 21, 191, 191) 31s gate True (space 7.7e-12, time 5.0e-08)
+11:58:05 stage data: 32s
+=== pod: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A2/out/cell --stages pod
+=== pod rc=0 48s
+11:58:07 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '7e9480531', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+11:58:07 stage pod: start
+11:58:44 pod pod: R 407 k_q 32 M_dev 7.3e-14 K_rel 2.8e-15 [37s]
+11:58:52 stage pod: 45s
+=== bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A2/out/cell --stages bank
+=== bank rc=0 2s
+11:58:55 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '7e9480531', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+=== ladder: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A2/out/cell --stages ladder
+=== ladder rc=0 7148s
+12:43:56 fom ladder rows 229
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.02GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+13:58:01 pod/ecsw ladder rows 434
+13:58:01 stage ladder: 7144s
+=== time: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A2/out/cell --stages time
+=== time rc=0 4426s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+15:11:48 stage time: 4423s
+=== controls: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A2/out/cell --stages controls
+=== controls rc=0 485s
+15:11:51 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '7e9480531', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+15:11:51 stage controls: start
+15:19:53 controls: all fire True not firing []
+15:19:53 stage controls: 482s
+JOB DONE

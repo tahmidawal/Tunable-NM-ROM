@@ -1,0 +1,17 @@
+NVIDIA H200, 143771 MiB
+GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec, NVIDIA H200
+jax_backend=gpu
+10.235.106.29:/projects/paralab  4.6T  1.3T  3.3T  29% /cluster/tufts/paralab
+=== reserve: mkdir -p /cluster/tufts/paralab/tawal01/burgers-archive/imp-box/.test-opened
+=== reserve rc=0 0s
+=== open_once: mkdir /cluster/tufts/paralab/tawal01/burgers-archive/imp-box/.test-opened/W28_A2
+=== open_once rc=0 0s
+=== restore: bash -c test ! -e /cluster/tufts/paralab/tawal01/burgers-archive/imp-box/W28_A2/test.json && cp -a /cluster/tufts/paralab/tawal01/burgers-archive/imp-box/W28_A2/. /cluster/tufts/paralab/tawal01/imp-box/test_W28_A2/out/cell/ && cd /cluster/tufts/paralab/tawal01/imp-box/test_W28_A2/out/cell && sha256sum -c --quiet SHA256SUMS && rm -rf _job SHA256SUMS
+=== restore rc=0 2s
+=== test: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A2 --out /cluster/tufts/paralab/tawal01/imp-box/test_W28_A2/out/cell --stages test --frozen /cluster/tufts/paralab/tawal01/imp-box/test_W28_A2/code/runs/frozen/W28_A2.json
+=== test rc=0 747s
+01:48:33 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': '5d80759a6', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+01:48:33 stage test: start
+01:49:29 ref test N192 n320: d34 max 1.84e-11 d12 max 1.23e-10 dt max 3.10e-09 dp max 3.04e-12 eligible 32/32 [56s]
+02:00:57 stage test: 744s
+JOB DONE

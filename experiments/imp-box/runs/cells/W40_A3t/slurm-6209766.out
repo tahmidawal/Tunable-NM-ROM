@@ -1,0 +1,21 @@
+NVIDIA H200, 143771 MiB
+GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, NVIDIA H200
+jax_backend=gpu
+10.235.106.30:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+=== restore: bash -c cp -a /cluster/tufts/paralab/tawal01/burgers-archive/imp-box/W40_A3/. /cluster/tufts/paralab/tawal01/imp-box/W40_A3t/out/cell/ && cd /cluster/tufts/paralab/tawal01/imp-box/W40_A3t/out/cell && sha256sum -c --quiet SHA256SUMS && rm -rf _job SHA256SUMS .done_time .done_controls final.json frozen.json && ls .done_ladder
+=== restore rc=0 4s
+.done_ladder
+=== time: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W40_A3t/out/cell --stages time
+=== time rc=0 4433s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+21:48:32 stage time: 4430s
+=== controls: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W40 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W40_A3t/out/cell --stages controls
+=== controls rc=0 460s
+21:48:36 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '1006cceda', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+21:48:36 stage controls: start
+21:56:12 controls: all fire True not firing []
+21:56:12 stage controls: 456s
+JOB DONE

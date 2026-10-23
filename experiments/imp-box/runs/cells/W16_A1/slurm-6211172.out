@@ -1,0 +1,47 @@
+NVIDIA H200, 143771 MiB
+GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, NVIDIA H200
+jax_backend=gpu
+10.235.106.23:/projects/paralab  4.6T  1.3T  3.3T  28% /cluster/tufts/paralab
+=== ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W16 --lev A1 --out /cluster/tufts/paralab/tawal01/imp-box/W16_A1/out/cell --stages ref
+=== ref rc=0 78s
+22:09:36 stage ref: start
+22:10:27 ref dev N128 n320: d34 max 3.76e-11 d12 max 2.56e-10 dt max 1.82e-09 dp max 7.49e-12 eligible 8/8 [50s]
+22:10:35 ref val N128 n320: d34 max 4.59e-11 d12 max 3.12e-10 dt max 3.42e-09 dp max 8.50e-12 eligible 32/32 [8s]
+22:10:53 ref U 6.861865489070905e-09 scorable True G7 3.556559404027246e-14 MF-IC 7.102915009681508 MF-REF True MF-PAD True
+22:10:53 stage ref: 77s
+=== data: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W16 --lev A1 --out /cluster/tufts/paralab/tawal01/imp-box/W16_A1/out/cell --stages data
+=== data rc=0 36s
+22:10:56 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '3e594a03b', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+22:10:56 stage data: start
+22:11:29 data train: (96, 21, 127, 127) 33s gate True (space 1.4e-11, time 1.6e-08)
+22:11:29 stage data: 33s
+=== pod: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W16 --lev A1 --out /cluster/tufts/paralab/tawal01/imp-box/W16_A1/out/cell --stages pod
+=== pod rc=0 34s
+22:11:30 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '3e594a03b', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+22:11:30 stage pod: start
+22:11:54 pod pod: R 203 k_q 16 M_dev 2.1e-14 K_rel 4.7e-15 [24s]
+22:12:03 stage pod: 32s
+=== bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W16 --lev A1 --out /cluster/tufts/paralab/tawal01/imp-box/W16_A1/out/cell --stages bank
+=== bank rc=0 2s
+22:12:05 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '3e594a03b', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+=== ladder: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W16 --lev A1 --out /cluster/tufts/paralab/tawal01/imp-box/W16_A1/out/cell --stages ladder
+=== ladder rc=0 2062s
+/cluster/tufts/paralab/tawal01/imp-box/W16_A1/code/score.py:16: RuntimeWarning: overflow encountered in square
+  num = np.sqrt(np.sum((F - R) ** 2, axis=-1))
+22:39:00 fom ladder rows 219
+22:46:25 pod/ecsw ladder rows 364
+22:46:25 stage ladder: 2059s
+=== time: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W16 --lev A1 --out /cluster/tufts/paralab/tawal01/imp-box/W16_A1/out/cell --stages time
+=== time rc=0 1846s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+23:17:12 stage time: 1843s
+=== controls: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W16 --lev A1 --out /cluster/tufts/paralab/tawal01/imp-box/W16_A1/out/cell --stages controls
+=== controls rc=0 366s
+23:17:14 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '3e594a03b', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+23:17:14 stage controls: start
+23:23:18 controls: all fire True not firing []
+23:23:18 stage controls: 364s
+JOB DONE

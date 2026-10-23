@@ -92,7 +92,8 @@ class Arm:
         if self.name == 'trans':
             if z_out:
                 inner = RM.make_query(sp, cfg['r'], 'gal_etdrk4', cfg['nsteps'], form=form, out='z')
-                return jax.jit(lambda d: inner(d.at[0].set(0.5).at[1].set(0.5)))
+                import hoist as HZ                    # A16: the outermost callable is hoisted (code audit 12)
+                return HZ.hoisted(lambda d: inner(d.at[0].set(0.5).at[1].set(0.5)))
             return PS.make_trans_query(sp, self.Phi, cfg['r'], cfg['nsteps'], form=form)
         return RM.make_query(sp, cfg['r'], cfg['st'], cfg['nsteps'], form=form, tol=cfg.get('tol', 'prod'),
                              out='z' if z_out else 'lattice')
@@ -375,7 +376,7 @@ def stage_time(a, out, D):
     freeze(a, out, final)
 
 
-QUERY_SOURCES = ('geom.py', 'spec.py', 'rom.py', 'podsine.py', 'bank.py', 'builders.py', 'vendor/pscore.py',
+QUERY_SOURCES = ('geom.py', 'spec.py', 'rom.py', 'podsine.py', 'bank.py', 'builders.py', 'hoist.py', 'vendor/pscore.py',
                  'vendor/sep_common.py')
 
 

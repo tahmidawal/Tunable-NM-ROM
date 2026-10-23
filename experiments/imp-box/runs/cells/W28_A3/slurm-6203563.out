@@ -1,0 +1,35 @@
+NVIDIA H200, 143771 MiB
+GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, NVIDIA H200
+jax_backend=gpu
+10.235.106.32:/projects/paralab  4.6T  1.3T  3.3T  29% /cluster/tufts/paralab
+=== ref: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A3/out/cell --stages ref
+=== ref rc=0 191s
+15:36:36 stage ref: start
+15:38:39 ref dev N384 n640: d34 max 2.64e-14 d12 max 6.08e-10 dt max 7.46e-09 dp max 9.64e-16 eligible 8/8 [123s]
+15:39:25 ref val N384 n640: d34 max 5.96e-13 d12 max 4.63e-09 dt max 1.08e-08 dp max 1.71e-15 eligible 32/32 [46s]
+15:39:45 ref U 2.1695407651744026e-08 scorable True G7 3.5599216651677215e-14 MF-IC 33.338684878674876 MF-REF True MF-PAD True
+15:39:45 stage ref: 189s
+=== data: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A3/out/cell --stages data
+=== data rc=0 110s
+15:39:48 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': '43c5c0d8f', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+15:39:48 stage data: start
+15:41:36 data train: (96, 21, 383, 383) 104s gate True (space 6.6e-13, time 1.5e-08)
+15:41:36 stage data: 108s
+=== pod: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A3/out/cell --stages pod
+=== pod rc=0 56s
+15:41:38 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': '43c5c0d8f', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+15:41:38 stage pod: start
+15:42:23 pod pod: R 512 k_q 32 M_dev 9.3e-14 K_rel 8.7e-15 [43s]
+15:42:32 stage pod: 53s
+=== bank: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A3/out/cell --stages bank
+=== bank rc=0 2s
+15:42:33 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': '43c5c0d8f', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+=== ladder: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A3/out/cell --stages ladder
+=== ladder rc=0 8575s
+16:32:11 fom ladder rows 247
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.02GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+18:05:27 pod/ecsw ladder rows 506
+18:05:27 stage ladder: 8572s
+=== time: /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python cell.py --W W28 --lev A3 --out /cluster/tufts/paralab/tawal01/imp-box/W28_A3/out/cell --stages time
+[2026-10-22T19:59:21.762] error: *** JOB 6203563 ON pax009 CANCELLED AT 2026-10-22T19:59:21 DUE to SIGNAL Terminated ***

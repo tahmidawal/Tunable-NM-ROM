@@ -68,7 +68,7 @@
    "gpu": "h200",
    "mem": "240G",
    "time": "10:00:00",
-   "basis": "wave-2 certificate runs/certificate-wave2.json; job audit codex-job-wave2-*.md"
+   "basis": "A17 runs/certificate-wave6.json 81.0 <= 87"
   },
   "W40_A3": {
    "body_sha256": "7bfff3c96da00c6d093ae404568f751b329bde5caf93051c2559270d445bddd1",
@@ -83,6 +83,92 @@
    "mem": "240G",
    "time": "10:00:00",
    "basis": "A14 exposure-bounded; runs/certificate-wave3.json 76.8 <= 87; job audit codex-job-wave3-*.md"
+  },
+  "W16_A1": {
+   "body_sha256": "b24545d948bc7446166fb815d45253b388071fb4cc00b89a8889f9584404dd2e",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "10:00:00",
+   "basis": "A17 runs/certificate-wave6.json 81.0 <= 87"
+  },
+  "W40_A3t": {
+   "body_sha256": "b4ff432319d5302f583e706911096615d7cd86b0e1755309bd365570faad207a",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "06:00:00",
+   "basis": "A16 restart; runs/certificate-wave5.json 77.1 <= 87",
+   "collect_name": "W40_A3t"
+  },
+  "W28_A3t": {
+   "body_sha256": "6de778970939d50cf28ce6155ef24525bb990dad73d6d795e35ab509eac6d69b",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "06:00:00",
+   "basis": "A16 restart; runs/certificate-wave5.json 77.1 <= 87",
+   "collect_name": "W28_A3t"
+  },
+  "test_W40_A1": {
+   "body_sha256": "044d64a4d7d3ec24a42400273b47123bd585f9cd64cf06063249342907d3c50a",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W40_A2": {
+   "body_sha256": "1990c2e786c404c0f48d820f686b71bea76998fc392880eb41c9290bb8343015",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W40_A3": {
+   "body_sha256": "cd507643e00d7f9d7f40e29c5aa7d88d06563d905325e6229e2912a86f70db9e",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W28_A1": {
+   "body_sha256": "b80bd1dd1c9cb3b9091446bc76297cbace9193bb2257068f83a3c4d3e608a803",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W28_A2": {
+   "body_sha256": "2c00c7953a484add445b72fe0097d5049ecc70e179ce4a2f999f72fc6d012ac2",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W28_A3": {
+   "body_sha256": "47ad7c7db6bc78fea288eb55ff03395fe253588a08352d971da9c798eb9556c6",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W08_A1": {
+   "body_sha256": "06a3f17e4ee8f7caf75731d970ee3e3e0e036a438be29775f07e8fbf2e1f5935",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W08_A2": {
+   "body_sha256": "dcf6911ee87e0c41c7619d3a1ecbe369ace21d06cdc87257dfe61948ed339bb6",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
+  },
+  "test_W16_A1": {
+   "body_sha256": "b3c30462b48eec230daef6fe33e38e258c7c0dc2b6a7389d6975be98421adcdd",
+   "gpu": "h200",
+   "mem": "240G",
+   "time": "02:30:00",
+   "basis": "runs/certificate-tests.json"
   }
  }
 }

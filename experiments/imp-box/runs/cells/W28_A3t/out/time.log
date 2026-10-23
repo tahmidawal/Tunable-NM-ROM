@@ -1,0 +1,36 @@
+20:34:49 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': '1006cceda', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+20:34:49 stage time: start
+20:51:28 pair spec|N32|dense|nt20 vs podg|r192|qT12|nt20: S 0.769 valid True
+20:51:33 pair spec|N32|dense|nt20 vs podg|r192|q4|nt20: S 0.643 valid True
+20:51:39 pair spec|N32|dense|nt40 vs podg|r192|qT12|nt20: S 1.28 valid True
+20:51:44 pair spec|N32|dense|nt40 vs podg|r192|q4|nt20: S 1.07 valid True
+20:52:11 pair spec|N24|dense|nt10 vs podg|r96|qT12|nt10: S 1.62 valid True
+20:52:16 pair spec|N24|dense|nt10 vs podg|r128|qT12|nt10: S 1.45 valid True
+20:52:21 pair spec|N32|dense|nt20 vs podg|r96|qT12|nt10: S 2.35 valid True
+20:52:26 pair spec|N32|dense|nt20 vs podg|r128|qT12|nt10: S 2.11 valid True
+20:52:32 pair specad|N24|tol1e-03|dense vs podg|r96|qT12|nt10: S 2.93 valid True
+20:52:37 pair specad|N24|tol1e-03|dense vs podg|r128|qT12|nt10: S 2.71 valid True
+20:52:43 pair specad|N24|tol1e-04|dense vs podg|r96|qT12|nt10: S 4.33 valid True
+20:52:48 pair specad|N24|tol1e-04|dense vs podg|r128|qT12|nt10: S 3.96 valid True
+20:53:19 pair spec|N32|dense|nt20 vs podg|r256|q4|nt20: S 0.531 valid True
+20:53:25 pair spec|N32|dense|nt20 vs podg|r256|qT12|nt20: S 0.48 valid True
+20:53:30 pair spec|N32|dense|nt40 vs podg|r256|q4|nt20: S 0.877 valid True
+20:53:36 pair spec|N32|dense|nt40 vs podg|r256|qT12|nt20: S 0.8 valid True
+20:53:59 pair spec|N16|dense|nt5 vs podg|r32|qT12|nt10: S 1.42 valid True
+20:54:04 pair spec|N16|dense|nt5 vs podg|r48|qT12|nt10: S 1.27 valid True
+20:54:09 pair spec|N24|dense|nt5 vs podg|r32|qT12|nt10: S 1.65 valid True
+20:54:13 pair spec|N24|dense|nt5 vs podg|r48|qT12|nt10: S 1.48 valid True
+20:54:19 pair specad|N16|tol1e-03|dense vs podg|r32|qT12|nt10: S 2.69 valid True
+20:54:24 pair specad|N16|tol1e-03|dense vs podg|r48|qT12|nt10: S 2.46 valid True
+20:54:29 pair specad|N16|tol1e-04|dense vs podg|r32|qT12|nt10: S 3.41 valid True
+20:54:34 pair specad|N16|tol1e-04|dense vs podg|r48|qT12|nt10: S 3.09 valid True
+E1022 21:13:34.270584   77484 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E1022 21:15:51.582234   77427 slow_operation_alarm.cc:140] The operation took 4m17.311729513s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+21:23:06 stage time: 2897s

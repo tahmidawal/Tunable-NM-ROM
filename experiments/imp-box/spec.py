@@ -18,6 +18,7 @@ import numpy as np
 import jax
 jax.config.update('jax_enable_x64', True)
 import jax.numpy as jnp
+import hoist as HZ   # imp-box A16
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'vendor'))
@@ -190,7 +191,7 @@ def make_fom(N, nsteps, M=None, out='lattice', n_out=G.N_OUT, cert=False, nan_st
         stats = jnp.stack([s[1], cc, jnp.asarray(float(nsteps)), jnp.asarray(0.0), s[2], jnp.asarray(0.0),
                            jnp.asarray(0.0)])
         return O, stats
-    return jax.jit(q)
+    return HZ.hoisted(q)
 
 
 # --------------------------------------------------------------------------------- F-SPEC-AD (step doubling) ---
@@ -282,7 +283,7 @@ def make_fom_ad(N, tol, J=AD_J, j0=AD_J0, M=None, out='lattice', n_out=G.N_OUT, 
         O = jnp.where(k == n_out, O, jnp.nan)                                     # unfinished run -> non-finite
         stats = jnp.stack([bad + mis, cc, nacc, fail.astype(jnp.float64), dfx, nrej, exhausted.astype(jnp.float64)])
         return O, stats
-    return jax.jit(q)
+    return HZ.hoisted(q)
 
 
 def fom_valid(fam, st):

@@ -51,11 +51,30 @@ def cell_dirs(cells):
     found = {}
     for W in WIDTHS:
         for lev in LEVELS:
-            for name in (f'{W}_{lev}',):            # production cells only; smokes are reported separately (audit 10)
+            for name in (f'{W}_{lev}t', f'{W}_{lev}'):   # production cells ('t' = A16 time-stage restart); no smokes
                 if name and (cells / name / 'out' / 'cell' / 'final.json').exists():
                     found[f'{W}_{lev}'] = (name, cells / name / 'out' / 'cell')
                     break
     return found
+
+
+def cfg_of(final, key):
+    for v in final['selection'].values():
+        for f in v['finalists']:
+            if f['key'] == key:
+                return f['cfg']
+    return None
+
+
+def ladder_min(final, se):
+    """A13 labels: the pair attaining S sits at a ladder minimum (FOM N = 8 or n = 5; reduced r = 16 or n = 10)."""
+    out = []
+    a, b = cfg_of(final, se.get('competitor_key')), cfg_of(final, se.get('bank_key'))
+    if a and (a.get('N') == 8 or a.get('nsteps') == 5):
+        out.append('FOM truncated at the ladder minimum')
+    if b and (b.get('r') == 16 or b.get('nsteps') == 10):
+        out.append('reduced model truncated at the ladder minimum')
+    return out
 
 
 def fom_best(final, tau, stat):
@@ -130,6 +149,44 @@ def main():
         X['stop_rule'] = dict(speed=sp['outcome'], scoped=sp['scoped']['outcome'], bank=bs['outcome'], max_S=sp['max_S'],
                               n_match=sp['n_match'], missing=sp['missing'], deferred=stop.get('deferred'),
                               source='runs/stoprule.json')
+    # ---- scope: retained / deferred / pending (A13-A17)
+    REGISTERED = [f'{W}_{lev}' for W in WIDTHS for lev in LEVELS]
+    DEFERRED = {'W40_A4': 'A14 (defer order: A4)', 'W28_A4': 'A14 (defer order: A4)', 'W16_A4': 'A14 / A15',
+                'W08_A4': 'A14 / A15', 'W16_A2': 'A15 (cap; defer order: W = 0.16)', 'W16_A3': 'A15 (cap)',
+                'W08_A3': 'A15 (cap)'}
+    w('## Scope: what ran, what was deferred (A13–A17)')
+    w('')
+    w('| cell | status |')
+    w('|---|---|')
+    scope = {}
+    for cl in REGISTERED:
+        st = 'collected' if cl in found else ('deferred: ' + DEFERRED[cl] if cl in DEFERRED else 'pending (running)')
+        scope[cl] = st
+        w(f'| {cl} | {st} |')
+    w('')
+    w('Also deferred: the second data size (384 trajectories; defer order item 4). Smokes (smk-*, smk2-*) and the four '
+      'diagnostic jobs are not results.')
+    w('')
+    X['scope'] = scope
+    # ---- A16 comparability (G-HOIST timing ratios)
+    gh = {k: (C[k]['controls'] or {}).get('G_HOIST') for k in found}
+    gh = {k: v for k, v in gh.items() if v and v.get('timing_reported')}
+    if gh:
+        w('## A16 comparability: hoisted vs embedded query timing (G-HOIST)')
+        w('')
+        w('A1/A2 cells and W08_A1 were selected and timed with embedded-constant queries, the A3 cells (and later cells) '
+          'with hoisted ones (A16). Ratio = hoisted / embedded single-query time on val[0] (median of 10):')
+        w('')
+        names = list(next(iter(gh.values()))['timing_reported'].keys())
+        w('| cell | ' + ' | '.join(names) + ' |')
+        w('|---|' + '---|' * len(names))
+        for k, v in sorted(gh.items()):
+            w(f'| {k} | ' + ' | '.join(f"{v['timing_reported'][n_]['ratio']:.3g}" for n_ in names) + ' |')
+        w('')
+        w('The dense-transform FOM runs about 10 % faster hoisted; the reduced queries within ±3 %. Cross-cell S '
+          'comparisons spanning the A16 change (A1/A2 vs A3) carry this uncertainty.')
+        w('')
+        X['a16_timing'] = {k: v['timing_reported'] for k, v in gh.items()}
     # ---- per-cell tables
     w('## Results per cell (val32, PROVISIONAL: conditional references; one trained bank per cell)')
     w('')
@@ -189,11 +246,15 @@ def main():
                             txt += f" (FOM search: {', '.join(str(x) for x in fstat)})"
                         if not accepted:
                             txt += ' (CELL NOT ACCEPTED: controls failed)'
+                        mins = ladder_min(fz, fz["S"].get(k) or {})
+                        if mins:
+                            txt += f" ({'; '.join(mins)})"
                     else:
                         txt = rec['status'] if not rec['finalists'] else 'timing invalid'
                     cells_.append(txt)
                     se = fz['S'].get(k) or {}
                     xc['entries'][k] = dict(status=rec['status'], S=s, arm_key=se.get('bank_key'), controls_accepted=accepted,
+                                            ladder_minimum=ladder_min(fz, se) if s is not None else None,
                                             fom_status={f: fz['selection'].get(f'{f}|{tau}|{stat}', {}).get('status')
                                                         for f in ('spec', 'specad')},
                                             qualification='PROVISIONAL: conditional spectral references (lane deviation, '
@@ -214,7 +275,9 @@ def main():
             for tau in TAUS:
                 for stat in STATS:
                     e = db['r_x']['entries'].get(f'{tau}|{stat}', {})
-                    w(f"| {pct(tau)} | {stat} | {e.get('fom_key', '–')} | {g(e.get('r_x'))} | {e.get('form', '–')} | "
+                    fsx = [fz['selection'].get(f'{f}|{tau}|{stat}', {}).get('status') for f in ('spec', 'specad')]
+                    lab = '' if all(x == 'finalist' for x in fsx) else f" (FOM search: {', '.join(str(x) for x in fsx)})"
+                    w(f"| {pct(tau)} | {stat} | {e.get('fom_key', '–')}{lab} | {g(e.get('r_x'))} | {e.get('form', '–')} | "
                       f"{pct(e.get('floor'))} | {e.get('verdict', '–')} | {g((e.get('query') or {}).get('r_x'))} |")
             w('')
             xc['bank_rx'] = db['r_x']['entries']
@@ -231,6 +294,118 @@ def main():
             w('')
             xc['stage_hours'] = st
             xc['host_peak_GiB'], xc['device_peak_GiB'] = pk, dk
+    # ---- crossing widths (DESIGN §5, A1.4): transitions of S across c = 1, 2 between adjacent measured widths
+    w('## Where S crosses 1 and 2 (per level, target, statistic, arm; PROVISIONAL)')
+    w('')
+    w('Measured widths per level are those of the collected cells; a transition is listed between adjacent measured '
+      'widths; "≥c everywhere" / "<c everywhere" when no transition occurs; censored or missing cells break the bracket. '
+      'R-TRANS (only W = 0.4) and the bank (W = 0.08, 0.4) have fewer widths.')
+    w('')
+    w('| level | τ | stat | arm | S by width (W: S) | crosses 1 | crosses 2 |')
+    w('|---|---|---|---|---|---|---|')
+    X['crossings'] = {}
+    for lev in LEVELS:
+        for tau in TAUS:
+            for stat in STATS:
+                for arm in ARMS:
+                    pts = []
+                    for W, wv in sorted(WIDTHS.items(), key=lambda t: t[1]):
+                        c = C.get(f'{W}_{lev}')
+                        if not c or not c['final'] or not c['final'].get('scorable'):
+                            continue
+                        rec = c['final']['selection'].get(f'{arm}|{tau}|{stat}')
+                        if rec is None:
+                            continue
+                        sv = (c['final']['S'].get(f'{arm}|{tau}|{stat}') or {}).get('S')
+                        fsx = [c['final']['selection'].get(f'{f}|{tau}|{stat}', {}).get('status') for f in ('spec', 'specad')]
+                        stt = rec['status'] if all(x == 'finalist' for x in fsx) else \
+                            f"{rec['status']}; FOM search {'/'.join(str(x) for x in fsx)}"
+                        pts.append((wv, sv, stt))
+                    if len(pts) < 2:
+                        continue
+                    def cross(cv):
+                        tr = []
+                        for (w1, s1, _), (w2, s2, _) in zip(pts, pts[1:]):
+                            if s1 is None or s2 is None:
+                                tr.append(f'[{w1:g}, {w2:g}] unresolved (censored/missing)')
+                            elif (s1 >= cv) != (s2 >= cv):
+                                tr.append(f"[{w1:g}, {w2:g}] {'down' if s1 >= cv else 'up'}")
+                        if not tr:
+                            vals = [x[1] for x in pts]
+                            if all(v is not None for v in vals):
+                                return f'≥{cv:g} everywhere' if all(v >= cv for v in vals) else (
+                                    f'<{cv:g} everywhere' if all(v < cv for v in vals) else '–')
+                        return '; '.join(tr) or '–'
+                    c1, c2 = cross(1.0), cross(2.0)
+                    X['crossings'][f'{lev}|{tau}|{stat}|{arm}'] = dict(points=pts, crosses_1=c1, crosses_2=c2)
+                    w(f"| {lev} | {pct(tau)} | {stat} | {ARM_NAME[arm]} | "
+                      f"{', '.join(f'{a:g}: ' + (g(b) if b is not None else st) + (f' ({st})' if b is not None and ';' in st else '') for a, b, st in pts)} | {c1} | {c2} |")
+    w('')
+    # ---- A11: dense vs FFT FOM implementation (ladder screen times)
+    w('## The dense-transform FOM (A11): how much the fair competitor matters')
+    w('')
+    w('Fastest ladder row meeting τ (worst error) per FOM implementation, by the single-case warm screen time '
+      '(diagnostic: the screen, not the paired timing); ratio > 1 means the FFT implementation is slower.')
+    w('')
+    w('| cell | τ | FFT fastest (ms) | dense fastest (ms) | FFT / dense |')
+    w('|---|---|---|---|---|')
+    X['a11'] = {}
+    for key in sorted(found):
+        lad = found[key][1] / 'ladder.jsonl'
+        if not lad.exists():
+            alt = cells / key / 'out' / 'cell' / 'ladder.jsonl'
+            lad = alt if alt.exists() else lad
+        if not lad.exists():
+            continue
+        rows = [json.loads(l) for l in lad.read_text().splitlines()]
+        U = C[key]['ref']['allowance']['U']
+        for tau in TAUS:
+            best = {}
+            for r in rows:
+                cf = r['cfg']
+                if cf.get('fam') not in ('spec', 'specad') or not r.get('valid') or r.get('screen') is None:
+                    continue
+                if r['worst'] + U <= tau:
+                    xf = cf.get('xform', 'fft')
+                    best[xf] = min(best.get(xf, np.inf), r['screen'])
+            if 'fft' in best and 'dense' in best:
+                X['a11'][f'{key}|{tau}'] = dict(fft=best['fft'], dense=best['dense'], ratio=best['fft'] / best['dense'])
+                w(f"| {key} | {pct(tau)} | {1e3 * best['fft']:.3g} | {1e3 * best['dense']:.3g} | "
+                  f"{best['fft'] / best['dense']:.3g} |")
+    w('')
+    # ---- test-once (A3.7): frozen validation pairs evaluated once on test32
+    T = {}
+    for key in sorted(found):
+        tf = cells / f'test_{key}' / 'out' / 'cell' / 'test.json'
+        if tf.exists():
+            T[key] = json.loads(tf.read_text())
+    if T:
+        w('## Test-once (frozen validation pairs on the sealed-by-seed test32 cohort; opened once)')
+        w('')
+        w('A pair is "matched on test" only if both frozen members meet τ on test32 (three-way rule with the test '
+          'allowance) and are numerically qualified on test reached states, and the re-timing is valid; S_test is the '
+          'speed-up of the validation-selected pair, not a re-selection.')
+        w('')
+        w('| cell | test eligible | U_test | pairs | matched on test | S_val → S_test (matched) |')
+        w('|---|---|---|---|---|---|')
+        X['test'] = {}
+        for key, t in T.items():
+            pr = t.get('pairs', {})
+            m = {k: v for k, v in pr.items() if v.get('matched_on_test')}
+            cc = t.get('claim_context', {})
+            w(f"| {key} | {cc.get('test', '–')} | {g(t.get('U_test'))} | {len(pr)} | {len(m)} | "
+              f"{'; '.join(f'{k}: {g(v.get('S_val'))}→{g(v.get('S_test'))}' for k, v in list(m.items())[:6])}{' …' if len(m) > 6 else ''} |")
+            X['test'][key] = dict(scorable=t.get('scorable'), U_test=t.get('U_test'), n_pairs=len(pr),
+                                  n_matched=len(m), pairs={k: dict(S_val=v.get('S_val'), S_test=v.get('S_test'),
+                                                                   matched=v.get('matched_on_test'),
+                                                                   reason=v.get('reason')) for k, v in pr.items()},
+                                  source=str(tf).replace(str(HERE) + '/', ''))
+        w('')
+    w('**Search limitations (stated):** ladders were not extended below their minima (A13): FOM $N=8$ and $n=5$, reduced '
+      '$r=16$ and $n=10$; entries whose S-attaining pair sits at a minimum are labelled. Finalist ordering within a '
+      'six-candidate screening batch is recorded only for the attempted candidates, so that every selected candidate beat '
+      'every unattempted member of its batch is not independently re-checkable from the JSONs (results audit 1).')
+    w('')
     # ---- smoke stage costs (including the cancelled first smokes, A9)
     sm = sorted(p for p in cells.glob('smk*') if (p / 'out' / 'cell' / 'stage_seconds.jsonl').exists())
     if sm:

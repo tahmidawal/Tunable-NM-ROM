@@ -24,6 +24,15 @@ import spec as SP
 import stoprule as STP
 
 
+def hoist_cmp(Oh, sh, Oe, se):
+    """G-HOIST gate value: max relative difference of fields and statistics; non-finite -> inf (A16)."""
+    vals = [rel(Oh, Oe), rel(sh, se)]
+    if not all(np.isfinite(v) for v in vals) or not np.all(np.isfinite(np.asarray(Oh))) \
+            or not np.all(np.isfinite(np.asarray(sh))):
+        return float('inf')
+    return max(vals)
+
+
 def rel(a, b):
     a, b = np.asarray(a), np.asarray(b)
     return float(np.max(np.abs(a - b)) / (np.max(np.abs(b)) + 1e-300))
@@ -143,6 +152,37 @@ def stage_controls(a, out, D):
     nan_mut = xdiff(bx, np.full_like(bx, np.nan))       # mutation: an all-NaN dense output must fail
     res['G_XFORM'] = dict(per_N=per, max_rel=gx, passed=bool(gx <= 1e-12), nan_mutation=nan_mut,
                           nan_fires=bool(not np.isfinite(nan_mut)))
+    # G-HOIST (A16): hoisted-constant queries equal the embedded-constant ones on real data
+    import os as _os
+    import hoist as HZ
+
+    def both(build):
+        _os.environ['IMPBOX_EMBED'] = '1'
+        qe = build()
+        _os.environ.pop('IMPBOX_EMBED')
+        qh = build()
+        import diag as DG
+        k = len(gh_t)
+        te = DG.tmed(qe, d0, reps=10, label=f'ghoist|{k}|embedded')
+        th = DG.tmed(qh, d0, reps=10, label=f'ghoist|{k}|hoisted')
+        gh_t[k] = dict(t_embedded=te, t_hoisted=th, ratio=th / te, raw_embedded=DG.TRAW[f'ghoist|{k}|embedded'],
+                       raw_hoisted=DG.TRAW[f'ghoist|{k}|hoisted'])
+        (Oh, sh), (Oe, se) = qh(d0), qe(d0)
+        return hoist_cmp(Oh, sh, Oe, se)
+    gh_t = {}
+    gh = dict(fom=both(lambda: SP.make_fom(16, 20)), fom_dense=both(lambda: SP.make_fom(16, 20, xform='dense')),
+              fom_ad=both(lambda: SP.make_fom_ad(16, 1e-4)),
+              podg_point=both(lambda: RM.make_query(sp, r, 'gal_etdrk4', n, form='point')),
+              podg_tensor=both(lambda: RM.make_query(sp, r, 'gal_etdrk4', n, form='tensor')),
+              lspg=both(lambda: RM.make_query(sp, r, 'lspg_cnr', n, form='tensor')),
+              trans=both(lambda: PS.make_trans_query(sp, Phi, r, n)))
+    gv = list(gh.values())
+    ok_h = bool(all(np.isfinite(v) and v <= 1e-12 for v in gv))
+    O_, s_ = np.ones((2, 3)), np.ones(3)                # mutations through the actual gate function (code audit 13)
+    mut = max(hoist_cmp(np.full((2, 3), np.nan), s_, O_, s_), hoist_cmp(O_, np.full(3, np.nan), O_, s_),
+              hoist_cmp(O_, s_ * 1.01, O_, s_) * 1e12)
+    res['G_HOIST'] = dict(per_query=gh, max_rel=float(max(gv)), passed=ok_h, nan_mutation_fires=bool(not np.isfinite(mut) or mut > 1e-12),
+                          timing_reported=dict(zip(gh.keys(), gh_t.values())))
     # MF-FLOOR
     zf = np.random.default_rng(3).standard_normal((6, r))
     Uin = zf @ sp.Pl[:, :r].T
@@ -213,7 +253,7 @@ def stage_controls(a, out, D):
         'G7': rj['G7']['passed'], 'MF_IC': rj['MF_IC']['fires'], 'MF_REF_real': rj['MF_REF_real']['fires'],
         'MF_PAD_chk': rj['MF_PAD_chk']['fires'], 'refgate_selftest': rj['refgate_selftest']['passed'],
         'G_OPS': pj['G_OPS']['passed'], 'G4': res['G4']['passed'], 'MF_TENS': res['MF_TENS']['fires'],
-        'G_XFORM': res['G_XFORM']['passed'] and res['G_XFORM']['nan_fires'],
+        'G_XFORM': res['G_XFORM']['passed'] and res['G_XFORM']['nan_fires'], 'G_HOIST': res['G_HOIST']['passed'] and res['G_HOIST']['nan_mutation_fires'],
         'MF_Q1_E4': res['MF_Q1_E4']['positive'] and res['MF_Q1_E4']['fires'],
         'MF_Q1_LSPG': res['MF_Q1_LSPG']['positive'] and res['MF_Q1_LSPG']['fires'],
         'MF_NAN_stage': res['MF_NAN_stage']['fires'], 'MF_AD_rej': res['MF_AD_rej']['fires'],

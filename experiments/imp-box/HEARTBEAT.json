@@ -1,4 +1,1 @@
-{"lane": "imp-box", "utc": "2026-10-22T18:26:09Z", "step": "7: running W28_A2 6198269, W28_A1 6200654, W08_A1 6202478; releaser queues W40_A3, W28_A3, W08_A2; A4 deferred (A14)",
- "waiting_on": {"slurm_jobs": ["6198269", "6200654", "6202478"], "codex_output": null, "codex_pid": null, "local_pid": null, "waiter_pids": [2802781, 2944103, 3010873], "auto_release_pid": 3025503},
- "expected_finish_utc": "", "last_commit": "e5374de5e",
- "gpu_hours_spent": 23.8331, "gpu_hours_cap": 87, "notes": "ledger 23.8 GPU-h; wave-3 certificate 80.6/87"}
+{"lane": "imp-box", "utc": "2026-10-23T05:28:35Z", "step": "parked: waiting on 6218372 6218378 6218390 (PENDING, H200 Resources/Priority); W08_A2,W16_A1 tests still to release (auto_release pid 1475946); 4/9 collected", "waiting_on": {"slurm_jobs": ["6218372", "6218378", "6218390"], "codex_output": null, "codex_pid": null, "local_pid": null, "auto_release_pid": 1475946}, "expected_finish_utc": "", "last_commit": "5d80759a6", "gpu_hours_spent": 47.9928, "gpu_hours_cap": 87, "notes": "ledger 47.1; test certificate 72.1/87"}

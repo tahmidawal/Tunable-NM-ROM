@@ -1,0 +1,270 @@
+{
+ "G4": {
+  "diff": 6.949585774983725e-17,
+  "passed": true
+ },
+ "MF_TENS": {
+  "diff": 2.408839535281903e-06,
+  "fires": true
+ },
+ "MF_Q1_E4": {
+  "defect_clean": 2.226327905205439e-15,
+  "coef_cert_clean": 7.538122661105127e-13,
+  "defect_fault": 1.0002861908712613e-06,
+  "positive": true,
+  "fires": true
+ },
+ "MF_Q1_LSPG": {
+  "nonstat_clean": 0.0,
+  "nonstat_fault": 1.0,
+  "positive": true,
+  "fires": true
+ },
+ "MF_NAN_stage": {
+  "reduced_invalid": true,
+  "fom_invalid": true,
+  "ad_invalid": true,
+  "fires": true
+ },
+ "MF_AD_rej": {
+  "tol": 0.01,
+  "rejects_clean": 0.0,
+  "rejects_fault": 1.0,
+  "accepted_clean": 7.0,
+  "accepted_fault": 8.0,
+  "fires": true
+ },
+ "MF_AD_cap": {
+  "cap_hit": 1.0,
+  "rejects": 8.0,
+  "expected_rejects": 8,
+  "fires": true
+ },
+ "MF_Q2": {
+  "rho_clean": 2.4724433601145964e-15,
+  "passed_clean": true,
+  "rho_fault": 0.49999999999999933,
+  "fires": true
+ },
+ "MF_ECSW": {
+  "r": 16,
+  "kappa": 8,
+  "rho_clean": 0.014559863433074775,
+  "passed_clean": true,
+  "rho_fault": 0.5024360552215091,
+  "positive": true,
+  "fires": true
+ },
+ "MF_TRANS": {
+  "zero_shift_identity": 1.6142887216376083e-15,
+  "id_passed": true,
+  "sign_good": 2.2204546097895425e-16,
+  "sign_bad": 1.7026753101295256,
+  "sign_passed": true,
+  "sign_fires": true
+ },
+ "G_XFORM": {
+  "per_N": {
+   "8": 3.127180042004296e-15,
+   "10": 1.35567659404922e-15,
+   "12": 3.1824950957088073e-15,
+   "14": 2.186278876861855e-15,
+   "16": 2.1673830218182565e-15,
+   "24": 3.3631169188640867e-15,
+   "32": 4.867533300554896e-15,
+   "48": 5.406823382523887e-15,
+   "64": 7.951247892405416e-15,
+   "96": 7.838301738875696e-15,
+   "128": 1.8134104989499185e-14
+  },
+  "max_rel": 1.8134104989499185e-14,
+  "passed": true,
+  "nan_mutation": Infinity,
+  "nan_fires": true
+ },
+ "MF_FLOOR": {
+  "in_span": 6.503258557186232e-16,
+  "random": 1.000960177343281,
+  "fires": true
+ },
+ "MF_SETUP": {
+  "leaky_vs_official_at_nu1": 0.04097673468750756,
+  "leaky_vs_official_at_nu0": 6.212377201867016e-17,
+  "fires": true,
+  "structural": "every timed callable is jax.jit of a function of d alone (builders receive no descriptor); nu enters only through d"
+ },
+ "selector": {
+  "finalists": [
+   "fake|6",
+   "fake|8"
+  ],
+  "attempts": [
+   [
+    "fake|1",
+    false
+   ],
+   [
+    "fake|5",
+    false
+   ],
+   [
+    "fake|4",
+    false
+   ],
+   [
+    "fake|3",
+    false
+   ],
+   [
+    "fake|0",
+    false
+   ],
+   [
+    "fake|2",
+    false
+   ],
+   [
+    "fake|6",
+    true
+   ],
+   [
+    "fake|8",
+    true
+   ]
+  ],
+  "fires": true
+ },
+ "MF_NOMATCH": {
+  "fires": true
+ },
+ "MF_STOP": {
+  "all_below_fires": true,
+  "one_0.6_not_fired": true,
+  "exact_0.5_not_fired": true,
+  "0.4999_fires": true,
+  "missing_unresolved": true,
+  "censored_arm_unresolved": true,
+  "all_censored_unresolved": true,
+  "bank_above_undefined_unresolved": true,
+  "bank_below_undefined_not_fired": true,
+  "bank_all_above_fires": true,
+  "bank_missing_unresolved": true,
+  "timing_excluded_missing": true,
+  "timing_excluded_winner_match": true,
+  "fom_incomplete_missing": true,
+  "unaccepted_missing": true,
+  "bank_entry_fom_incomplete_missing": true,
+  "passed": true
+ },
+ "score_selftest": {
+  "SW1a": true,
+  "SW1b": true,
+  "MF-REF": true
+ },
+ "MF_LEAK": {
+  "fires": true,
+  "msgs": [
+   "MF-LEAK: --frozen (the committed copy of frozen.json) is required",
+   "MF-LEAK: --frozen must be the staged committed copy under code/runs/frozen/"
+  ]
+ },
+ "MF_FROZEN": {
+  "fires": true,
+  "artifact": "data.json",
+  "msg": "MF-FROZEN: artifact data.json changed since the freeze",
+  "positive": true
+ },
+ "test_fixtures": {
+  "clean_matched": true,
+  "q2_fail_not_matched": true,
+  "infeasible_not_matched": true,
+  "empty_not_matched": true,
+  "fires": true
+ },
+ "eligibility_propagates": {
+  "row": 0,
+  "fires": true
+ },
+ "T_dbl_rom": {
+  "ratio": 1.0032737131500917,
+  "passed": true,
+  "both": [
+   0.0036864597350358963,
+   0.003683011047542095,
+   0.003679017536342144,
+   0.0036770617589354515,
+   0.0036668051034212112
+  ],
+  "one": [
+   0.001833990216255188,
+   0.0018349727615714073,
+   0.0018385527655482292,
+   0.0018300600349903107,
+   0.0018383627757430077
+  ],
+  "two": [
+   0.0018297825008630753,
+   0.0018374212086200714,
+   0.0018475018441677094,
+   0.0018320400267839432,
+   0.0018294034525752068
+  ]
+ },
+ "T_dbl_fom": {
+  "ratio": 0.9996425163671927,
+  "passed": true,
+  "both": [
+   0.027438757941126823,
+   0.027451084926724434,
+   0.027419024147093296,
+   0.02742886822670698,
+   0.0274449298158288
+  ],
+  "one": [
+   0.013740410096943378,
+   0.013718929141759872,
+   0.013732782565057278,
+   0.01374804601073265,
+   0.01371628139168024
+  ],
+  "two": [
+   0.013727936893701553,
+   0.013749335892498493,
+   0.013715787790715694,
+   0.013707234524190426,
+   0.013693252578377724
+  ]
+ },
+ "registry": {
+  "G7": true,
+  "MF_IC": true,
+  "MF_REF_real": true,
+  "MF_PAD_chk": true,
+  "refgate_selftest": true,
+  "G_OPS": true,
+  "G4": true,
+  "MF_TENS": true,
+  "G_XFORM": true,
+  "MF_Q1_E4": true,
+  "MF_Q1_LSPG": true,
+  "MF_NAN_stage": true,
+  "MF_AD_rej": true,
+  "MF_AD_cap": true,
+  "MF_Q2": true,
+  "MF_TRANS": true,
+  "MF_FLOOR": true,
+  "MF_SETUP": true,
+  "selector": true,
+  "MF_NOMATCH": true,
+  "MF_STOP": true,
+  "score_selftest": true,
+  "MF_LEAK": true,
+  "MF_FROZEN": true,
+  "test_fixtures": true,
+  "eligibility_propagates": true,
+  "T_dbl": true,
+  "MF_ECSW": true
+ },
+ "all_fire": true,
+ "not_firing": []
+}

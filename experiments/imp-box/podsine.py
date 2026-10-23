@@ -19,6 +19,7 @@ import numpy as np
 import jax
 jax.config.update('jax_enable_x64', True)
 import jax.numpy as jnp
+import hoist as HZ   # imp-box A16
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'vendor'))
@@ -166,15 +167,20 @@ def make_shift_decoder(Phi_r, lat=G.LAT, sign=-1.0):
     B = sum z_i Phi_i. sign=-1 is the registered decoder (x - delta); sign=+1 is the MF-TRANS-sign fault."""
     R, n, _ = Phi_r.shape
     F = jnp.asarray(Phi_r.reshape(R, -1))
-    x = jnp.asarray(np.arange(0, lat + 1) / lat)                  # full lattice incl. walls (scored)
-    kp = jnp.asarray(np.pi * np.arange(1, n + 1))
 
     def dec(z, delta):
-        B = (z @ F).reshape(n, n)
-        Sx = jnp.sin(jnp.outer(x + sign * delta[0], kp))
-        Sy = jnp.sin(jnp.outer(x + sign * delta[1], kp))
-        return (Sx @ B @ Sy.T).reshape(-1)
+        return shift_decode(z, delta, F, n, lat, sign)
     return dec
+
+
+def shift_decode(z, delta, F, n, lat=G.LAT, sign=-1.0):
+    """The shifted decoder with the basis F (R, n*n) as an explicit argument (A16: callers may pass it to jit)."""
+    x = jnp.asarray(np.arange(0, lat + 1) / lat)                  # full lattice incl. walls (scored)
+    kp = jnp.asarray(np.pi * np.arange(1, n + 1))
+    B = (z @ F).reshape(n, n)
+    Sx = jnp.sin(jnp.outer(x + sign * delta[0], kp))
+    Sy = jnp.sin(jnp.outer(x + sign * delta[1], kp))
+    return (Sx @ B @ Sy.T).reshape(-1)
 
 
 def make_trans_query(sp, Phi, r, nsteps, form='tensor', tol='prod', cert=False, sign=-1.0, zero_shift=False, lat=G.LAT,
@@ -190,7 +196,7 @@ def make_trans_query(sp, Phi, r, nsteps, form='tensor', tol='prod', cert=False, 
         if zero_shift:
             delta = jnp.zeros(2)
         return jax.vmap(lambda z: dec(z, delta))(Z), st
-    q_ = jax.jit(q)
+    q_ = HZ.hoisted(q)
     q_.info = dict(inner=getattr(inner, 'info', {}))
     return q_
 

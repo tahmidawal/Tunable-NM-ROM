@@ -1,0 +1,96 @@
+13:58:05 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax008', 'commit': '7e9480531', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+13:58:05 stage time: start
+14:11:10 pair spec|N16|dense|nt5 vs podg|r64|qT12|nt10: S 1.29 valid True
+14:11:17 pair spec|N16|dense|nt5 vs podg|r96|qT12|nt10: S 1.15 valid True
+14:11:22 pair spec|N16|dense|nt10 vs podg|r64|qT12|nt10: S 1.66 valid True
+14:11:27 pair spec|N16|dense|nt10 vs podg|r96|qT12|nt10: S 1.45 valid True
+14:11:33 pair specad|N16|tol1e-03|dense vs podg|r64|qT12|nt10: S 2.09 valid True
+14:11:38 pair specad|N16|tol1e-03|dense vs podg|r96|qT12|nt10: S 1.88 valid True
+14:11:43 pair specad|N16|tol1e-04|dense vs podg|r64|qT12|nt10: S 2.6 valid True
+14:11:48 pair specad|N16|tol1e-04|dense vs podg|r96|qT12|nt10: S 2.31 valid True
+14:14:09 pair spec|N32|dense|nt10 vs podg|r128|qT12|nt10: S 1.49 valid True
+14:14:16 pair spec|N32|dense|nt10 vs podg|r128|q4|nt10: S 1.04 valid True
+14:14:22 pair spec|N24|dense|nt10 vs podg|r128|qT12|nt10: S 1.51 valid True
+14:14:26 pair spec|N24|dense|nt10 vs podg|r128|q4|nt10: S 1.07 valid True
+14:14:33 pair specad|N24|tol1e-03|dense vs podg|r128|qT12|nt10: S 2.12 valid True
+14:14:38 pair specad|N24|tol1e-03|dense vs podg|r128|q4|nt10: S 1.48 valid True
+14:14:44 pair specad|N32|tol1e-03|dense vs podg|r128|qT12|nt10: S 2.42 valid True
+14:14:49 pair specad|N32|tol1e-03|dense vs podg|r128|q4|nt10: S 1.68 valid True
+14:15:45 pair spec|N16|dense|nt5 vs podg|r32|qT12|nt10: S 1.54 valid True
+14:15:50 pair spec|N16|dense|nt5 vs podg|r48|qT12|nt10: S 1.38 valid True
+14:15:55 pair spec|N14|dense|nt5 vs podg|r32|qT12|nt10: S 1.51 valid True
+14:16:00 pair spec|N14|dense|nt5 vs podg|r48|qT12|nt10: S 1.37 valid True
+14:16:05 pair specad|N16|tol1e-03|dense vs podg|r32|qT12|nt10: S 2.4 valid True
+14:16:09 pair specad|N16|tol1e-03|dense vs podg|r48|qT12|nt10: S 2.16 valid True
+14:16:15 pair specad|N14|tol1e-03|dense vs podg|r32|qT12|nt10: S 2.45 valid True
+14:16:19 pair specad|N14|tol1e-03|dense vs podg|r48|qT12|nt10: S 2.22 valid True
+14:16:53 pair spec|N10|dense|nt5 vs podg|r16|qT12|nt10: S 1.14 valid True
+14:16:58 pair spec|N10|dense|nt5 vs podg|r24|qT12|nt10: S 1.04 valid True
+14:17:03 pair spec|N10|dense|nt10 vs podg|r16|qT12|nt10: S 1.44 valid True
+14:17:08 pair spec|N10|dense|nt10 vs podg|r24|qT12|nt10: S 1.31 valid True
+14:17:13 pair specad|N10|tol1e-03|dense vs podg|r16|qT12|nt10: S 2.48 valid True
+14:17:18 pair specad|N10|tol1e-03|dense vs podg|r24|qT12|nt10: S 2.17 valid True
+14:17:23 pair specad|N10|tol1e-04|dense vs podg|r16|qT12|nt10: S 2.69 valid True
+14:17:27 pair specad|N10|tol1e-04|dense vs podg|r24|qT12|nt10: S 2.46 valid True
+14:17:33 pair specad|N12|tol1e-03|dense vs podg|r32|qT12|nt10: S 2.34 valid True
+14:17:38 pair specad|N12|tol1e-03|dense vs podg|r48|qT12|nt10: S 2.11 valid True
+14:23:52 pair spec|N16|dense|nt5 vs ecsw|r64|k8|nt10: S 1.2 valid True
+14:23:58 pair spec|N16|dense|nt5 vs ecsw|r96|k8|nt10: S 1.1 valid True
+14:24:03 pair spec|N16|dense|nt10 vs ecsw|r64|k8|nt10: S 1.5 valid True
+14:24:08 pair spec|N16|dense|nt10 vs ecsw|r96|k8|nt10: S 1.38 valid True
+14:24:13 pair specad|N16|tol1e-03|dense vs ecsw|r64|k8|nt10: S 1.89 valid True
+14:24:17 pair specad|N16|tol1e-03|dense vs ecsw|r96|k8|nt10: S 1.76 valid True
+14:24:22 pair specad|N16|tol1e-04|dense vs ecsw|r64|k8|nt10: S 2.38 valid True
+14:24:27 pair specad|N16|tol1e-04|dense vs ecsw|r96|k8|nt10: S 2.18 valid True
+14:32:38 pair spec|N32|dense|nt10 vs ecsw|r128|k8|nt10: S 1.44 valid True
+14:32:49 pair spec|N32|dense|nt10 vs ecsw|r192|k4|nt10: S 1.3 valid True
+14:32:54 pair spec|N24|dense|nt10 vs ecsw|r128|k8|nt10: S 1.46 valid True
+14:33:00 pair spec|N24|dense|nt10 vs ecsw|r192|k4|nt10: S 1.29 valid True
+14:33:06 pair specad|N24|tol1e-03|dense vs ecsw|r128|k8|nt10: S 2.1 valid True
+14:33:12 pair specad|N24|tol1e-03|dense vs ecsw|r192|k4|nt10: S 1.87 valid True
+14:33:17 pair specad|N32|tol1e-03|dense vs ecsw|r128|k8|nt10: S 2.45 valid True
+14:33:24 pair specad|N32|tol1e-03|dense vs ecsw|r192|k4|nt10: S 2.1 valid True
+14:36:04 pair spec|N16|dense|nt5 vs ecsw|r48|k8|nt10: S 1.25 valid True
+14:36:08 pair spec|N14|dense|nt5 vs ecsw|r48|k8|nt10: S 1.29 valid True
+14:36:13 pair spec|N14|dense|nt5 vs ecsw|r64|k8|nt10: S 1.2 valid True
+14:36:17 pair specad|N16|tol1e-03|dense vs ecsw|r48|k8|nt10: S 2.01 valid True
+14:36:22 pair specad|N14|tol1e-03|dense vs ecsw|r48|k8|nt10: S 2.05 valid True
+14:36:27 pair specad|N14|tol1e-03|dense vs ecsw|r64|k8|nt10: S 1.95 valid True
+14:38:11 pair spec|N10|dense|nt5 vs ecsw|r48|k8|nt10: S 0.859 valid True
+14:38:15 pair spec|N10|dense|nt5 vs ecsw|r64|k8|nt10: S 0.823 valid True
+14:38:20 pair spec|N10|dense|nt10 vs ecsw|r48|k8|nt10: S 1.1 valid True
+14:38:25 pair spec|N10|dense|nt10 vs ecsw|r64|k8|nt10: S 1.02 valid True
+14:38:29 pair specad|N10|tol1e-03|dense vs ecsw|r48|k8|nt10: S 1.79 valid True
+14:38:34 pair specad|N10|tol1e-03|dense vs ecsw|r64|k8|nt10: S 1.7 valid True
+14:38:39 pair specad|N10|tol1e-04|dense vs ecsw|r48|k8|nt10: S 1.96 valid True
+14:38:43 pair specad|N10|tol1e-04|dense vs ecsw|r64|k8|nt10: S 1.87 valid True
+14:38:55 pair specad|N12|tol1e-03|dense vs ecsw|r48|k8|nt10: S 1.98 valid True
+14:39:00 pair specad|N12|tol1e-03|dense vs ecsw|r64|k8|nt10: S 1.86 valid True
+E1022 14:44:45.858289  851231 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E1022 14:46:34.489086  851050 slow_operation_alarm.cc:140] The operation took 3m48.630879777s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E1022 14:58:40.514401  851231 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E1022 15:00:23.080013  851050 slow_operation_alarm.cc:140] The operation took 3m42.565696219s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E1022 15:08:14.590573  851231 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E1022 15:11:34.803308  851050 slow_operation_alarm.cc:140] The operation took 5m20.212802712s
+
+********************************
+[Compiling module jit__lambda for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+15:11:48 stage time: 4423s

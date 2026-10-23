@@ -117,11 +117,12 @@ def evaluate(cells_dir, deferred=()):
     for W in WIDE:
         for lev in LEVELS:
             cell = f'{W}_{lev}'
-            f = cells_dir / cell / 'out' / 'cell' / 'final.json'
+            cd_ = cell + 't' if (cells_dir / (cell + 't') / 'out' / 'cell' / 'final.json').exists() else cell  # A16
+            f = cells_dir / cd_ / 'out' / 'cell' / 'final.json'
             finals[cell] = json.loads(f.read_text()) if f.exists() else None
-            cj = cells_dir / cell / 'out' / 'cell' / 'controls.json'
+            cj = cells_dir / cd_ / 'out' / 'cell' / 'controls.json'
             acc[cell] = bool(cj.exists() and json.loads(cj.read_text()).get('all_fire', False))
-            g = cells_dir / cell / 'out' / 'cell' / 'diag_bank_lspg.json'
+            g = cells_dir / cd_ / 'out' / 'cell' / 'diag_bank_lspg.json'
             diags[cell] = json.loads(g.read_text()) if g.exists() else None
     ent = {}
     for (arm, cell, tau, stat) in required(deferred):

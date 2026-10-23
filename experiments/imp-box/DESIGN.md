@@ -739,3 +739,60 @@ qualified one. The smoke's speed-ups (FFT-only FOM) are smoke evidence only and 
   80.6 GPU-h ≤ 87 (`projected_total_corrected`). W08_A1 (approved and audited in wave 2) started before the A3 cells
   because three duplicate releaser processes were live; they were stopped, and a single releaser now runs W40_A3, W28_A3,
   then W08_A2. The order deviation does not change any job's specification.
+
+## Amendment A15 (2026-10-22, after four production A1/A2 cells; before any W = 0.16 job)
+
+- A1/A2 cell cost bound = the largest measured **production** A1/A2 cell (ledger; 4.92 GPU-h, W40_A2) instead of the
+  smoke × 1.5 bound; A3 cells at their 10 h wall; test-once allowance 0.5 GPU-h per cell (10 cells); 15 % headroom on
+  queued cells; failed-job allowance 10 h. Certificate `runs/certificate-wave4.json` (`certify_wave4.py`): releasing
+  W16_A1 gives 81.9 GPU-h ≤ 87; adding W16_A2 would give 87.6 > 87, so **W16_A2, W16_A3 and W08_A3 are deferred**
+  (defer order: W = 0.16 cells; W08_A3 by the same cap). The crossing analysis at A2/A3 therefore uses W = 0.08 and the wide
+  widths only, stated in the report.
+- A15 correction (job audit wave4-1 = DO-NOT-SUBMIT): the test-once allowance must be evidenced. Bounded by the largest
+  measured ref + time + controls stage hours of a completed cell (2.22 h, W40_A2) per tested cell, the remaining work no
+  longer fits with W16_A1, so **no W = 0.16 cell runs** (defer order item 3), and the second data size (item 4) is deferred.
+  The A3 crossing analysis uses W28 and W40 only (W08_A3 deferred). W08_A2 is held until W40_A3's measured cost allows a
+  certificate that includes test-once for every retained cell; the releaser now carries only W28_A3 (wide cells first).
+
+## Amendment A16 (2026-10-23, after the A3 time-stage stalls; before any A3 selection result)
+
+- **Diagnosis.** JAX 0.10 embeds the concrete arrays a jitted query closes over as HLO literals (checked: a query's
+  only argument is the descriptor; all basis / rule / tensor arrays are `stablehlo.constant`s). At A3/A4 these reach
+  hundreds of MB to GB per query, so every compilation is slow and the persistent cache cannot store executables
+  ("RESOURCE_EXHAUSTED ... serialize"). On H200 the W28_A3 time stage sat > 1 h compiling ECSW candidates with the GPU idle
+  (`ptxas` running), as smk2-A4 had. Both A3 jobs were cancelled (W28_A3 4.4 h, W40_A3 4.6 h) after their ladder stages;
+  no A3 selection result existed.
+- **Change.** `hoist.py`: every query (`spec.make_fom`, `spec.make_fom_ad`, `rom.make_query`, `podsine.make_trans_query`)
+  is traced once to a jaxpr whose constants are passed as executable arguments; the callable is still a function of the
+  descriptor alone and every timed call runs one compiled program. New mandatory control **G-HOIST**: hoisted vs
+  embedded outputs on val[0] for FOM (FFT, dense, adaptive), PODG point/tensor, LSPG and TRANS ≤ 1e-12 (measured ≤ 7.5e-16
+  locally); their timing ratio is reported (not gated).
+- **Restarts.** The archived A3 cells (ref/data/pod/bank/ladder done) are restored into new jobs `W40_A3t`, `W28_A3t`
+  that run only `time` and `controls` with the A16 code (wall 6 h each, exposure-bounded). Certificate
+  `runs/certificate-wave5.json` (`certify_wave5.py`): spent 41.35 + 12 + failed-job allowance 6 + test-once 2.22 GPU-h ×
+  8 retained cells = 77.1 ≤ 87. W08_A2 is decided after the restarts' measured costs.
+- **Comparability and the test stage.** A1/A2 cells and W08_A1 were selected and timed with embedded-constant queries;
+  the A3 cells and the test stage use hoisted queries. G-HOIST's timing ratios quantify the difference and are reported
+  beside cross-cell comparisons. The test stage accepts a frozen cell whose query sources changed only by A16 if a
+  committed `runs/frozen/SOURCE-EQUIVALENCE.json` lists the frozen and current hashes of each changed file.
+- A16 corrections (code audit 12, job audit wave5-1): outer wrappers (TRANS inner z-query, vmapped cohort runs, the
+  lattice synthesis of references) and the diagnostic kernels pass their arrays as arguments; G-HOIST compares fields
+  and statistics, fails on non-finite values (mutation fixture) and keeps its timing repetitions. Restart jobs are
+  collected under their own names (W40_A3t, W28_A3t); report and stop rule prefer a cell's restart directory.
+
+## Amendment A17 (2026-10-23, after the A3 restarts; before W08_A2 / W16_A1)
+
+- The A3 time-stage restarts completed with A16 (W40_A3t 1.36 GPU-h, W28_A3t 1.0 GPU-h; all mandatory controls fire,
+  G-HOIST ≤ 4e-16, hoisted/embedded timing ratios 0.90–1.03), so cross-cell timing comparability across the A16 change is
+  within a few per cent (the dense FOM 0.9).
+- Wave-6 certificate `runs/certificate-wave6.json` (`certify_wave6.py`): spent 43.7 + 1.15 × 2 × 4.92 (W08_A2, W16_A1) +
+  test-once 2.22 × 9 retained cells + 6 = 81.0 ≤ 87. W16_A2, W16_A3, W08_A3, A4 and the second data size stay deferred.
+- A17 correction (results audit 2): the hoisted/embedded timing ratios are 0.90 for the dense FOM (about 10 % faster
+  hoisted) and 0.98–1.03 for the reduced queries; the report prints them beside cross-cell comparisons.
+
+## Amendment A18 (2026-10-23, test-once release)
+
+All nine retained cells (W40/W28 × A1–A3, W08 × A1–A2, W16_A1) are frozen and indexed (`runs/frozen/`, committed with the
+A16 source-equivalence record). The nine test-once jobs (`cluster/bodies/test_<cell>.sh`) run at most three at a time
+through the shared lock, each exposure-bounded at 2.5 h: spent 47.1 + 22.5 + 2.5 = 72.1 GPU-h ≤ 87
+(`runs/certificate-tests.json`).

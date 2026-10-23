@@ -137,8 +137,16 @@ def check_inputs(fr, out, D):
     for k, h in fr['cohorts']['cell_hashes'].items():
         if CL.sha_arr(D[k]) != h:
             raise SystemExit(f'MF-FROZEN: descriptors of split {k} differ from the freeze')
-    if TM.source_identity() != fr['source']:
-        raise SystemExit('MF-FROZEN: query-defining source files differ from the freeze')
+    cur = TM.source_identity()
+    if cur != fr['source']:                     # A16: a registered, committed source-equivalence record may cover a change
+        eqf = HERE / 'runs' / 'frozen' / 'SOURCE-EQUIVALENCE.json'
+        eq = json.loads(eqf.read_text()) if (eqf.exists() and committed(eqf)) else {}
+        for f in sorted(set(cur) | set(fr['source'])):
+            if cur.get(f) == fr['source'].get(f):
+                continue
+            e = eq.get(f)
+            if not e or cur.get(f) != e.get('to') or fr['source'].get(f) not in e.get('from', []):
+                raise SystemExit(f'MF-FROZEN: query-defining source {f} differs from the freeze (no equivalence record)')
     cj = out / 'controls.json'
     if not (cj.exists() and json.loads(cj.read_text()).get('all_fire', False)):
         raise SystemExit('test refused: the cell did not pass its mandatory controls')

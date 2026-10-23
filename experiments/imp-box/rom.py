@@ -24,6 +24,7 @@ import numpy as np
 import jax
 jax.config.update('jax_enable_x64', True)
 import jax.numpy as jnp
+import hoist as HZ   # imp-box A16
 
 import geom as G
 
@@ -293,7 +294,7 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
             # stats[4] = max per-step relative defect between the update and its independent recomputation
             return O, jnp.stack([c[2], coef_cert, jnp.asarray(float(nsteps)), c[1], c[3],
                                  jnp.asarray(0.0), jnp.asarray(0.0)])
-        q_ = jax.jit(q)
+        q_ = HZ.hoisted(q)
         q_.info = dict(complex=cplx, condV=condV, Mt=Mt)
         return q_
 
@@ -399,7 +400,7 @@ def make_query(sp: Space, r, stepper, nsteps, form='point', tol='prod', n_out=G.
         if trace:
             return O, jnp.stack(list(c[2:9])), gtr
         return O, jnp.stack(list(c[2:9]))
-    q_ = jax.jit(q)
+    q_ = HZ.hoisted(q)
     q_.info = dict(Mt=Mt)
     return q_
 

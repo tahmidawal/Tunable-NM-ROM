@@ -1,0 +1,49 @@
+{
+ "N": 192,
+ "train": {
+  "n": 320,
+  "shape": [
+   96,
+   21,
+   191,
+   191
+  ],
+  "seconds": 32.49613107461482,
+  "gate": {
+   "space": [
+    7.372659796256067e-14,
+    1.1296804814804816e-12,
+    2.0061346880866465e-14,
+    2.5595734648580585e-13
+   ],
+   "time": [
+    3.87061642041349e-09,
+    5.028618070406801e-08,
+    3.157002144681574e-08,
+    3.201718821999141e-09
+   ],
+   "passed": true
+  },
+  "sha": "f0d26cb178218ec8f05a188c18991797c3b5ff454907d20eb30058ef10b9f63d"
+ },
+ "bank_samples": {
+  "lattice": 256,
+  "states": 2016,
+  "points": 65025,
+  "sha_U": "f8aeaba013b205d618bc86c02e172565e91985cf510ee6adf2b5e8d9d3cd16f8"
+ },
+ "env": {
+  "jax": "0.10.2",
+  "backend": "gpu",
+  "devices": [
+   "cuda:0"
+  ],
+  "precision": "highest",
+  "x64": true,
+  "host": "pax008",
+  "commit": "3e594a03b",
+  "IGEO_NCAP": null,
+  "IMPBOX_TINY": null,
+  "IMPBOX_BANK_STEPS": null
+ }
+}

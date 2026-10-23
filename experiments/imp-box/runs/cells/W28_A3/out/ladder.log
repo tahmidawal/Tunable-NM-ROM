@@ -1,0 +1,9 @@
+15:42:35 env {'jax': '0.10.2', 'backend': 'gpu', 'devices': ['cuda:0'], 'precision': 'highest', 'x64': True, 'host': 'pax009', 'commit': '43c5c0d8f', 'IGEO_NCAP': None, 'IMPBOX_TINY': None, 'IMPBOX_BANK_STEPS': None}
+15:42:35 stage ladder: start
+/cluster/tufts/paralab/tawal01/imp-box/W28_A3/code/score.py:16: RuntimeWarning: overflow encountered in square
+  num = np.sqrt(np.sum((F - R) ** 2, axis=-1))
+16:32:11 fom ladder rows 247
+/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/interpreters/mlir.py:1246: UserWarning: A large amount of constants were captured during lowering (2.02GB total). If this is intentional, disable this warning by setting JAX_CAPTURED_CONSTANTS_WARN_BYTES=-1. To obtain a report of where these constants were encountered, set JAX_CAPTURED_CONSTANTS_REPORT_FRAMES=-1.
+  warnings.warn(message)
+18:05:27 pod/ecsw ladder rows 506
+18:05:27 stage ladder: 8572s

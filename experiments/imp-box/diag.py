@@ -40,9 +40,9 @@ def tmed(f, x, reps=20, burn=5, label=None, args=()):
     return float(np.median(ts))
 
 
-def tcases(f, D, reps=5, label=None):
-    return float(np.mean([tmed(f, jnp.asarray(d), reps=reps, burn=3, label=None if label is None else f'{label}|{i}')
-                          for i, d in enumerate(D)]))
+def tcases(f, D, reps=5, label=None, args=()):
+    return float(np.mean([tmed(f, jnp.asarray(d), reps=reps, burn=3, label=None if label is None else f'{label}|{i}',
+                               args=args) for i, d in enumerate(D)]))
 
 
 def context_of(sel, name, key):
@@ -75,16 +75,17 @@ def comps_reduced(c, arm, cfg):
     Mi = jnp.asarray(np.linalg.inv(sp.M[:r, :r]))
     centred = arm.name == 'trans'
 
-    def ic(d):
+    def ic(d, Mi_, Pi_, wi_, Xi_):                       # arrays as arguments (A16)
         dd = d.at[0].set(0.5).at[1].set(0.5) if centred else d
-        return Mi @ (Pi.T @ (wi * G.ic('B', dd, Xi[:, 0], Xi[:, 1], jnp)))
+        return Mi_ @ (Pi_.T @ (wi_ * G.ic('B', dd, Xi_[:, 0], Xi_[:, 1], jnp)))
     lb = 'comp|' + '|'.join(f'{k}={cfg[k]}' for k in sorted(cfg))           # full configuration key (code audit 3)
-    out = dict(ic=tcases(jax.jit(ic), D4, label=lb + '|ic'))
+    out = dict(ic=tcases(jax.jit(ic), D4, label=lb + '|ic', args=(Mi, Pi, wi, Xi)))
     if cfg['st'] == 'gal_etdrk4':
         A = np.linalg.solve(sp.M[:r, :r], sp.K[:r, :r])
         lam = jnp.asarray(np.linalg.eigvals(A))
         dt = G.T_END / n
-        out['setup'] = tcases(jax.jit(lambda d: RM.etdrk4_coefs(-d[4] * lam, dt)), D4, label=lb + '|setup')
+        out['setup'] = tcases(jax.jit(lambda d, lam_: RM.etdrk4_coefs(-d[4] * lam_, dt)), D4, label=lb + '|setup',
+                              args=(lam,))
     else:
         out['setup'] = 0.0
     if arm.name == 'ecsw':
@@ -94,13 +95,14 @@ def comps_reduced(c, arm, cfg):
     out['query_no_decode'] = tcases(qz, D4, label=lb + '|nodecode')
     Z, _ = qz(jnp.asarray(c.Dv[0]))
     if centred:                                       # the shift is a dynamic argument (no constant folding)
-        dec = PS.make_shift_decoder(arm.Phi[:r])
+        Fr = jnp.asarray(arm.Phi[:r].reshape(r, -1))
+        nn = arm.Phi.shape[1]
         dl = jnp.asarray([c.Dv[0][0] - 0.5, c.Dv[0][1] - 0.5])
-        out['decode'] = tmed(jax.jit(lambda Z_, dl_: jax.vmap(lambda z: dec(z, dl_))(Z_)), Z, args=(dl,),
-                             label=lb + '|decode')
+        out['decode'] = tmed(jax.jit(lambda Z_, dl_, F_: jax.vmap(lambda z: PS.shift_decode(z, dl_, F_, nn))(Z_)), Z,
+                             args=(dl, Fr), label=lb + '|decode')
     else:
         Pl = jnp.asarray(sp.Pl[:, :r])
-        out['decode'] = tmed(jax.jit(lambda Z_: Z_ @ Pl.T), Z, label=lb + '|decode')
+        out['decode'] = tmed(jax.jit(lambda Z_, Pl_: Z_ @ Pl_.T), Z, label=lb + '|decode', args=(Pl,))
     out['fused'] = tcases(arm.build(cfg), D4, label=lb + '|fused')
     out['evolve_derived'] = out['query_no_decode'] - out['ic'] - out['setup']
     out['sum_vs_fused'] = (out['query_no_decode'] + out['decode']) / out['fused']
@@ -205,16 +207,16 @@ def r_times(c, arm, sel, T, out):
         for Mt, tag, st in ((r, 'gal', 'gal_etdrk4'), (min(4 * r, R), 'lspg', 'lspg_cnr')):
             T_ = RM.tensor(jnp.asarray(sp12.P[:, :Mt]), jnp.asarray(sp12.P[:, :r]), jnp.asarray(sp12.S[:, :r]),
                            jnp.asarray(sp12.w))
-            cand[f'tensor-{tag}'] = tmed(jax.jit(lambda z_, T_=T_: jnp.einsum('kij,i,j->k', T_, z_, z_)), z,
-                                         label=f'rx|r{r}|tensor-{tag}')
+            cand[f'tensor-{tag}'] = tmed(jax.jit(lambda z_, T__: jnp.einsum('kij,i,j->k', T__, z_, z_)), z,
+                                         label=f'rx|r{r}|tensor-{tag}', args=(T_,))
             del T_
             for q in LS.RULES:
                 s_ = sps[q]
                 if LS.flop_skip(s_, q, r, st):
                     continue
                 P, S, Th, w = (jnp.asarray(x) for x in (s_.P[:, :r], s_.S[:, :r], s_.P[:, :Mt], s_.w))
-                cand[f'point{q}-{tag}'] = tmed(jax.jit(lambda z_, P=P, S=S, Th=Th, w=w: Th.T @ (w * (P @ z_) * (S @ z_))),
-                                               z, label=f'rx|r{r}|point{q}-{tag}')
+                cand[f'point{q}-{tag}'] = tmed(jax.jit(lambda z_, P_, S_, Th_, w_: Th_.T @ (w_ * (P_ @ z_) * (S_ @ z_))),
+                                               z, label=f'rx|r{r}|point{q}-{tag}', args=(P, S, Th, w))
         k = min(cand, key=cand.get)
         tb[r], forms[r], cands[r] = cand[k], k, cand
     floors = {r: [RM.floor_err(sp12, r, c.Uv[i]) for i in range(len(c.Uv))] for r in rl}

@@ -63,16 +63,19 @@ def run(cfg,artifacts,out):
     recs={a:{} for a in arms};tight={a:{} for a in arms};tighter={a:{} for a in arms}
     for i in ids:
         ck=f'val64|{i}';rep['cases'][str(i)]={}
+        t_input=time.perf_counter();u0=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));nu=jnp.float64(fam.nu(i))
+        input_seconds=time.perf_counter()-t_input
         for a in arms:
             budget();kind='none' if a=='none' else 'ecsw';rr={}
             for level in ('prod','tight')+(('tighter',) if i in cfg['tighter_cases'] else ()):
                 rr[level]=cell.run(kind,512,data[a],'common' if level=='prod' else 'native',opt,level,
-                                   fam.ic(64,i),fam.nu(i),burn_s=cfg['burn_seconds'] if level=='prod' else 0.)
+                                   u0,nu,burn_s=cfg['burn_seconds'] if level=='prod' else 0.)
                 q=rr[level]
                 np.savez(out/'arrays'/f'{a}_c{i:03}_{level}.npz',case=i,W=q['W'],C=q['C'],gamma=q['gamma'],
                          reason=q['reason'],it=q['it'],lam=q['lam'],scale=q['scale'],dt=1/60,times=np.arange(6)*.05)
             r=rr['prod'];score=refs.score(r['fields_lat'],i);assert score['eligible']
             row=dict(e0=score,query_seconds=r['seconds'],W_sha256=X.array_hash(r['W']),cert=r['cert'],
+                     input_prepare_seconds=input_seconds,input_sha256=X.array_hash(u0),
                      tight=rr['tight']['cert'],tight_distance=S.lattice_distance(r['fields_lat'],rr['tight']['fields_lat'],refs.n0(i)))
             if 'tighter' in rr:
                 row.update(tighter=rr['tighter']['cert'],tight_tighter_distance=S.lattice_distance(rr['tight']['fields_lat'],rr['tighter']['fields_lat'],refs.n0(i)))
@@ -102,9 +105,11 @@ def run(cfg,artifacts,out):
     for i,r in panels:
         budget();row=dict(case=i,rep=r,invocations=[])
         sequence=arms if len(arms)==1 else [arms[0],arms[1],arms[0]]
+        input_start=time.perf_counter();u0=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));nu=jnp.float64(fam.nu(i))
+        row['input_prepare_seconds']=time.perf_counter()-input_start
         for a in sequence:
             P.burn(cfg['burn_seconds']);t=time.perf_counter()
-            o=jax.block_until_ready(queries[a](jnp.asarray(fam.ic(64,i)),jnp.float64(fam.nu(i)),data[a],sch))
+            o=jax.block_until_ready(queries[a](u0,nu,data[a],sch))
             sec=time.perf_counter()-t;pin=np.load(out/'arrays'/f'{a}_c{i:03}_prod.npz')['W']
             identical=X.scalar_check(o['W'],pin)
             row['invocations'].append(dict(arm=a,seconds=sec,W_sha256=X.array_hash(o['W']),identity=identical,

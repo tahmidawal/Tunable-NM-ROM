@@ -1,0 +1,20 @@
+{
+  "attempt": "pilot",
+  "cohort_seed": 923801,
+  "cohort_count": 64,
+  "cases": [0, 5, 30, 43],
+  "tighter_cases": [0, 5],
+  "timing_cases": [0, 5],
+  "timing_reps": 2,
+  "burn_seconds": 0.2,
+  "wall_hours": 1.0,
+  "budget_hours": 0.9,
+  "rank": 512,
+  "L": 64,
+  "dt_numerator": 1,
+  "dt_denominator": 60,
+  "scheme": "BDF2",
+  "arms": ["k8", "k16", "none"],
+  "scope": "diagnostic subset; not full-population qualification",
+  "admission": {"gradient": 0.001, "full_stationarity": 0.001, "nonstationary_fraction": 0.01, "field_distance": 0.00025, "tight_tighter": 0.000025}
+}

@@ -54,11 +54,12 @@ Use only seed 923801 validation cases, regenerated from seed in each cluster job
 - D-Q: W1024 fixed-sweep CN, step 0.01, one sweep, default test policy; verify the existing
   gl56 state with gl64 and gl80 successors. The full-population gl64 trajectory already
   exists: reuse it and gl56 after checking exact identities; only the missing gl80 is new.
-  First run a one-case memory/time pilot. Continue
-  on the archived first-eight check population and the validation cases with greatest
-  archived successor discrepancies. Report this as diagnostic subset evidence. A production
-  qualification claim requires the complete registered validation population and tighter
-  checks; the diagnostic subset cannot qualify the full configuration.
+  First run a one-case memory/time pilot. The missing gl80 finer check uses the original
+  finer-check ids 0–7; optional discrepancy diagnostics are frozen as ids 30 and 43 before
+  submission and reported separately. Full64 gl56/gl64 plus the original eight-case gl80
+  finer check can close the inherited configuration-level Q2 only with every inherited
+  own-state rho, Q1, anchor and identity predicate retained. Optional diagnostic subsets
+  cannot replace any registered population or promote a failed inherited check.
 - D-S: W768 and W1024 QN-BDF2, step 0.025, gl40, refresh period four. Replay archived failed
   cases 5, 30 and 43 where present, plus case 0 as a fixed ordinary control. First reproduce
   the original trajectory. At the identical saved pre-step history compare the production
@@ -89,17 +90,21 @@ Use only seed 923801 validation cases, regenerated from seed in each cluster job
   direct k8 versus no-HR still measures convergence, and successor support stays missing.
   For each case evaluate all six stored fields using the same full-grid mass norm and
   fixed initial-reference norm as the bank comparison. The Q2-POD field gate is max
-  evolved-output distance <=2.5e-4 for k8 versus no-HR and, when available, k8 versus k16
-  and k16 versus no-HR. The exact no-HR comparison closes convergence directly rather
-  than treating a larger support as truth. On every saved own-state coefficient vector,
-  also evaluate the common full-grid projected nonlinear vector and each weighted-vector
-  approximation: rho = ||N_HR-N_full||/||N_full||, with rho=0 when both vanish and infinity
-  when only the denominator vanishes. Require rho<=0.116; state this as a new conservative
-  comparator-admission rule, not a predicate satisfied by the historical campaign.
-  Because the historical method weights the whole residual, persist the analogous full
-  tested-residual and normal-equation gradient discrepancies too. Use the original sampled
-  Q1 solver checks and label full-operator discrepancies separately. Any instability,
-  nonfinite value, missing case or failed field/rho check blocks qualified HR admission.
+  evolved-output distance <=2.5e-4 for k8 versus k16 and k16 versus no-HR (also report
+  k8 versus no-HR directly). Preserve the archived square-root weights without
+  normalisation, in the full-grid objective's units; no-HR uses the full residual LSPG.
+  The historical ECSW method weights the entire least-squares residual. On every
+  production step tuple retain full residual r_F/Jacobian J_F and their sampled analogues
+  in common units, and delta_g = ||J_E^T r_E - J_F^T r_F||/(||J_F||_F ||r_F||).
+  Require finite delta_g<=1e-3 on every step, and fresh full-objective gamma_F<=1e-3
+  on at least 99 percent of pooled steps. When a denominator is zero, the ratio is zero
+  if the numerator is zero and infinity otherwise; nonfinite inputs always fail.
+  All three arms also need the original sampled-Q1 including tight/tighter anchors.
+  Projected-advection rho is retained as a diagnostic, not an admission gate: it cannot
+  certify the whole sampled least-squares objective. This is a new conservative
+  comparator-admission contract, not a predicate established by the historical campaign.
+  Any instability, nonfinite input, missing case or failed field/gradient/Q1 check
+  blocks qualified HR admission.
 
 The first numerical stage is capped at 2 GPU-hours including failed pilots. The complete
 initial campaign is capped at 12 GPU-hours; every extension requires a written amendment

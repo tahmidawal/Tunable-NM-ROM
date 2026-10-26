@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot01/experiments/b3d-solver/run.py", line 282, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot01/experiments/b3d-solver/run.py", line 273, in main
+    cx=Context(cfg,args.out);cx.save()
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot01/experiments/b3d-solver/run.py", line 53, in __init__
+    assert self.tab['sha256']==next(iter(self.history['sources'].values()))['cohort']['table_sha256']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

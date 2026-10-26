@@ -95,8 +95,8 @@ interval matching before any speed ratio. No claim of an optimal unrestricted FO
 improvement over an unqualified historical ROM/POD configuration follows from a match.
 
 The primary accuracy-match predicate is frozen here. For each eligible case with error e
-and approved conditional uncertainty epsilon, use the interval
-`[max(e-epsilon,0),e+epsilon]`. A full-solver arm matches a ROM only when both the median
+and approved conditional uncertainty $\epsilon_i$, use the interval
+$$I_i(e)=[\max(e-\epsilon_i,0),e+\epsilon_i].$$ A full-solver arm matches a ROM only when both the median
 of its upper endpoints is at most the median of the ROM lower endpoints and the maximum
 of its upper endpoints is at most the maximum of the ROM lower endpoints. Interval overlap
 is unresolved under this conservative rule. Apply the identical eligible case ids and

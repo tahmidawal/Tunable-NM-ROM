@@ -211,6 +211,8 @@ def dquad(cx):
     ms=jax.devices()[0].memory_stats();limit=ms.get('bytes_limit',0)
     assert limit>=100e9,('gl80 requires >=100 GB device memory',ms)
     d=st.data(rule)
+    fine_values={}
+    advbatch=jax.jit(qn3.adv)
     sp=('fs','CN',.01,1);q=S.make_query(sp,st)
     for j in cx.cases:
         o=jax.block_until_ready(q(cx.U[j][None],jnp.asarray([cx.nu[j]]),d))
@@ -220,14 +222,30 @@ def dquad(cx):
         old64=cx.historical('W1024|gl64|fs|CN|0.01|K1',j)
         metric=lambda x:float(jnp.linalg.norm(C3.TB.decode(jnp.asarray(x)[None],st.lean))/jnp.linalg.norm(cx.U[j]))
         dist=max(metric(x) for x in (W-old64)[1:])
-        # Own-state adv checks are evaluated without retaining the gl64 tables beside gl80.
+        # Keep only small tested advection outputs before releasing the gl80 point tables.
+        fine_values[j]=np.asarray(jax.block_until_ready(advbatch(jnp.asarray(old64),d)))
         rec=dict(fresh_gamma=g.tolist(),valid=S.run_valid(sp,o,0),dist_gl64_gl80=dist,
                  dist_gl56_gl80=max(metric(x) for x in (W-old56)[1:]),score=cx.score(W,st,j),
-                 own_state_rho=None,note='own-state rho deferred until gl80 tables released; no qualification claim')
+                 own_state_rho=None,note='diagnostic subset; no full-population qualification claim')
         cx.rep['runs'][f'W1024|gl80|case{j}']=rec
         np.savez_compressed(cx.out/f'W1024_gl80_c{j:03d}.npz',W_all=wall,W=W)
         cx.save()
+    del o,d
     st.drop('gl80');gc.collect()
+    d64=st.data('gl64')
+    for j in cx.cases:
+        old64=cx.historical('W1024|gl64|fs|CN|0.01|K1',j)
+        coarse=np.asarray(jax.block_until_ready(advbatch(jnp.asarray(old64),d64)))
+        fine=fine_values[j]
+        norm=np.linalg.norm(fine,axis=1)
+        num=np.linalg.norm(coarse-fine,axis=1)
+        rho=np.divide(num,norm,out=np.full_like(num,np.inf),where=norm>0)
+        rec=cx.rep['runs'][f'W1024|gl80|case{j}']
+        rec.update(own_state_rho=rho.tolist(),rho_finite=bool(np.isfinite(rho).all()),
+                   rho_gl64_own_states=True,zero_denominator_times=np.flatnonzero(norm==0).tolist())
+        np.savez_compressed(cx.out/f'W1024_gl64_gl80_adv_c{j:03d}.npz',W=old64,adv_gl64=coarse,adv_gl80=fine,rho=rho)
+        cx.save()
+    st.drop('gl64');del d64;gc.collect()
     cx.identities(['W1024|gl56|fs|CN|0.01|K1','W1024|gl64|fs|CN|0.01|K1'])
 
 def main():

@@ -14,6 +14,7 @@ sys.path.insert(0,str(HERE/'vendor'/'e0'))
 import c3common as C3
 import s3common as S
 import qn3
+import qn_policy
 import t2core as T2
 import refstore as RS
 import diagcore as DC
@@ -31,7 +32,7 @@ def dump(p,x):
 
 def provenance():
     p=json.loads((HERE/'PROVENANCE.json').read_text())
-    for v in p['files']:
+    for v in p['files']+p.get('derived_files',[]):
         rel=Path(v['destination']).relative_to('experiments/b3d-solver')
         assert sha(HERE/rel)==v['sha256'],rel
     assert RS.store_version()=='3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0'
@@ -123,8 +124,11 @@ def result_summary(o):
 
 def make_q(st,policy):
     dt=.025;steps=10
-    ev=qn3.make_qn_evolve(st.Rp,'BDF2',dt,steps,st.trust*policy['trust_factor'],policy['refresh'],
-                         g_in=policy['g_in'],q_max=policy['qmax'])
+    factory=qn3.make_qn_evolve if policy['qmax']==12 else qn_policy.make_qn_evolve
+    assert policy['slow_threshold']==6
+    extra={} if policy['qmax']==12 else dict(slow_threshold=policy['slow_threshold'])
+    ev=factory(st.Rp,'BDF2',dt,steps,st.trust*policy['trust_factor'],policy['refresh'],
+               g_in=policy['g_in'],q_max=policy['qmax'],**extra)
     @jax.jit
     def query(u0,nu,d):
         w0,_=C3.TB.project(u0,d)
@@ -170,9 +174,16 @@ def dsolver(cx):
                             dist=float(jnp.linalg.norm(field)/jnp.linalg.norm(cx.U[j]))
                             rrec['levels'][level]={a:np.asarray(v).tolist() for a,v in rr.items() if a not in ('c','trace')}
                             rrec['levels'][level]['baseline_distance']=dist
+                            rr_c,rr_J=DC.step_functions()[1](rr['c'],(jnp.asarray(W),jnp.int32(k),jnp.float64(cx.nu[j]),d))
+                            fresh=float(jnp.linalg.norm(rr_J.T@rr_c)/(jnp.linalg.norm(rr_J)*jnp.linalg.norm(rr_c)+1e-300))
+                            gt=1e-7 if level=='tight' else 1e-8
+                            verified=bool(np.isfinite(rc).all() and np.isfinite(fresh) and fresh<=gt and int(rr['reason'])==4)
+                            rrec['levels'][level].update(fresh_gamma=fresh,verified=verified,gtol=gt)
                             np.savez_compressed(cx.out/f'{sn}_restart_c{j:03d}_k{k}_{level}.npz',c=rc,trace=np.asarray(rr['trace']))
                         diff=runs['tight']['c']-runs['tighter']['c']
                         rrec['tight_tighter_distance']=float(jnp.linalg.norm(C3.TB.decode(diff[None],st.lean))/jnp.linalg.norm(cx.U[j]))
+                        rrec['anchor_usable']=bool(all(x['verified'] for x in rrec['levels'].values()) and rrec['tight_tighter_distance']<=2.5e-5)
+                        rrec['causal_interpretation_allowed']=rrec['anchor_usable']
                         assert float(diag['residual_agreement'])<1e-10 and float(diag['jvp_agreement'])<1e-10,rrec
                         cx.rep['restarts'][f'{sn}|case{j}|step{k}']=rrec;cx.save()
                 del o
@@ -227,6 +238,8 @@ def main():
     cx=Context(cfg,args.out);cx.save()
     try:
         (dsolver if cfg['mode']=='solver' else dquad)(cx)
+        cx.rep['execution_complete']=True
+        cx.rep['diagnostic_anchors_usable']=bool(cx.rep['restarts']) and all(x['anchor_usable'] for x in cx.rep['restarts'].values())
         cx.rep['complete']=True;cx.save()
     except BaseException as e:
         cx.rep['failure']=repr(e);cx.save();raise

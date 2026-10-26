@@ -7,6 +7,7 @@ import jax.numpy as jnp
 import diagcore as DC
 import t2core as T2
 import qn3
+import qn_policy
 
 def main():
     rng=np.random.default_rng(7); r,M,m=4,10,24
@@ -31,6 +32,9 @@ def main():
         assert int(got['jacobian_evals'])==int(got['it'])+1
     ev=qn3.make_qn_evolve(r,'BDF2',.025,4,1.,4)
     out=jax.jit(ev)(W[:1],jnp.asarray([.01]),d)
+    control=qn_policy.make_qn_evolve(r,'BDF2',.025,4,1.,4,slow_threshold=6)
+    twin=jax.jit(control)(W[:1],jnp.asarray([.01]),d)
+    assert all(np.array_equal(np.asarray(out[k]),np.asarray(twin[k])) for k in out), 'policy extension baseline changed'
     g=np.asarray(qn3.make_certify('BDF2',.025,4)(out['W_all'][:,0],nu,d))
     fresh=[]
     for k in range(4):
@@ -43,7 +47,7 @@ def main():
     wrong=res(c,args)-.025*(A@W[2])
     assert float(jnp.linalg.norm(wrong-res(c,args)))>1e-5
     out=dict(passed=True,x64=jax.config.x64_enabled,backend=jax.default_backend(),
-             derivative_relative=errors,lm_original_match=matches,fresh_certificate_difference=float(np.max(np.abs(g-fresh))))
+             policy_extension_baseline_bitwise=True,derivative_relative=errors,lm_original_match=matches,fresh_certificate_difference=float(np.max(np.abs(g-fresh))))
     dest=Path(__file__).resolve().parent/'audits'/'small-controls.json'
     dest.parent.mkdir(exist_ok=True)
     dest.write_text(json.dumps(out,indent=1)+'\n')

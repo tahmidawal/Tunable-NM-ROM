@@ -343,5 +343,16 @@
    "bytes": 73936,
    "commit": "cc04f4b54a1b717d00eb803a276d7efb86994773"
   }
+ ],
+ "derived_files": [
+  {
+   "source": "experiments/b3d-solver/vendor/speed3d/qn3.py",
+   "source_sha256": "bec525ef29cdd27c586ea64cfd3538e8310d80d30218f063be0596749dc40001",
+   "destination": "experiments/b3d-solver/qn_policy.py",
+   "sha256": "e88c22086ad4fed411979480d8ae6fac12b64766b2346314fa8bc525e262c0bb",
+   "bytes": 14736,
+   "upstream_commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+   "intentional_delta": "Optional slow_threshold parameter freezes slow-refresh threshold while varying q_max; module-relative import adjusted; explanatory docstring. Baseline arithmetic unchanged and bitwise tested."
+  }
  ]
 }

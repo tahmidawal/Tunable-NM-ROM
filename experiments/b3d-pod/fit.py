@@ -61,10 +61,12 @@ def run(cfg,artifacts,out):
         os.replace(out/'fit.json.tmp',out/'fit.json')
     save()
     z=np.load(artifacts/'Phi.npz');Phi=jax.block_until_ready(jnp.asarray(z['Phi'][:,:512]));del z
+    assert 0<P.device_peak()<=120e9,'missing or excessive GPU memory telemetry'
     fam=H.Family(3,'train')
     states,info=B.ecsw_states(3,64,fam,Phi)
     assert fam.n==1536
     rep['training']=dict(seed=923701,count=fam.n,table_sha256=fam.sha256,**info,
+                         descriptors={j:fam.descriptor(j).tolist() for j in info['trajectories']},
                          states=[dict(traj=s['traj'],option=s['option'],step=s['k'],nu=s['nu'],
                                       u_sha256=ah(s['u']),un_sha256=ah(s['un']),um_sha256=ah(s['um'])) for s in states])
     G,b,cand,ci=B.ecsw_contrib(states,Phi,3,64,seed=20261018,n_cand=32768)
@@ -85,12 +87,18 @@ def run(cfg,artifacts,out):
     rep['attempts']=1;save()
     result=NN.greedy_nnls(G,b,taus=(),supports=(16384,),cap=16384,max_drops=3,max_iter=40000,
                           max_seconds=5400,log=lambda *x:print(*x,flush=True))
+    np.savez(out/'NNLS_terminal.npz',support=result['support'],weights=result['weights'],
+             nodes=cand[np.asarray(result['support'],int)],residual=result['terminal']['resvec'])
     rec=result['records'].get(('s',16384))
     optimum=result['reason']=='kkt' and result['kkt']['ok']
+    # A final cleanup can record a target after a time/max-iteration cut. Such a record is retained, never admitted.
+    normal_target=result['reason']=='taus' and rec is not None
+    if not normal_target and not optimum:rec=None
     if rec is None and optimum and len(result['support']):
         pos=result['weights']>0
         rec=dict(support=result['support'][pos],weights=result['weights'][pos],size=int(pos.sum()),optimum=True)
-    quality=bool(result.get('drift_ok',False) and P.device_peak()<=120e9)
+    quality=bool(result.get('drift_ok',False) and 0<P.device_peak()<=120e9
+                 and result['banned']<=.01*len(cand))
     reached=rec is not None
     rep['path']={k:v for k,v in result.items() if k not in ('records','terminal','path','support','weights')}
     rep['path']['path']=result['path']

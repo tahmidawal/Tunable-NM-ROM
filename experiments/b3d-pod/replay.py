@@ -296,6 +296,39 @@ def run(cfg, artifacts, out):
             save()
             if row['drift_accepted']:
                 break
+    meta['timing_coverage_complete'] = all(any(t['case'] == i and t['rep'] == rep and t['B'] == b
+                                              and t['drift_accepted'] for t in meta['timing'])
+                                            for i, rep, b in panels)
+    # Diagnostic split timing includes the same mathematical query, with explicit synchronization at each part.
+    # These measurements are kept separate from the fused query comparison costs above.
+    init = jax.jit(lambda u, phi: (phi.T @ u, jnp.linalg.norm(phi.T @ u)))
+    decode = jax.jit(lambda W, phi: W @ phi.T)
+    meta['split_diagnostic'] = []
+    for arm in ARMS:
+        ev = jax.jit(R.make_evolve('none' if arm == 'none' else 'ecsw', 3, 64, 'common', H.NMAX[3], trust=trust))
+        for i in cfg['timing_cases']:
+            check_budget()
+            u, nu = jnp.asarray(fam.ic(64, i)), jnp.float64(fam.nu(i))
+            c0, scale = jax.block_until_ready(init(u, Phi))
+            W, C, st = jax.block_until_ready(ev(c0, nu, scale, data[arm], schedule))
+            jax.block_until_ready(decode(W, Phi))
+            for rep in range(cfg['timing_reps']):
+                check_budget()
+                P.burn(cfg['burn_seconds'])
+                t = time.perf_counter(); c0, scale = jax.block_until_ready(init(u, Phi)); t_init = time.perf_counter()-t
+                P.burn(cfg['burn_seconds'])
+                t = time.perf_counter(); W, C, st = jax.block_until_ready(ev(c0, nu, scale, data[arm], schedule)); t_ev = time.perf_counter()-t
+                P.burn(cfg['burn_seconds'])
+                t = time.perf_counter(); F = jax.block_until_ready(decode(W, Phi)); t_dec = time.perf_counter()-t
+                pin = np.load(out / 'arrays' / f'{arm}_c{i:03}_prod.npz')['W']
+                identity = scalar_check(W, pin)
+                meta['split_diagnostic'].append(dict(arm=arm, case=i, rep=rep, initialization_seconds=t_init,
+                    evolution_seconds=t_ev, decode_seconds=t_dec, identity=identity, W_sha256=array_hash(W),
+                    e0=refs.score(cell.lattice(F), i), nonlinear_iterations=int(np.asarray(st['it'])[:15].sum())))
+                assert identity, 'split/fused output identity failure'
+                save()
+        del ev
+        gc.collect()
     meta.update(complete=True, elapsed_seconds=time.perf_counter()-start, peak_device_bytes=P.device_peak(),
                 peak_host_bytes=P.host_rss())
     save()

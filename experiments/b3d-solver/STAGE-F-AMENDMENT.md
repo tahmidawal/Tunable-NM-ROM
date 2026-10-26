@@ -91,11 +91,33 @@ improvement over an unqualified historical ROM/POD configuration follows from a 
 
 ## Remaining scaling scope
 
-Historical fixed-reduced-setting mesh evidence remains labelled with its original test-mode,
-initialisation and fixed-output contracts. Any repaired finalist receives a bounded
-64/128/256-interval check if the measured cost fits the remaining cap. Separate fixed-output
-and growing-full-field output. A deferred scaling replay remains an open item and is never
-filled using cross-job wall-clock ratios.
+Historical mesh evidence remains labelled with its original test-mode, initialisation and
+fixed-output contracts. Its M policy may change with mesh and cannot substitute for a frozen
+test-list experiment. After the full64 frontier, budget a compact four-case M2 winner study
+at65 and129 nodes (64/128 intervals);257 nodes are conditional on a safe measured memory
+projection. Preserve exactly the65-node selected test-mode triples and their count, width,
+quadrature nodes/weights, scheme, step and nonlinear policy. Assemble the mesh-dependent
+mass/diffusion/test tables on those exact modes, rather than re-sorting or shell-completing
+a new list. Persist mode hashes and independently check the operator assembly.
+
+Use cases0,5,30,43 and distinguish two query paths at each mesh. The mesh-free path receives
+the analytic input at the same quadrature points, projects with the same small quadrature
+Gram matrix, evolves, and returns the same six63-cubed fields. The mesh-input/full-output
+path receives the entire sampled field at that mesh, projects it and returns all six growing
+mesh fields. Keep a separate fixed-output decoder for the first path so it never decodes
+a large field and then subsamples. Score both on the common63-cubed E0 lattice, using exact
+shared-node restriction for the large output. The reference normalization remains its
+original65-node initial norm.
+
+For both paths persist input-preparation, projection, evolution, decode, fused query and
+descriptor-to-output timings, all repetitions, nonlinear/Jacobian counts and source/output
+hashes. Record offline table-assembly time and peak memory separately. Verify nonlinear
+and successor-rule controls for the new mesh on the four cases; a failed new-mesh certificate
+cannot produce a qualified scaling claim. All mesh points run in one allocation. Stream
+bank evaluation during setup where needed and keep all large arrays as traced arguments.
+The full64 frontier has priority. A deferred scaling replay remains an open item and is
+never filled using cross-job wall-clock ratios. Two mesh points do not establish a scaling
+exponent; report measured ratios and counts only.
 
 ## Glossary
 

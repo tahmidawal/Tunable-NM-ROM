@@ -46,8 +46,11 @@ def main():
     args=(W,jnp.int32(3),nu,d); c=W[4]
     wrong=res(c,args)-.025*(A@W[2])
     assert float(jnp.linalg.norm(wrong-res(c,args)))>1e-5
+    G=rng.normal(size=(25,r));L=np.linalg.cholesky(G.T@G);diff=rng.normal(size=(6,r))
+    assert np.allclose(np.linalg.norm(diff@L,axis=1),np.linalg.norm(diff@G.T,axis=1),rtol=1e-14)
     out=dict(passed=True,x64=jax.config.x64_enabled,backend=jax.default_backend(),
-             policy_extension_baseline_bitwise=True,derivative_relative=errors,lm_original_match=matches,fresh_certificate_difference=float(np.max(np.abs(g-fresh))))
+             policy_extension_baseline_bitwise=True,metric_factor_control=True,
+             derivative_relative=errors,lm_original_match=matches,fresh_certificate_difference=float(np.max(np.abs(g-fresh))))
     dest=Path(__file__).resolve().parent/'audits'/'small-controls.json'
     dest.parent.mkdir(exist_ok=True)
     dest.write_text(json.dumps(out,indent=1)+'\n')

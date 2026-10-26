@@ -1,5 +1,18 @@
 {
- "status": "diagnostic results awaiting independent results audit",
+ "audits": {
+  "design": "READY diagnostic implementation",
+  "reviewer": "/root/independent_review",
+  "jobs": {
+   "spilot02": {
+    "code_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "code_small_controls": "READY",
+    "exact_job": "READY",
+    "results": "READY diagnostic subset",
+    "interpretation": "Incomplete nonlinear convergence at one step; no resolved physical accuracy gain, no full-population Q1 or stronger performance claim"
+   }
+  }
+ },
+ "status": "diagnostic subset; consult per-job independent audit verdicts",
  "scope": "validation diagnostics; no new frontier or comparator win claim",
  "gpu_hours": 0.017777777777777778,
  "budget_gpu_hours": 8,
@@ -56,6 +69,9 @@
    "jacobian_contractions": 5,
    "residual_evaluations": null,
    "historical_reproduction_relative": 5.079478179814356e-16,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
    "Q1_full_population": "not established",
    "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
    "timing_seconds": [
@@ -76,6 +92,8 @@
     0.22092887945473194,
     0.21893895976245403
    ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
    "query_median_seconds": 0.21895571751520038,
    "max_evolved_error_time_index": 2
   },
@@ -112,12 +130,17 @@
    "jacobian_contractions": 5,
    "residual_evaluations": null,
    "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
    "Q1_full_population": "not established",
    "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
    "timing_seconds": [
     0.291074451059103,
     0.2901981882750988
    ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
    "query_median_seconds": 0.2906363196671009,
    "max_evolved_error_time_index": 2
   },
@@ -154,12 +177,17 @@
    "jacobian_contractions": 10,
    "residual_evaluations": null,
    "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
    "Q1_full_population": "not established",
    "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
    "timing_seconds": [
     0.22794638480991125,
     0.2261467259377241
    ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
    "query_median_seconds": 0.22704655537381768,
    "max_evolved_error_time_index": 2
   },
@@ -196,12 +224,17 @@
    "jacobian_contractions": 5,
    "residual_evaluations": null,
    "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
    "Q1_full_population": "not established",
    "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
    "timing_seconds": [
     0.216995757073164,
     0.21520723588764668
    ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
    "query_median_seconds": 0.21610149648040533,
    "max_evolved_error_time_index": 2
   },
@@ -238,12 +271,17 @@
    "jacobian_contractions": 6,
    "residual_evaluations": null,
    "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
    "Q1_full_population": "not established",
    "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
    "timing_seconds": [
     0.3009950490668416,
     0.2990656141191721
    ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
    "query_median_seconds": 0.30003033159300685,
    "max_evolved_error_time_index": 2
   }

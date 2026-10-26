@@ -213,6 +213,10 @@ def dsolver(cx):
                         W=np.asarray(o['W_all'][:,0]);ref=cx.rep['runs'][f'{sn}|{arm}|case{j}']['coefficient_sha256']
                         assert ah(W)==ref
                         trip.append(dict(arm=arm,seconds=sec,sha256=ah(W),score=cx.score(W[::2],st,j)))
+                    drift=trip[2]['seconds']/trip[0]['seconds']
+                    for record in trip:
+                        record['anchor_drift_ratio']=drift
+                        record['timing_admitted']=bool(1/1.1<=drift<=1.1)
                     vals.append(trip)
                 cx.rep['timing'][f'{sn}|{pname}|case{j}']=vals;cx.save()
         st.drop(rule);gc.collect();Q.clear();jax.clear_caches()

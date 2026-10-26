@@ -68,7 +68,9 @@ def make_metrics(L, r, steps):
             _, ne = H.stencil_F(us, 0., L, 3)
             af = full['Phi'].T @ nf
             ae = sampled['Pst'][:, 0, :].T @ (sampled['sw'] ** 2 * ne)
-            return dict(gradient_difference=jnp.linalg.norm(ge - gf), denominator=den,
+            return dict(g_full=gf, g_sampled=ge, residual_norm_full=jnp.linalg.norm(rf),
+                        jacobian_norm_full=jnp.linalg.norm(jf),
+                        gradient_difference=jnp.linalg.norm(ge - gf), denominator=den,
                         full_gradient=jnp.linalg.norm(gf), sampled_gradient=jnp.linalg.norm(ge),
                         nonlinear_difference=jnp.linalg.norm(ae - af), nonlinear_denominator=jnp.linalg.norm(af),
                         finite=jnp.all(jnp.isfinite(rf)) & jnp.all(jnp.isfinite(jf)) &
@@ -148,6 +150,8 @@ def run(cfg, artifacts, out):
                     ['nvidia-smi', '--query-gpu=name,uuid', '--format=csv,noheader'], text=True).strip(),
                 jax=jax.__version__, artifacts=manifest, complete=False, cases={}, timing=[], phases={},
                 qualification=None)
+    source_manifest = json.loads((out.parent / 'PROVENANCE.json').read_text())
+    meta.update(commit=source_manifest['commit'], source_manifest_sha256=digest(out.parent / 'PROVENANCE.json'))
 
     def save():
         P.dump(out / 'result.json.tmp', meta)

@@ -150,7 +150,7 @@
     "full_population": false,
     "whole_residual": {
       "k8": {
-        "finite": "True",
+        "finite": true,
         "delta_g_max": 0.015423684605407337,
         "full_gamma_max": 0.015423684991835713,
         "full_nonstat": 60,
@@ -158,7 +158,7 @@
         "pass_": false
       },
       "k16": {
-        "finite": "True",
+        "finite": true,
         "delta_g_max": 0.0012331558461926284,
         "full_gamma_max": 0.0012771384375040217,
         "full_nonstat": 6,
@@ -299,5 +299,30 @@
   },
   "results_audit": "READY_FOR_DIAGNOSTIC_PUBLICATION",
   "results_audit_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/audits/results-pilot-01.md",
-  "results_audit_sha256": "1ce7e31d92a48e6cd6d646ec7e84a60d0f9f88d6f75a42714d29cba70734fce5"
+  "results_audit_sha256": "1ce7e31d92a48e6cd6d646ec7e84a60d0f9f88d6f75a42714d29cba70734fce5",
+  "raw_qualification_metadata": {
+    "scope": "diagnostic subset; not full-population qualification",
+    "full_population": false,
+    "whole_residual": {
+      "k8": {
+        "finite": "True",
+        "delta_g_max": 0.015423684605407337,
+        "full_gamma_max": 0.015423684991835713,
+        "full_nonstat": 60,
+        "steps": 60,
+        "pass_": false
+      },
+      "k16": {
+        "finite": "True",
+        "delta_g_max": 0.0012331558461926284,
+        "full_gamma_max": 0.0012771384375040217,
+        "full_nonstat": 6,
+        "steps": 60,
+        "pass_": false
+      }
+    },
+    "field_chain": false,
+    "passes_observed_population": false
+  },
+  "qualification_note": "finite flags independently recomputed from arrays; raw string flags quarantined under raw_qualification_metadata"
 }

@@ -141,6 +141,8 @@ def dsolver(cx):
     cfg=cx.cfg;rule='gl40';Q={}
     for width in cfg['widths']:
         sn=f'W{width}';st=cx.setting(sn);d=st.data(rule)
+        np.savez_compressed(cx.out/f'metric_{sn}.npz',L=np.asarray(st.lean['L']),
+                            case_ids=np.asarray(cx.cases),n0=np.asarray([float(jnp.linalg.norm(cx.U[j])) for j in cx.cases]))
         for pol in cfg['policies']:
             key=pol['name'];q,ev=make_q(st,pol);Q[key]=q
             for j in cx.cases:
@@ -153,6 +155,17 @@ def dsolver(cx):
                            nonlinear_iterations=int(np.asarray(o['q']).sum()),jacobian_contractions=int(np.asarray(o['n_exec']).sum()),
                            residual_evaluations=None,gradient_evaluations=None,
                            unavailable_counts='original byte-identical QN kernel does not record residual/gradient call counts')
+                rec['valid']=bool(rec['finite'] and not np.any(np.asarray(o['reason'])==3))
+                akey=f'{sn}|gl40|ad|LSPG|BDF2|0.025|tight'
+                if akey in cx.history['entries'] and j in cx.history['entries'][akey]['cases']:
+                    anchor=cx.historical(akey,j)
+                    diff=(jnp.asarray(W[::2])-jnp.asarray(anchor))@st.lean['L']
+                    rec['distance_historical_tight']=float(jnp.linalg.norm(diff,axis=1)[1:].max()/jnp.linalg.norm(cx.U[j]))
+                    rows=[rr for rr in cx.history['entries'][akey]['rows'] if rr['case']==j]
+                    rec['historical_anchor_valid']=bool(len(rows)==1 and rows[0]['valid'] and rows[0]['steps'].get('nfail',1)==0)
+                    rec['historical_anchor_source']=dict(key=akey,entry=cx.history['entries'][akey]['source'],
+                        source=cx.history['sources'][cx.history['entries'][akey]['source']])
+                    rec['distance_gate_diagnostic']=bool(rec['historical_anchor_valid'] and rec['distance_historical_tight']<=2.5e-4)
                 if key=='baseline':
                     histkey=f'{sn}|gl40|qn|BDF2|0.025|k4'
                     target=cx.historical(histkey,j)

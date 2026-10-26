@@ -11,7 +11,8 @@ PICKS = {
     'm3a': ['M2_512|gl32|qn|BDF2|0.025|k4'],
     'm3b': ['W768|gl40|qn|BDF2|0.025|k4', 'W1024|gl40|qn|BDF2|0.025|k4',
             'W768|gl40|fs|CN|0.01|K1', 'W1024|gl56|fs|CN|0.01|K1',
-            'W1024|gl64|fs|CN|0.01|K1'],
+            'W1024|gl64|fs|CN|0.01|K1',
+            'W768|gl40|ad|LSPG|BDF2|0.025|tight','W1024|gl40|ad|LSPG|BDF2|0.025|tight'],
     'k3b': ['W512k8|lat16384|fs|CN|0.01|K1'],
 }
 
@@ -35,7 +36,7 @@ def main():
             arrays['cases|'+key] = np.asarray(chosen, dtype=np.int64)
             rows = [r for r in result['rows'] if r['tag']== '|'.join(key.split('|')[:2])
                     and r['spec']=='|'.join(key.split('|')[2:]) and r['case'] in chosen]
-            meta['entries'][key] = dict(cases=chosen, scores={str(j): scores[key][str(j)] for j in chosen},
+            meta['entries'][key] = dict(cases=chosen, scores={str(j): scores.get(key,{}).get(str(j),{}) for j in chosen},
                                         rows=rows, source=att)
     dst=HERE/'inputs'; dst.mkdir(exist_ok=True)
     np.savez_compressed(dst/'historical.npz', **arrays)

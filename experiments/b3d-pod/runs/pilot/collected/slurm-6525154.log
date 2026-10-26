@@ -1,0 +1,26 @@
+jax_backend=gpu
+source.tar: OK
+source_provenance=verified
+jax_backend=gpu x64=True precision=highest
+completed_case 0 {'k8_to_k16': 0.0017883789215064607, 'k16_to_none': 0.00013279499982600724, 'k8_to_none': 0.0017852794505960616}
+completed_case 5 {'k8_to_k16': 0.0034407585825858337, 'k16_to_none': 0.0003461964526398934, 'k8_to_none': 0.003669779863634677}
+completed_case 30 {'k8_to_k16': 0.002883499974354266, 'k16_to_none': 0.0002130665635899274, 'k8_to_none': 0.0028967855153381877}
+completed_case 43 {'k8_to_k16': 0.00230713321680146, 'k16_to_none': 0.00012342445910560611, 'k8_to_none': 0.0023153046020162635}
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b3d-pod-20261026/pilot/experiments/b3d-pod/replay.py", line 344, in <module>
+    run(json.loads(Path(a.config).read_text()), Path(a.artifacts), Path(a.out))
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/b3d-pod-20261026/pilot/experiments/b3d-pod/replay.py", line 335, in run
+    print('complete', json.dumps(meta['qualification']), flush=True)
+                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 261, in iterencode
+    return _iterencode(o, 0)
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type bool is not JSON serializable

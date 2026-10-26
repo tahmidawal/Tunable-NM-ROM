@@ -1,0 +1,301 @@
+{
+  "lane": "b3d-pod",
+  "branch": "exp/2026-10-26-b3d-pod",
+  "job_id": 6525154,
+  "source_commit": "7559135c3f377e1ec7cd89265f9f4611a0619a56",
+  "source_tar_sha256": "b6646e0c5c0930ac47314b45243eec9825297691ec6cd0b0a7d1002a1f3558b3",
+  "result_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/output/result.json",
+  "result_sha256": "7f166e8d6b501c39e485b23fb80ab63537102d6b5fd617736a4148b7324c000b",
+  "summary_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/checks/pilot/SUMMARY.json",
+  "summary_sha256": "59ba7f9c75df3957a1bc3045cb78bf07ed920279b11c57d3b351d3219c07ad05",
+  "cohort_seed": 923801,
+  "ordered_cases": [
+    0,
+    5,
+    30,
+    43
+  ],
+  "scope": "diagnostic selected validation subset; not a full-population accuracy/cost frontier",
+  "gpu": "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534",
+  "reference": {
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "status_sha256": "af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005",
+    "kind": "ST",
+    "uncertainties": {
+      "0": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 4.181332047166529e-05,
+        "dimension_status": "validated",
+        "crosscheck": "PASS",
+        "eligible": true
+      },
+      "5": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 8.421610276360762e-05,
+        "dimension_status": "validated",
+        "crosscheck": "PASS",
+        "eligible": true
+      },
+      "30": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 7.830201020150904e-05,
+        "dimension_status": "validated",
+        "crosscheck": null,
+        "eligible": true
+      },
+      "43": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 0.00011588542322936715,
+        "dimension_status": "validated",
+        "crosscheck": "PASS",
+        "eligible": true
+      }
+    }
+  },
+  "q1": {
+    "k8": {
+      "q1": true,
+      "all_valid": true,
+      "anchors_ok": true,
+      "nonstat": 0,
+      "steps": 60,
+      "max_dist": 0.00021945104146290726,
+      "max_anchor": 1.2779162442757633e-08,
+      "dist": {
+        "val64|0": 3.328504204152469e-05,
+        "val64|5": 0.00015506015381735203,
+        "val64|30": 0.00021945104146290726,
+        "val64|43": 9.130630363210132e-06
+      },
+      "anchor": {
+        "val64|0": 1.2779162442757633e-08,
+        "val64|5": 1.1091457316837875e-08
+      },
+      "expected_case_ids": [
+        "val64|0",
+        "val64|5",
+        "val64|30",
+        "val64|43"
+      ],
+      "tighter_case_ids": [
+        "val64|0",
+        "val64|5"
+      ]
+    },
+    "k16": {
+      "q1": true,
+      "all_valid": true,
+      "anchors_ok": true,
+      "nonstat": 0,
+      "steps": 60,
+      "max_dist": 0.00022412331385811372,
+      "max_anchor": 1.8084549641506204e-08,
+      "dist": {
+        "val64|0": 3.313978932756117e-05,
+        "val64|5": 0.00016689839604465406,
+        "val64|30": 0.00022412331385811372,
+        "val64|43": 9.186298002755537e-06
+      },
+      "anchor": {
+        "val64|0": 1.2025935208260183e-08,
+        "val64|5": 1.8084549641506204e-08
+      },
+      "expected_case_ids": [
+        "val64|0",
+        "val64|5",
+        "val64|30",
+        "val64|43"
+      ],
+      "tighter_case_ids": [
+        "val64|0",
+        "val64|5"
+      ]
+    },
+    "none": {
+      "q1": true,
+      "all_valid": true,
+      "anchors_ok": true,
+      "nonstat": 0,
+      "steps": 60,
+      "max_dist": 0.00022554148412496353,
+      "max_anchor": 1.5910497579866084e-08,
+      "dist": {
+        "val64|0": 4.117243380367371e-05,
+        "val64|5": 0.00017952500552547804,
+        "val64|30": 0.00022554148412496353,
+        "val64|43": 9.156051255413315e-06
+      },
+      "anchor": {
+        "val64|0": 1.2090707011297464e-08,
+        "val64|5": 1.5910497579866084e-08
+      },
+      "expected_case_ids": [
+        "val64|0",
+        "val64|5",
+        "val64|30",
+        "val64|43"
+      ],
+      "tighter_case_ids": [
+        "val64|0",
+        "val64|5"
+      ]
+    }
+  },
+  "qualification": {
+    "scope": "diagnostic subset; not full-population qualification",
+    "full_population": false,
+    "whole_residual": {
+      "k8": {
+        "finite": "True",
+        "delta_g_max": 0.015423684605407337,
+        "full_gamma_max": 0.015423684991835713,
+        "full_nonstat": 60,
+        "steps": 60,
+        "pass_": false
+      },
+      "k16": {
+        "finite": "True",
+        "delta_g_max": 0.0012331558461926284,
+        "full_gamma_max": 0.0012771384375040217,
+        "full_nonstat": 6,
+        "steps": 60,
+        "pass_": false
+      }
+    },
+    "field_chain": false,
+    "passes_observed_population": false
+  },
+  "case_field_distances": {
+    "0": {
+      "k8_to_k16": 0.0017883789215064607,
+      "k16_to_none": 0.00013279499982600724,
+      "k8_to_none": 0.0017852794505960616
+    },
+    "5": {
+      "k8_to_k16": 0.0034407585825858337,
+      "k16_to_none": 0.0003461964526398934,
+      "k8_to_none": 0.003669779863634677
+    },
+    "30": {
+      "k8_to_k16": 0.002883499974354266,
+      "k16_to_none": 0.0002130665635899274,
+      "k8_to_none": 0.0028967855153381877
+    },
+    "43": {
+      "k8_to_k16": 0.00230713321680146,
+      "k16_to_none": 0.00012342445910560611,
+      "k8_to_none": 0.0023153046020162635
+    }
+  },
+  "case_gradient_metrics": {
+    "0": {
+      "field_distance": {
+        "k8_to_k16": 0.0017883789215064649,
+        "k16_to_none": 0.00013279499982600315,
+        "k8_to_none": 0.001785279450596066
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.011090202042857615,
+          "full_gamma_max": 0.011090205461405486,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0012331558461926284,
+          "full_gamma_max": 0.0012771384375040217,
+          "nonstat": 2
+        }
+      }
+    },
+    "5": {
+      "field_distance": {
+        "k8_to_k16": 0.003440758582585833,
+        "k16_to_none": 0.00034619645263989253,
+        "k8_to_none": 0.003669779863634676
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.00765131820010897,
+          "full_gamma_max": 0.007443573086534301,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0011323156453896268,
+          "full_gamma_max": 0.0012684405774668816,
+          "nonstat": 4
+        }
+      }
+    },
+    "30": {
+      "field_distance": {
+        "k8_to_k16": 0.0028834999743542694,
+        "k16_to_none": 0.00021306656358992571,
+        "k8_to_none": 0.002896785515338188
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.0066631516778486635,
+          "full_gamma_max": 0.006663109512964242,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0006951765774013409,
+          "full_gamma_max": 0.000938027481863095,
+          "nonstat": 0
+        }
+      }
+    },
+    "43": {
+      "field_distance": {
+        "k8_to_k16": 0.002307133216801456,
+        "k16_to_none": 0.00012342445910560462,
+        "k8_to_none": 0.002315304602016261
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.015423684605407337,
+          "full_gamma_max": 0.015423684991835713,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0008805814851616852,
+          "full_gamma_max": 0.00088058067494479,
+          "nonstat": 0
+        }
+      }
+    }
+  },
+  "offline_saved_array_checks": true,
+  "timing_coverage_complete": true,
+  "timing_repetitions_retained": 8,
+  "split_measurements_retained": 12,
+  "resource": {
+    "sacct_elapsed_seconds": 92,
+    "gpu_hours": 0.025555555555555557,
+    "result_elapsed_seconds": 72.3425832092762,
+    "setup_seconds": 11.097884370945394,
+    "peak_device_bytes": 8975874816,
+    "peak_host_bytes": 4011130880,
+    "cap_gpu_hours": 4
+  },
+  "execution": {
+    "slurm_state": "FAILED",
+    "exit_code": "1:0",
+    "checkpoint_complete": true,
+    "failure": "Final json.dumps print rejected NumPy boolean after complete checkpoint save; no scientific rerun",
+    "raw_finite_field_serialization": "whole_residual finite is preserved as historical string True; admission independently recomputed from arrays"
+  },
+  "retention": {
+    "local_output_manifest": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/OUTPUTS.sha256",
+    "local_collection_manifest": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/COLLECTION.sha256",
+    "basis_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/inputs/Phi.npz",
+    "basis_sha256": "7dc39cf9fbb5ea06d77001e4f8ccd69113dcdc8f22838f3cc12d0159b3431b2c",
+    "archive_preserved": true,
+    "remote_job_directory": "retained pending independent results audit and complete checksum verification"
+  },
+  "results_audit": "PENDING"
+}

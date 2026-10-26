@@ -26,7 +26,8 @@ def main():
     sources += [ROOT/'experiments/jcp-hr-baselines/e0/store/MANIFEST.sha256',
                 ROOT/'experiments/jcp-hr-baselines/e0/store/STATUS.json',
                 ROOT/'experiments/mr-burgers2d/engines.py',ROOT/'experiments/separable-decoder/sep_common.py']
-    sources += [p for p in HERE.rglob('*') if p.is_file() and not any(x in p.parts for x in ('runs','__pycache__'))]
+    sources += [p for p in HERE.rglob('*') if p.is_file() and p.name != 'Phi.npz'
+                and not any(x in p.parts for x in ('runs','__pycache__'))]
     sources=sorted(set(sources))
     hashes={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     manifest=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),

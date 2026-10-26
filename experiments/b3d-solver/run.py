@@ -50,7 +50,22 @@ class Context:
         assert sha(HERE/'inputs/historical.npz')==self.history['subset_sha256']
         self.hz=np.load(HERE/'inputs/historical.npz',allow_pickle=False)
         self.tab=C3.C.table(923801,64)
-        assert self.tab['sha256']==next(iter(self.history['sources'].values()))['cohort']['table_sha256']
+        expected=next(iter(self.history['sources'].values()))['cohort']['table_sha256']
+        np.savez_compressed(self.out/'regenerated_cohort.npz',**self.tab)
+        cohort_check=dict(expected_sha256=expected,actual_sha256=self.tab['sha256'],passed=self.tab['sha256']==expected,
+                          source_commit=os.environ['SOURCE_COMMIT'],gpu=C3.gpu_info(),rows={})
+        for j in range(64):
+            meta=json.loads(RS._read(f'3d/val64/ST/c{j:03d}.json'))
+            row=C3.C.b3.table_row(self.tab,j);desc=meta['desc'];b=int(row['B'])
+            delta={}
+            for key in ('c','w','rho'):
+                delta[key]=float(np.max(np.abs(np.asarray(row[key])[:b]-np.asarray(desc[key]))))
+            for key in ('B','A','nu'):
+                delta[key]=float(abs(row[key]-desc[key]))
+            delta['s_star']=float(self.tab['s_star'][j]-desc['s_star'])
+            cohort_check['rows'][j]=delta
+        dump(self.out/'cohort_identity.json',cohort_check)
+        assert cohort_check['passed'],cohort_check
         self.cases=cfg['cases']; assert all(j in range(64) for j in self.cases)
         self.U={j:jax.block_until_ready(jnp.asarray(C3.C.initial_interior(65,self.tab,j))) for j in self.cases}
         self.nu={j:float(self.tab['nu'][j]) for j in self.cases}
@@ -257,6 +272,7 @@ def dquad(cx):
         norm=np.linalg.norm(fine,axis=1)
         num=np.linalg.norm(coarse-fine,axis=1)
         rho=np.divide(num,norm,out=np.full_like(num,np.inf),where=norm>0)
+        rho=np.where((norm==0)&(np.linalg.norm(coarse,axis=1)==0),0.,rho)
         rec=cx.rep['runs'][f'W1024|gl80|case{j}']
         rec.update(own_state_rho=rho.tolist(),rho_finite=bool(np.isfinite(rho).all()),
                    rho_gl64_own_states=True,zero_denominator_times=np.flatnonzero(norm==0).tolist())

@@ -7,7 +7,7 @@ GPU-hours, inclusive of failures and earlier jobs. Sealed/test cohorts remain cl
 ## D-T: isolate time error after nonlinear and quadrature convergence
 
 Run only after the audited D-S and D-Q diagnostics. At W1024/default tests use BDF2 with
-steps 0.025, 0.0125 and 0.00625, rules gl40/gl48/gl56, and cases 0, 5, 30, 43 from seed923801.
+steps 0.025, 0.0125 and 0.00625, target rule gl40 with gl48/gl56 successors, and cases 0, 5, 30, 43 from seed923801.
 Reuse every exact existing tight trajectory; never rerun it just to recreate a table.
 The same-family verified adaptive LM uses original weak residuals/Jacobians, a fresh matrix
 each iteration, the frozen trust radius, stationarity tolerances 1e-7 and 1e-8, and the
@@ -18,6 +18,9 @@ For every step and rule retain fresh certificates; a time-error interpretation r
 tight/tighter agreement at most2.5e-5, trajectory quadrature differences at most2.5e-4,
 own-state advection rho at most0.116, and an independently checked successor. If an ingredient
 fails, report that failure and do not attribute the remaining difference to time alone.
+The three-rung chain can qualify gl40 on this diagnostic population; it cannot qualify the
+top gl56 rung. Every new policy requires its own changed-trajectory quadrature evidence and
+complete-rollout tight anchors; baseline Q2 is never transferred merely by matching r/M/m.
 Compare E0 error at each output, including which output attains the maximum, so repairing
 a late nonlinear step cannot be presented as lowering an unchanged early maximum.
 
@@ -50,11 +53,13 @@ qualified-POD superiority claim.
 
 ## Frozen full solvers; no broad retuning
 
-Use the already tested spectral selections N16/step0.025, N24/step0.01 and N32/step0.005,
+Use spectral selections N14/step0.025, N16/step0.025, N24/step0.01 and N32/step0.005,
 plus central finite differences L64/CN-R at step0.0125/tolerance-level1 and
 step0.005/tolerance-level0. `inputs/frozen-fom.json` preserves their original complete
 case records, calibration, source/job and content hash. Copy the original kernels
 byte-identically. Reject incomplete/nonfinite/uncalibrated finite-difference runs.
+N14 is the known matching tier from the earlier why-spectral CPU analysis; its new GPU
+measurement is required so N16 is not silently treated as the fastest known tier.
 These predefined levels span the relevant accuracy tiers; matching uses the fastest
 tested matching arm in this finite set and retains the historical broader ladder's
 scope. A missing match is an explicit outcome. Only a specific missing accuracy tier
@@ -88,6 +93,16 @@ Keep full64 errors and full64 timing observations joined by case/invocation id. 
 worst and outlier counts all use the identical eligible population. Apply uncertainty
 interval matching before any speed ratio. No claim of an optimal unrestricted FOM or
 improvement over an unqualified historical ROM/POD configuration follows from a match.
+
+The primary accuracy-match predicate is frozen here. For each eligible case with error e
+and approved conditional uncertainty epsilon, use the interval
+`[max(e-epsilon,0),e+epsilon]`. A full-solver arm matches a ROM only when both the median
+of its upper endpoints is at most the median of the ROM lower endpoints and the maximum
+of its upper endpoints is at most the maximum of the ROM lower endpoints. Interval overlap
+is unresolved under this conservative rule. Apply the identical eligible case ids and
+uncertainties to both methods. These are conditional Richardson intervals, not rigorous
+error bounds. Report median and worst matching separately as descriptive secondary views;
+neither can substitute for the joint primary predicate.
 
 ## Remaining scaling scope
 

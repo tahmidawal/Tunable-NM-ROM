@@ -1,0 +1,15 @@
+<section id="p2d-fom" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">In 2D, how cheaply do full solvers reach our accuracy?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#14213D">A coarse spectral solver reaches our accuracy band at far lower cost</h2>
+</div>
+<div style="display:flex;gap:44px;align-items:start">
+<img src="/_blob/cc2c9df27cc9f988fe15071c375ae566" alt="Error against cost for three families of full solvers, with the band of our models' accuracy shaded" style="width:1080px;height:500px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
+<ul style="flex:1;font-size:26px;line-height:1.38;color:#4A5568;display:flex;flex-direction:column;gap:14px"><li>Grey band: the accuracy our LSPG models reach at 1024² (median and worst)</li><li>Green: sine pseudo-spectral with ETDRK4 reaches that band at the lowest cost</li><li>Orange (central + CN-R) and blue (upwind + BE) need much more time</li><li>Example at 4096²: our r = 384 CN-R query 97 ms against 11.7 ms for the matched spectral solver</li></ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">jcp-fom2d; why-spectral report · 8</p>
+<aside>Each curve is the cheapest tested member of a full-solver family at each accuracy level, timed on an H200. Smooth Burgers in a box needs only a handful of sine modes, which is why the spectral family wins.</aside>
+</section>

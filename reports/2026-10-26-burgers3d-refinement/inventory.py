@@ -213,6 +213,9 @@ def main():
     dims_path = dirs['dims'] / 'checks/analysis-3d.json'
     speed_path = dirs['speed'] / 'checks/analysis-grid.json'
     dims, speed = read(dims_path), read(speed_path)
+    qualify_path = dirs['qualify'] / 'runs/EXPORT.json'
+    qualify = read(qualify_path)['threeD']['tested']
+    source(qualify_path, 'earlier 3D Q2 rounds')
     source(dims_path, 'qualification summary')
     source(speed_path, 'screening summary')
     summaries = []
@@ -233,6 +236,11 @@ def main():
                               Q2_reported=value.get('label', 'missing'),
                               qualified_reported=key in dims['qualified_3d'], payload=clean(value),
                               Q1_source=str(speed_path), status='historical Q2 round with cited Q1'))
+    for key, label in qualify.items():
+        summaries.append(dict(summary_id=f'qualify|{key}', source=str(qualify_path), lane='qualify',
+                              identity=identity(key), Q1_reported=speed['configs'].get(key, {}).get('eligible'),
+                              Q2_reported=label, qualified_reported=None,
+                              status='earlier Q2 evidence; retained even if a later round exists'))
 
     observations, cases_out, skips, raw_seen = [], [], [], {}
     coeff_cache = {}
@@ -307,7 +315,8 @@ def main():
                     raise ValueError(f'coefficient/score population mismatch {oid}')
                 authority = dims['configurations'].get(key_config)
                 qualifier = ('dims|' + key_config) if authority is not None else (
-                    'dims-round|' + key_config if key_config in dims['rounds'] else None)
+                    'dims-round|' + key_config if key_config in dims['rounds'] else (
+                        'qualify|' + key_config if key_config in qualify else None))
                 ident = identity(key_config, authority)
                 setting_meta = raw.get('settings_M', {}).get(ident.get('setting'), {})
                 setting_meta = setting_meta or raw.get('settings', {}).get(ident.get('setting'), {})
@@ -364,6 +373,7 @@ def main():
                   summary_counts=dict(speed=len(speed['configs']), dims=len(dims['configurations']),
                       dims_qualified=sum(bool(v['qualified']) for v in dims['configurations'].values()),
                       dims_rounds=len(dims['rounds']), dims_qualified_union=len(dims['qualified_3d']),
+                      qualify_earlier_rounds=len(qualify),
                       dims_nominal_width_qualified=nominal_qualified, observations=len(observations),
                       scored_cases=len(cases_out)),
                   reference=reference, summaries=summaries, observations=observations,

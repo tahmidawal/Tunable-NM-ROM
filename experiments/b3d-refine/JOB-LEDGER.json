@@ -3,6 +3,26 @@
   "base_commit": "93f399faad67f94ea2b56fe25f13003143e64694",
   "gpu_hour_cap": 12,
   "initial_diagnostic_cap": 2,
-  "jobs": [],
-  "gates": {"design": "pending", "code": "not-started", "job": "not-started", "results": "not-started"}
+  "jobs": [
+    {
+      "lane": "solver",
+      "job_id": 6525183,
+      "state": "completed; diagnostic-only results audited"
+    },
+    {
+      "lane": "pod",
+      "job_id": 6525154,
+      "state": "post-completion stdout failure; complete numerical checkpoint audited"
+    }
+  ],
+  "gates": {
+    "design": "READY",
+    "code": "StageR READY; numerical lanes separately gated",
+    "job": "pilot jobs independently admitted",
+    "results": "pilot diagnostics READY; final front pending"
+  },
+  "lane_ledger_sources": [
+    "../b3d-solver/EXPORT.json in solver worktree",
+    "../b3d-pod/runs/EXPORT.json in POD worktree"
+  ]
 }

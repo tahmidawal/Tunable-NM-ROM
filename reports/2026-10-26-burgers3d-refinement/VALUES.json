@@ -1,0 +1,1569 @@
+{
+  "inventory_counts": {
+    "dims": 390,
+    "dims_nominal_width_qualified": 83,
+    "dims_qualified": 93,
+    "dims_qualified_union": 101,
+    "dims_rounds": 62,
+    "observations": 2930,
+    "qualify_earlier_rounds": 55,
+    "scored_cases": 143571,
+    "speed": 684
+  },
+  "best_median": {
+    "key": "W768|gl40|fs|CN|0.01|K1",
+    "Q1": {
+      "population": true,
+      "valid": true,
+      "certificate": true,
+      "distance": true,
+      "anchors_valid": true,
+      "tight_tighter": true,
+      "offline_adt_agrees": true
+    },
+    "Q1_pass": true,
+    "Q2": {
+      "label": "pass",
+      "worst_dist_qp": 6.346410870858983e-05,
+      "rho_max": 0.000973269371030954,
+      "check": [
+        true,
+        4.481537591191169e-05
+      ],
+      "offline_agrees": true,
+      "rho_offline": null
+    },
+    "qualified": true,
+    "M": 3076,
+    "r": 768,
+    "rule": "gl40",
+    "spec": "fs|CN|0.01|K1",
+    "setting": "W768",
+    "median": 0.0015796486945204085,
+    "worst": 0.07165925309981161
+  },
+  "best_worst": {
+    "key": "W512k8|lat16384|fs|CN|0.01|K1",
+    "Q1": {
+      "population": true,
+      "valid": true,
+      "certificate": true,
+      "distance": true,
+      "anchors_valid": true,
+      "tight_tighter": true,
+      "offline_adt_agrees": true
+    },
+    "Q1_pass": true,
+    "Q2": {
+      "label": "pass",
+      "worst_dist_qp": 0.0001618328588472392,
+      "rho_max": 0.020398830493810687,
+      "check": [
+        true,
+        1.207436243693549e-05
+      ],
+      "offline_agrees": true,
+      "rho_offline": {
+        "cases": [
+          0,
+          1
+        ],
+        "offline": [
+          0.00010331715457330865,
+          0.0003374467660105025,
+          0.00075791131485457,
+          0.0022597603606311165,
+          0.006881326172410906,
+          0.015305212656260439,
+          2.428977238208306e-05,
+          5.239291658913881e-05,
+          8.750347344043759e-05,
+          0.00014518211304764833,
+          0.00024350449412409756,
+          0.00038542467629603864
+        ],
+        "job": [
+          0.00010331715457325409,
+          0.00033744676601047785,
+          0.0007579113148543732,
+          0.0022597603606309617,
+          0.006881326172410875,
+          0.015305212656260522,
+          2.4289772382137135e-05,
+          5.2392916589129035e-05,
+          8.750347344038606e-05,
+          0.0001451821130476055,
+          0.00024350449412405067,
+          0.00038542467629602064
+        ],
+        "agree": true
+      }
+    },
+    "qualified": true,
+    "M": 4097,
+    "r": 512,
+    "rule": "lat16384",
+    "spec": "fs|CN|0.01|K1",
+    "setting": "W512k8",
+    "median": 0.0020540510104403516,
+    "worst": 0.03137233756122672
+  },
+  "historical_ROM_comparisons": {
+    "C_old": {
+      "verdict": "fail (the selected candidate failed confirmation)",
+      "winner": "M2_512|gl32|qn|BDF2|0.016666667|k4",
+      "S": 1.1491377674333192,
+      "n_matching": 11,
+      "comparator": "M2_512|gl32|fs|BE|0.01|K1",
+      "comparator_q2": "pass",
+      "comparator_label": "qualified vs qualified comparator",
+      "scope": "full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired)"
+    },
+    "C_W768": {
+      "verdict": "pass",
+      "winner": "M2_512|gl32|qn|BDF2|0.016666667|k4",
+      "S": 2.9528017140837335,
+      "n_matching": 18,
+      "comparator": "W768|lat32768|fs|BE|0.01|K1",
+      "comparator_q2": "pass",
+      "comparator_label": "qualified vs qualified comparator",
+      "scope": "full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired)"
+    },
+    "C_W1024": {
+      "verdict": "pass",
+      "winner": "M2_512|gl32|qn|BDF2|0.016666667|k4",
+      "S": 9.87413496438928,
+      "n_matching": 8,
+      "comparator": "W1024|lat65536|fs|BE|0.01|K1",
+      "comparator_q2": "fail",
+      "comparator_label": "qualified configuration vs the deployed (unqualified) comparator",
+      "scope": "full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired)"
+    }
+  },
+  "timing_population": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "new_lanes": {
+    "solver": {
+      "audits": {
+        "design": "READY diagnostic implementation",
+        "reviewer": "/root/independent_review",
+        "jobs": {
+          "spilot02": {
+            "code_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "code_small_controls": "READY",
+            "exact_job": "READY",
+            "results": "READY diagnostic subset",
+            "interpretation": "Incomplete nonlinear convergence at one step; no resolved physical accuracy gain, no full-population Q1 or stronger performance claim"
+          }
+        }
+      },
+      "status": "diagnostic subset; consult per-job independent audit verdicts",
+      "scope": "validation diagnostics; no new frontier or comparator win claim",
+      "gpu_hours": 0.017777777777777778,
+      "budget_gpu_hours": 8,
+      "jobs": [
+        {
+          "attempt": "spilot02",
+          "job_id": 6525183,
+          "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+          "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/spilot02",
+          "status": "COMPLETED",
+          "gpu": "h200",
+          "hard_limit_hours": 0.9166666666666666,
+          "config_sha256": "de8684c6e75bd44bfd887b08024c0939fd487c9d581cc40dc96778873c186a38",
+          "remote_manifest_verified": true,
+          "independent_job_gate": "READY",
+          "elapsed_seconds": 64,
+          "gpu_hours": 0.017777777777777778,
+          "collection_sha256": "9017c341414ff0089922d08be9a3b73f8a936e625809b266e95a762c67660963",
+          "checksums_verified": true,
+          "remote_duplicate_deleted": true
+        }
+      ],
+      "observations": [
+        {
+          "key": "W1024|baseline|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "scope": "diagnostic subset",
+          "score": {
+            "e_t": [
+              0.00014211115235198486,
+              0.03866571437046715,
+              0.03900656564952225,
+              0.0383574547428039,
+              0.035769538696602717,
+              0.031078867514335945
+            ],
+            "e": 0.03900656564952225,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "fresh_nonstationary_steps": 1,
+          "nonlinear_iterations": 54,
+          "jacobian_contractions": 5,
+          "residual_evaluations": null,
+          "historical_reproduction_relative": 5.079478179814356e-16,
+          "distance_historical_tight": null,
+          "distance_gate_diagnostic": null,
+          "valid": true,
+          "Q1_full_population": "not established",
+          "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+          "timing_seconds": [
+            0.2226415602490306,
+            0.21880333684384823,
+            0.21879511140286922,
+            0.21875540912151337,
+            0.21996870636940002,
+            0.21854728925973177,
+            0.2182639129459858,
+            0.2189490683376789,
+            0.21893540117889643,
+            0.21896236669272184,
+            0.21992409601807594,
+            0.2190757319331169,
+            0.2197892451658845,
+            0.2190620480105281,
+            0.22092887945473194,
+            0.21893895976245403
+          ],
+          "timing_admission": "pilot descriptive; drift gate not applied",
+          "timing_all_admitted": false,
+          "query_median_seconds": 0.21895571751520038,
+          "max_evolved_error_time_index": 2
+        },
+        {
+          "key": "W1024|extra|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "scope": "diagnostic subset",
+          "score": {
+            "e_t": [
+              0.00014211115235198486,
+              0.03866571437046715,
+              0.03900656564952225,
+              0.0383574547428039,
+              0.035589670976804245,
+              0.03111504020780357
+            ],
+            "e": 0.03900656564952225,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "fresh_nonstationary_steps": 0,
+          "nonlinear_iterations": 90,
+          "jacobian_contractions": 5,
+          "residual_evaluations": null,
+          "historical_reproduction_relative": null,
+          "distance_historical_tight": null,
+          "distance_gate_diagnostic": null,
+          "valid": true,
+          "Q1_full_population": "not established",
+          "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+          "timing_seconds": [
+            0.291074451059103,
+            0.2901981882750988
+          ],
+          "timing_admission": "pilot descriptive; drift gate not applied",
+          "timing_all_admitted": false,
+          "query_median_seconds": 0.2906363196671009,
+          "max_evolved_error_time_index": 2
+        },
+        {
+          "key": "W1024|refresh|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "scope": "diagnostic subset",
+          "score": {
+            "e_t": [
+              0.00014211115235198486,
+              0.03866571437046715,
+              0.039006778784363566,
+              0.0383533626564827,
+              0.035582893696075826,
+              0.031106860566950386
+            ],
+            "e": 0.039006778784363566,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "fresh_nonstationary_steps": 0,
+          "nonlinear_iterations": 29,
+          "jacobian_contractions": 10,
+          "residual_evaluations": null,
+          "historical_reproduction_relative": null,
+          "distance_historical_tight": null,
+          "distance_gate_diagnostic": null,
+          "valid": true,
+          "Q1_full_population": "not established",
+          "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+          "timing_seconds": [
+            0.22794638480991125,
+            0.2261467259377241
+          ],
+          "timing_admission": "pilot descriptive; drift gate not applied",
+          "timing_all_admitted": false,
+          "query_median_seconds": 0.22704655537381768,
+          "max_evolved_error_time_index": 2
+        },
+        {
+          "key": "W1024|trust|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "scope": "diagnostic subset",
+          "score": {
+            "e_t": [
+              0.00014211115235198486,
+              0.03866571646095982,
+              0.03900656688704475,
+              0.038357473673369925,
+              0.03658779388605222,
+              0.03111538507090214
+            ],
+            "e": 0.03900656688704475,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "fresh_nonstationary_steps": 1,
+          "nonlinear_iterations": 52,
+          "jacobian_contractions": 5,
+          "residual_evaluations": null,
+          "historical_reproduction_relative": null,
+          "distance_historical_tight": null,
+          "distance_gate_diagnostic": null,
+          "valid": true,
+          "Q1_full_population": "not established",
+          "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+          "timing_seconds": [
+            0.216995757073164,
+            0.21520723588764668
+          ],
+          "timing_admission": "pilot descriptive; drift gate not applied",
+          "timing_all_admitted": false,
+          "query_median_seconds": 0.21610149648040533,
+          "max_evolved_error_time_index": 2
+        },
+        {
+          "key": "W1024|strict|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "scope": "diagnostic subset",
+          "score": {
+            "e_t": [
+              0.00014211115235198486,
+              0.03866572815064741,
+              0.03900665892777906,
+              0.038356055867764006,
+              0.03559234073286917,
+              0.031119858725194658
+            ],
+            "e": 0.03900665892777906,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "fresh_nonstationary_steps": 0,
+          "nonlinear_iterations": 89,
+          "jacobian_contractions": 6,
+          "residual_evaluations": null,
+          "historical_reproduction_relative": null,
+          "distance_historical_tight": null,
+          "distance_gate_diagnostic": null,
+          "valid": true,
+          "Q1_full_population": "not established",
+          "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+          "timing_seconds": [
+            0.3009950490668416,
+            0.2990656141191721
+          ],
+          "timing_admission": "pilot descriptive; drift gate not applied",
+          "timing_all_admitted": false,
+          "query_median_seconds": 0.30003033159300685,
+          "max_evolved_error_time_index": 2
+        }
+      ],
+      "same_history": [
+        {
+          "key": "W1024|case30|step7",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "step": 7,
+          "diagnostics": {
+            "baseline_residual": 0.21651879369557958,
+            "baseline_gamma": 0.013590038402783892,
+            "residual_agreement": 1.034039883395734e-13,
+            "jvp_agreement": 1.1385992444494904e-15,
+            "singular_min": 59.678384041635226,
+            "singular_max": 649.4471742414763,
+            "condition": 10.882452410044866
+          },
+          "kind": "fresh restart; original cached carry not restored",
+          "levels": {
+            "tight": {
+              "clips": 0,
+              "gamma": 3.0283281059382587e-09,
+              "it": 3,
+              "jacobian_evals": 4,
+              "mu": 3.703703703703703e-08,
+              "reason": 4,
+              "rejects": 0,
+              "residual_evals": 4,
+              "rn": 0.19284769868822618,
+              "baseline_distance": 0.003448310328623898,
+              "fresh_gamma": 3.0283281818407236e-09,
+              "verified": true,
+              "gtol": 1e-07
+            },
+            "tighter": {
+              "clips": 0,
+              "gamma": 3.0283281059382587e-09,
+              "it": 3,
+              "jacobian_evals": 4,
+              "mu": 3.703703703703703e-08,
+              "reason": 4,
+              "rejects": 0,
+              "residual_evals": 4,
+              "rn": 0.19284769868822618,
+              "baseline_distance": 0.003448310328623898,
+              "fresh_gamma": 3.0283281818407236e-09,
+              "verified": true,
+              "gtol": 1e-08
+            }
+          },
+          "tight_tighter_distance": 0.0,
+          "anchor_usable": true,
+          "causal_interpretation_allowed": true
+        }
+      ],
+      "archive_identities": [
+        {
+          "key": "M2_512|gl32|qn|BDF2|0.025|k4|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "score": {
+            "e_t": [
+              0.0006810105086455497,
+              0.03873160076920179,
+              0.039761370021265,
+              0.040129738666088446,
+              0.038729207500426785,
+              0.03397052092060429
+            ],
+            "e": 0.040129738666088446,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "archived_e": 0.04012973866608846,
+          "delta": 1.3877787807814457e-17,
+          "passed": true
+        },
+        {
+          "key": "W768|gl40|fs|CN|0.01|K1|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "score": {
+            "e_t": [
+              0.00028710984670308033,
+              0.0026669450190404485,
+              0.006811322115155437,
+              0.010968948863633008,
+              0.017596381135980603,
+              0.023868119232311448
+            ],
+            "e": 0.023868119232311448,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "archived_e": 0.023868119232311462,
+          "delta": 1.3877787807814457e-17,
+          "passed": true
+        },
+        {
+          "key": "W512k8|lat16384|fs|CN|0.01|K1|case30",
+          "source": {
+            "path": "results/spilot02/raw/output/result.json",
+            "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+            "job_id": 6525183,
+            "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+            "gpu": [
+              "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+            ]
+          },
+          "score": {
+            "e_t": [
+              0.0005859380692542107,
+              0.0034876071476051583,
+              0.010624869526071777,
+              0.01587030319208976,
+              0.018833274934384962,
+              0.021300452719156968
+            ],
+            "e": 0.021300452719156968,
+            "eps_ref": 7.830201020150904e-05,
+            "eligible": true,
+            "reference": "3d/val64/ST/c030",
+            "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+            "normalisation": 119.52707171947463
+          },
+          "archived_e": 0.021300452719156975,
+          "delta": 6.938893903907228e-18,
+          "passed": true
+        }
+      ],
+      "quadrature": [],
+      "next_open": [
+        "Independent results audit of D-S pilot",
+        "Remaining W768/W1024 cases0,5,30,43 with complete adaptive-anchor distance",
+        "D-Q gl80 missing finer-rule check on first8",
+        "Full64 paired same-invocation frontier validation after diagnostic review"
+      ]
+    },
+    "pod": {
+      "lane": "b3d-pod",
+      "branch": "exp/2026-10-26-b3d-pod",
+      "job_id": 6525154,
+      "source_commit": "7559135c3f377e1ec7cd89265f9f4611a0619a56",
+      "source_tar_sha256": "b6646e0c5c0930ac47314b45243eec9825297691ec6cd0b0a7d1002a1f3558b3",
+      "result_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/output/result.json",
+      "result_sha256": "7f166e8d6b501c39e485b23fb80ab63537102d6b5fd617736a4148b7324c000b",
+      "summary_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/checks/pilot/SUMMARY.json",
+      "summary_sha256": "59ba7f9c75df3957a1bc3045cb78bf07ed920279b11c57d3b351d3219c07ad05",
+      "cohort_seed": 923801,
+      "ordered_cases": [
+        0,
+        5,
+        30,
+        43
+      ],
+      "scope": "diagnostic selected validation subset; not a full-population accuracy/cost frontier",
+      "gpu": "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534",
+      "reference": {
+        "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+        "status_sha256": "af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005",
+        "kind": "ST",
+        "uncertainties": {
+          "0": {
+            "accepted": true,
+            "outcome": "accepted",
+            "eps_ref": 4.181332047166529e-05,
+            "dimension_status": "validated",
+            "crosscheck": "PASS",
+            "eligible": true
+          },
+          "5": {
+            "accepted": true,
+            "outcome": "accepted",
+            "eps_ref": 8.421610276360762e-05,
+            "dimension_status": "validated",
+            "crosscheck": "PASS",
+            "eligible": true
+          },
+          "30": {
+            "accepted": true,
+            "outcome": "accepted",
+            "eps_ref": 7.830201020150904e-05,
+            "dimension_status": "validated",
+            "crosscheck": null,
+            "eligible": true
+          },
+          "43": {
+            "accepted": true,
+            "outcome": "accepted",
+            "eps_ref": 0.00011588542322936715,
+            "dimension_status": "validated",
+            "crosscheck": "PASS",
+            "eligible": true
+          }
+        }
+      },
+      "q1": {
+        "k8": {
+          "q1": true,
+          "all_valid": true,
+          "anchors_ok": true,
+          "nonstat": 0,
+          "steps": 60,
+          "max_dist": 0.00021945104146290726,
+          "max_anchor": 1.2779162442757633e-08,
+          "dist": {
+            "val64|0": 3.328504204152469e-05,
+            "val64|5": 0.00015506015381735203,
+            "val64|30": 0.00021945104146290726,
+            "val64|43": 9.130630363210132e-06
+          },
+          "anchor": {
+            "val64|0": 1.2779162442757633e-08,
+            "val64|5": 1.1091457316837875e-08
+          },
+          "expected_case_ids": [
+            "val64|0",
+            "val64|5",
+            "val64|30",
+            "val64|43"
+          ],
+          "tighter_case_ids": [
+            "val64|0",
+            "val64|5"
+          ]
+        },
+        "k16": {
+          "q1": true,
+          "all_valid": true,
+          "anchors_ok": true,
+          "nonstat": 0,
+          "steps": 60,
+          "max_dist": 0.00022412331385811372,
+          "max_anchor": 1.8084549641506204e-08,
+          "dist": {
+            "val64|0": 3.313978932756117e-05,
+            "val64|5": 0.00016689839604465406,
+            "val64|30": 0.00022412331385811372,
+            "val64|43": 9.186298002755537e-06
+          },
+          "anchor": {
+            "val64|0": 1.2025935208260183e-08,
+            "val64|5": 1.8084549641506204e-08
+          },
+          "expected_case_ids": [
+            "val64|0",
+            "val64|5",
+            "val64|30",
+            "val64|43"
+          ],
+          "tighter_case_ids": [
+            "val64|0",
+            "val64|5"
+          ]
+        },
+        "none": {
+          "q1": true,
+          "all_valid": true,
+          "anchors_ok": true,
+          "nonstat": 0,
+          "steps": 60,
+          "max_dist": 0.00022554148412496353,
+          "max_anchor": 1.5910497579866084e-08,
+          "dist": {
+            "val64|0": 4.117243380367371e-05,
+            "val64|5": 0.00017952500552547804,
+            "val64|30": 0.00022554148412496353,
+            "val64|43": 9.156051255413315e-06
+          },
+          "anchor": {
+            "val64|0": 1.2090707011297464e-08,
+            "val64|5": 1.5910497579866084e-08
+          },
+          "expected_case_ids": [
+            "val64|0",
+            "val64|5",
+            "val64|30",
+            "val64|43"
+          ],
+          "tighter_case_ids": [
+            "val64|0",
+            "val64|5"
+          ]
+        }
+      },
+      "qualification": {
+        "scope": "diagnostic subset; not full-population qualification",
+        "full_population": false,
+        "whole_residual": {
+          "k8": {
+            "finite": "True",
+            "delta_g_max": 0.015423684605407337,
+            "full_gamma_max": 0.015423684991835713,
+            "full_nonstat": 60,
+            "steps": 60,
+            "pass_": false
+          },
+          "k16": {
+            "finite": "True",
+            "delta_g_max": 0.0012331558461926284,
+            "full_gamma_max": 0.0012771384375040217,
+            "full_nonstat": 6,
+            "steps": 60,
+            "pass_": false
+          }
+        },
+        "field_chain": false,
+        "passes_observed_population": false
+      },
+      "case_field_distances": {
+        "0": {
+          "k8_to_k16": 0.0017883789215064607,
+          "k16_to_none": 0.00013279499982600724,
+          "k8_to_none": 0.0017852794505960616
+        },
+        "5": {
+          "k8_to_k16": 0.0034407585825858337,
+          "k16_to_none": 0.0003461964526398934,
+          "k8_to_none": 0.003669779863634677
+        },
+        "30": {
+          "k8_to_k16": 0.002883499974354266,
+          "k16_to_none": 0.0002130665635899274,
+          "k8_to_none": 0.0028967855153381877
+        },
+        "43": {
+          "k8_to_k16": 0.00230713321680146,
+          "k16_to_none": 0.00012342445910560611,
+          "k8_to_none": 0.0023153046020162635
+        }
+      },
+      "case_gradient_metrics": {
+        "0": {
+          "field_distance": {
+            "k8_to_k16": 0.0017883789215064649,
+            "k16_to_none": 0.00013279499982600315,
+            "k8_to_none": 0.001785279450596066
+          },
+          "whole_residual": {
+            "k8": {
+              "delta_g_max": 0.011090202042857615,
+              "full_gamma_max": 0.011090205461405486,
+              "nonstat": 15
+            },
+            "k16": {
+              "delta_g_max": 0.0012331558461926284,
+              "full_gamma_max": 0.0012771384375040217,
+              "nonstat": 2
+            }
+          }
+        },
+        "5": {
+          "field_distance": {
+            "k8_to_k16": 0.003440758582585833,
+            "k16_to_none": 0.00034619645263989253,
+            "k8_to_none": 0.003669779863634676
+          },
+          "whole_residual": {
+            "k8": {
+              "delta_g_max": 0.00765131820010897,
+              "full_gamma_max": 0.007443573086534301,
+              "nonstat": 15
+            },
+            "k16": {
+              "delta_g_max": 0.0011323156453896268,
+              "full_gamma_max": 0.0012684405774668816,
+              "nonstat": 4
+            }
+          }
+        },
+        "30": {
+          "field_distance": {
+            "k8_to_k16": 0.0028834999743542694,
+            "k16_to_none": 0.00021306656358992571,
+            "k8_to_none": 0.002896785515338188
+          },
+          "whole_residual": {
+            "k8": {
+              "delta_g_max": 0.0066631516778486635,
+              "full_gamma_max": 0.006663109512964242,
+              "nonstat": 15
+            },
+            "k16": {
+              "delta_g_max": 0.0006951765774013409,
+              "full_gamma_max": 0.000938027481863095,
+              "nonstat": 0
+            }
+          }
+        },
+        "43": {
+          "field_distance": {
+            "k8_to_k16": 0.002307133216801456,
+            "k16_to_none": 0.00012342445910560462,
+            "k8_to_none": 0.002315304602016261
+          },
+          "whole_residual": {
+            "k8": {
+              "delta_g_max": 0.015423684605407337,
+              "full_gamma_max": 0.015423684991835713,
+              "nonstat": 15
+            },
+            "k16": {
+              "delta_g_max": 0.0008805814851616852,
+              "full_gamma_max": 0.00088058067494479,
+              "nonstat": 0
+            }
+          }
+        }
+      },
+      "offline_saved_array_checks": true,
+      "timing_coverage_complete": true,
+      "timing_repetitions_retained": 8,
+      "split_measurements_retained": 12,
+      "resource": {
+        "sacct_elapsed_seconds": 92,
+        "gpu_hours": 0.025555555555555557,
+        "result_elapsed_seconds": 72.3425832092762,
+        "setup_seconds": 11.097884370945394,
+        "peak_device_bytes": 8975874816,
+        "peak_host_bytes": 4011130880,
+        "cap_gpu_hours": 4
+      },
+      "execution": {
+        "slurm_state": "FAILED",
+        "exit_code": "1:0",
+        "checkpoint_complete": true,
+        "failure": "Final json.dumps print rejected NumPy boolean after complete checkpoint save; no scientific rerun",
+        "raw_finite_field_serialization": "whole_residual finite is preserved as historical string True; admission independently recomputed from arrays"
+      },
+      "retention": {
+        "local_output_manifest": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/OUTPUTS.sha256",
+        "local_collection_manifest": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/COLLECTION.sha256",
+        "basis_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/inputs/Phi.npz",
+        "basis_sha256": "7dc39cf9fbb5ea06d77001e4f8ccd69113dcdc8f22838f3cc12d0159b3431b2c",
+        "archive_preserved": true,
+        "remote_job_directory": "retained pending independent results audit and complete checksum verification"
+      },
+      "results_audit": "READY_FOR_DIAGNOSTIC_PUBLICATION",
+      "results_audit_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/audits/results-pilot-01.md",
+      "results_audit_sha256": "1ce7e31d92a48e6cd6d646ec7e84a60d0f9f88d6f75a42714d29cba70734fce5"
+    }
+  },
+  "mesh_work": {
+    "C_W1024": {
+      "rom_key": "W1024|lat65536|fs|BE|0.01|K1",
+      "Q2": "fail",
+      "median_iterations": [
+        [
+          64,
+          28.0
+        ],
+        [
+          128,
+          28.0
+        ],
+        [
+          256,
+          28.0
+        ],
+        [
+          384,
+          28.0
+        ]
+      ],
+      "source_job": "5352457"
+    },
+    "C_old": {
+      "rom_key": "M2_512|gl32|fs|BE|0.01|K1",
+      "Q2": "pass",
+      "median_iterations": [
+        [
+          64,
+          27.0
+        ],
+        [
+          128,
+          27.0
+        ],
+        [
+          256,
+          27.0
+        ],
+        [
+          384,
+          27.0
+        ]
+      ],
+      "source_job": "5352457"
+    },
+    "W_C_W768": {
+      "rom_key": "M2_512|gl24|qn|CN|0.016666667|k4",
+      "Q2": "fail",
+      "median_iterations": [
+        [
+          64,
+          20.5
+        ],
+        [
+          128,
+          20.5
+        ],
+        [
+          256,
+          20.5
+        ],
+        [
+          384,
+          20.5
+        ]
+      ],
+      "source_job": "5352457"
+    },
+    "W_C_old": {
+      "rom_key": "M2_512|gl24|fs|BDF2|0.0125|K1",
+      "Q2": "fail",
+      "median_iterations": [
+        [
+          64,
+          23.0
+        ],
+        [
+          128,
+          23.0
+        ],
+        [
+          256,
+          23.0
+        ],
+        [
+          384,
+          23.0
+        ]
+      ],
+      "source_job": "5352457"
+    }
+  },
+  "fixed_test_width": [
+    {
+      "key": "W256M2052|lat65536|fs|CN|0.01|K1",
+      "r": 256,
+      "M": 2052,
+      "m": 65536,
+      "median": 0.005707321101484081,
+      "worst": 0.05584504325955281,
+      "qualified": true
+    },
+    {
+      "key": "W512|lat65536|fs|CN|0.01|K1",
+      "r": 512,
+      "M": 2052,
+      "m": 65536,
+      "median": 0.002075572871456424,
+      "worst": 0.05803525999931454,
+      "qualified": true
+    },
+    {
+      "key": "W768M2052|lat65536|fs|CN|0.01|K1",
+      "r": 768,
+      "M": 2052,
+      "m": 65536,
+      "median": 0.0022958458010442963,
+      "worst": 0.1259274010361998,
+      "qualified": false
+    },
+    {
+      "key": "W1024M2052|lat65536|fs|CN|0.01|K1",
+      "r": 1024,
+      "M": 2052,
+      "m": 65536,
+      "median": 0.0027436472723117076,
+      "worst": 0.10878438119911502,
+      "qualified": false
+    }
+  ],
+  "quadrature_historical": [
+    {
+      "key": "W1024|gl16|fs|CN|0.01|K1",
+      "m": 4096,
+      "Q1": false,
+      "Q2": "fail",
+      "distance": 0.18211823874133318,
+      "rho": 1.351758241994735
+    },
+    {
+      "key": "W1024|gl20|fs|CN|0.01|K1",
+      "m": 8000,
+      "Q1": false,
+      "Q2": "fail",
+      "distance": 0.024869881666607897,
+      "rho": 0.5201924561396525
+    },
+    {
+      "key": "W1024|gl24|fs|CN|0.01|K1",
+      "m": 13824,
+      "Q1": true,
+      "Q2": "fail",
+      "distance": 0.024747180355108457,
+      "rho": 0.18154726219165276
+    },
+    {
+      "key": "W1024|gl32|fs|CN|0.01|K1",
+      "m": 32768,
+      "Q1": true,
+      "Q2": "fail",
+      "distance": 0.002102726256188528,
+      "rho": 0.031499328975032784
+    },
+    {
+      "key": "W1024|gl40|fs|CN|0.01|K1",
+      "m": 64000,
+      "Q1": true,
+      "Q2": "fail",
+      "distance": 0.000333678482426431,
+      "rho": 0.003880199668629746
+    },
+    {
+      "key": "W1024|gl48|fs|CN|0.01|K1",
+      "m": 110592,
+      "Q1": true,
+      "Q2": "fail",
+      "distance": 0.00025348824131687594,
+      "rho": 0.0028036969111939537
+    },
+    {
+      "key": "W1024|gl56|fs|CN|0.01|K1",
+      "m": 175616,
+      "Q1": true,
+      "Q2": "unverified (ladder top)",
+      "distance": null,
+      "rho": null
+    },
+    {
+      "key": "W1024|gl64|fs|CN|0.01|K1",
+      "m": 262144,
+      "Q1": true,
+      "Q2": "unverified (ladder top)",
+      "distance": null,
+      "rho": null
+    }
+  ],
+  "historical_error_budget": [
+    {
+      "key": "W256|gl24|fs|CN|0.0125|K1",
+      "ingredient": "Q",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 1.1587667840773845e-05
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.01|K1",
+      "ingredient": "Q",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 1.1371472138036444e-05
+    },
+    {
+      "key": "W256|lat8192|qn|BDF2|0.025|k4",
+      "ingredient": "Q",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 6.581833214440014e-06
+    },
+    {
+      "key": "W512|lat16384|qn|BDF2|0.025|k4",
+      "ingredient": "Q",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 4.640449317928077e-07
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.0125|K1",
+      "ingredient": "T",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.0013492996544329319
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.01|K1",
+      "ingredient": "T",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.0008653453296506883
+    },
+    {
+      "key": "W256|lat8192|qn|BDF2|0.025|k4",
+      "ingredient": "T",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.021536101880448688
+    },
+    {
+      "key": "W512|lat16384|qn|BDF2|0.025|k4",
+      "ingredient": "T",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.021598072837028255
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.0125|K1",
+      "ingredient": "S",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 2.002921336905118e-05
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.01|K1",
+      "ingredient": "S",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 1.239209755539365e-05
+    },
+    {
+      "key": "W256|lat8192|qn|BDF2|0.025|k4",
+      "ingredient": "S",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 1.367656503318899e-05
+    },
+    {
+      "key": "W512|lat16384|qn|BDF2|0.025|k4",
+      "ingredient": "S",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 8.972113189624745e-06
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.0125|K1",
+      "ingredient": "F",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.0005519061432055215
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.01|K1",
+      "ingredient": "F",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.00045620002646344675
+    },
+    {
+      "key": "W256|lat8192|qn|BDF2|0.025|k4",
+      "ingredient": "F",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.0010562911217449494
+    },
+    {
+      "key": "W512|lat16384|qn|BDF2|0.025|k4",
+      "ingredient": "F",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.0003988010083523218
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.0125|K1",
+      "ingredient": "e_P",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.008094182496265572
+    },
+    {
+      "key": "W256|gl24|fs|CN|0.01|K1",
+      "ingredient": "e_P",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.008094182496265572
+    },
+    {
+      "key": "W256|lat8192|qn|BDF2|0.025|k4",
+      "ingredient": "e_P",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.008094182496265572
+    },
+    {
+      "key": "W512|lat16384|qn|BDF2|0.025|k4",
+      "ingredient": "e_P",
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "median": 0.002827017140067667
+    }
+  ],
+  "regime_sources": {
+    "W768|gl40|fs|CN|0.01|K1": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/checks/scores-m3b.json",
+    "W512k8|lat16384|fs|CN|0.01|K1": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-dims/experiments/jcp-dims/checks/scores-k3b.json"
+  }
+}

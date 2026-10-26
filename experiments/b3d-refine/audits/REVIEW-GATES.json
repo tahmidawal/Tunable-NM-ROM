@@ -1,0 +1,47 @@
+[
+  {
+    "gate": "design",
+    "scope": "StageR CPU evidence, D-S/D-Q diagnostics, POD whole-objective controls",
+    "verdict": "READY after narrow amendments",
+    "reviewer": "independent_review",
+    "source": "independent Codex reviewer messages in this session",
+    "fixes": [
+      "Label fresh restarts; use full-trajectory one-factor policies",
+      "Reuse gl56/gl64 and retain original gl80-check population",
+      "Freeze whole-objective POD field/gradient/stationarity predicates"
+    ]
+  },
+  {
+    "gate": "StageR code/results",
+    "commit": "06ac1c524",
+    "verdict": "READY for declared partial-normalisation scope",
+    "reviewer": "independent_review",
+    "findings": [
+      "Exact per-case joins and approved reference pins independently checked",
+      "Exact historical timing population remains separate from whole-validation accuracy",
+      "Unknown metadata/registered population completeness remain explicit"
+    ]
+  },
+  {
+    "gate": "solver spilot02 results",
+    "job_id": 6525183,
+    "verdict": "READY for diagnostic publication only",
+    "reviewer": "independent_review",
+    "findings": [
+      "Nonlinear convergence gap independently verified",
+      "Certificate repairs do not establish physical accuracy improvement",
+      "No full-population Q1 or comparative speed claim"
+    ]
+  },
+  {
+    "gate": "POD pilot results",
+    "job_id": 6525154,
+    "verdict": "READY for diagnostic publication only",
+    "reviewer": "independent_review",
+    "findings": [
+      "Independent PDE adjoint corroborates whole-objective gradient discrepancy",
+      "Frozen supports fail new conservative HR contract",
+      "Post-completion stdout serialization failure recovered without numerical rerun"
+    ]
+  }
+]

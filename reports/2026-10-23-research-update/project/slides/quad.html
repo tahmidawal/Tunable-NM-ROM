@@ -1,0 +1,15 @@
+<section id="quad" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">How many quadrature points does the nonlinear term need?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#14213D">Gauss and Fibonacci rules pass with a few thousand points; Sobol and Smolyak need far more</h2>
+</div>
+<div style="display:flex;gap:44px;align-items:start">
+<img src="/_blob/5fad1d732f75889cc125d918dbb7bdf8" alt="Worst quadrature error against number of quadrature points for Gauss, Fibonacci lattice, Sobol and Smolyak rules at 1024², with the acceptance bar and the old 63² mesh lattice" style="width:1080px;height:500px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
+<ul style="flex:1;font-size:26px;line-height:1.38;color:#4A5568;display:flex;flex-direction:column;gap:14px"><li>ρ: worst relative error of the quadrature nonlinear term against a converged reference (Gauss 640²), over every state the model reaches</li><li>Acceptance bar: ρ ≤ 0.116</li><li>At about 4,000 points: Gauss 0.019, Fibonacci 0.033</li><li>Sobol converges slowly; Smolyak (a control) never reaches the bar</li><li>The old 63² mesh lattice (triangle) is measured against its own mesh target, so it is not directly comparable</li></ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Off-mesh quadrature study 2D, accurate setting, 1024², dev+val · 5</p>
+<aside>This is the off-mesh quadrature of the nonlinear term u·∇u: the network and its exact derivative are evaluated at m fixed points in the unit square, the same on every mesh. Gauss and Fibonacci lattices converge fast because the integrand is smooth; random-like Sobol points converge roughly as one over root m. The number of points grows with the bank width: about 4,000 at r = 128 up to about 37,000 at r = 512, and that is what drives the cost per step.</aside>
+</section>

@@ -1,0 +1,15 @@
+<section id="p2d-pod" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F6F8B;background:#E3ECF1;padding:10px 20px;border-radius:999px;white-space:nowrap">Question</p>
+<p style="font-size:32px;color:#4A5568">In 2D, how do we compare with a tuned POD reduced model?</p>
+</div>
+<div style="display:flex;gap:28px;align-items:center"><p style="font-size:28px;font-weight:600;color:#F7F6F2;background:#A8401B;padding:8px 20px;border-radius:8px;white-space:nowrap">Slower</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:56px;font-weight:600;line-height:1.1;color:#14213D">POD with ECSW or Q-DEIM matches our accuracy in less time</h2>
+</div>
+<div style="display:flex;gap:44px;align-items:start">
+<img src="/_blob/1384991a552e7eefa6f06053e505220c" alt="Worst error against query time at 1024²: our qualified configurations as red stars, POD variants as dots" style="width:1080px;height:500px;object-fit:contain;background:#FFFFFF;border:1px solid #DDE1E4;border-radius:12px">
+<ul style="flex:1;font-size:26px;line-height:1.38;color:#4A5568;display:flex;flex-direction:column;gap:14px"><li>Red stars: our qualified configurations; dots: POD + ECSW (blue), Q-DEIM (orange), none (grey)</li><li>Dominated (faster and more accurate) in 8 of 8 configurations at 256² and at 1024²</li><li>Example: ours r = 384 CN-R 86.8 ms, worst 1.78 %; POD + ECSW 30.7 ms, worst 1.35 %</li></ul>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">jcp-hr-baselines; final report §3.5 · 10</p>
+<aside>Same timing job for both, so the comparison is like for like. Developmental, in-sample, unadjusted evidence. POD snapshots came from the best full solver on the target mesh.</aside>
+</section>

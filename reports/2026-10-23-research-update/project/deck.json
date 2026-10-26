@@ -1,0 +1,65 @@
+{
+  "v": 4,
+  "attachments": {},
+  "cover": "cover",
+  "createdOnFiles": {
+    "at": "2026-10-23T09:30:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "faces": {
+    "ibm-plex-sans": {
+      "family": "IBM Plex Sans",
+      "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap"
+    },
+    "jetbrains-mono": {
+      "family": "JetBrains Mono",
+      "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+    },
+    "source-serif-4": {
+      "family": "Source Serif 4",
+      "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400..700&display=swap"
+    }
+  },
+  "lists": "css",
+  "order": [
+    "cover",
+    "d1",
+    "mesh-iters",
+    "ordering",
+    "quad",
+    "qcost",
+    "d2",
+    "p2d-fom",
+    "p2d-s",
+    "p2d-pod",
+    "p3d-front",
+    "p3d-cmp",
+    "p-summary",
+    "p-e1",
+    "summary",
+    "b3d-refine-evidence",
+    "b3d-refine-solver",
+    "b3d-refine-pod",
+    "b3d-refine-open"
+  ],
+  "sections": {
+    "s0": {
+      "description": "Cover",
+      "start": "cover"
+    },
+    "s1": {
+      "description": "The dial and the mesh",
+      "start": "d1"
+    },
+    "s2": {
+      "description": "Accuracy against speed, 2D and 3D",
+      "start": "d2"
+    },
+    "b3d-refinement": {
+      "description": "Burgers 3D refinement",
+      "start": "b3d-refine-evidence"
+    }
+  },
+  "title": "Research Update"
+}

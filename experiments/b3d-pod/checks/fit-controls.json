@@ -1,0 +1,32 @@
+{
+  "backend": "gpu",
+  "x64": true,
+  "controls": [
+    {
+      "target": 4,
+      "reason": "taus",
+      "accepted": true,
+      "kkt": {
+        "ok": true,
+        "support_max_abs_gradient": 0.0,
+        "off_support_max_gradient": 0.0,
+        "tol": 1.549193338482967e-08
+      },
+      "quality": true
+    },
+    {
+      "target": 6,
+      "reason": "kkt",
+      "accepted": true,
+      "kkt": {
+        "ok": true,
+        "support_max_abs_gradient": 0.0,
+        "off_support_max_gradient": 0.0,
+        "tol": 1.549193338482967e-08
+      },
+      "quality": true
+    }
+  ],
+  "numpy_boolean_serialization": true,
+  "pass_": true
+}

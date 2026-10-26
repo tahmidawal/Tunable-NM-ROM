@@ -16,7 +16,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('attempt');a=ap.parse_args()
     cfg=HERE/'configs'/f'{a.attempt}.json'
     j=json.loads(cfg.read_text())
-    assert j['attempt']==a.attempt and a.attempt in ('pilot','validation')
+    assert j['attempt']==a.attempt and a.attempt in ('pilot','validation','fit32','none64','k32pilot','k32val')
     d=HERE/'runs'/a.attempt
     assert not d.exists(), 'inspect existing job state; do not overwrite a staged attempt'
     d.mkdir()
@@ -26,8 +26,12 @@ def main():
     sources += [ROOT/'experiments/jcp-hr-baselines/e0/store/MANIFEST.sha256',
                 ROOT/'experiments/jcp-hr-baselines/e0/store/STATUS.json',
                 ROOT/'experiments/mr-burgers2d/engines.py',ROOT/'experiments/separable-decoder/sep_common.py']
-    sources += [p for p in HERE.rglob('*') if p.is_file() and p.name != 'Phi.npz'
-                and not any(x in p.parts for x in ('runs','__pycache__'))]
+    if j.get('driver')=='fit':
+        # Training-only package contains no validation fixture, score or result file.
+        sources += [HERE/'fit.py',cfg,HERE/'inputs/MANIFEST.json',HERE/'AMENDMENT-A1.md']
+    else:
+        sources += [p for p in HERE.rglob('*') if p.is_file() and p.name != 'Phi.npz'
+                    and not any(x in p.parts for x in ('runs','__pycache__'))]
     sources=sorted(set(sources))
     hashes={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     manifest=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
@@ -40,6 +44,9 @@ def main():
     archive=hashlib.sha256((d/'source.tar').read_bytes()).hexdigest()
     (d/'source.tar.sha256').write_text(archive+'  source.tar\n')
     remote=f'{NAMESPACE}/{a.attempt}'
+    minutes=int(round(j['wall_hours']*60));hh,mm=divmod(minutes,60)
+    driver='fit.py' if j.get('driver')=='fit' else ('validate.py' if j.get('driver')=='validate' else 'replay.py')
+    refenv='unset JCPREF_STORE JCPREF_META' if j.get('driver')=='fit' else 'export JCPREF_STORE=/cluster/tufts/paralab/tawal01/jcp-ref/store'
     # All runtime outputs and caches stay inside this unique job directory.
     sb=f'''#!/usr/bin/env bash
 #SBATCH --job-name=b3dpod_{a.attempt}
@@ -47,7 +54,7 @@ def main():
 #SBATCH --gres=gpu:h200:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=120G
-#SBATCH --time={int(j['wall_hours']):02}:00:00
+#SBATCH --time={hh:02}:{mm:02}:00
 #SBATCH --output={remote}/slurm-%j.log
 set -euo pipefail
 cd {remote}
@@ -55,7 +62,7 @@ export PYTHONDONTWRITEBYTECODE=1
 export JAX_DEFAULT_MATMUL_PRECISION=highest
 export JAX_ENABLE_X64=1
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
-export JCPREF_STORE=/cluster/tufts/paralab/tawal01/jcp-ref/store
+{refenv}
 export TMPDIR={remote}/tmp
 export XDG_CACHE_HOME={remote}/cache
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME"
@@ -75,7 +82,7 @@ mkdir artifacts
 cp /cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64b/jobdir/output/artifacts/Phi.npz artifacts/
 cp /cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64b/jobdir/output/artifacts/HR~ecsw~512~k8.npz artifacts/
 cp /cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64b/jobdir/output/artifacts/HR~ecsw~512~k16.npz artifacts/
-$PY experiments/b3d-pod/replay.py --config experiments/b3d-pod/configs/{a.attempt}.json --artifacts artifacts --out output
+$PY experiments/b3d-pod/{driver} --config experiments/b3d-pod/configs/{a.attempt}.json --artifacts artifacts --out output
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 '''
     (d/'run.sbatch').write_text(sb)

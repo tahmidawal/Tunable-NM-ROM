@@ -1,6 +1,6 @@
 # A1: one predeclared training-only support extension and complete no-HR fallback
 
-Status: proposed; independent design approval required before implementation.
+Status: independent reviewer approved implementation under this frozen scope.
 This is the only support extension. It gives the POD comparator one bounded tuning
 opportunity after the frozen supports failed. It is not an open support search.
 
@@ -12,6 +12,8 @@ implementation. Rebuild them with the original routine and candidate seed 202610
 32768 candidate grid nodes. Persist the actual candidate list, training descriptors,
 state hashes, block scalings and contribution hashes before starting the fit.
 No validation reference, descriptor, trajectory or error enters fitting.
+The original full candidate pool lacks an archival hash; recreation follows its
+pinned generator and seed. Do not claim byte identity to an unavailable old pool.
 
 Run exactly one inherited greedy-NNLS path with support target 16384 (k32), cap 16384,
 the inherited drop/refactor/KKT rules, maximum 40000 iterations and a 5400-second path

@@ -56,6 +56,16 @@
     "results": "READY seven-subject stronger-policy four-case tuning and selection",
     "reviewer": "/root/independent_review",
     "scope": "exposed four-case development; no full64 qualification transfer"
+   },
+   "front6402": {
+    "code_commit": "8196120c5ade3992bacfc02379799aa00a0cf4a3",
+    "code_small_controls": "READY",
+    "exact_job": "READY",
+    "results": "PENDING RUNNING",
+    "reviewer": "/root/independent_review",
+    "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
+    "job_id": 6533177,
+    "scope": "frozen16 subjects, ordered val64, paired invocation errors/costs; no publication before results audit"
    }
   }
  },
@@ -225,6 +235,18 @@
    "collection_verified": true,
    "remote_deleted": true,
    "reserved_max_gpu_hours": 0.0
+  },
+  {
+   "attempt": "front6402",
+   "job_id": 6533177,
+   "gpu_hours": 0.0,
+   "state": "RUNNING",
+   "source_commit": "8196120c5ade3992bacfc02379799aa00a0cf4a3",
+   "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402",
+   "reserved_max_gpu_hours": 3.0,
+   "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
+   "scope": "live job; final qualification and GPU hours pending collection",
+   "last_observed_utc": "2026-10-27T03:11:31.542300+00:00"
   }
  ],
  "observations": [
@@ -36144,11 +36166,10 @@
    }
   }
  ],
+ "time_intervention_scope": "Time-step/method package: dt changes integration, inherited diffusion-scaled residual row weights and time-discrete LSPG directions. Q1/Q2 control nonlinear/quadrature effects; this does not isolate pure temporal truncation.",
  "next_open": [
-  "D-Q gl80 first-eight closure after pilot audit",
-  "D-T fixed four-case time diagnostics",
-  "Fair POD schedule tuning on four cases",
-  "Full64 paired same-invocation frontier validation after diagnostic review"
+  "Full64 paired same-invocation frontier validation running; results audit pending",
+  "Fixed-mode65/129 mesh costs and operator diagnostics: separate code/control/job gates pending"
  ],
  "historical_tight_quadrature": {
   "path": "results/historical-tight-quadrature.json",

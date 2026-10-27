@@ -23,6 +23,12 @@ refresh1. Hold c0 from65 and fixed65 output points/norm throughout this operator
 Compare original65 A/P/lambda with129 moments normalized by $\sqrt{8}$ and129 discrete lambda.
 On case5 only separate lambda-only and test-moment-only interventions. These are explicitly
 operator interventions with supplied coefficients, not end-to-end growing-mesh queries.
+The lambda-parameter intervention changes both discrete diffusion eigenvalues and their
+induced inherited residual row weights
+$S_m=(a_0+\Delta t\,b_0\nu\lambda_m)^{-1}$. Save both lambda vectors and the derived
+weight vectors for each case/scheme/startup state. It does not isolate physical diffusion
+bias alone. Recompute the predictor QR factors whenever $A$ changes; retain them only
+when $A$ is unchanged.
 Record native129 versus65 initial projection differences separately; do not let an initial
 projection change masquerade as an operator effect. Analytic continuum advection B/D is
 unchanged; P has only the known test normalization. No upwind substitution is made.

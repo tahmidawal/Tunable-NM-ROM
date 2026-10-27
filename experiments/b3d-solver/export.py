@@ -13,8 +13,9 @@ def main():
     out=dict(audits=audits,status='diagnostic subset; consult per-job independent audit verdicts',scope='validation diagnostics; no new frontier or comparator win claim',
              gpu_hours=sum(e.get('gpu_hours',0.) for e in ledger['entries']),budget_gpu_hours=ledger['budget_gpu_hours'],
              jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],quadrature_witnesses=[],time_diagnostics=[],time_quadrature=[],POD_tuning=[],POD_tuning_jobs=[],
-             next_open=['D-Q gl80 first-eight closure after pilot audit','D-T fixed four-case time diagnostics',
-                        'Fair POD schedule tuning on four cases','Full64 paired same-invocation frontier validation after diagnostic review'])
+             time_intervention_scope='Time-step/method package: dt changes integration, inherited diffusion-scaled residual row weights and time-discrete LSPG directions. Q1/Q2 control nonlinear/quadrature effects; this does not isolate pure temporal truncation.',
+             next_open=['Full64 paired same-invocation frontier validation running; results audit pending',
+                        'Fixed-mode65/129 mesh costs and operator diagnostics: separate code/control/job gates pending'])
     for entry in ledger['entries']:
         rp=HERE/'results'/entry['attempt']/'raw/output/result.json'
         if not rp.exists():continue

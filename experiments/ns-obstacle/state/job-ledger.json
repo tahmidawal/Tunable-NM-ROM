@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "scalar_conversion_failure_collecting",
+  "status": "one_strict_scalar_repair_pending",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -103,10 +103,37 @@
         "mapped points and normals",
         "scalar matrix assembly/factorization/solve/residual",
         "first wrapped gradient evaluation"
-      ]
+      ],
+      "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke05/RETENTION.json",
+      "collection_archive_sha256": "2e28f41fbd7a2e4c9c41f27e4c17c9a285d3730d4f1ad1db3f81b4c61a43a325",
+      "remote_duplicate_removed": true
+    },
+    {
+      "job_id": 6567998,
+      "lane": "2d_reference",
+      "attempt": "g1-smoke06",
+      "source_commit": "9d431a0ccdf3f9477370e032a95d3f0c1a0b4323",
+      "source_mirror": "92b344ddc",
+      "manifest_sha256": "d328eb94d5382adb463bae95710c2eaf54c059e8b5321108480a27d06080622f",
+      "submitted_utc": "2026-10-27T21:07:35Z",
+      "state_last_observed": "PENDING",
+      "pending_reason": "Priority",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "purpose": "G1 controls after strict scalar conversion repair",
+      "repair_number_for_distinct_error": 1,
+      "device_for_FE": "CPU"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6567998
+  ],
   "completed_gpu_hours": 0.018333333333333333,
   "note": "All elapsed allocation including failed import charged. One targeted dependency-layout repair under review; no numerical result or reference accepted."
 }

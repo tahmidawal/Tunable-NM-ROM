@@ -1,0 +1,180 @@
+{
+  "volume": {
+    "point": [
+      0.25000000000000006,
+      0.24999999999999994
+    ],
+    "jacobian": [
+      [
+        0.0,
+        0.5000000000000001
+      ],
+      [
+        -0.4999999999999999,
+        -0.4999999999999999
+      ]
+    ],
+    "determinant": 0.25,
+    "weight": 0.041666666666666664
+  },
+  "boundary": {
+    "label": "wall_bottom",
+    "point": [
+      0.39433756729740654,
+      0.0
+    ],
+    "normal": [
+      -0.0,
+      -1.0
+    ],
+    "weight": 0.25000000000000006
+  },
+  "normal_checks": {
+    "wall_bottom": 0.0,
+    "outlet": 0.0,
+    "wall_top": 0.0,
+    "inlet": 0.0
+  },
+  "api_status": "passed_sampled_mapping_and_normals",
+  "umfpack": {
+    "free_dofs": 5,
+    "residual_numerator": 1.0693553686590446e-17,
+    "residual_denominator": 0.03755782578608303,
+    "relative_residual": 2.847223837582451e-16
+  },
+  "boundary_volume_derivative_control": {
+    "velocity": "(x,y)",
+    "expected_gradient": "identity",
+    "expected_divergence": 2.0,
+    "sampled_gradient_max_error": 4.295733869418746e-14,
+    "sampled_divergence_max_error": 3.3306690738754696e-14,
+    "stress_integral_checks": [
+      {
+        "stress": "gradient",
+        "label": "inlet",
+        "integrated_traction": [
+          0.39999999999999747,
+          -3.2531486185427478e-15
+        ],
+        "expected": [
+          0.39999999999999997,
+          -0.0
+        ],
+        "absolute_error": 4.101583712926171e-15
+      },
+      {
+        "stress": "gradient",
+        "label": "outlet",
+        "integrated_traction": [
+          -0.39999999999999913,
+          -7.946985083884197e-16
+        ],
+        "expected": [
+          -0.39999999999999997,
+          -0.0
+        ],
+        "absolute_error": 1.151034534327352e-15
+      },
+      {
+        "stress": "gradient",
+        "label": "wall_top",
+        "integrated_traction": [
+          -3.132657617107189e-15,
+          -0.3999999999999992
+        ],
+        "expected": [
+          -0.0,
+          -0.39999999999999997
+        ],
+        "absolute_error": 3.227617600735801e-15
+      },
+      {
+        "stress": "gradient",
+        "label": "wall_bottom",
+        "integrated_traction": [
+          -1.29721175930646e-16,
+          0.39999999999999775
+        ],
+        "expected": [
+          -0.0,
+          0.39999999999999997
+        ],
+        "absolute_error": 2.2242320564896446e-15
+      },
+      {
+        "stress": "physical_symmetric",
+        "label": "inlet",
+        "integrated_traction": [
+          0.09999999999999912,
+          -3.2406586095157155e-15
+        ],
+        "expected": [
+          0.09999999999999998,
+          -0.0
+        ],
+        "absolute_error": 3.3529383671715147e-15
+      },
+      {
+        "stress": "physical_symmetric",
+        "label": "outlet",
+        "integrated_traction": [
+          -0.10000000000000248,
+          -9.525800287457498e-17
+        ],
+        "expected": [
+          -0.09999999999999998,
+          -0.0
+        ],
+        "absolute_error": 2.4998174147177824e-15
+      },
+      {
+        "stress": "physical_symmetric",
+        "label": "wall_top",
+        "integrated_traction": [
+          -3.832098122621033e-15,
+          -0.10000000000000264
+        ],
+        "expected": [
+          -0.0,
+          -0.09999999999999998
+        ],
+        "absolute_error": 4.667410863464321e-15
+      },
+      {
+        "stress": "physical_symmetric",
+        "label": "wall_bottom",
+        "integrated_traction": [
+          -1.4221118495767878e-16,
+          0.09999999999999973
+        ],
+        "expected": [
+          -0.0,
+          0.09999999999999998
+        ],
+        "absolute_error": 2.8744417079706726e-16
+      }
+    ],
+    "operator": "BoundaryFromVolumeCF(Grad or div of GridFunction), then BND normal"
+  },
+  "passed": true,
+  "scalar_return_contract": [
+    {
+      "label": "wrapped_divergence_point",
+      "python_type": "builtins.tuple",
+      "shape": [
+        1
+      ],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "traction_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    }
+  ]
+}

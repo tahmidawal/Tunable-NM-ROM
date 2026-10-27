@@ -1,0 +1,15 @@
+Warning: can't change number of threads while TaskManager active!
+Warning: can't change number of threads while TaskManager active!
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/fom.py", line 524, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/fom.py", line 516, in main
+    result=run_case(cfg,target)
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/fom.py", line 71, in run_case
+    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))
+                                               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/preflight.py", line 64, in mapped_probe
+    if cosine>-.99:raise ArithmeticError('wrong obstacle normal sign')
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ArithmeticError: wrong obstacle normal sign

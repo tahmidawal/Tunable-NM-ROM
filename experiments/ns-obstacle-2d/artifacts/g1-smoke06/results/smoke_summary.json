@@ -1,0 +1,298 @@
+{
+  "gate": "G1_smoke",
+  "checks": [
+    {
+      "case": "channel",
+      "name": "independent_residual",
+      "value": 1.356142530338834e-14,
+      "threshold": 1e-09,
+      "passed": true
+    },
+    {
+      "case": "channel",
+      "name": "geometry_volume",
+      "value": 1.6370250806557185e-14,
+      "threshold": 1e-05,
+      "passed": true
+    },
+    {
+      "case": "channel",
+      "name": "velocity_error",
+      "value": 9.253209933495094e-15,
+      "threshold": 1e-06,
+      "passed": true
+    },
+    {
+      "case": "channel",
+      "name": "pressure_error",
+      "value": 9.652238181230531e-15,
+      "threshold": 1e-06,
+      "passed": true
+    },
+    {
+      "case": "channel",
+      "name": "boundary_trace",
+      "value": 1.1275748173992177e-15,
+      "threshold": 1e-10,
+      "passed": true
+    },
+    {
+      "case": "channel",
+      "name": "wall_force_sign_and_magnitude",
+      "value": 1.7511507816205265e-15,
+      "threshold": 1e-06,
+      "passed": true
+    },
+    {
+      "case": "manufactured",
+      "name": "completed",
+      "passed": false
+    },
+    {
+      "case": "dfg",
+      "name": "completed",
+      "passed": false
+    }
+  ],
+  "cases": {
+    "channel": {
+      "state": "completed_control_not_reference"
+    },
+    "manufactured": {
+      "state": "failed",
+      "failure": {
+        "error": "ArithmeticError('wrong obstacle normal sign')",
+        "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/fom.py\", line 516, in main\n    result=run_case(cfg,target)\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/fom.py\", line 71, in run_case\n    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))\n                                               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/preflight.py\", line 64, in mapped_probe\n    if cosine>-.99:raise ArithmeticError('wrong obstacle normal sign')\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nArithmeticError: wrong obstacle normal sign\n",
+        "source_sha256": "5d09cd0439364098286862ac2edf5467d89bf0e54229f2e72b4f2ea8b50febe6",
+        "peak_rss_bytes": 131334144,
+        "job_id": "6567998",
+        "scalar_return_contract": []
+      }
+    },
+    "dfg": {
+      "state": "not_run",
+      "failure": null
+    }
+  },
+  "preflight": {
+    "volume": {
+      "point": [
+        0.25000000000000006,
+        0.24999999999999994
+      ],
+      "jacobian": [
+        [
+          0.0,
+          0.5000000000000001
+        ],
+        [
+          -0.4999999999999999,
+          -0.4999999999999999
+        ]
+      ],
+      "determinant": 0.25,
+      "weight": 0.041666666666666664
+    },
+    "boundary": {
+      "label": "wall_bottom",
+      "point": [
+        0.39433756729740654,
+        0.0
+      ],
+      "normal": [
+        -0.0,
+        -1.0
+      ],
+      "weight": 0.25000000000000006
+    },
+    "normal_checks": {
+      "wall_bottom": 0.0,
+      "outlet": 0.0,
+      "wall_top": 0.0,
+      "inlet": 0.0
+    },
+    "api_status": "passed_sampled_mapping_and_normals",
+    "umfpack": {
+      "free_dofs": 5,
+      "residual_numerator": 1.0693553686590446e-17,
+      "residual_denominator": 0.03755782578608303,
+      "relative_residual": 2.847223837582451e-16
+    },
+    "boundary_volume_derivative_control": {
+      "velocity": "(x,y)",
+      "expected_gradient": "identity",
+      "expected_divergence": 2.0,
+      "sampled_gradient_max_error": 4.295733869418746e-14,
+      "sampled_divergence_max_error": 3.3306690738754696e-14,
+      "stress_integral_checks": [
+        {
+          "stress": "gradient",
+          "label": "inlet",
+          "integrated_traction": [
+            0.39999999999999747,
+            -3.2531486185427478e-15
+          ],
+          "expected": [
+            0.39999999999999997,
+            -0.0
+          ],
+          "absolute_error": 4.101583712926171e-15
+        },
+        {
+          "stress": "gradient",
+          "label": "outlet",
+          "integrated_traction": [
+            -0.39999999999999913,
+            -7.946985083884197e-16
+          ],
+          "expected": [
+            -0.39999999999999997,
+            -0.0
+          ],
+          "absolute_error": 1.151034534327352e-15
+        },
+        {
+          "stress": "gradient",
+          "label": "wall_top",
+          "integrated_traction": [
+            -3.132657617107189e-15,
+            -0.3999999999999992
+          ],
+          "expected": [
+            -0.0,
+            -0.39999999999999997
+          ],
+          "absolute_error": 3.227617600735801e-15
+        },
+        {
+          "stress": "gradient",
+          "label": "wall_bottom",
+          "integrated_traction": [
+            -1.29721175930646e-16,
+            0.39999999999999775
+          ],
+          "expected": [
+            -0.0,
+            0.39999999999999997
+          ],
+          "absolute_error": 2.2242320564896446e-15
+        },
+        {
+          "stress": "physical_symmetric",
+          "label": "inlet",
+          "integrated_traction": [
+            0.09999999999999912,
+            -3.2406586095157155e-15
+          ],
+          "expected": [
+            0.09999999999999998,
+            -0.0
+          ],
+          "absolute_error": 3.3529383671715147e-15
+        },
+        {
+          "stress": "physical_symmetric",
+          "label": "outlet",
+          "integrated_traction": [
+            -0.10000000000000248,
+            -9.525800287457498e-17
+          ],
+          "expected": [
+            -0.09999999999999998,
+            -0.0
+          ],
+          "absolute_error": 2.4998174147177824e-15
+        },
+        {
+          "stress": "physical_symmetric",
+          "label": "wall_top",
+          "integrated_traction": [
+            -3.832098122621033e-15,
+            -0.10000000000000264
+          ],
+          "expected": [
+            -0.0,
+            -0.09999999999999998
+          ],
+          "absolute_error": 4.667410863464321e-15
+        },
+        {
+          "stress": "physical_symmetric",
+          "label": "wall_bottom",
+          "integrated_traction": [
+            -1.4221118495767878e-16,
+            0.09999999999999973
+          ],
+          "expected": [
+            -0.0,
+            0.09999999999999998
+          ],
+          "absolute_error": 2.8744417079706726e-16
+        }
+      ],
+      "operator": "BoundaryFromVolumeCF(Grad or div of GridFunction), then BND normal"
+    },
+    "passed": true,
+    "scalar_return_contract": [
+      {
+        "label": "wrapped_divergence_point",
+        "python_type": "builtins.tuple",
+        "shape": [
+          1
+        ],
+        "dtype": "float64",
+        "finite": true,
+        "accepted": true
+      },
+      {
+        "label": "traction_integral",
+        "python_type": "builtins.float",
+        "shape": [],
+        "dtype": "float64",
+        "finite": true,
+        "accepted": true
+      }
+    ]
+  },
+  "run_exit_code": 1,
+  "last_stage": "manufactured",
+  "stage_exit_codes": [
+    {
+      "stage": "source_verification",
+      "exit_code": 0
+    },
+    {
+      "stage": "source_commit_present",
+      "exit_code": 0
+    },
+    {
+      "stage": "gpu_preflight",
+      "exit_code": 0
+    },
+    {
+      "stage": "dependencies",
+      "exit_code": 0
+    },
+    {
+      "stage": "dependency_import",
+      "exit_code": 0
+    },
+    {
+      "stage": "api_and_inverse_preflight",
+      "exit_code": 0
+    },
+    {
+      "stage": "channel",
+      "exit_code": 0
+    },
+    {
+      "stage": "manufactured",
+      "exit_code": 1
+    }
+  ],
+  "passed": false,
+  "nongating": {},
+  "G2_steady_reference_admitted": false,
+  "training_released": false,
+  "reason": "mesh/p/tolerance/force/domain/outlet and result reviews remain required"
+}

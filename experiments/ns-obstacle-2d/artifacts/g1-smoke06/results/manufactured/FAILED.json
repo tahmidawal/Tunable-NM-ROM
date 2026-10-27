@@ -1,0 +1,8 @@
+{
+  "error": "ArithmeticError('wrong obstacle normal sign')",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/fom.py\", line 516, in main\n    result=run_case(cfg,target)\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/fom.py\", line 71, in run_case\n    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))\n                                               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06/preflight.py\", line 64, in mapped_probe\n    if cosine>-.99:raise ArithmeticError('wrong obstacle normal sign')\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nArithmeticError: wrong obstacle normal sign\n",
+  "source_sha256": "5d09cd0439364098286862ac2edf5467d89bf0e54229f2e72b4f2ea8b50febe6",
+  "peak_rss_bytes": 131334144,
+  "job_id": "6567998",
+  "scalar_return_contract": []
+}

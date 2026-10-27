@@ -1,0 +1,39 @@
+{
+  "status": "complete_all_regular_files_verified",
+  "archive_sha256": "29b507647409347756caee62e505c1ef5826bb148f12f92bf52bc63597701738",
+  "archive_bytes": 158609584,
+  "verified_regular_files": 794,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "ff2d73429734fe43a6a5037581e884410e9340d32123a48e4cb6c2499802d776"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "4bc0c518cbe729dbe3296b8fc3d2fd07492d89f87d08e30a8f6b9d428d10e025"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 50331648,
+      "sha256": "8e481fddecce040390f4ea9559ed188a72e24a7a990b3a572b97a19863ddc5ca"
+    },
+    {
+      "path": "collection.tar.gz.part-003",
+      "bytes": 7614640,
+      "sha256": "a82d91475cc8eb02fa4008f8844851d5ab4ae51563e1dc57c7f333c7e997ed52"
+    }
+  ],
+  "recovery": "Concatenate chunks in order, verify archive SHA, extract, then cd g1-smoke06 and sha256sum -c COLLECTION-SHA256SUMS. All wheels, installed prefix files, sources, logs, channel results and failed manufactured evidence are preserved.",
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g1-smoke06-collection.tar.gz",
+  "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g1-smoke06",
+  "completed_cases": [
+    "channel"
+  ],
+  "failed_case": "manufactured before solve",
+  "unstarted_cases": [
+    "dfg"
+  ],
+  "reference_data_admitted": false
+}

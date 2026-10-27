@@ -175,7 +175,7 @@
       "memory_GiB": 64,
       "wall_seconds_cap": 1200,
       "gpu_hours_reservation_cap": 0.3333333333333333,
-      "elapsed_gpu_hours": null,
+      "elapsed_gpu_hours": 0.004166666666666667,
       "compute": "CPU finite elements; GPU for required preflight only",
       "queue_before": [
         6567730,
@@ -198,12 +198,33 @@
       "training_released": false,
       "reference_data_admitted": false,
       "retry_authorized": false,
-      "collection": "pending terminal state; checksum pull required before remote duplicate deletion"
+      "collection": "artifacts/g1-smoke06/RETENTION.json",
+      "terminal_state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 15,
+      "alloc_tres": "billing=16,cpu=16,gres/gpu=1,mem=64G,node=1",
+      "node": "pax008",
+      "start_cluster_local": "2026-10-27T17:15:09",
+      "end_cluster_local": "2026-10-27T17:15:24",
+      "batch_max_rss": "614988K",
+      "failed_stage": "manufactured geometry normal probe before solve",
+      "failure_exception": "ArithmeticError('wrong obstacle normal sign')",
+      "completed_cases": [
+        "channel"
+      ],
+      "unstarted_cases": [
+        "dfg"
+      ],
+      "finite_element_cases_ran": 1,
+      "api_preflight_passed": true,
+      "scalar_conversion_repair_succeeded": true,
+      "actual_effective_cpu_concurrency": "unmeasured; two TaskManager thread-change warnings",
+      "remote_cleanup": "pending durable mirrored retention"
     }
   ],
   "submitted_allocations": 4,
-  "completed_allocated_gpu_hours": 0.018333333333333333,
-  "active_cost": "6567998 unaccounted until terminal allocation accounting",
+  "completed_allocated_gpu_hours": 0.0225,
+  "active_cost": "none; all four submitted attempts terminal",
   "reservation_gpu_hours_cap": 0.3333333333333333,
-  "active_allocations": 1
+  "active_allocations": 0
 }

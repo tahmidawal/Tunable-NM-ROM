@@ -16,7 +16,10 @@
       "status": "COMPLETED",
       "exit_code": "0:0",
       "consumed_manifest_sha256": "5a5820f12afe2c345633c5f00b70ae48d35ae67724a278a8c94e0e07eab00c87",
-      "collection": "compact consumed arrays pulled and checksummed; regenerable training matrices remain remote until cleanup, bases retained while supplement uses symlink"
+      "collection": "Compact consumed arrays and native POD bases retained and reverified locally; regenerable training matrices omitted under the approved retention contract. Remote directory removed after checksum reverification.",
+      "remote_directory_removed_after_verified_collection": true,
+      "local_archive": "runs/prep01",
+      "collection_manifest_sha256": "d7b0fbe19b28915e620fa5b1437ef744ab8969dbffffa9db70b5d062e0b26027"
     },
     {
       "job_id": 6567730,
@@ -33,10 +36,13 @@
       "status": "COMPLETED",
       "exit_code": "0:0",
       "consumed_manifest_sha256": "5c0dea1d0318679249745964de005634a7dd4d44e2cede1489787db35240bdb9",
-      "collection": "all compact retained files checksummed locally, including materialized bases; all original time levels retained",
+      "collection": "All original and supplemental coarse levels, references and materialized compact bases retained and reverified locally; remote duplicate removed after checksum reverification.",
       "remaining_input_failures": [
         "val32_c005_L32"
-      ]
+      ],
+      "remote_directory_removed_after_verified_collection": true,
+      "local_archive": "runs/inputplus01",
+      "collection_manifest_sha256": "88d38b28ad553b9cbaf4b6200715a0407904b908e3e2b14cd08a832c833123bc"
     },
     {
       "job_id": 6568278,
@@ -55,7 +61,9 @@
       "eligible_for_results": false,
       "reason": "Path.with_suffix collapsed decimal configuration names; raw record/coefficients could overwrite. All scientific conclusions and timing claims from this development attempt are invalidated. No validation launched.",
       "cancellation": "reviewed lane-local guarded helper, exact ID/account/name/dev01 WorkDir only",
-      "collection": "all retained partial files pulled and checksummed; invalidation note retained; never used to freeze selection"
+      "collection": "all retained partial files pulled and checksummed; invalidation note retained; never used to freeze selection",
+      "remote_directory_removed_after_verified_collection": true,
+      "local_archive": "runs/dev01"
     },
     {
       "job_id": 6568662,
@@ -81,7 +89,9 @@
         "representative_replays": 26,
         "all_field_hashes_match": true
       },
-      "collection": "all files collected and verified against full COLLECTION.sha256; independent returned-artifact and freeze audit passed"
+      "collection": "all files collected and verified against full COLLECTION.sha256; independent returned-artifact and freeze audit passed",
+      "remote_directory_removed_after_verified_collection": true,
+      "local_archive": "runs/dev02"
     },
     {
       "job_id": 6569458,
@@ -94,8 +104,53 @@
       "reservation_seconds": 5400,
       "gpu_request": "h200:1",
       "status_at_submission": "PENDING",
-      "actual_elapsed_seconds": null,
-      "review": "Independent full development artifact/freeze and exact validation stage audits READY; parent released validation only with no selector. Queue checked before/after."
+      "actual_elapsed_seconds": 3470,
+      "review": "Independent full development artifact/freeze and exact validation stage audits READY; parent released validation only with no selector. Queue checked before/after.",
+      "status": "COMPLETED",
+      "charged_elapsed_seconds": 3470,
+      "exit_code": "0:0",
+      "export_sha256": "81e01e6abe24039e44824975fe8aa84db6bfe88a2841e2e06fc3e84bda7f7ba1",
+      "artifact_audit": {
+        "declared": 19136,
+        "unique_records": 19136,
+        "coefficient_archives_verified": 19136,
+        "representative_replays": 26,
+        "all_field_hashes_match": true
+      },
+      "collection": "Full archive retained locally and every COLLECTION entry verified; independently audited; remote duplicate removed after checksum reverification.",
+      "remote_directory_removed_after_verified_collection": true,
+      "local_archive": "runs/val01",
+      "collection_manifest_sha256": "0d0ecd6a8d79da29f889d8dfd3e122d9e0d43f6b0c6e1831706a1ff5a1dc2e8a",
+      "returned_audit": {
+        "status": "accepted",
+        "evidence": "../burgers-reconstruction/audits/VALIDATION-2D.json in coordinator worktree",
+        "complete_unique_records": 19136,
+        "timed_coefficient_links": 287040,
+        "prepared_case_mesh_inputs": 96,
+        "representative_timing_pairs": 390,
+        "strict_controls_independently_refitted": true,
+        "primary_method_over_ordinary_ratio": 1.3908839178083394,
+        "primary_wins": 0,
+        "primary_losses": 32
+      }
     }
-  ]
+  ],
+  "total_charged_gpu_seconds": 5211,
+  "total_charged_gpu_hours": 1.4475,
+  "remote_cleanup": {
+    "status": "complete",
+    "receipt": "runs/REMOTE-CLEANUP.txt",
+    "receipt_sha256": "422ef3abddf51768d6731e00eac4b9dd02a13e1ca532747205b4c475a87f9828",
+    "final_directories_removed": [
+      "val01",
+      "inputplus01",
+      "prep01"
+    ],
+    "earlier_verified_directories_removed": [
+      "dev01",
+      "dev02"
+    ],
+    "queue_guard": "No queued job used this namespace before cleanup.",
+    "retention": "All unique reconstruction/diagnostic arrays retained locally; only approved regenerable training-matrix duplicates omitted."
+  }
 }

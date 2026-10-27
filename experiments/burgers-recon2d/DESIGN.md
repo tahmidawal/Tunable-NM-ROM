@@ -1,6 +1,6 @@
 # Burgers 2D reconstruction screen: lane contract
 
-Status: preparation completed and independently reviewed; the bounded input supplement is queued. Reconstruction requires an exact staged job release. The coordinator's frozen design governs cross-dimensional methods and selection. This lane implements only reconstruction inputs and independent coefficient fits, with no reduced rollout or fine PDE correction.
+Status: completed and independently audited. Development selection was frozen before validation; all declared validation curves and the strict coarse-data controls are retained. Full returned artifacts pass checksum, identity, coefficient and representative independent fitting/decoding audits. Only verified remote duplicates were removed. `JOBS.json` records the final allocation and retention receipts. The coordinator’s frozen design governs cross-dimensional methods and selection; this lane contains reconstruction inputs and independent coefficient fits, with no reduced rollout or fine PDE correction.
 
 ## Frozen evidence and data
 

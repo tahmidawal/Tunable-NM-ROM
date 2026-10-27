@@ -4,7 +4,7 @@ This checkpoint contains unexecuted finite-element code for independent review. 
 
 ## Authoritative specification
 
-`CAMPAIGN.predata-A2.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke.json`. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
+`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
 
 The smoke uses inexpensive $P_2/P_1$ Taylor–Hood fields and cubic geometric mapping only to check execution and establish resource feasibility. It is not the planned $P_3/P_2$ reference or its $P_4/P_3$ cross-check. Mesh seed is recorded; the relationship of NumPy's seed to Netgen's deterministic defaults remains to be verified at runtime, so no stochastic mesher reproducibility assertion is made.
 

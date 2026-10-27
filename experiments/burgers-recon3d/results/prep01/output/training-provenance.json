@@ -1,0 +1,56 @@
+{
+  "seed": 923701,
+  "original_count": 1536,
+  "used_count": 1536,
+  "table_sha256": "a59381ba5b3fc7974c0193d1f57ab25fb306aa2337a4e5be60e7e2e94c905add",
+  "steps": [
+    0,
+    1,
+    2,
+    4,
+    7,
+    10,
+    15,
+    20,
+    25,
+    30,
+    40,
+    50
+  ],
+  "groups": {
+    "33": {
+      "points": 29791,
+      "snapshots": 18432,
+      "indices_sha256": "66ad34d68cd71b8335c87083d876beeda994d09afc904568f610d3c8e9bc3fa3",
+      "sampled_values_sha256": "f89d8013cce6323024db6831826f9ad2263d7e3c77b287ac090805ee5c1a56a1",
+      "normalization_sha256": "c697717527316f8d3a8a050e100934fa2fb21442d1bc86583beb9e655ed27d5f",
+      "stronger_common_grid_sha256": null,
+      "max_residual": 9.98645331741152e-09,
+      "seconds": 219.19539877958596
+    },
+    "65": {
+      "points": 250047,
+      "snapshots": 18432,
+      "indices_sha256": "ad88e5681a0b9ae81d1df14d9b576366ff6ecf12c5c7f739c1aab9a8855060c0",
+      "sampled_values_sha256": "684efb427dfc834241a8e5a0b8666590d51d33e6a0dc849495b919a8914ab686",
+      "normalization_sha256": "539548a6e96739d3ee289704ad8c123f7adf3cfddb5a763d19be059424ef2723",
+      "stronger_common_grid_sha256": null,
+      "max_residual": 9.943023215924672e-09,
+      "seconds": 306.6513154534623
+    },
+    "129": {
+      "points": 250047,
+      "snapshots": 18432,
+      "indices_sha256": "a866953d7c8cdcd8bcaec9c16ee2cd12a81e0e72ef2e3b7721083c7f4b7a4780",
+      "sampled_values_sha256": "8838363a029639e42b2a8717375ed0e70052c38bd20ba7407a78f9aad2616529",
+      "normalization_sha256": "4b0086ca4f0dc95fb4c3c04696d0f6ca8a8d15476200305531bcdef2329a5bb8",
+      "stronger_common_grid_sha256": "9a2457a848b5954507e3a25e9e0123e264666d17ffd48a6e6d9c231d544ea33c",
+      "max_residual": 9.999671506519285e-09,
+      "seconds": 1461.7758297817782
+    }
+  },
+  "weighting": "equal groups and snapshots; each mapped field divided by original sampled-field RMS",
+  "exact_info_extension": "33-node sine; 65-node identity; 129-node fixed 8NN IDW inverse squared distance",
+  "stronger_extension": "33-node sine; 65-node identity; 129-node full native field injection; extra original-unsampled values",
+  "total_seconds": 2075.405442710966
+}

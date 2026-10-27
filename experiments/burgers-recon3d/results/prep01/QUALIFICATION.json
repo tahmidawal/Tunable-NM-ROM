@@ -1,0 +1,87 @@
+{
+  "status": "passed preparation gates; no reconstruction-screen conclusions",
+  "job_id": 6567523,
+  "total_gpu_seconds_including_smoke": 2914,
+  "total_gpu_hours_including_smoke": 0.8094444444444444,
+  "compact_bytes": 11236250733,
+  "cases": 68,
+  "inputs": 136,
+  "admitted": 136,
+  "max_input_gap": 9.986302757877234e-06,
+  "rungs_used": {
+    "2": 0,
+    "3": 3,
+    "4": 83,
+    "5": 50
+  },
+  "snapshots_per_group": {
+    "33": 18432,
+    "65": 18432,
+    "129": 18432
+  },
+  "training_scope": "Recipe-reproduced values, original table hash and observation geometry verified; archived snapshot byte identity unavailable.",
+  "pod": {
+    "pod_matched": {
+      "q1": {
+        "orthogonality": 6.888041802643154e-15,
+        "qr_correction": 1.1074217586409353e-08,
+        "qr_offdiagonal": 1.1074200225915517e-08,
+        "residual_fraction": {
+          "128": 0.00042094179082222496,
+          "256": 5.840861532286801e-05,
+          "512": 5.807612881612478e-06,
+          "768": 1.2204490040097293e-06,
+          "1024": 3.666215155060253e-07
+        },
+        "random_probe_residual_sq": 0.15814850656460475
+      },
+      "q2": {
+        "orthogonality": 6.847441990784217e-15,
+        "qr_correction": 7.06937840928532e-09,
+        "qr_offdiagonal": 7.0692806841131845e-09,
+        "residual_fraction": {
+          "128": 0.0004209417908226414,
+          "256": 5.8408615323145634e-05,
+          "512": 5.8076125504120655e-06,
+          "768": 1.2203352909423691e-06,
+          "1024": 3.6213305668677044e-07
+        },
+        "random_probe_residual_sq": 0.16214356669230165
+      }
+    },
+    "pod_stronger": {
+      "q1": {
+        "orthogonality": 7.0856537073762435e-15,
+        "qr_correction": 2.5463635332062517e-08,
+        "qr_offdiagonal": 2.546110738939429e-08,
+        "residual_fraction": {
+          "128": 0.00035012942880433337,
+          "256": 3.6784897843479054e-05,
+          "512": 2.4357003823935537e-06,
+          "768": 3.6814439885638015e-07,
+          "1024": 8.246292909503093e-08
+        },
+        "random_probe_residual_sq": 0.03520379301532919
+      },
+      "q2": {
+        "orthogonality": 7.136679286523351e-15,
+        "qr_correction": 1.1221081593632054e-08,
+        "qr_offdiagonal": 1.1220683188172814e-08,
+        "residual_fraction": {
+          "128": 0.0003501294288040561,
+          "256": 3.678489784320176e-05,
+          "512": 2.435700373104316e-06,
+          "768": 3.681368313166456e-07,
+          "1024": 8.171929374327564e-08
+        },
+        "random_probe_residual_sq": 0.0368567636287164
+      }
+    }
+  },
+  "probe_scope": "Aggregate energy of eight independent residual probes, not a spectrum or optimality certificate",
+  "prepared_contract": {
+    "source_commit": "7b2fdff15e477ba22b3e070b743501e86ab949cf",
+    "manifest_sha256": "aea6bd2c95c964a9c4585a82f5b3a6eee6ff697c22f981c4876e963812019827",
+    "job_id": 6567523
+  }
+}

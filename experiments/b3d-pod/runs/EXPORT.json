@@ -969,5 +969,67 @@
     "sha256": "3d65517d1b4adf2bef35dfefbc0ba8ca68483a64d9c90f5de2032c34cf2a1921",
     "independent_code_control_gate": "READY",
     "scope": "five fixed no-HR integration schedules; new full64 Q1 required for each selected fine setting"
+  },
+  "failed_support_extension": {
+    "summary_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/checks/fit32/SUMMARY.json",
+    "summary_sha256": "de45799b31004481d51e32a21ce29094cbb8c28dde57f8f8c9b1ddcb5e3f213b",
+    "result_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/fit.json",
+    "result_sha256": "47f12bb6780a411a7573374376eec4d030a60ba98c4672d98bfea2c06bc94630",
+    "terminal_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/NNLS_terminal.npz",
+    "terminal_sha256": "06991bceb37a5edbe2c808bf898ba6de55fe5584e2307d4f6dadfe3bcbee9e56",
+    "results_audit_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/audits/results-fit32-01.md",
+    "results_audit_sha256": "e06ec674e67a47d2496823f53fa200861bdee7fcd31dfc1f9222be614f555012",
+    "results_audit": "READY_FAILED_FROZEN_FIT",
+    "job_id": "6525584",
+    "source_commit": "e7484aff1fa81ad633d0d71492797c23b6268631",
+    "accepted": false,
+    "construction_failure_reason": "incomplete (KKT violated)",
+    "support_target": 16384,
+    "terminal_support": 13673,
+    "kkt": {
+      "ok": false,
+      "support_max_abs_gradient": 9.791626754876827e-17,
+      "off_support_max_gradient": 2.155729114590945e-07,
+      "tol": 1.0170520742904887e-08
+    },
+    "banned": 1099,
+    "candidate_count": 32768,
+    "banned_fraction": 0.033538818359375,
+    "banned_fraction_limit": 0.01,
+    "rollout_validation_run": false,
+    "HR_admission_evaluated": false,
+    "A2_release_not_reached": true,
+    "source_tar_sha256": "8c37e1224f224c9fb7f68acec860573cf396c6d926c537dd62285e2ff6858725",
+    "collection_manifest_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/COLLECTION.sha256",
+    "collection_manifest_sha256": "e382922562a3dd8a5af5e7b2f136c991f6e679e48d5c5ff7fda3a0866948838d",
+    "resource": {
+      "elapsed_seconds": 3312,
+      "gpu_hours": 0.92,
+      "peak_device_allocated_bytes": 50718917376,
+      "sacct_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/sacct.txt"
+    },
+    "interpretation": "No accepted support was constructed. This is not a k32 rollout failure or evidence POD loses; qualified HR comparison remains open."
+  },
+  "large_fit_input_retention": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/contributions.npy",
+    "sha256": "0bd92ac754fabccb89652d47f80f068dba2c1a7dd069cd2872cdee4f1816b67e",
+    "bytes": 13690208384,
+    "tracked_in_git": false,
+    "preserve_before_worktree_archive": true,
+    "supporting_manifest_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/LOCAL-RETENTION.json",
+    "candidate_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/candidate_nodes.npy",
+    "target_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/target.npy"
+  },
+  "lane_final_scope": {
+    "all_lane_jobs_terminal": true,
+    "qualified_full_residual_POD_available": true,
+    "qualified_hyper_reduced_POD_available": false,
+    "qualified_HR_comparison": "unresolved; frozen supports fail common fields and the one support extension failed construction",
+    "no_constructor_failure_implies_POD_loss": true,
+    "no_k32_rollout_was_evaluated": true,
+    "further_support_search_stopped": true,
+    "fair_schedule_adapter_available_to_solver_lane": true,
+    "actual_gpu_hours": 1.0047222222222223,
+    "cap_gpu_hours": 4
   }
 }

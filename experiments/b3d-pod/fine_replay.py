@@ -48,6 +48,9 @@ def run(cfg,artifacts,out):
     refp=HERE/sel['reference_fixture'];assert X.digest(refp)==sel['reference_fixture_sha256']
     expected=np.load(refp,allow_pickle=False)
     endpoint=sel['selected'];scheme,dt,steps=endpoint['scheme'],endpoint['dt'],endpoint['steps']
+    choices=sel['eligible_candidates']
+    assert choices and all(np.isfinite(c['worst_error']) and np.isfinite(c['median_error']) for c in choices)
+    assert endpoint['subject_id']==min(choices,key=lambda c:(c['worst_error'],c['median_error'],c['subject_id']))['subject_id']
     assert steps in (10,15,20,25,40) and scheme in ('BDF2','CN') and abs(steps*dt-.25)<1e-14
     assert endpoint['gtol'] in (.001,.0001) and endpoint['tolf']==R.LEVELS['prod'][1]
     artifact=json.loads((HERE/'inputs/MANIFEST.json').read_text())
@@ -94,11 +97,15 @@ def run(cfg,artifacts,out):
         actual_schedule={k:np.asarray(v).tolist() for k,v in sch['none'].items()})
     metrics=X.make_metrics(64,512,steps)
     records={a:{} for a in arms};tight={a:{} for a in arms};tighter={a:{} for a in arms}
-    warm=jax.block_until_ready(jnp.asarray(fam.ic(64,ids[0])));wnu=jnp.float64(fam.nu(ids[0]))
+    inputs={};prep_seconds={}
+    for i in ids:
+        t0=time.perf_counter();inputs[i]=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));prep_seconds[i]=time.perf_counter()-t0
+        assert X.array_hash(inputs[i])==sel['input_sha256'][str(i)],'selected input binding mismatch'
+    warm=inputs[ids[0]];wnu=jnp.float64(fam.nu(ids[0]))
     for a in arms:jax.block_until_ready(common[a](warm,wnu,data[a],sch[a]))
     for i in ids:
-        budget();t0=time.perf_counter();u=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));nu=jnp.float64(fam.nu(i))
-        prep=time.perf_counter()-t0;inp=X.array_hash(u)
+        budget();u=inputs[i];nu=jnp.float64(fam.nu(i))
+        prep=prep_seconds[i];inp=X.array_hash(u)
         assert inp==sel['input_sha256'][str(i)],'selected input binding mismatch'
         rep['cases'][str(i)]={};fields={}
         for a in arms:

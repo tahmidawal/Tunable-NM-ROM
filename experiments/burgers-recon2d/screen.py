@@ -57,6 +57,10 @@ def make_plans(data,out,L):
                             failed.append(metadata|dict(setup_valid=False,reason=type(exc).__name__+': '+str(exc)))
                 A.log('prepared',L,label,'physicalrank',geo.metadata['physical_rank'] if geo is not None else None,'seconds',time.perf_counter()-start)
             del bc,bf; gc.collect()
+    names=[p.name for p in plans]+[p['name'] for p in failed]
+    if len(names)!=len(set(names)): raise RuntimeError('duplicate declared method names')
+    paths=[str(pdir/(name+'.npz')) for name in names]
+    if len(paths)!=len(set(paths)): raise RuntimeError('duplicate plan artifact paths')
     meta=dict(L=L,prepare_seconds=time.perf_counter()-t0,plans=[p.metadata for p in plans],failed_plans=failed)
     A.write_json(pdir/'plans.json',meta)
     return plans,oracle,meta
@@ -98,10 +102,12 @@ def run_case(plan,ys,levels,meta,idx,out,source,cohort,case,L):
         alt_coefs.append(c)
     target=out/f'cases/{cohort}/L{L}/{source}'; target.mkdir(parents=True,exist_ok=True)
     stem=target/f'c{case:03d}_{plan.name}'
-    coefhash=arrsave(stem.with_suffix('.npz'),coefficient_repetitions=np.stack(coefficients),initial_coefficients=c0,alternative_coefficients=np.stack(alt_coefs))
-    record=dict(status='complete',cohort=cohort,case=case,L=L,source=source,method=plan.name,group=plan.metadata['group'],rank=plan.metadata['rank'],ridge=plan.metadata.get('ridge'),strict_coarse_control=plan.metadata.get('strict_coarse_control',False),error_t=score,error_max=max(score),ref_eps=meta['ref_eps'],n0=n0,input_admitted=(source=='A' or meta['accepted']),actual_B_input_admitted=meta['accepted'],input_sha256=A.sha_array(ys),reference_sha256=A.sha_array(ref),timing=timing,initial=initial,sensitivity=alternatives,coefficient_file=str(stem.with_suffix('.npz').relative_to(out)),coefficient_file_sha256=coefhash,plan_arrays_file=plan.metadata['array_file'],plan_arrays_sha256=plan.metadata['array_sha256'],geometry_file=plan.metadata.get('geometry_file'),geometry_sha256=plan.metadata.get('geometry_sha256'),output_field_hashes=[v['repetitions'][-1]['field_sha256'] for v in timing])
-    A.write_json(stem.with_suffix('.json'),record)
-    return {k:record[k] for k in ['status','cohort','case','L','source','method','group','rank','ridge','strict_coarse_control','error_t','error_max','ref_eps','input_admitted','actual_B_input_admitted']}|dict(record=str(stem.with_suffix('.json').relative_to(out)))
+    # Method identifiers contain decimal ridge values; never use with_suffix here.
+    if Path(str(stem)+'.npz').exists() or Path(str(stem)+'.json').exists(): raise RuntimeError('refuse to overwrite a case artifact')
+    coefhash=arrsave(Path(str(stem)+'.npz'),coefficient_repetitions=np.stack(coefficients),initial_coefficients=c0,alternative_coefficients=np.stack(alt_coefs))
+    record=dict(status='complete',cohort=cohort,case=case,L=L,source=source,method=plan.name,group=plan.metadata['group'],rank=plan.metadata['rank'],ridge=plan.metadata.get('ridge'),strict_coarse_control=plan.metadata.get('strict_coarse_control',False),error_t=score,error_max=max(score),ref_eps=meta['ref_eps'],n0=n0,input_admitted=(source=='A' or meta['accepted']),actual_B_input_admitted=meta['accepted'],input_sha256=A.sha_array(ys),reference_sha256=A.sha_array(ref),timing=timing,initial=initial,sensitivity=alternatives,coefficient_file=str(Path(str(stem)+'.npz').relative_to(out)),coefficient_file_sha256=coefhash,plan_arrays_file=plan.metadata['array_file'],plan_arrays_sha256=plan.metadata['array_sha256'],geometry_file=plan.metadata.get('geometry_file'),geometry_sha256=plan.metadata.get('geometry_sha256'),output_field_hashes=[v['repetitions'][-1]['field_sha256'] for v in timing])
+    A.write_json(Path(str(stem)+'.json'),record)
+    return {k:record[k] for k in ['status','cohort','case','L','source','method','group','rank','ridge','strict_coarse_control','error_t','error_max','ref_eps','input_admitted','actual_B_input_admitted']}|dict(record=str(Path(str(stem)+'.json').relative_to(out)))
 
 def failed_case(metadata,error,out,source,cohort,case,L,case_meta):
     """A failed declared method remains in coverage and cannot enter selection."""
@@ -159,8 +165,8 @@ def main():
         idx=A.indices(L)
         for case in range(A.COHORTS[cohort]):
             stem=data/'coarse'/f'{cohort}_c{case:03d}_L{L}'
-            md=json.loads(stem.with_suffix('.json').read_text())
-            with np.load(stem.with_suffix('.npz')) as z:
+            md=json.loads(Path(str(stem)+'.json').read_text())
+            with np.load(Path(str(stem)+'.npz')) as z:
                 levels=np.asarray(z['reference_levels']); coarse=np.asarray(z['fields'])
             if not (np.isfinite(levels).all() and np.isfinite(coarse).all() and np.isfinite(md['n0']) and md['n0']>0 and np.isfinite(md['ref_eps']) and md['ref_eps']>=0): raise RuntimeError('invalid prepared input/reference metadata')
             md['_penultimate']=coarse[-2]

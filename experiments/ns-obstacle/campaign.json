@@ -1,8 +1,8 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "version": "predata-A3",
+  "version": "predata-A4",
   "status": "not_released_for_numerical_jobs",
-  "design_sha256": "fbf6daea4b5140a51a2fdd5ea85b007d5559cdee0626e9a68265061dc6060507",
+  "design_sha256": "0d9d077f456a2f4963764863cd0c06edccb1dccf0bc0513f4749071042e0e6bf",
   "fork": {
     "local": "93f399faad67f94ea2b56fe25f13003143e64694",
     "mirror": "5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f"
@@ -159,7 +159,7 @@
       4,
       8
     ],
-    "pressure_rank": "min(velocity_prefix,numerical_training_pressure_rank)",
+    "pressure_rank": "min(r,1+numerical_rank(weighted_mean_removed_training_pressure_snapshots))",
     "supremizers_per_pressure": 1,
     "fixed_momentum_tests": 64,
     "fixed_continuity_tests": 16,
@@ -182,7 +182,8 @@
     "representation_development_velocity_gate": 0.002,
     "representation_development_pressure_scaled_gate": 0.004,
     "mandatory_interpolation_control": "training_POD_coefficients_PCHIP",
-    "mandatory_mixed_Galerkin_control": true
+    "mandatory_mixed_Galerkin_control": true,
+    "pressure_constant_is_solved": true
   },
   "resources": {
     "allocated_gpu_hours_total": 12.0,

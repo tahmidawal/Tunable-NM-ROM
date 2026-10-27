@@ -512,3 +512,21 @@ checks must be frozen in the reference-suite configuration; no acceptance from d
 but unresolved noise. Every eventual train/dev/validation case needs admitted references,
 not just the Re20 anchor. The snapshot-generation contract prevents method-selection access
 to validation field values until the model choices freeze.
+
+## A4 — Pressure-space and deterministic test construction, 2026-10-27
+
+Before fitting or numerical reference jobs, specify pressure basis as constant first, then
+weighted POD of training pressures after removing their weighted means. Thus
+$p_r=\min(r,1+\operatorname{rank}(P_{train,centered}))$; the raw-snapshot rank shorthand in
+§5 is superseded. No zero-mean constraint is imposed on the reconstructed pressure: the
+constant is an actual solved mode, coupled through outlet-free velocity tests. This same
+rule applies to bank/POD/interpolation. Total unknown cap remains $r+2p_r\le24$.
+
+Construct the fixed momentum tests by first including all maximum-prefix pressure
+supremizers, then geometry-compatible vector H1 eigenmodes in increasing eigenvalue order.
+Essential trace is zero and outlet trace remains free. Construct continuity tests from the
+constant, all pressure modes, then scalar Laplacian modes. Weighted orthogonalization drops
+linearly dependent candidates at relative cutoff $10^{-12}$ until the fixed64/16 sizes are
+reached; failure to achieve them blocks that setting. Freeze eigensolver, deterministic
+orientation/tie convention and retained candidate indices in exported metadata. The code
+review must check the actual enumeration, not assume stability from the labels.

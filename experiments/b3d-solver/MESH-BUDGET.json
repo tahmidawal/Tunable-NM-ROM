@@ -1,0 +1,35 @@
+{
+ "config_sha256": "4228c639a9885d73f95c6f98df2a125e3096e2353f467c378517dcfea229220b",
+ "hard_limit_seconds": 3600,
+ "memory_guard_bytes": 120000000000,
+ "planned_static_bytes": 75299374080,
+ "conservative_extra_scratch_bytes": 30000000000,
+ "planned_peak_bytes": 105299374080,
+ "source_timing": {
+  "attempt": "tdiag02",
+  "elapsed_seconds": 715,
+  "kind": "same-kernel diagnostic allocation, not deployment cost"
+ },
+ "W1024_step_work_ratio": 2.3214285714285716,
+ "M2_contraction_size_ratio": 0.05467546761913095,
+ "M2_step_work_ratio": 0.8571428571428571,
+ "trajectory_seconds_proxy": 1693.3296794408675,
+ "overhead_assumptions": {
+  "native_basis_setup_and_controls_seconds": 600,
+  "additional_compile_seconds": 480,
+  "timing_phases_host_IO_seconds": 480,
+  "safety_seconds": 180
+ },
+ "total_seconds_proxy": 3433.3296794408675,
+ "spent_gpu_hours": 0.4633333333333333,
+ "full_front_reserved_hours": 3,
+ "mesh_reserved_hours": 1,
+ "total_reservation_hours": 4.463333333333333,
+ "budget_gpu_hours": 8,
+ "scopes": {
+  "M2_cells": 48,
+  "W1024_cells": 60,
+  "solves_per_cell": 3
+ },
+ "interpretation": "Planning only; allocator/compiler uncertainty remains. Late120GB guard and60min Slurm cap fail closed. No standalone memory or cross-job performance claim."
+}

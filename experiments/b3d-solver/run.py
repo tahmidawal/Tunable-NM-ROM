@@ -321,10 +321,13 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--config',required=True);ap.add_argument('--out',required=True)
     args=ap.parse_args();p=Path(args.config).resolve();cfg=json.loads(p.read_text());cfg['_config_path']=str(p)
     assert cfg['seed']==923801
-    assert cfg['mode'] in ('solver','quadrature','time','quad_witness')
+    assert cfg['mode'] in ('solver','quadrature','time','quad_witness','mesh')
     cx=Context(cfg,args.out);cx.save()
     try:
-        if cfg['mode']=='quad_witness':
+        if cfg['mode']=='mesh':
+            import mesh_run
+            mesh_run.run(cx)
+        elif cfg['mode']=='quad_witness':
             import quad_witness
             quad_witness.run(cx)
         elif cfg['mode']=='time':

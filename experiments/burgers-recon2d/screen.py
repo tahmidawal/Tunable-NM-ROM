@@ -119,6 +119,21 @@ def failed_case(metadata,error,out,source,cohort,case,L,case_meta):
     A.log('failed candidate',L,source,cohort,case,metadata['name'],rec['reason'])
     return rec|dict(record=str(path.relative_to(out)))
 
+def audit_artifacts(out,records,expected):
+    if len(records)!=expected: raise RuntimeError('incomplete declared case/configuration coverage')
+    identities=[(r['cohort'],r['case'],r['L'],r['source'],r['method']) for r in records]
+    paths=[r['record'] for r in records]
+    if len(set(identities))!=expected or len(set(paths))!=expected: raise RuntimeError('duplicate case identity or record path')
+    checked=0
+    for row in records:
+        actual=json.loads((out/row['record']).read_text())
+        for key in ['cohort','case','L','source','method','status','error_t','error_max']:
+            if actual[key]!=row[key]: raise RuntimeError('case artifact identity/value mismatch: '+row['record'])
+        if row['status']=='complete':
+            if A.sha_file(out/actual['coefficient_file'])!=actual['coefficient_file_sha256']: raise RuntimeError('coefficient artifact hash mismatch: '+row['record'])
+            checked+=1
+    return dict(declared=expected,unique_identities=len(set(identities)),unique_record_paths=len(set(paths)),checked_coefficient_archives=checked,status='pass')
+
 def freeze_choices(records,source_hashes):
     """Frozen selector uses development only and retains the complete declared population."""
     if {r['cohort'] for r in records}!={'dev6'}: raise ValueError('selector accepts only dev6')
@@ -196,6 +211,8 @@ def main():
             A.log('completed',args.phase,L,case,'records',len(summary))
         del plans,oracles; jax.clear_caches(); gc.collect()
     A.write_json(out/'setup.json',setup)
+    expected=A.COHORTS[cohort]*2*sum(len(m['plans'])+len(m['failed_plans']) for m in setup)
+    A.write_json(out/'ARTIFACT_AUDIT.json',audit_artifacts(out,summary,expected))
     if args.phase=='dev': A.write_json(out/'FROZEN.json',freeze_choices(summary,hashes))
     A.write_json(out/'COMPLETE.json',dict(phase=args.phase,cases=A.COHORTS[cohort],records=len(summary),source_hashes=hashes,runtime=runtime))
 if __name__=='__main__': main()

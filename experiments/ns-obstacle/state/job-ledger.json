@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "first_smoke_dependency_failure_collecting",
+  "status": "one_dependency_repair_retry_submitted",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -27,10 +27,36 @@
       "failure": "netgen.load_occ_libs KeyError: 'tkernel'",
       "FE_cases_started": false,
       "gpu_preflight_passed": true,
-      "x64_preflight_passed": true
+      "x64_preflight_passed": true,
+      "collection": "../../ns-obstacle-2d/artifacts/g1-smoke03/RETENTION.json",
+      "collection_archive_sha256": "02a97de2b7ede7b66554152dd654c0c251515500271a65d1d8066342b9e1082e",
+      "remote_duplicate_removed": true
+    },
+    {
+      "job_id": 6567287,
+      "lane": "2d_reference",
+      "attempt": "g1-smoke04",
+      "source_commit": "d345b0b05cd57811e5c698f4fb0d593adef525f2",
+      "source_mirror": "31066762a",
+      "manifest_sha256": "f03788836f4fd31765b2ac184abc8b5e636c13daa77e0d3691c9a27f2dd2672b",
+      "submitted_utc": "2026-10-27T20:43:31Z",
+      "state_last_observed": "PENDING",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke04",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "purpose": "G1 control retry after private-prefix repair",
+      "repair_number": 1,
+      "device_for_FE": "CPU"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6567287
+  ],
   "completed_gpu_hours": 0.009166666666666667,
   "note": "All elapsed allocation including failed import charged. One targeted dependency-layout repair under review; no numerical result or reference accepted."
 }

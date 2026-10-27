@@ -1,12 +1,13 @@
 {
-  "status": "dependency_layout_repair_after_first_failed_allocation",
-  "numerical_jobs": [],
+  "status": "one_2d_dependency_repair_retry_submitted",
+  "numerical_jobs": [
+    6567287
+  ],
   "active_external_consults": [],
   "pending": [
-    "checksummed_failure_collection_and_jobdircleanup",
-    "one_targeted_dependency_layout_repair_then_independent_review",
-    "2Dsmoke_retry_after_release",
-    "3Dtracefix_source_passed_but_dependency_and_2Dgate_closed"
+    "collect job6567287 after terminal state and review results",
+    "3D private-prefix repair and exact review",
+    "reference controls before training"
   ],
   "staged_unsubmitted": [
     {

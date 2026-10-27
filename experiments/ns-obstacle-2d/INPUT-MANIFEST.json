@@ -28,8 +28,8 @@
     },
     {
       "path": "campaign-A2.json",
-      "sha256": "b6fcb71041ddabb0a04180a629b53a43c46ba4129e4b83314422c26665981e53",
-      "bytes": 5022
+      "sha256": "9507f516c0daea29d84f15c120ef0c0fb128df4f8ba7bb8325552618dcaca262",
+      "bytes": 5565
     },
     {
       "path": "cluster/smoke.sh",
@@ -38,21 +38,21 @@
     },
     {
       "path": "configs/channel-smoke.json",
-      "sha256": "76155dd517bd39fe7d7ff0783f67f36feb1158370a83d027fb32e4a962d68cfe",
+      "sha256": "3554cbe4e180594203b2db36df2928509f1290f3c63f7053f42dc4307899a105",
       "bytes": 1143
     },
     {
       "path": "configs/dfg-smoke.json",
-      "sha256": "4bfa86ea67fa83287ef5c782e30237265725a365099248c5fb2e889c5150ec91",
+      "sha256": "65a01fc2d871c60853947ab8d93b7c043ffdf6b77241c85c1577eb74fca98b2f",
       "bytes": 1139
     },
     {
       "path": "configs/manufactured-smoke.json",
-      "sha256": "e7200917888c6c17cf1bc669826cbac469ea90a470397f508cfacc36de893cfa",
+      "sha256": "f03d13ba9404a1a8e8e42bd411b3729ae0a58ac67fd788a546f8b4265660bdda",
       "bytes": 1148
     }
   ],
-  "git_source_ancestor": "d504fa1f95fd0aaad0e8d5d48fc80236d6cc8ca3",
+  "git_source_ancestor": "4e38c82653679168f0be3f8bd7d28293ef5c1f16",
   "command": "sbatch --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
   "allocation": {
     "partition": "gpu",

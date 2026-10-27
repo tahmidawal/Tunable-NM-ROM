@@ -8,7 +8,7 @@
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
 set -euo pipefail
-: "${JOB_ROOT:?unique directory}"; : "${SOURCE_COMMIT:?frozen source}"; : "${EXPECTED_STAGE_SHA256:?reviewed manifest}"; : "${PREP_ROOT:?original preparation output}"
+: "${JOB_ROOT:?unique directory}"; : "${SOURCE_COMMIT:?frozen source}"; : "${EXPECTED_STAGE_SHA256:?reviewed manifest}"; : "${PREP_ROOT:?original preparation output}"; : "${EXPECTED_PREP_MANIFEST_SHA256:?reviewed source data manifest}"
 cd "$JOB_ROOT"
 test "$(sha256sum STAGED.sha256 | cut -d' ' -f1)" = "$EXPECTED_STAGE_SHA256"
 sha256sum --check STAGED.sha256

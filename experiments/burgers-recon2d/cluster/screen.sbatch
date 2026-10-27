@@ -12,6 +12,7 @@ set -euo pipefail
 : "${SOURCE_COMMIT:?frozen source commit}"
 : "${EXPECTED_STAGE_SHA256:?reviewed staging manifest}"
 : "${PREP_ROOT:?checksummed preparation output}"
+: "${EXPECTED_PREP_MANIFEST_SHA256:?reviewed prepared data manifest}"
 : "${PHASE:?dev or val}"
 cd "$JOB_ROOT"
 test "$(sha256sum STAGED.sha256 | cut -d' ' -f1)" = "$EXPECTED_STAGE_SHA256"

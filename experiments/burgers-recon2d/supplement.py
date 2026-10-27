@@ -4,7 +4,7 @@ Runtime NST capacity increases only; the vendored PDE/time equations are unchang
 Original records/levels are copied into a new output tree, never overwritten.
 """
 from pathlib import Path
-import argparse,json,shutil,time
+import argparse,json,shutil,time,os
 import numpy as np
 import adapter as A
 import data_manifest as DM
@@ -19,6 +19,7 @@ def main():
     out.mkdir(parents=True,exist_ok=True)
     A.verify_inputs(); A.write_json(out/'runtime.json',A.runtime())
     source_manifest_sha256=DM.verify(src)
+    if source_manifest_sha256!=os.environ.get('EXPECTED_PREP_MANIFEST_SHA256'): raise RuntimeError('unexpected source data manifest')
     A.RC.NST=CAPACITY
     source_summary=json.loads((src/'coarse/summary.json').read_text())
     records=[]; failures=[]

@@ -4,7 +4,7 @@ Timed methods accept only y. Scoring and reference-driven oracle fits live outsi
 reconstruction call. Every repetition's actual returned field is scored and hashed.
 """
 from __future__ import annotations
-import argparse,gc,json,time
+import argparse,gc,json,time,os
 from pathlib import Path
 import numpy as np
 import jax
@@ -61,6 +61,7 @@ def run_case(plan,ys,levels,meta,idx,out,source,cohort,case,L):
     for ti,result in enumerate(results,start=1):
         fields=np.stack(result['field_repetitions'])[:,0,:]
         coeff=np.stack(result['coefficient_repetitions'])[:,0,:]
+        if not (np.isfinite(fields).all() and np.isfinite(coeff).all()): raise FloatingPointError('nonfinite timed fields or coefficients')
         errors=np.linalg.norm(fields-ref[ti],axis=1)/n0
         offerr=np.linalg.norm(fields[:,off]-ref[ti,off],axis=1)/n0
         cres=np.linalg.norm(fields[:,idx]-ys[ti],axis=1)/(n0*L/A.LF)
@@ -69,6 +70,7 @@ def run_case(plan,ys,levels,meta,idx,out,source,cohort,case,L):
     primary=np.stack(repetition_fields)
     # t0 is an untimed sanity diagnostic, never mixed into evolved-output headline errors.
     f0,c0=C.ready(plan.query(jnp.asarray(ys[:1]))); f0=C.host(f0); c0=C.host(c0)
+    if not (np.isfinite(f0).all() and np.isfinite(c0).all()): raise FloatingPointError('nonfinite initial reconstruction')
     initial=dict(error=float(np.linalg.norm(f0[0]-ref[0])/n0),coarse_sample_residual=float(np.linalg.norm(f0[0,idx]-ys[0])/(n0*L/A.LF)),field_sha256=A.sha_array(f0))
     # Sensitivity is untimed and uses the very same frozen reconstruction map.
     alternatives=[]; alt_coefs=[]
@@ -76,19 +78,29 @@ def run_case(plan,ys,levels,meta,idx,out,source,cohort,case,L):
         for li in [0,1]:
             alt_y=levels[li][:,idx]
             f,c=C.ready(plan.query(jnp.asarray(alt_y[1:]))); f=C.host(f); c=C.host(c)
+            if not (np.isfinite(f).all() and np.isfinite(c).all()): raise FloatingPointError('nonfinite reference-level sensitivity')
             alternatives.append(dict(reference_level=li,output_change_vs_primary=(np.linalg.norm(f-primary,axis=1)/n0).tolist(),error_against_own_reference=(np.linalg.norm(f-levels[li,1:],axis=1)/n0).tolist(),input_change_physical=(np.linalg.norm(alt_y[1:]-ys[1:],axis=1)/(n0*L/A.LF)).tolist(),field_sha256=A.sha_array(f)))
             alt_coefs.append(c)
     else:
         alt_y=meta['_penultimate']
         f,c=C.ready(plan.query(jnp.asarray(alt_y[1:]))); f=C.host(f); c=C.host(c)
+        if not (np.isfinite(f).all() and np.isfinite(c).all()): raise FloatingPointError('nonfinite time-level sensitivity')
         alternatives.append(dict(coarse_time_level='penultimate',output_change_vs_primary=(np.linalg.norm(f-primary,axis=1)/n0).tolist(),error_against_fixed_reference=(np.linalg.norm(f-ref[1:],axis=1)/n0).tolist(),input_change_physical=(np.linalg.norm(alt_y[1:]-ys[1:],axis=1)/(n0*L/A.LF)).tolist(),field_sha256=A.sha_array(f)))
         alt_coefs.append(c)
     target=out/f'cases/{cohort}/L{L}/{source}'; target.mkdir(parents=True,exist_ok=True)
     stem=target/f'c{case:03d}_{plan.name}'
     coefhash=arrsave(stem.with_suffix('.npz'),coefficient_repetitions=np.stack(coefficients),initial_coefficients=c0,alternative_coefficients=np.stack(alt_coefs))
-    record=dict(cohort=cohort,case=case,L=L,source=source,method=plan.name,group=plan.metadata['group'],rank=plan.metadata['rank'],ridge=plan.metadata.get('ridge'),strict_coarse_control=plan.metadata.get('strict_coarse_control',False),error_t=score,error_max=max(score),ref_eps=meta['ref_eps'],n0=n0,coarse_input_admitted=meta['accepted'],input_sha256=A.sha_array(ys),reference_sha256=A.sha_array(ref),timing=timing,initial=initial,sensitivity=alternatives,coefficient_file=str(stem.with_suffix('.npz').relative_to(out)),coefficient_file_sha256=coefhash,plan_arrays_file=plan.metadata['array_file'],plan_arrays_sha256=plan.metadata['array_sha256'],geometry_file=plan.metadata.get('geometry_file'),geometry_sha256=plan.metadata.get('geometry_sha256'),output_field_hashes=[v['repetitions'][-1]['field_sha256'] for v in timing])
+    record=dict(status='complete',cohort=cohort,case=case,L=L,source=source,method=plan.name,group=plan.metadata['group'],rank=plan.metadata['rank'],ridge=plan.metadata.get('ridge'),strict_coarse_control=plan.metadata.get('strict_coarse_control',False),error_t=score,error_max=max(score),ref_eps=meta['ref_eps'],n0=n0,coarse_input_admitted=meta['accepted'],input_sha256=A.sha_array(ys),reference_sha256=A.sha_array(ref),timing=timing,initial=initial,sensitivity=alternatives,coefficient_file=str(stem.with_suffix('.npz').relative_to(out)),coefficient_file_sha256=coefhash,plan_arrays_file=plan.metadata['array_file'],plan_arrays_sha256=plan.metadata['array_sha256'],geometry_file=plan.metadata.get('geometry_file'),geometry_sha256=plan.metadata.get('geometry_sha256'),output_field_hashes=[v['repetitions'][-1]['field_sha256'] for v in timing])
     A.write_json(stem.with_suffix('.json'),record)
-    return {k:record[k] for k in ['cohort','case','L','source','method','group','rank','ridge','strict_coarse_control','error_t','error_max','ref_eps','coarse_input_admitted']}|dict(record=str(stem.with_suffix('.json').relative_to(out)))
+    return {k:record[k] for k in ['status','cohort','case','L','source','method','group','rank','ridge','strict_coarse_control','error_t','error_max','ref_eps','coarse_input_admitted']}|dict(record=str(stem.with_suffix('.json').relative_to(out)))
+
+def failed_case(metadata,error,out,source,cohort,case,L,case_meta):
+    """A failed declared method remains in coverage and cannot enter selection."""
+    rec=dict(status='failed',reason=type(error).__name__+': '+str(error),cohort=cohort,case=case,L=L,source=source,method=metadata['name'],group=metadata['group'],rank=metadata.get('rank'),ridge=metadata.get('ridge'),strict_coarse_control=metadata.get('strict_coarse_control',False),error_t=None,error_max=None,ref_eps=case_meta['ref_eps'],coarse_input_admitted=case_meta['accepted'])
+    target=out/f'cases/{cohort}/L{L}/{source}'; target.mkdir(parents=True,exist_ok=True)
+    path=target/f"c{case:03d}_{metadata['name']}.json"; A.write_json(path,rec)
+    A.log('failed candidate',L,source,cohort,case,metadata['name'],rec['reason'])
+    return rec|dict(record=str(path.relative_to(out)))
 
 def freeze_choices(records,source_hashes):
     """Frozen selector uses development only and retains the complete declared population."""
@@ -103,8 +115,11 @@ def freeze_choices(records,source_hashes):
                 for m in methods:
                     rr=sorted([r for r in rows if r['method']==m],key=lambda r:r['case'])
                     if [r['case'] for r in rr]!=list(range(6)): raise ValueError('incomplete dev population '+m)
+                    if any(r.get('status')!='complete' or r['error_max'] is None or not np.isfinite(r['error_max']) for r in rr): continue
                     e=np.asarray([r['error_max'] for r in rr]); margin=2*max(r['ref_eps'] for r in rr) if source=='B' else 1e-14
                     candidates.append(dict(method=m,median=float(np.median(e)),worst=float(e.max()),rank=rr[0]['rank'],ridge=rr[0]['ridge'],margin=margin))
+                if not candidates:
+                    choices.append(dict(L=L,source=source,group=group,selected=None,candidates=[],status='no_complete_finite_candidate',selection_information='fine_development_selected')); continue
                 best=min(c['median'] for c in candidates)
                 eligible=[c for c in candidates if c['median']<=best+c['margin']]
                 # Exact worst error then representation size then ridge then identifier; no validation input.
@@ -120,6 +135,7 @@ def main():
     A.verify_inputs(); runtime=A.runtime(); A.write_json(out/'runtime.json',runtime)
     hashes={fn:A.sha_file(A.HERE/fn) for fn in ['screen.py','adapter.py','reconstruction_core.py','data_manifest.py','INPUTS.json','CORE_SOURCE.json']}
     hashes['consumed_data_manifest']=DM.verify(data)
+    if hashes['consumed_data_manifest']!=os.environ.get('EXPECTED_PREP_MANIFEST_SHA256'): raise RuntimeError('unexpected prepared-data manifest')
     hashes['bases_manifest']=A.sha_file(data/'bases/bases.json'); hashes['coarse_manifest']=A.sha_file(data/'coarse/summary.json')
     if args.phase=='val':
         if not args.frozen: raise ValueError('validation requires frozen development choices')
@@ -137,6 +153,7 @@ def main():
             md=json.loads(stem.with_suffix('.json').read_text())
             with np.load(stem.with_suffix('.npz')) as z:
                 levels=np.asarray(z['reference_levels']); coarse=np.asarray(z['fields'])
+            if not (np.isfinite(levels).all() and np.isfinite(coarse).all() and np.isfinite(md['n0']) and md['n0']>0 and np.isfinite(md['ref_eps']) and md['ref_eps']>=0): raise RuntimeError('invalid prepared input/reference metadata')
             md['_penultimate']=coarse[-2]
             # A-level input and B temporal input sensitivities are retained independently.
             inputs={'A':levels[-1][:,idx],'B':coarse[-1]}
@@ -147,7 +164,10 @@ def main():
             for ii in order:
                 plan=plans[int(ii)]
                 for source in (['A','B'] if case%2==0 else ['B','A']):
-                    summary.append(run_case(plan,inputs[source],levels,md,idx,out,source,cohort,case,L))
+                    try:
+                        summary.append(run_case(plan,inputs[source],levels,md,idx,out,source,cohort,case,L))
+                    except Exception as exc:
+                        summary.append(failed_case(plan.metadata,exc,out,source,cohort,case,L,md))
             oracle_rec={}
             for label,qf in oracles.items():
                 c=C.ready(jnp.asarray(levels[-1,1:])@qf*(A.LF**-2)); f=C.host(C.ready(c@qf.T))

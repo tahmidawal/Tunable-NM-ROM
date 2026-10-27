@@ -1,0 +1,10 @@
+NVIDIA H200, GPU-82ad2379-97ca-7878-e8f3-7e960c158cff, 143771 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.23:/projects/paralab  4.6T  1.3T  3.3T  29% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 3.9s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.7s
+[mesh 65] bank rows [(256, 250047), (256, 250047), (256, 250047), (256, 250047)] 4.6s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 7.9s
+ALL-DONE

@@ -1,0 +1,117 @@
+{
+ "config": {
+  "mode": "mesh",
+  "seed": 923801,
+  "cases": [
+   0,
+   5,
+   30,
+   43
+  ],
+  "nodes": [
+   65,
+   129
+  ],
+  "hard_limit_minutes": 90,
+  "memory_peak_limit_bytes": 120000000000,
+  "burn_seconds": 0.1,
+  "phase_cases": [
+   0,
+   5,
+   30,
+   43
+  ],
+  "M2": {
+   "r": 512,
+   "M": 2052,
+   "rules": [
+    "gl32",
+    "gl40",
+    "gl48"
+   ],
+   "scheme": "BDF2",
+   "dt": 0.016666666666666666,
+   "refresh": 4,
+   "contracts": [
+    "mf",
+    "mesh"
+   ]
+  },
+  "W1024": {
+   "r": 1024,
+   "M": 4097,
+   "rules": [
+    "gl56",
+    "gl64",
+    "gl80"
+   ],
+   "schemes": [
+    [
+     "CN",
+     0.01,
+     "fs",
+     1
+    ],
+    [
+     "BDF2",
+     0.00625,
+     "qn",
+     1
+    ]
+   ],
+   "interventions": [
+    "baseline",
+    "composite",
+    "lambda",
+    "moments"
+   ],
+   "held_projection_nodes": 65
+  },
+  "timing_repetitions": 3,
+  "phase_repetitions": 3,
+  "scope": "four-case fixed-mode65/129 cost contracts and separately labeled operator diagnosis; no257 or exponent/full64-new-mesh claim",
+  "retry_of": "mesh01",
+  "memory_lifetime_policy": {
+   "W_native_GT": "release_after_operators_and_initial_projections",
+   "W_cold_start": "never_construct_for_held_path"
+  },
+  "_config_path": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh02/experiments/b3d-solver/configs/mesh02.json"
+ },
+ "config_sha256": "9b47bf91f81c5ed896a58674aca162ae5cdeff6d567d06c10024335bad69a43c",
+ "source_commit": "a534c65715bf8cb422c03d70b48c36bf02a5af91",
+ "job_id": "6542062",
+ "backend": "gpu",
+ "jax": "0.10.2",
+ "gpu": [
+  "NVIDIA H200, GPU-82ad2379-97ca-7878-e8f3-7e960c158cff"
+ ],
+ "provenance_sha256": "8d75a9edb674176c49cafd76fec621d132725e96b05522a3639408ce6fbff711",
+ "cohort_sha256": "b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c",
+ "complete": true,
+ "scope": "fixed-mode65/129 mesh campaign on four exposed cases with case5-only operator interventions; per-query masks carry exact populations",
+ "setup": {},
+ "runs": {},
+ "restarts": {},
+ "timing": {},
+ "archive_identity": {},
+ "gates": {},
+ "elapsed_seconds": 1793.2175145987421,
+ "memory": {
+  "num_allocs": 1027739,
+  "bytes_in_use": 8026112,
+  "peak_bytes_in_use": 99572474624,
+  "largest_alloc_size": 16798089216,
+  "bytes_limit": 135100628992,
+  "bytes_reserved": 0,
+  "peak_bytes_reserved": 0,
+  "largest_free_block_bytes": 0,
+  "pool_bytes": 135100628992,
+  "peak_pool_bytes": 135100628992
+ },
+ "mesh_progress": {
+  "cells": 108,
+  "timing_rows": 144
+ },
+ "execution_complete": true,
+ "diagnostic_anchors_usable": false
+}

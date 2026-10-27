@@ -1,0 +1,4691 @@
+{
+ "complete": true,
+ "source": {
+  "path": "results/mesh02/raw/output/mesh_result.json",
+  "sha256": "8d3bcdff71b0161d302a49daae1c6509b24b7c815b4c41698470243237b6f24d"
+ },
+ "generator_sha256": "fba9ad206c6d7d837a916ec62f95ed82e9dd740b5b551d1bc8e1b6a1d9130d9e",
+ "actual_counts": {
+  "production_cells": 108,
+  "adaptive_anchor_trajectories": 216,
+  "total_trajectories": 324
+ },
+ "planned_counts": {
+  "production_cells": 108,
+  "adaptive_anchor_trajectories": 216,
+  "total_trajectories": 324
+ },
+ "memory": {
+  "native_basis_release": {
+   "before": {
+    "current_bytes": 19093922048,
+    "whole_job_cumulative_peak_bytes": 44964356352,
+    "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+   },
+   "after": {
+    "current_bytes": 2313568512,
+    "whole_job_cumulative_peak_bytes": 44964356352,
+    "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+   },
+   "expected_unused_bytes": 16780353536,
+   "measured_released_bytes": 16780353536,
+   "retained_native_keys": [
+    "A",
+    "L",
+    "lam"
+   ],
+   "scope": "129 GT rows released only after moments/Gram/initial projections; all Wheld outputs and oracle checks use65 rows"
+  },
+  "owning_W_caches": [
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": null,
+    "seconds": 4.538569323718548,
+    "before": {
+     "current_bytes": 2313568512,
+     "whole_job_cumulative_peak_bytes": 44964356352,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 10988835328,
+     "whole_job_cumulative_peak_bytes": 44964356352,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": null,
+    "seconds": 0.9980989443138242,
+    "before": {
+     "current_bytes": 11046766848,
+     "whole_job_cumulative_peak_bytes": 44964356352,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 23975750144,
+     "whole_job_cumulative_peak_bytes": 44964356352,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": null,
+    "seconds": 2.9716366613283753,
+    "before": {
+     "current_bytes": 23987724544,
+     "whole_job_cumulative_peak_bytes": 49773006592,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49203258880,
+     "whole_job_cumulative_peak_bytes": 82736769536,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": "composite",
+    "seconds": 1.4066054206341505,
+    "before": {
+     "current_bytes": 49203256832,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49328796416,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": "composite",
+    "seconds": 0.5664240662008524,
+    "before": {
+     "current_bytes": 49259374336,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49404515072,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": "composite",
+    "seconds": 1.0664600124582648,
+    "before": {
+     "current_bytes": 49370968832,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49480078336,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": "lambda",
+    "seconds": 0.011077550239861012,
+    "before": {
+     "current_bytes": 49446515712,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49488499968,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": "lambda",
+    "seconds": 0.035376583226025105,
+    "before": {
+     "current_bytes": 49488327680,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49533945088,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": "lambda",
+    "seconds": 0.05673944018781185,
+    "before": {
+     "current_bytes": 49534114048,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49579712000,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": "moments",
+    "seconds": 0.011106744408607483,
+    "before": {
+     "current_bytes": 49579559168,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49658735872,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": "moments",
+    "seconds": 0.03715109918266535,
+    "before": {
+     "current_bytes": 49658888704,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49738065408,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": "moments",
+    "seconds": 0.05818891804665327,
+    "before": {
+     "current_bytes": 49737912576,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49817089280,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": null,
+    "seconds": 0.010996468365192413,
+    "before": {
+     "current_bytes": 49817242112,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49875021312,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": null,
+    "seconds": 0.03950815740972757,
+    "before": {
+     "current_bytes": 49875022080,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49917030656,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": null,
+    "seconds": 0.059170215390622616,
+    "before": {
+     "current_bytes": 49917055232,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 49959055360,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": "composite",
+    "seconds": 0.31507384311407804,
+    "before": {
+     "current_bytes": 49959035904,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50068145408,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": "composite",
+    "seconds": 0.4916363637894392,
+    "before": {
+     "current_bytes": 50034585856,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50143695360,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": "composite",
+    "seconds": 0.9981331117451191,
+    "before": {
+     "current_bytes": 50110132736,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50219242240,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": "lambda",
+    "seconds": 0.01102658174932003,
+    "before": {
+     "current_bytes": 50185679616,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50227663872,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": "lambda",
+    "seconds": 0.040087005123496056,
+    "before": {
+     "current_bytes": 50227751168,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50273373440,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": "lambda",
+    "seconds": 0.011032965034246445,
+    "before": {
+     "current_bytes": 50273277952,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50318892032,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl56",
+    "n": 65,
+    "intervention": "moments",
+    "seconds": 0.011175926774740219,
+    "before": {
+     "current_bytes": 50318987520,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50398155776,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 175616,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl64",
+    "n": 65,
+    "intervention": "moments",
+    "seconds": 0.03883788827806711,
+    "before": {
+     "current_bytes": 50398060288,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50477220864,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 262144,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   },
+   {
+    "bank": "W1024",
+    "rule": "gl80",
+    "n": 65,
+    "intervention": "moments",
+    "seconds": 0.05620130244642496,
+    "before": {
+     "current_bytes": 50477316352,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "after": {
+     "current_bytes": 50574973440,
+     "whole_job_cumulative_peak_bytes": 99572474624,
+     "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+    },
+    "predictor_QR": "recomputed for actual A",
+    "m": 512000,
+    "owning_cache_keys": [
+     "A",
+     "B",
+     "D",
+     "GTb",
+     "L",
+     "P",
+     "lam"
+    ],
+    "cold_start_tables_built": false
+   }
+  ],
+  "whole_job": {
+   "current_bytes": 50574893824,
+   "whole_job_cumulative_peak_bytes": 99572474624,
+   "interpretation": "JAX device allocation counters; peak is cumulative for this entire job, not standalone method memory"
+  },
+  "interpretation": "all peaks are cumulative whole-job counters; release delta is measured within this allocation"
+ },
+ "masks": [
+  {
+   "query": "M2_N65_mf_gl32",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       0.0001366338319269735,
+       0.00013602645480835913,
+       0.00014757021420189447,
+       0.0001971524016556837,
+       0.00025573508615355645,
+       0.0002541271203331789
+      ],
+      "distance": 6.0095485512081815e-06,
+      "finer_distance": 5.358287192283603e-07,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mf_gl32/quadrature_c000.npz",
+       "sha256": "8d35078dc32df0ac05d919b0827338f142a9a31c2b3c0975087aa24e9adf0502"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       7.041227808110292e-05,
+       0.00012116268910427502,
+       0.00018230719420954478,
+       0.00031289726950897267,
+       0.0005546518675131542,
+       0.0008151325193779243
+      ],
+      "distance": 2.6033470055028304e-05,
+      "finer_distance": 2.2507672905056827e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mf_gl32/quadrature_c005.npz",
+       "sha256": "e21e7bc1ddaf512283b61b64e5f3d4725c7bda83fe5b3f7ff3eb693920a564f6"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       7.014355578767221e-05,
+       0.00011549685373053152,
+       0.0002681326031961649,
+       0.00031139220921479085,
+       0.0004938803047752686,
+       0.0007050613985594836
+      ],
+      "distance": 1.362817963190826e-05,
+      "finer_distance": 1.1182834903230658e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mf_gl32/quadrature_c030.npz",
+       "sha256": "ae6eac1f98c3f58083cadea42e585283901947d8cde6a60536701c269ecec18a"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       5.522215177011105e-05,
+       7.027025626623678e-05,
+       0.0002592039247493083,
+       0.0004155743290317611,
+       0.0005548296401348819,
+       0.0008944600839444161
+      ],
+      "distance": 2.3562696196625e-05,
+      "finer_distance": 1.5080749968145405e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mf_gl32/quadrature_c043.npz",
+       "sha256": "9e310aaa943794ca1a2e2619ecc9a04d011c0427e0f921a4066ff7b792432faa"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "M2_N65_mf_gl32",
+    "successors": [
+     "M2_N65_mf_gl40",
+     "M2_N65_mf_gl48"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N65_mf_gl40",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N65_mf_gl48",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N65_mesh_gl32",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       0.00013663247286170119,
+       0.0001360279381793997,
+       0.00014757081530496097,
+       0.00019715299315196556,
+       0.00025573519544307713,
+       0.00025412723625365145
+      ],
+      "distance": 5.999614651326228e-06,
+      "finer_distance": 5.360715362094788e-07,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mesh_gl32/quadrature_c000.npz",
+       "sha256": "6778b4d740b1e99721a6b7301904a7c31bd1e19351db03d9e5a79a4af5174769"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       7.040588397184084e-05,
+       0.00012116265172453877,
+       0.00018230763518666175,
+       0.00031289711778442335,
+       0.0005546517628003786,
+       0.0008151328762960426
+      ],
+      "distance": 2.6033901659075768e-05,
+      "finer_distance": 2.250312288421834e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mesh_gl32/quadrature_c005.npz",
+       "sha256": "0f1900b551b34e455381251a0ff0e40dee6d1d3375b82af217fa4d84b6441774"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       7.012403598068796e-05,
+       0.00011549323810607281,
+       0.0002681319395144393,
+       0.0003113914435383988,
+       0.0004938803520153505,
+       0.0007050615802360028
+      ],
+      "distance": 1.359206337267912e-05,
+      "finer_distance": 1.1173679827047234e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mesh_gl32/quadrature_c030.npz",
+       "sha256": "23041ed7ce22f55ed95066c4f35daccd48c3f5f772c0392e8632c6a21b4a8930"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       5.5220229951512655e-05,
+       7.02719189000422e-05,
+       0.0002592012419449361,
+       0.00041557409140358857,
+       0.00055482975338898,
+       0.0008944601119486182
+      ],
+      "distance": 2.3550498997381206e-05,
+      "finer_distance": 1.5077452748021962e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N65_mesh_gl32/quadrature_c043.npz",
+       "sha256": "cb7b5eb03bd29c9dea08f8d8f544f5fbcaae198d139277f10385f8ae2a4cee83"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "M2_N65_mesh_gl32",
+    "successors": [
+     "M2_N65_mesh_gl40",
+     "M2_N65_mesh_gl48"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N65_mesh_gl40",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N65_mesh_gl48",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N129_mf_gl32",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       0.00013663383192703444,
+       0.00013584236497313137,
+       0.00014674067583604551,
+       0.00019461622794984094,
+       0.0002521387479433731,
+       0.0002511268983105368
+      ],
+      "distance": 5.906399258224246e-06,
+      "finer_distance": 5.283646089032085e-07,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mf_gl32/quadrature_c000.npz",
+       "sha256": "3d8a7ed7b7150e23ec030d1d85ff272f58ee47d184d6878c07d66415dde24629"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       7.04122780811841e-05,
+       0.00012113183754248743,
+       0.00018163297659510563,
+       0.00030957722565262604,
+       0.0005451384113472447,
+       0.0008030917120836356
+      ],
+      "distance": 2.5547819269087946e-05,
+      "finer_distance": 2.2120085301015592e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mf_gl32/quadrature_c005.npz",
+       "sha256": "add1b62fad1ea814775afd00ae6da101b4f4b0d2ea88cacb65d931779f10eaae"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       7.014355578764114e-05,
+       0.00011541819190544406,
+       0.0002655141335515836,
+       0.00030684284342954917,
+       0.0004851980731273503,
+       0.000697056297666157
+      ],
+      "distance": 1.3411069966934274e-05,
+      "finer_distance": 1.0992777302914726e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mf_gl32/quadrature_c030.npz",
+       "sha256": "4333cac5fa5a9aadbf66bf08036cda80bb4f51164b907d8b8d306857961c89c5"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       5.522215177012844e-05,
+       7.025501950470464e-05,
+       0.00025688668832372734,
+       0.0004111662215491685,
+       0.0005448846668492617,
+       0.0008792155923453924
+      ],
+      "distance": 2.3053390166346725e-05,
+      "finer_distance": 1.4835126692453484e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mf_gl32/quadrature_c043.npz",
+       "sha256": "d8e423a0554318cdfb4e4ccb5d4199ccd1265d8f6225b8b8c6090f7cc8767ee1"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "M2_N129_mf_gl32",
+    "successors": [
+     "M2_N129_mf_gl40",
+     "M2_N129_mf_gl48"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N129_mf_gl40",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N129_mf_gl48",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N129_mesh_gl32",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       0.00013663063790191006,
+       0.0001358425041691183,
+       0.00014674010811188587,
+       0.00019461635379189275,
+       0.00025213873037296014,
+       0.0002511269720247514
+      ],
+      "distance": 5.896610658067596e-06,
+      "finer_distance": 5.286171705076591e-07,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mesh_gl32/quadrature_c000.npz",
+       "sha256": "b5fa0de44ffc17f43734d4af6664cbe1e2ff8f6d100ecbc8a6ee7130ecd0ee32"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       7.041572280322646e-05,
+       0.00012113162916366321,
+       0.0001816329523808787,
+       0.00030957720977248086,
+       0.000545138293228309,
+       0.0008030919048093731
+      ],
+      "distance": 2.554825073354279e-05,
+      "finer_distance": 2.2115584511802887e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mesh_gl32/quadrature_c005.npz",
+       "sha256": "c88bc53dd98c8c43d4a9db0333c4aa0ecd5033c3c805418a66786757c02b2b76"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       7.012922803875278e-05,
+       0.00011541683004104719,
+       0.00026551438308728743,
+       0.00030684216267003417,
+       0.0004851980608352607,
+       0.0006970564679321168
+      ],
+      "distance": 1.3375250251937928e-05,
+      "finer_distance": 1.0983526530758256e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mesh_gl32/quadrature_c030.npz",
+       "sha256": "1349d5f83e4b604007ef74363b4a19e6d9194d963a3d3c37f02bbd9eeda5e8a9"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       5.522254626456433e-05,
+       7.025704861485829e-05,
+       0.000256883739424702,
+       0.0004111660359502314,
+       0.0005448847440059127,
+       0.0008792154631665635
+      ],
+      "distance": 2.304122131165352e-05,
+      "finer_distance": 1.4831685441970619e-06,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/M2_N129_mesh_gl32/quadrature_c043.npz",
+       "sha256": "9b64e7a5af78cac96e5704ebdf5c457b2ae18cc53fe89180d9671fccfd27e263"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "M2_N129_mesh_gl32",
+    "successors": [
+     "M2_N129_mesh_gl40",
+     "M2_N129_mesh_gl48"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N129_mesh_gl40",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "M2_N129_mesh_gl48",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 60,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 2,
+    "steps": 100,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       1.6736624190077482e-07,
+       1.1967037128810556e-07,
+       3.67020856883201e-07,
+       4.31804736677386e-07,
+       2.484501635732164e-07,
+       4.5379736249163424e-07
+      ],
+      "distance": 9.792503488559114e-09,
+      "finer_distance": 8.545293207736401e-10,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_baseline_gl56/quadrature_c000.npz",
+       "sha256": "fda203db66839c869caac6318adb5c460cc78a4b3781f868dd5c3f298bc3b060"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.1799630337402624e-07,
+       7.130631893596075e-07,
+       1.7732776488260103e-05,
+       8.486537561736301e-05,
+       0.0019143008604023254
+      ],
+      "distance": 0.00016839317642000707,
+      "finer_distance": 4.017087600026343e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_baseline_gl56/quadrature_c005.npz",
+       "sha256": "ecf23e7c5de4566286f9839e6c43251da54d970137bbcd8fc8feee31fdea85b8"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       8.879858655204365e-08,
+       3.180387595774001e-07,
+       1.229923569232104e-06,
+       1.451420346548981e-06,
+       1.873102536515242e-06,
+       4.657002074030071e-06
+      ],
+      "distance": 1.8481922998050596e-07,
+      "finer_distance": 3.4915164535463284e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_baseline_gl56/quadrature_c030.npz",
+       "sha256": "4cb6ea009faa3a530d9c26cd023e7e90b6c7dd82a9330519230ed78bedb26f37"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       4.798263427085486e-08,
+       1.275155563320001e-07,
+       1.1757232230296562e-06,
+       3.4032550268533253e-06,
+       4.726367822124946e-06,
+       9.060394410120838e-06
+      ],
+      "distance": 5.35173485889712e-07,
+      "finer_distance": 6.390503616641503e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_baseline_gl56/quadrature_c043.npz",
+       "sha256": "f4d8c923d23717db126cfc0c08146dde0a384c91bb39029a7c1dc52276e6b799"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_CN_baseline_gl56",
+    "successors": [
+     "W1024_CN_baseline_gl64",
+     "W1024_CN_baseline_gl80"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.19688908386349e-07,
+        3.6687065310937873e-07,
+        4.3178019992241316e-07,
+        2.484632702929453e-07,
+        4.53810147685347e-07
+       ],
+       "distance": 9.859051124924441e-09,
+       "finer_distance": 8.957054276269712e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tight_c000.npz",
+        "sha256": "2bf402134943cb9fb332b7fc38e43c587e8b8db85e5f67695d148b12288eda81"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.179963033932831e-07,
+        7.140499450543593e-07,
+        1.772975463235353e-05,
+        8.504446903812652e-05,
+        0.0019151726169064714
+       ],
+       "distance": 0.00016665048882140977,
+       "finer_distance": 3.9733493209217e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tight_c005.npz",
+        "sha256": "a8937764c1273d4b332e2e3e2011e872ec8b1be89f8fdfe5456fc7dd0dd92dc2"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.180387818810153e-07,
+        1.2311237765189204e-06,
+        1.451171091569716e-06,
+        1.8733821156971722e-06,
+        4.658194755007588e-06
+       ],
+       "distance": 1.8176817440611906e-07,
+       "finer_distance": 3.385092490260343e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tight_c030.npz",
+        "sha256": "3446069edb2050c009d12f7896ebaa9ffe0957cc95c88677e03d7c09443fde55"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.275155526109058e-07,
+        1.1752824822483202e-06,
+        3.4083123124027716e-06,
+        4.718773316583792e-06,
+        9.035984208746105e-06
+       ],
+       "distance": 4.685969920258237e-07,
+       "finer_distance": 5.128648386008926e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tight_c043.npz",
+        "sha256": "4d83c0c2659e1955455cecc166d26832e895e7eb6d423fd0a23ca397a5f8c0b7"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_CN_baseline_gl56",
+     "successors": [
+      "W1024_CN_baseline_gl64",
+      "W1024_CN_baseline_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.1968891018390424e-07,
+        3.668706557560296e-07,
+        4.317802005206266e-07,
+        2.4846327001064857e-07,
+        4.5381014747162955e-07
+       ],
+       "distance": 9.859047195025042e-09,
+       "finer_distance": 8.957051502152574e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tighter_c000.npz",
+        "sha256": "7e519972f7400245df5d103e9a5476da0812b7d1632a8fa0818febb07e931e75"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1799629102959283e-07,
+        7.140509436333707e-07,
+        1.7729718555208416e-05,
+        8.504424330536654e-05,
+        0.001915169666168223
+       ],
+       "distance": 0.00016665530844554532,
+       "finer_distance": 3.973456348586428e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tighter_c005.npz",
+        "sha256": "62f83fa3ffba225880fc90b319fbdd9e73d5ed35df91a15d46a3e90fe513d17f"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.180387506824883e-07,
+        1.2311236682020062e-06,
+        1.4511708017356024e-06,
+        1.8733824358223875e-06,
+        4.6581998740478446e-06
+       ],
+       "distance": 1.8175969600411144e-07,
+       "finer_distance": 3.385132494015139e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tighter_c030.npz",
+        "sha256": "0d6763dffc7e8c8fe766f05bbc0f01e6973f5cd5d8dc3c0374a78137422425d1"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.2751552888506975e-07,
+        1.1752791492540892e-06,
+        3.4083089902649145e-06,
+        4.718773123996868e-06,
+        9.035984759355516e-06
+       ],
+       "distance": 4.6859746295769754e-07,
+       "finer_distance": 5.12864897667835e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_baseline_gl56/quadrature_tighter_c043.npz",
+        "sha256": "90887f8fb9c3a23d85f9ed7109ce6e4f093632ba43e291904c851b183736fb3a"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_CN_baseline_gl56",
+     "successors": [
+      "W1024_CN_baseline_gl64",
+      "W1024_CN_baseline_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 1,
+    "30": 0,
+    "43": 1
+   }
+  },
+  {
+   "query": "W1024_CN_baseline_gl64",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 2,
+    "steps": 100,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 1,
+    "30": 0,
+    "43": 1
+   }
+  },
+  {
+   "query": "W1024_CN_baseline_gl80",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 2,
+    "steps": 100,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 1,
+    "30": 0,
+    "43": 1
+   }
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 2,
+    "steps": 100,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       1.6736624190077482e-07,
+       1.1865898898810978e-07,
+       3.53838602577062e-07,
+       4.131205001447379e-07,
+       2.453678680955656e-07,
+       4.1833109750551394e-07
+      ],
+      "distance": 8.934058834497336e-09,
+      "finer_distance": 9.36420869721541e-10,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_composite_gl56/quadrature_c000.npz",
+       "sha256": "8eda979480186a0d12250237cf509335af260d36025dfea4580d2e2f607da85b"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.1819519274491033e-07,
+       7.095799286074432e-07,
+       1.732012205939833e-05,
+       8.617283485240695e-05,
+       0.0018764566210946862
+      ],
+      "distance": 0.00016210162471323728,
+      "finer_distance": 3.8704199681500156e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_composite_gl56/quadrature_c005.npz",
+       "sha256": "9ca617263063383c85d518a82ba2f156eebaeff61b96bc33ea50b1913780efbe"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       8.879858655204365e-08,
+       3.147123058631757e-07,
+       1.2019981910316553e-06,
+       1.3697631107932635e-06,
+       1.7871578708389957e-06,
+       4.483748336774047e-06
+      ],
+      "distance": 1.7408691499285385e-07,
+      "finer_distance": 3.3756092181531936e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_composite_gl56/quadrature_c030.npz",
+       "sha256": "4cdca533b6b72efcb9524be91ed7ffb7ff439514c023c8c9ddb4c8f3b54a5628"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       4.798263427085486e-08,
+       1.2578078853333504e-07,
+       1.1514993307288653e-06,
+       3.2943297034885955e-06,
+       4.52837718914336e-06,
+       8.43688847644201e-06
+      ],
+      "distance": 4.953677288296642e-07,
+      "finer_distance": 5.968446852305651e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_composite_gl56/quadrature_c043.npz",
+       "sha256": "0dcc1e9d2fa1e26107e18f904b152565e006ab478bfd2034b51bd7a1ce6c9ab4"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_CN_composite_gl56",
+    "successors": [
+     "W1024_CN_composite_gl64",
+     "W1024_CN_composite_gl80"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.1867641639805981e-07,
+        3.5369799679524015e-07,
+        4.1309828506304237e-07,
+        2.4537845974498105e-07,
+        4.183447203172874e-07
+       ],
+       "distance": 8.99380865142901e-09,
+       "finer_distance": 9.68114121515561e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tight_c000.npz",
+        "sha256": "37fc044cbdfd27738f025af57fa2bdf1d957985b51751ce25f2afe305c9b7212"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1819519275789847e-07,
+        7.105926125977164e-07,
+        1.7316626935501087e-05,
+        8.634532271684741e-05,
+        0.001877238569801928
+       ],
+       "distance": 0.0001604611357082565,
+       "finer_distance": 3.829081545306702e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tight_c005.npz",
+        "sha256": "c0639bd3279f8ee5260e95e65586e925d418588e612b78d63ae8135d38a623cb"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.1471232726643666e-07,
+        1.203134303337872e-06,
+        1.3695050553517325e-06,
+        1.7873972527235716e-06,
+        4.48473862719902e-06
+       ],
+       "distance": 1.709089696306822e-07,
+       "finer_distance": 3.26600769220132e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tight_c030.npz",
+        "sha256": "4e232a045da15eff4da7de803e20cd614016ee3c7d37cb2a418f920c7c717a16"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.2578078501731748e-07,
+        1.1510528664043517e-06,
+        3.2991857370625203e-06,
+        4.520922736644784e-06,
+        8.414347136077544e-06
+       ],
+       "distance": 4.327361705845397e-07,
+       "finer_distance": 4.769798770810254e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tight_c043.npz",
+        "sha256": "2d8e2054add4be5789a9463bda5af094e5e46802a6f700c86026b397c07acd94"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_CN_composite_gl56",
+     "successors": [
+      "W1024_CN_composite_gl64",
+      "W1024_CN_composite_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.1867641824334695e-07,
+        3.536979992751595e-07,
+        4.1309828567205906e-07,
+        2.4537845948739574e-07,
+        4.18344720110668e-07
+       ],
+       "distance": 8.99380508436152e-09,
+       "finer_distance": 9.681138881164744e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tighter_c000.npz",
+        "sha256": "79d8a7bca60b0928fb9e64ab084cdd293a87ec23a9e7939a8363d90584c3b573"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1819517983247255e-07,
+        7.105935767113332e-07,
+        1.7316593195050234e-05,
+        8.634510639626884e-05,
+        0.0018772358425574326
+       ],
+       "distance": 0.00016046547762597137,
+       "finer_distance": 3.8291781685694624e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tighter_c005.npz",
+        "sha256": "1e0caa7d51367efdce2d06d4771ed62e98c12287bce101050835d1cefa5add2a"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.147122971552283e-07,
+        1.2031342232335117e-06,
+        1.3695048202955733e-06,
+        1.787397575470141e-06,
+        4.484743324623797e-06
+       ],
+       "distance": 1.709088181449375e-07,
+       "finer_distance": 3.266194513611336e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tighter_c030.npz",
+        "sha256": "e61ee3036746d946344a0cba93e085366ee7a55f62bb2d92f876d9e66b474309"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.2578076168810938e-07,
+        1.151049694758288e-06,
+        3.299182615011058e-06,
+        4.52092254829025e-06,
+        8.414342069033846e-06
+       ],
+       "distance": 4.326807409304028e-07,
+       "finer_distance": 4.7678953173348953e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_composite_gl56/quadrature_tighter_c043.npz",
+        "sha256": "cb946a98508f6b4e2a18a5f47c7e89e71f8d10f5af472dd4f9ce520c34cedda2"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_CN_composite_gl56",
+     "successors": [
+      "W1024_CN_composite_gl64",
+      "W1024_CN_composite_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 1,
+    "30": 0,
+    "43": 1
+   }
+  },
+  {
+   "query": "W1024_CN_composite_gl64",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 2,
+    "steps": 100,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 1,
+    "30": 0,
+    "43": 1
+   }
+  },
+  {
+   "query": "W1024_CN_composite_gl80",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 2,
+    "steps": 100,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 1,
+    "30": 0,
+    "43": 1
+   }
+  },
+  {
+   "query": "W1024_CN_lambda_gl56",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 1,
+    "steps": 25,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.1811378713919209e-07,
+       7.093791749988349e-07,
+       1.7323645626843362e-05,
+       8.61315377553797e-05,
+       0.0018757723688216322
+      ],
+      "distance": 0.0001620698065668692,
+      "finer_distance": 3.869574959936835e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_lambda_gl56/quadrature_c005.npz",
+       "sha256": "0365e888127f1c26cd45d558d57f5be6ddc7fc15b5f4bfa4d679afa3d0b7ee1e"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_CN_lambda_gl56",
+    "successors": [
+     "W1024_CN_lambda_gl64",
+     "W1024_CN_lambda_gl80"
+    ],
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.181137871582916e-07,
+        7.103923058591594e-07,
+        1.732015173699824e-05,
+        8.630400587505564e-05,
+        0.0018765534380398106
+       ],
+       "distance": 0.00016042956414209555,
+       "finer_distance": 3.828243906500402e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_lambda_gl56/quadrature_tight_c005.npz",
+        "sha256": "f12b3c6f74e767b31bf2a6d325bbafd2032261b12a701655d7288e7016030b9e"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_CN_lambda_gl56",
+     "successors": [
+      "W1024_CN_lambda_gl64",
+      "W1024_CN_lambda_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.18113774306763e-07,
+        7.103932703045965e-07,
+        1.7320118012590707e-05,
+        8.630378951132221e-05,
+        0.0018765507101863995
+       ],
+       "distance": 0.0001604339077341233,
+       "finer_distance": 3.828340571809437e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_lambda_gl56/quadrature_tighter_c005.npz",
+        "sha256": "84f27fbaa2761a964a29434b4f5d35fe6707eeaf9d3f6d75e949ef98b7f6c6d6"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_CN_lambda_gl56",
+     "successors": [
+      "W1024_CN_lambda_gl64",
+      "W1024_CN_lambda_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 1
+   }
+  },
+  {
+   "query": "W1024_CN_lambda_gl64",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 1,
+    "steps": 25,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 1
+   }
+  },
+  {
+   "query": "W1024_CN_lambda_gl80",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 1,
+    "steps": 25,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 1
+   }
+  },
+  {
+   "query": "W1024_CN_moments_gl56",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 1,
+    "steps": 25,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.180740839343639e-07,
+       7.132361269262859e-07,
+       1.7729215637418118e-05,
+       8.490655867521311e-05,
+       0.0019150039961491373
+      ],
+      "distance": 0.00016842651188191167,
+      "finer_distance": 4.017971774652075e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_CN_moments_gl56/quadrature_c005.npz",
+       "sha256": "2cf50075c7626b9b4f97d5c36c1214b464c244151f3363b5094bb581f5ed287b"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_CN_moments_gl56",
+    "successors": [
+     "W1024_CN_moments_gl64",
+     "W1024_CN_moments_gl80"
+    ],
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1807408391216918e-07,
+        7.142224061236456e-07,
+        1.7726194014597186e-05,
+        8.508567141856795e-05,
+        0.0019158766740638058
+       ],
+       "distance": 0.0001666835334768021,
+       "finer_distance": 3.974225031990269e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_moments_gl56/quadrature_tight_c005.npz",
+        "sha256": "b398e4eb8f82eb3fc4e9a4358eb94bc577a63754ed7c2b18658792a3c37d9c4e"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_CN_moments_gl56",
+     "successors": [
+      "W1024_CN_moments_gl64",
+      "W1024_CN_moments_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1807407145305875e-07,
+        7.142234043990541e-07,
+        1.772615791793301e-05,
+        8.508544573644746e-05,
+        0.0019158737239681936
+       ],
+       "distance": 0.0001666883514077177,
+       "finer_distance": 3.974332016737657e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_CN_moments_gl56/quadrature_tighter_c005.npz",
+        "sha256": "3820ed344a88af2da76397590b307ae199e4abb39d520f409ef74edd5c34a666"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_CN_moments_gl56",
+     "successors": [
+      "W1024_CN_moments_gl64",
+      "W1024_CN_moments_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 1
+   }
+  },
+  {
+   "query": "W1024_CN_moments_gl64",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 1,
+    "steps": 25,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 1
+   }
+  },
+  {
+   "query": "W1024_CN_moments_gl80",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": false,
+    "nonstationary": 1,
+    "steps": 25,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 1
+   }
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 160,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       1.6736624190077482e-07,
+       1.1987906802725648e-07,
+       3.566331431909924e-07,
+       4.2330550038864453e-07,
+       2.4578637772574007e-07,
+       4.5099459133198114e-07
+      ],
+      "distance": 9.605359284230225e-09,
+      "finer_distance": 8.462467693123158e-10,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_baseline_gl56/quadrature_c000.npz",
+       "sha256": "f9c4b02cad89829850ba09beccf1084830a4f88a88659caf78c53a551018c62a"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.1873449500056573e-07,
+       7.457099582922559e-07,
+       1.6199919935272417e-05,
+       8.16652447413828e-05,
+       0.001814876849536731
+      ],
+      "distance": 0.00014345642642848245,
+      "finer_distance": 3.405840282026433e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_baseline_gl56/quadrature_c005.npz",
+       "sha256": "9b37d2f8647818de0fd5606ad0910c4da3e92f081f6ceb390161bf218248854e"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       8.879858655204365e-08,
+       3.0912563887252157e-07,
+       1.1829500849220292e-06,
+       1.3595058157582013e-06,
+       1.7986093365154177e-06,
+       4.5465286533446485e-06
+      ],
+      "distance": 1.7445780566682568e-07,
+      "finer_distance": 3.166905086623933e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_baseline_gl56/quadrature_c030.npz",
+       "sha256": "e80ef25a654aced8c86acdef83ce3775a6401d3ebbcce41e87882b6e1651e44a"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       4.798263427085486e-08,
+       1.2704255720832682e-07,
+       1.16258302501146e-06,
+       3.2732881787090303e-06,
+       4.48287524589483e-06,
+       8.824349155320855e-06
+      ],
+      "distance": 3.512898504621377e-07,
+      "finer_distance": 3.885463139297982e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_baseline_gl56/quadrature_c043.npz",
+       "sha256": "990d52c4f424d4be86bb9878277bb428569bc32abad0df60b90c60e962c38442"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_BDF2_baseline_gl56",
+    "successors": [
+     "W1024_BDF2_baseline_gl64",
+     "W1024_BDF2_baseline_gl80"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.1987793931236352e-07,
+        3.566404152899564e-07,
+        4.2330721099851874e-07,
+        2.4578620531344664e-07,
+        4.509927549464723e-07
+       ],
+       "distance": 9.613704383008131e-09,
+       "finer_distance": 8.439739065971644e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tight_c000.npz",
+        "sha256": "a1959b10ae1f1968103d71fc34127bd29d64caf65cea0a313642e01fb537f808"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1873689999228693e-07,
+        7.456807400306948e-07,
+        1.6201582668230958e-05,
+        8.167023202293176e-05,
+        0.0018149620218511535
+       ],
+       "distance": 0.000143361734456848,
+       "finer_distance": 3.403486410958494e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tight_c005.npz",
+        "sha256": "3e9aed1271112d8c1de36f43cc9f5cf4c52b49ff3944f25d00c0d5a2d8e1fa66"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.091196481238607e-07,
+        1.1829219945587746e-06,
+        1.3594586075374786e-06,
+        1.7986241946226742e-06,
+        4.5464336913525696e-06
+       ],
+       "distance": 1.7457290644693684e-07,
+       "finer_distance": 3.169254587597664e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tight_c030.npz",
+        "sha256": "c756876c8e993faa15e8ff694c14af86e60418de3c5140822af331e129d00eaf"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.2702004050478494e-07,
+        1.1625462346485372e-06,
+        3.2738245102697216e-06,
+        4.4825851121125184e-06,
+        8.824819354058187e-06
+       ],
+       "distance": 3.5051765641991257e-07,
+       "finer_distance": 3.855200285012406e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tight_c043.npz",
+        "sha256": "d2d75649f0cb8ff1a0286970b217395c41348375827384ae558774ee4bf5dc1f"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_BDF2_baseline_gl56",
+     "successors": [
+      "W1024_BDF2_baseline_gl64",
+      "W1024_BDF2_baseline_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.1987793931236352e-07,
+        3.566404152899564e-07,
+        4.2330721099851874e-07,
+        2.4578620531344664e-07,
+        4.509927549464723e-07
+       ],
+       "distance": 9.613704383008131e-09,
+       "finer_distance": 8.439739065971644e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tighter_c000.npz",
+        "sha256": "a1959b10ae1f1968103d71fc34127bd29d64caf65cea0a313642e01fb537f808"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1873690258025562e-07,
+        7.456807406680715e-07,
+        1.6201582666999416e-05,
+        8.167023202575216e-05,
+        0.001814962021887262
+       ],
+       "distance": 0.00014336173446037864,
+       "finer_distance": 3.4034864110436464e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tighter_c005.npz",
+        "sha256": "eaf699182ddf8b7ad827cca1a4751c8392d8e3162c70419fcb382cdba975064b"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.0911964812589016e-07,
+        1.1829219945135553e-06,
+        1.3594586078135323e-06,
+        1.7986241949661816e-06,
+        4.546433693124943e-06
+       ],
+       "distance": 1.7457290658120922e-07,
+       "finer_distance": 3.169254589809369e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tighter_c030.npz",
+        "sha256": "32aa3fb8767e697a44cd6d50f53f7e2888a39643c07aa8ce0fddd8ecf7c74a5b"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.2702004050478494e-07,
+        1.1625462346485372e-06,
+        3.2738245102697216e-06,
+        4.4825851121125184e-06,
+        8.824819354058187e-06
+       ],
+       "distance": 3.5051765641991257e-07,
+       "finer_distance": 3.855200285012406e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_baseline_gl56/quadrature_tighter_c043.npz",
+        "sha256": "d2d75649f0cb8ff1a0286970b217395c41348375827384ae558774ee4bf5dc1f"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_BDF2_baseline_gl56",
+     "successors": [
+      "W1024_BDF2_baseline_gl64",
+      "W1024_BDF2_baseline_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl64",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 160,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl80",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 160,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 160,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 0,
+      "rho": [
+       1.6736624190077482e-07,
+       1.1883520742913437e-07,
+       3.4416121618303487e-07,
+       4.051767888044325e-07,
+       2.4288379857470966e-07,
+       4.1554900398028496e-07
+      ],
+      "distance": 8.795638783418647e-09,
+      "finer_distance": 8.905826561799401e-10,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_composite_gl56/quadrature_c000.npz",
+       "sha256": "00a11786ae8cca2052390ae74719756b64b627ca1cefb3a554e15d6cf1dc7c12"
+      }
+     },
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.1893976838986716e-07,
+       7.403240178466936e-07,
+       1.5820015694717984e-05,
+       8.297731280634863e-05,
+       0.0017793297916939377
+      ],
+      "distance": 0.0001383584480057906,
+      "finer_distance": 3.2872555725462826e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_composite_gl56/quadrature_c005.npz",
+       "sha256": "6e7c1d8047241008a0d84a2334b745edd9f220cae9a6d0a5b37b93238c938b98"
+      }
+     },
+     {
+      "case": 30,
+      "rho": [
+       8.879858655204365e-08,
+       3.0569359180452617e-07,
+       1.1562620009396565e-06,
+       1.2841801920110837e-06,
+       1.7183248812266136e-06,
+       4.375380021342939e-06
+      ],
+      "distance": 1.6070952758218808e-07,
+      "finer_distance": 2.964369865860076e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_composite_gl56/quadrature_c030.npz",
+       "sha256": "85276eca72e1fbbd3c918fb15e5876d41c87f00375f911bd38464052160d2659"
+      }
+     },
+     {
+      "case": 43,
+      "rho": [
+       4.798263427085486e-08,
+       1.2522119941756195e-07,
+       1.138816882228961e-06,
+       3.168793318287654e-06,
+       4.3136308200737165e-06,
+       8.215525035052667e-06
+      ],
+      "distance": 3.242943831272205e-07,
+      "finer_distance": 3.611469624526038e-08,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_composite_gl56/quadrature_c043.npz",
+       "sha256": "6fa273f1bc99cf5543c63864e7fd67dec7e6987dc91c426808f72c9dda39c216"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_BDF2_composite_gl56",
+    "successors": [
+     "W1024_BDF2_composite_gl64",
+     "W1024_BDF2_composite_gl80"
+    ],
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.1883409146206152e-07,
+        3.4416809215987123e-07,
+        4.0517836355335357e-07,
+        2.428837197402473e-07,
+        4.1554745855121175e-07
+       ],
+       "distance": 8.802060925278262e-09,
+       "finer_distance": 8.881365691170711e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tight_c000.npz",
+        "sha256": "301565f405bf47e8829856c09d45d9eead55abf1bcfa7eddf8f7f6818f982cb7"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1894198021381322e-07,
+        7.40294034875092e-07,
+        1.582157406487373e-05,
+        8.29822572797863e-05,
+        0.0017794107480602775
+       ],
+       "distance": 0.00013827080710156225,
+       "finer_distance": 3.285070356599148e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tight_c005.npz",
+        "sha256": "51c8c62b0e908cd3b6f1cb273d984d23a30fe3565ccad5936c6c2986d8b19e91"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.0568786603419347e-07,
+        1.15623418665375e-06,
+        1.2841367308975588e-06,
+        1.7183378004315195e-06,
+        4.375293623969051e-06
+       ],
+       "distance": 1.6077502634012399e-07,
+       "finer_distance": 2.9653907061393648e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tight_c030.npz",
+        "sha256": "f6bbb6f44d8633653846f405d73466a45d4a25cbf9a4021dc06386ce72c254bf"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.251990684014274e-07,
+        1.1387803395410092e-06,
+        3.1693163175021403e-06,
+        4.313349653871315e-06,
+        8.21597673210898e-06
+       ],
+       "distance": 3.23560893871324e-07,
+       "finer_distance": 3.582669839525036e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tight_c043.npz",
+        "sha256": "b7fc5f835642633049e9efefc07332a13c6e91869af0fc9145c1026941d8cb10"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_BDF2_composite_gl56",
+     "successors": [
+      "W1024_BDF2_composite_gl64",
+      "W1024_BDF2_composite_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 0,
+       "rho": [
+        1.6736624190077482e-07,
+        1.1883409146206152e-07,
+        3.4416809215987123e-07,
+        4.0517836355335357e-07,
+        2.428837197402473e-07,
+        4.1554745855121175e-07
+       ],
+       "distance": 8.802060925278262e-09,
+       "finer_distance": 8.881365691170711e-10,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tighter_c000.npz",
+        "sha256": "301565f405bf47e8829856c09d45d9eead55abf1bcfa7eddf8f7f6818f982cb7"
+       }
+      },
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1894198304416408e-07,
+        7.402940355884525e-07,
+        1.582157406369449e-05,
+        8.298225728281258e-05,
+        0.0017794107480953597
+       ],
+       "distance": 0.00013827080710593332,
+       "finer_distance": 3.285070356696921e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tighter_c005.npz",
+        "sha256": "f24285d3904e0025430e1b547f24dd024d0abc77f091b436483a16f8299e2fd0"
+       }
+      },
+      {
+       "case": 30,
+       "rho": [
+        8.879858655204365e-08,
+        3.0568786634899544e-07,
+        1.1562341865887444e-06,
+        1.2841367311033144e-06,
+        1.7183378006661934e-06,
+        4.37529362563777e-06
+       ],
+       "distance": 1.6077502644300908e-07,
+       "finer_distance": 2.9653907060742968e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tighter_c030.npz",
+        "sha256": "544d712e2dbc5df0adbf734e25b031ccd069f078e7c96f7cc42e34fc1b1237c6"
+       }
+      },
+      {
+       "case": 43,
+       "rho": [
+        4.798263427085486e-08,
+        1.251990684014274e-07,
+        1.1387803395410092e-06,
+        3.1693163175021403e-06,
+        4.313349653871315e-06,
+        8.21597673210898e-06
+       ],
+       "distance": 3.23560893871324e-07,
+       "finer_distance": 3.582669839525036e-08,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_composite_gl56/quadrature_tighter_c043.npz",
+        "sha256": "b7fc5f835642633049e9efefc07332a13c6e91869af0fc9145c1026941d8cb10"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_BDF2_composite_gl56",
+     "successors": [
+      "W1024_BDF2_composite_gl64",
+      "W1024_BDF2_composite_gl80"
+     ],
+     "case_ids": [
+      0,
+      5,
+      30,
+      43
+     ],
+     "case_count": 4,
+     "scope": "4-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_composite_gl64",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 160,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_composite_gl80",
+   "case_ids": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "case_count": 4,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 160,
+    "case_ids": [
+     0,
+     5,
+     30,
+     43
+    ],
+    "case_count": 4,
+    "scope": "4 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "0": true,
+    "5": true,
+    "30": true,
+    "43": true
+   },
+   "production_bad_steps_by_case": {
+    "0": 0,
+    "5": 0,
+    "30": 0,
+    "43": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_lambda_gl56",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 40,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.1885608786228063e-07,
+       7.400991205675848e-07,
+       1.5823775978539563e-05,
+       8.293679801645764e-05,
+       0.0017786846135228677
+      ],
+      "distance": 0.0001383278996594263,
+      "finer_distance": 3.286450434112067e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_lambda_gl56/quadrature_c005.npz",
+       "sha256": "961a3fd70f4b247ba48b8e7061da882f9de6ee0925e84ddeb176230e73080a38"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_BDF2_lambda_gl56",
+    "successors": [
+     "W1024_BDF2_lambda_gl64",
+     "W1024_BDF2_lambda_gl80"
+    ],
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1885829413997581e-07,
+        7.400691386511313e-07,
+        1.5825333426010812e-05,
+        8.294174137781923e-05,
+        0.0017787656168169615
+       ],
+       "distance": 0.00013824027219191132,
+       "finer_distance": 3.28426565354904e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_lambda_gl56/quadrature_tight_c005.npz",
+        "sha256": "4107c50364b381c84c52376b21b07f61cabde4aec27530f2a7ee3a102ccfbdd5"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_BDF2_lambda_gl56",
+     "successors": [
+      "W1024_BDF2_lambda_gl64",
+      "W1024_BDF2_lambda_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1885829694347702e-07,
+        7.400691393244784e-07,
+        1.5825333424758735e-05,
+        8.294174138072674e-05,
+        0.001778765616851934
+       ],
+       "distance": 0.0001382402721956397,
+       "finer_distance": 3.284265653619978e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_lambda_gl56/quadrature_tighter_c005.npz",
+        "sha256": "0be0dddf686151874fdebd20e4802e72d7a435d6e7ed28f3a1a693b1b4010fdf"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_BDF2_lambda_gl56",
+     "successors": [
+      "W1024_BDF2_lambda_gl64",
+      "W1024_BDF2_lambda_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_lambda_gl64",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 40,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_lambda_gl80",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 40,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_moments_gl56",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 40,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": {
+    "passed": true,
+    "cases": [
+     {
+      "case": 5,
+      "rho": [
+       5.829451466816433e-08,
+       1.1881461141609877e-07,
+       7.45905761500337e-07,
+       1.619612244795967e-05,
+       8.170563279925265e-05,
+       0.0018155389132839313
+      ],
+      "distance": 0.0001434882633485224,
+      "finer_distance": 3.406678849238983e-05,
+      "all_rungs_valid": true,
+      "passed": true,
+      "raw": {
+       "path": "data/W1024_BDF2_moments_gl56/quadrature_c005.npz",
+       "sha256": "6551a10fe517b147b3cd9b0b57acac39734a4948831139bc4c47215f304121ef"
+      }
+     }
+    ],
+    "level": "production",
+    "target": "W1024_BDF2_moments_gl56",
+    "successors": [
+     "W1024_BDF2_moments_gl64",
+     "W1024_BDF2_moments_gl80"
+    ],
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1-case own-new-state common65 Q2 for production; no full-population or native-fine-E0 certificate"
+   },
+   "adaptive_Q2": {
+    "tight": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1881702220858573e-07,
+        7.458765386599113e-07,
+        1.6197786201211305e-05,
+        8.171062123701989e-05,
+        0.0018156240386554307
+       ],
+       "distance": 0.0001433935549539749,
+       "finer_distance": 3.404324463707463e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_moments_gl56/quadrature_tight_c005.npz",
+        "sha256": "c7fe2d342fa82156ff60b56145c750f451bda19d4ed6aa8328844f6cd32bd7b3"
+       }
+      }
+     ],
+     "level": "tight",
+     "target": "W1024_BDF2_moments_gl56",
+     "successors": [
+      "W1024_BDF2_moments_gl64",
+      "W1024_BDF2_moments_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tight; no full-population or native-fine-E0 certificate"
+    },
+    "tighter": {
+     "passed": true,
+     "cases": [
+      {
+       "case": 5,
+       "rho": [
+        5.829451466816433e-08,
+        1.1881702477613062e-07,
+        7.458765392819688e-07,
+        1.6197786199978435e-05,
+        8.171062123994062e-05,
+        0.0018156240386915012
+       ],
+       "distance": 0.00014339355495877882,
+       "finer_distance": 3.4043244638735626e-05,
+       "all_rungs_valid": true,
+       "passed": true,
+       "raw": {
+        "path": "data/W1024_BDF2_moments_gl56/quadrature_tighter_c005.npz",
+        "sha256": "82470612d3549be3a0d9f049b88fa6f5de620d001a9692b6a01979d605ca5f45"
+       }
+      }
+     ],
+     "level": "tighter",
+     "target": "W1024_BDF2_moments_gl56",
+     "successors": [
+      "W1024_BDF2_moments_gl64",
+      "W1024_BDF2_moments_gl80"
+     ],
+     "case_ids": [
+      5
+     ],
+     "case_count": 1,
+     "scope": "1-case own-new-state common65 Q2 for tighter; no full-population or native-fine-E0 certificate"
+    }
+   },
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_moments_gl64",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 40,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 0
+   }
+  },
+  {
+   "query": "W1024_BDF2_moments_gl80",
+   "case_ids": [
+    5
+   ],
+   "case_count": 1,
+   "production_Q1": {
+    "passed": true,
+    "nonstationary": 0,
+    "steps": 40,
+    "case_ids": [
+     5
+    ],
+    "case_count": 1,
+    "scope": "1 exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64"
+   },
+   "production_Q2": null,
+   "adaptive_Q2": {},
+   "anchor_usable_by_case": {
+    "5": true
+   },
+   "production_bad_steps_by_case": {
+    "5": 0
+   }
+  }
+ ],
+ "critical_time_projection_geometry": [
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 0,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0025940313888456346,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0019960170218370067,
+   "max_Pythagorean_squared_defect": 1.08039052422286e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 0,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.00259419631944184,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0019962313615791674,
+   "max_Pythagorean_squared_defect": 1.0905549195899117e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 0,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0025941963174463114,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.001996231358985881,
+   "max_Pythagorean_squared_defect": 1.08039052422286e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05581723707121685,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.053357387975582864,
+   "max_Pythagorean_squared_defect": 2.4657129094572683e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05585014365622905,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05339181064296164,
+   "max_Pythagorean_squared_defect": 2.445384118723165e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.055850014596025635,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.053391675640391024,
+   "max_Pythagorean_squared_defect": 3.0357660829594124e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 30,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.021004164889975706,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018908789899829165,
+   "max_Pythagorean_squared_defect": 2.2751304963250507e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 30,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.021003456012409872,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018908002464983687,
+   "max_Pythagorean_squared_defect": 2.298847418848171e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 30,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.021003445856553213,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018907991183617447,
+   "max_Pythagorean_squared_defect": 2.2768245622195593e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 43,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020790529277894838,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.015571543960141052,
+   "max_Pythagorean_squared_defect": 2.710505431213761e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 43,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020784936433191594,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.015564075821564804,
+   "max_Pythagorean_squared_defect": 2.710505431213761e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_baseline_gl56",
+   "case": 43,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020784936336216208,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.015564075692059707,
+   "max_Pythagorean_squared_defect": 2.846030702774449e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 0,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0024027578497375253,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0017402098694185484,
+   "max_Pythagorean_squared_defect": 8.762555839345737e-19,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 0,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0024027771170345865,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.001740236472233439,
+   "max_Pythagorean_squared_defect": 8.898081110906425e-19,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 0,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0024027771164842316,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.001740236471473553,
+   "max_Pythagorean_squared_defect": 8.580443755686062e-19,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.054312921015402235,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05178165975070489,
+   "max_Pythagorean_squared_defect": 2.2802126940085765e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.054343707291887595,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05181395004763491,
+   "max_Pythagorean_squared_defect": 2.6020852139652106e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05434359085871348,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05181382792973026,
+   "max_Pythagorean_squared_defect": 3.0357660829594124e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 30,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02026095150687434,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018079644595912464,
+   "max_Pythagorean_squared_defect": 1.844837759119866e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 30,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020260181218220638,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.01807878136782823,
+   "max_Pythagorean_squared_defect": 1.9193766584782446e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 30,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020260171981697536,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018078771016818453,
+   "max_Pythagorean_squared_defect": 1.909212263111193e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 43,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020192255290448376,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.014763266825545181,
+   "max_Pythagorean_squared_defect": 2.3310346708438345e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 43,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020185795648132384,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.014754430507334495,
+   "max_Pythagorean_squared_defect": 2.3852447794681098e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_composite_gl56",
+   "case": 43,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02018579397048318,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.014754428212113055,
+   "max_Pythagorean_squared_defect": 2.3852447794681098e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_lambda_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.054319080638989534,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05178812044067149,
+   "max_Pythagorean_squared_defect": 2.2708953315887792e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_lambda_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.054349875380573,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.051820419249522326,
+   "max_Pythagorean_squared_defect": 2.6020852139652106e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_lambda_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05434975886154635,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05182029704296073,
+   "max_Pythagorean_squared_defect": 2.6020852139652106e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_moments_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.055810668449799795,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05335051649352543,
+   "max_Pythagorean_squared_defect": 2.411502800832993e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_moments_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.055843565923731,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05338493001204121,
+   "max_Pythagorean_squared_defect": 2.433949173935232e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_CN_moments_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05584343695708039,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.053384795105833854,
+   "max_Pythagorean_squared_defect": 2.40599708667584e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 0,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0025841507646540782,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.001983159166483799,
+   "max_Pythagorean_squared_defect": 1.6589140271975472e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 0,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0025841036658889737,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0019830977941612624,
+   "max_Pythagorean_squared_defect": 1.6483261153568685e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 0,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0025841036658889737,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0019830977941612624,
+   "max_Pythagorean_squared_defect": 1.6483261153568685e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05590069680837328,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05344468917464227,
+   "max_Pythagorean_squared_defect": 4.772183624830728e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.055898518390882786,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05344241064555669,
+   "max_Pythagorean_squared_defect": 4.802676810931883e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05589851839156181,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.053442410646266925,
+   "max_Pythagorean_squared_defect": 4.8551928536616495e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 30,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02095012805098096,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.01884874685763206,
+   "max_Pythagorean_squared_defect": 5.265156800132731e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 30,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02095008313558341,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018848696934760538,
+   "max_Pythagorean_squared_defect": 5.197394164352387e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 30,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020950083136270455,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018848696935524174,
+   "max_Pythagorean_squared_defect": 5.227887350453542e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 43,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02063526037278647,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.015363620806967793,
+   "max_Pythagorean_squared_defect": 3.679511122872681e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 43,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02063522405859627,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.015363572032443245,
+   "max_Pythagorean_squared_defect": 3.679511122872681e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_baseline_gl56",
+   "case": 43,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02063522405859627,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.015363572032443245,
+   "max_Pythagorean_squared_defect": 3.679511122872681e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 0,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0024489760411449675,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0018034879415311637,
+   "max_Pythagorean_squared_defect": 1.677972268510769e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 0,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0024489309092312565,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0018034266559343248,
+   "max_Pythagorean_squared_defect": 1.6720430378799889e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 0,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0024489309092312565,
+   "floor_at_same_time": 0.0016567784688528368,
+   "in_span_departure_at_same_time": 0.0018034266559343248,
+   "max_Pythagorean_squared_defect": 1.6720430378799889e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.054378076538879695,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.0518499961946065,
+   "max_Pythagorean_squared_defect": 4.845028458294598e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05437601013807078,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05184782903698116,
+   "max_Pythagorean_squared_defect": 4.875521644395753e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.054376010138717235,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05184782903765914,
+   "max_Pythagorean_squared_defect": 4.811147140404426e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 30,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02022304365646206,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.01803715297605931,
+   "max_Pythagorean_squared_defect": 4.7874302178813055e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 30,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020223004690243334,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018037109287582606,
+   "max_Pythagorean_squared_defect": 4.760325163569168e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 30,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020223004690692607,
+   "floor_at_same_time": 0.009145086508579703,
+   "in_span_departure_at_same_time": 0.018037109288086325,
+   "max_Pythagorean_squared_defect": 4.845028458294598e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 43,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.020089166765897365,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.014621952502851211,
+   "max_Pythagorean_squared_defect": 3.808260130855334e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 43,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02008912815320824,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.014621899452657487,
+   "max_Pythagorean_squared_defect": 4.221612209115433e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_composite_gl56",
+   "case": 43,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.02008912815320824,
+   "floor_at_same_time": 0.013775816721791847,
+   "in_span_departure_at_same_time": 0.014621899452657487,
+   "max_Pythagorean_squared_defect": 4.221612209115433e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_lambda_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05438466312914752,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05185690388929237,
+   "max_Pythagorean_squared_defect": 4.797594613248357e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_lambda_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.054382594999701134,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05185473494497845,
+   "max_Pythagorean_squared_defect": 4.777265822514254e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_lambda_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05438259500034721,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05185473494565602,
+   "max_Pythagorean_squared_defect": 4.81792340398246e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_moments_gl56",
+   "case": 5,
+   "level": "production",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05589369034888236,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05343736069576411,
+   "max_Pythagorean_squared_defect": 4.8382521947165635e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_moments_gl56",
+   "case": 5,
+   "level": "tight",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.05589151374291292,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05343508403461787,
+   "max_Pythagorean_squared_defect": 4.814535272193443e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  },
+  {
+   "query": "W1024_BDF2_moments_gl56",
+   "case": 5,
+   "level": "tighter",
+   "physical_max_output_index": 5,
+   "time": 0.25,
+   "error_at_max": 0.0558915137435919,
+   "floor_at_same_time": 0.016387589898687025,
+   "in_span_departure_at_same_time": 0.05343508403532806,
+   "max_Pythagorean_squared_defect": 4.834864062927546e-18,
+   "scope": "common65 orthogonal geometry; no causal dynamical attribution"
+  }
+ ],
+ "cost_summaries": {
+  "M2_N65_mf_gl32": {
+   "descriptor": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.05659855809062719,
+     "5": 0.06277421396225691,
+     "30": 0.06213135551661253,
+     "43": 0.068282057531178
+    },
+    "median_seconds": 0.06245278473943472,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   },
+   "given_native": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.05136413313448429,
+     "5": 0.058227282017469406,
+     "30": 0.056949490681290627,
+     "43": 0.0624277712777257
+    },
+    "median_seconds": 0.057588386349380016,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   }
+  },
+  "M2_N65_mesh_gl32": {
+   "descriptor": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.059812093153595924,
+     "5": 0.0657672118395567,
+     "30": 0.06485022138804197,
+     "43": 0.07027243077754974
+    },
+    "median_seconds": 0.06530871661379933,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   },
+   "given_native": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.05168065149337053,
+     "5": 0.058579797856509686,
+     "30": 0.05717276316136122,
+     "43": 0.06247241701930761
+    },
+    "median_seconds": 0.05787628050893545,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   }
+  },
+  "M2_N129_mf_gl32": {
+   "descriptor": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.05701094772666693,
+     "5": 0.0628698393702507,
+     "30": 0.06211935821920633,
+     "43": 0.06830073054879904
+    },
+    "median_seconds": 0.06249459879472852,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   },
+   "given_native": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.0515593197196722,
+     "5": 0.05846224259585142,
+     "30": 0.05715050268918276,
+     "43": 0.06239149905741215
+    },
+    "median_seconds": 0.05780637264251709,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   }
+  },
+  "M2_N129_mesh_gl32": {
+   "descriptor": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.09995549637824297,
+     "5": 0.10783942881971598,
+     "30": 0.10834647994488478,
+     "43": 0.11254304740577936
+    },
+    "median_seconds": 0.10809295438230038,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   },
+   "given_native": {
+    "complete_case_coverage": true,
+    "per_case_medians": {
+     "0": 0.056752486154437065,
+     "5": 0.06358191929757595,
+     "30": 0.062297129072248936,
+     "43": 0.06729009747505188
+    },
+    "median_seconds": 0.06293952418491244,
+    "aggregation": "median of per-case medians; missing admission on any case leaves cost unresolved"
+   }
+  }
+ },
+ "scientific_status": "independent results audit required; incomplete allocations cannot support publication or cross-job timing"
+}

@@ -14,6 +14,9 @@ def main():
              gpu_hours=sum(e.get('gpu_hours',0.) for e in ledger['entries']),budget_gpu_hours=ledger['budget_gpu_hours'],
              jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],quadrature_witnesses=[],time_diagnostics=[],time_quadrature=[],POD_tuning=[],POD_tuning_jobs=[],full64_frontier=[],mesh_results=[],retention_manifests=[],
              time_intervention_scope='Time-step/method package: dt changes integration, inherited diffusion-scaled residual row weights and time-discrete LSPG directions. Q1/Q2 control nonlinear/quadrature effects; this does not isolate pure temporal truncation.',
+             equation_notes=dict(POD_none='Trial states are restricted to the frozen POD span, but the common LM objective minimizes the full central-FD residual norm. It does not first Galerkin-project the residual. This explicitly corrects ambiguous inherited raw metadata wording without modifying raw results.',
+                 bank='Smooth-test weak residual with analytic continuum advection quadrature and discrete sine diffusion; inherited diffusion-dependent row weighting. No upwind substitution.',
+                 spectral='Frozen3/2 oversampled sine ETDRK4 implementation; no exact de-aliasing claim'),
              next_open=['Full64 paired same-invocation frontier validation running; results audit pending',
                         'Fixed-mode65/129 mesh costs and operator diagnostics: separate code/control/job gates pending'])
     for entry in ledger['entries']:

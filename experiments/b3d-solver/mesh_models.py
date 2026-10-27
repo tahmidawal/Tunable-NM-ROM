@@ -33,7 +33,9 @@ def data_for(lean,base,A=None,lam=None,P=None):
     """New A always receives a new predictor QR; B/D and quadrature projection are frozen."""
     A=lean['A'] if A is None else A;lam=lean['lam'] if lam is None else lam
     d=dict(lean,A=A,lam=lam,B=base['B'],D=base['D'],P=base['P'] if P is None else P,
-           Bw=base['Bw'],Lq=base['Lq'],hmask=(lam>jnp.median(lam)).astype(jnp.float64),**qn3.qr_data(A))
+           hmask=(lam>jnp.median(lam)).astype(jnp.float64),**qn3.qr_data(A))
+    assert ('Bw' in base)==('Lq' in base)
+    if 'Bw' in base:d.update(Bw=base['Bw'],Lq=base['Lq'])
     return ready(d)
 
 @lru_cache(maxsize=None)

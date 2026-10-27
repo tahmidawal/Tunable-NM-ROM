@@ -1,10 +1,17 @@
 {
- "config_sha256": "bc588ccf378b915685c94a043a78bae35d3fc32c5ece21285a295e5bba961776",
+ "config_sha256": "9b47bf91f81c5ed896a58674aca162ae5cdeff6d567d06c10024335bad69a43c",
  "hard_limit_seconds": 5400,
  "memory_guard_bytes": 120000000000,
- "planned_static_bytes": 75299374080,
- "conservative_extra_scratch_bytes": 30000000000,
- "planned_peak_bytes": 105299374080,
+ "planned_static_bytes": 50738586624,
+ "conservative_extra_scratch_bytes": 60000000000,
+ "planned_peak_bytes": 110738586624,
+ "memory_failure_source": {
+  "path": "results/mesh01/raw/output/result.json",
+  "sha256": "198bea837087f7c704004a2cbc542ac9b7dc8a0b41f176512a9006903d26a66b",
+  "peak_bytes": 124156899584,
+  "current_bytes": 73766548224
+ },
+ "lifetime_policy": "W native129 rows freed after derived operators/initial projection; no W quadrature cold-start tables constructed",
  "source_timing": {
   "attempt": "tdiag02",
   "elapsed_seconds": 715,
@@ -17,16 +24,16 @@
  "overhead_assumptions": {
   "native_basis_setup_and_controls_seconds": 600,
   "additional_compile_seconds": 480,
-  "timing_phases_host_IO_seconds": 480,
+  "timing_phases_host_IO_seconds": 600,
   "safety_seconds": 180
  },
- "total_seconds_proxy": 3433.3296794408675,
- "spent_gpu_hours": 0.4633333333333333,
+ "total_seconds_proxy": 3553.3296794408675,
+ "spent_gpu_hours": 0.6180555555555556,
  "full_front_reserved_hours": 3,
  "mesh_reserved_hours": 1.5,
- "total_reservation_hours": 4.963333333333333,
+ "total_reservation_hours": 5.118055555555555,
  "budget_gpu_hours": 8,
- "reservation_margin_seconds": 1966.6703205591325,
+ "reservation_margin_seconds": 1846.6703205591325,
  "reservation_amendment": "coordinator prospectively added30minutes of slack; scientific scope unchanged",
  "scopes": {
   "M2_cells": 48,

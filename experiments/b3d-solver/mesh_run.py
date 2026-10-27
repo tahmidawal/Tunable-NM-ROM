@@ -47,17 +47,30 @@ def setup(cx,result,name,r,rules):
         analytic_advection='unchanged continuum u*(ux+uy+uz) quadrature, not an upwind stencil')
     result['shared_setup'].append(dict(bank=name,seconds=time.perf_counter()-t,before=before,after=memory(),
         scope='shared frozen-bank65 validation and129 basis/Gram/test-moment assembly; cumulative whole-job peak'))
-    norms={65:{},129:{}}
+    norms={65:{},129:{}};init65=[];init129=[]
     for j in cx.cases:
         u129=jnp.asarray(C3.C.initial_interior(129,cx.tab,j));norms[65][j]=float(jnp.linalg.norm(cx.U[j]));norms[129][j]=float(jnp.linalg.norm(u129))
         c65,_=MM.ready(C3.TB.project(cx.U[j],st.lean));c129,_=MM.ready(C3.TB.project(u129,native))
+        init65.append(np.asarray(c65));init129.append(np.asarray(c129))
         result['initial_projection_differences'][f'{name}_native129_c{j}']=dict(common65_distance=float(jnp.linalg.norm((c129-c65)@st.lean['L'])/cx.ref(j)[1]['judge']['n0']),
             used_in_operator_queries=False if name=='W1024' else None,held_projection='native65 for W1024 operator interventions')
+    p=folder/(name+'_initial_projections.npz');np.savez_compressed(p,case_ids=cx.cases,c0_65=np.asarray(init65),c0_129=np.asarray(init129),n0_65=list(norms[65].values()),n0_129=list(norms[129].values()))
+    result['operator_differences'][name]['initial_projections']=dict(path=str(p.relative_to(cx.out)),sha256=sha(p))
     save(cx,result)
-    return SimpleNamespace(name=name,bank=bank,st=st,native=native,k=k,norms=norms)
+    return SimpleNamespace(name=name,bank=bank,st=st,native=native,k=k,norms=norms,held_rule_cache={})
 
 def rule_data(cx,result,b,rule,n,intervention=None):
-    before=memory();t=time.perf_counter();base=b.st.data(rule)
+    before=memory();t=time.perf_counter()
+    if b.name=='W1024':
+        # Wheld never calls a quadrature cold-start projection. Do not allocate
+        # its unused Bw/Lq in an owning cache in the first place.
+        assert not b.st._d
+        if rule not in b.held_rule_cache:
+            X,w=b.st.rules[rule]
+            om=C3.OM.offmesh_tables(65,b.bank['params'],b.bank['T'][:,:b.st.Rp],X,w,b.k)
+            b.held_rule_cache[rule]=MM.ready(dict(b.st.lean,**om))
+        base=b.held_rule_cache[rule];assert 'Bw' not in base and 'Lq' not in base
+    else:base=b.st.data(rule)
     lean=b.st.lean if n==65 else b.native
     P=base['P'] if n==65 else base['P']*np.sqrt(8)
     if n==129:
@@ -80,7 +93,8 @@ def rule_data(cx,result,b,rule,n,intervention=None):
             del native
     else:d=MM.data_for(lean,base,P=P)
     result['incremental_setup'].append(dict(bank=b.name,rule=rule,n=n,intervention=intervention,
-        seconds=time.perf_counter()-t,before=before,after=memory(),predictor_QR='recomputed for actual A',m=len(b.st.rules[rule][1])))
+        seconds=time.perf_counter()-t,before=before,after=memory(),predictor_QR='recomputed for actual A',m=len(b.st.rules[rule][1]),
+        owning_cache_keys=sorted(base),cold_start_tables_built='Bw' in base))
     save(cx,result);return d
 
 def prepare(cx,b,path,n,rule,j):
@@ -104,7 +118,7 @@ def validate(cx,result,b,qid,runner,u,scale,j,o,out_n):
     W=np.asarray(o['W'][:,0]);C=np.asarray(o['W_all'][:,0]);F=np.asarray(o['fields'])
     valid=bool(runner.valid(o) and np.isfinite(F).all())
     gamma=np.asarray(runner.certify(jnp.asarray(C),cx.nu[j],runner.data))
-    arrays=dict(W=W,C=C,fresh_gamma=gamma);anchors={};av=[]
+    arrays=dict(W=W,C=C,fresh_gamma=gamma);anchors={};av=[];anchor_scores={}
     n0=float(cx.ref(j)[1]['judge']['n0']);native_n=129 if b.name=='W1024' else runner.n
     native_n0=b.norms[native_n][j];native_L=b.native['L'] if native_n==129 else b.st.lean['L']
     for label,(query,sch,gt) in runner.anchors.items():
@@ -112,6 +126,10 @@ def validate(cx,result,b,qid,runner,u,scale,j,o,out_n):
         g=np.asarray(runner.certify(jnp.asarray(states),cx.nu[j],runner.data))
         usable=bool(np.isfinite(states).all() and np.isfinite(g).all() and int(a['stats']['nfail'])==0 and np.all(g<=gt))
         anchors[label]=np.asarray(a['W']);av.append(usable)
+        if b.name=='W1024':
+            af=np.asarray(jax.block_until_ready(C3.TB.decode(a['W'],b.st.lean)))
+            anchor_scores[label]=dict(score=score(cx,af,j),output_sha256=ah(af),level=label,gtol=gt,valid=usable,
+                scope='untimed direct common65 decode of already computed adaptive trajectory; no new solve')
         arrays.update({label+'_W':anchors[label],label+'_C':states,label+'_fresh_gamma':g,
                        label+'_step_reason':np.asarray(a['stats']['step_reason'])[:runner.steps],
                        label+'_step_it':np.asarray(a['stats']['step_it'])[:runner.steps]})
@@ -125,7 +143,7 @@ def validate(cx,result,b,qid,runner,u,scale,j,o,out_n):
     row=dict(score=sc,valid=valid,common_distance_tight=common,common_tight_tighter_distance=tt,
         native_distance_tight=native,native_tight_tighter_distance=native_tt,native_initial_norm=native_n0,common_initial_reference_norm=n0,
         native_distance_scope='full returned native field' if out_n==129 else f'additional native{native_n} field-span diagnostic; fixed-output contract judged on65',
-        anchor_usable=usable,anchor_valid=av,nonstationary=int(np.sum(~(gamma<=1e-3))),steps=runner.steps,
+        anchor_usable=usable,anchor_valid=av,anchor_scores=anchor_scores,nonstationary=int(np.sum(~(gamma<=1e-3))),steps=runner.steps,
         common_rollout_check=bool(valid and usable and common<=2.5e-4),
         native_rollout_check=bool(valid and usable and native<=2.5e-4) if out_n==129 else None,
         work=runner.work(o),output_sha256=ah(F),coefficient_sha256=ah(C),
@@ -143,24 +161,34 @@ def qualify(result,qid):
 
 def quadrature(cx,result,b,main_id,definitions,outputs):
     main,next_id,finer_id=definitions
-    rows=[]
-    for j in result['queries'][main_id]['cases']:
-        Wa,Wb,Wc=[outputs[(qid,j)] for qid,runner in definitions]
-        da,db=main[1].data,next_id[1].data
-        va=np.asarray(qn3.adv(jnp.asarray(Wa),da));vb=np.asarray(qn3.adv(jnp.asarray(Wa),db))
-        num=np.linalg.norm(va-vb,axis=1);den=np.linalg.norm(vb,axis=1)
-        rho=np.divide(num,den,out=np.full_like(num,np.inf),where=den>0)
-        rho=np.where((den==0)&(np.linalg.norm(va,axis=1)==0),0.,rho)
-        n0=float(cx.ref(j)[1]['judge']['n0'])
-        dist=MM.metric_distance(Wa,Wb,b.st.lean['L'],n0);fine=MM.metric_distance(Wb,Wc,b.st.lean['L'],n0)
-        valid=all(result['case_results'][qid][str(j)]['valid'] for qid,_ in definitions)
-        p=cx.out/'data'/main_id/f'quadrature_c{j:03d}.npz';np.savez_compressed(p,W=Wa,adv_target=va,adv_successor=vb,rho=rho)
-        rows.append(dict(case=j,rho=rho.tolist(),distance=dist,finer_distance=fine,all_rungs_valid=valid,
-            passed=bool(valid and np.isfinite(rho).all() and rho.max()<=.116 and dist<=2.5e-4 and fine<=2.5e-4),
-            raw=dict(path=str(p.relative_to(cx.out)),sha256=sha(p))))
-    result['queries'][main_id]['Q2']=dict(passed=all(r['passed'] for r in rows),cases=rows,
-        target=main[0],successors=[next_id[0],finer_id[0]],case_ids=result['queries'][main_id]['cases'],case_count=len(rows),
-        scope=f'{len(rows)}-case own-new-state Q2; successor stationarity retained separately, no full-population certificate')
+    for level in (['production','tight','tighter'] if b.name=='W1024' else ['production']):
+        rows=[]
+        for j in result['queries'][main_id]['cases']:
+            if level=='production':Wa,Wb,Wc=[outputs[(qid,j)] for qid,runner in definitions]
+            else:
+                weights=[]
+                for qid,_ in definitions:
+                    with np.load(cx.out/'data'/qid/f'c{j:03d}'/'trajectory.npz',allow_pickle=False) as z:weights.append(z[level+'_W'])
+                Wa,Wb,Wc=weights
+            da,db=main[1].data,next_id[1].data
+            va=np.asarray(qn3.adv(jnp.asarray(Wa),da));vb=np.asarray(qn3.adv(jnp.asarray(Wa),db))
+            num=np.linalg.norm(va-vb,axis=1);den=np.linalg.norm(vb,axis=1)
+            rho=np.divide(num,den,out=np.full_like(num,np.inf),where=den>0)
+            rho=np.where((den==0)&(np.linalg.norm(va,axis=1)==0),0.,rho)
+            n0=float(cx.ref(j)[1]['judge']['n0'])
+            dist=MM.metric_distance(Wa,Wb,b.st.lean['L'],n0);fine=MM.metric_distance(Wb,Wc,b.st.lean['L'],n0)
+            valid=all(result['case_results'][qid][str(j)]['valid'] if level=='production' else
+                result['case_results'][qid][str(j)]['anchor_scores'][level]['valid'] and result['case_results'][qid][str(j)]['anchor_usable'] for qid,_ in definitions)
+            suffix='' if level=='production' else '_'+level
+            p=cx.out/'data'/main_id/f'quadrature{suffix}_c{j:03d}.npz';np.savez_compressed(p,W=Wa,adv_target=va,adv_successor=vb,rho=rho)
+            rows.append(dict(case=j,rho=rho.tolist(),distance=dist,finer_distance=fine,all_rungs_valid=valid,
+                passed=bool(valid and np.isfinite(rho).all() and rho.max()<=.116 and dist<=2.5e-4 and fine<=2.5e-4),
+                raw=dict(path=str(p.relative_to(cx.out)),sha256=sha(p))))
+        record=dict(passed=all(r['passed'] for r in rows),cases=rows,level=level,
+            target=main[0],successors=[next_id[0],finer_id[0]],case_ids=result['queries'][main_id]['cases'],case_count=len(rows),
+            scope=f'{len(rows)}-case own-new-state common65 Q2 for {level}; no full-population or native-fine-E0 certificate')
+        if level=='production':result['queries'][main_id]['Q2']=record
+        else:result['queries'][main_id].setdefault('anchor_Q2',{})[level]=record
     save(cx,result)
 
 def timings(cx,result,b,qid,runner,path,n,rule,anchor,anchor_prepare):
@@ -205,6 +233,7 @@ def run(cx):
     assert cx.cases==[0,5,30,43]
     cx.rep['scope']='fixed-mode65/129 mesh campaign on four exposed cases with case5-only operator interventions; per-query masks carry exact populations'
     assert cx.cfg['nodes']==[65,129] and cx.cfg['timing_repetitions']==cx.cfg['phase_repetitions']==3
+    assert cx.cfg['memory_lifetime_policy']==dict(W_native_GT='release_after_operators_and_initial_projections',W_cold_start='never_construct_for_held_path')
     assert cx.cfg['M2']==dict(r=512,M=2052,rules=['gl32','gl40','gl48'],scheme='BDF2',dt=.05/3,refresh=4,contracts=['mf','mesh'])
     assert cx.cfg['W1024']==dict(r=1024,M=4097,rules=['gl56','gl64','gl80'],schemes=[['CN',.01,'fs',1],['BDF2',.00625,'qn',1]],interventions=['baseline','composite','lambda','moments'],held_projection_nodes=65)
     identity=__import__('json').loads((cx.out/'cohort_identity.json').read_text())
@@ -215,7 +244,7 @@ def run(cx):
         contracts=dict(mf='analytic initial values at fixed Gauss points; fixed63^3 device output',mesh='entire native mesh input and growing full native device output',
             held='supplied fixed65-projected coefficients; operator intervention, not end-to-end growing-mesh query',normalisation_scalar='canonical s_star supplied in common offline descriptor'),
         frozen_modes={},shared_setup=[],incremental_setup=[],queries={},case_results={},timing_repetitions=[],phase_repetitions=[],
-        operator_differences={},initial_projection_differences={},projection_budgets={},execution=dict(complete=False,source_commit=cx.rep['source_commit'],job_id=cx.rep['job_id'],gpu=cx.rep['gpu'],config_sha256=cx.rep['config_sha256']))
+        operator_differences={},initial_projection_differences={},projection_budgets={},execution=dict(complete=False,source_commit=cx.rep['source_commit'],job_id=cx.rep['job_id'],gpu=cx.rep['gpu'],config_sha256=cx.rep['config_sha256'],memory_lifetime_policy=cx.cfg['memory_lifetime_policy'],retry_of=cx.cfg['retry_of']))
     projection=ProjectionBudget(cx,result);save(cx,result)
     b=setup(cx,result,'M2',512,['gl32','gl40','gl48']);runners={};outputs={}
     for n in (65,129):
@@ -258,6 +287,11 @@ def run(cx):
         result['cost_summaries'][qid]=costs
     del b,runners,outputs,defs,q,d,anchor,o,u;gc.collect()
     b=setup(cx,result,'W1024',1024,['gl56','gl64','gl80']);outputs={};runners={}
+    before=memory();expected=sum(g.size*g.dtype.itemsize for g in b.native['GTb'])
+    del b.native['GTb'];gc.collect();after=memory();released=before['current_bytes']-after['current_bytes']
+    result['operator_differences']['W1024']['native_basis_lifetime']=dict(before=before,after=after,expected_unused_bytes=expected,measured_released_bytes=released,
+        retained_native_keys=sorted(b.native),scope='129 GT rows released only after moments/Gram/initial projections; all Wheld outputs and oracle checks use65 rows')
+    save(cx,result);assert released>=.99*expected,'native129 rows still referenced after planned release'
     for scheme,dt,solver,policy in [('CN',.01,'fs',1),('BDF2',.00625,'qn',1)]:
         for intervention,cases in [('baseline',cx.cases),('composite',cx.cases),('lambda',[5]),('moments',[5])]:
             defs=[]

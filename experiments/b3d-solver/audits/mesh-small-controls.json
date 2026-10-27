@@ -43,5 +43,29 @@
  ],
  "changed_A_predictor_QR_relative": 0.0,
  "lambda_also_changes_row_weights": true,
- "native129_returned_field_restriction_pass": true
+ "native129_returned_field_restriction_pass": true,
+ "held_full_vs_lean_controls": [
+  {
+   "solver": "qn",
+   "state_exact": true,
+   "fields_exact": true,
+   "fresh_certificate_exact": true,
+   "lean_cache_keys": [
+    "B",
+    "D",
+    "P"
+   ]
+  },
+  {
+   "solver": "fs",
+   "state_exact": true,
+   "fields_exact": true,
+   "fresh_certificate_exact": true,
+   "lean_cache_keys": [
+    "B",
+    "D",
+    "P"
+   ]
+  }
+ ]
 }

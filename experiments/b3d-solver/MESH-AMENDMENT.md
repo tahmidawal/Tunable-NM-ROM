@@ -50,3 +50,19 @@ in blocks at most256; no cubic advection tensor. Stop on integrity/nonfinite/exh
 anchor or memory failure and retain raw evidence. Full64 frontier remains higher priority.
 The coordinator prospectively raised the earlier60minute reservation to90minutes to
 leave margin above the generated planning proxy; no method, case or search was added.
+
+The first allocation stopped at the unchanged memory guard. `MEMORY-REPAIR.json`
+binds the failed snapshots and superseded estimate. The retry changes only lifetime:
+after deriving native129 moments, Gram and initial projections, discard W1024 native129
+feature rows that no held-coefficient query uses. Preserve the native Gram and norms
+for field-span distances. Build the owning W rule cache without unused quadrature
+cold-start tables. The full M2 native input/output path retains its required rows.
+Record actual bytes released and cache keys; full-versus-lean synthetic states, fields
+and fresh certificates must agree exactly. All numerical equations, predictors, inputs,
+modes, rules and qualification thresholds remain fixed.
+
+Production stationarity misses remain visible with their exact subset population.
+Score the already computed verified tight/tighter trajectories by untimed common65
+decode, and check each anchor level's own quadrature distances and advection ratios.
+These measurements add no solve or candidate and do not transfer a production
+quadrature certificate to a different trajectory.

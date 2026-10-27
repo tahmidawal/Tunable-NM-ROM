@@ -41,6 +41,14 @@ def main():
         source_field_relative=MM.relative(o['fields'],expected['fields'][0]),
         held_state_relative=MM.relative(h['W_all'],o['W_all']),split_fused_relative=MM.relative(F,o['fields']))
     assert max(controls.values())<=1e-12,controls
+    leanbase={k:v for k,v in base.items() if k not in ('Bw','Lq')};ld=MM.data_for(lean,leanbase)
+    lifetime=[]
+    for test_sp in [sp,('fs','CN',.01,1)]:
+        full=MM.make(st,test_sp,'held',5,d,d);light=MM.make(st,test_sp,'held',5,ld,ld)
+        fo=MM.ready(full.run(c0[0],nu,scale[0]));lo=MM.ready(light.run(c0[0],nu,scale[0]))
+        fg=np.asarray(full.certify(fo['W_all'][:,0],nu,d));lg=np.asarray(light.certify(lo['W_all'][:,0],nu,ld))
+        assert np.array_equal(fo['W_all'],lo['W_all']) and np.array_equal(fo['fields'],lo['fields']) and np.array_equal(fg,lg)
+        lifetime.append(dict(solver=test_sp[0],state_exact=True,fields_exact=True,fresh_certificate_exact=True,lean_cache_keys=sorted(leanbase)))
     for label,(query,sch,gt) in q.anchors.items():
         a=MM.ready(query(u,nu,0.,d,sch));gamma=np.asarray(q.certify(a['stats']['states'],nu,d))
         controls[label+'_fresh_gamma_max']=float(gamma.max())
@@ -59,7 +67,7 @@ def main():
     restricted=MM.restrict(fields,129);want=flat.reshape(127,127,127)[1::2,1::2,1::2].reshape(-1)
     assert restricted.shape==(6,63**3) and np.array_equal(restricted[0],want)
     out=dict(passed=True,synthetic_only=True,x64=True,wrapper_controls=controls,normalization_controls=normalization,
-        changed_A_predictor_QR_relative=qr,lambda_also_changes_row_weights=True,native129_returned_field_restriction_pass=True)
+        changed_A_predictor_QR_relative=qr,lambda_also_changes_row_weights=True,native129_returned_field_restriction_pass=True,held_full_vs_lean_controls=lifetime)
     p=HERE/'audits/mesh-small-controls.json';p.write_text(json.dumps(out,indent=1)+'\n');print(json.dumps(out))
 
 if __name__=='__main__':main()

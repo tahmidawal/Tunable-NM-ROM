@@ -1,0 +1,36 @@
+{
+ "status": "memory-lifetime amendment design READY; source/control/job audits required",
+ "failed_attempt": "mesh01",
+ "job_id": "6541155",
+ "sources": {
+  "context_result": {
+   "path": "results/mesh01/raw/output/result.json",
+   "sha256": "198bea837087f7c704004a2cbc542ac9b7dc8a0b41f176512a9006903d26a66b",
+   "peak_bytes": 124156899584,
+   "current_bytes": 73766548224
+  },
+  "mesh_result": {
+   "path": "results/mesh01/raw/output/mesh_result.json",
+   "sha256": "ede9d1d0464e52c0a0a396587075ae7ffe849dd8af9072b34c1995a0428f6260"
+  }
+ },
+ "failing_query": "W1024_CN_baseline_gl80",
+ "failing_case": 5,
+ "recorded_current_bytes": 73766548224,
+ "recorded_peak_bytes": 124156899584,
+ "guard_bytes": 120000000000,
+ "M2_release_before_W_bytes": 8028672,
+ "proposed_release_native_W129_GT_bytes": 16780353536,
+ "proposed_avoid_unused_W_Bw_bytes": 7780433920,
+ "projected_old_peak_minus_removed_bytes": 99596112128,
+ "measured_scratch_above_current_bytes": 50390351360,
+ "new_conservative_scratch_assumption_bytes": 60000000000,
+ "historical_estimate_retraction": "Original planning peak105.30GB underpredicted recorded peak124.16GB; it was not a measured standalone method memory claim.",
+ "preserve": [
+  "all numerical kernels and held c0",
+  "all trial/test modes, quadrature and predictor equations",
+  "all tolerances and120GB guard",
+  "native A/L/lambda/norms after GT release"
+ ],
+ "scientific_interpretation": "None from incomplete allocation; all fields/logs/costs retained; no cross-job timing."
+}

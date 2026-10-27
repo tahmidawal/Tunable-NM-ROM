@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/experiments/b3d-solver/run.py", line 344, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/experiments/b3d-solver/run.py", line 329, in main
+    mesh_run.run(cx)
+    ~~~~~~~~~~~~^^^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/experiments/b3d-solver/mesh_run.py", line 273, in run
+    row,W=validate(cx,result,b,qid,q,c0,scale,j,o,65);outputs[(qid,j)]=W
+          ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/experiments/b3d-solver/mesh_run.py", line 133, in validate
+    result['case_results'].setdefault(qid,{})[str(j)]=row;save(cx,result)
+                                                          ~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/experiments/b3d-solver/mesh_run.py", line 24, in save
+    C3.C.dump(cx.out/'mesh_result.json',C3.C.clean(result));cx.save()
+                                                            ~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/experiments/b3d-solver/run.py", line 97, in save
+    if overrun and 'failure' not in self.rep:raise MemoryError('recorded device peak exceeds frozen memory limit')
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+MemoryError: recorded device peak exceeds frozen memory limit

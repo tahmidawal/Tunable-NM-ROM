@@ -31,3 +31,11 @@ This is a ceiling, not a commitment to spend it. No broad dependency changes or 
 
 Full transient/unsteady and larger 3D stages remain conditional on numerical and resource
 gates. Any stage failing its declared stop rule is recorded, not repeatedly optimized away.
+
+## Review and current release
+
+`DESIGN.md` with A1/A2 and `campaign.json` are the authoritative prospective contract.
+Discovery proposals are preserved as history and do not override these files. Independent
+Codex numerical and physics reviews permit reference/control implementation; code, exact
+job configuration and required Claude design review remain necessary before numerical
+submission. No production data, bank fitting or performance claim is released.

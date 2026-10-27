@@ -1,0 +1,106 @@
+# Design review: obstacle-flow ROM comparison
+
+**Verdict:** The plan is sound enough to release **(A)** with the fixes below. **(B)** is blocked for 3D until the solver and memory plan is made feasible. **(C)** should stay withheld.
+
+## (A) Release to implement reference and analytic controls
+
+1. **Force sign and normal convention is ambiguous as written.**
+   - "∫σ n_solid, normals solid→fluid" is correct: the normal points out of the body. But code usually has the fluid-domain outward normal, which is −n.
+   - Fix: state the sign once in executable form, F = −∫ σ n_fluid ds.
+   - Pin the sign with an analytic test before any DFG run, such as a Stokes sphere or cylinder drag sign check, or the Poiseuille wall shear on a channel wall.
+
+2. **The gradient-form and symmetric-form forces are not two physical quantities.**
+   - On a rigid no-slip surface, tangential derivatives vanish, so ∇u = (∂ₙu)⊗n.
+   - Then (∇uᵀn) = n(∂ₙu·n) = n·div u = 0.
+   - So the two forces are identical in the continuum. Their discrete difference is a divergence and trace-error diagnostic.
+   - Fix: gate it as a diagnostic (for example, ≤ the drag tolerance/10 at the finest level). Don't report "two forces."
+   - Note that the weak-reaction force inherits the bilinear form used. The gradient form gives the gradient-form force, so pair it with the matching direct surface integral.
+
+3. **The global mass gate cannot detect discretization error.**
+   - Taylor–Hood's continuous pressure space contains constants, so ∫div u = 0 holds up to algebra and quadrature.
+   - Keep the gate, but label it an algebra/quadrature check. The local ‖div u‖ gate is the discretization check.
+
+4. **The manufactured solution must exercise the curved obstacle.**
+   - A rectangle or box MMS does not test curved Dirichlet trace imposition, geometry order, or surface-force quadrature.
+   - Fix: add one divergence-free MMS on the actual obstacle domain. Use nonzero Dirichlet data on the curved boundary, nonzero outlet gradient traction, and check the force against the analytic surface integral.
+
+5. **Geometry order must be matched.**
+   - Freeze Netgen curve order equal to the velocity order: 3 for P3/P2 and 4 for P4/P3.
+   - Otherwise the p cross-check measures geometry error, not discretization.
+
+6. **The 3D Stokes-limit anchor is weak.** Barber/Emerson is correctly auxiliary but low-precision.
+   - Fix: add a Stokes (Re→0) run of the exact 3D geometry, on a long domain, compared with a Haberman–Sayre-type series wall correction for a fixed sphere centered in Poiseuille flow.
+   - Freeze the velocity convention (mean versus centerline) before comparing. It differs by a factor of 2, which likely explains the 3.241 figure.
+   - This is analytic-grade, not a rounded table.
+
+## (B) First bounded reference smoke
+
+7. **The 3D direct-solver feasibility is a hard blocker.**
+   - Rough P3 estimate in 3D: about 13.5 velocity DOFs per tetrahedron.
+   - A modest 200k-tet mesh gives about 3M DOFs. Sparse LU fill for 3D P3 at that size far exceeds 64 GiB.
+   - P4/P3 and three h-levels are worse. "Sparse-direct small control" leaves the finest 3D solver unspecified.
+   - Fix: before any 3D smoke, freeze a memory/fill extrapolation from the two coarsest levels. Then either:
+     - prospectively declare an iterative solver (for example, block-preconditioned GMRES with its own tolerance gate), or
+     - limit the 3D pilot to levels that fit, with "unverified at finest" recorded.
+
+8. **The 3D case is axisymmetric.**
+   - A centered sphere in a pipe at Re 10 is steady and axisymmetric.
+   - A meridional 2D axisymmetric Taylor–Hood solve is the natural independent reference: cheap, many h/p levels.
+   - Use it as the 3D reference cross-check, not only as a future cost comparator.
+   - Zero transverse force is then a symmetry check. That supports the 2e−4 transverse gate.
+   - It also means any 3D ROM claim is effectively 2D in content. State that.
+
+9. **Budget accounting.**
+   - CPU finite-element jobs on the GPU partition consume the 8 reference GPU-hours inefficiently.
+   - Fix: run the 2D DFG ladder first as the smoke. It needs seconds to minutes per solve.
+   - Release 3D only after the 2D reference passes and the item 7 extrapolation fits.
+
+10. **Uncertainty estimate.**
+    - The formula is fine as a conditional estimate.
+    - Require that the observed h-convergence order on drag and Δp is within a frozen band of the expected rate (for example, ≥ expected − 1). "Decreasing differences" alone can pass pre-asymptotic noise.
+
+11. **DFG Re 20 is a training point** (j = 4).
+    - Every training, development and validation Re needs the same reference gates, not only DFG.
+    - Run Newton by Re-continuation from the Stokes lift and freeze that path.
+
+## (C) Training and claims (keep withheld)
+
+12. **A missing strong baseline makes the comparison weak.**
+    - The parametric manifold is a smooth 1D family of steady fields. Nine snapshots over Re 15–25 is very easy for POD.
+    - Plain snapshot interpolation in Re (Chebyshev or spline of the fields, or of POD coefficients) will likely reach 10⁻⁴ with no PDE solve.
+    - Fix: add it as a mandatory zero-solve competitor. Any bank or POD claim must beat it.
+    - All validation Re are interior, so claims are interpolation-only. State that.
+
+13. **POD is handicapped by the bank's test space.**
+    - Running POD only in the 80-test whitened least-squares setup is not "POD at its best."
+    - Fix: also report standard POD-Galerkin/LSPG with supremizers on the full finite-element residual, as a separately labeled control.
+
+14. **Online cost cannot separate bank from POD.**
+    - Exact quadratic reduced tensors make the online solve identical in cost for both at equal size d.
+    - Bank-versus-POD cost differences reduce to reconstruction and query cost: network evaluation versus finite-element interpolation at probes and quadrature.
+    - Fix: state this up front. A cost advantage for the bank can only come from reconstruction, so frame it that way.
+
+15. **The representation floor should be an early-stop gate.**
+    - A 1×64 tanh bank fitted for 3000 steps is unlikely to match an 8-mode POD floor (probably 10⁻⁶ or better).
+    - Fix: if the bank's frozen representation floor exceeds the comparison tolerance/5, stop the bank branch before reduced solves.
+    - Also freeze input coordinate normalization and the "ordered" fitting objective (greedy or sequential residual projection) explicitly.
+
+16. **The test functions are underspecified.**
+    - Freeze how the 64 momentum tests split per component (32×2 in 2D; 3D only if a 3D ROM exists).
+    - They must vanish on all Dirichlet boundaries and remain free at the outlet.
+    - Freeze the continuity test set. With a natural outlet, the constant test is not a kernel mode.
+
+17. **The hyperreduction moments are ill-defined.**
+    - "Fitted positive training-output moments" needs an exact definition.
+    - Fit to integrands of the reduced tensors and force functionals on training states, under the item 13 operator-error gate. Otherwise fitting can pass while tensor error fails.
+
+18. **Dominance claims.**
+    - "Competitor upper error ≤ bank lower error" is good.
+    - Use the same validation states and the same uncertainty bars for the FOM ladder.
+    - A tuned-coarse FOM that meets the same error tolerance is the correct cost comparator. Keep the high-order ladder optional.
+
+## Minor
+
+- **Ramp:** sin²(πt/2) is C¹ but has a second-derivative jump at t = 0 and t = 1. This is fine for second order, but put t = 1 exactly on all dt grids (it is) and verify order on post-ramp outputs.
+- **Outlet:** The natural gradient outlet has no backflow risk at Re ≤ 25 with x = 2.2. Record a backflow check anyway (∫ min(u·n, 0) at the outlet).
+- **Domain checks:** Compare on the common subdomain with matched mesh in the overlap. Otherwise mesh differences contaminate the domain-sensitivity result.

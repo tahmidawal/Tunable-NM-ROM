@@ -28,6 +28,8 @@ def main():
             if z['config']['mode']==mode and actual.exists():
                 out[collection].append(dict(source=source,result=dict(path=str(actual.relative_to(HERE)),sha256=sha(actual)),
                     independent_audit=audits['jobs'].get(entry['attempt'],{}),complete=json.loads(actual.read_text())['execution']['complete']))
+                summary=rp.parents[2]/'SUMMARY.json'
+                if summary.exists():out[collection][-1]['summary']=dict(path=str(summary.relative_to(HERE)),sha256=sha(summary))
         if z['config']['mode']=='pod_tune':
             out['POD_tuning_jobs'].append(dict(source=source,scope=z['scope'],execution_complete=z['complete'],failure=z.get('failure'),
                 selection=z.get('selection',{}),frozen_picks=z.get('frozen_picks',[]),identity_probes=z.get('identity_probes',{})))

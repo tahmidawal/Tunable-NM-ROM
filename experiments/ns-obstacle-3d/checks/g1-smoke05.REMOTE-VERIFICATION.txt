@@ -1,0 +1,29 @@
+CAMPAIGN.predata-A3.json: OK
+DEPENDENCIES.discovery.json: OK
+DEPENDENCY-REPAIR.json: OK
+SOURCE_COMMIT.txt: OK
+cluster/g1-smoke05.sbatch: OK
+configs/g1-smoke05.json: OK
+install_deps.py: OK
+reference3d.py: OK
+requirements.lock: OK
+72d964fc372c0ba4af96444747eb1377ccf806cefa3ef2dfb2cd8fe7d539fd53  INPUTS.sha256
+81f66e6d587be0e8e7d2821a23b4cfe585bb6b0ac86e1d526f4db8d647aa8350  reference3d.py
+b5c313356a7cb84e5e4dbeb701b4dc55e889b0cadeb43e14135032eca3709455  SOURCE_COMMIT.txt
+7a5a6e4277aa3c532c4b0d19c20c3cf118f1f18b
+dependency_state=not_installed_or_run
+             JOBID                                     NAME        STATE         TIME NODELIST(REASON)
+           6567730                           b2dr_inputplus      PENDING         0:00 (Priority)
+           6567523                               br3_prep01      RUNNING        15:15 pax008
+Filesystem                      1024-blocks       Used  Available Capacity Mounted on
+10.235.106.20:/projects/paralab  4882812928 1462752256 3420060672      30% /cluster/tufts/paralab
+CAMPAIGN.predata-A3.json
+DEPENDENCIES.discovery.json
+DEPENDENCY-REPAIR.json
+INPUTS.sha256
+SOURCE_COMMIT.txt
+cluster/g1-smoke05.sbatch
+configs/g1-smoke05.json
+install_deps.py
+reference3d.py
+requirements.lock

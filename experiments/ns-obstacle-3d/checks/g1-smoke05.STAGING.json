@@ -1,0 +1,74 @@
+{
+  "status": "remote_staged_checksums_verified_not_submitted",
+  "recorded_utc": "2026-10-27T21:08:07.097988+00:00",
+  "reviewed_commit": "7a5a6e4277aa3c532c4b0d19c20c3cf118f1f18b",
+  "source_sha256": "81f66e6d587be0e8e7d2821a23b4cfe585bb6b0ac86e1d526f4db8d647aa8350",
+  "input_manifest_sha256": "72d964fc372c0ba4af96444747eb1377ccf806cefa3ef2dfb2cd8fe7d539fd53",
+  "remote_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke05",
+  "transfer_method": "scp directly to unique paralab directory; no login temporary staging",
+  "target_pre_stage": "absent",
+  "pre_stage_queue_ids": [
+    6567730,
+    6567523
+  ],
+  "post_stage_queue_ids": [
+    6567730,
+    6567523
+  ],
+  "disk_checks": "raw df output preserved in PRE-STAGE and REMOTE-VERIFICATION receipts",
+  "dependencies_installed": false,
+  "job_submitted": false,
+  "remote_all_input_checksums_verified": true,
+  "prior_staged_g1_smoke01": "untouched",
+  "remaining_execution_gates": [
+    "2D G1 pass",
+    "coordinator explicit execution release"
+  ],
+  "files": [
+    {
+      "path": "CAMPAIGN.predata-A3.json",
+      "sha256": "7df6e1f87e2cb9feee8c1bf55a2da8d37c6537c6eef318370b6c13016f5920a0",
+      "bytes": 5503
+    },
+    {
+      "path": "DEPENDENCIES.discovery.json",
+      "sha256": "547cb7ad225cddf2a88589e0c1bc09c8356a7b3bbd82ca30e853c14fbdc81fa2",
+      "bytes": 4064
+    },
+    {
+      "path": "DEPENDENCY-REPAIR.json",
+      "sha256": "c3176cdbd3a351cb84a0361d53241adf75d77acc13a095ab6cf32b6bef5652b0",
+      "bytes": 694
+    },
+    {
+      "path": "SOURCE_COMMIT.txt",
+      "sha256": "b5c313356a7cb84e5e4dbeb701b4dc55e889b0cadeb43e14135032eca3709455",
+      "bytes": 41
+    },
+    {
+      "path": "cluster/g1-smoke05.sbatch",
+      "sha256": "9dc98a082d207a36fa0149569b6eeacb271c593aa662696452ba8fd7367e9aad",
+      "bytes": 1986
+    },
+    {
+      "path": "configs/g1-smoke05.json",
+      "sha256": "008e39b94068fc896b94aae3b1e9baa0c000fa612170f0f16adc83e10ccf5ca9",
+      "bytes": 2207
+    },
+    {
+      "path": "install_deps.py",
+      "sha256": "2e01600450d2eb9473276972a6a98aa442284b63c11795afeceaf5b9d5dda747",
+      "bytes": 8810
+    },
+    {
+      "path": "reference3d.py",
+      "sha256": "81f66e6d587be0e8e7d2821a23b4cfe585bb6b0ac86e1d526f4db8d647aa8350",
+      "bytes": 42561
+    },
+    {
+      "path": "requirements.lock",
+      "sha256": "662f98254fdc5a52c3059246361c3694f69d82a9067f9e5cb80de3b8664e7525",
+      "bytes": 402
+    }
+  ]
+}

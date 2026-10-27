@@ -11,7 +11,7 @@ import fomrun as FOM
 import psjax
 import ps_phases
 import fs3
-from work_counts import fixed_sweep
+from work_counts import fixed_sweep,quasi_newton
 
 HERE=Path(__file__).resolve().parent
 def memory():
@@ -45,9 +45,8 @@ def bank(cx,cfg,shared):
     def work(o):
         rec=S.step_record(sp,o,0)
         if sp[0]=='qn':
-            return dict(nonlinear_iterations=int(np.asarray(o['q']).sum()),jacobian_contractions=int(np.asarray(o['n_exec']).sum()),
-                residual_evaluations=None,gradient_evaluations=None,raw_step_records=rec,
-                missing_counter_reason='unchanged original QN kernel does not record residual/gradient call counts')
+            return dict(quasi_newton(np.asarray(o['q'])[:,0],np.asarray(o['n_bt'])[:,0],np.asarray(o['reason'])[:,0],batch_size=1),
+                nonlinear_iterations=int(np.asarray(o['q']).sum()),jacobian_contractions=int(np.asarray(o['n_exec']).sum()),raw_step_records=rec)
         a=fs3.a_effective(cfg['scheme'],cfg['dt'],.01,st.a,q.steps)
         return dict(fixed_sweep(np.asarray(o['it'])[:,0],a,cfg['work_policy'],cfg['scheme']),raw_step_records=rec)
     return dict(id=cfg['id'],kind='bank',config=cfg,run=run,prepare=lambda j:prepared_field(cx,j),

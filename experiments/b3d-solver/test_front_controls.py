@@ -15,9 +15,10 @@ import psjax
 import ps_phases
 from front_metrics import summarize
 from pod_policy import stronger
-from work_counts import fixed_sweep
+from work_counts import fixed_sweep,quasi_newton
 import fs3
 from projection_budget import ProjectionBudget
+import pod_identity as ID
 
 def main():
     assert jax.config.x64_enabled
@@ -47,6 +48,17 @@ def main():
     assert float(policy['evolve'](jnp.float64(0),.1,1))==1e-4
     assert float(policy['validate'](jnp.float64(0),.1)['probe'])==1e-4
     assert float(original['sch']['gtol'])==1e-3
+    qcount=quasi_newton([2,3],[1,0],[4,0],batch_size=1)
+    assert qcount['residual_evaluations']==18 and qcount['gradient_evaluations']==7 and qcount['advection_value_evaluations']==22
+    assert quasi_newton([2],[0],[3])['residual_evaluations'] is None
+    assert quasi_newton([2],[0],[4],batch_size=2)['gradient_evaluations'] is None
+    actual_probe=HERE/'results/podtune04/raw/output/identity_probe_POD512_none_BDF2_40steps_c000.npz'
+    probe_result=__import__('json').loads((actual_probe.parent/'result.json').read_text())['identity_probes']['POD512_none_BDF2_40steps|case0']
+    z=np.load(actual_probe,allow_pickle=False);n0=probe_result['current_score']['normalisation']
+    identity=ID.original_policy(z['C'],z['old_C'],z['fields'],z['old_decoded_fields'],z['Gram'],n0,probe_result['current_score']['e'],probe_result['prior_score']['e'])
+    assert identity['passed'] and not np.array_equal(z['C'],z['old_C'])
+    changed=np.asarray(z['C']).copy();changed[0,0]+=2*ID.FIELD_TOL*n0/np.sqrt(z['Gram'][0,0])
+    assert not ID.original_policy(changed,z['old_C'],z['fields'],z['old_decoded_fields'],z['Gram'],n0,probe_result['current_score']['e'],probe_result['prior_score']['e'])['passed']
     calls=[]
     def counted_contract(data,c):
         jax.debug.callback(lambda _:calls.append(1),c,ordered=True)
@@ -72,7 +84,9 @@ def main():
         assert max(abs(x) for x in b['pythagorean_squared_error_defect'])<=1e-12
     out=dict(passed=True,synthetic_only=True,x64=jax.config.x64_enabled,PS_phase_fused_relative=rel,
              incomplete_case_coverage_rejects_cost_match=True,case_balanced_median_control=True,POD_stronger_policy_actual_schedule_binding=True,
-             FS_logical_contract_runtime_controls=actual,projection_oracle_relative=oracle_relative,projection_orthogonality_Pythagoras_pass=True)
+             FS_logical_contract_runtime_controls=actual,QN_singleton_counter_scope_guard=True,
+             projection_oracle_relative=oracle_relative,projection_orthogonality_Pythagoras_pass=True,
+             actual_POD_active_identity_pass=identity,POD_identity_above_bound_rejected=True)
     dest=HERE/'audits/front-small-controls.json';dest.parent.mkdir(exist_ok=True);dest.write_text(json.dumps(out,indent=1)+'\n');print(json.dumps(out))
 
 if __name__=='__main__':main()

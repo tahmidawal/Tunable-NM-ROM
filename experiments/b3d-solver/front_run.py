@@ -11,6 +11,7 @@ import c3common as C3
 import qn3
 import s3common as S
 import fomrun
+import psjax
 import refstore as RS
 import front_models as FM
 import pod_policy
@@ -153,12 +154,17 @@ def run(cx,POD):
             output=dict(shape=[6,63**3],points='fixed interior of65-node mesh',residency='device; synchronization included; host transfer/scoring/storage excluded for every method')),
         equations=dict(bank='inherited analytic continuum advection quadrature Bc*Dc; mesh-discrete sine diffusion eigenvalues and DST test moments; original equations unchanged',
                        POD='full central finite-difference residual projected on frozen POD basis; no hyper-reduction',
-                       FD='central finite differences and damped CN startup',PS='dealiased continuous sine pseudo-spectral ETDRK4'),
+                       FD='central finite differences and damped CN startup',PS='oversampled sine pseudo-spectral ETDRK4; not exact de-aliasing'),
         subjects={},case_results={},timing_repetitions=[],phase_repetitions=[],matching={},frontiers={},shared_setup=shared,
         common_setup=dict(seconds=common_setup,scope='shared provenance/descriptor construction and diagnostic input cache; online descriptor preparation still timed on every invocation'),
         execution=dict(source_commit=cx.rep['source_commit'],job_id=cx.rep['job_id'],gpu=cx.rep['gpu'],config_sha256=cx.rep['config_sha256'],
                        backend=cx.rep['backend'],jax=cx.rep['jax'],x64=True,matmul_precision='highest',complete=False))
     foms=fomrun.FOMs();anchor_cfg=next(s for s in cfg['subjects'] if s['id']==cfg['anchor'])
+    frozen_path=HERE/'inputs/frozen-fom.json';frozen=json.loads(frozen_path.read_text())
+    assert frozen['cases']['table_sha256']==cx.tab['sha256']
+    ps_control=psjax.gate(cx.tab,cases=(0,5),N=14,dt=.025)
+    assert ps_control['pass'] and ps_control['control_fires'],ps_control
+    result['implementation_controls']=dict(N14_port_and_half_step=ps_control)
     projection=ProjectionBudget(cx,result)
     anchor=FM.bank(cx,anchor_cfg,shared);anchor_hashes={};rng=np.random.default_rng(cfg['timing_seed'])
     subjects=[cfg['subjects'][i] for i in rng.permutation(len(cfg['subjects']))]
@@ -170,7 +176,8 @@ def run(cx,POD):
             X,w=sub['st'].rules[sc['rule']]
             mode_hash=C3.sha(np.asarray(sub['st'].tb.kx[:sc['M']],np.int64))
             rule_hash=hashlib.sha256(np.ascontiguousarray(X,np.float64).tobytes()+np.ascontiguousarray(w,np.float64).tobytes()).hexdigest()
-            operator_identity=dict(mode_hash=mode_hash,rule_sha256=rule_hash,M=sc['M'],r=sc['r'])
+            operator_identity=dict(mode_hash=mode_hash,rule_sha256=rule_hash,M=sc['M'],r=sc['r'],m=len(w),
+                quadrature_Gram_condition=sub['st'].mf_cond(sc['rule'])['cond'])
             if sc.get('archived_key'):
                 original=am['entries'][sc['archived_key']]['original_qualification_record']
                 if original and 'mode_hash' in original:assert mode_hash==original['mode_hash']
@@ -179,6 +186,13 @@ def run(cx,POD):
             setup_seconds=sub['setup_seconds'],setup_peak_bytes=sub['setup_memory_after']['whole_job_cumulative_peak_bytes'],
             setup_memory=dict(before=sub['setup_memory_before'],after=sub['setup_memory_after'],peak_scope='cumulative whole job'),
             shared_setup_keys=sub['shared_setup_keys'],operator_identity=operator_identity,input_contract=sub['input_contract'],qualification=dict(status='pending',Q1={},Q2={},scope='full64 exposed validation',source_pins={},common_rollout_check={},method_specific_extra_masks={}))
+        if sc['kind'] in ('PS','FD'):
+            source=next((v for v in frozen['picks'].values() if v['key']==fomrun.key(tuple(sc['spec']))),None)
+            if sc['kind']=='FD':
+                assert source and source['calibration']['status']=='qualified' and source['calibration']['chosen']==sc['spec'][4]
+            result['subjects'][sid]['provenance']=dict(frozen_manifest_sha256=file_sha(frozen_path),source=frozen['source'],source_sha256=frozen['sha256'],
+                calibration=source.get('calibration') if source else None,N14_cpu_prior=frozen.get('N14_cpu_prior') if sc['spec'][1]==14 else None,
+                old_timing_values_not_used=True)
         result['case_results'][sid]={};production={}
         warm=time.perf_counter()
         for subject in (anchor,sub):jax.block_until_ready(subject['run'](jax.block_until_ready(subject['prepare'](0)),cx.nu[0]))

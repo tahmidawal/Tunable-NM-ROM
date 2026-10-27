@@ -42,6 +42,18 @@
    }
   }
  ],
+ "QN_singleton_counter_scope_guard": true,
  "projection_oracle_relative": 1.230156504817066e-15,
- "projection_orthogonality_Pythagoras_pass": true
+ "projection_orthogonality_Pythagoras_pass": true,
+ "actual_POD_active_identity_pass": {
+  "active_state_distance": 2.5854048139020343e-16,
+  "C0_distance": 1.9448667778793639e-16,
+  "output_distance": 4.2976245005572026e-16,
+  "E0_error_difference": 4.336808689942018e-18,
+  "passed": true,
+  "field_tolerance": 1e-12,
+  "error_tolerance": 1e-11,
+  "interpretation": "operational identity much tighter than unchanged scientific gates; actual states and hashes retained, byte equality descriptive"
+ },
+ "POD_identity_above_bound_rejected": true
 }

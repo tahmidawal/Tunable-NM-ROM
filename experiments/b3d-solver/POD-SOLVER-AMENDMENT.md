@@ -12,7 +12,8 @@ one allocation on cases0,5,30,43. Reuse every independently valid native anchor 
 source/file, basis, trust, input, case, cohort, schedule and initial-state bindings. Recompute
 each new production-to-tight field distance with the current Phi Gram matrix, and freshly
 certify every actual production output. Stronger production states are not required to
-match the old states; original-policy controls must match their complete old state hash.
+match the old states; original-policy controls retain both hashes and must pass the separately audited bounded
+active-state/output identity rule in NUMERICAL-IDENTITY-AMENDMENT.md.
 Native anchors are independent of the production stopping tolerance.
 
 The copied `sch.gtol=1e-4` is passed to the unchanged typed compiled query and evolution

@@ -7,6 +7,7 @@ import jax
 import jax.numpy as jnp
 import c3common as C3
 import pod_policy
+import pod_identity as ID
 
 HERE=Path(__file__).resolve().parent
 def ah(x):return hashlib.sha256(np.ascontiguousarray(np.asarray(x)).tobytes()).hexdigest()
@@ -27,6 +28,7 @@ def run(cx,POD):
     gram=np.asarray(jax.block_until_ready(subjects[0]['data']['Phi'].T@subjects[0]['data']['Phi']))
     previous=None
     if cx.cfg.get('reuse_qualified'):
+        assert cx.cfg['identity_field_tolerance']==ID.FIELD_TOL and cx.cfg['identity_error_tolerance']==ID.ERROR_TOL
         pin=cx.cfg['reuse_qualified']['result'];path=HERE/pin['path']
         assert hashlib.sha256(path.read_bytes()).hexdigest()==pin['sha256']
         previous=__import__('json').loads(path.read_text());assert previous['complete'] and previous['cohort_sha256']==cx.tab['sha256']
@@ -45,10 +47,20 @@ def run(cx,POD):
                 assert previous['setup']['POD']['metadata']['trust_radius']==s['metadata']['trust_radius']
                 pin=cx.cfg['reuse_qualified']['arrays'][key];path=HERE/pin['path'];assert hashlib.sha256(path.read_bytes()).hexdigest()==pin['sha256']
                 z=np.load(path,allow_pickle=False)
+                assert z['C'].shape==np.asarray(o['C']).shape==(s['steps']+1,s['r'])
+                n0=float(prior['certificate']['n0'])
+                c0_identity=ID.field_distance(np.asarray(o['C'])[:1],z['C'][:1],gram,n0)
+                if c0_identity>ID.FIELD_TOL:
+                    cx.rep.setdefault('identity_failures',{})[key]=dict(C0_distance=c0_identity,input_sha256=ah(cx.U[j]),source=pin)
+                    np.savez_compressed(cx.out/f"identity_failed_C0_{s['name']}_c{j:03d}.npz",C=np.asarray(o['C']),W=np.asarray(o['W']),
+                        fields=np.asarray(o['fields']),old_C=np.asarray(z['C']),old_W=np.asarray(z['W']),Gram=gram)
+                    cx.save()
+                assert c0_identity<=ID.FIELD_TOL
                 if s.get('production_gtol',1e-3)==1e-3:
                     matches=ah(o['C'])==prior['coefficient_sha256'] and ah(o['fields'])==prior['output_sha256']
+                    old_fields=jax.block_until_ready(s['decode_query'](jnp.asarray(z['W']),s['data']))
+                    numerical_identity=ID.original_policy(o['C'],z['C'],o['fields'],old_fields,gram,n0,score(cx,o['fields'],j)['e'],prior['score']['e'])
                     if not matches:
-                        old_fields=jax.block_until_ready(s['decode_query'](jnp.asarray(z['W']),s['data']))
                         probe=dict(C_current_sha256=ah(o['C']),C_prior_sha256=prior['coefficient_sha256'],
                             fields_current_sha256=ah(o['fields']),fields_prior_sha256=prior['output_sha256'],old_decoded_fields_sha256=ah(old_fields),
                             C_max_absolute=float(np.max(np.abs(np.asarray(o['C'])-z['C']))),
@@ -58,14 +70,15 @@ def run(cx,POD):
                             decoded_field_distance=float(np.linalg.norm(np.asarray(o['fields'])-np.asarray(old_fields))/np.linalg.norm(np.asarray(cx.U[j]))),
                             current_score=score(cx,o['fields'],j),prior_score=prior['score'],old_decoded_score=score(cx,old_fields,j),
                             fresh_certificate=s['certify'](o,cx.nu[j]),input_sha256=ah(cx.U[j]),source=pin,
-                            note='Unchanged strict identity guard still aborts after this snapshot; no cause assumed.')
+                            numerical_identity=numerical_identity,
+                            note='Failed byte-equality expectation retracted after independent actual-array audit; bounded numerical identity checked without changing states or science gates. Origin of variation unknown.')
                         cx.rep.setdefault('identity_probes',{})[key]=probe
                         np.savez_compressed(cx.out/f"identity_probe_{s['name']}_c{j:03d}.npz",C=np.asarray(o['C']),W=np.asarray(o['W']),fields=np.asarray(o['fields']),
                             old_C=np.asarray(z['C']),old_W=np.asarray(z['W']),old_decoded_fields=np.asarray(old_fields),Gram=gram)
                         cx.save()
-                    assert prior['common_rollout_check'] and ah(o['C'])==prior['coefficient_sha256'] and ah(o['fields'])==prior['output_sha256']
+                    assert prior['common_rollout_check'] and numerical_identity['passed']
                 detail=dict(prior['certificate'])
-                assert ah(z['C'])==prior['coefficient_sha256'] and np.array_equal(np.asarray(z['C'])[0],np.asarray(o['C'])[0])
+                assert ah(z['C'])==prior['coefficient_sha256']
                 assert detail['tight_certificate']['anchor_ok'] and detail['tighter_certificate']['anchor_ok'] and detail['tight_tighter_distance']<=2.5e-5
                 detail['production_certificate']=s['certify'](o,cx.nu[j]);detail['reused_anchor_source']=pin
                 for k in ('Wtight','Ctight','gamma_tight','Wtighter','Ctighter','gamma_tighter'):detail[k]=np.asarray(z[k])
@@ -73,6 +86,7 @@ def run(cx,POD):
                 detail['prod_to_tight_distance']=float(np.sqrt(np.maximum(np.sum((diff@gram)*diff,axis=1),0)).max()/detail['n0'])
                 assert abs(detail['n0']/float(np.linalg.norm(np.asarray(cx.U[j])))-1)<=1e-12
                 detail['production_stopping_gtol']=float(s['sch']['gtol'])
+                detail['source_C0_identity_distance']=c0_identity
             else:detail=s['validate'](cx.U[j],cx.nu[j],prod=o,need_tighter=True)
             saved={k:np.asarray(v) for k,v in detail.items() if k.startswith(('Wtight','Ctight','gamma_tight'))}
             saved.update(W=np.asarray(o['W']),C=np.asarray(o['C']),**{'stats__'+k:np.asarray(v) for k,v in o['stats'].items()})

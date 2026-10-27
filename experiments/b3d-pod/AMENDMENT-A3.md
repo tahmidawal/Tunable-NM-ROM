@@ -1,6 +1,7 @@
 # A3: one archived-support replay at the stronger no-HR endpoint
 
-Status: proposed for independent design review before implementation or a job.
+Status: independent design gate READY for implementation, conditional on an
+independently accepted frozen stronger-tuning endpoint. No job is released here.
 The parent authorized this bounded temporal/stopping-policy fairness control after
 the original frozen-support observations and failed larger-support constructor.
 All previous results and the constructor stop remain preserved.
@@ -12,6 +13,14 @@ scheme, step size, production stopping policy and actual schedule before this
 replay. The solver lane is recovering the stronger-policy output after an original
 cross-job byte-identity assertion; no selection or numerical release occurs until
 its independent results gate resolves that evidence. No HR outcome enters selection.
+
+The new matching no-HR replay must reproduce the selected complete coefficient
+trajectory to relative $10^{-10}$ and six-output field distance divided by $n_0$
+at most $10^{-10}$. Its initial coefficient/field agreement uses $10^{-12}$.
+Record exact byte equality separately. The independent reviewer approved these
+prospective reproduction bounds; they do not alter the earlier tuning assertion.
+Restore derived cohort normalisers only with the already reviewed one-ULP procedure,
+manifest-verified E0 metadata, saved raw/canonical snapshots and exact final full SHA.
 
 Reuse the rank-512 basis and archived k16 support from inputs/MANIFEST.json. No fit,
 refit, alternate support, tolerance ladder or additional schedule is authorized.

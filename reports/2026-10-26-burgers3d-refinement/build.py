@@ -33,6 +33,8 @@ def main():
     for relative, digest in preservation['original'].items():
         if relative.startswith('project/slides/'):
             assert sha(presentation / relative) == digest
+    for record in preservation.get('original_artifact_backups', {}).values():
+        assert sha(Path(record['backup'])) == record['sha256']
     write(HERE / 'BUILD-CHECK.json', dict(direct_inputs_current=True, original_slides_preserved=True,
         report_filename=read(HERE / 'VALUES.json')['report_filename'],
         report_sha256=sha(HERE / read(HERE / 'VALUES.json')['report_filename']),

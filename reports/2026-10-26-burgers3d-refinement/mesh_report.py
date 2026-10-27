@@ -179,7 +179,8 @@ This is not complete-validation qualification at the new mesh or a comparative P
                 worst_error=max(errors), Q1=query['Q1']['passed'], Q2=query['Q2']['passed'],
                 case_errors={cid: r['score']['e'] for cid, r in result.items()})
             operator_rows.append([qid, str(query['cases']), f'{100*np.median(errors):.7g}', f'{100*max(errors):.7g}',
-                f"{query['Q1']['passed']}/{query['Q2']['passed']}", f"{max(r['common_distance_tight'] for r in result.values()):.7g}"])
+                f"{query['Q1']['passed']}/{query['Q2']['passed']}",
+                f"{query['Q1']['nonstationary']}/{query['Q1']['steps']}", f"{max(r['common_distance_tight'] for r in result.values()):.7g}"])
             own = result['5']['score'];base = doc['case_results'][f'W1024_{scheme}_baseline_gl56']['5']['score']
             eps = own['epsilon'];assert np.isclose(eps, reference['cohorts']['val64']['cases']['5']['eps_ref'], rtol=1e-10, atol=0)
             resolved = own['e']+eps < max(base['e']-eps, 0)
@@ -210,8 +211,11 @@ moments also recomputes the actual predictor QR. These factors do not isolate ph
 diffusion bias or pure temporal error from every projection/weighting effect.
 
 '''
-    text += table(['Control', 'Exact case ids', 'Median error (%)', 'Worst error (%)', 'Subset Q1/Q2',
+    text += table(['Control', 'Exact case ids', 'Median error (%)', 'Worst error (%)', 'Subset Q1/Q2', 'Fresh bad/steps',
                    'Max common production–tight distance'], operator_rows) + '\n\n'
+    text += ('The allowed bad-step fraction is applied to each declared case population. '
+             'An unchanged production policy can therefore pass a whole-validation pooled rule '
+             'and fail an exposed difficult-case subset rule. Both verdicts retain their original populations and thresholds.\n\n')
     text += table(['Scheme', 'Case 5 intervention', 'Error (%)', 'Change from baseline (percentage points)',
                    'Resolved relative to reference uncertainty only'], case5_rows) + '\n\n'
     text += '![Supplied-coefficient operator controls](figs/operator_interventions.png)\n\n'

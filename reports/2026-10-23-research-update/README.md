@@ -6,4 +6,4 @@ Live deck saved from the page on 23 Oct after the user's edits (mesh-cost droppe
 
 ## Burgers 3D refinement extension, 2026-10-26
 
-The 15 pre-existing saved slides retain their source bytes and relative order. 5 generated refinement slides are appended. Rebuild with `../2026-10-26-burgers3d-refinement/update_research.py` after generating that report's VALUES.json. The preservation manifest records original hashes and the saved original PDF; new scientific numbers are taken from generated report inputs.
+The 15 pre-existing saved slides retain their source bytes and relative order. 8 generated refinement slides are appended. Rebuild with `../2026-10-26-burgers3d-refinement/update_research.py` after generating that report's VALUES.json. The preservation manifest records original hashes and the saved original PDF; new scientific numbers are taken from generated report inputs.

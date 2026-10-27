@@ -188,6 +188,63 @@ An unresolved overlap is not a win. A ratio below unity means the matched compet
     return text
 
 
+def key_findings(doc, summaries, table):
+    usable = {sid: v for sid, v in summaries.items() if v['registered_qualified'] and
+              v['complete_score_population'] and v['costs']['descriptor']['complete_population']}
+    banks = [sid for sid, v in usable.items() if v['method'] == 'Bank ROM']
+    spectral = []
+    for sid in banks:
+        match = doc['matching']['subjects'][sid]['PS']['descriptor']
+        if match['selected'] and match['competitor_over_subject_cost_ratio'] < 1:
+            spectral.append(dict(subject=sid, competitor=match['selected'],
+                subject_over_competitor_cost=1/match['competitor_over_subject_cost_ratio']))
+    new = sorted([sid for sid in banks if doc['subjects'][sid]['config'].get('successors')],
+                 key=lambda sid: doc['subjects'][sid]['config']['dt'], reverse=True)
+    old = [sid for sid in banks if doc['subjects'][sid]['config'].get('archived_key')]
+    simultaneous = []
+    for sid in new:
+        a = usable[sid]
+        for baseline in old:
+            b = usable[baseline]
+            if a['median_upper'] < b['median_lower'] and a['worst_upper'] < b['worst_lower'] and a['costs']['descriptor']['median_seconds'] < b['costs']['descriptor']['median_seconds']:
+                simultaneous.append([sid, baseline])
+    text = '## What the bounded campaign establishes\n\n'
+    text += (f"All {len(usable)} admitted subjects below retain complete error and descriptor-cost coverage. "
+             'Admission certifies the registered numerical checks; it is not a physical-accuracy target.\n\n')
+    if banks and len(spectral) == len(banks):
+        ratios = [v['subject_over_competitor_cost'] for v in spectral]
+        text += (f"**Every tested admitted bank setting has a faster jointly accuracy-matching spectral comparator.** "
+                 f"Across these {len(banks)} bank settings, observed descriptor-query speed ratios range "
+                 f"from {min(ratios):.4g} to {max(ratios):.4g}. Matching requires both competitor upper "
+                 'conditional median/worst errors to lie below the corresponding bank lower errors. '
+                 'This is a same-allocation result on the frozen box/cohort and finite tested set.\n\n')
+    else:
+        text += f"A faster jointly matching spectral comparator exists for {len(spectral)}/{len(banks)} admitted bank settings.\n\n"
+    rows = []
+    for sid in new:
+        v = usable[sid]
+        rows.append([sid, f"{v['median_error']*100:.7g}", f"{v['worst_error']*100:.7g}",
+                     v['errors_above_1pct'], f"{v['costs']['descriptor']['median_seconds']*1e3:.7g}"])
+    if rows:
+        text += ('The refreshed-QN endpoints close their declared solver/quadrature checks. '
+                 'Their complete-validation accuracy and cost are:\n\n')
+        text += table(['Refreshed bank endpoint', 'Median error (%)', 'Worst error (%)', 'Cases above 1%',
+                       'Descriptor query (ms)'], rows) + '\n\n'
+        if not simultaneous:
+            text += ('Neither tested endpoint simultaneously improves resolved median error, resolved worst error '
+                     'and measured query cost over any tested earlier bank setting. Refinement improves the '
+                     'median while worsening the worst case and increasing cost. The intermediate time setting '
+                     'has selected-case evidence only and is not silently discarded.\n\n')
+    pod = [sid for sid, v in usable.items() if v['method'] == 'POD']
+    text += (f"The {len(pod)} admitted POD subjects evaluate the unsampled full residual. Their finite-schedule "
+             'matches are distinct from earlier-bank improvements and from the faster full-solver matches. '
+             'The unresolved hyper-reduced-POD gate is not evidence of a bank advantage. '
+             'Detailed matching tables and projection/operator controls follow.\n\n')
+    return text, dict(admitted_complete_subjects=len(usable), bank_subjects=banks,
+        faster_joint_spectral_matches=spectral, new_endpoints=new, simultaneous_new_bank_wins=simultaneous,
+        admitted_unsampled_POD=pod)
+
+
 def projection_geometry(doc, table, save):
     budgets = doc['projection_budgets']
     rows, worst_rows, all_floors = [], [], []
@@ -487,6 +544,7 @@ conditional on the E0 reference uncertainty. Competitor searches cover a finite 
 ''')
     component_text, phase_values = components(doc, table, save)
     text += comparisons(doc, summaries, table) + component_text + projection_geometry(doc, table, save)
-    return dict(subjects=summaries, figures=figures, text=text,
+    summary_text, findings = key_findings(doc, summaries, table)
+    return dict(subjects=summaries, figures=figures, text=text, summary_text=summary_text, key_findings=findings,
                 diagnostic_phase_seconds=phase_values,
                 matching=doc['matching'], frontiers=doc['frontiers'], execution=doc['execution'])

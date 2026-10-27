@@ -41,6 +41,8 @@ def main():
     values = read(HERE / 'VALUES.json')
     frontier = values.get('full_validation_frontier')
     mesh = values.get('fixed_mode_mesh')
+    findings = {} if not frontier else frontier['key_findings']
+    spectral_leads = bool(findings.get('bank_subjects')) and len(findings['faster_joint_spectral_matches']) == len(findings['bank_subjects'])
     qualified_hr = [] if not frontier else [sid for sid, v in frontier['subjects'].items()
         if v['method'] == 'POD' and v['registered_qualified'] and
         v['qualification']['method_specific_extra_masks'].get('hyper_reduced') is True]
@@ -52,9 +54,23 @@ def main():
             shutil.copy2(SOURCE / name, DEST / name)
     original = {}
     original_pdf_backup = None
-    for p in [SOURCE / 'project/deck.json', *sorted((SOURCE / 'project/slides').glob('*.html'))]:
+    for p in [SOURCE / 'project/deck.json', SOURCE / 'README.md', SOURCE / 'build_local.py',
+              *sorted((SOURCE / 'project/slides').glob('*.html'))]:
         if p.stem not in GENERATED_IDS:
             original[str(p.relative_to(SOURCE))] = sha(p)
+    original_artifact_backups = {}
+    snapshot = HERE / 'research-update-original'
+    snapshot.mkdir(exist_ok=True)
+    for relative in ['project/deck.json', 'README.md', 'build_local.py',
+                     'research-update-local.html', 'research-update-print.html']:
+        source = SOURCE / relative
+        if source.is_file():
+            digest = sha(source)
+            target = snapshot / f'{source.stem}-{digest[:12]}{source.suffix}'
+            if not target.exists():
+                shutil.copy2(source, target)
+            assert sha(target) == digest
+            original_artifact_backups[relative] = dict(sha256=digest, backup=str(target))
     if (SOURCE / 'Research-Update.pdf').is_file():
         snapshot = HERE / 'research-update-original'
         snapshot.mkdir(exist_ok=True)
@@ -139,7 +155,8 @@ def main():
     if frontier:
         text = f'''<img alt="Same-allocation complete-validation accuracy versus descriptor-total query cost" src="{picture('full64_descriptor_frontier.png')}" style="display:block;width:94%;max-height:640px;object-fit:contain;margin:0 auto">
 <p style="font-size:27px;line-height:1.4;margin-top:18px">Input preparation and synchronized device outputs are included; host output transfer and scoring are excluded. Filled points pass registered method-specific gates; open points remain visible. Joint accuracy matches and the finite tested set are documented in the report.</p>'''
-        output.append(('b3d-refine-frontier', 'The complete validation comparison uses one GPU allocation', text))
+        frontier_title = 'Tested spectral settings lead the comparison' if spectral_leads else 'The complete validation comparison uses one GPU allocation'
+        output.append(('b3d-refine-frontier', frontier_title, text))
     if mesh:
         target = next(iter(mesh['cost_queries'].values()))['config']
         text = f'''<img alt="Fixed reduced settings at two mesh sizes and two input/output contracts" src="{picture('fixed_mode_mesh_cost_work.png')}" style="display:block;width:94%;max-height:575px;object-fit:contain;margin:0 auto">
@@ -160,13 +177,17 @@ def main():
         hr_status = ('A tuned existing POD sampling rule passes complete-validation admission and is included.'
                      if qualified_hr else 'Qualified hyper-reduced POD remains open within the tested settings.')
         open_title = 'What is established, and what remains open'
+        bank_result = (f"Every tested admitted bank has a faster spectral setting jointly matching median and worst error on the {len(frontier['subjects'][findings['bank_subjects'][0]]['case_ids'])} validation cases."
+                       if spectral_leads else 'Earlier bank ROMs, tuned POD and full solvers have separate matched comparisons.')
+        endpoint_result = ('The refreshed bank endpoints pass their numerical checks. Finer stepping improves the median, worsens the worst case and increases query cost.'
+                           if not findings['simultaneous_new_bank_wins'] else 'Refreshed bank endpoints have explicitly scoped comparisons with earlier settings.')
         text = f'''<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:45px;font-size:31px;line-height:1.5">
 <div><h2 style="font-size:37px;color:#27659a;margin-bottom:24px">Measured comparisons</h2>
-<p>Earlier bank ROMs, tuned POD and full solvers have separate matched comparisons.</p>
+<p>{bank_result}</p>
 <p style="margin-top:26px">Full query, initialisation, evolution, decoding, setup and memory are reported separately. Split phase calls do not replace the full-query timer.</p></div>
 <div><h2 style="font-size:37px;color:#9a5b27;margin-bottom:24px">Failures retained</h2>
 <p>The new support constructor failed its checks; no rollout of that rejected rule ran.</p>
-<p style="margin-top:26px">A repaired convergence certificate does not guarantee lower physical error. Median and worst errors can move in opposite directions.</p></div>
+<p style="margin-top:26px">{endpoint_result}</p></div>
 <div><h2 style="font-size:37px;color:#3a7656;margin-bottom:24px">Scope and open work</h2>
 <p>{hr_status}</p>
 <p style="margin-top:26px">The finite exposed-validation set does not establish a universal fastest method. Sealed replication remains closed. A solver certificate does not establish spatial consistency.</p></div></div>'''
@@ -217,6 +238,7 @@ def main():
         if rel.startswith('project/slides/'):
             assert sha(DEST / rel) == digest
     write(HERE / 'RESEARCH-UPDATE-PRESERVATION.json', dict(source_root=str(SOURCE), original=original,
+        original_artifact_backups=original_artifact_backups,
         preserved_slide_count=count, added_slide_count=len(output), generated_pdf_sha256=sha(DEST / 'Research-Update.pdf'),
         generated_pdf=str(DEST / 'Research-Update.pdf'), original_pdf_backup=None if original_pdf_backup is None else str(original_pdf_backup)))
     print(DEST / 'Research-Update.pdf')

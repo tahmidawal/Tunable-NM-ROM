@@ -38,21 +38,22 @@ def main():
                   '/cluster/tufts/paralab/tawal01/b3d-pod-20261026/']
     def ours(workdir):
         return any(workdir.startswith(n) for n in namespaces)
+    known_ids = {int(r['job_id']) for r in entries if r.get('job_id') is not None}
     queue = subprocess.check_output(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
-        'tufts-login', 'squeue -h -u tawal01 -o "%i|%Z|%T|%j"'], text=True, timeout=25)
+        'tufts-login', 'squeue -h -u tawal01 -o "%i|%Z|%T|%j|%o"'], text=True, timeout=25)
     live, account_queue = [], []
     for line in queue.splitlines():
         f = [s.strip() for s in line.split('|')]
         if len(f) >= 4:
-            record = dict(job_id=int(f[0]) if f[0].isdigit() else f[0], workdir=f[1], state=f[2], name=f[3])
+            command = f[4] if len(f) > 4 else ''
+            record = dict(job_id=int(f[0]) if f[0].isdigit() else f[0], workdir=f[1], state=f[2], name=f[3], command=command)
             account_queue.append(record)
-            if ours(f[1]):
+            if record['job_id'] in known_ids or ours(f[1]) or any(n in command for n in namespaces):
                 live.append(record)
-    known_ids = {int(r['job_id']) for r in entries if r.get('job_id') is not None}
     missing_live = [r['job_id'] for r in live if r['job_id'] not in known_ids]
     queue_audit = dict(checked_at_utc=datetime.now(timezone.utc).isoformat(), live_campaign_jobs=live,
                        account_queue_snapshot=account_queue,
-                       scope='Only the two campaign namespaces govern closure; unrelated account jobs remain visible and untouched.',
+                       scope='Only recorded campaign IDs or campaign namespaces govern closure; unrelated account jobs remain visible and untouched.',
                        live_job_ids_missing_from_lane_ledgers=missing_live)
     write(HERE / 'data/LIVE-QUEUE-CHECKPOINT.json', queue_audit)
     if args.final and active:
@@ -61,14 +62,15 @@ def main():
         if live:
             raise RuntimeError(f'cannot close with live campaign queue entries: {live}')
         accounting = subprocess.check_output(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
-            'tufts-login', 'sacct -X -n -P -S 2026-10-26 -u tawal01 --format=JobIDRaw,State,ElapsedRaw,WorkDir%200'],
+            'tufts-login', 'sacct -X -n -P -S 2026-10-26 -u tawal01 --format=JobIDRaw,State,ElapsedRaw,WorkDir%240,SubmitLine%512,JobName%100'],
             text=True, timeout=25)
         actual = []
         for line in accounting.splitlines():
             fields = line.split('|')
-            if len(fields) >= 4 and fields[0].strip().isdigit() and ours(fields[3].strip()):
+            if len(fields) >= 6 and fields[0].strip().isdigit() and (
+                    int(fields[0]) in known_ids or ours(fields[3].strip()) or any(n in fields[4] for n in namespaces)):
                 actual.append(dict(job_id=int(fields[0]), state=fields[1].strip(), elapsed_seconds=int(fields[2]),
-                                   workdir=fields[3].strip()))
+                                   workdir=fields[3].strip(), submit_line=fields[4].strip(), name=fields[5].strip()))
         if not actual:
             raise RuntimeError('no campaign accounting records returned; cannot verify final ledger')
         expected = {int(r['job_id']): r for r in entries if r.get('job_id') is not None}
@@ -80,6 +82,7 @@ def main():
             e = expected[row['job_id']]
             assert int(e.get('elapsed_seconds', -1)) == row['elapsed_seconds'], ('stale elapsed-time ledger', row)
         write(HERE / 'data/FINAL-QUEUE-AUDIT.json', dict(**queue_audit, accounting=actual,
+              accounting_scope='Recorded numeric IDs or campaign namespace in WorkDir/SubmitLine. Early POD scripts cd to unique paralab directories from a home submit cwd; exact SubmitLine and elapsed remain recorded.',
               note='Foreground bounded SSH/Slurm checks; no background watcher.'))
     active_ids = {int(r['job_id']) for r in active}
     spent = sum(float(r.get('gpu_hours', r.get('spent_gpu_hours')) or 0) for r in entries
@@ -171,7 +174,12 @@ def main():
     if frontier_file:
         front = read(frontier_file)
         assert front['execution']['complete'] is True
-        completed.append('Frozen same-allocation complete-validation frontier. Use its explicit per-subject qualification and timing-coverage masks; not every measured subject is necessarily admitted.')
+        qualified = sum(v['qualification']['status'] == 'qualified' for v in front['subjects'].values())
+        banks = [sid for sid, v in front['subjects'].items() if v['config']['kind'] == 'bank']
+        faster = [sid for sid in banks if front['matching']['subjects'][sid]['PS']['descriptor']['selected'] and
+                  front['matching']['subjects'][sid]['PS']['descriptor']['competitor_over_subject_cost_ratio'] < 1]
+        completed.append(f"Frozen same-allocation complete-validation frontier: {qualified}/{len(front['subjects'])} subjects pass their registered method-specific admission. All declared timing-coverage masks remain explicit; final POD costs come from this same allocation, separately from the old fallback job.")
+        completed.append(f"A faster spectral member jointly matches conditional median/worst accuracy for {len(faster)}/{len(banks)} tested bank settings. Refreshed-QN time refinement improves the median while worsening the worst case and cost; no universal method advantage follows.")
     else:
         pending.append('Same-allocation complete-validation endpoint comparison, own new-policy qualification and paired accuracy-matched full-solver/POD costs.')
     mesh_file = next((HERE / 'data' / n for n in ['frozen-mesh.json.gz', 'frozen-mesh.json'] if (HERE / 'data' / n).is_file()), None)

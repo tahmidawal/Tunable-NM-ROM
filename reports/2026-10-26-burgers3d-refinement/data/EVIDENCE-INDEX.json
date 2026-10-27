@@ -8,10 +8,12 @@
     "pod": "lane-pod-export.json"
   },
   "source_snapshots": "CHECKPOINT-SOURCES.json",
-  "full_validation_frontier": null,
-  "fixed_mode_mesh": null,
+  "full_validation_frontier": "frozen-frontier.json.gz",
+  "fixed_mode_mesh": "frozen-mesh.json.gz",
   "solver_array_retention": [
-    "solver-retention-mesh01.json"
+    "solver-retention-front6402.json",
+    "solver-retention-mesh01.json",
+    "solver-retention-mesh02.json"
   ],
   "pod_fit_retention": "pod-fit32-retention.json",
   "note": "Historical qualifications retain their date/scope; new qualification joins are in lane exports."

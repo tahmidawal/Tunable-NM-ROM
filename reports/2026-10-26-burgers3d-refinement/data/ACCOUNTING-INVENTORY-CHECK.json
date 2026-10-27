@@ -1,0 +1,129 @@
+{
+  "expected": [
+    6525154,
+    6525183,
+    6525518,
+    6525527,
+    6525584,
+    6525585,
+    6525763,
+    6526456,
+    6527167,
+    6527289,
+    6527478,
+    6527566,
+    6528236,
+    6528531,
+    6529066,
+    6529465,
+    6533177,
+    6541155,
+    6542062
+  ],
+  "matching_namespace_rows": [
+    {
+      "job_id": 6525183,
+      "state": "COMPLETED",
+      "elapsed": "64",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/spilot02"
+    },
+    {
+      "job_id": 6525518,
+      "state": "COMPLETED",
+      "elapsed": "193",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/sdiag01"
+    },
+    {
+      "job_id": 6525527,
+      "state": "FAILED",
+      "elapsed": "13",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot01"
+    },
+    {
+      "job_id": 6525763,
+      "state": "FAILED",
+      "elapsed": "14",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot02"
+    },
+    {
+      "job_id": 6526456,
+      "state": "COMPLETED",
+      "elapsed": "56",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot03"
+    },
+    {
+      "job_id": 6527167,
+      "state": "COMPLETED",
+      "elapsed": "107",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qcheck801"
+    },
+    {
+      "job_id": 6527289,
+      "state": "COMPLETED",
+      "elapsed": "715",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/tdiag02"
+    },
+    {
+      "job_id": 6527478,
+      "state": "COMPLETED",
+      "elapsed": "68",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qwitness01"
+    },
+    {
+      "job_id": 6527566,
+      "state": "COMPLETED",
+      "elapsed": "242",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/podtune02"
+    },
+    {
+      "job_id": 6528236,
+      "state": "FAILED",
+      "elapsed": "33",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/podtune03"
+    },
+    {
+      "job_id": 6528531,
+      "state": "FAILED",
+      "elapsed": "31",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/podtune04"
+    },
+    {
+      "job_id": 6529066,
+      "state": "COMPLETED",
+      "elapsed": "132",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/podtune05"
+    },
+    {
+      "job_id": 6529465,
+      "state": "COMPLETED",
+      "elapsed": "77",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-pod-20261026/k16fine01"
+    },
+    {
+      "job_id": 6533177,
+      "state": "COMPLETED",
+      "elapsed": "6327",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402"
+    },
+    {
+      "job_id": 6541155,
+      "state": "FAILED",
+      "elapsed": "557",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01"
+    },
+    {
+      "job_id": 6542062,
+      "state": "COMPLETED",
+      "elapsed": "1806",
+      "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh02"
+    }
+  ],
+  "missing": [
+    6525154,
+    6525584,
+    6525585
+  ],
+  "extra": [],
+  "status": "Superseded WorkDir-only probe; not final accounting",
+  "resolution": "All19 recorded job IDs and namespace WorkDir/SubmitLine rows reconcile in CLOSURE-QUEUE-AUDIT.json; early POD submit cwd was home, actual TASK_ROOT was unique paralab. No allocation omitted or GPU-hour change."
+}

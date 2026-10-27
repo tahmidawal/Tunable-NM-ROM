@@ -233,6 +233,8 @@ def main():
     values['regime_sources'] = regime_sources
     values['regime_statistics'] = regime_statistics
     new_frontier_text = ''
+    principal_findings = ''
+    frontier_data = None
     frontier_path = HERE / 'data/frozen-frontier.json.gz'
     if not frontier_path.is_file():
         frontier_path = HERE / 'data/frozen-frontier.json'
@@ -241,6 +243,7 @@ def main():
         frontier_data = load_frozen(frontier_path.name)
         rendered = frontier_report.render(frontier_data, FIG, table, save, inv['reference'])
         new_frontier_text = rendered.pop('text')
+        principal_findings = rendered.pop('summary_text')
         values['full_validation_frontier'] = rendered
         values['qualified_HR_POD_subjects'] = [sid for sid, v in rendered['subjects'].items()
             if v['method'] == 'POD' and v['registered_qualified'] and
@@ -254,6 +257,45 @@ def main():
         rendered_mesh = mesh_report.render(load_frozen(mesh_path.name), inv['reference'], table, save)
         new_mesh_text = rendered_mesh.pop('text')
         values['fixed_mode_mesh'] = rendered_mesh
+    physical_interpretation = ''
+    if frontier_data is not None and values.get('fixed_mode_mesh'):
+        endpoints = values['full_validation_frontier']['key_findings']['new_endpoints']
+        fine_id = min(endpoints, key=lambda sid: frontier_data['subjects'][sid]['config']['dt'])
+        records = frontier_data['case_results'][fine_id]
+        cid = max(records, key=lambda key: records[key]['score']['e'])
+        record = records[cid]
+        ti = 1 + int(np.argmax(record['score']['e_t'][1:]))
+        geometry = record['projection_budget']
+        total = record['score']['e_t'][ti]
+        floor = geometry['reference_projection_floor_e_t'][ti]
+        within = geometry['evolution_in_span_distance_e_t'][ti]
+        anchors = values['fixed_mode_mesh']['operator_anchors']
+        cn = {v['intervention']: v for v in anchors if v['scheme'] == 'CN' and v['level'] == 'tight'}
+        opcase = next(v['cases'][0] for v in values['fixed_mode_mesh']['operator_controls'].values() if len(v['cases']) == 1)
+        values['physical_error_controls'] = dict(fine_endpoint=fine_id,case=int(cid),time=frontier_data['reference']['output_times'][ti],
+            total_error=total,reference_floor=floor,within_span_distance=within,held_operator_case=opcase,CN_existing_tight=cn)
+        physical_interpretation = (f"## What the controls explain about physical error\n\n"
+            f"At the fine refreshed bank endpoint's worst case {cid}, time {frontier_data['reference']['output_times'][ti]}, "
+            f"the total field error is {100*total:.7g}%, the best reference-field fit at that same time is "
+            f"{100*floor:.7g}%, and the within-span distance is {100*within:.7g}%. "
+            'The verified squared-error identity shows field-fit headroom inside the frozen span. '
+            'It does not show that those reference projections form a feasible PDE trajectory, '
+            'nor causally assign the gap to one numerical mechanism.\n\n'
+            f"The separate held-projection case {opcase} control uses verified existing tight CN trajectories. "
+            f"Its baseline error {100*cn['baseline']['case5_error']:.7g}% changes to "
+            f"{100*cn['composite']['case5_error']:.7g}% for the composite operator, "
+            f"{100*cn['lambda']['case5_error']:.7g}% for the eigenvalue/induced-weight package, and "
+            f"{100*cn['moments']['case5_error']:.7g}% for moments alone. "
+            f"The moment-only change is {100*abs(cn['moments']['change']):.7g} percentage points, "
+            f"below the doubled conditional reference uncertainty {200*cn['moments']['reference_uncertainty']:.7g}. "
+            'The eigenvalue/weight intervention reproduces most of the modest composite response on this case; '
+            'a substantial trajectory error remains. Fine-BDF2 shows the same qualitative pattern in the saved controls. '
+            'Production CN subset failures remain visible, while these untimed anchor diagnostics carry their own Q2.\n\n'
+            'These results weaken an explanation based only on insufficient nonlinear convergence or field-fit capacity. '
+            'They do not establish pure temporal truncation, pure physical diffusion bias or one universal cause. '
+            'A separately bounded weight-frozen control could distinguish weighting from the remaining time-method package; '
+            'it would still need to account for projection/test-direction effects. The inherited analytic-advection '
+            'deviation from the FOM-exact upwind rule also remains an explicit methodological issue.\n\n')
 
     # New lane results remain separate, with exact scope and audit state supplied by their owners.
     lane_sections = []
@@ -609,6 +651,8 @@ numbers are conditional estimates against approved E0 ST references; new numeric
 are accepted only with their independent audit status. This generated version does not
 promote missing or subset evidence into full-validation qualification.
 
+{principal_findings}
+
 ## Problem and experimental controls
 
 The problem is scalar viscous Burgers flow on the unit cube with zero boundary values.
@@ -617,8 +661,8 @@ amplitudes and viscosity. The frozen spatial bank represents the field using a s
 of coefficients; these comparisons use linear bank prefixes, not a deployed nonlinear head.
 The bank solver minimises the PDE residual tested against smooth spatial functions.
 
-The independent controls separate bank width, test-space size, quadrature, nonlinear work
-and time integration. They reuse existing trained banks and valid trajectories. Numerical
+The controls examine bank width, test-space size, quadrature, nonlinear work
+and time integration, with coupled changes stated explicitly. They reuse existing trained banks and valid trajectories. Numerical
 design, code/small controls, exact job manifests and interpretation pass separate independent
 review gates. Failed controls remain in the ledger. The output contract and exact population
 travel with each result; the common scoring schedule has
@@ -784,6 +828,8 @@ they use the same output/hardware contract and include the tuned POD policies.
 ## New bounded experiment results
 
 {chr(10).join(lane_sections)}
+
+{physical_interpretation}
 
 ## Completed, failed, deferred and open
 

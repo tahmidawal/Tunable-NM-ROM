@@ -22,6 +22,13 @@
    "exact_job": "READY",
    "results": "READY one-case finer-rule diagnostic",
    "interpretation": "One of25 gl80 steps fails fresh1e-3 stationarity. This is the original qpp validity/distance check, not gl80 qualification; inherited gl56 closure still needs original eight-case coverage."
+  },
+  "qcheck801": {
+   "code_commit": "13494d2c697cb31b36a546999e0810677bc260be",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY original-eight finer-witness closure",
+   "interpretation": "Joins historical full64 gl56 Q1 plus gl56\u219264 Q2 with original first-eight gl64\u219280. Legacy gl56 qualification closes. One of200 fine gl80 steps nonstationary; no full gl80 qualification. Narrow case5 adaptive witness is a strengthening control."
   }
  }
 }

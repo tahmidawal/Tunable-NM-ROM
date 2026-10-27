@@ -15,10 +15,10 @@ import s3common as S
 HERE=Path(__file__).resolve().parent
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
-def adaptive(st,dt,gtol):
+def adaptive(st,dt,gtol,scheme='BDF2'):
     steps=int(round(.25/dt))
     ev=P1.make_evolve(C3.nl3,C3.nlJ3,'LSPG',st.Rp,st.trust,nrec=steps+1)
-    sch=P1.sched('BDF2',dt,gtol,0.)
+    sch=P1.sched(scheme,dt,gtol,0.)
     @jax.jit
     def query(u,nu,d,sch):
         w0,s0=C3.TB.project(u,d)

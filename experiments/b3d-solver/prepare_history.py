@@ -12,6 +12,7 @@ PICKS = {
     'm3b': ['W768|gl40|qn|BDF2|0.025|k4', 'W1024|gl40|qn|BDF2|0.025|k4',
             'W768|gl40|fs|CN|0.01|K1', 'W1024|gl56|fs|CN|0.01|K1',
             'W1024|gl64|fs|CN|0.01|K1',
+            'W1024|gl64|ad|LSPG|CN|0.01|tight',
             'W768|gl40|ad|LSPG|BDF2|0.025|tight'] + [f'W1024|{rl}|ad|LSPG|BDF2|0.025|{level}' for rl in ('gl40','gl48','gl56') for level in ('tight','tighter')],
     'k3b': ['W512k8|lat16384|fs|CN|0.01|K1'],
 }

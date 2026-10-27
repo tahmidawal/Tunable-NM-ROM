@@ -58,22 +58,29 @@ def run(cx,POD):
                         given_native_seconds=t2-t1,descriptor_seconds=t2-t0,score=score(cx,o['fields'],j),
                         coefficient_sha256=ah(o['C']),output_sha256=ah(o['fields'])))
                 drift=trip[2]['descriptor_seconds']/trip[0]['descriptor_seconds']
-                for row in trip:row.update(anchor_drift_ratio=drift,timing_admitted=bool(1/1.1<=drift<=1.1))
+                native_drift=trip[2]['given_native_seconds']/trip[0]['given_native_seconds']
+                for row in trip:row.update(anchor_drift_ratio=drift,timing_admitted=bool(1/1.1<=drift<=1.1),
+                    native_anchor_drift_ratio=native_drift,native_timing_admitted=bool(1/1.1<=native_drift<=1.1))
                 cx.rep['timing'][f"{s['name']}|case{j}|rep{rep}"]=trip;cx.save()
     candidates=[]
     for s in subjects:
         rows=[cx.rep['runs'][f"{s['name']}|case{j}"] for j in cx.cases]
         alltimes=[r for trip in cx.rep['timing'].values() for r in trip if r['subject']==s['name'] and r['role']=='B']
-        admitted=[r['descriptor_seconds'] for r in alltimes if r['timing_admitted']]
+        admitted_by_case={j:[r['descriptor_seconds'] for r in alltimes if r['case']==j and r['timing_admitted']] for j in cx.cases}
+        coverage=all(admitted_by_case[j] for j in cx.cases)
         qualified=all(r['common_rollout_check'] for r in rows) and sum(r['nonstationary'] for r in rows)<=.01*sum(r['steps'] for r in rows)
-        rec=dict(subject=s['name'],qualified_subset=qualified,median_descriptor_seconds=float(np.median(admitted)) if admitted else None,
+        rec=dict(subject=s['name'],qualified_subset=qualified,
+                 median_descriptor_seconds=float(np.median([np.median(admitted_by_case[j]) for j in cx.cases])) if coverage else None,
+                 cost_selection_usable=coverage,cost_case_coverage=[j for j in cx.cases if admitted_by_case[j]],
                  worst_error=max(r['score']['e'] for r in rows),median_error=float(np.median([r['score']['e'] for r in rows])),
                  timing_all_admitted=all(r['timing_admitted'] for r in alltimes),eligible_cases=[r['case'] for r in rows if r['score']['eligible']])
         cx.rep['selection'][s['name']]=rec
-        if qualified and admitted and len(rec['eligible_cases'])==4:candidates.append(rec)
+        if qualified and len(rec['eligible_cases'])==4:candidates.append(rec)
     picks=[]
     if candidates:
         for key in ('median_descriptor_seconds','worst_error'):
-            p=min(candidates,key=lambda r:(r[key],r['median_error'],r['subject']))['subject']
+            eligible=[r for r in candidates if key=='worst_error' or r['cost_selection_usable']]
+            if not eligible:continue
+            p=min(eligible,key=lambda r:(r[key],r['median_error'],r['subject']))['subject']
             if p not in picks:picks.append(p)
     cx.rep['frozen_picks']=picks;cx.rep['full_population_qualification']='not established by four-case tuning';cx.save()

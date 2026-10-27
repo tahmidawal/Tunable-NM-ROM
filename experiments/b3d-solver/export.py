@@ -12,7 +12,7 @@ def main():
     audits=json.loads((HERE/'AUDIT-STATUS.json').read_text())
     out=dict(audits=audits,status='diagnostic subset; consult per-job independent audit verdicts',scope='validation diagnostics; no new frontier or comparator win claim',
              gpu_hours=sum(e.get('gpu_hours',0.) for e in ledger['entries']),budget_gpu_hours=ledger['budget_gpu_hours'],
-             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],time_diagnostics=[],time_quadrature=[],
+             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],quadrature_witnesses=[],time_diagnostics=[],time_quadrature=[],
              next_open=['D-Q gl80 first-eight closure after pilot audit','D-T fixed four-case time diagnostics',
                         'Fair POD schedule tuning on four cases','Full64 paired same-invocation frontier validation after diagnostic review'])
     for entry in ledger['entries']:
@@ -20,6 +20,9 @@ def main():
         if not rp.exists():continue
         z=json.loads(rp.read_text());source=dict(path=str(rp.relative_to(HERE)),sha256=sha(rp),job_id=entry['job_id'],source_commit=z['source_commit'],gpu=z['gpu'])
         for key,v in z['runs'].items():
+            if z['config']['mode']=='quad_witness':
+                out['quadrature_witnesses'].append(dict(key=key,source=source,scope=z['scope'],
+                    tight_tighter_distance=z.get('tight_tighter_distance'),anchor_usable=z.get('anchor_usable'),**v));continue
             if z['config']['mode']=='time':
                 out['time_diagnostics'].append(dict(key=key,source=source,scope=z['scope'],**v));continue
             if 'nonlinear_iterations' not in v:

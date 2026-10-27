@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "one_native_lifetime_repair_submitted",
+  "status": "scalar_conversion_failure_collecting",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -75,23 +75,38 @@
       "source_mirror": "5bb86e185",
       "manifest_sha256": "23dd7281492fe75e4965f619c6fa173eb7f80fcae1dac4f148a90105efeb2b10",
       "submitted_utc": "2026-10-27T20:55:26Z",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "FAILED",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05",
       "gpu_type_requested": "h200",
       "gpus": 1,
       "cpus_reserved": 16,
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 16,
+      "allocated_gpu_hours": 0.0044444444444444444,
       "purpose": "G1 controls after native-lifetime repair",
       "repair_number_for_distinct_error": 1,
-      "device_for_FE": "CPU"
+      "device_for_FE": "CPU",
+      "node": "pax009",
+      "failure_stage": "api_and_inverse_preflight",
+      "subprocess_exit_code": 1,
+      "FE_cases_started": false,
+      "dependency_prefix_verified": true,
+      "dependency_import_passed": true,
+      "gpu_preflight_passed": true,
+      "x64_preflight_passed": true,
+      "highest_precision_verified": true,
+      "measured_failure": "TypeError converting wrapped divergence tuple to float",
+      "failed_source_line": "preflight.py:130",
+      "exact_tuple_shape_recorded": false,
+      "completed_phases": [
+        "mapped points and normals",
+        "scalar matrix assembly/factorization/solve/residual",
+        "first wrapped gradient evaluation"
+      ]
     }
   ],
-  "live_job_ids": [
-    6567633
-  ],
-  "completed_gpu_hours": 0.013888888888888888,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.018333333333333333,
   "note": "All elapsed allocation including failed import charged. One targeted dependency-layout repair under review; no numerical result or reference accepted."
 }

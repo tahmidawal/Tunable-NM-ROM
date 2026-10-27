@@ -1,13 +1,12 @@
 {
-  "status": "one_2d_native_lifetime_repair_submitted",
-  "numerical_jobs": [
-    6567633
-  ],
+  "status": "strict_scalar_conversion_repair_preparation",
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "collect job6567633 after terminal state and review results",
-    "3D source ready pending2D G1 and fresh staging",
-    "ROM adapter independent source review"
+    "collect third failed allocation and localize scalar-return shape in next guarded preflight",
+    "review strict scalar extraction in reference lanes",
+    "finish ROM adapter independent review",
+    "G1 and later G2 remain unpassed"
   ],
   "staged_unsubmitted": [
     {
@@ -25,7 +24,7 @@
       "will_be_superseded_by": "g1-smoke02"
     }
   ],
-  "completed_allocated_gpu_hours": 0.013888888888888888,
+  "completed_allocated_gpu_hours": 0.018333333333333333,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,

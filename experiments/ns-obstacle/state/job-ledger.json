@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "one_strict_scalar_repair_pending",
+  "status": "api_and_channel_completed_obstacle_normal_failure_collecting",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -116,7 +116,7 @@
       "source_mirror": "92b344ddc",
       "manifest_sha256": "d328eb94d5382adb463bae95710c2eaf54c059e8b5321108480a27d06080622f",
       "submitted_utc": "2026-10-27T21:07:35Z",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "FAILED",
       "pending_reason": "Priority",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06",
       "gpu_type_requested": "h200",
@@ -124,16 +124,27 @@
       "cpus_reserved": 16,
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 15,
+      "allocated_gpu_hours": 0.004166666666666667,
       "purpose": "G1 controls after strict scalar conversion repair",
       "repair_number_for_distinct_error": 1,
-      "device_for_FE": "CPU"
+      "device_for_FE": "CPU",
+      "node": "pax008",
+      "failure_stage": "manufactured_early_geometry",
+      "FE_cases_started": true,
+      "case_states": {
+        "channel": "completed_control_pending_independent_review",
+        "manufactured": "failed_before_solve_wrong_obstacle_normal_sign",
+        "dfg": "not_run"
+      },
+      "api_preflight_passed": true,
+      "dependency_import_passed": true,
+      "measured_failure": "raw mapped obstacle normal failed signed radial-dot threshold; exact dot was not saved",
+      "collection_archive_sha256": "29b507647409347756caee62e505c1ef5826bb148f12f92bf52bc63597701738",
+      "collection_archive_bytes": 158609584
     }
   ],
-  "live_job_ids": [
-    6567998
-  ],
-  "completed_gpu_hours": 0.018333333333333333,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.0225,
   "note": "All elapsed allocation including failed import charged. One targeted dependency-layout repair under review; no numerical result or reference accepted."
 }

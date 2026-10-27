@@ -2,7 +2,7 @@
   "campaign": "ns-obstacle-20261027",
   "version": "predata-A6",
   "status": "G1_control_only_by_exact_job_ledger_reference_and_training_closed",
-  "design_sha256": "0bd0613e64fc3a67a5b7db5201eee80cf05b704052eebcec11931f2d859f7a9e",
+  "design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
   "fork": {
     "local": "93f399faad67f94ea2b56fe25f13003143e64694",
     "mirror": "5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f"
@@ -234,6 +234,7 @@
     "pivot_tie_relative": 1.4210854715202004e-14,
     "velocity_scale": "original_sampled_sigma1",
     "pressure_scale": "max(1,original_uncentered_sampled_sigma1)",
-    "shared_Stokes_lift_allowed_with_validation": true
+    "shared_Stokes_lift_allowed_with_validation": true,
+    "pressure_constant_protected_in_both_CGS2_passes": true
   }
 }

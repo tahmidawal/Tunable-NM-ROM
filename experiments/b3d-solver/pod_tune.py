@@ -43,10 +43,28 @@ def run(cx,POD):
                 assert prior['input_sha256']==ah(cx.U[j])
                 assert previous['setup']['POD']['metadata']['basis_sha256']==s['metadata']['basis_sha256']
                 assert previous['setup']['POD']['metadata']['trust_radius']==s['metadata']['trust_radius']
-                if s.get('production_gtol',1e-3)==1e-3:
-                    assert prior['common_rollout_check'] and ah(o['C'])==prior['coefficient_sha256'] and ah(o['fields'])==prior['output_sha256']
                 pin=cx.cfg['reuse_qualified']['arrays'][key];path=HERE/pin['path'];assert hashlib.sha256(path.read_bytes()).hexdigest()==pin['sha256']
-                z=np.load(path,allow_pickle=False);detail=dict(prior['certificate'])
+                z=np.load(path,allow_pickle=False)
+                if s.get('production_gtol',1e-3)==1e-3:
+                    matches=ah(o['C'])==prior['coefficient_sha256'] and ah(o['fields'])==prior['output_sha256']
+                    if not matches:
+                        old_fields=jax.block_until_ready(s['decode_query'](jnp.asarray(z['W']),s['data']))
+                        probe=dict(C_current_sha256=ah(o['C']),C_prior_sha256=prior['coefficient_sha256'],
+                            fields_current_sha256=ah(o['fields']),fields_prior_sha256=prior['output_sha256'],old_decoded_fields_sha256=ah(old_fields),
+                            C_max_absolute=float(np.max(np.abs(np.asarray(o['C'])-z['C']))),
+                            C_relative=float(np.linalg.norm(np.asarray(o['C'])-z['C'])/(np.linalg.norm(z['C'])+1e-300)),
+                            C0_bitwise_equal=bool(np.array_equal(np.asarray(o['C'])[0],z['C'][0])),
+                            W_max_absolute=float(np.max(np.abs(np.asarray(o['W'])-z['W']))),
+                            decoded_field_distance=float(np.linalg.norm(np.asarray(o['fields'])-np.asarray(old_fields))/np.linalg.norm(np.asarray(cx.U[j]))),
+                            current_score=score(cx,o['fields'],j),prior_score=prior['score'],old_decoded_score=score(cx,old_fields,j),
+                            fresh_certificate=s['certify'](o,cx.nu[j]),input_sha256=ah(cx.U[j]),source=pin,
+                            note='Unchanged strict identity guard still aborts after this snapshot; no cause assumed.')
+                        cx.rep.setdefault('identity_probes',{})[key]=probe
+                        np.savez_compressed(cx.out/f"identity_probe_{s['name']}_c{j:03d}.npz",C=np.asarray(o['C']),W=np.asarray(o['W']),fields=np.asarray(o['fields']),
+                            old_C=np.asarray(z['C']),old_W=np.asarray(z['W']),old_decoded_fields=np.asarray(old_fields),Gram=gram)
+                        cx.save()
+                    assert prior['common_rollout_check'] and ah(o['C'])==prior['coefficient_sha256'] and ah(o['fields'])==prior['output_sha256']
+                detail=dict(prior['certificate'])
                 assert ah(z['C'])==prior['coefficient_sha256'] and np.array_equal(np.asarray(z['C'])[0],np.asarray(o['C'])[0])
                 assert detail['tight_certificate']['anchor_ok'] and detail['tighter_certificate']['anchor_ok'] and detail['tight_tighter_distance']<=2.5e-5
                 detail['production_certificate']=s['certify'](o,cx.nu[j]);detail['reused_anchor_source']=pin

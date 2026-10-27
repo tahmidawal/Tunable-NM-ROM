@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/podtune03/experiments/b3d-solver/front.py", line 46, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/podtune03/experiments/b3d-solver/front.py", line 37, in main
+    pod_tune.run(cx,POD)
+    ~~~~~~~~~~~~^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/podtune03/experiments/b3d-solver/pod_tune.py", line 47, in run
+    assert prior['common_rollout_check'] and ah(o['C'])==prior['coefficient_sha256'] and ah(o['fields'])==prior['output_sha256']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

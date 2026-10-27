@@ -20,7 +20,7 @@ def arrsave(path,**arrays):
 
 def make_plans(data,out,L):
     pdir=out/f'plans/L{L}'; pdir.mkdir(parents=True,exist_ok=True)
-    t0=time.perf_counter(); plans=C.interpolation_plans(L,A.LF,2); oracle={}
+    t0=time.perf_counter(); plans=C.interpolation_plans(L,A.LF,2); oracle={}; failed=[]
     for p in plans:
         p.metadata.update(group='ordinary',representation='geometry_only',rank=None)
         path=pdir/(p.name+'.npz'); p.metadata['array_file']=str(path.relative_to(out)); p.metadata['array_sha256']=arrsave(path,**p.arrays)
@@ -34,21 +34,30 @@ def make_plans(data,out,L):
                 prior=np.asarray(pi['captured_energy'])/16384
             for r in RANKS:
                 start=time.perf_counter(); label=f'{name}_r{r}'
-                geo=C.prepare_basis(bc[:,:r],bf[:,:r],L,A.LF,2,label)
-                gpath=pdir/(label+'_geometry.npz')
-                gh=arrsave(gpath,fine_basis=geo.fine,coarse_basis=geo.coarse,transform=geo.transform)
-                oracle[label]=geo.fine
+                geo=None; geometry_error=None
+                try:
+                    geo=C.prepare_basis(bc[:,:r],bf[:,:r],L,A.LF,2,label)
+                    gpath=pdir/(label+'_geometry.npz')
+                    gh=arrsave(gpath,fine_basis=geo.fine,coarse_basis=geo.coarse,transform=geo.transform)
+                    oracle[label]=geo.fine
+                except Exception as exc:
+                    geometry_error=exc
                 for cov in ([False,True] if family=='pod' else [False]):
                     for lam in C.RIDGES:
                         if cov and lam==0: continue # mathematically identical to the unregularized POD row
-                        plan=geo.plan(lam,prior_variances=prior[:r] if cov else None)
-                        plan.metadata.update(group=name,representation=family,rank=r,training='256_node_fine_informed' if bank=='base' else '129_node_solution_data_only_inherited_recipe',strict_coarse_control=bool(bank=='coarse' and L==128 and r==384 and lam==0 and not cov),covariance_note='uncentered training second moments, no mean mode' if cov else None,geometry_file=str(gpath.relative_to(out)),geometry_sha256=gh)
-                        path=pdir/(plan.name+'.npz')
-                        plan.metadata['array_file']=str(path.relative_to(out)); plan.metadata['array_sha256']=arrsave(path,fit_matrix=plan.arrays['fit_matrix'])
-                        plans.append(plan)
-                A.log('prepared',L,label,'physicalrank',geo.metadata['physical_rank'],'seconds',time.perf_counter()-start)
+                        metadata=dict(name=f"{label}_{'covridge' if cov else 'ridge'}{lam:g}",group=name,representation=family,rank=r,ridge=lam,training='256_node_fine_informed' if bank=='base' else '129_node_solution_data_only_inherited_recipe',strict_coarse_control=bool(bank=='coarse' and L==128 and r==384 and lam==0 and not cov),covariance_note='uncentered training second moments, no mean mode' if cov else None)
+                        try:
+                            if geometry_error is not None: raise RuntimeError('geometry setup: '+str(geometry_error))
+                            plan=geo.plan(lam,prior_variances=prior[:r] if cov else None)
+                            plan.metadata.update(metadata,geometry_file=str(gpath.relative_to(out)),geometry_sha256=gh)
+                            path=pdir/(plan.name+'.npz')
+                            plan.metadata['array_file']=str(path.relative_to(out)); plan.metadata['array_sha256']=arrsave(path,fit_matrix=plan.arrays['fit_matrix'])
+                            plans.append(plan)
+                        except Exception as exc:
+                            failed.append(metadata|dict(setup_valid=False,reason=type(exc).__name__+': '+str(exc)))
+                A.log('prepared',L,label,'physicalrank',geo.metadata['physical_rank'] if geo is not None else None,'seconds',time.perf_counter()-start)
             del bc,bf; gc.collect()
-    meta=dict(L=L,prepare_seconds=time.perf_counter()-t0,plans=[p.metadata for p in plans])
+    meta=dict(L=L,prepare_seconds=time.perf_counter()-t0,plans=[p.metadata for p in plans],failed_plans=failed)
     A.write_json(pdir/'plans.json',meta)
     return plans,oracle,meta
 
@@ -133,7 +142,7 @@ def main():
     if out.exists() and any(out.iterdir()): raise RuntimeError('output directory must be fresh')
     out.mkdir(parents=True,exist_ok=True)
     A.verify_inputs(); runtime=A.runtime(); A.write_json(out/'runtime.json',runtime)
-    hashes={fn:A.sha_file(A.HERE/fn) for fn in ['screen.py','adapter.py','reconstruction_core.py','data_manifest.py','INPUTS.json','CORE_SOURCE.json']}
+    hashes={fn:A.sha_file(A.HERE/fn) for fn in ['screen.py','adapter.py','reconstruction_core.py','check_core.py','data_manifest.py','INPUTS.json','CORE_SOURCE.json']}
     hashes['consumed_data_manifest']=DM.verify(data)
     if hashes['consumed_data_manifest']!=os.environ.get('EXPECTED_PREP_MANIFEST_SHA256'): raise RuntimeError('unexpected prepared-data manifest')
     hashes['bases_manifest']=A.sha_file(data/'bases/bases.json'); hashes['coarse_manifest']=A.sha_file(data/'coarse/summary.json')
@@ -160,6 +169,8 @@ def main():
             # Sustained GPU burn before the case; later method blocks have their own burn.
             burn_y=jnp.asarray(inputs['B'][1:2]); deadline=time.perf_counter()+1.
             while time.perf_counter()<deadline: C.ready(plans[-1].query(burn_y))
+            for failure in meta['failed_plans']:
+                for source in ['A','B']: summary.append(failed_case(failure,RuntimeError(failure['reason']),out,source,cohort,case,L,md))
             order=np.random.default_rng(7201+case+L).permutation(len(plans))
             for ii in order:
                 plan=plans[int(ii)]

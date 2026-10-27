@@ -23,10 +23,12 @@ export OMP_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 MKL_NUM_THREADS=8
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); sys.exit(0 if b=='gpu' else 42)"
 if [ "$PHASE" = dev ]; then
-    "$PY" screen.py --phase dev --data "$PREP_ROOT" --out output
+    "$PY" check_core.py
+"$PY" screen.py --phase dev --data "$PREP_ROOT" --out output
 elif [ "$PHASE" = val ]; then
     : "${FROZEN_FILE:?frozen development selection}"
-    "$PY" screen.py --phase val --data "$PREP_ROOT" --frozen "$FROZEN_FILE" --out output
+    "$PY" check_core.py
+"$PY" screen.py --phase val --data "$PREP_ROOT" --frozen "$FROZEN_FILE" --out output
 else
     echo "unsupported phase" >&2; exit 2
 fi

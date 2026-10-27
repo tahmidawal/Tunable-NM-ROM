@@ -20,7 +20,8 @@ def main():
         if not rp.exists():continue
         z=json.loads(rp.read_text());source=dict(path=str(rp.relative_to(HERE)),sha256=sha(rp),job_id=entry['job_id'],source_commit=z['source_commit'],gpu=z['gpu'])
         if z['config']['mode']=='pod_tune':
-            out['POD_tuning_jobs'].append(dict(source=source,scope=z['scope'],selection=z['selection'],frozen_picks=z['frozen_picks']))
+            out['POD_tuning_jobs'].append(dict(source=source,scope=z['scope'],execution_complete=z['complete'],failure=z.get('failure'),
+                selection=z.get('selection',{}),frozen_picks=z.get('frozen_picks',[]),identity_probes=z.get('identity_probes',{})))
         for key,v in z['runs'].items():
             if z['config']['mode']=='pod_tune':
                 out['POD_tuning'].append(dict(key=key,source=source,scope=z['scope'],**v));continue

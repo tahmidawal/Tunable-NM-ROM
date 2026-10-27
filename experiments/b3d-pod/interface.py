@@ -17,14 +17,15 @@ import pipeline as P
 PHI_SHA='7dc39cf9fbb5ea06d77001e4f8ccd69113dcdc8f22838f3cc12d0159b3431b2c'
 
 
-def functions_for(trust, max_steps=40, solver='common'):
+def functions_for(trust, max_steps=40, solver='common', L=64):
     """Original no-HR equations with a larger explicit buffer; no global NMAX mutation.
 
     Returns fused, initialize, evolve, decode, fresh_certifier, schedule_factory.
     Native tight/tighter anchors use solver='native'. All large data are arguments.
     """
-    assert max_steps in (25,40,80) and solver in ('common','native')
-    raw_evolve=R.make_evolve('none',3,64,solver,max_steps,trust=trust)
+    assert max_steps in (10,15,20,25,40) and solver in ('common','native')
+    assert L in (5,64)  # L=5 is the tiny consistency control; production stays at L=64.
+    raw_evolve=R.make_evolve('none',3,L,solver,max_steps,trust=trust)
     def query(u0,nu,data,sch):
         c0=data['Phi'].T@u0;scale=jnp.linalg.norm(c0)
         W,C,stats=raw_evolve(c0,nu,scale,data,sch)
@@ -35,7 +36,7 @@ def functions_for(trust, max_steps=40, solver='common'):
         return dict({k:v for k,v in ss.items() if k!='nsave'},gtol=jnp.float64(g),tolf=jnp.float64(t))
     return (jax.jit(query),jax.jit(lambda u,d:(d['Phi'].T@u,jnp.linalg.norm(d['Phi'].T@u))),
             jax.jit(raw_evolve),jax.jit(lambda W,d:W@d['Phi'].T),
-            R.make_certifier('none',3,64,max_steps),schedule)
+            R.make_certifier('none',3,L,max_steps),schedule)
 
 
 def setup(phi_path):

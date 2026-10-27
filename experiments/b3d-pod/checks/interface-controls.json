@@ -1,0 +1,37 @@
+{
+  "backend": "gpu",
+  "old_new_CN_W_maxabs": 0.0,
+  "fine_steps": 40,
+  "fine_buffer": 40,
+  "fine_output_slot_difference": 0.0,
+  "fine_finite": true,
+  "steps": [
+    {
+      "dt": 0.025,
+      "steps": 10,
+      "buffer": 10
+    },
+    {
+      "dt": 0.016666666666666666,
+      "steps": 15,
+      "buffer": 15
+    },
+    {
+      "dt": 0.0125,
+      "steps": 20,
+      "buffer": 20
+    },
+    {
+      "dt": 0.01,
+      "steps": 25,
+      "buffer": 25
+    },
+    {
+      "dt": 0.00625,
+      "steps": 40,
+      "buffer": 40
+    }
+  ],
+  "H_NMAX_unchanged": true,
+  "pass": true
+}

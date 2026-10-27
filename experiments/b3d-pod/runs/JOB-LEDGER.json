@@ -1,7 +1,7 @@
 {
   "namespace": "/cluster/tufts/paralab/tawal01/b3d-pod-20261026",
   "cap_gpu_hours": 4,
-  "spent_gpu_hours": 0.025555555555555557,
+  "spent_gpu_hours": 0.08472222222222223,
   "jobs": [
     {
       "attempt": "pilot",
@@ -34,14 +34,20 @@
     },
     {
       "attempt": "none64",
-      "state": "RUNNING",
+      "state": "COMPLETED",
       "job_id": 6525585,
       "requested_gpu_hours": 0.4,
       "source_sha256": "1cbb7d13f30191a67c897044441ccf1cdd06e14440306d985758daa6cd40fa4a",
       "source_commit": "5b49973df8c543535c25ccb09eec94a27edb07d2",
       "submitted_utc": "2026-10-26T23:53:16.187482+00:00",
       "pre_post_queue_checked": true,
-      "post_submit_exactly_one": true
+      "post_submit_exactly_one": true,
+      "exit_code": "0:0",
+      "elapsed_seconds": 213,
+      "spent_gpu_hours": 0.059166666666666666,
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "results_audit": "READY"
     }
   ]
 }

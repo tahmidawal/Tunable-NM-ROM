@@ -1,1 +1,32 @@
-{"campaign":"ns-obstacle-20261027","status":"discovery_no_jobs","allocated_gpu_hour_ceiling":12,"allocations":[],"live_job_ids":[],"completed_gpu_hours":0,"note":"Ceiling prospective, subject to independent design audit. No numerical gate passed."}
+{
+  "campaign": "ns-obstacle-20261027",
+  "status": "first_2d_smoke_submitted",
+  "allocated_gpu_hour_ceiling": 12,
+  "allocations": [
+    {
+      "job_id": 6566869,
+      "lane": "2d_reference",
+      "attempt": "g1-smoke03",
+      "source_commit": "1ac56b2d7c3305f4e961149c31e087b422d2600f",
+      "source_sha256": "6e5c4dd4a804436c800ca2c83ad8d12037bcf5ce8ac69867974dccfd1046dc33",
+      "manifest_sha256": "0dde96f33990f4e05054b4390de595d782db790231954eb31fcf636e0756ea13",
+      "submitted_utc": "2026-10-27 20:30:46 UTC",
+      "state_last_observed": "PENDING",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "purpose": "diagnostic_G1_not_reference_admission",
+      "device_for_FE": "CPU"
+    }
+  ],
+  "live_job_ids": [
+    6566869
+  ],
+  "completed_gpu_hours": 0,
+  "note": "One allocation pending/running; elapsed cost unknown until accounting, not zero. Total charged allocations plus reserved live limits must stay under ceiling."
+}

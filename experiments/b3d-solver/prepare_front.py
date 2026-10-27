@@ -24,6 +24,8 @@ def main():
         ids=np.asarray(z['cases|'+rawkey],int);assert np.array_equal(ids,np.arange(64))
         W=np.asarray(z[rawkey]);assert W.shape[:2]==(64,6) and np.isfinite(W).all()
         arrays[key]=W
+        native=json.loads(rp.read_text())
+        original=next((b['result'][key] for b in native['blocks'] if key in b.get('result',{})),None)
         cert=analysis['configurations'].get(key)
         if attempt=='q3r5':
             q1=speed['configs'][key]
@@ -49,7 +51,7 @@ def main():
                 finer_result=pin(finerpath),finer_fresh_bad=sum(sum(not(g<=1e-3) for g in r['fresh_gamma']) for r in finer['runs'].values()),
                 finer_steps=sum(len(r['fresh_gamma']) for r in finer['runs'].values()),finer_rule_itself_qualified=False))
         else:assert cert['qualified'] and cert['Q1_pass'] and cert['Q2']['label']=='pass'
-        out['entries'][key]=dict(ordered_cases=ids.tolist(),raw_key=rawkey,coefficients=pin(wp),run=pin(rp),
+        out['entries'][key]=dict(ordered_cases=ids.tolist(),raw_key=rawkey,coefficients=pin(wp),run=pin(rp),original_qualification_record=original,
             cohort=json.loads(rp.read_text())['cohort'],qualification=cert)
     np.savez_compressed(HERE/'inputs/front_archive.npz',**arrays)
     out['archive_sha256']=sha(HERE/'inputs/front_archive.npz')

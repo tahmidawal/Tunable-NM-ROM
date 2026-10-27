@@ -1,0 +1,319 @@
+{
+  "status": "passed development gates; validation has not run",
+  "selection_sha256": "bc669ab95ea20d88f1d793549e6f4d260fed7eae2641a1c76d837de6f49e819c",
+  "job_id": 6569265,
+  "case_config_rows": 2544,
+  "source_manifest": "4798274dd6e7e3029be3cf099d6e489ad6b27b22978f867b0eecbcf8d2da10dc",
+  "output_manifest": "18e2b6ae5ef319bef83fb19a5c95e886ac8742715df6c9958fc7f854b28f98c4",
+  "total_gpu_seconds": 3342,
+  "total_gpu_hours": 0.9283333333333333,
+  "selected": {
+    "16/A/ordinary": "sine_smooth0.01",
+    "16/A/bank": "bank_q2_r1024_ridge0.0001",
+    "16/A/pod_matched": "pod_matched_q2_r1024_covridge1e-08",
+    "16/A/pod_stronger": "pod_stronger_q2_r1024_covridge1e-10",
+    "16/B/ordinary": "sine_smooth1",
+    "16/B/bank": "bank_q2_r256_ridge0.01",
+    "16/B/pod_matched": "pod_matched_q2_r512_covridge1e-06",
+    "16/B/pod_stronger": "pod_stronger_q2_r512_covridge1e-06",
+    "32/A/ordinary": "sine_smooth0.01",
+    "32/A/bank": "bank_q2_r1024_ridge1e-10",
+    "32/A/pod_matched": "pod_matched_q2_r1024_covridge1e-10",
+    "32/A/pod_stronger": "pod_stronger_q2_r1024_ridge0",
+    "32/B/ordinary": "sine_smooth1",
+    "32/B/bank": "bank_q2_r1024_ridge0.0001",
+    "32/B/pod_matched": "pod_matched_q2_r1024_covridge1e-08",
+    "32/B/pod_stronger": "pod_stronger_q2_r1024_covridge1e-08"
+  },
+  "pod_approximation_warning": "Some selected development reconstructions change materially between q1 and q2. Comparator remains approximate; no optimal-POD or pure architecture claim.",
+  "selected_pod_rows": [
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 0,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 0.0003722528022492677,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 0,
+      "config": "pod_stronger_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 0.0011803005555065518,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 0,
+      "config": "pod_matched_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 7.626277322022933e-07,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 0,
+      "config": "pod_stronger_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 7.999990173259713e-08,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 1,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 0.0004232173820868012,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 1,
+      "config": "pod_stronger_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 0.0017863868446034244,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 1,
+      "config": "pod_matched_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 8.194862806619829e-07,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 1,
+      "config": "pod_stronger_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 9.532846123117547e-08,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 2,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 2.939114442156117e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 2,
+      "config": "pod_stronger_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 7.290393991935675e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 2,
+      "config": "pod_matched_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 4.742300302321321e-08,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 2,
+      "config": "pod_stronger_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 5.080439848192591e-09,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 3,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 5.955493279101779e-06,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "A",
+      "case": 3,
+      "config": "pod_stronger_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 1.2971759757910192e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 3,
+      "config": "pod_matched_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 1.4593186704809258e-08,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 16,
+      "source": "B",
+      "case": 3,
+      "config": "pod_stronger_q2_r512_covridge1e-06",
+      "approximate_pod_gap_max": 1.1338852196567615e-09,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 0,
+      "config": "pod_matched_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 0.0015699441513100988,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 0,
+      "config": "pod_stronger_q2_r1024_ridge0",
+      "approximate_pod_gap_max": 0.0007231296812556675,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 0,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 0.0004558753991897476,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 0,
+      "config": "pod_stronger_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 9.483695669279759e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 1,
+      "config": "pod_matched_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 0.0016165537526663697,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 1,
+      "config": "pod_stronger_q2_r1024_ridge0",
+      "approximate_pod_gap_max": 0.0009940527553985782,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 1,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 0.0005495490047879835,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 1,
+      "config": "pod_stronger_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 0.00011394370273915088,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 2,
+      "config": "pod_matched_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 9.66905679201638e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 2,
+      "config": "pod_stronger_q2_r1024_ridge0",
+      "approximate_pod_gap_max": 4.7541868337568514e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 2,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 2.6272394332478422e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 2,
+      "config": "pod_stronger_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 5.006844451516852e-06,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 3,
+      "config": "pod_matched_q2_r1024_covridge1e-10",
+      "approximate_pod_gap_max": 2.0925538229407695e-05,
+      "approximate_pod_gap_consequential": true,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "A",
+      "case": 3,
+      "config": "pod_stronger_q2_r1024_ridge0",
+      "approximate_pod_gap_max": 9.098906615748292e-06,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 3,
+      "config": "pod_matched_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 5.446349614140393e-06,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    },
+    {
+      "coarse_intervals": 32,
+      "source": "B",
+      "case": 3,
+      "config": "pod_stronger_q2_r1024_covridge1e-08",
+      "approximate_pod_gap_max": 7.817888730988798e-07,
+      "approximate_pod_gap_consequential": false,
+      "approximate_pod_paired_times": 5
+    }
+  ]
+}

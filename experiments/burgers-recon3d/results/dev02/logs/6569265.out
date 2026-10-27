@@ -1,0 +1,64 @@
+host=pax008 source_commit=6f3a7e6e245f180b1c73511a67b108c4c513c066
+NVIDIA H200, GPU-aaf512b7-e3e2-7531-dd67-71a6810293b4, 143771 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.32:/projects/paralab  4.6T  1.5T  3.1T  33% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu
+{"status": "pass", "results": [{"dim": 2, "status": "pass", "sampled_rank": 3, "fine_rank": 4, "eigenbasis_invariance": true, "sine_exact": true, "covariance_ridge_checked": true}, {"dim": 3, "status": "pass", "sampled_rank": 3, "fine_rank": 4, "eigenbasis_invariance": true, "sine_exact": true, "covariance_ridge_checked": true}]}
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA H200
+prepared L16 bank_q2_r256 elapsed=0.00
+prepared L16 bank_q2_r512 elapsed=0.00
+prepared L16 bank_q2_r1024 elapsed=0.00
+prepared L16 pod_matched_q1_r256 elapsed=0.00
+prepared L16 pod_matched_q1_r512 elapsed=0.01
+prepared L16 pod_matched_q1_r1024 elapsed=0.01
+prepared L16 pod_matched_q2_r256 elapsed=0.00
+prepared L16 pod_matched_q2_r512 elapsed=0.01
+prepared L16 pod_matched_q2_r1024 elapsed=0.01
+prepared L16 pod_stronger_q1_r256 elapsed=0.00
+prepared L16 pod_stronger_q1_r512 elapsed=0.01
+prepared L16 pod_stronger_q1_r1024 elapsed=0.01
+prepared L16 pod_stronger_q2_r256 elapsed=0.00
+prepared L16 pod_stronger_q2_r512 elapsed=0.01
+prepared L16 pod_stronger_q2_r1024 elapsed=0.01
+scored dev4/0 L16 A methods=159 eligible=True
+scored dev4/0 L16 B methods=159 eligible=True
+scored dev4/1 L16 A methods=159 eligible=True
+scored dev4/1 L16 B methods=159 eligible=True
+scored dev4/2 L16 A methods=159 eligible=True
+scored dev4/2 L16 B methods=159 eligible=True
+scored dev4/3 L16 A methods=159 eligible=True
+scored dev4/3 L16 B methods=159 eligible=True
+prepared L32 bank_q2_r256 elapsed=0.00
+prepared L32 bank_q2_r512 elapsed=0.00
+prepared L32 bank_q2_r1024 elapsed=0.00
+prepared L32 pod_matched_q1_r256 elapsed=0.00
+prepared L32 pod_matched_q1_r512 elapsed=0.01
+prepared L32 pod_matched_q1_r1024 elapsed=0.01
+prepared L32 pod_matched_q2_r256 elapsed=0.00
+prepared L32 pod_matched_q2_r512 elapsed=0.01
+prepared L32 pod_matched_q2_r1024 elapsed=0.01
+prepared L32 pod_stronger_q1_r256 elapsed=0.00
+prepared L32 pod_stronger_q1_r512 elapsed=0.01
+prepared L32 pod_stronger_q1_r1024 elapsed=0.01
+prepared L32 pod_stronger_q2_r256 elapsed=0.00
+prepared L32 pod_stronger_q2_r512 elapsed=0.01
+prepared L32 pod_stronger_q2_r1024 elapsed=0.01
+scored dev4/0 L32 A methods=159 eligible=True
+scored dev4/0 L32 B methods=159 eligible=True
+scored dev4/1 L32 A methods=159 eligible=True
+scored dev4/1 L32 B methods=159 eligible=True
+scored dev4/2 L32 A methods=159 eligible=True
+scored dev4/2 L32 B methods=159 eligible=True
+scored dev4/3 L32 A methods=159 eligible=True
+scored dev4/3 L32 B methods=159 eligible=True
+{
+  "status": "pass",
+  "phase": "dev",
+  "rows": 2544,
+  "coefficient_invocations_checked": 15264,
+  "timed_invocations_checked": 0,
+  "representative_field_invocations_checked": 0,
+  "scope": "Artifact identities and stored score consistency; independent numerical replay is separate."
+}
+ALL-DONE

@@ -627,6 +627,11 @@ def main():
               "", "## Provenance", ""]
     for item in provenance:
         lines.append(f"- {item['dimension']}D validation export: `{item['path']}`; SHA-256 `{item['sha256']}`.")
+    lines += ["", "The [protocol and controls](DESIGN.md) specify the physical times, meshes, training information, "
+              "fitting rules and prospective selection criteria."]
+    if acceptance:
+        lines += ["", "The [independent acceptance record](ACCEPTED-SCREEN.json) binds the exports, report generator "
+                  "and auxiliary POD evidence used for this publication."]
     lines += ["", "The companion JSON contains normalized selected-case records, full comparison pairs, "
               "runtime metadata and the gate constants used to generate these tables.", "",
               f"The [complete configuration table]({args.out.stem}.configurations.csv) retains every "
@@ -652,8 +657,10 @@ def main():
               "largest departure of the basis inner products from an identity matrix.",
               "- **q1/q2 / consequential cases:** two predeclared randomized-POD approximation levels / "
               "development cases where their reconstructed outputs differ beyond the registered threshold.",
+              "- **Bank q2 identifier:** bookkeeping in the saved configuration name; the learned bank is frozen "
+              "and has no POD power-iteration parameter.",
               "- **Frozen configuration:** rank, penalty and method chosen before validation was run.",
-              "- **Rank / ridge:** number of retained basis directions / penalty that discourages unstable coefficients.",
+              "- **Rank / ridge:** requested basis prefix size before numerical pruning / penalty that discourages unstable coefficients.",
               "- **Requested directions / retained fine directions / sampled rank:** initial basis size / "
               "directions kept after removing numerical dependence / directions distinguishable on the coarse grid.",
               "- **Retained-spectrum condition:** largest divided by smallest retained singular value of the "

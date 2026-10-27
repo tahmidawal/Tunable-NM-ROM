@@ -89,6 +89,22 @@ tested matching arm in this finite set and retains the historical broader ladder
 scope. A missing match is an explicit outcome. Only a specific missing accuracy tier
 can justify a separately reviewed extension, never a new unrestricted grid.
 
+## Inherited equations and diagnostic geometry
+
+The archived bank kernels use analytic continuum advection quadrature (`B*c * D*c`),
+with discrete sine diffusion eigenvalues and mesh-DST test moments. They do not use the
+sign-upwind stencil inside this off-mesh term. The generic repository upwind guidance
+must not be used to relabel these byte-identical archived equations. POD/FD use their
+frozen central finite-difference operators and PS uses its continuous sine formulation.
+All target the same physical continuum problem, with their measured discretization errors.
+
+The offline E0 projection budget fits each reference output by exact least squares on
+the fixed scoring lattice, using the frozen bank/POD trial basis. Save oracle coefficients,
+residual norms, projected-residual orthogonality and squared-error/Pythagorean closure.
+For W1024 cases0,5,30,43 also retain complete residual fields. Normalize by the original
+65-node initial-reference norm. This geometric decomposition is not a causal split of
+space, time and nonlinear error; a small floor does not identify the dynamical cause.
+
 ## Population, input and cost contract
 
 All64 unsealed validation cases, seed923801, approved E0 ST finest references, output times
@@ -112,7 +128,8 @@ reusable operator tables are offline; record their setup/memory separately.
 
 Within a single H200 job, warm every subject, randomise A-B-A paired blocks with the M2
 anchor, burn in before every invocation, and save all repetitions. Use at least three
-repetitions per case/subject; reject performance inference when an anchor bracket drifts
+repetitions per case/subject. Allow at most two extra brackets only if one contract has no
+admitted timing for that case; retain all rejected brackets. Reject performance inference when an anchor bracket drifts
 outside[1/1.1,1.1]. Persist fields or reusable coefficients, output hashes and the E0 score
 for each timed invocation. Cost and accuracy therefore refer to the same solve. Record
 initialisation, evolution, decoding, full native query, parameter-to-output time, work

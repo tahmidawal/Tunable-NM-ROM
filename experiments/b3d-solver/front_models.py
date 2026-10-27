@@ -10,6 +10,8 @@ import qn3
 import fomrun as FOM
 import psjax
 import ps_phases
+import fs3
+from work_counts import fixed_sweep
 
 HERE=Path(__file__).resolve().parent
 def memory():
@@ -46,8 +48,8 @@ def bank(cx,cfg,shared):
             return dict(nonlinear_iterations=int(np.asarray(o['q']).sum()),jacobian_contractions=int(np.asarray(o['n_exec']).sum()),
                 residual_evaluations=None,gradient_evaluations=None,raw_step_records=rec,
                 missing_counter_reason='unchanged original QN kernel does not record residual/gradient call counts')
-        return dict(nonlinear_iterations=int(np.asarray(o['it']).sum()),jacobian_contractions=None,residual_evaluations=None,
-                    gradient_evaluations=None,raw_step_records=rec,missing_counter_reason='unchanged FS kernel records iterations, predictors and damping, not total logical operator calls')
+        a=fs3.a_effective(cfg['scheme'],cfg['dt'],.01,st.a,q.steps)
+        return dict(fixed_sweep(np.asarray(o['it'])[:,0],a,cfg['work_policy'],cfg['scheme']),raw_step_records=rec)
     return dict(id=cfg['id'],kind='bank',config=cfg,run=run,prepare=lambda j:prepared_field(cx,j),
         output=output,weights=weights,state=state,valid=valid,work=work,st=st,data=d,query=q,spec=sp,
         certifier=qn3.make_certify(cfg['scheme'],cfg['dt'],q.steps),adaptive_queries={},

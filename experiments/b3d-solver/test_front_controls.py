@@ -3,6 +3,8 @@ from pathlib import Path
 import copy
 import json
 import sys
+import tempfile
+from types import SimpleNamespace
 import numpy as np
 
 HERE=Path(__file__).resolve().parent
@@ -13,6 +15,9 @@ import psjax
 import ps_phases
 from front_metrics import summarize
 from pod_policy import stronger
+from work_counts import fixed_sweep
+import fs3
+from projection_budget import ProjectionBudget
 
 def main():
     assert jax.config.x64_enabled
@@ -42,8 +47,32 @@ def main():
     assert float(policy['evolve'](jnp.float64(0),.1,1))==1e-4
     assert float(policy['validate'](jnp.float64(0),.1)['probe'])==1e-4
     assert float(original['sch']['gtol'])==1e-3
+    calls=[]
+    def counted_contract(data,c):
+        jax.debug.callback(lambda _:calls.append(1),c,ordered=True)
+        return jnp.einsum('mij,j->mi',data['T'],c)
+    d=dict(A=jnp.asarray([[1.,.1],[.1,1.],[.2,.3]]),lam=jnp.asarray([1.,2.,3.]),T=jnp.ones((3,2,2))*.01)
+    actual=[]
+    for aeff in (0,2):
+        calls.clear();ev=fs3.make_fs_evolve(2,counted_contract,'CN',.025,1,1e-3,.05,aeff,4,unroll=False)
+        out=jax.block_until_ready(ev(jnp.asarray([.2,.3]),.02,1e-12,d));jax.effects_barrier()
+        derived=fixed_sweep(np.asarray(out['it']),aeff,1,'CN')
+        assert len(calls)==derived['jacobian_contractions'],(len(calls),derived)
+        actual.append(dict(adaptive_steps=aeff,observed_contractions=len(calls),derived=derived))
+    rng=np.random.default_rng(19);G=rng.normal(size=(7,3));R=rng.normal(size=(6,7));W=rng.normal(size=(6,3));n0=np.linalg.norm(R[0])
+    with tempfile.TemporaryDirectory(dir=HERE/'audits') as td:
+        cx=SimpleNamespace(out=Path(td),cfg=dict(phase_cases=[0]),ref=lambda j:(R,dict(judge=dict(n0=n0)),{}))
+        d=dict(GTb=(jnp.asarray(G.T[:1]),jnp.asarray(G.T[1:])),L=jnp.asarray(np.linalg.cholesky(G.T@G)))
+        sub=dict(kind='bank',st=SimpleNamespace(bk=dict(sha256='synthetic-only'),lean=d))
+        output={};budget=ProjectionBudget(cx,output)
+        b=budget.measure(sub,0,W,(np.linalg.norm(W@G.T-R,axis=1)/n0).tolist())
+        exact=np.linalg.lstsq(G,R.T,rcond=None)[0].T
+        observed=budget.cache[('bank_synthetic-only_3',0)][0]
+        oracle_relative=float(np.linalg.norm(exact-observed)/(np.linalg.norm(exact)+1e-300));assert oracle_relative<=1e-12
+        assert max(abs(x) for x in b['pythagorean_squared_error_defect'])<=1e-12
     out=dict(passed=True,synthetic_only=True,x64=jax.config.x64_enabled,PS_phase_fused_relative=rel,
-             incomplete_case_coverage_rejects_cost_match=True,case_balanced_median_control=True,POD_stronger_policy_actual_schedule_binding=True)
+             incomplete_case_coverage_rejects_cost_match=True,case_balanced_median_control=True,POD_stronger_policy_actual_schedule_binding=True,
+             FS_logical_contract_runtime_controls=actual,projection_oracle_relative=oracle_relative,projection_orthogonality_Pythagoras_pass=True)
     dest=HERE/'audits/front-small-controls.json';dest.parent.mkdir(exist_ok=True);dest.write_text(json.dumps(out,indent=1)+'\n');print(json.dumps(out))
 
 if __name__=='__main__':main()

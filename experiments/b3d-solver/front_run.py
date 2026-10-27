@@ -17,6 +17,7 @@ import pod_policy
 from front_metrics import summarize
 from pod_tune import ah,score
 from time_run import adaptive,fielddist
+from projection_budget import ProjectionBudget
 
 HERE=Path(__file__).resolve().parent
 def file_sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
@@ -141,7 +142,7 @@ def run(cx,POD):
     for j in cx.cases:cx.ref(j)
     cohort_audit=json.loads((cx.out/'cohort_identity.json').read_text())
     times=[round(.05*k,10) for k in range(6)]
-    result=dict(schema_version=1,cohort=dict(name='val64',seed=923801,count=64,ordered_cases=cx.cases,
+    result=dict(schema_version=1,cohort=dict(name='val64',seed=923801,count=64,ordered_cases=cx.cases,ordered_case_ids=cx.cases,
         eligible_cases=[j for j in cx.cases if cx.refs[j][2]['eligible']],table_sha256=cx.tab['sha256'],canonical_table_sha256=cx.tab['sha256'],
         raw_regeneration_sha256=cohort_audit['actual_sha256'],normalisation_restore=cohort_audit['normalisation_audit'],exposed_validation=True),
         reference=dict(dimension=3,cohort='val64',kind='ST',field='finest',store_version=RS.store_version(),
@@ -150,10 +151,15 @@ def run(cx,POD):
         contracts=dict(primary='descriptor',descriptor=dict(contains_canonical_s_star=True,cohort_and_descriptor_construction='common offline setup',
             includes_native_input_preparation=True),prepared_native=dict(cross_method_inputs_differ=True),
             output=dict(shape=[6,63**3],points='fixed interior of65-node mesh',residency='device; synchronization included; host transfer/scoring/storage excluded for every method')),
+        equations=dict(bank='inherited analytic continuum advection quadrature Bc*Dc; mesh-discrete sine diffusion eigenvalues and DST test moments; original equations unchanged',
+                       POD='full central finite-difference residual projected on frozen POD basis; no hyper-reduction',
+                       FD='central finite differences and damped CN startup',PS='dealiased continuous sine pseudo-spectral ETDRK4'),
         subjects={},case_results={},timing_repetitions=[],phase_repetitions=[],matching={},frontiers={},shared_setup=shared,
         common_setup=dict(seconds=common_setup,scope='shared provenance/descriptor construction and diagnostic input cache; online descriptor preparation still timed on every invocation'),
-        execution=dict(source_commit=cx.rep['source_commit'],job_id=cx.rep['job_id'],gpu=cx.rep['gpu'],config_sha256=cx.rep['config_sha256'],complete=False))
+        execution=dict(source_commit=cx.rep['source_commit'],job_id=cx.rep['job_id'],gpu=cx.rep['gpu'],config_sha256=cx.rep['config_sha256'],
+                       backend=cx.rep['backend'],jax=cx.rep['jax'],x64=True,matmul_precision='highest',complete=False))
     foms=fomrun.FOMs();anchor_cfg=next(s for s in cfg['subjects'] if s['id']==cfg['anchor'])
+    projection=ProjectionBudget(cx,result)
     anchor=FM.bank(cx,anchor_cfg,shared);anchor_hashes={};rng=np.random.default_rng(cfg['timing_seed'])
     subjects=[cfg['subjects'][i] for i in rng.permutation(len(cfg['subjects']))]
     for sc in subjects:
@@ -210,6 +216,8 @@ def run(cx,POD):
                 coefficient_sha256=row['coefficient_sha256'],raw=dict(path=str(path.relative_to(cx.out)),sha256=file_sha(path)),
                 certificate=cert,valid=cert['valid'],common_rollout_check=cert['common_rollout_check'],method_specific_extra_masks=extra,work=sub['work'](o),
                 descriptor=C3.C.b3.table_row(cx.tab,j))
+            if W is not None and row['score'].get('finite',True):
+                result['case_results'][sid][str(j)]['projection_budget']=projection.measure(sub,j,W,row['score']['e_t'])
             save(cx,result)
         rows=list(result['case_results'][sid].values());qual=result['subjects'][sid]['qualification']
         common=all(r['common_rollout_check'] for r in rows);valid=all(r['valid'] for r in rows)

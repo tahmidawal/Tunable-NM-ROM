@@ -430,11 +430,31 @@ def main():
             verdict = "passes" if c["accuracy_gate"] else "does not pass"
             sentences.append(f"The {dim}D decoder {verdict} the prespecified accuracy gate "
                              f"against development-selected classical reconstruction.")
+    overview = []
+    for dim, c in sorted(primary_by_dim.items()):
+        lc = c['Lc']
+        rows_by_method = [chosen.get((dim,lc,'B','bank_base' if dim == 2 else 'bank'))]
+        rows_by_method += [groups[dim,lc,'B',name] for name in CLASSICAL]
+        rows_by_method += [chosen.get((dim,lc,'B','ordinary'))]
+        cells = []
+        for rr in rows_by_method:
+            if not rr:
+                cells.append('unavailable')
+            else:
+                s = summarize(rr)
+                cells.append(fmt(s['median'],100)+(f" ({s['failures']} failed)" if s['failures'] else ''))
+        overview.append([f"{dim}D, {lc} → {groups[dim,lc,'B','linear'][0]['Lf']}", *cells])
     lines = ["# Burgers reconstruction from the same coarse samples", "",
              "This report compares classical and learned-basis reconstruction using identical "
              "coarse field samples. "+('The numbers are final for this bounded screen after independent result review; numerical-reference and training-information qualifications remain explicit.'
                                        if acceptance else 'The numbers are provisional pending independent returned-result and reporting review.'), "",
-             " ".join(sentences), "", "## What is being compared", "",
+             " ".join(sentences), "",
+             "The table below gives median errors on the coarsest actual-solver input grid in each dimension. "
+             "Each entry is a percentage of the initial-field norm, after taking each case's largest evolved-time error. "
+             "The decoder and selected classical settings were frozen using development cases; the three "
+             "interpolation columns are fixed methods. Any failed cases are marked beside the finite-case median.", "",
+             table(["Dimension, coarse → fine intervals", "Decoder (%)", "Linear (%)", "Cubic (%)", "Full sine (%)", "Selected classical (%)"], overview),
+             "", "## What is being compared", "",
              "The screen uses the repository's scalar viscous Burgers families and exposed research cohorts.", "",
              ("Unavailable frozen selections: "+'; '.join(f'{d}D L{lc} {s} {LABEL[cat]}' for d,lc,s,cat in unavailable_choices)+'.'
               if unavailable_choices else 'Every declared method family has an available frozen selection.'), "",

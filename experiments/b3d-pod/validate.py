@@ -100,12 +100,14 @@ def run(cfg,artifacts,out):
         gradient_mask={str(i):bool(all(rep['cases'][str(i)]['k32']['whole_residual']['finite']) and
                                    np.isfinite(rep['cases'][str(i)]['k32']['whole_residual']['delta_g']).all() and
                                    max(rep['cases'][str(i)]['k32']['whole_residual']['delta_g'])<=.001) for i in ids}
-        full_bad_masks={str(i):(np.asarray(rep['cases'][str(i)]['k32']['whole_residual']['full_gamma'])>.001).tolist() for i in ids}
+        full_bad_masks={str(i):((~np.isfinite(rep['cases'][str(i)]['k32']['whole_residual']['full_gamma'])) |
+                               (np.asarray(rep['cases'][str(i)]['k32']['whole_residual']['full_gamma'])>.001)).tolist() for i in ids}
+        full_bad=(~np.isfinite(gg)) | (gg>.001)
         own_q1=bool(all(q['q1'] for q in rep['Q1'].values()))
         common_pass=bool(own_q1 and all(field_mask.values()))
         gradient_pass=bool(finite and all(gradient_mask.values()))
-        full_stationarity_pass=bool(finite and (gg>.001).sum()<=.01*len(gg))
-        rep['HR']=dict(delta_g_max=float(dg.max()),full_gamma_max=float(gg.max()),full_nonstat=int((gg>.001).sum()),
+        full_stationarity_pass=bool(finite and full_bad.sum()<=.01*len(gg))
+        rep['HR']=dict(delta_g_max=float(dg.max()),full_gamma_max=float(gg.max()),full_nonstat=int(full_bad.sum()),
                        steps=len(gg),field_max=max(dist),finite=finite,
                        own_objective_Q1_pass=own_q1,
                        shared_field_checks=dict(bar=.00025,case_mask=field_mask,pass_=all(field_mask.values())),

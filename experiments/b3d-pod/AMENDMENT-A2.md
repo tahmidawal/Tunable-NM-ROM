@@ -1,6 +1,6 @@
 # A2: separate common consistency from extra POD-only gradient checks
 
-Status: proposed for independent review, before any k32 validation. This amendment
+Status: independently approved before any k32 validation. This amendment
 is made after the frozen k8/k16 pilot and before the fitted k32 support is available.
 
 All original thresholds and the original joint admission verdict remain frozen.
@@ -17,7 +17,7 @@ definitions and thresholds. They cannot be treated as symmetric admission criter
 The original strict POD admission passes only when every original predicate passes;
 an extra-gradient failure is still a failure of that preregistered contract.
 
-Proposed validation-release clarification: if the fixed k32 pilot passes layers
+Approved validation-release clarification: if the fixed k32 pilot passes layers
 one and two while failing only layer three, the same frozen support may receive the
 already-reserved complete validation as a descriptive common-profile comparator.
 It must carry the original extra-gate failure and cannot be called preregistered

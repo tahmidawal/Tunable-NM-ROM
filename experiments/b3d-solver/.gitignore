@@ -1,3 +1,7 @@
 __pycache__/
 runs/
 *.tar
+# Bulk returned fields remain local with generated retention/SHA manifests.
+results/front64*/raw/output/data/PS*/*.npz
+results/front64*/raw/output/data/FD*/*.npz
+results/mesh*/raw/output/data/**/field_t*.npz

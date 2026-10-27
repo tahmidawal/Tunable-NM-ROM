@@ -1,0 +1,47 @@
+{
+  "measured": {
+    "source_commit": "d345b0b05cd57811e5c698f4fb0d593adef525f2",
+    "allocation": {
+      "JobIDRaw": "6567287",
+      "JobName": "ctol_nsobs2d_g1",
+      "State": "FAILED",
+      "ExitCode": "139:0",
+      "ElapsedRaw": "17",
+      "AllocTRES": "billing=16,cpu=16,gres/gpu=1,mem=64G,node=1",
+      "NodeList": "pax008",
+      "MaxRSS": "",
+      "Start": "2026-10-27T16:43:32",
+      "End": "2026-10-27T16:43:49"
+    },
+    "all_record_files_verified": true,
+    "occt_libraries_verified": 47,
+    "dependency_runtime": {
+      "ngsolve": "6.2.2608",
+      "ngsolve_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke04/deps/lib/python3.13/site-packages/ngsolve/__init__.py",
+      "netgen_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke04/deps/lib/python3.13/site-packages/netgen/__init__.py",
+      "numpy": "2.5.0",
+      "jax": "0.10.2",
+      "jax_backend": "gpu",
+      "jax_x64": true,
+      "matmul_precision": "highest"
+    },
+    "last_completed_stage": "dependency_import",
+    "failed_stage": "api_and_inverse_preflight",
+    "exit_code": 139,
+    "flow_cases_ran": 0,
+    "core_available": false,
+    "precise_native_call": "unresolved: no per-call markers or native traceback"
+  },
+  "source_evidence": {
+    "mapped_probe_unsafe_calls": [
+      "preflight.py:14 mesh.GetTrafo(el)(ip)",
+      "preflight.py:26 mesh.GetTrafo(el)(ip)"
+    ],
+    "GetTrafo": "python_comp_mesh.cpp579-582: ownership transfer to Python",
+    "transformation_call": "python_fem.cpp2041-2044: returned mapped point has no keep_alive relationship to transformation",
+    "mapped_point_storage": "intrule.hpp334-355: raw transformation pointer, owns_trafo false by default",
+    "IntegrationRule_index": "python_fem.cpp1883-1888: lambda returns IntegrationPoint by value; temporary rule not primary lifetime defect"
+  },
+  "interpretation": "Concrete source lifetime hazard, not measured exact crash cause. Named transformation must remain alive through every mapped-point access. A later corrected-path pass will not retrospectively prove crash location.",
+  "pending": "independent review of bounded lifetime ownership repair and diagnostic markers; no automatic retry"
+}

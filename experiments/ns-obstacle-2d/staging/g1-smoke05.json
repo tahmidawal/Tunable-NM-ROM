@@ -1,0 +1,37 @@
+{
+  "attempt": "g1-smoke05",
+  "state": "staged_verified_not_submitted",
+  "verified_utc": "2026-10-27T20:54:46Z",
+  "source_commit": "f4f90487940c8a1f0b8bb19d8e9e1b9d7505a7e4",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05",
+  "source_commit_file_sha256": "b2ed73b97bf22c1ae6ebe8f56564da6e1eb926b5cf215b9e1e1ca2ffc2e31e95",
+  "manifest_sha256": "23dd7281492fe75e4965f619c6fa173eb7f80fcae1dac4f148a90105efeb2b10",
+  "source_sha256sums_sha256": "23ac7fea80fbc0364978dc7ede6b7c5f3cad4cce2d66e80940b133235f9ba1a8",
+  "remote_source_hash_check": "all 14 passed",
+  "queue_before": [
+    "6567523 br3_prep01 RUNNING pax008"
+  ],
+  "queue_after_staging": [
+    "6567523 br3_prep01 RUNNING pax008"
+  ],
+  "matching_live_jobs": [],
+  "exact_submit": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05 cluster/smoke.sh",
+  "command_cwd": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05",
+  "job_name": "ctol_nsobs2d_g1",
+  "resources": {
+    "gpu": "H200",
+    "gpus": 1,
+    "cpus": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200
+  },
+  "dependency_layout_repair_counter": 1,
+  "dependency_layout_repair_status": "succeeded in prior job6567287",
+  "native_preflight_repair_counter": 1,
+  "native_preflight_repair_limit": 1,
+  "submitted": false,
+  "dependencies_installed": false,
+  "numerical_execution": false,
+  "previous_attempts": "01/02 preserved unexecuted; 03/04 full evidence tracked and remote duplicates removed",
+  "pending": "independent coordinator remote verification and explicit one-run release"
+}

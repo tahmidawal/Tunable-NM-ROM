@@ -1,0 +1,49 @@
+{
+  "access_date": "2026-10-27",
+  "sources": [
+    {
+      "id": "DFG1",
+      "title": "DFG benchmark 2D-1, Re20",
+      "url": "https://wwwold.mathematik.tu-dortmund.de/~featflow/en/benchmarks/cfdbenchmarking/flow/dfg_benchmark1_re20.html",
+      "access": "full official benchmark page read",
+      "use": "authoritative geometry, PDE, BC, normalization and reference scalars"
+    },
+    {
+      "id": "DFG2",
+      "title": "DFG benchmark 2D-2, Re100",
+      "url": "https://wwwold.mathematik.tu-dortmund.de/~featflow/en/benchmarks/cfdbenchmarking/flow/dfg_benchmark2_re100.html",
+      "access": "full official benchmark page read",
+      "use": "future unsteady regime and developed-cycle sampling; newest downloadable line-integration reference must be read before unsteady registration"
+    },
+    {
+      "id": "ST1996",
+      "title": "Schaefer and Turek, Benchmark Computations of Laminar Flow Around a Cylinder (1996)",
+      "url": "https://wwwold.mathematik.tu-dortmund.de/lsiii/cms/papers/SchaeferTurek1996.pdf",
+      "doi": "10.1007/978-3-322-89849-4_39",
+      "access": "indexed text read; direct PDF fetch returned 404; do not claim full PDF inspection",
+      "use": "historical benchmark provenance and caution that longer inlet changes experiment comparison"
+    },
+    {
+      "id": "NGS",
+      "title": "NGSolve 3.2 Incompressible Navier-Stokes equations",
+      "url": "https://ngsolve.org/ngsolve/docs/i-tutorials/unit-3.2-navierstokes/navierstokes.html",
+      "access": "full official documentation read",
+      "use": "curved body-fitted Taylor-Hood implementation and residual force evaluation, not benchmark geometry/force normalization"
+    },
+    {
+      "id": "NGS_DIV",
+      "title": "NGSolve 14.1 Fluid-structure interaction with Taylor-Hood elements",
+      "url": "https://docu.ngsolve.org/ngs24/SaS/fsi_TaylorHood.html",
+      "access": "official documentation relevant sections read",
+      "use": "Taylor-Hood is discretely, not pointwise, divergence-free"
+    },
+    {
+      "id": "GD",
+      "title": "Batugedara and Schwiebert (2022), Note on effect of grad-div stabilization on calculating drag and lift",
+      "url": "https://digitalcommons.mtu.edu/michigantech-p/16314/",
+      "doi": "10.1016/j.amc.2022.127434",
+      "access": "author institutional abstract only",
+      "use": "force extraction must include stabilization if later introduced; no detailed method inference"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-27",
+  "status": "metadata_only_not_installed",
+  "python_local": "3.12.3",
+  "machine_local": "aarch64",
+  "modules_local": {
+    "dolfinx": false,
+    "dolfin": false,
+    "ngsolve": false,
+    "netgen": false,
+    "skfem": false,
+    "gmsh": false,
+    "meshio": false,
+    "petsc4py": false,
+    "scipy": true
+  },
+  "cluster_probe": {
+    "host": "login-p03.pax.tufts.edu",
+    "python": "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+    "modules_absent": [
+      "dolfinx",
+      "dolfin",
+      "ngsolve",
+      "netgen",
+      "skfem",
+      "gmsh",
+      "meshio",
+      "petsc4py"
+    ],
+    "scipy": true,
+    "apptainer": "/usr/bin/apptainer",
+    "paralab_free": "3.3T"
+  },
+  "candidates": {
+    "ngsolve": {
+      "version": "6.2.2608",
+      "requires_dist": [
+        "netgen-mesher==6.2.2608",
+        "numpy",
+        "ngsolve-openblas==0.3.33; platform_system != \"Darwin\"",
+        "pytest; extra == \"test\"",
+        "scipy; extra == \"test\"",
+        "numpy; extra == \"test\""
+      ],
+      "cluster_candidate_wheels": [
+        {
+          "filename": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl",
+          "size": 30204991,
+          "url": "https://files.pythonhosted.org/packages/61/25/432fd37a2671fcffa13d6958fd04363d2d8a27c2dd0c1b3dcef2857a1cb4/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl",
+          "digests": {
+            "blake2b_256": "6125432fd37a2671fcffa13d6958fd04363d2d8a27c2dd0c1b3dcef2857a1cb4",
+            "md5": "ccf9f221023f1291c7c79a1ffab576e8",
+            "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff"
+          }
+        }
+      ]
+    },
+    "netgen-mesher": {
+      "version": "6.2.2608",
+      "requires_dist": [
+        "netgen-occt==7.8.1",
+        "numpy",
+        "pytest; extra == \"test\""
+      ],
+      "cluster_candidate_wheels": [
+        {
+          "filename": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "size": 8506176,
+          "url": "https://files.pythonhosted.org/packages/b9/1e/64d73fd5a97813c86d1267b9f362e405f166854604c9d8d9699615f18ffe/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "digests": {
+            "blake2b_256": "b91e64d73fd5a97813c86d1267b9f362e405f166854604c9d8d9699615f18ffe",
+            "md5": "06bcda76866c0e300a2998d3df48b36c",
+            "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122"
+          }
+        }
+      ]
+    },
+    "netgen-occt": {
+      "version": "7.8.1",
+      "requires_dist": [
+        "pytest; extra == \"test\""
+      ],
+      "cluster_candidate_wheels": [
+        {
+          "filename": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+          "size": 25610800,
+          "url": "https://files.pythonhosted.org/packages/2a/9e/dbe6b538248f6e2d7c2972cdf9aa59e2904505c4a345fcd6cfcfe1841f9f/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+          "digests": {
+            "blake2b_256": "2a9edbe6b538248f6e2d7c2972cdf9aa59e2904505c4a345fcd6cfcfe1841f9f",
+            "md5": "f0da5e895f8e4125394f73f5305c1096",
+            "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94"
+          }
+        }
+      ]
+    },
+    "ngsolve-openblas": {
+      "version": "0.3.33",
+      "requires_dist": null,
+      "cluster_candidate_wheels": [
+        {
+          "filename": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl",
+          "size": 15064649,
+          "url": "https://files.pythonhosted.org/packages/08/45/60d2124e32f2f07b2f3822f6325dd6bb60b42f743d73906ea93aa2db9a48/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl",
+          "digests": {
+            "blake2b_256": "084560d2124e32f2f07b2f3822f6325dd6bb60b42f743d73906ea93aa2db9a48",
+            "md5": "61dab59f25970544effe05a98b7abbe8",
+            "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141"
+          }
+        }
+      ]
+    }
+  }
+}

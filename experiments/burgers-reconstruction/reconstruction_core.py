@@ -109,14 +109,19 @@ class BasisGeometry:
             # Ridge controls the inverse; no normal equation used for unregularized fits.
             gram = cw.T @ cw + ridge * h
             fitter = jnp.linalg.solve(gram, cw.T) * np.sqrt(self.wc)
+            fit_gram = fitter @ fitter.T / self.wc
+            amp = float(host(jnp.sqrt(jnp.maximum(
+                jnp.linalg.eigvalsh((fit_gram + fit_gram.T) / 2)[-1], 0.))))
         else:
             safe = jnp.where(keep, s, 1.)
             gain = jnp.where(keep, safe / (safe * safe + ridge), 0.)
             fitter = (v.T * gain[None, :]) @ u.T * np.sqrt(self.wc)
+            amp = float(host(jnp.max(jnp.abs(gain))))
         ready(fitter)
         # Fine basis is orthonormal in physical L2. This is the actual map norm
         # from the coarse physical L2 input to the fine physical L2 output.
-        amp = float(host(jnp.linalg.svd(fitter / np.sqrt(self.wc), compute_uv=False)[0]))
+        # The standard ridge factorization already supplies singular gains.
+        # For a non-diagonal prior, use the small exact map Gram above.
         # Matrices are explicit traced arguments, never compiled constants.
         fit = lambda y: _dense_fit(y, fitter)
         qf = self.fine

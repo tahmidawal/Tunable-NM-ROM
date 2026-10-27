@@ -83,3 +83,28 @@ A suggested larger-campaign signal is ratio of validation median errors <=0.8 ag
 - Oracle: diagnostic fit allowed to see the fine answer; not a reconstruction competitor.
 - IDW: interpolation from nearby supplied points weighted by inverse distance.
 - Exposed: outcomes have already been available in earlier development; not a fresh test.
+
+## Amendment A1 — coarse-input qualification before reconstruction results
+
+The 2D preparation and 3D development smoke found some coarse inputs exceed the
+fixed temporal-gap threshold at the final original rung. No reconstruction
+outcomes informed this change. Add exactly one rung, dt=0.00015625, preserving
+the 1e-5 threshold, every earlier field/status and all other equations. The
+vendored reference solver bytes remain unchanged; set its stage-buffer capacity
+`RC.NST=2000` explicitly in the adapter and record that override. In 2D the
+supplement computes only originally unqualified inputs; 3D full preparation
+includes the extra rung in the fixed ladder. Remaining failures stay visible
+and descriptive; no automatic further ladder or threshold relaxation.
+
+3D POD matches supplied training observations, not the bank's entire development
+information: the bank also selected its checkpoint on historical bank-validation
+data and optimized tail/Gram penalties. These distinctions prohibit a pure
+architecture causal claim even with a converged POD computation.
+
+Primary timing is one field per query. Interleave methods in a predetermined
+order, with GPU burn at block starts and after long host-bound interruptions.
+Every timed row retains at least three invocations, hashes, coefficients and
+scores. If the fixed allocation ceiling requires limiting timing, retain all
+predeclared accuracy curves while timing frozen selected configurations and
+unregularized rank curves; untimed rows have no cost claim. This timing scope
+must be fixed before validation, not chosen from validation results.

@@ -41,10 +41,12 @@ Use L65 or direct restricted fields for every common-lattice distance; L129 is o
 native projection. Include E0 least-squares oracle coefficients/residuals, orthogonality
 and Pythagorean closure, reusing an exact matching saved projection budget when available.
 
-Conservative first-job bound: one H200,200G host,60minutes, device peak120GB with later
+Conservative job bound: one H200,200G host,90minutes, device peak120GB with later
 checkpoint guards. Generated `MESH-BUDGET.json` accounts for both mesh bases and all
 three Gauss rungs, including inherited cold-start weight blocks; its static-plus-scratch
 estimate supersedes the earlier60–80GB sketch. It remains a planning estimate, not a
 measured standalone memory claim. Stream basis rows
 in blocks at most256; no cubic advection tensor. Stop on integrity/nonfinite/exhausted
 anchor or memory failure and retain raw evidence. Full64 frontier remains higher priority.
+The coordinator prospectively raised the earlier60minute reservation to90minutes to
+leave margin above the generated planning proxy; no method, case or search was added.

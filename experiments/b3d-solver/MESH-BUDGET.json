@@ -1,6 +1,6 @@
 {
- "config_sha256": "4228c639a9885d73f95c6f98df2a125e3096e2353f467c378517dcfea229220b",
- "hard_limit_seconds": 3600,
+ "config_sha256": "bc588ccf378b915685c94a043a78bae35d3fc32c5ece21285a295e5bba961776",
+ "hard_limit_seconds": 5400,
  "memory_guard_bytes": 120000000000,
  "planned_static_bytes": 75299374080,
  "conservative_extra_scratch_bytes": 30000000000,
@@ -23,13 +23,15 @@
  "total_seconds_proxy": 3433.3296794408675,
  "spent_gpu_hours": 0.4633333333333333,
  "full_front_reserved_hours": 3,
- "mesh_reserved_hours": 1,
- "total_reservation_hours": 4.463333333333333,
+ "mesh_reserved_hours": 1.5,
+ "total_reservation_hours": 4.963333333333333,
  "budget_gpu_hours": 8,
+ "reservation_margin_seconds": 1966.6703205591325,
+ "reservation_amendment": "coordinator prospectively added30minutes of slack; scientific scope unchanged",
  "scopes": {
   "M2_cells": 48,
   "W1024_cells": 60,
   "solves_per_cell": 3
  },
- "interpretation": "Planning only; allocator/compiler uncertainty remains. Late120GB guard and60min Slurm cap fail closed. No standalone memory or cross-job performance claim."
+ "interpretation": "Planning only; allocator/compiler uncertainty remains. Late120GB guard and90min Slurm cap fail closed. No standalone memory or cross-job performance claim."
 }

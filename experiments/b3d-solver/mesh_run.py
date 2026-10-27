@@ -194,7 +194,7 @@ def timings(cx,result,b,qid,runner,path,n,rule,anchor,anchor_prepare):
             for phase,fn in values:
                 C3.burn(cx.cfg['burn_seconds']);t=time.perf_counter();answer=MM.ready(fn());seconds=time.perf_counter()-t
                 result['phase_repetitions'].append(dict(query=qid,case=j,N=n,contract=path,rep=rep,phase=phase,seconds=seconds,split_fused_relative=rel,
-                    scope='indicative separately compiled components; four cases only'))
+                    output_leaf_sha256=[ah(x) for x in jax.tree_util.tree_leaves(answer)],scope='indicative separately compiled components; four cases only'))
         save(cx,result)
     return outputs
 
@@ -223,7 +223,9 @@ def run(cx):
                 runners[qid]=q;defs.append((qid,q));result['queries'][qid]=dict(bank='M2',N=n,r=512,M=2052,m=len(b.st.rules[rule][1]),mode_hash=C3.sha(b.k),
                     contract=path,scheme='BDF2',dt=.05/3,refresh=4,trust=b.st.trust,cases=cx.cases,rule=rule,output_nodes=65 if path=='mf' else n,
                     input_shape=[len(b.st.rules[rule][1])] if path=='mf' else [(n-2)**3],output_shape=[6,63**3 if path=='mf' else (n-2)**3],boundary_values='homogeneous Dirichlet zeros implicit')
-                u=prepare(cx,b,path,n,rule,0);MM.ready(q.run(u,cx.nu[0]))
+                t=time.perf_counter();u=prepare(cx,b,path,n,rule,0);MM.ready(q.run(u,cx.nu[0]))
+                result['queries'][qid]['compile_and_warm_seconds']=time.perf_counter()-t
+                result['queries'][qid]['effective_parameters']=dict(q_max=12,g_in=5e-4,slow_threshold=6,refresh=4,LMM_startup_steps=1)
                 if rule=='gl32':
                     anchor=runners['M2_N65_mf_gl32'];ap=lambda j:prepare(cx,b,'mf',65,'gl32',j)
                     outputs.update(timings(cx,result,b,qid,q,path,n,rule,anchor,ap))
@@ -263,7 +265,9 @@ def run(cx):
                     intervention=intervention,residual_weights_follow_actual_lambda=True,output_nodes=65)
                 for j in cases:
                     c0,s0=MM.ready(C3.TB.project(cx.U[j],b.st.lean));scale=float(jnp.linalg.norm(s0))
-                    o=MM.ready(q.run(c0,cx.nu[j],scale));row,W=validate(cx,result,b,qid,q,c0,scale,j,o,65);outputs[(qid,j)]=W
+                    t=time.perf_counter();o=MM.ready(q.run(c0,cx.nu[j],scale));elapsed=time.perf_counter()-t
+                    row,W=validate(cx,result,b,qid,q,c0,scale,j,o,65);outputs[(qid,j)]=W
+                    row['untimed_diagnostic_call_seconds_with_possible_first_compile']=elapsed
                     if rule=='gl56':row['projection_budget']=projection.measure(dict(kind='bank',st=b.st),j,W,row['score']['e_t'])
                     weights={}
                     for step in (0,3):

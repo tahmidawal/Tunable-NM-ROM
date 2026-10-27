@@ -6,6 +6,7 @@ both pressure couplings, no pressure mass penalty and no extra pressure gauge.
 """
 from __future__ import annotations
 import argparse
+import faulthandler
 import hashlib
 import json
 import math
@@ -19,9 +20,16 @@ import sys
 import time
 import traceback
 
+faulthandler.enable(all_threads=True)
+print("native_preflight=import_numpy.begin",flush=True)
 import numpy as np
+print("native_preflight=import_numpy.end",flush=True)
+print("native_preflight=import_ngsolve.begin",flush=True)
 import ngsolve as ng
+print("native_preflight=import_ngsolve.end",flush=True)
+print("native_preflight=import_netgen_csg.begin",flush=True)
 from netgen.csg import CSGeometry, Cylinder, Plane, Pnt, Sphere, Vec
+print("native_preflight=import_netgen_csg.end",flush=True)
 
 
 def dump(path, value):
@@ -83,18 +91,27 @@ def surface(cf, mesh, boundary, order):
     return value
 
 
+def preflight_call(label, operation):
+    """Keep the last entered native operation visible even after a native crash."""
+    print("native_preflight="+label+".begin",flush=True)
+    result=operation()
+    print("native_preflight="+label+".end",flush=True)
+    return result
+
+
 def mapped_api_sample(mesh, element, boundary):
     """Exercise explicit mapped-point API before expensive solve/export work."""
-    trafo=mesh.GetTrafo(ng.ElementId(element))
-    point=trafo(next(iter(ng.IntegrationRule(element.type,2))))
-    xyz=np.asarray(list(point.point),dtype=float)
-    jac=np.array(point.jacobi.NumPy(),dtype=float,copy=True)
-    measure=float(point.measure)
+    # Keep trafo alive through every mapped-point access and owned array copy.
+    trafo=preflight_call("mapped.get_trafo",lambda: mesh.GetTrafo(ng.ElementId(element)))
+    point=preflight_call("mapped.map_first_point",lambda: trafo(next(iter(ng.IntegrationRule(element.type,2)))))
+    xyz=preflight_call("mapped.copy_point",lambda: np.asarray(list(point.point),dtype=float))
+    jac=preflight_call("mapped.copy_jacobian",lambda: np.array(point.jacobi.NumPy(),dtype=float,copy=True))
+    measure=preflight_call("mapped.measure",lambda: float(point.measure))
     if xyz.shape!=(3,) or not np.all(np.isfinite(xyz)) or not np.all(np.isfinite(jac)) or not math.isfinite(measure) or measure<=0:
         raise RuntimeError("Mapped integration-point API returned invalid data")
     row={"point":xyz.tolist(),"jacobian_shape":list(jac.shape),"measure":measure}
     if boundary:
-        normal=np.asarray(ng.specialcf.normal(3)(point),dtype=float)
+        normal=preflight_call("mapped.normal",lambda: np.asarray(ng.specialcf.normal(3)(point),dtype=float))
         if normal.shape!=(3,) or abs(np.linalg.norm(normal)-1)>1e-10:
             raise RuntimeError("Mapped boundary normal API failed")
         row["normal"]=normal.tolist()
@@ -108,30 +125,34 @@ def mapped_api_sample(mesh, element, boundary):
 def tiny_fe_api_preflight(cfg, folder):
     """Fail cheaply if the pinned wheel lacks UMFPACK or required export APIs."""
     start=time.monotonic()
-    geo=CSGeometry()
+    geo=preflight_call("cube.geometry",lambda: CSGeometry())
     face_normals={"x0":(-1,0,0),"x1":(1,0,0),"y0":(0,-1,0),"y1":(0,1,0),"z0":(0,0,-1),"z1":(0,0,1)}
     cube=None
     for label,normal in face_normals.items():
         origin=tuple(float(c>0) for c in normal)
-        face=Plane(Pnt(*origin),Vec(*normal)).bc(label)
+        face=preflight_call("cube.plane."+label,lambda: Plane(Pnt(*origin),Vec(*normal)).bc(label))
         cube=face if cube is None else cube*face
-    geo.Add(cube)
-    mesh=ng.Mesh(geo.GenerateMesh(maxh=1.0))
-    mesh.Curve(2)
+    preflight_call("cube.add_solid",lambda: geo.Add(cube))
+    native_mesh=preflight_call("cube.generate_mesh",lambda: geo.GenerateMesh(maxh=1.0))
+    mesh=preflight_call("cube.ngsolve_mesh",lambda: ng.Mesh(native_mesh))
+    preflight_call("cube.curve",lambda: mesh.Curve(2))
     if set(mesh.GetBoundaries())!=set(face_normals):
         raise RuntimeError("Tiny cube face labels differ from expected six faces")
-    V=ng.H1(mesh,order=1)
+    V=preflight_call("scalar.h1_space",lambda: ng.H1(mesh,order=1))
     if V.ndof>cfg["preflight"]["tiny_fe_dofs_max"]:
         raise RuntimeError("Tiny backend-preflight DOF guard fired")
-    trial,test=V.TnT()
-    a=ng.BilinearForm(V)
+    trial,test=preflight_call("scalar.trial_test",lambda: V.TnT())
+    a=preflight_call("scalar.bilinear_form",lambda: ng.BilinearForm(V))
     a+=(ng.grad(trial)*ng.grad(test)+trial*test)*ng.dx
-    rhs=ng.LinearForm(V)
+    rhs=preflight_call("scalar.linear_form",lambda: ng.LinearForm(V))
     rhs+=test*ng.dx
-    a.Assemble(); rhs.Assemble()
-    solution=ng.GridFunction(V)
-    inverse=a.mat.Inverse(V.FreeDofs(),inverse=cfg["preflight"]["tiny_fe_backend"])
+    preflight_call("scalar.assemble_matrix",lambda: a.Assemble())
+    preflight_call("scalar.assemble_rhs",lambda: rhs.Assemble())
+    solution=preflight_call("scalar.gridfunction",lambda: ng.GridFunction(V))
+    inverse=preflight_call("scalar.inverse",lambda: a.mat.Inverse(V.FreeDofs(),inverse=cfg["preflight"]["tiny_fe_backend"]))
+    print("native_preflight=scalar.apply_inverse.begin",flush=True)
     solution.vec.data=inverse*rhs.vec
+    print("native_preflight=scalar.apply_inverse.end",flush=True)
     del inverse
     residual=rhs.vec.CreateVector()
     residual.data=a.mat*solution.vec-rhs.vec
@@ -141,20 +162,21 @@ def tiny_fe_api_preflight(cfg, folder):
         raise RuntimeError("Tiny UMFPACK solve residual failed")
     elements={"volume":next(iter(mesh.Elements(ng.VOL))),"boundary":next(iter(mesh.Elements(ng.BND)))}
     samples={name:mapped_api_sample(mesh,el,name=="boundary") for name,el in elements.items()}
-    W=ng.VectorH1(mesh,order=1)
-    vector=ng.GridFunction(W)
-    vector.Set(ng.CoefficientFunction((ng.x,ng.y,ng.z)))
-    gradient_v=ng.Grad(vector)
+    W=preflight_call("vector.h1_space",lambda: ng.VectorH1(mesh,order=1))
+    vector=preflight_call("vector.gridfunction",lambda: ng.GridFunction(W))
+    preflight_call("vector.set_coordinates",lambda: vector.Set(ng.CoefficientFunction((ng.x,ng.y,ng.z))))
+    gradient_v=preflight_call("vector.gradient_operator",lambda: ng.Grad(vector))
     # Grad(VectorH1) is a VOL operator. Map the derivative, not a traction
     # containing a BND normal, into the adjacent volume element first.
-    gradient_b=ng.BoundaryFromVolumeCF(gradient_v)
-    divergence_b=ng.BoundaryFromVolumeCF(ng.div(vector))
+    gradient_b=preflight_call("vector.wrap_boundary_gradient",lambda: ng.BoundaryFromVolumeCF(gradient_v))
+    divergence_b=preflight_call("vector.wrap_boundary_divergence",lambda: ng.BoundaryFromVolumeCF(ng.div(vector)))
     for name,el in elements.items():
-        trafo=mesh.GetTrafo(ng.ElementId(el))
-        mip=trafo(next(iter(ng.IntegrationRule(el.type,2))))
-        velocity=np.asarray(vector(mip),dtype=float)
+        # Mapped points borrow the transformation; retain it throughout use.
+        trafo=preflight_call(name+".get_trafo",lambda: mesh.GetTrafo(ng.ElementId(el)))
+        mip=preflight_call(name+".map_first_point",lambda: trafo(next(iter(ng.IntegrationRule(el.type,2)))))
+        velocity=preflight_call(name+".vector_value",lambda: np.asarray(vector(mip),dtype=float))
         gradient_cf=gradient_b if name=="boundary" else gradient_v
-        gradient=np.asarray(gradient_cf(mip),dtype=float).reshape(3,3)
+        gradient=preflight_call(name+".gradient_value",lambda: np.asarray(gradient_cf(mip),dtype=float).reshape(3,3))
         if not np.all(np.isfinite(velocity)) or not np.all(np.isfinite(gradient)):
             raise RuntimeError("Mapped coefficient/gradient API failed")
         samples[name]["linear_vector_value_error"]=float(np.linalg.norm(velocity-np.asarray(list(mip.point))))
@@ -167,22 +189,24 @@ def tiny_fe_api_preflight(cfg, folder):
     face_checks={}
     tolerance=cfg["preflight"]["face_traction_absolute_tolerance"]
     for label,normal in face_normals.items():
+        print("native_preflight=face_integrals."+label+".begin",flush=True)
         expected=np.asarray(normal,dtype=float)
-        actual_g=np.array([surface(gradient_traction[i],mesh,label,4) for i in range(3)])
-        actual_s=np.array([surface(symmetric_traction[i],mesh,label,4) for i in range(3)])
-        area=surface(1,mesh,label,4)
-        div_integral=surface(divergence_b,mesh,label,4)
-        power_g=surface(vector*gradient_traction,mesh,label,4)
-        power_s=surface(vector*symmetric_traction,mesh,label,4)
+        actual_g=np.array([preflight_call(label+".gradient_traction."+str(i),lambda: surface(gradient_traction[i],mesh,label,4)) for i in range(3)])
+        actual_s=np.array([preflight_call(label+".symmetric_traction."+str(i),lambda: surface(symmetric_traction[i],mesh,label,4)) for i in range(3)])
+        area=preflight_call(label+".area",lambda: surface(1,mesh,label,4))
+        div_integral=preflight_call(label+".div_integral",lambda: surface(divergence_b,mesh,label,4))
+        power_g=preflight_call(label+".power_g",lambda: surface(vector*gradient_traction,mesh,label,4))
+        power_s=preflight_call(label+".power_s",lambda: surface(vector*symmetric_traction,mesh,label,4))
         expected_power=float(label.endswith("1"))
         errors={"area":abs(area-1),"gradient_traction":float(np.linalg.norm(actual_g-expected)),"symmetric_traction":float(np.linalg.norm(actual_s-2*expected)),"divergence":abs(div_integral-3),"gradient_power":abs(power_g-expected_power),"symmetric_power":abs(power_s-2*expected_power)}
         face_checks[label]={"normal":list(normal),"area":area,"gradient_traction":actual_g.tolist(),"symmetric_traction":actual_s.tolist(),"divergence_integral":div_integral,"gradient_power":power_g,"symmetric_power":power_s,"absolute_errors":errors}
+        print("native_preflight=face_integrals."+label+".end",flush=True)
         if max(errors.values())>tolerance:
             raise RuntimeError(f"Tiny cube boundary derivative/traction preflight failed on {label}: {errors}")
-    gradient_error_squared=surface(ng.InnerProduct(gradient_b-ng.Id(3),gradient_b-ng.Id(3)),mesh,".*",4)
+    gradient_error_squared=preflight_call("boundary.gradient_L2",lambda: surface(ng.InnerProduct(gradient_b-ng.Id(3),gradient_b-ng.Id(3)),mesh,".*",4))
     if not math.isfinite(gradient_error_squared) or gradient_error_squared<0 or math.sqrt(gradient_error_squared)>tolerance:
         raise RuntimeError("Tiny cube traced-gradient L2 error failed")
-    check=mesh(0.25,0.25,0.25)
+    check=preflight_call("cube.interior_mesh_point",lambda: mesh(0.25,0.25,0.25))
     if check.nr<0:
         raise RuntimeError("Interior MeshPoint validity preflight failed")
     record={"status":"tiny_fe_api_preflight_passed","scope":"backend/API only, not a PDE reference","backend":cfg["preflight"]["tiny_fe_backend"],"scalar_dofs":V.ndof,"relative_linear_residual":relative,"samples":samples,"boundary_derivative_trace":"BoundaryFromVolumeCF(Grad(GridFunction)) before BND normals","face_traction_control":face_checks,"boundary_gradient_L2_error":math.sqrt(gradient_error_squared),"elapsed_seconds":time.monotonic()-start,"peak_rss_gib":rss_gib()}
@@ -199,6 +223,7 @@ def normal_orientation_samples(mesh,cfg,obstacle):
         label=str(element.mat)
         if label not in records:
             raise RuntimeError(f"Unexpected boundary element label {label}")
+        # Retain the transformation while every point in this rule is sampled.
         trafo=mesh.GetTrafo(ng.ElementId(element))
         for ip in ng.IntegrationRule(element.type,q):
             mip=trafo(ip)

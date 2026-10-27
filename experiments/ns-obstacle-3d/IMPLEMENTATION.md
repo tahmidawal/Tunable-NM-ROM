@@ -1,10 +1,10 @@
 # Three-component reference controls: implementation checkpoint
 
-Candidate `g1-smoke03` contains revised, unexecuted finite-element code for independent diff review. Independent review found an invalid boundary-gradient evaluation in earlier candidates; their release is withdrawn. The earlier staged `g1-smoke01` remains immutable and has not run; candidate 02 was never staged. See `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md`. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
+Candidate `g1-smoke04` contains revised, unexecuted finite-element code for independent diff review. Independent review found an invalid boundary-gradient evaluation in earlier candidates; their release is withdrawn. The earlier staged `g1-smoke01` remains immutable and has not run; candidate 02 was never staged. See `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md`. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
 
 ## Authoritative specification
 
-`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke03.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
+`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke04.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
 
 The smoke uses inexpensive $P_2/P_1$ Taylor–Hood fields and cubic geometric mapping only to check execution and establish resource feasibility. It is not the planned $P_3/P_2$ reference or its $P_4/P_3$ cross-check. Mesh seed is recorded; the relationship of NumPy's seed to Netgen's deterministic defaults remains to be verified at runtime, so no stochastic mesher reproducibility assertion is made.
 
@@ -30,7 +30,7 @@ $$B_{screen}=128n_{dof}^2+4\,\mathrm{GiB},\qquad B_{screen}\le48\,\mathrm{GiB}.$
 
 This is a screening allowance, not a mathematical upper bound for library memory. The batch reservation remains sixty-four GiB; observed peak resident memory, degrees of freedom and factor/solve time are saved. A later larger level needs two cheap-level observed memory measurements and a new independent release. No scalable iterative solver or large factorization is silently substituted when a guard fires.
 
-The proposed batch script is exactly one twenty-minute GPU allocation with sixteen reserved CPU cores, four numerical threads and a mandatory JAX GPU preflight. NGSolve solves run on CPUs and are labelled accordingly. Installation uses designated cluster Python and a new per-job `deps/` target. Four matching binary wheels are pinned by filename, version, size and SHA256; `--no-deps`, `--require-hashes` and no index prevent shared dependency replacement. JAX/JAXlib/NumPy versions are checked before and after. Download, installation and import logs remain in the isolated allocation. Neither the installer nor the batch has been executed.
+The proposed batch script is exactly one twenty-minute GPU allocation with sixteen reserved CPU cores, four numerical threads and a mandatory JAX GPU preflight. NGSolve solves run on CPUs and are labelled accordingly. Installation uses designated cluster Python and a new per-job `deps/` prefix, preserving native libraries under its `lib/` directory. Four matching binary wheels are pinned by filename, version, size and SHA256; `--no-deps`, `--require-hashes`, `--no-index`, `--ignore-installed` and the private prefix prevent shared dependency replacement. Raw RECORD paths, sizes and hashes, OCCT wheel-native entries, and package-relative OpenBLAS files are checked before importing. JAX/JAXlib/NumPy versions are checked before and after. Download, installation and import logs remain in the isolated allocation. Neither the installer nor the batch has been executed.
 
 The coordinator requires the 2D smoke to pass and an independent memory/configuration audit before releasing the 3D solve. The central scientific design also requires independent Claude review. This implementation checkpoint does not override any release gate.
 
@@ -52,6 +52,10 @@ The independent Claude implementation review found the manufactured derivatives 
 ## Candidate g1-smoke03 boundary derivative correction
 
 All computed surface stresses use `BoundaryFromVolumeCF(Grad(u_h))` before multiplication by a boundary normal. The tiny preflight checks the volume-side gradient, divergence, separate-face gradient/symmetric tractions and stress powers on a labelled unit cube. Volume operators and analytic prescribed tractions are unchanged. Source hashes and the correction to earlier readiness assessments are retained in `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md` and its source inventory. No numerical run has occurred.
+
+## Candidate g1-smoke04 dependency layout and crash diagnostics
+
+The private prefix repair follows independently reviewed 2D commit `d345b0b05`. Its original wheel pins, scientific settings and release gates are unchanged. `checks/DEPENDENCY-PREFIX-REPAIR.md` records the adaptation and metadata-only checks. The 2D lane has reported successful prefix/import checks followed by an unresolved native API-preflight crash; no flow case ran there. Candidate 04 therefore adds Python fault reporting and flushed markers before/after native preflight calls. All mapped transformations remain alive through point evaluation and array copying. The 3D lane has not installed packages or run numerical cases.
 
 ## Glossary
 

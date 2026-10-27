@@ -1,0 +1,4 @@
+# Multilevel lane design gate
+Independent Codex design gate READY (audits/design-codex-2.md). Core/code and exact-job gates pending. Local GPU smoke passes. Claude consultation unavailable: helper exited successfully with empty response. No cluster jobs yet; current cap four GPU-hours and namespace burgers-ml-20261027. App message to native ancestor was rejected because this environment does not expose native collaboration messaging. This file preserves the attempted parent update.
+
+Target: actual inherited weighted least-squares objective with analytic advection/discrete diffusion. Keep r=256/M=1024/gauss128/L256/CNR final target; compare existing predictor baseline, bounded r128 nested initialisation, and exact-pullback algebraic subspace correction. No geometric-multigrid or physical accuracy claim. Full dev6, all internal states and same invocation errors/timings. Stop on overhead or missed target.

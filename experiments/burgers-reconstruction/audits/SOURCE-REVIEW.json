@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-27",
+  "reviewer": "independent Codex reconstruction_numerical_review",
+  "evidence": "Read-only independent reviewer messages and returned staged-source checks; later job releases remain separately gated.",
+  "shared_core": {
+    "commit": "1d0b51c6d",
+    "sha256": "4439c1c43f13c0a469f660d96fb4572e94b92f641714400715d61bda5cdbb5d7",
+    "status": "source_ready",
+    "independent_covariance_augmented_lstsq_fit_difference": 3.04e-14,
+    "independent_covariance_amplification_difference": 1.52e-15,
+    "independent_covariance_normal_residual": 1.21e-12,
+    "tested_prior_variance_ratio": 1e8,
+    "invalid_variance_fixtures": "zero, NaN and overflow rejected",
+    "gpu_fixture_requirement": "Run check_core.py before development reconstruction outcomes."
+  },
+  "two_dimensional_input_supplement": {
+    "source": "df52c54278c3a8a7efe15297bfc03b1b46607591",
+    "manifest_sha256": "31a84d9aa93b9cd78b74df6c7407c20db20082f519f430aed393c4da7d281494",
+    "sbatch_sha256": "ab8271c4d55b488327240f4a34d95514be748ad84182f07a01d39c84009fead7",
+    "job_id": 6567730,
+    "status": "released_after_exact_source_and_input_review",
+    "prepared_inputs_independently_checked": 114
+  },
+  "three_dimensional_preparation": {
+    "source": "7b2fdff15e477ba22b3e070b743501e86ab949cf",
+    "manifest_sha256": "2ec8444c95e42f6ad4524ea30268c787dd4e73e370e7b3c8c6c85ba5995c4400",
+    "run_script_sha256": "cbcbaf4f83be2fb2a569d096d379ac9db3b5fc741fd4921e8f03b51baf6df4c0",
+    "job_id": 6567523,
+    "status": "released_after_exact_source_review_and_accepted_gpu_smoke"
+  },
+  "runner_source_gates": {
+    "two_dimensional": {"source": "6de9d4b83", "status": "source_ready"},
+    "three_dimensional": {"source": "c77483b42", "previously_reviewed": "72c01cad91c059a14e2eba424e357d9584be7870", "status": "source_ready"},
+    "scope": "Finite all-case development selection, retained failures, immutable source/data bindings, separate A/B input qualification and uncertainty interpretations. This does not release an unstaged job or accept scientific results."
+  },
+  "independent_three_dimensional_bank_audit": {
+    "artifact": "checksum-verified smk01",
+    "evaluation": "Pure NumPy Fourier features, SiLU network, zero-wall mask and rotation; no JAX import",
+    "interior_points": 7,
+    "relative_difference": 4.80e-13,
+    "maximum_absolute_difference": 3.12e-12,
+    "coincident_L16": "bitwise exact",
+    "coincident_L32_relative_difference": 9.08e-15,
+    "coincident_L32_maximum_absolute_difference": 1.07e-12,
+    "status": "passed"
+  },
+  "pending": [
+    "Preparation numerical qualification and final runner/export deltas",
+    "Exact development source/data manifests and GPU fixture",
+    "Committed development selector audit before validation release",
+    "Independent saved-coefficient field and error replay",
+    "Final result, timing linkage and publication audit"
+  ]
+}

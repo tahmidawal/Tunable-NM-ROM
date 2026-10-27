@@ -29,7 +29,7 @@
     "status": "released_after_exact_source_review_and_accepted_gpu_smoke"
   },
   "runner_source_gates": {
-    "two_dimensional": {"source": "6de9d4b83", "status": "source_ready"},
+    "two_dimensional": {"source": "6de9d4b83", "status": "retracted_artifact_writer_collision", "reason": "Path.with_suffix on decimal configuration names overwrote distinct raw records. Numerical formulas were unaffected; old development artifacts are inadmissible. Corrected source and exact release are recorded in DEVELOPMENT-RELEASES.json."},
     "three_dimensional": {"source": "c77483b42", "previously_reviewed": "72c01cad91c059a14e2eba424e357d9584be7870", "status": "source_ready"},
     "scope": "Finite all-case development selection, retained failures, immutable source/data bindings, separate A/B input qualification and uncertainty interpretations. This does not release an unstaged job or accept scientific results."
   },

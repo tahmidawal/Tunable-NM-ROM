@@ -71,6 +71,8 @@ One independent auditor must check algebra fixtures, data/provenance, exact job 
 
 A suggested larger-campaign signal is ratio of validation median errors <=0.8 against the development-selected ordinary baseline, resolved wins on>=75% of all validationcases (ties count as non-wins), no resolved worsening of overall worst error, and disclosed paired-tail/cost behavior. Apply separately per dimension at its primary B mesh and frozen bank setting. These are practical screening thresholds, not predictions or statistical proof. Gains over matched/stronger regularized POD are needed before architecture-specific claims; approximate or differently informed POD limits that attribution. Any larger campaign/fresh nonsealed confirmation requires a new scoped decision. Dynamics stays separate.
 
+Prospective reporting clarification before development reconstruction results: resolve overall worst-error deterioration using the case-specific uncertainty envelopes, $\max_i\max(0,e_{i,\mathrm{method}}-\epsilon_i)>\max_i(e_{i,\mathrm{interp}}+\epsilon_i)$. Do not borrow a large uncertainty from an unrelated low-error case to hide a worst-case regression. The report must verify the exact declared validation identities (val32 cases0--31 and val64 cases0--63), even if a missing case were absent from every configuration.
+
 ## Glossary
 
 - Bank: frozen spatial functions produced by the coordinate network; coefficients combine them into a field.

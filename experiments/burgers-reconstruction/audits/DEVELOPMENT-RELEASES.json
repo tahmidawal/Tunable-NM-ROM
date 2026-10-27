@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-27",
+  "reviewer": "independent Codex reconstruction_numerical_review",
+  "two_dimensional_input_qualification": {
+    "supplement_job": 6567730,
+    "elapsed_seconds": 87,
+    "declared_mesh_cases": 114,
+    "admitted_mesh_cases": 113,
+    "development_mesh_cases": 18,
+    "development_admitted": 18,
+    "remaining_unadmitted": "val32_c005_L32",
+    "remaining_time_gap": 1.18147627e-5,
+    "stage_solver_valid": true,
+    "further_time_rungs": "not authorized by the fixed protocol"
+  },
+  "invalid_development_run": {
+    "job_id": 6568278,
+    "source": "8044680aa35bcfecbdb4873101837542ea3fe523",
+    "stage_sha256": "caef5de63bdbea5381123007ea3d6b125fbba68e78b19210a382e4191fc1e51b",
+    "status": "cancelled_artifacts_inadmissible",
+    "reason": "Decimal configuration names collided under Path.with_suffix, overwriting raw timing/coefficient records.",
+    "previous_readiness": "retracted for artifact-writing path; no scientific reconstruction finding had been accepted",
+    "core_gpu_fixture": "passed; rerun remains required before accepting reconstruction artifacts",
+    "charged_seconds": 531,
+    "retention": "preserve partial outputs with checksums",
+    "cancellation": {
+      "helper_source": "a1d1f9cd035b4ffc5fcdf9e368e6a59136fbcfff",
+      "helper_sha256": "6e8964f616e9e0bce1644b237a0929512819f98ab6d5d286e17c2ad06563540c",
+      "review": "independently reviewed READY",
+      "scope": "exact numeric job 6568278, owner tawal01, name b2dr_screen and exact dev01 workdir; queue checked before and after",
+      "reason_for_lane_adaptation": "The mandated original guarded helper only permits another campaign's ctol_* names. Its numeric-ID/account guards were retained and narrowed to the exact owned job and directory.",
+      "other_jobs": "3D preparation 6567523 remained running; no other campaign changed"
+    }
+  },
+  "corrected_development_release": {
+    "directory": "dev02",
+    "job_id": 6568662,
+    "source": "1a42e82667f4983836a0a463c164656178ba929e",
+    "stage_sha256": "f6623fdecef25a1108c93c14e8b43cb39a4e1c88cfa759657ffb0ed6e1ab51d1",
+    "screen_sha256": "c76339e975c94c66d13265db6f6c7e858cc33853964c98446573b71757f95d2f",
+    "batch_sha256": "facfe5d026054e239e5eceeb37aecd628eaa759da13d774f8a8a78e80b55768b",
+    "input_manifest_sha256": "5c0dea1d0318679249745964de005634a7dd4d44e2cede1489787db35240bdb9",
+    "preparation": "inputplus01/output",
+    "phase": "dev",
+    "allocation": "one H200, 120 GB host memory, 90 minutes",
+    "status": "released_after_independent_exact_review",
+    "independent_path_fixture": {"logical_rows":3588,"old_unique_paths":2592,"corrected_unique_paths":3588},
+    "guards": "Literal extension append, no overwrite on success/failure, complete identity/path/raw-value/coefficient-hash audit before freezing selection",
+    "numerical_method_changes": false
+  },
+  "report_aggregation_review": {
+    "status": "stable numerical helpers passed independent fixtures",
+    "coverage": "Exact cohort identities, dimensions, grid/source coverage, ratio direction, full failure denominators, nonnegative errors and max-over-evolved-times consistency",
+    "worst_error_gate": "Case-specific method lower versus interpolation upper reference-uncertainty envelopes; prospective clarification recorded in DESIGN.md",
+    "pending": "New full-configuration-count guards, setup/oracle/conditioning integration and final returned-data audit"
+  },
+  "validation_release": "none"
+}

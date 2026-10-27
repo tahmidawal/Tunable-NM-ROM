@@ -198,7 +198,7 @@ def coarse_fields(out,dt_ladder=(.0025,.00125,.000625,.0003125),tol=1e-5,meshes=
                         accepted=True; break
                 key=f'{coh}_c{j:03d}_L{L}'
                 np.savez(out/f'{key}.npz',fields=np.stack(fields),reference_levels=ref,desc=p)
-                rec=dict(key=key,cohort=coh,case=j,L=L,accepted=accepted,temporal_rule='successive coarse fields gap <= tolerance; empirical not a rigorous time error bound',tolerance=tol,n0=n0,ref_eps=meta['judge']['eps_ref'],levels=levels,selected=len(fields)-1,input_sha256=sha_array(fields[-1]),sampled_input_sha256=sha_array(ref[-1,:,indices(L)]),reference_meta=meta)
+                rec=dict(key=key,cohort=coh,case=j,L=L,accepted=accepted,temporal_rule='successive coarse fields gap <= tolerance; empirical not a rigorous time error bound',tolerance=tol,n0=n0,ref_eps=meta['judge']['eps_ref'],levels=levels,selected=len(fields)-1,input_sha256=sha_array(fields[-1]),sampled_input_sha256=sha_array(ref[-1][:,indices(L)]),reference_meta=meta)
                 write_json(out/f'{key}.json',rec); summary.append({k:v for k,v in rec.items() if k not in ['levels','reference_meta']})
                 write_json(out/'summary.json',summary)
                 log('coarse',key,'admitted',accepted,'dt',levels[-1]['dt'],'gap',levels[-1]['relative_refinement_gap'])

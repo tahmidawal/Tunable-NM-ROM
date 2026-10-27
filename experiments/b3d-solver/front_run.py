@@ -71,7 +71,7 @@ def certify_case(cx,sub,o,j,archive,archive_meta):
             q2_margin=source['Q2']['worst_dist_qp']+delta<=2.5e-4
             cert.update(distance_tight_bound=old_distance+delta,source_field_distance=delta,source_coefficient_relative=relative,
                         anchors_usable=True,common_rollout_check=bool(valid and transfer),Q1_transfer=transfer,
-                        certification_basis='exact archived trajectory identity plus triangle bound and current fresh certificates')
+                        certification_basis='bounded numerical reproduction plus triangle-bound transfer and current fresh certificates')
             extra.update(archived_Q2_pass=bool(q2_margin),archived_Q2_source=entry['qualification'],source_pins=entry)
         else:
             anchors={};anchor_valid=[]

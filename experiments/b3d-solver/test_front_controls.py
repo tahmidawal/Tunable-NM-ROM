@@ -19,6 +19,7 @@ from work_counts import fixed_sweep,quasi_newton
 import fs3
 from projection_budget import ProjectionBudget
 import pod_identity as ID
+import frozen_tables as FT
 
 def main():
     assert jax.config.x64_enabled
@@ -82,11 +83,18 @@ def main():
         observed=budget.cache[('bank_synthetic-only_3',0)][0]
         oracle_relative=float(np.linalg.norm(exact-observed)/(np.linalg.norm(exact)+1e-300));assert oracle_relative<=1e-12
         assert max(abs(x) for x in b['pythagorean_squared_error_defect'])<=1e-12
+    frozen_k=np.asarray([[1,1,1],[2,1,1],[1,2,1]],np.int64);frozen_checks=[]
+    for n in (5,9):
+        x=fs3.C.interior_coords(n);features=np.prod(np.sin(np.pi*x[:,None,:]*frozen_k[None,:,:]),axis=2)*np.sqrt(8)
+        tables,meta=FT.assemble(n,(jnp.asarray(features.T[:1]),jnp.asarray(features.T[1:])),frozen_k)
+        assert np.allclose(tables['A'],np.eye(3)*(n-1)**1.5,rtol=1e-12,atol=1e-12)
+        checks=FT.direct_checks(n,tables,frozen_k);frozen_checks.append(dict(n=n,mode_hash=meta['mode_hash'],**checks))
+    assert frozen_checks[0]['mode_hash']==frozen_checks[1]['mode_hash']
     out=dict(passed=True,synthetic_only=True,x64=jax.config.x64_enabled,PS_phase_fused_relative=rel,
              incomplete_case_coverage_rejects_cost_match=True,case_balanced_median_control=True,POD_stronger_policy_actual_schedule_binding=True,
              FS_logical_contract_runtime_controls=actual,QN_singleton_counter_scope_guard=True,
              projection_oracle_relative=oracle_relative,projection_orthogonality_Pythagoras_pass=True,
-             actual_POD_active_identity_pass=identity,POD_identity_above_bound_rejected=True)
+             actual_POD_active_identity_pass=identity,POD_identity_above_bound_rejected=True,frozen_mode_assembly_controls=frozen_checks)
     dest=HERE/'audits/front-small-controls.json';dest.parent.mkdir(exist_ok=True);dest.write_text(json.dumps(out,indent=1)+'\n');print(json.dumps(out))
 
 if __name__=='__main__':main()

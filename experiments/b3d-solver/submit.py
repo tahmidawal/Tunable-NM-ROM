@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import re
 import subprocess
+from job_ledger import upsert
 HERE=Path(__file__).resolve().parent
 NS='/cluster/tufts/paralab/tawal01/b3d-solver-20261026'
 def ssh(s):
@@ -26,6 +27,11 @@ def main():
             'jid=$(sbatch --parsable run.sbatch); printf "%s\\n" "$jid" > SUBMITTED.jobid; printf "%s\\n" "$jid"').strip()
     assert job.isdigit(),job
     (stage/'SUBMITTED.jobid').write_text(job+'\n')
+    hours,minutes,seconds=map(int,re.search(r'#SBATCH --time=(\d+):(\d+):(\d+)',(stage/'run.sbatch').read_text()).groups())
+    upsert(a.attempt,int(job),state='SUBMITTED',source_commit=(stage/'COMMIT.txt').read_text().strip(),remote=remote,
+           reserved_max_gpu_hours=hours+minutes/60+seconds/3600,manifest_sha256=a.approved_manifest,scope='live job; final qualification and GPU hours pending collection')
     print('JOB-ID '+job)
-    print('QUEUE-AFTER\n'+ssh('squeue -u tawal01 -o "%.18i %.32j %.8T %.10M %.20R"'))
+    after=ssh('squeue -u tawal01 -o "%.18i %.32j %.8T %.10M %.20R"');print('QUEUE-AFTER\n'+after)
+    observed=[line.split()[2] for line in after.splitlines() if line.split() and line.split()[0]==job]
+    if observed:upsert(a.attempt,int(job),state=observed[0])
 if __name__=='__main__':main()

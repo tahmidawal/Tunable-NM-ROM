@@ -7,6 +7,7 @@ import re
 import shlex
 import subprocess
 import tarfile
+from job_ledger import upsert
 
 HERE=Path(__file__).resolve().parent
 NS='/cluster/tufts/paralab/tawal01/b3d-solver-20261026'
@@ -40,6 +41,8 @@ def main():
     ssh(f'set -euo pipefail; test -d {qr}; rm -rf -- {qr}')
     evidence['remote_duplicate_deleted']=True
     (stage/'COLLECTED.json').write_text(json.dumps(evidence,indent=1)+'\n')
+    upsert(a.attempt,a.job_id,state=row[1],elapsed_seconds=int(row[2]),gpu_hours=int(row[2])/3600,
+           source_commit=(stage/'COMMIT.txt').read_text().strip(),collection_verified=True,remote_deleted=True,reserved_max_gpu_hours=0.)
     print(json.dumps(evidence))
 
 if __name__=='__main__':main()

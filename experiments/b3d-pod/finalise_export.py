@@ -27,6 +27,8 @@ def main():
         results_audit_path=str(audit),results_audit_sha256=sha(audit),
         results_audit='READY_FAILED_FROZEN_FIT',job_id=fit['job_id'],source_commit=fit['source_commit'],
         accepted=False,construction_failure_reason=fit['construction_failure_reason'],
+        remote_job_directory_removed_after_verified_collection=row.get('remote_directory_removed_after_verified_collection',False),
+        original_archive_preserved=True,
         support_target=fit['support_target'],terminal_support=fit['terminal_support'],
         kkt=fit['kkt'],banned=fit['banned'],candidate_count=fit['candidate_count'],
         banned_fraction=fit['banned_fraction'],banned_fraction_limit=fit['banned_fraction_limit'],

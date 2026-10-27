@@ -1,8 +1,8 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "version": "predata-A2",
+  "version": "predata-A3",
   "status": "not_released_for_numerical_jobs",
-  "design_sha256": "ce8fee66c78b835f287b2c163fd363b123cc44b7dccd6cc0b33a9abb2a40c964",
+  "design_sha256": "fbf6daea4b5140a51a2fdd5ea85b007d5559cdee0626e9a68265061dc6060507",
   "fork": {
     "local": "93f399faad67f94ea2b56fe25f13003143e64694",
     "mirror": "5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f"
@@ -141,7 +141,9 @@
     "uncertainty_is_bound": false,
     "uncertainty_max_fraction_target": 0.2,
     "requires_decreasing_h_differences": true,
-    "domain_independence_is_separate": true
+    "domain_independence_is_separate": true,
+    "physical_gradient_drag_gap_relative": 0.0002,
+    "physical_gradient_transverse_gap_absolute": 1e-05
   },
   "pilot_accuracy": {
     "u_relative": 0.01,
@@ -176,7 +178,11 @@
     "exact_quadratic_tensor_control": [
       "bank",
       "POD"
-    ]
+    ],
+    "representation_development_velocity_gate": 0.002,
+    "representation_development_pressure_scaled_gate": 0.004,
+    "mandatory_interpolation_control": "training_POD_coefficients_PCHIP",
+    "mandatory_mixed_Galerkin_control": true
   },
   "resources": {
     "allocated_gpu_hours_total": 12.0,
@@ -188,7 +194,10 @@
     "first_smoke_seconds_per_dimension_max": 1200,
     "first_smoke_memory_GiB": 64,
     "new_local_unique_GiB_max": 60,
-    "remote_temporary_GiB_max": 50
+    "remote_temporary_GiB_max": 50,
+    "first_3d_max_dofs": 15000,
+    "first_3d_factor_estimate_bytes": "128*dofs**2+4*2**30",
+    "first_3d_factor_estimate_max_GiB": 48
   },
   "seeds": {
     "mesh": 27102026,

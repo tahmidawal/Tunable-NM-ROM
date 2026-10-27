@@ -455,3 +455,60 @@ term magnitudes with characteristic force/power floor $10^{-12}$ in nondimension
 The low-Re Barber–Emerson drag comparison remains auxiliary: its zero-axial-gradient outlet
 is not established identical to ours, and its reported no-slip normal-stress discrepancy
 precludes treating the rounded table as exact truth or assigning it our tight reference gate.
+
+## A3 — Independent Claude consultation and implementation release, 2026-10-27
+
+The first larger Claude request timed out without output; one shorter retry returned a
+substantive review. Both attempts and all raw reviews are retained. Reviewers permit
+implementation of dependency/geometry/analytic controls; this amendment releases that work.
+Code and exact-job review are still required for numerical smoke. Reference acceptance and
+training remain closed. `reviews/RESPONSE-A3.md` records accepted and qualified suggestions.
+
+Add a manufactured nonzero-Dirichlet, divergence-free flow with nonzero convection on the
+actual obstacle geometry, not only an empty box. Prescribe its consistent forcing and
+nonzero outlet pseudotraction; check analytic curved-surface force. Pair weak reaction with
+gradient-form direct force. The physical-minus-gradient force gap must be ≤2e−4 relative
+in drag and ≤1e−5 absolute transverse at admitted finest references; it is one physical
+force with two discrete evaluations. An exact-sign wall-shear control precedes a DFG claim.
+Primary geometry orders are3 for P3/P2 and4 for P4/P3, plus an independent geometry-order
+increase holding solution order fixed. Mass remains an algebra/quadrature check, not a
+certificate of spatial divergence error.
+
+The first 3D factorization cannot be released until the reviewed 2D smoke succeeds and
+its code has a prospective small-system guard: at most15000 mixed unknowns, conservative
+estimated factorization storage $128d_h^2+4\,\mathrm{GiB}\le48\,\mathrm{GiB}$ under a64GiB
+hard limit, and an element-count guard before assembly. This estimate is not a mathematical
+memory guarantee; actual peak RSS and failure logs must be saved. Geometry/mesh-only checks
+may precede factorization. Measure the first two coarse levels before projecting larger
+levels; full reference failure at affordable resolution is recorded as unresolved. No new
+iterative solver or larger memory allocation is silently substituted.
+
+Use velocity H1 and pressure L2 norms for the reduced inf-sup matrix:
+$\beta=\sigma_{\min}(G_p^{-1/2}BG_{v,H1}^{-1/2})$, with correctly oriented Cholesky factors
+or symmetric inverse roots. This supersedes A1's loose inclusion of inf-sup in velocity-L2
+unknown whitening. The Jacobian condition diagnostic may retain its explicitly fixed
+velocity-L2/pressure-L2 coefficient scaling. All actual Gram definitions are stored.
+
+Mandatory additional competitors: standard exact mixed POD-Galerkin with supremizers, and
+piecewise cubic Hermite interpolation of training POD coefficients in Reynolds number,
+using a fixed training-only weighted basis and no PDE solve. It gets identical lifting,
+pressure/forces and physics/accuracy checks; its negligible solve cost is not hidden by an
+irrelevant algebraic residual gate. Fields/outputs and constitutive PDE residual diagnostics
+still identify any inaccurate interpolated result. No validation data tune the interpolator.
+The present family and validation set support interpolation-only conclusions.
+
+Before bank reduced online solves, freeze and evaluate representation floors on development:
+velocity≤0.002 and characteristic-scaled pressure≤0.004. Failure stops the bank expansion;
+POD/FOM/interpolation controls still proceed. Save gradient, force and trace errors too;
+passing velocity projection alone cannot certify a force model. Width ordering is weighted
+QR/SVD after the one fixed two-hidden-layer64-unit tanh fit (seed27102027,max3000steps,
+first training wall cap30min); input coordinates are nondimensionalized by D, then affinely
+scaled using fixed geometry bounds. No architecture or seed search follows a failed fit.
+
+Actual momentum/continuity test enumeration and fitted moment definitions must be explicit
+and independently reviewed in code before training. Both tensors and fitted rules are
+available to bank and POD. Empirical-order/roundoff diagnostics and per-population reference
+checks must be frozen in the reference-suite configuration; no acceptance from decreasing
+but unresolved noise. Every eventual train/dev/validation case needs admitted references,
+not just the Re20 anchor. The snapshot-generation contract prevents method-selection access
+to validation field values until the model choices freeze.

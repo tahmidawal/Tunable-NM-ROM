@@ -2,6 +2,8 @@
 
 This is a prospective implementation recommendation for the fixed-geometry Navier–Stokes campaign, written before its data, neural fitting or numerical production. It contains no new measured results; the proposed thresholds require independent design review before use.
 
+**Implementation precedence:** the coordinator's `experiments/ns-obstacle/DESIGN.md` and dated amendments supersede this initial recommendation. The reviewable implementation is described in `API.md`; in particular it uses the actual inlet coordinate in both dimensions, a viscosity-scaled Stokes pressure lift, mandatory mixed Galerkin and PCHIP controls, constant-first pressure augmentation, and the final central qualification thresholds. No runtime physical gate has passed.
+
 ## Evidence recovered
 
 The current source fork is `93f399faad67f94ea2b56fe25f13003143e64694`, with code-only mirror base `5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f`. The lane is `exp/2026-10-27-ns-obstacle-rom`, its worktree is `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom`, and its reserved cluster namespace is `/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/`. No jobs have been submitted.

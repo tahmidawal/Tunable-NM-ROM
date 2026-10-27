@@ -1,0 +1,1476 @@
+You are an independent numerical-methods consultant for an incompressible Navier-Stokes obstacle-flow campaign. The user explicitly requests independent Claude review at major implementation milestones. You cannot inspect the repository or use tools; all relevant source is below. Do not infer successful executions. Give concrete blocking errors separately from limitations and suggest narrow fixes; focus on mathematical correctness and realistic implementation issues, not speculative fabricated-file attacks.
+
+This review concerns the new FE-to-ROM adapter at commit 97847a479 (source only). No NGSolve execution, training, or admitted reference data exists for it. The reference pipeline is independently building and verifying body-fitted NGSolve/Netgen6.2.2608 Taylor-Hood solutions. A dependency import/layout repair has passed. Native mapped-point lifetime and scalar-return compatibility issues were identified in early preflight controls; named transformations and owning NumPy arrays are required, and some scalar CF evaluations return singleton tuples. The next reference control is queued. Do not grant reference or runtime admission on source evidence.
+
+Physics: rho=1, kinematic pressure, steady advective mixed form -nu Delta u+(u dot grad)u+grad p=f, div u=0. Fixed no-slip cylinder in a channel, fixed parabolic inlet; natural gradient outlet (nu grad u-pI)n=0 sets pressure, no pressure pin/mean-zero gauge. Reference physical stress is -pI+nu(grad u+grad u^T); solid force is minus traction integrated with fluid normal. First family changes nu only. Scales D,U,D/U,U^2. The shared Stokes lift velocity is independent of nu for this family; its pressure scales with nu. FE velocity is homogeneous on inlet/walls/obstacle after lifting, and free on outlet.
+
+Both learned-bank and POD trials use this same FE lift, pressure POD and H1 supremizers. Pressure includes an explicit constant plus weighted spatial-mean-removed training residual-pressure modes. Snapshot source populations must already pass G2; validation and G1 files must be rejected. Pressure and velocity FE coefficient modes must match their sampled definitions. The shared H1 velocity/L2 pressure test spaces and inf-sup convention are defined in the contract below. Galerkin and weak residual least-squares are distinct; no exact-divergence or fully mesh-free claim is made. Exact quadratic operators are mandatory for both POD and bank later. No comparative result exists.
+
+Read the contract and code independently. Check nondimensional scales, lift pressure subtraction, weighted SVD coefficient transport, rank conventions, actual-basis Gram/coupling consistency, supremizers/full-velocity beta reference, generalized eigenmode construction and deterministic handling of clusters, boundary conditions, mapped quadrature/evaluation ownership and known scalar API issue. Check whether failure rules are honest and whether source caps give a bounded first control. Acknowledge missing producer exports/reload/runtime checks rather than treating them as already passed. Return a scoped READY-for-controls or NEEDS-FIXES verdict with evidence, and keep it concise enough to act on. Do not propose changed scientific tolerances merely to pass.
+
+
+
+===== SOURCE MODEL-CONTRACT.json =====
+{
+  "schema": "ns-obstacle-rom-infrastructure-v1",
+  "status": "reviewable_infrastructure_only_no_G2_data",
+  "central_campaign_version": "predata-A4",
+  "central_campaign_sha256": "9507f516c0daea29d84f15c120ef0c0fb128df4f8ba7bb8325552618dcaca262",
+  "central_design_sha256": "0d9d077f456a2f4963764863cd0c06edccb1dccf0bc0513f4749071042e0e6bf",
+  "central_commit": "4438e0ddfc65dcfc4840cbc50f2f4eacd1c3b66b",
+  "physics": {
+    "density": 1.0,
+    "pressure": "kinematic",
+    "outlet": "nu_grad_u_minus_pI_times_fluid_normal_equals_zero",
+    "additional_pressure_gauge": false,
+    "force_normal": "solid_to_fluid",
+    "physical_stress": "minus_pI_plus_nu_grad_u_plus_transpose",
+    "reference_weak_form": "advective_gradient_mixed",
+    "geometry": "fixed_stationary"
+  },
+  "case2d": {
+    "label": "DFG2D1_and_fixed_inlet_viscosity_family",
+    "xmin": 0.0,
+    "xmax": 2.2,
+    "height": 0.41,
+    "obstacle_center": [
+      0.2,
+      0.2
+    ],
+    "radius": 0.05,
+    "inlet_max": 0.3,
+    "inlet_mean": 0.2,
+    "benchmark_nu": 0.001,
+    "training_Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "development_Re": [
+      16.875,
+      23.125
+    ],
+    "validation_Re": [
+      16.0,
+      18.0,
+      22.0,
+      24.0
+    ],
+    "viscosity_rule": "0.02/Re",
+    "pressure_probes": [
+      [
+        0.15,
+        0.2
+      ],
+      [
+        0.25,
+        0.2
+      ]
+    ],
+    "upstream_extension_xmin": -0.2,
+    "downstream_extension_xmax": 4.4,
+    "target": "steady"
+  },
+  "case3d": {
+    "label": "project_defined_confined_sphere",
+    "xmin": -5.0,
+    "xmax": 15.0,
+    "pipe_radius": 2.5,
+    "sphere_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "sphere_radius": 0.5,
+    "inlet_mean": 1.0,
+    "inlet_max": 2.0,
+    "pilot_Re": 10.0,
+    "pilot_nu": 0.1,
+    "conditional_training_Re": [
+      8.0,
+      10.0,
+      12.0
+    ],
+    "conditional_development_Re": [
+      9.0
+    ],
+    "conditional_validation_Re": [
+      11.0
+    ],
+    "upstream_extension_xmin": -10.0,
+    "downstream_extension_xmax": 30.0,
+    "pressure_probes": [
+      [
+        -0.5,
+        0.0,
+        0.0
+      ],
+      [
+        0.5,
+        0.0,
+        0.0
+      ]
+    ],
+    "transient": {
+      "status": "separate_gate_not_released",
+      "ramp_time": 1.0,
+      "horizon": 2.0,
+      "output_interval": 0.1,
+      "dt": [
+        0.05,
+        0.025,
+        0.0125
+      ],
+      "startup": "must_be_reviewed_second_order"
+    }
+  },
+  "rom": {
+    "velocity_prefixes": [
+      2,
+      4,
+      8
+    ],
+    "pressure_rank": "min(r,1+numerical_rank(weighted_mean_removed_training_pressure_snapshots))",
+    "supremizers_per_pressure": 1,
+    "fixed_momentum_tests": 64,
+    "fixed_continuity_tests": 16,
+    "quadrature_candidates": [
+      320,
+      640,
+      1280,
+      2560
+    ],
+    "numerical_rank_relative_cutoff": 1e-12,
+    "inf_sup_absolute_min": 0.001,
+    "inf_sup_reference_fraction": 0.5,
+    "jacobian_condition_max": 10000000000.0,
+    "approximate_boundary_trace_over_U_max": 1e-06,
+    "formulation": "weak_residual_least_squares",
+    "exact_quadratic_tensor_control": [
+      "bank",
+      "POD"
+    ],
+    "representation_development_velocity_gate": 0.002,
+    "representation_development_pressure_scaled_gate": 0.004,
+    "mandatory_interpolation_control": "training_POD_coefficients_PCHIP",
+    "mandatory_mixed_Galerkin_control": true,
+    "pressure_constant_is_solved": true
+  },
+  "cost": {
+    "primary_device": "CPU",
+    "same_allocation": true,
+    "same_core_count": true,
+    "timing_repetitions": 7,
+    "alternating_order": true,
+    "same_invocation_cost_accuracy": true,
+    "gpu_training_is_offline": true,
+    "output_contracts": [
+      "full_velocity_pressure_fields",
+      "fixed_probes",
+      "integrated_forces"
+    ]
+  },
+  "training": {
+    "architecture": "tanh",
+    "hidden_widths": [
+      64,
+      64
+    ],
+    "rank": 8,
+    "seed": 27102027,
+    "steps_cap": 3000,
+    "wall_seconds_cap": 1800,
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "loss": "volume_weighted_QR_projection_no_ridge",
+    "requires_gate": "G2-steady",
+    "split": "training_only"
+  },
+  "required_controls": [
+    "bank_full_rule",
+    "bank_exact_tensor",
+    "POD_weak_LS_full_rule",
+    "POD_weak_LS_exact_tensor",
+    "POD_mixed_Galerkin_exact_tensor",
+    "POD_coefficient_PCHIP"
+  ],
+  "pressure_basis": {
+    "constant_first": true,
+    "centered_threshold_scale": "max(1,sigma_max(original_weighted_nondimensional_pressure_corrections))",
+    "relative_threshold": 1e-12,
+    "physical_mean_zero_constraint": false
+  },
+  "norms": {
+    "inf_sup_velocity": "dimensionless_H1_value_plus_gradient",
+    "inf_sup_pressure": "dimensionless_L2",
+    "jacobian_velocity_unknown": "dimensionless_L2",
+    "jacobian_pressure_unknown": "dimensionless_L2",
+    "momentum_rows": "fixed_full_rule_dimensionless_H1",
+    "continuity_rows": "fixed_full_rule_L2"
+  },
+  "test_enumeration": {
+    "momentum": [
+      "all_max_prefix_supremizers",
+      "canonical_vector_H1_eigenmodes_ascending_eigenvalue"
+    ],
+    "continuity": [
+      "constant",
+      "all_max_prefix_pressure_modes",
+      "canonical_scalar_Laplacian_modes_ascending_eigenvalue"
+    ],
+    "eigenvalue_cluster_relative": 1e-10,
+    "orientation": "largest_residual_FE_DOF_row_norm_first_index_ties",
+    "required_export": "mesh_DOF_order_eigenproblem_hashes_retained_indices_transforms_Grams"
+  },
+  "quadrature": {
+    "sampled_operator": "convection_only",
+    "exact_static_operators": [
+      "viscous",
+      "pressure",
+      "divergence",
+      "test_Grams",
+      "unknown_Grams"
+    ],
+    "moment_rows": [
+      "1",
+      "coordinates",
+      "reconstructed_training_u_components",
+      "reconstructed_training_gradient_components",
+      "test_dot_u_advection_gradient_u"
+    ],
+    "fit_relative": 1e-08,
+    "restricted_KKT": 1e-08,
+    "supports": [
+      320,
+      640,
+      1280,
+      2560
+    ],
+    "boundary_forces": "separate_refined_boundary_rule"
+  },
+  "dependency_gaps": [
+    "reviewed_FE_adapter",
+    "actual_FE_test_and_supremizer_export",
+    "actual_reference_data_G2_admission",
+    "JAX_training_runtime_validation",
+    "physical_pilot_and_quadrature_qualification"
+  ],
+  "fe_adapter_verification": {
+    "stored_numeric_precision": "float64_before_conversion",
+    "precision_check": "NPY headers before payload loading",
+    "mode_weighted_relative_discrepancy_max": 1e-10,
+    "mode_gram_spectral_error_max": 1e-10,
+    "failure_policy": "stop_without_rank_threshold_change_or_reorthogonalization",
+    "infsup_pressure_gram": "actual_reconstructed_FE_evaluations",
+    "scalar_CF": "finite_real_scalar_or_singleton_only"
+  }
+}
+
+
+
+===== SOURCE FE-ADAPTER-CONTRACT.md =====
+# Gated FE adapter and exporter integration
+
+This is implementation infrastructure for independent review. No NGSolve import, mesh, flow case, FE eigenproblem or FE supremizer has been executed by this lane. `FE-ADAPTER-SYNTHETIC.json` is only a small array/matrix regression; it cannot release reference or training gates. The current G1 FOM files are deliberately insufficient for this adapter.
+
+## Ownership and current sources
+
+The ROM lane owns `fe_adapter.py`, `fe_algebra.py` and their checks. The adapter never imports `fom.py`, runs `run_case`, writes into the reference worktree, or updates the canonical lab log. The reference lane owns the FOM and G2 exports. The coordinator owns reference admission and the source-bound adapter review record.
+
+The inspected producer is `experiments/ns-obstacle-2d/fom.py` in the `2026-10-27-ns-obstacle-2d` worktree: it saves `config.json`, `mesh.vol`, `full_rule.npz`, `boundary_rule.json`, `solution.sol` and `result.json`. Its full rule already contains physical points, positive weights, returned velocity/gradient/pressure and both mixed coefficient vectors. Stokes coefficients are copied before Newton; the returned solution coefficients are restored after its directional-Jacobian diagnostic. The producer's gradient convention is component, derivative coordinate.
+
+The reference author explicitly has **not** certified that `.vol` retains the curved geometry. Both sides require a future reload check. The adapter calls `Mesh(mesh.vol)` and never calls `Curve` after loading. A mismatch stops the bridge; no re-meshing, interpolation, re-curving, point nudging or mesh substitution repairs it silently. Only the fixed nine-state 2D training family is implemented; the conditional 3D family needs its own reviewed extension.
+
+## Exact future G2 producer additions
+
+| Artifact | Required content |
+|---|---|
+| `full_rule.npz` | Existing arrays plus `jacobians[n,2,2]` from the same ordered mapped volume rule. Retain solution and Stokes coefficient vectors. All numeric arrays must already be stored as finite float64. The adapter checks every NPY member header and declared allocation size before loading array payloads, rejecting other dtypes; it never upgrades float32 provenance to float64. |
+| `fe_layout.json` | `{"layout": record, "sha256": digest}` using the exact `layout_record(mesh,V,Q,ng)` algorithm below. |
+| `reload_checks.json` | `passed: true`, `policy: "saved_curved_verified_no_recurve"`, saved/reloaded geometry order evidence and numerical comparisons of mapped points, weights, Jacobians, volume/boundary values and gradients. This must come from a real reload, not a source inspection. |
+| `config.json` | Existing exact configuration, `release: "G2_steady_training_export"`, `precision: "float64"`, central campaign hash. A G1 release is rejected. |
+| outer training manifest | Exact schema below, with genuine independent G2 admission/review hashes and per-file SHA256 values. |
+
+The versioned layout record has `schema: "ns-obstacle-fe-layout-v1"`, mesh dimension, velocity/pressure DOF counts, ordered free-DOF masks as integer zero/one lists, and an ordered list from `mesh.Elements(VOL)`. Each element stores `number=int(el.nr)`, `type=str(el.type)`, and ordered `V.GetDofNrs(el)`/`Q.GetDofNrs(el)` lists. Digest the JSON serialization with `sort_keys=True`, `separators=(',', ':')`, UTF-8 and SHA256. Save both the record and digest. The helper is import-safe without NGSolve; producer reuse requires staging the reviewed adapter sources, or an independently checked identical implementation of this specification.
+
+Use one byte-identical immutable admitted mesh and the same FE/geometry/rule orders for all training states. The reference author agreed this is feasible for the viscosity-only family. If references need other meshes, construct the declared common training export with a separately reviewed transfer/error gate; this adapter does not invent one.
+
+The outer manifest is `ns-obstacle-fe-training-v1`. Required fields are `gate: "G2-steady"`, `passed: true`, `split: "training"`, `mesh_reload: "saved_curved_verified_no_recurve"`, `adapter_source_sha256`, `adapter_review_sha256`, `reference_admission_sha256`, `campaign_sha256`, and `cases`. `adapter_digest()` binds the exact adapter/algebra/space/operator/training-hash sources and frozen model contract; the campaign digest must also match that contract. `cases` must have the frozen ordered Reynolds numbers from the central campaign; each case contains its `Re`, `split: "training"`, relative `directory`, and a `files` mapping of exactly the eight named producer artifacts to their SHA256 hashes. No dummy admitted example is distributed. Read-only manifest checking rejects a closed gate, a validation population, mismatched source, missing files or mixed mesh hashes before importing NGSolve.
+
+## Frozen construction
+
+For physical diameter $D$, dimensionless integration weight is $w/D^2$. Velocity and pressure coefficients are divided by $U$ and $U^2$. The shared Stokes velocity lift is recovered from the first admitted training state and compared against all other Stokes vectors. The pressure lift coefficient per dimensionless viscosity is $p_LD/(U\nu)$. The adapter checks that this is shared, and forms training corrections only after subtracting the lift. It preserves the physical natural-outlet pressure convention.
+
+All velocity correction essential DOFs must be within the fixed roundoff threshold before being set exactly to zero; the removed maximum is recorded. Weighted POD uses the existing full-rule algorithm and carries its snapshot combinations back to FE coefficients, so every retained mode can be evaluated at arbitrary physical points. Pressure uses the same existing constant-first weighted-mean-removed training-correction construction and rank threshold. POD singular-value clusters use the existing coefficient-row pivot convention and save the rotation, keeping coefficient and sampled field representations consistent. POD prefixes above the actual weighted numerical rank are marked ineligible; smaller registered prefixes remain available. There is no manufactured zero-filled mode. No data outside training enter any basis or eigenproblem.
+
+After carrying the retained SVD modes back to FE coefficients, independently evaluate those coefficients on the full mapped rule. For every velocity and pressure mode require
+
+$$
+\frac{\|\phi_j^{FE}-\phi_j^{SVD}\|_Q}{\|\phi_j^{SVD}\|_Q}\le10^{-10},\qquad
+\|G^{FE}-I\|_2\le10^{-10}.
+$$
+
+These are fixed numerical reconstruction/orthonormality checks, separate from the physical field targets. Cancellation in $CV/\sigma$ near the existing singular cutoff causes a hard failure with the discrepancy/Gram diagnostics retained in the exception. Do not re-orthogonalize, drop extra columns, change the rank threshold or quietly substitute the ideal sample modes after failure. The pressure Gram used by the full-velocity reference inf-sup calculation is formed from these **actual reconstructed FE evaluations**, matching the pressure coefficients used in the divergence coupling and supremizers. Both velocity and pressure checks, their actual Grams and fixed thresholds are exported in metadata.
+
+
+Let $M$ denote dimensionless FE mass and $K$ the dimensionless gradient Gram. The velocity supremizer solves
+
+$$
+(M+K)s_j=b_j,\qquad (b_j)_i=\int_{\widehat\Omega}\psi_j\widehat\nabla\cdot v_i\,d\widehat x.
+$$
+
+Velocity essential DOFs are removed; outlet DOFs remain free. Matrix assembly supplies explicit per-element-type integration rules matching the exported full rule. Matrix symmetry, solve residuals and agreement between assembled and sampled test Grams are checked. The full-velocity/same-pressure reference inf-sup value is recovered from $B(M+K)^{-1}B^T$ with pressure-L2 whitening for each registered pressure prefix. It is a reference value, not a passed reduced inf-sup gate.
+
+Velocity eigenmodes solve $(M+K)e=\lambda Me$ on the same free velocity space. Scalar modes use the pressure H1 space with natural Neumann boundary conditions; the same shifted problem has Laplacian eigenvalues $\lambda-1$ and avoids factoring the singular Neumann stiffness. Fixed candidate counts are 96 velocity and 32 scalar modes, each with one extra eigenpair. A cut through an eigenvalue cluster stops construction. Sparse shift-invert uses SciPy `eigsh`, deterministic seed 27102026, tolerance $10^{-12}$, maximum 2000 iterations and SuperLU COLAMD. There is no fallback or enlargement after failure. Original and oriented eigenpair residuals, matrix hashes, look-ahead gap and canonical block pivots are saved. This is the documented generalized-eigenproblem and shift-invert contract of [SciPy eigsh](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.eigsh.html); use on the pinned FE matrices still needs runtime review.
+
+The fixed enumeration is all maximum-prefix supremizers then velocity eigenmodes, and constant then all pressure modes then scalar eigenmodes. Existing full-rule dependency rejection and normalization must produce exactly 64 H1 momentum tests and 16 L2 continuity tests. The duplicated constant in the scalar enumeration is deliberately rejected as dependent. The actual retained indices, transforms, Grams and candidate hashes are persisted. No label is taken as proof of pressure stability, outlet observability or good Jacobian conditioning.
+
+## Bounded use and export schema
+
+The prospective caps are encoded in `CAPS`: mixed unknowns, elements, volume/boundary rule points, sparse nonzeros, individual arrays/archives, estimated factor storage and process peak RSS. They are hard stops. The factor estimate repeats the FOM's conservative fill model; it is not a memory guarantee. A reviewed cluster launcher must additionally impose a hard memory/time limit and charge all failed setup work. This source provides no launcher and authorizes no job.
+
+Future invocation is `TrainingFEAdapter.open(manifest).build().export(new_directory)`. There is no CLI that searches for snapshots automatically. NGSolve is imported only after admission and source/file checks. Scalar coefficient-function evaluation accepts only a finite real scalar or an array/tuple with exactly one element. Larger, empty, complex or nonfinite results are errors; this explicitly handles the pinned-library singleton-tuple behavior. The `.sol` vector must match the archived mixed coefficients, and evaluating those coefficients must reproduce all archived volume and boundary fields/gradients, mapped points/weights/Jacobians and normal labels. Raw-point evaluation rejects a point outside the saved FE geometry; exact/approximate curved-boundary consistency is a separate gate.
+
+The export contains:
+
+| File | Contents and units |
+|---|---|
+| `coefficients.npz` | FE coefficients for dimensionless lift velocity, pressure lift per dimensionless viscosity, POD velocity, pressure, supremizers and both fixed test banks. |
+| `volume.npz` | Physical points/Jacobians, dimensionless weights, each coefficient field's values and dimensionless first derivatives. Velocity arrays have axes point/component/column, gradients point/component/coordinate/column; scalar arrays point/column. Lift fields retain a singleton column. |
+| `boundary.npz` | Same field arrays on the separate positive mapped boundary rule, labels and outward-fluid normals. Only obstacle normals are negated for `force_moments`; other labels retain fluid orientation for flux/balance diagnostics. Surface weights divide by $D$. |
+| `training.npz` | Declared training-only dimensionless velocity/pressure corrections and velocity gradients, physical points, dimensionless weights, ordered Reynolds numbers. Its neural-training array digest uses the existing training API's exact hash convention. |
+| `manifest.json` | Input/source hashes, layout, rank/ordering/test/eigen/supremizer evidence, caps, versions, setup/export timing, peak RSS, units and hashes of all output archives. `physical_admission` remains false. |
+
+For an eligible registered velocity prefix $r$, take the first $r$ POD columns (or later neural columns) and the first $p_r$ supremizers, with $p_r$ the minimum of $r$ and the saved pressure count. The pressure unknowns are the first $p_r$ pressure columns. Weak LS uses the saved fixed 64/16 tests; mixed POD Galerkin tests equal its actual enriched velocity and pressure trial columns. Squeeze singleton lift columns when constructing `WeakRule`. Boundary gradients use `BoundaryFromVolumeCF` while normals remain on the boundary transformation, following the repaired FOM convention. The [NGSolve NumPy bridge](https://docu.ngsolve.org/nightly/how_to/howto_numpy.html) documents coefficient-array views and sparse COO export; saved evidence is always copied before it can alias mutable FE storage.
+
+All setup, FE recovery, eigen/supremizer construction, sample export and tensor assembly costs are offline costs to retain. Same-CPU online timing still requires the frozen output contract. The current fitted quadrature contracts into the same tensor shape: fewer points alone establish no online solve speedup.
+
+## Remaining release blockers
+
+Independent adapter/source review and a real pinned-library serialization/evaluation/matrix test remain mandatory before future FE use. G2 has not passed. The producer has not yet added the declared G2 layout/Jacobian/reload exports. Actual full-rule convergence, geometry consistency, full reference validation, reduced inf-sup/Jacobian gates, training execution and full end-to-end bank/POD assembly remain unpassed. The adapter builds smooth FE H1 functions; it does not assert analytic smoothness across element interfaces or exact pointwise incompressibility. The pressure-POD and test eigensolver APIs must not be described as integrated merely because synthetic algebra passes.
+
+## Glossary
+
+FE: finite elements. DOF: one coefficient in an FE space. G1: preliminary controls. G2: admitted reference/data gate. POD: weighted training snapshot basis. H1: value-plus-gradient function norm. L2: value-only function norm. Supremizer: a velocity enrichment exposing a pressure mode through divergence. Inf-sup: a scaled pressure/velocity coupling diagnostic. Eigenmode: a generalized matrix eigenvector interpreted as an FE function. Prefix: the first columns of one fixed ordered space. Round-trip: saving, reloading and comparing the same geometric/field data. Shift-invert: solve-based eigensolver transformation. COLAMD: a fixed sparse-factor ordering algorithm. RSS: measured process memory. Gram matrix: weighted inner products between basis functions. SVD: singular-value matrix factorization. Spectral norm: largest singular value of a matrix. Cancellation: loss of numerical precision when subtracting nearly equal quantities. SHA256: content digest. COO: sparse coordinate-list representation. Physical admission: all required scientific checks on actual flow results, distinct from source or array-algebra checks.
+
+
+
+===== SOURCE fe_algebra.py =====
+"""Small algebra for a training-only FE bridge; no NGSolve import or FE execution."""
+from __future__ import annotations
+import hashlib
+import json
+import numpy as np
+from spaces import (canonicalize_eigenmodes, checked_cholesky, pressure_basis,
+                    weighted_gram, weighted_pod)
+
+
+def array_digest(*arrays):
+    h = hashlib.sha256()
+    for value in arrays:
+        a = np.ascontiguousarray(value)
+        h.update(str((a.shape, a.dtype.str)).encode())
+        h.update(a.tobytes())
+    return h.hexdigest()
+
+
+def canonical_pod(coefficients, values, singular_values, weights):
+    """Orient POD blocks using frozen FE coefficient order, keeping sampled fields exact."""
+    c = np.asarray(coefficients, dtype=np.float64)
+    v = np.asarray(values, dtype=np.float64)
+    # Negative singular values are ascending. Cluster/sign rule is the existing rule.
+    oriented, meta = canonicalize_eigenmodes(-np.asarray(singular_values), c,
+                                            weighted_gram(v, weights))
+    rotation, _, rank, _ = np.linalg.lstsq(c, oriented, rcond=1e-12)
+    if rank != c.shape[1] or not np.allclose(c @ rotation, oriented, rtol=1e-10, atol=1e-12):
+        raise ValueError("POD coefficient orientation lost rank")
+    meta['rotation'] = rotation.tolist()
+    return oriented, v @ rotation, meta
+
+
+def coefficient_pod(velocity_coefficients, velocity_samples, pressure_coefficients,
+                    pressure_samples, constant_coefficients, weights):
+    """All inputs are dimensionless TRAINING corrections on one FE mesh.
+
+    Coefficients [dof,case], velocity samples [case,point,component], pressure
+    samples [case,point]. Returned basis coefficients preserve FE evaluation anywhere.
+    """
+    vc = np.asarray(velocity_coefficients, dtype=np.float64)
+    pc = np.asarray(pressure_coefficients, dtype=np.float64)
+    one = np.asarray(constant_coefficients, dtype=np.float64)
+    u, um = weighted_pod(velocity_samples, weights, max_rank=8)
+    cu = vc @ np.asarray(um['snapshot_combinations'])
+    cu, u, orient_u = canonical_pod(cu, u, um['singular_values'][:u.shape[-1]], weights)
+    um['eligible_velocity_prefixes'] = [r for r in (2, 4, 8) if r <= u.shape[-1]]
+    if not um['eligible_velocity_prefixes']:
+        raise ValueError('no registered velocity prefix passes the POD rank guard')
+    p, pm = pressure_basis(pressure_samples, weights, 8)
+    cp = one[:, None] / np.sqrt(np.sum(weights))
+    if p.shape[-1] > 1:
+        center_coeff = pc - one[:, None] * np.asarray(pm['snapshot_means'])[None, :]
+        tail = center_coeff @ np.asarray(pm['centered_pod']['snapshot_combinations'])
+        tail, p_tail, orient_p = canonical_pod(
+            tail, p[:, 1:], pm['centered_pod']['singular_values'][:p.shape[-1]-1], weights)
+        cp = np.c_[cp, tail]
+        p = np.c_[p[:, 0], p_tail]
+        pm['orientation'] = orient_p
+    um['orientation'] = orient_u
+    return {'velocity_coefficients': cu, 'pressure_coefficients': cp,
+            'velocity_values': u, 'pressure_values': p,
+            'metadata': {'velocity': um, 'pressure': pm}}
+
+
+def reference_inf_sup(rhs, supremizers, pressure_gram):
+    """Full-free-velocity H1 / SAME reduced pressure-L2 reference, not reduced admission."""
+    gram = np.asarray(rhs).T @ np.asarray(supremizers)
+    lp = checked_cholesky(pressure_gram)
+    whitened = np.linalg.solve(lp, gram) @ np.linalg.inv(lp.T)
+    if not np.allclose(whitened, whitened.T, rtol=1e-10, atol=1e-12):
+        raise ValueError("supremizer reference Gram is not symmetric")
+    eigenvalues = np.linalg.eigvalsh((whitened + whitened.T) / 2)
+    if not np.isfinite(eigenvalues).all() or eigenvalues[0] <= 0:
+        raise ValueError("full-velocity pressure coupling is singular")
+    return {'beta': float(np.sqrt(eigenvalues[0])), 'squared_singular_values': eigenvalues.tolist(),
+            'norms': 'dimensionless velocity H1 / pressure L2',
+            'schur_gram': gram.tolist(), 'pressure_gram': np.asarray(pressure_gram).tolist()}
+
+
+# Prospective fixed numerical-consistency gates, separate from physical error targets.
+MODE_WEIGHTED_RELATIVE_TOLERANCE = 1e-10
+MODE_GRAM_SPECTRAL_TOLERANCE = 1e-10
+
+
+def verify_reconstructed_modes(actual, ideal, weights, label):
+    """Compare actual FE evaluation of POD coefficients against their SVD sample modes.
+
+    The relative discrepancy is checked per column in the original weighted L2 norm;
+    the Gram spectral error is measured against identity. No new rank truncation or
+    re-orthogonalization is allowed when either check fails. Return the ACTUAL Gram.
+    """
+    a = np.asarray(actual); target = np.asarray(ideal)
+    if (a.shape != target.shape or a.ndim < 2 or a.shape[-1] < 1 or
+        not np.isfinite(a).all() or not np.isfinite(target).all()):
+        raise ValueError(f'{label}: invalid reconstructed/sample mode arrays')
+    error_gram = weighted_gram(a-target, weights)
+    ideal_gram = weighted_gram(target, weights)
+    gram = weighted_gram(a, weights)
+    ideal_norms = np.sqrt(np.diag(ideal_gram))
+    if np.any(ideal_norms <= 0):
+        raise ValueError(f'{label}: zero ideal mode')
+    relative = np.sqrt(np.maximum(np.diag(error_gram), 0.))/ideal_norms
+    gram_error = float(np.linalg.norm(gram-np.eye(a.shape[-1]), ord=2))
+    report = {'field': label, 'mode_count': a.shape[-1],
+              'weighted_relative_discrepancy_per_mode': relative.tolist(),
+              'weighted_relative_discrepancy_max': float(np.max(relative)),
+              'weighted_relative_tolerance': MODE_WEIGHTED_RELATIVE_TOLERANCE,
+              'actual_gram_spectral_error': gram_error,
+              'gram_spectral_tolerance': MODE_GRAM_SPECTRAL_TOLERANCE,
+              'ideal_sample_gram_spectral_error': float(np.linalg.norm(ideal_gram-np.eye(a.shape[-1]), ord=2)),
+              'actual_gram': gram.tolist(), 'rank_or_threshold_changed': False}
+    report['passed'] = bool(np.max(relative) <= MODE_WEIGHTED_RELATIVE_TOLERANCE and
+                            gram_error <= MODE_GRAM_SPECTRAL_TOLERANCE)
+    if not report['passed']:
+        raise ArithmeticError('FE coefficient mode reconstruction failed: '+json.dumps(report, allow_nan=False))
+    return gram, report
+
+
+
+===== SOURCE fe_adapter.py =====
+"""Gated, bounded 2D NGSolve-to-ROM bridge. No FE operation runs on import.
+
+This source has NOT passed a pinned-library FE integration test. A future reviewed job
+must supply a genuine G2 training manifest; current G1 control files are rejected.
+Only this module owns the adapter; it never imports or mutates the FOM solver module.
+"""
+from __future__ import annotations
+import hashlib
+import json
+import math
+from pathlib import Path
+import resource
+import time
+import zipfile
+import numpy as np
+from fe_algebra import (array_digest, coefficient_pod, reference_inf_sup,
+                        verify_reconstructed_modes)
+from spaces import canonicalize_eigenmodes, select_test_columns
+
+SCHEMA = 'ns-obstacle-fe-training-v1'
+REYNOLDS = [15 + 1.25*j for j in range(9)]
+ESSENTIAL = 'inlet|wall.*|obstacle'
+FILES = ('config.json', 'mesh.vol', 'full_rule.npz', 'boundary_rule.json',
+         'solution.sol', 'result.json', 'fe_layout.json', 'reload_checks.json')
+CAPS = {'mixed_dofs': 100000, 'elements': 20000, 'volume_points': 100000,
+        'boundary_points': 30000, 'matrix_nnz': 12000000,
+        'single_array_bytes': 2**30, 'archive_bytes': 2**30,
+        'factor_estimate_bytes': 8*2**30, 'process_rss_bytes': 16*2**30,
+        'vector_eigen_candidates': 96, 'scalar_eigen_candidates': 32,
+        'eigensolver_iterations': 2000}
+
+
+def sha_file(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(2**20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def adapter_digest():
+    root = Path(__file__).parent
+    return hashlib.sha256(json.dumps({name: sha_file(root/name) for name in
+        ('fe_adapter.py', 'fe_algebra.py', 'spaces.py', 'weak.py', 'train_bank.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+
+
+def read_training_manifest(path):
+    """Check admission before opening any mesh/state archive or importing NGSolve."""
+    path = Path(path)
+    manifest = json.loads(path.read_text())
+    if (manifest.get('schema') != SCHEMA or manifest.get('gate') != 'G2-steady' or
+        manifest.get('passed') is not True or manifest.get('split') != 'training'):
+        raise RuntimeError('reviewed G2-steady TRAINING manifest required; G1 is not admission')
+    if manifest.get('adapter_source_sha256') != adapter_digest():
+        raise RuntimeError('review must bind the exact adapter source')
+    for name in ('adapter_review_sha256', 'reference_admission_sha256', 'campaign_sha256'):
+        value = manifest.get(name, '')
+        if len(value) != 64 or any(c not in '0123456789abcdef' for c in value):
+            raise ValueError(f'missing SHA256 evidence: {name}')
+    if manifest.get('mesh_reload') != 'saved_curved_verified_no_recurve':
+        raise RuntimeError('curved .vol reload must be verified; automatic re-Curve is forbidden')
+    contract = json.loads(Path(__file__).with_name('MODEL-CONTRACT.json').read_text())
+    if manifest['campaign_sha256'] != contract['central_campaign_sha256']:
+        raise ValueError('manifest does not match the frozen central campaign contract')
+    cases = manifest.get('cases', [])
+    if [c.get('Re') for c in cases] != REYNOLDS or any(c.get('split') != 'training' for c in cases):
+        raise ValueError('exact nine-state training population/order required')
+    mesh_hashes = []
+    for case in cases:
+        folder = (path.parent / case['directory']).resolve()
+        # Snapshot manifests are local file evidence; do not follow undeclared files.
+        if set(case['files']) != set(FILES):
+            raise ValueError('incomplete or extra declared FE case files')
+        for name in FILES:
+            file = folder / name
+            if file.stat().st_size > CAPS['archive_bytes'] or sha_file(file) != case['files'][name]:
+                raise ValueError(f'FE case artifact size/hash mismatch: {file}')
+        mesh_hashes.append(case['files']['mesh.vol'])
+        case['resolved_directory'] = str(folder)
+    if len(set(mesh_hashes)) != 1:
+        raise ValueError('training adapter requires one byte-identical admitted curved mesh')
+    manifest['manifest_sha256'] = sha_file(path)
+    return manifest
+
+
+def load_npz_bounded(path):
+    # Inspect ORIGINAL NPY headers before loading/converting any payload. This both
+    # preserves f64 provenance and prevents f32->f64 conversion from hiding size growth.
+    with zipfile.ZipFile(path) as z:
+        entries = z.infolist()
+        if sum(x.file_size for x in entries) > CAPS['archive_bytes']:
+            raise MemoryError('uncompressed FE archive exceeds bound')
+        if len({x.filename for x in entries}) != len(entries):
+            raise ValueError('duplicate FE archive member')
+        for entry in entries:
+            if not entry.filename.endswith('.npy'):
+                raise ValueError('FE archive contains a non-NPY member')
+            with z.open(entry) as stream:
+                version = np.lib.format.read_magic(stream)
+                if version == (1, 0):
+                    shape, _, dtype = np.lib.format.read_array_header_1_0(stream)
+                elif version == (2, 0):
+                    shape, _, dtype = np.lib.format.read_array_header_2_0(stream)
+                else:
+                    raise ValueError('unsupported NPY header version')
+            if dtype.kind != 'f' or dtype.itemsize != 8:
+                raise TypeError(f'FE array {entry.filename} must be stored float64, got {dtype}')
+            check_allocation(shape)
+    with np.load(path, allow_pickle=False) as z:
+        result = {}
+        for key in z.files:
+            original = z[key]
+            if original.dtype.kind != 'f' or original.dtype.itemsize != 8:
+                raise TypeError(f'FE array {key} changed dtype after header verification')
+            if not np.isfinite(original).all():
+                raise ValueError(f'nonfinite FE array {key}')
+            # Only byte order/layout may change here; original precision is already f64.
+            result[key] = np.array(original, dtype=np.float64, copy=True)
+    return result
+
+
+def strict_scalar(value, label='FE scalar'):
+    """Finite real scalar or singleton tuple/array; never select from a larger CF."""
+    array = np.asarray(value)
+    if array.size != 1 or array.dtype.kind not in 'fiu':
+        raise ValueError(f'{label}: expected one real scalar, got shape {array.shape}, dtype {array.dtype}')
+    scalar = float(array.reshape(-1)[0])
+    if not math.isfinite(scalar):
+        raise ValueError(f'{label}: nonfinite value')
+    return scalar
+
+
+def check_allocation(shape):
+    count = math.prod(shape) * 8
+    if count > CAPS['single_array_bytes']:
+        raise MemoryError(f'proposed array exceeds adapter cap: {shape}')
+    if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024 + count > CAPS['process_rss_bytes']:
+        raise MemoryError('adapter RSS plus proposed array exceeds cap')
+
+
+def relative_gap(actual, expected, scale=1.):
+    a = np.asarray(actual); b = np.asarray(expected)
+    if a.shape != b.shape or not np.isfinite(a).all() or not np.isfinite(b).all():
+        raise ValueError('round-trip shape/nonfinite mismatch')
+    return float(np.max(np.abs(a-b), initial=0) / max(float(np.max(np.abs(b), initial=0)), scale))
+
+
+def layout_record(mesh, velocity_space, pressure_space, ng):
+    """Canonical JSON digest includes ordered VOL elements and local FE DOF numbers."""
+    record = {'schema': 'ns-obstacle-fe-layout-v1', 'dimension': int(mesh.dim),
+              'velocity_ndof': int(velocity_space.ndof), 'pressure_ndof': int(pressure_space.ndof),
+              'velocity_free': [int(bool(v)) for v in velocity_space.FreeDofs()],
+              'pressure_free': [int(bool(v)) for v in pressure_space.FreeDofs()], 'elements': []}
+    for el in mesh.Elements(ng.VOL):
+        record['elements'].append({'number': int(el.nr), 'type': str(el.type),
+            'velocity_dofs': [int(i) for i in velocity_space.GetDofNrs(el)],
+            'pressure_dofs': [int(i) for i in pressure_space.GetDofNrs(el)]})
+    digest = hashlib.sha256(json.dumps(record, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    return record, digest
+
+
+def _sparse(form, size):
+    from scipy.sparse import coo_matrix
+    if form.mat.nze > CAPS['matrix_nnz']:
+        raise MemoryError('sparse nonzero bound')
+    rows, cols, vals = form.mat.COO()
+    matrix = coo_matrix((np.asarray(vals), (np.asarray(rows), np.asarray(cols))),
+                        shape=(size, size)).tocsc()
+    matrix.sum_duplicates(); matrix.sort_indices()
+    gap = matrix-matrix.T
+    if not np.isfinite(matrix.data).all() or (gap.nnz and np.max(np.abs(gap.data)) > 1e-12*max(np.max(np.abs(matrix.data)), 1e-300)):
+        raise ArithmeticError('assembled FE metric is not finite symmetric')
+    return matrix
+
+
+def sparse_digest(matrix):
+    a = matrix.tocsc(copy=True); a.sum_duplicates(); a.sort_indices()
+    return array_digest(np.asarray(a.shape, dtype=np.int64), a.indptr, a.indices, a.data)
+
+
+def bounded_factor(matrix):
+    from scipy.sparse.linalg import splu
+    # Same conservative fill model as FOM; a prospective guard, not a memory theorem.
+    estimate = matrix.nnz*16*100 + matrix.shape[0]*8*32
+    if (matrix.nnz > CAPS['matrix_nnz'] or estimate > CAPS['factor_estimate_bytes'] or
+        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024 + estimate > CAPS['process_rss_bytes']):
+        raise MemoryError('FE adapter factorization estimate exceeds fixed cap')
+    started = time.perf_counter()
+    factor = splu(matrix, permc_spec='COLAMD')
+    return factor, {'estimate_bytes': int(estimate), 'seconds': time.perf_counter()-started,
+                    'matrix_sha256': sparse_digest(matrix), 'backend': 'scipy SuperLU COLAMD'}
+
+
+def bounded_eigenmodes(h1, mass, solve_h1, count):
+    """H1 = M+K; generalized eigenmodes also diagonalize scalar Laplace K.
+
+    One look-ahead eigenpair protects the truncation from splitting a degenerate block.
+    No retry, larger candidate bank, or dense fallback is selected from field errors.
+    """
+    from scipy.sparse.linalg import eigsh, LinearOperator
+    n = h1.shape[0]
+    if n <= count+2:
+        raise ValueError('not enough free DOFs for frozen eigenbank plus look-ahead')
+    v0 = np.random.default_rng(27102026).normal(size=n)
+    inv = LinearOperator(h1.shape, matvec=solve_h1, dtype=np.float64)
+    lam, vec = eigsh(h1, k=count+1, M=mass, sigma=0., which='LM', OPinv=inv,
+                    v0=v0, tol=1e-12, maxiter=CAPS['eigensolver_iterations'],
+                    ncv=min(n-1, 2*(count+1)+1))
+    idx = np.argsort(lam, kind='stable'); lam = lam[idx]; vec = vec[:, idx]
+    if abs(lam[count]-lam[count-1]) <= 1e-10*max(1., abs(lam[count])):
+        raise ValueError('candidate cap splits eigenvalue cluster; stop for review')
+    look_ahead = float(lam[count]); boundary_gap = float(lam[count]-lam[count-1])
+    lam = lam[:count]; vec = vec[:, :count]
+    av = h1 @ vec; mv = mass @ vec
+    errors = np.linalg.norm(av-mv*lam, axis=0) / np.maximum(
+        np.linalg.norm(av, axis=0)+np.abs(lam)*np.linalg.norm(mv, axis=0), 1e-300)
+    if np.max(errors) > 1e-9:
+        raise ArithmeticError('generalized eigenpair residual gate')
+    vec, orientation = canonicalize_eigenmodes(lam, vec, vec.T @ mv)
+    av = h1 @ vec; mv = mass @ vec
+    oriented_errors = np.linalg.norm(av-mv*lam, axis=0) / np.maximum(
+        np.linalg.norm(av, axis=0)+np.abs(lam)*np.linalg.norm(mv, axis=0), 1e-300)
+    if np.max(oriented_errors) > 1e-9:
+        raise ArithmeticError('oriented eigenpair residual gate')
+    return vec, {'eigenvalues_H1': lam.tolist(), 'eigenvalues_Laplace': (lam-1).tolist(),
+                 'residuals': errors.tolist(), 'oriented_residuals': oriented_errors.tolist(),
+                 'orientation': orientation,
+                 'h1_sha256': sparse_digest(h1), 'mass_sha256': sparse_digest(mass),
+                 'eigensolver': 'scipy eigsh shift-invert sigma0 tol1e-12 seed27102026',
+                 'look_ahead_cluster_complete': True, 'look_ahead_eigenvalue': look_ahead,
+                 'boundary_eigenvalue_gap': boundary_gap}
+
+
+class TrainingFEAdapter:
+    @classmethod
+    def open(cls, manifest_path):
+        admission = read_training_manifest(manifest_path)
+        import ngsolve as ng  # Deliberately below all data admission checks.
+        return cls(admission, ng)
+
+    def __init__(self, admission, ng):
+        self.ng = ng; self.admission = admission; self.started = time.perf_counter()
+        self.cases = []
+        for case in admission['cases']:
+            folder = Path(case['resolved_directory'])
+            cfg = json.loads((folder/'config.json').read_text())
+            result = json.loads((folder/'result.json').read_text())
+            reload_checks = json.loads((folder/'reload_checks.json').read_text())
+            if (cfg.get('kind') != 'dfg' or cfg.get('outlet') != 'gradient' or
+                cfg.get('release') != 'G2_steady_training_export' or cfg.get('precision') != 'float64'):
+                raise ValueError('only declared 2D homogeneous-outlet steady training exports supported')
+            if cfg['campaign_sha256'] != admission['campaign_sha256']:
+                raise ValueError('campaign mismatch')
+            if (cfg['U'], cfg['D'], cfg['xmin'], cfg['xmax'], cfg['H'], cfg['radius'], cfg['center']) != (
+                    .2, .1, 0., 2.2, .41, .05, [.2, .2]):
+                raise ValueError('not the fixed 2D training geometry/scales')
+            if abs(cfg['nu']-.02/case['Re']) > 1e-15:
+                raise ValueError('Re/viscosity mismatch')
+            if result['versions']['ngsolve'] != ng.__version__:
+                raise ValueError('NGSolve version differs from exported coefficients')
+            if reload_checks.get('passed') is not True or reload_checks.get('policy') != 'saved_curved_verified_no_recurve':
+                raise RuntimeError('exporter reload admission missing')
+            self.cases.append({'case': case, 'folder': folder, 'cfg': cfg, 'result': result})
+        self.cfg = self.cases[0]['cfg']; self.U = self.cfg['U']; self.D = self.cfg['D']
+        shared = ('velocity_order', 'pressure_order', 'geometry_order', 'diagnostic_order', 'threads')
+        if any(any(c['cfg'][k] != self.cfg[k] for k in shared) for c in self.cases):
+            raise ValueError('training FE/order/thread layout differs')
+        if self.cfg['pressure_order'] != self.cfg['velocity_order']-1 or self.cfg['velocity_order'] < 2:
+            raise ValueError('Taylor-Hood spaces required')
+        if not 1 <= self.cfg['threads'] <= 16:
+            raise ValueError('CPU thread cap')
+        ng.SetNumThreads(self.cfg['threads'])
+        self.mesh = ng.Mesh(str(self.cases[0]['folder']/'mesh.vol'))  # Never re-Curve.
+        if self.mesh.dim != 2 or self.mesh.ne > CAPS['elements']:
+            raise MemoryError('unsupported dimension or element cap')
+        self.V = ng.VectorH1(self.mesh, order=self.cfg['velocity_order'], dirichlet=ESSENTIAL)
+        self.Q = ng.H1(self.mesh, order=self.cfg['pressure_order'])
+        self.X = self.V*self.Q
+        if self.X.ndof > CAPS['mixed_dofs']:
+            raise MemoryError('mixed DOF cap before any matrix assembly')
+        self.layout, self.layout_sha256 = layout_record(self.mesh, self.V, self.Q, ng)
+        for c in self.cases:
+            saved = json.loads((c['folder']/'fe_layout.json').read_text())
+            if saved.get('sha256') != self.layout_sha256 or saved.get('layout') != self.layout:
+                raise ValueError('FE DOF-order round-trip failed')
+        self.free = np.array(self.layout['velocity_free'], dtype=bool)
+        self.volume = self.mapped_rule(boundary=False)
+        self.boundary = self.mapped_rule(boundary=True)
+        self.weights = self.volume['weights']/self.D**2
+        self.roundtrip = []
+        self._load_coefficients()
+
+    def mapped_rule(self, boundary=False):
+        ng = self.ng; vb = ng.BND if boundary else ng.VOL
+        cap = CAPS['boundary_points'] if boundary else CAPS['volume_points']
+        points = []; weights = []; labels = []; normals = []; jacobians = []
+        normal = ng.specialcf.normal(2)
+        for el in self.mesh.Elements(vb):
+            tr = self.mesh.GetTrafo(el)
+            for ip in ng.IntegrationRule(el.type, self.cfg['diagnostic_order']):
+                if len(points) >= cap:
+                    raise MemoryError('mapped integration point cap')
+                mip = tr(ip); w = strict_scalar(ip.weight, 'reference weight')*strict_scalar(mip.measure, 'mapped measure')
+                if not np.isfinite(w) or w <= 0:
+                    raise ValueError('nonpositive mapped integration weight')
+                points.append(np.array(mip.point, copy=True)); weights.append(w)
+                if boundary:
+                    labels.append(str(el.mat)); normals.append(np.array(normal(mip), copy=True))
+                else:
+                    jac = np.array(mip.jacobi, copy=True)
+                    if np.linalg.det(jac) <= 0:
+                        raise ValueError('nonpositive mapped volume Jacobian')
+                    jacobians.append(jac)
+        result = {'points': np.asarray(points), 'weights': np.asarray(weights)}
+        if boundary:
+            result.update(labels=np.asarray(labels), normals_fluid=np.asarray(normals))
+        else:
+            result['jacobians'] = np.asarray(jacobians)
+        return result
+
+    def evaluate(self, coefficients, vector=True, boundary=False, points=None):
+        """FE coefficients -> dimensionless values and physical-coordinate derivatives.
+
+        Requested raw points are never nudged to the FE mesh. Boundary derivatives
+        use BoundaryFromVolumeCF only for the mapped BND rule, not for normal vectors.
+        """
+        ng = self.ng; c = np.asarray(coefficients, dtype=np.float64)
+        space = self.V if vector else self.Q
+        if c.ndim == 1: c = c[:, None]
+        if c.shape[0] != space.ndof or not np.isfinite(c).all():
+            raise ValueError('invalid FE coefficient matrix')
+        if points is not None and boundary:
+            raise ValueError('raw points use volume lookup; mapped boundary must retain BND transform')
+        if points is None:
+            n = len(self.boundary['points'] if boundary else self.volume['points'])
+        else:
+            points = np.asarray(points, dtype=np.float64)
+            if points.ndim != 2 or points.shape[1] != 2 or not np.isfinite(points).all():
+                raise ValueError('finite 2D probe coordinates required')
+            if len(points) > CAPS['volume_points']: raise MemoryError('probe cap')
+            n = len(points)
+        shape = (n, 2, c.shape[1]) if vector else (n, c.shape[1])
+        grad_shape = (n, 2, 2, c.shape[1]) if vector else (n, 2, c.shape[1])
+        check_allocation(shape); check_allocation(grad_shape)
+        values = np.empty(shape); gradients = np.empty(grad_shape)
+        for j in range(c.shape[1]):
+            g = ng.GridFunction(space); g.vec.FV().NumPy()[:] = c[:, j]
+            derivative = ng.Grad(g)
+            if boundary: derivative = ng.BoundaryFromVolumeCF(derivative)
+            for i, mip in enumerate(self.iter_mapped(boundary, points)):
+                values[..., j][i] = (np.asarray(g(mip)) if vector else strict_scalar(g(mip), 'FE scalar point value'))
+                gradients[..., j][i] = np.asarray(derivative(mip)).reshape((2, 2) if vector else (2,))
+        if not np.isfinite(values).all() or not np.isfinite(gradients).all():
+            raise ValueError('nonfinite reconstructed FE fields')
+        return values, gradients
+
+    def iter_mapped(self, boundary=False, points=None):
+        # Evaluate while each element transformation remains alive. Do not retain
+        # mapped C++ points after their transformation leaves scope.
+        if points is not None:
+            for point in points:
+                mip = self.mesh(*point)
+                if mip.nr < 0: raise ValueError('probe outside saved FE geometry; no nudge')
+                yield mip
+            return
+        ng = self.ng
+        for el in self.mesh.Elements(ng.BND if boundary else ng.VOL):
+            tr = self.mesh.GetTrafo(el)
+            for ip in ng.IntegrationRule(el.type, self.cfg['diagnostic_order']):
+                yield tr(ip)
+
+    def _load_coefficients(self):
+        ng = self.ng; solutions = []; stokes = []
+        for c in self.cases:
+            data = load_npz_bounded(c['folder']/'full_rule.npz')
+            checks = {}
+            for key in ('points', 'weights', 'jacobians'):
+                if key not in data:
+                    raise ValueError(f'future G2 export must add {key}; G1 archive is insufficient')
+                checks[key] = relative_gap(self.volume[key], data[key], self.D if key == 'points' else 1.)
+            saved = ng.GridFunction(self.X); saved.Load(str(c['folder']/'solution.sol'))
+            solution = data['solution_coefficients']; lift = data['stokes_coefficients']
+            if solution.shape != (self.X.ndof,) or lift.shape != solution.shape:
+                raise ValueError('coefficient block layout mismatch')
+            checks['sol_vs_coefficients'] = relative_gap(saved.vec.FV().NumPy(), solution)
+            uv, gu = self.evaluate(solution[:self.V.ndof]); pp, _ = self.evaluate(solution[self.V.ndof:], False)
+            for key, actual, scale in [('velocity', uv[..., 0], self.U),
+                ('velocity_gradient', gu[..., 0], self.U/self.D), ('pressure', pp[:, 0], self.U**2)]:
+                checks[key] = relative_gap(actual, data[key], scale)
+            b = json.loads((c['folder']/'boundary_rule.json').read_text())
+            for key, actual in [('point', self.boundary['points']), ('weight', self.boundary['weights']),
+                                ('normal', self.boundary['normals_fluid'])]:
+                checks['boundary_'+key] = relative_gap(actual, np.asarray([r[key] for r in b]))
+            if [r['label'] for r in b] != self.boundary['labels'].tolist():
+                raise ValueError('boundary enumeration differs on reload')
+            bv, bg = self.evaluate(solution[:self.V.ndof], boundary=True)
+            bp, _ = self.evaluate(solution[self.V.ndof:], False, boundary=True)
+            for key, actual, scale in [('velocity', bv[..., 0], self.U),
+                ('velocity_gradient', bg[..., 0], self.U/self.D), ('pressure', bp[:, 0], self.U**2)]:
+                checks['boundary_'+key] = relative_gap(actual, [r[key] for r in b], scale)
+            if max(checks.values()) > 1e-10:
+                raise ArithmeticError(f'FE serialization round-trip mismatch: {checks}')
+            self.roundtrip.append({'Re': c['case']['Re'], 'relative_max_gaps': checks})
+            solutions.append(solution); stokes.append(lift)
+        sol = np.asarray(solutions); lifts = np.asarray(stokes)
+        nv = self.V.ndof
+        self.lift_u = lifts[0, :nv]/self.U
+        self.lift_p_per_nu = lifts[0, nv:]*self.D/(self.U*self.cases[0]['cfg']['nu'])
+        for i, c in enumerate(self.cases):
+            if (relative_gap(lifts[i, :nv]/self.U, self.lift_u) > 1e-10 or
+                relative_gap(lifts[i, nv:]*self.D/(self.U*c['cfg']['nu']), self.lift_p_per_nu) > 1e-10):
+                raise ArithmeticError('fixed-inlet Stokes lift not viscosity-invariant/scaled')
+        self.velocity_corrections = sol[:, :nv].T/self.U-self.lift_u[:, None]
+        trace = np.max(np.abs(self.velocity_corrections[~self.free]), initial=0.)
+        if trace > 1e-10: raise ValueError('velocity correction has nonzero essential FE trace coefficients')
+        self.velocity_corrections[~self.free] = 0.  # Declared rounding-only restoration.
+        self.trace_coefficient_roundoff_removed = float(trace)
+        nu_hat = np.array([c['cfg']['nu']/(self.U*self.D) for c in self.cases])
+        self.pressure_corrections = sol[:, nv:].T/self.U**2-self.lift_p_per_nu[:, None]*nu_hat
+
+    def metric_matrices(self, space, vector):
+        ng = self.ng; u, v = space.TnT()
+        rules = {kind: ng.IntegrationRule(kind, self.cfg['diagnostic_order'])
+                 for kind in {el.type for el in self.mesh.Elements(ng.VOL)}}
+        dx = ng.dx(intrules=rules)
+        mass = ng.BilinearForm(space); h1 = ng.BilinearForm(space)
+        product = ng.InnerProduct(u, v)
+        derivative = ng.InnerProduct(ng.Grad(u), ng.Grad(v))
+        mass += product/self.D**2*dx
+        h1 += (product/self.D**2+derivative)*dx
+        with ng.TaskManager(): mass.Assemble(); h1.Assemble()
+        return _sparse(h1, space.ndof), _sparse(mass, space.ndof), dx
+
+    def build(self):
+        """Offline training-only spaces. The returned object is NOT physical admission."""
+        ng = self.ng
+        import scipy
+        uv, _ = self.evaluate(self.velocity_corrections)
+        pv, _ = self.evaluate(self.pressure_corrections, False)
+        constant = ng.GridFunction(self.Q); constant.Set(1.)
+        one = constant.vec.FV().NumPy().copy()
+        one_values, _ = self.evaluate(one, False)
+        if relative_gap(one_values[:, 0], np.ones(len(self.weights))) > 1e-12:
+            raise ArithmeticError('constant pressure coefficient reconstruction failed')
+        pod = coefficient_pod(self.velocity_corrections, uv.transpose(2, 0, 1),
+            self.pressure_corrections, pv.T, one, self.weights)
+        # Back-transforming C @ V / sigma can cancel near the frozen singular cutoff.
+        # Verify the actual FE functions before assembling any reduced pressure coupling.
+        actual_u, _ = self.evaluate(pod['velocity_coefficients'])
+        actual_p, _ = self.evaluate(pod['pressure_coefficients'], False)
+        pod_velocity_gram, pod_u_check = verify_reconstructed_modes(
+            actual_u, pod['velocity_values'], self.weights, 'velocity')
+        pressure_gram, pod_p_check = verify_reconstructed_modes(
+            actual_p, pod['pressure_values'], self.weights, 'pressure')
+        pressure = pod['pressure_coefficients']; count = pressure.shape[1]
+        h1v, mv, dx = self.metric_matrices(self.V, True)
+        h1q, mq, _ = self.metric_matrices(self.Q, False)
+        ids = np.flatnonzero(self.free)
+        hv = h1v[ids][:, ids]; mvv = mv[ids][:, ids]
+        factor_v, fm_v = bounded_factor(hv)
+        rhs = np.empty((len(ids), count))
+        test = self.V.TestFunction()
+        for j in range(count):
+            psi = ng.GridFunction(self.Q); psi.vec.FV().NumPy()[:] = pressure[:, j]
+            form = ng.LinearForm(self.V); form += psi*ng.div(test)/self.D*dx
+            with ng.TaskManager(): form.Assemble()
+            rhs[:, j] = form.vec.FV().NumPy()[ids]
+        sf = factor_v.solve(rhs)
+        residual = np.linalg.norm(hv@sf-rhs)/max(np.linalg.norm(rhs), 1e-300)
+        if residual > 1e-10: raise ArithmeticError('H1 supremizer linear residual failed')
+        supremizers = np.zeros((self.V.ndof, count)); supremizers[ids] = sf
+        eigen_v, em_v = bounded_eigenmodes(hv, mvv, factor_v.solve, CAPS['vector_eigen_candidates'])
+        ev = np.zeros((self.V.ndof, eigen_v.shape[1])); ev[ids] = eigen_v
+        del factor_v
+        factor_q, fm_q = bounded_factor(h1q)
+        eq, em_q = bounded_eigenmodes(h1q, mq, factor_q.solve, CAPS['scalar_eigen_candidates'])
+        del factor_q
+        candidates_v = np.c_[supremizers, ev]
+        candidates_q = np.c_[one, pressure, eq]
+        vv, vg = self.evaluate(candidates_v)
+        qq, _ = self.evaluate(candidates_q, False)
+        _, _, vm = select_test_columns(vv, self.weights, 64, vg*self.D)
+        _, _, qm = select_test_columns(qq, self.weights, 16)
+        tests_v = candidates_v[:, vm['candidate_indices']] @ np.asarray(vm['transform'])
+        tests_q = candidates_q[:, qm['candidate_indices']] @ np.asarray(qm['transform'])
+        # Use the verified ACTUAL FE pressure Gram, matching psi in B and the supremizers.
+        ref_beta = {str(p): reference_inf_sup(rhs[:, :p], sf[:, :p], pressure_gram[:p, :p])
+                    for p in sorted(set(min(r, count) for r in (2, 4, 8)))}
+        # Same dimensionless full-rule metric must reproduce the assembled metric.
+        cv = tests_v.T @ (h1v @ tests_v); cq = tests_q.T @ (mq @ tests_q)
+        if max(relative_gap(cv, np.eye(64)), relative_gap(cq, np.eye(16))) > 1e-9:
+            raise ArithmeticError('assembled FE metric and mapped-rule test normalization disagree')
+        self.coefficients = {'lift_u': self.lift_u, 'lift_p_per_nu': self.lift_p_per_nu,
+            'pod_velocity': pod['velocity_coefficients'], 'pressure': pressure,
+            'supremizers': supremizers, 'momentum_tests': tests_v, 'continuity_tests': tests_q}
+        self.metadata = {'schema': 'ns-obstacle-fe-adapter-v1', 'physical_admission': False,
+            'split': 'training', 'Re': REYNOLDS, 'manifest_sha256': self.admission['manifest_sha256'],
+            'adapter_source_sha256': adapter_digest(), 'caps': CAPS, 'roundtrip': self.roundtrip,
+            'admission_evidence': {k: self.admission[k] for k in ('adapter_review_sha256',
+                'reference_admission_sha256', 'campaign_sha256', 'mesh_reload')},
+            'source_case_files': [c['case'] for c in self.cases],
+            'layout_sha256': self.layout_sha256, 'pod': pod['metadata'],
+            'pod_reconstruction': {'velocity': pod_u_check, 'pressure': pod_p_check},
+            'pod_velocity_L2_gram_reconstructed': pod_velocity_gram.tolist(),
+            'pressure_gram_source': 'actual reconstructed FE pressure evaluations on full rule',
+            'supremizer_residual': float(residual), 'reference_inf_sup': ref_beta,
+            'momentum_candidates': ['all maximum-prefix supremizers', 'vector H1 eigenmodes'],
+            'continuity_candidates': ['constant', 'all pressure modes', 'scalar Neumann Laplace eigenmodes'],
+            'momentum_selection': vm, 'continuity_selection': qm,
+            'eigen_velocity': em_v, 'eigen_scalar': em_q, 'factor_velocity': fm_v, 'factor_scalar': fm_q,
+            'momentum_H1_gram': cv.tolist(), 'continuity_L2_gram': cq.tolist(),
+            'pressure_L2_gram': pressure_gram.tolist(),
+            'trace_coefficient_roundoff_removed': self.trace_coefficient_roundoff_removed,
+            'seconds_including_load': time.perf_counter()-self.started,
+            'versions': {'ngsolve': ng.__version__, 'numpy': np.__version__, 'scipy': scipy.__version__}}
+        return self
+
+    def export(self, directory):
+        """Persist arrays, FE coefficient bases and their provenance; no integration pass flag."""
+        if not hasattr(self, 'coefficients'): raise RuntimeError('build required')
+        export_started = time.perf_counter()
+        out = Path(directory); out.mkdir(parents=True, exist_ok=False)
+        for boundary, name in ((False, 'volume'), (True, 'boundary')):
+            mapped = self.boundary if boundary else self.volume
+            arrays = {'points_physical': mapped['points'],
+                      'weights_dimensionless': mapped['weights']/self.D**(1 if boundary else 2)}
+            if boundary:
+                arrays.update(labels=mapped['labels'], normals_fluid=mapped['normals_fluid'])
+            else: arrays['jacobians_physical'] = mapped['jacobians']
+            for key, c in self.coefficients.items():
+                vector = key in ('lift_u', 'pod_velocity', 'supremizers', 'momentum_tests')
+                values, gradients = self.evaluate(c, vector, boundary)
+                arrays[key] = values
+                arrays[key+'_gradient_dimensionless'] = self.D*gradients
+            np.savez_compressed(out/(name+'.npz'), **arrays)
+        np.savez_compressed(out/'coefficients.npz', **self.coefficients)
+        # One explicitly training-only archive; exact same population as all FE spaces.
+        u, du = self.evaluate(self.velocity_corrections)
+        p, _ = self.evaluate(self.pressure_corrections, False)
+        from train_bank import array_hash  # Does not import JAX or run training.
+        training = {'points_physical': self.volume['points'], 'weights_dimensionless': self.weights,
+                    'velocity_corrections': u.transpose(2, 0, 1),
+                    'velocity_correction_gradients_dimensionless': (du*self.D).transpose(3, 0, 1, 2),
+                    'pressure_corrections': p.T, 'Re': np.asarray(REYNOLDS)}
+        np.savez_compressed(out/'training.npz', **training)
+        meta = dict(self.metadata)
+        meta['training_array_sha256'] = array_hash(training['points_physical'],
+            training['weights_dimensionless'], training['velocity_corrections'])
+        meta['export_seconds'] = time.perf_counter()-export_started
+        meta['total_preparation_seconds'] = time.perf_counter()-self.started
+        meta['peak_rss_bytes'] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
+        meta['scales'] = {'D': self.D, 'U': self.U, 'nu_hat': 'nu/(U*D)'}
+        meta['gradient_axes'] = 'point, component, derivative_coordinate, column'
+        meta['boundary_normals'] = 'outward fluid; negate only obstacle normals for force_moments'
+        meta['coefficient_files'] = {name: sha_file(out/name) for name in
+                                    ('volume.npz', 'boundary.npz', 'coefficients.npz', 'training.npz')}
+        (out/'manifest.json').write_text(json.dumps(meta, indent=2, allow_nan=False)+'\n')
+        return meta
+
+
+
+===== SOURCE spaces.py =====
+"""Mass-weighted POD/ordering, fixed Gram whitening, and explicit numerical rank gates."""
+from __future__ import annotations
+import numpy as np
+
+RANK_CUTOFF=1e-12
+
+
+def positive_weights(weights,n):
+    w=np.asarray(weights,dtype=np.float64)
+    if w.shape != (n,) or not np.isfinite(w).all() or np.any(w<=0):
+        raise ValueError("finite strictly positive physical-volume weights required")
+    return w
+
+
+def checked_cholesky(gram):
+    g=np.asarray(gram,dtype=np.float64)
+    if g.ndim!=2 or g.shape[0]!=g.shape[1] or not np.isfinite(g).all():
+        raise ValueError("finite square Gram required")
+    if np.linalg.norm(g-g.T)>1e-12*max(np.linalg.norm(g),1e-300):
+        raise ValueError("Gram is not symmetric")
+    eig=np.linalg.eigvalsh(g)
+    if eig[-1]<=0 or eig[0]<=RANK_CUTOFF*eig[-1]:
+        raise ValueError("Gram fails fixed 1e-12 eigenvalue rank gate; no hidden ridge")
+    return np.linalg.cholesky(g)
+
+
+def weighted_gram(values,weights):
+    a=np.asarray(values,dtype=np.float64)
+    w=positive_weights(weights,len(a))
+    flat=a.reshape(-1,a.shape[-1])
+    repeated=np.repeat(w,int(np.prod(a.shape[1:-1])))
+    return flat.T@(repeated[:,None]*flat)
+
+
+def ordered_transform(bank_values,correction_snapshots,weights):
+    """QR+training SVD; snapshots[s,n,d], bank[n,d,r]. No validation access."""
+    g=np.asarray(bank_values,dtype=np.float64)
+    u=np.asarray(correction_snapshots,dtype=np.float64)
+    if u.ndim!=3 or u.shape[1:]!=g.shape[:2] or len(u)<g.shape[-1]:
+        raise ValueError("insufficient snapshots or incompatible shape")
+    sw=np.repeat(np.sqrt(positive_weights(weights,len(g))),g.shape[1])
+    a=g.reshape(-1,g.shape[-1])*sw[:,None]
+    singular=np.linalg.svd(a,compute_uv=False)
+    if singular[-1]<=RANK_CUTOFF*singular[0]:
+        raise ValueError("neural columns rank deficient before ordering")
+    q,rf=np.linalg.qr(a,mode="reduced")
+    coefficients=(u.reshape(len(u),-1)*sw[None,:])@q
+    _,importance,vt=np.linalg.svd(coefficients,full_matrices=False)
+    rotation=vt.T
+    sign=np.sign(rotation[np.argmax(np.abs(rotation),axis=0),np.arange(rotation.shape[1])])
+    rotation*=np.where(sign==0,1,sign)
+    transform=np.linalg.solve(rf,rotation)
+    return transform,{"basis_singular_values":singular.tolist(),"training_importance":importance.tolist(),
+                      "rank_cutoff":RANK_CUTOFF,"training_count":len(u),"mean_centered":False}
+
+
+def weighted_pod(snapshots,weights,max_rank=None):
+    """Snapshots[s,n,...]; no automatic mean or pressure-gauge shift."""
+    u=np.asarray(snapshots,dtype=np.float64)
+    if u.ndim<2 or not np.isfinite(u).all():
+        raise ValueError("finite snapshots required")
+    n=u.shape[1]
+    components=int(np.prod(u.shape[2:]))
+    sw=np.repeat(np.sqrt(positive_weights(weights,n)),components)
+    left,sv,vt=np.linalg.svd((u.reshape(len(u),-1)*sw).T,full_matrices=False)
+    numerical_rank=int(np.sum(sv>RANK_CUTOFF*sv[0])) if len(sv) and sv[0]>0 else 0
+    rank=numerical_rank if max_rank is None else min(int(max_rank),numerical_rank)
+    if rank<1:
+        raise ValueError("no nonzero POD mode")
+    basis=(left[:,:rank]/sw[:,None]).reshape(*u.shape[1:],rank)
+    return basis,{"singular_values":sv.tolist(),"original_count":len(sv),"numerical_rank":numerical_rank,
+                  "retained_rank":rank,"rank_cutoff":RANK_CUTOFF,"mean_centered":False,
+                  "snapshot_combinations":(vt[:rank].T/sv[:rank]).tolist()}
+
+
+def pressure_basis(training_pressure_corrections,weights,velocity_prefix):
+    """Constant first; then mass POD of centered TRAINING pressure corrections.
+
+    This changes basis construction, not the physical pressure convention: reconstructed
+    pressure keeps its solved constant coefficient. No gauge constraint is imposed.
+    """
+    p=np.asarray(training_pressure_corrections,dtype=np.float64)
+    if p.ndim!=2 or not np.isfinite(p).all() or velocity_prefix not in (2,4,8):
+        raise ValueError("finite training pressure snapshots and declared prefix required")
+    w=positive_weights(weights,p.shape[1]);volume=w.sum()
+    means=p@w/volume
+    centered=p-means[:,None]
+    constant=np.ones(p.shape[1])/np.sqrt(volume)
+    matrix=(centered*np.sqrt(w)).T
+    left,sv,vt=np.linalg.svd(matrix,full_matrices=False)
+    reference=max(1.,float(np.linalg.svd((p*np.sqrt(w)).T,compute_uv=False)[0]))
+    numerical_rank=int(np.sum(sv>RANK_CUTOFF*reference))
+    if numerical_rank==0:
+        return constant[:,None],{"pressure_rank":1,"centered_numerical_rank":0,"constant_first":True,
+                                 "physical_gauge_shift":False,"snapshot_means":means.tolist(),
+                                 "rank_reference":reference,"centered_singular_values":sv.tolist()}
+    rank=min(velocity_prefix-1,numerical_rank)
+    modes=left[:,:rank]/np.sqrt(w[:,None])
+    meta={"numerical_rank":numerical_rank,"retained_rank":rank,"singular_values":sv.tolist(),
+          "rank_reference":reference,"rank_reference_definition":"max(1,original weighted pressure snapshot sigma_max)",
+          "relative_rank_cutoff":RANK_CUTOFF,"snapshot_combinations":(vt[:rank].T/sv[:rank]).tolist()}
+    result=np.c_[constant,modes]
+    return result,{"pressure_rank":result.shape[1],"centered_numerical_rank":meta["numerical_rank"],
+                   "constant_first":True,"physical_gauge_shift":False,"snapshot_means":means.tolist(),
+                   "centered_pod":meta}
+
+
+def canonicalize_eigenmodes(eigenvalues,eigenvectors,metric_gram,degeneracy_relative=1e-10):
+    """Deterministic orientation inside eigenvalue clusters using ordered FE DOF values.
+
+    Input eigenvectors are columns, already orthonormal in the stated FE metric. Largest
+    residual DOF-row norm is the pivot; np.argmax fixes ties to smallest FE DOF index.
+    Canonical result is invariant under orthogonal rotations of a degenerate block.
+    """
+    lam=np.asarray(eigenvalues,dtype=np.float64);v=np.asarray(eigenvectors,dtype=np.float64)
+    if v.ndim!=2 or v.shape[1]!=len(lam) or np.any(np.diff(lam)<0):
+        raise ValueError("sorted eigenpairs required")
+    if not np.allclose(metric_gram,np.eye(len(lam)),atol=1e-10,rtol=1e-10):
+        raise ValueError("eigenvectors must be metric-orthonormal before canonicalization")
+    out=np.empty_like(v);groups=[];start=0
+    while start<len(lam):
+        end=start+1
+        while end<len(lam) and abs(lam[end]-lam[start])<=degeneracy_relative*max(1.,abs(lam[start]),abs(lam[end])):
+            end+=1
+        rows=v[:,start:end].copy();rotation=[];pivots=[]
+        for _ in range(end-start):
+            pivot=int(np.argmax(np.sum(rows*rows,axis=1)))
+            direction=rows[pivot].copy();norm=np.linalg.norm(direction)
+            if norm<=1e-14:
+                raise ValueError("degenerate-block orientation lost rank")
+            direction/=norm
+            rotation.append(direction);pivots.append(pivot)
+            rows-=np.outer(rows@direction,direction)
+        out[:,start:end]=v[:,start:end]@np.column_stack(rotation)
+        groups.append({"start":start,"end":end,"pivot_FE_dofs":pivots})
+        start=end
+    return out,{"groups":groups,"relative_eigenvalue_cluster_tolerance":degeneracy_relative,
+                "tie_rule":"largest residual DOF-row norm, first FE DOF index on exact tie"}
+
+
+def select_test_columns(values,weights,target_count,gradients=None):
+    """Ordered candidates -> fixed full-rule H1 or L2 independent normalized test bank.
+
+    Momentum candidates: all maximum pressure-prefix supremizers, then canonical vector
+    H1 eigenmodes. Continuity: constant, pressure modes, then canonical scalar Laplace
+    modes. This routine receives that immutable enumeration and never sees state errors.
+    """
+    v=np.asarray(values,dtype=np.float64);w=positive_weights(weights,len(v))
+    flat=v.reshape(-1,v.shape[-1])*np.repeat(np.sqrt(w),int(np.prod(v.shape[1:-1])))[:,None]
+    if gradients is not None:
+        g=np.asarray(gradients,dtype=np.float64)
+        gf=g.reshape(-1,g.shape[-1])*np.repeat(np.sqrt(w),int(np.prod(g.shape[1:-1])))[:,None]
+        flat=np.r_[flat,gf]
+    selected=[];rejected=[]
+    for j in range(flat.shape[1]):
+        sv=np.linalg.svd(flat[:,selected+[j]],compute_uv=False)
+        if not len(sv) or sv[0]==0 or sv[-1]<=RANK_CUTOFF*sv[0]:
+            rejected.append(j);continue
+        selected.append(j)
+        if len(selected)==target_count:
+            break
+    if len(selected)!=target_count:
+        raise ValueError(f"test enumeration has {len(selected)} independent candidates, needs {target_count}")
+    _,r=np.linalg.qr(flat[:,selected],mode="reduced")
+    transform=np.linalg.inv(r)
+    return v[...,selected]@transform, (None if gradients is None else g[...,selected]@transform), {
+        "candidate_indices":selected,"rejected_indices":rejected,"target_count":target_count,
+        "transform":transform.tolist(),"rank_cutoff":RANK_CUTOFF,
+        "metric":"dimensionless H1" if gradients is not None else "dimensionless L2"}
+
+
+def projection_floor(basis,snapshots,weights):
+    b=np.asarray(basis,dtype=np.float64)
+    u=np.asarray(snapshots,dtype=np.float64)
+    w=positive_weights(weights,len(b))
+    components=int(np.prod(b.shape[1:-1]))
+    sw=np.repeat(np.sqrt(w),components)
+    a=b.reshape(-1,b.shape[-1])*sw[:,None]
+    y=u.reshape(len(u),-1)*sw[None,:]
+    coef,_,rank,sv=np.linalg.lstsq(a,y.T,rcond=RANK_CUTOFF)
+    residual=y-coef.T@a.T
+    return coef.T,{"squared_errors":np.sum(residual**2,axis=1).tolist(),
+                   "squared_reference_norms":np.sum(y**2,axis=1).tolist(),
+                   "numerical_rank":int(rank),"singular_values":sv.tolist()}
+
+
+def inf_sup(divergence,velocity_gram,pressure_gram,reference_beta):
+    """Standard velocity H1/pressure L2 coupling; reference MUST use those same norms.
+
+    The coordinator corrected draft A1's inf-sup norm before numerical execution.
+    Jacobian unknown whitening separately continues to use velocity/pressure L2.
+    """
+    lv=checked_cholesky(velocity_gram)
+    lp=checked_cholesky(pressure_gram)
+    b=np.asarray(divergence,dtype=np.float64)
+    if b.shape!=(len(lp),len(lv)) or len(lp)>len(lv):
+        raise ValueError("pressure divergence coupling shape or dimension invalid")
+    scaled=np.linalg.solve(lp,b)@np.linalg.inv(lv.T)
+    sv=np.linalg.svd(scaled,compute_uv=False)
+    beta=float(sv[-1])
+    if not np.isfinite(reference_beta) or reference_beta<=0:
+        raise ValueError("positive full-velocity/same-pressure reference required")
+    ratio=beta/reference_beta
+    return {"beta":beta,"reference_beta":float(reference_beta),"ratio":ratio,
+            "singular_values":sv.tolist(),"norms":"dimensionless velocity H1, pressure L2",
+            "passed":bool(beta>=1e-3 and ratio>=0.5)}
+
+
+
+===== SOURCE weak.py =====
+"""Gradient-form steady mixed weak operators in FIXED dimensionless units.
+
+Array axes: point, vector component, derivative coordinate, column. Volume points use
+x/D, velocities u/U, pressure p/U**2, nu_hat=nu/(U*D). Pressure lift is nu_hat*p_lift.
+Both learned-bank and POD arms must use these same routines and the same test spaces.
+"""
+from __future__ import annotations
+from dataclasses import dataclass
+import numpy as np
+from spaces import checked_cholesky,positive_weights
+
+
+@dataclass
+class WeakRule:
+    weights: np.ndarray
+    lift: np.ndarray
+    lift_gradient: np.ndarray
+    pressure_lift_per_nu: np.ndarray
+    velocity: np.ndarray
+    velocity_gradient: np.ndarray
+    pressure: np.ndarray
+    tests: np.ndarray
+    test_gradient: np.ndarray
+    scalar_tests: np.ndarray
+
+    def __post_init__(self):
+        for name in self.__dataclass_fields__:
+            setattr(self,name,np.asarray(getattr(self,name),dtype=np.float64))
+        n,d=self.lift.shape
+        nv=self.velocity.shape[-1]
+        m=self.tests.shape[-1]
+        shapes={"lift_gradient":(n,d,d),"pressure_lift_per_nu":(n,),
+                "velocity":(n,d,nv),"velocity_gradient":(n,d,d,nv),
+                "tests":(n,d,m),"test_gradient":(n,d,d,m)}
+        for name,shape in shapes.items():
+            if getattr(self,name).shape!=shape:
+                raise ValueError(f"bad {name} shape: expected {shape}")
+        for name in ("pressure","scalar_tests"):
+            if getattr(self,name).ndim!=2 or len(getattr(self,name))!=n:
+                raise ValueError(f"bad {name} shape")
+        positive_weights(self.weights,n)
+        if not all(np.isfinite(getattr(self,name)).all() for name in self.__dataclass_fields__):
+            raise ValueError("nonfinite rule arrays")
+
+    def direct(self,state,nu_hat):
+        """Independent pointwise assembly; returns unwhitened momentum/continuity."""
+        nv=self.velocity.shape[-1]
+        a=np.asarray(state,dtype=np.float64)
+        if a.shape!=(nv+self.pressure.shape[-1],):
+            raise ValueError("state dimension mismatch")
+        u=self.lift+np.einsum("ndr,r->nd",self.velocity,a[:nv])
+        du=self.lift_gradient+np.einsum("ndjr,r->ndj",self.velocity_gradient,a[:nv])
+        p=nu_hat*self.pressure_lift_per_nu+self.pressure@a[nv:]
+        adv=np.einsum("nj,nij->ni",u,du)
+        divt=np.einsum("niim->nm",self.test_gradient)
+        rm=(np.einsum("n,ni,nim->m",self.weights,adv,self.tests)+
+            nu_hat*np.einsum("n,nij,nijm->m",self.weights,du,self.test_gradient)-
+            np.einsum("n,n,nm->m",self.weights,p,divt))
+        rc=np.einsum("n,nq,n->q",self.weights,self.scalar_tests,np.trace(du,axis1=1,axis2=2))
+        return rm,rc
+
+    def tensor(self,chunk=1024,formulation="weak_residual_least_squares"):
+        if formulation=="mixed_Galerkin" and not (
+                np.array_equal(self.tests,self.velocity) and
+                np.array_equal(self.test_gradient,self.velocity_gradient) and
+                np.array_equal(self.scalar_tests,self.pressure)):
+            raise ValueError("Galerkin tests must equal the actual velocity/pressure trial modes")
+        nv=self.velocity.shape[-1]
+        ext=np.concatenate((self.lift[:,:,None],self.velocity),axis=2)
+        dext=np.concatenate((self.lift_gradient[:,:,:,None],self.velocity_gradient),axis=3)
+        m=self.tests.shape[-1]
+        tensor=np.zeros((m,nv+1,nv+1),dtype=np.float64)
+        for start in range(0,len(ext),chunk):
+            s=slice(start,min(start+chunk,len(ext)))
+            # Separate chunks avoid materializing point*test*trial*trial arrays.
+            tensor+=np.einsum("n,nim,nja,nijb->mab",self.weights[s],self.tests[s],ext[s],dext[s],optimize=True)
+        viscous=np.einsum("n,nija,nijm->ma",self.weights,dext,self.test_gradient,optimize=True)
+        divt=np.einsum("niim->nm",self.test_gradient)
+        pressure=-np.einsum("n,nk,nm->mk",self.weights,self.pressure,divt)
+        plift=-np.einsum("n,n,nm->m",self.weights,self.pressure_lift_per_nu,divt)
+        continuity=np.einsum("n,nq,niia->qa",self.weights,self.scalar_tests,dext)
+        vg=(np.einsum("n,nim,nil->ml",self.weights,self.tests,self.tests)+
+            np.einsum("n,nijm,nijl->ml",self.weights,self.test_gradient,self.test_gradient))
+        qg=np.einsum("n,nq,nr->qr",self.weights,self.scalar_tests,self.scalar_tests)
+        ug=np.einsum("n,nia,nib->ab",self.weights,self.velocity,self.velocity)
+        pg=np.einsum("n,na,nb->ab",self.weights,self.pressure,self.pressure)
+        return WeakOperator(tensor,viscous,pressure,plift,continuity,vg,qg,ug,pg,formulation)
+
+
+@dataclass
+class WeakOperator:
+    convection: np.ndarray
+    viscous: np.ndarray
+    pressure: np.ndarray
+    pressure_lift: np.ndarray
+    continuity: np.ndarray
+    velocity_test_gram: np.ndarray
+    scalar_test_gram: np.ndarray
+    velocity_unknown_gram: np.ndarray
+    pressure_unknown_gram: np.ndarray
+    formulation: str = "weak_residual_least_squares"
+
+    def __post_init__(self):
+        for name in self.__dataclass_fields__:
+            if name!="formulation":
+                setattr(self,name,np.asarray(getattr(self,name),dtype=np.float64))
+        self.lv=checked_cholesky(self.velocity_test_gram)
+        self.lq=checked_cholesky(self.scalar_test_gram)
+        a=checked_cholesky(self.velocity_unknown_gram)
+        p=checked_cholesky(self.pressure_unknown_gram)
+        self.unknown_cholesky=np.zeros((len(a)+len(p),len(a)+len(p)))
+        self.unknown_cholesky[:len(a),:len(a)]=a
+        self.unknown_cholesky[len(a):,len(a):]=p
+        self.unknown_map=np.linalg.inv(self.unknown_cholesky.T)
+        self.nv=len(a)
+        self.np=len(p)
+        if self.formulation=="weak_residual_least_squares":
+            if len(self.lv)+len(self.lq)<=self.nv+self.np:
+                raise ValueError("weak LS requires strictly more independent test rows than unknowns")
+        elif self.formulation=="mixed_Galerkin":
+            if (len(self.lv),len(self.lq))!=(self.nv,self.np):
+                raise ValueError("mixed Galerkin needs matched velocity and pressure test dimensions")
+        else:
+            raise ValueError("unsupported reduced formulation")
+
+    def terms(self,state,nu_hat):
+        z=np.asarray(state,dtype=np.float64)
+        if z.shape!=(self.nv+self.np,) or not np.isfinite(z).all() or not np.isfinite(nu_hat) or nu_hat<=0:
+            raise ValueError("finite state and positive viscosity required")
+        x=np.r_[1.,z[:self.nv]]
+        return {"advection":np.einsum("mab,a,b->m",self.convection,x,x),
+                "viscous":nu_hat*self.viscous@x,
+                "pressure":self.pressure@z[self.nv:],
+                "pressure_lifting":nu_hat*self.pressure_lift,
+                "continuity":self.continuity@x}
+
+    def residual(self,state,nu_hat,whiten=True):
+        terms=self.terms(state,nu_hat)
+        m=sum(terms[k] for k in ("advection","viscous","pressure","pressure_lifting"))
+        c=terms["continuity"]
+        if whiten:
+            m=np.linalg.solve(self.lv,m)
+            c=np.linalg.solve(self.lq,c)
+        return np.r_[m,c]
+
+    def jacobian_terms(self,state,nu_hat):
+        z=np.asarray(state,dtype=np.float64)
+        x=np.r_[1.,z[:self.nv]]
+        sym=self.convection+self.convection.transpose(0,2,1)
+        shape=(len(self.lv)+len(self.lq),self.nv+self.np)
+        result={k:np.zeros(shape) for k in ("advection","viscous","pressure","continuity")}
+        result["advection"][:len(self.lv),:self.nv]=np.einsum("mab,b->ma",sym,x)[:,1:]
+        result["viscous"][:len(self.lv),:self.nv]=nu_hat*self.viscous[:,1:]
+        result["pressure"][:len(self.lv),self.nv:]=self.pressure
+        result["continuity"][len(self.lv):,:self.nv]=self.continuity[:,1:]
+        return result
+
+    def whiten_matrix(self,jac,columns=False):
+        out=np.r_[np.linalg.solve(self.lv,jac[:len(self.lv)]),np.linalg.solve(self.lq,jac[len(self.lv):])]
+        return out@self.unknown_map if columns else out
+
+    def jacobian(self,state,nu_hat,whiten=True,columns=False):
+        jac=sum(self.jacobian_terms(state,nu_hat).values())
+        if whiten:
+            return self.whiten_matrix(jac,columns)
+        if columns:
+            raise ValueError("column-only whitening is not a supported contract")
+        return jac
+
+    def condition(self,state,nu_hat):
+        sv=np.linalg.svd(self.jacobian(state,nu_hat,columns=True),compute_uv=False)
+        rank=int(np.sum(sv>1e-12*sv[0])) if len(sv) and sv[0]>0 else 0
+        cond=float(sv[0]/sv[-1]) if rank==len(sv) else float("inf")
+        return {"rank":rank,"columns":len(sv),"singular_values":sv.tolist(),"condition":cond,
+                "passed":bool(rank==self.nv+self.np and cond<=1e10)}
+
+    def quadrature_gap(self,other,state,nu_hat):
+        """Full-rule normalization and whitening stay frozen; compare another raw operator."""
+        base=self.terms(state,nu_hat)
+        diff=self.residual(state,nu_hat,False)-other.residual(state,nu_hat,False)
+        wr=np.r_[np.linalg.solve(self.lv,diff[:len(self.lv)]),np.linalg.solve(self.lq,diff[len(self.lv):])]
+        denominator=sum(np.linalg.norm(np.linalg.solve(self.lv,base[k])) for k in
+                        ("advection","viscous","pressure","pressure_lifting"))
+        denominator+=np.linalg.norm(np.linalg.solve(self.lq,base["continuity"]))
+        denominator=max(float(denominator),1e-12)
+        jd=self.jacobian(state,nu_hat,False)-other.jacobian(state,nu_hat,False)
+        jnum=float(np.linalg.norm(self.whiten_matrix(jd,columns=True)))
+        jden=max(sum(np.linalg.norm(self.whiten_matrix(v,columns=True)) for v in
+                     self.jacobian_terms(state,nu_hat).values()),1e-12)
+        return {"operator_numerator":float(np.linalg.norm(wr)),"operator_denominator":denominator,
+                "operator_relative":float(np.linalg.norm(wr))/denominator,
+                "jacobian_numerator":jnum,"jacobian_denominator":float(jden),"jacobian_relative":jnum/jden}
+
+
+def physical_to_dimensionless(weights,lift,lift_gradient,pressure_lift_per_nu,D,U,dimension):
+    """FE exporter bridge. Test values are dimensionless; test gradients separately *D."""
+    if not D>0 or not U>0 or dimension not in (2,3):
+        raise ValueError("positive physical scales and dimension 2/3 required")
+    return {"weights":np.asarray(weights)/D**dimension,"lift":np.asarray(lift)/U,
+            "lift_gradient":np.asarray(lift_gradient)*D/U,
+            "pressure_lift_per_nu":np.asarray(pressure_lift_per_nu)*D/U}
+
+
+def force_moments(boundary_weights,n_body,velocity_gradient,pressure_basis,lift_gradient,pressure_lift_per_nu,reference_area):
+    """Dimensionless force coefficient C=2*integral(sigma*n_body)/area, separately linear.
+
+    n_body points from solid into fluid. In 2D reference_area=1 after scaling by D;
+    in 3D sphere reference_area=pi/4. Geometry mapping/admission is the caller's gate.
+    """
+    w=positive_weights(boundary_weights,len(n_body))
+    n=np.asarray(n_body,dtype=np.float64)
+    if not np.allclose(np.linalg.norm(n,axis=1),1,rtol=1e-10,atol=1e-12) or reference_area<=0:
+        raise ValueError("unit body normals and positive reference area required")
+    g=np.asarray(velocity_gradient)
+    gl=np.asarray(lift_gradient)
+    factor=2/reference_area
+    return {"velocity_per_nu":factor*np.einsum("n,nijr,nj->ir",w,g+g.transpose(0,2,1,3),n),
+            "pressure":-factor*np.einsum("n,nr,ni->ir",w,pressure_basis,n),
+            "lifting_per_nu":factor*(np.einsum("n,nij,nj->i",w,gl+gl.transpose(0,2,1),n)-
+                                      np.einsum("n,n,ni->i",w,pressure_lift_per_nu,n))}

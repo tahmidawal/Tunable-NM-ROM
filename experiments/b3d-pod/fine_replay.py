@@ -140,8 +140,9 @@ def run(cfg,artifacts,out):
                 dc0field=float(jnp.linalg.norm(full['Phi']@(o['c0']-jnp.asarray(c0ref))))/refs.n0(i)
                 cdist=float(np.linalg.norm(np.asarray(o['C'])-Cref)/np.linalg.norm(Cref))
                 fdist=S.lattice_distance(F,Fref,refs.n0(i))
-                row['endpoint_reproduction']=dict(C_bit_equal=np.array_equal(o['C'],Cref),W_bit_equal=np.array_equal(o['W'],Wref),
-                    fields_bit_equal=np.array_equal(F,Fref),c0_bit_equal=np.array_equal(c0,c0ref),
+                row['endpoint_reproduction']=dict(C_bit_equal=X.array_hash(o['C'])==X.array_hash(Cref),
+                    W_bit_equal=X.array_hash(o['W'])==X.array_hash(Wref),fields_bit_equal=X.array_hash(F)==X.array_hash(Fref),
+                    c0_bit_equal=X.array_hash(c0)==X.array_hash(c0ref),
                     C_relative=cdist,field_distance=fdist,c0_relative=dc0,c0_field_distance=dc0field,
                     pass_=bool(cdist<=1e-10 and fdist<=1e-10 and dc0<=1e-12 and dc0field<=1e-12))
             rep['cases'][str(i)][a]=row;ck=f'val64|{i}'
@@ -160,14 +161,23 @@ def run(cfg,artifacts,out):
     for i,r in panels:
         budget();t0=time.perf_counter();u=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));nu=jnp.float64(fam.nu(i))
         row=dict(case=i,rep=r,invocations=[],input_prepare_seconds=time.perf_counter()-t0,input_sha256=X.array_hash(u))
-        for a in ('k16','none','k16'):
+        for seq,a in enumerate(('k16','none','k16')):
             P.burn(cfg['burn_seconds']);t0=time.perf_counter();o=jax.block_until_ready(common[a](u,nu,data[a],sch[a]));seconds=time.perf_counter()-t0
             pin=np.load(out/'arrays'/f'{a}_c{i:03}_prod.npz')
-            identical=X.scalar_check(o['C'],pin['C']) and X.scalar_check(o['W'],pin['W']) and X.scalar_check(o['fields'],pin['fields'])
+            identical=all(X.array_hash(o[k])==X.array_hash(pin[k]) for k in ('C','W','fields'))
+            payload=f'arrays/{a}_c{i:03}_prod.npz'
+            if not identical:
+                payload=f'arrays/timing_c{i:03}_r{r}_s{seq}_{a}.npz'
+                np.savez_compressed(out/payload,case=i,W=o['W'],C=o['C'],fields=o['fields'],
+                    reason=o['stats']['reason'],it=o['stats']['it'],lam=o['stats']['lam'],c0=o['c0'],scale=o['scale'])
             row['invocations'].append(dict(arm=a,seconds=seconds,identity=identical,W_sha256=X.array_hash(o['W']),
                 C_sha256=X.array_hash(o['C']),fields_sha256=X.array_hash(o['fields']),e0=refs.score_safe(o['fields'],i),
+                payload_path=payload,
                 raw_step_records={k:np.asarray(v).tolist() for k,v in o['stats'].items()}))
-        ts=[v['seconds'] for v in row['invocations']];row.update(drift=ts[0]/ts[2],drift_accepted=abs(ts[0]/ts[2]-1)<=.25)
+        ts=[v['seconds'] for v in row['invocations']];drift=ts[0]/ts[2]
+        row.update(drift=drift,drift_accepted=abs(drift-1)<=.25,
+            timing_admitted=bool(abs(drift-1)<=.25 and all(v['identity'] and v['e0']['eligible'] for v in row['invocations'])),
+            scope='diagnostic timing cases only; rejected drift rows excluded from admitted cost comparisons')
         rep['timing'].append(row);save()
     rep['timing_coverage_complete']=all(v['identity'] and v['e0']['eligible'] for r in rep['timing'] for v in r['invocations'])
     rep['admission']['full64_adapter_release'] &= rep['timing_coverage_complete']

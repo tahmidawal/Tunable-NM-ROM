@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
@@ -79,6 +79,7 @@ class BasisGeometry:
     right: Any
     wc: float
     metadata: dict
+    prior_cache: dict = field(default_factory=dict)
 
     def plan(self, ridge: float = 0., prior_variances=None):
         """Fine-field-norm ridge, or covariance-weighted POD ridge.
@@ -89,27 +90,50 @@ class BasisGeometry:
         """
         s, u, v = self.singular, self.left, self.right
         keep = s > SVD_RTOL * s[0]
+        if not np.isfinite(ridge) or ridge < 0:
+            raise ValueError('ridge must be finite and nonnegative')
         use_prior = prior_variances is not None
         penalty_eigen = None
+        solve_residual = 0.
+        prior_condition = None
         if use_prior and ridge > 0:
             var = jnp.asarray(prior_variances, dtype=jnp.float64)
             if var.ndim != 1 or var.size != self.transform.shape[0]:
                 raise ValueError('prior variances must match original prefix')
             if not bool(host(jnp.all(jnp.isfinite(var) & (var > 0)))):
                 raise ValueError('prior variances must be finite and positive')
-            precision = var.max() / var
-            h = self.transform.T @ (precision[:, None] * self.transform)
-            h = (h + h.T) / 2
-            ev = jnp.linalg.eigvalsh(h)
-            if not bool(host(jnp.all(ev > 0))):
-                raise ValueError('nonpositive prior precision')
-            h = h / ev[0]
-            penalty_eigen = host(ev / ev[0]).tolist()
-            cw = self.coarse * np.sqrt(self.wc)
-            # Ridge controls the inverse; no normal equation used for unregularized fits.
-            gram = cw.T @ cw + ridge * h
-            fitter = jnp.linalg.solve(gram, cw.T) * np.sqrt(self.wc)
-            fit_gram = fitter @ fitter.T / self.wc
+            key = hashlib.sha256(host(var).tobytes()).hexdigest()
+            if key not in self.prior_cache:
+                precision = var.max() / var
+                h = self.transform.T @ (precision[:, None] * self.transform)
+                h = (h + h.T) / 2
+                if not bool(host(jnp.all(jnp.isfinite(h)))):
+                    raise ValueError('nonfinite covariance precision')
+                ev, hv = jnp.linalg.eigh(h)
+                if not bool(host(jnp.all(jnp.isfinite(ev) & (ev > 0)))):
+                    raise ValueError('nonpositive covariance precision')
+                h = h / ev[0]
+                normalized_ev = ev / ev[0]
+                inv_root = (hv / jnp.sqrt(normalized_ev)[None, :]) @ hv.T
+                cw = self.coarse * np.sqrt(self.wc)
+                pu, ps, pvh = jnp.linalg.svd(cw @ inv_root, full_matrices=False)
+                pv = inv_root @ pvh.T
+                # This factorization avoids solving normal equations. Small
+                # normal-equation residuals are checked only as diagnostics.
+                self.prior_cache[key] = (h, normalized_ev, pu, ps, pv,
+                                         cw.T @ cw, cw.T @ pu)
+            h, normalized_ev, pu, ps, pv, gram0, rhs_reduced = self.prior_cache[key]
+            penalty_eigen = host(normalized_ev).tolist()
+            prior_condition = float(penalty_eigen[-1])
+            pgain = ps / (ps * ps + ridge)
+            reduced_fit = pv * pgain[None, :]
+            solve_residual = float(host(jnp.linalg.norm(
+                (gram0 + ridge * h) @ reduced_fit - rhs_reduced)
+                / jnp.maximum(jnp.linalg.norm(rhs_reduced), 1e-300)))
+            if not np.isfinite(solve_residual) or solve_residual > 1e-7:
+                raise ValueError(f'covariance ridge residual failed: {solve_residual}')
+            fitter = reduced_fit @ pu.T * np.sqrt(self.wc)
+            fit_gram = reduced_fit @ reduced_fit.T
             amp = float(host(jnp.sqrt(jnp.maximum(
                 jnp.linalg.eigvalsh((fit_gram + fit_gram.T) / 2)[-1], 0.))))
         else:
@@ -118,6 +142,8 @@ class BasisGeometry:
             fitter = (v.T * gain[None, :]) @ u.T * np.sqrt(self.wc)
             amp = float(host(jnp.max(jnp.abs(gain))))
         ready(fitter)
+        if not bool(host(jnp.all(jnp.isfinite(fitter)))) or not np.isfinite(amp):
+            raise ValueError('nonfinite fit map or physical amplification')
         # Fine basis is orthonormal in physical L2. This is the actual map norm
         # from the coarse physical L2 input to the fine physical L2 output.
         # The standard ridge factorization already supplies singular gains.
@@ -131,6 +157,9 @@ class BasisGeometry:
         meta = dict(self.metadata, name=name, ridge=float(ridge),
                     prior='training_covariance' if use_prior else 'fine_field_norm',
                     prior_precision_eigenvalues=penalty_eigen,
+                    prior_condition=prior_condition,
+                    ridge_normal_residual=solve_residual,
+                    setup_valid=True,
                     physical_amplification=amp)
         return LinearPlan(name, fit, synthesize, meta,
                           dict(fine_basis=qf, fit_matrix=fitter,
@@ -187,6 +216,8 @@ def _tensor_apply(a, matrix, dim):
 
 def interpolation_plans(Lc: int, Lf: int, dim: int):
     """Geometry-only classical methods. No state/reference-dependent decisions."""
+    if dim not in (2, 3) or Lc < 3 or Lf < Lc or Lf % Lc:
+        raise ValueError('expected nested 2D/3D grids with at least four coarse nodes')
     nc, nf = (Lc - 1) ** dim, (Lf - 1) ** dim
     xc = np.arange(Lc + 1) / Lc
     xf = np.arange(1, Lf) / Lf
@@ -276,6 +307,8 @@ def benchmark(plan, y_host, repetitions=3, burn_seconds=.1):
         # common field-output service contract and timed separately.
         last_coeff = np.array(jax.device_get(coeff), copy=True)
         ta = time.perf_counter()
+        if not np.isfinite(last_fields).all() or not np.isfinite(last_coeff).all():
+            raise ValueError('nonfinite timed reconstruction; retain failed candidate')
         field_hash = hashlib.sha256(last_fields.tobytes(order='C')).hexdigest()
         coefficient_hash = hashlib.sha256(last_coeff.tobytes(order='C')).hexdigest()
         field_repetitions.append(last_fields)

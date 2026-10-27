@@ -1,0 +1,32 @@
+{
+  "status": "complete_all_regular_files_verified",
+  "archive_sha256": "2e28f41fbd7a2e4c9c41f27e4c17c9a285d3730d4f1ad1db3f81b4c61a43a325",
+  "archive_bytes": 158260564,
+  "verified_regular_files": 777,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "7d05c76df38393b4172905926f8030d4a6e6b4af4e396104cb6fa630ac47ed09"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "79d02bd4ae6a76f5484c9bdb37cfbf9ca49fb5a32d724129d071c3a088c8b7da"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 50331648,
+      "sha256": "3c0216a60320e97ba613c8014868586435aa2a3f84ccd52e735ad8bf4022c7c1"
+    },
+    {
+      "path": "collection.tar.gz.part-003",
+      "bytes": 7265620,
+      "sha256": "af52433c84db7f0b5c568b912457af624ba423e26402ef013f7003df9f43da2f"
+    }
+  ],
+  "recovery": "Concatenate chunks in listed order; verify archive_sha256; extract; cd g1-smoke05 and sha256sum -c COLLECTION-SHA256SUMS. Original dependencies, wheels, sources, logs and partial preflight evidence preserved.",
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g1-smoke05-collection.tar.gz",
+  "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g1-smoke05",
+  "no_flow_case_ran": true
+}

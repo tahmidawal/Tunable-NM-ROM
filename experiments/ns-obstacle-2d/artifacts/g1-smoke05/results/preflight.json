@@ -1,0 +1,5 @@
+{
+  "passed": false,
+  "error": "TypeError(\"float() argument must be a string or a real number, not 'tuple'\")",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 162, in <module>\n    result=run()\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 130, in run\n    divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 14, in traced\n    value=function(*args,**kwargs)\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 130, in <lambda>\n    divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))\n                                                      ~~~~~^^^^^^^^^^^^^^^^^^^^^\nTypeError: float() argument must be a string or a real number, not 'tuple'\n"
+}

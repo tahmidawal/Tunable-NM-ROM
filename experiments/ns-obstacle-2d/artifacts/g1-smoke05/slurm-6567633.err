@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py", line 162, in <module>
+    result=run()
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py", line 130, in run
+    divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py", line 14, in traced
+    value=function(*args,**kwargs)
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py", line 130, in <lambda>
+    divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))
+                                                      ~~~~~^^^^^^^^^^^^^^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'tuple'

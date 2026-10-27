@@ -1,0 +1,72 @@
+{
+  "gate": "G1_smoke",
+  "checks": [
+    {
+      "case": "channel",
+      "name": "completed",
+      "passed": false
+    },
+    {
+      "case": "manufactured",
+      "name": "completed",
+      "passed": false
+    },
+    {
+      "case": "dfg",
+      "name": "completed",
+      "passed": false
+    }
+  ],
+  "cases": {
+    "channel": {
+      "state": "not_run",
+      "failure": null
+    },
+    "manufactured": {
+      "state": "not_run",
+      "failure": null
+    },
+    "dfg": {
+      "state": "not_run",
+      "failure": null
+    }
+  },
+  "preflight": {
+    "passed": false,
+    "error": "TypeError(\"float() argument must be a string or a real number, not 'tuple'\")",
+    "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 162, in <module>\n    result=run()\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 130, in run\n    divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 14, in traced\n    value=function(*args,**kwargs)\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/preflight.py\", line 130, in <lambda>\n    divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))\n                                                      ~~~~~^^^^^^^^^^^^^^^^^^^^^\nTypeError: float() argument must be a string or a real number, not 'tuple'\n"
+  },
+  "run_exit_code": 1,
+  "last_stage": "api_and_inverse_preflight",
+  "stage_exit_codes": [
+    {
+      "stage": "source_verification",
+      "exit_code": 0
+    },
+    {
+      "stage": "source_commit_present",
+      "exit_code": 0
+    },
+    {
+      "stage": "gpu_preflight",
+      "exit_code": 0
+    },
+    {
+      "stage": "dependencies",
+      "exit_code": 0
+    },
+    {
+      "stage": "dependency_import",
+      "exit_code": 0
+    },
+    {
+      "stage": "api_and_inverse_preflight",
+      "exit_code": 1
+    }
+  ],
+  "passed": false,
+  "nongating": {},
+  "G2_steady_reference_admitted": false,
+  "training_released": false,
+  "reason": "mesh/p/tolerance/force/domain/outlet and result reviews remain required"
+}

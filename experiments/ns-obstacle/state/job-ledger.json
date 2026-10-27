@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "native_preflight_failure_collecting",
+  "status": "one_native_lifetime_repair_submitted",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -28,9 +28,9 @@
       "FE_cases_started": false,
       "gpu_preflight_passed": true,
       "x64_preflight_passed": true,
-      "collection": "../../ns-obstacle-2d/artifacts/g1-smoke03/RETENTION.json",
       "collection_archive_sha256": "02a97de2b7ede7b66554152dd654c0c251515500271a65d1d8066342b9e1082e",
-      "remote_duplicate_removed": true
+      "remote_duplicate_removed": true,
+      "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke03/RETENTION.json"
     },
     {
       "job_id": 6567287,
@@ -62,10 +62,36 @@
       "x64_preflight_passed": true,
       "highest_precision_verified": true,
       "measured_cause": "native preflight process segfault; exact call unresolved",
-      "source_hypothesis": "temporary element transformation destroyed before mapped point use"
+      "source_hypothesis": "temporary element transformation destroyed before mapped point use",
+      "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke04/RETENTION.json",
+      "collection_archive_sha256": "9f5500def8829b9ea635a9e4dd74fefa0b5e09a51261c873cd948decff1e0445",
+      "remote_duplicate_removed": true
+    },
+    {
+      "job_id": 6567633,
+      "lane": "2d_reference",
+      "attempt": "g1-smoke05",
+      "source_commit": "f4f90487940c8a1f0b8bb19d8e9e1b9d7505a7e4",
+      "source_mirror": "5bb86e185",
+      "manifest_sha256": "23dd7281492fe75e4965f619c6fa173eb7f80fcae1dac4f148a90105efeb2b10",
+      "submitted_utc": "2026-10-27T20:55:26Z",
+      "state_last_observed": "PENDING",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "purpose": "G1 controls after native-lifetime repair",
+      "repair_number_for_distinct_error": 1,
+      "device_for_FE": "CPU"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6567633
+  ],
   "completed_gpu_hours": 0.013888888888888888,
   "note": "All elapsed allocation including failed import charged. One targeted dependency-layout repair under review; no numerical result or reference accepted."
 }

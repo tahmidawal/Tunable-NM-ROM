@@ -1,13 +1,12 @@
 {
-  "status": "2d_smoke_submitted_3d_pending_trace_fix_review",
-  "numerical_jobs": [
-    6566869
-  ],
+  "status": "dependency_layout_repair_after_first_failed_allocation",
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "collect_terminal2Dsmoke_with_checksums_and_resultreview",
-    "3Dtracefix_independent_review_then_2Dsmokepass",
-    "G2_reference_suite_design_code_review_after_G1"
+    "checksummed_failure_collection_and_jobdircleanup",
+    "one_targeted_dependency_layout_repair_then_independent_review",
+    "2Dsmoke_retry_after_release",
+    "3Dtracefix_source_passed_but_dependency_and_2Dgate_closed"
   ],
   "staged_unsubmitted": [
     {
@@ -25,7 +24,7 @@
       "will_be_superseded_by": "g1-smoke02"
     }
   ],
-  "completed_allocated_gpu_hours": 0,
+  "completed_allocated_gpu_hours": 0.009166666666666667,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,

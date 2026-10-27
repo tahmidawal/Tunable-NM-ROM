@@ -279,9 +279,13 @@ for conditional reference uncertainty only. They are not deployment-cost measure
                 'unavailable' if peak is None else f'{peak/1e9:.6g}'])
     text += table(['Setup level', 'Bank', 'Base data nodes', 'Rule', 'Intervention', 'Seconds',
                    'Current-memory change (GB)', 'Whole-job peak so far (GB)'], setup_rows) + '\n\n'
-    projection_rows = [[key, f"{v['common65_distance']:.7g}", v.get('baseline', v.get('held_projection', 'see contract'))]
+    projection_rows = [[key, f"{v['common65_distance']:.7g}",
+                        'same M2 bank: native65 projection (diagnostic)' if key.startswith('M2_native129_') else
+                        v.get('baseline', v.get('held_projection', 'see contract'))]
                        for key, v in doc['initial_projection_differences'].items()]
     text += table(['Initial-projection comparison', 'Common-lattice field distance', 'Projection baseline/scope'], projection_rows) + '\n\n'
+    text += ('The raw M2 records inherit a W1024-only held-projection label. The table corrects that '
+             'description to the actual same-M2 native-projection comparison; raw data and numeric values remain unchanged.\n\n')
     text += ('Shared assembly prepares both meshes; incremental setup is additional rule/operator work. '
              'Base data nodes identify the runner data structure; a held-projection control can use finer-mesh matrices with the original base data. '
              'The assembly table excludes compilation and warm-up, which are listed separately for timed target queries above. '

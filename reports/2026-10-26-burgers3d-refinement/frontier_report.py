@@ -96,7 +96,7 @@ def components(doc, table, save):
             x = matrix[i, j]
             ax.text(j, i, 'n/a' if np.isnan(x) else f'{x:.3g}', ha='center', va='center', fontsize=7,
                     color='white' if np.isfinite(x) and x > np.nanmedian(matrix)*2 else 'black')
-    ax.set(xticks=range(3), xticklabels=['Initialisation', 'Reduced/full evolution', 'Output decode/synthesis'],
+    ax.set(xticks=range(3), xticklabels=['Initialisation', 'Reduced/full\nevolution', 'Output decode/\nsynthesis'],
            yticks=range(len(phase_values)), yticklabels=list(phase_values),
            title='Separate phase calls: case-balanced median milliseconds\nDiagnostic cases only; phases do not sum to fused query cost')
     fig.colorbar(im, ax=ax, label='Milliseconds (log colour scale)'); save(fig, 'query_components')
@@ -434,7 +434,9 @@ def render(doc, figdir, table, save, reference):
             assert np.isclose(entry['worst_error'], source_summary['worst_error'], rtol=1e-12)
         full_solver = entry['method'] in ['Spectral FOM', 'Finite-difference FOM']
         q2_label = 'n/a' if q['Q2'].get('applicability') else str(q2)
-        check_label = f'stage-valid={q1}; Q2={q2_label}' if full_solver else f'Q1={q1}; Q2={q2_label}'
+        check_label = (f'finite/port={q1}; Q2={q2_label}' if entry['method'] == 'Spectral FOM' else
+                       f'stage-converged={q1}; Q2={q2_label}' if entry['method'] == 'Finite-difference FOM' else
+                       f'Q1={q1}; Q2={q2_label}')
         table_rows.append([subject_id, entry['method'], q['status'], check_label, common,
             'missing' if not complete_scores else f"{100*entry['median_error']:.6g}",
             'missing' if not complete_scores else f"{100*entry['worst_error']:.6g}",
@@ -528,8 +530,9 @@ The extra POD gradient threshold is not equivalent to the bank advection-rho thr
 All preregistered verdicts remain unchanged. A POD point that passes the common checks but
 fails its extra conservative gate remains visible as descriptive evidence; its exclusion
 cannot be used to claim a bank advantage over tuned POD. Unqualified points are retained.
-Full solvers use their declared stage-validity/convergence checks; they do not receive ROM
-tight/tighter-anchor certification, and quadrature qualification is not applicable to them.
+Spectral full solvers use finite-output and pinned implementation-port checks; finite-difference
+full solvers use stage convergence/completeness. They do not receive ROM tight/tighter-anchor
+certification, and quadrature qualification is not applicable to them.
 Unsampled POD restricts the trial state to the frozen POD span and minimises the full
 central finite-difference residual norm; it does not first Galerkin-project that residual.
 Whiskers show conditional reference-error intervals; lower endpoints at zero are omitted

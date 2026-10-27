@@ -876,7 +876,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Device output: fully computed fields resident on the GPU; host transfer, scoring and saving are separate work.
 - GPU-hour: allocated GPU count multiplied by elapsed hours, including failed jobs; it is separate from measured online query cost.
 - Phase: a separately measured part of a query; separate calls are not assumed additive to fused-query cost.
-- Q1: nonlinear-solver validity, stationarity and agreement with tighter solves.
+- Q1: bank/POD nonlinear validity, stationarity and tighter-solve agreement; full-solver checks instead use their explicitly labelled finite/port or stage-convergence rules.
 - Q2: quadrature successor and own-state nonlinear agreement, with the finer rule checked too.
 - Mesh Q2 scope: successor field agreement on the common scoring lattice; growing-output native solve checks do not provide a finer-native-grid E0 reference certificate.
 - Rho: relative change in the projected nonlinear term when the integration rule is refined at the same returned state.

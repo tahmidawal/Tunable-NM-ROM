@@ -140,22 +140,22 @@ Frontier job **6533177**, GPU `['NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2
 
 | Subject | Method | Qualification status | Registered checks | Method common check | Median E0 error (%) | Worst E0 error (%) | Cases above 1% | Descriptor total (ms) | Prepared native (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| PS_N24_25 | Spectral FOM | qualified | stage-valid=True; Q2=n/a | True | 0.00272036 | 0.772672 | 0 | 21.2488 | 8.11984 |
+| PS_N24_25 | Spectral FOM | qualified | finite/port=True; Q2=n/a | True | 0.00272036 | 0.772672 | 0 | 21.2488 | 8.11984 |
 | W1024_gl56_fs_CN_25 | Bank ROM | qualified | Q1=True; Q2=True | True | 0.120231 | 5.58172 | 4 | 1314.35 | 1308.12 |
 | M2_512_gl32_qn_BDF2_15 | Bank ROM | qualified | Q1=True; Q2=True | True | 1.04467 | 4.24121 | 35 | 55.7807 | 48.6657 |
 | W1024_gl56_qn_BDF2_10 | Bank ROM | qualified | Q1=True; Q2=True | True | 2.03738 | 4.37906 | 58 | 542.439 | 535.368 |
-| PS_N32_50 | Spectral FOM | qualified | stage-valid=True; Q2=n/a | True | 0.0025563 | 0.260652 | 0 | 38.5696 | 21.5664 |
+| PS_N32_50 | Spectral FOM | qualified | finite/port=True; Q2=n/a | True | 0.0025563 | 0.260652 | 0 | 38.5696 | 21.5664 |
 | POD512_none_CN_25steps_g1e-4 | POD | qualified | Q1=True; Q2=n/a | True | 0.294234 | 2.28065 | 9 | 189.718 | 182.858 |
-| FD_CC_L64_50_t0 | Finite-difference FOM | qualified | stage-valid=True; Q2=n/a | True | 0.160747 | 0.817141 | 0 | 103.115 | 95.2785 |
+| FD_CC_L64_50_t0 | Finite-difference FOM | qualified | stage-converged=True; Q2=n/a | True | 0.160747 | 0.817141 | 0 | 103.115 | 95.2785 |
 | POD512_none_BDF2_10steps_g1e-4 | POD | qualified | Q1=True; Q2=n/a | True | 2.06358 | 4.57837 | 61 | 128.828 | 122.023 |
 | W256_lat8192_qn_BDF2_10 | Bank ROM | qualified | Q1=True; Q2=True | True | 2.07876 | 5.85715 | 61 | 17.7778 | 10.857 |
 | W1024_gl56_qn_BDF2_40 | Bank ROM | qualified | Q1=True; Q2=True | True | 0.179969 | 5.59007 | 3 | 2062.75 | 2056.51 |
 | W512k8_lat16384_fs_CN_25 | Bank ROM | qualified | Q1=True; Q2=True | True | 0.205405 | 3.13723 | 9 | 79.8898 | 73.1825 |
 | W768_gl40_fs_CN_25 | Bank ROM | qualified | Q1=True; Q2=True | True | 0.157965 | 7.16593 | 5 | 277.756 | 271.096 |
-| PS_N16_10 | Spectral FOM | qualified | stage-valid=True; Q2=n/a | True | 0.0416221 | 2.55336 | 5 | 12.596 | 3.21523 |
-| PS_N14_10 | Spectral FOM | qualified | stage-valid=True; Q2=n/a | True | 0.0676794 | 3.60287 | 5 | 11.7152 | 3.3026 |
+| PS_N16_10 | Spectral FOM | qualified | finite/port=True; Q2=n/a | True | 0.0416221 | 2.55336 | 5 | 12.596 | 3.21523 |
+| PS_N14_10 | Spectral FOM | qualified | finite/port=True; Q2=n/a | True | 0.0676794 | 3.60287 | 5 | 11.7152 | 3.3026 |
 | POD512_none_BDF2_15steps | POD | qualified | Q1=True; Q2=n/a | True | 1.09592 | 3.22085 | 36 | 122.437 | 115.471 |
-| FD_CC_L64_20_t1 | Finite-difference FOM | qualified | stage-valid=True; Q2=n/a | True | 0.467289 | 1.1603 | 3 | 51.6004 | 43.987 |
+| FD_CC_L64_20_t1 | Finite-difference FOM | qualified | stage-converged=True; Q2=n/a | True | 0.467289 | 1.1603 | 3 | 51.6004 | 43.987 |
 
 The actual adapter settings below make the finite comparison explicit. The PS identifier's N is its sine cutoff, retaining indices below N in each axis; it is not the mesh-study node count. Further frozen parameters and source hashes remain in the dataset.
 
@@ -208,8 +208,9 @@ The extra POD gradient threshold is not equivalent to the bank advection-rho thr
 All preregistered verdicts remain unchanged. A POD point that passes the common checks but
 fails its extra conservative gate remains visible as descriptive evidence; its exclusion
 cannot be used to claim a bank advantage over tuned POD. Unqualified points are retained.
-Full solvers use their declared stage-validity/convergence checks; they do not receive ROM
-tight/tighter-anchor certification, and quadrature qualification is not applicable to them.
+Spectral full solvers use finite-output and pinned implementation-port checks; finite-difference
+full solvers use stage convergence/completeness. They do not receive ROM tight/tighter-anchor
+certification, and quadrature qualification is not applicable to them.
 Unsampled POD restricts the trial state to the frozen POD span and minimises the full
 central finite-difference residual norm; it does not first Galerkin-project that residual.
 Whiskers show conditional reference-error intervals; lower endpoints at zero are omitted
@@ -632,10 +633,10 @@ for conditional reference uncertainty only. They are not deployment-cost measure
 
 | Initial-projection comparison | Common-lattice field distance | Projection baseline/scope |
 | --- | --- | --- |
-| M2_native129_c0 | 2.126581e-06 | native65 for W1024 operator interventions |
-| M2_native129_c5 | 2.128081e-06 | native65 for W1024 operator interventions |
-| M2_native129_c30 | 1.636706e-06 | native65 for W1024 operator interventions |
-| M2_native129_c43 | 8.791163e-07 | native65 for W1024 operator interventions |
+| M2_native129_c0 | 2.126581e-06 | same M2 bank: native65 projection (diagnostic) |
+| M2_native129_c5 | 2.128081e-06 | same M2 bank: native65 projection (diagnostic) |
+| M2_native129_c30 | 1.636706e-06 | same M2 bank: native65 projection (diagnostic) |
+| M2_native129_c43 | 8.791163e-07 | same M2 bank: native65 projection (diagnostic) |
 | 65_mf_c0 | 0 | N65 fixed-Gauss projection |
 | 65_mf_c5 | 0 | N65 fixed-Gauss projection |
 | 65_mf_c30 | 0 | N65 fixed-Gauss projection |
@@ -656,6 +657,8 @@ for conditional reference uncertainty only. They are not deployment-cost measure
 | W1024_native129_c5 | 3.422765e-06 | native65 for W1024 operator interventions |
 | W1024_native129_c30 | 2.911357e-06 | native65 for W1024 operator interventions |
 | W1024_native129_c43 | 1.186191e-06 | native65 for W1024 operator interventions |
+
+The raw M2 records inherit a W1024-only held-projection label. The table corrects that description to the actual same-M2 native-projection comparison; raw data and numeric values remain unchanged.
 
 Shared assembly prepares both meshes; incremental setup is additional rule/operator work. Base data nodes identify the runner data structure; a held-projection control can use finer-mesh matrices with the original base data. The assembly table excludes compilation and warm-up, which are listed separately for timed target queries above. The peak counter accumulates through the entire job, so it is not standalone method memory. Native-projection differences above are reported separately and are not inserted into the held-projection operator controls. Exact matrix/weight hashes, projection geometry and all raw repetitions remain in the frozen dataset.
 
@@ -929,7 +932,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Device output: fully computed fields resident on the GPU; host transfer, scoring and saving are separate work.
 - GPU-hour: allocated GPU count multiplied by elapsed hours, including failed jobs; it is separate from measured online query cost.
 - Phase: a separately measured part of a query; separate calls are not assumed additive to fused-query cost.
-- Q1: nonlinear-solver validity, stationarity and agreement with tighter solves.
+- Q1: bank/POD nonlinear validity, stationarity and tighter-solve agreement; full-solver checks instead use their explicitly labelled finite/port or stage-convergence rules.
 - Q2: quadrature successor and own-state nonlinear agreement, with the finer rule checked too.
 - Mesh Q2 scope: successor field agreement on the common scoring lattice; growing-output native solve checks do not provide a finer-native-grid E0 reference certificate.
 - Rho: relative change in the projected nonlinear term when the integration rule is refined at the same returned state.

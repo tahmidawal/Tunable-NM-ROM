@@ -36,7 +36,7 @@ predeclared campaign cap 12; live jobs are listed explicitly and are not counted
 | pod | none64 | 6525585 | COMPLETED | 0.0591667 |
 | pod | k16fine01 | 6529465 | COMPLETED_FAILED_HR_ADMISSION | 0.0213889 |
 
-Foreground queue check at `2026-10-27T05:24:46.227093+00:00`: `[]`.
+Foreground queue check at `2026-10-27T05:30:46.487534+00:00`: `[]`.
 Live job ids absent from the source lane ledgers: `[]`. Any such lag is explicit;
 active allocation costs are still unaccounted rather than zero.
 

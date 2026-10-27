@@ -43,5 +43,29 @@
       "Frozen supports fail new conservative HR contract",
       "Post-completion stdout serialization failure recovered without numerical rerun"
     ]
+  },
+  {
+    "gate": "Full-validation numerical results",
+    "verdict": "READY: independent complete full-validation numerical results",
+    "record": "audits/coordinator/FRONTIER-RESULTS-REVIEW.json",
+    "sha256": "1dcd00ebeceaa1d3a38b0095388aa0af566ef472a76d55a5664e22925439614c"
+  },
+  {
+    "gate": "Bounded mesh numerical results",
+    "verdict": "READY: independent complete bounded mesh results; selected diagnostic cases only",
+    "record": "audits/coordinator/MESH02-RESULTS-REVIEW.json",
+    "sha256": "e71e80249b01b555760a86a1d3c1302e34353f268fba5eb9ecfb7c8d364e69e5"
+  },
+  {
+    "gate": "Final scientific wording",
+    "verdict": "READY final scientific wording",
+    "record": "audits/coordinator/FINAL-SCIENTIFIC-REVIEW.json",
+    "sha256": "2c30282197d8cbb11620ff9947b9107980080ba926f4337d7e08d6154e607b77"
+  },
+  {
+    "gate": "Final report/PDF publication",
+    "verdict": "READY_PUBLICATION",
+    "record": "PUBLICATION-AUDIT.json",
+    "sha256": "fc383ac66f25d5ccf2e2c7f0a2c5dcf43cc2d8bc90a28379910da42842e7a600"
   }
 ]

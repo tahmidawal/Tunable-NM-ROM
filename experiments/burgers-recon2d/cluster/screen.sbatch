@@ -32,3 +32,6 @@ elif [ "$PHASE" = val ]; then
 else
     echo "unsupported phase" >&2; exit 2
 fi
+
+"$PY" export_results.py --run output --prep "$PREP_ROOT"
+"$PY" export_fields.py --run output --representatives

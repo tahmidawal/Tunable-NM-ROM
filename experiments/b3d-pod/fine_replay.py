@@ -8,6 +8,7 @@ import time
 import numpy as np
 import replay as X
 import hr_interface as I
+import canonical_cohort as CC
 from fit import conv
 
 jax,jnp,H,R,P,B,S=X.jax,X.jnp,X.H,X.R,X.P,X.B,X.S
@@ -75,7 +76,19 @@ def run(cfg,artifacts,out):
         sch[a]=dict(schedule(scheme,dt),gtol=jnp.float64(endpoint['gtol']),tolf=jnp.float64(endpoint['tolf']))
         st[a],stt[a]=ns(scheme,dt,'tight'),ns(scheme,dt,'tighter')
         assert int(sch[a]['steps'])==steps and len(sch[a]['slot'])==steps+1
-    fam=H.Family(3,'val64',count=64);refs=S.Refs(3,'val64',fam,ids)
+    assert {k:np.asarray(v).tolist() for k,v in sch['none'].items()}==sel['actual_schedule']
+    fam=H.Family(3,'val64',count=64)
+    np.savez_compressed(out/'regenerated_cohort.npz',**fam.T)
+    S.check_store();normalizers=[]
+    for i in range(64):
+        m=json.loads(S.RS._read(f'3d/val64/ST/c{i:03d}.json'))
+        assert (m['dim'],m['cohort'],m['case'],m['kind'])==(3,'val64',i,'ST')
+        assert m['cohort_sha256']==sel['cohort_sha256']
+        normalizers.append(m['desc']['s_star'])
+    fam.T,ca=CC.restore(fam.T,normalizers,sel['cohort_sha256']);fam.sha256=fam.T['sha256']
+    np.savez_compressed(out/'canonical_cohort.npz',**fam.T)
+    rep['cohort_canonicalization']=ca;save()
+    refs=S.Refs(3,'val64',fam,ids)
     rep.update(cohort_sha256=fam.sha256,reference=dict(store_version=S.STORE_VERSION,status_sha256=S.STATUS_SHA,kind='ST',
         cases={i:dict(refs.st[i],n0=refs.n0(i)) for i in ids}),steps=steps,
         actual_schedule={k:np.asarray(v).tolist() for k,v in sch['none'].items()})
@@ -105,6 +118,11 @@ def run(cfg,artifacts,out):
             row=dict(e0=refs.score_safe(F,i),query_seconds=prod['seconds'],cert=prod['cert'],
                 input_prepare_seconds=prep,input_sha256=inp,W_sha256=X.array_hash(o['W']),fields_sha256=X.array_hash(F),
                 tight=q['tight']['cert'],tight_distance=S.lattice_distance(F,q['tight']['out']['fields'],refs.n0(i)))
+            it=int(np.asarray(o['stats']['it']).sum())
+            row['work']=dict(steps=steps,nonlinear_iterations=it,residual_jacobian_pairs=steps+it,
+                residual_evaluations=4*steps+it,history_F_evaluations=steps,
+                unit='logical common-LM calls; fresh certification excluded',
+                raw_step_records={k:np.asarray(v).tolist() for k,v in o['stats'].items()})
             if 'tighter' in q:row.update(tighter=q['tighter']['cert'],
                 tight_tighter_distance=S.lattice_distance(q['tight']['out']['fields'],q['tighter']['out']['fields'],refs.n0(i)))
             if a=='k16':row['whole_residual']=X.metric_summary(jax.block_until_ready(metrics(o['C'],nu,full,hr,sch[a])))
@@ -133,12 +151,15 @@ def run(cfg,artifacts,out):
     rep['admission']['full64_adapter_release'] &= rep['endpoint_reproduction_pass']
     panels=[(i,r) for i in cfg['timing_cases'] for r in range(cfg['timing_reps'])];np.random.default_rng(20261026).shuffle(panels)
     for i,r in panels:
-        budget();u=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));nu=jnp.float64(fam.nu(i));row=dict(case=i,rep=r,invocations=[])
+        budget();t0=time.perf_counter();u=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));nu=jnp.float64(fam.nu(i))
+        row=dict(case=i,rep=r,invocations=[],input_prepare_seconds=time.perf_counter()-t0,input_sha256=X.array_hash(u))
         for a in ('k16','none','k16'):
             P.burn(cfg['burn_seconds']);t0=time.perf_counter();o=jax.block_until_ready(common[a](u,nu,data[a],sch[a]));seconds=time.perf_counter()-t0
-            pin=np.load(out/'arrays'/f'{a}_c{i:03}_prod.npz');identical=X.scalar_check(o['W'],pin['W']) and X.scalar_check(o['fields'],pin['fields'])
+            pin=np.load(out/'arrays'/f'{a}_c{i:03}_prod.npz')
+            identical=X.scalar_check(o['C'],pin['C']) and X.scalar_check(o['W'],pin['W']) and X.scalar_check(o['fields'],pin['fields'])
             row['invocations'].append(dict(arm=a,seconds=seconds,identity=identical,W_sha256=X.array_hash(o['W']),
-                fields_sha256=X.array_hash(o['fields']),e0=refs.score_safe(o['fields'],i)))
+                C_sha256=X.array_hash(o['C']),fields_sha256=X.array_hash(o['fields']),e0=refs.score_safe(o['fields'],i),
+                raw_step_records={k:np.asarray(v).tolist() for k,v in o['stats'].items()}))
         ts=[v['seconds'] for v in row['invocations']];row.update(drift=ts[0]/ts[2],drift_accepted=abs(ts[0]/ts[2]-1)<=.25)
         rep['timing'].append(row);save()
     rep['timing_coverage_complete']=all(v['identity'] and v['e0']['eligible'] for r in rep['timing'] for v in r['invocations'])

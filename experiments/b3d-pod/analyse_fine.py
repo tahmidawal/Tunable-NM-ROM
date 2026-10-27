@@ -29,6 +29,8 @@ def main():
     assert RS.store_version()==j['reference']['store_version']
     assert sha(Path(a.references)/'store/STATUS.json')==j['reference']['status_sha256']
     ids=j['config']['cases'];assert ids==[0,5,30,43] and list(j['cases'])==list(map(str,ids));n=j['steps']
+    fixture=Path(__file__).parent/j['selection']['reference_fixture'];assert sha(fixture)==j['selection']['reference_fixture_sha256']
+    endpoint=np.load(fixture,allow_pickle=False);refs={};reproduction=[]
     fact=dict(result_path=str(rp),result_sha256=sha(rp),source_commit=j['source_commit'],job_id=j['job_id'],
         selection=j['selection'],config=j['config'],steps=n,cases={},Q1={},checks=[],whole_residual={},
         scope='four preselected diagnostic cases only; not full-population qualification')
@@ -36,7 +38,8 @@ def main():
         diff=x[1:]-y[1:]
         return float(np.sqrt(np.maximum(np.sum((diff@gram)*diff,axis=1),0)).max()/n0)
     for i in ids:
-        ref,rm=RS.load(3,'val64',i,'ST',field='finest');n0=rm['judge']['n0'];fact['cases'][str(i)]={};saved={}
+        ref,rm=RS.load(3,'val64',i,'ST',field='finest');n0=rm['judge']['n0'];refs[i]=(ref,n0)
+        fact['cases'][str(i)]={};saved={}
         for arm in ('k16','none'):
             rr=j['cases'][str(i)][arm];z=np.load(d/'arrays'/f'{arm}_c{i:03}_prod.npz')
             t=np.load(d/'arrays'/f'{arm}_c{i:03}_tight.npz');saved[arm]=z['W']
@@ -54,6 +57,14 @@ def main():
                 row.update(native_tighter_anchor=ctt['anchor_ok'],tight_tighter_distance=dtt)
                 fact['checks'] += [ctt['anchor_ok']==rr['tighter']['anchor_ok'],abs(dtt-rr['tight_tighter_distance'])<=1e-10]
             fact['cases'][str(i)][arm]=row
+            if arm=='none':
+                C0=endpoint[f'C_c{i:03}'];F0=endpoint[f'fields_c{i:03}']
+                cd=float(np.linalg.norm(z['C']-C0)/np.linalg.norm(C0));fd=float(np.linalg.norm(z['fields'][1:]-F0[1:],axis=1).max()/n0)
+                dc=z['C'][0]-C0[0];c0=float(np.linalg.norm(dc)/np.linalg.norm(C0[0]));cf=float(np.sqrt(max(float(dc@gram@dc),0))/n0)
+                ok=bool(cd<=1e-10 and fd<=1e-10 and c0<=1e-12 and cf<=1e-12);reproduction.append(ok)
+                row['endpoint_reproduction_pass']=ok
+                fact['checks'] += [ok==rr['endpoint_reproduction']['pass_'],abs(cd-rr['endpoint_reproduction']['C_relative'])<=1e-12,
+                    abs(fd-rr['endpoint_reproduction']['field_distance'])<=1e-12]
             if arm=='k16':
                 m=rr['whole_residual'];gf=np.asarray(m['g_full']);ge=np.asarray(m['g_sampled'])
                 assert gf.shape==ge.shape==(n,512)
@@ -93,7 +104,14 @@ def main():
         for v in row['invocations']:
             z=np.load(d/v['payload_path'])
             fact['checks'] += [ah(z[k])==v[k+'_sha256'] for k in ('C','W','fields')]
+            ref,n0=refs[row['case']];e=float(np.linalg.norm(z['fields'][1:]-ref[1:],axis=1).max()/n0)
+            fact['checks'].append(abs(e-v['e0']['e'])<=1e-10)
         fact['checks'].append(row['timing_admitted']==bool(row['drift_accepted'] and all(v['identity'] and v['e0']['eligible'] for v in row['invocations'])))
+    fact['checks'].append(all(reproduction)==j['endpoint_reproduction_pass'])
+    release=bool(fact['admission']['both_layers_pass'] and all(reproduction) and
+        all(v['identity'] and v['e0']['eligible'] for row in j['timing'] for v in row['invocations']))
+    fact['checks'].append(release==j['admission']['full64_adapter_release'])
+    fact['checks']=[bool(v) for v in fact['checks']]
     fact.update(endpoint_reproduction_pass=j['endpoint_reproduction_pass'],timing=j['timing'],
         full64_adapter_release=j['admission']['full64_adapter_release'],offline_checks_pass=bool(all(fact['checks'])))
     assert fact['offline_checks_pass']

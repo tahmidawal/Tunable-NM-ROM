@@ -1,0 +1,25 @@
+# Boundary derivative audit correction — 2026-10-27
+
+Candidate `g1-smoke03` corrects a source defect discovered during the independent physics review of `c74d39dc6`. No candidate has been installed or numerically run by this lane. Earlier readiness assessments did not catch this defect and cannot release the older packages. The staged `g1-smoke01` bytes remain untouched for provenance; candidate 02 was never staged.
+
+`Grad` of a `VectorH1` grid function is a volume operator. The earlier tiny preflight evaluated it directly at a boundary mapped point, where the pinned implementation can return zero. The older diagnostic surface integrals also used that volume gradient directly: force, momentum traction and boundary stress power therefore lacked a valid adjacent-volume derivative path. The mathematical formulas were not enough to establish library correctness. No computed result is being retained or reinterpreted from those implementations.
+
+The correction forms `G_b = BoundaryFromVolumeCF(Grad(u_h))` before constructing boundary stresses. Only afterward are the stresses multiplied by the boundary normal. Every computed traction, viscous/total sphere force and stress-power surface integral uses `G_b`. Volume dissipation/divergence terms keep their direct volume operators. The prescribed manufactured outlet traction and exact polynomial surface-force controls remain analytic coefficient functions. There are no production boundary divergence terms in this implementation; the tiny preflight separately exercises `BoundaryFromVolumeCF(div(u_h))` to guard that scalar path too.
+
+The revised tiny cube has six explicitly named planar faces. With $u_h=(x,y,z)$, zero pressure and unit viscosity, it checks the traced gradient against the identity at a mapped boundary point and in a surface integral. Each individual face must reproduce its known area, divergence integral, gradient traction, symmetric traction and stress power. In particular, its integrated tractions are $n$ and $2n$ on each unit-area face. Testing faces individually prevents a zero-gradient error from passing through cancellation over the closed cube. The existing sparse-solver, precision and resource checks remain, and solver thresholds are unchanged. These tests are implemented but unexecuted.
+
+The pinned NGSolve `v6.2.2608` source was downloaded directly for inspection; byte counts and SHA256 hashes are saved in `BOUNDARY-TRACE-SOURCE-INVENTORY.json`. Directly retrieved source establishes:
+
+- [`comp/python_comp_mesh.cpp`, lines 1096–1115](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/python_comp_mesh.cpp#L1096) exports the wrapper and documents adjacent-volume evaluation.
+- [`comp/meshaccess.cpp`, lines 2348–2480](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/meshaccess.cpp#L2348) preserves matrix dimensions, selects an associated volume element, maps the boundary reference coordinates into it and evaluates the wrapped function there.
+- [`fem/coefficient.hpp`, lines 535–550](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/fem/coefficient.hpp#L535) adapts mapped-point evaluation through a one-point integration rule.
+- [`comp/h1hofespace.cpp`, lines 2535–2544](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/h1hofespace.cpp#L2535) distinguishes the vector volume gradient operator from the boundary-gradient operator. The latter is not the full volume derivative needed by the stress.
+- [`comp/gridfunction.cpp`, lines 1492–1495](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/gridfunction.cpp#L1492) shows the zero return for an unavailable point-evaluation operator. Other evaluation paths can throw instead.
+
+The [NGSolve developer explanation](https://forum.ngsolve.org/t/exterior-trace-on-an-internal-material-interface-using-dx-skeleton-true/3879) confirms the wrapper's intended use with grid functions/coefficient functions, rather than trial/test proxies. This code wraps computed grid-function derivatives only. The actual sphere and outer pipe are exterior boundaries with one fluid-side volume, so the unspecified side selection at internal material interfaces is inapplicable.
+
+A web-reader cache returned older, shorter text at the same raw-source URLs during this check. The above line references and source inventory use directly fetched files, not that cached text. Runtime confirmation remains required on the pinned wheels. This correction does not close the future signed-curved-Jacobian, trace-maximum, refinement, tolerance, domain/outlet, reload or scientific admission gates.
+
+## Glossary
+
+**Volume derivative:** spatial derivative inside a fluid element. **Boundary trace:** the fluid-side value evaluated at its boundary. **Traction:** stress acting on a surface normal. **Stress power:** traction dotted with velocity. **Mapped point:** a quadrature point transformed to the computational geometry. **Proxy:** a symbolic trial or test function used to assemble a finite-element system. **Preflight:** a small execution check that must pass before larger cases start.

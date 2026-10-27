@@ -12,3 +12,7 @@ Implementation qualifications highlighted by the review remain explicit:
 - The 2D smoke and Claude implementation gate must be resolved by the coordinator before any 3D solver execution. Staging is not execution release.
 
 The 2D implementation agent also supplied a mapped-integration-point API approach, verified against the pinned library's source but not yet runtime tested, for later signed-Jacobian and sampled boundary-maximum controls. No unreviewed source change was made while binding this smoke. A sampled maximum will not be described as a certified continuous supremum.
+
+## Subsequent audit correction
+
+The independent physics review of candidate `c74d39dc6` found unsupported boundary evaluation of the computed vector gradient, also affecting the older diagnostic stress path. The prior readiness record is insufficient to release the staged candidate. No staged 3D job has run; the original package stays unchanged. See `BOUNDARY-TRACE-AUDIT-CORRECTION.md` for the candidate 03 correction and required new review.

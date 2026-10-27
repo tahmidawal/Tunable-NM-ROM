@@ -21,7 +21,7 @@ import traceback
 
 import numpy as np
 import ngsolve as ng
-from netgen.csg import CSGeometry, Cylinder, OrthoBrick, Plane, Pnt, Sphere, Vec
+from netgen.csg import CSGeometry, Cylinder, Plane, Pnt, Sphere, Vec
 
 
 def dump(path, value):
@@ -109,9 +109,17 @@ def tiny_fe_api_preflight(cfg, folder):
     """Fail cheaply if the pinned wheel lacks UMFPACK or required export APIs."""
     start=time.monotonic()
     geo=CSGeometry()
-    geo.Add(OrthoBrick(Pnt(0,0,0),Pnt(1,1,1)))
+    face_normals={"x0":(-1,0,0),"x1":(1,0,0),"y0":(0,-1,0),"y1":(0,1,0),"z0":(0,0,-1),"z1":(0,0,1)}
+    cube=None
+    for label,normal in face_normals.items():
+        origin=tuple(float(c>0) for c in normal)
+        face=Plane(Pnt(*origin),Vec(*normal)).bc(label)
+        cube=face if cube is None else cube*face
+    geo.Add(cube)
     mesh=ng.Mesh(geo.GenerateMesh(maxh=1.0))
     mesh.Curve(2)
+    if set(mesh.GetBoundaries())!=set(face_normals):
+        raise RuntimeError("Tiny cube face labels differ from expected six faces")
     V=ng.H1(mesh,order=1)
     if V.ndof>cfg["preflight"]["tiny_fe_dofs_max"]:
         raise RuntimeError("Tiny backend-preflight DOF guard fired")
@@ -136,21 +144,48 @@ def tiny_fe_api_preflight(cfg, folder):
     W=ng.VectorH1(mesh,order=1)
     vector=ng.GridFunction(W)
     vector.Set(ng.CoefficientFunction((ng.x,ng.y,ng.z)))
+    gradient_v=ng.Grad(vector)
+    # Grad(VectorH1) is a VOL operator. Map the derivative, not a traction
+    # containing a BND normal, into the adjacent volume element first.
+    gradient_b=ng.BoundaryFromVolumeCF(gradient_v)
+    divergence_b=ng.BoundaryFromVolumeCF(ng.div(vector))
     for name,el in elements.items():
         trafo=mesh.GetTrafo(ng.ElementId(el))
         mip=trafo(next(iter(ng.IntegrationRule(el.type,2))))
         velocity=np.asarray(vector(mip),dtype=float)
-        gradient=np.asarray(ng.Grad(vector)(mip),dtype=float).reshape(3,3)
+        gradient_cf=gradient_b if name=="boundary" else gradient_v
+        gradient=np.asarray(gradient_cf(mip),dtype=float).reshape(3,3)
         if not np.all(np.isfinite(velocity)) or not np.all(np.isfinite(gradient)):
             raise RuntimeError("Mapped coefficient/gradient API failed")
         samples[name]["linear_vector_value_error"]=float(np.linalg.norm(velocity-np.asarray(list(mip.point))))
         samples[name]["linear_vector_gradient_error"]=float(np.linalg.norm(gradient-np.eye(3)))
         if samples[name]["linear_vector_value_error"]>1e-10 or samples[name]["linear_vector_gradient_error"]>1e-10:
             raise RuntimeError("Mapped vector/gradient convention preflight failed")
+    n=ng.specialcf.normal(3)
+    gradient_traction=gradient_b*n  # unit viscosity, zero pressure
+    symmetric_traction=(gradient_b+gradient_b.trans)*n
+    face_checks={}
+    tolerance=cfg["preflight"]["face_traction_absolute_tolerance"]
+    for label,normal in face_normals.items():
+        expected=np.asarray(normal,dtype=float)
+        actual_g=np.array([surface(gradient_traction[i],mesh,label,4) for i in range(3)])
+        actual_s=np.array([surface(symmetric_traction[i],mesh,label,4) for i in range(3)])
+        area=surface(1,mesh,label,4)
+        div_integral=surface(divergence_b,mesh,label,4)
+        power_g=surface(vector*gradient_traction,mesh,label,4)
+        power_s=surface(vector*symmetric_traction,mesh,label,4)
+        expected_power=float(label.endswith("1"))
+        errors={"area":abs(area-1),"gradient_traction":float(np.linalg.norm(actual_g-expected)),"symmetric_traction":float(np.linalg.norm(actual_s-2*expected)),"divergence":abs(div_integral-3),"gradient_power":abs(power_g-expected_power),"symmetric_power":abs(power_s-2*expected_power)}
+        face_checks[label]={"normal":list(normal),"area":area,"gradient_traction":actual_g.tolist(),"symmetric_traction":actual_s.tolist(),"divergence_integral":div_integral,"gradient_power":power_g,"symmetric_power":power_s,"absolute_errors":errors}
+        if max(errors.values())>tolerance:
+            raise RuntimeError(f"Tiny cube boundary derivative/traction preflight failed on {label}: {errors}")
+    gradient_error_squared=surface(ng.InnerProduct(gradient_b-ng.Id(3),gradient_b-ng.Id(3)),mesh,".*",4)
+    if not math.isfinite(gradient_error_squared) or gradient_error_squared<0 or math.sqrt(gradient_error_squared)>tolerance:
+        raise RuntimeError("Tiny cube traced-gradient L2 error failed")
     check=mesh(0.25,0.25,0.25)
     if check.nr<0:
         raise RuntimeError("Interior MeshPoint validity preflight failed")
-    record={"status":"tiny_fe_api_preflight_passed","scope":"backend/API only, not a PDE reference","backend":cfg["preflight"]["tiny_fe_backend"],"scalar_dofs":V.ndof,"relative_linear_residual":relative,"samples":samples,"elapsed_seconds":time.monotonic()-start,"peak_rss_gib":rss_gib()}
+    record={"status":"tiny_fe_api_preflight_passed","scope":"backend/API only, not a PDE reference","backend":cfg["preflight"]["tiny_fe_backend"],"scalar_dofs":V.ndof,"relative_linear_residual":relative,"samples":samples,"boundary_derivative_trace":"BoundaryFromVolumeCF(Grad(GridFunction)) before BND normals","face_traction_control":face_checks,"boundary_gradient_L2_error":math.sqrt(gradient_error_squared),"elapsed_seconds":time.monotonic()-start,"peak_rss_gib":rss_gib()}
     dump(folder/"backend-api-preflight.json",record)
     return record
 
@@ -419,8 +454,11 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
     U=cfg["physics"]["mean_speed"]
     D=cfg["geometry"]["sphere_diameter"]
     n=ng.specialcf.normal(3)
-    sigma=constitutive(G,p,nu,"symmetric")
-    gradstress=constitutive(G,p,nu,"gradient")
+    # Boundary derivatives must be evaluated from the adjacent fluid volume.
+    # Keep G for volume dissipation, and leave analytic prescribed loads alone.
+    G_b=ng.BoundaryFromVolumeCF(G)
+    sigma_b=constitutive(G_b,p,nu,"symmetric")
+    gradstress_b=constitutive(G_b,p,nu,"gradient")
     obstacle=case in ("sphere","manufactured")
     out=[]
     for order in (cfg["fe"]["diagnostic_quadrature_order"],cfg["fe"]["diagnostic_quadrature_order"]+4):
@@ -441,7 +479,7 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
         momentum_flux=[]; all_traction=[]; body=[]; mom_res=[]; mom_den=[]
         for i in range(3):
             mf={b:surface(u[i]*(u*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
-            tf={b:surface((sigma*n)[i],mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+            tf={b:surface((sigma_b*n)[i],mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
             bf=integrate(f[i],mesh,order)
             momentum_flux.append(mf); all_traction.append(tf); body.append(bf)
             mom_res.append(sum(mf.values())-sum(tf.values())-bf)
@@ -449,19 +487,19 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
         eps=(G+G.trans)*0.5
         diss=2*nu*integrate(ng.InnerProduct(eps,eps),mesh,order)
         kinetic={b:0.5*surface((u*u)*(u*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
-        power={b:surface(u*(sigma*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+        power={b:surface(u*(sigma_b*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
         fpower=integrate(u*f,mesh,order)
         energy=diss+sum(kinetic.values())-sum(power.values())-fpower
         eden=max(abs(diss)+sum(abs(v) for v in kinetic.values())+sum(abs(v) for v in power.values())+abs(fpower),1e-12*U**3*D*D)
         divkin=0.5*integrate((u*u)*ng.div(u),mesh,order)
         divp=integrate(p*ng.div(u),mesh,order)
         grad_diss=nu*integrate(ng.InnerProduct(G,G),mesh,order)
-        gradpower={b:surface(u*(gradstress*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+        gradpower={b:surface(u*(gradstress_b*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
         grad_identity=grad_diss+sum(kinetic.values())-divkin-divp-sum(gradpower.values())-fpower
         grad_energy_den=max(abs(grad_diss)+sum(abs(v) for v in kinetic.values())+abs(divkin)+abs(divp)+sum(abs(v) for v in gradpower.values())+abs(fpower),1e-12*U**3*D*D)
         gradient_momentum=[]
         for i in range(3):
-            gradient_tractions={b:surface((gradstress*n)[i],mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+            gradient_tractions={b:surface((gradstress_b*n)[i],mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
             udiv=integrate(u[i]*ng.div(u),mesh,order)
             mismatch=sum(momentum_flux[i].values())-sum(gradient_tractions.values())-udiv-body[i]
             den=max(sum(abs(v) for v in momentum_flux[i].values())+sum(abs(v) for v in gradient_tractions.values())+abs(udiv)+abs(body[i]),1e-12*U*U*D*D)
@@ -471,8 +509,8 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
         values["gradient_energy_with_finite_divergence"]={"gradient_dissipation":grad_diss,"kinetic_boundary_flux":kinetic,"gradient_boundary_power":gradpower,"body_power":fpower,"half_u_squared_divu":divkin,"p_divu":divp,"residual":grad_identity,"denominator":grad_energy_den,"normalized":abs(grad_identity)/grad_energy_den}
         values["physical_energy_raw_uncorrected_continuum"]={"physical_strain_dissipation":diss,"kinetic_boundary_flux":kinetic,"physical_boundary_power":power,"body_power":fpower,"raw_residual":energy,"denominator":eden,"normalized":abs(energy)/eden}
         if obstacle:
-            fsym=[-surface((sigma*n)[i],mesh,"sphere",order) for i in range(3)]
-            fgrad=[-surface((gradstress*n)[i],mesh,"sphere",order) for i in range(3)]
+            fsym=[-surface((sigma_b*n)[i],mesh,"sphere",order) for i in range(3)]
+            fgrad=[-surface((gradstress_b*n)[i],mesh,"sphere",order) for i in range(3)]
             fp=[surface(p*n[i],mesh,"sphere",order) for i in range(3)]
             unit=0.5*U*U*math.pi*D*D/4
             values["force"]={"physical":fsym,"gradient":fgrad,"pressure":fp,"viscous":[a-b for a,b in zip(fsym,fp)],"coefficient_denominator":unit,"physical_coefficients":[a/unit for a in fsym],"gradient_coefficients":[a/unit for a in fgrad]}
@@ -519,7 +557,7 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
             probes.append({"point":point,"pressure":pressure,"velocity":velocity,"status":"evaluated_on_FE_geometry_no_nearest_node_replacement"})
         except Exception as exc:
             probes.append({"point":point,"status":"unresolved_exact_point","error":str(exc)})
-    return {"integration_ladder":out,"gradient_weak_reaction_force":reactions,"reaction_force_checks":reaction_checks,"pressure_probes":probes,"reference_admitted":False,"admission_note":"Requires independent multi-level convergence, trace-maximum and signed-curved-Jacobian gates; this smoke cannot admit references"}
+    return {"boundary_derivative_trace":"BoundaryFromVolumeCF(Grad(GridFunction)) before BND normals","integration_ladder":out,"gradient_weak_reaction_force":reactions,"reaction_force_checks":reaction_checks,"pressure_probes":probes,"reference_admitted":False,"admission_note":"Requires independent multi-level convergence, trace-maximum and signed-curved-Jacobian gates; this smoke cannot admit references"}
 
 
 def main():

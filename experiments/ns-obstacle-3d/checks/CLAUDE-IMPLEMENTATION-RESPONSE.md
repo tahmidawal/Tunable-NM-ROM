@@ -1,5 +1,7 @@
 # Response to independent Claude implementation review — 2026-10-27
 
+Subsequent correction: independent physics review found an invalid boundary derivative path in candidate 02. Its earlier preparation does not release execution. Candidate 03 and `BOUNDARY-TRACE-AUDIT-CORRECTION.md` supersede the affected implementation, with no prior numerical outputs.
+
 Review SHA256: `cbbc08dce5d72baf034faade4d261cfdfebfa7a5cf636d0082ad6224f6ba73ca`.
 
 Source review read in full: coordinator `experiments/ns-obstacle/reviews/CLAUDE-IMPLEMENTATION-REVIEW.txt`. This response prepares a new candidate `g1-smoke02` for independent Codex diff review. It does not mark execution or scientific gates passed. The unexecuted `g1-smoke01` local/remote package and checksum record remain unchanged.

@@ -1,10 +1,10 @@
 # Three-component reference controls: implementation checkpoint
 
-Candidate `g1-smoke02` contains revised, unexecuted finite-element code for independent diff review. The earlier staged `g1-smoke01` remains immutable and has not run. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
+Candidate `g1-smoke03` contains revised, unexecuted finite-element code for independent diff review. Independent review found an invalid boundary-gradient evaluation in earlier candidates; their release is withdrawn. The earlier staged `g1-smoke01` remains immutable and has not run; candidate 02 was never staged. See `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md`. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
 
 ## Authoritative specification
 
-`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke02.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
+`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke03.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
 
 The smoke uses inexpensive $P_2/P_1$ Taylor–Hood fields and cubic geometric mapping only to check execution and establish resource feasibility. It is not the planned $P_3/P_2$ reference or its $P_4/P_3$ cross-check. Mesh seed is recorded; the relationship of NumPy's seed to Netgen's deterministic defaults remains to be verified at runtime, so no stochastic mesher reproducibility assertion is made.
 
@@ -48,6 +48,10 @@ The coordinator requires the 2D smoke to pass and an independent memory/configur
 ## Candidate g1-smoke02 practical review fixes
 
 The independent Claude implementation review found the manufactured derivatives and force identity correct. Its practical suggestions adopted here are detailed in `checks/CLAUDE-IMPLEMENTATION-RESPONSE.md`: independent per-boundary normal samples, a tiny sparse-backend and mapped-export preflight, reaction-versus-exact force metrics, invalid-point rejection, explicitly raw physical balance labels and bounded termination handling. There has been no installation or numerical FE execution. Strict linear residual admission remains unchanged; speculative dependency and tolerance changes were rejected.
+
+## Candidate g1-smoke03 boundary derivative correction
+
+All computed surface stresses use `BoundaryFromVolumeCF(Grad(u_h))` before multiplication by a boundary normal. The tiny preflight checks the volume-side gradient, divergence, separate-face gradient/symmetric tractions and stress powers on a labelled unit cube. Volume operators and analytic prescribed tractions are unchanged. Source hashes and the correction to earlier readiness assessments are retained in `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md` and its source inventory. No numerical run has occurred.
 
 ## Glossary
 

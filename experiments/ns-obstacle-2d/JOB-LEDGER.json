@@ -44,11 +44,48 @@
       "failure_exception": "KeyError: 'tkernel'",
       "finite_element_cases_ran": 0,
       "remote_cleanup": "verified exact failed job directory and its remote collection archive removed; artifacts/g1-smoke03/REMOTE-CLEANUP.txt"
+    },
+    {
+      "job_id": 6567287,
+      "attempt": "g1-smoke04",
+      "status_at_submission": "PENDING",
+      "submitted_utc": "2026-10-27T20:43:31Z",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke04",
+      "submit_host": "tufts-login",
+      "exact_submit_command": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke04 cluster/smoke.sh",
+      "command_cwd": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke04",
+      "source_commit": "d345b0b05cd57811e5c698f4fb0d593adef525f2",
+      "source_mirror": "31066762a",
+      "staging_commit": "6c3158d98",
+      "staging_mirror": "43d32768a",
+      "manifest_sha256": "f03788836f4fd31765b2ac184abc8b5e636c13daa77e0d3691c9a27f2dd2672b",
+      "source_sha256sums_sha256": "6d3360b24a996f78a969da07c58cbd69375525fae9436d91a71f8a222a476b3d",
+      "source_commit_file_sha256": "76fe815d0cc15ac6b389f3a8bb5154c11d0de7263a96ac460f9e0d91120c3871",
+      "partition": "gpu",
+      "gpu_type": "h200",
+      "gpus": 1,
+      "cpus": 16,
+      "memory_GiB": 64,
+      "wall_seconds_cap": 1200,
+      "gpu_hours_reservation_cap": 0.3333333333333333,
+      "elapsed_gpu_hours": null,
+      "compute": "CPU finite elements; GPU for required preflight only",
+      "queue_before": [],
+      "queue_after": [
+        6567287
+      ],
+      "repair_counter": 1,
+      "repair_limit": 1,
+      "released_scope": "one G1 smoke retry for OCCT dependency layout only",
+      "training_released": false,
+      "reference_data_admitted": false,
+      "retry_authorized": false,
+      "collection": "pending terminal state; checksum pull required before remote duplicate deletion"
     }
   ],
-  "submitted_allocations": 1,
+  "submitted_allocations": 2,
   "completed_allocated_gpu_hours": 0.009166666666666667,
-  "active_cost": "none; job terminal",
+  "active_cost": "6567287 unaccounted until terminal allocation accounting",
   "reservation_gpu_hours_cap": 0.3333333333333333,
-  "active_allocations": 0
+  "active_allocations": 1
 }

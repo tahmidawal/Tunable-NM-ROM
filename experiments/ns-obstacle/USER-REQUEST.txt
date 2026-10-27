@@ -1,0 +1,295 @@
+Work in /home/tahmid/Dev/Tunable-NM-ROM-Claude.
+
+You are the coordinator of a new incompressible Navier–Stokes obstacle-flow campaign:
+
+A. 2D rectangular channel containing a fixed circular obstacle.
+B. 3D circular pipe containing a fixed spherical obstacle.
+
+Investigate our tunable coordinate-network bank with off-mesh quadrature on these problems. Continue autonomously through discovery, design, implementation, bounded experiments, independent reviews, and final reporting.
+
+You may create parallel subagents in separate worktrees. Use independent Codex reviewers and an independent Claude consultant. This campaign must establish what works and fails; it must not manufacture an advantage over competitors.
+
+1. RECOVER THE PROJECT STATE
+
+Read the canonical LAB-LOG.md first, then AGENTS.md and CLAUDE.md. Resolve the current experimental fork point rather than assuming main.
+
+Read the completed Burgers campaign, improvement campaign, recent Burgers 3D refinement, and geometry/spectral-investigation reports. Inspect existing Navier–Stokes implementations, banks, divergence-free constructions, pressure treatment, references, and POD baselines.
+
+Separate validated code from experimental code and superseded claims. Do not assume that changing geometry automatically makes our method competitive.
+
+Before implementing, review authoritative primary sources for an established 2D cylinder-in-channel benchmark and an appropriate confined-sphere flow configuration. Cite the exact sources. Distinguish a literature benchmark from a new project-defined case.
+
+Record an inventory of reusable components, missing components, risks, and estimated resources.
+
+2. DEFINE THE PHYSICS PRECISELY
+
+Use incompressible Newtonian flow:
+
+∂t u + (u · ∇)u = −∇p + νΔu,
+∇ · u = 0.
+
+Define the pressure convention, nondimensionalisation and density convention explicitly.
+
+For each dimension specify:
+- Domain dimensions and obstacle geometry.
+- Obstacle position.
+- Inlet velocity profile and its characteristic-speed convention.
+- No-slip walls and obstacle surface.
+- Outlet condition and pressure gauge.
+- Initial condition and any inlet ramp.
+- Viscosity and Reynolds number Re = U D / ν.
+- Blockage ratio and its definition.
+- Simulation horizon and output schedule.
+- Force-coefficient normalisation.
+
+The first geometries are fixed and stationary. No moving obstacles, fluid–structure interaction, or varying geometry in the first production campaign.
+
+Choose a modest steady-flow regime first. Select unsteady regimes using benchmark evidence and verified simulations; do not guess transition thresholds. Geometry and confinement affect those thresholds.
+
+Check upstream and downstream domain-length adequacy before treating the wake or forces as reference data.
+
+3. ORGANISE THE AGENTS AND WORKTREES
+
+Suggested roles:
+- Coordinator: owns the campaign design, integration and final report.
+- 2D reference/FOM agent.
+- 3D reference/feasibility agent.
+- ROM architecture and quadrature agent.
+- POD/baseline agent.
+- Independent Codex numerical reviewer.
+- Independent Claude reviewer/consultant.
+
+Each writing agent gets its own worktree and cluster namespace. Reviewers remain read-only. Do not allow concurrent writers in the same experiment directory.
+
+Parallelise independent discovery, reference verification and baseline preparation. Keep dependent work sequential: no production ROM training before reference/data gates pass.
+
+The 3D agent may build and verify infrastructure while 2D runs, but large 3D training and sweeps require the agreed pilot gates.
+
+4. DESIGN AND AUDIT BEFORE PRODUCTION
+
+Write a staged DESIGN.md containing:
+- Scientific questions and hypotheses.
+- Parameter populations and seeds.
+- Training, development and validation separation.
+- Primary accuracy and cost metrics.
+- Controls and numerical acceptance criteria.
+- Resource ceilings.
+- Stop rules and escalation paths.
+- What each outcome permits us to claim.
+
+Specify thresholds before examining the relevant results. If a change is necessary, retain the original outcome and record a dated amendment. Never silently relax a failed criterion.
+
+Have independent Codex and Claude reviews assess:
+- PDE and boundary-condition correctness.
+- Incompressibility and pressure treatment.
+- Reference quality.
+- Fairness of comparisons.
+- Leakage and selection bias.
+- Feasibility and implementation risks.
+
+Resolve scientific blockers before advancing. Do not create endless audit cycles over fabricated-file attacks; focus on realistic execution and scientific errors.
+
+5. BUILD TRUSTWORTHY FULL-ORDER REFERENCES
+
+Select a credible incompressible solver suitable for curved boundaries. Justify the choice after inspecting available code and dependencies.
+
+Consider body-fitted finite elements, spectral/high-order elements, or a carefully verified embedded-boundary method. Do not choose a deliberately weak comparator to create a ROM win.
+
+Verify:
+- Spatial and temporal convergence separately.
+- Linear and nonlinear tolerance adequacy.
+- Mass conservation and divergence.
+- Boundary-condition enforcement.
+- Pressure gauge and pressure-drop consistency.
+- Drag/lift or transverse-force convergence.
+- Domain-length and outlet sensitivity.
+- Initial-transient treatment.
+- Appropriate momentum/energy balance including inlet/outlet fluxes.
+
+Do not apply an unforced periodic-box energy-decay rule to an inlet-driven problem.
+
+Use analytic/manufactured controls where appropriate and benchmark comparisons where available. Estimate reference uncertainty and mark unresolved cases ineligible for ranking.
+
+Generate training snapshots only after the reference/data-generation pipeline passes review.
+
+6. FIRST COMPLETE EXPERIMENT: 2D STEADY FLOW
+
+Start with fixed geometry and a narrow, declared parameter family varying inlet speed or viscosity.
+
+Build the full path:
+reference trajectories → training data → learned bank → ordered prefixes →
+initialisation → reduced evolution or steady solve → velocity/pressure/force outputs.
+
+Choose whether the first model learns transients, steady solutions, or both. Keep the cost contract consistent: do not compare a ROM steady prediction with an unnecessarily long full-order transient.
+
+Demonstrate a complete small pilot before expanding the family.
+
+7. ADAPT THE ROM TO THE GEOMETRY
+
+Do not reuse the Burgers box envelope, sine tests, or tensor quadrature unchanged.
+
+Explicitly address:
+- Nonhomogeneous inlet data through a suitable lifting or equivalent treatment.
+- Zero velocity on walls and obstacle.
+- Incompressibility.
+- Pressure representation or recovery.
+- Geometric integration over the fluid region.
+- Conditioning of the reduced system.
+
+If using a divergence-free bank, verify the property numerically and analytically where possible. Do not assume that divergence-free functions alone satisfy all boundary conditions or give pressure and forces automatically.
+
+If using a velocity–pressure formulation, check reduced stability and any stabilisation. Avoid an arbitrary pressure basis with no stability assessment.
+
+If using streamfunctions or vector potentials, document their boundary constraints and derivative costs.
+
+Compare a small number of justified constructions. Change one ingredient at a time.
+
+8. VERIFY OFF-MESH QUADRATURE
+
+Construct quadrature over the actual fluid domain, excluding the obstacle. Treat boundary integrals separately where required.
+
+Compare credible rules suited to the geometry. Possible candidates include mapped element quadrature, composite Gauss rules, geometry-aware point sets, and fitted positive-weight quadrature.
+
+Do not assume Fibonacci lattices or box Gauss rules remain efficient around curved excluded regions.
+
+Check:
+- Geometric integration and simple exactness controls.
+- Reduced nonlinear operator error.
+- Operator Jacobian consistency.
+- Pressure/divergence contributions where applicable.
+- Boundary-force integration.
+- Reached-state accuracy, not just training-state accuracy.
+- Rollout convergence as the quadrature is refined.
+
+Keep integration error, solution error and force error as separate metrics. A quadrature threshold alone does not certify the PDE solution.
+
+9. COMPARE FAIRLY WITH POD
+
+Construct POD from the same admissible training information.
+
+Give POD:
+- Appropriate boundary lifting and incompressibility/pressure handling.
+- Comparable tuning budgets.
+- The same useful time-integration improvements.
+- Qualified hyper-reduction such as ECSW or another justified formulation.
+- An unsampled or exact reduced-operator control where feasible.
+
+Clarify which residual is being minimised or projected. Do not label a full-residual least-squares method as Galerkin.
+
+If a fitted sampling rule fails, retain an unsampled POD comparator. A failed POD implementation or failed sampling fit is not evidence that our bank wins.
+
+Report representation floors before attributing differences to online dynamics.
+
+10. EXTEND TO UNSTEADY 2D FLOW
+
+Only after the steady pilot passes, introduce a regime with a resolved unsteady wake.
+
+Measure:
+- Velocity error over an explicitly defined horizon.
+- Pressure and force histories.
+- Mean drag and fluctuating lift.
+- Shedding frequency, when a periodic shedding regime exists.
+- Phase drift.
+- Long-time stability and appropriate statistics.
+
+Report both phase-sensitive trajectory errors and any phase-aligned diagnostics. Do not hide phase drift using alignment.
+
+Compare time steps and integrators with solver tolerances controlled. Verify temporal order where claimed.
+
+11. BUILD THE 3D PIPE–SPHERE CASE
+
+Start with fixed geometry, a manageable steady regime and a short well-resolved transient.
+
+Verify:
+- Curved pipe and sphere boundary treatment.
+- Three-component velocity and incompressibility.
+- Pressure/force recovery.
+- Mesh and time convergence.
+- Training-memory and quadrature-memory feasibility.
+
+Then run a bounded end-to-end ROM/POD/FOM pilot.
+
+Expand to unsteady 3D only when the steady pipeline and resource gates pass. Do not claim turbulent generalisation from smooth or steady evidence.
+
+Do not train a large 3D bank before measuring the representation requirements and likely cost of a small pilot.
+
+12. MEASURE ACCURACY AND COST DEPENDENCIES
+
+Use bounded sweeps selected from pilot evidence:
+- Bank width r.
+- Test-space size M.
+- Quadrature point count m.
+- Time step and solver policy.
+- Mesh/output resolution N.
+- Reynolds number and parameter-family width.
+
+Keep variables fixed when claiming dependence on one variable.
+
+Report:
+- Representation floor.
+- Velocity and pressure error where applicable.
+- Divergence and mass balance.
+- Force errors.
+- Nonlinear iterations and Jacobian evaluations.
+- Initialisation, evolution and reconstruction time separately.
+- Total query time.
+- Offline setup, training and data-generation cost.
+- Memory and break-even query count.
+
+Compare at matched accuracy and identical output requirements. Distinguish:
+- Full velocity/pressure fields.
+- Fixed probe outputs.
+- Integrated forces.
+
+Do not compare a force-only ROM query with a full-field FOM query without also providing the matched-output comparison.
+
+Use within-job, same-device paired timings with burn-in and stored repetition arrays. Cost and accuracy must come from the same invocation.
+
+13. REVIEW WITH BOTH CODEX AND CLAUDE
+
+Use independent Codex reviews for design, code, exact job configuration, numerical results, and final claims.
+
+Use Claude as an independent consultant at the major design, numerical-implementation and final-interpretation milestones.
+
+Read /home/tahmid/.codex/skills/claude/SKILL.md before invoking Claude. Use the authenticated helper described there. It is advisory and does not automatically see this conversation or inspect the repository, so provide a self-contained review packet with relevant equations, source excerpts, configurations, audit findings and result tables. Never send credentials or unrelated private files.
+
+Ask Claude and Codex to review independently before reconciling disagreements. Record the review, response, fixes and remaining uncertainty.
+
+If Claude authentication or usage limits block review, save the review packet and report the blocker. Continue independent work that does not require that gate, but do not mark the missing review as passed or retry indefinitely.
+
+14. AUTONOMY, BUDGET AND MONITORING
+
+Continue without routine permission requests within the staged scope.
+
+Start with a modest, explicit pilot budget. Audit resource projections before expanding. Do not interpret autonomy as permission for unlimited compute, paid services, new cloud accounts, broad software changes or uncontrolled architecture searches.
+
+Follow repository GPU, f64, precision, preflight, isolation, checksum and backup rules. Coordinate with other active campaigns.
+
+Maintain a job ledger and durable checkpoints. Use bounded waits and explicit timeouts. Check actual job/agent state before restarting or resubmitting. Never duplicate a live job.
+
+Use supported monitoring tools if available. Monitoring should be quiet during healthy progress and notify only on milestones, failures or required decisions.
+
+Recover from ordinary implementation errors autonomously. Preserve failed logs and results. Stop a scientific branch when its declared stop rule fires; document the result rather than endlessly searching for a win.
+
+Keep existing sealed cohorts closed. Do not merge experiment branches or delete unique data without approval.
+
+15. DELIVERABLES
+
+Produce:
+- A reviewed design and source-backed benchmark specification.
+- Verified 2D and 3D reference pipelines.
+- End-to-end pilot results.
+- Audited configurations, provenance and raw-result manifests.
+- Accuracy–cost, cost–mesh, iteration–mesh, width–accuracy and quadrature plots.
+- Force, divergence and wake diagnostics.
+- Comparisons against strong FOM and POD baselines.
+- Clear explanations of failed experiments, labelled as measured causes or hypotheses.
+- A readable report and presentation PDF.
+- A final handoff stating completed, failed, deferred and still-open work.
+
+Generate numerical tables and plotted values from saved results. Preserve original presentation edits when adding results.
+
+Update the canonical LAB-LOG.md and back up commits using the repository’s prescribed workflow.
+
+START NOW:
+Recover the existing code and evidence, assign independent discovery tasks, propose the first bounded 2D and 3D pilots, and obtain design reviews. Then proceed autonomously through the gates.

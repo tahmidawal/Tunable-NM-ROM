@@ -46,7 +46,7 @@ def bank(cx,cfg,shared):
         rec=S.step_record(sp,o,0)
         if sp[0]=='qn':
             return dict(quasi_newton(np.asarray(o['q'])[:,0],np.asarray(o['n_bt'])[:,0],np.asarray(o['reason'])[:,0],batch_size=1),
-                nonlinear_iterations=int(np.asarray(o['q']).sum()),jacobian_contractions=int(np.asarray(o['n_exec']).sum()),raw_step_records=rec)
+                jacobian_contractions=int(np.asarray(o['n_exec']).sum()),raw_step_records=rec)
         a=fs3.a_effective(cfg['scheme'],cfg['dt'],.01,st.a,q.steps)
         return dict(fixed_sweep(np.asarray(o['it'])[:,0],a,cfg['work_policy'],cfg['scheme']),raw_step_records=rec)
     effective=dict(r=r,M=st.M,m=len(rules[cfg['rule']][1]),trust=st.trust,trust_fraction=.05,

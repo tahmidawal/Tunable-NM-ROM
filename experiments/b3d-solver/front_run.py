@@ -28,6 +28,12 @@ def save(cx,result):
     cx.save();C3.C.dump(cx.out/'front_result.json',C3.C.clean(result))
 
 def phase_records(cx,sub,result,j):
+    production=result['case_results'][sub['id']][str(j)]
+    if not production['valid'] or not production['certificate']['output_finite']:
+        result['phase_repetitions'].append(dict(subject=sub['id'],case=j,phase='all',seconds=None,
+            status='unavailable: production trajectory invalid or nonfinite',invocation_id=production['invocation_id'],
+            scope='optional four-case component profile skipped; raw production evidence retained'))
+        return
     u=jax.block_until_ready(sub['prepare'](j));nu=cx.nu[j]
     initial=u if sub['phase_init'] is None else jax.block_until_ready(sub['phase_init'](u))
     evolved=jax.block_until_ready(sub['phase_evolve'](initial,nu))
@@ -252,7 +258,7 @@ def run(cx,POD):
             common_scope=q1_scope+'; no ROM tight/tighter or stationarity predicate applies'
             q1_status='FOM stage-valid' if sc['kind']=='FD' else 'FOM finite/port-verified'
         else:
-            q1_scope='all64 full-rollout production/tight/tighter or explicit original transfer; field distance on6 returned times, fresh stationarity every step'
+            q1_scope='all64 full-rollout production/tight/tighter or explicit original transfer; field distance on five evolved scheduled outputs (time0 excluded and separately reported), fresh stationarity every step'
             common_scope='finite/valid ROM trajectory plus verified scheduled-output tight distance'
             q1_status='ROM Q1'
         qual.update(Q1=dict(passed=q1,status=q1_status,nonstationary=nonstat if steps else None,steps=steps if steps else None,scope=q1_scope),

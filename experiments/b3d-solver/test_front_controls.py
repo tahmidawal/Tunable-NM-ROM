@@ -9,6 +9,7 @@ import numpy as np
 
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE/'vendor/speed3d'))
+sys.path.insert(0,str(HERE/'vendor/e0'))
 import jax
 import jax.numpy as jnp
 import psjax
@@ -20,6 +21,7 @@ import fs3
 from projection_budget import ProjectionBudget
 import pod_identity as ID
 import frozen_tables as FT
+from front_run import phase_records
 
 def main():
     assert jax.config.x64_enabled
@@ -52,6 +54,10 @@ def main():
     qcount=quasi_newton([2,3],[1,0],[4,0],batch_size=1)
     assert qcount['residual_evaluations']==18 and qcount['gradient_evaluations']==7 and qcount['advection_value_evaluations']==22
     assert quasi_newton([2],[0],[3])['residual_evaluations'] is None
+    assert quasi_newton([2],[0],[3])['nonlinear_iterations'] is None
+    invalid_profile=dict(case_results=dict(failed={'0':dict(valid=False,certificate=dict(output_finite=False),invocation_id='synthetic-failed')}),phase_repetitions=[])
+    phase_records(None,dict(id='failed'),invalid_profile,0)
+    assert invalid_profile['phase_repetitions'][0]['seconds'] is None
     assert quasi_newton([2],[0],[4],batch_size=2)['gradient_evaluations'] is None
     actual_probe=HERE/'results/podtune04/raw/output/identity_probe_POD512_none_BDF2_40steps_c000.npz'
     probe_result=__import__('json').loads((actual_probe.parent/'result.json').read_text())['identity_probes']['POD512_none_BDF2_40steps|case0']
@@ -92,7 +98,7 @@ def main():
     assert frozen_checks[0]['mode_hash']==frozen_checks[1]['mode_hash']
     out=dict(passed=True,synthetic_only=True,x64=jax.config.x64_enabled,PS_phase_fused_relative=rel,
              incomplete_case_coverage_rejects_cost_match=True,case_balanced_median_control=True,POD_stronger_policy_actual_schedule_binding=True,
-             FS_logical_contract_runtime_controls=actual,QN_singleton_counter_scope_guard=True,
+             FS_logical_contract_runtime_controls=actual,QN_singleton_counter_scope_guard=True,invalid_optional_phase_profile_skipped=True,
              projection_oracle_relative=oracle_relative,projection_orthogonality_Pythagoras_pass=True,
              actual_POD_active_identity_pass=identity,POD_identity_above_bound_rejected=True,frozen_mode_assembly_controls=frozen_checks)
     dest=HERE/'audits/front-small-controls.json';dest.parent.mkdir(exist_ok=True);dest.write_text(json.dumps(out,indent=1)+'\n');print(json.dumps(out))

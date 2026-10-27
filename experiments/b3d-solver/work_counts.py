@@ -17,8 +17,8 @@ def quasi_newton(q,backtracks,reasons,batch_size=1):
     q=np.asarray(q,int);b=np.asarray(backtracks,int);reason=np.asarray(reasons,int)
     assert q.shape==b.shape==reason.shape
     if batch_size!=1 or np.any(reason==3):
-        return dict(residual_evaluations=None,gradient_evaluations=None,advection_value_evaluations=None,
+        return dict(nonlinear_iterations=None,reported_q_sum=int(q.sum()),residual_evaluations=None,gradient_evaluations=None,advection_value_evaluations=None,
                     missing_counter_reason='invalid direction bodies or batched global while/branch counts are not recoverable from per-case q')
     n=len(q);Q=int(q.sum());B=int(b.sum());residuals=6*n+Q+B
-    return dict(residual_evaluations=residuals,gradient_evaluations=n+Q,advection_value_evaluations=residuals+n+2,
+    return dict(nonlinear_iterations=Q,reported_q_sum=Q,residual_evaluations=residuals,gradient_evaluations=n+Q,advection_value_evaluations=residuals+n+2,
                 linear_solves=Q,count_kind='exact logical singleton source-level calls before compiler optimization; fresh certification excluded')

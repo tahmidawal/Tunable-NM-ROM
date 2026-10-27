@@ -1,0 +1,28 @@
+{
+ "distinct_GPU_allocations_verified": true,
+ "comparisons": "separate within-job only; node shared",
+ "allocations": [
+  {
+   "attempt": "front6402",
+   "job_id": 6533177,
+   "node": "pax008",
+   "allocated_gpu_uuid": "GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e",
+   "Slurm_GPU_index": 7,
+   "CPU_IDs": "74-81",
+   "GPU_preflight": true,
+   "precision_preflight": true,
+   "raw_snapshot": "JobId=6533177 JobName=b3ds_front6402 SLUID=s5EHM5XNG0Y900 UserId=tawal01(34493) GroupId=tawal01_g(1034493) MCS_label=N/A Priority=995 Nice=0 Account=default QOS=normal JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 DerivedExitCode=0:0 RunTime=00:37:23 TimeLimit=03:00:00 TimeMin=N/A SubmitTime=2026-10-26T23:11:31 EligibleTime=2026-10-26T23:11:31 AccrueTime=2026-10-26T23:11:31 StartTime=2026-10-26T23:11:31 EndTime=2026-10-27T02:11:31 Deadline=N/A PreemptEligibleTime=2026-10-26T23:11:31 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-26T23:11:31 Scheduler=Main Partition=gpu AllocNode:Sid=login-p01:528425 ReqNodeList=(null) ExcNodeList=pax007 NodeList=pax008 BatchHost=pax008 NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=200G,node=1,billing=8,gres/gpu=1 AllocTRES=cpu=8,mem=200G,node=1,billing=8,gres/gpu=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* JOB_GRES=gpu:h200:1 Nodes=pax008 CPU_IDs=74-81 Mem=204800 GRES=gpu:h200:1(IDX:7) MinCPUsNode=8 MinMemoryNode=200G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=NO Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null) Command=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402/run.sbatch SubmitLine=sbatch --parsable run.sbatch WorkDir=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402 StdErr=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402/logs/6533177.err StdIn=/dev/null StdOut=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402/logs/6533177.out TresPerNode=gres/gpu:h200:1 TresPerTask=cpu=8\nNVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB\nFilesystem                       Size  Used Avail Use% Mounted on\n10.235.106.23:/projects/paralab  4.6T  1.3T  3.3T  29% /cluster/tufts/paralab\njax_backend=gpu\njax_backend=gpu x64=True precision=highest\n[mesh 65] bank rows [(512, 250047)] 4.0s\n"
+  },
+  {
+   "attempt": "mesh01",
+   "job_id": 6541155,
+   "node": "pax008",
+   "allocated_gpu_uuid": "GPU-82ad2379-97ca-7878-e8f3-7e960c158cff",
+   "Slurm_GPU_index": 0,
+   "CPU_IDs": "0,33-39",
+   "GPU_preflight": true,
+   "precision_preflight": true,
+   "raw_snapshot": "JobId=6541155 JobName=b3ds_mesh01 SLUID=s5EHM5XQBV3T00 UserId=tawal01(34493) GroupId=tawal01_g(1034493) MCS_label=N/A Priority=995 Nice=0 Account=default QOS=normal JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 DerivedExitCode=0:0 RunTime=00:04:44 TimeLimit=01:30:00 TimeMin=N/A SubmitTime=2026-10-26T23:44:11 EligibleTime=2026-10-26T23:44:11 AccrueTime=2026-10-26T23:44:11 StartTime=2026-10-26T23:44:11 EndTime=2026-10-27T01:14:11 Deadline=N/A PreemptEligibleTime=2026-10-26T23:44:11 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-26T23:44:11 Scheduler=Main Partition=gpu AllocNode:Sid=login-p03:259832 ReqNodeList=(null) ExcNodeList=pax007 NodeList=pax008 BatchHost=pax008 NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=200G,node=1,billing=8,gres/gpu=1 AllocTRES=cpu=8,mem=200G,node=1,billing=8,gres/gpu=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* JOB_GRES=gpu:h200:1 Nodes=pax008 CPU_IDs=0,33-39 Mem=204800 GRES=gpu:h200:1(IDX:0) MinCPUsNode=8 MinMemoryNode=200G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=NO Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null) Command=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/run.sbatch SubmitLine=sbatch --parsable run.sbatch WorkDir=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01 StdErr=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/logs/6541155.err StdIn=/dev/null StdOut=/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01/logs/6541155.out TresPerNode=gres/gpu:h200:1 TresPerTask=cpu=8\nNVIDIA H200, GPU-82ad2379-97ca-7878-e8f3-7e960c158cff, 143771 MiB\nFilesystem                       Size  Used Avail Use% Mounted on\n10.235.106.23:/projects/paralab  4.6T  1.3T  3.3T  29% /cluster/tufts/paralab\njax_backend=gpu\njax_backend=gpu x64=True precision=highest\n[mesh 65] bank rows [(512, 250047)] 4.1s\n"
+  }
+ ]
+}

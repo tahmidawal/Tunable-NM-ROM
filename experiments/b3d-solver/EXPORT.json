@@ -66,6 +66,16 @@
     "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
     "job_id": 6533177,
     "scope": "frozen16 subjects, ordered val64, paired invocation errors/costs; no publication before results audit"
+   },
+   "mesh01": {
+    "code_commit": "0cfd1119cda6cfd46b74accf93dd47a9b2eebd5a",
+    "code_small_controls": "READY",
+    "exact_job": "READY",
+    "results": "PENDING RUNNING",
+    "reviewer": "/root/independent_review",
+    "manifest_sha256": "e12ead96f0efcb210a80af72ff3460af7266a3b084fb181392cd5559392bf2b0",
+    "job_id": 6541155,
+    "scope": "four-case fixed-mode65/129 campaign and case5-only operator subpopulations; no publication before results audit"
    }
   }
  },
@@ -246,7 +256,27 @@
    "reserved_max_gpu_hours": 3.0,
    "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
    "scope": "live job; final qualification and GPU hours pending collection",
-   "last_observed_utc": "2026-10-27T03:11:31.542300+00:00"
+   "last_observed_utc": "2026-10-27T03:48:54.921110+00:00",
+   "allocated_gpu_uuid": "GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e",
+   "node": "pax008",
+   "Slurm_GPU_index": 7,
+   "CPU_IDs": "74-81"
+  },
+  {
+   "attempt": "mesh01",
+   "job_id": 6541155,
+   "gpu_hours": 0.0,
+   "state": "RUNNING",
+   "source_commit": "0cfd1119cda6cfd46b74accf93dd47a9b2eebd5a",
+   "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh01",
+   "reserved_max_gpu_hours": 1.5,
+   "manifest_sha256": "e12ead96f0efcb210a80af72ff3460af7266a3b084fb181392cd5559392bf2b0",
+   "scope": "live job; final qualification and GPU hours pending collection",
+   "last_observed_utc": "2026-10-27T03:48:55.462844+00:00",
+   "allocated_gpu_uuid": "GPU-82ad2379-97ca-7878-e8f3-7e960c158cff",
+   "node": "pax008",
+   "Slurm_GPU_index": 0,
+   "CPU_IDs": "0,33-39"
   }
  ],
  "observations": [

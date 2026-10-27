@@ -19601,3 +19601,10 @@ All numbers are from the lanes' generated `report.md` / `EXPORT.json`; accuracy 
 - Saved substantive source notes at `/home/tahmid/Dev/Tunable-NM-ROM-Claude/research_notes/Quadtree and octree PDE comparisons/classical_tree_solvers.md`, `/home/tahmid/Dev/Tunable-NM-ROM-Claude/research_notes/Quadtree and octree PDE comparisons/tree_roms.md`, and `/home/tahmid/Dev/Tunable-NM-ROM-Claude/research_notes/Quadtree and octree PDE comparisons/neural_tree_pdes.md`.
 - Finding: locality, continuous approximation, weak assembly, hierarchical correction, and solved coefficients already exist in conventional methods. The candidate additional benefit is reusable family-trained compression yielding fewer active unknowns or cheaper repeated accepted solves after training, adaptation, assembly, checks, output, and fallback are counted. No universal speed benefit or first-method claim; exact joint novelty and matched-tree empirical advantage remain open.
 - Coordinator reviewed and approved the report. Local links resolve, Markdown/math fences balance, and whitespace validation passes. No experiments, jobs, new measured numerical claims, worktrees, merges, or empirical status changes; top status left unchanged. Existing unrelated viewer log additions and external-watch files remain outside this commit.
+
+
+## 2026-10-27 — Printable adaptive-tree research report
+
+### Codex — PDF export for reading on paper
+
+Exported the existing `reports/2026-10-26-adaptive-trees-for-coordinate-roms.md` without changing its scientific content to the sibling `.pdf` (20 US Letter pages). Saved the self-contained `.print.html` and reproducible `reports/export_adaptive_trees_pdf.cjs`. The print edition renders LaTeX equations and the Mermaid diagram, repeats table headers, includes page numbers and numbered external-source URLs, and retains the glossary at the end. Checked PDF metadata/text extraction and rendered table, diagram, and equation pages for layout. No experiments, new literature claims, or changes to empirical project status. Temporary Node rendering dependencies were isolated outside the project Python environment.

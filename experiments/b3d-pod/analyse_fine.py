@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse
 import json
 import sys
+sys.dont_write_bytecode=True
 import numpy as np
 from analyse import sha,safe_ratio
 

@@ -2,6 +2,7 @@
 from pathlib import Path
 import argparse
 import json
+import hashlib
 import os
 import subprocess
 import time
@@ -13,6 +14,8 @@ from fit import conv
 
 jax,jnp,H,R,P,B,S=X.jax,X.jnp,X.H,X.R,X.P,X.B,X.S
 HERE=Path(__file__).resolve().parent
+
+def raw_hash(x):return hashlib.sha256(np.ascontiguousarray(np.asarray(x)).tobytes()).hexdigest()
 
 
 def layers(cases,ids,Q1):
@@ -45,6 +48,7 @@ def run(cfg,artifacts,out):
     assert cfg['rank']==512 and cfg['L']==64 and cfg['cohort_seed']==923801 and cfg['cohort_count']==64
     pin=HERE/cfg['selection_manifest'];assert X.digest(pin)==cfg['selection_sha256']
     sel=json.loads(pin.read_text());assert sel['independent_results_gate']=='READY'
+    assert sel['source_input_hash_kind']=='raw-contiguous-bytes'
     refp=HERE/sel['reference_fixture'];assert X.digest(refp)==sel['reference_fixture_sha256']
     expected=np.load(refp,allow_pickle=False)
     endpoint=sel['selected'];scheme,dt,steps=endpoint['scheme'],endpoint['dt'],endpoint['steps']
@@ -100,13 +104,13 @@ def run(cfg,artifacts,out):
     inputs={};prep_seconds={}
     for i in ids:
         t0=time.perf_counter();inputs[i]=jax.block_until_ready(jnp.asarray(fam.ic(64,i)));prep_seconds[i]=time.perf_counter()-t0
-        assert X.array_hash(inputs[i])==sel['input_sha256'][str(i)],'selected input binding mismatch'
+        assert raw_hash(inputs[i])==sel['input_sha256'][str(i)],'selected input binding mismatch'
     warm=inputs[ids[0]];wnu=jnp.float64(fam.nu(ids[0]))
     for a in arms:jax.block_until_ready(common[a](warm,wnu,data[a],sch[a]))
     for i in ids:
         budget();u=inputs[i];nu=jnp.float64(fam.nu(i))
         prep=prep_seconds[i];inp=X.array_hash(u)
-        assert inp==sel['input_sha256'][str(i)],'selected input binding mismatch'
+        assert raw_hash(u)==sel['input_sha256'][str(i)],'selected input binding mismatch'
         rep['cases'][str(i)]={};fields={}
         for a in arms:
             q={}

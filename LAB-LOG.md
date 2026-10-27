@@ -19608,3 +19608,10 @@ All numbers are from the lanes' generated `report.md` / `EXPORT.json`; accuracy 
 ### Codex — PDF export for reading on paper
 
 Exported the existing `reports/2026-10-26-adaptive-trees-for-coordinate-roms.md` without changing its scientific content to the sibling `.pdf` (20 US Letter pages). Saved the self-contained `.print.html` and reproducible `reports/export_adaptive_trees_pdf.cjs`. The print edition renders LaTeX equations and the Mermaid diagram, repeats table headers, includes page numbers and numbered external-source URLs, and retains the glossary at the end. Checked PDF metadata/text extraction and rendered table, diagram, and equation pages for layout. No experiments, new literature claims, or changes to empirical project status. Temporary Node rendering dependencies were isolated outside the project Python environment.
+
+
+## 2026-10-27 — Adaptive-tree proposal teaching guide
+
+### Codex — Reworked presentation after readability feedback
+
+Created `understand/adaptive-trees-proposal-guide.md` and its printable PDF/HTML, with reproducible exporter `reports/export_tree_proposal_guide.cjs`. This is a teaching/proposal companion to the canonical detailed literature report, not a competing empirical report. The guide uses one concept per page, diagrams, symbol definitions, plain-language weak-form derivation, implementation implications, controlled experimental aims, and a reusable proposal draft. It distinguishes local approximation from quadrature, preserves the no-general-bank-advantage qualification, and treats novelty and performance as unestablished. Reviewed rendered math, tables, and diagrams; final PDF is 10 US Letter pages. No experiments or changed scientific results. The earlier detailed review remains the reference.

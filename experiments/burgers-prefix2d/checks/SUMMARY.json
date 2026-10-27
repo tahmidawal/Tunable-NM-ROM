@@ -1,0 +1,201 @@
+{
+  "scope": "completed dev6 early cost screen; no validation or matched-physical-accuracy conclusion",
+  "job_id": "6567243",
+  "source_commit": "1fecc15e33a6368d7fa4a3d98ca6fa0f13d1628a",
+  "gpu": [
+    "NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB"
+  ],
+  "input_contract": "on-device sampled physical initial field; initial fit, evolution and six on-device fields included",
+  "settings": {
+    "L": 256,
+    "r": 384,
+    "coarse_r": 128,
+    "M": 1536,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "dt": 0.005,
+    "steps": 50,
+    "startup_BE_steps": 2,
+    "gtol": 0.001,
+    "tolf": 1e-09,
+    "coarse_max_corrections": 2,
+    "repetitions": 7,
+    "timing_order_seed": 20261027
+  },
+  "arms": {
+    "direct": {
+      "median_query_ms": 86.07749920338392,
+      "paired_median_ratio": 1.0,
+      "slowdown_percent": 0.0,
+      "minimum_case_ratio": 1.0,
+      "maximum_case_ratio": 1.0,
+      "slower_case_count": 0,
+      "case_count": 6,
+      "coarse_accepted_total": 0,
+      "all_production_step_checks": true,
+      "median_fine_corrections": 54.0,
+      "median_fine_jacobian_pairs": 104.0,
+      "median_coarse_corrections": 0.0,
+      "median_coarse_jacobian_pairs": 0.0
+    },
+    "affine2": {
+      "median_query_ms": 118.79847478121519,
+      "paired_median_ratio": 1.3919643925350111,
+      "slowdown_percent": 39.19643925350111,
+      "minimum_case_ratio": 1.3575145310810566,
+      "maximum_case_ratio": 1.4430179741541158,
+      "slower_case_count": 6,
+      "case_count": 6,
+      "coarse_accepted_total": 300,
+      "all_production_step_checks": true,
+      "median_fine_corrections": 46.5,
+      "median_fine_jacobian_pairs": 96.5,
+      "median_coarse_corrections": 51.0,
+      "median_coarse_jacobian_pairs": 101.0
+    },
+    "pure2": {
+      "median_query_ms": 123.27795475721359,
+      "paired_median_ratio": 1.4396923008043976,
+      "slowdown_percent": 43.96923008043976,
+      "minimum_case_ratio": 1.422425199904524,
+      "maximum_case_ratio": 1.4677188254446605,
+      "slower_case_count": 6,
+      "case_count": 6,
+      "coarse_accepted_total": 18,
+      "all_production_step_checks": true,
+      "median_fine_corrections": 51.0,
+      "median_fine_jacobian_pairs": 101.0,
+      "median_coarse_corrections": 51.0,
+      "median_coarse_jacobian_pairs": 101.0
+    }
+  },
+  "per_case": [
+    {
+      "case": 0,
+      "median_query_ms": {
+        "direct": 86.56086679548025,
+        "affine2": 119.96277514845133,
+        "pure2": 124.97057486325502
+      },
+      "paired_median_ratios": {
+        "direct": 1.0,
+        "affine2": 1.3875576665122968,
+        "pure2": 1.4441993091199168
+      }
+    },
+    {
+      "case": 1,
+      "median_query_ms": {
+        "direct": 86.5991348400712,
+        "affine2": 117.63417441397905,
+        "pure2": 124.23073966056108
+      },
+      "paired_median_ratios": {
+        "direct": 1.0,
+        "affine2": 1.3575145310810566,
+        "pure2": 1.4351852924888784
+      }
+    },
+    {
+      "case": 2,
+      "median_query_ms": {
+        "direct": 85.5941316112876,
+        "affine2": 123.33752121776342,
+        "pure2": 121.79621774703264
+      },
+      "paired_median_ratios": {
+        "direct": 1.0,
+        "affine2": 1.4430179741541158,
+        "pure2": 1.422425199904524
+      }
+    },
+    {
+      "case": 3,
+      "median_query_ms": {
+        "direct": 87.30471506714821,
+        "affine2": 125.49050897359848,
+        "pure2": 124.97411482036114
+      },
+      "paired_median_ratios": {
+        "direct": 1.0,
+        "affine2": 1.437385241760203,
+        "pure2": 1.4314703933715431
+      }
+    },
+    {
+      "case": 4,
+      "median_query_ms": {
+        "direct": 84.39021557569504,
+        "affine2": 117.11496952921152,
+        "pure2": 122.3251698538661
+      },
+      "paired_median_ratios": {
+        "direct": 1.0,
+        "affine2": 1.3831974048309668,
+        "pure2": 1.44951839522373
+      }
+    },
+    {
+      "case": 5,
+      "median_query_ms": {
+        "direct": 83.15797802060843,
+        "affine2": 116.32969323545694,
+        "pure2": 122.05252982676029
+      },
+      "paired_median_ratios": {
+        "direct": 1.0,
+        "affine2": 1.3963711185577254,
+        "pure2": 1.4677188254446605
+      }
+    }
+  ],
+  "all_fresh_step_checks_pass": true,
+  "all_baseline_parity_checks_pass": true,
+  "transfer": {
+    "field": 1.3877787807814457e-17,
+    "dx": 4.440892098500626e-16,
+    "dy": 4.440892098500626e-16,
+    "pass": true
+  },
+  "timed_invocations": 126,
+  "strong_accuracy_checks": "not run in cost screen: tight/tighter, physical E0 and successor quadrature remain required if continuing",
+  "continue_validation": false,
+  "setup": {
+    "bank_and_setting_seconds": 19.794599186629057,
+    "trust": 1.5689859107113286,
+    "memory": {
+      "in_use": 706765568,
+      "peak": 2200604928,
+      "limit": 105077800960
+    }
+  },
+  "compile_warm_seconds": {
+    "direct_recorded": 4.291732206009328,
+    "direct_fused": 1.2608326645568013,
+    "affine2_recorded": 2.8901792215183377,
+    "affine2_fused": 1.9203188316896558,
+    "pure2_recorded": 1.8866783836856484,
+    "pure2_fused": 1.8923806520178914
+  },
+  "source_result_sha256": "c767aef90bdd9affb3236885106475142ab21a5ec5e9a53f222fa291976a220b",
+  "collected_archive_sha256": "61b1be722126f04b304106c96ca9ef6b3c16521ea60e03c6486c470b1ccf903e",
+  "resource_accounting": {
+    "cluster_gpu_seconds": 108,
+    "local_smoke_conservative_seconds": 55,
+    "total_charged_seconds": 163,
+    "total_charged_gpu_hours": 0.04527777777777778,
+    "cap_gpu_hours": 2,
+    "local_charge_is_upper_bound": true,
+    "sacct": {
+      "JobIDRaw": "6567243",
+      "JobName": "bprefix2d_gate01",
+      "State": "COMPLETED",
+      "ElapsedRaw": "108",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=80G,node=1",
+      "ExitCode": "0:0",
+      "NodeList": "pax008",
+      "WorkDir": "/cluster/tufts/paralab/tawal01/bprefix2d-20261027/gate01"
+    }
+  }
+}

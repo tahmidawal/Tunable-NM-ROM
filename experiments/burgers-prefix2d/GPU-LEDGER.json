@@ -12,10 +12,16 @@
     {
       "attempt": "gate01",
       "reserved_seconds": 1200,
-      "status": "submitted",
+      "status": "complete_reviewed_stop",
       "commit": "1fecc15e33a6368d7fa4a3d98ca6fa0f13d1628a",
       "remote": "/cluster/tufts/paralab/tawal01/bprefix2d-20261027/gate01",
-      "job_id": "6567243"
+      "job_id": "6567243",
+      "charged_seconds": 108,
+      "exit_code": "0:0",
+      "node": "pax008",
+      "gpu": "H200",
+      "checksum_manifest": "runs/gate01/OUTPUTS.sha256",
+      "remote_duplicate_deleted_after_checksums": true
     }
   ]
 }

@@ -9,7 +9,7 @@
     "development_mesh_cases": 18,
     "development_admitted": 18,
     "remaining_unadmitted": "val32_c005_L32",
-    "remaining_time_gap": 1.18147627e-5,
+    "remaining_time_gap": 1.18147627e-05,
     "stage_solver_valid": true,
     "further_time_rungs": "not authorized by the fixed protocol"
   },
@@ -44,15 +44,19 @@
     "phase": "dev",
     "allocation": "one H200, 120 GB host memory, 90 minutes",
     "status": "released_after_independent_exact_review",
-    "independent_path_fixture": {"logical_rows":3588,"old_unique_paths":2592,"corrected_unique_paths":3588},
+    "independent_path_fixture": {
+      "logical_rows": 3588,
+      "old_unique_paths": 2592,
+      "corrected_unique_paths": 3588
+    },
     "guards": "Literal extension append, no overwrite on success/failure, complete identity/path/raw-value/coefficient-hash audit before freezing selection",
     "numerical_method_changes": false
   },
   "report_aggregation_review": {
-    "status": "stable numerical helpers passed independent fixtures",
+    "status": "independent Codex review READY through coordinator c86dca5d3; bounded Claude logic review completed and findings addressed",
     "coverage": "Exact cohort identities, dimensions, grid/source coverage, ratio direction, full failure denominators, nonnegative errors and max-over-evolved-times consistency",
     "worst_error_gate": "Case-specific method lower versus interpolation upper reference-uncertainty envelopes; prospective clarification recorded in DESIGN.md",
-    "pending": "New full-configuration-count guards, setup/oracle/conditioning integration and final returned-data audit"
+    "pending": "Empirical validation return and rendered-figure review"
   },
   "two_dimensional_development_acceptance": {
     "job_id": 6568662,
@@ -90,9 +94,12 @@
     "coarse_inputs_admitted": 136,
     "coarse_inputs_declared": 136,
     "saved_rung_residual_arrays_checked": 591,
-    "maximum_coarse_time_gap": 9.986302757877234e-6,
+    "maximum_coarse_time_gap": 9.986302757877234e-06,
     "maximum_stage_residual": 9.99661862613191e-12,
-    "training_matrix_shape": [55296,250047],
+    "training_matrix_shape": [
+      55296,
+      250047
+    ],
     "pod_qualification": "Approximate POD; residual probes retain aggregate energy, not a probe Gram spectrum or optimality certificate",
     "bank_arrays": "byte-identical to independently NumPy-audited smoke arrays"
   },
@@ -105,13 +112,46 @@
     "status": "released_after_independent_exact_review",
     "phase": "dev",
     "allocation": "H200, 192 GB host memory, 40 minutes",
-    "screen_ranks": [256,512,1024],
+    "screen_ranks": [
+      256,
+      512,
+      1024
+    ],
     "correction_before_launch": "An imported preparation rank list would have added POD ranks128/768. Screen loops now explicitly use the three declared prefixes. Earlier reported source counts were corrected before any 3D reconstruction execution; dev01 never ran.",
     "artifact_audit": "Executed under set-e after screen and before export/completion",
     "returned_elapsed_seconds": 428,
     "reported_returned_rows": 2544,
     "reported_coefficient_invocations": 15264,
     "reported_freeze_sha256": "bc669ab95ea20d88f1d793549e6f4d260fed7eae2641a1c76d837de6f49e819c",
-    "returned_result_review": "pending"
+    "returned_result_review": "accepted after independent return, selection and representative NumPy replay"
+  },
+  "three_dimensional_development_acceptance": {
+    "job_id": 6569265,
+    "rows": 2544,
+    "coefficient_invocations_verified": 15264,
+    "frozen_choices_reproduced": 16,
+    "selected_case0_scores_replayed": 96,
+    "maximum_error_score_difference": 2.66e-16,
+    "power_sensitivity_gaps_replayed": 48,
+    "maximum_power_gap_difference": 2.03e-17,
+    "primary_B_L16_independent_coefficient_relative_differences": {
+      "bank": 6.13e-15,
+      "matched_POD": 4.5e-12,
+      "stronger_POD": 8.85e-13
+    },
+    "POD_qualification": "Six of eight selected mesh/source POD settings have consequential q1/q2 differences; primary B/L16 matched and stronger settings pass the registered sensitivity criterion. Approximate POD, no optimality certificate."
+  },
+  "three_dimensional_validation_release": {
+    "job_id": 6570205,
+    "directory": "val01",
+    "source": "37a91f156aff168ef8eff3b80f51d19df16a8ae0",
+    "stage_sha256": "5affa5f398397294bdfa1d60dcf1da0909ace537da82174905e48600ab5b2bab",
+    "batch_sha256": "157bc7ea5e727b1172fe56d56198d97a2b7ae12635cadc21f9f6d6bff5fdd38b",
+    "freeze_sha256": "bc669ab95ea20d88f1d793549e6f4d260fed7eae2641a1c76d837de6f49e819c",
+    "phase": "val",
+    "allocation": "H200, 192 GB host memory, 50 minutes",
+    "status": "released after independent exact review; complete checksummed return awaits independent empirical acceptance",
+    "selection": "committed immutable development choices; selector disabled",
+    "accepted_validation_results": false
   }
 }

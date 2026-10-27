@@ -1,10 +1,10 @@
 # Three-component reference controls: implementation checkpoint
 
-This checkpoint contains unexecuted finite-element code for independent review. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
+Candidate `g1-smoke02` contains revised, unexecuted finite-element code for independent diff review. The earlier staged `g1-smoke01` remains immutable and has not run. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
 
 ## Authoritative specification
 
-`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
+`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke02.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
 
 The smoke uses inexpensive $P_2/P_1$ Taylor–Hood fields and cubic geometric mapping only to check execution and establish resource feasibility. It is not the planned $P_3/P_2$ reference or its $P_4/P_3$ cross-check. Mesh seed is recorded; the relationship of NumPy's seed to Netgen's deterministic defaults remains to be verified at runtime, so no stochastic mesher reproducibility assertion is made.
 
@@ -37,13 +37,17 @@ The coordinator requires the 2D smoke to pass and an independent memory/configur
 ## Explicit remaining infrastructure and scientific work
 
 - Runtime NGSolve/Netgen import and API compatibility, actual direct backend and curved FE behavior remain untested.
-- The geometry report deliberately says that a signed-curved-Jacobian certificate is missing. Volume/area and normal-integral checks alone cannot supply it.
+- The geometry report deliberately says that a full signed-curved-Jacobian certificate is missing. The backend/geometry preflights check one mapped volume point, which does not certify all curved elements. Volume/area and normal-integral checks alone cannot supply it.
 - Boundary RMS and essential-coefficient mismatch are saved. A pointwise maximum trace certificate is not implemented and is not replaced by RMS.
 - A full $h/p$/geometry/solver-tolerance/domain/outlet series, reference uncertainty and strong FOM ladder are future released work. The first smoke cannot admit training data.
 - Mesh serialization preserves the emitted mesh/solution and coefficients; independent reload/reconstruction parity must pass before using these for data transfer.
 - Runtime boundary pressure-probe failures are retained as unresolved, with no nearest-node substitution.
 - The transient integrator is deliberately absent pending its separate implementation/review gate.
 - No bank, POD or fitted quadrature training has been performed.
+
+## Candidate g1-smoke02 practical review fixes
+
+The independent Claude implementation review found the manufactured derivatives and force identity correct. Its practical suggestions adopted here are detailed in `checks/CLAUDE-IMPLEMENTATION-RESPONSE.md`: independent per-boundary normal samples, a tiny sparse-backend and mapped-export preflight, reaction-versus-exact force metrics, invalid-point rejection, explicitly raw physical balance labels and bounded termination handling. There has been no installation or numerical FE execution. Strict linear residual admission remains unchanged; speculative dependency and tolerance changes were rejected.
 
 ## Glossary
 

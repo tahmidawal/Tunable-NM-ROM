@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import platform
 import resource
+import signal
 import subprocess
 import sys
 import time
@@ -20,7 +21,7 @@ import traceback
 
 import numpy as np
 import ngsolve as ng
-from netgen.csg import CSGeometry, Cylinder, Plane, Pnt, Sphere, Vec
+from netgen.csg import CSGeometry, Cylinder, OrthoBrick, Plane, Pnt, Sphere, Vec
 
 
 def dump(path, value):
@@ -80,6 +81,135 @@ def surface(cf, mesh, boundary, order):
     if not math.isfinite(value):
         raise RuntimeError("Nonfinite surface integral")
     return value
+
+
+def mapped_api_sample(mesh, element, boundary):
+    """Exercise explicit mapped-point API before expensive solve/export work."""
+    trafo=mesh.GetTrafo(ng.ElementId(element))
+    point=trafo(next(iter(ng.IntegrationRule(element.type,2))))
+    xyz=np.asarray(list(point.point),dtype=float)
+    jac=np.array(point.jacobi.NumPy(),dtype=float,copy=True)
+    measure=float(point.measure)
+    if xyz.shape!=(3,) or not np.all(np.isfinite(xyz)) or not np.all(np.isfinite(jac)) or not math.isfinite(measure) or measure<=0:
+        raise RuntimeError("Mapped integration-point API returned invalid data")
+    row={"point":xyz.tolist(),"jacobian_shape":list(jac.shape),"measure":measure}
+    if boundary:
+        normal=np.asarray(ng.specialcf.normal(3)(point),dtype=float)
+        if normal.shape!=(3,) or abs(np.linalg.norm(normal)-1)>1e-10:
+            raise RuntimeError("Mapped boundary normal API failed")
+        row["normal"]=normal.tolist()
+    else:
+        if jac.shape!=(3,3) or np.linalg.det(jac)<=0:
+            raise RuntimeError("Tiny preflight volume Jacobian is nonpositive")
+        row["determinant"]=float(np.linalg.det(jac))
+    return row
+
+
+def tiny_fe_api_preflight(cfg, folder):
+    """Fail cheaply if the pinned wheel lacks UMFPACK or required export APIs."""
+    start=time.monotonic()
+    geo=CSGeometry()
+    geo.Add(OrthoBrick(Pnt(0,0,0),Pnt(1,1,1)))
+    mesh=ng.Mesh(geo.GenerateMesh(maxh=1.0))
+    mesh.Curve(2)
+    V=ng.H1(mesh,order=1)
+    if V.ndof>cfg["preflight"]["tiny_fe_dofs_max"]:
+        raise RuntimeError("Tiny backend-preflight DOF guard fired")
+    trial,test=V.TnT()
+    a=ng.BilinearForm(V)
+    a+=(ng.grad(trial)*ng.grad(test)+trial*test)*ng.dx
+    rhs=ng.LinearForm(V)
+    rhs+=test*ng.dx
+    a.Assemble(); rhs.Assemble()
+    solution=ng.GridFunction(V)
+    inverse=a.mat.Inverse(V.FreeDofs(),inverse=cfg["preflight"]["tiny_fe_backend"])
+    solution.vec.data=inverse*rhs.vec
+    del inverse
+    residual=rhs.vec.CreateVector()
+    residual.data=a.mat*solution.vec-rhs.vec
+    denominator=max(float(np.linalg.norm(rhs.vec.FV().NumPy())),1e-30)
+    relative=float(np.linalg.norm(residual.FV().NumPy()))/denominator
+    if not math.isfinite(relative) or relative>cfg["preflight"]["tiny_fe_relative_residual"]:
+        raise RuntimeError("Tiny UMFPACK solve residual failed")
+    elements={"volume":next(iter(mesh.Elements(ng.VOL))),"boundary":next(iter(mesh.Elements(ng.BND)))}
+    samples={name:mapped_api_sample(mesh,el,name=="boundary") for name,el in elements.items()}
+    W=ng.VectorH1(mesh,order=1)
+    vector=ng.GridFunction(W)
+    vector.Set(ng.CoefficientFunction((ng.x,ng.y,ng.z)))
+    for name,el in elements.items():
+        trafo=mesh.GetTrafo(ng.ElementId(el))
+        mip=trafo(next(iter(ng.IntegrationRule(el.type,2))))
+        velocity=np.asarray(vector(mip),dtype=float)
+        gradient=np.asarray(ng.Grad(vector)(mip),dtype=float).reshape(3,3)
+        if not np.all(np.isfinite(velocity)) or not np.all(np.isfinite(gradient)):
+            raise RuntimeError("Mapped coefficient/gradient API failed")
+        samples[name]["linear_vector_value_error"]=float(np.linalg.norm(velocity-np.asarray(list(mip.point))))
+        samples[name]["linear_vector_gradient_error"]=float(np.linalg.norm(gradient-np.eye(3)))
+        if samples[name]["linear_vector_value_error"]>1e-10 or samples[name]["linear_vector_gradient_error"]>1e-10:
+            raise RuntimeError("Mapped vector/gradient convention preflight failed")
+    check=mesh(0.25,0.25,0.25)
+    if check.nr<0:
+        raise RuntimeError("Interior MeshPoint validity preflight failed")
+    record={"status":"tiny_fe_api_preflight_passed","scope":"backend/API only, not a PDE reference","backend":cfg["preflight"]["tiny_fe_backend"],"scalar_dofs":V.ndof,"relative_linear_residual":relative,"samples":samples,"elapsed_seconds":time.monotonic()-start,"peak_rss_gib":rss_gib()}
+    dump(folder/"backend-api-preflight.json",record)
+    return record
+
+
+def normal_orientation_samples(mesh,cfg,obstacle):
+    """Independent low-order point samples, separate from force integration."""
+    q=cfg["mesh"]["normal_sampling_order"]
+    records={name:{"count":0,"minimum":None,"maximum":None,"worst_point":None} for name in sorted(set(mesh.GetBoundaries()))}
+    ncf=ng.specialcf.normal(3)
+    for element in mesh.Elements(ng.BND):
+        label=str(element.mat)
+        if label not in records:
+            raise RuntimeError(f"Unexpected boundary element label {label}")
+        trafo=mesh.GetTrafo(ng.ElementId(element))
+        for ip in ng.IntegrationRule(element.type,q):
+            mip=trafo(ip)
+            point=np.asarray(list(mip.point),dtype=float)
+            normal=np.asarray(ncf(mip),dtype=float)
+            if point.shape!=(3,) or normal.shape!=(3,) or not np.all(np.isfinite(point)) or not np.all(np.isfinite(normal)) or abs(np.linalg.norm(normal)-1)>1e-10:
+                raise RuntimeError("Boundary normal sample has invalid coordinates/normal")
+            if label=="sphere":
+                dot=float(normal@point/np.linalg.norm(point))
+                allowed=dot<=-0.99
+            elif label=="wall":
+                radial=np.array([0.0,point[1],point[2]])
+                dot=float(normal@radial/np.linalg.norm(radial))
+                allowed=dot>=0.99
+            elif label=="inlet":
+                dot=float(normal[0]); allowed=abs(dot+1)<=1e-10
+            elif label=="outlet":
+                dot=float(normal[0]); allowed=abs(dot-1)<=1e-10
+            else:
+                raise RuntimeError("Unrecognized boundary label")
+            row=records[label]
+            row["count"]+=1
+            row["minimum"]=dot if row["minimum"] is None else min(dot,row["minimum"])
+            row["maximum"]=dot if row["maximum"] is None else max(dot,row["maximum"])
+            # Save the most poorly aligned independently evaluated sample.
+            score=-dot if label=="sphere" or label=="inlet" else dot
+            if row.get("minimum_alignment",2)>score:
+                row["minimum_alignment"]=score; row["worst_point"]=point.tolist()
+            if not allowed:
+                raise RuntimeError(f"Normal orientation failed on {label}: point={point.tolist()}, dot={dot}")
+    if any(row["count"]==0 for row in records.values()):
+        raise RuntimeError("A required boundary has no independent normal samples")
+    if obstacle and "sphere" not in records:
+        raise RuntimeError("Missing sphere orientation samples")
+    return {"independent_point_rule_order":q,"status":"sampled_orientation_passed_not_continuum_certificate","boundaries":records}
+
+
+def geometry_dof_screen(mesh,cfg,obstacle):
+    bcs="inlet|wall"+("|sphere" if obstacle else "")
+    V=ng.VectorH1(mesh,order=cfg["fe"]["velocity_order"],dirichlet=bcs)
+    Q=ng.H1(mesh,order=cfg["fe"]["pressure_order"])
+    total=V.ndof+Q.ndof
+    estimate=128*total**2/1024**3+4
+    row={"velocity":V.ndof,"pressure":Q.ndof,"total":total,"factor_memory_screen_gib":estimate,"screen_is_bound":False,"guard_passed":total<=cfg["guards"]["max_dofs"] and estimate<=cfg["guards"]["factor_estimate_gib_max"],"factorization_performed":False}
+    print("geometry_dof_screen="+json.dumps(row,sort_keys=True),flush=True)
+    return row
 
 
 def geometry_diagnostics(mesh, cfg, obstacle):
@@ -270,7 +400,7 @@ def solve(mesh,cfg,case,folder,row,start):
     independent=scaled_norm(ri,units,free)
     gap=r.CreateVector()
     gap.data=r-ri
-    row["residual"]={"free_dof_normalization":"Euclidean row-unit-scaled free residual divided by max(initial exact-BC zero-interior residual, configured floor); velocity unit U²D², continuity UD²","denominator":denom,"independent_free_raw":independent,"independent_relative":independent/denom,"assembled_vector_gap":scaled_norm(gap,units,free)/denom,"dirichlet_coefficient_max_gap":float(np.max(np.abs((gfu.vec.FV().NumPy()-bc.vec.FV().NumPy())[~free]),initial=0))}
+    row["residual"]={"free_dof_normalization":"Euclidean row-unit-scaled free residual divided by max(initial exact-BC zero-interior residual, configured floor); velocity unit U²D², continuity UD²","denominator":denom,"independent_free_raw":independent,"independent_relative":independent/denom,"criterion_when_floor_active":"absolute in fixed row-scaled units","assembled_vector_gap":scaled_norm(gap,units,free)/denom,"dirichlet_coefficient_max_gap":float(np.max(np.abs((gfu.vec.FV().NumPy()-bc.vec.FV().NumPy())[~free]),initial=0))}
     if independent/denom>cfg["solver"]["relative_free_residual"] or row["residual"]["assembled_vector_gap"]>1e-12:
         raise RuntimeError("Independent residual check failed")
     row["history"]=history
@@ -337,8 +467,9 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
             den=max(sum(abs(v) for v in momentum_flux[i].values())+sum(abs(v) for v in gradient_tractions.values())+abs(udiv)+abs(body[i]),1e-12*U*U*D*D)
             gradient_momentum.append({"gradient_tractions":gradient_tractions,"u_divu":udiv,"residual":mismatch,"denominator":den,"normalized":abs(mismatch)/den})
         values["gradient_momentum_with_finite_divergence"]=gradient_momentum
-        values["momentum"]={"convective_boundary_flux":momentum_flux,"physical_boundary_traction":all_traction,"body_force_integrals":body,"residual":mom_res,"denominator":mom_den,"normalized": [abs(a)/b for a,b in zip(mom_res,mom_den)],"finite_divergence_u_divu": [integrate(u[i]*ng.div(u),mesh,order) for i in range(3)]}
-        values["energy"]={"physical_strain_dissipation":diss,"kinetic_boundary_flux":kinetic,"physical_boundary_power":power,"body_power":fpower,"raw_residual":energy,"denominator":eden,"normalized":abs(energy)/eden,"half_u_squared_divu":divkin,"p_divu":divp,"gradient_dissipation":grad_diss,"gradient_boundary_power":gradpower,"gradient_identity_with_divergence_terms":grad_identity,"gradient_identity_denominator":grad_energy_den,"gradient_identity_normalized":abs(grad_identity)/grad_energy_den}
+        values["physical_momentum_raw_uncorrected_continuum"]={"convective_boundary_flux":momentum_flux,"physical_boundary_traction":all_traction,"body_force_integrals":body,"residual":mom_res,"denominator":mom_den,"normalized": [abs(a)/b for a,b in zip(mom_res,mom_den)],"finite_divergence_u_divu": [integrate(u[i]*ng.div(u),mesh,order) for i in range(3)]}
+        values["gradient_energy_with_finite_divergence"]={"gradient_dissipation":grad_diss,"kinetic_boundary_flux":kinetic,"gradient_boundary_power":gradpower,"body_power":fpower,"half_u_squared_divu":divkin,"p_divu":divp,"residual":grad_identity,"denominator":grad_energy_den,"normalized":abs(grad_identity)/grad_energy_den}
+        values["physical_energy_raw_uncorrected_continuum"]={"physical_strain_dissipation":diss,"kinetic_boundary_flux":kinetic,"physical_boundary_power":power,"body_power":fpower,"raw_residual":energy,"denominator":eden,"normalized":abs(energy)/eden}
         if obstacle:
             fsym=[-surface((sigma*n)[i],mesh,"sphere",order) for i in range(3)]
             fgrad=[-surface((gradstress*n)[i],mesh,"sphere",order) for i in range(3)]
@@ -366,14 +497,29 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
             ei=ng.CoefficientFunction(tuple(float(j==i) for j in range(3)))
             test.components[0].Set(ei,definedon=mesh.Boundaries("sphere"))
             reactions.append(-float(np.dot(ri.FV().NumPy(),test.vec.FV().NumPy())))
+    reaction_checks=[]
+    if obstacle:
+        for item in out:
+            check={"quadrature_order":item["quadrature_order"],"reaction_minus_gradient_surface":[a-b for a,b in zip(reactions,item["force"]["gradient"])],"reaction_minus_physical_surface":[a-b for a,b in zip(reactions,item["force"]["physical"])]}
+            if case=="manufactured":
+                exact=item["manufactured_force_control"]
+                check["reaction_minus_analytic_exact_sphere"]=[a-b for a,b in zip(reactions,exact["analytic_exact_sphere_surface_force"])]
+                check["reaction_minus_exact_polynomial_on_FE_surface"]=[a-b for a,b in zip(reactions,exact["exact_polynomial_on_FE_surface"])]
+            reaction_checks.append(check)
     probes=[]
     for point in ((-D/2,0,0),(D/2,0,0)) if obstacle else ((0,0,0),(1,0,0)):
         try:
             mp=mesh(*point)
-            probes.append({"point":point,"pressure":float(p(mp)),"velocity":[float(v) for v in u(mp)],"status":"evaluated_on_FE_geometry_no_nearest_node_replacement"})
+            if mp.nr<0:
+                raise RuntimeError("MeshPoint.nr < 0: exact probe outside computational mesh")
+            pressure=float(p(mp))
+            velocity=[float(v) for v in u(mp)]
+            if not math.isfinite(pressure) or not all(math.isfinite(v) for v in velocity):
+                raise RuntimeError("Nonfinite exact-point probe evaluation")
+            probes.append({"point":point,"pressure":pressure,"velocity":velocity,"status":"evaluated_on_FE_geometry_no_nearest_node_replacement"})
         except Exception as exc:
             probes.append({"point":point,"status":"unresolved_exact_point","error":str(exc)})
-    return {"integration_ladder":out,"gradient_weak_reaction_force":reactions,"pressure_probes":probes,"reference_admitted":False,"admission_note":"Requires independent multi-level convergence, trace-maximum and signed-curved-Jacobian gates; this smoke cannot admit references"}
+    return {"integration_ladder":out,"gradient_weak_reaction_force":reactions,"reaction_force_checks":reaction_checks,"pressure_probes":probes,"reference_admitted":False,"admission_note":"Requires independent multi-level convergence, trace-maximum and signed-curved-Jacobian gates; this smoke cannot admit references"}
 
 
 def main():
@@ -403,8 +549,13 @@ def main():
     except Exception as exc:
         report["hardware_query_error"]=str(exc)
     dump(args.out/"summary.json",report)
+    def on_termination(signum, frame):
+        raise SystemExit(128+signum)
+    signal.signal(signal.SIGTERM,on_termination)
     try:
         with ng.TaskManager():
+            report["preflight"]=tiny_fe_api_preflight(cfg,args.out)
+            dump(args.out/"summary.json",report)
             for name in cfg["cases"]:
                 if time.monotonic()-start>cfg["guards"]["total_seconds_max"]:
                     raise RuntimeError("Total code wall-time guard fired")
@@ -415,6 +566,14 @@ def main():
                 case_start=time.monotonic()
                 dump(args.out/"summary.json",report)
                 mesh=geometry(cfg,name!="empty")
+                row["mapped_api_first_volume"]=mapped_api_sample(mesh,next(iter(mesh.Elements(ng.VOL))),False)
+                row["mapped_api_first_boundary"]=mapped_api_sample(mesh,next(iter(mesh.Elements(ng.BND))),True)
+                row["normal_orientation"]=normal_orientation_samples(mesh,cfg,name!="empty")
+                row["geometry_dof_screen"]=geometry_dof_screen(mesh,cfg,name!="empty")
+                dump(folder/"progress.json",row)
+                dump(args.out/"summary.json",report)
+                if not row["geometry_dof_screen"]["guard_passed"]:
+                    raise RuntimeError("Geometry-only DOF/memory screen failed before any case factorization")
                 row["geometry"]=geometry_diagnostics(mesh,cfg,name!="empty")
                 row["geometry_seconds"]=time.monotonic()-case_start
                 dump(folder/"progress.json",row)
@@ -428,9 +587,10 @@ def main():
                 dump(folder/"result.json",row)
                 dump(args.out/"summary.json",report)
         report["status"]="smoke_complete_not_reference_admission"
-    except Exception as exc:
-        report["status"]="failed"
+    except BaseException as exc:
+        report["status"]="terminated" if isinstance(exc,(SystemExit,KeyboardInterrupt)) else "failed"
         report["exception"]=str(exc)
+        report["exception_type"]=type(exc).__name__
         report["traceback"]=traceback.format_exc()
         raise
     finally:

@@ -57,8 +57,8 @@ def main():
     if before != after:
         raise RuntimeError("Shared numerical package versions changed")
     env = dict(os.environ)
-    env["PYTHONPATH"] = str(target)
-    check = subprocess.run([EXPECTED_PYTHON, "-c", "import ngsolve,netgen,jax; print('ngsolve_version='+ngsolve.__version__); print('jax_version='+jax.__version__); print('jax_backend='+jax.default_backend()); assert jax.default_backend()=='gpu'"], env=env, capture_output=True, text=True, timeout=90)
+    env["PYTHONPATH"] = str(target) + (os.pathsep+env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+    check = subprocess.run([EXPECTED_PYTHON, "-c", "import ngsolve,netgen,jax; print('ngsolve_version='+ngsolve.__version__); print('jax_version='+jax.__version__); print('jax_backend='+jax.default_backend()); assert jax.default_backend()=='gpu'; assert jax.config.x64_enabled; print('jax_x64='+str(jax.config.x64_enabled))"], env=env, capture_output=True, text=True, timeout=90)
     report = {"schema":"ns-obstacle-dependencies-v1","wheels":rows,"shared_before":before,"shared_after":after,"import_exit":check.returncode,"import_stdout":check.stdout,"import_stderr":check.stderr,"target":str(target)}
     (root/"DEPENDENCIES.installed.json").write_text(json.dumps(report, indent=2)+"\n")
     print(check.stdout, flush=True)

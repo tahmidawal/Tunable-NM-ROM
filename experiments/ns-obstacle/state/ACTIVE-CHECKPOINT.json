@@ -1,13 +1,11 @@
 {
-  "status": "one_2d_dependency_repair_retry_submitted",
-  "numerical_jobs": [
-    6567287
-  ],
+  "status": "native_preflight_lifetime_repair_preparation",
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "collect job6567287 after terminal state and review results",
-    "3D private-prefix repair and exact review",
-    "reference controls before training"
+    "collect second failed allocation and preserve successful dependency evidence",
+    "review one lifetime repair plus fault markers",
+    "future G1 controls then G2 references"
   ],
   "staged_unsubmitted": [
     {
@@ -25,7 +23,7 @@
       "will_be_superseded_by": "g1-smoke02"
     }
   ],
-  "completed_allocated_gpu_hours": 0.009166666666666667,
+  "completed_allocated_gpu_hours": 0.013888888888888888,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,

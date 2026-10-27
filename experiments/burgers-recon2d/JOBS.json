@@ -19,7 +19,9 @@
       "collection": "Compact consumed arrays and native POD bases retained and reverified locally; regenerable training matrices omitted under the approved retention contract. Remote directory removed after checksum reverification.",
       "remote_directory_removed_after_verified_collection": true,
       "local_archive": "runs/prep01",
-      "collection_manifest_sha256": "d7b0fbe19b28915e620fa5b1437ef744ab8969dbffffa9db70b5d062e0b26027"
+      "collection_manifest_sha256": "d7b0fbe19b28915e620fa5b1437ef744ab8969dbffffa9db70b5d062e0b26027",
+      "local_archive_storage": "direct local Git blobs plus unchanged expanded files",
+      "local_archive_member_manifest": "results/RETENTION.members.jsonl"
     },
     {
       "job_id": 6567730,
@@ -42,7 +44,9 @@
       ],
       "remote_directory_removed_after_verified_collection": true,
       "local_archive": "runs/inputplus01",
-      "collection_manifest_sha256": "88d38b28ad553b9cbaf4b6200715a0407904b908e3e2b14cd08a832c833123bc"
+      "collection_manifest_sha256": "88d38b28ad553b9cbaf4b6200715a0407904b908e3e2b14cd08a832c833123bc",
+      "local_archive_storage": "direct local Git blobs plus unchanged expanded files",
+      "local_archive_member_manifest": "results/RETENTION.members.jsonl"
     },
     {
       "job_id": 6568278,
@@ -63,7 +67,9 @@
       "cancellation": "reviewed lane-local guarded helper, exact ID/account/name/dev01 WorkDir only",
       "collection": "all retained partial files pulled and checksummed; invalidation note retained; never used to freeze selection",
       "remote_directory_removed_after_verified_collection": true,
-      "local_archive": "runs/dev01"
+      "local_archive": "runs/dev01",
+      "local_archive_storage": "direct local Git blobs plus unchanged expanded files",
+      "local_archive_member_manifest": "results/RETENTION.members.jsonl"
     },
     {
       "job_id": 6568662,
@@ -91,7 +97,9 @@
       },
       "collection": "all files collected and verified against full COLLECTION.sha256; independent returned-artifact and freeze audit passed",
       "remote_directory_removed_after_verified_collection": true,
-      "local_archive": "runs/dev02"
+      "local_archive": "runs/dev02",
+      "local_archive_storage": "direct local Git blobs plus unchanged expanded files",
+      "local_archive_member_manifest": "results/RETENTION.members.jsonl"
     },
     {
       "job_id": 6569458,
@@ -132,7 +140,9 @@
         "primary_method_over_ordinary_ratio": 1.3908839178083394,
         "primary_wins": 0,
         "primary_losses": 32
-      }
+      },
+      "local_archive_storage": "direct local Git blobs plus unchanged expanded files",
+      "local_archive_member_manifest": "results/RETENTION.members.jsonl"
     }
   ],
   "total_charged_gpu_seconds": 5211,
@@ -151,6 +161,16 @@
       "dev02"
     ],
     "queue_guard": "No queued job used this namespace before cleanup.",
-    "retention": "All unique reconstruction/diagnostic arrays retained locally; only approved regenerable training-matrix duplicates omitted."
+    "retention": "All unique reconstruction/diagnostic arrays retained locally and in direct Git blobs; only approved regenerable training matrices omitted."
+  },
+  "durable_retention": {
+    "manifest": "results/RETENTION.json",
+    "members": "results/RETENTION.members.jsonl",
+    "members_sha256": "3526a0b5a44ecc0c9688e61be940e203c8e6c0b69f5e9b0810f9b94d6cafc65f",
+    "tracked_files": 50760,
+    "logical_bytes": 51714197084,
+    "unique_git_blobs": 49062,
+    "code_only_backup": "Complete member manifest, retention metadata, and losslessly compressed full development/validation EXPORTs; raw run files deliberately excluded.",
+    "repair": "The first closeout recorded ignored expanded copies only. A later review identified the gap; all five runs and the cleanup receipt are now tracked directly without deleting or replacing expanded evidence."
   }
 }

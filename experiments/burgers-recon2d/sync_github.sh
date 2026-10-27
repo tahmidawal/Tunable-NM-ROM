@@ -27,6 +27,11 @@ git read-tree "$REMOTE_BASE^{tree}"
 
 git diff --no-renames --name-status -z "$LOCAL_BASE" HEAD |
 while IFS= read -r -d '' status && IFS= read -r -d '' path; do
+  # Numerical evidence is retained as direct local Git blobs. The complete
+  # RETENTION manifest is mirrored; raw runs never enter the code-only tree.
+  if [[ "$path" == experiments/burgers-recon2d/runs/* ]]; then
+    continue
+  fi
   if [ "$status" = D ]; then
     git update-index --force-remove -- "$path"
     continue

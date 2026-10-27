@@ -2,6 +2,8 @@
 from pathlib import Path
 import hashlib
 import json
+import argparse
+import re
 
 HERE=Path(__file__).resolve().parent
 def pin(p):return dict(path=str(p.relative_to(HERE)),sha256=hashlib.sha256(p.read_bytes()).hexdigest())
@@ -13,10 +15,12 @@ def bank(name,r,M,rule,solver,scheme,dt,k,archived=True):
     return d
 
 def main():
+    parser=argparse.ArgumentParser();parser.add_argument('--pod-attempt',default='podtune05');args=parser.parse_args()
+    assert re.fullmatch('[a-z0-9-]+',args.pod_attempt)
     audits=json.loads((HERE/'AUDIT-STATUS.json').read_text())
-    for attempt in ('tdiag02','podtune03','qcheck801'):
+    for attempt in ('tdiag02',args.pod_attempt,'qcheck801'):
         assert audits['jobs'][attempt]['results'].startswith('READY'),(attempt,'independent results gate not READY')
-    tp=HERE/'results/tdiag02/raw/output/result.json';pp=HERE/'results/podtune03/raw/output/result.json'
+    tp=HERE/'results/tdiag02/raw/output/result.json';pp=HERE/f'results/{args.pod_attempt}/raw/output/result.json'
     t,p=[json.loads(q.read_text()) for q in (tp,pp)]
     assert t['complete'] and p['complete'] and t['cohort_sha256']==p['cohort_sha256']
     subjects=[bank('W256',256,1027,'lat8192','qn','BDF2',.025,4),bank('M2_512',512,2052,'gl32','qn','BDF2',.05/3,4),
@@ -39,7 +43,10 @@ def main():
     pod=list(p['frozen_picks'])
     # Preserve the original qualified POD endpoint even when a fair-grid endpoint wins development.
     if 'POD512_none_BDF2_15steps' not in pod:pod.append('POD512_none_BDF2_15steps')
-    for name in pod:subjects.append(dict(id=name,kind='POD',subject_name=name))
+    for name in pod:
+        row=p['runs'][name+'|case0']
+        subjects.append(dict(id=name,kind='POD',subject_name=name,r=512,scheme=row['scheme'],dt=row['dt'],steps=row['steps'],
+                             production_gtol=row['production_stopping_gtol'],production_tolf=1e-9,solver='common'))
     for N,dt in [(14,.025),(16,.025),(24,.01),(32,.005)]:subjects.append(dict(id=f'PS_N{N}_{round(.25/dt)}',kind='PS',spec=['ps',N,dt]))
     for dt,level in [(.0125,1),(.005,0)]:subjects.append(dict(id=f'FD_CC_L64_{round(.25/dt)}_t{level}',kind='FD',spec=['fd','CC',64,dt,level]))
     out=dict(seed=923801,mode='front',cases=list(range(64)),subjects=subjects,anchor=subjects[1]['id'],

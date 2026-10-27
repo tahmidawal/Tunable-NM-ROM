@@ -16,7 +16,8 @@ def score(cx,F,j):
     if not np.isfinite(np.asarray(F)).all():
         return dict(e=None,e_t=[None]*6,epsilon=status['eps_ref'],eligible=status['eligible'],normalisation=n0,finite=False)
     et=np.linalg.norm(np.asarray(F)-R,axis=1)/n0
-    return dict(e=float(et[1:].max()),e_t=et.tolist(),epsilon=status['eps_ref'],eligible=status['eligible'],normalisation=n0,finite=True)
+    return dict(e=float(et[1:].max()),e_t=et.tolist(),epsilon=status['eps_ref'],eligible=status['eligible'],normalisation=n0,finite=True,
+                metric='maximum relative error over evolved outputs0.05:0.05:0.25; time0 retained separately')
 
 def run(cx,POD):
     t=time.perf_counter()

@@ -19,6 +19,10 @@ def summarize(result):
                 median_seconds=float(np.median([np.median(percase[j]) for j in ids])) if covered else None,
                 admitted_repetitions=sum(map(len,percase.values())),
                 rejected_repetitions=sum(r['subject']==sid and r['role']=='B' and not r[mask] for r in result['timing_repetitions']))
+            if covered:
+                cm=np.asarray([np.median(percase[j]) for j in ids]);median=float(np.median(cm))
+                rec['costs'][contract].update(worst_case_median_seconds=float(cm.max()),p95_case_median_seconds=float(np.quantile(cm,.95)),
+                                              cases_above_three_times_median=int(np.sum(cm>3*median)))
         if finite:
             med=rec['median_error'];rec['errors_above_five_times_median']=sum(e>5*med for e in errors)
             rec['errors_above_one_percent']=sum(e>.01 for e in errors)
@@ -34,7 +38,7 @@ def summarize(result):
             choices=[cid for cid,sub in result['subjects'].items() if cid!=sid and sub['config']['kind']==family]
             result['matching']['subjects'][sid][family]={}
             for contract in ('descriptor','prepared_native'):
-                usable=[];checks={}
+                usable=[];median_usable=[];worst_usable=[];checks={}
                 for cid in choices:
                     comp=summaries[cid]
                     if not(own['qualified'] and comp['qualified'] and own['costs'][contract]['coverage_complete'] and comp['costs'][contract]['coverage_complete']):
@@ -47,8 +51,13 @@ def summarize(result):
                     checks[cid]=dict(median_match=median,worst_match=worst,joint_match=median and worst,
                                      status='matched' if median and worst else 'unresolved overlap or insufficient accuracy')
                     if median and worst:usable.append(cid)
+                    if median:median_usable.append(cid)
+                    if worst:worst_usable.append(cid)
                 pick=min(usable,key=lambda c:summaries[c]['costs'][contract]['median_seconds']) if usable else None
+                mpick=min(median_usable,key=lambda c:summaries[c]['costs'][contract]['median_seconds']) if median_usable else None
+                wpick=min(worst_usable,key=lambda c:summaries[c]['costs'][contract]['median_seconds']) if worst_usable else None
                 result['matching']['subjects'][sid][family][contract]=dict(selected=pick,checks=checks,
+                    selected_joint=pick,selected_median_descriptive=mpick,selected_worst_descriptive=wpick,
                     competitor_over_subject_cost_ratio=(summaries[pick]['costs'][contract]['median_seconds']/own['costs'][contract]['median_seconds']) if pick else None,
                     scope='fastest jointly matching member of this frozen finite tested set')
     result['frontiers']={}

@@ -1,0 +1,63 @@
+{
+ "scope": "planning proxy only; measured difficult-case controls include setup/compilation and overlapping query/certification costs, not a prediction or speed comparison",
+ "config_sha256": "be653a4e18e8c70aebfb9e1c96c29834dd25200212425fa4252865360768cd6e",
+ "ordered_subjects": [
+  "W256_lat8192_qn_BDF2_10",
+  "M2_512_gl32_qn_BDF2_15",
+  "W512k8_lat16384_fs_CN_25",
+  "W768_gl40_fs_CN_25",
+  "W1024_gl56_fs_CN_25",
+  "W1024_gl56_qn_BDF2_10",
+  "W1024_gl56_qn_BDF2_40",
+  "POD512_none_BDF2_10steps_g1e-4",
+  "POD512_none_CN_25steps_g1e-4",
+  "POD512_none_BDF2_15steps",
+  "PS_N14_10",
+  "PS_N16_10",
+  "PS_N24_25",
+  "PS_N32_50",
+  "FD_CC_L64_20_t1",
+  "FD_CC_L64_50_t0"
+ ],
+ "measured_sources": {
+  "time": {
+   "path": "results/tdiag02/raw/output/result.json",
+   "sha256": "7f2ea1cfb024b5ed6e80fbeccd849e73239763803fef0f23691b1c6655a055db",
+   "Slurm_seconds": 715,
+   "new_steps": 2460
+  },
+  "POD": {
+   "path": "results/podtune02/raw/output/result.json",
+   "sha256": "a9a0bb13eeaa9e23c41d26ba932b76103931f4bbf8d41fed6a32b88735611475",
+   "Slurm_seconds": 242,
+   "native_steps": 880
+  }
+ },
+ "proxies_by_max_reps": {
+  "3": {
+   "weak_control_proxy_seconds": 3836.5853658536585,
+   "POD_validation_proxy_seconds": 1760.0,
+   "additional_new_bank_query_allowance_seconds": 422.4700892114638,
+   "burn_seconds": 921.6,
+   "other_query_allowance_seconds": 900.0,
+   "setup_serialization_allowance_seconds": 600,
+   "total_gpu_hours": 2.344626515295867
+  },
+  "5": {
+   "weak_control_proxy_seconds": 3836.5853658536585,
+   "POD_validation_proxy_seconds": 1760.0,
+   "additional_new_bank_query_allowance_seconds": 844.9401784229276,
+   "burn_seconds": 1536.0,
+   "other_query_allowance_seconds": 1500.0,
+   "setup_serialization_allowance_seconds": 600,
+   "total_gpu_hours": 2.79931265118794
+  }
+ },
+ "spent_before_job_gpu_hours": 0.4633333333333333,
+ "hard_final_gpu_hours": 3,
+ "planned_mesh_hard_gpu_hours": 1,
+ "lane_cap_gpu_hours": 8,
+ "reserved_total_gpu_hours": 4.463333333333333,
+ "device_peak_limit_bytes": 120000000000,
+ "memory_projection": "Measured D-T86.14GB plus shared POD/M2 tables and streamed rule changes;120GB late checkpoint cap. Peak attribution remains whole job."
+}

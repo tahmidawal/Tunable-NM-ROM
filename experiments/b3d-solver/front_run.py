@@ -135,6 +135,7 @@ def own_quadrature(cx,sub,result,prod):
 
 def run(cx,POD):
     cfg=cx.cfg;assert cx.cases==list(range(64)) and cfg['timing_reps']>=3
+    for pin in cfg['selection_sources'].values():assert file_sha(HERE/pin['path'])==pin['sha256']
     am=json.loads((HERE/'inputs/front_archive.json').read_text());assert file_sha(HERE/'inputs/front_archive.npz')==am['archive_sha256']
     archive=np.load(HERE/'inputs/front_archive.npz',allow_pickle=False)
     common_setup=time.perf_counter()-cx.t0
@@ -148,6 +149,7 @@ def run(cx,POD):
         raw_regeneration_sha256=cohort_audit['actual_sha256'],normalisation_restore=cohort_audit['normalisation_audit'],exposed_validation=True),
         reference=dict(dimension=3,cohort='val64',kind='ST',field='finest',store_version=RS.store_version(),
             status_sha256=file_sha(HERE/'vendor/e0/store/STATUS.json'),uncertainty='conditional Richardson',output_times=times,
+            error_metric='maximum normalized field error over evolved outputs0.05:0.05:0.25; time0 reported separately',
             scoring_lattice=dict(nodes_per_axis=65,interior_per_axis=63,flattening='x slowest',shape=[6,63**3])),
         contracts=dict(primary='descriptor',descriptor=dict(contains_canonical_s_star=True,cohort_and_descriptor_construction='common offline setup',
             includes_native_input_preparation=True),prepared_native=dict(cross_method_inputs_differ=True),
@@ -156,6 +158,8 @@ def run(cx,POD):
                        POD='full central finite-difference residual projected on frozen POD basis; no hyper-reduction',
                        FD='central finite differences and damped CN startup',PS='oversampled sine pseudo-spectral ETDRK4; not exact de-aliasing'),
         subjects={},case_results={},timing_repetitions=[],phase_repetitions=[],matching={},frontiers={},shared_setup=shared,
+        selection_sources=cfg['selection_sources'],HR_comparator_status=cfg.get('HR_comparator_status'),
+        scope='fixed16-subject finite set on exposed full64 validation; no sealed confirmation or best-HR-superiority claim',
         common_setup=dict(seconds=common_setup,scope='shared provenance/descriptor construction and diagnostic input cache; online descriptor preparation still timed on every invocation'),
         execution=dict(source_commit=cx.rep['source_commit'],job_id=cx.rep['job_id'],gpu=cx.rep['gpu'],config_sha256=cx.rep['config_sha256'],
                        backend=cx.rep['backend'],jax=cx.rep['jax'],x64=True,matmul_precision='highest',complete=False))
@@ -170,7 +174,7 @@ def run(cx,POD):
     subjects=[cfg['subjects'][i] for i in rng.permutation(len(cfg['subjects']))]
     for sc in subjects:
         sub=anchor if sc['id']==cfg['anchor'] else FM.bank(cx,sc,shared) if sc['kind']=='bank' else FM.pod(cx,sc,pod_subjects,shared) if sc['kind']=='POD' else FM.fom(cx,sc,foms)
-        sid=sc['id'];folder=cx.out/'data'/sid;folder.mkdir(parents=True,exist_ok=False)
+        sc=sub['config'];sid=sc['id'];folder=cx.out/'data'/sid;folder.mkdir(parents=True,exist_ok=False)
         operator_identity={}
         if sub['kind']=='bank':
             X,w=sub['st'].rules[sc['rule']]
@@ -182,10 +186,11 @@ def run(cx,POD):
                 original=am['entries'][sc['archived_key']]['original_qualification_record']
                 if original and 'mode_hash' in original:assert mode_hash==original['mode_hash']
                 if original and 'rule_sha256' in original:assert rule_hash==original['rule_sha256']
-        result['subjects'][sid]=dict(config=sc,provenance=dict(bank_sha256=sub['st'].bk['sha256']) if sub['kind']=='bank' else sub.get('pod',{}).get('metadata',{}),
+        result['subjects'][sid]=dict(config=sc,provenance=dict(bank_sha256=sub['st'].bk['sha256']) if sub['kind']=='bank' else sub.get('active_metadata',{}),
             setup_seconds=sub['setup_seconds'],setup_peak_bytes=sub['setup_memory_after']['whole_job_cumulative_peak_bytes'],
             setup_memory=dict(before=sub['setup_memory_before'],after=sub['setup_memory_after'],peak_scope='cumulative whole job'),
-            shared_setup_keys=sub['shared_setup_keys'],operator_identity=operator_identity,input_contract=sub['input_contract'],qualification=dict(status='pending',Q1={},Q2={},scope='full64 exposed validation',source_pins={},common_rollout_check={},method_specific_extra_masks={}))
+            shared_setup_keys=sub['shared_setup_keys'],operator_identity=operator_identity,effective_parameters=sub['effective_parameters'],
+            input_contract=sub['input_contract'],qualification=dict(status='pending',Q1={},Q2={},scope='full64 exposed validation',source_pins={},common_rollout_check={},method_specific_extra_masks={}))
         if sc['kind'] in ('PS','FD'):
             source=next((v for v in frozen['picks'].values() if v['key']==fomrun.key(tuple(sc['spec']))),None)
             if sc['kind']=='FD':
@@ -205,12 +210,14 @@ def run(cx,POD):
                     C3.burn(cfg['burn_seconds']);t0=time.perf_counter();u=jax.block_until_ready(subject['prepare'](j));t1=time.perf_counter()
                     o=jax.block_until_ready(subject['run'](u,cx.nu[j]));t2=time.perf_counter();F=subject['output'](o)
                     oh=ah(F);state=subject['state'](o);ch=ah(state) if state is not None else None
+                    assert np.asarray(F).dtype==np.float64 and np.asarray(u).dtype==np.float64
+                    if state is not None:assert state.dtype==np.float64
                     if subject['id']==cfg['anchor']:
                         if j in anchor_hashes:assert anchor_hashes[j]==(oh,ch)
                         anchor_hashes[j]=(oh,ch)
                     row=dict(invocation_id=f'{sid}:c{j}:r{rep}:{role}',subject=subject['id'],case=j,rep=rep,bracket=f'{sid}:c{j}:r{rep}',role=role,
                         given_native_seconds=t2-t1,input_prep_seconds=t1-t0,descriptor_seconds=t2-t0,score=score(cx,F,j),
-                        output_sha256=oh,coefficient_sha256=ch)
+                        output_sha256=oh,coefficient_sha256=ch,input_dtype=str(u.dtype),output_dtype=str(F.dtype))
                     trip.append(row)
                     if role=='B':
                         if expected is not None:assert expected==(oh,ch)
@@ -222,6 +229,9 @@ def run(cx,POD):
                 seen=[r for r in result['timing_repetitions'] if r['subject']==sid and r['case']==j and r['role']=='B']
                 if rep+1>=cfg['timing_reps'] and any(r['timing_admitted'] for r in seen) and any(r['native_timing_admitted'] for r in seen):break
             o,row=first;cert,extra,arrays=certify_case(cx,sub,o,j,archive,am);W=sub['weights'](o);C=sub['state'](o)
+            cert['output_finite']=row['score'].get('finite',True)
+            cert['valid']=bool(cert['valid'] and cert['output_finite'])
+            cert['common_rollout_check']=bool(cert['common_rollout_check'] and cert['output_finite'])
             if C is None:arrays['fields']=np.asarray(sub['output'](o))
             else:arrays.update(W=W,C=C)
             path=folder/f'c{j:03d}.npz';np.savez_compressed(path,**arrays)
@@ -237,15 +247,23 @@ def run(cx,POD):
         common=all(r['common_rollout_check'] for r in rows);valid=all(r['valid'] for r in rows)
         nonstat=sum(r['certificate']['nonstationary'] or 0 for r in rows);steps=sum(r['certificate']['steps'] or 0 for r in rows)
         q1=bool(common and valid and (not steps or nonstat<=.01*steps))
-        qual.update(Q1=dict(passed=q1,nonstationary=nonstat,steps=steps,scope='all64 production, full-trajectory tight and tighter anchors or explicit original identity-bound transfer'),
-                    common_rollout_check=dict(passed=common,scope='finite/valid trajectory plus verified full-field tight distance'),
+        if sc['kind'] in ('FD','PS'):
+            q1_scope='all64 FD per-stage convergence/completeness and finite returned fields' if sc['kind']=='FD' else 'all64 finite returned fields plus pinned implementation port control'
+            common_scope=q1_scope+'; no ROM tight/tighter or stationarity predicate applies'
+            q1_status='FOM stage-valid' if sc['kind']=='FD' else 'FOM finite/port-verified'
+        else:
+            q1_scope='all64 full-rollout production/tight/tighter or explicit original transfer; field distance on6 returned times, fresh stationarity every step'
+            common_scope='finite/valid ROM trajectory plus verified scheduled-output tight distance'
+            q1_status='ROM Q1'
+        qual.update(Q1=dict(passed=q1,status=q1_status,nonstationary=nonstat if steps else None,steps=steps if steps else None,scope=q1_scope),
+                    common_rollout_check=dict(passed=common,scope=common_scope),
                     method_specific_extra_masks=dict(production_valid=valid,hyper_reduced=False if sc['kind']=='POD' else None))
         if sub['kind']=='bank':
             if sc.get('archived_key'):
                 qp=all(r['method_specific_extra_masks']['archived_Q2_pass'] for r in rows)
                 qual['Q2']=dict(passed=qp,scope='original qualified quadrature evidence bound to reproduced trajectories',source=am['entries'][sc['archived_key']])
             else:own_quadrature(cx,sub,result,production)
-        else:qual['Q2']=dict(passed=True,applicability='not a quadrature-reduced bank solve')
+        else:qual['Q2']=dict(passed=True,status='not_applicable',applicability='not a quadrature-reduced bank solve; neutral for admission')
         qual['status']='qualified' if q1 and qual['Q2']['passed'] else 'unqualified; retained diagnostic data'
         for j in cfg['phase_cases']:phase_records(cx,sub,result,j)
         result['subjects'][sid]['memory_after_all_work']=FM.memory();save(cx,result)
@@ -254,5 +272,6 @@ def run(cx,POD):
         del sub,production,first,o;gc.collect()
     manifest=[dict(path=str(p.relative_to(cx.out)),sha256=file_sha(p),bytes=p.stat().st_size) for p in sorted((cx.out/'data').rglob('*.npz'))]
     result['execution'].update(complete=True,elapsed_seconds=time.perf_counter()-cx.t0,whole_job_memory=FM.memory(),raw_file_manifest=manifest,
-        driver_gpu_hours_lower_bound=(time.perf_counter()-cx.t0)/3600,Slurm_gpu_hours='collector JOB-LEDGER after completion')
+        driver_gpu_hours_lower_bound=(time.perf_counter()-cx.t0)/3600,slurm_gpu_hours=None,
+        slurm_gpu_hours_source='collector JOB-LEDGER after completion')
     summarize(result);save(cx,result);cx.rep['scope']='same-allocation full64 validation frontier'

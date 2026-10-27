@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 LANE='experiments/burgers-recon3d'
 NS='/cluster/tufts/paralab/tawal01/b3d-recon-20261027'
-p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--mode',choices=['smoke','prepare','screen'],required=True)
+p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--mode',choices=['smoke','prepare','dev','val'],required=True)
 p.add_argument('--prepared',default='prep01');a=p.parse_args()
 assert a.attempt.isalnum() and a.prepared.isalnum()
 commit=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
@@ -21,12 +21,14 @@ for rel in files:
 (out/'PROVENANCE.json').write_text(json.dumps(proof,indent=2)+'\n');(out/'COMMIT.txt').write_text(commit+'\n')
 (out/'logs').mkdir()
 remote=f'{NS}/{a.attempt}'
-limits={'smoke':('00:10:00','128G'),'prepare':('02:00:00','384G'),'screen':('01:30:00','192G')}
+limits={'smoke':('00:10:00','128G'),'prepare':('02:00:00','384G'),'dev':('00:40:00','192G'),'val':('00:50:00','192G')}
 wall,mem=limits[a.mode]
 cmd=(f'"$PY" -u {LANE}/prepare3d.py --bank experiments/jcp-combined/inputs/model_W1024/bank.pkl '
  f'--training experiments/jcp-combined/inputs/model_W1024/training.json --out "$TASK_ROOT/output"'+(' --smoke' if a.mode=='smoke' else ''))
 if a.mode=='smoke': cmd=f'\"$PY\" -u {LANE}/vendor/check_core.py && \"$PY\" -u {LANE}/check_prepare.py && '+cmd
-if a.mode=='screen': cmd=f'"$PY" -u {LANE}/screen3d.py --prepared {NS}/{a.prepared}/output --out "$TASK_ROOT/output"'
+if a.mode in ('dev','val'):
+ cmd=f'"$PY" -u {LANE}/vendor/check_core.py && "$PY" -u {LANE}/screen3d.py --phase {a.mode} --prepared {NS}/{a.prepared}/output --out "$TASK_ROOT/output"'
+ cmd+=f' && "$PY" -u {LANE}/export3d.py --input "$TASK_ROOT/output"'
 script=f'''#!/bin/bash
 #SBATCH --job-name=br3_{a.attempt}
 #SBATCH --partition=gpu

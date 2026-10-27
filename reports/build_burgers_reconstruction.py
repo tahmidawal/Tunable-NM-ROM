@@ -19,6 +19,7 @@ import tempfile
 
 
 GATE = {"median_ratio_max": .8, "resolved_win_fraction_min": .75}
+POD_ABSOLUTE_GAP_THRESHOLD = 1e-5
 COHORT = {2: ("val32", 32, {32, 64, 128}, 256), 3: ("val64", 64, {16, 32}, 64)}
 CONFIG_COUNTS = {2: {32: 77, 64: 77, 128: 145}, 3: {16: 93, 32: 93}}
 LABEL = {
@@ -296,10 +297,45 @@ def diagnostic_evidence(roots, chosen):
     return dict(conditioning=conditioning, setup=setup_rows, oracle=oracle_rows, consumed=consumed)
 
 
+def pod_approximation_evidence(two_preparation, three_development, chosen):
+    hashes, two_rows, three_rows = {}, [], []
+    for family in ('base','coarse'):
+        path=two_preparation/'bases'/f'pod_{family}.json'
+        d=json.loads(path.read_text());hashes['2D_POD_'+family]=sha(path)
+        for rank in (128,256,384,512):
+            residual=d['relative_eigen_residual'][:rank]
+            require(len(residual)==rank and all(finite(x) and x>=0 for x in residual),'Invalid POD residual diagnostic')
+            two_rows.append([family,rank,fmt(max(residual)),fmt(d['projection_tail_fraction'][rank-1]),fmt(d['orthogonality_max'])])
+    d=json.loads(three_development.read_text());hashes['3D_development_export']=sha(three_development)
+    require(d['dimension']==3 and d['phase']=='dev','POD sensitivity must use the admitted 3D development export')
+    require(len(d['cases'])==2544 and all(r['cohort']=='dev4' for r in d['cases']),'Wrong development population')
+    for (dim,lc,source,category),rr in sorted(chosen.items()):
+        if dim != 3 or not category.startswith('pod_'):
+            continue
+        config=rr[0]['config']
+        cases=[r for r in d['cases'] if (r['coarse_intervals'],r['source'],r['config'])==(lc,source,config)]
+        require(len(cases)==4 and {r['case'] for r in cases}==set(range(4)),'Incomplete POD development sensitivity population')
+        require(all(r['selected'] for r in cases),'Validation POD setting differs from frozen development selection')
+        good=[r for r in cases if r['approximate_pod_paired_times']==5
+              and finite(r['approximate_pod_gap_max']) and r['approximate_pod_gap_max']>=0
+              and isinstance(r['approximate_pod_gap_consequential'],bool)]
+        for r in good:
+            expected=(r['approximate_pod_gap_max'] > 2*r['reference_eps'] or
+                      r['approximate_pod_gap_max'] > POD_ABSOLUTE_GAP_THRESHOLD)
+            require(r['approximate_pod_gap_consequential']==expected,'POD sensitivity flag differs from registered rule')
+        three_rows.append([lc,source,LABEL[category],f'`{config}`',
+                           fmt(max(r['approximate_pod_gap_max'] for r in good) if len(good)==len(cases) else None,100),
+                           sum(r['approximate_pod_gap_consequential'] for r in good),f'{len(good)}/{len(cases)}'])
+    return dict(hashes=hashes,absolute_gap_threshold=POD_ABSOLUTE_GAP_THRESHOLD,
+                two_dimensional=two_rows,three_dimensional=three_rows)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--two-dimensional", type=Path, required=True)
     p.add_argument("--three-dimensional", type=Path, required=True)
+    p.add_argument("--two-preparation", type=Path, required=True)
+    p.add_argument("--three-development", type=Path, required=True)
     p.add_argument("--accepted-audit", type=Path, help="Independent result acceptance record bound to both exports and this generator")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args()
@@ -378,6 +414,9 @@ def main():
         if rr[0]['strict'] and source == 'B':
             conditioning_choices[dim,lc,source,rr[0]['category']+'_fixed'] = rr
     evidence = diagnostic_evidence(roots, conditioning_choices)
+    pod_evidence=pod_approximation_evidence(args.two_preparation,args.three_development,chosen)
+    if acceptance:
+        require(acceptance.get('auxiliary_sha256')==pod_evidence['hashes'],'Audit/approximation evidence hashes differ')
     sentences = []
     for dim in sorted({r["dimension"] for r in allrows}):
         c = primary_by_dim.get(dim)
@@ -520,6 +559,15 @@ def main():
               "POD is uncentered, without a separately added mean field. Configurations named "
               "`covridge` use diagonal training second moments; they do not use an exact full "
               "covariance model. The approximate basis can retain off-diagonal second moments.", "",
+              table(["2D training data", "Prefix rank", "Max relative eigen residual", "Training projection tail", "Full-basis orthogonality max"],
+                    pod_evidence['two_dimensional']), "",
+              table(["3D coarse intervals", "Source", "POD family", "Frozen configuration", "Max q1/q2 change (%)",
+                     "Consequential cases", "Complete / all dev cases"],pod_evidence['three_dimensional']), "",
+              "The q1/q2 comparison uses the two predeclared approximation levels on development cases. "
+              "A case is consequential when an evolved output change exceeds either twice its reference "
+              f"uncertainty or the fixed normalized-field threshold {POD_ABSOLUTE_GAP_THRESHOLD:g}. Passing this check does not certify "
+              "global POD optimality. The preparation's independent residual probes measure aggregate "
+              "residual energy, without a probe-spectrum certificate.", "",
               "Warm query time is the median of per-case medians for independently fitted single fields, "
               "including common host transfers. It excludes reusable basis evaluation, factorization and "
               "compilation. Accuracy and timing come from the same calls, with raw repetitions retained. "
@@ -564,6 +612,11 @@ def main():
               "- **POD:** proper orthogonal decomposition, a linear basis extracted from training snapshots.",
               "- **Uncentered / second moments / covridge:** snapshots without mean subtraction / "
               "average coefficient products / a penalty using only the diagonal of those products.",
+              "- **Relative eigen residual / projection tail / orthogonality max:** mismatch in the approximate "
+              "training covariance eigen-equation / fraction of training energy left outside the basis / "
+              "largest departure of the basis inner products from an identity matrix.",
+              "- **q1/q2 / consequential cases:** two predeclared randomized-POD approximation levels / "
+              "development cases where their reconstructed outputs differ beyond the registered threshold.",
               "- **Frozen configuration:** rank, penalty and method chosen before validation was run.",
               "- **Rank / ridge:** number of retained basis directions / penalty that discourages unstable coefficients.",
               "- **Requested directions / retained fine directions / sampled rank:** initial basis size / "
@@ -603,7 +656,8 @@ def main():
     json_content=json.dumps(json_safe(dict(
         provenance=provenance, acceptance=acceptance, gate=GATE, selected_cases=[r for r in allrows if r['selected'] or r['strict']], comparisons=comparisons,
         primary=primary, fixed_maps=fixed_maps, control_comparisons=control_comparisons,
-        unavailable_choices=unavailable_choices,diagnostic_evidence=evidence)), indent=2, allow_nan=False)+"\n"
+        unavailable_choices=unavailable_choices,diagnostic_evidence=evidence,
+        pod_approximation=pod_evidence)), indent=2, allow_nan=False)+"\n"
     configuration_rows = []
     for (dim, lc, source, config), rr in sorted(groups.items()):
         configuration_rows.append(dict(dimension=dim, coarse_intervals=lc, fine_intervals=rr[0]['Lf'],

@@ -1,0 +1,12 @@
+{
+  "status": "proposal awaiting independent design gate; no computed flow results",
+  "date": "2026-10-27",
+  "geometry": {"sphere_diameter": 1.0, "sphere_center": [0.0,0.0,0.0], "pipe_radius": 2.5, "x_in": -10.0, "x_out": 20.0, "diameter_blockage": 0.2, "area_blockage": 0.04},
+  "convention": {"rho": 1.0, "pressure": "kinematic pressure; dynamic pressure divided by constant density", "velocity_scale": "inlet cross-sectional mean", "length_scale": "sphere diameter", "inlet_mean_speed": 1.0, "inlet_peak_speed": 2.0, "primary_reynolds": "U_mean * D_sphere / nu", "outlet": "nu * partial_n u - p * n = 0; Laplacian natural condition"},
+  "reference_pilot": {"steady_reynolds": 10.0, "nu": 0.1, "training_authorized": false, "geometry_family": "fixed", "unsteady_regime_authorized": false},
+  "short_transient": {"initial_velocity": "zero", "initial_pressure": "constraint variable solved at first step", "ramp_time": 2.0, "ramp": "sin(pi*t/(2*ramp_time))**2 before ramp_time, then 1", "horizon": 10.0, "output_dt": 0.1, "time_steps": [0.05,0.025,0.0125], "status": "verification only; not a steady-state horizon claim"},
+  "domain_checks": [{"name":"upstream","x_in":-20.0,"x_out":20.0},{"name":"downstream","x_in":-10.0,"x_out":40.0}],
+  "proposed_reference_gates": {"fine_coarse_velocity_L2_rel_max":0.001,"pressure_rms_scaled_by_U2_max":0.005,"drag_rel_max":0.005,"transverse_force_coefficient_abs_max":0.0005,"mass_imbalance_rel_max":0.000001,"divergence_L2_scaled_D_over_U_sqrt_volume_max":0.001,"no_slip_boundary_velocity_rms_scaled_U_max":0.000001,"inlet_velocity_boundary_rms_scaled_U_max":0.000001,"momentum_balance_scaled_max":0.005,"energy_balance_scaled_max":0.005,"linear_or_nonlinear_tightening_output_change_fraction_of_gate_max":0.1},
+  "resources": {"initial_smoke_allocated_gpu_hours":0.3333333333333333,"initial_smoke_cpus_max":16,"initial_smoke_memory_gib_max":64,"campaign_cap_allocated_gpu_hours":12,"campaign_reference_share_hours":8,"campaign_conditional_rom_share_hours":4,"status":"coordinator initial envelope; allocated GPU time includes CPU-only FE phases"},
+  "auxiliary_literature_check": {"source":"barber-emerson-2001","source_table":4,"source_pdf_page_one_based":32,"source_printed_page":30,"pipe_to_sphere_diameter_ratio":5.0,"source_radius_reynolds":0.125,"diameter_reynolds":0.25,"source_CD_times_radius_Re_over_12":3.241,"equivalent_CD_times_diameter_Re_over_24":3.241,"source_domain_x_over_sphere_diameter":[-5.0,5.0],"use":"external consistency diagnostic, not a certified reference uncertainty or exact reproduction"}
+}

@@ -1,0 +1,46 @@
+{
+  "gate": "G1_smoke",
+  "checks": [
+    {
+      "case": "channel",
+      "name": "completed",
+      "passed": false
+    },
+    {
+      "case": "manufactured",
+      "name": "completed",
+      "passed": false
+    },
+    {
+      "case": "dfg",
+      "name": "completed",
+      "passed": false
+    }
+  ],
+  "cases": {
+    "channel": {
+      "state": "not_run",
+      "failure": null
+    },
+    "manufactured": {
+      "state": "not_run",
+      "failure": null
+    },
+    "dfg": {
+      "state": "not_run",
+      "failure": null
+    }
+  },
+  "preflight": {
+    "passed": false,
+    "state": "not_completed"
+  },
+  "run_exit_code": 42,
+  "last_stage": "api_and_inverse_preflight",
+  "stage_exit_codes": [],
+  "passed": false,
+  "nongating": {},
+  "G2_steady_reference_admitted": false,
+  "training_released": false,
+  "reason": "mesh/p/tolerance/force/domain/outlet and result reviews remain required"
+}

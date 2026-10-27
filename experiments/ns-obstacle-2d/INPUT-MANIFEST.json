@@ -2,9 +2,19 @@
   "status": "review_candidate_no_execution_release",
   "files": [
     {
+      "path": "preflight.py",
+      "sha256": "fbd27b8fac4fa7b32f9240a0289163283938db14936434a1e03b1420c6c8598c",
+      "bytes": 4393
+    },
+    {
+      "path": "benchmark.json",
+      "sha256": "e5ff1685142a61e963a23e2b0fea4954b1ef779d8d9cb513482cc1c2473cfd82",
+      "bytes": 840
+    },
+    {
       "path": "fom.py",
-      "sha256": "c67a90d3b3e5b277e97500d09078e19008835cde332a09a57f3bfea4f2d06050",
-      "bytes": 29006
+      "sha256": "6c2aafa850ca0b3ceabd3a98e64706f24c76c09c70d6354c3289529c09a6299a",
+      "bytes": 30687
     },
     {
       "path": "dependencies.py",
@@ -13,8 +23,8 @@
     },
     {
       "path": "smoke_summary.py",
-      "sha256": "86ad1e1384e289d6f17061664817ca221c561b68e89b802f73c67d4390aefc98",
-      "bytes": 2202
+      "sha256": "6a55eaab2b975dad0753127a43d2a99920ab1bcac8cfe24324ca64d49e310f3f",
+      "bytes": 4393
     },
     {
       "path": "manufactured_witness.json",
@@ -33,8 +43,8 @@
     },
     {
       "path": "cluster/smoke.sh",
-      "sha256": "ab41e2b77905ba84913fd9af37a68852682267b535d7f3d8424767fb46ce564f",
-      "bytes": 1934
+      "sha256": "3bb875432362873752049dda882a9b12ad5f8fd1092ddcde6d9a9dc85ed5f4d5",
+      "bytes": 2789
     },
     {
       "path": "configs/channel-smoke.json",
@@ -52,7 +62,8 @@
       "bytes": 1148
     }
   ],
-  "git_source_ancestor": "4e38c82653679168f0be3f8bd7d28293ef5c1f16",
+  "source_parent_when_manifest_generated": "310a4372896ffd76dced73d624db94a9d09c35ad",
+  "execution_source_commit_binding": "SOURCE_COMMIT.txt is created from exact source commit at staging and separately recorded in staging manifest",
   "command": "sbatch --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
   "allocation": {
     "partition": "gpu",

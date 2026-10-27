@@ -66,6 +66,8 @@ def run_case(cfg, out):
     # retained as provenance, not a claim that Netgen accepts an RNG seed option.
     mesh = ng.Mesh(geo.GenerateMesh(maxh=cfg['maxh']))
     mesh.Curve(cfg['geometry_order'])
+    from preflight import mapped_probe
+    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))
     mesh.ngmesh.Save(str(out/'mesh.vol'))
     if mesh.ne > cfg['max_elements']:
         raise MemoryError(f'pre-space element guard: {mesh.ne}')
@@ -101,6 +103,8 @@ def run_case(cfg, out):
         traction = (nu*gu-exact_p*I)*normal
         witness_path = Path(__file__).with_name('manufactured_witness.json')
         witness = json.loads(witness_path.read_text())
+        if not np.allclose(witness['obstacle_force']['gradient'],witness['obstacle_force']['physical_symmetric'],rtol=1e-12,atol=1e-15):
+            raise AssertionError('independent manufactured closed-surface stress integrals disagree')
         if any(abs(cfg[k]-witness['configuration'][k]) > 1e-14 for k in ('U','nu','H','xmin','xmax')):
             raise ValueError('manufactured witness is tied to its exact configuration')
         checks = []
@@ -274,7 +278,7 @@ def run_case(cfg, out):
         return float(ng.Integrate(cf, mesh, definedon=mesh.Boundaries(boundary), order=order)) if boundary else float(ng.Integrate(cf,mesh,order=order))
     volume=integ(1)
     exact_volume=L*H-(math.pi*cfg['radius']**2 if obstacle else 0)
-    boundary_measures={b:integ(1,b) for b in set(mesh.GetBoundaries())}
+    boundary_measures={b:integ(1,b) for b in sorted(set(mesh.GetBoundaries()))}
     geometry={'volume':volume,'volume_error':metric(abs(volume-exact_volume),exact_volume,'area error / exact fluid area'),
               'boundary_measures':boundary_measures,'element_count':mesh.ne,'ndof':X.ndof,'velocity_ndof':V.ndof,
               'pressure_ndof':Q.ndof,'geometry_order':cfg['geometry_order'],'coordinate_derivative_convention':'component,coordinate'}
@@ -347,6 +351,7 @@ def run_case(cfg, out):
              'pressure_gauge':'fixed by natural outlet, no pin and no shift',
              'row_scale_momentum':U**2*D,'row_scale_continuity':U*D,
              'residual_initial_stokes_norm':initial,'residual_floor':cfg['residual_floor'],
+             'residual_mode':('absolute in scaled row units' if initial<=cfg['residual_floor'] else 'relative to initial Stokes residual in scaled row units'),
              'stokes_linear_residual':stokes_linear_metric}
     # Raw and finite-divergence-corrected physical energy equation.
     eps=ng.Sym(gu)
@@ -440,8 +445,22 @@ def run_case(cfg, out):
         # never nearest-node substitution or a fitted pressure shift.
         cx,cy=cfg['center'];rad=cfg['radius']
         probes=[(cx-rad,cy),(cx+rad,cy)]
-        pressures_probe=[float(ph(mesh(*pt))) for pt in probes]
-        forces['pressure_probes']={'points':probes,'values':pressures_probe,'difference':pressures_probe[0]-pressures_probe[1]}
+        pressures_probe=[];probe_errors=[]
+        for pt in probes:
+            try:
+                mp=mesh(*pt)
+                if mp.nr<0:raise ValueError('exact pressure probe is outside FE mesh')
+                value=float(ph(mp))
+                if not math.isfinite(value):raise ValueError('nonfinite exact pressure probe')
+                pressures_probe.append(value);probe_errors.append(None)
+            except Exception as exc:
+                pressures_probe.append(None);probe_errors.append(repr(exc))
+        probes_valid=all(z is not None for z in pressures_probe)
+        forces['pressure_probes']={'points':probes,'values':pressures_probe,
+            'difference':pressures_probe[0]-pressures_probe[1] if probes_valid else None,
+            'valid':probes_valid,'errors':probe_errors,
+            'G2_pressure_gate_eligible':probes_valid,
+            'evaluation':'exact coordinate FE interpolation; no nearest node, shift or nudge'}
         if kind=='manufactured':
             forces['analytic_force']=witness['obstacle_force']
             for stress_name in ['gradient','physical_symmetric']:
@@ -461,7 +480,8 @@ def run_case(cfg, out):
             'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',
             'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
             'versions':{'ngsolve':ng.__version__,'numpy':np.__version__,'python':platform.python_version()},
-            'provenance':{'source_sha256':sha(__file__),'config_sha256':sha(out/'config.json'),
+            'threading':{'requested':cfg['threads'],'TaskManager':True,'actual_effective_concurrency':'unmeasured; no performance claim'},
+            'provenance':{'execution_source_commit':Path('SOURCE_COMMIT.txt').read_text().strip() if Path('SOURCE_COMMIT.txt').exists() else None,'source_sha256':sha(__file__),'config_sha256':sha(out/'config.json'),
                           'job_id':os.environ.get('SLURM_JOB_ID'),'hostname':platform.node()}}
     dump(out/'result.json',result)
     return result
@@ -479,7 +499,10 @@ def main():
     if target.exists():
         raise FileExistsError('refusing to overwrite an existing attempt directory')
     try:
-        result=run_case(cfg,target)
+        import ngsolve as ng
+        ng.SetNumThreads(int(cfg['threads']))
+        with ng.TaskManager():
+            result=run_case(cfg,target)
         print(json.dumps({'status':result['status'],'out':str(target),'elapsed_seconds':result['elapsed_seconds']}),flush=True)
     except Exception as exc:
         target.mkdir(parents=True,exist_ok=True)

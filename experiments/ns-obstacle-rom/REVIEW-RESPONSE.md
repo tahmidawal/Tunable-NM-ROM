@@ -15,3 +15,9 @@ The recorder hashed output arrays but retained references to the caller's arrays
 The current compact rule changes convection tensor assembly, then uses the same online tensor dimensions as the full-rule control. Point-count reduction is not an online-solve speedup result. Assembly/setup must be charged, and a direct sampled evaluator would require separate implementation, review and measurement. This limitation is now stated in `API.md`.
 
 No equations, thresholds, training data or physical admission status changed. Independent confirmation of this repair remains pending when this response is written.
+
+## Subsequent FE adapter infrastructure — pending independent review
+
+`fe_adapter.py`, `fe_algebra.py` and `FE-ADAPTER-CONTRACT.md` add the training-only FE bridge. The coordinator authorized source construction while G1 controls run; this does not release FE/POD/data/training execution. `FE-ADAPTER-SYNTHETIC.json` records only array/matrix checks, including rejection before NGSolve import. No FE integration pass is asserted.
+
+Review should inspect pinned-library mesh/space/coefficient round-trip, named transformation lifetime and copied arrays, explicit-rule metric assembly, constant pressure reconstruction, coefficient-preserving POD orientation, H1 supremizer/full-velocity reference norms, eigenvalue-cluster truncation, fixed 64/16 enumeration, resource guards and provenance. The reference author has received the exact missing G2 exports. The actual producer/reloader test and all scientific gates remain open.

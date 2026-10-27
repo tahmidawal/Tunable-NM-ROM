@@ -388,6 +388,14 @@
    "bytes": 14736,
    "upstream_commit": "93f399faad67f94ea2b56fe25f13003143e64694",
    "intentional_delta": "Optional slow_threshold parameter freezes slow-refresh threshold while varying q_max; module-relative import adjusted; explanatory docstring. Baseline arithmetic unchanged and bitwise tested."
+  },
+  {
+   "source": "experiments/jcp-speed3d/psjax.py",
+   "destination": "experiments/b3d-solver/ps_phases.py",
+   "sha256": "e5cd8328fc06f7909a766f2eb2101c8b6a12c2508365c92f4805b1938c1124c9",
+   "bytes": 1193,
+   "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+   "intentional_delta": "Phase-only derivative: preserves ETDRK4 operations and records coefficient outputs before separately synthesized fixed-grid fields. Production uses original psjax byte-identically. Synthetic fused/split control required."
   }
  ]
 }

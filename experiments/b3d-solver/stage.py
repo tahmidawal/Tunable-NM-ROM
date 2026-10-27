@@ -14,7 +14,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('attempt');p.add_argument('--config',required=True)
     p.add_argument('--minutes',type=int,default=55);a=p.parse_args()
     assert re.fullmatch('[a-z0-9-]+',a.attempt)
-    assert 1<=a.minutes<=60
+    assert 1<=a.minutes<=120
     hours,minutes=divmod(a.minutes,60)
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     names=subprocess.check_output(['git','ls-tree','-r','--name-only',commit,LANE],cwd=ROOT,text=True).splitlines()

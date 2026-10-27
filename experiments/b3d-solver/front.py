@@ -35,6 +35,9 @@ def main():
         if cfg['mode']=='pod_tune':
             import pod_tune
             pod_tune.run(cx,POD)
+        elif cfg['mode']=='front':
+            import front_run
+            front_run.run(cx,POD)
         else:raise ValueError(cfg['mode'])
         cx.rep.update(execution_complete=True,complete=True);cx.save()
     except BaseException as e:

@@ -6,27 +6,56 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 import c3common as C3
+import pod_policy
 
 HERE=Path(__file__).resolve().parent
 def ah(x):return hashlib.sha256(np.ascontiguousarray(np.asarray(x)).tobytes()).hexdigest()
 def score(cx,F,j):
     R,meta,status=cx.ref(j);n0=float(meta['judge']['n0'])
+    if not np.isfinite(np.asarray(F)).all():
+        return dict(e=None,e_t=[None]*6,epsilon=status['eps_ref'],eligible=status['eligible'],normalisation=n0,finite=False)
     et=np.linalg.norm(np.asarray(F)-R,axis=1)/n0
-    return dict(e=float(et[1:].max()),e_t=et.tolist(),epsilon=status['eps_ref'],eligible=status['eligible'],normalisation=n0)
+    return dict(e=float(et[1:].max()),e_t=et.tolist(),epsilon=status['eps_ref'],eligible=status['eligible'],normalisation=n0,finite=True)
 
 def run(cx,POD):
-    t=time.perf_counter();subjects=POD.build(HERE.parent/'b3d-pod/inputs/Phi.npz')
+    t=time.perf_counter()
+    subjects=(pod_policy.build(POD,HERE.parent/'b3d-pod/inputs/Phi.npz',True) if cx.cfg.get('production_gtol') else POD.build(HERE.parent/'b3d-pod/inputs/Phi.npz'))
     cx.rep['setup']['POD']=dict(seconds=time.perf_counter()-t,metadata=subjects[0]['metadata'])
-    assert cx.cases==[0,5,30,43] and len(subjects)==5
+    assert cx.cases==[0,5,30,43] and len(subjects)==(7 if cx.cfg.get('production_gtol') else 5)
     cx.rep.update(scope='five frozen POD schedules on four exposed validation cases; developmental selection only',selection={})
-    baseline=next(s for s in subjects if s['steps']==15)
+    baseline=next(s for s in subjects if s['steps']==15 and s.get('production_gtol',1e-3)==1e-3)
+    gram=np.asarray(jax.block_until_ready(subjects[0]['data']['Phi'].T@subjects[0]['data']['Phi']))
+    previous=None
+    if cx.cfg.get('reuse_qualified'):
+        pin=cx.cfg['reuse_qualified']['result'];path=HERE/pin['path']
+        assert hashlib.sha256(path.read_bytes()).hexdigest()==pin['sha256']
+        previous=__import__('json').loads(path.read_text());assert previous['complete'] and previous['cohort_sha256']==cx.tab['sha256']
     # Warm all query paths and bind each supplied production output to its exact subject/case call.
     for s in subjects:
         for j in cx.cases:
             o=jax.block_until_ready(s['query'](cx.U[j],cx.nu[j],s['data'],s['sch']))
             expected=jax.block_until_ready(s['initialization_query'](cx.U[j],s['data']))[0]
             assert np.allclose(np.asarray(o['c0']),np.asarray(expected),rtol=1e-12,atol=1e-12)
-            detail=s['validate'](cx.U[j],cx.nu[j],prod=o,need_tighter=True)
+            reuse=previous is not None
+            if reuse:
+                oldname=s['name'].removesuffix('_g1e-4');key=f"{oldname}|case{j}";prior=previous['runs'][key]
+                assert (prior['case'],prior['scheme'],prior['dt'],prior['steps'])==(j,s['scheme'],s['dt'],s['steps'])
+                assert prior['input_sha256']==ah(cx.U[j])
+                assert previous['setup']['POD']['metadata']['basis_sha256']==s['metadata']['basis_sha256']
+                assert previous['setup']['POD']['metadata']['trust_radius']==s['metadata']['trust_radius']
+                if s.get('production_gtol',1e-3)==1e-3:
+                    assert prior['common_rollout_check'] and ah(o['C'])==prior['coefficient_sha256'] and ah(o['fields'])==prior['output_sha256']
+                pin=cx.cfg['reuse_qualified']['arrays'][key];path=HERE/pin['path'];assert hashlib.sha256(path.read_bytes()).hexdigest()==pin['sha256']
+                z=np.load(path,allow_pickle=False);detail=dict(prior['certificate'])
+                assert ah(z['C'])==prior['coefficient_sha256'] and np.array_equal(np.asarray(z['C'])[0],np.asarray(o['C'])[0])
+                assert detail['tight_certificate']['anchor_ok'] and detail['tighter_certificate']['anchor_ok'] and detail['tight_tighter_distance']<=2.5e-5
+                detail['production_certificate']=s['certify'](o,cx.nu[j]);detail['reused_anchor_source']=pin
+                for k in ('Wtight','Ctight','gamma_tight','Wtighter','Ctighter','gamma_tighter'):detail[k]=np.asarray(z[k])
+                diff=np.asarray(o['W'])[1:]-detail['Wtight'][1:]
+                detail['prod_to_tight_distance']=float(np.sqrt(np.maximum(np.sum((diff@gram)*diff,axis=1),0)).max()/detail['n0'])
+                assert abs(detail['n0']/float(np.linalg.norm(np.asarray(cx.U[j])))-1)<=1e-12
+                detail['production_stopping_gtol']=float(s['sch']['gtol'])
+            else:detail=s['validate'](cx.U[j],cx.nu[j],prod=o,need_tighter=True)
             saved={k:np.asarray(v) for k,v in detail.items() if k.startswith(('Wtight','Ctight','gamma_tight'))}
             saved.update(W=np.asarray(o['W']),C=np.asarray(o['C']),**{'stats__'+k:np.asarray(v) for k,v in o['stats'].items()})
             np.savez_compressed(cx.out/f"{s['name']}_c{j:03d}.npz",**saved)
@@ -34,7 +63,7 @@ def run(cx,POD):
             # The exact typed call signature accompanies the coefficient-bearing production output.
             pc=detail['production_certificate'];it=int(np.asarray(o['stats']['it'])[:s['steps']].sum())
             cx.rep['runs'][f"{s['name']}|case{j}"]=dict(subject=s['name'],case=j,scheme=s['scheme'],dt=s['dt'],steps=s['steps'],
-                input_sha256=ah(cx.U[j]),coefficient_sha256=ah(o['C']),output_sha256=ah(o['fields']),score=score(cx,o['fields'],j),
+                production_stopping_gtol=float(s['sch']['gtol']),input_sha256=ah(cx.U[j]),coefficient_sha256=ah(o['C']),output_sha256=ah(o['fields']),score=score(cx,o['fields'],j),
                 certificate=small,valid=pc['valid'],nonstationary=pc['nonstat'],
                 common_rollout_check=bool(pc['valid'] and detail['tight_certificate']['anchor_ok'] and detail['tighter_certificate']['anchor_ok']
                                           and detail['prod_to_tight_distance']<=2.5e-4 and detail['tight_tighter_distance']<=2.5e-5),

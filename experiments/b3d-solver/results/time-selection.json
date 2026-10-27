@@ -1,0 +1,97 @@
+{
+ "source": {
+  "path": "results/tdiag02/raw/output/result.json",
+  "sha256": "7f2ea1cfb024b5ed6e80fbeccd849e73239763803fef0f23691b1c6655a055db"
+ },
+ "scope": "four exposed validation cases; post-diagnostic choice frozen before full64",
+ "selection": "coarse0.025 repaired policy plus finest0.00625 best-tested-median representative, each conditional on own full64 Q1/Q2",
+ "abandoned_rule": "Worst-only interval selection was not in staged pre-data design and is not used to exclude the fine representative.",
+ "cost_scope": "No warmed production timings in D-T. First-compile anchor seconds are not deployment costs.",
+ "caution": "Median and worst trade off. These two final temporal endpoints do not exhaust the tested diagnostic tradeoff or the temporal frontier.",
+ "rows": [
+  {
+   "dt": 0.025,
+   "cases": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "errors": [
+    0.018455077780600158,
+    0.04379058175334248,
+    0.03900679474546836,
+    0.04249080649728837
+   ],
+   "median": 0.04074880062137837,
+   "worst": 0.04379058175334248,
+   "median_lower": 0.040651706904662924,
+   "median_upper": 0.0408458943380938,
+   "worst_lower": 0.04370636565057887,
+   "worst_upper": 0.04387479785610609,
+   "corrections": 115,
+   "jacobian_contractions": 40,
+   "total_steps": 40,
+   "fresh_bad_steps": 0,
+   "all_target_anchors_usable": true,
+   "max_distance_tight": 0.00012754811848502117,
+   "all_own_chains_pass": true
+  },
+  {
+   "dt": 0.0125,
+   "cases": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "errors": [
+    0.005954592252179926,
+    0.048126826408454566,
+    0.02022133221299267,
+    0.022776615069490923
+   ],
+   "median": 0.021498973641241797,
+   "worst": 0.048126826408454566,
+   "median_lower": 0.021401879924526357,
+   "median_upper": 0.021596067357957237,
+   "worst_lower": 0.04804261030569096,
+   "worst_upper": 0.048211042511218175,
+   "corrections": 107,
+   "jacobian_contractions": 80,
+   "total_steps": 80,
+   "fresh_bad_steps": 0,
+   "all_target_anchors_usable": true,
+   "max_distance_tight": 0.0001459275475999384,
+   "all_own_chains_pass": true
+  },
+  {
+   "dt": 0.00625,
+   "cases": [
+    0,
+    5,
+    30,
+    43
+   ],
+   "errors": [
+    0.0025841507646540813,
+    0.055900696808373465,
+    0.020950128050980933,
+    0.020635260372786415
+   ],
+   "median": 0.020792694211883674,
+   "worst": 0.055900696808373465,
+   "median_lower": 0.020695600495168234,
+   "median_upper": 0.020889787928599114,
+   "worst_lower": 0.05581648070560986,
+   "worst_upper": 0.05598491291113707,
+   "corrections": 163,
+   "jacobian_contractions": 160,
+   "total_steps": 160,
+   "fresh_bad_steps": 0,
+   "all_target_anchors_usable": true,
+   "max_distance_tight": 4.830920605086057e-06,
+   "all_own_chains_pass": true
+  }
+ ]
+}

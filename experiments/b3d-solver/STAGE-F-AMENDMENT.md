@@ -49,6 +49,12 @@ within5% uses refresh-every-step, then extra-budget, then strict, then trust as 
 priority. Time candidates are the two finer predefined steps if their ingredient checks
 pass and an E0 improvement is resolved relative to reference uncertainty; retain rejected
 candidates with their exact failure rather than removing them from the inventory.
+Post-diagnostic endpoint freeze: retain the repaired coarse0.025 and the finest0.00625
+as two representatives of the observed median/worst tradeoff, contingent on their own
+full64 Q1/Q2 admission. Intermediate0.0125 remains a certified four-case diagnostic.
+A later worst-only interval criterion was not in the staged pre-data design and is not
+used to exclude the fine representative. There is no claim of uniform physical-error
+improvement or of a new held-out selection.
 
 POD's qualified frozen winner comes from the separate POD lane and must run in this same
 allocation before comparative cost claims. Give it the same output schedule and input

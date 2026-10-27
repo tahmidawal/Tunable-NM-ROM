@@ -12,19 +12,25 @@ def main():
     audits=json.loads((HERE/'AUDIT-STATUS.json').read_text())
     out=dict(audits=audits,status='diagnostic subset; consult per-job independent audit verdicts',scope='validation diagnostics; no new frontier or comparator win claim',
              gpu_hours=sum(e.get('gpu_hours',0.) for e in ledger['entries']),budget_gpu_hours=ledger['budget_gpu_hours'],
-             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],quadrature_witnesses=[],time_diagnostics=[],time_quadrature=[],
+             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],quadrature_witnesses=[],time_diagnostics=[],time_quadrature=[],POD_tuning=[],POD_tuning_jobs=[],
              next_open=['D-Q gl80 first-eight closure after pilot audit','D-T fixed four-case time diagnostics',
                         'Fair POD schedule tuning on four cases','Full64 paired same-invocation frontier validation after diagnostic review'])
     for entry in ledger['entries']:
         rp=HERE/'results'/entry['attempt']/'raw/output/result.json'
         if not rp.exists():continue
         z=json.loads(rp.read_text());source=dict(path=str(rp.relative_to(HERE)),sha256=sha(rp),job_id=entry['job_id'],source_commit=z['source_commit'],gpu=z['gpu'])
+        if z['config']['mode']=='pod_tune':
+            out['POD_tuning_jobs'].append(dict(source=source,scope=z['scope'],selection=z['selection'],frozen_picks=z['frozen_picks']))
         for key,v in z['runs'].items():
+            if z['config']['mode']=='pod_tune':
+                out['POD_tuning'].append(dict(key=key,source=source,scope=z['scope'],**v));continue
             if z['config']['mode']=='quad_witness':
                 out['quadrature_witnesses'].append(dict(key=key,source=source,scope=z['scope'],
                     tight_tighter_distance=z.get('tight_tighter_distance'),anchor_usable=z.get('anchor_usable'),**v));continue
             if z['config']['mode']=='time':
-                out['time_diagnostics'].append(dict(key=key,source=source,scope=z['scope'],**v));continue
+                payload=dict(v)
+                if 'source' in payload:payload['trajectory_source']=payload.pop('source')
+                out['time_diagnostics'].append(dict(payload,key=key,source=source,scope=z['scope']));continue
             if 'nonlinear_iterations' not in v:
                 out['quadrature'].append(dict(key=key,source=source,**v));continue
             obs=dict(key=key,source=source,scope=z['scope'],score=v['score'],fresh_nonstationary_steps=v['nonstationary'],
@@ -56,6 +62,8 @@ def main():
         out['time_quadrature'] += [dict(key=k,source=source,**v) for k,v in z.get('quadrature',{}).items()]
     qr=HERE/'results/historical-tight-quadrature.json'
     if qr.exists():out['historical_tight_quadrature']=dict(path=str(qr.relative_to(HERE)),sha256=sha(qr),data=json.loads(qr.read_text()))
+    ts=HERE/'results/time-selection.json'
+    if ts.exists():out['time_selection']=dict(path=str(ts.relative_to(HERE)),sha256=sha(ts),data=json.loads(ts.read_text()))
     (HERE/'EXPORT.json').write_text(json.dumps(out,indent=1)+'\n')
     print(json.dumps(dict(observations=len(out['observations']),same_history=len(out['same_history']),gpu_hours=out['gpu_hours'])))
 

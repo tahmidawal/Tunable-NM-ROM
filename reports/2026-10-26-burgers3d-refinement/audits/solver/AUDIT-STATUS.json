@@ -1,0 +1,108 @@
+{
+ "design": "READY diagnostic implementation",
+ "reviewer": "/root/independent_review",
+ "jobs": {
+  "spilot02": {
+   "code_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY diagnostic subset",
+   "interpretation": "Incomplete nonlinear convergence at one step; no resolved physical accuracy gain, no full-population Q1 or stronger performance claim"
+  },
+  "sdiag01": {
+   "code_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY fixed four-case diagnostic subset",
+   "interpretation": "Refresh-every-step passes tight-distance and fresh-stationarity subset; no full-population qualification or physical accuracy gain claim"
+  },
+  "qpilot03": {
+   "code_commit": "7c5e44bb22a5729c270901fa0ecc5ce7ad5bec33",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY one-case finer-rule diagnostic",
+   "interpretation": "One of25 gl80 steps fails fresh1e-3 stationarity. This is the original qpp validity/distance check, not gl80 qualification; inherited gl56 closure still needs original eight-case coverage."
+  },
+  "qcheck801": {
+   "code_commit": "13494d2c697cb31b36a546999e0810677bc260be",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY original-eight finer-witness closure",
+   "interpretation": "Joins historical full64 gl56 Q1 plus gl56\u219264 Q2 with original first-eight gl64\u219280. Legacy gl56 qualification closes. One of200 fine gl80 steps nonstationary; no full gl80 qualification. Narrow case5 adaptive witness is a strengthening control."
+  },
+  "qwitness01": {
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY case5 adaptive finer-witness strengthening",
+   "reviewer": "/root/independent_review"
+  },
+  "tdiag02": {
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY four-case time diagnostics; post-diagnostic coarse+finest freeze",
+   "reviewer": "/root/independent_review"
+  },
+  "podtune02": {
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY original gtol1e-3 five-schedule four-case controls; picks provisional pending one stronger policy",
+   "reviewer": "/root/independent_review"
+  },
+  "podtune05": {
+   "code_commit": "dd4d0c3dd34e0771f3a4cbeb1ac35c155fb12fe2",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY seven-subject stronger-policy four-case tuning and selection",
+   "reviewer": "/root/independent_review",
+   "scope": "exposed four-case development; no full64 qualification transfer"
+  },
+  "front6402": {
+   "code_commit": "8196120c5ade3992bacfc02379799aa00a0cf4a3",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY complete independently audited full64 paired frontier; all actual admission masks retained",
+   "reviewer": "/root/independent_review",
+   "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
+   "job_id": 6533177,
+   "scope": "frozen16 subjects, ordered val64, paired invocation errors/costs; no publication before results audit",
+   "POD_subgate": {
+    "status": "READY all192 cases",
+    "reviewer": "/root/evidence_recovery",
+    "source_result_sha256": "7e778b1eedf23ef8963a1f867736eba1cb4f1c7a98dcb9506150e19344920908",
+    "scope": "all3 POD subjects; full-Phi/E0 decoding, masks, timing/state links, costs and central-PDE certificate spots",
+    "independent_review": {
+     "path": "results/front6402/POD-INDEPENDENT-REVIEW.json",
+     "sha256": "d356be2c7734480535669a7a1d20c689d07ce71fbf38ae8f53710f13770719bc"
+    }
+   },
+   "independent_review": {
+    "path": "results/front6402/INDEPENDENT-REVIEW.json",
+    "sha256": "1dcd00ebeceaa1d3a38b0095388aa0af566ef472a76d55a5664e22925439614c"
+   }
+  },
+  "mesh01": {
+   "code_commit": "0cfd1119cda6cfd46b74accf93dd47a9b2eebd5a",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "NOT RELEASED incomplete mesh; retained verified memory-guard failure, superseded by accepted mesh02",
+   "reviewer": "/root/independent_review",
+   "manifest_sha256": "e12ead96f0efcb210a80af72ff3460af7266a3b084fb181392cd5559392bf2b0",
+   "job_id": 6541155,
+   "scope": "four-case fixed-mode65/129 campaign and case5-only operator subpopulations; no publication before results audit"
+  },
+  "mesh02": {
+   "code_commit": "a534c65715bf8cb422c03d70b48c36bf02a5af91",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY complete explicitly scoped mesh data; production CN subset failures preserved",
+   "reviewer": "/root/independent_review",
+   "manifest_sha256": "719bf693f15c1e6619507955abc4d0b4e42d2e5f38792ef5c23d34edbcf8e4a8",
+   "job_id": 6542062,
+   "scope": "same frozen mesh campaign; memory-lifetime repair only and untimed existing-anchor measurements",
+   "independent_review": {
+    "path": "results/mesh02/INDEPENDENT-REVIEW.json",
+    "sha256": "e71e80249b01b555760a86a1d3c1302e34353f268fba5eb9ecfb7c8d364e69e5"
+   }
+  }
+ }
+}

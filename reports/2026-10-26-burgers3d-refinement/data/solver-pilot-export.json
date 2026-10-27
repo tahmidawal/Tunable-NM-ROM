@@ -1,0 +1,3373 @@
+{
+ "audits": {
+  "design": "READY diagnostic implementation",
+  "reviewer": "/root/independent_review",
+  "jobs": {
+   "spilot02": {
+    "code_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "code_small_controls": "READY",
+    "exact_job": "READY",
+    "results": "READY diagnostic subset",
+    "interpretation": "Incomplete nonlinear convergence at one step; no resolved physical accuracy gain, no full-population Q1 or stronger performance claim"
+   }
+  }
+ },
+ "status": "diagnostic subset; consult per-job independent audit verdicts",
+ "scope": "validation diagnostics; no new frontier or comparator win claim",
+ "gpu_hours": 0.075,
+ "budget_gpu_hours": 8,
+ "jobs": [
+  {
+   "attempt": "spilot02",
+   "job_id": 6525183,
+   "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+   "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/spilot02",
+   "status": "COMPLETED",
+   "gpu": "h200",
+   "hard_limit_hours": 0.9166666666666666,
+   "config_sha256": "de8684c6e75bd44bfd887b08024c0939fd487c9d581cc40dc96778873c186a38",
+   "remote_manifest_verified": true,
+   "independent_job_gate": "READY",
+   "elapsed_seconds": 64,
+   "gpu_hours": 0.017777777777777778,
+   "collection_sha256": "9017c341414ff0089922d08be9a3b73f8a936e625809b266e95a762c67660963",
+   "checksums_verified": true,
+   "remote_duplicate_deleted": true
+  },
+  {
+   "attempt": "sdiag01",
+   "job_id": 6525518,
+   "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+   "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/sdiag01",
+   "status": "COMPLETED",
+   "gpu": "h200",
+   "hard_limit_hours": 0.25,
+   "config_sha256": "9169cf7ec33fce2644fe278486e2851348ae3c1e83796d046b5609bd908efe04",
+   "manifest_sha256": "1d8eb4ce1a0a8bf3dce3cf680d83656aab9c42ced23c096b1d05ccb93409fe1b",
+   "remote_manifest_verified": true,
+   "independent_job_gate": "READY",
+   "elapsed_seconds": 193,
+   "gpu_hours": 0.05361111111111111,
+   "collection_sha256": "268c9f3e992129690fb855e337156bcc72f8288c4b56c226723cc4fc85eb9a82",
+   "checksums_verified": true,
+   "remote_duplicate_deleted": true
+  },
+  {
+   "attempt": "qpilot01",
+   "job_id": 6525527,
+   "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+   "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot01",
+   "status": "FAILED",
+   "gpu": "h200",
+   "hard_limit_hours": 0.25,
+   "config_sha256": "d7245f06b6a7f8cb67e60c51bd72ddd7962c6fbcee5a87cf15151864dc95e09f",
+   "manifest_sha256": "09bfc58364773835415073a9a2f4f37d9fabf8e54ce1d914c0e51a1b2e01d8eb",
+   "remote_manifest_verified": true,
+   "independent_job_gate": "READY",
+   "elapsed_seconds": 13,
+   "gpu_hours": 0.003611111111111111,
+   "collection_sha256": "262e90c53e25da6b2d126ea511af816f13d18453edc6744bc4e209f7649b98f4",
+   "checksums_verified": true,
+   "remote_duplicate_deleted": true
+  }
+ ],
+ "observations": [
+  {
+   "key": "W1024|baseline|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571437046715,
+     0.03900656564952225,
+     0.0383574547428039,
+     0.035769538696602717,
+     0.031078867514335945
+    ],
+    "e": 0.03900656564952225,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 54,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 5.079478179814356e-16,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.2226415602490306,
+    0.21880333684384823,
+    0.21879511140286922,
+    0.21875540912151337,
+    0.21996870636940002,
+    0.21854728925973177,
+    0.2182639129459858,
+    0.2189490683376789,
+    0.21893540117889643,
+    0.21896236669272184,
+    0.21992409601807594,
+    0.2190757319331169,
+    0.2197892451658845,
+    0.2190620480105281,
+    0.22092887945473194,
+    0.21893895976245403
+   ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
+   "query_median_seconds": 0.21895571751520038,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|extra|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571437046715,
+     0.03900656564952225,
+     0.0383574547428039,
+     0.035589670976804245,
+     0.03111504020780357
+    ],
+    "e": 0.03900656564952225,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 90,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.291074451059103,
+    0.2901981882750988
+   ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
+   "query_median_seconds": 0.2906363196671009,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|refresh|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571437046715,
+     0.039006778784363566,
+     0.0383533626564827,
+     0.035582893696075826,
+     0.031106860566950386
+    ],
+    "e": 0.039006778784363566,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 29,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.22794638480991125,
+    0.2261467259377241
+   ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
+   "query_median_seconds": 0.22704655537381768,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|trust|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571646095982,
+     0.03900656688704475,
+     0.038357473673369925,
+     0.03658779388605222,
+     0.03111538507090214
+    ],
+    "e": 0.03900656688704475,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 52,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.216995757073164,
+    0.21520723588764668
+   ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
+   "query_median_seconds": 0.21610149648040533,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|strict|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866572815064741,
+     0.03900665892777906,
+     0.038356055867764006,
+     0.03559234073286917,
+     0.031119858725194658
+    ],
+    "e": 0.03900665892777906,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 89,
+   "jacobian_contractions": 6,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": null,
+   "distance_gate_diagnostic": null,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.3009950490668416,
+    0.2990656141191721
+   ],
+   "timing_admission": "pilot descriptive; drift gate not applied",
+   "timing_all_admitted": false,
+   "query_median_seconds": 0.30003033159300685,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W768|baseline|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0021504279033103756,
+     0.018487647997642263,
+     0.0174877664821867,
+     0.016488886491085406,
+     0.015102361021026803,
+     0.012826257401117092
+    ],
+    "e": 0.018487647997642263,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 35,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 5.057357023209681e-16,
+   "distance_historical_tight": 1.2609457316699055e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1254486683756113,
+    0.12075083330273628,
+    0.12086053565144539,
+    0.12067594192922115,
+    0.12066187802702188,
+    0.1208990952000022,
+    0.12079302966594696,
+    0.12081706523895264,
+    0.12077710311859846,
+    0.12102345936000347,
+    0.12106814328581095,
+    0.12102468311786652,
+    0.1208749059587717,
+    0.12085882667452097,
+    0.12028924282640219,
+    0.12080835085362196
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.1208379459567368,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W768|baseline|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0003205104933628721,
+     0.029688767024153448,
+     0.032476971331973026,
+     0.03393786531171942,
+     0.0351899695780061,
+     0.04989344824175935
+    ],
+    "e": 0.04989344824175935,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 56,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 5.582027084927405e-16,
+   "distance_historical_tight": 0.0020291039916439835,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.15231247060000896,
+    0.1525059100240469,
+    0.15258509386330843,
+    0.15261709596961737,
+    0.15255314577370882,
+    0.1524553382769227,
+    0.1527569806203246,
+    0.15268756169825792,
+    0.15264435298740864,
+    0.15248164907097816,
+    0.15254901349544525,
+    0.15251088980585337,
+    0.1525530405342579,
+    0.1545965690165758,
+    0.1531690638512373,
+    0.15273464191704988
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.15256911981850863,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|baseline|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0002871098467030817,
+     0.03866985960933708,
+     0.039124915618683496,
+     0.038518184505267866,
+     0.03646146324262713,
+     0.032830508812415775
+    ],
+    "e": 0.039124915618683496,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 57,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 5.431750529055236e-16,
+   "distance_historical_tight": 0.0006816911805964933,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.15422067511826754,
+    0.15411827061325312,
+    0.15438887011259794,
+    0.15421538427472115,
+    0.15418405551463366,
+    0.154001597315073,
+    0.15417333785444498,
+    0.1541815623641014,
+    0.15411307662725449,
+    0.15566059108823538,
+    0.15407217387109995,
+    0.1540485890582204,
+    0.15411293413490057,
+    0.1540694609284401,
+    0.15427981410175562,
+    0.15421990770846605
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.1541774501092732,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W768|baseline|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00019547942154791957,
+     0.030457800347479247,
+     0.035763998122252796,
+     0.040084048315842155,
+     0.04246755225576042,
+     0.04331482213882527
+    ],
+    "e": 0.04331482213882527,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 2,
+   "nonlinear_iterations": 65,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 4.7609470295531e-16,
+   "distance_historical_tight": 0.000760739897208354,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.16617380268871784,
+    0.16607098747044802,
+    0.1662520533427596,
+    0.16629097796976566,
+    0.16625714860856533,
+    0.16614226251840591,
+    0.16792677994817495,
+    0.16614672634750605,
+    0.16619224939495325,
+    0.16612819116562605,
+    0.16624147910624743,
+    0.1661876244470477,
+    0.16608647163957357,
+    0.16631904058158398,
+    0.1664085779339075,
+    0.16615855414420366
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.16618993692100048,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|extra|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0021504279033103756,
+     0.018487647997642263,
+     0.0174877664821867,
+     0.016488886491085406,
+     0.015102361021026803,
+     0.012826257401117092
+    ],
+    "e": 0.018487647997642263,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 35,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 1.2609457316699055e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.12239036988466978,
+    0.12085368670523167
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.12162202829495072,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W768|extra|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0003205104933628721,
+     0.029688767024153448,
+     0.032417001829207905,
+     0.03397952983612463,
+     0.0351937669435621,
+     0.049918548486769666
+    ],
+    "e": 0.049918548486769666,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 82,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.0001214183931886731,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1919087888672948,
+    0.19192920345813036
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.19191899616271257,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|extra|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0002871098467030817,
+     0.03866985960933708,
+     0.03911655960685285,
+     0.038519978947897646,
+     0.03646501369162374,
+     0.0328359199784492
+    ],
+    "e": 0.03911655960685285,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 71,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.00017165153749890052,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.17540375888347626,
+    0.17517337575554848
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.17528856731951237,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W768|extra|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00019547942154791957,
+     0.030457800347479247,
+     0.03576564259405322,
+     0.040084345401443976,
+     0.04247902020044736,
+     0.04327489278096574
+    ],
+    "e": 0.04327489278096574,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 86,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 6.528377524506467e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.19793576933443546,
+    0.1984345829114318
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.19818517612293363,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|refresh|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0021504279033103756,
+     0.018487647997642263,
+     0.01748555977810006,
+     0.016487195476089737,
+     0.015100337169984079,
+     0.012824244420163193
+    ],
+    "e": 0.018487647997642263,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 21,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 6.8976015787260794e-06,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.14069098234176636,
+    0.138123725540936
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.13940735394135118,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W768|refresh|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0003205104933628721,
+     0.029688767024153448,
+     0.03241709078391512,
+     0.03398634957535826,
+     0.03518724276195295,
+     0.050021121346210035
+    ],
+    "e": 0.050021121346210035,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 27,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.0001126875205398816,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1494637792930007,
+    0.14716170728206635
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.14831274328753352,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|refresh|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0002871098467030817,
+     0.03866985960933708,
+     0.039115294798893044,
+     0.03851290546756723,
+     0.03645844930585695,
+     0.03285222858536738
+    ],
+    "e": 0.039115294798893044,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 27,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 4.91293224152007e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1472456520423293,
+    0.14721713308244944
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.14723139256238937,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W768|refresh|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00019547942154791957,
+     0.030457800347479247,
+     0.03576488477913618,
+     0.040078018913954176,
+     0.042474108443783645,
+     0.04325797149115981
+    ],
+    "e": 0.04325797149115981,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 32,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 5.871170374752873e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.15484408009797335,
+    0.1547996960580349
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.15482188807800412,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|trust|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0021504279033103756,
+     0.018488652334083665,
+     0.017488174771819846,
+     0.01648918604653055,
+     0.015102770828097838,
+     0.012826707523869683
+    ],
+    "e": 0.018488652334083665,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 35,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 1.2453607656387357e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.12301388289779425,
+    0.12092023622244596
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.1219670595601201,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W768|trust|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0003205104933628721,
+     0.029688766293290668,
+     0.03248669046095904,
+     0.033935763049695734,
+     0.035197631390282175,
+     0.04985739539337118
+    ],
+    "e": 0.04985739539337118,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 2,
+   "nonlinear_iterations": 57,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.0021816594708473167,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1542242569848895,
+    0.1540189953520894
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.15412162616848946,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|trust|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0002871098467030817,
+     0.03866989394198768,
+     0.03913079107197652,
+     0.03851799670574861,
+     0.036458518185779484,
+     0.032824483423599594
+    ],
+    "e": 0.03913079107197652,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 2,
+   "nonlinear_iterations": 56,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.0009223776487402347,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1528018992394209,
+    0.15262076817452908
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.15271133370697498,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W768|trust|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00019547942154791957,
+     0.030457808435532988,
+     0.035763678444349356,
+     0.04007900614857736,
+     0.04248876705274693,
+     0.04329286457075414
+    ],
+    "e": 0.04329286457075414,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 2,
+   "nonlinear_iterations": 65,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.0027098679559467123,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.16694292705506086,
+    0.16672937665134668
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.16683615185320377,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|strict|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0021504279033103756,
+     0.018488817815342812,
+     0.017486515210913697,
+     0.016488360918109953,
+     0.015101863589864553,
+     0.012825869038533139
+    ],
+    "e": 0.018488817815342812,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 57,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 3.2495642480938386e-09,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1624012803658843,
+    0.16117733996361494
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.16178931016474962,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W768|strict|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0003205104933628721,
+     0.02968878592812473,
+     0.032417096162557585,
+     0.03398948744959196,
+     0.03519816755560245,
+     0.049980379523446986
+    ],
+    "e": 0.049980379523446986,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 85,
+   "jacobian_contractions": 6,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 6.514165757683445e-08,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.20915066357702017,
+    0.20902823749929667
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.20908945053815842,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W768|strict|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0002871098467030817,
+     0.038669923530907,
+     0.03911625844434534,
+     0.038521142654399515,
+     0.036469658787138266,
+     0.03286120929935587
+    ],
+    "e": 0.03911625844434534,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 84,
+   "jacobian_contractions": 6,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 2.997693727700592e-08,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.20754959248006344,
+    0.2074461169540882
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.20749785471707582,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W768|strict|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00019547942154791957,
+     0.030457828295250195,
+     0.035764920793348046,
+     0.040085144967880626,
+     0.04248267108295677,
+     0.04326867345852967
+    ],
+    "e": 0.04326867345852967,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 86,
+   "jacobian_contractions": 7,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 4.7755672337647273e-08,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.2187981428578496,
+    0.21678858902305365
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.21779336594045162,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|baseline|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0011041810270951595,
+     0.018455083849050726,
+     0.017406777268088678,
+     0.01642702082960566,
+     0.015027162485788228,
+     0.012650255809043217
+    ],
+    "e": 0.018455083849050726,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 41,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 4.3616508130043404e-16,
+   "distance_historical_tight": 4.6362556722581644e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.1880367984995246,
+    0.18233997095376253,
+    0.18196425214409828,
+    0.18202398344874382,
+    0.18213486019521952,
+    0.18266262859106064,
+    0.18252303823828697,
+    0.18249693978577852,
+    0.18259121105074883,
+    0.18254516180604696,
+    0.18258522637188435,
+    0.18267495464533567,
+    0.1849128156900406,
+    0.18252108804881573,
+    0.18251812923699617,
+    0.18248230684548616
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.18252206314355135,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W1024|baseline|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00016687573712881277,
+     0.029688610758024904,
+     0.03239199674678978,
+     0.03387556715521673,
+     0.03452546711017819,
+     0.04375658310587011
+    ],
+    "e": 0.04375658310587011,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 56,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 4.881906207216791e-16,
+   "distance_historical_tight": 0.0001674948658460322,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.22361340280622244,
+    0.22329962439835072,
+    0.22325472719967365,
+    0.22343326918780804,
+    0.22351983934640884,
+    0.2235206263139844,
+    0.22344387415796518,
+    0.22336728312075138,
+    0.22350210323929787,
+    0.22362173721194267,
+    0.22345615830272436,
+    0.22317208908498287,
+    0.2232639342546463,
+    0.2233415711671114,
+    0.22341475915163755,
+    0.22322954330593348
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.2234240141697228,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|baseline|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571437046718,
+     0.03900656564952235,
+     0.03835745474280413,
+     0.03576953869660298,
+     0.031078867514336105
+    ],
+    "e": 0.03900656564952235,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 54,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 7.380718212875464e-16,
+   "distance_historical_tight": 0.003526374279607285,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.2192752556875348,
+    0.21961420588195324,
+    0.21999105717986822,
+    0.21877572778612375,
+    0.2189840953797102,
+    0.21910861786454916,
+    0.2195398872718215,
+    0.2193226646631956,
+    0.2194528328254819,
+    0.22133743856102228,
+    0.21882455982267857,
+    0.21920873131603003,
+    0.2189920386299491,
+    0.2193604912608862,
+    0.21892582718282938,
+    0.2188851097598672
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.21924199350178242,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|baseline|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     8.664120244991989e-05,
+     0.030456908603266882,
+     0.035743538715232434,
+     0.03992562587572083,
+     0.04194529917839194,
+     0.04248099600050435
+    ],
+    "e": 0.04248099600050435,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 61,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": 6.618161552586601e-16,
+   "distance_historical_tight": 0.00018522857929368703,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.2262888727709651,
+    0.22610596846789122,
+    0.2258720202371478,
+    0.22589513286948204,
+    0.22581588942557573,
+    0.22612338606268167,
+    0.22618625778704882,
+    0.22613773867487907,
+    0.2259922567754984,
+    0.2262009009718895,
+    0.22599806264042854,
+    0.22592226322740316,
+    0.22607983462512493,
+    0.22594158723950386,
+    0.22585213277488947,
+    0.2258012667298317
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.22599515970796347,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|extra|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0011041810270951595,
+     0.018455083849050726,
+     0.017406777268088678,
+     0.01642702082960566,
+     0.015027162485788228,
+     0.012650255809043217
+    ],
+    "e": 0.018455083849050726,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 41,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 4.6362556722581644e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.18448621407151222,
+    0.1826324127614498
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.18355931341648102,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W1024|extra|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00016687573712881277,
+     0.029688610758024904,
+     0.03239199674678978,
+     0.03387556715521673,
+     0.03452500350382899,
+     0.043740993496108264
+    ],
+    "e": 0.043740993496108264,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 58,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.00012803211013107395,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.22820500191301107,
+    0.2298205941915512
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.22901279805228114,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|extra|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571437046718,
+     0.03900656564952235,
+     0.03835745474280413,
+     0.03558967097680452,
+     0.031115040207803805
+    ],
+    "e": 0.03900656564952235,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 90,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.00027020987367306287,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.289952308870852,
+    0.28986128605902195
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.28990679746493697,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|extra|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     8.664120244991989e-05,
+     0.030456908603266882,
+     0.03574285873108938,
+     0.03992450182181806,
+     0.041945298002190164,
+     0.042481166181933955
+    ],
+    "e": 0.042481166181933955,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 69,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.00018417890383144118,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.241518578492105,
+    0.24186004791408777
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.2416893132030964,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|refresh|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0011041810270951595,
+     0.018455083849050726,
+     0.01740681767294648,
+     0.01642660697323635,
+     0.015023789978577298,
+     0.01264765849813046
+    ],
+    "e": 0.018455083849050726,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 21,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 9.644356950058613e-06,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.21332405880093575,
+    0.21211892180144787
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.2127214903011918,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W1024|refresh|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00016687573712881277,
+     0.029688610758024904,
+     0.03239182719619019,
+     0.03387764897320669,
+     0.034523412868412456,
+     0.04381708614843876
+    ],
+    "e": 0.04381708614843876,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 29,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.00012761321485849433,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.22801749501377344,
+    0.22741528134793043
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.22771638818085194,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|refresh|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571437046718,
+     0.03900677878436368,
+     0.038353362656482884,
+     0.03558289369607601,
+     0.03110686056695051
+    ],
+    "e": 0.03900677878436368,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 29,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 7.894314635976604e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.2266146671026945,
+    0.22767179366201162
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.22714323038235307,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|refresh|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     8.664120244991989e-05,
+     0.030456908603266882,
+     0.03574235271565775,
+     0.03992232776318221,
+     0.04194463548343106,
+     0.042489863552233095
+    ],
+    "e": 0.042489863552233095,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 36,
+   "jacobian_contractions": 10,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 3.778985956678038e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.24056469183415174,
+    0.24048678576946259
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.24052573880180717,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|trust|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0011041810270951595,
+     0.018455985646086154,
+     0.017407123398429977,
+     0.016427294371618346,
+     0.01502755252078246,
+     0.012650700954234232
+    ],
+    "e": 0.018455985646086154,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 41,
+   "jacobian_contractions": 4,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 4.640885520895462e-05,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.18475199025124311,
+    0.1827211445197463
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.1837365673854947,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W1024|trust|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00016687573712881277,
+     0.02968863004433909,
+     0.03239201224608015,
+     0.03387556965706647,
+     0.03452437267593117,
+     0.043731602322230216
+    ],
+    "e": 0.043731602322230216,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 53,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.0001692130180754591,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.21876570023596287,
+    0.2177763981744647
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.21827104920521379,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|trust|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866571646095983,
+     0.0390065668870448,
+     0.03835747367336998,
+     0.03658779388605239,
+     0.031115385070902248
+    ],
+    "e": 0.0390065668870448,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 52,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.008392842696981031,
+   "distance_gate_diagnostic": false,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.2154947007074952,
+    0.21536681335419416
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.2154307570308447,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|trust|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     8.664120244991989e-05,
+     0.030456916529941685,
+     0.03574321431813952,
+     0.03992361138183206,
+     0.041936885949286115,
+     0.042477429986756236
+    ],
+    "e": 0.042477429986756236,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 1,
+   "nonlinear_iterations": 61,
+   "jacobian_contractions": 5,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 0.00013987624480245667,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.23288445640355349,
+    0.23314042389392853
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.233012440148741,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|strict|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.0011041810270951595,
+     0.018456146197111743,
+     0.017407742599961012,
+     0.016427864473398987,
+     0.015025452822801998,
+     0.012649495298289773
+    ],
+    "e": 0.018456146197111743,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 58,
+   "jacobian_contractions": 6,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 4.857946332478939e-09,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.24029594659805298,
+    0.23818294890224934
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.23923944775015116,
+   "max_evolved_error_time_index": 1
+  },
+  {
+   "key": "W1024|strict|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00016687573712881277,
+     0.02968862740369822,
+     0.03239167034651987,
+     0.0338738130796985,
+     0.034536339381936024,
+     0.043812819841497645
+    ],
+    "e": 0.043812819841497645,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 83,
+   "jacobian_contractions": 7,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 3.495412539387444e-07,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.30006438214331865,
+    0.2992289671674371
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.29964667465537786,
+   "max_evolved_error_time_index": 5
+  },
+  {
+   "key": "W1024|strict|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     0.00014211115235198486,
+     0.03866572815064745,
+     0.03900665892777909,
+     0.038356055867764076,
+     0.03559234073286923,
+     0.031119858725194665
+    ],
+    "e": 0.03900665892777909,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 89,
+   "jacobian_contractions": 6,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 1.2344785164409065e-06,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.29893335048109293,
+    0.2993239341303706
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.2991286423057318,
+   "max_evolved_error_time_index": 2
+  },
+  {
+   "key": "W1024|strict|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "scope": "diagnostic subset",
+   "score": {
+    "e_t": [
+     8.664120244991989e-05,
+     0.030456936641628293,
+     0.035742381564672555,
+     0.03992226773568888,
+     0.04194352595289985,
+     0.042491535828210955
+    ],
+    "e": 0.042491535828210955,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "fresh_nonstationary_steps": 0,
+   "nonlinear_iterations": 85,
+   "jacobian_contractions": 8,
+   "residual_evaluations": null,
+   "historical_reproduction_relative": null,
+   "distance_historical_tight": 2.521326501502456e-07,
+   "distance_gate_diagnostic": true,
+   "valid": true,
+   "Q1_full_population": "not established",
+   "Q2": "historical gl40 evidence; not recertified by this single-case pilot",
+   "timing_seconds": [
+    0.31597063038498163,
+    0.31342036370188
+   ],
+   "timing_admission": "bracket drift ratio in [1/1.1,1.1]",
+   "timing_all_admitted": true,
+   "query_median_seconds": 0.3146954970434308,
+   "max_evolved_error_time_index": 5
+  }
+ ],
+ "same_history": [
+  {
+   "key": "W1024|case30|step7",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 7,
+   "diagnostics": {
+    "baseline_residual": 0.21651879369557958,
+    "baseline_gamma": 0.013590038402783892,
+    "residual_agreement": 1.034039883395734e-13,
+    "jvp_agreement": 1.1385992444494904e-15,
+    "singular_min": 59.678384041635226,
+    "singular_max": 649.4471742414763,
+    "condition": 10.882452410044866
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 3.0283281059382587e-09,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.19284769868822618,
+     "baseline_distance": 0.003448310328623898,
+     "fresh_gamma": 3.0283281818407236e-09,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 3.0283281059382587e-09,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.19284769868822618,
+     "baseline_distance": 0.003448310328623898,
+     "fresh_gamma": 3.0283281818407236e-09,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W768|case0|step4",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 4,
+   "diagnostics": {
+    "baseline_residual": 0.05968379660715191,
+    "baseline_gamma": 0.0003928401977343488,
+    "residual_agreement": 8.971947637031389e-14,
+    "jvp_agreement": 4.2050107063575014e-16,
+    "singular_min": 72.90911511095045,
+    "singular_max": 626.4021288002345,
+    "condition": 8.591547543088383
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 9.22022195178968e-11,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.05967982236241357,
+     "baseline_distance": 1.4190101675463941e-05,
+     "fresh_gamma": 9.220226768438401e-11,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 9.22022195178968e-11,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.05967982236241357,
+     "baseline_distance": 1.4190101675463941e-05,
+     "fresh_gamma": 9.220226768438401e-11,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W768|case5|step3",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 3,
+   "diagnostics": {
+    "baseline_residual": 0.09035491844081744,
+    "baseline_gamma": 0.030613421659684073,
+    "residual_agreement": 9.285893548198487e-14,
+    "jvp_agreement": 4.74236496819273e-16,
+    "singular_min": 79.62913518186595,
+    "singular_max": 717.3661190159758,
+    "condition": 9.008839759185813
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 7.949042819339729e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.048618189354837825,
+     "baseline_distance": 0.0020241053617885392,
+     "fresh_gamma": 7.94904145473256e-10,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 7.949042819339729e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.048618189354837825,
+     "baseline_distance": 0.0020241053617885392,
+     "fresh_gamma": 7.94904145473256e-10,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W768|case30|step3",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 3,
+   "diagnostics": {
+    "baseline_residual": 0.10698652406920736,
+    "baseline_gamma": 0.007567640312377411,
+    "residual_agreement": 6.424720353855144e-14,
+    "jvp_agreement": 4.20126795585513e-16,
+    "singular_min": 78.9615261707975,
+    "singular_max": 678.206089557406,
+    "condition": 8.589070176916469
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 6.157005988740796e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.10456303586207329,
+     "baseline_distance": 0.0006801002478218588,
+     "fresh_gamma": 6.157004801916636e-10,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 6.157005988740796e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.10456303586207329,
+     "baseline_distance": 0.0006801002478218588,
+     "fresh_gamma": 6.157004801916636e-10,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W768|case43|step6",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 6,
+   "diagnostics": {
+    "baseline_residual": 0.4134029539605958,
+    "baseline_gamma": 0.004516072948636111,
+    "residual_agreement": 3.037692605340806e-14,
+    "jvp_agreement": 5.792032217955529e-16,
+    "singular_min": 89.51810563012941,
+    "singular_max": 776.5126208786548,
+    "condition": 8.674363866534966
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 1,
+     "gamma": 4.215526042153678e-08,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.41067818965712155,
+     "baseline_distance": 0.0007892132024587606,
+     "fresh_gamma": 4.2155260417423083e-08,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 1,
+     "gamma": 6.131927122578776e-11,
+     "it": 4,
+     "jacobian_evals": 5,
+     "mu": 1.2345679012345676e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 5,
+     "rn": 0.41067818965685315,
+     "baseline_distance": 0.0007892159470022389,
+     "fresh_gamma": 6.131905334187009e-11,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 4.14907871123477e-09,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W768|case43|step9",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 9,
+   "diagnostics": {
+    "baseline_residual": 0.7070422382182789,
+    "baseline_gamma": 0.002103845184575393,
+    "residual_agreement": 1.6018160293955793e-14,
+    "jvp_agreement": 5.536965626194147e-16,
+    "singular_min": 88.23397292140243,
+    "singular_max": 744.4594125348037,
+    "condition": 8.437333012284935
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 1,
+     "gamma": 1.042622227244555e-09,
+     "it": 4,
+     "jacobian_evals": 5,
+     "mu": 1.2345679012345676e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 5,
+     "rn": 0.7059373634341043,
+     "baseline_distance": 0.0006540296313559603,
+     "fresh_gamma": 1.0426221361057649e-09,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 1,
+     "gamma": 1.042622227244555e-09,
+     "it": 4,
+     "jacobian_evals": 5,
+     "mu": 1.2345679012345676e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 5,
+     "rn": 0.7059373634341043,
+     "baseline_distance": 0.0006540296313559603,
+     "fresh_gamma": 1.0426221361057649e-09,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W1024|case0|step6",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 6,
+   "diagnostics": {
+    "baseline_residual": 0.047747855115752344,
+    "baseline_gamma": 0.0004889424687800132,
+    "residual_agreement": 4.3493396617614954e-13,
+    "jvp_agreement": 1.2683794854384665e-15,
+    "singular_min": 57.5299898340664,
+    "singular_max": 621.5571546709954,
+    "condition": 10.804054658513778
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 2.0459708302292309e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.04773813529806544,
+     "baseline_distance": 3.3299160935930856e-05,
+     "fresh_gamma": 2.045969587380563e-10,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 2.0459708302292309e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.04773813529806544,
+     "baseline_distance": 3.3299160935930856e-05,
+     "fresh_gamma": 2.045969587380563e-10,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W1024|case5|step7",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 7,
+   "diagnostics": {
+    "baseline_residual": 0.27185707758783384,
+    "baseline_gamma": 0.000699461239425937,
+    "residual_agreement": 1.264328151938943e-13,
+    "jvp_agreement": 1.3325123904191853e-15,
+    "singular_min": 59.123882282917215,
+    "singular_max": 691.8138619552955,
+    "condition": 11.701089902128816
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 1.4120367351055425e-08,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.2717928124323849,
+     "baseline_distance": 0.0001753424514920034,
+     "fresh_gamma": 1.4120367331669566e-08,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 2.6796118806353357e-11,
+     "it": 4,
+     "jacobian_evals": 5,
+     "mu": 1.2345679012345676e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 5,
+     "rn": 0.27179281243235315,
+     "baseline_distance": 0.00017534166720217505,
+     "fresh_gamma": 2.6796029345239244e-11,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 1.9161123843862213e-09,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W1024|case30|step7",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 7,
+   "diagnostics": {
+    "baseline_residual": 0.21651879369558105,
+    "baseline_gamma": 0.013590038402784282,
+    "residual_agreement": 1.0210613184814947e-13,
+    "jvp_agreement": 1.1317099758955573e-15,
+    "singular_min": 59.67838404163519,
+    "singular_max": 649.4471742414765,
+    "condition": 10.882452410044875
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 3.028328115450616e-09,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.192847698688226,
+     "baseline_distance": 0.003448310328624022,
+     "fresh_gamma": 3.0283282192395095e-09,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 3.028328115450616e-09,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.192847698688226,
+     "baseline_distance": 0.003448310328624022,
+     "fresh_gamma": 3.0283282192395095e-09,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  },
+  {
+   "key": "W1024|case43|step3",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "step": 3,
+   "diagnostics": {
+    "baseline_residual": 0.07348368167850991,
+    "baseline_gamma": 0.0033101265223216153,
+    "residual_agreement": 9.332990898830639e-13,
+    "jvp_agreement": 2.11257562225286e-15,
+    "singular_min": 68.06741571916666,
+    "singular_max": 835.5662564084247,
+    "condition": 12.275568972029344
+   },
+   "kind": "fresh restart; original cached carry not restored",
+   "levels": {
+    "tight": {
+     "clips": 0,
+     "gamma": 9.45622278717846e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.07316796850860914,
+     "baseline_distance": 0.00012014639495275083,
+     "fresh_gamma": 9.456224313408163e-10,
+     "verified": true,
+     "gtol": 1e-07
+    },
+    "tighter": {
+     "clips": 0,
+     "gamma": 9.45622278717846e-10,
+     "it": 3,
+     "jacobian_evals": 4,
+     "mu": 3.703703703703703e-08,
+     "reason": 4,
+     "rejects": 0,
+     "residual_evals": 4,
+     "rn": 0.07316796850860914,
+     "baseline_distance": 0.00012014639495275083,
+     "fresh_gamma": 9.456224313408163e-10,
+     "verified": true,
+     "gtol": 1e-08
+    }
+   },
+   "tight_tighter_distance": 0.0,
+   "anchor_usable": true,
+   "causal_interpretation_allowed": true
+  }
+ ],
+ "archive_identities": [
+  {
+   "key": "M2_512|gl32|qn|BDF2|0.025|k4|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0006810105086455497,
+     0.03873160076920179,
+     0.039761370021265,
+     0.040129738666088446,
+     0.038729207500426785,
+     0.03397052092060429
+    ],
+    "e": 0.040129738666088446,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "archived_e": 0.04012973866608846,
+   "delta": 1.3877787807814457e-17,
+   "passed": true
+  },
+  {
+   "key": "W768|gl40|fs|CN|0.01|K1|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.00028710984670308033,
+     0.0026669450190404485,
+     0.006811322115155437,
+     0.010968948863633008,
+     0.017596381135980603,
+     0.023868119232311448
+    ],
+    "e": 0.023868119232311448,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "archived_e": 0.023868119232311462,
+   "delta": 1.3877787807814457e-17,
+   "passed": true
+  },
+  {
+   "key": "W512k8|lat16384|fs|CN|0.01|K1|case30",
+   "source": {
+    "path": "results/spilot02/raw/output/result.json",
+    "sha256": "368e45dc3159d33f45ddb721ce074757ef776c94090cd6ed5c2b66a4ff17f8ec",
+    "job_id": 6525183,
+    "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0005859380692542107,
+     0.0034876071476051583,
+     0.010624869526071777,
+     0.01587030319208976,
+     0.018833274934384962,
+     0.021300452719156968
+    ],
+    "e": 0.021300452719156968,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "archived_e": 0.021300452719156975,
+   "delta": 6.938893903907228e-18,
+   "passed": true
+  },
+  {
+   "key": "M2_512|gl32|qn|BDF2|0.025|k4|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.003990860562345688,
+     0.01865017816788028,
+     0.017787818391019297,
+     0.01711105486865825,
+     0.01570779098404365,
+     0.013797498433972424
+    ],
+    "e": 0.01865017816788028,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "archived_e": 0.01865017816788028,
+   "delta": 0.0,
+   "passed": true
+  },
+  {
+   "key": "M2_512|gl32|qn|BDF2|0.025|k4|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0007450631423678503,
+     0.02969489837475075,
+     0.032659039258120325,
+     0.03467791075794475,
+     0.03679171677399838,
+     0.044207424613558956
+    ],
+    "e": 0.044207424613558956,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "archived_e": 0.044207424613558956,
+   "delta": 0.0,
+   "passed": true
+  },
+  {
+   "key": "M2_512|gl32|qn|BDF2|0.025|k4|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0006810105086455497,
+     0.03873160076920179,
+     0.039761370021265,
+     0.040129738666088446,
+     0.038729207500426785,
+     0.03397052092060429
+    ],
+    "e": 0.040129738666088446,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "archived_e": 0.04012973866608846,
+   "delta": 1.3877787807814457e-17,
+   "passed": true
+  },
+  {
+   "key": "M2_512|gl32|qn|BDF2|0.025|k4|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0006933277123258786,
+     0.030471912865977512,
+     0.03597142352151381,
+     0.04146134702681927,
+     0.04470193828719299,
+     0.04585347097360217
+    ],
+    "e": 0.04585347097360217,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "archived_e": 0.045853470973602165,
+   "delta": 6.938893903907228e-18,
+   "passed": true
+  },
+  {
+   "key": "W768|gl40|fs|CN|0.01|K1|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.002150427903310375,
+     0.0018340194403663626,
+     0.002821830555034981,
+     0.003006198974751016,
+     0.003108331524052162,
+     0.0034480196752024956
+    ],
+    "e": 0.0034480196752024956,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "archived_e": 0.003448019675202491,
+   "delta": 4.7704895589362195e-18,
+   "passed": true
+  },
+  {
+   "key": "W768|gl40|fs|CN|0.01|K1|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0003205104933628725,
+     0.001444527603330177,
+     0.004152348470506066,
+     0.009928451017519239,
+     0.02017224952830712,
+     0.07165925309981157
+    ],
+    "e": 0.07165925309981157,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "archived_e": 0.07165925309981161,
+   "delta": 4.163336342344337e-17,
+   "passed": true
+  },
+  {
+   "key": "W768|gl40|fs|CN|0.01|K1|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.00028710984670308033,
+     0.0026669450190404485,
+     0.006811322115155437,
+     0.010968948863633008,
+     0.017596381135980603,
+     0.023868119232311448
+    ],
+    "e": 0.023868119232311448,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "archived_e": 0.023868119232311462,
+   "delta": 1.3877787807814457e-17,
+   "passed": true
+  },
+  {
+   "key": "W768|gl40|fs|CN|0.01|K1|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.00019547942154791957,
+     0.0017344231652012911,
+     0.004553290579217848,
+     0.01175803747401569,
+     0.01872706275088563,
+     0.023073030462480715
+    ],
+    "e": 0.023073030462480715,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "archived_e": 0.023073030462480715,
+   "delta": 0.0,
+   "passed": true
+  },
+  {
+   "key": "W512k8|lat16384|fs|CN|0.01|K1|case0",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.004484126644517817,
+     0.003325923965965692,
+     0.004157188499751797,
+     0.00514979871049513,
+     0.004902182758342827,
+     0.005789319279809225
+    ],
+    "e": 0.005789319279809225,
+    "eps_ref": 4.181332047166529e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c000",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 113.1278262898315
+   },
+   "archived_e": 0.005789319279809225,
+   "delta": 0.0,
+   "passed": true
+  },
+  {
+   "key": "W512k8|lat16384|fs|CN|0.01|K1|case5",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0006258188515581472,
+     0.001539578165520321,
+     0.005281928562583419,
+     0.01091510745466734,
+     0.016394049546112326,
+     0.03137233756122672
+    ],
+    "e": 0.03137233756122672,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "archived_e": 0.03137233756122672,
+   "delta": 0.0,
+   "passed": true
+  },
+  {
+   "key": "W512k8|lat16384|fs|CN|0.01|K1|case30",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0005859380692542107,
+     0.0034876071476051583,
+     0.010624869526071777,
+     0.01587030319208976,
+     0.018833274934384962,
+     0.021300452719156968
+    ],
+    "e": 0.021300452719156968,
+    "eps_ref": 7.830201020150904e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c030",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 119.52707171947463
+   },
+   "archived_e": 0.021300452719156975,
+   "delta": 6.938893903907228e-18,
+   "passed": true
+  },
+  {
+   "key": "W512k8|lat16384|fs|CN|0.01|K1|case43",
+   "source": {
+    "path": "results/sdiag01/raw/output/result.json",
+    "sha256": "879544a7d131428aa1ecc79bb1f052d69b55b80e1496bf47a70dbc975ffa3122",
+    "job_id": 6525518,
+    "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+    "gpu": [
+     "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+    ]
+   },
+   "score": {
+    "e_t": [
+     0.0005544830111065784,
+     0.0019530832432754553,
+     0.006663381535255208,
+     0.01684397138668118,
+     0.024559183280630503,
+     0.028654689893144455
+    ],
+    "e": 0.028654689893144455,
+    "eps_ref": 0.00011588542322936715,
+    "eligible": true,
+    "reference": "3d/val64/ST/c043",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 176.0188046264213
+   },
+   "archived_e": 0.028654689893144448,
+   "delta": 6.938893903907228e-18,
+   "passed": true
+  }
+ ],
+ "quadrature": [],
+ "next_open": [
+  "Independent results audit of D-S pilot",
+  "Remaining W768/W1024 cases0,5,30,43 with complete adaptive-anchor distance",
+  "D-Q gl80 missing finer-rule check on first8",
+  "Full64 paired same-invocation frontier validation after diagnostic review"
+ ]
+}

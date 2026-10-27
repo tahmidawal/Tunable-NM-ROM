@@ -1,0 +1,95 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Fixed-mode Burgers3D mesh diagnostic",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "cohort",
+  "reference",
+  "frozen_modes",
+  "contracts",
+  "shared_setup",
+  "incremental_setup",
+  "queries",
+  "case_results",
+  "timing_repetitions",
+  "phase_repetitions",
+  "operator_differences",
+  "initial_projection_differences",
+  "projection_budgets",
+  "execution"
+ ],
+ "properties": {
+  "schema_version": {
+   "type": "integer",
+   "const": 1
+  },
+  "cohort": {
+   "type": "object"
+  },
+  "reference": {
+   "type": "object"
+  },
+  "frozen_modes": {
+   "type": "object"
+  },
+  "contracts": {
+   "type": "object"
+  },
+  "shared_setup": {
+   "type": "array"
+  },
+  "incremental_setup": {
+   "type": "array"
+  },
+  "queries": {
+   "type": "object",
+   "description": "Frozen query config including bank,N,r,M,m,mode hash,contract,scheme,dt,input/output shape and Q1/Q2 scope. Operator interventions are separate from end-to-end native queries."
+  },
+  "case_results": {
+   "type": "object",
+   "description": "query id -> case id -> exact timed invocation linkage, actual returned-field restricted E0 score, native/common production-tight distances with declared norms, work, coefficients/all states/raw hashes and masks."
+  },
+  "timing_repetitions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "invocation_id",
+     "query",
+     "case",
+     "N",
+     "contract",
+     "rep",
+     "bracket",
+     "role",
+     "given_native_seconds",
+     "input_prep_seconds",
+     "descriptor_seconds",
+     "score",
+     "output_sha256",
+     "timing_admitted",
+     "native_timing_admitted"
+    ]
+   }
+  },
+  "phase_repetitions": {
+   "type": "array"
+  },
+  "operator_differences": {
+   "type": "object",
+   "description": "Frozen A65/A129,lambda65/lambda129 and P scaling files/hashes plus explicitly labeled diffusion-only/moment-only/composite interventions; no silent production-equation changes."
+  },
+  "initial_projection_differences": {
+   "type": "object"
+  },
+  "projection_budgets": {
+   "type": "object",
+   "description": "Common65 E0 oracle coefficients/residuals, orthogonality and Pythagorean checks; native129 Gram never substitutes for the scoring metric."
+  },
+  "execution": {
+   "type": "object",
+   "description": "Exact source/config/job/GPU, complete raw manifest and diagnostics-only qualification scope. Peak memory is labeled cumulative whole-job; setup current-memory deltas separate."
+  }
+ }
+}

@@ -37,7 +37,15 @@
     "p3d-cmp",
     "p-summary",
     "p-e1",
-    "summary"
+    "summary",
+    "b3d-refine-evidence",
+    "b3d-refine-solver",
+    "b3d-refine-time",
+    "b3d-refine-pod",
+    "b3d-refine-frontier",
+    "b3d-refine-mesh",
+    "b3d-refine-operator",
+    "b3d-refine-open"
   ],
   "sections": {
     "s0": {
@@ -51,6 +59,10 @@
     "s2": {
       "description": "Accuracy against speed, 2D and 3D",
       "start": "d2"
+    },
+    "b3d-refinement": {
+      "description": "Burgers 3D refinement",
+      "start": "b3d-refine-evidence"
     }
   },
   "title": "Research Update"

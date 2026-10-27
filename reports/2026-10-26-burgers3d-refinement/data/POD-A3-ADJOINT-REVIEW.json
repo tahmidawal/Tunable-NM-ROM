@@ -1,0 +1,24 @@
+{
+  "status": "Independent reviewer freshly reconstructed one saved step with CPU NumPy; no new GPU solve or parameter change",
+  "supersedes": "Earlier rounded probe values had an undocumented normalization and are retired in favor of this explicit fresh output",
+  "result_sha256": "b255bebbed01038d67b7ccc9e97f1de8d13c170510a7a03f9d099ae4852baff6",
+  "array_relative_path": "arrays/k16_c000_prod.npz",
+  "array_sha256": "5ddab4c2d7271d210f9e7cf2d4dd603209d2b0ec0ca81cac7ea6c309c4c3fb24",
+  "Phi_sha256": "7dc39cf9fbb5ea06d77001e4f8ccd69113dcdc8f22838f3cc12d0159b3431b2c",
+  "k16_sha256": "b022883db13926f0f6f619cda880f12b54af9fdbfdbf1175cd1889242722c6aa",
+  "case": 0,
+  "state_indices": [0, 1],
+  "basis_columns": 512,
+  "dt": 0.01,
+  "h": 0.015625,
+  "nu": 0.015720525393965363,
+  "jacobian_column_block": 32,
+  "full_metric_denominator": "6.12292257414319",
+  "comparisons": {
+    "Full gradient": {"absolute_difference": "1.1057735220123976e-14", "full_metric_normalized": "1.8059570550214515e-15", "saved_target_norm": "0.00804449693302751", "target_norm_relative": "1.3745713762069206e-12"},
+    "Sampled gradient": {"absolute_difference": "9.73278015642404e-14", "full_metric_normalized": "1.58956446673442e-14", "saved_target_norm": "2.8706470389396333e-7", "target_norm_relative": "3.390448224529602e-7"},
+    "Residual norm": {"absolute_difference": "3.0531133177191805e-16", "full_metric_normalized": null, "saved_target_norm": "0.2431965661212582", "target_norm_relative": "1.2554097150355706e-15"},
+    "Jacobian Frobenius norm": {"absolute_difference": "0.0", "full_metric_normalized": null, "saved_target_norm": "25.17684633380179", "target_norm_relative": "0.0"}
+  },
+  "precision_note": "Fresh printed output of the independent read-only reconstruction. Last-bit differences from earlier CPU summation are expected. Near-zero sampled-gradient target-relative error must not be described as the full-metric-normalized error."
+}

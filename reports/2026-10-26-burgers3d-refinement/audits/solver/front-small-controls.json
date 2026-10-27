@@ -1,0 +1,108 @@
+{
+ "passed": true,
+ "synthetic_only": true,
+ "x64": true,
+ "PS_phase_fused_relative": 0.0,
+ "incomplete_case_coverage_rejects_cost_match": true,
+ "case_balanced_median_control": true,
+ "POD_stronger_policy_actual_schedule_binding": true,
+ "FS_logical_contract_runtime_controls": [
+  {
+   "adaptive_steps": 0,
+   "observed_contractions": 5,
+   "derived": {
+    "nonlinear_iterations": 4,
+    "dense_GN_matrix_builds": 4,
+    "linear_solves": 4,
+    "jacobian_contractions": 5,
+    "residual_jacobian_pairs": 8,
+    "gradient_evaluations": 8,
+    "predictor_residual_evaluations": 12,
+    "residual_evaluations": 20,
+    "history_F_components": 4,
+    "count_kind": "exact logical source-level calls before compiler fusion/CSE; certification excluded",
+    "derivation": "FS initial contraction1; adaptive LM(it+1) contracts plus final carry contraction1 per adaptive step; fixedK contracts. Predictor3 residual calls/step. Full r/J and gradient pairs: adaptive(it+1), fixed(K+1)."
+   }
+  },
+  {
+   "adaptive_steps": 2,
+   "observed_contractions": 9,
+   "derived": {
+    "nonlinear_iterations": 4,
+    "dense_GN_matrix_builds": 4,
+    "linear_solves": 4,
+    "jacobian_contractions": 9,
+    "residual_jacobian_pairs": 8,
+    "gradient_evaluations": 8,
+    "predictor_residual_evaluations": 12,
+    "residual_evaluations": 20,
+    "history_F_components": 4,
+    "count_kind": "exact logical source-level calls before compiler fusion/CSE; certification excluded",
+    "derivation": "FS initial contraction1; adaptive LM(it+1) contracts plus final carry contraction1 per adaptive step; fixedK contracts. Predictor3 residual calls/step. Full r/J and gradient pairs: adaptive(it+1), fixed(K+1)."
+   }
+  }
+ ],
+ "QN_singleton_counter_scope_guard": true,
+ "invalid_optional_phase_profile_skipped": true,
+ "projection_oracle_relative": 1.230156504817066e-15,
+ "projection_orthogonality_Pythagoras_pass": true,
+ "actual_POD_active_identity_pass": {
+  "active_state_distance": 2.5854048139020343e-16,
+  "C0_distance": 1.9448667778793639e-16,
+  "output_distance": 4.2976245005572026e-16,
+  "E0_error_difference": 4.336808689942018e-18,
+  "passed": true,
+  "field_tolerance": 1e-12,
+  "error_tolerance": 1e-11,
+  "interpretation": "operational identity much tighter than unchanged scientific gates; actual states and hashes retained, byte equality descriptive"
+ },
+ "POD_identity_above_bound_rejected": true,
+ "frozen_mode_assembly_controls": [
+  {
+   "n": 5,
+   "mode_hash": "8c30d8114a6bc22ff38e403a0d5069a909a8a18e717f0b8842fe9756f37f68bd",
+   "selected_moment_relative": 6.908054375445422e-16,
+   "sine_eigenrelation_relative": 1.7125501324525633e-16,
+   "selected_modes": [
+    [
+     1,
+     1,
+     1
+    ],
+    [
+     2,
+     1,
+     1
+    ],
+    [
+     1,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "n": 9,
+   "mode_hash": "8c30d8114a6bc22ff38e403a0d5069a909a8a18e717f0b8842fe9756f37f68bd",
+   "selected_moment_relative": 3.0072806342782305e-16,
+   "sine_eigenrelation_relative": 1.0747340818484017e-15,
+   "selected_modes": [
+    [
+     1,
+     1,
+     1
+    ],
+    [
+     2,
+     1,
+     1
+    ],
+    [
+     1,
+     2,
+     1
+    ]
+   ]
+  }
+ ]
+}

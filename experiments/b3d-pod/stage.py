@@ -16,7 +16,13 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('attempt');a=ap.parse_args()
     cfg=HERE/'configs'/f'{a.attempt}.json'
     j=json.loads(cfg.read_text())
-    assert j['attempt']==a.attempt and a.attempt in ('pilot','validation','fit32','none64','k32pilot','k32val')
+    assert j['attempt']==a.attempt and a.attempt in ('pilot','validation','fit32','none64','k32pilot','k32val','k16fine01')
+    if a.attempt=='k16fine01':
+        sel=HERE/j['selection_manifest']
+        assert hashlib.sha256(sel.read_bytes()).hexdigest()==j['selection_sha256']
+        frozen=json.loads(sel.read_text());assert frozen['independent_results_gate']=='READY'
+        fp=HERE/frozen['reference_fixture']
+        assert hashlib.sha256(fp.read_bytes()).hexdigest()==frozen['reference_fixture_sha256']
     if 'k32' in j.get('arms',[]):
         frozen=json.loads((HERE/j['artifact_manifest']).read_text())
         w=HERE/'inputs/HR~ecsw~512~k32.npz'
@@ -50,7 +56,8 @@ def main():
     (d/'source.tar.sha256').write_text(archive+'  source.tar\n')
     remote=f'{NAMESPACE}/{a.attempt}'
     minutes=int(round(j['wall_hours']*60));hh,mm=divmod(minutes,60)
-    driver='fit.py' if j.get('driver')=='fit' else ('validate.py' if j.get('driver')=='validate' else 'replay.py')
+    driver=('fine_replay.py' if j.get('driver')=='fine_replay' else
+            ('fit.py' if j.get('driver')=='fit' else ('validate.py' if j.get('driver')=='validate' else 'replay.py')))
     refenv='unset JCPREF_STORE JCPREF_META' if j.get('driver')=='fit' else 'export JCPREF_STORE=/cluster/tufts/paralab/tawal01/jcp-ref/store'
     support_copy='cp experiments/b3d-pod/inputs/HR~ecsw~512~k32.npz artifacts/' if 'k32' in j.get('arms',[]) else ''
     # All runtime outputs and caches stay inside this unique job directory.

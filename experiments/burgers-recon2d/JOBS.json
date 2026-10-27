@@ -81,7 +81,21 @@
         "representative_replays": 26,
         "all_field_hashes_match": true
       },
-      "collection": "full output collection and checksum verification in progress"
+      "collection": "all files collected and verified against full COLLECTION.sha256; independent returned-artifact and freeze audit passed"
+    },
+    {
+      "job_id": 6569458,
+      "directory": "val01",
+      "phase": "frozen_validation_only",
+      "source_commit": "7c58b45eaa734a9fac5eaa764c25698f66fd77e1",
+      "stage_manifest_sha256": "1a687805f8f22b2131c1df6ca5ee5dc0636ed5b05499b3457fd27ee522c1b47e",
+      "prepared_manifest_sha256": "5c0dea1d0318679249745964de005634a7dd4d44e2cede1489787db35240bdb9",
+      "frozen_sha256": "bb8535dc386c4af19cd75877bcb005ac0165358daedd9f9a4c341b78e632ee88",
+      "reservation_seconds": 5400,
+      "gpu_request": "h200:1",
+      "status_at_submission": "PENDING",
+      "actual_elapsed_seconds": null,
+      "review": "Independent full development artifact/freeze and exact validation stage audits READY; parent released validation only with no selector. Queue checked before/after."
     }
   ]
 }

@@ -90,11 +90,17 @@ All64 unsealed validation cases, seed923801, approved E0 ST finest references, o
 Retain every per-case eligibility/uncertainty mask. This is further development/validation
 on an exposed cohort; it is not new held-out or sealed confirmation.
 
-The common query input is the analytic family's known physical-parameter descriptor.
+The common query input is the analytic family's known physical-parameter descriptor,
+including its canonical supplied `s_star` normalization scalar. Seed draw, normalization
+and descriptor construction are common offline setup; their provenance and setup cost are
+recorded. The timer begins from the supplied descriptor, not a seed or unnormalized blob list.
 Report native-input preparation separately and include it in a second end-to-end timer:
 ROM/POD prepare the same65-node input field then project; finite differences prepare their
 native sampled field; spectral prepares its continuous sine coefficients. Also retain
-prepared-native-input timings under that explicit narrower label. No comparison silently
+prepared-native-input timings under that explicit narrower label. Record every native input
+shape and its points: ROM/POD/FD use the flat63-cubed field, while PS uses(N-1)-cubed
+continuous sine coefficients. These native inputs differ across methods, so descriptor-total
+is the primary fair cost contract. All six output fields use the identical fine63-cubed points. No comparison silently
 omits a competitor's initialisation. Cohort generation, frozen bank/basis training and
 reusable operator tables are offline; record their setup/memory separately.
 

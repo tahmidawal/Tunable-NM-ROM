@@ -90,7 +90,11 @@ class Context:
     def save(self):
         self.rep['elapsed_seconds']=time.perf_counter()-self.t0
         self.rep['memory']=jax.devices()[0].memory_stats()
+        cap=self.cfg.get('memory_peak_limit_bytes')
+        overrun=bool(cap and self.rep['memory']['peak_bytes_in_use']>cap)
+        if overrun:self.rep['memory_limit_exceeded']=True
         dump(self.out/'result.json',self.rep)
+        if overrun and 'failure' not in self.rep:raise MemoryError('recorded device peak exceeds frozen memory limit')
 
     def setting(self,name):
         if name not in self.settings:

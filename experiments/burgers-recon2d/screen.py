@@ -113,7 +113,9 @@ def failed_case(metadata,error,out,source,cohort,case,L,case_meta):
     """A failed declared method remains in coverage and cannot enter selection."""
     rec=dict(status='failed',reason=type(error).__name__+': '+str(error),cohort=cohort,case=case,L=L,source=source,method=metadata['name'],group=metadata['group'],rank=metadata.get('rank'),ridge=metadata.get('ridge'),strict_coarse_control=metadata.get('strict_coarse_control',False),error_t=None,error_max=None,ref_eps=case_meta['ref_eps'],input_admitted=(source=='A' or case_meta['accepted']),actual_B_input_admitted=case_meta['accepted'])
     target=out/f'cases/{cohort}/L{L}/{source}'; target.mkdir(parents=True,exist_ok=True)
-    path=target/f"c{case:03d}_{metadata['name']}.json"; A.write_json(path,rec)
+    path=target/f"c{case:03d}_{metadata['name']}.json"
+    if path.exists(): raise RuntimeError('refuse to overwrite an existing case record with a failure')
+    A.write_json(path,rec)
     A.log('failed candidate',L,source,cohort,case,metadata['name'],rec['reason'])
     return rec|dict(record=str(path.relative_to(out)))
 

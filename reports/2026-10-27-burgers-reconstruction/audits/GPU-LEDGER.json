@@ -1,0 +1,124 @@
+{
+  "source_sha256": "f0f490b66515edefb45e5d936177c09403e36f37a406f54e60212996153b3ada",
+  "jobs": [
+    {
+      "JobIDRaw": "6567289",
+      "JobName": "b2dr_prepare",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "313",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=120G,node=1",
+      "job_id": 6567289,
+      "dimension": 2,
+      "allocated_gpu_seconds": 313,
+      "charged_gpu_seconds": 313
+    },
+    {
+      "JobIDRaw": "6567332",
+      "JobName": "br3_smk01",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "179",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=128G,node=1",
+      "job_id": 6567332,
+      "dimension": 3,
+      "allocated_gpu_seconds": 179,
+      "charged_gpu_seconds": 179
+    },
+    {
+      "JobIDRaw": "6567523",
+      "JobName": "br3_prep01",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "2735",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=384G,node=1",
+      "job_id": 6567523,
+      "dimension": 3,
+      "allocated_gpu_seconds": 2735,
+      "charged_gpu_seconds": 2735
+    },
+    {
+      "JobIDRaw": "6567730",
+      "JobName": "b2dr_inputplus",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "87",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=64G,node=1",
+      "job_id": 6567730,
+      "dimension": 2,
+      "allocated_gpu_seconds": 87,
+      "charged_gpu_seconds": 87
+    },
+    {
+      "JobIDRaw": "6568278",
+      "JobName": "b2dr_screen",
+      "State": "CANCELLED by 34493",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "529",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=120G,node=1",
+      "job_id": 6568278,
+      "dimension": 2,
+      "allocated_gpu_seconds": 529,
+      "charged_gpu_seconds": 531
+    },
+    {
+      "JobIDRaw": "6568662",
+      "JobName": "b2dr_screen",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "810",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=120G,node=1",
+      "job_id": 6568662,
+      "dimension": 2,
+      "allocated_gpu_seconds": 810,
+      "charged_gpu_seconds": 810
+    },
+    {
+      "JobIDRaw": "6569265",
+      "JobName": "br3_dev02",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "428",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=192G,node=1",
+      "job_id": 6569265,
+      "dimension": 3,
+      "allocated_gpu_seconds": 428,
+      "charged_gpu_seconds": 428
+    },
+    {
+      "JobIDRaw": "6569458",
+      "JobName": "b2dr_screen",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "3470",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=120G,node=1",
+      "job_id": 6569458,
+      "dimension": 2,
+      "allocated_gpu_seconds": 3470,
+      "charged_gpu_seconds": 3470
+    },
+    {
+      "JobIDRaw": "6570205",
+      "JobName": "br3_val01",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "1697",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=192G,node=1",
+      "job_id": 6570205,
+      "dimension": 3,
+      "allocated_gpu_seconds": 1697,
+      "charged_gpu_seconds": 1697
+    }
+  ],
+  "charged_gpu_seconds_by_dimension": {
+    "2": 5211,
+    "3": 5039
+  },
+  "charged_gpu_seconds": 10250,
+  "charged_gpu_hours": 2.8472222222222223,
+  "cap_gpu_hours_by_dimension": {
+    "2": 4,
+    "3": 4
+  },
+  "note": "The invalid development attempt retains its earlier conservative charge even where final Slurm elapsed time is smaller. Local CUDA-initialization failure had no cluster allocation."
+}

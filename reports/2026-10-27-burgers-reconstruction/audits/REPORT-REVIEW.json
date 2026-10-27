@@ -1,0 +1,27 @@
+{
+  "status": "ready_for_final_acceptance_binding",
+  "reviewer": "independent read-only Codex reconstruction_numerical_review",
+  "generator_sha256": "02a76ebcacdb2eca8eddd62ae24e3ec621231e985e8b372944bdd8c003a467ca",
+  "checks": {
+    "paired_and_control_comparisons_recomputed": 88,
+    "configuration_summaries_and_timing_medians_recomputed": 970,
+    "fixed_B_map_A_B_summaries_recomputed": 19,
+    "diagnostic_source_hashes_verified": 133,
+    "both_primary_worst_envelope_gates_verified": true,
+    "figure_points_verified": {
+      "2D": 32,
+      "3D": 64
+    },
+    "figure_coordinates_and_classifications_match_raw": true,
+    "figure_readable_without_clipping": true,
+    "bundled_protocol_byte_identical": true
+  },
+  "figures": "Regenerate figure provenance after adding the final acceptance object; no numerical settings may change.",
+  "claude_review": {
+    "available": true,
+    "scope": "Proposal and report logic; not an independent empirical GPU-result audit.",
+    "report_response": "claude-report/response.txt",
+    "bounded_success": true,
+    "findings": "Failure-handling and incomplete-comparison findings were fixed, then independently verified by Codex."
+  }
+}

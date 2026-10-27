@@ -1,0 +1,157 @@
+{
+  "date": "2026-10-27",
+  "reviewer": "independent Codex reconstruction_numerical_review",
+  "two_dimensional_input_qualification": {
+    "supplement_job": 6567730,
+    "elapsed_seconds": 87,
+    "declared_mesh_cases": 114,
+    "admitted_mesh_cases": 113,
+    "development_mesh_cases": 18,
+    "development_admitted": 18,
+    "remaining_unadmitted": "val32_c005_L32",
+    "remaining_time_gap": 1.18147627e-05,
+    "stage_solver_valid": true,
+    "further_time_rungs": "not authorized by the fixed protocol"
+  },
+  "invalid_development_run": {
+    "job_id": 6568278,
+    "source": "8044680aa35bcfecbdb4873101837542ea3fe523",
+    "stage_sha256": "caef5de63bdbea5381123007ea3d6b125fbba68e78b19210a382e4191fc1e51b",
+    "status": "cancelled_artifacts_inadmissible",
+    "reason": "Decimal configuration names collided under Path.with_suffix, overwriting raw timing/coefficient records.",
+    "previous_readiness": "retracted for artifact-writing path; no scientific reconstruction finding had been accepted",
+    "core_gpu_fixture": "passed; rerun remains required before accepting reconstruction artifacts",
+    "charged_seconds": 531,
+    "retention": "preserve partial outputs with checksums",
+    "cancellation": {
+      "helper_source": "a1d1f9cd035b4ffc5fcdf9e368e6a59136fbcfff",
+      "helper_sha256": "6e8964f616e9e0bce1644b237a0929512819f98ab6d5d286e17c2ad06563540c",
+      "review": "independently reviewed READY",
+      "scope": "exact numeric job 6568278, owner tawal01, name b2dr_screen and exact dev01 workdir; queue checked before and after",
+      "reason_for_lane_adaptation": "The mandated original guarded helper only permits another campaign's ctol_* names. Its numeric-ID/account guards were retained and narrowed to the exact owned job and directory.",
+      "other_jobs": "3D preparation 6567523 remained running; no other campaign changed"
+    }
+  },
+  "corrected_development_release": {
+    "directory": "dev02",
+    "job_id": 6568662,
+    "source": "1a42e82667f4983836a0a463c164656178ba929e",
+    "stage_sha256": "f6623fdecef25a1108c93c14e8b43cb39a4e1c88cfa759657ffb0ed6e1ab51d1",
+    "screen_sha256": "c76339e975c94c66d13265db6f6c7e858cc33853964c98446573b71757f95d2f",
+    "batch_sha256": "facfe5d026054e239e5eceeb37aecd628eaa759da13d774f8a8a78e80b55768b",
+    "input_manifest_sha256": "5c0dea1d0318679249745964de005634a7dd4d44e2cede1489787db35240bdb9",
+    "preparation": "inputplus01/output",
+    "phase": "dev",
+    "allocation": "one H200, 120 GB host memory, 90 minutes",
+    "status": "released_after_independent_exact_review",
+    "independent_path_fixture": {
+      "logical_rows": 3588,
+      "old_unique_paths": 2592,
+      "corrected_unique_paths": 3588
+    },
+    "guards": "Literal extension append, no overwrite on success/failure, complete identity/path/raw-value/coefficient-hash audit before freezing selection",
+    "numerical_method_changes": false
+  },
+  "report_aggregation_review": {
+    "status": "final numerical/report source and actual exported tables/figure independently accepted",
+    "coverage": "Exact cohort identities, dimensions, grid/source coverage, ratio direction, full failure denominators, nonnegative errors and max-over-evolved-times consistency",
+    "worst_error_gate": "Case-specific method lower versus interpolation upper reference-uncertainty envelopes; prospective clarification recorded in DESIGN.md",
+    "pending": "none for the approved bounded screen"
+  },
+  "two_dimensional_development_acceptance": {
+    "job_id": 6568662,
+    "elapsed_seconds": 810,
+    "status": "accepted_after_independent_return_and_freeze_review",
+    "rows": 3588,
+    "timed_coefficient_hashes_verified": 53820,
+    "frozen_choices_reproduced": 22,
+    "representative_rows_replayed": 26,
+    "representative_timing_field_coefficient_pairs": 390,
+    "maximum_independent_coefficient_relative_difference": 6.43e-16,
+    "maximum_independent_field_relative_difference": 4.95e-16,
+    "maximum_error_score_difference": 3.59e-17,
+    "freeze_commit": "7c58b45eaa734a9fac5eaa764c25698f66fd77e1",
+    "freeze_sha256": "bb8535dc386c4af19cd75877bcb005ac0165358daedd9f9a4c341b78e632ee88",
+    "export_sha256": "53b71d603488fa874338c4b8782fd3bf09d243ab28efcbf31017b17a5ee15c4c",
+    "total_charged_lane_seconds_through_development": 1741
+  },
+  "two_dimensional_validation_release": {
+    "job_id": 6569458,
+    "directory": "val01",
+    "source": "7c58b45eaa734a9fac5eaa764c25698f66fd77e1",
+    "stage_sha256": "1a687805f8f22b2131c1df6ca5ee5dc0636ed5b05499b3457fd27ee522c1b47e",
+    "phase": "val",
+    "allocation": "H200, 120 GB host memory, 90 minutes",
+    "status": "completed; independent numerical, reporting and operational acceptance closed",
+    "selection": "committed immutable development choices; selector disabled",
+    "accepted_validation_results": true
+  },
+  "three_dimensional_preparation_acceptance": {
+    "job_id": 6567523,
+    "elapsed_seconds": 2735,
+    "status": "accepted_after_independent_return_review",
+    "compact_files_rehashed": 827,
+    "coarse_inputs_admitted": 136,
+    "coarse_inputs_declared": 136,
+    "saved_rung_residual_arrays_checked": 591,
+    "maximum_coarse_time_gap": 9.986302757877234e-06,
+    "maximum_stage_residual": 9.99661862613191e-12,
+    "training_matrix_shape": [
+      55296,
+      250047
+    ],
+    "pod_qualification": "Approximate POD; residual probes retain aggregate energy, not a probe Gram spectrum or optimality certificate",
+    "bank_arrays": "byte-identical to independently NumPy-audited smoke arrays"
+  },
+  "three_dimensional_development_release": {
+    "job_id": 6569265,
+    "directory": "dev02",
+    "source": "6f3a7e6e245f180b1c73511a67b108c4c513c066",
+    "stage_sha256": "4798274dd6e7e3029be3cf099d6e489ad6b27b22978f867b0eecbcf8d2da10dc",
+    "batch_sha256": "dc68f12e5ff3e65a4ba0381e55124f1d793c26ab59da4701d02c739ab51150cd",
+    "status": "released_after_independent_exact_review",
+    "phase": "dev",
+    "allocation": "H200, 192 GB host memory, 40 minutes",
+    "screen_ranks": [
+      256,
+      512,
+      1024
+    ],
+    "correction_before_launch": "An imported preparation rank list would have added POD ranks128/768. Screen loops now explicitly use the three declared prefixes. Earlier reported source counts were corrected before any 3D reconstruction execution; dev01 never ran.",
+    "artifact_audit": "Executed under set-e after screen and before export/completion",
+    "returned_elapsed_seconds": 428,
+    "reported_returned_rows": 2544,
+    "reported_coefficient_invocations": 15264,
+    "reported_freeze_sha256": "bc669ab95ea20d88f1d793549e6f4d260fed7eae2641a1c76d837de6f49e819c",
+    "returned_result_review": "accepted after independent return, selection and representative NumPy replay"
+  },
+  "three_dimensional_development_acceptance": {
+    "job_id": 6569265,
+    "rows": 2544,
+    "coefficient_invocations_verified": 15264,
+    "frozen_choices_reproduced": 16,
+    "selected_case0_scores_replayed": 96,
+    "maximum_error_score_difference": 2.66e-16,
+    "power_sensitivity_gaps_replayed": 48,
+    "maximum_power_gap_difference": 2.03e-17,
+    "primary_B_L16_independent_coefficient_relative_differences": {
+      "bank": 6.13e-15,
+      "matched_POD": 4.5e-12,
+      "stronger_POD": 8.85e-13
+    },
+    "POD_qualification": "Six of eight selected mesh/source POD settings have consequential q1/q2 differences; primary B/L16 matched and stronger settings pass the registered sensitivity criterion. Approximate POD, no optimality certificate."
+  },
+  "three_dimensional_validation_release": {
+    "job_id": 6570205,
+    "directory": "val01",
+    "source": "37a91f156aff168ef8eff3b80f51d19df16a8ae0",
+    "stage_sha256": "5affa5f398397294bdfa1d60dcf1da0909ace537da82174905e48600ab5b2bab",
+    "batch_sha256": "157bc7ea5e727b1172fe56d56198d97a2b7ae12635cadc21f9f6d6bff5fdd38b",
+    "freeze_sha256": "bc669ab95ea20d88f1d793549e6f4d260fed7eae2641a1c76d837de6f49e819c",
+    "phase": "val",
+    "allocation": "H200, 192 GB host memory, 50 minutes",
+    "status": "completed; independent numerical, reporting and operational acceptance closed",
+    "selection": "committed immutable development choices; selector disabled",
+    "accepted_validation_results": true
+  }
+}

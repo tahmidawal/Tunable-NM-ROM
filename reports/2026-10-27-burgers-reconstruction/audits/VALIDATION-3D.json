@@ -1,0 +1,51 @@
+{
+  "status": "accepted_for_screen",
+  "reviewer": "independent read-only Codex reconstruction_numerical_review",
+  "job_id": 6570205,
+  "source": "37a91f156aff168ef8eff3b80f51d19df16a8ae0",
+  "export_sha256": "2150f1fb136fb4cdc38afe079c510f4905b05e1e6037a2a6a3f9d1941000cdba",
+  "output_manifest_sha256": "405b4be28eb3cd4a3ea1930f1bf7a34753c492bfab74e6eb787dcc5f0f0e87e1",
+  "freeze_sha256": "bc669ab95ea20d88f1d793549e6f4d260fed7eae2641a1c76d837de6f49e819c",
+  "verified": {
+    "collection_files": 1200,
+    "complete_rows": 23808,
+    "coefficient_hashes": 203008,
+    "timing_links": 90240,
+    "representative_invocation_fields": 256,
+    "independent_selected_field_replays": 96,
+    "independent_sensitivity_field_replays": 144,
+    "prepared_mesh_case_inputs_matched": 128,
+    "all_inputs_admitted": true,
+    "all_fits_complete": true,
+    "frozen_selection_and_source_contracts": true,
+    "exported_scores_and_timing_medians_match_raw": true
+  },
+  "independent_differences": {
+    "field_relative_max": 1.43e-15,
+    "score_max": 7.29e-16,
+    "sensitivity_max": 1.21e-16,
+    "reference_norm_relative_max": 3.55e-14,
+    "primary_case0_augmented_lstsq_coefficient_relative": {
+      "ordinary": 0,
+      "bank": 5.25e-15,
+      "matched_POD": 3.22e-12,
+      "stronger_POD": 1.95e-13
+    }
+  },
+  "qualifications": [
+    "Conditional numerical-reference estimates, not certified physical bounds or statistical confidence.",
+    "Exposed research cohorts; sealed and out-of-distribution cohorts remain closed.",
+    "POD approximation/training-information qualifications remain unchanged.",
+    "Only same-sample reconstruction; no ROM rollout or fine PDE correction."
+  ],
+  "operational_acceptance": {
+    "independently_verified": true,
+    "retained_arrays": 1685,
+    "expanded_and_git_archive_storage_verified": true,
+    "remote_namespace_empty": true,
+    "retention_record": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-burgers-recon3d/experiments/burgers-recon3d/results/RETENTION.json",
+    "retention_record_sha256": "91ccfae84b214fcedd18a900e759c35fb73dbef2a494e23dd48a62f8d8363515",
+    "lane_commit": "d7e21d00e",
+    "mirror_commit": "6221252fb"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "status": "accepted_for_screen",
+  "finalized_utc": "2026-10-27T23:30:46.343305+00:00",
+  "scope": "User-approved version B: same-sample 2D and 3D reconstruction including the existing strict 2D coarse-data control. Acceptance establishes artifact and reporting integrity; both primary larger-campaign accuracy gates fail.",
+  "reviewer": "independent read-only Codex reconstruction_numerical_review",
+  "export_sha256": {
+    "2": "81e01e6abe24039e44824975fe8aa84db6bfe88a2841e2e06fc3e84bda7f7ba1",
+    "3": "2150f1fb136fb4cdc38afe079c510f4905b05e1e6037a2a6a3f9d1941000cdba"
+  },
+  "generator_sha256": "02a76ebcacdb2eca8eddd62ae24e3ec621231e985e8b372944bdd8c003a467ca",
+  "auxiliary_sha256": {
+    "2D_POD_base": "c401f87be0d516803fd83d5a8d9975b2af434be10f5c9bd5ef8b06ade4d76562",
+    "2D_POD_coarse": "bfbf5faea6ea0705d08c8e9fd5546381d6a3af82a8c43f7c8924883b433f2d47",
+    "3D_development_export": "21c59b373f77383154a7b28a721ba017287dfb481f0a011d8b52d99435980d12"
+  },
+  "audit_sha256": {
+    "VALIDATION-2D.json": "de418bbd5e44fa8eba10f38e5786a27dcfdb481a7d777d6030cb1ffd91824d66",
+    "VALIDATION-3D.json": "a147c6ce51fb95b3fb81da642d105bf5c5a6ba55729028c0bd56df82502a1cc1",
+    "REPORT-REVIEW.json": "7ff789d75245780ed11ae33fbe76b8037abbd03660af0e1eddaa8677fa2b000f",
+    "GPU-LEDGER.json": "692710399ea0a14ccf0807169875784b538ddd2c482fb39a0335936737fd973c"
+  },
+  "operational_acceptance": "Both lanes retained expanded evidence and committed Git blobs/archives; code-only backups contain source, measurements and manifests. Own remote job directories were checksum-verified and removed. The 2D durability gap was repaired and independently verified.",
+  "claude_review": "Proposal and report logic reviews succeeded through the installed Claude skill; empirical numerical acceptance is the independent Codex audit.",
+  "constraints": [
+    "Exposed cohorts only; sealed/OOD remain closed.",
+    "No new neural training, reconstructed-state evolution or fine PDE correction.",
+    "Conditional numerical-reference uncertainty and approximate-POD/training-information limitations remain.",
+    "The sole unadmitted 2D L32 input is retained in all full-cohort comparisons."
+  ]
+}

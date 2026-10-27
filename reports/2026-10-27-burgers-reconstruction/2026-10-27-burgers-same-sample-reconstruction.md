@@ -1,6 +1,6 @@
 # Burgers reconstruction from the same coarse samples
 
-This report compares classical and learned-basis reconstruction using identical coarse field samples. The numbers are provisional pending independent returned-result and reporting review.
+This report compares classical and learned-basis reconstruction using identical coarse field samples. The numbers are final for this bounded screen after independent result review; numerical-reference and training-information qualifications remain explicit.
 
 The 2D decoder does not pass the prespecified accuracy gate against development-selected classical reconstruction. The 3D decoder does not pass the prespecified accuracy gate against development-selected classical reconstruction.
 
@@ -17,7 +17,7 @@ The screen uses the repository's scalar viscous Burgers families and exposed res
 
 Every declared method family has an available frozen selection.
 
-Source A supplies exact samples of the stored fine-reference array. Source B supplies an actual coarse numerical solution. Every method receives the same field at the same physical time, coordinates and zero boundary values. There is no rollout or subsequent PDE correction. Sealed and out-of-distribution cohorts remain closed.
+Source A supplies exact samples of the stored fine-reference array. Source B supplies an actual coarse numerical solution. Every method receives the same field at the same physical time, coordinates and zero boundary values. Reconstructed fields are not advanced through time or corrected with a fine PDE solve. Sealed and out-of-distribution cohorts remain closed.
 
 The coarse inputs use central differences and Crank–Nicolson stepping with backward-Euler startup. Historical bank training values use the inherited upwind/backward-Euler recipe. That numerical-prior mismatch is part of the inherited system tested here.
 
@@ -403,6 +403,8 @@ $$\max_i\max(0,e_{i,\mathrm{method}}-\epsilon_i)>\max_i(e_{i,\mathrm{classical}}
 - 3D validation export: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-burgers-recon3d/experiments/burgers-recon3d/results/val01/output/EXPORT.json`; SHA-256 `2150f1fb136fb4cdc38afe079c510f4905b05e1e6037a2a6a3f9d1941000cdba`.
 
 The [protocol and controls](DESIGN.md) specify the physical times, meshes, training information, fitting rules and prospective selection criteria.
+
+The [independent acceptance record](ACCEPTED-SCREEN.json) binds the exports, report generator and auxiliary POD evidence used for this publication.
 
 The companion JSON contains normalized selected-case records, full comparison pairs, runtime metadata and the gate constants used to generate these tables.
 

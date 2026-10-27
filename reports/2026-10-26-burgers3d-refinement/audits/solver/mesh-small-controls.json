@@ -1,0 +1,71 @@
+{
+ "passed": true,
+ "synthetic_only": true,
+ "x64": true,
+ "wrapper_controls": {
+  "source_state_relative": 0.0,
+  "source_field_relative": 0.0,
+  "held_state_relative": 0.0,
+  "split_fused_relative": 0.0,
+  "tight_fresh_gamma_max": 2.5008545632467636e-08,
+  "tighter_fresh_gamma_max": 1.4908980373712167e-11,
+  "mf_source_state_relative": 0.0
+ },
+ "normalization_controls": [
+  {
+   "scheme": "CN",
+   "dt": 0.01,
+   "step": 0,
+   "residual_relative": 3.740647528194252e-18,
+   "Jacobian_relative": 8.455075063974816e-17
+  },
+  {
+   "scheme": "CN",
+   "dt": 0.01,
+   "step": 3,
+   "residual_relative": 3.740647528194252e-18,
+   "Jacobian_relative": 8.455075063974816e-17
+  },
+  {
+   "scheme": "BDF2",
+   "dt": 0.00625,
+   "step": 0,
+   "residual_relative": 6.6355114961443095e-18,
+   "Jacobian_relative": 6.527718059129175e-20
+  },
+  {
+   "scheme": "BDF2",
+   "dt": 0.00625,
+   "step": 3,
+   "residual_relative": 1.7776049239778066e-17,
+   "Jacobian_relative": 5.978604368166206e-17
+  }
+ ],
+ "changed_A_predictor_QR_relative": 0.0,
+ "lambda_also_changes_row_weights": true,
+ "native129_returned_field_restriction_pass": true,
+ "held_full_vs_lean_controls": [
+  {
+   "solver": "qn",
+   "state_exact": true,
+   "fields_exact": true,
+   "fresh_certificate_exact": true,
+   "lean_cache_keys": [
+    "B",
+    "D",
+    "P"
+   ]
+  },
+  {
+   "solver": "fs",
+   "state_exact": true,
+   "fields_exact": true,
+   "fresh_certificate_exact": true,
+   "lean_cache_keys": [
+    "B",
+    "D",
+    "P"
+   ]
+  }
+ ]
+}

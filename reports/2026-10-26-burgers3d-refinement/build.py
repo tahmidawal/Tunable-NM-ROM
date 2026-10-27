@@ -34,6 +34,8 @@ def main():
         if relative.startswith('project/slides/'):
             assert sha(presentation / relative) == digest
     write(HERE / 'BUILD-CHECK.json', dict(direct_inputs_current=True, original_slides_preserved=True,
+        report_filename=read(HERE / 'VALUES.json')['report_filename'],
+        report_sha256=sha(HERE / read(HERE / 'VALUES.json')['report_filename']),
         pdf_pages=pages, pdf_sha256=sha(pdf), preserved_slides=preservation['preserved_slide_count'],
         added_slides=preservation['added_slide_count'],
         note='Build/integrity checks only; numerical and publication audit gates remain separate.'))

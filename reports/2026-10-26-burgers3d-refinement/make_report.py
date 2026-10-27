@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import collections
 import json
+from datetime import date
 from pathlib import Path
 
 import matplotlib
@@ -53,6 +54,12 @@ def main():
     plt.rcParams.update({'font.size': 10, 'axes.spines.top': False, 'axes.spines.right': False,
                          'pdf.fonttype': 42, 'ps.fonttype': 42})
     inv = load(HERE / 'data/inventory.json.gz')
+    closure_path = HERE / 'data/CAMPAIGN-CLOSURE.json'
+    closure = load(closure_path) if closure_path.is_file() else None
+    numbers_date = date.fromisoformat(closure['numbers_finalized_date']).isoformat() if closure else '2026-10-26'
+    report_filename = f'{numbers_date}-burgers3d-refinement.md'
+    report_status = ('Final numerical results for the bounded tested set; remaining scientific gaps are explicitly scoped.'
+                     if closure else 'Provisional campaign checkpoint; final paired validation and publication review are pending.')
     timed = load(HERE / 'data/timing-rescore.json')
     dimsdir = WTS / '2026-10-18-jcp-dims/experiments/jcp-dims'
     speeddir = WTS / '2026-10-14-jcp-speed3d/experiments/jcp-speed3d'
@@ -80,6 +87,8 @@ def main():
                   best_worst=dict(key=bestworst, **qualified[bestworst]),
                   historical_ROM_comparisons=dims['h2q'], timing_population=timed['case_ids'],
                   historical_POD_scope=pod_scope, new_lanes={}, qualified_HR_POD_subjects=[])
+    values['report_filename'] = report_filename
+    values['numbers_finalized_date'] = numbers_date if closure else None
 
     # Exact historical timed population: cost and returned coefficients linked by original hashes.
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
@@ -236,6 +245,15 @@ def main():
         values['qualified_HR_POD_subjects'] = [sid for sid, v in rendered['subjects'].items()
             if v['method'] == 'POD' and v['registered_qualified'] and
             v['qualification']['method_specific_extra_masks'].get('hyper_reduced') is True]
+    new_mesh_text = ''
+    mesh_path = HERE / 'data/frozen-mesh.json.gz'
+    if not mesh_path.is_file():
+        mesh_path = HERE / 'data/frozen-mesh.json'
+    if mesh_path.is_file():
+        import mesh_report
+        rendered_mesh = mesh_report.render(load_frozen(mesh_path.name), inv['reference'], table, save)
+        new_mesh_text = rendered_mesh.pop('text')
+        values['fixed_mode_mesh'] = rendered_mesh
 
     # New lane results remain separate, with exact scope and audit state supplied by their owners.
     lane_sections = []
@@ -319,7 +337,9 @@ def main():
                              'All displayed settings pass their subset nonlinear and own-state quadrature controls. '
                              'Finer steps improve the median while worsening the worst case; neither a general '
                              'accuracy improvement nor a general failure describes this tradeoff. The intervals '
-                             'are propagated conditional reference uncertainties, not statistical confidence intervals.\n\n')
+                             'are propagated conditional reference uncertainties, not statistical confidence intervals. '
+                             'The inherited mode weights depend on the step size, so this is a time-step/method-package '
+                             'intervention rather than isolated temporal truncation error.\n\n')
                     text += table(['Step size', 'Case ids', 'Median error (%)', 'Conditional median interval (%)',
                                    'Worst error (%)', 'Corrections (sum)', 'Jacobian contractions (sum)',
                                    'Uncertified steps', 'Subset controls pass'], rows) + '\n\n'
@@ -515,6 +535,18 @@ weighted tests, and $\Lambda_N$ supplies the discrete diffusion eigenvalues. The
 uses $\mathcal{N}_q(c)+\nu\Lambda_NA_Nc$, with $A_N$ the mesh-derived test moments. $N$ denotes
 nodes per axis here; historical plots using intervals have $L=N-1$.
 
+The weak least-squares objective also has the inherited diagonal mode weights
+
+$$
+S_{\Delta t,\nu,\Lambda}=
+\operatorname{diag}\!\left((a_0+\Delta t\,b_0\,\nu\,\lambda_{\mathbf{k}})^{-1}\right),
+$$
+
+where $a_0,b_0$ are coefficients of the time scheme. Changing the time step or diffusion
+eigenvalues changes these weights as well as the time-discrete residual and test directions.
+The measured time-step and eigenvalue interventions are method packages; even verified solves
+do not isolate pure temporal truncation or physical diffusion bias from those weighting effects.
+
 This archived formulation deviates from the general FOM-exact upwind rule in `AGENTS.md`.
 The campaign preserves it to reconcile the actual historical method; it does not silently
 substitute an upwind operator. POD's central finite-difference residual and the spectral full
@@ -524,10 +556,16 @@ solve and its quadrature, not PDE or spatial consistency. Changing $N$ also chan
 projection, Gram matrices and normalization; a composite mesh replay cannot isolate diffusion
 or advection bias by itself. Any alternative operator is a separately named diagnostic control.
 
+Unsampled POD restricts the trial state to its frozen span, $u=\Phi c$, and minimises
+the full central finite-difference residual norm, $\|R_h(\Phi c)\|^2$. The residual
+is not first projected by $\Phi^\top$. ECSW samples and weights that full residual.
+Inherited metadata describing a residual projected onto the POD basis should be read with
+this correction; the numerical kernels and archived results remain unchanged.
+
 '''
     report = f'''# Burgers 3D refinement: recovered evidence, numerical gaps and controlled replays
 
-Status: provisional campaign checkpoint; final paired validation and publication review are pending.
+Status: {report_status}
 This report reconciles existing evidence and the bounded refinement campaign. The historical
 numbers are conditional estimates against approved E0 ST references; new numerical results
 are accepted only with their independent audit status. This generated version does not
@@ -650,6 +688,8 @@ time-discretisation package bind in different settings. The archived cohort limi
 
 ## Mesh and input-regime dependence
 
+{new_mesh_text}
+
 ![Historical same-allocation mesh cost and reported nonlinear work](figs/mesh_cost_iterations.png)
 
 This mesh panel uses the mesh-free input/scoring-lattice contract and the historical deployment
@@ -742,6 +782,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - $A_N$, $\\Lambda_N$, $c$, $\\nu$: mesh test moments, discrete diffusion eigenvalues, reduced coefficients, and viscosity.
 - W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
 - M2_512: a separately trained frozen bank with its own source hash; it is not a prefix of the W bank.
+- M2 / W1024: short labels for the specific frozen banks identified in the parameter tables; no new bank is trained in this campaign.
 - POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
 - Bank keys: bank label, integration rule, nonlinear solver, time scheme, step size, and work policy, separated by vertical bars.
 - FS K1 / QN k4: one fixed correction after the adaptive startup / matrix refresh every four steps, with the inherited slow-refresh logic retained.
@@ -754,10 +795,12 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Outlier count: number of cases exceeding the table's stated error threshold.
 - Full query: input projection, reduced time evolution and requested output decoding.
 - Descriptor / prepared native: supplied initial-condition parameters and canonical normalization / method-specific precomputed field or sine coefficients. These are distinct input contracts.
+- mf / mesh / held: fixed Gauss input and fixed output / native mesh input and output at that mesh / supplied baseline coefficients held fixed for an untimed operator diagnostic.
 - Device output: fully computed fields resident on the GPU; host transfer, scoring and saving are separate work.
 - Phase: a separately measured part of a query; separate calls are not assumed additive to fused-query cost.
 - Q1: nonlinear-solver validity, stationarity and agreement with tighter solves.
 - Q2: quadrature successor and own-state nonlinear agreement, with the finer rule checked too.
+- Mesh Q2 scope: successor field agreement on the common scoring lattice; growing-output native solve checks do not provide a finer-native-grid E0 reference certificate.
 - Rho: relative change in the projected nonlinear term when the integration rule is refined at the same returned state.
 - Qualified / admitted: satisfies the method's declared checks on the required population; nonapplicable checks are labelled, and unknown evidence is not a pass.
 - CN / BDF2 / BE: Crank–Nicolson / second-order backward differentiation / backward Euler.
@@ -778,6 +821,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Joint accuracy match: both median and worst competitor upper conditional errors lie below the subject's lower errors on the same cases.
 - Projection floor: best reference-field fit in the frozen span at a stored time; it does not identify the cause of a trajectory's larger error.
 - Test moment / operator intervention: overlap of a bank function with a test / an explicitly changed equation component with other quantities held fixed.
+- Mode weights: the inherited scaling of weak residual rows; they depend on the time scheme, step size, viscosity and diffusion eigenvalues.
 - Shared / incremental setup: reused bank or basis preparation / additional preparation for one configuration; neither includes historical training unless stated.
 - Cumulative peak memory: largest device allocation seen anywhere earlier in the job, not a standalone method's memory requirement.
 - Diagnostic subset: selected cases for explaining a failure, not a whole-population performance estimate.
@@ -786,9 +830,17 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Q/T/S/F/e_P: quadrature / time / nonlinear solve / reduced-form intervention / representation floor.
 - Mesh-free: use method-specific input and output points; full-field output requests every mesh value.
 - Conditional / provisional: valid only with stated numerical assumptions / awaiting required evidence.
-- Spearman correlation: association between ranks of case quantities, without establishing a causal effect.
 '''
-    (HERE / '2026-10-26-burgers3d-refinement.md').write_text(report)
+    report_path = HERE / report_filename
+    if closure:
+        assert values.get('full_validation_frontier') and values.get('fixed_mode_mesh')
+        assert closure['numerical_results_audit_ready'] is True
+        final_queue = load(HERE / 'data/FINAL-QUEUE-AUDIT.json')
+        assert not final_queue['live_campaign_jobs']
+    report_path.write_text(report)
+    draft = HERE / '2026-10-26-burgers3d-refinement.md'
+    if closure and draft != report_path and draft.is_file():
+        draft.unlink()  # Generated draft remains recoverable in the campaign's backed-up Git history.
     for name in ['inventory.py', 'rescore_timing.py', 'make_report.py', 'frontier_report.py',
                  'checkpoint.py', 'update_research.py', 'build.py', 'mesh_report.py']:
         code = HERE / name
@@ -796,7 +848,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
             PINS[str(code)] = sha(code)
     write(HERE / 'VALUES.json', values)
     write(HERE / 'PROVENANCE.json', PINS)
-    print(HERE / '2026-10-26-burgers3d-refinement.md')
+    print(report_path)
 
 
 if __name__ == '__main__':

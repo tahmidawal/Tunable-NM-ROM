@@ -1,6 +1,6 @@
 # Burgers 3D refinement: recovered evidence, numerical gaps and controlled replays
 
-Status: provisional campaign checkpoint; final paired validation and publication review are pending.
+Status: Provisional campaign checkpoint; final paired validation and publication review are pending.
 This report reconciles existing evidence and the bounded refinement campaign. The historical
 numbers are conditional estimates against approved E0 ST references; new numerical results
 are accepted only with their independent audit status. This generated version does not
@@ -38,6 +38,18 @@ weighted tests, and $\Lambda_N$ supplies the discrete diffusion eigenvalues. The
 uses $\mathcal{N}_q(c)+\nu\Lambda_NA_Nc$, with $A_N$ the mesh-derived test moments. $N$ denotes
 nodes per axis here; historical plots using intervals have $L=N-1$.
 
+The weak least-squares objective also has the inherited diagonal mode weights
+
+$$
+S_{\Delta t,\nu,\Lambda}=
+\operatorname{diag}\!\left((a_0+\Delta t\,b_0\,\nu\,\lambda_{\mathbf{k}})^{-1}\right),
+$$
+
+where $a_0,b_0$ are coefficients of the time scheme. Changing the time step or diffusion
+eigenvalues changes these weights as well as the time-discrete residual and test directions.
+The measured time-step and eigenvalue interventions are method packages; even verified solves
+do not isolate pure temporal truncation or physical diffusion bias from those weighting effects.
+
 This archived formulation deviates from the general FOM-exact upwind rule in `AGENTS.md`.
 The campaign preserves it to reconcile the actual historical method; it does not silently
 substitute an upwind operator. POD's central finite-difference residual and the spectral full
@@ -46,6 +58,12 @@ comparison, but not a claim of identical discrete equations. Q1/Q2 certify the s
 solve and its quadrature, not PDE or spatial consistency. Changing $N$ also changes test moments,
 projection, Gram matrices and normalization; a composite mesh replay cannot isolate diffusion
 or advection bias by itself. Any alternative operator is a separately named diagnostic control.
+
+Unsampled POD restricts the trial state to its frozen span, $u=\Phi c$, and minimises
+the full central finite-difference residual norm, $\|R_h(\Phi c)\|^2$. The residual
+is not first projected by $\Phi^\top$. ECSW samples and weights that full residual.
+Inherited metadata describing a residual projected onto the POD basis should be read with
+this correction; the numerical kernels and archived results remain unchanged.
 
 
 
@@ -178,6 +196,8 @@ time-discretisation package bind in different settings. The archived cohort limi
 
 ## Mesh and input-regime dependence
 
+
+
 ![Historical same-allocation mesh cost and reported nonlinear work](figs/mesh_cost_iterations.png)
 
 This mesh panel uses the mesh-free input/scoring-lattice contract and the historical deployment
@@ -299,7 +319,7 @@ The missing inherited finer-rule check now covers the original case ids [0, 1, 2
 
 #### Time refinement: median and worst trade off
 
-These selected-case diagnostics hold bank, test space and target quadrature fixed. All displayed settings pass their subset nonlinear and own-state quadrature controls. Finer steps improve the median while worsening the worst case; neither a general accuracy improvement nor a general failure describes this tradeoff. The intervals are propagated conditional reference uncertainties, not statistical confidence intervals.
+These selected-case diagnostics hold bank, test space and target quadrature fixed. All displayed settings pass their subset nonlinear and own-state quadrature controls. Finer steps improve the median while worsening the worst case; neither a general accuracy improvement nor a general failure describes this tradeoff. The intervals are propagated conditional reference uncertainties, not statistical confidence intervals. The inherited mode weights depend on the step size, so this is a time-step/method-package intervention rather than isolated temporal truncation error.
 
 | Step size | Case ids | Median error (%) | Conditional median interval (%) | Worst error (%) | Corrections (sum) | Jacobian contractions (sum) | Uncertified steps | Subset controls pass |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -405,6 +425,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - $A_N$, $\Lambda_N$, $c$, $\nu$: mesh test moments, discrete diffusion eigenvalues, reduced coefficients, and viscosity.
 - W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
 - M2_512: a separately trained frozen bank with its own source hash; it is not a prefix of the W bank.
+- M2 / W1024: short labels for the specific frozen banks identified in the parameter tables; no new bank is trained in this campaign.
 - POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
 - Bank keys: bank label, integration rule, nonlinear solver, time scheme, step size, and work policy, separated by vertical bars.
 - FS K1 / QN k4: one fixed correction after the adaptive startup / matrix refresh every four steps, with the inherited slow-refresh logic retained.
@@ -417,10 +438,12 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Outlier count: number of cases exceeding the table's stated error threshold.
 - Full query: input projection, reduced time evolution and requested output decoding.
 - Descriptor / prepared native: supplied initial-condition parameters and canonical normalization / method-specific precomputed field or sine coefficients. These are distinct input contracts.
+- mf / mesh / held: fixed Gauss input and fixed output / native mesh input and output at that mesh / supplied baseline coefficients held fixed for an untimed operator diagnostic.
 - Device output: fully computed fields resident on the GPU; host transfer, scoring and saving are separate work.
 - Phase: a separately measured part of a query; separate calls are not assumed additive to fused-query cost.
 - Q1: nonlinear-solver validity, stationarity and agreement with tighter solves.
 - Q2: quadrature successor and own-state nonlinear agreement, with the finer rule checked too.
+- Mesh Q2 scope: successor field agreement on the common scoring lattice; growing-output native solve checks do not provide a finer-native-grid E0 reference certificate.
 - Rho: relative change in the projected nonlinear term when the integration rule is refined at the same returned state.
 - Qualified / admitted: satisfies the method's declared checks on the required population; nonapplicable checks are labelled, and unknown evidence is not a pass.
 - CN / BDF2 / BE: Crank–Nicolson / second-order backward differentiation / backward Euler.
@@ -441,6 +464,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Joint accuracy match: both median and worst competitor upper conditional errors lie below the subject's lower errors on the same cases.
 - Projection floor: best reference-field fit in the frozen span at a stored time; it does not identify the cause of a trajectory's larger error.
 - Test moment / operator intervention: overlap of a bank function with a test / an explicitly changed equation component with other quantities held fixed.
+- Mode weights: the inherited scaling of weak residual rows; they depend on the time scheme, step size, viscosity and diffusion eigenvalues.
 - Shared / incremental setup: reused bank or basis preparation / additional preparation for one configuration; neither includes historical training unless stated.
 - Cumulative peak memory: largest device allocation seen anywhere earlier in the job, not a standalone method's memory requirement.
 - Diagnostic subset: selected cases for explaining a failure, not a whole-population performance estimate.
@@ -449,4 +473,3 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Q/T/S/F/e_P: quadrature / time / nonlinear solve / reduced-form intervention / representation floor.
 - Mesh-free: use method-specific input and output points; full-field output requests every mesh value.
 - Conditional / provisional: valid only with stated numerical assumptions / awaiting required evidence.
-- Spearman correlation: association between ranks of case quantities, without establishing a causal effect.

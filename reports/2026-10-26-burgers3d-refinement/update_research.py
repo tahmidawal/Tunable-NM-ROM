@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 DEST = HERE.parents[0] / '2026-10-23-research-update'
 SOURCE = ROOT / 'reports/2026-10-23-research-update'
 GENERATED_IDS = ['b3d-refine-evidence', 'b3d-refine-solver', 'b3d-refine-time', 'b3d-refine-pod',
-                 'b3d-refine-frontier', 'b3d-refine-mesh', 'b3d-refine-open']
+                 'b3d-refine-frontier', 'b3d-refine-mesh', 'b3d-refine-operator', 'b3d-refine-open']
 
 
 def picture(name):
@@ -40,6 +40,7 @@ def slide(name, title, body, number):
 def main():
     values = read(HERE / 'VALUES.json')
     frontier = values.get('full_validation_frontier')
+    mesh = values.get('fixed_mode_mesh')
     qualified_hr = [] if not frontier else [sid for sid, v in frontier['subjects'].items()
         if v['method'] == 'POD' and v['registered_qualified'] and
         v['qualification']['method_specific_extra_masks'].get('hyper_reduced') is True]
@@ -103,7 +104,7 @@ def main():
 <div style="font-size:31px;line-height:1.45"><p>On the fixed diagnostic cases, median error falls from {100*coarse['median']:.4g}% to {100*fine['median']:.4g}%, while worst error rises from {100*coarse['worst']:.4g}% to {100*fine['worst']:.4g}%.</p>
 <p style="margin-top:25px">Both endpoints pass the subset convergence checks. A lower median does not guarantee a better worst case.</p>
 <p style="margin-top:25px">The coarse and fine endpoints were selected after these diagnostics, before the full-validation sweep. The intermediate setting remains a valid measured tradeoff.</p></div></div>
-<p style="font-size:26px;line-height:1.4;margin-top:30px;color:#6d4e2d">Error cancellation is a hypothesis. The inherited bank uses analytic advection and grid-dependent diffusion; it does not share POD's discrete residual.</p>'''
+<p style="font-size:26px;line-height:1.4;margin-top:30px;color:#6d4e2d">Error cancellation is a hypothesis. Changing the step also changes least-squares row weights. The bank uses analytic advection and grid-dependent diffusion; it does not share POD's discrete residual.</p>'''
         output.append(('b3d-refine-time', 'Time refinement improves the median and worsens outliers', text))
     pod = read(HERE / 'data/pod-pilot-export.json')
     old = values['historical_POD_scope']
@@ -139,6 +140,15 @@ def main():
         text = f'''<img alt="Same-allocation complete-validation accuracy versus descriptor-total query cost" src="{picture('full64_descriptor_frontier.png')}" style="display:block;width:94%;max-height:640px;object-fit:contain;margin:0 auto">
 <p style="font-size:27px;line-height:1.4;margin-top:18px">Input preparation and synchronized device outputs are included; host output transfer and scoring are excluded. Filled points pass registered method-specific gates; open points remain visible. Joint accuracy matches and the finite tested set are documented in the report.</p>'''
         output.append(('b3d-refine-frontier', 'The complete validation comparison uses one GPU allocation', text))
+    if mesh:
+        target = next(iter(mesh['cost_queries'].values()))['config']
+        text = f'''<img alt="Fixed reduced settings at two mesh sizes and two input/output contracts" src="{picture('fixed_mode_mesh_cost_work.png')}" style="display:block;width:94%;max-height:575px;object-fit:contain;margin:0 auto">
+<p style="font-size:28px;line-height:1.4;margin-top:18px">Frozen M2 bank: r={target['r']}, M={target['M']}, m={target['m']}; {len(target['cases'])} diagnostic cases. Job {mesh['execution']['job_id']}. Input preparation and returned fields are included. Q2 agreement uses the common scoring lattice; this does not certify finer-grid E0 accuracy.</p>'''
+        output.append(('b3d-refine-mesh', 'Fixed modes expose the cost of requested output', text))
+        case = next(v['cases'][0] for v in mesh['operator_controls'].values() if len(v['cases']) == 1)
+        text = f'''<img alt="Fixed-initial-coefficient diffusion and moment controls" src="{picture('operator_interventions.png')}" style="display:block;width:88%;max-height:560px;object-fit:contain;margin:0 auto">
+<p style="font-size:29px;line-height:1.4;margin-top:20px">Diagnostic case {case}, fixed original coefficients and common output judge. Hatching retains failed subset checks. Changing diffusion eigenvalues also changes least-squares row weights; these controls do not isolate physical diffusion bias. No deployment costs are measured for these interventions.</p>'''
+        output.append(('b3d-refine-operator', 'Operator controls retain their limited causal scope', text))
     text = f'''<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:40px">
 <img alt="Quadrature successor convergence" src="{picture('quadrature_convergence.png')}" style="width:100%;margin-top:30px">
 <div style="font-size:30px;line-height:1.5"><p>Completed quadrature trajectories are reused. The missing finer-rule check closes a specific evidence gap.</p>
@@ -172,7 +182,7 @@ def main():
             f.write(f'\n\n{marker}\n\n'
                 f'The {count} pre-existing saved slides retain their source bytes and relative order. '
                 f'{len(output)} generated refinement slides are appended. '
-                'Rebuild with `../2026-10-26-burgers3d-refinement/update_research.py` after generating '
+                f'Rebuild with `../{HERE.name}/update_research.py` after generating '
                 'that report\'s VALUES.json. The preservation manifest records original hashes and the '
                 'saved original PDF; new scientific numbers are taken from generated report inputs.\n')
     else:

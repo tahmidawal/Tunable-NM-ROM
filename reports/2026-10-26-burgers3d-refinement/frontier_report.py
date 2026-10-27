@@ -56,16 +56,19 @@ def components(doc, table, save):
                ('residual_jacobian_pairs', 'Residual/Jacobian pairs'), ('residual_evaluations', 'Residual calls'),
                ('nonlinear_evaluations', 'Nonlinear calls')]
     for sid, subject in doc['subjects'].items():
-        result = {}
+        result, coverage = {}, {}
         for phase in ['initialization', 'evolve', 'decode']:
             own = phases[(sid, phase)]
-            if own:
-                assert sorted(own) == [0, 5, 30, 43], (sid, phase, 'phase population differs')
+            assert set(own) <= {0, 5, 30, 43}, (sid, phase, 'unexpected phase case')
+            coverage[phase] = sorted(own)
+            if sorted(own) == [0, 5, 30, 43]:
                 result[phase] = float(np.median([np.median(v) for v in own.values()]))
             else:
                 result[phase] = None
+        result['case_coverage'] = coverage
         phase_values[sid] = result
-        phase_rows.append([sid] + ['not applicable / unavailable' if result[p] is None else f'{result[p]*1e3:.6g}'
+        phase_rows.append([sid] + [f'incomplete {len(coverage[p])}/4' if result[p] is None and coverage[p]
+                                  else 'not applicable / unavailable' if result[p] is None else f'{result[p]*1e3:.6g}'
                                   for p in ['initialization', 'evolve', 'decode']])
         counts = []
         raw = doc['case_results'][sid]
@@ -103,6 +106,8 @@ The separate phase calls below use only the fixed diagnostic cases, with the sam
 checked against the fused query. Their costs are indicative components and are not added
 to construct or replace the full-validation query timer. A full solver supplied its native
 dynamic state has no separate initial coefficient projection.
+Aggregates require all diagnostic cases; skipped invalid cases remain incomplete rather than
+being dropped to create a faster phase estimate. Raw per-case phase calls remain in the dataset.
 
 '''
     text += table(['Subject', 'Initialisation (ms)', 'Evolution (ms)', 'Decode/synthesis (ms)'], phase_rows) + '\n\n'
@@ -439,6 +444,8 @@ fails its extra conservative gate remains visible as descriptive evidence; its e
 cannot be used to claim a bank advantage over tuned POD. Unqualified points are retained.
 Full solvers use their declared stage-validity/convergence checks; they do not receive ROM
 tight/tighter-anchor certification, and quadrature qualification is not applicable to them.
+Unsampled POD restricts the trial state to the frozen POD span and minimises the full
+central finite-difference residual norm; it does not first Galerkin-project that residual.
 Whiskers show conditional reference-error intervals; lower endpoints at zero are omitted
 on the logarithmic axis. They are numerical-reference uncertainty, not statistical intervals.
 

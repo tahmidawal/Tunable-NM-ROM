@@ -40,14 +40,19 @@ def main():
         return any(workdir.startswith(n) for n in namespaces)
     queue = subprocess.check_output(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
         'tufts-login', 'squeue -h -u tawal01 -o "%i|%Z|%T|%j"'], text=True, timeout=25)
-    live = []
+    live, account_queue = [], []
     for line in queue.splitlines():
         f = [s.strip() for s in line.split('|')]
-        if len(f) >= 4 and ours(f[1]):
-            live.append(dict(job_id=int(f[0]), workdir=f[1], state=f[2], name=f[3]))
+        if len(f) >= 4:
+            record = dict(job_id=int(f[0]) if f[0].isdigit() else f[0], workdir=f[1], state=f[2], name=f[3])
+            account_queue.append(record)
+            if ours(f[1]):
+                live.append(record)
     known_ids = {int(r['job_id']) for r in entries if r.get('job_id') is not None}
     missing_live = [r['job_id'] for r in live if r['job_id'] not in known_ids]
     queue_audit = dict(checked_at_utc=datetime.now(timezone.utc).isoformat(), live_campaign_jobs=live,
+                       account_queue_snapshot=account_queue,
+                       scope='Only the two campaign namespaces govern closure; unrelated account jobs remain visible and untouched.',
                        live_job_ids_missing_from_lane_ledgers=missing_live)
     write(HERE / 'data/LIVE-QUEUE-CHECKPOINT.json', queue_audit)
     if args.final and active:
@@ -73,13 +78,18 @@ def main():
             assert int(e.get('elapsed_seconds', -1)) == row['elapsed_seconds'], ('stale elapsed-time ledger', row)
         write(HERE / 'data/FINAL-QUEUE-AUDIT.json', dict(**queue_audit, accounting=actual,
               note='Foreground bounded SSH/Slurm checks; no background watcher.'))
-    spent = sum(float(r.get('gpu_hours', r.get('spent_gpu_hours')) or 0) for r in entries)
+    active_ids = {int(r['job_id']) for r in active}
+    spent = sum(float(r.get('gpu_hours', r.get('spent_gpu_hours')) or 0) for r in entries
+                if int(r['job_id']) not in active_ids)
+    reserved = sum(float(r.get('reserved_max_gpu_hours') or 0) for r in active)
     campaign_ledger = HERE / 'data/campaign-ledger.json'
     cap_source = EXPERIMENT / 'JOB-LEDGER.json' if (EXPERIMENT / 'JOB-LEDGER.json').is_file() else campaign_ledger
     cap = read(cap_source)['gpu_hour_cap']
     assert spent <= cap
+    assert spent + reserved <= cap, 'completed plus live hard reservations exceed campaign cap'
     ledger = dict(campaign='b3d-refine-20261026', state='bounded campaign closed' if args.final else 'checkpoint, work ongoing',
                   gpu_hour_cap=cap, completed_gpu_hours=spent, active_ledger_entries=len(active),
+                  live_reserved_max_gpu_hours=reserved,
                   live_campaign_jobs=live, live_job_ids_missing_from_lane_ledgers=missing_live,
                   accounting_note='Only completed elapsed-time entries included; active jobs are not zero-cost.',
                   jobs=entries, lane_snapshot_sources=pins,
@@ -95,13 +105,20 @@ def main():
     for name in ['solver', 'pod']:
         lane = ROOT / f'worktrees/2026-10-26-b3d-{name}/experiments/b3d-{name}'
         files = [p for p in (lane / 'audits').iterdir() if p.is_file() and p.suffix in ('.md', '.json')]
-        files += [p for p in [lane / 'DESIGN.md', lane / 'AUDIT-STATUS.json', lane / 'FRONTIER-SCHEMA.json'] if p.is_file()]
+        files += list(lane.glob('*.md'))
+        files += [p for p in [lane / 'AUDIT-STATUS.json', lane / 'FRONTIER-SCHEMA.json', lane / 'MESH-RESULT-SCHEMA.json'] if p.is_file()]
         destination = HERE / 'audits' / name
         destination.mkdir(parents=True, exist_ok=True)
         for source in files:
             target = destination / source.name
             shutil.copy2(source, target)
             assert sha(source) == sha(target), 'audit record changed during snapshot; retry'
+            audit_index[str(target.relative_to(HERE))] = dict(source=str(source), sha256=sha(target))
+        for source in sorted((lane / 'configs').glob('*.json')):
+            target = destination / 'configs' / source.name
+            target.parent.mkdir(exist_ok=True)
+            shutil.copy2(source, target)
+            assert sha(source) == sha(target)
             audit_index[str(target.relative_to(HERE))] = dict(source=str(source), sha256=sha(target))
     write(HERE / 'data/AUDIT-SOURCES.json', audit_index)
     write(HERE / 'data/CHECKPOINT-SOURCES.json', pins)
@@ -111,13 +128,17 @@ def main():
         lane_exports={name: f'lane-{name}-export.json' for name in ['solver', 'pod']},
         source_snapshots='CHECKPOINT-SOURCES.json',
         full_validation_frontier=next((n for n in ['frozen-frontier.json.gz', 'frozen-frontier.json'] if (HERE / 'data' / n).is_file()), None),
+        fixed_mode_mesh=next((n for n in ['frozen-mesh.json.gz', 'frozen-mesh.json'] if (HERE / 'data' / n).is_file()), None),
+        solver_array_retention=[f"solver-retention-{r['attempt']}.json" for r in snapshots[('solver', 'export')].get('retention_manifests', [])],
+        pod_fit_retention='pod-fit32-retention.json' if snapshots[('pod', 'export')].get('large_fit_input_retention') else None,
         note='Historical qualifications retain their date/scope; new qualification joins are in lane exports.'))
     rows = []
     for r in entries:
         state = r.get('status', r.get('state', 'unknown'))
         cost = r.get('gpu_hours', r.get('spent_gpu_hours'))
+        cost_text = 'active/unaccounted' if cost is None or int(r['job_id']) in active_ids else f'{cost:.6g}'
         rows.append(f"| {r['lane']} | {r.get('attempt')} | {r.get('job_id')} | {state} | "
-                    f"{'active/unaccounted' if cost is None else f'{cost:.6g}'} |")
+                    f"{cost_text} |")
     retention = snapshots[('pod', 'export')].get('large_fit_input_retention')
     solver, pod = snapshots[('solver', 'export')], snapshots[('pod', 'export')]
     if pod.get('a3_replay'):
@@ -129,6 +150,10 @@ def main():
         assert sha(target) == a3['summary_sha256']
     completed = ['Historical inventory, source hashes, exact saved timing-output re-scoring and generated figures.']
     failed = ['Historical quadrature/nonlinear failures and square-system controls remain in the inventory.']
+    for row in entries:
+        if row['lane'] == 'solver' and str(row.get('attempt', '')).startswith('mesh') and str(row.get('state', row.get('status', ''))).upper() == 'FAILED':
+            failed.append(f"Mesh attempt {row['attempt']}, job {row['job_id']}: {row.get('failure', 'failed; inspect the retained log')}. "
+                          'Its allocation remains in the resource total; an incomplete checkpoint is not an admitted mesh dataset.')
     pending = []
     if solver.get('audits', {}).get('jobs', {}).get('qcheck801', {}).get('results', '').startswith('READY'):
         completed.append('Missing original finer-rule witness joined to inherited complete-population evidence; legacy gl56 qualification closes within its original scope.')
@@ -146,7 +171,7 @@ def main():
         completed.append('Frozen same-allocation complete-validation frontier. Use its explicit per-subject qualification and timing-coverage masks; not every measured subject is necessarily admitted.')
     else:
         pending.append('Same-allocation complete-validation endpoint comparison, own new-policy qualification and paired accuracy-matched full-solver/POD costs.')
-    if not (HERE / 'data/frozen-mesh.json').is_file():
+    if not any((HERE / 'data' / n).is_file() for n in ['frozen-mesh.json.gz', 'frozen-mesh.json']):
         pending.append('Bounded fixed-mode mesh/output costs, explicit operator interventions and same-reference projection floor.')
     if pod.get('a3_replay'):
         a = pod['a3_replay']
@@ -159,11 +184,28 @@ def main():
     retention_text = ''
     if retention:
         assert Path(retention['path']).stat().st_size == retention['bytes']
+        source_manifest = Path(retention['supporting_manifest_path'])
+        portable_manifest = HERE / 'data/pod-fit32-retention.json'
+        shutil.copy2(source_manifest, portable_manifest)
+        assert sha(source_manifest) == sha(portable_manifest)
         retention_text = (f"\n\nThe actual fitting matrix ({retention['bytes']/1e9:.6g} GB) is retained at "
             f"`{retention['path']}` with SHA256 `{retention['sha256']}`. It is outside Git; "
-            f"the durable retention manifest is [{Path(retention['supporting_manifest_path']).name}]"
-            f"({retention['supporting_manifest_path']}). Preserve or move this data before any "
+            f"the [portable retention manifest](data/{portable_manifest.name}) has SHA256 `{sha(portable_manifest)}` "
+            f"and its original is `{source_manifest}`. Preserve or move this data before any "
             'worktree archival. Candidate nodes and the target are listed by that manifest.\n')
+    for record in solver.get('retention_manifests', []):
+        source = ROOT / 'worktrees/2026-10-26-b3d-solver/experiments/b3d-solver' / record['path']
+        assert sha(source) == record['sha256']
+        target = HERE / 'data' / f"solver-retention-{record['attempt']}.json"
+        shutil.copy2(source, target)
+        assert sha(target) == record['sha256']
+        bulk_bytes = sum(r['bytes'] for r in record['bulk_arrays'])
+        retention_text += (f"\n\nSolver attempt `{record['attempt']}` / job {record['job_id']} retains "
+            f"{len(record['bulk_arrays'])} bulk arrays ({bulk_bytes/1e9:.6g} GB) outside Git. "
+            f"The [portable retention manifest](data/{target.name}) has SHA256 `{record['sha256']}`; "
+            f"its original is `{source}`. The verified collection archive is "
+            f"`{record['archive']['path']}` with SHA256 `{record['archive']['sha256']}`. "
+            f"{record['archival_precondition']}\n")
     text = f'''# Burgers 3D refinement handoff
 
 Status: {ledger['state']}. Completed allocations total {spent:.6g} GPU-hours against the

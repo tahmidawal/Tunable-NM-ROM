@@ -1,0 +1,64 @@
+{
+ "seed": 923801,
+ "mode": "solver",
+ "cases": [
+  0,
+  5,
+  30,
+  43
+ ],
+ "widths": [
+  768,
+  1024
+ ],
+ "max_restart_steps": 2,
+ "timing_reps": 2,
+ "burn_seconds": 0.1,
+ "archive_identity_keys": [
+  "M2_512|gl32|qn|BDF2|0.025|k4",
+  "W768|gl40|fs|CN|0.01|K1",
+  "W512k8|lat16384|fs|CN|0.01|K1"
+ ],
+ "policies": [
+  {
+   "name": "baseline",
+   "qmax": 12,
+   "refresh": 4,
+   "trust_factor": 1.0,
+   "g_in": 0.0005,
+   "slow_threshold": 6
+  },
+  {
+   "name": "extra",
+   "qmax": 48,
+   "refresh": 4,
+   "trust_factor": 1.0,
+   "g_in": 0.0005,
+   "slow_threshold": 6
+  },
+  {
+   "name": "refresh",
+   "qmax": 12,
+   "refresh": 1,
+   "trust_factor": 1.0,
+   "g_in": 0.0005,
+   "slow_threshold": 6
+  },
+  {
+   "name": "trust",
+   "qmax": 12,
+   "refresh": 4,
+   "trust_factor": 10.0,
+   "g_in": 0.0005,
+   "slow_threshold": 6
+  },
+  {
+   "name": "strict",
+   "qmax": 12,
+   "refresh": 4,
+   "trust_factor": 1.0,
+   "g_in": 1e-07,
+   "slow_threshold": 6
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "scope": "syntax and scalar-return conversion audit; no FE execution",
+  "audited_calls": {
+    "preflight.py": {
+      "direct_float_of_scalar_CF_calls": []
+    },
+    "fom.py": {
+      "direct_float_of_scalar_CF_calls": []
+    }
+  },
+  "unchanged_files": [
+    "dependencies.py",
+    "DEPENDENCIES.json",
+    "PREFLIGHT-REPAIR.json",
+    "campaign-A2.json",
+    "benchmark.json",
+    "manufactured_witness.json",
+    "cluster/smoke.sh",
+    "configs/manufactured-smoke.json",
+    "configs/channel-smoke.json",
+    "configs/dfg-smoke.json"
+  ],
+  "wrapper_divergence_FOM_usage": "symbolic boundary integrands only; scalar integral result uses strict helper",
+  "actual_failed_tuple_shape": "unknown, to be observed by strict next-run helper"
+}

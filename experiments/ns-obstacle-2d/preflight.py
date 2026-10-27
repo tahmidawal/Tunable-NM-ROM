@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse,faulthandler,json,traceback
 from pathlib import Path
 import numpy as np
+from scalars import scalar_value, scalar_observations
 
 
 def marker(name, phase):
@@ -127,7 +128,7 @@ def run():
             point_call=call+f'.point[{point_index}]'
             point=traced(point_call+'.mapped_point',tr,ip)
             gradient=traced(point_call+'.gradient_copy',lambda:np.array(gradient_b(point),dtype=float,copy=True).reshape(2,2))
-            divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))
+            divergence=traced(point_call+'.divergence',lambda:scalar_value(divergence_b(point),'wrapped_divergence_point'))
             trace_gradient_max=max(trace_gradient_max,float(np.linalg.norm(gradient-np.eye(2))))
             trace_div_max=max(trace_div_max,abs(divergence-2.))
     viscosity=.3;pressure=.7
@@ -138,8 +139,8 @@ def run():
     force_checks=[]
     for name,stress in stresses.items():
         for label,direction in directions.items():
-            measured=np.array([float(traced(f'{name}.{label}.traction[{i}]',ng.Integrate,
-                (stress*normal)[i],mesh,definedon=mesh.Boundaries(label),order=6)) for i in range(2)])
+            measured=np.array([scalar_value(traced(f'{name}.{label}.traction[{i}]',ng.Integrate,
+                (stress*normal)[i],mesh,definedon=mesh.Boundaries(label),order=6),'traction_integral') for i in range(2)])
             expected=expected_scalar[name]*np.asarray(direction)
             force_checks.append({'stress':name,'label':label,'integrated_traction':measured.tolist(),
                                  'expected':expected.tolist(),'absolute_error':float(np.linalg.norm(measured-expected))})
@@ -150,6 +151,7 @@ def run():
     if trace_gradient_max>1e-10 or trace_div_max>1e-10 or max(row['absolute_error'] for row in force_checks)>1e-10:
         raise ArithmeticError('volume-derivative boundary trace or known stress integral failed: '+str(result['boundary_volume_derivative_control']))
     result['passed']=True
+    result['scalar_return_contract']=scalar_observations()
     return result
 
 
@@ -161,6 +163,7 @@ if __name__=='__main__':
     try:
         result=run()
     except Exception as exc:
-        target.write_text(json.dumps({'passed':False,'error':repr(exc),'traceback':traceback.format_exc()},indent=2)+'\n')
+        target.write_text(json.dumps({'passed':False,'error':repr(exc),'traceback':traceback.format_exc(),
+            'scalar_return_contract':scalar_observations()},indent=2)+'\n')
         raise
     target.write_text(json.dumps(result,indent=2)+'\n')

@@ -2,9 +2,14 @@
   "status": "review_candidate_no_execution_release",
   "files": [
     {
+      "path": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
       "path": "preflight.py",
-      "sha256": "847e630c0be61316eb4590e0faff2f0eb58db749f041ff22a05a83700defe302",
-      "bytes": 9617
+      "sha256": "8afd20368568da16e0e3a73c127856516f417d58293677893283772c3d645fa7",
+      "bytes": 9851
     },
     {
       "path": "benchmark.json",
@@ -13,8 +18,8 @@
     },
     {
       "path": "fom.py",
-      "sha256": "2dafac1358c471fdf33b11531175437491f4edc905aed6a5cfdd4584802cf026",
-      "bytes": 31592
+      "sha256": "5d09cd0439364098286862ac2edf5467d89bf0e54229f2e72b4f2ea8b50febe6",
+      "bytes": 31988
     },
     {
       "path": "dependencies.py",
@@ -38,13 +43,18 @@
     },
     {
       "path": "REPAIR.json",
-      "sha256": "61fd77818191f48d3908b969553f06a349bfd4391246c546c9c2ca97c37bdcd9",
+      "sha256": "2cedf92254994c249d2be26ca5bba494c1c9713bafdd09b6f0fc4dca302892be",
       "bytes": 924
     },
     {
       "path": "PREFLIGHT-REPAIR.json",
       "sha256": "2fc801ca6941b192e1a517d3a5cf9a9236532783bab098bb093413b8b5e3d0f4",
       "bytes": 1432
+    },
+    {
+      "path": "SCALAR-REPAIR.json",
+      "sha256": "6c085e80d0ce6cfa65654c41bab519976335b66784f143725ed1f814067b408f",
+      "bytes": 1188
     },
     {
       "path": "campaign-A2.json",
@@ -72,7 +82,7 @@
       "bytes": 1148
     }
   ],
-  "source_parent_when_manifest_generated": "01300486ce5fe775b481616eb1b848a052631b08",
+  "source_parent_when_manifest_generated": "125e486411b4494635a06b06341eb33a4ca320d3",
   "execution_source_commit_binding": "SOURCE_COMMIT.txt is created from exact source commit at staging and separately recorded in staging manifest",
   "command": "sbatch --gres=gpu:h200:1 --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
   "allocation": {

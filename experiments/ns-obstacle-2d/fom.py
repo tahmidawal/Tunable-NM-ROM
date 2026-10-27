@@ -16,6 +16,7 @@ import time
 import traceback
 
 import numpy as np
+from scalars import scalar_value, scalar_observations
 
 
 def dump(path, value):
@@ -110,7 +111,7 @@ def run_case(cfg, out):
         checks = []
         for record in witness['samples']:
             mip = mesh(*record['point'])
-            values = np.r_[np.asarray(exact_u(mip)), float(exact_p(mip)),
+            values = np.r_[np.asarray(exact_u(mip)), scalar_value(exact_p(mip),'manufactured_pressure_point'),
                             np.asarray(gu(mip)).ravel(), np.asarray(force(mip))]
             expected = np.array(record['u']+[record['p']]+record['gradient']+record['forcing'])
             checks.append(metric(np.linalg.norm(values-expected), max(np.linalg.norm(expected), 1.0),
@@ -277,7 +278,8 @@ def run_case(cfg, out):
     # Quadrature-specific metrics and boundary traces are sampled independently of DOFs.
     qo = cfg['diagnostic_order']
     def integ(cf, boundary=None, order=qo):
-        return float(ng.Integrate(cf, mesh, definedon=mesh.Boundaries(boundary), order=order)) if boundary else float(ng.Integrate(cf,mesh,order=order))
+        value=ng.Integrate(cf,mesh,definedon=mesh.Boundaries(boundary),order=order) if boundary else ng.Integrate(cf,mesh,order=order)
+        return scalar_value(value,'boundary_integral' if boundary else 'volume_integral')
     volume=integ(1)
     exact_volume=L*H-(math.pi*cfg['radius']**2 if obstacle else 0)
     boundary_measures={b:integ(1,b) for b in sorted(set(mesh.GetBoundaries()))}
@@ -303,7 +305,7 @@ def run_case(cfg, out):
                 raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
             points.append(list(mip.point));weights.append(w)
             # Persist an owning gradient array, never a possible native view.
-            vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(float(ph(mip)))
+            vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(scalar_value(ph(mip),'volume_pressure_point'))
     # A VectorH1 volume derivative is not a BND differential operator.
     # Trace only the field derivative; retain normals on the boundary transform.
     gradient_on_boundary=ng.BoundaryFromVolumeCF(grad(uh))
@@ -325,7 +327,7 @@ def run_case(cfg, out):
                 obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))
                 obstacle_distance_max=max(obstacle_distance_max,abs(np.linalg.norm(xy-np.array(cfg['center']))-cfg['radius']))
             boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),
-                               'label':label,'velocity':uv.tolist(),'pressure':float(ph(mip)),
+                               'label':label,'velocity':uv.tolist(),'pressure':scalar_value(ph(mip),'boundary_pressure_point'),
                                'velocity_gradient':np.asarray(gradient_on_boundary(mip)).reshape(2,2).tolist()})
     geometry['minimum_sampled_jacobian_determinant']=min_det
     geometry['max_sampled_obstacle_distance']=obstacle_distance_max
@@ -440,7 +442,7 @@ def run_case(cfg, out):
             test=ng.GridFunction(X)
             unit=ng.CF(tuple(1.0 if j==i else 0.0 for j in range(2)))
             test.components[0].Set(unit,definedon=mesh.Boundaries('obstacle'))
-            reaction.append(-float(ng.InnerProduct(rforce,test.vec)))
+            reaction.append(-scalar_value(ng.InnerProduct(rforce,test.vec),'reaction_inner_product'))
         norm=0.5*U**2*D
         forces['normalization']=norm
         forces['reaction_force']=reaction
@@ -458,7 +460,7 @@ def run_case(cfg, out):
             try:
                 mp=mesh(*pt)
                 if mp.nr<0:raise ValueError('exact pressure probe is outside FE mesh')
-                value=float(ph(mp))
+                value=scalar_value(ph(mp),'exact_pressure_probe')
                 if not math.isfinite(value):raise ValueError('nonfinite exact pressure probe')
                 pressures_probe.append(value);probe_errors.append(None)
             except Exception as exc:
@@ -484,6 +486,7 @@ def run_case(cfg, out):
              'axial_error':metric(abs(wall_force[0]-expected_wall),abs(expected_wall),'force on both walls versus positive analytic Poiseuille drag')}
     elapsed=time.perf_counter()-started
     result={'status':'completed_control_not_reference_admission','configuration':cfg,
+            'scalar_return_contract':scalar_observations(),
             'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
             'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',
             'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
@@ -514,7 +517,7 @@ def main():
         print(json.dumps({'status':result['status'],'out':str(target),'elapsed_seconds':result['elapsed_seconds']}),flush=True)
     except Exception as exc:
         target.mkdir(parents=True,exist_ok=True)
-        dump(target/'FAILED.json',{'error':repr(exc),'traceback':traceback.format_exc(),'source_sha256':sha(__file__),'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'job_id':os.environ.get('SLURM_JOB_ID')})
+        dump(target/'FAILED.json',{'error':repr(exc),'traceback':traceback.format_exc(),'source_sha256':sha(__file__),'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'job_id':os.environ.get('SLURM_JOB_ID'),'scalar_return_contract':scalar_observations()})
         raise
 
 if __name__=='__main__':

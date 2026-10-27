@@ -1,0 +1,21 @@
+{
+  "repair_kind": "strict scalar-return conversion",
+  "scalar_conversion_repair_counter": 1,
+  "scalar_conversion_repair_limit": 1,
+  "prior_dependency_layout_repair_counter": 1,
+  "prior_native_lifetime_repair_counter": 1,
+  "status": "review_candidate_no_staging_or_execution_release",
+  "failed_job_id": 6567633,
+  "failed_attempt": "g1-smoke05",
+  "fresh_attempt": "g1-smoke06",
+  "measured_failure": "float(divergence_b(point)) received tuple at preflight.py130; tuple length and values not saved",
+  "accepted_contract": "finite real numeric scalar shape() or one-element ndarray/tuple shape(1,) only",
+  "rejected_contract": "all other shapes, nonnumeric/object/bool/complex/masked/nonfinite payloads; no squeeze, flatten, component selection or imaginary-part discard",
+  "shape_evidence": "distinct type/shape/dtype/acceptance records flushed and saved in completed/failed results",
+  "coefficient_function_algebra_changed": false,
+  "scientific_thresholds_changed": false,
+  "mesh_and_control_settings_changed": false,
+  "automatic_retry": false,
+  "failed_evidence": "artifacts/g1-smoke05/RETENTION.json",
+  "requires_independent_diff_review_and_coordinator_release": true
+}

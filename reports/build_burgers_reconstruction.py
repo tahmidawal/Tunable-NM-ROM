@@ -302,10 +302,13 @@ def pod_approximation_evidence(two_preparation, three_development, chosen):
     for family in ('base','coarse'):
         path=two_preparation/'bases'/f'pod_{family}.json'
         d=json.loads(path.read_text());hashes['2D_POD_'+family]=sha(path)
+        require(finite(d['orthogonality_max']) and d['orthogonality_max']>=0,'Invalid POD orthogonality diagnostic')
         for rank in (128,256,384,512):
             residual=d['relative_eigen_residual'][:rank]
             require(len(residual)==rank and all(finite(x) and x>=0 for x in residual),'Invalid POD residual diagnostic')
-            two_rows.append([family,rank,fmt(max(residual)),fmt(d['projection_tail_fraction'][rank-1]),fmt(d['orthogonality_max'])])
+            tail=d['projection_tail_fraction'][rank-1]
+            require(finite(tail) and 0<=tail<=1,'Invalid POD training projection tail')
+            two_rows.append([family,rank,fmt(max(residual)),fmt(tail),fmt(d['orthogonality_max'])])
     d=json.loads(three_development.read_text());hashes['3D_development_export']=sha(three_development)
     require(d['dimension']==3 and d['phase']=='dev','POD sensitivity must use the admitted 3D development export')
     require(len(d['cases'])==2544 and all(r['cohort']=='dev4' for r in d['cases']),'Wrong development population')
@@ -320,6 +323,7 @@ def pod_approximation_evidence(two_preparation, three_development, chosen):
               and finite(r['approximate_pod_gap_max']) and r['approximate_pod_gap_max']>=0
               and isinstance(r['approximate_pod_gap_consequential'],bool)]
         for r in good:
+            require(finite(r['reference_eps']) and r['reference_eps']>=0,'Invalid development reference uncertainty')
             expected=(r['approximate_pod_gap_max'] > 2*r['reference_eps'] or
                       r['approximate_pod_gap_max'] > POD_ABSOLUTE_GAP_THRESHOLD)
             require(r['approximate_pod_gap_consequential']==expected,'POD sensitivity flag differs from registered rule')
@@ -431,12 +435,16 @@ def main():
              "coarse field samples. "+('The numbers are final for this bounded screen after independent result review; numerical-reference and training-information qualifications remain explicit.'
                                        if acceptance else 'The numbers are provisional pending independent returned-result and reporting review.'), "",
              " ".join(sentences), "", "## What is being compared", "",
+             "The screen uses the repository's scalar viscous Burgers families and exposed research cohorts.", "",
              ("Unavailable frozen selections: "+'; '.join(f'{d}D L{lc} {s} {LABEL[cat]}' for d,lc,s,cat in unavailable_choices)+'.'
               if unavailable_choices else 'Every declared method family has an available frozen selection.'), "",
              "Source A supplies exact samples of the stored fine-reference array. Source B supplies "
              "an actual coarse numerical solution. Every method receives the same field at the same "
              "physical time, coordinates and zero boundary values. There is no rollout or subsequent "
              "PDE correction. Sealed and out-of-distribution cohorts remain closed.", "",
+             "The coarse inputs use central differences and Crank–Nicolson stepping with backward-Euler "
+             "startup. Historical bank training values use the inherited upwind/backward-Euler recipe. "
+             "That numerical-prior mismatch is part of the inherited system tested here.", "",
              "The decoder and POD have training-derived information about plausible fields. "
              "Interpolation has grid geometry and boundary information. Finer decoder evaluation "
              "does not add observations: any improvement comes from the learned representation "
@@ -468,6 +476,9 @@ def main():
               "An unadmitted coarse input still permits a same-input accuracy comparison, but its "
               "error cannot be attributed cleanly to spatial discretization alone.", "",
               "## Paired comparisons with selected classical reconstruction", ""]
+    lines += [f"![Primary actual-coarse paired errors]({args.out.stem}.png)", "",
+              "Each point is one case. Colors use the conditional numerical-reference resolution rule; "
+              "they do not indicate statistical significance. The diagonal marks equal error.", ""]
     comparison_rows = []
     for c in comparisons:
         comparison_rows.append([c["dimension"], c["Lc"], c["source"], LABEL[c["category"]],
@@ -604,6 +615,10 @@ def main():
               "mean that a complete timing measurement is unavailable.", "",
               "## Plain-language glossary", "",
               "- **Dimension / D:** number of spatial directions.",
+              "- **Scalar / case:** one dependent field / one viscosity and initial-field choice.",
+              "- **Central differences / upwind / Crank–Nicolson / backward Euler:** spatial difference "
+              "rules using neighbors on both sides / a spatial rule following the flow direction / "
+              "a time rule averaging old and new rates / an implicit time rule using the new rate.",
               "- **Intervals per axis / coarse intervals:** number of mesh cells along each direction; "
               "the full grid includes both boundary nodes.",
               "- **Source A / B:** sampled fine-reference array / actual coarse numerical solution.",

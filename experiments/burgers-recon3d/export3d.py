@@ -44,7 +44,9 @@ def main():
             timing_median={key:float(np.median([t[key] for t in times])) for key in
                 ('fit_seconds','decode_seconds','device_query_seconds','host_query_seconds')} if times else None,
             raw_scores=f'L{lc}/{r["cohort"]}/c{r["case"]:03d}/{r["source"]}_scores.json',
-            raw_coefficients=f'L{lc}/{r["cohort"]}/c{r["case"]:03d}/{r["source"]}_coefficients.npz')
+            raw_coefficients=f'L{lc}/{r["cohort"]}/c{r["case"]:03d}/{r["source"]}_coefficients.npz',
+            representative_actual_fields=f'L{lc}/{r["cohort"]}/c000/{r["source"]}_selected_fields.npz'
+                if phase=='val' and r['case']==0 and selected.get(key)==r['method'] else None)
         rows.append(row)
     groups={}
     for r in rows:

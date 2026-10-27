@@ -311,6 +311,17 @@ def run_cohort(prepared,out,lc,phase,plans,desc,geometries,failures,selected=Non
                 records[name]=row;cohort_rows.append(row)
             np.savez(case_dir/f'{source}_coefficients.npz',**packed)
             np.savez(case_dir/f'{source}_sensitivity_coefficients.npz',**diagnostic_coefficients)
+            if phase=='val' and case==0:
+                selected_fields={}
+                for name in plans:
+                    key=f'{lc}/{source}/{desc[name]["category"]}'
+                    if selected.get(key)!=name: continue
+                    for ti in range(6):
+                        result=actual[ti,name]
+                        if isinstance(result,str): continue
+                        fs,cs,timing,same=result
+                        selected_fields[f'{name}__t{ti}']=np.stack(fs[:1] if same else fs)
+                np.savez(case_dir/f'{source}_selected_fields.npz',**selected_fields)
             dump(case_dir/f'{source}_scores.json',list(records.values()))
             log(f'scored {cohort}/{case} L{lc} {source} methods={len(plans)} eligible={source=="A" or cm["eligible"]}')
             del actual
@@ -374,6 +385,7 @@ def main():
         prepared=prepmeta,prepared_contract=contract,seed=SEED,times=TIMES.tolist(),
         selection_sha256=None if selection is None else sha(args.selection),cost_note='Only within this allocation; cached geometry/compile separate from query.')
     execution['source_contract']=source_contract()
+    execution['training_evidence_scope']='Recipe-reproduced training states with verified archived parameter-table hash and original observation coordinates; original snapshot byte identity is unavailable. Matched-information means this recipe/observation control, not verified archived floating-point array identity.'
     dump(out/'execution.json',execution)
     allrows=[]
     for lc in (16,32):

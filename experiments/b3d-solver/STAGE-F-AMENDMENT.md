@@ -1,13 +1,13 @@
 # Conditional time refinement and same-allocation validation frontier
 
-Status: proposed amendment awaiting independent design review; no implementation of this
-extension is released by the earlier D-S/D-Q pilot approvals. Total lane cap remains eight
+Status: independent design READY; source, small controls and exact jobs remain separately
+reviewed before submission. Total lane cap remains eight
 GPU-hours, inclusive of failures and earlier jobs. Sealed/test cohorts remain closed.
 
 ## D-T: isolate time error after nonlinear and quadrature convergence
 
 Run only after the audited D-S and D-Q diagnostics. At W1024/default tests use BDF2 with
-steps 0.025, 0.0125 and 0.00625, target rule gl40 with gl48/gl56 successors, and cases 0, 5, 30, 43 from seed923801.
+steps 0.025, 0.0125 and 0.00625, target rule gl56 with gl64/gl80 successors, and cases 0, 5, 30, 43 from seed923801.
 Reuse every exact existing tight trajectory; never rerun it just to recreate a table.
 The same-family verified adaptive LM uses original weak residuals/Jacobians, a fresh matrix
 each iteration, the frozen trust radius, stationarity tolerances 1e-7 and 1e-8, and the
@@ -18,8 +18,10 @@ For every step and rule retain fresh certificates; a time-error interpretation r
 tight/tighter agreement at most2.5e-5, trajectory quadrature differences at most2.5e-4,
 own-state advection rho at most0.116, and an independently checked successor. If an ingredient
 fails, report that failure and do not attribute the remaining difference to time alone.
-The three-rung chain can qualify gl40 on this diagnostic population; it cannot qualify the
-top gl56 rung. Every new policy requires its own changed-trajectory quadrature evidence and
+The three-rung chain can qualify gl56 on this diagnostic population; it cannot qualify the
+top gl80 rung. The pre-data amendment uses the persisted full64 tight CN comparison: both
+gl40 and gl48 fail the unchanged quadrature bar on case5, so the finer time controls use
+the conservative gl56 target. New BDF2 states still receive their own Q2 checks. Every new policy requires its own changed-trajectory quadrature evidence and
 complete-rollout tight anchors; baseline Q2 is never transferred merely by matching r/M/m.
 Compare E0 error at each output, including which output attains the maximum, so repairing
 a late nonlinear step cannot be presented as lowering an unchanged early maximum.
@@ -31,6 +33,8 @@ failure, nonfinite state, exhausted verified solve or failed reference identity.
 ## Freeze the final validation manifest before running it
 
 Original qualified anchors:
+
+- W256, default tests, lat8192, QN-BDF2, step0.025, refresh4.
 
 - M2_512, gl32, QN-BDF2, step0.05/3, refresh4.
 - W512, shell-completed tests at nominal8r, lat16384, FS-CN, step0.01, one sweep.
@@ -101,7 +105,14 @@ outside[1/1.1,1.1]. Persist fields or reusable coefficients, output hashes and t
 for each timed invocation. Cost and accuracy therefore refer to the same solve. Record
 initialisation, evolution, decoding, full native query, parameter-to-output time, work
 counts and memory; separately timed components are indicative and need not sum to a fused
-query. Certification/diagnostic work is excluded from the deployable-query timer.
+query. Certification/diagnostic work is excluded from the deployable-query timer. Phase repetitions
+use the four declared diagnostic cases, with three repetitions; these are descriptive
+component measurements and never replace full64 query costs.
+
+Persist a separate common rollout check and each method-specific extra gate. POD supports
+passing the common checks but failing their stronger full-gradient gate remain visible in
+descriptive common-check panels; excluding them cannot establish bank superiority. Frozen
+original predicates remain intact.
 
 Keep full64 errors and full64 timing observations joined by case/invocation id. Median,
 worst and outlier counts all use the identical eligible population. Apply uncertainty

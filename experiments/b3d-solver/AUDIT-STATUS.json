@@ -15,6 +15,13 @@
    "exact_job": "READY",
    "results": "READY fixed four-case diagnostic subset",
    "interpretation": "Refresh-every-step passes tight-distance and fresh-stationarity subset; no full-population qualification or physical accuracy gain claim"
+  },
+  "qpilot03": {
+   "code_commit": "7c5e44bb22a5729c270901fa0ecc5ce7ad5bec33",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY one-case finer-rule diagnostic",
+   "interpretation": "One of25 gl80 steps fails fresh1e-3 stationarity. This is the original qpp validity/distance check, not gl80 qualification; inherited gl56 closure still needs original eight-case coverage."
   }
  }
 }

@@ -12,7 +12,7 @@ def main():
     audits=json.loads((HERE/'AUDIT-STATUS.json').read_text())
     out=dict(audits=audits,status='diagnostic subset; consult per-job independent audit verdicts',scope='validation diagnostics; no new frontier or comparator win claim',
              gpu_hours=sum(e.get('gpu_hours',0.) for e in ledger['entries']),budget_gpu_hours=ledger['budget_gpu_hours'],
-             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],
+             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],time_diagnostics=[],time_quadrature=[],
              next_open=['D-Q gl80 first-eight closure after pilot audit','D-T fixed four-case time diagnostics',
                         'Fair POD schedule tuning on four cases','Full64 paired same-invocation frontier validation after diagnostic review'])
     for entry in ledger['entries']:
@@ -20,6 +20,8 @@ def main():
         if not rp.exists():continue
         z=json.loads(rp.read_text());source=dict(path=str(rp.relative_to(HERE)),sha256=sha(rp),job_id=entry['job_id'],source_commit=z['source_commit'],gpu=z['gpu'])
         for key,v in z['runs'].items():
+            if z['config']['mode']=='time':
+                out['time_diagnostics'].append(dict(key=key,source=source,scope=z['scope'],**v));continue
             if 'nonlinear_iterations' not in v:
                 out['quadrature'].append(dict(key=key,source=source,**v));continue
             obs=dict(key=key,source=source,scope=z['scope'],score=v['score'],fresh_nonstationary_steps=v['nonstationary'],
@@ -48,6 +50,7 @@ def main():
             out['same_history'].append(dict(key=k,source=source,step_output_time=st,physical_max_error_time=mt,
                 physical_max_precedes_replayed_step=mt<st,step_fails_stationarity=v['diagnostics']['baseline_gamma']>1e-3,**v))
         out['archive_identities'] += [dict(key=k,source=source,**v) for k,v in z['archive_identity'].items()]
+        out['time_quadrature'] += [dict(key=k,source=source,**v) for k,v in z.get('quadrature',{}).items()]
     qr=HERE/'results/historical-tight-quadrature.json'
     if qr.exists():out['historical_tight_quadrature']=dict(path=str(qr.relative_to(HERE)),sha256=sha(qr),data=json.loads(qr.read_text()))
     (HERE/'EXPORT.json').write_text(json.dumps(out,indent=1)+'\n')

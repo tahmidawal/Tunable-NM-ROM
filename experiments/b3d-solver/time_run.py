@@ -54,7 +54,8 @@ def historical(cx,key,j):
 
 def run(cx):
     cfg=cx.cfg;st=cx.setting('W1024');D={rl:st.data(rl) for rl in cfg['rules']}
-    assert cfg['rules']==['gl40','gl48','gl56']
+    assert cfg['rules']==['gl56','gl64','gl80']
+    assert jax.devices()[0].memory_stats()['peak_bytes_in_use']<=cfg['memory_peak_limit_bytes']
     L=st.lean['L'];n0={j:float(jnp.linalg.norm(cx.U[j])) for j in cx.cases}
     np.savez_compressed(cx.out/'metric_W1024.npz',L=np.asarray(L),case_ids=np.asarray(cx.cases),n0=np.asarray(list(n0.values())))
     outputs={}
@@ -105,17 +106,18 @@ def run(cx):
     for dt in cfg['dts']:
         for lev in ['tight','tighter','candidate']:
             for j in cx.cases:
-                W40,W48,W56=[outputs[(dt,rl,lev,j)] for rl in cfg['rules']]
-                v40=np.asarray(rho(jnp.asarray(W40),D['gl40']));v48=np.asarray(rho(jnp.asarray(W40),D['gl48']))
-                den=np.linalg.norm(v48,axis=1);num=np.linalg.norm(v40-v48,axis=1)
+                main,fine,finer=cfg['rules']
+                Wa,Wb,Wc=[outputs[(dt,rl,lev,j)] for rl in cfg['rules']]
+                va=np.asarray(rho(jnp.asarray(Wa),D[main]));vb=np.asarray(rho(jnp.asarray(Wa),D[fine]))
+                den=np.linalg.norm(vb,axis=1);num=np.linalg.norm(va-vb,axis=1)
                 rr=np.divide(num,den,out=np.full_like(num,np.inf),where=den>0)
-                rr=np.where((den==0)&(np.linalg.norm(v40,axis=1)==0),0.,rr)
-                dist=fielddist(W40,W48,L,n0[j]);finer=fielddist(W48,W56,L,n0[j])
+                rr=np.where((den==0)&(np.linalg.norm(va,axis=1)==0),0.,rr)
+                dist=fielddist(Wa,Wb,L,n0[j]);finer_dist=fielddist(Wb,Wc,L,n0[j])
                 valid=all(cx.rep['runs'][f'W1024|{rl}|BDF2|{dt:.8g}|{lev}|case{j}']['valid'] for rl in cfg['rules'])
-                cx.rep['quadrature'][f'{dt:.8g}|{lev}|case{j}']=dict(target='gl40',successors=['gl48','gl56'],distance=dist,finer_distance=finer,
+                cx.rep['quadrature'][f'{dt:.8g}|{lev}|case{j}']=dict(target=main,successors=[fine,finer],distance=dist,finer_distance=finer_dist,
                     rho=rr.tolist(),all_rungs_valid=valid,
-                    quadrature_subset_pass=bool(valid and np.isfinite(rr).all() and rr.max()<=.116 and dist<=2.5e-4 and finer<=2.5e-4))
-                np.savez_compressed(cx.out/f'rho_gl40_{dt:.8g}_{lev}_c{j:03d}.npz',W=W40,adv_gl40=v40,adv_gl48=v48,rho=rr)
+                    quadrature_subset_pass=bool(valid and np.isfinite(rr).all() and rr.max()<=.116 and dist<=2.5e-4 and finer_dist<=2.5e-4))
+                np.savez_compressed(cx.out/f'rho_{main}_{dt:.8g}_{lev}_c{j:03d}.npz',W=Wa,adv_target=va,adv_successor=vb,rho=rr)
                 cx.save()
     cx.rep['scope']='fixed four-case time diagnostics; not full-population qualification'
     cx.rep['execution_complete']=True;cx.rep['complete']=True;cx.save()

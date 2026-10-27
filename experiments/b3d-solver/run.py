@@ -259,22 +259,42 @@ def dquad(cx):
     advbatch=jax.jit(qn3.adv)
     sp=('fs','CN',.01,1);q=S.make_query(sp,st)
     for j in cx.cases:
-        o=jax.block_until_ready(q(cx.U[j][None],jnp.asarray([cx.nu[j]]),d))
-        W=np.asarray(o['W'][:,0]);wall=np.asarray(o['W_all'][:,0])
-        g=np.asarray(qn3.make_certify('CN',.01,25)(o['W_all'][:,0],cx.nu[j],d))
+        reuse=cx.cfg.get('reuse',{}).get(str(j))
+        if reuse:
+            for pin in reuse.values():assert sha(HERE/pin['path'])==pin['sha256']
+            prior=json.loads((HERE/reuse['result']['path']).read_text())
+            assert prior['complete'] and prior['cohort_sha256']==cx.tab['sha256']
+            assert prior['config']['cases']==[j] and prior['config']['mode']=='quadrature'
+            z=np.load(HERE/reuse['trajectory']['path'],allow_pickle=False)
+            W,wall=np.asarray(z['W']),np.asarray(z['W_all'])
+            previous=prior['runs'][f'W1024|gl80|case{j}']
+            assert previous['valid']
+            g=np.asarray(previous['fresh_gamma'])
+            valid=previous['valid']
+        else:
+            o=jax.block_until_ready(q(cx.U[j][None],jnp.asarray([cx.nu[j]]),d))
+            W=np.asarray(o['W'][:,0]);wall=np.asarray(o['W_all'][:,0])
+            g=np.asarray(qn3.make_certify('CN',.01,25)(o['W_all'][:,0],cx.nu[j],d))
+            valid=S.run_valid(sp,o,0)
         old56=cx.historical('W1024|gl56|fs|CN|0.01|K1',j)
         old64=cx.historical('W1024|gl64|fs|CN|0.01|K1',j)
         metric=lambda x:float(jnp.linalg.norm(C3.TB.decode(jnp.asarray(x)[None],st.lean))/jnp.linalg.norm(cx.U[j]))
         dist=max(metric(x) for x in (W-old64)[1:])
         # Keep only small tested advection outputs before releasing the gl80 point tables.
-        fine_values[j]=np.asarray(jax.block_until_ready(advbatch(jnp.asarray(old64),d)))
-        rec=dict(fresh_gamma=g.tolist(),valid=S.run_valid(sp,o,0),dist_gl64_gl80=dist,
+        if reuse:
+            az=np.load(HERE/reuse['advection']['path'],allow_pickle=False)
+            assert np.array_equal(az['W'],old64)
+            fine_values[j]=np.asarray(az['adv_gl80'])
+        else:
+            fine_values[j]=np.asarray(jax.block_until_ready(advbatch(jnp.asarray(old64),d)))
+        rec=dict(fresh_gamma=g.tolist(),valid=valid,dist_gl64_gl80=dist,reused=reuse,
                  dist_gl56_gl80=max(metric(x) for x in (W-old56)[1:]),score=cx.score(W,st,j),
                  own_state_rho=None,note='diagnostic subset; no full-population qualification claim')
+        if reuse:assert abs(rec['score']['e']-previous['score']['e'])<=1e-11
         cx.rep['runs'][f'W1024|gl80|case{j}']=rec
         np.savez_compressed(cx.out/f'W1024_gl80_c{j:03d}.npz',W_all=wall,W=W)
         cx.save()
-    del o,d
+    del d
     st.drop('gl80');gc.collect()
     d64=st.data('gl64')
     for j in cx.cases:

@@ -1,0 +1,43 @@
+{
+  "job_id": 6567633,
+  "attempt": "g1-smoke05",
+  "status_at_submission": "PENDING",
+  "submitted_utc": "2026-10-27T20:55:26Z",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05",
+  "submit_host": "tufts-login",
+  "exact_submit_command": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05 cluster/smoke.sh",
+  "command_cwd": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05",
+  "source_commit": "f4f90487940c8a1f0b8bb19d8e9e1b9d7505a7e4",
+  "source_mirror": "5bb86e185",
+  "staging_commit": "8e6d58f69",
+  "staging_mirror": "82debe6eb",
+  "manifest_sha256": "23dd7281492fe75e4965f619c6fa173eb7f80fcae1dac4f148a90105efeb2b10",
+  "source_sha256sums_sha256": "23ac7fea80fbc0364978dc7ede6b7c5f3cad4cce2d66e80940b133235f9ba1a8",
+  "source_commit_file_sha256": "b2ed73b97bf22c1ae6ebe8f56564da6e1eb926b5cf215b9e1e1ca2ffc2e31e95",
+  "partition": "gpu",
+  "gpu_type": "h200",
+  "gpus": 1,
+  "cpus": 16,
+  "memory_GiB": 64,
+  "wall_seconds_cap": 1200,
+  "gpu_hours_reservation_cap": 0.3333333333333333,
+  "elapsed_gpu_hours": null,
+  "compute": "CPU finite elements; GPU for required preflight only",
+  "queue_before": [
+    6567523
+  ],
+  "queue_after": [
+    6567633,
+    6567523
+  ],
+  "unrelated_job_preserved": 6567523,
+  "dependency_layout_repair_counter": 1,
+  "dependency_layout_repair_status": "succeeded in previous attempt",
+  "native_preflight_repair_counter": 1,
+  "native_preflight_repair_limit": 1,
+  "released_scope": "one G1 smoke execution for mapped-object ownership repair with diagnostic markers",
+  "training_released": false,
+  "reference_data_admitted": false,
+  "retry_authorized": false,
+  "collection": "pending terminal state; checksum pull required before remote duplicate deletion"
+}

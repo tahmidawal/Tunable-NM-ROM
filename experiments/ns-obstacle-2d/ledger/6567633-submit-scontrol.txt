@@ -1,0 +1,31 @@
+JobId=6567633 JobName=ctol_nsobs2d_g1
+   UserId=tawal01(34493) GroupId=tawal01_g(1034493) MCS_label=N/A
+   Priority=1014 Nice=0 Account=default QOS=normal
+   JobState=RUNNING Reason=None Dependency=(null)
+   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:13 TimeLimit=00:20:00 TimeMin=N/A
+   SubmitTime=2026-10-27T16:55:26 EligibleTime=2026-10-27T16:55:26
+   AccrueTime=2026-10-27T16:55:26
+   StartTime=2026-10-27T16:55:28 EndTime=2026-10-27T17:15:28 Deadline=N/A
+   PreemptEligibleTime=2026-10-27T16:55:28 PreemptTime=None
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-27T16:55:28 Scheduler=Main
+   Partition=gpu AllocNode:Sid=login-p03:671138
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=pax009
+   BatchHost=pax009
+   NumNodes=1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=16,mem=64G,node=1,billing=16,gres/gpu=1
+   AllocTRES=cpu=16,mem=64G,node=1,billing=16,gres/gpu=1
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   MinCPUsNode=16 MinMemoryNode=64G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=NO Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/cluster/smoke.sh
+   SubmitLine=sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05 cluster/smoke.sh
+   WorkDir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05
+   StdErr=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/slurm-6567633.err
+   StdIn=/dev/null
+   StdOut=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke05/slurm-6567633.out
+   TresPerNode=gres/gpu:h200:1
+   TresPerTask=cpu=16
+

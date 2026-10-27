@@ -1,0 +1,20 @@
+{
+  "attempt": "g1-smoke02",
+  "state": "staged_verified_not_submitted",
+  "date": "2026-10-27",
+  "source_commit": "3dc8d65cc059abaad362343d7912970133f11455",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke02",
+  "source_commit_file_sha256": "749456e5719dc9f5415287980765cdad087567c18e00fd020a194de409af9e54",
+  "manifest_sha256": "f05883f2999e6ac18736d24cb2e720a5d2da8c08ec8bba0602f9947668e5bc8f",
+  "source_sha256sums_sha256": "a4604102e89278e688cae6c778808bf1ba240f95a7e608f6ce3b438674cb0efb",
+  "remote_source_hash_check": "all passed",
+  "queue_before": "empty",
+  "queue_after_staging": "empty",
+  "gpu_availability": "pax010,pax011 idle H200 nodes at staging check",
+  "exact_submit": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke02 cluster/smoke.sh",
+  "job_name": "ctol_nsobs2d_g1",
+  "submitted": false,
+  "dependencies_installed": false,
+  "numerical_execution": false,
+  "previous_attempt": "g1-smoke01 preserved untouched"
+}

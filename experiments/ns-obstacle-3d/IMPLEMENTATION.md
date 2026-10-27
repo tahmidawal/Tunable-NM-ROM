@@ -1,10 +1,10 @@
 # Three-component reference controls: implementation checkpoint
 
-Candidate `g1-smoke05` contains revised, unexecuted finite-element code for independent diff review. Independent review found an invalid boundary-gradient evaluation in earlier candidates; their release is withdrawn. The earlier staged `g1-smoke01` remains immutable and has not run; candidate 02 was never staged. See `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md`. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
+Candidate `g1-smoke06` contains revised, unexecuted finite-element code for independent diff review. Independent review found an invalid boundary-gradient evaluation in earlier candidates; their release is withdrawn. The earlier staged `g1-smoke01` remains immutable and has not run; candidate 02 was never staged. See `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md`. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
 
 ## Authoritative specification
 
-`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke05.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
+`CAMPAIGN.predata-A3.json` copies the coordinator's central specification; the exact SHA256 is recorded and enforced by `configs/g1-smoke06.json`. The earlier A2 copy remains for provenance. Central geometry $x\in[-5,15]$ supersedes the longer discovery proposal before any data. The original `SPEC.proposed.json` remains unchanged as historical design provenance. Pressure means kinematic pressure with an outlet-fixed level; there is no pressure penalty or additional gauge.
 
 The smoke uses inexpensive $P_2/P_1$ Taylor–Hood fields and cubic geometric mapping only to check execution and establish resource feasibility. It is not the planned $P_3/P_2$ reference or its $P_4/P_3$ cross-check. Mesh seed is recorded; the relationship of NumPy's seed to Netgen's deterministic defaults remains to be verified at runtime, so no stochastic mesher reproducibility assertion is made.
 
@@ -60,6 +60,10 @@ The private prefix repair follows independently reviewed 2D commit `d345b0b05`. 
 ## Candidate g1-smoke05 scalar point representation
 
 A strict scalar extractor accepts exactly one finite real number from scalar, tuple or array returns. Tiny preflight scalar evaluations and pressure probes record the observed type and shape; wrong sizes fail explicitly. This addresses the separate Python return-type error observed in the 2D lane and does not attribute its earlier native crash. See `checks/SCALAR-RETURN-REPAIR.md` for retained evidence references, prior candidate provenance and pure-function checks. No 3D FE execution has occurred.
+
+## Candidate g1-smoke06 nonsymmetric gradient convention check
+
+The tiny preflight now also evaluates a separate cyclic affine field in volume and through the boundary-from-volume wrapper, comparing against an explicit nonsymmetric gradient. It retains the identity-gradient field and traction checks and uses the existing tolerance. This follows an independent adapter-review recommendation, not an observed gradient error. See `checks/NONSYMMETRIC-GRADIENT-PREFLIGHT.md`; candidate 05 remains staged and unsubmitted. No new candidate has been staged or executed.
 
 ## Glossary
 

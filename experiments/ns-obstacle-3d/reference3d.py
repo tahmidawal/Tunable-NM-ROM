@@ -186,6 +186,13 @@ def tiny_fe_api_preflight(cfg, folder):
     gradient_b=preflight_call("vector.wrap_boundary_gradient",lambda: ng.BoundaryFromVolumeCF(gradient_v))
     divergence_v=preflight_call("vector.divergence_operator",lambda: ng.div(vector))
     divergence_b=preflight_call("vector.wrap_boundary_divergence",lambda: ng.BoundaryFromVolumeCF(divergence_v))
+    # Identity gradients cannot detect a transpose convention. This separate
+    # affine fixture has rows=velocity components, columns=(x,y,z) derivatives.
+    cyclic=preflight_call("cyclic.gridfunction",lambda: ng.GridFunction(W))
+    preflight_call("cyclic.set_coordinates",lambda: cyclic.Set(ng.CoefficientFunction((ng.y,ng.z,ng.x))))
+    cyclic_gradient_v=preflight_call("cyclic.gradient_operator",lambda: ng.Grad(cyclic))
+    cyclic_gradient_b=preflight_call("cyclic.wrap_boundary_gradient",lambda: ng.BoundaryFromVolumeCF(cyclic_gradient_v))
+    cyclic_expected=np.array([[0.0,1.0,0.0],[0.0,0.0,1.0],[1.0,0.0,0.0]])
     for name,el in elements.items():
         # Mapped points borrow the transformation; retain it throughout use.
         trafo=preflight_call(name+".get_trafo",lambda: mesh.GetTrafo(ng.ElementId(el)))
@@ -199,6 +206,14 @@ def tiny_fe_api_preflight(cfg, folder):
         samples[name]["linear_vector_gradient_error"]=float(np.linalg.norm(gradient-np.eye(3)))
         if samples[name]["linear_vector_value_error"]>1e-10 or samples[name]["linear_vector_gradient_error"]>1e-10:
             raise RuntimeError("Mapped vector/gradient convention preflight failed")
+        cyclic_cf=cyclic_gradient_b if name=="boundary" else cyclic_gradient_v
+        cyclic_gradient=preflight_call(name+".cyclic_gradient_value",lambda: np.asarray(cyclic_cf(mip),dtype=float).reshape(3,3))
+        if not np.all(np.isfinite(cyclic_gradient)):
+            raise RuntimeError("Nonfinite nonsymmetric affine gradient")
+        cyclic_error=float(np.linalg.norm(cyclic_gradient-cyclic_expected))
+        samples[name]["nonsymmetric_affine_gradient"]={"velocity_formula":"(y,z,x)","convention":"rows are velocity components; columns are x,y,z derivatives","expected":cyclic_expected.tolist(),"evaluated":cyclic_gradient.tolist(),"frobenius_error":cyclic_error}
+        if cyclic_error>cfg["preflight"]["face_traction_absolute_tolerance"]:
+            raise RuntimeError("Nonsymmetric affine gradient convention preflight failed")
         divergence_cf=divergence_b if name=="boundary" else divergence_v
         raw_divergence=preflight_call(name+".divergence_value",lambda: divergence_cf(mip))
         divergence,representation=scalar_point_value(raw_divergence)

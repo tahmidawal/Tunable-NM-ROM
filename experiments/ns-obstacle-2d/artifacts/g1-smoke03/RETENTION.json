@@ -1,0 +1,27 @@
+{
+  "status": "complete_all_regular_files_verified",
+  "archive_sha256": "02a97de2b7ede7b66554152dd654c0c251515500271a65d1d8066342b9e1082e",
+  "archive_bytes": 132488874,
+  "verified_regular_files": 701,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "7aa41cc72e096aa34af75f6ff73563fea45f801bf877c9eb61383a7058753b0a"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "c04605d33634deeda51e998778902d21a7364c8d3aa20c5f1996fe9188956783"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 31825578,
+      "sha256": "93662597ef89b720dc40ea0cba9d488edafb4f4739a5e632e755337907cae060"
+    }
+  ],
+  "recovery": "Concatenate chunks in listed order; verify archive_sha256; extract; cd g1-smoke03 and sha256sum -c COLLECTION-SHA256SUMS. Full original dependency installation, wheels, sources, logs and failure results are preserved.",
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g1-smoke03-collection.tar.gz",
+  "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g1-smoke03",
+  "no_flow_case_ran": true
+}

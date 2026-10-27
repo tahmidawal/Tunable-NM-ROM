@@ -1,0 +1,67 @@
+{
+  "gate": "G1_smoke",
+  "checks": [
+    {
+      "case": "channel",
+      "name": "completed",
+      "passed": false
+    },
+    {
+      "case": "manufactured",
+      "name": "completed",
+      "passed": false
+    },
+    {
+      "case": "dfg",
+      "name": "completed",
+      "passed": false
+    }
+  ],
+  "cases": {
+    "channel": {
+      "state": "not_run",
+      "failure": null
+    },
+    "manufactured": {
+      "state": "not_run",
+      "failure": null
+    },
+    "dfg": {
+      "state": "not_run",
+      "failure": null
+    }
+  },
+  "preflight": {
+    "passed": false,
+    "state": "not_completed"
+  },
+  "run_exit_code": 1,
+  "last_stage": "dependency_import",
+  "stage_exit_codes": [
+    {
+      "stage": "source_verification",
+      "exit_code": 0
+    },
+    {
+      "stage": "source_commit_present",
+      "exit_code": 0
+    },
+    {
+      "stage": "gpu_preflight",
+      "exit_code": 0
+    },
+    {
+      "stage": "dependencies",
+      "exit_code": 0
+    },
+    {
+      "stage": "dependency_import",
+      "exit_code": 1
+    }
+  ],
+  "passed": false,
+  "nongating": {},
+  "G2_steady_reference_admitted": false,
+  "training_released": false,
+  "reason": "mesh/p/tolerance/force/domain/outlet and result reviews remain required"
+}

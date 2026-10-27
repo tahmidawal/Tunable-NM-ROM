@@ -1,0 +1,14 @@
+WARNING: Target directory /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03/deps/bin already exists. Specify --upgrade to force replacement.
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import ngsolve,netgen,numpy,jax; print('ngsolve='+ngsolve.__version__); print('numpy='+numpy.__version__); print('jax_after_dependency_import='+jax.__version__); print('backend_after_dependency_import='+jax.default_backend())
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03/deps/ngsolve/__init__.py", line 17, in <module>
+    import netgen
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03/deps/netgen/__init__.py", line 66, in <module>
+    load_occ_libs()
+    ~~~~~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03/deps/netgen/__init__.py", line 60, in load_occ_libs
+    p = lib_paths[lib_name.lower()]
+        ~~~~~~~~~^^^^^^^^^^^^^^^^^^
+KeyError: 'tkernel'

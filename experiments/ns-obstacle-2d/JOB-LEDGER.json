@@ -21,7 +21,7 @@
       "memory_GiB": 64,
       "wall_seconds_cap": 1200,
       "gpu_hours_reservation_cap": 0.3333333333333333,
-      "elapsed_gpu_hours": null,
+      "elapsed_gpu_hours": 0.009166666666666667,
       "compute": "CPU finite elements; GPU for required preflight only",
       "queue_before": [],
       "queue_after": [
@@ -31,11 +31,24 @@
       "training_released": false,
       "reference_data_admitted": false,
       "retry_authorized": false,
-      "collection": "pending terminal state; checksum pull required before remote duplicate deletion"
+      "collection": "artifacts/g1-smoke03/RETENTION.json",
+      "terminal_state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 33,
+      "alloc_tres": "billing=16,cpu=16,gres/gpu=1,mem=64G,node=1",
+      "node": "pax008",
+      "start_cluster_local": "2026-10-27T16:30:46",
+      "end_cluster_local": "2026-10-27T16:31:19",
+      "batch_max_rss": "0.92G",
+      "failed_stage": "dependency_import",
+      "failure_exception": "KeyError: 'tkernel'",
+      "finite_element_cases_ran": 0,
+      "remote_cleanup": "pending verification guard"
     }
   ],
   "submitted_allocations": 1,
-  "completed_allocated_gpu_hours": 0,
-  "active_cost": "unaccounted until terminal allocation accounting",
-  "reservation_gpu_hours_cap": 0.3333333333333333
+  "completed_allocated_gpu_hours": 0.009166666666666667,
+  "active_cost": "none; job terminal",
+  "reservation_gpu_hours_cap": 0.3333333333333333,
+  "active_allocations": 0
 }

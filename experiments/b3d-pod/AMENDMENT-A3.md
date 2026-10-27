@@ -18,7 +18,8 @@ refit, alternate support, tolerance ladder or additional schedule is authorized.
 Replay k16 and its matching full-residual no-HR model on the same ordered diagnostic
 cases, with native tight/tighter anchors, initial projection and output lattice as
 the original POD lane. The cases and anchor policy are exactly those already frozen
-in configs/k32pilot.json; this is a new schedule/policy observation, not a rerun of
+in configs/k32pilot.json: cases 0, 5, 30, 43, with tighter anchors 0 and 5.
+This is a new schedule/policy observation, not a rerun of
 the old BDF2 observation.
 
 The initializer remains the full-grid projection $c_0=\Phi^T u_0$ for both arms.
@@ -33,7 +34,11 @@ Preserve the original predicates without relaxation: each arm's own-objective Q1
 native anchors and production/tight field agreement; k16-to-matching-none field
 agreement on every case; strict whole-residual gradient discrepancy at every live
 step and pooled full-residual stationarity. Use the original thresholds and exact
-zero/nonfinite handling. Full gradients use the HR trajectory's own previous states
+zero/nonfinite handling. The field bar is $2.5\times10^{-4}$; the tight/tighter bar
+is $2.5\times10^{-5}$. Own-objective production Q1 uses its unchanged $10^{-3}$
+stationarity bar and at least 99 percent of pooled steps. The additional gradient
+bar is $10^{-3}$ at every step; full stationarity uses the same bar on at least
+99 percent of pooled steps. Full gradients use the HR trajectory's own previous states
 and scheme/startup coefficients, archived square-root weights and the same full-grid
 objective units. Retain raw gradient vectors, norms, coefficients, step diagnostics,
 case IDs, input/output hashes and timing repetition arrays. Export common Q1/field

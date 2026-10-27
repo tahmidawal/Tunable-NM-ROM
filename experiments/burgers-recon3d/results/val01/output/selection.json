@@ -1,0 +1,3639 @@
+{
+  "cohort": "dev4",
+  "frozen_before_validation": true,
+  "selected": {
+    "16/A/ordinary": "sine_smooth0.01",
+    "16/A/bank": "bank_q2_r1024_ridge0.0001",
+    "16/A/pod_matched": "pod_matched_q2_r1024_covridge1e-08",
+    "16/A/pod_stronger": "pod_stronger_q2_r1024_covridge1e-10",
+    "16/B/ordinary": "sine_smooth1",
+    "16/B/bank": "bank_q2_r256_ridge0.01",
+    "16/B/pod_matched": "pod_matched_q2_r512_covridge1e-06",
+    "16/B/pod_stronger": "pod_stronger_q2_r512_covridge1e-06",
+    "32/A/ordinary": "sine_smooth0.01",
+    "32/A/bank": "bank_q2_r1024_ridge1e-10",
+    "32/A/pod_matched": "pod_matched_q2_r1024_covridge1e-10",
+    "32/A/pod_stronger": "pod_stronger_q2_r1024_ridge0",
+    "32/B/ordinary": "sine_smooth1",
+    "32/B/bank": "bank_q2_r1024_ridge0.0001",
+    "32/B/pod_matched": "pod_matched_q2_r1024_covridge1e-08",
+    "32/B/pod_stronger": "pod_stronger_q2_r1024_covridge1e-08"
+  },
+  "details": {
+    "16/A/ordinary": {
+      "status": "qualified",
+      "winner": {
+        "method": "sine_smooth0.01",
+        "median": 0.007520629045130383,
+        "worst": 0.017801238889710913,
+        "rank": 0,
+        "ridge": 0.0,
+        "prior": "geometry",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "linear",
+          "median": 0.03296310971758154,
+          "worst": 0.04583225650858823,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "cubic_notaknot",
+          "median": 0.010364719968829591,
+          "worst": 0.022205804931372072,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_full",
+          "median": 0.0075567721191888365,
+          "worst": 0.017973386397027186,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut7",
+          "median": 0.042635795628558446,
+          "worst": 0.08142692703779118,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut11",
+          "median": 0.014796172300679368,
+          "worst": 0.03207631902934441,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1e-06",
+          "median": 0.007556767746663443,
+          "worst": 0.01797336778940221,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.0001",
+          "median": 0.007556335637381869,
+          "worst": 0.017971527070443485,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.01",
+          "median": 0.007520629045130383,
+          "worst": 0.017801238889710913,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1",
+          "median": 0.014149725407372664,
+          "worst": 0.026952797764025024,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "16/A/bank": {
+      "status": "qualified",
+      "winner": {
+        "method": "bank_q2_r1024_ridge0.0001",
+        "median": 0.008587640956079659,
+        "worst": 0.016815581546566385,
+        "rank": 1024,
+        "ridge": 0.0001,
+        "prior": "field",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "bank_q2_r256_ridge0",
+          "median": 0.018697518537261832,
+          "worst": 0.03578921069510556,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-10",
+          "median": 0.018697518537262384,
+          "worst": 0.035789210695251185,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-08",
+          "median": 0.018697518537321843,
+          "worst": 0.03578921070966875,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-06",
+          "median": 0.018697518592066094,
+          "worst": 0.03578921216174995,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.0001",
+          "median": 0.018698011914537828,
+          "worst": 0.0357894606028936,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.01",
+          "median": 0.022006880284092513,
+          "worst": 0.03681169404445278,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0",
+          "median": 0.008653057457120233,
+          "worst": 0.018220469854021044,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-10",
+          "median": 0.008653057456906166,
+          "worst": 0.018220469852644496,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-08",
+          "median": 0.008653057435729609,
+          "worst": 0.018220469716368398,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-06",
+          "median": 0.008653055474681516,
+          "worst": 0.01822045610716263,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.0001",
+          "median": 0.008654423716454626,
+          "worst": 0.0182192792107776,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.01",
+          "median": 0.01366496666952038,
+          "worst": 0.01983442211689762,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0",
+          "median": 0.008663248219295497,
+          "worst": 0.017111669546834758,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-10",
+          "median": 0.008663248137722408,
+          "worst": 0.01711166924200143,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-08",
+          "median": 0.008663240062046015,
+          "worst": 0.017111639063591855,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-06",
+          "median": 0.0086624330994874,
+          "worst": 0.017108622111899785,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.0001",
+          "median": 0.008587640956079659,
+          "worst": 0.016815581546566385,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.01",
+          "median": 0.012474367611136596,
+          "worst": 0.014989178119478268,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "16/A/pod_matched": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_matched_q2_r1024_covridge1e-08",
+        "median": 0.0069085154433086386,
+        "worst": 0.014899509325083653,
+        "rank": 1024,
+        "ridge": 1e-08,
+        "prior": "diagonal_second_moment",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "pod_matched_q2_r256_ridge0",
+          "median": 0.020489745967160067,
+          "worst": 0.039092466922916985,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-10",
+          "median": 0.020489745967160446,
+          "worst": 0.03909246692365441,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-08",
+          "median": 0.02048974596720261,
+          "worst": 0.03909246699665981,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-06",
+          "median": 0.020489746015778403,
+          "worst": 0.039092474306278255,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.0001",
+          "median": 0.020490194227417224,
+          "worst": 0.03909329602909357,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.01",
+          "median": 0.02371635159333755,
+          "worst": 0.040051865774352914,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-10",
+          "median": 0.02048971320990847,
+          "worst": 0.03909243169327266,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-08",
+          "median": 0.020486721854556546,
+          "worst": 0.03908927314477768,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-06",
+          "median": 0.021550363265373455,
+          "worst": 0.04042057611207965,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.0001",
+          "median": 0.05469744088861066,
+          "worst": 0.08877097260512792,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.01",
+          "median": 0.1748752520253175,
+          "worst": 0.22424950409526026,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0",
+          "median": 0.010821759558679225,
+          "worst": 0.021630433802074654,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-10",
+          "median": 0.010821759555514976,
+          "worst": 0.0216304338084141,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-08",
+          "median": 0.01082175924226892,
+          "worst": 0.021630434436018857,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-06",
+          "median": 0.01082172805685509,
+          "worst": 0.02163049721577959,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.0001",
+          "median": 0.010820002850847305,
+          "worst": 0.0216369679262699,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.01",
+          "median": 0.016161955207811704,
+          "worst": 0.02403402603522307,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-10",
+          "median": 0.01082035325386271,
+          "worst": 0.02162741352457714,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-08",
+          "median": 0.010738387490345369,
+          "worst": 0.021419302319945245,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-06",
+          "median": 0.017647141897118267,
+          "worst": 0.0334543951310798,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.0001",
+          "median": 0.05466229872039466,
+          "worst": 0.0887125275508178,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.01",
+          "median": 0.17487529898532694,
+          "worst": 0.2242493128410617,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0",
+          "median": 0.007295171623094275,
+          "worst": 0.01747251677059273,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-10",
+          "median": 0.00729517161505063,
+          "worst": 0.017472516766506158,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-08",
+          "median": 0.0072951708188108595,
+          "worst": 0.017472516361943663,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-06",
+          "median": 0.007295092017987747,
+          "worst": 0.017472476005108734,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.0001",
+          "median": 0.007295336404595695,
+          "worst": 0.017469432558906074,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.01",
+          "median": 0.018333338254245796,
+          "worst": 0.024184378407252263,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-10",
+          "median": 0.007022054269182507,
+          "worst": 0.016855228991923685,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-08",
+          "median": 0.0069085154433086386,
+          "worst": 0.014899509325083653,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-06",
+          "median": 0.017531230954358035,
+          "worst": 0.0332312208410441,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.0001",
+          "median": 0.05466193128856431,
+          "worst": 0.08871172595148409,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.01",
+          "median": 0.1748753083172948,
+          "worst": 0.22424931942298584,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "16/A/pod_stronger": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_stronger_q2_r1024_covridge1e-10",
+        "median": 0.005151891069961787,
+        "worst": 0.014307367940912709,
+        "rank": 1024,
+        "ridge": 1e-10,
+        "prior": "diagonal_second_moment",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "pod_stronger_q2_r256_ridge0",
+          "median": 0.018676509015678144,
+          "worst": 0.03574836630646635,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-10",
+          "median": 0.018676509015678733,
+          "worst": 0.03574836630661219,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-08",
+          "median": 0.018676509015742394,
+          "worst": 0.03574836632105196,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-06",
+          "median": 0.018676509070879505,
+          "worst": 0.03574836777536523,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.0001",
+          "median": 0.01867700216039451,
+          "worst": 0.0357486165578999,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.01",
+          "median": 0.021985559415181082,
+          "worst": 0.03677199330997216,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-10",
+          "median": 0.018676494878505062,
+          "worst": 0.035748365369819284,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-08",
+          "median": 0.01867549356447895,
+          "worst": 0.035748821168881846,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-06",
+          "median": 0.020140772811423163,
+          "worst": 0.03801783143003504,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.0001",
+          "median": 0.05413709063101069,
+          "worst": 0.08805667304762377,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.01",
+          "median": 0.17455715765051127,
+          "worst": 0.2240640034332247,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0",
+          "median": 0.008621661673592513,
+          "worst": 0.018225887098447465,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-10",
+          "median": 0.00862166167338817,
+          "worst": 0.018225887097132087,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-08",
+          "median": 0.008621661653173518,
+          "worst": 0.018225886966912873,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-06",
+          "median": 0.008621659788577127,
+          "worst": 0.0182258739633872,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.0001",
+          "median": 0.008623040253551968,
+          "worst": 0.01822475755351986,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.01",
+          "median": 0.013638402393256484,
+          "worst": 0.01984470693169774,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-10",
+          "median": 0.00862050873355011,
+          "worst": 0.018215968129499355,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-08",
+          "median": 0.008608616803854935,
+          "worst": 0.017646860285648373,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-06",
+          "median": 0.017006894362722527,
+          "worst": 0.032079096761747694,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.0001",
+          "median": 0.054116290602530696,
+          "worst": 0.08801391091515046,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.01",
+          "median": 0.17455713691277575,
+          "worst": 0.22406383391910875,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0",
+          "median": 0.007255982748580307,
+          "worst": 0.02053210738203828,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-10",
+          "median": 0.007255982632555596,
+          "worst": 0.02053210704868585,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-08",
+          "median": 0.0072559711461970535,
+          "worst": 0.020532074046908207,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-06",
+          "median": 0.00725482339087158,
+          "worst": 0.020528774989731942,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.0001",
+          "median": 0.007148574583272439,
+          "worst": 0.020209700513558672,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.01",
+          "median": 0.013227713105233858,
+          "worst": 0.01513976290835393,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-10",
+          "median": 0.005151891069961787,
+          "worst": 0.014307367940912709,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-08",
+          "median": 0.005850829676390348,
+          "worst": 0.012600359452096447,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-06",
+          "median": 0.016959095275538696,
+          "worst": 0.03198642907862639,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.0001",
+          "median": 0.054116145368607614,
+          "worst": 0.08801354913687012,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.01",
+          "median": 0.1745571383043329,
+          "worst": 0.22406383398262059,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "16/B/ordinary": {
+      "status": "qualified",
+      "winner": {
+        "method": "sine_smooth1",
+        "median": 0.043126280554047484,
+        "worst": 0.08739819555220485,
+        "rank": 0,
+        "ridge": 0.0,
+        "prior": "geometry",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "linear",
+          "median": 0.04679306372469028,
+          "worst": 0.08237123205875777,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "cubic_notaknot",
+          "median": 0.05424388122008399,
+          "worst": 0.11254038545895259,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_full",
+          "median": 0.05770087565361357,
+          "worst": 0.12106056329953407,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut7",
+          "median": 0.05307261153234042,
+          "worst": 0.10168965993313542,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut11",
+          "median": 0.049359815825122354,
+          "worst": 0.10046830493644354,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1e-06",
+          "median": 0.057700840681644786,
+          "worst": 0.12106047701710783,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.0001",
+          "median": 0.057697379222755286,
+          "worst": 0.12105193716260969,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.01",
+          "median": 0.05735860807780692,
+          "worst": 0.12021818135068033,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1",
+          "median": 0.043126280554047484,
+          "worst": 0.08739819555220485,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "16/B/bank": {
+      "status": "qualified",
+      "winner": {
+        "method": "bank_q2_r256_ridge0.01",
+        "median": 0.04656545357299742,
+        "worst": 0.09202485745098075,
+        "rank": 256,
+        "ridge": 0.01,
+        "prior": "field",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "bank_q2_r256_ridge0",
+          "median": 0.047239190027046095,
+          "worst": 0.09428963753719108,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-10",
+          "median": 0.047239190004914264,
+          "worst": 0.0942896375111623,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-08",
+          "median": 0.04723918781386289,
+          "worst": 0.09428963493431174,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-06",
+          "median": 0.04723896872326396,
+          "worst": 0.09428937725259114,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.0001",
+          "median": 0.047217205229985924,
+          "worst": 0.09426364238829077,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.01",
+          "median": 0.04656545357299742,
+          "worst": 0.09202485745098075,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0",
+          "median": 0.05539443396162326,
+          "worst": 0.11448892042907162,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-10",
+          "median": 0.055394433938816975,
+          "worst": 0.11448892040340362,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-08",
+          "median": 0.05539443168099913,
+          "worst": 0.11448891786227418,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-06",
+          "median": 0.05539420591339614,
+          "worst": 0.11448866375214836,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.0001",
+          "median": 0.055371771145561875,
+          "worst": 0.11446328094976248,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.01",
+          "median": 0.05460401565463846,
+          "worst": 0.11220719389219778,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0",
+          "median": 0.06079743466316458,
+          "worst": 0.12592664371143905,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-10",
+          "median": 0.06079743457199222,
+          "worst": 0.12592664363527958,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-08",
+          "median": 0.060797425545950357,
+          "worst": 0.12592663609550464,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-06",
+          "median": 0.060796523157751615,
+          "worst": 0.12592588228226598,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.0001",
+          "median": 0.06070838438290292,
+          "worst": 0.12585208767550657,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.01",
+          "median": 0.05831462757568349,
+          "worst": 0.12221479594910227,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "16/B/pod_matched": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_matched_q2_r512_covridge1e-06",
+        "median": 0.04320737960700009,
+        "worst": 0.0859544534307539,
+        "rank": 512,
+        "ridge": 1e-06,
+        "prior": "diagonal_second_moment",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "pod_matched_q2_r256_ridge0",
+          "median": 0.047782925502155925,
+          "worst": 0.09384674988958265,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-10",
+          "median": 0.047782925480257706,
+          "worst": 0.09384674986291516,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-08",
+          "median": 0.047782923312335655,
+          "worst": 0.09384674722282961,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-06",
+          "median": 0.04778270653558542,
+          "worst": 0.09384648321825445,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.0001",
+          "median": 0.04776118363317275,
+          "worst": 0.09382012253003343,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.01",
+          "median": 0.047274136801663674,
+          "worst": 0.0915830439268531,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-10",
+          "median": 0.047782240374166327,
+          "worst": 0.09384532557228759,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-08",
+          "median": 0.04771493198392435,
+          "worst": 0.09370527261334392,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-06",
+          "median": 0.04389854945524595,
+          "worst": 0.08538614853601756,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.0001",
+          "median": 0.05615297429681772,
+          "worst": 0.09333295806646957,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.01",
+          "median": 0.17373314191895511,
+          "worst": 0.22007747986463577,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0",
+          "median": 0.05476513758552702,
+          "worst": 0.11241800942815566,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-10",
+          "median": 0.054765137561515805,
+          "worst": 0.11241800940420109,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-08",
+          "median": 0.05476513518440684,
+          "worst": 0.11241800703269328,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-06",
+          "median": 0.054764897492562595,
+          "worst": 0.11241776988539945,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.0001",
+          "median": 0.05474131908906361,
+          "worst": 0.11239408997412519,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.01",
+          "median": 0.054298784992629995,
+          "worst": 0.11037167373273128,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-10",
+          "median": 0.054756095434291115,
+          "worst": 0.11240005983909887,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-08",
+          "median": 0.05394569385749936,
+          "worst": 0.11077935997046456,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-06",
+          "median": 0.04320737960700009,
+          "worst": 0.0859544534307539,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.0001",
+          "median": 0.05613048616649952,
+          "worst": 0.09329446404912468,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.01",
+          "median": 0.1737331948102243,
+          "worst": 0.22007736302055153,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0",
+          "median": 0.060125360364698524,
+          "worst": 0.12434645095506071,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-10",
+          "median": 0.06012536032958189,
+          "worst": 0.12434645092451384,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-08",
+          "median": 0.06012535685303804,
+          "worst": 0.1243464479003771,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-06",
+          "median": 0.06012500925176799,
+          "worst": 0.12434614550185621,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.0001",
+          "median": 0.0600907803470751,
+          "worst": 0.12431605667820797,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.01",
+          "median": 0.06101736270988338,
+          "worst": 0.12251191969266993,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-10",
+          "median": 0.05979535039028641,
+          "worst": 0.12375144851622244,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-08",
+          "median": 0.05552615365347817,
+          "worst": 0.11481006559712074,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-06",
+          "median": 0.043232511942703465,
+          "worst": 0.08598391499793093,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.0001",
+          "median": 0.05613073179159782,
+          "worst": 0.09329474276874189,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.01",
+          "median": 0.1737332043023995,
+          "worst": 0.22007737401450558,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "16/B/pod_stronger": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_stronger_q2_r512_covridge1e-06",
+        "median": 0.04290577142787348,
+        "worst": 0.08596210123248314,
+        "rank": 512,
+        "ridge": 1e-06,
+        "prior": "diagonal_second_moment",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "pod_stronger_q2_r256_ridge0",
+          "median": 0.04724931004907868,
+          "worst": 0.0943812895606061,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-10",
+          "median": 0.047249310026944054,
+          "worst": 0.0943812895345821,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-08",
+          "median": 0.047249307835616434,
+          "worst": 0.09438128695820511,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-06",
+          "median": 0.047249088717392244,
+          "worst": 0.09438102932383678,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.0001",
+          "median": 0.04722732245193153,
+          "worst": 0.09435529916697327,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.01",
+          "median": 0.04657555680569739,
+          "worst": 0.09211669642264644,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-10",
+          "median": 0.04724854814024776,
+          "worst": 0.09437970722646835,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-08",
+          "median": 0.04717376459226713,
+          "worst": 0.09422425908449585,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-06",
+          "median": 0.04313657504308693,
+          "worst": 0.08512466207048591,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.0001",
+          "median": 0.05570119898402009,
+          "worst": 0.09251600827417021,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.01",
+          "median": 0.17342177519182586,
+          "worst": 0.21988130064996314,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0",
+          "median": 0.05537499300449862,
+          "worst": 0.11453442289268666,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-10",
+          "median": 0.05537499298170119,
+          "worst": 0.11453442286700173,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-08",
+          "median": 0.05537499072475374,
+          "worst": 0.1145344203241973,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-06",
+          "median": 0.05537476504419031,
+          "worst": 0.11453416604657254,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.0001",
+          "median": 0.055352338985631945,
+          "worst": 0.11450876648692743,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.01",
+          "median": 0.05458548567343597,
+          "worst": 0.11225093100553511,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-10",
+          "median": 0.05536164743165411,
+          "worst": 0.11450732940386528,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-08",
+          "median": 0.054237344865832475,
+          "worst": 0.11221880279090715,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-06",
+          "median": 0.04290577142787348,
+          "worst": 0.08596210123248314,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.0001",
+          "median": 0.05568915429018523,
+          "worst": 0.0924897882526546,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.01",
+          "median": 0.1734217596481638,
+          "worst": 0.2198811884459741,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0",
+          "median": 0.0597675402195399,
+          "worst": 0.13019442070399023,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-10",
+          "median": 0.059767540112625826,
+          "worst": 0.13019442054909766,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-08",
+          "median": 0.059767529528160133,
+          "worst": 0.13019440521478498,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-06",
+          "median": 0.05976647138071728,
+          "worst": 0.13019287222619644,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.0001",
+          "median": 0.059663552870779395,
+          "worst": 0.13004383192985652,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.01",
+          "median": 0.058722602783734895,
+          "worst": 0.12433925576726668,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-10",
+          "median": 0.05878343555625984,
+          "worst": 0.12577568404735368,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-08",
+          "median": 0.05503117972804501,
+          "worst": 0.11511040406638172,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-06",
+          "median": 0.042921973428362695,
+          "worst": 0.0859988854696965,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.0001",
+          "median": 0.0556892455622358,
+          "worst": 0.09248996465370757,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.01",
+          "median": 0.17342176111177238,
+          "worst": 0.21988119073347895,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/A/ordinary": {
+      "status": "qualified",
+      "winner": {
+        "method": "sine_smooth0.01",
+        "median": 0.00038616986021369347,
+        "worst": 0.0008946210581760016,
+        "rank": 0,
+        "ridge": 0.0,
+        "prior": "geometry",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "linear",
+          "median": 0.008250725781353396,
+          "worst": 0.011923844899735001,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "cubic_notaknot",
+          "median": 0.0005782329264029766,
+          "worst": 0.0013295749000433162,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_full",
+          "median": 0.00038814325892314413,
+          "worst": 0.0009015933308247223,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut15",
+          "median": 0.006146719760410604,
+          "worst": 0.014011988709266463,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut23",
+          "median": 0.001310488408167022,
+          "worst": 0.0030053217507546946,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1e-06",
+          "median": 0.0003881428792228075,
+          "worst": 0.0009015924266808763,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.0001",
+          "median": 0.00038810539664228214,
+          "worst": 0.0009015031239824008,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.01",
+          "median": 0.00038616986021369347,
+          "worst": 0.0008946210581760016,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1",
+          "median": 0.0018329622691261038,
+          "worst": 0.0038432939619003534,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/A/bank": {
+      "status": "qualified",
+      "winner": {
+        "method": "bank_q2_r1024_ridge1e-10",
+        "median": 0.0033936932111543784,
+        "worst": 0.008297417621830483,
+        "rank": 1024,
+        "ridge": 1e-10,
+        "prior": "field",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "bank_q2_r256_ridge0",
+          "median": 0.01868261438021764,
+          "worst": 0.03576396165581534,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-10",
+          "median": 0.01868261438021712,
+          "worst": 0.0357639616558154,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-08",
+          "median": 0.018682614380170624,
+          "worst": 0.03576396165582181,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-06",
+          "median": 0.01868261442433128,
+          "worst": 0.035763961666797885,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.0001",
+          "median": 0.01868310681033686,
+          "worst": 0.035764066098667245,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.01",
+          "median": 0.021992748117083055,
+          "worst": 0.036773250008124404,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0",
+          "median": 0.008342560306272909,
+          "worst": 0.01693994744411055,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-10",
+          "median": 0.008342560306272229,
+          "worst": 0.016939947444110447,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-08",
+          "median": 0.008342560306220765,
+          "worst": 0.016939947444102245,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-06",
+          "median": 0.008342560459640819,
+          "worst": 0.01693994746513207,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.0001",
+          "median": 0.00834415964952594,
+          "worst": 0.01694016801839947,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.01",
+          "median": 0.013416072083266756,
+          "worst": 0.01898076284169662,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0",
+          "median": 0.003393693211153322,
+          "worst": 0.008297417621837042,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-10",
+          "median": 0.0033936932111543784,
+          "worst": 0.008297417621830483,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-08",
+          "median": 0.0033936932113236124,
+          "worst": 0.00829741762118546,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-06",
+          "median": 0.003393693873307724,
+          "worst": 0.008297417601304225,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.0001",
+          "median": 0.0034001009964833018,
+          "worst": 0.008297861724182056,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.01",
+          "median": 0.010010895746409388,
+          "worst": 0.011923341604712253,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/A/pod_matched": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_matched_q2_r1024_covridge1e-10",
+        "median": 0.004629347499264418,
+        "worst": 0.01040387446051292,
+        "rank": 1024,
+        "ridge": 1e-10,
+        "prior": "diagonal_second_moment",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "pod_matched_q2_r256_ridge0",
+          "median": 0.020367096255482844,
+          "worst": 0.038939931930233915,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-10",
+          "median": 0.02036709625553368,
+          "worst": 0.0389399319302569,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-08",
+          "median": 0.020367096260570483,
+          "worst": 0.03893993193253384,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-06",
+          "median": 0.020367096806483145,
+          "worst": 0.03893993216888542,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.0001",
+          "median": 0.020367573597129388,
+          "worst": 0.038940042369314073,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.01",
+          "median": 0.02343995751276365,
+          "worst": 0.039790208082669226,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-10",
+          "median": 0.020367094622860866,
+          "worst": 0.03893992894314062,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-08",
+          "median": 0.02036717730426002,
+          "worst": 0.038939926080722706,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-06",
+          "median": 0.021497853124489468,
+          "worst": 0.04039800119709959,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.0001",
+          "median": 0.05460730644537117,
+          "worst": 0.0885771223621496,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.01",
+          "median": 0.174853912466686,
+          "worst": 0.22429417257938916,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0",
+          "median": 0.010144302843841994,
+          "worst": 0.020177381643444337,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-10",
+          "median": 0.010144302843817612,
+          "worst": 0.02017738164366313,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-08",
+          "median": 0.010144302841414836,
+          "worst": 0.020177381665325036,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-06",
+          "median": 0.010144302713818757,
+          "worst": 0.020177383850218267,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.0001",
+          "median": 0.010145415950595132,
+          "worst": 0.020177789322468144,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.01",
+          "median": 0.014825450823178224,
+          "worst": 0.02197089555332912,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-10",
+          "median": 0.010144286907802384,
+          "worst": 0.02017725566124724,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-08",
+          "median": 0.010168146919364959,
+          "worst": 0.02021215695805071,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-06",
+          "median": 0.017470395534220022,
+          "worst": 0.032671281246281166,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.0001",
+          "median": 0.05457154006235988,
+          "worst": 0.08851810324071124,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.01",
+          "median": 0.1748538786302156,
+          "worst": 0.22429394426471666,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0",
+          "median": 0.004630964301085285,
+          "worst": 0.010405609034653944,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-10",
+          "median": 0.004630964301247062,
+          "worst": 0.010405609034913131,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-08",
+          "median": 0.004630964317302155,
+          "worst": 0.010405609060576956,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-06",
+          "median": 0.004630966314558802,
+          "worst": 0.010405611664547836,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.0001",
+          "median": 0.004635060303671565,
+          "worst": 0.01040624785317272,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.01",
+          "median": 0.010921195502571363,
+          "worst": 0.013645243150094466,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-10",
+          "median": 0.004629347499264418,
+          "worst": 0.01040387446051292,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-08",
+          "median": 0.005835997996152998,
+          "worst": 0.012500942016412173,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-06",
+          "median": 0.01733949469956029,
+          "worst": 0.032413051940739374,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.0001",
+          "median": 0.05457102956018694,
+          "worst": 0.088517139287764,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.01",
+          "median": 0.1748538796469844,
+          "worst": 0.22429394226407265,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/A/pod_stronger": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_stronger_q2_r1024_ridge0",
+        "median": 0.003110383189875464,
+        "worst": 0.007741017053609206,
+        "rank": 1024,
+        "ridge": 0.0,
+        "prior": "field",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 1e-14,
+      "all_candidates": [
+        {
+          "method": "pod_stronger_q2_r256_ridge0",
+          "median": 0.018661663495443546,
+          "worst": 0.03572315077704418,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-10",
+          "median": 0.018661663495443095,
+          "worst": 0.03572315077704417,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-08",
+          "median": 0.018661663495403515,
+          "worst": 0.035723150777042946,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-06",
+          "median": 0.018661663540228288,
+          "worst": 0.0357231507872681,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.0001",
+          "median": 0.018662155718343277,
+          "worst": 0.03572325526258397,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.01",
+          "median": 0.021971521623333275,
+          "worst": 0.036733557658331306,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-10",
+          "median": 0.018661663281312107,
+          "worst": 0.035723150748276915,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-08",
+          "median": 0.0186620022862361,
+          "worst": 0.0357236880428342,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-06",
+          "median": 0.02013651858268732,
+          "worst": 0.0379792289905562,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.0001",
+          "median": 0.05412484464691365,
+          "worst": 0.0880092368594188,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.01",
+          "median": 0.1745567511338621,
+          "worst": 0.2240400769888661,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0",
+          "median": 0.00831638764432954,
+          "worst": 0.016943337206005774,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-10",
+          "median": 0.008316387644329029,
+          "worst": 0.016943337206005615,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-08",
+          "median": 0.008316387644293998,
+          "worst": 0.016943337205992375,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-06",
+          "median": 0.00831638779963173,
+          "worst": 0.016943337226513703,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.0001",
+          "median": 0.008317989917325321,
+          "worst": 0.016943557685247,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.01",
+          "median": 0.013394245452189115,
+          "worst": 0.018983783810172853,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-10",
+          "median": 0.008316393293885952,
+          "worst": 0.016943342713913095,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-08",
+          "median": 0.008383980448729574,
+          "worst": 0.017069652972369686,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-06",
+          "median": 0.016953214097368684,
+          "worst": 0.03193550367903326,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.0001",
+          "median": 0.05410407653408147,
+          "worst": 0.08796617167346757,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.01",
+          "median": 0.17455673012712403,
+          "worst": 0.2240399064708934,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0",
+          "median": 0.003110383189875464,
+          "worst": 0.007741017053609206,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-10",
+          "median": 0.0031103831898898248,
+          "worst": 0.007741017053610537,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-08",
+          "median": 0.0031103831913832716,
+          "worst": 0.007741017053747044,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-06",
+          "median": 0.003110384058404723,
+          "worst": 0.007741017115226736,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.0001",
+          "median": 0.003117497366002165,
+          "worst": 0.007741501441212373,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.01",
+          "median": 0.009857470927021699,
+          "worst": 0.011543651379081383,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-10",
+          "median": 0.0031142107931853677,
+          "worst": 0.007752292353899088,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-08",
+          "median": 0.005282510333368487,
+          "worst": 0.01156004079744994,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-06",
+          "median": 0.0169028033316627,
+          "worst": 0.0318374241762391,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.0001",
+          "median": 0.05410391940658926,
+          "worst": 0.08796580454208663,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.01",
+          "median": 0.17455673148196355,
+          "worst": 0.2240399065527074,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/B/ordinary": {
+      "status": "qualified",
+      "winner": {
+        "method": "sine_smooth1",
+        "median": 0.01137546869647109,
+        "worst": 0.023041102362824334,
+        "rank": 0,
+        "ridge": 0.0,
+        "prior": "geometry",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "linear",
+          "median": 0.011919470211190898,
+          "worst": 0.02137895364266619,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "cubic_notaknot",
+          "median": 0.012372707324552338,
+          "worst": 0.025293547332147913,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_full",
+          "median": 0.012597626823698136,
+          "worst": 0.025835592263989075,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut15",
+          "median": 0.012735455693401069,
+          "worst": 0.026143724893485765,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_cut23",
+          "median": 0.012422764500710929,
+          "worst": 0.025379691060179253,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1e-06",
+          "median": 0.012597624857949376,
+          "worst": 0.02583558761692634,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.0001",
+          "median": 0.012597430267099514,
+          "worst": 0.025835127603917433,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth0.01",
+          "median": 0.012578149960657328,
+          "worst": 0.025789578077397356,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "sine_smooth1",
+          "median": 0.01137546869647109,
+          "worst": 0.023041102362824334,
+          "rank": 0,
+          "ridge": 0.0,
+          "prior": "geometry",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/B/bank": {
+      "status": "qualified",
+      "winner": {
+        "method": "bank_q2_r1024_ridge0.0001",
+        "median": 0.012172766310446772,
+        "worst": 0.024986860660587206,
+        "rank": 1024,
+        "ridge": 0.0001,
+        "prior": "field",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "bank_q2_r256_ridge0",
+          "median": 0.020482331111724435,
+          "worst": 0.03978468963092124,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-10",
+          "median": 0.020482331103029477,
+          "worst": 0.039784689619724735,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-08",
+          "median": 0.02048233024223419,
+          "worst": 0.03978468851127104,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge1e-06",
+          "median": 0.020482244207026476,
+          "worst": 0.039784577674359785,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.0001",
+          "median": 0.02047408436309415,
+          "worst": 0.03977357857561683,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r256_ridge0.01",
+          "median": 0.022963208921330677,
+          "worst": 0.039517344546286234,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0",
+          "median": 0.01317859885341753,
+          "worst": 0.026954292866528826,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-10",
+          "median": 0.01317859883544886,
+          "worst": 0.026954292848760733,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-08",
+          "median": 0.013178597056557296,
+          "worst": 0.0269542910897216,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge1e-06",
+          "median": 0.01317841922476717,
+          "worst": 0.026954115197983203,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.0001",
+          "median": 0.013161212851025927,
+          "worst": 0.026936647836713686,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r512_ridge0.01",
+          "median": 0.01623707273894875,
+          "worst": 0.026435840835526355,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0",
+          "median": 0.012192123810105818,
+          "worst": 0.02500651587708621,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-10",
+          "median": 0.01219212379016224,
+          "worst": 0.025006515857299703,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-08",
+          "median": 0.012192121815754308,
+          "worst": 0.025006513898437065,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge1e-06",
+          "median": 0.012191924432654091,
+          "worst": 0.025006318025160717,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.0001",
+          "median": 0.012172766310446772,
+          "worst": 0.024986860660587206,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "bank_q2_r1024_ridge0.01",
+          "median": 0.015031508320018896,
+          "worst": 0.02438330008328931,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/B/pod_matched": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_matched_q2_r1024_covridge1e-08",
+        "median": 0.011647816892427313,
+        "worst": 0.023629927626355993,
+        "rank": 1024,
+        "ridge": 1e-08,
+        "prior": "diagonal_second_moment",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "pod_matched_q2_r256_ridge0",
+          "median": 0.02202894572024359,
+          "worst": 0.04246594492966478,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-10",
+          "median": 0.022028945712094943,
+          "worst": 0.04246594491925311,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-08",
+          "median": 0.022028944905383378,
+          "worst": 0.04246594388849819,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge1e-06",
+          "median": 0.02202886427322227,
+          "worst": 0.04246584082102564,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.0001",
+          "median": 0.022021191306414657,
+          "worst": 0.04245561426225987,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_ridge0.01",
+          "median": 0.02427994902397017,
+          "worst": 0.0422306523085478,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-10",
+          "median": 0.02202879326473068,
+          "worst": 0.0424656483494125,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-08",
+          "median": 0.02201399692118445,
+          "worst": 0.04243674904262409,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge1e-06",
+          "median": 0.022250110474580122,
+          "worst": 0.042060805928297224,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.0001",
+          "median": 0.05369046205059865,
+          "worst": 0.08735907910922719,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r256_covridge0.01",
+          "median": 0.17452074946838342,
+          "worst": 0.22307943495531177,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0",
+          "median": 0.014203278736120132,
+          "worst": 0.028550015534940767,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-10",
+          "median": 0.014203278718963507,
+          "worst": 0.028550015518464,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-08",
+          "median": 0.014203277020464018,
+          "worst": 0.028550013887264802,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge1e-06",
+          "median": 0.014203107234210494,
+          "worst": 0.028549850779160488,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.0001",
+          "median": 0.014186768757807477,
+          "worst": 0.028533658165755198,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_ridge0.01",
+          "median": 0.01720977338666754,
+          "worst": 0.028115346788662503,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-10",
+          "median": 0.014200998331556582,
+          "worst": 0.028545243222428348,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-08",
+          "median": 0.014009836648506416,
+          "worst": 0.028145397437673404,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge1e-06",
+          "median": 0.018115206782085017,
+          "worst": 0.034055431685682105,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.0001",
+          "median": 0.05365545504744179,
+          "worst": 0.08729256018167887,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r512_covridge0.01",
+          "median": 0.17452071539178804,
+          "worst": 0.2230791791673156,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0",
+          "median": 0.01232780673442701,
+          "worst": 0.025069105511996034,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-10",
+          "median": 0.012327806714193626,
+          "worst": 0.025069105491944767,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-08",
+          "median": 0.012327804711093335,
+          "worst": 0.02506910350686999,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge1e-06",
+          "median": 0.01232760446115948,
+          "worst": 0.025068905013101477,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.0001",
+          "median": 0.012308183780841357,
+          "worst": 0.025049192812245435,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_ridge0.01",
+          "median": 0.01525497558778741,
+          "worst": 0.024492109736837218,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-10",
+          "median": 0.012294683051461941,
+          "worst": 0.02500424930193969,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-08",
+          "median": 0.011647816892427313,
+          "worst": 0.023629927626355993,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge1e-06",
+          "median": 0.017963197065124153,
+          "worst": 0.033771960613045195,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.0001",
+          "median": 0.053654859903241994,
+          "worst": 0.08729143054207868,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_matched_q2_r1024_covridge0.01",
+          "median": 0.17452071643080258,
+          "worst": 0.22307917662251348,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    },
+    "32/B/pod_stronger": {
+      "status": "qualified",
+      "winner": {
+        "method": "pod_stronger_q2_r1024_covridge1e-08",
+        "median": 0.01142875900377284,
+        "worst": 0.023443427030246062,
+        "rank": 1024,
+        "ridge": 1e-08,
+        "prior": "diagonal_second_moment",
+        "qualified_spatial_input": true
+      },
+      "tie_width": 0.0001830967997095462,
+      "all_candidates": [
+        {
+          "method": "pod_stronger_q2_r256_ridge0",
+          "median": 0.02046439753540739,
+          "worst": 0.03973048638410063,
+          "rank": 256,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-10",
+          "median": 0.02046439752670925,
+          "worst": 0.03973048637288508,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-08",
+          "median": 0.020464396665597427,
+          "worst": 0.03973048526254565,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge1e-06",
+          "median": 0.020464310598715042,
+          "worst": 0.03973037423707218,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.0001",
+          "median": 0.020456147382324808,
+          "worst": 0.039719356393678705,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_ridge0.01",
+          "median": 0.022944424823685503,
+          "worst": 0.039462408342093705,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-10",
+          "median": 0.020464224632901106,
+          "worst": 0.03973007423605945,
+          "rank": 256,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-08",
+          "median": 0.020447585613153872,
+          "worst": 0.0396901325089074,
+          "rank": 256,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge1e-06",
+          "median": 0.020927755108966183,
+          "worst": 0.03970985634044038,
+          "rank": 256,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.0001",
+          "median": 0.053201360727490724,
+          "worst": 0.08680795549708525,
+          "rank": 256,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r256_covridge0.01",
+          "median": 0.17422420325458501,
+          "worst": 0.22282500358320903,
+          "rank": 256,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0",
+          "median": 0.013170866086548699,
+          "worst": 0.026959981221457614,
+          "rank": 512,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-10",
+          "median": 0.01317086606857137,
+          "worst": 0.026959981203691037,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-08",
+          "median": 0.013170864288822779,
+          "worst": 0.026959979444799824,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge1e-06",
+          "median": 0.013170686371335094,
+          "worst": 0.026959803567851385,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.0001",
+          "median": 0.013153471492366028,
+          "worst": 0.026942337661278157,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_ridge0.01",
+          "median": 0.016228958118733476,
+          "worst": 0.026441415395237172,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-10",
+          "median": 0.013167551907481104,
+          "worst": 0.026951829004714677,
+          "rank": 512,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-08",
+          "median": 0.01292810367545041,
+          "worst": 0.02634187025178641,
+          "rank": 512,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge1e-06",
+          "median": 0.01764354419928013,
+          "worst": 0.03347707156817755,
+          "rank": 512,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.0001",
+          "median": 0.053177965303057934,
+          "worst": 0.08675927147640924,
+          "rank": 512,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r512_covridge0.01",
+          "median": 0.17422418276801888,
+          "worst": 0.22282481233740162,
+          "rank": 512,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0",
+          "median": 0.012223746256731309,
+          "worst": 0.025088267848735604,
+          "rank": 1024,
+          "ridge": 0.0,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-10",
+          "median": 0.012223746236795525,
+          "worst": 0.025088267828976354,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-08",
+          "median": 0.012223744263159742,
+          "worst": 0.02508826587281179,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge1e-06",
+          "median": 0.012223546957256252,
+          "worst": 0.025088070269306997,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.0001",
+          "median": 0.01220439636257658,
+          "worst": 0.025068639486692947,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_ridge0.01",
+          "median": 0.015061013541327967,
+          "worst": 0.024463393675684477,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "field",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-10",
+          "median": 0.012154587069270363,
+          "worst": 0.024939812564161095,
+          "rank": 1024,
+          "ridge": 1e-10,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-08",
+          "median": 0.01142875900377284,
+          "worst": 0.023443427030246062,
+          "rank": 1024,
+          "ridge": 1e-08,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge1e-06",
+          "median": 0.017587871885027712,
+          "worst": 0.03337320603667706,
+          "rank": 1024,
+          "ridge": 1e-06,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.0001",
+          "median": 0.053177744603875754,
+          "worst": 0.08675885659910935,
+          "rank": 1024,
+          "ridge": 0.0001,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        },
+        {
+          "method": "pod_stronger_q2_r1024_covridge0.01",
+          "median": 0.17422418413550456,
+          "worst": 0.22282481224737183,
+          "rank": 1024,
+          "ridge": 0.01,
+          "prior": "diagonal_second_moment",
+          "qualified_spatial_input": true
+        }
+      ]
+    }
+  },
+  "prepared_contract": {
+    "source_commit": "7b2fdff15e477ba22b3e070b743501e86ab949cf",
+    "manifest_sha256": "aea6bd2c95c964a9c4585a82f5b3a6eee6ff697c22f981c4876e963812019827",
+    "job_id": 6567523
+  },
+  "reference_store": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+  "dev_commit": "6f3a7e6e245f180b1c73511a67b108c4c513c066",
+  "dev_job": "6569265",
+  "source_contract": {
+    "configs/frozen_inputs.json": "c8bfe44c02552d752692dfe32d1a72323d3ecf0059bd7e9a469cca089f8dc94a",
+    "export3d.py": "57713e9ab592b033340b462ddbfb2b6b411cdd879f371b7e0f0b3e06831a6d12",
+    "prepare3d.py": "2c1742edd6f86dd62721986366c6b0b146e4d4fd8ea8cc41a6df557fa2952621",
+    "screen3d.py": "5f6ce03888a86a570b17af7a58f6dd4223cd4841c48dcc79a205644395d06f92",
+    "vendor/PROVENANCE.json": "9740fd779e6653e70547d28135ed61cf6eecf9b21203093c4d2264a43cfdbcf8",
+    "vendor/check_core.py": "c9c1d9320412fa6341f8f02489e0654b9bc9cc5c5b4d0319186c9919d06b5101",
+    "vendor/experiments/jcp-references/cohorts.py": "59ee1afb7caf290e3209f366e7566f7b244e967c3fc391e446bcfc8d73eda767",
+    "vendor/experiments/jcp-references/refcore.py": "dc42b15cb86782b23202b74be68768acc89996107f65747c0345f7d700014fdc",
+    "vendor/experiments/jcp-references/refstore.py": "91d905eb7a21d381d5990ba75e358d39a330e2ec7006064a9b6825a547361ef4",
+    "vendor/experiments/jcp-references/vendor/quad3d/vendor/burgers3d-span/common.py": "670475259683ef77f7af454d8b2b04fdd5ee3543373aa4a11353df4363c484b6",
+    "vendor/experiments/jcp-references/vendor/quad3d/vendor/paper-b3d/vendor/b3d_common.py": "c5e36b4c6fc148f795613b0d5547014b6ffd43ad4b1f62db3768d8d733a6814f",
+    "vendor/experiments/jcp-references/verdict.py": "f004845931ddeb253a8ad5ea35c30a82cd8a7b3d24a18aa24b82fbd99ce9c0ba",
+    "vendor/experiments/mr-burgers2d/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "vendor/experiments/separable-decoder/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+    "vendor/reconstruction_core.py": "4439c1c43f13c0a469f660d96fb4572e94b92f641714400715d61bda5cdbb5d7"
+  },
+  "dev_scores_sha256": "d8ecea7ba0e74d902efa2a89f93375c08c8b634f6af626b90a9fc7947e832d97",
+  "policy": "All complete finite dev4 cases; minimum median case-maximum. A fixed-array tie width 1e-14; B tie width twice maximum reference eps. Within tie choose worst-case, rank, ridge, prior, lexical method. Input admission qualifies interpretation, never deletes cases."
+}

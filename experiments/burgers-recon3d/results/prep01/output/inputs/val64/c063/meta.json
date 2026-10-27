@@ -1,0 +1,111 @@
+{
+  "descriptor": {
+    "B": 1,
+    "c": [
+      [
+        0.22921861367957252,
+        0.39031447256643714,
+        0.3939689181966902
+      ]
+    ],
+    "w": [
+      0.16150546324574006
+    ],
+    "rho": [
+      0.7672937237479239
+    ],
+    "A": 0.8983878570624193,
+    "nu": 0.039738334104671,
+    "s_star": 0.5449437002550414
+  },
+  "cohort_sha256": "b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c",
+  "reference_store": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+  "reference_eps": 1.4348057714485623e-05,
+  "n0_fine": 57.667437600888334,
+  "meshes": {
+    "16": {
+      "eligible": true,
+      "history": [
+        {
+          "dt": 0.0025,
+          "valid": true,
+          "max_residual": 4.765497584607326e-14,
+          "max_newton": 2,
+          "physical_last_pair_gap": null,
+          "stages": 102,
+          "array_sha256": "5ef7fa2cbba1f906642f697fa3da8e930008af1242a44bd60b5e63b80925a90c"
+        },
+        {
+          "dt": 0.00125,
+          "valid": true,
+          "max_residual": 4.729968870731249e-16,
+          "max_newton": 2,
+          "physical_last_pair_gap": 7.923520806752872e-05,
+          "stages": 202,
+          "array_sha256": "0a976971e65a07f25b3f7eb6d418dd35e3072099def8e121d915f4e99d90bdb4"
+        },
+        {
+          "dt": 0.000625,
+          "valid": true,
+          "max_residual": 5.326726542032442e-17,
+          "max_newton": 2,
+          "physical_last_pair_gap": 1.9870754860251364e-05,
+          "stages": 402,
+          "array_sha256": "3f22e3618a5a1863b60e78830f60c2a55ed4c518fe25a1d44b3f5ec973f1003a"
+        },
+        {
+          "dt": 0.0003125,
+          "valid": true,
+          "max_residual": 5.340568405857527e-17,
+          "max_newton": 2,
+          "physical_last_pair_gap": 4.975689352431458e-06,
+          "stages": 802,
+          "array_sha256": "5f6d5d8022e736fd993971675544a49a039d31625f9721e156ed59899655807d"
+        }
+      ],
+      "finest_dt": 0.0003125
+    },
+    "32": {
+      "eligible": true,
+      "history": [
+        {
+          "dt": 0.0025,
+          "valid": true,
+          "max_residual": 8.770217154481675e-14,
+          "max_newton": 2,
+          "physical_last_pair_gap": null,
+          "stages": 102,
+          "array_sha256": "1a3b4bf1236cfc5b037d19ae2f27045d6091072e36fc06702159b33e66776d84"
+        },
+        {
+          "dt": 0.00125,
+          "valid": true,
+          "max_residual": 8.996592096366205e-16,
+          "max_newton": 2,
+          "physical_last_pair_gap": 8.481007320276649e-05,
+          "stages": 202,
+          "array_sha256": "ef43d26b4e5c4ccbf45684a280b923a59acab4df86e0f1524abb846f1fd19fb0"
+        },
+        {
+          "dt": 0.000625,
+          "valid": true,
+          "max_residual": 5.329637930747188e-17,
+          "max_newton": 2,
+          "physical_last_pair_gap": 2.1277168390769356e-05,
+          "stages": 402,
+          "array_sha256": "84d5c9ccaeb6111ab0e9817523fba58211d72b3b40be68da510f8676e163df8a"
+        },
+        {
+          "dt": 0.0003125,
+          "valid": true,
+          "max_residual": 5.1366662688556024e-17,
+          "max_newton": 2,
+          "physical_last_pair_gap": 5.3289194791303685e-06,
+          "stages": 802,
+          "array_sha256": "eb79ab2b57124901d2576460544f958c955c11c92595c9b8eca46ed981da9632"
+        }
+      ],
+      "finest_dt": 0.0003125
+    }
+  }
+}

@@ -20,7 +20,8 @@ from inventory import ROOT, read, sha, write
 HERE = Path(__file__).resolve().parent
 DEST = HERE.parents[0] / '2026-10-23-research-update'
 SOURCE = ROOT / 'reports/2026-10-23-research-update'
-GENERATED_IDS = ['b3d-refine-evidence', 'b3d-refine-solver', 'b3d-refine-pod', 'b3d-refine-open']
+GENERATED_IDS = ['b3d-refine-evidence', 'b3d-refine-solver', 'b3d-refine-time', 'b3d-refine-pod',
+                 'b3d-refine-frontier', 'b3d-refine-mesh', 'b3d-refine-open']
 
 
 def picture(name):
@@ -80,12 +81,25 @@ def main():
     observations = [o for o in solver.get('observations', []) if o['source']['job_id'] == 6525183 and
                     o['key'].startswith('W1024|') and o['key'].endswith('|case30')]
     assert len(observations) == 5 and len({o['key'] for o in observations}) == 5
+    pilot_bank, _, pilot_case = observations[0]['key'].split('|')
+    pilot_case = pilot_case.removeprefix('case')
+    pilot_job = observations[0]['source']['job_id']
     rows = ''.join(f"<tr><td>{html.escape(o['key'].split('|')[1])}</td><td>{o['fresh_nonstationary_steps']}</td><td>{o['score']['e']*100:.5g}%</td></tr>" for o in observations)
-    text = f'''<p style="font-size:32px;line-height:1.45;margin-bottom:25px">W1024 · validation case 30 · pilot job 6525183: a controlled replay repairs the nonlinear certificate while the worst physical error persists.</p>
+    text = f'''<p style="font-size:32px;line-height:1.45;margin-bottom:25px">{pilot_bank} · validation case {pilot_case} · pilot job {pilot_job}: a controlled replay repairs the nonlinear certificate while the worst physical error persists.</p>
 <table style="font-size:31px"><tr><th>Policy on the diagnostic case</th><th>Uncertified steps</th><th>Maximum E0 error</th></tr>{rows}</table>
 <p style="font-size:29px;line-height:1.5;margin-top:30px">Extra nonlinear work and more frequent matrix refresh address the demonstrated convergence gap. A larger trust radius alone does not. Fresh restarts are labelled separately from the original cached solver.</p>
 <p style="font-size:27px;line-height:1.45;margin-top:24px;color:#6d4e2d">Selected difficult-case diagnostics. This table does not establish whole-population accuracy or speed gains.</p>'''
     output.append(('b3d-refine-solver', 'A convergence repair with unchanged physical error', text))
+    time_diagnostic = values.get('time_refinement_diagnostic')
+    if time_diagnostic:
+        coarse, fine = time_diagnostic['rows'][0], time_diagnostic['rows'][-1]
+        text = f'''<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:45px">
+<div><img alt="Time-step accuracy and nonlinear work tradeoff" src="{picture('time_refinement_tradeoff.png')}" style="width:100%;margin-top:30px"></div>
+<div style="font-size:31px;line-height:1.45"><p>On the fixed diagnostic cases, median error falls from {100*coarse['median']:.4g}% to {100*fine['median']:.4g}%, while worst error rises from {100*coarse['worst']:.4g}% to {100*fine['worst']:.4g}%.</p>
+<p style="margin-top:25px">Both endpoints pass the subset convergence checks. More frequent matrix refresh does not make physical error uniformly smaller.</p>
+<p style="margin-top:25px">The coarse and fine endpoints were selected after these diagnostics, before the full-validation sweep. The intermediate setting remains a valid measured tradeoff.</p></div></div>
+<p style="font-size:26px;line-height:1.4;margin-top:30px;color:#6d4e2d">Error cancellation is a hypothesis. The inherited bank uses analytic advection and grid-dependent diffusion; it does not share POD's discrete residual.</p>'''
+        output.append(('b3d-refine-time', 'Time refinement improves the median and worsens outliers', text))
     pod = read(HERE / 'data/pod-pilot-export.json')
     old = values['historical_POD_scope']
     q = pod.get('qualification', {}).get('whole_residual', {})
@@ -104,13 +118,27 @@ def main():
 <p style="font-size:27px;line-height:1.45;margin-top:25px">The historical {old['dominated_all']}/{old['total']} domination headline pooled {old['diagnostic']} diagnostic and {old['qualified']} qualified bank rows. Within the qualified subset: {old['dominated_qualified']}/{old['qualified']} dominated, {old['withheld_qualified']} withheld. Old POD hyper-reduction convergence was not gated.</p>
 <p style="font-size:26px;line-height:1.4;margin-top:20px">{extension_status} The diagnostic failures above use the new conservative rule and do not establish a bank advantage.</p>'''
     output.append(('b3d-refine-pod', 'POD receives the same qualification scrutiny', text))
+    frontier = values.get('full_validation_frontier')
+    if frontier:
+        text = f'''<img alt="Same-allocation complete-validation accuracy versus descriptor-total query cost" src="{picture('full64_descriptor_frontier.png')}" style="display:block;width:94%;max-height:640px;object-fit:contain;margin:0 auto">
+<p style="font-size:27px;line-height:1.4;margin-top:18px">Input preparation and all returned fields are included. Filled points pass their registered method-specific gates; open points remain visible. The exact frozen tested set, conditional reference uncertainty and joint accuracy matches are documented in the report.</p>'''
+        output.append(('b3d-refine-frontier', 'The complete validation comparison uses one GPU allocation', text))
     text = f'''<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:40px">
 <img alt="Quadrature successor convergence" src="{picture('quadrature_convergence.png')}" style="width:100%;margin-top:30px">
 <div style="font-size:30px;line-height:1.5"><p>Completed quadrature trajectories are reused. The missing finer-rule check closes a specific evidence gap.</p>
 <p style="margin-top:28px">A qualified refined frontier needs whole-population solver and quadrature checks, same-invocation timing, and matched output requirements.</p>
 <p style="margin-top:28px">Reduced evolution, input preparation, output decoding, offline setup and memory remain separate costs.</p>
 <p style="margin-top:28px;color:#6d4e2d">No new general advantage over POD or the fastest tested full solver is established by the diagnostic pilots.</p></div></div>'''
-    output.append(('b3d-refine-open', 'Close missing evidence before extending the frontier', text))
+    open_title = 'Close missing evidence before extending the frontier'
+    if frontier:
+        open_title = 'What is established, and what remains open'
+        text = f'''<div style="display:grid;grid-template-columns:1.1fr 1fr;gap:45px">
+<img alt="Separately measured query phases" src="{picture('query_components.png')}" style="width:100%;max-height:640px;object-fit:contain">
+<div style="font-size:30px;line-height:1.5"><p>The report separates improvements over earlier bank ROMs, tuned unsampled POD and the fastest tested jointly accuracy-matched full solver.</p>
+<p style="margin-top:26px">Phase measurements explain costs but do not replace the measured full-query timer. Offline setup and cumulative memory counters are reported separately.</p>
+<p style="margin-top:26px">Qualified hyper-reduced POD remains open after the frozen support failure. The exposed validation set supports development; sealed replication remains closed.</p>
+<p style="margin-top:26px;color:#6d4e2d">The finite tested set does not establish a universal fastest method. A solver certificate does not establish spatial consistency.</p></div></div>'''
+    output.append(('b3d-refine-open', open_title, text))
     for i, (name, title, body) in enumerate(output, start=count + 1):
         (DEST / 'project/slides' / (name + '.html')).write_text(slide(name, title, body, i))
         deck['order'].append(name)

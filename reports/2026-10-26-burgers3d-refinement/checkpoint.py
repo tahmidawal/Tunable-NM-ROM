@@ -26,6 +26,7 @@ def main():
             dst = HERE / 'data' / f'lane-{name}-{kind}.json'
             shutil.copy2(src, dst)
             pins[str(src)] = dict(sha256=sha(src), snapshot=str(dst), snapshot_sha256=sha(dst))
+            assert pins[str(src)]['sha256'] == pins[str(src)]['snapshot_sha256'], 'export changed during snapshot; retry checkpoint'
             snapshots[(name, kind)] = read(dst)
         ledger = snapshots[(name, 'ledger')]
         for row in ledger.get('entries', ledger.get('jobs', [])):

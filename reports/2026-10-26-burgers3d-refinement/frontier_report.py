@@ -19,6 +19,9 @@ def explicit_pass(value):
 
 
 def timing_pass(row, contract):
+    if contract == 'prepared_native' and 'native_timing_admitted' in row:
+        assert isinstance(row['native_timing_admitted'], bool)
+        return row['native_timing_admitted']
     value = row['timing_admitted']
     if isinstance(value, bool):
         return value
@@ -41,6 +44,140 @@ def method_group(subject_id, subject):
     return 'Bank ROM'
 
 
+def components(doc, table, save):
+    phases = collections.defaultdict(lambda: collections.defaultdict(list))
+    for row in doc['phase_repetitions']:
+        if row['seconds'] is None:
+            continue
+        assert np.isfinite(row['seconds']) and row['seconds'] > 0
+        phases[(row['subject'], row['phase'])][int(row['case'])].append(row['seconds'])
+    phase_rows, phase_values, work_rows, setup_rows = [], {}, [], []
+    columns = [('nonlinear_iterations', 'Corrections'), ('jacobian_contractions', 'Jacobian contractions'),
+               ('residual_jacobian_pairs', 'Residual/Jacobian pairs'), ('residual_evaluations', 'Residual calls'),
+               ('nonlinear_evaluations', 'Nonlinear calls')]
+    for sid, subject in doc['subjects'].items():
+        result = {}
+        for phase in ['initialization', 'evolve', 'decode']:
+            own = phases[(sid, phase)]
+            if own:
+                assert sorted(own) == [0, 5, 30, 43], (sid, phase, 'phase population differs')
+                result[phase] = float(np.median([np.median(v) for v in own.values()]))
+            else:
+                result[phase] = None
+        phase_values[sid] = result
+        phase_rows.append([sid] + ['not applicable / unavailable' if result[p] is None else f'{result[p]*1e3:.6g}'
+                                  for p in ['initialization', 'evolve', 'decode']])
+        counts = []
+        raw = doc['case_results'][sid]
+        for key, _ in columns:
+            vals = [v['work'].get(key) for v in raw.values()]
+            if any(v is None for v in vals):
+                counts.append('not exposed')
+            else:
+                assert np.isfinite(vals).all() and min(vals) >= 0
+                counts.append(f'{np.median(vals):.6g} [{min(vals):.6g}, {max(vals):.6g}]')
+        work_rows.append([sid] + counts)
+        memory = subject['setup_memory']
+        before, after = memory['before']['current_bytes'], memory['after']['current_bytes']
+        setup_rows.append([sid, ', '.join(subject['shared_setup_keys']) or 'none',
+            f"{subject['setup_seconds']:.6g}", f"{subject['compile_and_warm_seconds']:.6g}",
+            'unavailable' if before is None or after is None else f'{(after-before)/1e9:.6g}',
+            f"{subject['setup_peak_bytes']/1e9:.6g}"])
+    fig, ax = plt.subplots(figsize=(9, max(4, .34 * len(phase_values))))
+    matrix = np.array([[np.nan if v[p] is None else v[p]*1e3 for p in ['initialization', 'evolve', 'decode']]
+                       for v in phase_values.values()])
+    from matplotlib.colors import LogNorm
+    im = ax.imshow(matrix, aspect='auto', norm=LogNorm(), cmap='Blues')
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            x = matrix[i, j]
+            ax.text(j, i, 'n/a' if np.isnan(x) else f'{x:.3g}', ha='center', va='center', fontsize=7,
+                    color='white' if np.isfinite(x) and x > np.nanmedian(matrix)*2 else 'black')
+    ax.set(xticks=range(3), xticklabels=['Initialisation', 'Reduced/full evolution', 'Output decode/synthesis'],
+           yticks=range(len(phase_values)), yticklabels=list(phase_values),
+           title='Separate phase calls: case-balanced median milliseconds\nDiagnostic cases only; phases do not sum to fused query cost')
+    fig.colorbar(im, ax=ax, label='Milliseconds (log colour scale)'); save(fig, 'query_components')
+    text = '''### Query phases, work and offline setup
+
+The separate phase calls below use only the fixed diagnostic cases, with the same output
+checked against the fused query. Their costs are indicative components and are not added
+to construct or replace the full-validation query timer. A full solver supplied its native
+dynamic state has no separate initial coefficient projection.
+
+'''
+    text += table(['Subject', 'Initialisation (ms)', 'Evolution (ms)', 'Decode/synthesis (ms)'], phase_rows) + '\n\n'
+    text += '![Separately measured query phases](figs/query_components.png)\n\n'
+    text += ('The following work counts are medians [minimum, maximum] over the complete validation '
+             'population. They count declared logical operations, not GPU kernels. Missing counters '
+             'remain missing; an iteration of one method is not assumed to cost the same as another.\n\n')
+    text += table(['Subject'] + [label for _, label in columns], work_rows) + '\n\n'
+    text += table(['Subject', 'Shared setup', 'Incremental setup (s)', 'Compile/warm (s)',
+                   'Current-memory change (GB)', 'Whole-job peak so far (GB)'], setup_rows) + '\n\n'
+    shared_rows = [[sid, f"{v['seconds']:.6g}", json.dumps({k: v[k] for k in ['memory_before', 'memory_after']})]
+                   for sid, v in doc['shared_setup'].items()]
+    text += table(['Shared bank/basis setup', 'Seconds', 'Memory counters'], shared_rows) + '\n\n'
+    text += (f"Common provenance/descriptor setup takes {doc['common_setup']['seconds']:.6g} seconds. "
+             'Shared setup is reported once, separate from each incremental configuration and from '
+             'compilation/warm-up. Device-memory changes are current-allocation differences; the peak '
+             'counter is cumulative for the entire job and cannot rank standalone method memory. '
+             'Inputs and returned fields are on device at the query boundary; synchronization is included, '
+             'while output transfer, scoring and storage are excluded equally. Descriptor preparation is '
+             'included in the primary query contract.\n\n')
+    return text, phase_values
+
+
+def comparisons(doc, summaries, table):
+    rows = []
+    for sid, families in doc['matching']['subjects'].items():
+        for family, contracts in families.items():
+            own = contracts['descriptor']
+            selected = own['selected']
+            rows.append([sid, family, selected or 'unresolved / no tested joint match',
+                'unavailable' if selected is None else f"{own['competitor_over_subject_cost_ratio']:.6g}"])
+            if selected:
+                assert summaries[sid]['registered_qualified'] and summaries[selected]['registered_qualified']
+                assert own['checks'][selected]['joint_match'] is True
+                assert (summaries[selected]['median_upper'] <= summaries[sid]['median_lower'] and
+                        summaries[selected]['worst_upper'] <= summaries[sid]['worst_lower'])
+                expected = summaries[selected]['costs']['descriptor']['median_seconds'] / summaries[sid]['costs']['descriptor']['median_seconds']
+                assert np.isclose(own['competitor_over_subject_cost_ratio'], expected, rtol=1e-12)
+    text = '''### Tuned POD and full-solver comparisons
+
+The primary descriptor-total comparison below requires a joint match: both the competitor's
+median upper conditional error and worst upper conditional error must be no larger than the
+bank/POD subject's corresponding lower errors, on exactly the same eligible cases. The selected
+competitor is the fastest admitted member of the frozen tested set satisfying both conditions.
+An unresolved overlap is not a win. A ratio below unity means the matched competitor is faster.
+
+'''
+    text += table(['Subject', 'Competitor family', 'Fastest tested joint match',
+                   'Competitor / subject cost'], rows) + '\n\n'
+    text += ('Prepared-native matches and the separate median-only/worst-only predicates are retained '
+             'in the machine dataset. This is a finite developmental comparison, not a global optimum '
+             'or sealed confirmation. The qualified hyper-reduced POD gap remains separate from '
+             'the measured unsampled POD comparison.\n\n')
+    old = [sid for sid, v in doc['subjects'].items() if v['config'].get('archived_key')]
+    new = [sid for sid, v in doc['subjects'].items() if v['config'].get('successors')]
+    rows = []
+    for sid in new:
+        for baseline in old:
+            a, b = summaries[sid], summaries[baseline]
+            valid = a['registered_qualified'] and b['registered_qualified'] and all(
+                v['complete_score_population'] and v['costs']['descriptor']['complete_population'] for v in [a, b])
+            rows.append([sid, baseline,
+                'unqualified / incomplete' if not valid else a['median_upper'] < b['median_lower'],
+                'unqualified / incomplete' if not valid else a['worst_upper'] < b['worst_lower'],
+                'unavailable' if not valid else f"{b['costs']['descriptor']['median_seconds']/a['costs']['descriptor']['median_seconds']:.6g}"])
+    if rows:
+        text += ('### Improvement over earlier bank ROMs\n\n'
+                 'The following same-allocation comparisons separate resolved median improvement, '
+                 'resolved worst-case improvement and speed. A gain in one column does not imply '
+                 'a gain in the others. True requires non-overlapping conditional reference intervals.\n\n')
+        text += table(['New policy', 'Earlier bank setting', 'Median resolved better', 'Worst resolved better',
+                       'Earlier / new query cost'], rows) + '\n\n'
+    return text
+
+
 def render(doc, figdir, table, save, reference):
     required = ['schema_version', 'cohort', 'reference', 'contracts', 'subjects', 'case_results',
                 'timing_repetitions', 'phase_repetitions', 'matching', 'frontiers', 'execution']
@@ -48,12 +185,23 @@ def render(doc, figdir, table, save, reference):
     cohort, ref = doc['cohort'], doc['reference']
     expected = reference['cohorts']['val64']
     assert cohort['name'] == 'val64' and cohort['seed'] == expected['seed']
-    assert cohort['ordered_case_ids'] == list(range(64))
+    ordered = cohort.get('ordered_case_ids', cohort.get('ordered_cases'))
+    assert ordered == list(range(64))
+    if 'ordered_case_ids' in cohort and 'ordered_cases' in cohort:
+        assert cohort['ordered_case_ids'] == cohort['ordered_cases']
+    assert cohort['eligible_cases'] == sorted(int(k) for k, v in expected['cases'].items() if v['eligible'])
     assert cohort['canonical_table_sha256'] == expected['table_sha256']
     assert ref['dimension'] == 3 and ref['kind'] == 'ST' and ref['field'] == 'finest'
     assert ref['store_version'] == reference['store_version'] and ref['status_sha256'] == reference['status_sha256']
     assert np.allclose(ref['output_times'], reference['output_times'], rtol=0, atol=1e-15)
+    execution = doc['execution']
+    assert execution['complete'] is True, 'progress checkpoint is not a completed frontier'
+    assert execution['job_id'] and execution['gpu'] and execution['source_commit'] and execution['config_sha256']
+    assert execution['raw_file_manifest']
+    assert all(v['sha256'] and v['bytes'] > 0 for v in execution['raw_file_manifest'])
     rows = doc['timing_repetitions']
+    by_invocation = {r['invocation_id']: r for r in rows}
+    assert len(by_invocation) == len(rows), 'duplicate timing invocation IDs'
     # Derive the exact observed full population from per-invocation evidence, then check the contract.
     ids = sorted({int(r['case']) for r in rows})
     assert ids == list(range(64)), f'not the full declared validation population: {ids}'
@@ -63,21 +211,38 @@ def render(doc, figdir, table, save, reference):
         score = row.get('score') or {}
         cid = str(int(row['case']))
         target = reference['cohorts']['val64']['cases'][cid]
-        finite = all(isinstance(score.get(k), (int, float)) and np.isfinite(score[k]) for k in ['e', 'epsilon'])
+        assert isinstance(score['epsilon'], (int, float)) and np.isfinite(score['epsilon'])
+        assert np.isclose(score['epsilon'], target['eps_ref'], rtol=1e-10, atol=0)
+        assert score['eligible'] is target['eligible']
+        for contract, field in [('prepared_native', 'given_native_seconds'), ('descriptor', 'descriptor_seconds')]:
+            if timing_pass(row, contract):
+                assert isinstance(row[field], (int, float)) and np.isfinite(row[field]) and row[field] > 0
+        assert np.isfinite(row['input_prep_seconds']) and row['input_prep_seconds'] >= 0
+        assert abs(row['descriptor_seconds'] - row['given_native_seconds'] - row['input_prep_seconds']) <= 1e-9
+        finite = isinstance(score.get('e'), (int, float)) and np.isfinite(score['e'])
         if not finite or score.get('eligible') is not True:
-            assert not any(timing_pass(row, c) for c in ['prepared_native', 'descriptor']), 'invalid result admitted for timing'
+            # The driver records clock-drift admission separately from numerical validity.
+            # Retain the failed invocation and its raw duration, but never plot its cost/error.
             invalid_subjects.add(row['subject'])
             continue
-        assert np.isclose(score['epsilon'], target['eps_ref'], rtol=1e-10, atol=0)
         assert len(score['e_t']) == len(reference['output_times']) and np.isfinite(score['e_t']).all()
         assert abs(max(score['e_t'][1:]) - score['e']) <= 1e-12
         assert row['output_sha256']
     summaries, table_rows = {}, []
     groups = collections.defaultdict(list)
     for row in rows:
-        groups[row['subject']].append(row)
+        if row['role'] == 'B':
+            groups[row['subject']].append(row)
     for subject_id, subject in doc['subjects'].items():
         own = groups.get(subject_id, [])
+        raw_cases = doc['case_results'][subject_id]
+        assert sorted(int(c) for c in raw_cases) == ids, (subject_id, 'missing raw case result')
+        for cid, result in raw_cases.items():
+            row = by_invocation[result['invocation_id']]
+            assert (row['subject'], row['case'], row['role']) == (subject_id, int(cid), 'B')
+            assert row['output_sha256'] == result['output_sha256'] and row['score'] == result['score']
+            if result.get('coefficient_sha256') is not None:
+                assert row['coefficient_sha256'] == result['coefficient_sha256']
         score_by_case = {}
         for row in own:
             if row['subject'] in invalid_subjects:
@@ -88,12 +253,22 @@ def render(doc, figdir, table, save, reference):
             score_by_case[cid] = float(row['score']['e'])
         complete_scores = sorted(score_by_case) == ids and subject_id not in invalid_subjects
         q = subject['qualification']
+        common = explicit_pass(q['common_rollout_check'])
+        q1, q2 = explicit_pass(q['Q1']), explicit_pass(q['Q2'])
+        assert q['scope'] and isinstance(q['method_specific_extra_masks'], dict)
+        qualified = str(q['status']).lower() in ['qualified', 'pass', 'accepted']
+        assert qualified == (q1 and q2 and common), (subject_id, 'status disagrees with registered admission masks')
         entry = dict(id=subject_id, method=method_group(subject_id, subject), qualification=q,
+                     registered_qualified=qualified, common_rollout_pass=common,
                      complete_score_population=complete_scores,
                      case_ids=sorted(score_by_case), costs={}, source_config=subject['config'])
         if complete_scores:
             errors = [score_by_case[c] for c in ids]
+            epsilon = np.array([reference['cohorts']['val64']['cases'][str(c)]['eps_ref'] for c in ids])
+            lower, upper = np.maximum(np.array(errors)-epsilon, 0), np.array(errors)+epsilon
             entry.update(median_error=float(np.median(errors)), worst_error=max(errors),
+                         median_lower=float(np.median(lower)), median_upper=float(np.median(upper)),
+                         worst_lower=float(max(lower)), worst_upper=float(max(upper)),
                          errors_above_1pct=sum(e > .01 for e in errors))
         for contract, field in [('prepared_native', 'given_native_seconds'), ('descriptor', 'descriptor_seconds')]:
             good = [r for r in own if timing_pass(r, contract)]
@@ -103,7 +278,17 @@ def render(doc, figdir, table, save, reference):
                 admitted_repetitions=len(good), case_repetitions=case_times,
                 median_seconds=float(np.median([np.median(case_times[c]) for c in ids])) if complete_timing else None)
         summaries[subject_id] = entry
-        table_rows.append([subject_id, entry['method'], q['status'],
+        source_summary = doc['summaries'][subject_id]
+        for contract in ['descriptor', 'prepared_native']:
+            ours, theirs = entry['costs'][contract], source_summary['costs'][contract]
+            assert ours['complete_population'] is theirs['coverage_complete']
+            assert ours['admitted_repetitions'] == theirs['admitted_repetitions']
+            if ours['complete_population']:
+                assert np.isclose(ours['median_seconds'], theirs['median_seconds'], rtol=1e-12)
+        if complete_scores:
+            assert np.isclose(entry['median_error'], source_summary['median_error'], rtol=1e-12)
+            assert np.isclose(entry['worst_error'], source_summary['worst_error'], rtol=1e-12)
+        table_rows.append([subject_id, entry['method'], q['status'], f'{q1}/{q2}', common,
             'missing' if not complete_scores else f"{100*entry['median_error']:.6g}",
             'missing' if not complete_scores else f"{100*entry['worst_error']:.6g}",
             entry.get('errors_above_1pct', 'missing'),
@@ -121,7 +306,7 @@ def render(doc, figdir, table, save, reference):
             seen = set()
             for point in points:
                 q, group = point['qualification'], point['method']
-                qualified = str(q['status']).lower() in ['qualified', 'pass', 'accepted']
+                qualified = point['registered_qualified']
                 common = explicit_pass(q['common_rollout_check'])
                 label = group if group not in seen else None
                 seen.add(group)
@@ -132,7 +317,7 @@ def render(doc, figdir, table, save, reference):
             ax.set(xscale='log', yscale='log', xlabel=f'{contract.replace("_", " ")} query: median over 64 cases (ms)',
                    ylabel=f'{metric.replace("_", " ").capitalize()} (%)')
             ax.grid(alpha=.2); ax.legend(fontsize=8)
-        fig.suptitle('Same allocation · full validation · conditional E0 ST error\nFilled: registered qualified; open: other status retained', fontsize=10)
+        fig.suptitle('Same allocation · full validation · device outputs · conditional E0 ST error\nFilled: registered qualified; open: other status retained', fontsize=10)
         name = f'full64_{contract}_frontier'
         save(fig, name)
         figures.append((contract, name))
@@ -145,8 +330,13 @@ Descriptor-total is the primary cross-method contract. Prepared-native costs use
 method-specific supplied data, so those values are shown as decomposition evidence.
 
 '''
-    text += table(['Subject', 'Method', 'Qualification status', 'Median E0 error (%)', 'Worst E0 error (%)',
+    text += table(['Subject', 'Method', 'Qualification status', 'Q1/Q2', 'Common rollout pass', 'Median E0 error (%)', 'Worst E0 error (%)',
                    'Cases above 1%', 'Descriptor total (ms)', 'Prepared native (ms)'], table_rows) + '\n\n'
+    extra_rows = []
+    for sid, subject in doc['subjects'].items():
+        q = subject['qualification']
+        extra_rows.append([sid, q['scope'], json.dumps(q['method_specific_extra_masks'], sort_keys=True)])
+    text += table(['Subject', 'Qualification scope', 'Method-specific or supplementary masks (raw)'], extra_rows) + '\n\n'
     for contract, name in figures:
         text += f'![Full validation {contract.replace("_", " ")} cost versus accuracy](figs/{name}.png)\n\n'
     text += ('''Common rollout-consistency checks and method-specific extra checks are separate masks.
@@ -162,5 +352,8 @@ included in the descriptor-total timer. All errors and matches remain developmen
 conditional on the E0 reference uncertainty. Competitor searches cover a finite tested set.
 
 ''')
+    component_text, phase_values = components(doc, table, save)
+    text += comparisons(doc, summaries, table) + component_text
     return dict(subjects=summaries, figures=figures, text=text,
+                diagnostic_phase_seconds=phase_values,
                 matching=doc['matching'], frontiers=doc['frontiers'], execution=doc['execution'])

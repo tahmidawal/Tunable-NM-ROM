@@ -33,7 +33,7 @@ def table(headers, rows):
 def save(fig, name):
     fig.tight_layout()
     fig.savefig(FIG / f'{name}.png', dpi=170, bbox_inches='tight')
-    fig.savefig(FIG / f'{name}.pdf', bbox_inches='tight')
+    fig.savefig(FIG / f'{name}.pdf', bbox_inches='tight', metadata={'CreationDate': None, 'ModDate': None})
     plt.close(fig)
 
 
@@ -273,6 +273,62 @@ def main():
                              'so fixed-sweep work alone does not explain them.\n\n')
                     text += table(['Nonlinear solve', 'Quadrature transition', 'Cases', 'Median distance',
                                    'Maximum distance', 'Largest case', 'Cases over registered threshold'], rows) + '\n\n'
+                finer = [v for v in lane.get('quadrature', [])
+                         if v['source']['path'].startswith('results/qcheck801/')]
+                if finer:
+                    finer = sorted(finer, key=lambda v: int(v['key'].split('case')[-1]))
+                    cases = [int(v['key'].split('case')[-1]) for v in finer]
+                    bad = sum(sum(g > 1e-3 for g in v['fresh_gamma']) for v in finer)
+                    steps = sum(len(v['fresh_gamma']) for v in finer)
+                    text += (f"The missing inherited finer-rule check now covers the original case ids {cases}, "
+                             f"with maximum successor distance {max(v['dist_gl64_gl80'] for v in finer):.7g}, "
+                             f"maximum own-state rho {max(max(v['own_state_rho']) for v in finer):.7g}, and "
+                             f"{bad}/{steps} fresh uncertified fine-rule steps. The independently approved join "
+                             'to the saved complete-population target/successor evidence closes the legacy '
+                             '`W1024|gl56|fs|CN|0.01|K1` qualification. It does not qualify the finest rule '
+                             'as a new deployment or improve physical accuracy. Historical inventory status '
+                             'counts above retain their original pre-campaign scope.\n\n')
+                ts = lane.get('time_selection', {}).get('data')
+                if ts:
+                    tr = ts['rows']
+                    values['time_refinement_diagnostic'] = ts
+                    rows = [[v['dt'], ', '.join(map(str, v['cases'])), f"{100*v['median']:.7g}",
+                             f"{100*v['median_lower']:.7g}–{100*v['median_upper']:.7g}", f"{100*v['worst']:.7g}",
+                             v['corrections'], v['jacobian_contractions'], f"{v['fresh_bad_steps']}/{v['total_steps']}",
+                             v['all_target_anchors_usable'] and v['all_own_chains_pass']] for v in tr]
+                    text += ('#### Time refinement: median and worst trade off\n\n'
+                             'These selected-case diagnostics hold bank, test space and target quadrature fixed. '
+                             'All displayed settings pass their subset nonlinear and own-state quadrature controls. '
+                             'Finer steps improve the median while worsening the worst case; neither a general '
+                             'accuracy improvement nor a general failure describes this tradeoff. The intervals '
+                             'are propagated conditional reference uncertainties, not statistical confidence intervals.\n\n')
+                    text += table(['Step size', 'Case ids', 'Median error (%)', 'Conditional median interval (%)',
+                                   'Worst error (%)', 'Corrections (sum)', 'Jacobian contractions (sum)',
+                                   'Uncertified steps', 'Subset controls pass'], rows) + '\n\n'
+                    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+                    for metric, colour in [('median', '#27659a'), ('worst', '#a65c25')]:
+                        y = np.array([v[metric] * 100 for v in tr])
+                        lo = np.array([v[metric + '_lower'] * 100 for v in tr])
+                        hi = np.array([v[metric + '_upper'] * 100 for v in tr])
+                        axes[0].errorbar([v['dt'] for v in tr], y, yerr=[y-lo, hi-y],
+                                         marker='o', capsize=4, color=colour, label=metric)
+                    for metric, label in [('corrections', 'Nonlinear corrections'),
+                                          ('jacobian_contractions', 'Jacobian contractions')]:
+                        axes[1].plot([v['dt'] for v in tr], [v[metric] for v in tr], marker='o', label=label)
+                    axes[0].set(ylabel='Conditional E0 ST error (%)', title='Selected-case accuracy tradeoff')
+                    axes[1].set(ylabel='Sum over the diagnostic cases', title='Logical nonlinear work')
+                    for ax in axes:
+                        ax.set(xscale='log', xlabel='Time step (coarse to fine)'); ax.invert_xaxis()
+                        ax.set_xticks([v['dt'] for v in tr], [str(v['dt']) for v in tr])
+                        ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+                        ax.grid(alpha=.2); ax.legend(fontsize=8)
+                    save(fig, 'time_refinement_tradeoff')
+                    text += ('![Time refinement accuracy and work](figs/time_refinement_tradeoff.png)\n\n'
+                             f"Endpoint selection is explicitly post-diagnostic: {ts['selection']}. "
+                             f"{ts['caution']} {ts['cost_scope']} "
+                             'The earlier proposed worst-only rejection rule was not in the staged design '
+                             'and was abandoned. Error cancellation is a hypothesis; this time-step control '
+                             'alone does not identify a spatial, operator or representation cause.\n\n')
             else:
                 rows = []
                 for rule, q in lane.get('qualification', {}).get('whole_residual', {}).items():
@@ -334,6 +390,38 @@ def main():
                          [[f"`{v['setting']}`", f"{v['viscosity_spearman']:.4g}",
                            f"{v['nominal_steepness_spearman']:.4g}", v['errors_above_1pct'],
                            ', '.join(str(c) for c in v['largest_error_cases'])] for v in regime_statistics])
+    operator_sources = [WTS / '2026-10-26-b3d-solver/experiments/b3d-solver' / rel for rel in [
+        'vendor/speed3d/vendor/quad3d/offmesh.py',
+        'vendor/speed3d/vendor/quad3d/vendor/burgers3d-span/common.py',
+        'vendor/speed3d/t2core.py']]
+    for source in operator_sources:
+        PINS[str(source)] = sha(source)
+    operator_text = r'''### Which equations are actually being measured
+
+The inherited bank kernel combines analytic continuum advection with mesh-dependent discrete
+diffusion and discrete test moments. In the quadrature term,
+
+$$
+\mathcal{N}_q(c)=P_q^\top\big[(B_qc)\odot(D_qc)\big],\qquad
+(\Lambda_N)_{\mathbf{k},\mathbf{k}}=
+4(N-1)^2\sum_{d=1}^{3}\sin^2\!\left(\frac{\pi k_d}{2(N-1)}\right).
+$$
+
+Here $B_q$ evaluates the frozen bank, $D_q$ its analytic directional derivative, $P_q$ the
+weighted tests, and $\Lambda_N$ supplies the discrete diffusion eigenvalues. The weak residual
+uses $\mathcal{N}_q(c)+\nu\Lambda_NA_Nc$, with $A_N$ the mesh-derived test moments. $N$ denotes
+nodes per axis here; historical plots using intervals have $L=N-1$.
+
+This archived formulation deviates from the general FOM-exact upwind rule in `AGENTS.md`.
+The campaign preserves it to reconcile the actual historical method; it does not silently
+substitute an upwind operator. POD's central finite-difference residual and the spectral full
+solver use different discretizations. Their common E0 ST error permits an empirical accuracy–cost
+comparison, but not a claim of identical discrete equations. Q1/Q2 certify the stated reduced
+solve and its quadrature, not PDE or spatial consistency. Changing $N$ also changes test moments,
+projection, Gram matrices and normalization; a composite mesh replay cannot isolate diffusion
+or advection bias by itself. Any alternative operator is a separately named diagnostic control.
+
+'''
     report = f'''# Burgers 3D refinement: recovered evidence, numerical gaps and controlled replays
 
 This report reconciles existing evidence and the bounded refinement campaign. The historical
@@ -356,6 +444,8 @@ review gates. Failed controls remain in the ledger. The output contract and exac
 travel with each result; the common scoring schedule has
 {len(inv['reference']['output_times'])} fields through time {inv['reference']['output_times'][-1]}
 on the {inv['reference']['scoring_lattice']} lattice.
+
+{operator_text}
 
 ## Recovered state
 
@@ -532,6 +622,9 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 
 - Bank: frozen spatial functions that turn a short vector into a field; r is their count.
 - M: number of smooth functions used to test the PDE; m: number of integration points.
+- N / L: nodes per mesh axis / intervals per axis, with $L=N-1$.
+- $B_q$, $D_q$, $P_q$: bank values, analytic directional derivatives, and weighted test values at quadrature points.
+- $A_N$, $\\Lambda_N$, $c$, $\\nu$: mesh test moments, discrete diffusion eigenvalues, reduced coefficients, and viscosity.
 - W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
 - POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
 - Gauss / gl / lattice / lat: tensor Gauss–Legendre rules / their short label / a rank-one integration point set / its short label.

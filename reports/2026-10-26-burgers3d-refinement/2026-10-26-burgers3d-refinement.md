@@ -21,6 +21,33 @@ travel with each result; the common scoring schedule has
 6 fields through time 0.25
 on the 63^3 interior, x slowest lattice.
 
+### Which equations are actually being measured
+
+The inherited bank kernel combines analytic continuum advection with mesh-dependent discrete
+diffusion and discrete test moments. In the quadrature term,
+
+$$
+\mathcal{N}_q(c)=P_q^\top\big[(B_qc)\odot(D_qc)\big],\qquad
+(\Lambda_N)_{\mathbf{k},\mathbf{k}}=
+4(N-1)^2\sum_{d=1}^{3}\sin^2\!\left(\frac{\pi k_d}{2(N-1)}\right).
+$$
+
+Here $B_q$ evaluates the frozen bank, $D_q$ its analytic directional derivative, $P_q$ the
+weighted tests, and $\Lambda_N$ supplies the discrete diffusion eigenvalues. The weak residual
+uses $\mathcal{N}_q(c)+\nu\Lambda_NA_Nc$, with $A_N$ the mesh-derived test moments. $N$ denotes
+nodes per axis here; historical plots using intervals have $L=N-1$.
+
+This archived formulation deviates from the general FOM-exact upwind rule in `AGENTS.md`.
+The campaign preserves it to reconcile the actual historical method; it does not silently
+substitute an upwind operator. POD's central finite-difference residual and the spectral full
+solver use different discretizations. Their common E0 ST error permits an empirical accuracy–cost
+comparison, but not a claim of identical discrete equations. Q1/Q2 certify the stated reduced
+solve and its quadrature, not PDE or spatial consistency. Changing $N$ also changes test moments,
+projection, Gram matrices and normalization; a composite mesh replay cannot isolate diffusion
+or advection bias by itself. Any alternative operator is a separately named diagnostic control.
+
+
+
 ## Recovered state
 
 The current experimental base is `93f399faad67f94ea2b56fe25f13003143e64694`. The inventory contains
@@ -258,6 +285,22 @@ The following re-analysis reuses saved full-validation trajectories. Quadrature 
 | ad\|LSPG\|CN\|0.01\|tight | gl48 to gl56 | 64 | 2.439895e-08 | 0.0002506383 | 5 | 1 |
 | ad\|LSPG\|CN\|0.01\|tight | gl56 to gl64 | 64 | 1.999782e-09 | 0.0001666505 | 5 | 0 |
 
+The missing inherited finer-rule check now covers the original case ids [0, 1, 2, 3, 4, 5, 6, 7], with maximum successor distance 4.017088e-05, maximum own-state rho 0.000455362, and 1/200 fresh uncertified fine-rule steps. The independently approved join to the saved complete-population target/successor evidence closes the legacy `W1024|gl56|fs|CN|0.01|K1` qualification. It does not qualify the finest rule as a new deployment or improve physical accuracy. Historical inventory status counts above retain their original pre-campaign scope.
+
+#### Time refinement: median and worst trade off
+
+These selected-case diagnostics hold bank, test space and target quadrature fixed. All displayed settings pass their subset nonlinear and own-state quadrature controls. Finer steps improve the median while worsening the worst case; neither a general accuracy improvement nor a general failure describes this tradeoff. The intervals are propagated conditional reference uncertainties, not statistical confidence intervals.
+
+| Step size | Case ids | Median error (%) | Conditional median interval (%) | Worst error (%) | Corrections (sum) | Jacobian contractions (sum) | Uncertified steps | Subset controls pass |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0.025 | 0, 5, 30, 43 | 4.07488 | 4.065171–4.084589 | 4.379058 | 115 | 40 | 0/40 | True |
+| 0.0125 | 0, 5, 30, 43 | 2.149897 | 2.140188–2.159607 | 4.812683 | 107 | 80 | 0/80 | True |
+| 0.00625 | 0, 5, 30, 43 | 2.079269 | 2.06956–2.088979 | 5.59007 | 163 | 160 | 0/160 | True |
+
+![Time refinement accuracy and work](figs/time_refinement_tradeoff.png)
+
+Endpoint selection is explicitly post-diagnostic: coarse0.025 repaired policy plus finest0.00625 best-tested-median representative, each conditional on own full64 Q1/Q2. Median and worst trade off. These two final temporal endpoints do not exhaust the tested diagnostic tradeoff or the temporal frontier. No warmed production timings in D-T. First-compile anchor seconds are not deployment costs. The earlier proposed worst-only rejection rule was not in the staged design and was abandoned. Error cancellation is a hypothesis; this time-step control alone does not identify a spatial, operator or representation cause.
+
 Machine export and hashed raw evidence: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-export.json`. No cross-job speed-up is inferred.
 
 ### Pod lane
@@ -313,6 +356,9 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 
 - Bank: frozen spatial functions that turn a short vector into a field; r is their count.
 - M: number of smooth functions used to test the PDE; m: number of integration points.
+- N / L: nodes per mesh axis / intervals per axis, with $L=N-1$.
+- $B_q$, $D_q$, $P_q$: bank values, analytic directional derivatives, and weighted test values at quadrature points.
+- $A_N$, $\Lambda_N$, $c$, $\nu$: mesh test moments, discrete diffusion eigenvalues, reduced coefficients, and viscosity.
 - W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
 - POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
 - Gauss / gl / lattice / lat: tensor Gauss–Legendre rules / their short label / a rank-one integration point set / its short label.

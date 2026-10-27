@@ -1,8 +1,41 @@
 # Burgers 3D refinement: evidence reconciliation and targeted numerical controls
 
-Status: proposed design, awaiting independent review. No new scientific GPU result exists.
+Status: the initial design passed independent review with recorded amendments. The original
+bounded stages below are retained; subsequent decisions are recorded explicitly here and in
+the lane designs/manifests. An outcome-dependent selection is not called predeclared.
 The implementation base is consolidated commit `93f399faad67f94ea2b56fe25f13003143e64694`;
 the newer improvement lanes are sources of labelled evidence, not implicitly merged code.
+
+## Recorded amendments and interpretation limits
+
+- The frozen larger-support POD constructor failed its admission checks. Its terminal inputs
+  and state are retained; the stop rule permits no further support fit or rollout of that
+  rejected support. The unsampled POD comparison continues separately.
+- POD receives the same five frozen integration schedules and one stronger production solve
+  at gradient tolerance $10^{-4}$, after a full-trajectory agreement miss under $10^{-3}$.
+  Basis, trust policy and schedules remain fixed; original failed policies stay visible.
+  Costs used to select old versus stronger policies are remeasured within one allocation.
+- After the time diagnostic, coarse step $0.025$ and fine step $0.00625$ are the two proposed
+  new bank endpoints. This is a post-diagnostic choice before complete validation, motivated
+  by the median/worst tradeoff; the valid intermediate setting is not a failed configuration.
+  No warmed deployment times were measured by the time diagnostic. Final admission requires
+  each endpoint's own complete-population nonlinear and quadrature checks.
+- Primary comparison uses a supplied analytic descriptor, including its canonical initial
+  normalization scalar, to synchronized device-resident output fields. It includes native
+  input preparation and full evolution/decoding. Descriptor construction is common setup;
+  host output transfer, scoring and storage are excluded equally. Prepared-native inputs
+  differ by method and have a separate descriptive cost contract.
+- The archived bank combines analytic advection with discrete diffusion and mesh-derived
+  test moments; it is not the FOM-exact upwind formulation required by the general method
+  rule. Reconciliation preserves and labels this inherited deviation rather than silently
+  changing its equation. It can be compared empirically against the common reference, but
+  cannot be described as sharing POD's discrete equations. Solver/quadrature certification
+  alone does not certify PDE/spatial consistency. Any operator intervention is a separately
+  named diagnostic and does not inherit the original deployment certificate.
+- A bounded fixed-mode spatial control and reference-projection floor are justified before
+  attributing the remaining error to representation. Changing the mesh changes several
+  quantities together; composite mesh changes cannot identify a single causal component.
+  The existing lane and total resource caps remain unchanged.
 
 ## Questions and hypotheses
 

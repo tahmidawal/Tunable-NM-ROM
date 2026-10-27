@@ -1,31 +1,51 @@
 """Cheap pinned NGSolve runtime checks before any actual flow case."""
 from __future__ import annotations
-import argparse,json,traceback
+import argparse,faulthandler,json,traceback
 from pathlib import Path
 import numpy as np
 
 
-def mapped_probe(mesh, center=None, sample_order=2):
+def marker(name, phase):
+    print(json.dumps({'preflight_call':name,'phase':phase}),flush=True)
+
+
+def traced(name, function, *args, enabled=True, **kwargs):
+    if enabled:marker(name,'before')
+    value=function(*args,**kwargs)
+    if enabled:marker(name,'after')
+    return value
+
+
+def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False):
     import ngsolve as ng
     record={'volume':None,'boundary':None,'normal_checks':{},'api_status':'unverified'}
     normal=ng.specialcf.normal(2)
     for el in mesh.Elements(ng.VOL):
-        ip=ng.IntegrationRule(el.type,sample_order)[0]
-        mip=mesh.GetTrafo(el)(ip)
-        jac=np.asarray(mip.jacobi)
+        ir=traced('volume.rule',ng.IntegrationRule,el.type,sample_order,enabled=diagnostic)
+        ip=ir[0]  # Pinned binding returns this IntegrationPoint by value.
+        # Pinned mapped points store a non-owning transformation pointer. Keep
+        # this named Python owner alive through every access to mip and its views.
+        tr=traced('volume.transformation',mesh.GetTrafo,el,enabled=diagnostic)
+        mip=traced('volume.mapped_point',tr,ip,enabled=diagnostic)
+        jac=traced('volume.jacobian_copy',lambda:np.array(mip.jacobi,dtype=float,copy=True),enabled=diagnostic)
         det=float(np.linalg.det(jac))
         if det<=0 or float(ip.weight*mip.measure)<=0:
             raise ArithmeticError('mapped volume preflight has invalid Jacobian/weight')
-        record['volume']={'point':list(mip.point),'jacobian':jac.tolist(),'determinant':det,
+        xy=traced('volume.point_copy',lambda:list(mip.point),enabled=diagnostic)
+        record['volume']={'point':xy,'jacobian':jac.tolist(),'determinant':det,
                           'weight':float(ip.weight*mip.measure)}
         break
     directions={'inlet':[-1.,0.],'outlet':[1.,0.],'wall_top':[0.,1.],'wall_bottom':[0.,-1.]}
-    for el in mesh.Elements(ng.BND):
+    for element_index,el in enumerate(mesh.Elements(ng.BND)):
         label=el.mat
-        for ip in ng.IntegrationRule(el.type,sample_order):
-            mip=mesh.GetTrafo(el)(ip)
-            nn=np.asarray(normal(mip),dtype=float)
-            xy=np.asarray(mip.point,dtype=float)
+        call=f'boundary[{element_index}]'
+        ir=traced(call+'.rule',ng.IntegrationRule,el.type,sample_order,enabled=diagnostic)
+        tr=traced(call+'.transformation',mesh.GetTrafo,el,enabled=diagnostic)
+        for point_index,ip in enumerate(ir):
+            point_call=call+f'.point[{point_index}]'
+            mip=traced(point_call+'.mapped_point',tr,ip,enabled=diagnostic)
+            nn=traced(point_call+'.normal_copy',lambda:np.array(normal(mip),dtype=float,copy=True),enabled=diagnostic)
+            xy=traced(point_call+'.coordinate_copy',lambda:np.array(mip.point,dtype=float,copy=True),enabled=diagnostic)
             if float(ip.weight*mip.measure)<=0:
                 raise ArithmeticError('nonpositive mapped boundary weight')
             if record['boundary'] is None:
@@ -52,22 +72,36 @@ def mapped_probe(mesh, center=None, sample_order=2):
 
 
 def run():
+    marker('ngsolve_and_geometry_import','before')
     import ngsolve as ng
     from netgen.geom2d import SplineGeometry
-    ng.SetNumThreads(16)
-    geo=SplineGeometry()
-    geo.AddRectangle((0,0),(1,1),bcs=('wall_bottom','outlet','wall_top','inlet'))
-    mesh=ng.Mesh(geo.GenerateMesh(maxh=.6));mesh.Curve(3)
-    result=mapped_probe(mesh)
-    V=ng.H1(mesh,order=2,dirichlet='wall_bottom|wall_top|inlet|outlet')
+    marker('ngsolve_and_geometry_import','after')
+    traced('set_threads',ng.SetNumThreads,16)
+    geo=traced('geometry_create',SplineGeometry)
+    traced('geometry_rectangle',geo.AddRectangle,(0,0),(1,1),bcs=('wall_bottom','outlet','wall_top','inlet'))
+    ngmesh=traced('generate_mesh',geo.GenerateMesh,maxh=.6)
+    mesh=traced('mesh_wrapper',ng.Mesh,ngmesh)
+    traced('curve_mesh',mesh.Curve,3)
+    result=mapped_probe(mesh,diagnostic=True)
+    V=traced('scalar_space',ng.H1,mesh,order=2,dirichlet='wall_bottom|wall_top|inlet|outlet')
+    marker('scalar_forms','before')
     u,v=V.TnT();a=ng.BilinearForm(V);a+=(ng.grad(u)*ng.grad(v)+u*v)*ng.dx
     f=ng.LinearForm(V);f+=v*ng.dx
+    marker('scalar_forms','after')
+    marker('task_manager_enter','before')
     with ng.TaskManager():
-        a.Assemble();f.Assemble()
+        marker('task_manager_enter','after')
+        traced('scalar_bilinear_assemble',a.Assemble)
+        traced('scalar_linear_assemble',f.Assemble)
         if not any(V.FreeDofs()):raise AssertionError('tiny factorization has no free DOFs')
-        inv=a.mat.Inverse(V.FreeDofs(),inverse='umfpack')
+        inv=traced('umfpack_factorization',a.mat.Inverse,V.FreeDofs(),inverse='umfpack')
+        marker('umfpack_solve','before')
         solution=f.vec.CreateVector();solution.data=inv*f.vec
+        marker('umfpack_solve','after')
+        marker('scalar_residual','before')
         residual=f.vec.CreateVector();residual.data=a.mat*solution-f.vec
+        marker('scalar_residual','after')
+    marker('task_manager_exit','after')
     free=np.array([bool(x) for x in V.FreeDofs()])
     n=float(np.linalg.norm(residual.FV().NumPy()[free]));d=float(np.linalg.norm(f.vec.FV().NumPy()[free]))
     result['umfpack']={'free_dofs':int(sum(free)),'residual_numerator':n,'residual_denominator':d,'relative_residual':n/d}
@@ -75,20 +109,27 @@ def run():
     # Exercise the same boundary trace + normal + Integrate path as force/balance
     # diagnostics. Wrapping a whole traction containing normal would be wrong:
     # normal is a BND quantity and stays outside BoundaryFromVolumeCF.
-    VV=ng.VectorH1(mesh,order=2)
-    exact_vector=ng.GridFunction(VV)
-    exact_vector.Set(ng.CF((ng.x,ng.y)))
+    VV=traced('vector_space',ng.VectorH1,mesh,order=2)
+    exact_vector=traced('vector_gridfunction',ng.GridFunction,VV)
+    traced('vector_set_identity',exact_vector.Set,ng.CF((ng.x,ng.y)))
+    marker('boundary_derivative_wrappers','before')
     gradient_b=ng.BoundaryFromVolumeCF(ng.Grad(exact_vector))
     divergence_b=ng.BoundaryFromVolumeCF(ng.div(exact_vector))
     normal=ng.specialcf.normal(2)
     identity=ng.Id(2)
+    marker('boundary_derivative_wrappers','after')
     trace_gradient_max=0.;trace_div_max=0.
-    for element in mesh.Elements(ng.BND):
-        tr=mesh.GetTrafo(element)
-        for ip in ng.IntegrationRule(element.type,6):
-            point=tr(ip)
-            trace_gradient_max=max(trace_gradient_max,float(np.linalg.norm(np.asarray(gradient_b(point)).reshape(2,2)-np.eye(2))))
-            trace_div_max=max(trace_div_max,abs(float(divergence_b(point))-2.))
+    for element_index,element in enumerate(mesh.Elements(ng.BND)):
+        call=f'trace[{element_index}]'
+        tr=traced(call+'.transformation',mesh.GetTrafo,element)
+        ir=traced(call+'.rule',ng.IntegrationRule,element.type,6)
+        for point_index,ip in enumerate(ir):
+            point_call=call+f'.point[{point_index}]'
+            point=traced(point_call+'.mapped_point',tr,ip)
+            gradient=traced(point_call+'.gradient_copy',lambda:np.array(gradient_b(point),dtype=float,copy=True).reshape(2,2))
+            divergence=traced(point_call+'.divergence',lambda:float(divergence_b(point)))
+            trace_gradient_max=max(trace_gradient_max,float(np.linalg.norm(gradient-np.eye(2))))
+            trace_div_max=max(trace_div_max,abs(divergence-2.))
     viscosity=.3;pressure=.7
     stresses={'gradient':viscosity*gradient_b-pressure*identity,
               'physical_symmetric':viscosity*(gradient_b+gradient_b.trans)-pressure*identity}
@@ -97,7 +138,8 @@ def run():
     force_checks=[]
     for name,stress in stresses.items():
         for label,direction in directions.items():
-            measured=np.array([float(ng.Integrate((stress*normal)[i],mesh,definedon=mesh.Boundaries(label),order=6)) for i in range(2)])
+            measured=np.array([float(traced(f'{name}.{label}.traction[{i}]',ng.Integrate,
+                (stress*normal)[i],mesh,definedon=mesh.Boundaries(label),order=6)) for i in range(2)])
             expected=expected_scalar[name]*np.asarray(direction)
             force_checks.append({'stress':name,'label':label,'integrated_traction':measured.tolist(),
                                  'expected':expected.tolist(),'absolute_error':float(np.linalg.norm(measured-expected))})
@@ -112,6 +154,7 @@ def run():
 
 
 if __name__=='__main__':
+    faulthandler.enable(all_threads=True)
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);args=ap.parse_args()
     target=Path(args.out)
     if target.exists():raise FileExistsError('preflight output exists')

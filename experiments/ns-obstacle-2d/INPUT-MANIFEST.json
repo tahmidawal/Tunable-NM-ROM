@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "preflight.py",
-      "sha256": "040b2f6007e196666a5e344af2c7d057e31d8daa346ee43b8045ec30ed40737d",
-      "bytes": 6866
+      "sha256": "847e630c0be61316eb4590e0faff2f0eb58db749f041ff22a05a83700defe302",
+      "bytes": 9617
     },
     {
       "path": "benchmark.json",
@@ -13,8 +13,8 @@
     },
     {
       "path": "fom.py",
-      "sha256": "6e5c4dd4a804436c800ca2c83ad8d12037bcf5ce8ac69867974dccfd1046dc33",
-      "bytes": 31299
+      "sha256": "2dafac1358c471fdf33b11531175437491f4edc905aed6a5cfdd4584802cf026",
+      "bytes": 31592
     },
     {
       "path": "dependencies.py",
@@ -38,8 +38,13 @@
     },
     {
       "path": "REPAIR.json",
-      "sha256": "c6b8e992988d0a4817166e0be14d4f015940ef4586ffadca74452e44682a231e",
+      "sha256": "61fd77818191f48d3908b969553f06a349bfd4391246c546c9c2ca97c37bdcd9",
       "bytes": 924
+    },
+    {
+      "path": "PREFLIGHT-REPAIR.json",
+      "sha256": "2fc801ca6941b192e1a517d3a5cf9a9236532783bab098bb093413b8b5e3d0f4",
+      "bytes": 1432
     },
     {
       "path": "campaign-A2.json",
@@ -48,8 +53,8 @@
     },
     {
       "path": "cluster/smoke.sh",
-      "sha256": "9aeb6dd31badfbe8d764d4759fecf3789314b0267b2c68f82eccabdb692f2e07",
-      "bytes": 3568
+      "sha256": "887dc745eab18626e7438c04c1d789853c1cfcdb8ea36c05294d6be5893894d7",
+      "bytes": 3615
     },
     {
       "path": "configs/channel-smoke.json",
@@ -67,7 +72,7 @@
       "bytes": 1148
     }
   ],
-  "source_parent_when_manifest_generated": "d6011073349f4366869baf8e1f7e84e2bdfa56b8",
+  "source_parent_when_manifest_generated": "01300486ce5fe775b481616eb1b848a052631b08",
   "execution_source_commit_binding": "SOURCE_COMMIT.txt is created from exact source commit at staging and separately recorded in staging manifest",
   "command": "sbatch --gres=gpu:h200:1 --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
   "allocation": {

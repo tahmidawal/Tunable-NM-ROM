@@ -254,9 +254,11 @@ def run_case(cfg, out):
     checks=[]
     for h in cfg['jacobian_steps']:
         arr(g.vec)[:] = perturbed+h*direction
-        plus = (arr(residual())/row_scale)[free].copy()
+        plus_residual = residual()  # Own the native vector while its NumPy view is used.
+        plus = (arr(plus_residual)/row_scale)[free].copy()
         arr(g.vec)[:] = perturbed-h*direction
-        minus = (arr(residual())/row_scale)[free].copy()
+        minus_residual = residual()
+        minus = (arr(minus_residual)/row_scale)[free].copy()
         fd=(plus-minus)/(2*h)
         checks.append({'h':h,'agreement':metric(np.linalg.norm(fd-jv),max(np.linalg.norm(jv),1e-30),
                                               'centered difference versus assembled Jacobian action'),
@@ -293,14 +295,15 @@ def run_case(cfg, out):
         tr=mesh.GetTrafo(el)
         for ip in ir:
             mip=tr(ip)
-            jac=np.asarray(mip.jacobi)
+            jac=np.array(mip.jacobi,dtype=float,copy=True)
             determinant=float(np.linalg.det(jac))
             min_det=min(min_det,determinant)
             w=float(ip.weight*mip.measure)
             if w<=0 or determinant<=0:
                 raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
             points.append(list(mip.point));weights.append(w)
-            vals.append(list(uh(mip)));grads.append(np.asarray(grad(uh)(mip)).reshape(2,2));pressures.append(float(ph(mip)))
+            # Persist an owning gradient array, never a possible native view.
+            vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(float(ph(mip)))
     # A VectorH1 volume derivative is not a BND differential operator.
     # Trace only the field derivative; retain normals on the boundary transform.
     gradient_on_boundary=ng.BoundaryFromVolumeCF(grad(uh))
@@ -311,7 +314,7 @@ def run_case(cfg, out):
         label=el.mat
         for ip in ir:
             mip=tr(ip)
-            uv=np.asarray(uh(mip)); xy=np.array(mip.point)
+            uv=np.array(uh(mip),dtype=float,copy=True); xy=np.array(mip.point,dtype=float,copy=True)
             bv=np.asarray(boundary_u(mip)) if (kind=='manufactured' or label=='inlet') else np.zeros(2)
             if label!='outlet':
                 trace_max=max(trace_max,float(np.linalg.norm(uv-bv)))

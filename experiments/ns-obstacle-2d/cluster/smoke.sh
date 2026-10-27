@@ -13,6 +13,7 @@ JOB_DIR=$(pwd -P)
 case "$JOB_DIR" in /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/*) ;; *) exit 64;; esac
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_DEFAULT_MATMUL_PRECISION=highest JAX_ENABLE_X64=true
+export PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=16 OPENBLAS_NUM_THREADS=16 MKL_NUM_THREADS=16
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export TMPDIR="$JOB_DIR/tmp" XDG_CACHE_HOME="$JOB_DIR/cache"

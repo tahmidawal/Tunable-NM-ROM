@@ -1,0 +1,26 @@
+{
+  "scope": "static checks only, no NGSolve execution",
+  "ownership_call_chain_scan": {
+    "preflight.py": {
+      "temporary_GetTrafo_call_chains": [],
+      "syntax": "pass"
+    },
+    "fom.py": {
+      "temporary_GetTrafo_call_chains": [],
+      "syntax": "pass"
+    }
+  },
+  "unchanged_scientific_configs_and_installer": [
+    "dependencies.py",
+    "DEPENDENCIES.json",
+    "campaign-A2.json",
+    "benchmark.json",
+    "manufactured_witness.json",
+    "configs/manufactured-smoke.json",
+    "configs/channel-smoke.json",
+    "configs/dfg-smoke.json"
+  ],
+  "shell_syntax": "pass",
+  "scientific_runtime_status": "not run",
+  "native_crash_cause": "original precise call unresolved"
+}

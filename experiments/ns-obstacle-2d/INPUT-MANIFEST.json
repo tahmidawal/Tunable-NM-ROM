@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "preflight.py",
-      "sha256": "fbd27b8fac4fa7b32f9240a0289163283938db14936434a1e03b1420c6c8598c",
-      "bytes": 4393
+      "sha256": "040b2f6007e196666a5e344af2c7d057e31d8daa346ee43b8045ec30ed40737d",
+      "bytes": 6866
     },
     {
       "path": "benchmark.json",
@@ -13,8 +13,8 @@
     },
     {
       "path": "fom.py",
-      "sha256": "6c2aafa850ca0b3ceabd3a98e64706f24c76c09c70d6354c3289529c09a6299a",
-      "bytes": 30687
+      "sha256": "6e5c4dd4a804436c800ca2c83ad8d12037bcf5ce8ac69867974dccfd1046dc33",
+      "bytes": 31299
     },
     {
       "path": "dependencies.py",
@@ -62,7 +62,7 @@
       "bytes": 1148
     }
   ],
-  "source_parent_when_manifest_generated": "5d969926de28310c8ef4e4699c8c81e928015c80",
+  "source_parent_when_manifest_generated": "9fb7abc53c64e967d7b16f34a2f09695b9401c9f",
   "execution_source_commit_binding": "SOURCE_COMMIT.txt is created from exact source commit at staging and separately recorded in staging manifest",
   "command": "sbatch --gres=gpu:h200:1 --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
   "allocation": {

@@ -72,6 +72,41 @@ def run():
     n=float(np.linalg.norm(residual.FV().NumPy()[free]));d=float(np.linalg.norm(f.vec.FV().NumPy()[free]))
     result['umfpack']={'free_dofs':int(sum(free)),'residual_numerator':n,'residual_denominator':d,'relative_residual':n/d}
     if n/d>1e-10:raise ArithmeticError('tiny UMFPACK residual failure')
+    # Exercise the same boundary trace + normal + Integrate path as force/balance
+    # diagnostics. Wrapping a whole traction containing normal would be wrong:
+    # normal is a BND quantity and stays outside BoundaryFromVolumeCF.
+    VV=ng.VectorH1(mesh,order=2)
+    exact_vector=ng.GridFunction(VV)
+    exact_vector.Set(ng.CF((ng.x,ng.y)))
+    gradient_b=ng.BoundaryFromVolumeCF(ng.Grad(exact_vector))
+    divergence_b=ng.BoundaryFromVolumeCF(ng.div(exact_vector))
+    normal=ng.specialcf.normal(2)
+    identity=ng.Id(2)
+    trace_gradient_max=0.;trace_div_max=0.
+    for element in mesh.Elements(ng.BND):
+        tr=mesh.GetTrafo(element)
+        for ip in ng.IntegrationRule(element.type,6):
+            point=tr(ip)
+            trace_gradient_max=max(trace_gradient_max,float(np.linalg.norm(np.asarray(gradient_b(point)).reshape(2,2)-np.eye(2))))
+            trace_div_max=max(trace_div_max,abs(float(divergence_b(point))-2.))
+    viscosity=.3;pressure=.7
+    stresses={'gradient':viscosity*gradient_b-pressure*identity,
+              'physical_symmetric':viscosity*(gradient_b+gradient_b.trans)-pressure*identity}
+    expected_scalar={'gradient':viscosity-pressure,'physical_symmetric':2*viscosity-pressure}
+    directions={'inlet':[-1.,0.],'outlet':[1.,0.],'wall_top':[0.,1.],'wall_bottom':[0.,-1.]}
+    force_checks=[]
+    for name,stress in stresses.items():
+        for label,direction in directions.items():
+            measured=np.array([float(ng.Integrate((stress*normal)[i],mesh,definedon=mesh.Boundaries(label),order=6)) for i in range(2)])
+            expected=expected_scalar[name]*np.asarray(direction)
+            force_checks.append({'stress':name,'label':label,'integrated_traction':measured.tolist(),
+                                 'expected':expected.tolist(),'absolute_error':float(np.linalg.norm(measured-expected))})
+    result['boundary_volume_derivative_control']={'velocity':'(x,y)','expected_gradient':'identity','expected_divergence':2.,
+       'sampled_gradient_max_error':trace_gradient_max,'sampled_divergence_max_error':trace_div_max,
+       'stress_integral_checks':force_checks,
+       'operator':'BoundaryFromVolumeCF(Grad or div of GridFunction), then BND normal'}
+    if trace_gradient_max>1e-10 or trace_div_max>1e-10 or max(row['absolute_error'] for row in force_checks)>1e-10:
+        raise ArithmeticError('volume-derivative boundary trace or known stress integral failed: '+str(result['boundary_volume_derivative_control']))
     result['passed']=True
     return result
 

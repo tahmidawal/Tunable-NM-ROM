@@ -25,3 +25,21 @@ The independent Claude consultation re-derived the core mixed weak form, force s
 Checks performed without NGSolve execution: Python syntax, shell syntax, symbolic witness equality, and the missing-case summary path. No packages installed and no numerical allocation submitted.
 
 The job name now starts with `ctol_` so the existing explicit-ID cancellation helper can validate it if cancellation becomes necessary. No alternate cancellation policy is introduced. The first smoke's exact submission command specifies `--gres=gpu:h200:1`, subject to the coordinator checking current availability; this is recorded in the manifest. The hard twenty-minute limit, CPU FE interpretation, and total allocation accounting are unchanged.
+
+## Boundary differential-operator audit miss — readiness retracted before execution
+
+An additional independent physics review identified a concrete missed API issue in the approved candidate before any job was submitted. Plain `Integrate(..., definedon=mesh.Boundaries(...))` selects boundary transformations in pinned NGSolve 6.2.2608. VectorH1 volume `Grad(uh)` and `div(uh)` cannot be assumed to evaluate there as the desired volume derivatives; the old diagnostics could fail or evaluate an inappropriate trace. Earlier readiness for those diagnostics is retracted. No numerical result existed, so no measured result is retracted.
+
+Primary implementation evidence inspected:
+
+- [Pinned Integrate region handling](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/python_comp.cpp#L3714), especially selection of `vb` from a boundary region.
+- [Pinned GridFunction derivative dispatch](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/gridfunction.cpp#L1731), selecting only a differential operator supporting the transformation's region type.
+- [Pinned BoundaryFromVolumeCF binding and documentation](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/python_comp_mesh.cpp), explicitly documenting adjacent-volume evaluation for boundary mechanical stresses.
+- [Pinned wrapper implementation](https://github.com/NGSolve/ngsolve/blob/v6.2.2608/comp/meshaccess.cpp), mapping boundary points into the associated volume element.
+- [NGSolve developer clarification](https://forum.ngsolve.org/t/exterior-trace-on-an-internal-material-interface-using-dx-skeleton-true/3879), applying this wrapper to GridFunctions/coefficient functions, not symbolic trial/test functions.
+
+The repair applies `BoundaryFromVolumeCF` to the **GridFunction gradient and divergence only**, before building stress or multiplying by boundary normals. It fixes every surface-force, wall-shear, boundary-work and finite-divergence boundary term; volume weak forms and all thresholds are unchanged. Native H1 pressure/velocity boundary traces are retained. Boundary gradient arrays are now saved with the boundary rule, enabling later independent surface-force reconstruction.
+
+The preflight now sets a tiny VectorH1 field exactly to $u=(x,y)$, checks its traced identity gradient and constant divergence on boundary quadrature, and integrates known gradient/symmetric-stress tractions independently on each side. This exercises the actual derivative-wrapper/normal/integration path before flow solves. It is not a substitute for the physical/MMS checks. These checks are implemented and syntax-checked, not yet executed with NGSolve.
+
+Both staged attempts remain untouched. `g1-smoke02` is explicitly held; a new `g1-smoke03` may be staged only after focused diff review. No dependency installation, numerical job, equation change, or tolerance relaxation occurred.

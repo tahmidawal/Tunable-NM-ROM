@@ -301,6 +301,9 @@ def run_case(cfg, out):
                 raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
             points.append(list(mip.point));weights.append(w)
             vals.append(list(uh(mip)));grads.append(np.asarray(grad(uh)(mip)).reshape(2,2));pressures.append(float(ph(mip)))
+    # A VectorH1 volume derivative is not a BND differential operator.
+    # Trace only the field derivative; retain normals on the boundary transform.
+    gradient_on_boundary=ng.BoundaryFromVolumeCF(grad(uh))
     trace_max=0.0; obstacle_distance_max=0.0; obstacle_normal_dot=[]
     for el in mesh.Elements(ng.BND):
         ir=ng.IntegrationRule(el.type,qo)
@@ -319,7 +322,8 @@ def run_case(cfg, out):
                 obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))
                 obstacle_distance_max=max(obstacle_distance_max,abs(np.linalg.norm(xy-np.array(cfg['center']))-cfg['radius']))
             boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),
-                               'label':label,'velocity':uv.tolist(),'pressure':float(ph(mip))})
+                               'label':label,'velocity':uv.tolist(),'pressure':float(ph(mip)),
+                               'velocity_gradient':np.asarray(gradient_on_boundary(mip)).reshape(2,2).tolist()})
     geometry['minimum_sampled_jacobian_determinant']=min_det
     geometry['max_sampled_obstacle_distance']=obstacle_distance_max
     geometry['mapped_weight_sum']=sum(weights)
@@ -334,8 +338,9 @@ def run_case(cfg, out):
     g.Save(str(out/'solution.sol'))
     # Gradient-form and symmetric-stress diagnostics both keep nonzero boundary work.
     gu=grad(uh); div=ng.div(uh)
-    tau=nu*gu-ph*I
-    sigma=nu*(gu+gu.trans)-ph*I
+    div_boundary=ng.BoundaryFromVolumeCF(div)
+    tau_boundary=nu*gradient_on_boundary-ph*I
+    sigma_boundary=nu*(gradient_on_boundary+gradient_on_boundary.trans)-ph*I
     qin=-integ(uh*normal,'inlet');qout=integ(uh*normal,'outlet')
     metrics={'mass':metric(abs(qout-qin),max(abs(qin),1e-30),'abs(Qout-Qin)/abs(Qin)'),
              'divergence':metric(D*math.sqrt(max(integ(div*div),0)),U*math.sqrt(volume),'D||div u||/(U sqrt(volume))'),
@@ -357,62 +362,62 @@ def run_case(cfg, out):
     eps=ng.Sym(gu)
     terms={'dissipation':2*nu*integ(ng.InnerProduct(eps,eps)),
            'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),
-           'physical_traction_work':-sum(integ(uh*(sigma*normal),b) for b in boundary_measures),
+           'physical_traction_work':-sum(integ(uh*(sigma_boundary*normal),b) for b in boundary_measures),
            'body_force_work':-integ(force*uh),
            'finite_divergence_convection':-.5*integ((uh*uh)*div),
            'finite_divergence_pressure':-integ(ph*div),
            # Δu formulation differs from div(2ε) by grad(div u).
-           'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}
+           'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}
     energy_floor=1e-12*U**3*D
     physical_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}
-    physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma*normal),b) for b in boundary_measures})
+    physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma_boundary*normal),b) for b in boundary_measures})
     physical_parts.update({k:z for k,z in terms.items() if k not in ('convection_boundary','physical_traction_work','finite_divergence_viscous')})
     if cfg['outlet']=='gradient':
         physical_parts['finite_divergence_viscous_volume']=-nu*integ(div*div)
-        physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div*(uh*normal),b) for b in boundary_measures})
+        physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})
     denominator_energy=max(sum(abs(z) for z in physical_parts.values()),energy_floor)
     metrics['energy']={'terms':terms,'individual_contributions':physical_parts,'physical_raw':metric(abs(sum(terms[k] for k in ('dissipation','convection_boundary','physical_traction_work','body_force_work'))),denominator_energy,'raw physical balance / sum absolute terms'),
                        'corrected':metric(abs(sum(terms.values())),denominator_energy,'finite-divergence-corrected physical balance / sum absolute terms')}
     gt={'dissipation':nu*integ(ng.InnerProduct(gu,gu)),
         'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),
-        'gradient_traction_work':-sum(integ(uh*(tau*normal),b) for b in boundary_measures),
+        'gradient_traction_work':-sum(integ(uh*(tau_boundary*normal),b) for b in boundary_measures),
         'body_force_work':-integ(force*uh),
         'finite_divergence_convection':-.5*integ((uh*uh)*div),
         'finite_divergence_pressure':-integ(ph*div)}
     if cfg['outlet']=='symmetric':
-        gt['symmetric_pde_adjustment']=nu*integ(div*div)-sum(nu*integ(div*(uh*normal),b) for b in boundary_measures)
+        gt['symmetric_pde_adjustment']=nu*integ(div*div)-sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)
     gradient_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}
-    gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau*normal),b) for b in boundary_measures})
+    gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau_boundary*normal),b) for b in boundary_measures})
     gradient_parts.update({k:z for k,z in gt.items() if k not in ('convection_boundary','gradient_traction_work','symmetric_pde_adjustment')})
     if cfg['outlet']=='symmetric':
         gradient_parts['symmetric_div_volume']=nu*integ(div*div)
-        gradient_parts.update({f'symmetric_div_{b}':-nu*integ(div*(uh*normal),b) for b in boundary_measures})
+        gradient_parts.update({f'symmetric_div_{b}':-nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})
     metrics['gradient_energy']={'terms':gt,'individual_contributions':gradient_parts,'corrected':metric(abs(sum(gt.values())),max(sum(abs(z) for z in gradient_parts.values()),energy_floor),'A2 gradient-form energy including body forcing and finite divergence')}
     gm=[]
     for i in range(2):
         terms_m={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),
-                 'gradient_traction':-sum(integ((tau*normal)[i],b) for b in boundary_measures),
+                 'gradient_traction':-sum(integ((tau_boundary*normal)[i],b) for b in boundary_measures),
                  'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div)}
         if cfg['outlet']=='symmetric':
-            terms_m['symmetric_pde_adjustment']=-sum(nu*integ(div*normal[i],b) for b in boundary_measures)
+            terms_m['symmetric_pde_adjustment']=-sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures)
         pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}
-        pieces.update({f'gradient_traction_{b}':-integ((tau*normal)[i],b) for b in boundary_measures})
+        pieces.update({f'gradient_traction_{b}':-integ((tau_boundary*normal)[i],b) for b in boundary_measures})
         pieces.update({k:z for k,z in terms_m.items() if k not in ('convection','gradient_traction','symmetric_pde_adjustment')})
         if cfg['outlet']=='symmetric':
-            pieces.update({f'symmetric_div_{b}':-nu*integ(div*normal[i],b) for b in boundary_measures})
+            pieces.update({f'symmetric_div_{b}':-nu*integ(div_boundary*normal[i],b) for b in boundary_measures})
         gm.append({'terms':terms_m,'individual_contributions':pieces,'corrected':metric(abs(sum(terms_m.values())),max(sum(abs(z) for z in pieces.values()),1e-12*U**2*D),'A2 gradient-form momentum including body forcing and finite divergence')})
     metrics['gradient_momentum']=gm
     momentum=[]
     for i in range(2):
         mt={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),
-            'physical_traction':-sum(integ((sigma*normal)[i],b) for b in boundary_measures),
+            'physical_traction':-sum(integ((sigma_boundary*normal)[i],b) for b in boundary_measures),
             'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div),
-            'finite_divergence_viscous':sum(nu*integ(div*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}
+            'finite_divergence_viscous':sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}
         pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}
-        pieces.update({f'physical_traction_{b}':-integ((sigma*normal)[i],b) for b in boundary_measures})
+        pieces.update({f'physical_traction_{b}':-integ((sigma_boundary*normal)[i],b) for b in boundary_measures})
         pieces.update({k:z for k,z in mt.items() if k not in ('convection','physical_traction','finite_divergence_viscous')})
         if cfg['outlet']=='gradient':
-            pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div*normal[i],b) for b in boundary_measures})
+            pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*normal[i],b) for b in boundary_measures})
         momentum.append({'terms':mt,'individual_contributions':pieces,'corrected':metric(abs(sum(mt.values())),max(sum(abs(z) for z in pieces.values()),1e-12*U**2*D),'physical momentum corrected for discrete divergence')})
     metrics['momentum']=momentum
     if exact_u is not None:
@@ -437,7 +442,7 @@ def run_case(cfg, out):
         forces['normalization']=norm
         forces['reaction_force']=reaction
         forces['reaction_coefficient']=[z/norm for z in reaction]
-        for stress_name,stress in [('gradient',tau),('physical_symmetric',sigma)]:
+        for stress_name,stress in [('gradient',tau_boundary),('physical_symmetric',sigma_boundary)]:
             for order in [qo,qo+4]:
                 ff=[-integ((stress*normal)[i],'obstacle',order) for i in range(2)]
                 forces[f'{stress_name}_order{order}']={'force':ff,'coefficient':[z/norm for z in ff]}
@@ -470,7 +475,7 @@ def run_case(cfg, out):
             forces['reaction_analytic_error']=metric(np.linalg.norm(np.asarray(reaction)-np.asarray(witness['obstacle_force']['gradient'])),U**2*D,'reaction force minus analytic gradient force / U²D')
         metrics['forces']=forces
     if kind=='channel':
-        wall_force=[-integ((sigma*normal)[i],'wall.*') for i in range(2)]
+        wall_force=[-integ((sigma_boundary*normal)[i],'wall.*') for i in range(2)]
         expected_wall=12*nu*U*L/H
         metrics['wall_shear_sign_control']={'force_on_both_walls':wall_force,'analytic_axial_force':expected_wall,
              'axial_error':metric(abs(wall_force[0]-expected_wall),abs(expected_wall),'force on both walls versus positive analytic Poiseuille drag')}

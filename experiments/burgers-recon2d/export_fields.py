@@ -40,6 +40,8 @@ def main():
         if row['case']!=0 or (row['L'],row['source'],row['method']) not in selected:continue
         if row['status']!='complete':records.append(dict(record=row['record'],status='failed_original',reason=row.get('reason')));continue
         result=replay(root,row['record'],dest/f"L{row['L']}_{row['source']}_{row['method']}.npz");records.append(result)
-    (dest/'index.json').write_text(json.dumps(dict(records=records,all_completed_replays_match=all(r.get('all_hashes_match',True) for r in records)),indent=2)+'\n')
-    print(json.dumps(dict(replayed=len(records),all_completed_replays_match=all(r.get('all_hashes_match',True) for r in records))))
+    audit=dict(records=records,completed_replays=sum('all_hashes_match' in r for r in records),failed_original=sum(r.get('status')=='failed_original' for r in records),all_completed_replays_match=all(r.get('all_hashes_match',True) for r in records))
+    (dest/'index.json').write_text(json.dumps(audit,indent=2)+'\n')
+    print(json.dumps({k:v for k,v in audit.items() if k!='records'}))
+    if not audit['all_completed_replays_match']:raise RuntimeError('saved coefficient replay does not match timed field hashes')
 if __name__=='__main__':main()

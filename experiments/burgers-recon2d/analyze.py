@@ -21,7 +21,7 @@ def analyze(run,prep):
             for t in record['timing']:
                 for rep in t['repetitions']:
                     host.append(rep['host_query_seconds']); device.append(rep['device_query_seconds']); fit.append(rep['fit_seconds']); decode.append(rep['decode_seconds']); transfer.append(rep['input_seconds']+rep['output_seconds'])
-        aggregates.append(dict(L=L,source=source,method=method,group=rows[0]['group'],cases=len(rows),failed=len(rows)-len(valid),coarse_inputs_unqualified=sum(not r['coarse_input_admitted'] for r in rows),error_max_over_evolved_times=stats(r['error_max'] for r in valid),steady_warm_single_field_seconds=dict(host=stats(host),device=stats(device),fit=stats(fit),decode=stats(decode),transfer=stats(transfer))))
+        aggregates.append(dict(L=L,source=source,method=method,group=rows[0]['group'],cases=len(rows),failed=len(rows)-len(valid),supplied_inputs_unqualified=sum(not r['input_admitted'] for r in rows),error_max_over_evolved_times=stats(r['error_max'] for r in valid),steady_warm_single_field_seconds=dict(host=stats(host),device=stats(device),fit=stats(fit),decode=stats(decode),transfer=stats(transfer))))
     paired=[]
     for choice in frozen['choices']:
         L=choice['L']; source=choice['source']; group=choice['group']; pick=choice['selected']
@@ -33,7 +33,7 @@ def analyze(run,prep):
             y=b[case]
             if x['status']!='complete' or y['status']!='complete': pairs.append(dict(case=case,status='failed')); continue
             delta=y['error_max']-x['error_max']; margin=2*x['ref_eps'] if source=='B' else 0.
-            pairs.append(dict(case=case,status='complete',method_error=x['error_max'],baseline_error=y['error_max'],gain=y['error_max']/x['error_max'] if x['error_max']>0 else None,relative_degradation=x['error_max']/y['error_max'] if y['error_max']>0 else None,improvement=delta,reference_comparison_margin=margin,resolved_improvement=bool(delta>margin),coarse_input_admitted=x['coarse_input_admitted']))
+            pairs.append(dict(case=case,status='complete',method_error=x['error_max'],baseline_error=y['error_max'],gain=y['error_max']/x['error_max'] if x['error_max']>0 else None,relative_degradation=x['error_max']/y['error_max'] if y['error_max']>0 else None,improvement=delta,reference_comparison_margin=margin,resolved_improvement=bool(delta>margin),input_admitted=x['input_admitted']))
         ok=[x for x in pairs if x['status']=='complete']
         paired.append(dict(L=L,source=source,group=group,method=pick['method'],baseline=base['method'],gain=stats(x['gain'] for x in ok),worst_relative_degradation=max((x['relative_degradation'] for x in ok),default=None),wins20pct=sum(x['gain'] is not None and x['gain']>=1.25 for x in ok),losses10pct=sum(x['relative_degradation'] is not None and x['relative_degradation']>1.1 for x in ok),resolved_improvements=sum(x['resolved_improvement'] for x in ok),cases=pairs))
     qualification=[]

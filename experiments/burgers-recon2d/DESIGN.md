@@ -1,6 +1,6 @@
 # Burgers 2D reconstruction screen: lane contract
 
-Status: implementation in preparation; no numerical release yet. The coordinator's frozen design governs cross-dimensional methods and selection. This lane implements only reconstruction inputs and independent coefficient fits, with no reduced rollout or fine PDE correction.
+Status: preparation completed and independently reviewed; the bounded input supplement is queued. Reconstruction requires an exact staged job release. The coordinator's frozen design governs cross-dimensional methods and selection. This lane implements only reconstruction inputs and independent coefficient fits, with no reduced rollout or fine PDE correction.
 
 ## Frozen evidence and data
 
@@ -42,3 +42,9 @@ No numeric job is submitted until the coordinator's independent design/code/exac
 ## A1: one extra input-qualification rung before reconstruction outcomes
 
 Initial preparation reveals coarse-CNR inputs that miss the unchanged temporal gap threshold at the last registered time step. Before any reconstruction outcome is computed, permit exactly one extra rung, $\Delta t=0.00015625$, on those failed-admission cases only. Increase the runtime stage-record capacity to 2000 without editing the vendored PDE equations. Retain all original levels and metadata; supplement writes a separate directory. No threshold relaxation, additional rung, or dropping failed cases. Any remaining failures are descriptive inputs without a qualified spatial-error interpretation. This amendment requires the same independent exact-code/job review.
+
+## Timing and input qualification clarification
+
+Each method/case/input-source timing block consists of five independent single-field requests, one per evolved physical time, each with three repetitions. A sustained GPU burn precedes the case and a further burn precedes each method block. No host reference scoring or persistence occurs between the five requests; all returned fields are scored afterward. Report steady-warm single-field latency, not batched throughput.
+
+Source A is an admissible restriction of the stored fine field regardless of the actual source-B coarse solver's temporal qualification. Keep that separate source-B flag for audit. All cases remain in the descriptive screen; only the admitted source-B subset supports the qualified coarse-spatial-input reading. Source-A sensitivity reports both reconstructed-output change and error-vector change across stored reference levels. Physical comparisons must consider this sensitivity, not the reference tolerance alone.

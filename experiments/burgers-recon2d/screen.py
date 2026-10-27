@@ -88,7 +88,7 @@ def run_case(plan,ys,levels,meta,idx,out,source,cohort,case,L):
             alt_y=levels[li][:,idx]
             f,c=C.ready(plan.query(jnp.asarray(alt_y[1:]))); f=C.host(f); c=C.host(c)
             if not (np.isfinite(f).all() and np.isfinite(c).all()): raise FloatingPointError('nonfinite reference-level sensitivity')
-            alternatives.append(dict(reference_level=li,output_change_vs_primary=(np.linalg.norm(f-primary,axis=1)/n0).tolist(),error_against_own_reference=(np.linalg.norm(f-levels[li,1:],axis=1)/n0).tolist(),input_change_physical=(np.linalg.norm(alt_y[1:]-ys[1:],axis=1)/(n0*L/A.LF)).tolist(),field_sha256=A.sha_array(f)))
+            alternatives.append(dict(reference_level=li,output_change_vs_primary=(np.linalg.norm(f-primary,axis=1)/n0).tolist(),error_against_own_reference=(np.linalg.norm(f-levels[li,1:],axis=1)/n0).tolist(),error_vector_change=(np.linalg.norm((f-levels[li,1:])-(primary-ref[1:]),axis=1)/n0).tolist(),input_change_physical=(np.linalg.norm(alt_y[1:]-ys[1:],axis=1)/(n0*L/A.LF)).tolist(),field_sha256=A.sha_array(f)))
             alt_coefs.append(c)
     else:
         alt_y=meta['_penultimate']
@@ -99,13 +99,13 @@ def run_case(plan,ys,levels,meta,idx,out,source,cohort,case,L):
     target=out/f'cases/{cohort}/L{L}/{source}'; target.mkdir(parents=True,exist_ok=True)
     stem=target/f'c{case:03d}_{plan.name}'
     coefhash=arrsave(stem.with_suffix('.npz'),coefficient_repetitions=np.stack(coefficients),initial_coefficients=c0,alternative_coefficients=np.stack(alt_coefs))
-    record=dict(status='complete',cohort=cohort,case=case,L=L,source=source,method=plan.name,group=plan.metadata['group'],rank=plan.metadata['rank'],ridge=plan.metadata.get('ridge'),strict_coarse_control=plan.metadata.get('strict_coarse_control',False),error_t=score,error_max=max(score),ref_eps=meta['ref_eps'],n0=n0,coarse_input_admitted=meta['accepted'],input_sha256=A.sha_array(ys),reference_sha256=A.sha_array(ref),timing=timing,initial=initial,sensitivity=alternatives,coefficient_file=str(stem.with_suffix('.npz').relative_to(out)),coefficient_file_sha256=coefhash,plan_arrays_file=plan.metadata['array_file'],plan_arrays_sha256=plan.metadata['array_sha256'],geometry_file=plan.metadata.get('geometry_file'),geometry_sha256=plan.metadata.get('geometry_sha256'),output_field_hashes=[v['repetitions'][-1]['field_sha256'] for v in timing])
+    record=dict(status='complete',cohort=cohort,case=case,L=L,source=source,method=plan.name,group=plan.metadata['group'],rank=plan.metadata['rank'],ridge=plan.metadata.get('ridge'),strict_coarse_control=plan.metadata.get('strict_coarse_control',False),error_t=score,error_max=max(score),ref_eps=meta['ref_eps'],n0=n0,input_admitted=(source=='A' or meta['accepted']),actual_B_input_admitted=meta['accepted'],input_sha256=A.sha_array(ys),reference_sha256=A.sha_array(ref),timing=timing,initial=initial,sensitivity=alternatives,coefficient_file=str(stem.with_suffix('.npz').relative_to(out)),coefficient_file_sha256=coefhash,plan_arrays_file=plan.metadata['array_file'],plan_arrays_sha256=plan.metadata['array_sha256'],geometry_file=plan.metadata.get('geometry_file'),geometry_sha256=plan.metadata.get('geometry_sha256'),output_field_hashes=[v['repetitions'][-1]['field_sha256'] for v in timing])
     A.write_json(stem.with_suffix('.json'),record)
-    return {k:record[k] for k in ['status','cohort','case','L','source','method','group','rank','ridge','strict_coarse_control','error_t','error_max','ref_eps','coarse_input_admitted']}|dict(record=str(stem.with_suffix('.json').relative_to(out)))
+    return {k:record[k] for k in ['status','cohort','case','L','source','method','group','rank','ridge','strict_coarse_control','error_t','error_max','ref_eps','input_admitted','actual_B_input_admitted']}|dict(record=str(stem.with_suffix('.json').relative_to(out)))
 
 def failed_case(metadata,error,out,source,cohort,case,L,case_meta):
     """A failed declared method remains in coverage and cannot enter selection."""
-    rec=dict(status='failed',reason=type(error).__name__+': '+str(error),cohort=cohort,case=case,L=L,source=source,method=metadata['name'],group=metadata['group'],rank=metadata.get('rank'),ridge=metadata.get('ridge'),strict_coarse_control=metadata.get('strict_coarse_control',False),error_t=None,error_max=None,ref_eps=case_meta['ref_eps'],coarse_input_admitted=case_meta['accepted'])
+    rec=dict(status='failed',reason=type(error).__name__+': '+str(error),cohort=cohort,case=case,L=L,source=source,method=metadata['name'],group=metadata['group'],rank=metadata.get('rank'),ridge=metadata.get('ridge'),strict_coarse_control=metadata.get('strict_coarse_control',False),error_t=None,error_max=None,ref_eps=case_meta['ref_eps'],input_admitted=(source=='A' or case_meta['accepted']),actual_B_input_admitted=case_meta['accepted'])
     target=out/f'cases/{cohort}/L{L}/{source}'; target.mkdir(parents=True,exist_ok=True)
     path=target/f"c{case:03d}_{metadata['name']}.json"; A.write_json(path,rec)
     A.log('failed candidate',L,source,cohort,case,metadata['name'],rec['reason'])

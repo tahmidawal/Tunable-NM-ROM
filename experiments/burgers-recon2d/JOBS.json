@@ -55,7 +55,7 @@
       "eligible_for_results": false,
       "reason": "Path.with_suffix collapsed decimal configuration names; raw record/coefficients could overwrite. All scientific conclusions and timing claims from this development attempt are invalidated. No validation launched.",
       "cancellation": "reviewed lane-local guarded helper, exact ID/account/name/dev01 WorkDir only",
-      "collection": "full partial-output checksum collection in progress; never used to freeze selection"
+      "collection": "all retained partial files pulled and checksummed; invalidation note retained; never used to freeze selection"
     },
     {
       "job_id": 6568662,
@@ -67,8 +67,21 @@
       "reservation_seconds": 5400,
       "gpu_request": "h200:1",
       "status_at_submission": "PENDING",
-      "actual_elapsed_seconds": null,
-      "review": "Independent exact source/stage/input and filename-identity audit READY; parent released corrected dev only. Queue checked before/after."
+      "actual_elapsed_seconds": 810,
+      "review": "Independent exact source/stage/input and filename-identity audit READY; parent released corrected dev only. Queue checked before/after.",
+      "status": "COMPLETED",
+      "charged_elapsed_seconds": 810,
+      "exit_code": "0:0",
+      "frozen_sha256": "bb8535dc386c4af19cd75877bcb005ac0165358daedd9f9a4c341b78e632ee88",
+      "export_sha256": "53b71d603488fa874338c4b8782fd3bf09d243ab28efcbf31017b17a5ee15c4c",
+      "artifact_audit": {
+        "declared": 3588,
+        "unique_records": 3588,
+        "coefficient_archives_verified": 3588,
+        "representative_replays": 26,
+        "all_field_hashes_match": true
+      },
+      "collection": "full output collection and checksum verification in progress"
     }
   ]
 }

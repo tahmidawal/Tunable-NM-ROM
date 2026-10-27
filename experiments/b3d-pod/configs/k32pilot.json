@@ -1,0 +1,21 @@
+{
+  "attempt": "k32pilot",
+  "driver": "validate",
+  "arms": ["k32", "none"],
+  "cases": [0,5,30,43],
+  "tighter_cases": [0,5],
+  "timing_cases": [0,5],
+  "timing_reps": 2,
+  "burn_seconds": 0.2,
+  "cohort_seed": 923801,
+  "cohort_count": 64,
+  "rank": 512,
+  "L": 64,
+  "scheme": "BDF2",
+  "dt_numerator": 1,
+  "dt_denominator": 60,
+  "artifact_manifest": "inputs/K32-MANIFEST.json",
+  "wall_hours": 0.15,
+  "budget_hours": 0.13,
+  "scope": "same diagnostic subset; fixed k32 support frozen before validation; not full-population qualification"
+}

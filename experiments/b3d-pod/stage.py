@@ -17,6 +17,11 @@ def main():
     cfg=HERE/'configs'/f'{a.attempt}.json'
     j=json.loads(cfg.read_text())
     assert j['attempt']==a.attempt and a.attempt in ('pilot','validation','fit32','none64','k32pilot','k32val')
+    if 'k32' in j.get('arms',[]):
+        frozen=json.loads((HERE/j['artifact_manifest']).read_text())
+        w=HERE/'inputs/HR~ecsw~512~k32.npz'
+        assert hashlib.sha256(w.read_bytes()).hexdigest()==frozen['files'][w.name]
+        assert frozen['fit_accepted_before_validation'] is True
     d=HERE/'runs'/a.attempt
     assert not d.exists(), 'inspect existing job state; do not overwrite a staged attempt'
     d.mkdir()
@@ -47,6 +52,7 @@ def main():
     minutes=int(round(j['wall_hours']*60));hh,mm=divmod(minutes,60)
     driver='fit.py' if j.get('driver')=='fit' else ('validate.py' if j.get('driver')=='validate' else 'replay.py')
     refenv='unset JCPREF_STORE JCPREF_META' if j.get('driver')=='fit' else 'export JCPREF_STORE=/cluster/tufts/paralab/tawal01/jcp-ref/store'
+    support_copy='cp experiments/b3d-pod/inputs/HR~ecsw~512~k32.npz artifacts/' if 'k32' in j.get('arms',[]) else ''
     # All runtime outputs and caches stay inside this unique job directory.
     sb=f'''#!/usr/bin/env bash
 #SBATCH --job-name=b3dpod_{a.attempt}
@@ -82,6 +88,7 @@ mkdir artifacts
 cp /cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64b/jobdir/output/artifacts/Phi.npz artifacts/
 cp /cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64b/jobdir/output/artifacts/HR~ecsw~512~k8.npz artifacts/
 cp /cluster/tufts/paralab/tawal01/burgers-archive/jcp-hr-baselines/t3d64b/jobdir/output/artifacts/HR~ecsw~512~k16.npz artifacts/
+{support_copy}
 $PY experiments/b3d-pod/{driver} --config experiments/b3d-pod/configs/{a.attempt}.json --artifacts artifacts --out output
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 '''

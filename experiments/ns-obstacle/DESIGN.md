@@ -545,3 +545,82 @@ is permitted. Verify native RECORD files, package import and post-import GPU/f64
 controls. Exact source/config review and fresh checksummed staging precede the single retry.
 All physics, scientific acceptance criteria, populations and resource ceilings are unchanged.
 The original target-install outcome is retained; no flow result existed to reinterpret.
+
+## Amendment A6 — stable FE basis construction before data, 2026-10-27
+
+No reference snapshot, FE-adapter execution or training result has been admitted. Independent
+Claude review of the adapter and Codex adjudication found a known vector-eigenvalue
+multiplicity gap and a conditioning risk in coefficient transport through division by small
+singular values. The original source, conservative rejection checks and synthetic failures
+remain preserved. Earlier narrow source readiness is superseded for adapter execution.
+Neither inevitable failure at a particular singular ratio nor a fixed component ratio for
+all vector eigenmodes is claimed. Physical acceptance criteria and scientific rank cutoffs
+remain unchanged.
+
+**POD construction.** For each field, form training FE coefficient columns $C$ and the
+assembled full-rule mass metric $M$. Use deterministic pivoted mass-metric Gram–Schmidt
+with reorthogonalization, retaining the permutation in $C\Pi=QR$. An SVD of the small
+factor, $R=U_R\Sigma V_R^T$, gives coefficient modes $QU_R$. Avoid transport through
+$CV/\sigma$. QR pivoting is not an additional scientific rank rule: the original independent
+sampled-SVD rank references/cutoffs determine the required modes; inability to construct
+those modes is a hard failure, with no accuracy-tolerance-based column dropping.
+Pressure QR uses spatially centered pressure corrections, retains the original uncentered
+rank reference, and keeps the normalized constant first.
+
+The fixed consistency scales are $S_v=\sigma_{v,1}$ for nonzero velocity corrections and
+$S_p=\max(1,\sigma_{p,1}^{\rm uncentered})$ for pressure. Zero velocity corrections have no
+eligible registered velocity prefix and stop that construction. Zero centered pressure
+returns only the constant and does not divide by its zero leading singular value. With
+these scales, the following numerical checks must pass before modes are used:
+
+- QR backward error $\|C\Pi-QR\|_{M,F}/S\le10^{-10}$, with the actual permutation saved.
+- Metric orthonormality and actual sampled-mode Gram spectral error at most $10^{-10}$.
+- Maximum absolute difference between sampled and small-factor singular values, divided
+  by $S$, at most $10^{-10}$; retain the original sampled rank selection and sufficient
+  QR directions for every required retained mode.
+- At every registered available prefix, each training case's weighted residual norm agrees
+  with the residual of the independent sampled-SVD prefix to $10^{-10}S$. These are
+  per-case consistency comparisons; POD optimality concerns aggregate weighted squared
+  error, not a separate optimal basis for each case. Also save aggregate projection floors.
+
+POD cluster tests use the full singular spectrum before truncation. Normalize by the
+leading nonzero singular value and declare adjacent values clustered when their gap is at
+most $\max(64\epsilon_{64},10^{-10}\max(|s_i|,|s_{i+1}|))$. Reject a cut through a detected
+cluster at the numerical-rank boundary, retained maximum, or eligible registered prefix;
+pressure-tail cut indices are $p_r-1$. No hidden rank reduction selects passing modes.
+For QR and coefficient-orientation pivots, the score is the relevant squared residual/row
+norm. Scores within $64\epsilon_{64}$ times the maximum nonzero score tie; choose the
+smallest frozen snapshot/DOF index. The zero-score case is handled explicitly. This is a
+numerical tie convention, not universal cross-platform uniqueness of eigenvectors.
+
+**Velocity test eigenbank.** Solve the scalar H1 eigenproblem at the velocity polynomial
+order with the same essential boundary set and free outlet. Retain 48 scalar candidates
+plus one look-ahead, then explicitly emit $(\phi_j,0)$ and $(0,\phi_j)$ in that order.
+Verify scalar-to-vector DOF maps, matching diagonal blocks and negligible cross blocks;
+do not assume a coefficient-array split. Block Frobenius discrepancies normalized by a
+nonzero matching diagonal-block norm must be at most $10^{-12}$. Pressure scalar candidate
+count remains 32. Keep the fixed final 64 momentum/16 continuity tests and existing
+supremizer-first/rank rules. The look-ahead label is `gap_checked`; returned residuals and
+gaps do not certify that the scalar solver found every eigenvalue. This construction
+resolves the known component duplication, not every possible scalar multiplicity.
+
+**Independent geometry and interface controls.** Add the nonsymmetric affine velocity
+$u=(y,0)$ (cyclic $u=(y,z,x)$ in 3D), checking full volume and wrapped boundary gradients
+against the explicit analytic matrix at the existing gradient tolerance. On an actual
+curved mesh, use an auxiliary fixture degree sufficient to represent its coordinate map;
+production spaces are unchanged. Check reloaded normals against analytic side/radial
+orientation and normalized normal closure on the obstacle and the union of outer faces,
+not on an individual open inlet/outlet face. Closure alone does not establish sign.
+The normal-closure tolerance is $10^{-10}$ times the corresponding boundary measure.
+
+Every adapter export explicitly declares already-dimensionless coordinates, weights,
+velocities, pressures, lifts and derivatives. Consumers must not apply the physical-to-
+dimensionless conversion again. A future producer may export one validated shared Stokes
+velocity lift and pressure coefficient per viscosity on the immutable common mesh. Reuse
+and pressure scaling are allowed in the tuned FOM query too; one-time construction is
+counted offline for both methods. Vectorized FE evaluation remains an implementation
+optimization requiring ordering/memory/ownership checks, not an assumed measured gain.
+
+The independent policy review permits implementation of A6. Exact source review, admitted
+G2 producer data, curved reload evidence and bounded native runtime controls are still
+required. These checks can reject ill-conditioned inputs; no universal success is promised.

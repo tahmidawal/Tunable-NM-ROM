@@ -1,8 +1,8 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "version": "predata-A4",
-  "status": "not_released_for_numerical_jobs",
-  "design_sha256": "0d9d077f456a2f4963764863cd0c06edccb1dccf0bc0513f4749071042e0e6bf",
+  "version": "predata-A6",
+  "status": "G1_control_only_by_exact_job_ledger_reference_and_training_closed",
+  "design_sha256": "0bd0613e64fc3a67a5b7db5201eee80cf05b704052eebcec11931f2d859f7a9e",
   "fork": {
     "local": "93f399faad67f94ea2b56fe25f13003143e64694",
     "mirror": "5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f"
@@ -218,5 +218,22 @@
       "fixed_probes",
       "integrated_forces"
     ]
+  },
+  "adapter_A6": {
+    "status": "policy_reviewed_implementation_and_runtime_pending",
+    "construction": "pivoted_mass_metric_reorthogonalized_QR_small_R_SVD",
+    "preserve_sampled_rank_rules": true,
+    "numerical_consistency_tolerance": 1e-10,
+    "component_block_relative_tolerance": 1e-12,
+    "scalar_velocity_eigen_candidates": 48,
+    "component_copies": 2,
+    "scalar_pressure_eigen_candidates": 32,
+    "cluster_gap": "max(64*eps64,1e-10*max(abs(adjacent_sigma_over_sigma1)))",
+    "cluster_cut_policy": "reject_declared_cut_without_hidden_rank_reduction",
+    "pivot_score": "squared_residual_or_row_norm",
+    "pivot_tie_relative": 1.4210854715202004e-14,
+    "velocity_scale": "original_sampled_sigma1",
+    "pressure_scale": "max(1,original_uncentered_sampled_sigma1)",
+    "shared_Stokes_lift_allowed_with_validation": true
   }
 }

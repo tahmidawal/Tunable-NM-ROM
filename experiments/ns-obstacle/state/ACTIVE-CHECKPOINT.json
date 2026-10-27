@@ -5,10 +5,10 @@
   ],
   "active_external_consults": [],
   "pending": [
-    "monitor job6567998 without duplicate submission",
-    "G2 producer control preparation only",
-    "3D7a5a6e427 staged and independently hash verified; wait for2D G1",
-    "ROM97847a479 source fixes reviewed; no FE runtime/training admission"
+    "monitor queued job6567998 without duplicate submission",
+    "G2 producer controls in preparation",
+    "A6 adapter implementation plus source/runtime reviews",
+    "3D nonsymmetric gradient candidate review then fresh staging; execution still waits2D G1"
   ],
   "staged_unsubmitted": [
     {
@@ -36,9 +36,8 @@
     "manifest_sha256": "cd84e2b28217b7e699baaf050e25f98666ddfe797b690f1eeb947b77af2e2908"
   },
   "claude_fe_adapter_consultation": {
-    "status": "running",
+    "status": "completed_NEEDS_FIXES_adjudicated_A6_policy",
     "source_commit": "97847a479",
-    "local_exec_session_id": 86296,
     "packet": "../reviews/CLAUDE-FE-ADAPTER-PACKET.txt",
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."

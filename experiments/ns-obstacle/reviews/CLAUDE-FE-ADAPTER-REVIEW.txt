@@ -1,0 +1,96 @@
+# Independent review: FE-to-ROM adapter at 97847a479 (source only)
+
+## Verdict: NEEDS-FIXES
+
+There are two blocking defects. B1 makes the first realistic build very likely to hard-stop with every prefix lost. B2 can silently produce a degenerate momentum test bank. Neither needs a change to scientific tolerances. Nothing here grants reference, runtime or physical admission. No NGSolve execution, reload, eigensolve or G2 data has been observed.
+
+## Checked and consistent (source level)
+
+- **Scales.** For the 2D family, D=0.1, U=0.2 and Re=0.02/ν, so ν̂=ν/(UD)=1/Re.
+  - Weights: w/D² for volume, w/D for boundary.
+  - Fields and gradients: values are divided by U and U². Gradients are D·∇(·/U).
+  - Metric: the assembled `mass` (/D²) and `h1` ((/D²)+∇:∇) equal the dimensionless L2 and H1 forms exactly.
+  - Supremizer right-hand side: ∫ψ div v/D dx equals the dimensionless ∫ψ ∇̂·v dx̂.
+- **Lift pressure.** By linearity of Stokes with fixed Dirichlet data and the natural outlet, p_L=ν·π. Then `lift_p_per_nu`=p_L·D/(Uν), and ν̂·`lift_p_per_nu`=p_L/U². This matches `weak.py` and the subtraction in `_load_coefficients`. The physical constant is retained and no gauge is applied.
+- **Coefficient transport.** `snapshot_combinations`=V/σ, so C·V/σ evaluates to the snapshots ×V/σ, which equals L/√w in exact arithmetic. The pressure path is also consistent: it builds `center_coeff` from the constant coefficient vector, and its evaluation to exactly 1 is checked to 1e-12.
+- **Ranks.** The pressure basis has a constant plus min(7, centred rank) modes, which equals min(r, 1+rank) for r=8. p_r=min(r, count) matches the contract.
+- **Inf-sup reference.** β²=λ_min(L_p⁻¹ B(M+K)⁻¹Bᵀ L_p⁻ᵀ):
+  - It uses the actual evaluated pressure Gram, the same ψ coefficients in B, and essential DOFs removed with the outlet free.
+  - The constant is coupled through outlet flux, as it must be without a gauge.
+- **Boundary conditions.** Tests and supremizers are zero on inlet, walls and obstacle and free on the outlet. The essential-trace zeroing is bounded and recorded. The mixed `.sol` layout and DOF order are checked by the layout digest and field round-trip.
+- **Scalar API and lifetime.**
+  - `strict_scalar` covers weights, measures and scalar values. Vector and gradient tuples are reshaped explicitly.
+  - Transformations are named locals that stay alive inside the generator while each point is consumed, and points, normals and Jacobians are copied.
+  - Probes use `MeshPoint` with no nudging.
+- **Test banks.** Duplicate constants are rejected as intended (pressure column 0 and scalar eigenmode 0). The `cv`/`cq` check compares sampled H1/L2 normalisation against the assembled matrices on the same rule.
+- **Admission order.** The manifest, hashes and G2/training/Re checks run before NGSolve is imported. Validation and G1 inputs are rejected.
+
+## Blocking
+
+**B1: The POD reconstruction gate is inconsistent with the retained rank, so failure is predictable rather than exceptional.**
+
+- **Cause.** The computed SVD satisfies A V̂ = L̂ Σ̂ + E with ‖E‖≈ε σ₁. That makes
+  ‖C V̂_j/σ_j − L̂_j‖ ≈ ε σ₁/σ_j,
+  and FE evaluation of the cancelling coefficients has the same amplification.
+- **Consequence.** The check of 1e-10 on relative error and on the Gram fails once σ_j/σ₁ ≲ 2e-6. The rank cutoff keeps modes down to 1e-12.
+  - For nine smooth steady states at Re 15–25, σ₈/σ₁ is plausibly 1e-7 to 1e-10, or sits at the FOM's Newton-tolerance noise floor.
+  - The pressure path is worse: `center_coeff` subtracts the mean in coefficient space, adding ε·|mean|/σ_j.
+- **Impact.** `verify_reconstructed_modes` runs over all retained modes and raises, so prefixes 2 and 4 are lost because of mode 8. The failure rule is honest, but the first control would spend an allocation to confirm arithmetic that can be predicted now.
+- **Narrow fix (no tolerance change; contract amendment reviewed before any run).** Build the POD in FE coefficient space, using the assembled full-rule mass, which the adapter already treats as equal to the sampled Gram:
+  1. Orthonormalise the snapshot coefficients in M (CGS2, i.e. Gram–Schmidt with one reorthogonalisation pass) to get C = Q_c R.
+  2. Take the SVD R = U Σ Vᵀ.
+  3. Use modes = Q_c U and define the sampled modes as their evaluations.
+- **Gates under the fix.**
+  - Keep the actual-Gram gate ‖G−I‖≤1e-10. Here it measures orthonormality, not 1/σ amplification.
+  - Replace "FE vs. sample-side SVD modes" with two checks: the singular values agree with the sampled SVD to O(ε σ₁) absolute, and the training snapshots project onto the prefix with the stated floor.
+  - Tail directions remain determined only to ε σ₁/gap. That is intrinsic and should be stated.
+- **Do not** instead make prefix eligibility depend on which modes pass. That would be an unreviewed rank change.
+
+**B2: The vector eigenproblem has exact two-fold degeneracy, and single-vector shift-invert Lanczos can return only one copy of each pair without any error.**
+
+- **Cause.** For `VectorH1` with the same Dirichlet set on both components, M and K are a permuted direct sum of two identical scalar matrices, so every eigenvalue is exactly double.
+- **How it fails silently.** The Krylov space from v₀=(a,b) only contains vectors (p(A)a, p(A)b), so in exact arithmetic it finds one direction per pair. ARPACK can converge to 97 distinct eigenvalues that are each a genuine eigenpair. Then:
+  - the residual gates pass,
+  - the cut check at λ₉₆/λ₉₇ passes,
+  - `look_ahead_cluster_complete: True` is recorded,
+  - and every eigenmode has the same component ratio α:β set by the seed. The 64-test bank then spans only (αφ, βφ) beyond the supremizers, so selection succeeds without raising.
+- **Even when both copies are found.** Within a pair, the x DOF and y DOF of the same node have equal row norms, so the `argmax` pivot is decided by roundoff. The claimed rotation invariance does not hold.
+- **Fix.**
+  1. Solve the scalar H1 problem on one component once: the same Dirichlet set, the x-block of `hv`/`mvv`, 48 modes plus look-ahead.
+  2. Emit the vector modes in a declared order, (e_k,0) then (0,e_k) for k ascending.
+  3. Apply the cluster-cut check to scalar λ₄₈/λ₄₉.
+
+  This is deterministic, needs no pivot within pairs, and halves the eigensolve. Update the contract's enumeration text to match.
+
+## Fix before the first control (cheap, no tolerance changes)
+
+1. **Normal orientation is not independently checked.** The round-trip compares against producer normals, which come from the same NGSolve convention. Assert the following on the mapped boundary rule:
+   - fluid normals satisfy n·(x−c) < 0 on `obstacle`,
+   - they point outward on the box sides,
+   - and ∮n ds ≈ 0 over each closed boundary.
+
+   A sign error here flips forces without failing any current check.
+2. **Grad convention.** `weak.py` assumes du[i,j]=∂u_i/∂x_j. The round-trip only compares NGSolve against NGSolve. Add a one-line runtime probe: set (y,0) and require grad[0,1]=1 and grad[1,0]=0.
+3. **POD cluster scale.** `canonicalize_eigenmodes` uses max(1,|λ|), which acts as an absolute 1e-10 for singular values below 1. For POD, pass values scaled by σ₁. Also stop, rather than silently mix, if a registered prefix (2, 4, 8) or the rank truncation cuts a cluster. The current behaviour is deterministic but no longer POD-optimal for that prefix.
+4. **Metadata honesty.** Rename `look_ahead_cluster_complete` to something like `look_ahead_gap_checked`. It does not verify that no eigenvalue was missed (see L1).
+5. **Double-scaling hazard.** The exported `lift_p_per_nu`, lift values and gradients are already dimensionless. Calling `weak.physical_to_dimensionless` on them would scale them twice. State in the manifest units that it must not be applied, or add a guard.
+
+## Limitations and risks (not blocking; record them)
+
+- **L1.** There is no independent eigenvalue count, such as a Sylvester inertia check. ARPACK can miss members of near-degenerate scalar clusters. The off-centre cylinder makes exact symmetry unlikely, but this is unverified. Also, eigenvectors returned by `eigsh` must be M-orthonormal to 1e-10 for `canonicalize_eigenmodes` to accept them. This is a runtime question.
+- **L2.** The 1e-10 gate on equality of the Stokes lift across nine separate saddle-point solves at different ν can stop on LU roundoff, roughly ε·cond. ROM correctness only needs one Dirichlet-consistent lift, since the corrections absorb any difference. Two ways to avoid a false stop:
+  - Preferred: the producer exports one shared lift from a single solve.
+  - Otherwise: accept that a stop here is honest but uninformative.
+- **L3.** `cfg['U'] == .2` uses exact float equality. If the producer derives U as 2/3·0.3, the value is 0.19999999999999998 and the run is rejected. This fails safe.
+- **L4.** Evaluation is a Python loop per point per column, roughly 35M points across load, build and export at the caps. The adapter imposes no wall-time cap. The launcher must, as the contract says. `MapToAllElements` with vectorised CF evaluation would make this much cheaper.
+- **L5.** The DOF pivots use NGSolve hierarchical coefficients and can tie across platforms on roundoff. They are deterministic only for a fixed binary.
+
+## Still unpassed
+
+- Producer exports: `jacobians`, `fe_layout.json`, a real `reload_checks.json` and G2 config/manifest.
+- A real reload and comparison of the curved mesh.
+- Pinned-library behaviour of `mip.measure`, `mip.jacobi`, the COO export and `.sol` loading.
+- Actual SuperLU and `eigsh` runs and memory and time measurements.
+- Reduced inf-sup and Jacobian gates, training, quadrature qualification and end-to-end bank/POD assembly.
+
+After B1 and B2 are fixed, items 1–5 above are added, and the B1 construction amendment has been reviewed, the source would be READY for a bounded first control. That control would still be subject to the launcher's memory and time caps and to the reference lane's G2 admission.

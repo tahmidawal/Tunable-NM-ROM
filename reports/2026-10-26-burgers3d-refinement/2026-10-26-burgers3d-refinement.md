@@ -12,7 +12,7 @@ The problem is scalar viscous Burgers flow on the unit cube with zero boundary v
 The existing initial fields contain smooth Gaussian bumps with varying positions, widths,
 amplitudes and viscosity. The frozen spatial bank represents the field using a short vector
 of coefficients; these comparisons use linear bank prefixes, not a deployed nonlinear head.
-The solver minimises the PDE residual tested against smooth spatial functions.
+The bank solver minimises the PDE residual tested against smooth spatial functions.
 
 The independent controls separate bank width, test-space size, quadrature, nonlinear work
 and time integration. They reuse existing trained banks and valid trajectories. Numerical
@@ -254,15 +254,15 @@ gap stated explicitly. The new comparator lane tests the saved supports against 
 unsampled reduced objective before any qualified comparison.
 
 The earlier spectral result remains evidence against a general bank speed advantage on the
-box. No new speed ratio versus a spectral or finite-difference solver is inferred from these
-different jobs, outputs or populations. A repaired solver must face the same accuracy,
-output and hardware contract, and POD receives the same numerical improvements.
+box. The historical observations above do not supply a new cross-job speed ratio.
+New same-allocation accuracy-matched comparisons, when accepted, appear separately below;
+they use the same output/hardware contract and include the tuned POD policies.
 
 ## New bounded experiment results
 
 ### Solver lane
 
-Audit/status: `diagnostic subset; consult per-job independent audit verdicts`. Scope: validation diagnostics; no new frontier or comparator win claim.
+Audit/status: `frozen campaign in progress; consult actual collection and independent-gate state`. Scope: Accepted diagnostic subsets plus any actual collected full64/mesh data; pending or incomplete data remain unreleased..
 
 | Job | Bank/policy | Case ids | Uncertified steps | Corrections | Median/worst error (%) | Max distance to tight | Raw median query (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -387,23 +387,26 @@ One frozen replay uses the existing k16 support with CN, step 0.01, production t
 
 The common field limit is 0.00025; the additional gradient limit is 0.001, with measured maximum 0.001313833. Full-objective stationarity misses 7/100 steps against fraction limit 0.01. The triangle lower bound subtracts both production-to-tight distances from the observed model-to-model distance; the remaining failing case cannot be explained solely by those production solve tolerances. Scalar E0-error changes are within reference uncertainty on this subset, so this is a consistency failure, not a demonstrated physical-accuracy loss or a bank advantage. The frozen stop rule blocks full-validation HR release; no support was refitted.
 
+An [independent saved-step adjoint supplement](audits/coordinator/POD-A3-ADJOINT-SUPPLEMENT.md) records the explicit stencil check and distinguishes full-metric normalization from target-relative error.
+
 Machine export and hashed raw evidence: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-pod-export.json`. No cross-job speed-up is inferred.
 
 
 ## Completed, failed, deferred and open
 
-- Completed recovery: canonical fork, separate historical populations/references, explicit
-  qualification scopes, source hashes, saved coefficients and timing repetition evidence.
+- Completed recovery: canonical fork, separate historical populations/references, explicit qualification scopes, source hashes, saved coefficients and timing repetitions.
 - Completed analysis: exact historical timed-workload re-scoring and generated scientific plots.
-- Failed historical controls remain visible: under-resolved quadrature, incomplete nonlinear
-  convergence and square test-space controls; post-hoc selections and retracted combined
-  selection claims remain labelled in the source inventory.
-- Numerical diagnostics and any frozen full-validation follow-up retain independent design,
-  code, job and results gates. See lane exports and the job ledger for current completion.
-- Deferred until supported: a qualified full-population repaired frontier, qualified POD
-  hyper-reduction comparison, paired fastest-full-solver comparisons, fixed-mode scaling of
-  a repaired candidate and separate full-field output/offline costs.
-- No bank retraining, sealed-cohort opening or branch merge is implied.
+- Failed historical quadrature, nonlinear and square-system controls remain visible; post-hoc selections and retracted interpretations retain their scope.
+- Pending: whole-validation repaired-policy qualification and same-allocation accuracy-matched POD/full-solver costs.
+- Pending: accepted fixed-mode mesh/output costs and separately labelled operator diagnostics; incomplete resource-limited attempts are not admitted datasets.
+- Open: qualified POD hyper-reduction remains unestablished within the tested supports and policies. The rejected support constructor and improved-policy support failure do not establish a bank advantage.
+- The measured controls do not causally split every spatial, time, projection and weighting effect. Further numerical work requires a separately bounded question.
+- No bank retraining, sealed-cohort opening, out-of-distribution replication or branch merge is implied.
+
+## Allocation resources and retained data
+
+Completed allocations total **1.644167 GPU-hours** against the campaign cap 12. There are 2 ledger-active jobs, with a remaining hard reservation of 4.5 GPU-hours; active elapsed costs are not treated as zero. Allocation accounting includes failed attempts and the rejected support fit, and is distinct from online query cost. The [handoff](HANDOFF.md) lists every job, retained failure and large-array preservation manifest; `data/campaign-ledger.json` retains the full machine ledger.
+
 
 ## Reproduction and provenance
 
@@ -423,7 +426,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - N / L: nodes per mesh axis / intervals per axis, with $L=N-1$.
 - $B_q$, $D_q$, $P_q$: bank values, analytic directional derivatives, and weighted test values at quadrature points.
 - $A_N$, $\Lambda_N$, $c$, $\nu$: mesh test moments, discrete diffusion eigenvalues, reduced coefficients, and viscosity.
-- W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
+- W512k8: the active bank prefix with approximately eight tests per coefficient, including mode-shell completion; the parameter tables give its rank.
 - M2_512: a separately trained frozen bank with its own source hash; it is not a prefix of the W bank.
 - M2 / W1024: short labels for the specific frozen banks identified in the parameter tables; no new bank is trained in this campaign.
 - POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
@@ -440,6 +443,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Descriptor / prepared native: supplied initial-condition parameters and canonical normalization / method-specific precomputed field or sine coefficients. These are distinct input contracts.
 - mf / mesh / held: fixed Gauss input and fixed output / native mesh input and output at that mesh / supplied baseline coefficients held fixed for an untimed operator diagnostic.
 - Device output: fully computed fields resident on the GPU; host transfer, scoring and saving are separate work.
+- GPU-hour: allocated GPU count multiplied by elapsed hours, including failed jobs; it is separate from measured online query cost.
 - Phase: a separately measured part of a query; separate calls are not assumed additive to fused-query cost.
 - Q1: nonlinear-solver validity, stationarity and agreement with tighter solves.
 - Q2: quadrature successor and own-state nonlinear agreement, with the finer rule checked too.
@@ -454,6 +458,11 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Baseline / extra / refresh / trust / strict: original solver / larger correction budget with unchanged slow-refresh trigger / matrix refreshed each step / larger trust radius / tighter internal stopping.
 - POD / ECSW: a standard linear reduced basis / weighted sampling of its residual equations.
 - FOM / PS / FD: a full-state solver / the frozen sine pseudo-spectral solver / finite differences.
+- PS cutoff N: retains sine indices below N in each axis; this identifier is separate from the mesh-study node count.
+- FD CC / Rannacher startup: central-advection finite differences with Crank–Nicolson after initial backward-Euler half steps.
+- ETDRK4 / contour points: an exponential time integrator / quadrature samples used to evaluate its coefficient functions.
+- Newton / linear tolerance and calibrated level: stopping thresholds for the nonlinear and inner linear solves / their frozen tested pair.
+- g_in / gtol / tolf: internal gradient or objective-change stopping targets with method-specific meanings and normalizations; the declared external certificates remain separate.
 - Oversampled sine collocation: evaluate the nonlinear term on a larger grid before projecting it; the inherited PS implementation does not claim exact de-aliasing.
 - Support / active points: integration points whose fitted weights are positive.
 - NNLS / optimality check: fitting nonnegative weights / checking whether a permitted weight change could still improve that fit.
@@ -465,6 +474,7 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - Projection floor: best reference-field fit in the frozen span at a stored time; it does not identify the cause of a trajectory's larger error.
 - Test moment / operator intervention: overlap of a bank function with a test / an explicitly changed equation component with other quantities held fixed.
 - Mode weights: the inherited scaling of weak residual rows; they depend on the time scheme, step size, viscosity and diffusion eigenvalues.
+- Source-normalized matrix change: a matrix difference divided by one plus the comparison matrix's norm; this differs from a relative norm with no added constant.
 - Shared / incremental setup: reused bank or basis preparation / additional preparation for one configuration; neither includes historical training unless stated.
 - Cumulative peak memory: largest device allocation seen anywhere earlier in the job, not a standalone method's memory requirement.
 - Diagnostic subset: selected cases for explaining a failure, not a whole-population performance estimate.

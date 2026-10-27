@@ -22,22 +22,28 @@ def render(doc, reference, table, save):
     assert ref['output_times'] == reference['output_times']
     assert doc['execution']['job_id'] and doc['execution']['gpu'] and doc['execution']['source_commit']
     assert doc['execution']['raw_file_manifest']
+    def check_score(sc, case):
+        target = reference['cohorts']['val64']['cases'][str(case)]
+        assert sc['eligible'] is target['eligible']
+        assert np.isclose(sc['epsilon'], target['eps_ref'], rtol=1e-10, atol=0)
+        assert len(sc['e_t']) == len(ref['output_times']) and np.isfinite(sc['e_t']).all()
+        assert abs(max(sc['e_t'][1:])-sc['e']) <= 1e-12
     for qid, query in doc['queries'].items():
         frozen = doc['frozen_modes'][query['bank']]
         assert (query['r'], query['M'], query['mode_hash']) == (frozen['r'], frozen['M'], frozen['mode_hash'])
         assert sorted(int(c) for c in doc['case_results'][qid]) == sorted(query['cases'])
         assert set(query['cases']) <= set(CASES)
+        for cid, record in doc['case_results'][qid].items():
+            check_score(record['score'], cid)
+            for level, anchor in record.get('anchor_scores', {}).items():
+                assert anchor['level'] == level and anchor['valid'] is True and anchor['output_sha256']
+                check_score(anchor['score'], cid)
     rows = doc['timing_repetitions']
     invocations = {r['invocation_id']: r for r in rows}
     assert len(invocations) == len(rows)
     for row in rows:
         assert row['query'] in doc['queries'] and row['case'] in CASES
-        sc = row['score']
-        target = reference['cohorts']['val64']['cases'][str(row['case'])]
-        assert sc['eligible'] is target['eligible']
-        assert np.isclose(sc['epsilon'], target['eps_ref'], rtol=1e-10, atol=0)
-        assert np.isfinite(sc['e_t']).all() and abs(max(sc['e_t'][1:])-sc['e']) <= 1e-12
-        assert len(sc['e_t']) == len(ref['output_times'])
+        check_score(row['score'], row['case'])
         for mask, field in [('timing_admitted', 'descriptor_seconds'), ('native_timing_admitted', 'given_native_seconds')]:
             assert isinstance(row[mask], bool)
             if row[mask]:
@@ -212,6 +218,51 @@ diffusion bias or pure temporal error from every projection/weighting effect.
     text += ('The bars show conditional numerical-reference intervals, not statistical confidence. '
              'Qualification masks and scope in the table apply to every interpretation; an apparently '
              'lower diagnostic error does not create an admitted production frontier point.\n\n')
+    anchor_rows, anchor_values = [], []
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5), sharey=True)
+    for ax, scheme in zip(axes, ['CN', 'BDF2']):
+        for level, style in [('production', '--'), ('tight', '-'), ('tighter', ':')]:
+            values, epsilons, admitted = [], [], []
+            for intervention in interventions:
+                qid = f'W1024_{scheme}_{intervention}_gl56'
+                query, result = doc['queries'][qid], doc['case_results'][qid]
+                if level == 'production':
+                    own = result['5']['score'];good = query['Q1']['passed'] and query['Q2']['passed']
+                else:
+                    aq = query['anchor_Q2'][level]
+                    assert aq['level'] == level and sorted(aq['case_ids']) == sorted(query['cases'])
+                    assert sorted(v['case'] for v in aq['cases']) == sorted(query['cases'])
+                    own = result['5']['anchor_scores'][level]['score'];good = aq['passed']
+                    e = [v['anchor_scores'][level]['score']['e'] for v in result.values()]
+                    anchor_rows.append([qid, level, str(query['cases']), f'{100*np.median(e):.7g}/{100*max(e):.7g}',
+                        good, peak([v['distance'] for v in aq['cases']]), peak([v['finer_distance'] for v in aq['cases']]),
+                        peak([rho for v in aq['cases'] for rho in v['rho']])])
+                    baseline = doc['case_results'][f'W1024_{scheme}_baseline_gl56']['5']['anchor_scores'][level]['score']
+                    anchor_values.append(dict(scheme=scheme, intervention=intervention, level=level,
+                        cases=query['cases'], case5_error=own['e'], baseline_error=baseline['e'],
+                        reference_uncertainty=own['epsilon'], change=own['e']-baseline['e'],
+                        resolved_reference_error_improvement=own['e']+own['epsilon'] < max(baseline['e']-baseline['epsilon'], 0),
+                        own_Q2=good, median_error=float(np.median(e)), worst_error=max(e)))
+                values.append(own['e']*100);epsilons.append(own['epsilon']*100);admitted.append(good)
+            line = ax.errorbar(range(len(interventions)), values, yerr=epsilons, linestyle=style, capsize=2, label=level)
+            color = line[0].get_color()
+            for x, y, good in zip(range(len(interventions)), values, admitted):
+                ax.scatter(x, y, s=30, facecolors=color if good else 'none', edgecolors=color)
+        ax.set(xticks=range(len(interventions)), xticklabels=interventions, title=scheme,
+               ylabel='Case 5 conditional E0 ST error (%)');ax.grid(alpha=.2);ax.legend(fontsize=8)
+    fig.suptitle('Already computed converged anchors · no additional solves or deployment timing', fontsize=11)
+    save(fig, 'operator_anchor_interventions')
+    text += '''The production subset verdicts remain above even when the tighter solves are usable.
+The following untimed diagnostics decode the already computed tight/tighter trajectories
+and evaluate each integration rule at those same converged states. They add no solve or
+new policy. Filled anchor markers pass their own declared-case, common-lattice Q2;
+open production markers retain failed subset checks. These scalar error intervals account
+for conditional reference uncertainty only. They are not deployment-cost measurements.
+
+'''
+    text += table(['Control', 'Existing anchor', 'Exact cases', 'Median/worst error (%)', 'Own-state Q2',
+                   'Target→next distance', 'Next→finest distance', 'Own-state rho'], anchor_rows) + '\n\n'
+    text += '![Existing converged-anchor operator diagnostics](figs/operator_anchor_interventions.png)\n\n'
     setup_rows = []
     for level in ['shared_setup', 'incremental_setup']:
         for record in doc[level]:
@@ -234,5 +285,20 @@ diffusion bias or pure temporal error from every projection/weighting effect.
              'Native-projection differences above are reported separately and are not inserted into '
              'the held-projection operator controls. Exact matrix/weight hashes, projection geometry '
              'and all raw repetitions remain in the frozen dataset.\n\n')
+    operator_difference_rows = [[bank, f"{v['A129_normalized_relative_to65']:.7g}",
+                                f"{v['lambda129_relative_to65']:.7g}"]
+                               for bank, v in doc['operator_differences'].items()]
+    text += table(['Bank', 'Source-normalized test-moment change', 'Source-normalized diffusion-eigenvalue change'], operator_difference_rows) + '\n\n'
+    text += (r'The matrix-control columns use $\|a-b\|/(1+\|b\|)$, with '
+             r'$a=A_{129}/\sqrt{8}, b=A_{65}$ for moments and $a=\lambda_{129}, b=\lambda_{65}$ '
+             'for eigenvalues. This source normalization differs from division by the target norm alone.\n\n')
+    lifetime = doc['operator_differences']['W1024'].get('native_basis_lifetime')
+    if lifetime:
+        text += (f"The memory-only retry released {lifetime['measured_released_bytes']/1e9:.7g} GB of "
+                 'unused finer-native basis rows after deriving and preserving the required moments, Gram data and initial projections. '
+                 'Unused cold-start tables are omitted only from the supplied-coefficient path. The equations and numerical gates are unchanged.\n\n')
+    final_peak = doc['execution']['checkpoint_memory']['whole_job_cumulative_peak_bytes']
+    text += (f'Final-checkpoint whole-job device peak: {final_peak/1e9:.7g} GB. '
+             'This cumulative counter is not standalone method memory.\n\n') if final_peak is not None else 'Final device peak is unavailable.\n\n'
     return dict(text=text, cost_queries=summary, operator_case5=case5_values, operator_controls=operator_summary,
-                execution=doc['execution'], frozen_modes=doc['frozen_modes'])
+                operator_anchors=anchor_values, execution=doc['execution'], frozen_modes=doc['frozen_modes'])

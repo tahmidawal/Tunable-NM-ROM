@@ -9,6 +9,7 @@ predeclared campaign cap 12; live jobs are listed explicitly and are not counted
 - Solver/quadrature: `worktrees/2026-10-26-b3d-solver`, branch `exp/2026-10-26-b3d-solver`.
 - POD comparator: `worktrees/2026-10-26-b3d-pod`, branch `exp/2026-10-26-b3d-pod`.
 - Canonical log: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md`.
+- [Consolidated report](2026-10-26-burgers3d-refinement.md) and [updated Research Update PDF](../2026-10-23-research-update/Research-Update.pdf).
 - New work must retain the consolidated fork recorded in CLAUDE.md, not the frozen main baseline.
 
 ## Exact job checkpoint
@@ -29,12 +30,13 @@ predeclared campaign cap 12; live jobs are listed explicitly and are not counted
 | solver | podtune05 | 6529066 | COMPLETED | 0.0366667 |
 | solver | front6402 | 6533177 | RUNNING | active/unaccounted |
 | solver | mesh01 | 6541155 | FAILED | 0.154722 |
+| solver | mesh02 | 6542062 | RUNNING | active/unaccounted |
 | pod | pilot | 6525154 | FAILED_FINAL_PRINT_AFTER_COMPLETE_CHECKPOINT | 0.0255556 |
 | pod | fit32 | 6525584 | COMPLETED_CONSTRUCTION_REJECTED | 0.92 |
 | pod | none64 | 6525585 | COMPLETED | 0.0591667 |
 | pod | k16fine01 | 6529465 | COMPLETED_FAILED_HR_ADMISSION | 0.0213889 |
 
-Foreground queue check at `2026-10-27T04:12:14.137999+00:00`: `[{"job_id": 6533177, "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402", "state": "RUNNING", "name": "b3ds_front6402"}]`.
+Foreground queue check at `2026-10-27T04:54:25.195432+00:00`: `[{"job_id": 6533177, "workdir": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/front6402", "state": "RUNNING", "name": "b3ds_front6402"}]`.
 Live job ids absent from the source lane ledgers: `[]`. Any such lag is explicit;
 active allocation costs are still unaccounted rather than zero.
 
@@ -76,6 +78,8 @@ Scientific numbers are generated from saved JSON inputs; publication review is a
 - The unstaged worst-only time-endpoint rejection rule was abandoned, not called predeclared.
 - The inherited bank uses analytic advection with discrete diffusion, not FOM-exact upwind.
   Solver/quadrature certification does not prove identical discrete equations or spatial consistency.
+- Changing the step or diffusion eigenvalues also changes inherited residual-row weights;
+  those interventions do not isolate pure temporal truncation or physical diffusion bias.
 
 ## Deferred, conditional and still-open work
 
@@ -97,6 +101,9 @@ verified complete collection. No unsupported background watcher is relied on.
 
 
 The actual fitting matrix (13.6902 GB) is retained at `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/contributions.npy` with SHA256 `0bd92ac754fabccb89652d47f80f068dba2c1a7dd069cd2872cdee4f1816b67e`. It is outside Git; the [portable retention manifest](data/pod-fit32-retention.json) has SHA256 `19b8f62d573b223139c3dd2be4d3197c788eda93bf87b71e18fee1b3000d2276` and its original is `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/LOCAL-RETENTION.json`. Preserve or move this data before any worktree archival. Candidate nodes and the target are listed by that manifest.
+
+
+Solver attempt `mesh01` / job 6541155 retains 348 bulk arrays (1.64114 GB) outside Git. The [portable retention manifest](data/solver-retention-mesh01.json) has SHA256 `ae2b91e877ff46a506cf4e87ea23e0c565c0991acf7e97f3c551c35cbf8aab04`; its original is `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/results/mesh01/RETENTION.json`. The verified collection archive is `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/runs/mesh01/collection.tar` with SHA256 `74a9c667e97b438485c4e9ec882f55743b86882ca1948f997a4ca47762362940`. Before archiving/removing this worktree, copy all excluded arrays or the verified collection archive to permanent storage and verify these hashes. Ignored files are not preserved by managed worktree archival.
 
 
 ## Glossary

@@ -144,10 +144,10 @@ def main():
         target = next(iter(mesh['cost_queries'].values()))['config']
         text = f'''<img alt="Fixed reduced settings at two mesh sizes and two input/output contracts" src="{picture('fixed_mode_mesh_cost_work.png')}" style="display:block;width:94%;max-height:575px;object-fit:contain;margin:0 auto">
 <p style="font-size:28px;line-height:1.4;margin-top:18px">Frozen M2 bank: r={target['r']}, M={target['M']}, m={target['m']}; {len(target['cases'])} diagnostic cases. Job {mesh['execution']['job_id']}. Input preparation and returned fields are included. Q2 agreement uses the common scoring lattice; this does not certify finer-grid E0 accuracy.</p>'''
-        output.append(('b3d-refine-mesh', 'Fixed modes expose the cost of requested output', text))
+        output.append(('b3d-refine-mesh', 'Fixed modes separate reduced work from field requests', text))
         case = next(v['cases'][0] for v in mesh['operator_controls'].values() if len(v['cases']) == 1)
-        text = f'''<img alt="Fixed-initial-coefficient diffusion and moment controls" src="{picture('operator_interventions.png')}" style="display:block;width:88%;max-height:560px;object-fit:contain;margin:0 auto">
-<p style="font-size:29px;line-height:1.4;margin-top:20px">Diagnostic case {case}, fixed original coefficients and common output judge. Hatching retains failed subset checks. Changing diffusion eigenvalues also changes least-squares row weights; these controls do not isolate physical diffusion bias. No deployment costs are measured for these interventions.</p>'''
+        text = f'''<img alt="Existing converged-anchor and production operator controls" src="{picture('operator_anchor_interventions.png')}" style="display:block;width:94%;max-height:560px;object-fit:contain;margin:0 auto">
+<p style="font-size:29px;line-height:1.4;margin-top:20px">Diagnostic case {case}, fixed original coefficients and common output judge. Existing converged anchors are shown beside production; open markers retain failed subset checks. Changing diffusion eigenvalues also changes least-squares row weights. No deployment costs are measured for these interventions.</p>'''
         output.append(('b3d-refine-operator', 'Operator controls retain their limited causal scope', text))
     text = f'''<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:40px">
 <img alt="Quadrature successor convergence" src="{picture('quadrature_convergence.png')}" style="width:100%;margin-top:30px">

@@ -74,6 +74,9 @@ def main():
         expected = {int(r['job_id']): r for r in entries if r.get('job_id') is not None}
         assert {r['job_id'] for r in actual} == set(expected), 'campaign ledger/accounting inventory differs'
         for row in actual:
+            assert row['state'].split()[0].rstrip('+') in {
+                'COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY',
+                'NODE_FAIL', 'BOOT_FAIL', 'PREEMPTED', 'DEADLINE', 'REVOKED'}, ('nonterminal accounting state', row)
             e = expected[row['job_id']]
             assert int(e.get('elapsed_seconds', -1)) == row['elapsed_seconds'], ('stale elapsed-time ledger', row)
         write(HERE / 'data/FINAL-QUEUE-AUDIT.json', dict(**queue_audit, accounting=actual,
@@ -171,8 +174,12 @@ def main():
         completed.append('Frozen same-allocation complete-validation frontier. Use its explicit per-subject qualification and timing-coverage masks; not every measured subject is necessarily admitted.')
     else:
         pending.append('Same-allocation complete-validation endpoint comparison, own new-policy qualification and paired accuracy-matched full-solver/POD costs.')
-    if not any((HERE / 'data' / n).is_file() for n in ['frozen-mesh.json.gz', 'frozen-mesh.json']):
+    mesh_file = next((HERE / 'data' / n for n in ['frozen-mesh.json.gz', 'frozen-mesh.json'] if (HERE / 'data' / n).is_file()), None)
+    if mesh_file is None:
         pending.append('Bounded fixed-mode mesh/output costs, explicit operator interventions and same-reference projection floor.')
+    else:
+        assert read(mesh_file)['execution']['complete'] is True
+        completed.append('Frozen complete bounded mesh study: fixed reduced settings, separate fixed-output/growing-output tasks and supplied-coefficient operator controls. Qualification remains selected-case/common-reference only; no exponent or general POD mesh advantage is inferred.')
     if pod.get('a3_replay'):
         a = pod['a3_replay']
         failed.append('The existing k16 support at the selected improved policy passes both own-objective Q1 checks, but fails common field agreement and stricter whole-objective gates. No complete-validation HR release; scalar reference-error changes do not demonstrate a physical-accuracy loss.')
@@ -181,6 +188,8 @@ def main():
         pending.append('Qualified hyper-reduced POD depends on the separately audited improved-policy k16 control and complete-validation admission; the rejected new constructor supplies no such evidence.')
     pending.append('Sealed/out-of-distribution replication, bank retraining, further support fitting and branch merges are outside the released campaign.')
     bullets = lambda rows: '\n'.join('- ' + row for row in rows)
+    closure_path = HERE / 'data/CAMPAIGN-CLOSURE.json'
+    number_date = read(closure_path)['numbers_finalized_date'] if closure_path.is_file() else '2026-10-26'
     retention_text = ''
     if retention:
         assert Path(retention['path']).stat().st_size == retention['bytes']
@@ -217,6 +226,7 @@ predeclared campaign cap {cap}; live jobs are listed explicitly and are not coun
 - Solver/quadrature: `worktrees/2026-10-26-b3d-solver`, branch `exp/2026-10-26-b3d-solver`.
 - POD comparator: `worktrees/2026-10-26-b3d-pod`, branch `exp/2026-10-26-b3d-pod`.
 - Canonical log: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md`.
+- [Consolidated report]({number_date}-burgers3d-refinement.md) and [updated Research Update PDF](../2026-10-23-research-update/Research-Update.pdf).
 - New work must retain the consolidated fork recorded in CLAUDE.md, not the frozen main baseline.
 
 ## Exact job checkpoint
@@ -261,6 +271,8 @@ Scientific numbers are generated from saved JSON inputs; publication review is a
 - The unstaged worst-only time-endpoint rejection rule was abandoned, not called predeclared.
 - The inherited bank uses analytic advection with discrete diffusion, not FOM-exact upwind.
   Solver/quadrature certification does not prove identical discrete equations or spatial consistency.
+- Changing the step or diffusion eigenvalues also changes inherited residual-row weights;
+  those interventions do not isolate pure temporal truncation or physical diffusion bias.
 
 ## Deferred, conditional and still-open work
 

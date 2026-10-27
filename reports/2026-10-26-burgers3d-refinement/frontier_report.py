@@ -100,7 +100,7 @@ def components(doc, table, save):
            yticks=range(len(phase_values)), yticklabels=list(phase_values),
            title='Separate phase calls: case-balanced median milliseconds\nDiagnostic cases only; phases do not sum to fused query cost')
     fig.colorbar(im, ax=ax, label='Milliseconds (log colour scale)'); save(fig, 'query_components')
-    text = '''### Query phases, work and offline setup
+    text = '''#### Query phases, work and offline setup
 
 The separate phase calls below use only the fixed diagnostic cases, with the same output
 checked against the fused query. Their costs are indicative components and are not added
@@ -148,7 +148,7 @@ def comparisons(doc, summaries, table):
                         summaries[selected]['worst_upper'] <= summaries[sid]['worst_lower'])
                 expected = summaries[selected]['costs']['descriptor']['median_seconds'] / summaries[sid]['costs']['descriptor']['median_seconds']
                 assert np.isclose(own['competitor_over_subject_cost_ratio'], expected, rtol=1e-12)
-    text = '''### Tuned POD and full-solver comparisons
+    text = '''#### Tuned POD and full-solver comparisons
 
 The primary descriptor-total comparison below requires a joint match: both the competitor's
 median upper conditional error and worst upper conditional error must be no larger than the
@@ -179,7 +179,7 @@ An unresolved overlap is not a win. A ratio below unity means the matched compet
                 'unqualified / incomplete' if not valid else a['worst_upper'] < b['worst_lower'],
                 'unavailable' if not valid else f"{b['costs']['descriptor']['median_seconds']/a['costs']['descriptor']['median_seconds']:.6g}"])
     if rows:
-        text += ('### Improvement over earlier bank ROMs\n\n'
+        text += ('#### Improvement over earlier bank ROMs\n\n'
                  'The following same-allocation comparisons separate resolved median improvement, '
                  'resolved worst-case improvement and speed. A gain in one column does not imply '
                  'a gain in the others. True requires non-overlapping conditional reference intervals.\n\n')
@@ -243,7 +243,7 @@ def projection_geometry(doc, table, save):
     ax.set(xscale='log', yscale='log', xlabel='Best reference-field fit: maximum evolved-time error (%)',
            ylabel='Actual rollout: maximum evolved-time error (%)', title='Reference-span geometry on the common scoring lattice')
     ax.grid(alpha=.2); ax.legend(fontsize=7); save(fig, 'reference_projection_budget')
-    text = '''### Representation floor and trajectory error
+    text = '''#### Representation floor and trajectory error
 
 The best least-squares fit of each numerical reference field supplies a geometric control,
 using the same scoring lattice and fixed reference initial norm. Coverage is explicit;
@@ -412,12 +412,12 @@ def render(doc, figdir, table, save, reference):
             ax.set(xscale='log', yscale='log', xlabel=f'{contract.replace("_", " ")} query: median over 64 cases (ms)',
                    ylabel=f'{metric.replace("_", " ").capitalize()} (%)')
             ax.grid(alpha=.2); ax.legend(fontsize=8)
-        fig.suptitle('Same allocation · full validation · device outputs · conditional E0 ST error\n'
+        fig.suptitle(f"Same allocation job {execution['job_id']} · full validation · device outputs · conditional E0 ST error\n"
                      'Filled: admitted; open: retained · Whiskers: conditional reference intervals', fontsize=10)
         name = f'full64_{contract}_frontier'
         save(fig, name)
         figures.append((contract, name))
-    text = '''## Same-allocation full-validation frontier
+    text = '''### Same-allocation full-validation frontier
 
 The following dataset uses the complete validation population and scores the fields returned
 by the same measured invocations. Query costs are case-balanced medians; timing rejection
@@ -426,8 +426,37 @@ Descriptor-total is the primary cross-method contract. Prepared-native costs use
 method-specific supplied data, so those values are shown as decomposition evidence.
 
 '''
+    text += f"Frontier job **{execution['job_id']}**, GPU `{execution['gpu']}`, source `{execution['source_commit']}`. Costs below are compared within this allocation.\n\n"
     text += table(['Subject', 'Method', 'Qualification status', 'Registered checks', 'Method common check', 'Median E0 error (%)', 'Worst E0 error (%)',
                    'Cases above 1%', 'Descriptor total (ms)', 'Prepared native (ms)'], table_rows) + '\n\n'
+    parameter_rows = []
+    for sid, subject in doc['subjects'].items():
+        cfg, p = subject['config'], subject['effective_parameters']
+        shape = subject['input_contract']['shape']
+        if cfg['kind'] == 'bank':
+            spatial = f"r={p['r']}; M={p['M']}; m={p['m']}"
+            time = f"{cfg['scheme']}; dt={cfg['dt']:.10g}"
+            policy = (f"QN refresh={p['refresh']}; g_in={p['g_in']}; max corrections={p['q_max']}" if cfg['solver'] == 'qn' else
+                      f"FS sweeps={p['K']}; gtol={p['gtol']}; adaptive startup steps={p['FS_a_eff']}; startup budget={p['lm_budget']}")
+            policy += f"; trust={p['trust']:.7g}"
+        elif cfg['kind'] == 'POD':
+            spatial = f"r={p['r']}; full residual at {int(np.prod(shape))} native points"
+            time = f"{cfg['scheme']}; dt={cfg['dt']:.10g}"
+            policy = f"gtol={p['production_gtol']}; tolf={p['production_tolf']}; trust={p['trust']:.7g}"
+        elif cfg['kind'] == 'PS':
+            spatial = f"sine cutoff={p['N']}; coefficients={int(np.prod(shape))}; oversampling intervals={p['nonlinear_oversampling_intervals']}"
+            time = f"ETDRK4; dt={p['dt']:.10g}"
+            policy = f"contour points={p['ETDRK4_contour_points']}"
+        else:
+            assert cfg['kind'] == 'FD'
+            spatial = f"grid intervals={p['intervals']}; native points={int(np.prod(shape))}"
+            time = f"central advection / CN with Rannacher startup; dt={p['dt']:.10g}"
+            policy = f"Newton tolerance={p['ntol']}; linear tolerance={p['ltol']}; calibrated level={p['tolerance_level']}"
+        parameter_rows.append([sid, spatial, time, policy, str(shape)])
+    text += ('The actual adapter settings below make the finite comparison explicit. The PS identifier\'s '
+             'N is its sine cutoff, retaining indices below N in each axis; it is not the mesh-study node count. '
+             'Further frozen parameters and source hashes remain in the dataset.\n\n')
+    text += table(['Subject', 'Spatial parameters', 'Time discretization', 'Solver/work parameters', 'Prepared-native input shape'], parameter_rows) + '\n\n'
     extra_rows = []
     for sid, subject in doc['subjects'].items():
         q = subject['qualification']

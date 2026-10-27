@@ -3,8 +3,8 @@
   "state": "checkpoint, work ongoing",
   "gpu_hour_cap": 12,
   "completed_gpu_hours": 1.6441666666666668,
-  "active_ledger_entries": 1,
-  "live_reserved_max_gpu_hours": 3.0,
+  "active_ledger_entries": 2,
+  "live_reserved_max_gpu_hours": 4.5,
   "live_campaign_jobs": [
     {
       "job_id": 6533177,
@@ -229,6 +229,23 @@
       "remote_deleted": true
     },
     {
+      "lane": "solver",
+      "attempt": "mesh02",
+      "job_id": 6542062,
+      "gpu_hours": 0.0,
+      "state": "RUNNING",
+      "source_commit": "a534c65715bf8cb422c03d70b48c36bf02a5af91",
+      "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh02",
+      "reserved_max_gpu_hours": 1.5,
+      "manifest_sha256": "719bf693f15c1e6619507955abc4d0b4e42d2e5f38792ef5c23d34edbcf8e4a8",
+      "scope": "live job; final qualification and GPU hours pending collection",
+      "last_observed_utc": "2026-10-27T04:28:55.957313+00:00",
+      "allocated_gpu_uuid": "GPU-82ad2379-97ca-7878-e8f3-7e960c158cff",
+      "node": "pax008",
+      "Slurm_GPU_index": 0,
+      "CPU_IDs": "0,33-39"
+    },
+    {
       "lane": "pod",
       "attempt": "pilot",
       "state": "FAILED_FINAL_PRINT_AFTER_COMPLETE_CHECKPOINT",
@@ -309,14 +326,14 @@
   ],
   "lane_snapshot_sources": {
     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/JOB-LEDGER.json": {
-      "sha256": "1f74b730b5d2fc3c68811129dc9739c401f4aec0a14118b0ae8669f497ce57af",
+      "sha256": "e42c6a5b594de568dbc3b5f6f382ee4fda11314daa76a961ef13d0d663d7721e",
       "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-ledger.json",
-      "snapshot_sha256": "1f74b730b5d2fc3c68811129dc9739c401f4aec0a14118b0ae8669f497ce57af"
+      "snapshot_sha256": "e42c6a5b594de568dbc3b5f6f382ee4fda11314daa76a961ef13d0d663d7721e"
     },
     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/EXPORT.json": {
-      "sha256": "c2cb3043aaa40a2d5e70f08748c5d265cf265cfbad5844d898437b4496e3d953",
+      "sha256": "3ff3dfa35962a82bfc0b687df85f9931c2130cf904355ad63f58af89298e0cef",
       "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-export.json",
-      "snapshot_sha256": "c2cb3043aaa40a2d5e70f08748c5d265cf265cfbad5844d898437b4496e3d953"
+      "snapshot_sha256": "3ff3dfa35962a82bfc0b687df85f9931c2130cf904355ad63f58af89298e0cef"
     },
     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/JOB-LEDGER.json": {
       "sha256": "33bd3bb0f5dccf9f5125c67b895632149656a82c9b6d331460d9199b5d3c20a2",

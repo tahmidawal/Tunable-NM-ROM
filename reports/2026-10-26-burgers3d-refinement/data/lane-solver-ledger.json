@@ -198,6 +198,22 @@
    "failure": "frozen120GB checkpoint guard; collection pending",
    "collection_verified": true,
    "remote_deleted": true
+  },
+  {
+   "attempt": "mesh02",
+   "job_id": 6542062,
+   "gpu_hours": 0.0,
+   "state": "RUNNING",
+   "source_commit": "a534c65715bf8cb422c03d70b48c36bf02a5af91",
+   "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/mesh02",
+   "reserved_max_gpu_hours": 1.5,
+   "manifest_sha256": "719bf693f15c1e6619507955abc4d0b4e42d2e5f38792ef5c23d34edbcf8e4a8",
+   "scope": "live job; final qualification and GPU hours pending collection",
+   "last_observed_utc": "2026-10-27T04:28:55.957313+00:00",
+   "allocated_gpu_uuid": "GPU-82ad2379-97ca-7878-e8f3-7e960c158cff",
+   "node": "pax008",
+   "Slurm_GPU_index": 0,
+   "CPU_IDs": "0,33-39"
   }
  ]
 }

@@ -134,9 +134,9 @@ def compare(method, baseline):
     ratio = sm["median"]/sb["median"] if full and sb["median"] > 0 else None
     wins = sum(p["win"] for p in pairs)
     losses = sum(p["loss"] for p in pairs)
-    method_worst_lower = max(max(0., r["error"]-r["eps"]) for r in method) if full else None
-    baseline_worst_upper = max(r["error"]+r["eps"] for r in baseline) if full else None
-    worst_ok = bool(full and method_worst_lower <= baseline_worst_upper)
+    method_worst_lower = max(max(0., r["error"]-r["eps"]) for r in method) if full and source == 'B' else None
+    baseline_worst_upper = max(r["error"]+r["eps"] for r in baseline) if full and source == 'B' else None
+    worst_ok = bool(full and source == 'B' and method_worst_lower <= baseline_worst_upper)
     return dict(method=method[0]["config"], baseline=baseline[0]["config"],
                 source=source, cases=len(pairs), complete_pairs=sum(p["finite"] for p in pairs),
                 reference_eps_max=sm['eps_max'],
@@ -172,35 +172,52 @@ def diagnostic_evidence(roots, chosen):
     conditioning, setup_rows, oracle_rows = [], [], []
     for dim, root in roots.items():
         cohort, count, meshes, _ = COHORT[dim]
-        plans_by_mesh = {}
+        plans_by_mesh, failures_by_mesh, declared_labels = {}, {}, {}
         for lc in sorted(meshes):
             path = root/f'plans/L{lc}/plans.json' if dim == 2 else root/f'L{lc}/plans/setup.json'
             setup = read(path)
             plans_by_mesh[lc] = ({r['name']:r for r in setup['plans']} if dim == 2 else setup['plans'])
-            setup_rows.append([dim, lc, fmt(setup['prepare_seconds'] if dim == 2 else setup['total_seconds'])])
+            failures_by_mesh[lc] = ({r['name']:r for r in setup['failed_plans']} if dim == 2 else setup['failures'])
+            declared_labels[lc] = {p['label'] for p in plans_by_mesh[lc].values() if 'label' in p}
+            for name, failure in failures_by_mesh[lc].items():
+                category = failure.get('group', failure.get('descriptor',{}).get('category'))
+                if category != 'ordinary':
+                    declared_labels[lc].add(name.rsplit('_',1)[0])
+            setup_rows.append([dim, lc, fmt(setup['prepare_seconds'] if dim == 2 else setup['total_seconds']),
+                               'Basis/factors; query compilation separate' if dim == 2 else 'Basis/factors and query warm-up/compilation'])
         for (rdim, lc, source, category), rows in sorted(chosen.items()):
             if rdim != dim or source != 'B' or category == 'ordinary':
                 continue
-            p = plans_by_mesh[lc][rows[0]['config']]
+            name = rows[0]['config']
+            if name not in plans_by_mesh[lc]:
+                failure = failures_by_mesh[lc][name]
+                rank = failure.get('rank', failure.get('descriptor',{}).get('rank'))
+                reason = str(failure.get('reason', failure.get('failure','unavailable'))).replace('|','/').replace('\n',' ')
+                conditioning.append([dim, lc, LABEL[category], rank, '—', '—', '—', '—', 'Unavailable: '+reason])
+                continue
+            p = plans_by_mesh[lc][name]
             spectrum = p['singular_values']
             retained = p['sampled_effective_rank']
             condition = spectrum[0]/spectrum[retained-1] if retained and spectrum[retained-1] > 0 else None
             conditioning.append([dim, lc, LABEL[category], p['original_rank'], p['physical_rank'], retained,
-                                 fmt(condition), fmt(p['physical_amplification'])])
+                                 fmt(condition), fmt(p['physical_amplification']), 'Available'])
         # Primary-grid limits and the extra coarse-training-control grid. Other
         # meshes share the fine representation and remain in the raw archive.
         for lc in ([32, 128] if dim == 2 else [16]):
-            per_label = defaultdict(list)
+            per_label = {label: [] for label in declared_labels[lc]}
             for case in range(count):
                 path = (root/f'oracle/L{lc}/{cohort}_c{case:03d}.json' if dim == 2
                         else root/f'L{lc}/{cohort}/c{case:03d}/oracle.json')
                 for label, row in read(path).items():
+                    assert label in per_label
                     values = row['error_t'] if dim == 2 else row['e_t'][1:]
-                    assert len(values) == 5 and all(finite(e) and e >= 0 for e in values)
-                    per_label[label].append(max(values))
+                    if len(values) == 5 and all(finite(e) and e >= 0 for e in values):
+                        per_label[label].append(max(values))
             for label, values in sorted(per_label.items()):
-                assert len(values) == count
-                oracle_rows.append([dim, lc, f'`{label}`', fmt(median(values),100), fmt(max(values),100), count])
+                full = len(values) == count
+                oracle_rows.append([dim, lc, f'`{label}`', fmt(median(values) if full else None,100),
+                                    fmt(max(values) if full else None,100), f'{len(values)}/{count}',
+                                    'Available' if full else 'Unavailable or incomplete diagnostic'])
     return dict(conditioning=conditioning, setup=setup_rows, oracle=oracle_rows, consumed=consumed)
 
 
@@ -311,10 +328,12 @@ def main():
               "The coarse-training control uses its prespecified rank and no fitted ridge penalty. "
               "Other selected configurations use exposed development references; their selection "
               "therefore has fine-reference information. Both development and validation are exposed "
-              "research cohorts, rather than sealed generalization tests.", "",
+              "research cohorts, rather than sealed generalization tests. Coarse-data training refers "
+              "to the solution values used in training; it does not erase the architecture's and "
+              "recipe's earlier development history.", "",
               "## Do the samples determine the representation?", "",
               table(["Dimension", "Coarse intervals", "Selected B family", "Requested directions",
-                     "Retained fine directions", "Sampled rank", "Retained-spectrum condition", "Amplification"],
+                     "Retained fine directions", "Sampled rank", "Retained-spectrum condition", "Amplification", "Status"],
                     evidence['conditioning']), "",
               "The fine-grid Gram cutoff can remove nearly dependent directions before fitting. "
               "A sampled rank below the retained fine rank leaves directions unidentified by the observations. "
@@ -322,7 +341,7 @@ def main():
               "physical amplification quantify sensitivity at different stages.", "",
               "## Fine-reference oracle limits — diagnostics only", "",
               table(["Dimension", "Coarse-grid plan", "Fine representation", "Oracle median error (%)",
-                     "Oracle worst error (%)", "Cases"], evidence['oracle']), "",
+                     "Oracle worst error (%)", "Complete / all", "Status"], evidence['oracle']), "",
               "These projections use the full fine target and are inadmissible as reconstruction methods. "
               "They diagnose whether a representation can express the target at all. A large oracle floor "
               "limits any coefficient fit; a small floor with poor coarse reconstruction points toward "
@@ -333,11 +352,14 @@ def main():
               "with archived training arrays. The matched-observation spatial extension and the stronger "
               "comparator with extra fine values are distinct. These comparisons do not by themselves "
               "isolate a causal advantage of the network architecture.", "",
+              "POD is uncentered, without a separately added mean field. Configurations named "
+              "`covridge` use diagonal training second moments; they do not use an exact full "
+              "covariance model. The approximate basis can retain off-diagonal second moments.", "",
               "Warm query time is the median of per-case medians for independently fitted single fields, "
               "including common host transfers. It excludes reusable basis evaluation, factorization and "
               "compilation. Accuracy and timing come from the same calls, with raw repetitions retained. "
               "Compare costs only within the same job and GPU; cross-dimensional timings are not speedup comparisons.", "",
-              table(["Dimension", "Coarse intervals", "Recorded library setup (s)"], evidence['setup']), "",
+              table(["Dimension", "Coarse intervals", "Recorded library setup (s)", "Recorded scope"], evidence['setup']), "",
               "Library setup covers the entire tested configuration sweep in that validation job, rather "
               "than the cost of deploying one selected method. Fine-coordinate basis evaluation was cached "
               "during preparation. These measurements support steady repeated-query comparisons, not a "
@@ -375,6 +397,8 @@ def main():
               "- **Decoder / learned basis:** coordinate-dependent functions learned from training fields; "
               "only their coefficients are fitted to the supplied coarse field.",
               "- **POD:** proper orthogonal decomposition, a linear basis extracted from training snapshots.",
+              "- **Uncentered / second moments / covridge:** snapshots without mean subtraction / "
+              "average coefficient products / a penalty using only the diagonal of those products.",
               "- **Frozen configuration:** rank, penalty and method chosen before validation was run.",
               "- **Rank / ridge:** number of retained basis directions / penalty that discourages unstable coefficients.",
               "- **Requested directions / retained fine directions / sampled rank:** initial basis size / "

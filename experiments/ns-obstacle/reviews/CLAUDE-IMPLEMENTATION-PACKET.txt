@@ -1,0 +1,1380 @@
+Independent numerical-implementation consultation. Respond in at most 1200 words, emphasizing concrete bugs and practical fixes. You cannot use tools or inspect additional files. Review supplied exact code independently; no other code review findings are included. No obstacle numerical jobs have run, no result is admitted. Design already independently reviewed; this is a first diagnostic smoke, NOT reference acceptance/training. User requires credible fixed-obstacle incompressible NS and no manufactured bank advantage.
+
+Physics: density1, kinematic p, advective NS with gradient viscous weak form; natural outlet (nu*grad(u)-pI)n=0 fixes pressure, no pin. Physicalforce on solid minus integral symmetricstress*fluidnormal; weak reaction pairs gradientstress, their gap diagnostic. DFG2D-1 exact L2.2 H.41 circle(.2,.2)R.05 inletpeak.3 mean.2 nu.001. Actual-obstacle MMS has nonzero curvedDirichlet/forcing/outlettraction and analytic force; emptychannel shear sign check. Pipeline target3D sphereD1 pipeR2.5 x[-5,15] mean1 nu.1, but first3Dsmoke geometry/empty/MMS only. P2/P1 cheap3Dcontrol distinct from eventualP3/P2refs. One20min64GiB16reservedCPU1GPU job, CPU FE kernels; designated Python, pinned lane-local deps, JAXpreflightf64highest; no environment replacement. 3D≤15000DOF conservative128*n²+4GiB screen≤48GiB;3Dactual solve after2Dsmoke passes. Scope: release2Dbounded smoke after source/exactconfig review;3Dconditional. Fullh/p/time/force/ref/data gates remain closed. Please separate realistic runtime API risks suitable for smoke from mathematical or execution blockers. Avoid hypothetical malicious file concerns.
+
+
+--- 2D fom.py ---
+"""Curved mixed FE steady controls. No time stepping or ROM training.
+
+Run only under the reviewed configuration. NGSolve solve kernels are CPU kernels.
+All NumPy arrays are float64; Grad has [velocity component, spatial coordinate].
+"""
+from __future__ import annotations
+import argparse
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import resource
+import time
+import traceback
+
+import numpy as np
+
+
+def dump(path, value):
+    Path(path).write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
+
+
+def metric(numerator, denominator, definition):
+    numerator, denominator = float(numerator), float(denominator)
+    if not math.isfinite(numerator) or not math.isfinite(denominator) or denominator <= 0:
+        raise ValueError(f"invalid metric {definition}: {numerator}, {denominator}")
+    return {"numerator": numerator, "denominator": denominator,
+            "value": numerator / denominator, "definition": definition}
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def run_case(cfg, out):
+    import ngsolve as ng
+    from netgen.geom2d import SplineGeometry
+    ng.SetNumThreads(int(cfg['threads']))
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=False)
+    dump(out / 'config.json', cfg)
+    started = time.perf_counter()
+    U, D, nu = float(cfg['U']), float(cfg['D']), float(cfg['nu'])
+    H, xmin, xmax = cfg['H'], cfg['xmin'], cfg['xmax']
+    L = xmax-xmin
+    kind = cfg['kind']
+    obstacle = kind in ('dfg','manufactured')
+    if kind not in ('dfg', 'channel', 'manufactured'):
+        raise ValueError(kind)
+    if cfg['velocity_order'] < 2 or cfg['pressure_order'] != cfg['velocity_order']-1:
+        raise ValueError('Taylor-Hood k/(k-1) required')
+    if not (1 <= cfg['newton_max'] <= 30):
+        raise ValueError('Newton cap must be between 1 and 30')
+    if cfg['outlet'] not in ('gradient', 'symmetric'):
+        raise ValueError('unknown outlet')
+    if cfg['outlet'] == 'symmetric' and kind != 'dfg':
+        raise ValueError('only named DFG-domain-sensitivity case uses symmetric outlet')
+    geo = SplineGeometry()
+    geo.AddRectangle((xmin, 0), (xmax, H), bcs=('wall_bottom', 'outlet', 'wall_top', 'inlet'))
+    if obstacle:
+        geo.AddCircle(tuple(cfg['center']), cfg['radius'], leftdomain=0,
+                      rightdomain=1, bc='obstacle', maxh=cfg['obstacle_h'])
+    # Netgen optimize/mesh operations are single-threaded here; recorded seed is
+    # retained as provenance, not a claim that Netgen accepts an RNG seed option.
+    mesh = ng.Mesh(geo.GenerateMesh(maxh=cfg['maxh']))
+    mesh.Curve(cfg['geometry_order'])
+    mesh.ngmesh.Save(str(out/'mesh.vol'))
+    if mesh.ne > cfg['max_elements']:
+        raise MemoryError(f'pre-space element guard: {mesh.ne}')
+    V = ng.VectorH1(mesh, order=cfg['velocity_order'], dirichlet='inlet|wall.*|obstacle')
+    Q = ng.H1(mesh, order=cfg['pressure_order'])
+    X = V*Q
+    if X.ndof > cfg['max_dofs']:
+        raise MemoryError(f'pre-assembly DOF guard: {X.ndof}')
+    (u, p), (v, q) = X.TnT()
+    g = ng.GridFunction(X)
+    uh, ph = g.components
+    x, y = ng.x, ng.y
+    normal = ng.specialcf.normal(2)
+    I = ng.Id(2)
+    grad = ng.Grad
+    exact_u = exact_p = force = traction = None
+    witness = None
+    if kind == 'channel':
+        exact_u = ng.CF((6*U*y*(H-y)/H**2, 0))
+        exact_p = 12*nu*U*(xmax-x)/H**2
+        force = ng.CF((0, 0))
+        traction = ng.CF((0, 0))
+    elif kind == 'manufactured':
+        xx, yy = (x-xmin)/L, y/H
+        psi = U*H*(xx**2*yy + xx*yy**2 + 0.25*xx**3*yy**3)
+        exact_u = ng.CF((psi.Diff(y), -psi.Diff(x)))
+        exact_p = U**2*(xx+yy+xx*yy)
+        gu = ng.CF(tuple(exact_u[i].Diff(c) for i in range(2)
+                         for c in (x, y)), dims=(2, 2))
+        lap = ng.CF(tuple(sum(exact_u[i].Diff(c).Diff(c) for c in (x,y)) for i in range(2)))
+        gp = ng.CF((exact_p.Diff(x), exact_p.Diff(y)))
+        force = gu*exact_u - nu*lap + gp
+        traction = (nu*gu-exact_p*I)*normal
+        witness_path = Path(__file__).with_name('manufactured_witness.json')
+        witness = json.loads(witness_path.read_text())
+        if any(abs(cfg[k]-witness['configuration'][k]) > 1e-14 for k in ('U','nu','H','xmin','xmax')):
+            raise ValueError('manufactured witness is tied to its exact configuration')
+        checks = []
+        for record in witness['samples']:
+            mip = mesh(*record['point'])
+            values = np.r_[np.asarray(exact_u(mip)), float(exact_p(mip)),
+                            np.asarray(gu(mip)).ravel(), np.asarray(force(mip))]
+            expected = np.array(record['u']+[record['p']]+record['gradient']+record['forcing'])
+            checks.append(metric(np.linalg.norm(values-expected), max(np.linalg.norm(expected), 1.0),
+                                 'CF analytic derivatives versus independent SymPy witness'))
+        dump(out/'manufactured_derivative_checks.json', checks)
+        if max(a['value'] for a in checks) > 1e-12:
+            raise AssertionError('manufactured analytical derivative witness mismatch')
+    else:
+        force, traction = ng.CF((0,0)), ng.CF((0,0))
+    boundary_u = exact_u if exact_u is not None else ng.CF((6*U*y*(H-y)/H**2,0))
+    if kind == 'manufactured':
+        uh.Set(boundary_u, definedon=mesh.Boundaries('inlet|wall.*|obstacle'))
+    else:
+        uh.Set(boundary_u, definedon=mesh.Boundaries('inlet'))
+    ds_out = ng.ds('outlet', bonus_intorder=cfg['assembly_bonus_order'])
+    dx = ng.dx(bonus_intorder=cfg['assembly_bonus_order'])
+    viscous = nu*ng.InnerProduct(grad(u),grad(v))
+    if cfg['outlet'] == 'symmetric':
+        viscous = 2*nu*ng.InnerProduct(ng.Sym(grad(u)),ng.Sym(grad(v)))
+    stokes = ng.BilinearForm(X)
+    stokes += (viscous - p*ng.div(v)-q*ng.div(u))*dx
+    rhs = ng.LinearForm(X)
+    rhs += force*v*dx + traction*v*ds_out
+    rhs.Assemble()
+    residual_form = ng.BilinearForm(X)
+    residual_form += (viscous + (grad(u)*u)*v-p*ng.div(v)-q*ng.div(u))*dx
+    free = np.array([bool(b) for b in X.FreeDofs()], dtype=bool)
+    row_scale = np.r_[np.full(V.ndof, U**2*D), np.full(Q.ndof, U*D)]
+    if len(row_scale) != X.ndof:
+        raise AssertionError('mixed block DOF layout mismatch')
+    def arr(vec):
+        return vec.FV().NumPy()
+    def free_norm(vec):
+        return float(np.linalg.norm((arr(vec)/row_scale)[free]))
+    def true_residual():
+        # Independent assembly path: state is a coefficient, not symbolic trial.
+        form = ng.LinearForm(X)
+        vf = nu*ng.InnerProduct(grad(uh),grad(v))
+        if cfg['outlet'] == 'symmetric':
+            vf = 2*nu*ng.InnerProduct(ng.Sym(grad(uh)),ng.Sym(grad(v)))
+        form += (vf+(grad(uh)*uh)*v-ph*ng.div(v)-q*ng.div(uh)-force*v)*dx
+        form += -traction*v*ds_out
+        form.Assemble()
+        return form.vec
+    def residual():
+        r = g.vec.CreateVector()
+        residual_form.Apply(g.vec,r)
+        r.data -= rhs.vec
+        return r
+    def factor(mat):
+        # Conservative declared accounting model, not a solver-memory guarantee.
+        nnz = int(mat.nze)
+        estimated = nnz*16*cfg['factor_fill_estimate'] + X.ndof*8*32
+        rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
+        record = {'nnz':nnz,'estimated_factor_bytes':estimated,'current_maxrss_bytes':rss}
+        memory_checks.append(record)
+        dump(out/'memory_checks.json',memory_checks)
+        if nnz > cfg['max_nnz'] or estimated+rss > cfg['memory_stop_gib']*2**30:
+            raise MemoryError(f'pre-factorization guard {record}')
+        return mat.Inverse(X.FreeDofs(), inverse=cfg['inverse_backend'])
+    memory_checks = []
+    stokes.Assemble()
+    r = rhs.vec.CreateVector()
+    r.data = rhs.vec-stokes.mat*g.vec
+    inv = factor(stokes.mat)
+    delta = g.vec.CreateVector()
+    delta.data = inv*r
+    linear = r.CreateVector()
+    linear.data = stokes.mat*delta-r
+    stokes_linear_metric = metric(free_norm(linear), max(free_norm(r),1e-30), 'scaled linear residual / scaled RHS')
+    if stokes_linear_metric['value'] > cfg['linear_relative_tolerance']:
+        raise ArithmeticError('Stokes direct solve residual failed')
+    g.vec.data += delta
+    del inv
+    stokes_state = arr(g.vec).copy()
+    r = residual()
+    initial = free_norm(r)
+    denominator = max(initial, cfg['residual_floor'])
+    histories = []
+    converged = False
+    for it in range(cfg['newton_max']+1):
+        r = residual()
+        value = free_norm(r)
+        rec = {'iteration':it,'scaled_residual_norm':value,'residual_denominator':denominator,
+               'relative_residual':value/denominator}
+        histories.append(rec)
+        dump(out/'newton_history.json', histories)
+        if value/denominator <= cfg['nonlinear_relative_tolerance']:
+            converged = True
+            break
+        if it == cfg['newton_max']:
+            break
+        residual_form.AssembleLinearization(g.vec)
+        inv = factor(residual_form.mat)
+        delta.data = inv*r
+        linear.data = residual_form.mat*delta-r
+        linmet = metric(free_norm(linear),max(value,1e-30),'scaled linear residual / scaled RHS')
+        rec['linear_residual'] = linmet
+        if linmet['value'] > cfg['linear_relative_tolerance']:
+            raise ArithmeticError('Newton direct solve residual failed')
+        base = arr(g.vec).copy()
+        accepted = False
+        for damping in cfg['damping_sequence']:
+            arr(g.vec)[:] = base-damping*arr(delta)
+            candidate = free_norm(residual())
+            if candidate <= (1-cfg['armijo']*damping)*value:
+                accepted = True
+                rec['damping'] = damping
+                rec['step_l2_coefficients'] = float(np.linalg.norm(damping*arr(delta)))
+                break
+        del inv
+        if not accepted:
+            arr(g.vec)[:] = base
+            raise ArithmeticError('no declared Newton damping accepted')
+    dump(out/'newton_history.json', histories)
+    dump(out/'memory_checks.json', memory_checks)
+    if not converged:
+        raise ArithmeticError('Newton iteration limit: no accepted solution')
+    independent = true_residual()
+    independent_norm = free_norm(independent)
+    independent_difference = metric(np.linalg.norm(((arr(independent)-arr(r))/row_scale)[free]),
+                                    denominator,'independent coefficient residual versus operator apply')
+    if independent_norm/denominator > cfg['nonlinear_relative_tolerance'] or independent_difference['value'] > 1e-11:
+        raise ArithmeticError('independent residual did not certify returned solution')
+    # Directional Jacobian check at a deterministic perturbed admissible state.
+    rng = np.random.default_rng(cfg['seed'])
+    reference = arr(g.vec).copy()
+    direction = rng.normal(size=X.ndof)
+    direction[~free] = 0
+    direction[:V.ndof] *= U
+    direction[V.ndof:] *= U**2
+    direction /= np.linalg.norm(direction/np.r_[np.full(V.ndof,U),np.full(Q.ndof,U**2)])
+    arr(g.vec)[:] += cfg['jacobian_state_perturbation']*direction
+    perturbed = arr(g.vec).copy()
+    residual_form.AssembleLinearization(g.vec)
+    vector = g.vec.CreateVector()
+    arr(vector)[:] = direction
+    action = vector.CreateVector()
+    action.data = residual_form.mat*vector
+    jv = (arr(action)/row_scale)[free].copy()
+    checks=[]
+    for h in cfg['jacobian_steps']:
+        arr(g.vec)[:] = perturbed+h*direction
+        plus = (arr(residual())/row_scale)[free].copy()
+        arr(g.vec)[:] = perturbed-h*direction
+        minus = (arr(residual())/row_scale)[free].copy()
+        fd=(plus-minus)/(2*h)
+        checks.append({'h':h,'agreement':metric(np.linalg.norm(fd-jv),max(np.linalg.norm(jv),1e-30),
+                                              'centered difference versus assembled Jacobian action'),
+                       'signal_norm':float(np.linalg.norm(plus-minus)),
+                       'signal_floor':float(100*np.finfo(float).eps*max(np.linalg.norm(plus),np.linalg.norm(minus),1.0))})
+    arr(g.vec)[:] = reference
+    dump(out/'jacobian_checks.json', checks)
+    useful=[a for a in checks if a['signal_norm']>a['signal_floor']]
+    values=[a['agreement']['value'] for a in useful]
+    # At a quadratic residual, centered differences are exact in real arithmetic;
+    # a uniformly small roundoff plateau is expected, not an artificial O(h²) fit.
+    plateau=len(useful)>=2 and max(values)<=1e-8
+    reducing=len(useful)>=2 and any(values[j+1]<=values[j] for j in range(len(values)-1))
+    if not useful or min(values)>1e-6 or not (plateau or reducing):
+        raise ArithmeticError('Jacobian finite difference mismatch or unresolved signal/plateau')
+    # Quadrature-specific metrics and boundary traces are sampled independently of DOFs.
+    qo = cfg['diagnostic_order']
+    def integ(cf, boundary=None, order=qo):
+        return float(ng.Integrate(cf, mesh, definedon=mesh.Boundaries(boundary), order=order)) if boundary else float(ng.Integrate(cf,mesh,order=order))
+    volume=integ(1)
+    exact_volume=L*H-(math.pi*cfg['radius']**2 if obstacle else 0)
+    boundary_measures={b:integ(1,b) for b in set(mesh.GetBoundaries())}
+    geometry={'volume':volume,'volume_error':metric(abs(volume-exact_volume),exact_volume,'area error / exact fluid area'),
+              'boundary_measures':boundary_measures,'element_count':mesh.ne,'ndof':X.ndof,'velocity_ndof':V.ndof,
+              'pressure_ndof':Q.ndof,'geometry_order':cfg['geometry_order'],'coordinate_derivative_convention':'component,coordinate'}
+    if obstacle:
+        circumference=2*math.pi*cfg['radius']
+        geometry['obstacle_perimeter_error']=metric(abs(boundary_measures['obstacle']-circumference),circumference,'perimeter error / exact circumference')
+    # Full positive mapped rule exporter; checks mapped Jacobians and FE traces.
+    points=[]; weights=[]; vals=[]; grads=[]; pressures=[]; boundaries=[]
+    min_det=float('inf')
+    for el in mesh.Elements(ng.VOL):
+        ir=ng.IntegrationRule(el.type,qo)
+        tr=mesh.GetTrafo(el)
+        for ip in ir:
+            mip=tr(ip)
+            jac=np.asarray(mip.jacobi)
+            determinant=float(np.linalg.det(jac))
+            min_det=min(min_det,determinant)
+            w=float(ip.weight*mip.measure)
+            if w<=0 or determinant<=0:
+                raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
+            points.append(list(mip.point));weights.append(w)
+            vals.append(list(uh(mip)));grads.append(np.asarray(grad(uh)(mip)).reshape(2,2));pressures.append(float(ph(mip)))
+    trace_max=0.0; obstacle_distance_max=0.0; obstacle_normal_dot=[]
+    for el in mesh.Elements(ng.BND):
+        ir=ng.IntegrationRule(el.type,qo)
+        tr=mesh.GetTrafo(el)
+        label=el.mat
+        for ip in ir:
+            mip=tr(ip)
+            uv=np.asarray(uh(mip)); xy=np.array(mip.point)
+            bv=np.asarray(boundary_u(mip)) if (kind=='manufactured' or label=='inlet') else np.zeros(2)
+            if label!='outlet':
+                trace_max=max(trace_max,float(np.linalg.norm(uv-bv)))
+            if float(ip.weight*mip.measure)<=0:
+                raise ArithmeticError('nonpositive boundary rule weight')
+            if label=='obstacle':
+                radial=xy-np.array(cfg['center'])
+                obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))
+                obstacle_distance_max=max(obstacle_distance_max,abs(np.linalg.norm(xy-np.array(cfg['center']))-cfg['radius']))
+            boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),
+                               'label':label,'velocity':uv.tolist(),'pressure':float(ph(mip))})
+    geometry['minimum_sampled_jacobian_determinant']=min_det
+    geometry['max_sampled_obstacle_distance']=obstacle_distance_max
+    geometry['mapped_weight_sum']=sum(weights)
+    if obstacle:
+        geometry['sampled_obstacle_normal_dot_radial_range']=[min(obstacle_normal_dot),max(obstacle_normal_dot)]
+        if max(obstacle_normal_dot)>-.99:
+            raise ArithmeticError('obstacle outward-fluid normal orientation invalid')
+    np.savez_compressed(out/'full_rule.npz',points=np.asarray(points),weights=np.asarray(weights),
+                        velocity=np.asarray(vals),velocity_gradient=np.asarray(grads),pressure=np.asarray(pressures),
+                        stokes_coefficients=stokes_state,solution_coefficients=reference)
+    dump(out/'boundary_rule.json',boundaries)
+    g.Save(str(out/'solution.sol'))
+    # Gradient-form and symmetric-stress diagnostics both keep nonzero boundary work.
+    gu=grad(uh); div=ng.div(uh)
+    tau=nu*gu-ph*I
+    sigma=nu*(gu+gu.trans)-ph*I
+    qin=-integ(uh*normal,'inlet');qout=integ(uh*normal,'outlet')
+    metrics={'mass':metric(abs(qout-qin),max(abs(qin),1e-30),'abs(Qout-Qin)/abs(Qin)'),
+             'divergence':metric(D*math.sqrt(max(integ(div*div),0)),U*math.sqrt(volume),'D||div u||/(U sqrt(volume))'),
+             'boundary_trace':metric(trace_max,U,'maximum sampled essential FE trace error/U'),
+             'Qin':qin,'Qout':qout,
+             'mass_scope':('physical inlet/outlet mass' if kind!='manufactured' else 'inlet/outlet only; not a manufactured-control gate'),
+             'global_boundary_flux':metric(abs(sum(integ(uh*normal,b) for b in boundary_measures)),
+                                         max(sum(integ(ng.sqrt((uh*normal)**2),b) for b in boundary_measures),1e-12*U*D),
+                                         'abs(total boundary flux) / total absolute boundary flux'),
+             'independent_residual':metric(independent_norm,denominator,'scaled free-DOF residual / max(initial Stokes scaled residual, fixed floor)'),
+             'independent_assembly_agreement':independent_difference,
+             'pressure_mean':integ(ph)/volume,
+             'pressure_gauge':'fixed by natural outlet, no pin and no shift',
+             'row_scale_momentum':U**2*D,'row_scale_continuity':U*D,
+             'residual_initial_stokes_norm':initial,'residual_floor':cfg['residual_floor'],
+             'stokes_linear_residual':stokes_linear_metric}
+    # Raw and finite-divergence-corrected physical energy equation.
+    eps=ng.Sym(gu)
+    terms={'dissipation':2*nu*integ(ng.InnerProduct(eps,eps)),
+           'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),
+           'physical_traction_work':-sum(integ(uh*(sigma*normal),b) for b in boundary_measures),
+           'body_force_work':-integ(force*uh),
+           'finite_divergence_convection':-.5*integ((uh*uh)*div),
+           'finite_divergence_pressure':-integ(ph*div),
+           # Δu formulation differs from div(2ε) by grad(div u).
+           'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}
+    energy_floor=1e-12*U**3*D
+    physical_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}
+    physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma*normal),b) for b in boundary_measures})
+    physical_parts.update({k:z for k,z in terms.items() if k not in ('convection_boundary','physical_traction_work','finite_divergence_viscous')})
+    if cfg['outlet']=='gradient':
+        physical_parts['finite_divergence_viscous_volume']=-nu*integ(div*div)
+        physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div*(uh*normal),b) for b in boundary_measures})
+    denominator_energy=max(sum(abs(z) for z in physical_parts.values()),energy_floor)
+    metrics['energy']={'terms':terms,'individual_contributions':physical_parts,'physical_raw':metric(abs(sum(terms[k] for k in ('dissipation','convection_boundary','physical_traction_work','body_force_work'))),denominator_energy,'raw physical balance / sum absolute terms'),
+                       'corrected':metric(abs(sum(terms.values())),denominator_energy,'finite-divergence-corrected physical balance / sum absolute terms')}
+    gt={'dissipation':nu*integ(ng.InnerProduct(gu,gu)),
+        'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),
+        'gradient_traction_work':-sum(integ(uh*(tau*normal),b) for b in boundary_measures),
+        'body_force_work':-integ(force*uh),
+        'finite_divergence_convection':-.5*integ((uh*uh)*div),
+        'finite_divergence_pressure':-integ(ph*div)}
+    if cfg['outlet']=='symmetric':
+        gt['symmetric_pde_adjustment']=nu*integ(div*div)-sum(nu*integ(div*(uh*normal),b) for b in boundary_measures)
+    gradient_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}
+    gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau*normal),b) for b in boundary_measures})
+    gradient_parts.update({k:z for k,z in gt.items() if k not in ('convection_boundary','gradient_traction_work','symmetric_pde_adjustment')})
+    if cfg['outlet']=='symmetric':
+        gradient_parts['symmetric_div_volume']=nu*integ(div*div)
+        gradient_parts.update({f'symmetric_div_{b}':-nu*integ(div*(uh*normal),b) for b in boundary_measures})
+    metrics['gradient_energy']={'terms':gt,'individual_contributions':gradient_parts,'corrected':metric(abs(sum(gt.values())),max(sum(abs(z) for z in gradient_parts.values()),energy_floor),'A2 gradient-form energy including body forcing and finite divergence')}
+    gm=[]
+    for i in range(2):
+        terms_m={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),
+                 'gradient_traction':-sum(integ((tau*normal)[i],b) for b in boundary_measures),
+                 'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div)}
+        if cfg['outlet']=='symmetric':
+            terms_m['symmetric_pde_adjustment']=-sum(nu*integ(div*normal[i],b) for b in boundary_measures)
+        pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}
+        pieces.update({f'gradient_traction_{b}':-integ((tau*normal)[i],b) for b in boundary_measures})
+        pieces.update({k:z for k,z in terms_m.items() if k not in ('convection','gradient_traction','symmetric_pde_adjustment')})
+        if cfg['outlet']=='symmetric':
+            pieces.update({f'symmetric_div_{b}':-nu*integ(div*normal[i],b) for b in boundary_measures})
+        gm.append({'terms':terms_m,'individual_contributions':pieces,'corrected':metric(abs(sum(terms_m.values())),max(sum(abs(z) for z in pieces.values()),1e-12*U**2*D),'A2 gradient-form momentum including body forcing and finite divergence')})
+    metrics['gradient_momentum']=gm
+    momentum=[]
+    for i in range(2):
+        mt={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),
+            'physical_traction':-sum(integ((sigma*normal)[i],b) for b in boundary_measures),
+            'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div),
+            'finite_divergence_viscous':sum(nu*integ(div*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}
+        pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}
+        pieces.update({f'physical_traction_{b}':-integ((sigma*normal)[i],b) for b in boundary_measures})
+        pieces.update({k:z for k,z in mt.items() if k not in ('convection','physical_traction','finite_divergence_viscous')})
+        if cfg['outlet']=='gradient':
+            pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div*normal[i],b) for b in boundary_measures})
+        momentum.append({'terms':mt,'individual_contributions':pieces,'corrected':metric(abs(sum(mt.values())),max(sum(abs(z) for z in pieces.values()),1e-12*U**2*D),'physical momentum corrected for discrete divergence')})
+    metrics['momentum']=momentum
+    if exact_u is not None:
+        eu=uh-exact_u; ep=ph-exact_p
+        unorm=math.sqrt(max(integ(exact_u*exact_u),0))
+        metrics['velocity_error']=metric(math.sqrt(max(integ(eu*eu),0)),max(unorm,1e-12*U*math.sqrt(volume)),'weighted velocity L2 error / reference L2')
+        metrics['pressure_reference_relative_secondary']=metric(math.sqrt(max(integ(ep*ep),0)),max(math.sqrt(max(integ(exact_p*exact_p),0)),1e-12*U**2*math.sqrt(volume)),'secondary pressure L2 / reference pressure L2')
+        metrics['pressure_error']=metric(math.sqrt(max(integ(ep*ep),0)),U**2*math.sqrt(volume),'unshifted pressure RMS error / U²')
+        exact_grad=ng.CF(tuple(exact_u[i].Diff(c) for i in range(2) for c in (x,y)),dims=(2,2))
+        eg=gu-exact_grad
+        metrics['velocity_gradient_error']=metric(math.sqrt(max(integ(ng.InnerProduct(eg,eg)),0)),max(math.sqrt(max(integ(ng.InnerProduct(exact_grad,exact_grad)),0)),1e-12*U/D*math.sqrt(volume)),'gradient L2 error / reference gradient L2')
+    if obstacle:
+        forces={}
+        rforce=true_residual()
+        reaction=[]
+        for i in range(2):
+            test=ng.GridFunction(X)
+            unit=ng.CF(tuple(1.0 if j==i else 0.0 for j in range(2)))
+            test.components[0].Set(unit,definedon=mesh.Boundaries('obstacle'))
+            reaction.append(-float(ng.InnerProduct(rforce,test.vec)))
+        norm=0.5*U**2*D
+        forces['normalization']=norm
+        forces['reaction_force']=reaction
+        forces['reaction_coefficient']=[z/norm for z in reaction]
+        for stress_name,stress in [('gradient',tau),('physical_symmetric',sigma)]:
+            for order in [qo,qo+4]:
+                ff=[-integ((stress*normal)[i],'obstacle',order) for i in range(2)]
+                forces[f'{stress_name}_order{order}']={'force':ff,'coefficient':[z/norm for z in ff]}
+        # Probe points are geometrical spline vertices; evaluate FE interpolation,
+        # never nearest-node substitution or a fitted pressure shift.
+        cx,cy=cfg['center'];rad=cfg['radius']
+        probes=[(cx-rad,cy),(cx+rad,cy)]
+        pressures_probe=[float(ph(mesh(*pt))) for pt in probes]
+        forces['pressure_probes']={'points':probes,'values':pressures_probe,'difference':pressures_probe[0]-pressures_probe[1]}
+        if kind=='manufactured':
+            forces['analytic_force']=witness['obstacle_force']
+            for stress_name in ['gradient','physical_symmetric']:
+                expected=np.asarray(witness['obstacle_force'][stress_name])
+                measured=np.asarray(forces[f'{stress_name}_order{qo+4}']['force'])
+                forces[f'{stress_name}_analytic_error']=metric(np.linalg.norm(measured-expected),U**2*D,'force difference norm / U²D; includes source-driven manufactured force')
+            forces['reaction_analytic_error']=metric(np.linalg.norm(np.asarray(reaction)-np.asarray(witness['obstacle_force']['gradient'])),U**2*D,'reaction force minus analytic gradient force / U²D')
+        metrics['forces']=forces
+    if kind=='channel':
+        wall_force=[-integ((sigma*normal)[i],'wall.*') for i in range(2)]
+        expected_wall=12*nu*U*L/H
+        metrics['wall_shear_sign_control']={'force_on_both_walls':wall_force,'analytic_axial_force':expected_wall,
+             'axial_error':metric(abs(wall_force[0]-expected_wall),abs(expected_wall),'force on both walls versus positive analytic Poiseuille drag')}
+    elapsed=time.perf_counter()-started
+    result={'status':'completed_control_not_reference_admission','configuration':cfg,
+            'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
+            'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',
+            'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+            'versions':{'ngsolve':ng.__version__,'numpy':np.__version__,'python':platform.python_version()},
+            'provenance':{'source_sha256':sha(__file__),'config_sha256':sha(out/'config.json'),
+                          'job_id':os.environ.get('SLURM_JOB_ID'),'hostname':platform.node()}}
+    dump(out/'result.json',result)
+    return result
+
+
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--config',required=True)
+    parser.add_argument('--out',required=True)
+    args=parser.parse_args()
+    cfg=json.loads(Path(args.config).read_text())
+    if os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')!='highest' or os.environ.get('JAX_ENABLE_X64')!='true':
+        raise RuntimeError('required precision environment missing')
+    target=Path(args.out)
+    if target.exists():
+        raise FileExistsError('refusing to overwrite an existing attempt directory')
+    try:
+        result=run_case(cfg,target)
+        print(json.dumps({'status':result['status'],'out':str(target),'elapsed_seconds':result['elapsed_seconds']}),flush=True)
+    except Exception as exc:
+        target.mkdir(parents=True,exist_ok=True)
+        dump(target/'FAILED.json',{'error':repr(exc),'traceback':traceback.format_exc(),'source_sha256':sha(__file__),'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'job_id':os.environ.get('SLURM_JOB_ID')})
+        raise
+
+if __name__=='__main__':
+    main()
+
+
+--- 2D cluster/smoke.sh ---
+#!/usr/bin/env bash
+#SBATCH --job-name=nsob2d_smoke
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --time=00:20:00
+#SBATCH --output=slurm-%j.out
+#SBATCH --error=slurm-%j.err
+set -euo pipefail
+: "${SLURM_JOB_ID:?must be submitted as reviewed batch job}"
+JOB_DIR=$(pwd -P)
+case "$JOB_DIR" in /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/*) ;; *) exit 64;; esac
+PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+export JAX_DEFAULT_MATMUL_PRECISION=highest JAX_ENABLE_X64=true
+export OMP_NUM_THREADS=16 OPENBLAS_NUM_THREADS=16 MKL_NUM_THREADS=16
+export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export TMPDIR="$JOB_DIR/tmp" XDG_CACHE_HOME="$JOB_DIR/cache"
+export MPLCONFIGDIR="$JOB_DIR/cache/matplotlib" PIP_CACHE_DIR="$JOB_DIR/cache/pip"
+mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$MPLCONFIGDIR" "$PIP_CACHE_DIR" "$JOB_DIR/results"
+sha256sum -c SOURCE-SHA256SUMS
+"$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); print('jax_version='+jax.__version__); print('jax_devices='+str(jax.devices())); print('jax_x64='+str(jax.config.x64_enabled)); sys.exit(0 if b=='gpu' and jax.config.x64_enabled else 42)"
+printf 'cpu_model='
+lscpu | sed -n 's/^Model name:[[:space:]]*//p'
+nvidia-smi --query-gpu=name,uuid,memory.total --format=csv
+"$PY" dependencies.py --wheel-dir wheels --install --target "$JOB_DIR/deps"
+export PYTHONPATH="$JOB_DIR/deps${PYTHONPATH:+:$PYTHONPATH}"
+"$PY" -c "import ngsolve,netgen,numpy,jax; print('ngsolve='+ngsolve.__version__); print('numpy='+numpy.__version__); print('jax_after_dependency_import='+jax.__version__); print('backend_after_dependency_import='+jax.default_backend())"
+"$PY" fom.py --config configs/channel-smoke.json --out results/channel
+"$PY" fom.py --config configs/manufactured-smoke.json --out results/manufactured
+"$PY" fom.py --config configs/dfg-smoke.json --out results/dfg
+"$PY" smoke_summary.py results
+
+
+--- 2D dependencies.py ---
+"""Download exact hashed binary wheels; install only with explicit --install flag.
+
+No dependency resolution and no shared-environment mutation. Caller must supply a new
+lane-local target. Downloaded wheels are execution inputs, not generated training data.
+"""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+import urllib.request
+
+
+def main():
+    ap=argparse.ArgumentParser()
+    ap.add_argument('--wheel-dir',required=True)
+    ap.add_argument('--install',action='store_true')
+    ap.add_argument('--target')
+    args=ap.parse_args()
+    root=Path(__file__).resolve().parent
+    meta=json.loads((root/'DEPENDENCIES.json').read_text())
+    wheel_dir=Path(args.wheel_dir).resolve();wheel_dir.mkdir(parents=True,exist_ok=True)
+    wheels=[]
+    for name,package in meta['candidates'].items():
+        choices=package['cluster_candidate_wheels']
+        if len(choices)!=1:raise ValueError(f'{name}: expected one pinned wheel, got {len(choices)}')
+        wheel=choices[0];path=wheel_dir/wheel['filename']
+        if not path.exists():
+            partial=path.with_suffix('.partial')
+            with urllib.request.urlopen(wheel['url'],timeout=60) as src,partial.open('xb') as dst:
+                while block:=src.read(1024*1024):dst.write(block)
+            partial.rename(path)
+        digest=hashlib.file_digest(path.open('rb'),'sha256').hexdigest()
+        if digest!=wheel['digests']['sha256'] or path.stat().st_size!=wheel['size']:
+            raise ValueError(f'{path.name}: pinned byte hash/size mismatch')
+        wheels.append(str(path))
+        print(json.dumps({'wheel':path.name,'sha256':digest,'bytes':path.stat().st_size}),flush=True)
+    if args.install:
+        if not args.target:raise ValueError('--target required with --install')
+        target=Path(args.target).resolve()
+        if target.exists():raise FileExistsError('target exists: refusing to mix installations')
+        allowed='/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/'
+        if not str(target).startswith(allowed):raise ValueError('target must be inside this lane cluster namespace')
+        if sys.executable!='/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python':
+            raise RuntimeError('installation requires designated cluster interpreter')
+        subprocess.run([sys.executable,'-m','pip','install','--no-deps','--no-index','--no-compile','--target',str(target),*wheels],check=True,timeout=180)
+
+if __name__=='__main__':main()
+
+
+--- 2D smoke_summary.py ---
+"""G1 controls only. Never grants G2 reference/data admission."""
+import argparse,json
+from pathlib import Path
+ap=argparse.ArgumentParser();ap.add_argument('root');args=ap.parse_args()
+root=Path(args.root)
+campaign=json.loads(Path(__file__).with_name('campaign-A2.json').read_text());g=campaign['reference_gates']
+checks=[]
+for kind in ['channel','manufactured','dfg']:
+ result=json.loads((root/kind/'result.json').read_text());m=result['metrics'];geo=result['geometry']
+ for name,actual,limit in [('independent_residual',m['independent_residual']['value'],g['free_dof_residual']),
+                          ('geometry_volume',geo['volume_error']['value'],g['geometry_relative'])]:
+  checks.append(dict(case=kind,name=name,value=actual,threshold=limit,passed=actual<=limit))
+ if kind=='channel':
+  for name,limit in [('velocity_error',g['analytic_velocity_relative']),('pressure_error',g['analytic_pressure_scaled']),('boundary_trace',g['essential_trace_over_U'])]:
+   checks.append(dict(case=kind,name=name,value=m[name]['value'],threshold=limit,passed=m[name]['value']<=limit))
+  shear=m['wall_shear_sign_control']['axial_error']['value']
+  checks.append(dict(case=kind,name='wall_force_sign_and_magnitude',value=shear,threshold=1e-6,passed=shear<=1e-6))
+ if kind=='manufactured':
+  # Source derivatives checked inside solver. Coarse MMS solve is a sign/assembly
+  # smoke, not a final asymptotic accuracy or force certificate.
+  for name,limit in [('velocity_error',.02),('pressure_error',.02)]:
+   checks.append(dict(case=kind,name='coarse_'+name,value=m[name]['value'],threshold=limit,passed=m[name]['value']<=limit))
+  force=m['forces']['reaction_analytic_error']['value']
+  checks.append(dict(case=kind,name='coarse_known_curved_force',value=force,threshold=.005,passed=force<=.005))
+summary={'gate':'G1_smoke','checks':checks,'passed':all(c['passed'] for c in checks),
+         'G2_steady_reference_admitted':False,'training_released':False,
+         'reason':'mesh/p/tolerance/force/domain/outlet and result reviews remain required'}
+(root/'smoke_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+print(json.dumps(summary,indent=2))
+raise SystemExit(0 if summary['passed'] else 2)
+
+
+--- 2D make_configs.py ---
+"""Derive frozen smoke cases from saved authoritative campaign constants."""
+import hashlib
+import json
+from pathlib import Path
+import sympy as sp
+
+root=Path(__file__).resolve().parent
+source=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/campaign.json')
+raw=source.read_bytes();(root/'campaign-A2.json').write_bytes(raw)
+c=json.loads(raw);b=c['case2d']
+base=dict(U=b['inlet_mean'],D=2*b['radius'],nu=b['benchmark_nu'],H=b['height'],xmin=b['xmin'],xmax=b['xmax'],
+          center=b['obstacle_center'],radius=b['radius'],outlet='gradient',
+          velocity_order=3,pressure_order=2,geometry_order=3,maxh=.08,obstacle_h=.02,
+          assembly_bonus_order=6,diagnostic_order=12,threads=16,seed=c['seeds']['mesh'],
+          newton_max=30,nonlinear_relative_tolerance=1e-10,linear_relative_tolerance=1e-10,
+          residual_floor=1.0,damping_sequence=[1,.5,.25,.125,.0625,.03125,.015625],armijo=1e-4,
+          inverse_backend='umfpack',max_elements=20000,max_dofs=100000,max_nnz=12000000,
+          factor_fill_estimate=100,memory_stop_gib=48,
+          jacobian_steps=[1e-4,1e-5,1e-6],jacobian_state_perturbation=.1,
+          campaign_sha256=hashlib.sha256(raw).hexdigest(),design_sha256=c['design_sha256'],
+          release='G1_smoke_only_not_reference_admission',precision='float64')
+for kind in ['channel','manufactured','dfg']:
+ d=dict(base,kind=kind)
+ if kind=='channel': d['maxh']=.16
+ (root/'configs'/f'{kind}-smoke.json').write_text(json.dumps(d,indent=2)+'\n')
+# Independent symbolic witness: differentiate with SymPy, not NGSolve's CF calculus.
+x,y=sp.symbols('x y');U=sp.Rational(str(base['U']));H=sp.Rational(str(base['H']))
+xmin=sp.Rational(str(base['xmin']));L=sp.Rational(str(base['xmax']))-xmin;nu=sp.Rational(str(base['nu']))
+X=(x-xmin)/L;Y=y/H
+psi=U*H*(X**2*Y+X*Y**2+sp.Rational(1,4)*X**3*Y**3)
+uvec=sp.Matrix([sp.diff(psi,y),-sp.diff(psi,x)]);p=U**2*(X+Y+X*Y)
+grad=uvec.jacobian([x,y]);lap=sp.Matrix([sp.diff(a,x,2)+sp.diff(a,y,2) for a in uvec])
+f=grad*uvec-nu*lap+sp.Matrix([sp.diff(p,x),sp.diff(p,y)])
+div=sp.simplify(sp.diff(uvec[0],x)+sp.diff(uvec[1],y));assert div==0
+samples=[]
+for point in [[.11,.08],[.7,.17],[1.2,.29],[2.0,.35]]:
+ sub={x:point[0],y:point[1]}
+ samples.append({'point':point,'u':[float(a.subs(sub)) for a in uvec], 'p':float(p.subs(sub)),
+                 'gradient':[float(a.subs(sub)) for a in grad],'forcing':[float(a.subs(sub)) for a in f]})
+theta=sp.symbols('theta',real=True)
+radius=sp.Rational(str(base['radius']));cx,cy=map(lambda z:sp.Rational(str(z)),base['center'])
+normal=sp.Matrix([sp.cos(theta),sp.sin(theta)])
+force_exact={}
+for name,stress in [('gradient',nu*grad-p*sp.eye(2)),('physical_symmetric',nu*(grad+grad.T)-p*sp.eye(2))]:
+ tr=stress.subs({x:cx+radius*sp.cos(theta),y:cy+radius*sp.sin(theta)})*normal*radius
+ force_exact[name]=[float(sp.integrate(sp.expand(z),(theta,0,2*sp.pi))) for z in tr]
+w={'obstacle_force':force_exact,'force_normal':'outward from solid into fluid','configuration':{k:base[k] for k in ['U','nu','H','xmin','xmax']},'sympy_version':sp.__version__,
+   'divergence_symbolic':str(div),'velocity':[str(a) for a in uvec], 'pressure':str(p),
+   'forcing':[str(sp.simplify(a)) for a in f], 'advection':[str(sp.simplify(a)) for a in grad*uvec],
+   'samples':samples,'status':'symbolic_control_witness_not_measured_solver_result'}
+(root/'manufactured_witness.json').write_text(json.dumps(w,indent=2)+'\n')
+
+
+--- 2D config channel-smoke.json ---
+{
+  "U": 0.2,
+  "D": 0.1,
+  "nu": 0.001,
+  "H": 0.41,
+  "xmin": 0.0,
+  "xmax": 2.2,
+  "center": [
+    0.2,
+    0.2
+  ],
+  "radius": 0.05,
+  "outlet": "gradient",
+  "velocity_order": 3,
+  "pressure_order": 2,
+  "geometry_order": 3,
+  "maxh": 0.16,
+  "obstacle_h": 0.02,
+  "assembly_bonus_order": 6,
+  "diagnostic_order": 12,
+  "threads": 16,
+  "seed": 27102026,
+  "newton_max": 30,
+  "nonlinear_relative_tolerance": 1e-10,
+  "linear_relative_tolerance": 1e-10,
+  "residual_floor": 1.0,
+  "damping_sequence": [
+    1,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+  ],
+  "armijo": 0.0001,
+  "inverse_backend": "umfpack",
+  "max_elements": 20000,
+  "max_dofs": 100000,
+  "max_nnz": 12000000,
+  "factor_fill_estimate": 100,
+  "memory_stop_gib": 48,
+  "jacobian_steps": [
+    0.0001,
+    1e-05,
+    1e-06
+  ],
+  "jacobian_state_perturbation": 0.1,
+  "campaign_sha256": "b6fcb71041ddabb0a04180a629b53a43c46ba4129e4b83314422c26665981e53",
+  "design_sha256": "ce8fee66c78b835f287b2c163fd363b123cc44b7dccd6cc0b33a9abb2a40c964",
+  "release": "G1_smoke_only_not_reference_admission",
+  "precision": "float64",
+  "kind": "channel"
+}
+
+
+--- 2D config dfg-smoke.json ---
+{
+  "U": 0.2,
+  "D": 0.1,
+  "nu": 0.001,
+  "H": 0.41,
+  "xmin": 0.0,
+  "xmax": 2.2,
+  "center": [
+    0.2,
+    0.2
+  ],
+  "radius": 0.05,
+  "outlet": "gradient",
+  "velocity_order": 3,
+  "pressure_order": 2,
+  "geometry_order": 3,
+  "maxh": 0.08,
+  "obstacle_h": 0.02,
+  "assembly_bonus_order": 6,
+  "diagnostic_order": 12,
+  "threads": 16,
+  "seed": 27102026,
+  "newton_max": 30,
+  "nonlinear_relative_tolerance": 1e-10,
+  "linear_relative_tolerance": 1e-10,
+  "residual_floor": 1.0,
+  "damping_sequence": [
+    1,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+  ],
+  "armijo": 0.0001,
+  "inverse_backend": "umfpack",
+  "max_elements": 20000,
+  "max_dofs": 100000,
+  "max_nnz": 12000000,
+  "factor_fill_estimate": 100,
+  "memory_stop_gib": 48,
+  "jacobian_steps": [
+    0.0001,
+    1e-05,
+    1e-06
+  ],
+  "jacobian_state_perturbation": 0.1,
+  "campaign_sha256": "b6fcb71041ddabb0a04180a629b53a43c46ba4129e4b83314422c26665981e53",
+  "design_sha256": "ce8fee66c78b835f287b2c163fd363b123cc44b7dccd6cc0b33a9abb2a40c964",
+  "release": "G1_smoke_only_not_reference_admission",
+  "precision": "float64",
+  "kind": "dfg"
+}
+
+
+--- 2D config manufactured-smoke.json ---
+{
+  "U": 0.2,
+  "D": 0.1,
+  "nu": 0.001,
+  "H": 0.41,
+  "xmin": 0.0,
+  "xmax": 2.2,
+  "center": [
+    0.2,
+    0.2
+  ],
+  "radius": 0.05,
+  "outlet": "gradient",
+  "velocity_order": 3,
+  "pressure_order": 2,
+  "geometry_order": 3,
+  "maxh": 0.08,
+  "obstacle_h": 0.02,
+  "assembly_bonus_order": 6,
+  "diagnostic_order": 12,
+  "threads": 16,
+  "seed": 27102026,
+  "newton_max": 30,
+  "nonlinear_relative_tolerance": 1e-10,
+  "linear_relative_tolerance": 1e-10,
+  "residual_floor": 1.0,
+  "damping_sequence": [
+    1,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+  ],
+  "armijo": 0.0001,
+  "inverse_backend": "umfpack",
+  "max_elements": 20000,
+  "max_dofs": 100000,
+  "max_nnz": 12000000,
+  "factor_fill_estimate": 100,
+  "memory_stop_gib": 48,
+  "jacobian_steps": [
+    0.0001,
+    1e-05,
+    1e-06
+  ],
+  "jacobian_state_perturbation": 0.1,
+  "campaign_sha256": "b6fcb71041ddabb0a04180a629b53a43c46ba4129e4b83314422c26665981e53",
+  "design_sha256": "ce8fee66c78b835f287b2c163fd363b123cc44b7dccd6cc0b33a9abb2a40c964",
+  "release": "G1_smoke_only_not_reference_admission",
+  "precision": "float64",
+  "kind": "manufactured"
+}
+
+
+--- 3D implementation (full) ---
+"""Bounded three-component curved-FE reference/control implementation.
+
+This initial revision is unexecuted and its smoke cannot admit physical references.
+Grad(u)[i,j] = d_j u_i. Mixed residual uses gradient diffusion and minus signs for
+both pressure couplings, no pressure mass penalty and no extra pressure gauge.
+"""
+from __future__ import annotations
+import argparse
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import resource
+import subprocess
+import sys
+import time
+import traceback
+
+import numpy as np
+import ngsolve as ng
+from netgen.csg import CSGeometry, Cylinder, Plane, Pnt, Sphere, Vec
+
+
+def dump(path, value):
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
+    tmp.replace(path)
+
+
+def rss_gib():
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024**2
+
+
+def guard(cfg, start, ndof=None):
+    if rss_gib() > cfg["guards"]["rss_gib_max"]:
+        raise RuntimeError("Peak RSS guard fired")
+    if time.monotonic() - start > cfg["guards"]["case_seconds_max"]:
+        raise RuntimeError("Case wall-time guard fired")
+    if ndof is not None:
+        # Deliberately conservative screening heuristic, not a proved fill bound.
+        estimate = 128 * ndof**2 / 1024**3 + 4
+        if ndof > cfg["guards"]["max_dofs"] or estimate > cfg["guards"]["factor_estimate_gib_max"]:
+            raise RuntimeError(f"Pre-factorization guard: ndof={ndof}, estimated_GiB={estimate}")
+        return estimate
+
+
+def geometry(cfg, obstacle):
+    g, m = cfg["geometry"], cfg["mesh"]
+    pipe = Cylinder(Pnt(0,0,0), Pnt(1,0,0), g["pipe_radius"]).bc("wall").maxh(m["wall_maxh"])
+    left = Plane(Pnt(g["x_in"],0,0), Vec(-1,0,0)).bc("inlet")
+    right = Plane(Pnt(g["x_out"],0,0), Vec(1,0,0)).bc("outlet")
+    fluid = pipe * left * right
+    if obstacle:
+        sphere = Sphere(Pnt(0,0,0), g["sphere_diameter"]/2).bc("sphere").maxh(m["sphere_maxh"])
+        fluid = fluid - sphere
+    geo = CSGeometry()
+    geo.Add(fluid.mat("fluid"))
+    mesh = ng.Mesh(geo.GenerateMesh(maxh=m["maxh"]))
+    if mesh.ne > m["max_elements"]:
+        raise RuntimeError(f"Element-count guard: {mesh.ne}")
+    mesh.Curve(m["geometry_order"])
+    got = set(mesh.GetBoundaries())
+    want = {"inlet","outlet","wall"} | ({"sphere"} if obstacle else set())
+    if got != want:
+        raise RuntimeError(f"Boundary labels differ: {got} != {want}")
+    return mesh
+
+
+def integrate(cf, mesh, order):
+    value=float(ng.Integrate(cf, mesh, order=order))
+    if not math.isfinite(value):
+        raise RuntimeError("Nonfinite volume integral")
+    return value
+
+
+def surface(cf, mesh, boundary, order):
+    value=float(ng.Integrate(cf, mesh, ng.BND, definedon=mesh.Boundaries(boundary), order=order))
+    if not math.isfinite(value):
+        raise RuntimeError("Nonfinite surface integral")
+    return value
+
+
+def geometry_diagnostics(mesh, cfg, obstacle):
+    g=cfg["geometry"]
+    R, a, L = g["pipe_radius"], g["sphere_diameter"]/2, g["x_out"]-g["x_in"]
+    q=cfg["fe"]["diagnostic_quadrature_order"]
+    exact_v=math.pi*R*R*L-(4*math.pi*a**3/3 if obstacle else 0)
+    rows=[]
+    for order in (q,q+4):
+        V=integrate(1,mesh,order)
+        areas={name:surface(1,mesh,name,order) for name in sorted(set(mesh.GetBoundaries()))}
+        exact={"inlet":math.pi*R*R,"outlet":math.pi*R*R,"wall":2*math.pi*R*L}
+        if obstacle:
+            exact["sphere"]=4*math.pi*a*a
+        n=ng.specialcf.normal(3)
+        normal_balance=[surface(n[i],mesh,".*",order) for i in range(3)]
+        coordinates=ng.CoefficientFunction((ng.x,ng.y,ng.z))
+        div_theorem=surface(coordinates*n,mesh,".*",order)
+        sphere_distance_rms=None
+        if obstacle:
+            sphere_distance_rms=math.sqrt(max(0,surface((ng.sqrt(ng.x**2+ng.y**2+ng.z**2)-a)**2,mesh,"sphere",order)/areas["sphere"]))
+        wall_distance=math.sqrt(max(0,surface((ng.sqrt(ng.y**2+ng.z**2)-R)**2,mesh,"wall",order)/areas["wall"]))
+        rows.append({"order":order,"volume":V,"exact_volume":exact_v,"volume_relative_error":abs(V-exact_v)/exact_v,"areas":areas,"exact_areas":exact,"area_relative_errors":{k:abs(areas[k]-v)/v for k,v in exact.items()},"closed_normal_integrals":normal_balance,"divergence_theorem_x_dot_n_minus_3V":div_theorem-3*V,"sphere_distance_rms":sphere_distance_rms,"wall_distance_rms":wall_distance})
+    return {"elements":mesh.ne,"vertices":mesh.nv,"curving_order":cfg["mesh"]["geometry_order"],"boundaries":list(mesh.GetBoundaries()),"integration_ladder":rows,"signed_curved_jacobian_certificate":"not yet implemented; geometry smoke alone cannot pass G2"}
+
+
+def exact_data(cfg, case):
+    """Analytical polynomial controls with manually differentiated derivatives.
+
+    Manufactured u=(Y²+Z,Z²+X,X²+Y), p=X+Y²−Z. Every velocity component is
+    nonzero; div(u)=0 and (u·grad)u != 0. Physical exact data are evaluated on
+    the computational curved geometry, with exact natural outlet load.
+    """
+    x,y,z=ng.x,ng.y,ng.z
+    R=cfg["geometry"]["pipe_radius"]
+    nu=cfg["physics"]["nu"]
+    U=cfg["physics"]["mean_speed"]
+    if case == "manufactured":
+        L=cfg["geometry"]["x_out"]-cfg["geometry"]["x_in"]
+        X,Y,Z=x/L,y/R,z/R
+        u=ng.CoefficientFunction((Y*Y+Z,Z*Z+X,X*X+Y))
+        G=ng.CoefficientFunction((0,2*y/R**2,1/R,1/L,0,2*z/R**2,2*x/L**2,1/R,0), dims=(3,3))
+        lap=ng.CoefficientFunction((2/R**2,2/R**2,2/L**2))
+        p=X+Y*Y-Z
+        gp=ng.CoefficientFunction((1/L,2*y/R**2,-1/R))
+        f=G*u+gp-nu*lap
+        return u,p,G,f
+    u=ng.CoefficientFunction((2*U*(1-(y*y+z*z)/R**2),0,0))
+    G=ng.CoefficientFunction((0,-4*U*y/R**2,-4*U*z/R**2,0,0,0,0,0,0),dims=(3,3))
+    p=8*nu*U*(cfg["geometry"]["x_out"]-x)/R**2
+    return u,p,G,ng.CoefficientFunction((0,0,0))
+
+
+def constitutive(G,p,nu,kind):
+    return nu*(G+G.trans if kind=="symmetric" else G)-p*ng.Id(3)
+
+
+def residual_scales(X,V,cfg):
+    U,D=cfg["physics"]["mean_speed"],cfg["geometry"]["sphere_diameter"]
+    # Force/continuity units fixed across Newton, Reynolds and candidate policy.
+    units=np.concatenate((np.full(V.ndof,U*U*D**2),np.full(X.ndof-V.ndof,U*D**2)))
+    free=np.fromiter((bool(X.FreeDofs()[i]) for i in range(X.ndof)),dtype=bool,count=X.ndof)
+    return units,free
+
+
+def scaled_norm(vec,units,free):
+    value=float(np.linalg.norm(vec.FV().NumPy()[free]/units[free]))
+    if not math.isfinite(value):
+        raise RuntimeError("Nonfinite free-DOF residual")
+    return value
+
+
+def independent_residual(X,gfu,mesh,cfg,f,traction,conv_factor):
+    v,q=X.TestFunction()
+    u,p=gfu.components
+    nu=cfg["physics"]["nu"]
+    order=cfg["fe"]["quadrature_order"]
+    kind=cfg["physics"]["outlet"]
+    visc=nu*ng.InnerProduct(ng.Grad(u)+ng.Grad(u).trans if kind=="symmetric" else ng.Grad(u),ng.Grad(v))
+    value=(visc+conv_factor*(ng.Grad(u)*u)*v-p*ng.div(v)-ng.div(u)*q-f*v)*ng.dx(bonus_intorder=order)
+    value-=traction*v*ng.ds("outlet",bonus_intorder=order)
+    rr=ng.LinearForm(X)
+    rr+=value
+    rr.Assemble()
+    return rr.vec
+
+
+def solve(mesh,cfg,case,folder,row,start):
+    t0=time.monotonic()
+    is_mms=case=="manufactured"
+    obstacle=case in ("manufactured","sphere")
+    bcs="inlet|wall"+("|sphere" if obstacle else "")
+    order=cfg["fe"]["velocity_order"]
+    if cfg["fe"]["pressure_order"]!=order-1:
+        raise RuntimeError("Only Taylor-Hood degree k/k-1 accepted")
+    V=ng.VectorH1(mesh,order=order,dirichlet=bcs)
+    Q=ng.H1(mesh,order=order-1)
+    X=V*Q
+    row["dofs"]={"velocity":V.ndof,"pressure":Q.ndof,"total":X.ndof}
+    row["factor_memory_screen_gib"]=guard(cfg,start,X.ndof)
+    row["factor_memory_screen_is_bound"]=False
+    dump(folder/"progress.json",row)
+    u,p=X.TrialFunction()
+    v,q=X.TestFunction()
+    gfu=ng.GridFunction(X)
+    bc=ng.GridFunction(X)
+    uex,pex,Gex,f=exact_data(cfg,case)
+    if is_mms:
+        bc.components[0].Set(uex,definedon=mesh.Boundaries(bcs))
+    else:
+        bc.components[0].Set(uex,definedon=mesh.Boundaries("inlet"))
+    gfu.vec.data=bc.vec
+    nu=cfg["physics"]["nu"]
+    n=ng.specialcf.normal(3)
+    kind=cfg["physics"]["outlet"]
+    if kind not in ("gradient","symmetric"):
+        raise RuntimeError("Unknown outlet/diffusion form")
+    if kind=="symmetric" and case=="empty":
+        raise RuntimeError("Empty Poiseuille exact control requires gradient outlet")
+    traction=constitutive(Gex,pex,nu,kind)*n if is_mms else ng.CoefficientFunction((0,0,0))
+    alpha=ng.Parameter(0)
+    qi=cfg["fe"]["quadrature_order"]
+    visc=nu*ng.InnerProduct(ng.Grad(u)+ng.Grad(u).trans if kind=="symmetric" else ng.Grad(u),ng.Grad(v))
+    a=ng.BilinearForm(X)
+    a+=(visc+alpha*(ng.Grad(u)*u)*v-p*ng.div(v)-ng.div(u)*q)*ng.dx(bonus_intorder=qi)
+    rhs=ng.LinearForm(X)
+    rhs+=f*v*ng.dx(bonus_intorder=qi)+traction*v*ng.ds("outlet",bonus_intorder=qi)
+    rhs.Assemble()
+    units,free=residual_scales(X,V,cfg)
+    r=gfu.vec.CreateVector()
+    trial=gfu.vec.CreateVector()
+    step=gfu.vec.CreateVector()
+    linear=r.CreateVector()
+    history=[]
+    denom=None
+    for factor in cfg["solver"]["continuation"]:
+        alpha.Set(factor)
+        for it in range(cfg["solver"]["max_newton"]+1):
+            guard(cfg,start,X.ndof)
+            a.Apply(gfu.vec,r)
+            r.data-=rhs.vec
+            raw=scaled_norm(r,units,free)
+            if denom is None:
+                denom=max(raw,cfg["solver"]["initial_residual_floor"])
+            record={"convection_factor":factor,"iteration":it,"raw_free_residual":raw,"normalization":denom,"relative_residual":raw/denom,"rss_gib":rss_gib()}
+            if raw/denom<=cfg["solver"]["relative_free_residual"]:
+                history.append(record)
+                break
+            if it==cfg["solver"]["max_newton"]:
+                raise RuntimeError("Newton iteration limit; no accepted state")
+            ta=time.monotonic()
+            a.AssembleLinearization(gfu.vec)
+            guard(cfg,start,X.ndof)
+            inverse=a.mat.Inverse(X.FreeDofs(),inverse=cfg["fe"]["inverse"])
+            step.data=inverse*r
+            del inverse
+            linear.data=a.mat*step-r
+            lin_raw=scaled_norm(linear,units,free)
+            lin_denom=max(raw,1e-30)
+            record.update(linear_residual=lin_raw,linear_denominator=lin_denom,linear_relative=lin_raw/lin_denom,jacobian_factor_solve_seconds=time.monotonic()-ta)
+            if lin_raw/lin_denom>cfg["solver"]["linear_relative_residual"]:
+                raise RuntimeError(f"Linear residual gate failed: {lin_raw/lin_denom}")
+            before=gfu.vec.FV().NumPy().copy()
+            accepted=False
+            for bt in range(cfg["solver"]["max_backtracks"]+1):
+                damping=2.0**(-bt)
+                trial.FV().NumPy()[:]=before-damping*step.FV().NumPy()
+                a.Apply(trial,r)
+                r.data-=rhs.vec
+                new=scaled_norm(r,units,free)
+                if new<=(1-cfg["solver"]["armijo"]*damping)*raw:
+                    gfu.vec.data=trial
+                    accepted=True
+                    record.update(damping=damping,backtracks=bt,accepted_raw_residual=new)
+                    break
+            history.append(record)
+            row["history"]=history
+            dump(folder/"progress.json",row)
+            if not accepted:
+                raise RuntimeError("Damped Newton failed to reduce residual")
+        else:
+            raise RuntimeError("Unreachable Newton exit")
+    if cfg["solver"]["continuation"][-1]!=1.0:
+        raise RuntimeError("Last solve did not use complete convection")
+    a.Apply(gfu.vec,r)
+    r.data-=rhs.vec
+    ri=independent_residual(X,gfu,mesh,cfg,f,traction,1.0)
+    independent=scaled_norm(ri,units,free)
+    gap=r.CreateVector()
+    gap.data=r-ri
+    row["residual"]={"free_dof_normalization":"Euclidean row-unit-scaled free residual divided by max(initial exact-BC zero-interior residual, configured floor); velocity unit U²D², continuity UD²","denominator":denom,"independent_free_raw":independent,"independent_relative":independent/denom,"assembled_vector_gap":scaled_norm(gap,units,free)/denom,"dirichlet_coefficient_max_gap":float(np.max(np.abs((gfu.vec.FV().NumPy()-bc.vec.FV().NumPy())[~free]),initial=0))}
+    if independent/denom>cfg["solver"]["relative_free_residual"] or row["residual"]["assembled_vector_gap"]>1e-12:
+        raise RuntimeError("Independent residual check failed")
+    row["history"]=history
+    row["solve_seconds"]=time.monotonic()-t0
+    row["diagnostics"]=diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder)
+    gfu.Save(str(folder/"solution.gf"))
+    mesh.ngmesh.Save(str(folder/"mesh.vol"))
+    np.savez_compressed(folder/"coefficients.npz",coefficients=gfu.vec.FV().NumPy(),free=free,velocity_dofs=V.ndof,pressure_dofs=Q.ndof)
+    return gfu
+
+
+def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
+    u,p=gfu.components
+    G=ng.Grad(u)
+    nu=cfg["physics"]["nu"]
+    U=cfg["physics"]["mean_speed"]
+    D=cfg["geometry"]["sphere_diameter"]
+    n=ng.specialcf.normal(3)
+    sigma=constitutive(G,p,nu,"symmetric")
+    gradstress=constitutive(G,p,nu,"gradient")
+    obstacle=case in ("sphere","manufactured")
+    out=[]
+    for order in (cfg["fe"]["diagnostic_quadrature_order"],cfg["fe"]["diagnostic_quadrature_order"]+4):
+        V=integrate(1,mesh,order)
+        flux={name:surface(u*n,mesh,name,order) for name in sorted(set(mesh.GetBoundaries()))}
+        div2=integrate(ng.div(u)**2,mesh,order)
+        inlet_area=surface(1,mesh,"inlet",order)
+        flux_scale=U*inlet_area
+        values={"quadrature_order":order,"volume":V,"fluxes_outward":flux,"mass_imbalance":sum(flux.values()),"mass_denominator":flux_scale,"mass_relative":abs(sum(flux.values()))/flux_scale,"divergence_squared_integral":div2,"divergence_normalized":D*math.sqrt(max(div2,0))/(U*math.sqrt(V)),"outlet_backflow_flux":surface(ng.IfPos(-(u*n),-(u*n),0),mesh,"outlet",order)}
+        # Exact essential coefficients and trace RMS are distinct diagnostics. A
+        # continuum max trace has not been certified by this implementation smoke.
+        traces={}
+        for boundary in ("inlet","wall")+(("sphere",) if obstacle else ()):
+            desired=uex if case=="manufactured" or boundary=="inlet" else ng.CoefficientFunction((0,0,0))
+            traces[boundary]=math.sqrt(max(0,surface(ng.InnerProduct(u-desired,u-desired),mesh,boundary,order)/surface(1,mesh,boundary,order)))/U
+        values["boundary_trace_rms_over_U"]=traces
+        values["boundary_trace_max_certificate"]="not computed; RMS is not maximum"
+        momentum_flux=[]; all_traction=[]; body=[]; mom_res=[]; mom_den=[]
+        for i in range(3):
+            mf={b:surface(u[i]*(u*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+            tf={b:surface((sigma*n)[i],mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+            bf=integrate(f[i],mesh,order)
+            momentum_flux.append(mf); all_traction.append(tf); body.append(bf)
+            mom_res.append(sum(mf.values())-sum(tf.values())-bf)
+            mom_den.append(max(sum(abs(v) for v in mf.values())+sum(abs(v) for v in tf.values())+abs(bf),1e-12*U*U*D*D))
+        eps=(G+G.trans)*0.5
+        diss=2*nu*integrate(ng.InnerProduct(eps,eps),mesh,order)
+        kinetic={b:0.5*surface((u*u)*(u*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+        power={b:surface(u*(sigma*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+        fpower=integrate(u*f,mesh,order)
+        energy=diss+sum(kinetic.values())-sum(power.values())-fpower
+        eden=max(abs(diss)+sum(abs(v) for v in kinetic.values())+sum(abs(v) for v in power.values())+abs(fpower),1e-12*U**3*D*D)
+        divkin=0.5*integrate((u*u)*ng.div(u),mesh,order)
+        divp=integrate(p*ng.div(u),mesh,order)
+        grad_diss=nu*integrate(ng.InnerProduct(G,G),mesh,order)
+        gradpower={b:surface(u*(gradstress*n),mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+        grad_identity=grad_diss+sum(kinetic.values())-divkin-divp-sum(gradpower.values())-fpower
+        grad_energy_den=max(abs(grad_diss)+sum(abs(v) for v in kinetic.values())+abs(divkin)+abs(divp)+sum(abs(v) for v in gradpower.values())+abs(fpower),1e-12*U**3*D*D)
+        gradient_momentum=[]
+        for i in range(3):
+            gradient_tractions={b:surface((gradstress*n)[i],mesh,b,order) for b in sorted(set(mesh.GetBoundaries()))}
+            udiv=integrate(u[i]*ng.div(u),mesh,order)
+            mismatch=sum(momentum_flux[i].values())-sum(gradient_tractions.values())-udiv-body[i]
+            den=max(sum(abs(v) for v in momentum_flux[i].values())+sum(abs(v) for v in gradient_tractions.values())+abs(udiv)+abs(body[i]),1e-12*U*U*D*D)
+            gradient_momentum.append({"gradient_tractions":gradient_tractions,"u_divu":udiv,"residual":mismatch,"denominator":den,"normalized":abs(mismatch)/den})
+        values["gradient_momentum_with_finite_divergence"]=gradient_momentum
+        values["momentum"]={"convective_boundary_flux":momentum_flux,"physical_boundary_traction":all_traction,"body_force_integrals":body,"residual":mom_res,"denominator":mom_den,"normalized": [abs(a)/b for a,b in zip(mom_res,mom_den)],"finite_divergence_u_divu": [integrate(u[i]*ng.div(u),mesh,order) for i in range(3)]}
+        values["energy"]={"physical_strain_dissipation":diss,"kinetic_boundary_flux":kinetic,"physical_boundary_power":power,"body_power":fpower,"raw_residual":energy,"denominator":eden,"normalized":abs(energy)/eden,"half_u_squared_divu":divkin,"p_divu":divp,"gradient_dissipation":grad_diss,"gradient_boundary_power":gradpower,"gradient_identity_with_divergence_terms":grad_identity,"gradient_identity_denominator":grad_energy_den,"gradient_identity_normalized":abs(grad_identity)/grad_energy_den}
+        if obstacle:
+            fsym=[-surface((sigma*n)[i],mesh,"sphere",order) for i in range(3)]
+            fgrad=[-surface((gradstress*n)[i],mesh,"sphere",order) for i in range(3)]
+            fp=[surface(p*n[i],mesh,"sphere",order) for i in range(3)]
+            unit=0.5*U*U*math.pi*D*D/4
+            values["force"]={"physical":fsym,"gradient":fgrad,"pressure":fp,"viscous":[a-b for a,b in zip(fsym,fp)],"coefficient_denominator":unit,"physical_coefficients":[a/unit for a in fsym],"gradient_coefficients":[a/unit for a in fgrad]}
+        if case=="manufactured":
+            exact_stress=constitutive(Gex,pex,nu,"symmetric")
+            exact_surface=[-surface((exact_stress*n)[i],mesh,"sphere",order) for i in range(3)]
+            R=cfg["geometry"]["pipe_radius"]
+            length=cfg["geometry"]["x_out"]-cfg["geometry"]["x_in"]
+            solid_volume=4*math.pi*(D/2)**3/3
+            exact_sphere_force=[solid_volume*(-1/length+2*nu/R**2),solid_volume*(2*nu/R**2),solid_volume*(1/R+2*nu/length**2)]
+            values["manufactured_force_control"]={"exact_polynomial_on_FE_surface":exact_surface,"analytic_exact_sphere_surface_force":exact_sphere_force,"geometry_only_gap":[a-b for a,b in zip(exact_surface,exact_sphere_force)],"FE_solution_force_minus_exact_on_FE_geometry":[a-b for a,b in zip(values["force"]["physical"],exact_surface)]}
+        if case in ("empty","manufactured"):
+            eu=integrate(ng.InnerProduct(u-uex,u-uex),mesh,order)
+            ur=integrate(uex*uex,mesh,order)
+            ep=integrate((p-pex)**2,mesh,order)
+            values["exact_error"]={"u_error_squared":eu,"u_reference_squared":ur,"u_relative":math.sqrt(max(0,eu)/max(ur,1e-30)),"p_error_squared":ep,"p_characteristic_rms":math.sqrt(max(ep,0))/(U*U*math.sqrt(V))}
+        out.append(values)
+    reactions=[]
+    if obstacle:
+        for i in range(3):
+            test=ng.GridFunction(X)
+            ei=ng.CoefficientFunction(tuple(float(j==i) for j in range(3)))
+            test.components[0].Set(ei,definedon=mesh.Boundaries("sphere"))
+            reactions.append(-float(np.dot(ri.FV().NumPy(),test.vec.FV().NumPy())))
+    probes=[]
+    for point in ((-D/2,0,0),(D/2,0,0)) if obstacle else ((0,0,0),(1,0,0)):
+        try:
+            mp=mesh(*point)
+            probes.append({"point":point,"pressure":float(p(mp)),"velocity":[float(v) for v in u(mp)],"status":"evaluated_on_FE_geometry_no_nearest_node_replacement"})
+        except Exception as exc:
+            probes.append({"point":point,"status":"unresolved_exact_point","error":str(exc)})
+    return {"integration_ladder":out,"gradient_weak_reaction_force":reactions,"pressure_probes":probes,"reference_admitted":False,"admission_note":"Requires independent multi-level convergence, trace-maximum and signed-curved-Jacobian gates; this smoke cannot admit references"}
+
+
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--config",type=Path,required=True)
+    parser.add_argument("--out",type=Path,required=True)
+    args=parser.parse_args()
+    cfg=json.loads(args.config.read_text())
+    campaign_path=Path(__file__).with_name(cfg["campaign_file"])
+    if hashlib.sha256(campaign_path.read_bytes()).hexdigest()!=cfg["campaign_sha256"]:
+        raise RuntimeError("Central campaign bytes differ from reviewed configuration")
+    campaign=json.loads(campaign_path.read_text())
+    c3=campaign["case3d"]
+    expected_geometry={"sphere_diameter":2*c3["sphere_radius"],"pipe_radius":c3["pipe_radius"],"x_in":c3["xmin"],"x_out":c3["xmax"]}
+    if cfg["geometry"]!=expected_geometry or cfg["physics"]["mean_speed"]!=c3["inlet_mean"] or cfg["physics"]["nu"]!=c3["pilot_nu"]:
+        raise RuntimeError("Initial smoke differs from central fixed geometry/physics")
+    if args.out.exists():
+        raise RuntimeError("Output exists; inspect old attempt, use a new job directory")
+    args.out.mkdir(parents=True)
+    ng.SetNumThreads(cfg["threads"])
+    np.random.seed(cfg["seed"])
+    start=time.monotonic()
+    report={"schema":"ns-obstacle-3d-control-results-v1","config":cfg,"config_sha256":hashlib.sha256(args.config.read_bytes()).hexdigest(),"source_sha256":hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),"source_commit":Path("SOURCE_COMMIT.txt").read_text().strip() if Path("SOURCE_COMMIT.txt").exists() else None,"job_id":os.environ.get("SLURM_JOB_ID"),"python":sys.version,"ngsolve_version":ng.__version__,"numpy_version":np.__version__,"platform":platform.platform(),"cpu":platform.processor(),"thread_env":{k:os.environ.get(k) for k in ("OMP_NUM_THREADS","OPENBLAS_NUM_THREADS","MKL_NUM_THREADS")},"arithmetic":"real64 FE/NumPy; GPU JAX preflight external; no FE GPU acceleration claim","cases":[],"reference_admitted":False}
+    try:
+        report["cpu_info"]=subprocess.check_output(["lscpu"],text=True,timeout=10)
+        report["gpu_info"]=subprocess.check_output(["nvidia-smi","--query-gpu=name,uuid,memory.total","--format=csv,noheader"],text=True,timeout=10)
+    except Exception as exc:
+        report["hardware_query_error"]=str(exc)
+    dump(args.out/"summary.json",report)
+    try:
+        with ng.TaskManager():
+            for name in cfg["cases"]:
+                if time.monotonic()-start>cfg["guards"]["total_seconds_max"]:
+                    raise RuntimeError("Total code wall-time guard fired")
+                folder=args.out/name
+                folder.mkdir()
+                row={"case":name,"status":"started","seed":cfg["seed"],"mesh_seed_scope":"NumPy seed recorded; Netgen deterministic default seed/control requires runtime verification"}
+                report["cases"].append(row)
+                case_start=time.monotonic()
+                dump(args.out/"summary.json",report)
+                mesh=geometry(cfg,name!="empty")
+                row["geometry"]=geometry_diagnostics(mesh,cfg,name!="empty")
+                row["geometry_seconds"]=time.monotonic()-case_start
+                dump(folder/"progress.json",row)
+                if name=="geometry_sphere":
+                    mesh.ngmesh.Save(str(folder/"mesh.vol"))
+                elif name in ("empty","manufactured","sphere"):
+                    solve(mesh,cfg,name,folder,row,case_start)
+                else:
+                    raise RuntimeError(f"Unknown case {name}")
+                row.update(status="diagnostic_complete",elapsed_seconds=time.monotonic()-case_start,peak_rss_gib=rss_gib())
+                dump(folder/"result.json",row)
+                dump(args.out/"summary.json",report)
+        report["status"]="smoke_complete_not_reference_admission"
+    except Exception as exc:
+        report["status"]="failed"
+        report["exception"]=str(exc)
+        report["traceback"]=traceback.format_exc()
+        raise
+    finally:
+        report["elapsed_seconds"]=time.monotonic()-start
+        report["peak_rss_gib"]=rss_gib()
+        dump(args.out/"summary.json",report)
+        files=sorted(p for p in args.out.rglob("*") if p.is_file() and p.name!="OUTPUTS.sha256")
+        (args.out/"OUTPUTS.sha256").write_text("".join(hashlib.sha256(p.read_bytes()).hexdigest()+"  "+str(p.relative_to(args.out))+"\n" for p in files))
+
+if __name__=="__main__":
+    main()
+
+
+--- 3D configs/g1-smoke.json ---
+{
+  "schema": "ns-obstacle-3d-control-v1",
+  "release_status": "NOT_RELEASED_requires_coordinator_exact_review",
+  "scope": "geometry_then_CPU_FE_control_only_after_2D_smoke_and_independent_memory_review_no_reference_admission",
+  "seed": 27102026,
+  "threads": 4,
+  "geometry": {
+    "sphere_diameter": 1.0,
+    "pipe_radius": 2.5,
+    "x_in": -5.0,
+    "x_out": 15.0
+  },
+  "physics": {
+    "mean_speed": 1.0,
+    "rho": 1.0,
+    "nu": 0.1,
+    "outlet": "gradient"
+  },
+  "mesh": {
+    "maxh": 2.0,
+    "wall_maxh": 1.5,
+    "sphere_maxh": 0.6,
+    "geometry_order": 3,
+    "max_elements": 6000
+  },
+  "fe": {
+    "velocity_order": 2,
+    "pressure_order": 1,
+    "quadrature_order": 10,
+    "diagnostic_quadrature_order": 12,
+    "inverse": "umfpack"
+  },
+  "solver": {
+    "max_newton": 20,
+    "relative_free_residual": 1e-10,
+    "initial_residual_floor": 1.0,
+    "linear_relative_residual": 1e-10,
+    "max_backtracks": 12,
+    "armijo": 0.0001,
+    "continuation": [
+      0.0,
+      0.25,
+      0.5,
+      1.0
+    ]
+  },
+  "guards": {
+    "max_dofs": 15000,
+    "factor_estimate_gib_max": 48.0,
+    "rss_gib_max": 48.0,
+    "case_seconds_max": 300.0,
+    "total_seconds_max": 1000.0,
+    "factor_memory_formula": "128 * total_mixed_dofs**2 bytes + 4GiB reserve; conservative screen, not guarantee"
+  },
+  "cases": [
+    "geometry_sphere",
+    "empty",
+    "manufactured"
+  ],
+  "output": "output",
+  "gate_policy": "all outputs diagnostic; no physical reference or training gate may be marked passed by this smoke",
+  "campaign_file": "CAMPAIGN.predata-A3.json",
+  "campaign_sha256": "7df6e1f87e2cb9feee8c1bf55a2da8d37c6537c6eef318370b6c13016f5920a0"
+}
+
+
+--- 3D cluster/g1-smoke.sbatch ---
+#!/usr/bin/env bash
+#SBATCH --job-name=ctol_nsobs3d_g1
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --time=00:20:00
+#SBATCH --output=/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke01/%j.out
+#SBATCH --error=/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke01/%j.err
+#SBATCH --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke01
+set -euo pipefail
+PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+export JAX_ENABLE_X64=1 JAX_DEFAULT_MATMUL_PRECISION=highest
+export OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4
+export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export TMPDIR="$PWD/tmp" PIP_CACHE_DIR="$PWD/pip-cache"
+mkdir -p "$TMPDIR" "$PIP_CACHE_DIR"
+sha256sum -c INPUTS.sha256
+"$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
+"$PY" install_deps.py --target "$PWD/deps" --metadata DEPENDENCIES.discovery.json
+export PYTHONPATH="$PWD/deps"
+timeout --signal=TERM 1000 "$PY" reference3d.py --config configs/g1-smoke.json --out output

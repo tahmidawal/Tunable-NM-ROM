@@ -1,0 +1,30 @@
+{
+  "status": "implementation_reviews_and_preflight_fixes",
+  "numerical_jobs": [],
+  "active_external_consults": [],
+  "pending": [
+    "2D final preflight source/config diff review",
+    "3D final preflight source/config diff review, then2Dsmokepass",
+    "ROM infrastructure independent code review"
+  ],
+  "staged_unsubmitted": [
+    {
+      "lane": "2d",
+      "attempt": "g1-smoke01",
+      "source_commit": "09784dba13b1301231dd7c571bb137d03873ff15",
+      "manifest": "fa0b11e140612bfe85117c9bee84f18b940a91311a703bbce1dcf0282485c953",
+      "will_be_superseded_by": "g1-smoke02"
+    },
+    {
+      "lane": "3d",
+      "attempt": "g1-smoke01",
+      "source_commit": "485d4252f740d54fccb172f089ecc48a0db88438",
+      "manifest": "22911ce4bd4905b705879eae65bbaa8e94d0bd38f1213ae403c4e5021300606a",
+      "will_be_superseded_by": "g1-smoke02"
+    }
+  ],
+  "completed_allocated_gpu_hours": 0,
+  "global_ceiling_gpu_hours": 12,
+  "no_legacy_sealed_data_opened": true,
+  "no_merges": true
+}

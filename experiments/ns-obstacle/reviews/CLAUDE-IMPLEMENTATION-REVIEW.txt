@@ -1,0 +1,93 @@
+# Numerical-implementation review: 2D smoke (releasable after fixes) and 3D (conditional)
+
+## Verdict
+
+I re-derived the 2D core formulation and found no mathematical blocker. Specifically:
+
+- **Weak form and signs.** The weak form, the natural outlet sign and the Newton sign convention are correct. So are the Taylor–Hood k/(k−1) DOF ordering and the momentum U²D / continuity UD row units.
+- **Force sign.** Force on the solid is −∫σ·n_fluid, and the solid-outward normal used in the witness integral is consistent with it.
+- **Reaction force.** The reaction −⟨r, e_i on obstacle⟩ is consistent with the gradient-stress surface force.
+- **Energy and momentum identities.** The gradient-form and physical identities, including the ∇(div u) correction terms, are correct.
+- **Channel controls.** The Poiseuille pressure and the wall-drag sign 12νUL/H are correct.
+- **MMS.** The 3D manufactured derivatives and the closed-form sphere force V_B(νΔu − ⟨∇p⟩) are correct.
+
+The real risks are in how the run executes and in a few diagnostic gaps. The items under heading A could each abort or invalidate the smoke after the expensive work is already done.
+
+## A. Runtime/API risks likely to kill the smoke (fix before release)
+
+1. **The 1e-10 relative linear-residual gate is fragile.** The direct-solve backward error is about eps·‖J‖‖δ‖/‖r‖. On late Newton steps r is tiny, and on the unscaled saddle-point matrix this ratio can plausibly reach 1e-10 to 1e-9 even with a correct UMFPACK solve. If it does, the run raises `ArithmeticError` on a correct solution.
+   - Fix: log the ratio, and abort only above about 1e-6. Newton convergence plus the independent residual check already certify the state. The same applies in 3D.
+
+2. **Solver and library availability.** I can't confirm that the pinned NGSolve wheel was built with UMFPACK; PyPI Linux builds lean on MKL/PARDISO.
+   - With `pip --target --no-deps`, the `mkl` and `intel-openmp` wheels must be in `DEPENDENCIES.json`.
+   - Their `.so` files land in `deps/lib`, which the wheel's rpath (venv-relative) may not find.
+   - Fix: add a preflight in `smoke.sh` after the import line that solves a tiny 2×2 sparse system with `inverse='umfpack'`. If MKL is present, `export LD_LIBRARY_PATH=$JOB_DIR/deps/lib`. This fails in seconds rather than at the first factorization.
+
+3. **Exporter API calls only run after the solve.** These calls are made only after the solve and the Jacobian check:
+   - `mesh.GetTrafo(el)` with an `Ngs_Element`
+   - `np.asarray(mip.jacobi)`
+   - `normal(mip)` on a BND trafo
+
+   I'm not certain that `Ngs_Element→ElementId` converts implicitly, or that `FlatMatrix` exposes the buffer protocol. Fix:
+   - Use `mesh.GetTrafo(ng.ElementId(el))` and `mip.jacobi.NumPy()`.
+   - Better, exercise one VOL and one BND point immediately after `mesh.Curve`, so an API failure costs nothing.
+
+4. **2D pressure probes have no fallback.** The probes at (cx±r, cy) sit on the curved boundary. Unlike 3D, 2D has no try/except, and `mesh(x, y)` may return a MeshPoint with `nr == −1` rather than raising. Either way the DFG case can die or silently evaluate garbage at the very end.
+   - Fix: check `mp.nr >= 0`, wrap the evaluation, and record failures.
+   - Optionally also report probes nudged 1e-9 radially into the fluid, with the offset recorded.
+   - Apply the `nr` check in 3D as well.
+
+5. **Nondeterministic summation order.** `set(mesh.GetBoundaries())` iteration order changes with string-hash randomization, so the order of all boundary summations and JSON keys varies run to run. Use `sorted(...)`, as 3D already does.
+
+6. **2D threading is not actually enabled.** `ng.SetNumThreads(16)` does nothing without `with ng.TaskManager():`, so assembly and the Python exporter loop run serially. That is acceptable at this size, but either wrap the work or record the runtime as serial.
+
+7. **`smoke.sh` stops at the first failing case.** Because of `set -e`, one failure means no `smoke_summary.json`. Run each case as `|| rc=$?`, always run the summary (letting it handle missing `result.json`), then exit with the worst code.
+
+8. **3D SIGTERM handling.** `timeout --signal=TERM` kills Python without running `finally`, so `summary.json`/`OUTPUTS.sha256` are never finalized. Install `signal.signal(SIGTERM, lambda *a: sys.exit(143))`.
+   - Also, 1000 s plus pip install plus preflight inside 1200 s is tight. Compute the remaining budget or lower the timeout.
+
+## B. Mathematical or diagnostic defects (not 2D-smoke blockers)
+
+1. **3D has no normal-orientation gate.**
+   - 2D asserts that n·r̂ ≈ −1 on the obstacle; 3D does not check orientation at all.
+   - `closed_normal_integrals` is sign-blind.
+   - A flipped sphere orientation shifts `∮x·n − 3V` by only about 2·3V_B ≈ 3.1 against 3V ≈ 1178, and that quantity is not gated.
+
+   Add per-label checks with a hard fail:
+   - sphere: n·x/|x| ≤ −0.99
+   - wall: n·(0,y,z)/R ≥ 0.99
+   - inlet: n_x = −1
+   - outlet: n_x = +1
+
+   Add rectangle-edge checks in 2D as well, since Q_in and the wall-drag sign depend on them. Force and MMS-force credibility depend on these checks.
+
+2. **3D physical momentum and energy omit finite-divergence corrections.** The "physical" residual `mom_res` and `energy` lack the −∫u_i div u, ν∮(div u)n_i, −½∫|u|²div u, −∫p div u, and −ν∫(div u)² + ν∮(div u)(u·n) terms that 2D includes. They will therefore sit at discretization level, not at roundoff. Either add the terms, mirroring 2D, or rename the field to `raw_uncorrected`. The gradient-form 3D identities are correct.
+
+3. **Missing reaction-force checks.**
+   - 3D computes the gradient reaction force but never compares it with `exact_sphere_force`. Add the same metric as in 2D.
+   - Because the exact MMS field is divergence-free and smooth through the solid, the analytic gradient force and the analytic symmetric force must be identical. Assert `witness['obstacle_force']['gradient'] == ['physical_symmetric']` to roundoff in 2D. This is a free independent check of the witness integration.
+
+4. **DFG produces no force diagnostics in the summary.** The summary for the DFG case gates only on the residual and the volume. Without becoming a reference gate, it should at least record:
+   - the reaction-versus-surface-integral gap for both quadrature orders
+   - |C_D − 5.5795|, |C_L − 0.010619| and |Δp − 0.11752|, labelled non-gating
+
+   That way a sign or normalization bug is visible in the smoke output.
+
+5. **The residual floor of 1.0 turns the criterion into an absolute 1e-10 in scaled units** whenever the initial Stokes residual is below 1, as it is for the channel case (≈ roundoff). That is acceptable, but record it explicitly as "absolute in scaled units" rather than "relative". My roundoff-floor estimates (≈3e-14 in 2D, ≈3e-13 in 3D) are well below it, so Armijo stagnation is unlikely.
+
+6. **3D DOF budget may be tight.** With maxh 2, wall 1.5, sphere 0.6 and P2/P1, the DOF count could be close to the 15000 guard. Run the `geometry_sphere` case first, which is already ordered, and print `V.ndof` from a space built on that mesh before attempting `empty`/`manufactured`. Otherwise the guard fires after meshing time has been spent. The coarse sphere mesh (~5 elements around a great circle) is fine for geometry/MMS sign checks but not for any force claim, which is consistent with the stated scope.
+
+7. **Minor items.**
+   - The 3D preflight doesn't assert `jax.config.x64_enabled`, whereas 2D does. 2D also requires the literal `'true'`, while 3D exports `1`. Harmless, but keep it consistent.
+   - 3D `PYTHONPATH` overwrites rather than prepends.
+
+## C. Confirmed correct (no action)
+
+- **Newton details.** The Armijo backtracking, the restoration to `reference` before diagnostics, the independent coefficient-residual path (same quadrature, so the 1e-11 gap is pure roundoff), and the centered-FD Jacobian check are sound. The FD check exploits the residual being exactly quadratic.
+- **Witness check.** The row-major Jacobian ordering matches SymPy, all witness sample points lie outside the obstacle, and the MMS has nonzero data on curved Dirichlet boundaries, forcing, and outlet traction.
+- **Inlet.** The DFG inlet peak of 0.3 (mean 0.2) is correct, and C_D normalization uses U_mean and D = 0.1.
+- **3D geometry.** CSG plane half-space orientations and the Poiseuille data (u = 2U(1 − r²/R²), dp/dx = −8νU/R²) are correct.
+
+## Release recommendation
+
+Release the 2D smoke after A1–A5 and A7, plus the B1 rectangle checks and the B3 witness equality. These are small edits, but the source changes mean the SHA manifest and the configs must be regenerated and re-reviewed. Keep 3D conditional on the 2D pass and on B1, B2 and A8. None of this changes the closed G2/h/p/force/reference gates.

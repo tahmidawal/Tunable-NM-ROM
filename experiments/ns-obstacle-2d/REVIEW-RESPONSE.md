@@ -23,3 +23,5 @@ The independent Claude consultation re-derived the core mixed weak form, force s
 - `SOURCE_COMMIT.txt` will be generated from the exact committed source at staging, transferred explicitly and independently recorded in the attempt manifest. The prior staged `g1-smoke01` is preserved; the candidate is for a distinct `g1-smoke02` after re-review.
 
 Checks performed without NGSolve execution: Python syntax, shell syntax, symbolic witness equality, and the missing-case summary path. No packages installed and no numerical allocation submitted.
+
+The job name now starts with `ctol_` so the existing explicit-ID cancellation helper can validate it if cancellation becomes necessary. No alternate cancellation policy is introduced. The first smoke's exact submission command specifies `--gres=gpu:h200:1`, subject to the coordinator checking current availability; this is recorded in the manifest. The hard twenty-minute limit, CPU FE interpretation, and total allocation accounting are unchanged.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --job-name=nsob2d_smoke
+#SBATCH --job-name=ctol_nsobs2d_g1
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=16

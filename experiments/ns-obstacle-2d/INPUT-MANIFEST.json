@@ -43,8 +43,8 @@
     },
     {
       "path": "cluster/smoke.sh",
-      "sha256": "3bb875432362873752049dda882a9b12ad5f8fd1092ddcde6d9a9dc85ed5f4d5",
-      "bytes": 2789
+      "sha256": "76a12dc82639e6693b7d4cbb5f9a8a75d1c85a89a1ab67de827ec055705d9127",
+      "bytes": 2792
     },
     {
       "path": "configs/channel-smoke.json",
@@ -62,12 +62,14 @@
       "bytes": 1148
     }
   ],
-  "source_parent_when_manifest_generated": "310a4372896ffd76dced73d624db94a9d09c35ad",
+  "source_parent_when_manifest_generated": "5d969926de28310c8ef4e4699c8c81e928015c80",
   "execution_source_commit_binding": "SOURCE_COMMIT.txt is created from exact source commit at staging and separately recorded in staging manifest",
-  "command": "sbatch --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
+  "command": "sbatch --gres=gpu:h200:1 --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
   "allocation": {
     "partition": "gpu",
     "gpus": 1,
+    "gpu_type_submit_override": "h200",
+    "job_name": "ctol_nsobs2d_g1",
     "cpus": 16,
     "mem_GiB": 64,
     "wall_seconds": 1200

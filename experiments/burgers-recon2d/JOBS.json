@@ -11,8 +11,25 @@
       "reservation_seconds": 3600,
       "gpu_request": "h200:1",
       "status_at_submission": "PENDING",
+      "actual_elapsed_seconds": 313,
+      "review": "Independent numerical reviewer PREPARATION SOURCE READY at aec440bf8; parent released exact matching preparation-only job.",
+      "status": "COMPLETED",
+      "exit_code": "0:0",
+      "consumed_manifest_sha256": "5a5820f12afe2c345633c5f00b70ae48d35ae67724a278a8c94e0e07eab00c87",
+      "collection": "compact consumed arrays pulled and checksummed; regenerable training matrices remain remote until cleanup, bases retained while supplement uses symlink"
+    },
+    {
+      "job_id": 6567730,
+      "directory": "inputplus01",
+      "phase": "extra_input_rung_only",
+      "source_commit": "df52c54278c3a8a7efe15297bfc03b1b46607591",
+      "stage_manifest_sha256": "31a84d9aa93b9cd78b74df6c7407c20db20082f519f430aed393c4da7d281494",
+      "source_preparation_manifest_sha256": "5a5820f12afe2c345633c5f00b70ae48d35ae67724a278a8c94e0e07eab00c87",
+      "reservation_seconds": 1200,
+      "gpu_request": "h200:1",
+      "status_at_submission": "PENDING",
       "actual_elapsed_seconds": null,
-      "review": "Independent numerical reviewer PREPARATION SOURCE READY at aec440bf8; parent released exact matching preparation-only job."
+      "review": "Independent exact source/stage/input manifest RELEASE READY, parent released once; queue checked before and after."
     }
   ]
 }

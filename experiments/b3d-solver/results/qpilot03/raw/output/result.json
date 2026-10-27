@@ -1,0 +1,155 @@
+{
+ "config": {
+  "seed": 923801,
+  "mode": "quadrature",
+  "cases": [
+   5
+  ],
+  "_config_path": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot03/experiments/b3d-solver/configs/q-pilot.json"
+ },
+ "config_sha256": "d7245f06b6a7f8cb67e60c51bd72ddd7962c6fbcee5a87cf15151864dc95e09f",
+ "source_commit": "7c5e44bb22a5729c270901fa0ecc5ce7ad5bec33",
+ "job_id": "6526456",
+ "backend": "gpu",
+ "jax": "0.10.2",
+ "gpu": [
+  "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534"
+ ],
+ "provenance_sha256": "027ac367139ca64cf28e54bf6fcd562d6f0028afa4ab759ef1557b7c57b840a6",
+ "cohort_sha256": "b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c",
+ "complete": true,
+ "scope": "diagnostic subset",
+ "setup": {
+  "W1024": {
+   "seconds": 8.45041735842824,
+   "r": 1024,
+   "M": 4097,
+   "bank_sha256": "86094f6884e55643240197e560f7dc1924bac3885aed79b20faf2e54446aa036",
+   "trust": 0.005882977149369457
+  }
+ },
+ "runs": {
+  "W1024|gl80|case5": {
+   "fresh_gamma": [
+    1.457372063095494e-09,
+    9.496420468720048e-08,
+    6.90355699564195e-09,
+    8.021894396985994e-09,
+    9.819757406827188e-09,
+    1.4969549558544758e-08,
+    0.0012438057454440656,
+    0.0008609636808725365,
+    0.0006691814505029112,
+    0.0005598904504350525,
+    0.0004231172438813727,
+    0.00032391405980593203,
+    0.00027303074355211957,
+    0.0001995203177115095,
+    0.00015418954970360032,
+    0.00014574678796983596,
+    0.00012152252561713691,
+    9.038633184232572e-05,
+    7.533751119126931e-05,
+    6.893263163060536e-05,
+    5.525093511334607e-05,
+    3.874504030498864e-05,
+    2.6675940856988525e-05,
+    2.17643463747494e-05,
+    1.9462822958876183e-05
+   ],
+   "valid": true,
+   "dist_gl64_gl80": 4.0170876000302173e-05,
+   "dist_gl56_gl80": 0.00012827223522128255,
+   "score": {
+    "e_t": [
+     0.00016687573712881277,
+     0.0014178078310365014,
+     0.0032922799821993,
+     0.008601055492102064,
+     0.016144028093325425,
+     0.055730326640207856
+    ],
+    "e": 0.055730326640207856,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "own_state_rho": [
+    7.371819884100791e-09,
+    1.760762338489427e-08,
+    1.3142580824042185e-07,
+    4.170107663076291e-06,
+    2.0931860775369168e-05,
+    0.00045536200304529607
+   ],
+   "note": "diagnostic subset; no full-population qualification claim",
+   "rho_finite": true,
+   "rho_gl64_own_states": true,
+   "zero_denominator_times": []
+  }
+ },
+ "restarts": {},
+ "timing": {},
+ "archive_identity": {
+  "W1024|gl56|fs|CN|0.01|K1|case5": {
+   "score": {
+    "e_t": [
+     0.0001668757371288138,
+     0.0014178076895714597,
+     0.003292272281984719,
+     0.008600971479313832,
+     0.01614502077759108,
+     0.055817237071216816
+    ],
+    "e": 0.055817237071216816,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "archived_e": 0.05581723707121686,
+   "delta": 4.163336342344337e-17,
+   "passed": true
+  },
+  "W1024|gl64|fs|CN|0.01|K1|case5": {
+   "score": {
+    "e_t": [
+     0.0001668757371288138,
+     0.0014178079031562966,
+     0.0032922824190097905,
+     0.008601077493307949,
+     0.016143694469762458,
+     0.05570373487963751
+    ],
+    "e": 0.05570373487963751,
+    "eps_ref": 8.421610276360762e-05,
+    "eligible": true,
+    "reference": "3d/val64/ST/c005",
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "normalisation": 126.92954175598341
+   },
+   "archived_e": 0.05570373487963758,
+   "delta": 6.938893903907228e-17,
+   "passed": true
+  }
+ },
+ "gates": {},
+ "elapsed_seconds": 48.587922194972634,
+ "memory": {
+  "num_allocs": 42914,
+  "bytes_in_use": 2264779776,
+  "peak_bytes_in_use": 61013808896,
+  "largest_alloc_size": 16798089216,
+  "bytes_limit": 135100628992,
+  "bytes_reserved": 0,
+  "peak_bytes_reserved": 0,
+  "largest_free_block_bytes": 0,
+  "pool_bytes": 135100628992,
+  "peak_pool_bytes": 135100628992
+ },
+ "execution_complete": true,
+ "diagnostic_anchors_usable": false
+}

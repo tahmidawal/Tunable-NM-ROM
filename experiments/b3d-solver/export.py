@@ -13,8 +13,8 @@ def main():
     out=dict(audits=audits,status='diagnostic subset; consult per-job independent audit verdicts',scope='validation diagnostics; no new frontier or comparator win claim',
              gpu_hours=sum(e.get('gpu_hours',0.) for e in ledger['entries']),budget_gpu_hours=ledger['budget_gpu_hours'],
              jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],
-             next_open=['Independent results audit of D-S pilot','Remaining W768/W1024 cases0,5,30,43 with complete adaptive-anchor distance',
-                        'D-Q gl80 missing finer-rule check on first8','Full64 paired same-invocation frontier validation after diagnostic review'])
+             next_open=['D-Q gl80 first-eight closure after pilot audit','D-T fixed four-case time diagnostics',
+                        'Fair POD schedule tuning on four cases','Full64 paired same-invocation frontier validation after diagnostic review'])
     for entry in ledger['entries']:
         rp=HERE/'results'/entry['attempt']/'raw/output/result.json'
         if not rp.exists():continue
@@ -40,9 +40,16 @@ def main():
                             obs['timing_all_admitted'] &= r.get('timing_admitted',False)
             obs['query_median_seconds']=float(np.median(obs['timing_seconds'])) if obs['timing_seconds'] else None
             obs['max_evolved_error_time_index']=int(np.argmax(v['score']['e_t'][1:])+1)
+            obs['max_evolved_error_time']=.05*obs['max_evolved_error_time_index']
             out['observations'].append(obs)
-        out['same_history'] += [dict(key=k,source=source,**v) for k,v in z['restarts'].items()]
+        for k,v in z['restarts'].items():
+            sn,case,_=k.split('|');baseline=z['runs'][sn+'|baseline|'+case]
+            mt=.05*(int(np.argmax(baseline['score']['e_t'][1:]))+1);st=.025*(v['step']+1)
+            out['same_history'].append(dict(key=k,source=source,step_output_time=st,physical_max_error_time=mt,
+                physical_max_precedes_replayed_step=mt<st,step_fails_stationarity=v['diagnostics']['baseline_gamma']>1e-3,**v))
         out['archive_identities'] += [dict(key=k,source=source,**v) for k,v in z['archive_identity'].items()]
+    qr=HERE/'results/historical-tight-quadrature.json'
+    if qr.exists():out['historical_tight_quadrature']=dict(path=str(qr.relative_to(HERE)),sha256=sha(qr),data=json.loads(qr.read_text()))
     (HERE/'EXPORT.json').write_text(json.dumps(out,indent=1)+'\n')
     print(json.dumps(dict(observations=len(out['observations']),same_history=len(out['same_history']),gpu_hours=out['gpu_hours'])))
 

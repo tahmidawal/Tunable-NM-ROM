@@ -1,0 +1,71 @@
+{
+  "status": "all_expanded_evidence_matches_staged_local_git_blobs",
+  "storage": "Direct Git blobs; expanded evidence is retained. Numerical runs are excluded from the code-only mirror.",
+  "member_manifest": "experiments/burgers-recon2d/results/RETENTION.members.jsonl",
+  "member_manifest_sha256": "3526a0b5a44ecc0c9688e61be940e203c8e6c0b69f5e9b0810f9b94d6cafc65f",
+  "tracked_files": 50760,
+  "total_logical_bytes": 51714197084,
+  "unique_git_blobs": 49062,
+  "collections": [
+    {
+      "run": "prep01",
+      "collection_sha256": "d7b0fbe19b28915e620fa5b1437ef744ab8969dbffffa9db70b5d062e0b26027",
+      "collection_members_verified": 359,
+      "tracked_files": 360,
+      "bytes": 3496140608
+    },
+    {
+      "run": "inputplus01",
+      "collection_sha256": "88d38b28ad553b9cbaf4b6200715a0407904b908e3e2b14cd08a832c833123bc",
+      "collection_members_verified": 367,
+      "tracked_files": 368,
+      "bytes": 3520499132
+    },
+    {
+      "run": "dev01",
+      "collection_sha256": "fded98a71adee5e1f8916bbffcf58292fc6ed7ef49cb92bea930e00978a7ea6e",
+      "collection_members_verified": 3484,
+      "tracked_files": 3486,
+      "bytes": 13401913653
+    },
+    {
+      "run": "dev02",
+      "collection_sha256": "60fb7043a65e1b8c82ce88a0cdbdfcd841d4245d6809885b33c7a2a8da669386",
+      "collection_members_verified": 7683,
+      "tracked_files": 7684,
+      "bytes": 14092232786
+    },
+    {
+      "run": "val01",
+      "collection_sha256": "0d0ecd6a8d79da29f889d8dfd3e122d9e0d43f6b0c6e1831706a1ff5a1dc2e8a",
+      "collection_members_verified": 38858,
+      "tracked_files": 38859,
+      "bytes": 17163936555
+    }
+  ],
+  "compact_exports": [
+    {
+      "run": "dev02",
+      "source": "experiments/burgers-recon2d/runs/dev02/output/EXPORT.json",
+      "source_bytes": 26078942,
+      "source_sha256": "53b71d603488fa874338c4b8782fd3bf09d243ab28efcbf31017b17a5ee15c4c",
+      "compressed": "experiments/burgers-recon2d/results/dev02-EXPORT.json.zst",
+      "compressed_bytes": 6340433,
+      "compressed_sha256": "dc0550d65a7786a0f7b989364bb3cae614c9eded8313837c975b9cac7cbba5a6",
+      "verified": "decompressed bytes match the immutable original EXPORT exactly"
+    },
+    {
+      "run": "val01",
+      "source": "experiments/burgers-recon2d/runs/val01/output/EXPORT.json",
+      "source_bytes": 135612526,
+      "source_sha256": "81e01e6abe24039e44824975fe8aa84db6bfe88a2841e2e06fc3e84bda7f7ba1",
+      "compressed": "experiments/burgers-recon2d/results/val01-EXPORT.json.zst",
+      "compressed_bytes": 33133364,
+      "compressed_sha256": "c70d9a9c4324301dcf37cbfcf4120e5ad43a12e759b84422f19f29be4ccbc3fd",
+      "verified": "decompressed bytes match the immutable original EXPORT exactly"
+    }
+  ],
+  "training_retention": "Regenerable training matrices were omitted under the approved contract; hashes, seed, recipe, fingerprints and native POD bases are retained.",
+  "invalid_attempt": "dev01 is retained for audit, fully ineligible for scientific or timing conclusions.",
+  "durability_repair": "Earlier closing entry described ignored expanded copies; this manifest records the subsequent direct-Git retention repair without replacing those copies."
+}

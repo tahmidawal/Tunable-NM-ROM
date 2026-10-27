@@ -1,0 +1,53 @@
+{
+  "status": "accepted_for_screen",
+  "reviewer": "independent read-only Codex reconstruction_numerical_review",
+  "job_id": 6569458,
+  "source": "7c58b45eaa734a9fac5eaa764c25698f66fd77e1",
+  "export_sha256": "81e01e6abe24039e44824975fe8aa84db6bfe88a2841e2e06fc3e84bda7f7ba1",
+  "collection_manifest_sha256": "0d0ecd6a8d79da29f889d8dfd3e122d9e0d43f6b0c6e1831706a1ff5a1dc2e8a",
+  "freeze_sha256": "bb8535dc386c4af19cd75877bcb005ac0165358daedd9f9a4c341b78e632ee88",
+  "verified": {
+    "complete_unique_records": 19136,
+    "timed_coefficient_links": 287040,
+    "representative_reconstructions": 26,
+    "representative_timing_pairs": 390,
+    "prepared_case_mesh_inputs": 96,
+    "input_reference_hash_links": 19136,
+    "all_fits_complete": true,
+    "frozen_selection_and_source_contracts": true,
+    "exported_scores_timing_selections_sensitivities_match_raw": true
+  },
+  "independent_differences": {
+    "fit_relative_max": 8.52e-16,
+    "field_relative_max": 5.13e-16,
+    "error_sensitivity_max": 5.07e-17,
+    "strict_rank384_ridge0_augmented_lstsq_coefficient_relative": {
+      "bank": 1.14e-14,
+      "POD": 4.86e-15
+    }
+  },
+  "qualifications": [
+    "L32/B/case5 is the sole unadmitted coarse input and is retained everywhere.",
+    "Conditional numerical-reference estimates, not certified physical bounds or statistical confidence.",
+    "Recipe-reproduced approximate POD; not byte-identical archived training data.",
+    "Exposed research cohorts; sealed and out-of-distribution cohorts remain closed.",
+    "Only same-sample reconstruction; no ROM rollout or fine PDE correction."
+  ],
+  "operational_review": {
+    "remote_cleanup_independently_verified": true,
+    "cleanup_receipt_sha256": "422ef3abddf51768d6731e00eac4b9dd02a13e1ca532747205b4c475a87f9828",
+    "expanded_data_intact": true,
+    "tracked_run_files_before_repair": 0,
+    "durability_repair_status": "independently accepted",
+    "tracked_files": 50760,
+    "unique_git_blobs": 49062,
+    "collected_file_hashes_verified": 50751,
+    "total_logical_bytes": 51714197084,
+    "lane_commit": "d3773aabc33ff8a7bd07c0d3df23768066017f04",
+    "mirror_commit": "2686da8125cc549b381cc7b9ea29cd4279043503",
+    "retention_record_sha256": "6422f91c13ab16fbb81ee8a07ba4e56f37f304ec9f521820334176ea899f345a",
+    "member_manifest_sha256": "3526a0b5a44ecc0c9688e61be940e203c8e6c0b69f5e9b0810f9b94d6cafc65f",
+    "expanded_and_git_storage_verified": true,
+    "compressed_export_bytes_exact": true
+  }
+}

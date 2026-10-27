@@ -1,0 +1,10 @@
+{
+  "reviewer": "independent Codex reconstruction_numerical_review",
+  "scope": "read-only design, source and exact preparation/smoke jobs",
+  "shared_core": {"commit":"2188aead1", "status":"ready_for_bounded_gpu_algebra_smoke", "independent_numpy_fixtures":"passed"},
+  "local_gpu_smoke": {"status":"failed_before_backend_initialization", "reason":"CUDA out of memory at stream executor creation", "accepted_result":false, "log":"core-smoke.log", "retry":"none locally; approved fixture passed in 3D cluster smoke"},
+  "two_dimensional_preparation": {"source":"aec440bf80e90fae20a0f6697452646e67833aca", "manifest_sha256":"29e3f64f7319e5db9de8e991716bc057ab6789d3c0ea2fe391ee4d6fd37fcf64", "status":"ready", "job_id":6567289},
+  "three_dimensional_smoke": {"source":"db1ba37611076e319222338034551cc7296a8048", "manifest_sha256":"2d87411399d825609bf27f2ad94b630c2d443afff4af0bec3637466af0bd094e", "status":"ready_smoke_only", "job_id":6567332},
+  "pending": ["3D smoke collection/result acceptance", "3D full preparation and 2D input supplement exact release", "reconstruction runners", "development selector freeze", "validation", "results and publication"],
+  "qualifications": ["fine-Gram numerical truncation depends on ill-conditioned raw rescaling", "randomized POD is approximate", "check covariance after basis QR", "3D bank used historical bank-validation data in checkpoint selection"]
+}

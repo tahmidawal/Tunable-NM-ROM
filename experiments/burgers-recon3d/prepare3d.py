@@ -113,6 +113,8 @@ def generate_training(cfg, out, smoke=False):
     p = (LF-1)**3
     t0 = time.perf_counter()
     tab = C.table(cfg['train_seed'], cfg['train_count'])  # same exact original count even in smoke
+    expected = json.loads((HERE/'configs/frozen_inputs.json').read_text())
+    assert tab['sha256'] == expected['bank_training_table_sha256'], 'training table hash differs'
     train_info = dict(seed=cfg['train_seed'], original_count=cfg['train_count'], used_count=ntraj,
                       table_sha256=tab['sha256'], steps=steps, groups={},
                       weighting='equal groups and snapshots; each mapped field divided by original sampled-field RMS',
@@ -276,6 +278,7 @@ def prepare_bank(bank_path, out):
 
 def prepare_coarse_inputs(out, smoke=False):
     meta={}
+    solvers={l:RC.make_solver(3,l,adv='central',max_newton=40) for l in (16,32)}
     for name,count in [('dev4',4),('val64',64)]:
         if smoke and name=='val64': continue
         coh=CH.Cohort(3,name)
@@ -289,7 +292,7 @@ def prepare_coarse_inputs(out, smoke=False):
             rec={'descriptor':coh.desc(case),'cohort_sha256':coh.sha256,'reference_store':RS.store_version(),
                  'reference_eps':rm['judge']['eps_ref'],'n0_fine':n0,'meshes':{}}
             for l in [16,32]:
-                solve=RC.make_solver(3,l,adv='central',max_newton=40)
+                solve=solvers[l]
                 history=[]
                 last=None
                 previous=None
@@ -299,7 +302,8 @@ def prepare_coarse_inputs(out, smoke=False):
                     fields=np.asarray(rr['out']); ns=int(rr['stages'])
                     res=np.asarray(rr['res'])[:ns]; nit=np.asarray(rr['nwt'])[:ns]
                     valid=bool(np.isfinite(fields).all() and np.isfinite(res).all() and
-                               np.max(res)<=2e-11 and ns==RC.n_stages(dt,'cnr') and int(np.max(nit))<40)
+                               np.max(res)<=2e-11 and ns==RC.n_stages(dt,'cnr') and int(np.max(nit))<40
+                               and int(rr['units'])==2*round(.25/dt))
                     diff=None
                     if last is not None:
                         diff=float(np.max(np.linalg.norm(fields[1:]-last[1:],axis=1))*(LF/l)**1.5/n0)
@@ -319,6 +323,44 @@ def prepare_coarse_inputs(out, smoke=False):
     return meta
 
 
+def verify_inputs(bank_path, training_path):
+    expected=json.loads((HERE/'configs/frozen_inputs.json').read_text())
+    assert hashlib.sha256(Path(bank_path).read_bytes()).hexdigest()==expected['bank_sha256']
+    assert hashlib.sha256(Path(training_path).read_bytes()).hexdigest()==expected['training_sha256']
+    assert RS.store_version()==expected['reference_store_sha256']
+    vendor=json.loads((HERE/'vendor/PROVENANCE.json').read_text())
+    for rel,info in vendor.items():
+        assert hashlib.sha256((HERE/'vendor'/rel).read_bytes()).hexdigest()==info['sha256'],rel
+    cfg=json.loads(Path(training_path).read_text())['config']
+    contract=dict(meshes=[33,65,129],train_seed=923701,train_count=1536,
+        train_steps=[0,1,2,4,7,10,15,20,25,30,40,50],subset_seed=923002,
+        group_points_cap=250047,data_ntol=1e-8,data_ltol=1e-9,bank_rank=1024,bank_width=2048,bank_depth=3)
+    for key,value in contract.items(): assert cfg[key]==value,(key,cfg[key],value)
+    return cfg
+
+
+def disjointness(out):
+    def rows(tab):
+        result=[]
+        for i in range(tab['m']):
+            b=int(tab['B'][i]); c=np.zeros((3,3));w=np.zeros(3);rho=np.zeros(3)
+            c[:b]=tab['c'][i,:b];w[:b]=tab['w'][i,:b];rho[:b]=tab['rho'][i,:b]
+            result.append(np.r_[b,c.ravel(),w,rho,tab['A'][i],np.log(tab['nu'][i])])
+        return np.asarray(result)
+    train=rows(C.b3.draw_param_table(923701,1536))
+    dev=rows(C.b3.draw_param_table(923651,4)); val=rows(C.b3.draw_param_table(923801,64))
+    keys=lambda a:{digest(r) for r in a}
+    assert not (keys(train)&keys(dev) or keys(train)&keys(val) or keys(dev)&keys(val))
+    scale=np.std(train,axis=0);scale[scale==0]=1
+    tree=cKDTree(train/scale)
+    dd=tree.query(dev/scale)[0];dv=tree.query(val/scale)[0]
+    result=dict(train_seed=923701,dev_seed=923651,val_seed=923801,exact_overlap=False,
+        standardized_parameter_distance_to_training=dict(dev=dd.tolist(),val=dv.tolist()),
+        interpretation='active blob descriptors; distance is descriptive, not an independence certificate')
+    np.savez(out/'disjoint_parameters.npz',train=train,dev=dev,val=val)
+    dump(out/'disjointness.json',result)
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--bank',required=True)
@@ -328,7 +370,8 @@ def main():
     args=ap.parse_args()
     guard()
     out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
-    cfg=json.loads(Path(args.training).read_text())['config']
+    cfg=verify_inputs(args.bank,args.training)
+    disjointness(out)
     metadata=dict(job_id=os.environ.get('SLURM_JOB_ID'),gpu=jax.devices()[0].device_kind,
                   commit=os.environ.get('SOURCE_COMMIT'),jax=jax.__version__,precision='highest',f64=True)
     dump(out/'execution.json',metadata)

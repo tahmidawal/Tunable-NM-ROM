@@ -202,7 +202,7 @@
 </section><section id="b3d-refine-solver" style="background:#fff;color:#172331;padding:72px 92px;font-family:Arial,sans-serif;position:relative">
 <p style="font-size:24px;letter-spacing:2px;color:#476075;margin-bottom:20px">RESEARCH UPDATE · BURGERS 3D REFINEMENT</p>
 <h1 style="font-size:58px;line-height:1.12;margin-bottom:36px">A convergence repair with unchanged physical error</h1>
-<p style="font-size:34px;line-height:1.5;margin-bottom:25px">A controlled replay repairs the nonlinear certificate while the worst physical error persists.</p>
+<p style="font-size:32px;line-height:1.45;margin-bottom:25px">W1024 · validation case 30 · pilot job 6525183: a controlled replay repairs the nonlinear certificate while the worst physical error persists.</p>
 <table style="font-size:31px"><tr><th>Policy on the diagnostic case</th><th>Uncertified steps</th><th>Maximum E0 error</th></tr><tr><td>baseline</td><td>1</td><td>3.9007%</td></tr><tr><td>extra</td><td>0</td><td>3.9007%</td></tr><tr><td>refresh</td><td>0</td><td>3.9007%</td></tr><tr><td>trust</td><td>1</td><td>3.9007%</td></tr><tr><td>strict</td><td>0</td><td>3.9007%</td></tr></table>
 <p style="font-size:29px;line-height:1.5;margin-top:30px">Extra nonlinear work and more frequent matrix refresh address the demonstrated convergence gap. A larger trust radius alone does not. Fresh restarts are labelled separately from the original cached solver.</p>
 <p style="font-size:27px;line-height:1.45;margin-top:24px;color:#6d4e2d">Selected difficult-case diagnostics. This table does not establish whole-population accuracy or speed gains.</p>
@@ -212,8 +212,8 @@
 <h1 style="font-size:58px;line-height:1.12;margin-bottom:36px">POD receives the same qualification scrutiny</h1>
 <p style="font-size:34px;line-height:1.5;margin-bottom:28px">The saved POD supports solve their sampled equations, but fail the new check against the complete reduced objective.</p>
 <table style="font-size:29px"><tr><th>Frozen support</th><th>Gradient discrepancy</th><th>Full-objective uncertified steps</th><th>Outcome</th></tr><tr><td>k8</td><td>0.015424</td><td>60/60</td><td>Fails new contract</td></tr><tr><td>k16</td><td>0.0012332</td><td>6/60</td><td>Fails new contract</td></tr></table>
-<p style="font-size:29px;line-height:1.5;margin-top:30px">The larger support also changes a difficult-case trajectory beyond the registered tolerance. Historical observed POD domination remains evidence with an explicit hyper-reduction qualification gap.</p>
-<p style="font-size:28px;line-height:1.5;margin-top:25px">A single larger support is fitted using training data only; the unsampled POD provides the fallback comparator. These failures do not establish a bank advantage over POD.</p>
+<p style="font-size:27px;line-height:1.45;margin-top:25px">The historical 7/9 domination headline pooled 5 diagnostic and 4 qualified bank rows. Within the qualified subset: 2/4 dominated, 2 withheld. Old POD hyper-reduction convergence was not gated.</p>
+<p style="font-size:26px;line-height:1.4;margin-top:20px">The single larger-support constructor stopped at 13673 of 16384 points and failed its optimality and banned-point checks. No larger-support rollout ran. Qualified unsampled POD remains available; the qualified HR comparison stays open. The diagnostic failures above use the new conservative rule and do not establish a bank advantage.</p>
 <p style="position:absolute;left:92px;right:92px;bottom:36px;font-size:22px;color:#526574;border-top:1px solid #d7dfe5;padding-top:14px">Conditional E0 ST estimates · Development/validation evidence · 18</p>
 </section><section id="b3d-refine-open" style="background:#fff;color:#172331;padding:72px 92px;font-family:Arial,sans-serif;position:relative">
 <p style="font-size:24px;letter-spacing:2px;color:#476075;margin-bottom:20px">RESEARCH UPDATE · BURGERS 3D REFINEMENT</p>

@@ -1,0 +1,67 @@
+{
+  "namespace": "/cluster/tufts/paralab/tawal01/b3d-pod-20261026",
+  "cap_gpu_hours": 4,
+  "spent_gpu_hours": 1.0047222222222223,
+  "jobs": [
+    {
+      "attempt": "pilot",
+      "state": "FAILED_FINAL_PRINT_AFTER_COMPLETE_CHECKPOINT",
+      "job_id": 6525154,
+      "requested_gpu_hours": 1,
+      "source_sha256": "b6646e0c5c0930ac47314b45243eec9825297691ec6cd0b0a7d1002a1f3558b3",
+      "config_sha256": "c4f33b471484e5e03a96995750729abb0bd22d0a18b42d6cbc19b097465fb6ce",
+      "source_commit": "7559135c3f377e1ec7cd89265f9f4611a0619a56",
+      "scope": "diagnostic subset",
+      "submitted_utc": "2026-10-26T23:32:32.778444+00:00",
+      "pre_submit_queue_empty": true,
+      "post_submit_exactly_one": true,
+      "elapsed_seconds": 92,
+      "spent_gpu_hours": 0.025555555555555557,
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "remote_directory_removed_after_verified_collection": true
+    },
+    {
+      "attempt": "fit32",
+      "state": "COMPLETED_CONSTRUCTION_REJECTED",
+      "job_id": 6525584,
+      "requested_gpu_hours": 2.25,
+      "source_sha256": "8c37e1224f224c9fb7f68acec860573cf396c6d926c537dd62285e2ff6858725",
+      "source_commit": "e7484aff1fa81ad633d0d71492797c23b6268631",
+      "submitted_utc": "2026-10-26T23:53:16.187470+00:00",
+      "pre_post_queue_checked": true,
+      "post_submit_exactly_one": true,
+      "elapsed_seconds": 3312,
+      "spent_gpu_hours": 0.92,
+      "exit_code": "0:0",
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "results_audit": "READY_FAILED_FROZEN_FIT",
+      "accepted_support": false,
+      "remote_directory_removed_after_verified_collection": true
+    },
+    {
+      "attempt": "none64",
+      "state": "COMPLETED",
+      "job_id": 6525585,
+      "requested_gpu_hours": 0.4,
+      "source_sha256": "1cbb7d13f30191a67c897044441ccf1cdd06e14440306d985758daa6cd40fa4a",
+      "source_commit": "5b49973df8c543535c25ccb09eec94a27edb07d2",
+      "submitted_utc": "2026-10-26T23:53:16.187482+00:00",
+      "pre_post_queue_checked": true,
+      "post_submit_exactly_one": true,
+      "exit_code": "0:0",
+      "elapsed_seconds": 213,
+      "spent_gpu_hours": 0.059166666666666666,
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "results_audit": "READY",
+      "remote_directory_removed_after_verified_collection": true
+    }
+  ],
+  "additional_support_jobs_authorized": false,
+  "unrun_validation_attempts": {
+    "k32pilot": "construction failed; not run",
+    "k32val": "construction failed; not run"
+  }
+}

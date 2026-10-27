@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import spearmanr
 
 from inventory import ROOT, read, sha, write, identity
 
@@ -44,6 +45,8 @@ def main():
     dimsdir = WTS / '2026-10-18-jcp-dims/experiments/jcp-dims'
     speeddir = WTS / '2026-10-14-jcp-speed3d/experiments/jcp-speed3d'
     dims = load(dimsdir / 'checks/analysis-3d.json')
+    historical_confirmation = load(dimsdir / 'runs/t3c/slim/output/d3run_t3c/result.json')
+    first_confirmation = next(iter(historical_confirmation['timing'].values()))
     speed = load(speeddir / 'checks/analysis-grid.json')
     qualify_q2 = load(WTS / '2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/EXPORT.json')['threeD']['tested']
     mesh = load(speeddir / 'checks/analysis-pm.json')['m1']
@@ -88,7 +91,7 @@ def main():
         q2 = dims['configurations'].get(key, {}).get('Q2', {}).get('label',
              dims['rounds'].get(key, {}).get('label', qualify_q2.get(key, 'unverified')))
         axes[0].plot([x for x, _ in points], [y * 1e3 for _, y in points], marker='o',
-                     label=f'{label} (Q2 {q2})')
+                     label=f'{label} (Q2 at 65 nodes: {q2})')
         ident = identity(key)
         sp = key.split('|', 2)[2]
         work = []
@@ -123,6 +126,21 @@ def main():
     ax.legend(); ax.grid(alpha=.2); save(fig, 'accuracy_width')
     values['fixed_test_width'] = width_rows
 
+    test_rows = []
+    for k, v in dims['configurations'].items():
+        if k.startswith('W512') and v['spec'] == 'fs|CN|0.01|K1' and v['rule'] == 'lat32768':
+            test_rows.append(dict(key=k, M=v['M'], r=v['r'], m=32768, median=v['median'], worst=v['worst'],
+                                  Q1=v['Q1_pass'], Q2=v['Q2']['label'], qualified=v['qualified']))
+    test_rows.sort(key=lambda v: v['M'])
+    fig, ax = plt.subplots(figsize=(7, 4))
+    for metric in ['median', 'worst']:
+        ax.plot([r['M'] for r in test_rows], [r[metric] * 100 for r in test_rows], marker='o', label=metric)
+    ax.set(xlabel='Actual smooth test functions M', ylabel='E0 ST error (%)', yscale='log',
+           title='Frozen W512, lattice m=32768, FS-CN step 0.01')
+    ax.legend(title='Full validation statistic'); ax.grid(alpha=.2)
+    save(fig, 'test_space')
+    values['test_space_fixed_quadrature'] = test_rows
+
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     qrows = []
     for order in [16, 20, 24, 32, 40, 48, 56, 64]:
@@ -141,6 +159,8 @@ def main():
         ax.grid(alpha=.2); ax.legend()
     save(fig, 'quadrature_convergence')
     values['quadrature_historical'] = qrows
+    gap = dims['configurations']['W1024|gl48|fs|CN|0.01|K1']
+    values['quadrature_vs_physical_example'] = dict(successor_distance=gap['Q2']['worst_dist_qp'], worst_E0=gap['worst'])
 
     fig, ax = plt.subplots(figsize=(9, 4))
     ingredients = ['Q', 'T', 'S', 'F', 'e_P']
@@ -168,6 +188,7 @@ def main():
         metadata[cid] = load(p)['desc']
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     regime_sources = {}
+    regime_statistics = []
     for key, label in [(bestmed, 'best historical median'), (bestworst, 'best historical worst')]:
         candidates = [o for o in inv['observations'] if o['config_key'] == key and o['cohort'] == 'val64' and
                       o['case_ids'] == list(range(64)) and o['n_scored'] == 64 and
@@ -176,6 +197,12 @@ def main():
         observation = sorted(candidates, key=lambda o: o['observation_id'])[0]
         source = load(observation['source'])['scores'][key]
         regime_sources[key] = observation['source']
+        errors = [source[str(c)]['e'] for c in range(64)]
+        regime_statistics.append(dict(setting=key, cases=list(range(64)),
+            viscosity_spearman=float(spearmanr([metadata[c]['nu'] for c in range(64)], errors).statistic),
+            nominal_steepness_spearman=float(spearmanr([metadata[c]['A']/metadata[c]['nu'] for c in range(64)], errors).statistic),
+            errors_above_1pct=sum(e > .01 for e in errors),
+            largest_error_cases=sorted(range(64), key=lambda c: errors[c], reverse=True)[:3]))
         for ax, component, xlabel in [(axes[0], 'nu', 'Viscosity nu'), (axes[1], 'steepness', 'Nominal amplitude / viscosity')]:
             xx = [metadata[c]['nu'] if component == 'nu' else metadata[c]['A'] / metadata[c]['nu'] for c in range(64)]
             ax.scatter(xx, [100 * source[str(c)]['e'] for c in range(64)], s=22, alpha=.7, label=label)
@@ -183,6 +210,15 @@ def main():
             ax.grid(alpha=.2); ax.legend(fontsize=8)
     save(fig, 'in_range_regime')
     values['regime_sources'] = regime_sources
+    values['regime_statistics'] = regime_statistics
+    new_frontier_text = ''
+    frontier_path = HERE / 'data/frozen-frontier.json'
+    if frontier_path.is_file():
+        import frontier_report
+        frontier_data = load(frontier_path)
+        rendered = frontier_report.render(frontier_data, FIG, table, save, inv['reference'])
+        new_frontier_text = rendered.pop('text')
+        values['full_validation_frontier'] = rendered
 
     # New lane results remain separate, with exact scope and audit state supplied by their owners.
     lane_sections = []
@@ -190,28 +226,53 @@ def main():
         p = WTS / f'2026-10-26-b3d-{name}/experiments/b3d-{name}/EXPORT.json'
         if not p.is_file():
             p = p.parent / 'runs/EXPORT.json'
+        frozen_export = HERE / 'data' / f'lane-{name}-export.json'
+        if frozen_export.is_file():
+            p = frozen_export
         if p.is_file():
             lane = load(p)
             values['new_lanes'][name] = lane
             status = lane.get('status', lane.get('results_audit', 'unrecorded'))
             text = f"### {name.capitalize()} lane\n\nAudit/status: `{status}`. Scope: {lane.get('scope', 'see export')}.\n\n"
             if name == 'solver':
-                rows = [[o['key'], o['fresh_nonstationary_steps'],
-                         f"{o['score']['e']*100:.7g}", f"{o['query_median_seconds']*1e3:.5g}"]
-                        for o in lane.get('observations', [])]
-                text += table(['Diagnostic setting/case', 'Fresh uncertified steps', 'E0 max error (%)',
-                               'Raw median query (ms)'], rows) + '\n\n'
+                groups = collections.defaultdict(list)
+                for o in lane.get('observations', []):
+                    width, policy, _ = o['key'].split('|')
+                    groups[(o['source']['job_id'], width, policy)].append(o)
+                rows = []
+                for (job, width, policy), group in sorted(groups.items()):
+                    errors = [o['score']['e'] for o in group]
+                    distances = [o['distance_historical_tight'] for o in group if o.get('distance_historical_tight') is not None]
+                    rows.append([job, f'{width}/{policy}', ', '.join(o['key'].split('|')[-1][4:] for o in group),
+                        sum(o['fresh_nonstationary_steps'] for o in group), sum(o['nonlinear_iterations'] for o in group),
+                        f'{np.median(errors)*100:.6g}/{max(errors)*100:.6g}',
+                        'not measured' if not distances else f'{max(distances):.6g}',
+                        f"{np.median([o['query_median_seconds'] for o in group])*1e3:.5g}"])
+                text += table(['Job', 'Bank/policy', 'Case ids', 'Uncertified steps', 'Corrections',
+                               'Median/worst error (%)', 'Max distance to tight', 'Raw median query (ms)'], rows) + '\n\n'
                 text += ('These are selected-case diagnostics. A repaired certificate is not a full-trajectory '
                          'Q1 pass or a physical-accuracy improvement. Raw timings do not establish comparative '
                          'speed without the declared paired acceptance checks.\n\n')
                 for control in lane.get('same_history', []):
+                    usable = bool(control.get('anchor_usable') and all(v.get('verified') for v in control['levels'].values()))
                     text += (f"At `{control['key']}`, the returned Jacobian condition number is "
                              f"{control['diagnostics']['condition']:.6g}. The fresh tight solve uses "
-                             f"{control['levels']['tight']['it']} iterations and reaches stationarity "
+                             f"{control['levels']['tight']['it']} iterations with reported stationarity "
                              f"{control['levels']['tight']['fresh_gamma']:.6g}; its field distance to the "
                              f"returned baseline step is {control['levels']['tight']['baseline_distance']:.6g}. "
+                             f"Independent anchor usable: {usable}. "
                              'This is a fresh restart from identical coefficient history, not restoration of '
                              'the original cached solver state.\n\n')
+                historical_q = lane.get('historical_tight_quadrature', {}).get('data')
+                if historical_q:
+                    rows = [[v['solver'], f"{v['coarse']} to {v['fine']}", len(v['ordered_cases']),
+                             f"{v['median']:.7g}", f"{v['maximum']:.7g}", v['maximum_case'],
+                             len(v['cases_above_threshold'])] for v in historical_q['comparisons']]
+                    text += ('The following re-analysis reuses saved full-validation trajectories. '
+                             'Quadrature discrepancies persist with verified tight nonlinear solves, '
+                             'so fixed-sweep work alone does not explain them.\n\n')
+                    text += table(['Nonlinear solve', 'Quadrature transition', 'Cases', 'Median distance',
+                                   'Maximum distance', 'Largest case', 'Cases over registered threshold'], rows) + '\n\n'
             else:
                 rows = []
                 for rule, q in lane.get('qualification', {}).get('whole_residual', {}).items():
@@ -224,6 +285,33 @@ def main():
                 text += ('These failures disqualify the frozen supports under the new conservative whole-objective '
                          'contract. They do not establish that the bank beats POD. The post-completion printing '
                          'failure and recovered checkpoint are retained in the execution record.\n\n')
+                fallback = lane.get('no_hr_full64')
+                if fallback:
+                    f = fallback['arms']['none']
+                    text += (f"The unsampled POD fallback has audit status `{fallback['results_audit']}` on "
+                             f"{len(fallback['ordered_case_ids'])} validation cases: Q1={f['Q1']}, "
+                             f"{f['nonstationary_steps']}/{f['steps']} uncertified steps, "
+                             f"{100*f['median_error']:.7g}% median and {100*f['worst_error']:.7g}% worst "
+                             f"conditional E0 error, with {f['errors_above_one_percent']} cases above one percent. "
+                             f"Maximum production-to-tight distance {f['maximum_tight_distance']:.7g}. "
+                             'It is a qualified full-residual reduced model, not a qualified hyper-reduced model. '
+                             'Its separate allocation is not used for cross-method timing ratios; the common '
+                             'frontier gives POD the same integration improvements.\n\n')
+                failed = lane.get('failed_support_extension')
+                if failed:
+                    text += (f"The sole larger-support construction has audit status `{failed['results_audit']}`. "
+                             f"It stopped with {failed['terminal_support']} active points against its fixed "
+                             f"target {failed['support_target']}; the off-support optimality gradient was "
+                             f"{failed['kkt']['off_support_max_gradient']:.7g} against tolerance "
+                             f"{failed['kkt']['tol']:.7g}, and {100*failed['banned_fraction']:.6g}% of "
+                             f"candidate points were banned against a {100*failed['banned_fraction_limit']:.6g}% cap. "
+                             f"The allocation completed normally after {failed['resource']['elapsed_seconds']} "
+                             f"seconds ({failed['resource']['gpu_hours']:.6g} GPU-hours); this was not a time-budget "
+                             'exhaustion. No larger support was admitted, and no rollout validation of it ran. '
+                             'The permitted greedy path exhausted admissible choices under its fixed policy; '
+                             'this does not prove that no valid larger support exists. The frozen stop rule '
+                             'ends the support search. Qualified hyper-reduced POD comparison remains open; '
+                             'the construction failure is not evidence that POD loses.\n\n')
             text += f"Machine export and hashed raw evidence: `{p}`. No cross-job speed-up is inferred.\n"
             lane_sections.append(text)
     if not lane_sections:
@@ -241,12 +329,33 @@ def main():
     for cohort, v in inv['reference']['cohorts'].items():
         eps = [x['eps_ref'] for x in v['cases'].values()]
         ref_rows.append([cohort, f"{v['eligible']}/{len(v['cases'])}", f"{min(eps):.6g}–{max(eps):.6g}", v['selection_allowed']])
+    regime_table = table(['Qualified historical setting', 'Spearman(error, viscosity)',
+                          'Spearman(error, nominal steepness)', 'Cases above 1% error', 'Largest-error case ids'],
+                         [[f"`{v['setting']}`", f"{v['viscosity_spearman']:.4g}",
+                           f"{v['nominal_steepness_spearman']:.4g}", v['errors_above_1pct'],
+                           ', '.join(str(c) for c in v['largest_error_cases'])] for v in regime_statistics])
     report = f'''# Burgers 3D refinement: recovered evidence, numerical gaps and controlled replays
 
 This report reconciles existing evidence and the bounded refinement campaign. The historical
 numbers are conditional estimates against approved E0 ST references; new numerical results
 are accepted only with their independent audit status. This generated version does not
 promote missing or subset evidence into full-validation qualification.
+
+## Problem and experimental controls
+
+The problem is scalar viscous Burgers flow on the unit cube with zero boundary values.
+The existing initial fields contain smooth Gaussian bumps with varying positions, widths,
+amplitudes and viscosity. The frozen spatial bank represents the field using a short vector
+of coefficients; these comparisons use linear bank prefixes, not a deployed nonlinear head.
+The solver minimises the PDE residual tested against smooth spatial functions.
+
+The independent controls separate bank width, test-space size, quadrature, nonlinear work
+and time integration. They reuse existing trained banks and valid trajectories. Numerical
+design, code/small controls, exact job manifests and interpretation pass separate independent
+review gates. Failed controls remain in the ledger. The output contract and exact population
+travel with each result; the common scoring schedule has
+{len(inv['reference']['output_times'])} fields through time {inv['reference']['output_times'][-1]}
+on the {inv['reference']['scoring_lattice']} lattice.
 
 ## Recovered state
 
@@ -279,7 +388,9 @@ These full-validation figures select different objectives. A low median can coex
 large error on a difficult case. The test-space-expanded setting retains its explicit name;
 it is not silently pooled with a nominal test-space configuration.
 
-## Cost and accuracy on the exact saved timing workload
+{new_frontier_text}
+
+## Historical cost and accuracy on the exact saved timing workload
 
 The timing-job coefficients were re-decoded directly with a NumPy evaluator and scored
 against the approved reference fields. Its exact case ids are {timed['case_ids']}; it is
@@ -305,6 +416,13 @@ agreement. Wide-bank large-step QN-BDF2 can instead pass quadrature but fail eve
 distance to a verified tight solve. Pooled stationarity alone can miss a small number of
 important failed steps. Trust clipping is an observed counter; it is not by itself a cause.
 
+A failed numerical certificate does not establish the dominant physical error source.
+For example, the historical wide-bank Gauss rule above has successor distance
+{values['quadrature_vs_physical_example']['successor_distance']:.7g} while its worst conditional
+E0 error is {100*values['quadrature_vs_physical_example']['worst_E0']:.7g} percent. Closing that
+certificate alone need not remove the much larger physical error. The reported Jacobian
+condition number below concerns one failed step, not the conditioning of the whole family.
+
 Restarting from coefficient history resets the historical QN cache. Fresh-restart controls
 are labelled separately; full-trajectory one-factor controls assess refresh-policy changes.
 The completed quadrature trajectories are reused, and only missing successor evidence is run.
@@ -314,6 +432,17 @@ The completed quadrature trajectories are reused, and only missing successor evi
 Open markers retain failed or unverified qualification. A decreasing raw error is not enough
 to claim a qualified width dial. The square test-space control failed historically, so the
 original registered causal test-space verdict remains blocked even where expansion helped.
+
+![Test-space dependence at fixed bank, quadrature and integration](figs/test_space.png)
+
+{table(['Setting', 'Actual M', 'Quadrature m', 'Q1', 'Q2', 'Median error (%)', 'Worst error (%)'],
+       [[f"`{v['key']}`", v['M'], v['m'], v['Q1'], v['Q2'], f"{100*v['median']:.6g}", f"{100*v['worst']:.6g}"] for v in test_rows])}
+
+This is a descriptive comparison of existing qualified settings at fixed bank width,
+quadrature and integration. Increasing the test space changes worst-case error much more
+than the median in the upper part of this tested range. It does not change the earlier
+registered verdict whose square-system control failed, and it does not claim that still
+larger test spaces must improve the result.
 
 ![Error-budget interventions on their historical population](figs/error_budget.png)
 
@@ -328,7 +457,7 @@ time-discretisation package bind in different settings. The archived cohort limi
 This mesh panel uses the mesh-free input/scoring-lattice contract and the historical deployment
 mode policy, which may change the test list with the mesh. It establishes neither fixed-M
 cost nor full-field output cost. Only the appropriately qualified curves support numerical
-claims; unqualified curves remain visible. Full output and arbitrary mesh-sampled input
+claims at their tested reference mesh; there is no all-mesh Q2 join here. Failed curves remain visible. Full output and arbitrary mesh-sampled input
 must be measured separately. Historical Jacobian counts are not reconstructed from iteration
 counts where the original counter is absent.
 
@@ -339,9 +468,21 @@ Amplitude divided by viscosity is a nominal steepness proxy. These associations 
 one-factor causal tests and do not qualify new steep-front or viscosity-extrapolation regimes.
 The earlier two-dimensional steep-front failures cannot be silently promoted to 3D results.
 
+{regime_table}
+
+These rank correlations are descriptive on the same validation cases, without a family-wise
+inference claim. Viscosity, amplitude and family shape vary together, so they do not identify
+a separate causal effect of viscosity or front steepness.
+
 ## Three different comparisons
 
 The historical confirmed ROM-to-ROM comparisons are:
+
+The common selected winner is `{dims['h2q']['C_old']['winner']}`. Its confirmation timing
+source is job `{historical_confirmation['job_id']}` on `{historical_confirmation['gpu']}`:
+case ids {first_confirmation['cases']}, {first_confirmation['reps']} repetitions per case,
+under the full-field mesh-path query at the historical reference mesh. These are historical
+paired workload ratios, not the four-case re-scored timing curve or new full-validation times.
 
 {table(['Earlier comparator', 'Speed ratio', 'Comparator Q2', 'Qualification scope'], comparison_rows)}
 
@@ -391,6 +532,9 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 
 - Bank: frozen spatial functions that turn a short vector into a field; r is their count.
 - M: number of smooth functions used to test the PDE; m: number of integration points.
+- W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
+- POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
+- Gauss / gl / lattice / lat: tensor Gauss–Legendre rules / their short label / a rank-one integration point set / its short label.
 - Mesh intervals: divisions along each spatial axis; nodes include the two boundary endpoints.
 - E0 ST: approved space/time-refined reference; its uncertainty is conditional on convergence assumptions.
 - Error: largest output-time field difference divided by the reference initial-field norm.
@@ -404,11 +548,16 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - FS / QN: fixed full-Jacobian correction sweeps / a solver that reuses its small normal matrix.
 - Jacobian: derivative of the reduced residual; stationarity measures whether further correction remains.
 - Trust radius / damping: controls on correction size / regularisation of a nonlinear correction.
+- Baseline / extra / refresh / trust / strict: original solver / larger correction budget with unchanged slow-refresh trigger / matrix refreshed each step / larger trust radius / tighter internal stopping.
 - POD / ECSW: a standard linear reduced basis / weighted sampling of its residual equations.
+- Support / active points: integration points whose fitted weights are positive.
+- NNLS / optimality check: fitting nonnegative weights / checking whether a permitted weight change could still improve that fit.
+- Banned points: candidates excluded by the greedy fit's fixed drop/ban policy; an excessive banned fraction fails its quality check.
 - No-HR: evaluate the complete reduced objective without weighted spatial sampling.
 - Frontier: settings that no other admissible setting beats in both cost and the chosen error metric.
 - Diagnostic subset: selected cases for explaining a failure, not a whole-population performance estimate.
 - Post hoc / retracted: selected after observing data / no longer an accepted earlier claim.
+- Spearman correlation: association between the ranks of two quantities; not a causal effect.
 - Q/T/S/F/e_P: quadrature / time / nonlinear solve / reduced-form intervention / representation floor.
 - Mesh-free: use method-specific input and output points; full-field output requests every mesh value.
 - Conditional / provisional: valid only with stated numerical assumptions / awaiting required evidence.

@@ -125,7 +125,10 @@ def refs(dirs):
     statuses = {}
     for cohort, count, seed in [('dev4', 4, 923651), ('val64', 64, 923801), ('test32', 32, 923901)]:
         entries = {str(i): rs.reference_status(3, cohort, i, 'ST') for i in range(count)}
+        meta = json.loads(rs._read(f'3d/{cohort}/ST/c000.json'))
+        assert (meta['dim'], meta['cohort'], meta['case'], meta['kind']) == (3, cohort, 0, 'ST')
         statuses[cohort] = dict(seed=seed, selection_allowed=cohort != 'test32',
+                                table_sha256=meta['cohort_sha256'], metric_id=meta['metric_id'],
                                 cases=entries, eligible=sum(v['eligible'] for v in entries.values()))
     return dict(store_version=EXPECTED_STORE, status_sha256=EXPECTED_STATUS, kind='ST',
                 field='finest', uncertainty='conditional Richardson estimate, not a bound',

@@ -1,0 +1,1037 @@
+{
+  "lane": "b3d-pod",
+  "branch": "exp/2026-10-26-b3d-pod",
+  "job_id": 6525154,
+  "source_commit": "7559135c3f377e1ec7cd89265f9f4611a0619a56",
+  "source_tar_sha256": "b6646e0c5c0930ac47314b45243eec9825297691ec6cd0b0a7d1002a1f3558b3",
+  "result_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/output/result.json",
+  "result_sha256": "7f166e8d6b501c39e485b23fb80ab63537102d6b5fd617736a4148b7324c000b",
+  "summary_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/checks/pilot/SUMMARY.json",
+  "summary_sha256": "59ba7f9c75df3957a1bc3045cb78bf07ed920279b11c57d3b351d3219c07ad05",
+  "cohort_seed": 923801,
+  "ordered_cases": [
+    0,
+    5,
+    30,
+    43
+  ],
+  "scope": "diagnostic selected validation subset; not a full-population accuracy/cost frontier",
+  "gpu": "NVIDIA H200, GPU-0a476d14-05f4-a288-5ed3-39f4f359c534",
+  "reference": {
+    "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+    "status_sha256": "af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005",
+    "kind": "ST",
+    "uncertainties": {
+      "0": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 4.181332047166529e-05,
+        "dimension_status": "validated",
+        "crosscheck": "PASS",
+        "eligible": true
+      },
+      "5": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 8.421610276360762e-05,
+        "dimension_status": "validated",
+        "crosscheck": "PASS",
+        "eligible": true
+      },
+      "30": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 7.830201020150904e-05,
+        "dimension_status": "validated",
+        "crosscheck": null,
+        "eligible": true
+      },
+      "43": {
+        "accepted": true,
+        "outcome": "accepted",
+        "eps_ref": 0.00011588542322936715,
+        "dimension_status": "validated",
+        "crosscheck": "PASS",
+        "eligible": true
+      }
+    }
+  },
+  "q1": {
+    "k8": {
+      "q1": true,
+      "all_valid": true,
+      "anchors_ok": true,
+      "nonstat": 0,
+      "steps": 60,
+      "max_dist": 0.00021945104146290726,
+      "max_anchor": 1.2779162442757633e-08,
+      "dist": {
+        "val64|0": 3.328504204152469e-05,
+        "val64|5": 0.00015506015381735203,
+        "val64|30": 0.00021945104146290726,
+        "val64|43": 9.130630363210132e-06
+      },
+      "anchor": {
+        "val64|0": 1.2779162442757633e-08,
+        "val64|5": 1.1091457316837875e-08
+      },
+      "expected_case_ids": [
+        "val64|0",
+        "val64|5",
+        "val64|30",
+        "val64|43"
+      ],
+      "tighter_case_ids": [
+        "val64|0",
+        "val64|5"
+      ]
+    },
+    "k16": {
+      "q1": true,
+      "all_valid": true,
+      "anchors_ok": true,
+      "nonstat": 0,
+      "steps": 60,
+      "max_dist": 0.00022412331385811372,
+      "max_anchor": 1.8084549641506204e-08,
+      "dist": {
+        "val64|0": 3.313978932756117e-05,
+        "val64|5": 0.00016689839604465406,
+        "val64|30": 0.00022412331385811372,
+        "val64|43": 9.186298002755537e-06
+      },
+      "anchor": {
+        "val64|0": 1.2025935208260183e-08,
+        "val64|5": 1.8084549641506204e-08
+      },
+      "expected_case_ids": [
+        "val64|0",
+        "val64|5",
+        "val64|30",
+        "val64|43"
+      ],
+      "tighter_case_ids": [
+        "val64|0",
+        "val64|5"
+      ]
+    },
+    "none": {
+      "q1": true,
+      "all_valid": true,
+      "anchors_ok": true,
+      "nonstat": 0,
+      "steps": 60,
+      "max_dist": 0.00022554148412496353,
+      "max_anchor": 1.5910497579866084e-08,
+      "dist": {
+        "val64|0": 4.117243380367371e-05,
+        "val64|5": 0.00017952500552547804,
+        "val64|30": 0.00022554148412496353,
+        "val64|43": 9.156051255413315e-06
+      },
+      "anchor": {
+        "val64|0": 1.2090707011297464e-08,
+        "val64|5": 1.5910497579866084e-08
+      },
+      "expected_case_ids": [
+        "val64|0",
+        "val64|5",
+        "val64|30",
+        "val64|43"
+      ],
+      "tighter_case_ids": [
+        "val64|0",
+        "val64|5"
+      ]
+    }
+  },
+  "qualification": {
+    "scope": "diagnostic subset; not full-population qualification",
+    "full_population": false,
+    "whole_residual": {
+      "k8": {
+        "finite": true,
+        "delta_g_max": 0.015423684605407337,
+        "full_gamma_max": 0.015423684991835713,
+        "full_nonstat": 60,
+        "steps": 60,
+        "pass_": false
+      },
+      "k16": {
+        "finite": true,
+        "delta_g_max": 0.0012331558461926284,
+        "full_gamma_max": 0.0012771384375040217,
+        "full_nonstat": 6,
+        "steps": 60,
+        "pass_": false
+      }
+    },
+    "field_chain": false,
+    "passes_observed_population": false
+  },
+  "case_field_distances": {
+    "0": {
+      "k8_to_k16": 0.0017883789215064607,
+      "k16_to_none": 0.00013279499982600724,
+      "k8_to_none": 0.0017852794505960616
+    },
+    "5": {
+      "k8_to_k16": 0.0034407585825858337,
+      "k16_to_none": 0.0003461964526398934,
+      "k8_to_none": 0.003669779863634677
+    },
+    "30": {
+      "k8_to_k16": 0.002883499974354266,
+      "k16_to_none": 0.0002130665635899274,
+      "k8_to_none": 0.0028967855153381877
+    },
+    "43": {
+      "k8_to_k16": 0.00230713321680146,
+      "k16_to_none": 0.00012342445910560611,
+      "k8_to_none": 0.0023153046020162635
+    }
+  },
+  "case_gradient_metrics": {
+    "0": {
+      "field_distance": {
+        "k8_to_k16": 0.0017883789215064649,
+        "k16_to_none": 0.00013279499982600315,
+        "k8_to_none": 0.001785279450596066
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.011090202042857615,
+          "full_gamma_max": 0.011090205461405486,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0012331558461926284,
+          "full_gamma_max": 0.0012771384375040217,
+          "nonstat": 2
+        }
+      }
+    },
+    "5": {
+      "field_distance": {
+        "k8_to_k16": 0.003440758582585833,
+        "k16_to_none": 0.00034619645263989253,
+        "k8_to_none": 0.003669779863634676
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.00765131820010897,
+          "full_gamma_max": 0.007443573086534301,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0011323156453896268,
+          "full_gamma_max": 0.0012684405774668816,
+          "nonstat": 4
+        }
+      }
+    },
+    "30": {
+      "field_distance": {
+        "k8_to_k16": 0.0028834999743542694,
+        "k16_to_none": 0.00021306656358992571,
+        "k8_to_none": 0.002896785515338188
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.0066631516778486635,
+          "full_gamma_max": 0.006663109512964242,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0006951765774013409,
+          "full_gamma_max": 0.000938027481863095,
+          "nonstat": 0
+        }
+      }
+    },
+    "43": {
+      "field_distance": {
+        "k8_to_k16": 0.002307133216801456,
+        "k16_to_none": 0.00012342445910560462,
+        "k8_to_none": 0.002315304602016261
+      },
+      "whole_residual": {
+        "k8": {
+          "delta_g_max": 0.015423684605407337,
+          "full_gamma_max": 0.015423684991835713,
+          "nonstat": 15
+        },
+        "k16": {
+          "delta_g_max": 0.0008805814851616852,
+          "full_gamma_max": 0.00088058067494479,
+          "nonstat": 0
+        }
+      }
+    }
+  },
+  "offline_saved_array_checks": true,
+  "timing_coverage_complete": true,
+  "timing_repetitions_retained": 8,
+  "split_measurements_retained": 12,
+  "resource": {
+    "sacct_elapsed_seconds": 92,
+    "gpu_hours": 0.025555555555555557,
+    "result_elapsed_seconds": 72.3425832092762,
+    "setup_seconds": 11.097884370945394,
+    "peak_device_bytes": 8975874816,
+    "peak_host_bytes": 4011130880,
+    "cap_gpu_hours": 4
+  },
+  "execution": {
+    "slurm_state": "FAILED",
+    "exit_code": "1:0",
+    "checkpoint_complete": true,
+    "failure": "Final json.dumps print rejected NumPy boolean after complete checkpoint save; no scientific rerun",
+    "raw_finite_field_serialization": "whole_residual finite is preserved as historical string True; admission independently recomputed from arrays"
+  },
+  "retention": {
+    "local_output_manifest": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/OUTPUTS.sha256",
+    "local_collection_manifest": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/pilot/collected/COLLECTION.sha256",
+    "basis_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/inputs/Phi.npz",
+    "basis_sha256": "7dc39cf9fbb5ea06d77001e4f8ccd69113dcdc8f22838f3cc12d0159b3431b2c",
+    "archive_preserved": true,
+    "remote_job_directory": "deleted after checksummed complete local collection and independent results audit"
+  },
+  "results_audit": "READY_FOR_DIAGNOSTIC_PUBLICATION",
+  "results_audit_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/audits/results-pilot-01.md",
+  "results_audit_sha256": "1ce7e31d92a48e6cd6d646ec7e84a60d0f9f88d6f75a42714d29cba70734fce5",
+  "raw_qualification_metadata": {
+    "scope": "diagnostic subset; not full-population qualification",
+    "full_population": false,
+    "whole_residual": {
+      "k8": {
+        "finite": "True",
+        "delta_g_max": 0.015423684605407337,
+        "full_gamma_max": 0.015423684991835713,
+        "full_nonstat": 60,
+        "steps": 60,
+        "pass_": false
+      },
+      "k16": {
+        "finite": "True",
+        "delta_g_max": 0.0012331558461926284,
+        "full_gamma_max": 0.0012771384375040217,
+        "full_nonstat": 6,
+        "steps": 60,
+        "pass_": false
+      }
+    },
+    "field_chain": false,
+    "passes_observed_population": false
+  },
+  "qualification_note": "finite flags independently recomputed from arrays; raw string flags quarantined under raw_qualification_metadata",
+  "no_hr_full64": {
+    "results_audit": "READY_QUALIFIED_FULL_RESIDUAL_POD_NOT_HR",
+    "summary_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/checks/none64/SUMMARY.json",
+    "summary_sha256": "e4c85878fee588eb222fe82bab599796d90b808a54b1377090bd86f76aa029bc",
+    "result_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/none64/collected/output/result.json",
+    "result_sha256": "269bccc48c43e65ebf8161e8ff70d4bbafe7a759aa9b57e0a962d425deb946b2",
+    "job_id": 6525585,
+    "hyper_reduced": false,
+    "complete_population": true,
+    "arms": {
+      "none": {
+        "Q1": true,
+        "nonstationary_steps": 0,
+        "steps": 960,
+        "median_error": 0.010959167066488876,
+        "worst_error": 0.03220848195894777,
+        "errors_above_one_percent": 36,
+        "median_query_seconds": 0.11571971699595451,
+        "query_seconds": [
+          0.11173975374549627,
+          0.14900386799126863,
+          0.1389237642288208,
+          0.11089186277240515,
+          0.11547557078301907,
+          0.16310881171375513,
+          0.11557080782949924,
+          0.1578606814146042,
+          0.10609221365302801,
+          0.11077617201954126,
+          0.10629591904580593,
+          0.14382001664489508,
+          0.12514540739357471,
+          0.11085265688598156,
+          0.10624307673424482,
+          0.1060474831610918,
+          0.1157857608050108,
+          0.10603583976626396,
+          0.12065782491117716,
+          0.12071888614445925,
+          0.154022297821939,
+          0.11556763760745525,
+          0.14891531690955162,
+          0.10663791187107563,
+          0.1208657743409276,
+          0.11139526031911373,
+          0.11639299150556326,
+          0.10637642443180084,
+          0.10654217377305031,
+          0.11106128431856632,
+          0.15384392719715834,
+          0.10632828995585442,
+          0.12068905867636204,
+          0.12992110010236502,
+          0.10649175941944122,
+          0.11106811370700598,
+          0.14900639932602644,
+          0.12096580117940903,
+          0.1251432616263628,
+          0.12063227873295546,
+          0.1300505893304944,
+          0.11108871549367905,
+          0.12068813852965832,
+          0.1916057402268052,
+          0.11118743568658829,
+          0.14908043947070837,
+          0.13997700065374374,
+          0.10629282798618078,
+          0.10638783872127533,
+          0.11088838428258896,
+          0.12053020298480988,
+          0.13976220041513443,
+          0.12053138110786676,
+          0.10695012845098972,
+          0.10642756428569555,
+          0.1251453496515751,
+          0.10652823466807604,
+          0.11093952041119337,
+          0.11576706636697054,
+          0.11567236762493849,
+          0.10670203249901533,
+          0.12050759699195623,
+          0.12505686655640602,
+          0.10632626060396433
+        ],
+        "median_nonlinear_iterations": 18.0,
+        "maximum_tight_distance": 0.00022554148412495817
+      }
+    },
+    "offline_checks_pass": true,
+    "source_commit": "5b49973df8c543535c25ccb09eec94a27edb07d2",
+    "gpu": "NVIDIA H200, GPU-64b76fb8-65c0-ee22-c559-6d9549c2d207",
+    "cohort_seed": 923801,
+    "ordered_case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "resource": {
+      "elapsed_seconds": 213,
+      "gpu_hours": 0.059166666666666666
+    },
+    "audit_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/audits/results-none64-01.md",
+    "cost_scope": "given-field query on this allocation only; do not form cross-job ratios",
+    "timing_repetition_arrays_retained": true,
+    "remote_job_directory": "deleted after full local checksum verification and independent results audit"
+  },
+  "interface": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/interface.py",
+    "sha256": "464c79e3ebd2b3f6d3c4cadfcdc42689deba23e435a4ac2dd0b03ba52b128b3c",
+    "code_audit": "READY_FOR_STAGE_F_REUSE",
+    "numerical_qualification": "only original BDF2dt1/60 is qualified here; other schedules require own Q1",
+    "max_steps": [
+      10,
+      15,
+      20,
+      25,
+      40
+    ]
+  },
+  "pilot_admission_layers": {
+    "source_result_sha256": "7f166e8d6b501c39e485b23fb80ab63537102d6b5fd617736a4148b7324c000b",
+    "arms": {
+      "k8": {
+        "own_objective_Q1": {
+          "q1": true,
+          "all_valid": true,
+          "anchors_ok": true,
+          "nonstat": 0,
+          "steps": 60,
+          "max_dist": 0.00021945104146290726,
+          "max_anchor": 1.2779162442757633e-08,
+          "dist": {
+            "val64|0": 3.328504204152469e-05,
+            "val64|5": 0.00015506015381735203,
+            "val64|30": 0.00021945104146290726,
+            "val64|43": 9.130630363210132e-06
+          },
+          "anchor": {
+            "val64|0": 1.2779162442757633e-08,
+            "val64|5": 1.1091457316837875e-08
+          },
+          "expected_case_ids": [
+            "val64|0",
+            "val64|5",
+            "val64|30",
+            "val64|43"
+          ],
+          "tighter_case_ids": [
+            "val64|0",
+            "val64|5"
+          ]
+        },
+        "full_residual_Q1": {
+          "q1": true,
+          "all_valid": true,
+          "anchors_ok": true,
+          "nonstat": 0,
+          "steps": 60,
+          "max_dist": 0.00022554148412496353,
+          "max_anchor": 1.5910497579866084e-08,
+          "dist": {
+            "val64|0": 4.117243380367371e-05,
+            "val64|5": 0.00017952500552547804,
+            "val64|30": 0.00022554148412496353,
+            "val64|43": 9.156051255413315e-06
+          },
+          "anchor": {
+            "val64|0": 1.2090707011297464e-08,
+            "val64|5": 1.5910497579866084e-08
+          },
+          "expected_case_ids": [
+            "val64|0",
+            "val64|5",
+            "val64|30",
+            "val64|43"
+          ],
+          "tighter_case_ids": [
+            "val64|0",
+            "val64|5"
+          ]
+        },
+        "shared_field_bar": 0.00025,
+        "shared_field_to_none": {
+          "0": 0.0017852794505960616,
+          "5": 0.003669779863634677,
+          "30": 0.0028967855153381877,
+          "43": 0.0023153046020162635
+        },
+        "shared_field_case_mask": {
+          "0": false,
+          "5": false,
+          "30": false,
+          "43": false
+        },
+        "common_layer_pass": false,
+        "extra_gradient_bar": 0.001,
+        "extra_gradient_step_mask": {
+          "0": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "5": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "30": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "43": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "extra_gradient_pass": false,
+        "extra_full_stationarity_bar": 0.001,
+        "extra_full_stationarity_bad_step_mask": {
+          "0": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "5": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "30": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "43": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "extra_full_stationarity_bad_steps": 60,
+        "extra_full_stationarity_steps": 60,
+        "extra_full_stationarity_fraction_limit": 0.01,
+        "extra_full_stationarity_pass": false,
+        "finite_recomputed_numerically": true
+      },
+      "k16": {
+        "own_objective_Q1": {
+          "q1": true,
+          "all_valid": true,
+          "anchors_ok": true,
+          "nonstat": 0,
+          "steps": 60,
+          "max_dist": 0.00022412331385811372,
+          "max_anchor": 1.8084549641506204e-08,
+          "dist": {
+            "val64|0": 3.313978932756117e-05,
+            "val64|5": 0.00016689839604465406,
+            "val64|30": 0.00022412331385811372,
+            "val64|43": 9.186298002755537e-06
+          },
+          "anchor": {
+            "val64|0": 1.2025935208260183e-08,
+            "val64|5": 1.8084549641506204e-08
+          },
+          "expected_case_ids": [
+            "val64|0",
+            "val64|5",
+            "val64|30",
+            "val64|43"
+          ],
+          "tighter_case_ids": [
+            "val64|0",
+            "val64|5"
+          ]
+        },
+        "full_residual_Q1": {
+          "q1": true,
+          "all_valid": true,
+          "anchors_ok": true,
+          "nonstat": 0,
+          "steps": 60,
+          "max_dist": 0.00022554148412496353,
+          "max_anchor": 1.5910497579866084e-08,
+          "dist": {
+            "val64|0": 4.117243380367371e-05,
+            "val64|5": 0.00017952500552547804,
+            "val64|30": 0.00022554148412496353,
+            "val64|43": 9.156051255413315e-06
+          },
+          "anchor": {
+            "val64|0": 1.2090707011297464e-08,
+            "val64|5": 1.5910497579866084e-08
+          },
+          "expected_case_ids": [
+            "val64|0",
+            "val64|5",
+            "val64|30",
+            "val64|43"
+          ],
+          "tighter_case_ids": [
+            "val64|0",
+            "val64|5"
+          ]
+        },
+        "shared_field_bar": 0.00025,
+        "shared_field_to_none": {
+          "0": 0.00013279499982600724,
+          "5": 0.0003461964526398934,
+          "30": 0.0002130665635899274,
+          "43": 0.00012342445910560611
+        },
+        "shared_field_case_mask": {
+          "0": true,
+          "5": false,
+          "30": true,
+          "43": true
+        },
+        "common_layer_pass": false,
+        "extra_gradient_bar": 0.001,
+        "extra_gradient_step_mask": {
+          "0": [
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "5": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            true
+          ],
+          "30": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "43": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "extra_gradient_pass": false,
+        "extra_full_stationarity_bar": 0.001,
+        "extra_full_stationarity_bad_step_mask": {
+          "0": [
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "5": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "30": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "43": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "extra_full_stationarity_bad_steps": 6,
+        "extra_full_stationarity_steps": 60,
+        "extra_full_stationarity_fraction_limit": 0.01,
+        "extra_full_stationarity_pass": false,
+        "finite_recomputed_numerically": true
+      }
+    },
+    "original_all_three_field_chain_pass": false,
+    "original_strict_joint_verdict_unchanged": false,
+    "interpretation": "Both archived supports fail common fields independently of the additional POD-only gradient gate."
+  },
+  "reporting_amendment": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/AMENDMENT-A2.md",
+    "sha256": "30a707669437cff0389290671806000f18a819d3c792db880962bfea98fad598",
+    "independent_design_gate": "READY",
+    "common_profile_is_preregistered_HR_qualification": false,
+    "extra_POD_gradient_and_bank_rho_are_equivalent": false
+  },
+  "stageF_adapter": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/pod_subjects.py",
+    "sha256": "3d65517d1b4adf2bef35dfefbc0ba8ca68483a64d9c90f5de2032c34cf2a1921",
+    "independent_code_control_gate": "READY",
+    "scope": "five fixed no-HR integration schedules; new full64 Q1 required for each selected fine setting"
+  },
+  "failed_support_extension": {
+    "summary_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/checks/fit32/SUMMARY.json",
+    "summary_sha256": "de45799b31004481d51e32a21ce29094cbb8c28dde57f8f8c9b1ddcb5e3f213b",
+    "result_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/fit.json",
+    "result_sha256": "47f12bb6780a411a7573374376eec4d030a60ba98c4672d98bfea2c06bc94630",
+    "terminal_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/NNLS_terminal.npz",
+    "terminal_sha256": "06991bceb37a5edbe2c808bf898ba6de55fe5584e2307d4f6dadfe3bcbee9e56",
+    "results_audit_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/audits/results-fit32-01.md",
+    "results_audit_sha256": "e06ec674e67a47d2496823f53fa200861bdee7fcd31dfc1f9222be614f555012",
+    "results_audit": "READY_FAILED_FROZEN_FIT",
+    "job_id": "6525584",
+    "source_commit": "e7484aff1fa81ad633d0d71492797c23b6268631",
+    "accepted": false,
+    "construction_failure_reason": "incomplete (KKT violated)",
+    "remote_job_directory_removed_after_verified_collection": true,
+    "original_archive_preserved": true,
+    "support_target": 16384,
+    "terminal_support": 13673,
+    "kkt": {
+      "ok": false,
+      "support_max_abs_gradient": 9.791626754876827e-17,
+      "off_support_max_gradient": 2.155729114590945e-07,
+      "tol": 1.0170520742904887e-08
+    },
+    "banned": 1099,
+    "candidate_count": 32768,
+    "banned_fraction": 0.033538818359375,
+    "banned_fraction_limit": 0.01,
+    "rollout_validation_run": false,
+    "HR_admission_evaluated": false,
+    "A2_release_not_reached": true,
+    "source_tar_sha256": "8c37e1224f224c9fb7f68acec860573cf396c6d926c537dd62285e2ff6858725",
+    "collection_manifest_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/COLLECTION.sha256",
+    "collection_manifest_sha256": "e382922562a3dd8a5af5e7b2f136c991f6e679e48d5c5ff7fda3a0866948838d",
+    "resource": {
+      "elapsed_seconds": 3312,
+      "gpu_hours": 0.92,
+      "peak_device_allocated_bytes": 50718917376,
+      "sacct_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/sacct.txt"
+    },
+    "interpretation": "No accepted support was constructed. This is not a k32 rollout failure or evidence POD loses; qualified HR comparison remains open."
+  },
+  "large_fit_input_retention": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/contributions.npy",
+    "sha256": "0bd92ac754fabccb89652d47f80f068dba2c1a7dd069cd2872cdee4f1816b67e",
+    "bytes": 13690208384,
+    "tracked_in_git": false,
+    "preserve_before_worktree_archive": true,
+    "supporting_manifest_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/LOCAL-RETENTION.json",
+    "candidate_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/candidate_nodes.npy",
+    "target_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/target.npy"
+  },
+  "lane_final_scope": {
+    "all_lane_jobs_terminal": true,
+    "qualified_full_residual_POD_available": true,
+    "qualified_hyper_reduced_POD_available": false,
+    "qualified_HR_comparison": "unresolved; frozen supports fail common fields and the one support extension failed construction",
+    "no_constructor_failure_implies_POD_loss": true,
+    "no_k32_rollout_was_evaluated": true,
+    "further_support_search_stopped": true,
+    "fair_schedule_adapter_available_to_solver_lane": true,
+    "actual_gpu_hours": 1.0047222222222223,
+    "cap_gpu_hours": 4
+  }
+}

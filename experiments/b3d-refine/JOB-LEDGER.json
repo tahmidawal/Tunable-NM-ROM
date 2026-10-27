@@ -1,28 +1,222 @@
 {
   "campaign": "b3d-refine-20261026",
-  "base_commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+  "state": "checkpoint, work ongoing",
   "gpu_hour_cap": 12,
-  "initial_diagnostic_cap": 2,
+  "completed_gpu_hours": 1.4136111111111112,
+  "active_ledger_entries": 0,
+  "accounting_note": "Only completed elapsed-time entries included; active jobs are not zero-cost.",
   "jobs": [
     {
       "lane": "solver",
+      "attempt": "spilot02",
       "job_id": 6525183,
-      "state": "completed; diagnostic-only results audited"
+      "source_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+      "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/spilot02",
+      "status": "COMPLETED",
+      "gpu": "h200",
+      "hard_limit_hours": 0.9166666666666666,
+      "config_sha256": "de8684c6e75bd44bfd887b08024c0939fd487c9d581cc40dc96778873c186a38",
+      "remote_manifest_verified": true,
+      "independent_job_gate": "READY",
+      "elapsed_seconds": 64,
+      "gpu_hours": 0.017777777777777778,
+      "collection_sha256": "9017c341414ff0089922d08be9a3b73f8a936e625809b266e95a762c67660963",
+      "checksums_verified": true,
+      "remote_duplicate_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "sdiag01",
+      "job_id": 6525518,
+      "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+      "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/sdiag01",
+      "status": "COMPLETED",
+      "gpu": "h200",
+      "hard_limit_hours": 0.25,
+      "config_sha256": "9169cf7ec33fce2644fe278486e2851348ae3c1e83796d046b5609bd908efe04",
+      "manifest_sha256": "1d8eb4ce1a0a8bf3dce3cf680d83656aab9c42ced23c096b1d05ccb93409fe1b",
+      "remote_manifest_verified": true,
+      "independent_job_gate": "READY",
+      "elapsed_seconds": 193,
+      "gpu_hours": 0.05361111111111111,
+      "collection_sha256": "268c9f3e992129690fb855e337156bcc72f8288c4b56c226723cc4fc85eb9a82",
+      "checksums_verified": true,
+      "remote_duplicate_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "qpilot01",
+      "job_id": 6525527,
+      "source_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+      "remote": "/cluster/tufts/paralab/tawal01/b3d-solver-20261026/qpilot01",
+      "status": "FAILED",
+      "gpu": "h200",
+      "hard_limit_hours": 0.25,
+      "config_sha256": "d7245f06b6a7f8cb67e60c51bd72ddd7962c6fbcee5a87cf15151864dc95e09f",
+      "manifest_sha256": "09bfc58364773835415073a9a2f4f37d9fabf8e54ce1d914c0e51a1b2e01d8eb",
+      "remote_manifest_verified": true,
+      "independent_job_gate": "READY",
+      "elapsed_seconds": 13,
+      "gpu_hours": 0.003611111111111111,
+      "collection_sha256": "262e90c53e25da6b2d126ea511af816f13d18453edc6744bc4e209f7649b98f4",
+      "checksums_verified": true,
+      "remote_duplicate_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "qpilot02",
+      "job_id": 6525763,
+      "status": "FAILED",
+      "source_commit": "e4375c9bee261975f49e614175aed04ace9a704a",
+      "gpu": "h200",
+      "elapsed_seconds": 14,
+      "gpu_hours": 0.0038888888888888888,
+      "collection_sha256": "87eafbd55c8f9eb3b227c5c725d5e5148e2eb6efacb4a60aeaa3d76237447847",
+      "checksums_verified": true,
+      "remote_duplicate_deleted": true,
+      "reason": "one-ULP derived peak-normalisation difference; stopped before physics"
+    },
+    {
+      "lane": "solver",
+      "attempt": "qpilot03",
+      "job_id": 6526456,
+      "status": "COMPLETED",
+      "source_commit": "7c5e44bb22a5729c270901fa0ecc5ce7ad5bec33",
+      "gpu": "h200",
+      "elapsed_seconds": 56,
+      "gpu_hours": 0.015555555555555555,
+      "collection_sha256": "c5f27cd4b21c2c62f1d3ea900361d46a1d21b0cc19dbb248be263658e5ece14f",
+      "checksums_verified": true,
+      "remote_duplicate_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "qcheck801",
+      "job_id": 6527167,
+      "source_commit": "13494d2c697cb31b36a546999e0810677bc260be",
+      "state": "COMPLETED",
+      "elapsed_seconds": 107,
+      "gpu_hours": 0.029722222222222223,
+      "scope": "original first-eight gl80 finer witness; case5 exact prior reuse",
+      "collection_verified": true,
+      "remote_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "qwitness01",
+      "job_id": 6527478,
+      "source_commit": "d26d0b08adfe11846962fc75015d6ce8635124e6",
+      "state": "COMPLETED",
+      "elapsed_seconds": 68,
+      "gpu_hours": 0.01888888888888889,
+      "scope": "case5 adaptive finer-witness strengthening",
+      "collection_verified": true,
+      "remote_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "tdiag02",
+      "job_id": 6527289,
+      "source_commit": "40209c7ce6a6fd1cc1a7c182c166aac4687c57bf",
+      "state": "COMPLETED",
+      "elapsed_seconds": 715,
+      "gpu_hours": 0.1986111111111111,
+      "scope": "fixed four-case time diagnostics; not full-population qualification",
+      "collection_verified": true,
+      "remote_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "podtune02",
+      "job_id": 6527566,
+      "source_commit": "d26d0b08adfe11846962fc75015d6ce8635124e6",
+      "state": "COMPLETED",
+      "elapsed_seconds": 242,
+      "gpu_hours": 0.06722222222222222,
+      "scope": "five frozen POD schedules on four exposed validation cases; developmental selection only",
+      "collection_verified": true,
+      "remote_deleted": true
     },
     {
       "lane": "pod",
+      "attempt": "pilot",
+      "state": "FAILED_FINAL_PRINT_AFTER_COMPLETE_CHECKPOINT",
       "job_id": 6525154,
-      "state": "post-completion stdout failure; complete numerical checkpoint audited"
+      "requested_gpu_hours": 1,
+      "source_sha256": "b6646e0c5c0930ac47314b45243eec9825297691ec6cd0b0a7d1002a1f3558b3",
+      "config_sha256": "c4f33b471484e5e03a96995750729abb0bd22d0a18b42d6cbc19b097465fb6ce",
+      "source_commit": "7559135c3f377e1ec7cd89265f9f4611a0619a56",
+      "scope": "diagnostic subset",
+      "submitted_utc": "2026-10-26T23:32:32.778444+00:00",
+      "pre_submit_queue_empty": true,
+      "post_submit_exactly_one": true,
+      "elapsed_seconds": 92,
+      "spent_gpu_hours": 0.025555555555555557,
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "remote_directory_removed_after_verified_collection": true
+    },
+    {
+      "lane": "pod",
+      "attempt": "fit32",
+      "state": "COMPLETED_CONSTRUCTION_REJECTED",
+      "job_id": 6525584,
+      "requested_gpu_hours": 2.25,
+      "source_sha256": "8c37e1224f224c9fb7f68acec860573cf396c6d926c537dd62285e2ff6858725",
+      "source_commit": "e7484aff1fa81ad633d0d71492797c23b6268631",
+      "submitted_utc": "2026-10-26T23:53:16.187470+00:00",
+      "pre_post_queue_checked": true,
+      "post_submit_exactly_one": true,
+      "elapsed_seconds": 3312,
+      "spent_gpu_hours": 0.92,
+      "exit_code": "0:0",
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "results_audit": "READY_FAILED_FROZEN_FIT",
+      "accepted_support": false,
+      "remote_directory_removed_after_verified_collection": true
+    },
+    {
+      "lane": "pod",
+      "attempt": "none64",
+      "state": "COMPLETED",
+      "job_id": 6525585,
+      "requested_gpu_hours": 0.4,
+      "source_sha256": "1cbb7d13f30191a67c897044441ccf1cdd06e14440306d985758daa6cd40fa4a",
+      "source_commit": "5b49973df8c543535c25ccb09eec94a27edb07d2",
+      "submitted_utc": "2026-10-26T23:53:16.187482+00:00",
+      "pre_post_queue_checked": true,
+      "post_submit_exactly_one": true,
+      "exit_code": "0:0",
+      "elapsed_seconds": 213,
+      "spent_gpu_hours": 0.059166666666666666,
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "results_audit": "READY",
+      "remote_directory_removed_after_verified_collection": true
     }
   ],
-  "gates": {
-    "design": "READY",
-    "code": "StageR READY; numerical lanes separately gated",
-    "job": "pilot jobs independently admitted",
-    "results": "pilot diagnostics READY; final front pending"
+  "lane_snapshot_sources": {
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/JOB-LEDGER.json": {
+      "sha256": "56a242c3427e2a06bd488acc762178f51ab558a515ec1bbdd7d2b2639cc10a9c",
+      "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-ledger.json",
+      "snapshot_sha256": "56a242c3427e2a06bd488acc762178f51ab558a515ec1bbdd7d2b2639cc10a9c"
+    },
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/EXPORT.json": {
+      "sha256": "87afb4689ab99477a0f6e7bb283daf24d4636d4395303fd30f9e153ea28fe003",
+      "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-export.json",
+      "snapshot_sha256": "87afb4689ab99477a0f6e7bb283daf24d4636d4395303fd30f9e153ea28fe003"
+    },
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/JOB-LEDGER.json": {
+      "sha256": "3968d87c6a430afb21c8207e20d54169161101ad3f6c0b9d67f471d49a94b47d",
+      "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-pod-ledger.json",
+      "snapshot_sha256": "3968d87c6a430afb21c8207e20d54169161101ad3f6c0b9d67f471d49a94b47d"
+    },
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/EXPORT.json": {
+      "sha256": "85065aea59d9efd476b52b374c74444ada1f8941c5633329b0f00a2099fdf545",
+      "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-pod-export.json",
+      "snapshot_sha256": "85065aea59d9efd476b52b374c74444ada1f8941c5633329b0f00a2099fdf545"
+    }
   },
-  "lane_ledger_sources": [
-    "../b3d-solver/EXPORT.json in solver worktree",
-    "../b3d-pod/runs/EXPORT.json in POD worktree"
-  ]
+  "gates": "Independent gate details live in lane audit records; publication audit remains separate."
 }

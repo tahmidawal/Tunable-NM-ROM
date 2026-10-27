@@ -17,12 +17,13 @@ def main():
              equation_notes=dict(POD_none='Trial states are restricted to the frozen POD span, but the common LM objective minimizes the full central-FD residual norm. It does not first Galerkin-project the residual. This explicitly corrects ambiguous inherited raw metadata wording without modifying raw results.',
                  bank='Smooth-test weak residual with analytic continuum advection quadrature and discrete sine diffusion; inherited diffusion-dependent row weighting. No upwind substitution.',
                  spectral='Frozen3/2 oversampled sine ETDRK4 implementation; no exact de-aliasing claim'),
-             next_open=['Full64 paired same-invocation frontier validation running; results audit pending',
-                        'Fixed-mode65/129 mesh costs and operator diagnostics: separate code/control/job gates pending'])
+             next_open=[])
     for entry in ledger['entries']:
         rp=HERE/'results'/entry['attempt']/'raw/output/result.json'
         if not rp.exists():continue
-        z=json.loads(rp.read_text());source=dict(path=str(rp.relative_to(HERE)),sha256=sha(rp),job_id=entry['job_id'],source_commit=z['source_commit'],gpu=z['gpu'])
+        z=json.loads(rp.read_text());source=dict(path=str(rp.relative_to(HERE)),sha256=sha(rp),job_id=entry['job_id'],source_commit=z['source_commit'],gpu=z['gpu'],config_sha256=z['config_sha256'])
+        original_manifest=rp.parents[1]/'MANIFEST.sha256'
+        if original_manifest.exists():source['original_job_manifest']=dict(path=str(original_manifest.relative_to(HERE)),sha256=sha(original_manifest))
         for mode,filename,collection in [('front','front_result.json','full64_frontier'),('mesh','mesh_result.json','mesh_results')]:
             actual=rp.parent/filename
             if z['config']['mode']==mode and actual.exists():
@@ -81,6 +82,16 @@ def main():
         out['retention_manifests'].append(dict(path=str(p.relative_to(HERE)),sha256=sha(p),attempt=retained['attempt'],job_id=retained['job_id'],
             archive=dict(path=retained['independent_local_collection_archive'],sha256=retained['collection_archive_sha256']),
             bulk_arrays=[r for r in retained['arrays'] if r['retention'].startswith('local bulk')],archival_precondition=retained['archival_precondition']))
+    accepted=lambda rows:any(r['complete'] and r['independent_audit'].get('results','').startswith('READY') for r in rows)
+    front_ready=accepted(out['full64_frontier']);mesh_ready=accepted(out['mesh_results'])
+    active=[e for e in ledger['entries'] if e.get('state',e.get('status')) in ('RUNNING','PENDING','SUBMITTED','COMPLETING','CONFIGURING')]
+    out['campaign_status']=dict(full64_complete_results_gate=front_ready,mesh_complete_results_gate=mesh_ready,active_jobs=[dict(attempt=e['attempt'],job_id=e['job_id'],state=e.get('state',e.get('status'))) for e in active])
+    if not front_ready:out['next_open'].append('Complete immutable full64 collection and independent results gate')
+    if not mesh_ready:out['next_open'].append('Complete immutable fixed-mode mesh collection and independent results gate')
+    out['status']='complete independently audited frozen campaign' if front_ready and mesh_ready else 'frozen campaign in progress; consult actual collection and independent-gate state'
+    out['scope']='Same-allocation full64 paired frontier and separate within-job fixed-mode mesh diagnostics; finite exposed validation sets and per-query masks apply.' if front_ready and mesh_ready else 'Accepted diagnostic subsets plus any actual collected full64/mesh data; pending or incomplete data remain unreleased.'
+    out['metadata_generator_sha256']=sha(Path(__file__))
+    out['source_job_pins']=[dict(attempt=e['attempt'],job_id=e['job_id'],source_commit=e.get('source_commit'),manifest_sha256=e.get('manifest_sha256')) for e in ledger['entries']]
     (HERE/'EXPORT.json').write_text(json.dumps(out,indent=1)+'\n')
     print(json.dumps(dict(observations=len(out['observations']),same_history=len(out['same_history']),gpu_hours=out['gpu_hours'])))
 

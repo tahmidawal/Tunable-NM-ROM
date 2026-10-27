@@ -28,8 +28,28 @@
       "reservation_seconds": 1200,
       "gpu_request": "h200:1",
       "status_at_submission": "PENDING",
+      "actual_elapsed_seconds": 87,
+      "review": "Independent exact source/stage/input manifest RELEASE READY, parent released once; queue checked before and after.",
+      "status": "COMPLETED",
+      "exit_code": "0:0",
+      "consumed_manifest_sha256": "5c0dea1d0318679249745964de005634a7dd4d44e2cede1489787db35240bdb9",
+      "collection": "all compact retained files checksummed locally, including materialized bases; all original time levels retained",
+      "remaining_input_failures": [
+        "val32_c005_L32"
+      ]
+    },
+    {
+      "job_id": 6568278,
+      "directory": "dev01",
+      "phase": "development_only",
+      "source_commit": "8044680aa35bcfecbdb4873101837542ea3fe523",
+      "stage_manifest_sha256": "caef5de63bdbea5381123007ea3d6b125fbba68e78b19210a382e4191fc1e51b",
+      "prepared_manifest_sha256": "5c0dea1d0318679249745964de005634a7dd4d44e2cede1489787db35240bdb9",
+      "reservation_seconds": 5400,
+      "gpu_request": "h200:1",
+      "status_at_submission": "PENDING",
       "actual_elapsed_seconds": null,
-      "review": "Independent exact source/stage/input manifest RELEASE READY, parent released once; queue checked before and after."
+      "review": "Independent exact source/stage/supplement audit READY; parent released dev only. Core algebra check precedes screen, export and replay gate follow. Queue checked before/after."
     }
   ]
 }

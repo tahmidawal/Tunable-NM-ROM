@@ -80,7 +80,7 @@ def main():
     for p in sorted((HERE/'results').glob('*/RETENTION.json')):
         retained=json.loads(p.read_text())
         out['retention_manifests'].append(dict(path=str(p.relative_to(HERE)),sha256=sha(p),attempt=retained['attempt'],job_id=retained['job_id'],
-            archive=dict(path=retained['independent_local_collection_archive'],sha256=retained['collection_archive_sha256']),
+            archive=dict(path=retained['independent_local_collection_archive'],sha256=retained['collection_archive_sha256'],bytes=retained.get('collection_archive_bytes')),
             bulk_arrays=[r for r in retained['arrays'] if r['retention'].startswith('local bulk')],archival_precondition=retained['archival_precondition']))
     accepted=lambda rows:any(r['complete'] and r['independent_audit'].get('results','').startswith('READY') for r in rows)
     front_ready=accepted(out['full64_frontier']);mesh_ready=accepted(out['mesh_results'])

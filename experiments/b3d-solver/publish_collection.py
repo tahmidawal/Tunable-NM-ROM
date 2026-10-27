@@ -25,6 +25,7 @@ def main():
         records.append(dict(path=str(f.relative_to(HERE)),sha256=sha(f),bytes=f.stat().st_size,
             retention='local bulk field; excluded from Git and code-only mirror' if bulk else 'numerical state/diagnostic array; eligible for local Git and code-only mirror subject to50MB limit'))
     manifest=dict(attempt=a.attempt,job_id=proof['job_id'],collection_archive_sha256=proof['archive_sha256'],all_copied_checksums_verified=True,
+        collection_archive_bytes=(stage/'collection.tar').stat().st_size,
         arrays=records,bulk_bytes=sum(r['bytes'] for r in records if r['retention'].startswith('local bulk')),
         local_array_root=str(dest.resolve()),independent_local_collection_archive=str((stage/'collection.tar').resolve()),
         archival_precondition='Before archiving/removing this worktree, copy all excluded arrays or the verified collection archive to permanent storage and verify these hashes. Ignored files are not preserved by managed worktree archival.',

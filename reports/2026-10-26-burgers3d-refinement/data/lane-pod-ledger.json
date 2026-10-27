@@ -1,7 +1,7 @@
 {
   "namespace": "/cluster/tufts/paralab/tawal01/b3d-pod-20261026",
   "cap_gpu_hours": 4,
-  "spent_gpu_hours": 1.0047222222222223,
+  "spent_gpu_hours": 1.0261111111111112,
   "jobs": [
     {
       "attempt": "pilot",
@@ -57,11 +57,51 @@
       "checksums_verified": true,
       "results_audit": "READY",
       "remote_directory_removed_after_verified_collection": true
+    },
+    {
+      "attempt": "k16fine01",
+      "state": "COMPLETED_FAILED_HR_ADMISSION",
+      "job_id": 6529465,
+      "requested_gpu_hours": 0.4,
+      "source_commit": "6592f2288",
+      "source_sha256": "4ae6aade3b19f9bc48a39261cd66005df8bfb158d648c2067641af8f2751d6f7",
+      "submitted_utc": "2026-10-27T02:24:45.907074+00:00",
+      "pre_submit_queue_empty": true,
+      "post_submit_exactly_one": true,
+      "exit_code": "0:0",
+      "elapsed_seconds": 77,
+      "spent_gpu_hours": 0.021388888888888888,
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "results_audit": "READY",
+      "full64_adapter_release": false,
+      "remote_directory_removed_after_verified_collection": true
     }
   ],
   "additional_support_jobs_authorized": false,
   "unrun_validation_attempts": {
     "k32pilot": "construction failed; not run",
     "k32val": "construction failed; not run"
-  }
+  },
+  "A3_replay_authorization": {
+    "attempt": "k16fine01",
+    "state": "COMPLETED_FAILED_HR_ADMISSION",
+    "hard_gpu_hours": 0.4,
+    "selection_sha256": "46ddebe8b6e2f582ad9791a5819460ab0f928b60a9c457d0e0e6e5d621a211fa",
+    "config_sha256": "7e911ac90ffd88ce1608fb7298569632d41232efc4be972e8a42236fd893c9de",
+    "support": "archived k16, unchanged; no fit/refit",
+    "selected": {
+      "subject_id": "POD512_none_CN_25steps_g1e-4",
+      "scheme": "CN",
+      "dt": 0.01,
+      "steps": 25,
+      "gtol": 0.0001,
+      "tolf": 1e-09,
+      "trust_radius": 3.097916703945634
+    },
+    "job_id": 6529465,
+    "exact_job_gate": "READY",
+    "results_audit": "READY"
+  },
+  "additional_support_fitting_jobs_authorized": false
 }

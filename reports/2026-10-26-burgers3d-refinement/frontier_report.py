@@ -82,7 +82,7 @@ def components(doc, table, save):
         setup_rows.append([sid, ', '.join(subject['shared_setup_keys']) or 'none',
             f"{subject['setup_seconds']:.6g}", f"{subject['compile_and_warm_seconds']:.6g}",
             'unavailable' if before is None or after is None else f'{(after-before)/1e9:.6g}',
-            f"{subject['setup_peak_bytes']/1e9:.6g}"])
+            'unavailable' if subject['setup_peak_bytes'] is None else f"{subject['setup_peak_bytes']/1e9:.6g}"])
     fig, ax = plt.subplots(figsize=(9, max(4, .34 * len(phase_values))))
     matrix = np.array([[np.nan if v[p] is None else v[p]*1e3 for p in ['initialization', 'evolve', 'decode']]
                        for v in phase_values.values()])
@@ -118,7 +118,9 @@ dynamic state has no separate initial coefficient projection.
     text += table(['Shared bank/basis setup', 'Seconds', 'Memory counters'], shared_rows) + '\n\n'
     text += (f"Common provenance/descriptor setup takes {doc['common_setup']['seconds']:.6g} seconds. "
              'Shared setup is reported once, separate from each incremental configuration and from '
-             'compilation/warm-up. Device-memory changes are current-allocation differences; the peak '
+             'compilation/warm-up. It loads and assembles existing artifacts; historical training and '
+             'support fitting are not rerun or included in those setup seconds. The new rejected fit '
+             'has separate allocation accounting. Device-memory changes are current-allocation differences; the peak '
              'counter is cumulative for the entire job and cannot rank standalone method memory. '
              'Inputs and returned fields are on device at the query boundary; synchronization is included, '
              'while output transfer, scoring and storage are excluded equally. Descriptor preparation is '
@@ -154,8 +156,11 @@ An unresolved overlap is not a win. A ratio below unity means the matched compet
                    'Competitor / subject cost'], rows) + '\n\n'
     text += ('Prepared-native matches and the separate median-only/worst-only predicates are retained '
              'in the machine dataset. This is a finite developmental comparison, not a global optimum '
-             'or sealed confirmation. The qualified hyper-reduced POD gap remains separate from '
-             'the measured unsampled POD comparison.\n\n')
+             'or sealed confirmation. ')
+    hr = [sid for sid, v in summaries.items() if v['method'] == 'POD' and v['registered_qualified'] and
+          v['qualification']['method_specific_extra_masks'].get('hyper_reduced') is True]
+    text += ('Qualified hyper-reduced POD is included for the explicitly admitted improved-policy subject(s).\n\n'
+             if hr else 'The qualified hyper-reduced POD gap remains separate from the measured unsampled POD comparison.\n\n')
     old = [sid for sid, v in doc['subjects'].items() if v['config'].get('archived_key')]
     new = [sid for sid, v in doc['subjects'].items() if v['config'].get('successors')]
     rows = []
@@ -175,6 +180,81 @@ An unresolved overlap is not a win. A ratio below unity means the matched compet
                  'a gain in the others. True requires non-overlapping conditional reference intervals.\n\n')
         text += table(['New policy', 'Earlier bank setting', 'Median resolved better', 'Worst resolved better',
                        'Earlier / new query cost'], rows) + '\n\n'
+    return text
+
+
+def projection_geometry(doc, table, save):
+    budgets = doc['projection_budgets']
+    rows, worst_rows, all_floors = [], [], []
+    for span, budget in budgets.items():
+        cases = budget['cases']
+        assert set(int(k) for k in cases) <= set(range(64)), (span, 'unexpected projection population')
+        floors = []
+        for cid, record in cases.items():
+            assert record['reference'] == f'3d/val64/ST/c{int(cid):03d}'
+            assert len(record['floor_e_t']) == len(doc['reference']['output_times'])
+            assert max(record['orthogonality_relative']) <= 1e-10
+            assert np.isclose(record['floor_max'], max(record['floor_e_t'][1:]), rtol=1e-12)
+            floors.append(record['floor_max'])
+        all_floors.extend(floors)
+        complete = sorted(int(k) for k in cases) == list(range(64))
+        rows.append([span, budget['r'], f'{len(floors)}/64',
+                     f'{100*np.median(floors):.7g}' if complete else 'incomplete',
+                     f'{100*max(floors):.7g}' if complete else 'incomplete'])
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for sid, subject in doc['subjects'].items():
+        records = doc['case_results'][sid]
+        pairs = []
+        for cid, record in records.items():
+            geometry = record.get('projection_budget')
+            if geometry is None:
+                continue
+            floor = np.asarray(geometry['reference_projection_floor_e_t'])
+            dyn = np.asarray(geometry['evolution_in_span_distance_e_t'])
+            actual = np.asarray(record['score']['e_t'], dtype=float)
+            if not np.isfinite(actual).all():
+                continue
+            defect = actual**2 - floor**2 - dyn**2
+            assert np.max(np.abs(defect)) <= 1e-8 * max(float(np.max(actual**2)), 1e-16) + 1e-12
+            pairs.append((max(floor[1:]), record['score']['e'], int(cid), actual, floor, dyn))
+        if not pairs:
+            continue
+        if len(pairs) == 64:
+            worst = max(pairs, key=lambda v: v[1])
+            t = 1 + int(np.argmax(worst[3][1:]))
+            worst_rows.append([sid, worst[2], doc['reference']['output_times'][t], f'{100*worst[3][t]:.7g}',
+                               f'{100*worst[4][t]:.7g}', f'{100*worst[5][t]:.7g}'])
+        else:
+            worst_rows.append([sid, 'incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete'])
+        # Show the wide-bank diagnostics and the tuned POD representative; all spans remain in the table.
+        cfg = subject['config']
+        show = cfg.get('setting') == 'W1024' or ('POD' in sid and 'CN' in sid)
+        if show:
+            ax.scatter([v[0]*100 for v in pairs], [v[1]*100 for v in pairs], s=20, alpha=.65, label=sid)
+    limits = [v for v in all_floors if v > 0]
+    if limits:
+        lo, hi = min(limits)*100, max(limits)*100
+        ax.plot([lo, hi], [lo, hi], '--', color='#555', label='Rollout equals best field fit')
+    ax.set(xscale='log', yscale='log', xlabel='Best reference-field fit: maximum evolved-time error (%)',
+           ylabel='Actual rollout: maximum evolved-time error (%)', title='Reference-span geometry on the common scoring lattice')
+    ax.grid(alpha=.2); ax.legend(fontsize=7); save(fig, 'reference_projection_budget')
+    text = '''### Representation floor and trajectory error
+
+The best least-squares fit of each numerical reference field supplies a geometric control,
+using the same scoring lattice and fixed reference initial norm. Coverage is explicit;
+population medians and maxima require every validation case. The control is not a new bank
+fit or a feasible PDE trajectory, and missing geometry from a failed rollout remains missing.
+A floor below the conditional reference uncertainty is not a resolved physical lower bound.
+
+'''
+    text += table(['Frozen span', 'Rank', 'Cases', 'Median reference floor (%)', 'Worst reference floor (%)'], rows) + '\n\n'
+    text += '![Reference projection versus actual trajectory error](figs/reference_projection_budget.png)\n\n'
+    text += ('For each subject below, the case and time are selected by its actual largest evolved-output '
+             'error. At that same case/time, squared total error equals squared projection residual plus '
+             'squared distance within the span, up to the recorded orthogonality/round-off checks. '
+             'This identity does not causally split time, spatial, quadrature and solver errors.\n\n')
+    text += table(['Subject', 'Worst case', 'Time', 'Total error (%)', 'Reference floor at that time (%)',
+                   'Distance within span (%)'], worst_rows) + '\n\n'
     return text
 
 
@@ -245,7 +325,7 @@ def render(doc, figdir, table, save, reference):
                 assert row['coefficient_sha256'] == result['coefficient_sha256']
         score_by_case = {}
         for row in own:
-            if row['subject'] in invalid_subjects:
+            if row['score'].get('e') is None or not np.isfinite(row['score']['e']) or row['score'].get('eligible') is not True:
                 continue
             cid = int(row['case'])
             if cid in score_by_case:
@@ -261,6 +341,8 @@ def render(doc, figdir, table, save, reference):
         entry = dict(id=subject_id, method=method_group(subject_id, subject), qualification=q,
                      registered_qualified=qualified, common_rollout_pass=common,
                      complete_score_population=complete_scores,
+                     missing_score_case_ids=[c for c in ids if c not in score_by_case],
+                     numerically_invalid_cases=[int(c) for c, r in raw_cases.items() if not r['valid']],
                      case_ids=sorted(score_by_case), costs={}, source_config=subject['config'])
         if complete_scores:
             errors = [score_by_case[c] for c in ids]
@@ -288,7 +370,10 @@ def render(doc, figdir, table, save, reference):
         if complete_scores:
             assert np.isclose(entry['median_error'], source_summary['median_error'], rtol=1e-12)
             assert np.isclose(entry['worst_error'], source_summary['worst_error'], rtol=1e-12)
-        table_rows.append([subject_id, entry['method'], q['status'], f'{q1}/{q2}', common,
+        full_solver = entry['method'] in ['Spectral FOM', 'Finite-difference FOM']
+        q2_label = 'n/a' if q['Q2'].get('applicability') else str(q2)
+        check_label = f'stage-valid={q1}; Q2={q2_label}' if full_solver else f'Q1={q1}; Q2={q2_label}'
+        table_rows.append([subject_id, entry['method'], q['status'], check_label, common,
             'missing' if not complete_scores else f"{100*entry['median_error']:.6g}",
             'missing' if not complete_scores else f"{100*entry['worst_error']:.6g}",
             entry.get('errors_above_1pct', 'missing'),
@@ -312,12 +397,18 @@ def render(doc, figdir, table, save, reference):
                 seen.add(group)
                 xx = point['costs'][contract]['median_seconds'] * 1e3
                 yy = point[metric] * 100
+                bound_name = 'median' if metric == 'median_error' else 'worst'
+                low, high = point[bound_name + '_lower'] * 100, point[bound_name + '_upper'] * 100
+                lower_bar = yy-low if low > 0 else 0
+                ax.errorbar(xx, yy, yerr=[[max(lower_bar, 0)], [max(high-yy, 0)]],
+                            fmt='none', ecolor=colours[group], alpha=.35, linewidth=.7, capsize=2)
                 ax.scatter(xx, yy, s=48, c=colours[group] if qualified else 'none',
                            edgecolors=colours[group], marker='o' if qualified or common else 's', label=label)
             ax.set(xscale='log', yscale='log', xlabel=f'{contract.replace("_", " ")} query: median over 64 cases (ms)',
                    ylabel=f'{metric.replace("_", " ").capitalize()} (%)')
             ax.grid(alpha=.2); ax.legend(fontsize=8)
-        fig.suptitle('Same allocation · full validation · device outputs · conditional E0 ST error\nFilled: registered qualified; open: other status retained', fontsize=10)
+        fig.suptitle('Same allocation · full validation · device outputs · conditional E0 ST error\n'
+                     'Filled: admitted; open: retained · Whiskers: conditional reference intervals', fontsize=10)
         name = f'full64_{contract}_frontier'
         save(fig, name)
         figures.append((contract, name))
@@ -330,7 +421,7 @@ Descriptor-total is the primary cross-method contract. Prepared-native costs use
 method-specific supplied data, so those values are shown as decomposition evidence.
 
 '''
-    text += table(['Subject', 'Method', 'Qualification status', 'Q1/Q2', 'Common rollout pass', 'Median E0 error (%)', 'Worst E0 error (%)',
+    text += table(['Subject', 'Method', 'Qualification status', 'Registered checks', 'Method common check', 'Median E0 error (%)', 'Worst E0 error (%)',
                    'Cases above 1%', 'Descriptor total (ms)', 'Prepared native (ms)'], table_rows) + '\n\n'
     extra_rows = []
     for sid, subject in doc['subjects'].items():
@@ -339,11 +430,17 @@ method-specific supplied data, so those values are shown as decomposition eviden
     text += table(['Subject', 'Qualification scope', 'Method-specific or supplementary masks (raw)'], extra_rows) + '\n\n'
     for contract, name in figures:
         text += f'![Full validation {contract.replace("_", " ")} cost versus accuracy](figs/{name}.png)\n\n'
-    text += ('''Common rollout-consistency checks and method-specific extra checks are separate masks.
+    text += ('''Filled markers pass their registered admission gates. Open circles pass the common
+rollout check but lack registered admission; open squares fail the common rollout check.
+Common rollout-consistency checks and method-specific extra checks are separate masks.
 The extra POD gradient threshold is not equivalent to the bank advection-rho threshold.
 All preregistered verdicts remain unchanged. A POD point that passes the common checks but
 fails its extra conservative gate remains visible as descriptive evidence; its exclusion
 cannot be used to claim a bank advantage over tuned POD. Unqualified points are retained.
+Full solvers use their declared stage-validity/convergence checks; they do not receive ROM
+tight/tighter-anchor certification, and quadrature qualification is not applicable to them.
+Whiskers show conditional reference-error intervals; lower endpoints at zero are omitted
+on the logarithmic axis. They are numerical-reference uncertainty, not statistical intervals.
 
 The descriptor includes the canonical initial-condition normalisation scalar. Cohort draw
 and canonical descriptor construction are common offline work. All methods return the same
@@ -353,7 +450,7 @@ conditional on the E0 reference uncertainty. Competitor searches cover a finite 
 
 ''')
     component_text, phase_values = components(doc, table, save)
-    text += comparisons(doc, summaries, table) + component_text
+    text += comparisons(doc, summaries, table) + component_text + projection_geometry(doc, table, save)
     return dict(subjects=summaries, figures=figures, text=text,
                 diagnostic_phase_seconds=phase_values,
                 matching=doc['matching'], frontiers=doc['frontiers'], execution=doc['execution'])

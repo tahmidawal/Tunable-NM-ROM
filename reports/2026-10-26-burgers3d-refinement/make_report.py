@@ -25,6 +25,17 @@ def load(p):
     return read(p)
 
 
+def load_frozen(name):
+    path = HERE / 'data' / name
+    gates = load(HERE / 'data/DATASET-GATES.json')
+    gate = gates[name]
+    assert sha(path) == gate['sha256'] and gate['verdict'].startswith('READY')
+    audit = HERE / gate['audit_snapshot']
+    assert sha(audit) == gate['audit_sha256']
+    PINS[str(audit)] = sha(audit)
+    return load(path)
+
+
 def table(headers, rows):
     return '\n'.join(['| ' + ' | '.join(headers) + ' |', '| ' + ' | '.join(['---'] * len(headers)) + ' |'] +
                      ['| ' + ' | '.join(str(c).replace('|', '\\|') for c in row) + ' |' for row in rows])
@@ -39,7 +50,8 @@ def save(fig, name):
 
 def main():
     FIG.mkdir(exist_ok=True)
-    plt.rcParams.update({'font.size': 10, 'axes.spines.top': False, 'axes.spines.right': False})
+    plt.rcParams.update({'font.size': 10, 'axes.spines.top': False, 'axes.spines.right': False,
+                         'pdf.fonttype': 42, 'ps.fonttype': 42})
     inv = load(HERE / 'data/inventory.json.gz')
     timed = load(HERE / 'data/timing-rescore.json')
     dimsdir = WTS / '2026-10-18-jcp-dims/experiments/jcp-dims'
@@ -67,7 +79,7 @@ def main():
     values = dict(inventory_counts=n, best_median=dict(key=bestmed, **qualified[bestmed]),
                   best_worst=dict(key=bestworst, **qualified[bestworst]),
                   historical_ROM_comparisons=dims['h2q'], timing_population=timed['case_ids'],
-                  historical_POD_scope=pod_scope, new_lanes={})
+                  historical_POD_scope=pod_scope, new_lanes={}, qualified_HR_POD_subjects=[])
 
     # Exact historical timed population: cost and returned coefficients linked by original hashes.
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
@@ -212,13 +224,18 @@ def main():
     values['regime_sources'] = regime_sources
     values['regime_statistics'] = regime_statistics
     new_frontier_text = ''
-    frontier_path = HERE / 'data/frozen-frontier.json'
+    frontier_path = HERE / 'data/frozen-frontier.json.gz'
+    if not frontier_path.is_file():
+        frontier_path = HERE / 'data/frozen-frontier.json'
     if frontier_path.is_file():
         import frontier_report
-        frontier_data = load(frontier_path)
+        frontier_data = load_frozen(frontier_path.name)
         rendered = frontier_report.render(frontier_data, FIG, table, save, inv['reference'])
         new_frontier_text = rendered.pop('text')
         values['full_validation_frontier'] = rendered
+        values['qualified_HR_POD_subjects'] = [sid for sid, v in rendered['subjects'].items()
+            if v['method'] == 'POD' and v['registered_qualified'] and
+            v['qualification']['method_specific_extra_masks'].get('hyper_reduced') is True]
 
     # New lane results remain separate, with exact scope and audit state supplied by their owners.
     lane_sections = []
@@ -262,7 +279,8 @@ def main():
                              f"returned baseline step is {control['levels']['tight']['baseline_distance']:.6g}. "
                              f"Independent anchor usable: {usable}. "
                              'This is a fresh restart from identical coefficient history, not restoration of '
-                             'the original cached solver state.\n\n')
+                             'the original cached solver state. The condition number measures this returned '
+                             'step only; it does not bound conditioning across the trajectory or population.\n\n')
                 historical_q = lane.get('historical_tight_quadrature', {}).get('data')
                 if historical_q:
                     rows = [[v['solver'], f"{v['coarse']} to {v['fine']}", len(v['ordered_cases']),
@@ -329,6 +347,35 @@ def main():
                              'The earlier proposed worst-only rejection rule was not in the staged design '
                              'and was abandoned. Error cancellation is a hypothesis; this time-step control '
                              'alone does not identify a spatial, operator or representation cause.\n\n')
+                pod_groups = collections.defaultdict(list)
+                for v in lane.get('POD_tuning', []):
+                    attempt = v['source']['path'].split('/')[1]
+                    gate = lane.get('audits', {}).get('jobs', {}).get(attempt, {}).get('results', '')
+                    if gate.startswith('READY'):
+                        pod_groups[(v['source']['job_id'], v['subject'])].append(v)
+                if pod_groups:
+                    rows = []
+                    for (job, subject), group in sorted(pod_groups.items()):
+                        ids = sorted(v['case'] for v in group)
+                        assert len(set(ids)) == len(ids) and set(ids) <= {0, 5, 30, 43}
+                        if ids != [0, 5, 30, 43]:
+                            rows.append([job, subject, str(ids), 'incomplete', 'incomplete', 'not established',
+                                         'partial execution retained', 'partial'])
+                            continue
+                        errors = [v['score']['e'] for v in group]
+                        common = all(v['common_rollout_check'] for v in group)
+                        pooled = sum(v['nonstationary'] for v in group) <= .01 * sum(v['steps'] for v in group)
+                        rows.append([job, subject, str(ids), f'{100*np.median(errors):.7g}', f'{100*max(errors):.7g}',
+                            common and pooled, f"{max(v['certificate']['prod_to_tight_distance'] for v in group):.7g}",
+                            sum(v['work']['nonlinear_iterations'] for v in group)])
+                    text += ('#### Equal integration and nonlinear opportunities for POD\n\n'
+                             'The unsampled POD diagnostics retain the original policies, their failures and '
+                             'the prospectively frozen stronger-production control. Each row uses the same '
+                             'selected cases; these are not complete-validation error estimates. The common '
+                             'full-trajectory agreement gate remains unchanged. Cross-job times are not used '
+                             'to choose between policies; the selected endpoints face the common allocation.\n\n')
+                    text += table(['Job', 'POD schedule/policy', 'Case ids', 'Median error (%)', 'Worst error (%)',
+                                   'Subset Q1/common pass', 'Max production–tight distance', 'Corrections (sum)'], rows) + '\n\n'
             else:
                 rows = []
                 for rule, q in lane.get('qualification', {}).get('whole_residual', {}).items():
@@ -366,8 +413,64 @@ def main():
                              'exhaustion. No larger support was admitted, and no rollout validation of it ran. '
                              'The permitted greedy path exhausted admissible choices under its fixed policy; '
                              'this does not prove that no valid larger support exists. The frozen stop rule '
-                             'ends the support search. Qualified hyper-reduced POD comparison remains open; '
-                             'the construction failure is not evidence that POD loses.\n\n')
+                             'ends the new-support search. This rejected constructor supplies no qualified '
+                             'hyper-reduced comparator and is not evidence that POD loses. Any separately '
+                             'admitted improved-policy existing support is reported with the matched frontier.\n\n')
+                a3 = lane.get('a3_replay')
+                if a3:
+                    assert a3['results_audit'].startswith('READY')
+                    admission = a3['admission']
+                    summary_path = HERE / 'data/pod-improved-support-summary.json'
+                    assert sha(summary_path) == a3['summary_sha256']
+                    support_summary = load(summary_path)
+                    assert support_summary['result_sha256'] == a3['result_sha256']
+                    assert support_summary['selection']['reference_store_version'] == inv['reference']['store_version']
+                    scores = {}
+                    for repetition in a3['timing_repetitions']:
+                        for invocation in repetition['invocations']:
+                            key = (str(repetition['case']), invocation['arm'])
+                            value = invocation['e0']
+                            if key in scores:
+                                assert abs(scores[key]['e'] - value['e']) <= 1e-12
+                            scores[key] = value
+                    rows = []
+                    for cid, distance in sorted(a3['common_field_distances'].items(), key=lambda kv: int(kv[0])):
+                        own = support_summary['cases'][cid]
+                        k_error, full_error = own['k16']['error'], own['none']['error']
+                        eps = inv['reference']['cohorts']['val64']['cases'][cid]['eps_ref']
+                        for arm, value in [('k16', k_error), ('none', full_error)]:
+                            if (cid, arm) in scores:
+                                timed_a3 = scores[(cid, arm)]
+                                assert timed_a3['eligible'] is True and abs(timed_a3['e'] - value) <= 1e-12
+                                assert np.isclose(timed_a3['eps_ref'], eps, rtol=1e-10, atol=0)
+                        assert abs(k_error-full_error) <= eps
+                        rows.append([cid, f'{distance:.7g}', admission['shared_field_case_mask'][cid],
+                                     f"{a3['diagnostic_native_tight_lower_bounds'][cid]:.7g}",
+                                     f"{abs(k_error-full_error):.7g}", f'{eps:.7g}'])
+                    selected = a3['selected']
+                    text += (f"#### Existing support under the tuned POD policy\n\n"
+                             f"One frozen replay uses the existing k16 support with {selected['scheme']}, "
+                             f"step {selected['dt']}, production tolerance {selected['gtol']:.7g}, on "
+                             f"case ids {sorted(int(c) for c in a3['common_field_distances'])}. "
+                             f"Own-objective Q1: k16={a3['own_objective_Q1']['k16']['q1']}, "
+                             f"no-HR={a3['own_objective_Q1']['none']['q1']}. "
+                             'The exact anchor populations and reproduction evidence remain in the export. '
+                             'The common field check and the additional whole-objective checks are separate.\n\n')
+                    text += table(['Case', 'k16 to no-HR field distance', 'Common field pass',
+                                   'Tight-trajectory distance lower bound', 'Absolute scalar E0-error change',
+                                   'Conditional reference uncertainty'], rows) + '\n\n'
+                    text += (f"The common field limit is {admission['shared_field_bar']:.7g}; "
+                             f"the additional gradient limit is {admission['extra_gradient_bar']:.7g}, "
+                             f"with measured maximum {admission['delta_g_max']:.7g}. "
+                             f"Full-objective stationarity misses {admission['extra_full_stationarity_bad_steps']}/"
+                             f"{admission['extra_full_stationarity_steps']} steps against fraction limit "
+                             f"{admission['extra_full_stationarity_fraction_limit']:.7g}. "
+                             'The triangle lower bound subtracts both production-to-tight distances from '
+                             'the observed model-to-model distance; the remaining failing case cannot be '
+                             'explained solely by those production solve tolerances. Scalar E0-error changes '
+                             'are within reference uncertainty on this subset, so this is a consistency '
+                             'failure, not a demonstrated physical-accuracy loss or a bank advantage. '
+                             'The frozen stop rule blocks full-validation HR release; no support was refitted.\n\n')
             text += f"Machine export and hashed raw evidence: `{p}`. No cross-job speed-up is inferred.\n"
             lane_sections.append(text)
     if not lane_sections:
@@ -424,6 +527,7 @@ or advection bias by itself. Any alternative operator is a separately named diag
 '''
     report = f'''# Burgers 3D refinement: recovered evidence, numerical gaps and controlled replays
 
+Status: provisional campaign checkpoint; final paired validation and publication review are pending.
 This report reconciles existing evidence and the bounded refinement campaign. The historical
 numbers are conditional estimates against approved E0 ST references; new numerical results
 are accepted only with their independent audit status. This generated version does not
@@ -469,6 +573,10 @@ The inventory exposes unknown fields and unsupported supporting schemas explicit
 Only development and validation populations can inform selection. Historical test observations
 remain replication evidence. Sealed and reserved out-of-distribution cohorts remain closed.
 Reference uncertainty is a conditional Richardson estimate, not a rigorous error bound.
+
+The per-case score is the maximum evolved-output field discrepancy on the common scoring
+lattice, divided by the fixed reference initial-field norm. Initial reconstruction is retained
+separately and is not silently substituted for an evolved-output error.
 
 ### There is no single strongest bank configuration
 
@@ -551,6 +659,11 @@ claims at their tested reference mesh; there is no all-mesh Q2 join here. Failed
 must be measured separately. Historical Jacobian counts are not reconstructed from iteration
 counts where the original counter is absent.
 
+The earlier general comparative multi-mesh advantage was withdrawn after continuous-POD
+controls. Mesh-independent reduced evolution is not exclusive to the bank. The present
+within-bank mesh measurements do not restore that comparative claim, and earlier
+two-dimensional multi-mesh cost ratios are not relabelled as three-dimensional evidence.
+
 ![Descriptive in-range viscosity and steepness associations](figs/in_range_regime.png)
 
 The regime plot uses only the existing validation population and the same E0 reference.
@@ -611,8 +724,10 @@ output and hardware contract, and POD receives the same numerical improvements.
 
 ## Reproduction and provenance
 
-Run `inventory.py`, `rescore_timing.py`, then `make_report.py` with the repository's absolute
-Python environment. These analysis scripts use CPU NumPy and saved trajectories. They do
+Run `build.py` with the repository's absolute Python environment to snapshot checkpoints,
+generate the report, then build and verify the Research Update PDF in dependency order.
+Use `inventory.py` and `rescore_timing.py` when rebuilding the historical evidence inputs.
+These analysis scripts use CPU NumPy and saved trajectories. They do
 not rerun the historical solver grid. `data/SOURCES.json` pins historical sources;
 `PROVENANCE.json` pins this report's direct inputs, and `VALUES.json` retains extracted
 numbers and figure inputs. Compressed inventory and per-case JSON lines are backed up on
@@ -626,36 +741,59 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - $B_q$, $D_q$, $P_q$: bank values, analytic directional derivatives, and weighted test values at quadrature points.
 - $A_N$, $\\Lambda_N$, $c$, $\\nu$: mesh test moments, discrete diffusion eigenvalues, reduced coefficients, and viscosity.
 - W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
+- M2_512: a separately trained frozen bank with its own source hash; it is not a prefix of the W bank.
 - POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
+- Bank keys: bank label, integration rule, nonlinear solver, time scheme, step size, and work policy, separated by vertical bars.
+- FS K1 / QN k4: one fixed correction after the adaptive startup / matrix refresh every four steps, with the inherited slow-refresh logic retained.
 - Gauss / gl / lattice / lat: tensor Gauss–Legendre rules / their short label / a rank-one integration point set / its short label.
 - Mesh intervals: divisions along each spatial axis; nodes include the two boundary endpoints.
 - E0 ST: approved space/time-refined reference; its uncertainty is conditional on convergence assumptions.
+- Richardson estimate: numerical uncertainty inferred from reference refinements under an assumed convergence rate, rather than a rigorous bound.
 - Error: largest output-time field difference divided by the reference initial-field norm.
 - Median / worst: middle / largest case error; they answer different accuracy questions.
 - Outlier count: number of cases exceeding the table's stated error threshold.
 - Full query: input projection, reduced time evolution and requested output decoding.
+- Descriptor / prepared native: supplied initial-condition parameters and canonical normalization / method-specific precomputed field or sine coefficients. These are distinct input contracts.
+- Device output: fully computed fields resident on the GPU; host transfer, scoring and saving are separate work.
+- Phase: a separately measured part of a query; separate calls are not assumed additive to fused-query cost.
 - Q1: nonlinear-solver validity, stationarity and agreement with tighter solves.
 - Q2: quadrature successor and own-state nonlinear agreement, with the finer rule checked too.
-- Qualified: satisfies both checks on the required population; unknown evidence is not a pass.
+- Rho: relative change in the projected nonlinear term when the integration rule is refined at the same returned state.
+- Qualified / admitted: satisfies the method's declared checks on the required population; nonapplicable checks are labelled, and unknown evidence is not a pass.
 - CN / BDF2 / BE: Crank–Nicolson / second-order backward differentiation / backward Euler.
 - FS / QN: fixed full-Jacobian correction sweeps / a solver that reuses its small normal matrix.
 - Jacobian: derivative of the reduced residual; stationarity measures whether further correction remains.
+- Contraction / residual-Jacobian pair: a declared tensor/matrix calculation / a requested joint residual-and-derivative evaluation. Counts describe logical source operations, not compiler kernels.
 - Trust radius / damping: controls on correction size / regularisation of a nonlinear correction.
 - Baseline / extra / refresh / trust / strict: original solver / larger correction budget with unchanged slow-refresh trigger / matrix refreshed each step / larger trust radius / tighter internal stopping.
 - POD / ECSW: a standard linear reduced basis / weighted sampling of its residual equations.
+- FOM / PS / FD: a full-state solver / the frozen sine pseudo-spectral solver / finite differences.
+- Oversampled sine collocation: evaluate the nonlinear term on a larger grid before projecting it; the inherited PS implementation does not claim exact de-aliasing.
 - Support / active points: integration points whose fitted weights are positive.
 - NNLS / optimality check: fitting nonnegative weights / checking whether a permitted weight change could still improve that fit.
+- KKT: the constrained optimality conditions used to check the nonnegative-weight fit.
 - Banned points: candidates excluded by the greedy fit's fixed drop/ban policy; an excessive banned fraction fails its quality check.
 - No-HR: evaluate the complete reduced objective without weighted spatial sampling.
 - Frontier: settings that no other admissible setting beats in both cost and the chosen error metric.
+- Joint accuracy match: both median and worst competitor upper conditional errors lie below the subject's lower errors on the same cases.
+- Projection floor: best reference-field fit in the frozen span at a stored time; it does not identify the cause of a trajectory's larger error.
+- Test moment / operator intervention: overlap of a bank function with a test / an explicitly changed equation component with other quantities held fixed.
+- Shared / incremental setup: reused bank or basis preparation / additional preparation for one configuration; neither includes historical training unless stated.
+- Cumulative peak memory: largest device allocation seen anywhere earlier in the job, not a standalone method's memory requirement.
 - Diagnostic subset: selected cases for explaining a failure, not a whole-population performance estimate.
 - Post hoc / retracted: selected after observing data / no longer an accepted earlier claim.
 - Spearman correlation: association between the ranks of two quantities; not a causal effect.
 - Q/T/S/F/e_P: quadrature / time / nonlinear solve / reduced-form intervention / representation floor.
 - Mesh-free: use method-specific input and output points; full-field output requests every mesh value.
 - Conditional / provisional: valid only with stated numerical assumptions / awaiting required evidence.
+- Spearman correlation: association between ranks of case quantities, without establishing a causal effect.
 '''
     (HERE / '2026-10-26-burgers3d-refinement.md').write_text(report)
+    for name in ['inventory.py', 'rescore_timing.py', 'make_report.py', 'frontier_report.py',
+                 'checkpoint.py', 'update_research.py', 'build.py', 'mesh_report.py']:
+        code = HERE / name
+        if code.is_file():
+            PINS[str(code)] = sha(code)
     write(HERE / 'VALUES.json', values)
     write(HERE / 'PROVENANCE.json', PINS)
     print(HERE / '2026-10-26-burgers3d-refinement.md')

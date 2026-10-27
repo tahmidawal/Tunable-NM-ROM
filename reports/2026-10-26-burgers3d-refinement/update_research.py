@@ -39,6 +39,10 @@ def slide(name, title, body, number):
 
 def main():
     values = read(HERE / 'VALUES.json')
+    frontier = values.get('full_validation_frontier')
+    qualified_hr = [] if not frontier else [sid for sid, v in frontier['subjects'].items()
+        if v['method'] == 'POD' and v['registered_qualified'] and
+        v['qualification']['method_specific_extra_masks'].get('hyper_reduced') is True]
     DEST.mkdir(exist_ok=True)
     same_destination = DEST.resolve() == SOURCE.resolve()
     if not same_destination:
@@ -94,9 +98,10 @@ def main():
     if time_diagnostic:
         coarse, fine = time_diagnostic['rows'][0], time_diagnostic['rows'][-1]
         text = f'''<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:45px">
-<div><img alt="Time-step accuracy and nonlinear work tradeoff" src="{picture('time_refinement_tradeoff.png')}" style="width:100%;margin-top:30px"></div>
+<div><img alt="Time-step accuracy and nonlinear work tradeoff" src="{picture('time_refinement_tradeoff.png')}" style="width:100%;margin-top:30px">
+<p style="font-size:24px;line-height:1.4;margin-top:15px">Fixed bank/test/quadrature setting; case ids {html.escape(str(coarse['cases']))}.</p></div>
 <div style="font-size:31px;line-height:1.45"><p>On the fixed diagnostic cases, median error falls from {100*coarse['median']:.4g}% to {100*fine['median']:.4g}%, while worst error rises from {100*coarse['worst']:.4g}% to {100*fine['worst']:.4g}%.</p>
-<p style="margin-top:25px">Both endpoints pass the subset convergence checks. More frequent matrix refresh does not make physical error uniformly smaller.</p>
+<p style="margin-top:25px">Both endpoints pass the subset convergence checks. A lower median does not guarantee a better worst case.</p>
 <p style="margin-top:25px">The coarse and fine endpoints were selected after these diagnostics, before the full-validation sweep. The intermediate setting remains a valid measured tradeoff.</p></div></div>
 <p style="font-size:26px;line-height:1.4;margin-top:30px;color:#6d4e2d">Error cancellation is a hypothesis. The inherited bank uses analytic advection and grid-dependent diffusion; it does not share POD's discrete residual.</p>'''
         output.append(('b3d-refine-time', 'Time refinement improves the median and worsens outliers', text))
@@ -109,19 +114,30 @@ def main():
         extension_status = (f"The single larger-support constructor stopped at {failed_fit['terminal_support']} "
             f"of {failed_fit['support_target']} points and failed its optimality and banned-point checks. "
             'No larger-support rollout ran. Qualified unsampled POD remains available; the qualified HR comparison stays open.')
+        if qualified_hr:
+            extension_status = (f"The new support constructor failed at {failed_fit['terminal_support']} "
+                f"of {failed_fit['support_target']} points; no rollout of that rejected rule ran. "
+                'The separately tuned existing support qualifies on complete validation and is included in the matched frontier.')
     else:
         extension_status = ('The single larger support is being evaluated using training data only. '
                             'Unsampled POD is the fallback comparator; this is not evidence of a bank advantage.')
     rows = ''.join(f"<tr><td>{rule}</td><td>{v['delta_g_max']:.5g}</td><td>{v['full_nonstat']}/{v['steps']}</td><td>Fails new contract</td></tr>" for rule,v in q.items())
-    text = f'''<p style="font-size:34px;line-height:1.5;margin-bottom:28px">The saved POD supports solve their sampled equations, but fail the new check against the complete reduced objective.</p>
+    a3 = pod_final.get('a3_replay')
+    improved_status = ''
+    if a3:
+        improved_status = (f"The existing k16 rule also fails the field-agreement check under tuned "
+            f"{a3['selected']['scheme']} (maximum gap {max(a3['common_field_distances'].values()):.5g}); "
+            'its scalar reference-error changes remain within uncertainty. No full-validation HR release follows.')
+    text = f'''<p style="font-size:34px;line-height:1.5;margin-bottom:28px">Under the historical integration policy, the saved POD supports solve their sampled equations but fail the new complete-objective check.</p>
 <table style="font-size:29px"><tr><th>Frozen support</th><th>Gradient discrepancy</th><th>Full-objective uncertified steps</th><th>Outcome</th></tr>{rows}</table>
 <p style="font-size:27px;line-height:1.45;margin-top:25px">The historical {old['dominated_all']}/{old['total']} domination headline pooled {old['diagnostic']} diagnostic and {old['qualified']} qualified bank rows. Within the qualified subset: {old['dominated_qualified']}/{old['qualified']} dominated, {old['withheld_qualified']} withheld. Old POD hyper-reduction convergence was not gated.</p>
 <p style="font-size:26px;line-height:1.4;margin-top:20px">{extension_status} The diagnostic failures above use the new conservative rule and do not establish a bank advantage.</p>'''
+    if improved_status:
+        text += f'<p style="font-size:25px;line-height:1.4;margin-top:18px;color:#6d4e2d">{improved_status}</p>'
     output.append(('b3d-refine-pod', 'POD receives the same qualification scrutiny', text))
-    frontier = values.get('full_validation_frontier')
     if frontier:
         text = f'''<img alt="Same-allocation complete-validation accuracy versus descriptor-total query cost" src="{picture('full64_descriptor_frontier.png')}" style="display:block;width:94%;max-height:640px;object-fit:contain;margin:0 auto">
-<p style="font-size:27px;line-height:1.4;margin-top:18px">Input preparation and all returned fields are included. Filled points pass their registered method-specific gates; open points remain visible. The exact frozen tested set, conditional reference uncertainty and joint accuracy matches are documented in the report.</p>'''
+<p style="font-size:27px;line-height:1.4;margin-top:18px">Input preparation and synchronized device outputs are included; host output transfer and scoring are excluded. Filled points pass registered method-specific gates; open points remain visible. Joint accuracy matches and the finite tested set are documented in the report.</p>'''
         output.append(('b3d-refine-frontier', 'The complete validation comparison uses one GPU allocation', text))
     text = f'''<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:40px">
 <img alt="Quadrature successor convergence" src="{picture('quadrature_convergence.png')}" style="width:100%;margin-top:30px">
@@ -131,13 +147,19 @@ def main():
 <p style="margin-top:28px;color:#6d4e2d">No new general advantage over POD or the fastest tested full solver is established by the diagnostic pilots.</p></div></div>'''
     open_title = 'Close missing evidence before extending the frontier'
     if frontier:
+        hr_status = ('A tuned existing POD sampling rule passes complete-validation admission and is included.'
+                     if qualified_hr else 'Qualified hyper-reduced POD remains open within the tested settings.')
         open_title = 'What is established, and what remains open'
-        text = f'''<div style="display:grid;grid-template-columns:1.1fr 1fr;gap:45px">
-<img alt="Separately measured query phases" src="{picture('query_components.png')}" style="width:100%;max-height:640px;object-fit:contain">
-<div style="font-size:30px;line-height:1.5"><p>The report separates improvements over earlier bank ROMs, tuned unsampled POD and the fastest tested jointly accuracy-matched full solver.</p>
-<p style="margin-top:26px">Phase measurements explain costs but do not replace the measured full-query timer. Offline setup and cumulative memory counters are reported separately.</p>
-<p style="margin-top:26px">Qualified hyper-reduced POD remains open after the frozen support failure. The exposed validation set supports development; sealed replication remains closed.</p>
-<p style="margin-top:26px;color:#6d4e2d">The finite tested set does not establish a universal fastest method. A solver certificate does not establish spatial consistency.</p></div></div>'''
+        text = f'''<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:45px;font-size:31px;line-height:1.5">
+<div><h2 style="font-size:37px;color:#27659a;margin-bottom:24px">Measured comparisons</h2>
+<p>Earlier bank ROMs, tuned POD and full solvers have separate matched comparisons.</p>
+<p style="margin-top:26px">Full query, initialisation, evolution, decoding, setup and memory are reported separately. Split phase calls do not replace the full-query timer.</p></div>
+<div><h2 style="font-size:37px;color:#9a5b27;margin-bottom:24px">Failures retained</h2>
+<p>The new support constructor failed its checks; no rollout of that rejected rule ran.</p>
+<p style="margin-top:26px">A repaired convergence certificate does not guarantee lower physical error. Median and worst errors can move in opposite directions.</p></div>
+<div><h2 style="font-size:37px;color:#3a7656;margin-bottom:24px">Scope and open work</h2>
+<p>{hr_status}</p>
+<p style="margin-top:26px">The finite exposed-validation set does not establish a universal fastest method. Sealed replication remains closed. A solver certificate does not establish spatial consistency.</p></div></div>'''
     output.append(('b3d-refine-open', open_title, text))
     for i, (name, title, body) in enumerate(output, start=count + 1):
         (DEST / 'project/slides' / (name + '.html')).write_text(slide(name, title, body, i))
@@ -153,6 +175,13 @@ def main():
                 'Rebuild with `../2026-10-26-burgers3d-refinement/update_research.py` after generating '
                 'that report\'s VALUES.json. The preservation manifest records original hashes and the '
                 'saved original PDF; new scientific numbers are taken from generated report inputs.\n')
+    else:
+        readme = (DEST / 'README.md').read_text()
+        readme = re.sub(r'The \d+ pre-existing saved slides retain their source bytes and relative order\. '
+                        r'\d+ generated refinement slides are appended\.',
+                        f'The {count} pre-existing saved slides retain their source bytes and relative order. '
+                        f'{len(output)} generated refinement slides are appended.', readme)
+        (DEST / 'README.md').write_text(readme)
     # Execute the preserved local viewer builder against current canonical image assets.
     builder = (DEST / 'build_local.py').read_text().replace(
         'root=Path(__file__).resolve().parents[2]', f'root=Path({str(ROOT)!r})')

@@ -2,8 +2,10 @@
   "campaign": "b3d-refine-20261026",
   "state": "checkpoint, work ongoing",
   "gpu_hour_cap": 12,
-  "completed_gpu_hours": 1.4136111111111112,
+  "completed_gpu_hours": 1.4894444444444446,
   "active_ledger_entries": 0,
+  "live_campaign_jobs": [],
+  "live_job_ids_missing_from_lane_ledgers": [],
   "accounting_note": "Only completed elapsed-time entries included; active jobs are not zero-cost.",
   "jobs": [
     {
@@ -22,7 +24,8 @@
       "gpu_hours": 0.017777777777777778,
       "collection_sha256": "9017c341414ff0089922d08be9a3b73f8a936e625809b266e95a762c67660963",
       "checksums_verified": true,
-      "remote_duplicate_deleted": true
+      "remote_duplicate_deleted": true,
+      "state": "COMPLETED"
     },
     {
       "lane": "solver",
@@ -41,7 +44,8 @@
       "gpu_hours": 0.05361111111111111,
       "collection_sha256": "268c9f3e992129690fb855e337156bcc72f8288c4b56c226723cc4fc85eb9a82",
       "checksums_verified": true,
-      "remote_duplicate_deleted": true
+      "remote_duplicate_deleted": true,
+      "state": "COMPLETED"
     },
     {
       "lane": "solver",
@@ -60,7 +64,8 @@
       "gpu_hours": 0.003611111111111111,
       "collection_sha256": "262e90c53e25da6b2d126ea511af816f13d18453edc6744bc4e209f7649b98f4",
       "checksums_verified": true,
-      "remote_duplicate_deleted": true
+      "remote_duplicate_deleted": true,
+      "state": "FAILED"
     },
     {
       "lane": "solver",
@@ -74,7 +79,8 @@
       "collection_sha256": "87eafbd55c8f9eb3b227c5c725d5e5148e2eb6efacb4a60aeaa3d76237447847",
       "checksums_verified": true,
       "remote_duplicate_deleted": true,
-      "reason": "one-ULP derived peak-normalisation difference; stopped before physics"
+      "reason": "one-ULP derived peak-normalisation difference; stopped before physics",
+      "state": "FAILED"
     },
     {
       "lane": "solver",
@@ -87,7 +93,8 @@
       "gpu_hours": 0.015555555555555555,
       "collection_sha256": "c5f27cd4b21c2c62f1d3ea900361d46a1d21b0cc19dbb248be263658e5ece14f",
       "checksums_verified": true,
-      "remote_duplicate_deleted": true
+      "remote_duplicate_deleted": true,
+      "state": "COMPLETED"
     },
     {
       "lane": "solver",
@@ -136,6 +143,44 @@
       "scope": "five frozen POD schedules on four exposed validation cases; developmental selection only",
       "collection_verified": true,
       "remote_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "podtune03",
+      "job_id": 6528236,
+      "source_commit": "faa047985e75e550c21da0ca980bd47dff593b93",
+      "state": "FAILED",
+      "elapsed_seconds": 33,
+      "gpu_hours": 0.009166666666666667,
+      "scope": "stopped on original15 cross-job strict C/field hash guard; cause unmeasured, partial rows retained",
+      "collection_verified": true,
+      "remote_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "podtune04",
+      "job_id": 6528531,
+      "source_commit": "9a86af7a85acb5f1310412cab2b92e9306b2a1f8",
+      "state": "FAILED",
+      "elapsed_seconds": 31,
+      "gpu_hours": 0.008611111111111111,
+      "scope": "strict identity probe preserves actual active-state differences; no tuning endpoint accepted",
+      "collection_verified": true,
+      "remote_deleted": true
+    },
+    {
+      "lane": "solver",
+      "attempt": "podtune05",
+      "job_id": 6529066,
+      "gpu_hours": 0.03666666666666667,
+      "state": "COMPLETED",
+      "elapsed_seconds": 132,
+      "source_commit": "dd4d0c3dd34e0771f3a4cbeb1ac35c155fb12fe2",
+      "scope": "five frozen POD schedules on four exposed validation cases; developmental selection only",
+      "last_observed_utc": "2026-10-27T02:07:35.167232+00:00",
+      "collection_verified": true,
+      "remote_deleted": true,
+      "reserved_max_gpu_hours": 0.0
     },
     {
       "lane": "pod",
@@ -194,28 +239,48 @@
       "checksums_verified": true,
       "results_audit": "READY",
       "remote_directory_removed_after_verified_collection": true
+    },
+    {
+      "lane": "pod",
+      "attempt": "k16fine01",
+      "state": "COMPLETED_FAILED_HR_ADMISSION",
+      "job_id": 6529465,
+      "requested_gpu_hours": 0.4,
+      "source_commit": "6592f2288",
+      "source_sha256": "4ae6aade3b19f9bc48a39261cd66005df8bfb158d648c2067641af8f2751d6f7",
+      "submitted_utc": "2026-10-27T02:24:45.907074+00:00",
+      "pre_submit_queue_empty": true,
+      "post_submit_exactly_one": true,
+      "exit_code": "0:0",
+      "elapsed_seconds": 77,
+      "spent_gpu_hours": 0.021388888888888888,
+      "complete_checkpoint": true,
+      "checksums_verified": true,
+      "results_audit": "READY",
+      "full64_adapter_release": false,
+      "remote_directory_removed_after_verified_collection": true
     }
   ],
   "lane_snapshot_sources": {
     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/JOB-LEDGER.json": {
-      "sha256": "56a242c3427e2a06bd488acc762178f51ab558a515ec1bbdd7d2b2639cc10a9c",
+      "sha256": "357fb74be23118ddf8a7c231b16a86eb6622fe56d61fc7401c7fd30e682e2f1b",
       "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-ledger.json",
-      "snapshot_sha256": "56a242c3427e2a06bd488acc762178f51ab558a515ec1bbdd7d2b2639cc10a9c"
+      "snapshot_sha256": "357fb74be23118ddf8a7c231b16a86eb6622fe56d61fc7401c7fd30e682e2f1b"
     },
     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/EXPORT.json": {
-      "sha256": "82cbefd97417cb6f6c02e9abf5a76d6c5c67d166057583233ad718ee650c7f45",
+      "sha256": "762ae95039b7e0f46aec5b51d6e642fae162c1c2ecd219a8f7181c05560b1c70",
       "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-export.json",
-      "snapshot_sha256": "82cbefd97417cb6f6c02e9abf5a76d6c5c67d166057583233ad718ee650c7f45"
+      "snapshot_sha256": "762ae95039b7e0f46aec5b51d6e642fae162c1c2ecd219a8f7181c05560b1c70"
     },
     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/JOB-LEDGER.json": {
-      "sha256": "3968d87c6a430afb21c8207e20d54169161101ad3f6c0b9d67f471d49a94b47d",
+      "sha256": "33bd3bb0f5dccf9f5125c67b895632149656a82c9b6d331460d9199b5d3c20a2",
       "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-pod-ledger.json",
-      "snapshot_sha256": "3968d87c6a430afb21c8207e20d54169161101ad3f6c0b9d67f471d49a94b47d"
+      "snapshot_sha256": "33bd3bb0f5dccf9f5125c67b895632149656a82c9b6d331460d9199b5d3c20a2"
     },
     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/EXPORT.json": {
-      "sha256": "85065aea59d9efd476b52b374c74444ada1f8941c5633329b0f00a2099fdf545",
+      "sha256": "1231491bd326bbae16f2fd35737c6500472f70a0a4ee19dff2b6acac84f9fe3c",
       "snapshot": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-pod-export.json",
-      "snapshot_sha256": "85065aea59d9efd476b52b374c74444ada1f8941c5633329b0f00a2099fdf545"
+      "snapshot_sha256": "1231491bd326bbae16f2fd35737c6500472f70a0a4ee19dff2b6acac84f9fe3c"
     }
   },
   "gates": "Independent gate details live in lane audit records; publication audit remains separate."

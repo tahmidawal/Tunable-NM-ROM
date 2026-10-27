@@ -15,6 +15,13 @@ the newer improvement lanes are sources of labelled evidence, not implicitly mer
   at gradient tolerance $10^{-4}$, after a full-trajectory agreement miss under $10^{-3}$.
   Basis, trust policy and schedules remain fixed; original failed policies stay visible.
   Costs used to select old versus stronger policies are remeasured within one allocation.
+- The existing k16 support receives one replay at the no-HR endpoint selected for lowest
+  worst error by that completed tuning (ties: median, then subject identifier). Freeze the
+  exact schedule/tolerance after its results gate and before submission. This is no refit.
+  It uses the same diagnostic cases and unchanged separate common/strict gates. If either
+  layer fails, stop; only a pass of both releases conditional complete-validation admission
+  and same-allocation timing of that existing support. A support's failure under its old
+  integration policy cannot be generalized to all improved policies.
 - After the time diagnostic, coarse step $0.025$ and fine step $0.00625$ are the two proposed
   new bank endpoints. This is a post-diagnostic choice before complete validation, motivated
   by the median/worst tradeoff; the valid intermediate setting is not a failed configuration.

@@ -1,0 +1,60 @@
+{
+ "design": "READY diagnostic implementation",
+ "reviewer": "/root/independent_review",
+ "jobs": {
+  "spilot02": {
+   "code_commit": "043bd70c0bdb996ec610deea900f76773ff1ef5c",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY diagnostic subset",
+   "interpretation": "Incomplete nonlinear convergence at one step; no resolved physical accuracy gain, no full-population Q1 or stronger performance claim"
+  },
+  "sdiag01": {
+   "code_commit": "5d9f106da7a2b48828b7920ece34b5fa8781184e",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY fixed four-case diagnostic subset",
+   "interpretation": "Refresh-every-step passes tight-distance and fresh-stationarity subset; no full-population qualification or physical accuracy gain claim"
+  },
+  "qpilot03": {
+   "code_commit": "7c5e44bb22a5729c270901fa0ecc5ce7ad5bec33",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY one-case finer-rule diagnostic",
+   "interpretation": "One of25 gl80 steps fails fresh1e-3 stationarity. This is the original qpp validity/distance check, not gl80 qualification; inherited gl56 closure still needs original eight-case coverage."
+  },
+  "qcheck801": {
+   "code_commit": "13494d2c697cb31b36a546999e0810677bc260be",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY original-eight finer-witness closure",
+   "interpretation": "Joins historical full64 gl56 Q1 plus gl56\u219264 Q2 with original first-eight gl64\u219280. Legacy gl56 qualification closes. One of200 fine gl80 steps nonstationary; no full gl80 qualification. Narrow case5 adaptive witness is a strengthening control."
+  },
+  "qwitness01": {
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY case5 adaptive finer-witness strengthening",
+   "reviewer": "/root/independent_review"
+  },
+  "tdiag02": {
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY four-case time diagnostics; post-diagnostic coarse+finest freeze",
+   "reviewer": "/root/independent_review"
+  },
+  "podtune02": {
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY original gtol1e-3 five-schedule four-case controls; picks provisional pending one stronger policy",
+   "reviewer": "/root/independent_review"
+  },
+  "podtune05": {
+   "code_commit": "dd4d0c3dd34e0771f3a4cbeb1ac35c155fb12fe2",
+   "code_small_controls": "READY",
+   "exact_job": "READY",
+   "results": "READY seven-subject stronger-policy four-case tuning and selection",
+   "reviewer": "/root/independent_review",
+   "scope": "exposed four-case development; no full64 qualification transfer"
+  }
+ }
+}

@@ -1,6 +1,6 @@
 # Burgers 3D refinement handoff
 
-Status: checkpoint, work ongoing. Completed allocations total 1.41361 GPU-hours against the
+Status: checkpoint, work ongoing. Completed allocations total 1.48944 GPU-hours against the
 predeclared campaign cap 12; live jobs are listed explicitly and are not counted as zero.
 
 ## Work locations
@@ -24,9 +24,17 @@ predeclared campaign cap 12; live jobs are listed explicitly and are not counted
 | solver | qwitness01 | 6527478 | COMPLETED | 0.0188889 |
 | solver | tdiag02 | 6527289 | COMPLETED | 0.198611 |
 | solver | podtune02 | 6527566 | COMPLETED | 0.0672222 |
+| solver | podtune03 | 6528236 | FAILED | 0.00916667 |
+| solver | podtune04 | 6528531 | FAILED | 0.00861111 |
+| solver | podtune05 | 6529066 | COMPLETED | 0.0366667 |
 | pod | pilot | 6525154 | FAILED_FINAL_PRINT_AFTER_COMPLETE_CHECKPOINT | 0.0255556 |
 | pod | fit32 | 6525584 | COMPLETED_CONSTRUCTION_REJECTED | 0.92 |
 | pod | none64 | 6525585 | COMPLETED | 0.0591667 |
+| pod | k16fine01 | 6529465 | COMPLETED_FAILED_HR_ADMISSION | 0.0213889 |
+
+Foreground queue check at `2026-10-27T03:00:01.311103+00:00`: `[]`.
+Live job ids absent from the source lane ledgers: `[]`. Any such lag is explicit;
+active allocation costs are still unaccounted rather than zero.
 
 Inspect each ledger's exact directory, Slurm state and existing outputs before any restart.
 Do not duplicate a submitted job. Use direct staging to paralab and checksummed collection.
@@ -36,11 +44,20 @@ measured quadrature failure. Keep every failed attempt in the ledger.
 
 ## Completed and accepted evidence
 
-The frozen historical inventory and exact timing-output re-scoring passed independent review
-for their declared scope. Selected-case solver and POD diagnostics have separate independent
-results gates. Their approved scope does not promote them into a whole-validation frontier.
-See the generated report and the snapshotted lane exports for numerical details and current
-whole-validation qualification. Every scientific number is generated from saved JSON inputs.
+- Historical inventory, source hashes, exact saved timing-output re-scoring and generated figures.
+- Missing original finer-rule witness joined to inherited complete-population evidence; legacy gl56 qualification closes within its original scope.
+- Audited time-step diagnostic: median improves while worst worsens; coarse/fine endpoint choice is post-diagnostic and the valid intermediate is retained.
+- Complete-validation unsampled POD fallback with independent reference/array audit; its separate allocation supplies no cross-job speed ratio.
+
+Selected-case diagnostics retain their separate scope and independent gates. See the
+generated report and frozen exports for exact cases, current admission and provenance.
+Scientific numbers are generated from saved JSON inputs; publication review is a separate gate.
+
+## Failed experiments and controls
+
+- Historical quadrature/nonlinear failures and square-system controls remain in the inventory.
+- Sole larger-support constructor: incomplete (KKT violated), terminal support 13673/16384. No admitted support or rollout; no fit retry.
+- The existing k16 support at the selected improved policy passes both own-objective Q1 checks, but fails common field agreement and stricter whole-objective gates. No complete-validation HR release; scalar reference-error changes do not demonstrate a physical-accuracy loss.
 
 ## Failed or retracted interpretations
 
@@ -53,14 +70,18 @@ whole-validation qualification. Every scientific number is generated from saved 
 - Neither the new frozen-support failures nor an unsampled POD comparison establish a
   general advantage over tuned qualified POD.
 - Historical mesh-free deployment curves are not fixed-mode full-field output curves.
+- The unstaged worst-only time-endpoint rejection rule was abandoned, not called predeclared.
+- The inherited bank uses analytic advection with discrete diffusion, not FOM-exact upwind.
+  Solver/quadrature certification does not prove identical discrete equations or spatial consistency.
 
-## Deferred or still open unless closed in the final exports
+## Deferred, conditional and still-open work
 
-Missing quadrature successor evidence; new-policy own-state quadrature and complete nonlinear
-qualification; time-step separation; complete matched solver/POD/FOM accuracy–cost comparisons;
-fixed-mode mesh and output phase costs; larger-support training fit and its independent
-admission. The report must label every unresolved part instead of filling it with an estimate.
-Fresh 3D extrapolation-regime cohorts, bank retraining and sealed replication are not implied.
+- Same-allocation complete-validation endpoint comparison, own new-policy qualification and paired accuracy-matched full-solver/POD costs.
+- Bounded fixed-mode mesh/output costs, explicit operator interventions and same-reference projection floor.
+- Qualified hyper-reduced POD remains unestablished within the tested supports/policies. No further fit or policy ladder is released by the completed campaign.
+- Sealed/out-of-distribution replication, bank retraining, further support fitting and branch merges are outside the released campaign.
+
+The report must label every unresolved part rather than fill it with an estimate.
 
 ## Preservation and next-session rules
 

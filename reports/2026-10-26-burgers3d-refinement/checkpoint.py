@@ -5,6 +5,7 @@ import argparse
 import json
 import shutil
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 from inventory import ROOT, read, sha, write
@@ -33,18 +34,27 @@ def main():
             entries.append(dict(lane=name, **row))
     active = [r for r in entries if str(r.get('status', r.get('state', 'unknown'))).upper()
               in ('RUNNING', 'PENDING', 'SUBMITTED', 'CONFIGURING', 'COMPLETING', 'QUEUED')]
+    namespaces = ['/cluster/tufts/paralab/tawal01/b3d-solver-20261026/',
+                  '/cluster/tufts/paralab/tawal01/b3d-pod-20261026/']
+    def ours(workdir):
+        return any(workdir.startswith(n) for n in namespaces)
+    queue = subprocess.check_output(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
+        'tufts-login', 'squeue -h -u tawal01 -o "%i|%Z|%T|%j"'], text=True, timeout=25)
+    live = []
+    for line in queue.splitlines():
+        f = [s.strip() for s in line.split('|')]
+        if len(f) >= 4 and ours(f[1]):
+            live.append(dict(job_id=int(f[0]), workdir=f[1], state=f[2], name=f[3]))
+    known_ids = {int(r['job_id']) for r in entries if r.get('job_id') is not None}
+    missing_live = [r['job_id'] for r in live if r['job_id'] not in known_ids]
+    queue_audit = dict(checked_at_utc=datetime.now(timezone.utc).isoformat(), live_campaign_jobs=live,
+                       live_job_ids_missing_from_lane_ledgers=missing_live)
+    write(HERE / 'data/LIVE-QUEUE-CHECKPOINT.json', queue_audit)
     if args.final and active:
         raise RuntimeError(f'cannot close with active ledger entries: {[r.get("job_id") for r in active]}')
     if args.final:
-        namespaces = ['/cluster/tufts/paralab/tawal01/b3d-solver-20261026/',
-                      '/cluster/tufts/paralab/tawal01/b3d-pod-20261026/']
-        def ours(workdir):
-            return any(workdir.startswith(n) for n in namespaces)
-        queue = subprocess.check_output(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
-            'tufts-login', 'squeue -h -u tawal01 -o "%i|%Z|%T"'], text=True, timeout=25)
-        queued = [line for line in queue.splitlines() if len(line.split('|')) >= 3 and ours(line.split('|')[1].strip())]
-        if queued:
-            raise RuntimeError(f'cannot close with live campaign queue entries: {queued}')
+        if live:
+            raise RuntimeError(f'cannot close with live campaign queue entries: {live}')
         accounting = subprocess.check_output(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
             'tufts-login', 'sacct -X -n -P -S 2026-10-26 -u tawal01 --format=JobIDRaw,State,ElapsedRaw,WorkDir%200'],
             text=True, timeout=25)
@@ -61,24 +71,46 @@ def main():
         for row in actual:
             e = expected[row['job_id']]
             assert int(e.get('elapsed_seconds', -1)) == row['elapsed_seconds'], ('stale elapsed-time ledger', row)
-        write(HERE / 'data/FINAL-QUEUE-AUDIT.json', dict(live_campaign_jobs=[], accounting=actual,
+        write(HERE / 'data/FINAL-QUEUE-AUDIT.json', dict(**queue_audit, accounting=actual,
               note='Foreground bounded SSH/Slurm checks; no background watcher.'))
-    spent = sum(float(r.get('gpu_hours', r.get('spent_gpu_hours', 0))) for r in entries)
-    cap = read(EXPERIMENT / 'JOB-LEDGER.json')['gpu_hour_cap']
+    spent = sum(float(r.get('gpu_hours', r.get('spent_gpu_hours')) or 0) for r in entries)
+    campaign_ledger = HERE / 'data/campaign-ledger.json'
+    cap_source = EXPERIMENT / 'JOB-LEDGER.json' if (EXPERIMENT / 'JOB-LEDGER.json').is_file() else campaign_ledger
+    cap = read(cap_source)['gpu_hour_cap']
     assert spent <= cap
     ledger = dict(campaign='b3d-refine-20261026', state='bounded campaign closed' if args.final else 'checkpoint, work ongoing',
                   gpu_hour_cap=cap, completed_gpu_hours=spent, active_ledger_entries=len(active),
+                  live_campaign_jobs=live, live_job_ids_missing_from_lane_ledgers=missing_live,
                   accounting_note='Only completed elapsed-time entries included; active jobs are not zero-cost.',
                   jobs=entries, lane_snapshot_sources=pins,
                   gates='Independent gate details live in lane audit records; publication audit remains separate.')
-    write(EXPERIMENT / 'JOB-LEDGER.json', ledger)
+    write(campaign_ledger, ledger)
+    if (EXPERIMENT / 'JOB-LEDGER.json').is_file():
+        write(EXPERIMENT / 'JOB-LEDGER.json', ledger)
+    for source, name in [(EXPERIMENT / 'DESIGN.md', 'DESIGN.md'),
+                         (EXPERIMENT / 'audits/REVIEW-GATES.json', 'AUDIT-GATES.json')]:
+        if source.is_file():
+            shutil.copy2(source, HERE / name)
+    audit_index = {}
+    for name in ['solver', 'pod']:
+        lane = ROOT / f'worktrees/2026-10-26-b3d-{name}/experiments/b3d-{name}'
+        files = [p for p in (lane / 'audits').iterdir() if p.is_file() and p.suffix in ('.md', '.json')]
+        files += [p for p in [lane / 'DESIGN.md', lane / 'AUDIT-STATUS.json', lane / 'FRONTIER-SCHEMA.json'] if p.is_file()]
+        destination = HERE / 'audits' / name
+        destination.mkdir(parents=True, exist_ok=True)
+        for source in files:
+            target = destination / source.name
+            shutil.copy2(source, target)
+            assert sha(source) == sha(target), 'audit record changed during snapshot; retry'
+            audit_index[str(target.relative_to(HERE))] = dict(source=str(source), sha256=sha(target))
+    write(HERE / 'data/AUDIT-SOURCES.json', audit_index)
     write(HERE / 'data/CHECKPOINT-SOURCES.json', pins)
     write(HERE / 'data/EVIDENCE-INDEX.json', dict(
         historical_inventory='inventory.json.gz', historical_cases='cases.jsonl.gz',
         historical_source_pins='SOURCES.json', historical_timing_rescore='timing-rescore.json',
         lane_exports={name: f'lane-{name}-export.json' for name in ['solver', 'pod']},
         source_snapshots='CHECKPOINT-SOURCES.json',
-        full_validation_frontier='frozen-frontier.json' if (HERE / 'data/frozen-frontier.json').is_file() else None,
+        full_validation_frontier=next((n for n in ['frozen-frontier.json.gz', 'frozen-frontier.json'] if (HERE / 'data' / n).is_file()), None),
         note='Historical qualifications retain their date/scope; new qualification joins are in lane exports.'))
     rows = []
     for r in entries:
@@ -87,6 +119,43 @@ def main():
         rows.append(f"| {r['lane']} | {r.get('attempt')} | {r.get('job_id')} | {state} | "
                     f"{'active/unaccounted' if cost is None else f'{cost:.6g}'} |")
     retention = snapshots[('pod', 'export')].get('large_fit_input_retention')
+    solver, pod = snapshots[('solver', 'export')], snapshots[('pod', 'export')]
+    if pod.get('a3_replay'):
+        a3 = pod['a3_replay']
+        source = Path(a3['summary_path'])
+        target = HERE / 'data/pod-improved-support-summary.json'
+        assert sha(source) == a3['summary_sha256']
+        shutil.copy2(source, target)
+        assert sha(target) == a3['summary_sha256']
+    completed = ['Historical inventory, source hashes, exact saved timing-output re-scoring and generated figures.']
+    failed = ['Historical quadrature/nonlinear failures and square-system controls remain in the inventory.']
+    pending = []
+    if solver.get('audits', {}).get('jobs', {}).get('qcheck801', {}).get('results', '').startswith('READY'):
+        completed.append('Missing original finer-rule witness joined to inherited complete-population evidence; legacy gl56 qualification closes within its original scope.')
+    if solver.get('time_selection'):
+        completed.append('Audited time-step diagnostic: median improves while worst worsens; coarse/fine endpoint choice is post-diagnostic and the valid intermediate is retained.')
+    if pod.get('no_hr_full64'):
+        completed.append('Complete-validation unsampled POD fallback with independent reference/array audit; its separate allocation supplies no cross-job speed ratio.')
+    if pod.get('failed_support_extension'):
+        f = pod['failed_support_extension']
+        failed.append(f"Sole larger-support constructor: {f['construction_failure_reason']}, terminal support {f['terminal_support']}/{f['support_target']}. No admitted support or rollout; no fit retry.")
+    frontier_file = next((HERE / 'data' / n for n in ['frozen-frontier.json.gz', 'frozen-frontier.json'] if (HERE / 'data' / n).is_file()), None)
+    if frontier_file:
+        front = read(frontier_file)
+        assert front['execution']['complete'] is True
+        completed.append('Frozen same-allocation complete-validation frontier. Use its explicit per-subject qualification and timing-coverage masks; not every measured subject is necessarily admitted.')
+    else:
+        pending.append('Same-allocation complete-validation endpoint comparison, own new-policy qualification and paired accuracy-matched full-solver/POD costs.')
+    if not (HERE / 'data/frozen-mesh.json').is_file():
+        pending.append('Bounded fixed-mode mesh/output costs, explicit operator interventions and same-reference projection floor.')
+    if pod.get('a3_replay'):
+        a = pod['a3_replay']
+        failed.append('The existing k16 support at the selected improved policy passes both own-objective Q1 checks, but fails common field agreement and stricter whole-objective gates. No complete-validation HR release; scalar reference-error changes do not demonstrate a physical-accuracy loss.')
+        pending.append('Qualified hyper-reduced POD remains unestablished within the tested supports/policies. No further fit or policy ladder is released by the completed campaign.')
+    else:
+        pending.append('Qualified hyper-reduced POD depends on the separately audited improved-policy k16 control and complete-validation admission; the rejected new constructor supplies no such evidence.')
+    pending.append('Sealed/out-of-distribution replication, bank retraining, further support fitting and branch merges are outside the released campaign.')
+    bullets = lambda rows: '\n'.join('- ' + row for row in rows)
     retention_text = ''
     if retention:
         assert Path(retention['path']).stat().st_size == retention['bytes']
@@ -114,6 +183,10 @@ predeclared campaign cap {cap}; live jobs are listed explicitly and are not coun
 | --- | --- | --- | --- | --- |
 {chr(10).join(rows)}
 
+Foreground queue check at `{queue_audit['checked_at_utc']}`: `{json.dumps(live)}`.
+Live job ids absent from the source lane ledgers: `{missing_live}`. Any such lag is explicit;
+active allocation costs are still unaccounted rather than zero.
+
 Inspect each ledger's exact directory, Slurm state and existing outputs before any restart.
 Do not duplicate a submitted job. Use direct staging to paralab and checksummed collection.
 The POD final-print failure recovered complete numerical output; it did not warrant a rerun.
@@ -122,11 +195,15 @@ measured quadrature failure. Keep every failed attempt in the ledger.
 
 ## Completed and accepted evidence
 
-The frozen historical inventory and exact timing-output re-scoring passed independent review
-for their declared scope. Selected-case solver and POD diagnostics have separate independent
-results gates. Their approved scope does not promote them into a whole-validation frontier.
-See the generated report and the snapshotted lane exports for numerical details and current
-whole-validation qualification. Every scientific number is generated from saved JSON inputs.
+{bullets(completed)}
+
+Selected-case diagnostics retain their separate scope and independent gates. See the
+generated report and frozen exports for exact cases, current admission and provenance.
+Scientific numbers are generated from saved JSON inputs; publication review is a separate gate.
+
+## Failed experiments and controls
+
+{bullets(failed)}
 
 ## Failed or retracted interpretations
 
@@ -139,14 +216,15 @@ whole-validation qualification. Every scientific number is generated from saved 
 - Neither the new frozen-support failures nor an unsampled POD comparison establish a
   general advantage over tuned qualified POD.
 - Historical mesh-free deployment curves are not fixed-mode full-field output curves.
+- The unstaged worst-only time-endpoint rejection rule was abandoned, not called predeclared.
+- The inherited bank uses analytic advection with discrete diffusion, not FOM-exact upwind.
+  Solver/quadrature certification does not prove identical discrete equations or spatial consistency.
 
-## Deferred or still open unless closed in the final exports
+## Deferred, conditional and still-open work
 
-Missing quadrature successor evidence; new-policy own-state quadrature and complete nonlinear
-qualification; time-step separation; complete matched solver/POD/FOM accuracy–cost comparisons;
-fixed-mode mesh and output phase costs; larger-support training fit and its independent
-admission. The report must label every unresolved part instead of filling it with an estimate.
-Fresh 3D extrapolation-regime cohorts, bank retraining and sealed replication are not implied.
+{bullets(pending)}
+
+The report must label every unresolved part rather than fill it with an estimate.
 
 ## Preservation and next-session rules
 
@@ -169,7 +247,7 @@ verified complete collection. No unsupported background watcher is relied on.
 - Diagnostic: explains selected cases; it is not a population performance estimate.
 '''
     (HERE / 'HANDOFF.md').write_text(text)
-    print(ledger['state'], spent, 'GPU-h;', len(active), 'active ledger entries')
+    print(ledger['state'], spent, 'completed GPU-h;', len(active), 'ledger-active;', len(live), 'live queue jobs')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,125 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Same-allocation Burgers3D frontier result",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "cohort",
+  "reference",
+  "contracts",
+  "subjects",
+  "case_results",
+  "timing_repetitions",
+  "phase_repetitions",
+  "matching",
+  "frontiers",
+  "execution"
+ ],
+ "properties": {
+  "schema_version": {
+   "type": "integer",
+   "const": 1
+  },
+  "cohort": {
+   "type": "object"
+  },
+  "reference": {
+   "type": "object"
+  },
+  "contracts": {
+   "type": "object",
+   "description": "Separate prepared-native input and analytic parameter descriptor to fixed63cubed output; descriptor includes native input preparation."
+  },
+  "subjects": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "object",
+    "required": [
+     "config",
+     "provenance",
+     "setup_seconds",
+     "setup_peak_bytes",
+     "qualification"
+    ],
+    "properties": {
+     "qualification": {
+      "type": "object",
+      "required": [
+       "status",
+       "Q1",
+       "Q2",
+       "scope",
+       "source_pins",
+       "common_rollout_check",
+       "method_specific_extra_masks"
+      ]
+     }
+    }
+   }
+  },
+  "case_results": {
+   "type": "object",
+   "description": "Mapping subject id -> case id -> same-invocation score, reference eligibility/uncertainty, raw arrays/SHAs, certificate, work and admission masks."
+  },
+  "matching": {
+   "type": "object",
+   "description": "Frozen joint conditional interval matching, median-only/worst-only descriptive matches, competitor picks and unresolved overlaps."
+  },
+  "frontiers": {
+   "type": "object",
+   "description": "Distinct prepared-native and descriptor cost fronts, each median and worst views on identical eligible cases."
+  },
+  "execution": {
+   "type": "object",
+   "description": "Job/GPU/source IDs, raw file manifest, spentGPUh, peak memory and execution completeness."
+  },
+  "timing_repetitions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "invocation_id",
+     "subject",
+     "case",
+     "rep",
+     "bracket",
+     "role",
+     "given_native_seconds",
+     "input_prep_seconds",
+     "descriptor_seconds",
+     "score",
+     "output_sha256",
+     "anchor_drift_ratio",
+     "timing_admitted"
+    ],
+    "properties": {
+     "score": {
+      "type": "object",
+      "required": [
+       "e",
+       "e_t",
+       "epsilon",
+       "eligible"
+      ]
+     }
+    }
+   }
+  },
+  "phase_repetitions": {
+   "type": "array",
+   "description": "Three repetitions on diagnostic cases0,5,30,43 only; indicative components never replace full64 fused-query costs.",
+   "items": {
+    "type": "object",
+    "required": [
+     "subject",
+     "case",
+     "rep",
+     "phase",
+     "seconds",
+     "output_sha256",
+     "scope"
+    ]
+   }
+  }
+ }
+}

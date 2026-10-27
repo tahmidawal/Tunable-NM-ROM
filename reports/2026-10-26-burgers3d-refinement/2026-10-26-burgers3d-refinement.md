@@ -1,5 +1,6 @@
 # Burgers 3D refinement: recovered evidence, numerical gaps and controlled replays
 
+Status: provisional campaign checkpoint; final paired validation and publication review are pending.
 This report reconciles existing evidence and the bounded refinement campaign. The historical
 numbers are conditional estimates against approved E0 ST references; new numerical results
 are accepted only with their independent audit status. This generated version does not
@@ -74,6 +75,10 @@ The inventory exposes unknown fields and unsupported supporting schemas explicit
 Only development and validation populations can inform selection. Historical test observations
 remain replication evidence. Sealed and reserved out-of-distribution cohorts remain closed.
 Reference uncertainty is a conditional Richardson estimate, not a rigorous error bound.
+
+The per-case score is the maximum evolved-output field discrepancy on the common scoring
+lattice, divided by the fixed reference initial-field norm. Initial reconstruction is retained
+separately and is not silently substituted for an evolved-output error.
 
 ### There is no single strongest bank configuration
 
@@ -182,6 +187,11 @@ claims at their tested reference mesh; there is no all-mesh Q2 join here. Failed
 must be measured separately. Historical Jacobian counts are not reconstructed from iteration
 counts where the original counter is absent.
 
+The earlier general comparative multi-mesh advantage was withdrawn after continuous-POD
+controls. Mesh-independent reduced evolution is not exclusive to the bank. The present
+within-bank mesh measurements do not restore that comparative claim, and earlier
+two-dimensional multi-mesh cost ratios are not relabelled as three-dimensional evidence.
+
 ![Descriptive in-range viscosity and steepness associations](figs/in_range_regime.png)
 
 The regime plot uses only the existing validation population and the same E0 reference.
@@ -254,25 +264,25 @@ Audit/status: `diagnostic subset; consult per-job independent audit verdicts`. S
 
 These are selected-case diagnostics. A repaired certificate is not a full-trajectory Q1 pass or a physical-accuracy improvement. Raw timings do not establish comparative speed without the declared paired acceptance checks.
 
-At `W1024|case30|step7`, the returned Jacobian condition number is 10.8825. The fresh tight solve uses 3 iterations with reported stationarity 3.02833e-09; its field distance to the returned baseline step is 0.00344831. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W1024|case30|step7`, the returned Jacobian condition number is 10.8825. The fresh tight solve uses 3 iterations with reported stationarity 3.02833e-09; its field distance to the returned baseline step is 0.00344831. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W768|case0|step4`, the returned Jacobian condition number is 8.59155. The fresh tight solve uses 3 iterations with reported stationarity 9.22023e-11; its field distance to the returned baseline step is 1.41901e-05. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W768|case0|step4`, the returned Jacobian condition number is 8.59155. The fresh tight solve uses 3 iterations with reported stationarity 9.22023e-11; its field distance to the returned baseline step is 1.41901e-05. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W768|case5|step3`, the returned Jacobian condition number is 9.00884. The fresh tight solve uses 3 iterations with reported stationarity 7.94904e-10; its field distance to the returned baseline step is 0.00202411. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W768|case5|step3`, the returned Jacobian condition number is 9.00884. The fresh tight solve uses 3 iterations with reported stationarity 7.94904e-10; its field distance to the returned baseline step is 0.00202411. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W768|case30|step3`, the returned Jacobian condition number is 8.58907. The fresh tight solve uses 3 iterations with reported stationarity 6.157e-10; its field distance to the returned baseline step is 0.0006801. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W768|case30|step3`, the returned Jacobian condition number is 8.58907. The fresh tight solve uses 3 iterations with reported stationarity 6.157e-10; its field distance to the returned baseline step is 0.0006801. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W768|case43|step6`, the returned Jacobian condition number is 8.67436. The fresh tight solve uses 3 iterations with reported stationarity 4.21553e-08; its field distance to the returned baseline step is 0.000789213. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W768|case43|step6`, the returned Jacobian condition number is 8.67436. The fresh tight solve uses 3 iterations with reported stationarity 4.21553e-08; its field distance to the returned baseline step is 0.000789213. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W768|case43|step9`, the returned Jacobian condition number is 8.43733. The fresh tight solve uses 4 iterations with reported stationarity 1.04262e-09; its field distance to the returned baseline step is 0.00065403. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W768|case43|step9`, the returned Jacobian condition number is 8.43733. The fresh tight solve uses 4 iterations with reported stationarity 1.04262e-09; its field distance to the returned baseline step is 0.00065403. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W1024|case0|step6`, the returned Jacobian condition number is 10.8041. The fresh tight solve uses 3 iterations with reported stationarity 2.04597e-10; its field distance to the returned baseline step is 3.32992e-05. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W1024|case0|step6`, the returned Jacobian condition number is 10.8041. The fresh tight solve uses 3 iterations with reported stationarity 2.04597e-10; its field distance to the returned baseline step is 3.32992e-05. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W1024|case5|step7`, the returned Jacobian condition number is 11.7011. The fresh tight solve uses 3 iterations with reported stationarity 1.41204e-08; its field distance to the returned baseline step is 0.000175342. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W1024|case5|step7`, the returned Jacobian condition number is 11.7011. The fresh tight solve uses 3 iterations with reported stationarity 1.41204e-08; its field distance to the returned baseline step is 0.000175342. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W1024|case30|step7`, the returned Jacobian condition number is 10.8825. The fresh tight solve uses 3 iterations with reported stationarity 3.02833e-09; its field distance to the returned baseline step is 0.00344831. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W1024|case30|step7`, the returned Jacobian condition number is 10.8825. The fresh tight solve uses 3 iterations with reported stationarity 3.02833e-09; its field distance to the returned baseline step is 0.00344831. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
-At `W1024|case43|step3`, the returned Jacobian condition number is 12.2756. The fresh tight solve uses 3 iterations with reported stationarity 9.45622e-10; its field distance to the returned baseline step is 0.000120146. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state.
+At `W1024|case43|step3`, the returned Jacobian condition number is 12.2756. The fresh tight solve uses 3 iterations with reported stationarity 9.45622e-10; its field distance to the returned baseline step is 0.000120146. Independent anchor usable: True. This is a fresh restart from identical coefficient history, not restoration of the original cached solver state. The condition number measures this returned step only; it does not bound conditioning across the trajectory or population.
 
 The following re-analysis reuses saved full-validation trajectories. Quadrature discrepancies persist with verified tight nonlinear solves, so fixed-sweep work alone does not explain them.
 
@@ -301,6 +311,25 @@ These selected-case diagnostics hold bank, test space and target quadrature fixe
 
 Endpoint selection is explicitly post-diagnostic: coarse0.025 repaired policy plus finest0.00625 best-tested-median representative, each conditional on own full64 Q1/Q2. Median and worst trade off. These two final temporal endpoints do not exhaust the tested diagnostic tradeoff or the temporal frontier. No warmed production timings in D-T. First-compile anchor seconds are not deployment costs. The earlier proposed worst-only rejection rule was not in the staged design and was abandoned. Error cancellation is a hypothesis; this time-step control alone does not identify a spatial, operator or representation cause.
 
+#### Equal integration and nonlinear opportunities for POD
+
+The unsampled POD diagnostics retain the original policies, their failures and the prospectively frozen stronger-production control. Each row uses the same selected cases; these are not complete-validation error estimates. The common full-trajectory agreement gate remains unchanged. Cross-job times are not used to choose between policies; the selected endpoints face the common allocation.
+
+| Job | POD schedule/policy | Case ids | Median error (%) | Worst error (%) | Subset Q1/common pass | Max production–tight distance | Corrections (sum) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 6527566 | POD512_none_BDF2_10steps | [0, 5, 30, 43] | 3.970207 | 4.595296 | False | 0.0003968834 | 97 |
+| 6527566 | POD512_none_BDF2_15steps | [0, 5, 30, 43] | 2.704708 | 3.220848 | True | 0.0002255415 | 105 |
+| 6527566 | POD512_none_BDF2_20steps | [0, 5, 30, 43] | 2.260602 | 2.687349 | False | 0.0004922784 | 105 |
+| 6527566 | POD512_none_BDF2_40steps | [0, 5, 30, 43] | 2.063561 | 2.3458 | True | 7.66458e-05 | 167 |
+| 6527566 | POD512_none_CN_25steps | [0, 5, 30, 43] | 2.040071 | 2.277344 | False | 0.0003734203 | 112 |
+| 6529066 | POD512_none_BDF2_10steps_g1e-4 | [0, 5, 30, 43] | 3.970066 | 4.578374 | True | 2.226023e-05 | 108 |
+| 6529066 | POD512_none_BDF2_15steps | [0, 5, 30, 43] | 2.704708 | 3.220848 | True | 0.0002255415 | 105 |
+| 6529066 | POD512_none_BDF2_15steps_g1e-4 | [0, 5, 30, 43] | 2.703426 | 3.220848 | True | 9.156051e-06 | 132 |
+| 6529066 | POD512_none_BDF2_20steps_g1e-4 | [0, 5, 30, 43] | 2.259963 | 2.683855 | True | 1.305672e-05 | 153 |
+| 6529066 | POD512_none_BDF2_40steps | [0, 5, 30, 43] | 2.063561 | 2.3458 | True | 7.66458e-05 | 167 |
+| 6529066 | POD512_none_BDF2_40steps_g1e-4 | [0, 5, 30, 43] | 2.063556 | 2.345787 | True | 7.682855e-05 | 170 |
+| 6529066 | POD512_none_CN_25steps_g1e-4 | [0, 5, 30, 43] | 2.040161 | 2.28065 | True | 4.831686e-05 | 169 |
+
 Machine export and hashed raw evidence: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-solver-export.json`. No cross-job speed-up is inferred.
 
 ### Pod lane
@@ -323,7 +352,20 @@ These failures disqualify the frozen supports under the new conservative whole-o
 
 The unsampled POD fallback has audit status `READY_QUALIFIED_FULL_RESIDUAL_POD_NOT_HR` on 64 validation cases: Q1=True, 0/960 uncertified steps, 1.095917% median and 3.220848% worst conditional E0 error, with 36 cases above one percent. Maximum production-to-tight distance 0.0002255415. It is a qualified full-residual reduced model, not a qualified hyper-reduced model. Its separate allocation is not used for cross-method timing ratios; the common frontier gives POD the same integration improvements.
 
-The sole larger-support construction has audit status `READY_FAILED_FROZEN_FIT`. It stopped with 13673 active points against its fixed target 16384; the off-support optimality gradient was 2.155729e-07 against tolerance 1.017052e-08, and 3.35388% of candidate points were banned against a 1% cap. The allocation completed normally after 3312 seconds (0.92 GPU-hours); this was not a time-budget exhaustion. No larger support was admitted, and no rollout validation of it ran. The permitted greedy path exhausted admissible choices under its fixed policy; this does not prove that no valid larger support exists. The frozen stop rule ends the support search. Qualified hyper-reduced POD comparison remains open; the construction failure is not evidence that POD loses.
+The sole larger-support construction has audit status `READY_FAILED_FROZEN_FIT`. It stopped with 13673 active points against its fixed target 16384; the off-support optimality gradient was 2.155729e-07 against tolerance 1.017052e-08, and 3.35388% of candidate points were banned against a 1% cap. The allocation completed normally after 3312 seconds (0.92 GPU-hours); this was not a time-budget exhaustion. No larger support was admitted, and no rollout validation of it ran. The permitted greedy path exhausted admissible choices under its fixed policy; this does not prove that no valid larger support exists. The frozen stop rule ends the new-support search. This rejected constructor supplies no qualified hyper-reduced comparator and is not evidence that POD loses. Any separately admitted improved-policy existing support is reported with the matched frontier.
+
+#### Existing support under the tuned POD policy
+
+One frozen replay uses the existing k16 support with CN, step 0.01, production tolerance 0.0001, on case ids [0, 5, 30, 43]. Own-objective Q1: k16=True, no-HR=True. The exact anchor populations and reproduction evidence remain in the export. The common field check and the additional whole-objective checks are separate.
+
+| Case | k16 to no-HR field distance | Common field pass | Tight-trajectory distance lower bound | Absolute scalar E0-error change | Conditional reference uncertainty |
+| --- | --- | --- | --- | --- | --- |
+| 0 | 0.0001392422 | True | 0.0001289083 | 5.182658e-06 | 4.181332e-05 |
+| 5 | 0.0004652805 | False | 0.0003638172 | 6.796712e-05 | 8.42161e-05 |
+| 30 | 0.0002268498 | True | 0.0001302925 | 1.953009e-06 | 7.830201e-05 |
+| 43 | 0.0001899891 | True | 0.0001820543 | 3.35738e-06 | 0.0001158854 |
+
+The common field limit is 0.00025; the additional gradient limit is 0.001, with measured maximum 0.001313833. Full-objective stationarity misses 7/100 steps against fraction limit 0.01. The triangle lower bound subtracts both production-to-tight distances from the observed model-to-model distance; the remaining failing case cannot be explained solely by those production solve tolerances. Scalar E0-error changes are within reference uncertainty on this subset, so this is a consistency failure, not a demonstrated physical-accuracy loss or a bank advantage. The frozen stop rule blocks full-validation HR release; no support was refitted.
 
 Machine export and hashed raw evidence: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-refine/reports/2026-10-26-burgers3d-refinement/data/lane-pod-export.json`. No cross-job speed-up is inferred.
 
@@ -345,8 +387,10 @@ Machine export and hashed raw evidence: `/home/tahmid/Dev/Tunable-NM-ROM-Claude/
 
 ## Reproduction and provenance
 
-Run `inventory.py`, `rescore_timing.py`, then `make_report.py` with the repository's absolute
-Python environment. These analysis scripts use CPU NumPy and saved trajectories. They do
+Run `build.py` with the repository's absolute Python environment to snapshot checkpoints,
+generate the report, then build and verify the Research Update PDF in dependency order.
+Use `inventory.py` and `rescore_timing.py` when rebuilding the historical evidence inputs.
+These analysis scripts use CPU NumPy and saved trajectories. They do
 not rerun the historical solver grid. `data/SOURCES.json` pins historical sources;
 `PROVENANCE.json` pins this report's direct inputs, and `VALUES.json` retains extracted
 numbers and figure inputs. Compressed inventory and per-case JSON lines are backed up on
@@ -360,31 +404,49 @@ the prescribed code-only mirror. Full numerical reruns use each lane's frozen ma
 - $B_q$, $D_q$, $P_q$: bank values, analytic directional derivatives, and weighted test values at quadrature points.
 - $A_N$, $\Lambda_N$, $c$, $\nu$: mesh test moments, discrete diffusion eigenvalues, reduced coefficients, and viscosity.
 - W512k8: a width-512 bank with approximately eight tests per coefficient, including mode-shell completion.
+- M2_512: a separately trained frozen bank with its own source hash; it is not a prefix of the W bank.
 - POD k8/k16: support targets of eight/sixteen sampled residual rows per POD coefficient; these are not test-space labels.
+- Bank keys: bank label, integration rule, nonlinear solver, time scheme, step size, and work policy, separated by vertical bars.
+- FS K1 / QN k4: one fixed correction after the adaptive startup / matrix refresh every four steps, with the inherited slow-refresh logic retained.
 - Gauss / gl / lattice / lat: tensor Gauss–Legendre rules / their short label / a rank-one integration point set / its short label.
 - Mesh intervals: divisions along each spatial axis; nodes include the two boundary endpoints.
 - E0 ST: approved space/time-refined reference; its uncertainty is conditional on convergence assumptions.
+- Richardson estimate: numerical uncertainty inferred from reference refinements under an assumed convergence rate, rather than a rigorous bound.
 - Error: largest output-time field difference divided by the reference initial-field norm.
 - Median / worst: middle / largest case error; they answer different accuracy questions.
 - Outlier count: number of cases exceeding the table's stated error threshold.
 - Full query: input projection, reduced time evolution and requested output decoding.
+- Descriptor / prepared native: supplied initial-condition parameters and canonical normalization / method-specific precomputed field or sine coefficients. These are distinct input contracts.
+- Device output: fully computed fields resident on the GPU; host transfer, scoring and saving are separate work.
+- Phase: a separately measured part of a query; separate calls are not assumed additive to fused-query cost.
 - Q1: nonlinear-solver validity, stationarity and agreement with tighter solves.
 - Q2: quadrature successor and own-state nonlinear agreement, with the finer rule checked too.
-- Qualified: satisfies both checks on the required population; unknown evidence is not a pass.
+- Rho: relative change in the projected nonlinear term when the integration rule is refined at the same returned state.
+- Qualified / admitted: satisfies the method's declared checks on the required population; nonapplicable checks are labelled, and unknown evidence is not a pass.
 - CN / BDF2 / BE: Crank–Nicolson / second-order backward differentiation / backward Euler.
 - FS / QN: fixed full-Jacobian correction sweeps / a solver that reuses its small normal matrix.
 - Jacobian: derivative of the reduced residual; stationarity measures whether further correction remains.
+- Contraction / residual-Jacobian pair: a declared tensor/matrix calculation / a requested joint residual-and-derivative evaluation. Counts describe logical source operations, not compiler kernels.
 - Trust radius / damping: controls on correction size / regularisation of a nonlinear correction.
 - Baseline / extra / refresh / trust / strict: original solver / larger correction budget with unchanged slow-refresh trigger / matrix refreshed each step / larger trust radius / tighter internal stopping.
 - POD / ECSW: a standard linear reduced basis / weighted sampling of its residual equations.
+- FOM / PS / FD: a full-state solver / the frozen sine pseudo-spectral solver / finite differences.
+- Oversampled sine collocation: evaluate the nonlinear term on a larger grid before projecting it; the inherited PS implementation does not claim exact de-aliasing.
 - Support / active points: integration points whose fitted weights are positive.
 - NNLS / optimality check: fitting nonnegative weights / checking whether a permitted weight change could still improve that fit.
+- KKT: the constrained optimality conditions used to check the nonnegative-weight fit.
 - Banned points: candidates excluded by the greedy fit's fixed drop/ban policy; an excessive banned fraction fails its quality check.
 - No-HR: evaluate the complete reduced objective without weighted spatial sampling.
 - Frontier: settings that no other admissible setting beats in both cost and the chosen error metric.
+- Joint accuracy match: both median and worst competitor upper conditional errors lie below the subject's lower errors on the same cases.
+- Projection floor: best reference-field fit in the frozen span at a stored time; it does not identify the cause of a trajectory's larger error.
+- Test moment / operator intervention: overlap of a bank function with a test / an explicitly changed equation component with other quantities held fixed.
+- Shared / incremental setup: reused bank or basis preparation / additional preparation for one configuration; neither includes historical training unless stated.
+- Cumulative peak memory: largest device allocation seen anywhere earlier in the job, not a standalone method's memory requirement.
 - Diagnostic subset: selected cases for explaining a failure, not a whole-population performance estimate.
 - Post hoc / retracted: selected after observing data / no longer an accepted earlier claim.
 - Spearman correlation: association between the ranks of two quantities; not a causal effect.
 - Q/T/S/F/e_P: quadrature / time / nonlinear solve / reduced-form intervention / representation floor.
 - Mesh-free: use method-specific input and output points; full-field output requests every mesh value.
 - Conditional / provisional: valid only with stated numerical assumptions / awaiting required evidence.
+- Spearman correlation: association between ranks of case quantities, without establishing a causal effect.

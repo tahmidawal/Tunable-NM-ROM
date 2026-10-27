@@ -1,0 +1,64 @@
+# Review: Burgers same-sample reconstruction report generator
+
+## Verdict
+
+**The gate arithmetic is correct, but the generator needs fixes before use.** It computes the gate as specified:
+
+- ratio of cohort medians
+- wins counted only when `baseline − method > 2ε_i`, over all declared cases
+- worst-error envelopes built from per-case ε
+
+Failures stay in the denominators. Source A gets only the numerical-tie comparison, and the oracle is kept out of the comparisons. Two defects can still produce misleading or inconsistent artifacts, and several gaps can mislabel results. This review does not certify any empirical result.
+
+## Blockers
+
+1. **Partial or stale artifacts on non-finite values.**
+   - The markdown is written before `json.dumps(..., allow_nan=False)`.
+   - `selected_cases` contains raw rows. For non-complete rows, `error` is never finiteness-checked. `amplification` is never checked, and neither are the 3D `prediction_change` and `error_vector_change` values.
+   - A failed selected case carrying NaN or Inf, which is plausible for the failures you must retain, will crash after the markdown is written. The markdown would then point to a missing JSON and CSV, or to stale ones from an earlier run.
+   - Fix: convert non-finite values to `None` and build every output before writing any file.
+
+2. **"Does not pass" is reported when the gate is actually not evaluable.**
+   - In `compare`, if any pair is non-finite, `ratio` becomes `None` and `worst_ok` becomes `False`.
+   - The headline and the gate table then say "does not pass", and `no_resolved_worst_deterioration=False` asserts a deterioration that was never established.
+   - A decoder failure can fairly count as not passing. A failure of the classical comparator leaves the gate unevaluable.
+   - Fix: use a three-state result (pass / not pass / not evaluable, with the reason), and set `no_resolved_worst_deterioration=None` when the cohort is incomplete.
+
+## Correctness and failure-handling qualifications
+
+3. **Missing selections are skipped silently.**
+   - `primary_by_dim` overwrites without checking, so two qualifying primary comparisons in one dimension would keep only the last.
+   - A missing `ordinary` or `bank*` selection only produces the sentence "no available frozen selection".
+   - Missing POD selections are skipped with `if ... in chosen`.
+   - For a prespecified primary comparison, require exactly one entry per dimension and fail loudly otherwise.
+
+4. **3D sensitivity values are not validated.** `sensitive` checks only `alternative_input_errors`. `input_sensitivity_max` and `error_vector_sensitivity_max` are used without finiteness or non-negativity checks:
+   - `None` crashes `max`.
+   - NaN propagates into the output and triggers blocker 1.
+   - Unlike 2D, the five per-time values are not checked.
+
+5. **Infinite amplification is hidden.** `summarize` computes amplification over finite values only, so an infinite (unstable) amplification disappears from the CSV maximum. Report it as non-finite instead of dropping it.
+
+6. **The time-check column hides missing diagnostics.** "Stable / checked" can show 20/20 when 12 of 32 checks are missing. Show stable / checked / all, which the text itself says matters.
+
+7. **Validation relies on `assert`.** Under `python -O`, every check disappears, including the phase/cohort guard and full coverage. Use explicit `raise` for scientific invariants.
+
+8. **2D timing guard.** `fit_seconds` and `decode_seconds` are guarded by `host_query_seconds` being non-empty, not by their own lists. An empty list raises `StatisticsError`, and a missing host list drops valid fit/decode data.
+
+## Misleading presentation
+
+9. **ε is shown for Source A rows.** The paired-comparison table prints "Max reference ε" for Source A rows, but A decisions use `1e-14`, not ε. Show "—" for A.
+
+10. **Non-primary `accuracy_gate` values in the JSON.** The `comparisons` entries carry `accuracy_gate` for non-primary categories (POD vs classical, `bank_coarse`). A `True` there could be read as a pass. Set it to `None` outside the primary comparison, as `control_comparisons` already does.
+
+11. **The fixed coarse-data control has no conditioning row.** The 2D control is not selected, so it is absent from the conditioning table. It is the unregularized map (rank 384, zero ridge), so its amplification and conditioning matter most.
+
+12. **The intro says "interpolation".** "Compares interpolation and learned-basis reconstruction" contradicts the later point that the selected comparator may be a filter. Use "classical reconstruction".
+
+13. **The conditioning metric can look benign.** The retained-spectrum condition stops at `sampled_effective_rank`. When the sampled rank is below the physical rank, the unidentified directions are left out. The text discloses this, but readers should compare both ranks before reading the condition number.
+
+## Not defects
+
+- The fixed-map A/B table uses the B-selected configuration on both sources.
+- The decoder–POD pairing uses the frozen categories.
+- The warm-cost wording and the no-speedup caveat are appropriately scoped.

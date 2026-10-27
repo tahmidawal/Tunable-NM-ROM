@@ -9,10 +9,13 @@ import argparse
 from collections import defaultdict
 import csv
 import hashlib
+import io
 import json
 import math
+import os
 from pathlib import Path
 from statistics import median
+import tempfile
 
 
 GATE = {"median_ratio_max": .8, "resolved_win_fraction_min": .75}
@@ -27,6 +30,8 @@ LABEL = {
     "bank": "Learned decoder",
     "pod_matched": "POD, matched observations",
     "pod_stronger": "POD, extra fine samples",
+    "bank_coarse_fixed": "Coarse-data decoder (fixed control)",
+    "pod_coarse_fixed": "Coarse-data POD (fixed control)",
 }
 CLASSICAL = {"linear": "Linear", "cubic_notaknot": "Cubic", "sine_full": "Full sine"}
 
@@ -39,11 +44,31 @@ def finite(x):
     return isinstance(x, (float, int)) and not isinstance(x, bool) and math.isfinite(x)
 
 
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def timing_median(values):
+    return median(values) if values and all(finite(v) and v >= 0 for v in values) else None
+
+
+def json_safe(value):
+    """Retain failed/unavailable measurements without non-standard JSON numbers."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {k:json_safe(v) for k,v in value.items()}
+    if isinstance(value, (list,tuple)):
+        return [json_safe(v) for v in value]
+    return value
+
+
 def normalize(path, expected_dimension):
     data = json.loads(Path(path).read_text())
-    assert data["phase"] == "val", "Report accepts validation exports only"
+    require(data["phase"] == "val", "Report accepts validation exports only")
     dim = data["dimension"]
-    assert dim == expected_dimension
+    require(dim == expected_dimension, "Export dimension does not match its CLI argument")
     cohort, count, meshes, fine_mesh = COHORT[dim]
     rows = []
     for r in data["rows"] if dim == 2 else data["cases"]:
@@ -52,9 +77,9 @@ def normalize(path, expected_dimension):
             row = dict(dimension=dim, Lc=r["Lc"], Lf=r["Lf"], category=r["group"],
                        error=r["max_error"], eps=r["epsilon_reference"],
                        amplification=r["amplification"], strict=r["strict_coarse_control"],
-                       seconds=median(times) if times else None,
-                       fit_seconds=median(r["timings"]["fit_seconds"]) if times else None,
-                       decode_seconds=median(r["timings"]["decode_seconds"]) if times else None)
+                       seconds=timing_median(times),
+                       fit_seconds=timing_median(r["timings"]["fit_seconds"]),
+                       decode_seconds=timing_median(r["timings"]["decode_seconds"]))
         else:
             row = dict(dimension=dim, Lc=r["coarse_intervals"], Lf=r["fine_intervals"],
                        category=r["descriptor"]["category"], error=r["error"],
@@ -63,7 +88,17 @@ def normalize(path, expected_dimension):
                        fit_seconds=(r["timing_median"] or {}).get("fit_seconds"),
                        decode_seconds=(r["timing_median"] or {}).get("decode_seconds"))
         row.update({k: r[k] for k in ("source", "cohort", "case", "config", "status", "selected", "input_eligible")})
+        for key in ('seconds','fit_seconds','decode_seconds'):
+            if not finite(row[key]) or row[key] < 0:
+                row[key] = None
         row["finite"] = row["status"] == "complete" and finite(row["error"])
+        if not finite(row['error']):
+            row['error'] = None
+        amp = row['amplification']
+        row['amplification_status'] = ('unavailable' if amp is None else
+                                       'available' if finite(amp) and amp >= 0 else 'nonfinite_or_invalid')
+        if row['amplification_status'] != 'available':
+            row['amplification'] = None
         if dim == 2:
             alts = r['reference_level_sensitivity'] if row['source'] == 'A' else r['coarse_time_sensitivity']
             expected = 2 if row['source'] == 'A' else 1
@@ -80,36 +115,40 @@ def normalize(path, expected_dimension):
             row['prediction_change'] = r['input_sensitivity_max'] if sensitive else None
             row['error_vector_change'] = r['error_vector_sensitivity_max'] if sensitive and row['source'] == 'A' else None
             row['previous_error'] = alts[0] if sensitive and row['source'] == 'B' else None
+        sensitive = (sensitive and finite(row['prediction_change']) and row['prediction_change'] >= 0
+                     and (row['source'] == 'B' or (finite(row['error_vector_change']) and row['error_vector_change'] >= 0)))
+        if not sensitive:
+            row.update(prediction_change=None,error_vector_change=None,previous_error=None)
         row['sensitivity_complete'] = bool(sensitive)
         if row["status"] == "complete":
             error_times = r["error_t"] if dim == 2 else r["error_times"][1:]
-            assert len(error_times) == 5 and all(finite(e) and e >= 0 for e in error_times)
-            assert row["finite"] and row["error"] >= 0
-            assert math.isclose(row["error"], max(error_times), rel_tol=2e-14, abs_tol=1e-16)
-        assert finite(row["eps"]) and row["eps"] >= 0
-        assert type(row["case"]) is int
-        assert row["source"] in ("A", "B") and row["cohort"] == cohort
-        assert row["Lc"] in meshes and row["Lf"] == fine_mesh
+            require(len(error_times) == 5 and all(finite(e) and e >= 0 for e in error_times), "Invalid evolved-time errors")
+            require(row["finite"] and row["error"] >= 0, "Complete case has invalid error")
+            require(math.isclose(row["error"], max(error_times), rel_tol=2e-14, abs_tol=1e-16), "Case error differs from time maximum")
+        require(finite(row["eps"]) and row["eps"] >= 0, "Invalid reference uncertainty")
+        require(type(row["case"]) is int, "Non-integer case identity")
+        require(row["source"] in ("A", "B") and row["cohort"] == cohort, "Unexpected source or cohort")
+        require(row["Lc"] in meshes and row["Lf"] == fine_mesh, "Unexpected mesh")
         rows.append(row)
-    assert rows and all(r["dimension"] == dim for r in rows)
+    require(rows and all(r["dimension"] == dim for r in rows), "Empty or mixed dimension export")
     keys = [(r["Lc"], r["source"], r["case"], r["config"]) for r in rows]
-    assert len(keys) == len(set(keys)), "Duplicate case/configuration entries"
+    require(len(keys) == len(set(keys)), "Duplicate case/configuration entries")
     cohorts = {r["cohort"] for r in rows}
-    assert len(cohorts) == 1
+    require(len(cohorts) == 1, "Mixed cohorts")
     universe = set(range(count))
-    assert {r["case"] for r in rows} == universe
-    assert {(r["Lc"], r["source"]) for r in rows} == {(lc, s) for lc in meshes for s in ("A", "B")}
+    require({r["case"] for r in rows} == universe, "Incomplete declared case identities")
+    require({(r["Lc"], r["source"]) for r in rows} == {(lc, s) for lc in meshes for s in ("A", "B")}, "Missing mesh/source population")
     by_config = defaultdict(list)
     for row in rows:
         by_config[row["Lc"], row["source"], row["config"]].append(row)
     for rr in by_config.values():
-        assert {r["case"] for r in rr} == universe, "Incomplete declared cohort coverage"
-        assert len({r["selected"] for r in rr}) == 1
-        assert len({r["category"] for r in rr}) == 1
+        require({r["case"] for r in rr} == universe, "Incomplete declared cohort coverage")
+        require(len({r["selected"] for r in rr}) == 1, "Selection differs across cases")
+        require(len({r["category"] for r in rr}) == 1, "Category differs across cases")
     for lc in meshes:
-        assert len({r["config"] for r in rows if r["Lc"] == lc and r["source"] == "A"}) == CONFIG_COUNTS[dim][lc]
-        assert {r["config"] for r in rows if r["Lc"] == lc and r["source"] == "A"} == {
-            r["config"] for r in rows if r["Lc"] == lc and r["source"] == "B"}
+        require(len({r["config"] for r in rows if r["Lc"] == lc and r["source"] == "A"}) == CONFIG_COUNTS[dim][lc], "Missing declared configurations")
+        require({r["config"] for r in rows if r["Lc"] == lc and r["source"] == "A"} == {
+            r["config"] for r in rows if r["Lc"] == lc and r["source"] == "B"}, "A/B configuration sets differ")
     return data, rows
 
 
@@ -119,6 +158,7 @@ def summarize(rows):
     timings = {key: [r[key] for r in valid if finite(r[key])]
                for key in ("seconds", "fit_seconds", "decode_seconds")}
     sensitivity = [r for r in valid if r['sensitivity_complete']]
+    invalid_amplification = sum(r['amplification_status'] == 'nonfinite_or_invalid' for r in rows)
     return dict(cases=len(rows), finite_cases=len(valid), failures=len(rows)-len(valid),
                 input_admitted=sum(r["input_eligible"] for r in rows),
                 median=median(errors) if errors else None, worst=max(errors) if errors else None,
@@ -129,21 +169,22 @@ def summarize(rows):
                 prediction_change=max(r['prediction_change'] for r in sensitivity) if len(sensitivity) == len(rows) else None,
                 error_vector_change=max(r['error_vector_change'] for r in sensitivity) if len(sensitivity) == len(rows) and rows[0]['source'] == 'A' else None,
                 eps_max=max(r["eps"] for r in rows),
+                invalid_amplification_cases=invalid_amplification,
                 amplification=max((r["amplification"] for r in valid
-                                   if finite(r["amplification"])), default=None))
+                                   if finite(r["amplification"])), default=None) if not invalid_amplification else None)
 
 
 def compare(method, baseline):
     a = {r["case"]: r for r in method}
     b = {r["case"]: r for r in baseline}
-    assert a.keys() == b.keys() and a
+    require(a.keys() == b.keys() and a, "Comparison populations differ or are empty")
     sources = {r["source"] for r in method+baseline}
-    assert len(sources) == 1
+    require(len(sources) == 1, "Comparison mixes input sources")
     source = next(iter(sources))
     pairs = []
     for case in sorted(a):
         x, y = a[case], b[case]
-        assert x["eps"] == y["eps"], "Methods must share reference qualification"
+        require(x["eps"] == y["eps"], "Methods must share reference qualification")
         ok = x["finite"] and y["finite"]
         gap = y["error"]-x["error"] if ok else None
         width = 1e-14 if source == "A" else 2*x["eps"]
@@ -160,7 +201,18 @@ def compare(method, baseline):
     losses = sum(p["loss"] for p in pairs)
     method_worst_lower = max(max(0., r["error"]-r["eps"]) for r in method) if full and source == 'B' else None
     baseline_worst_upper = max(r["error"]+r["eps"] for r in baseline) if full and source == 'B' else None
-    worst_ok = bool(full and source == 'B' and method_worst_lower <= baseline_worst_upper)
+    worst_ok = (method_worst_lower <= baseline_worst_upper) if full and source == 'B' else None
+    if source != 'B':
+        gate, gate_status, gate_reason = None, 'not_applicable', 'Source A is fixed-array reconstruction'
+    elif sb['failures']:
+        gate, gate_status, gate_reason = None, 'not_evaluable', 'Classical comparator has failed cases'
+    elif sm['failures']:
+        gate, gate_status, gate_reason = False, 'not_pass', 'Method has failed cases; complete accuracy comparison unavailable'
+    elif ratio is None:
+        gate, gate_status, gate_reason = None, 'not_evaluable', 'Baseline median is zero; ratio unavailable'
+    else:
+        gate = bool(ratio <= GATE['median_ratio_max'] and wins/len(pairs) >= GATE['resolved_win_fraction_min'] and worst_ok)
+        gate_status, gate_reason = ('pass' if gate else 'not_pass'), 'Prespecified complete-cohort thresholds'
     return dict(method=method[0]["config"], baseline=baseline[0]["config"],
                 source=source, cases=len(pairs), complete_pairs=sum(p["finite"] for p in pairs),
                 reference_eps_max=sm['eps_max'],
@@ -170,10 +222,7 @@ def compare(method, baseline):
                 time_pairs_stable=sum(p['time_classification_stable'] is True for p in pairs),
                 no_resolved_worst_deterioration=worst_ok if source == "B" else None,
                 method_worst_lower=method_worst_lower, baseline_worst_upper=baseline_worst_upper,
-                accuracy_gate=bool(source == "B" and ratio is not None
-                                  and ratio <= GATE["median_ratio_max"]
-                                  and wins/len(pairs) >= GATE["resolved_win_fraction_min"]
-                                  and worst_ok),
+                accuracy_gate=gate, gate_status=gate_status, gate_reason=gate_reason,
                 input_admitted=sum(p["input_admitted"] for p in pairs), pairs=pairs)
 
 
@@ -235,7 +284,7 @@ def diagnostic_evidence(roots, chosen):
                 path = (root/f'oracle/L{lc}/{cohort}_c{case:03d}.json' if dim == 2
                         else root/f'L{lc}/{cohort}/c{case:03d}/oracle.json')
                 for label, row in read(path).items():
-                    assert label in per_label
+                    require(label in per_label, 'Undeclared oracle representation')
                     values = row['error_t'] if dim == 2 else row['e_t'][1:]
                     if len(values) == 5 and all(finite(e) and e >= 0 for e in values):
                         per_label[label].append(max(values))
@@ -251,6 +300,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--two-dimensional", type=Path, required=True)
     p.add_argument("--three-dimensional", type=Path, required=True)
+    p.add_argument("--accepted-audit", type=Path, help="Independent result acceptance record bound to both exports and this generator")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args()
     inputs = [args.two_dimensional, args.three_dimensional]
@@ -263,6 +313,12 @@ def main():
         provenance.append(dict(path=str(path.resolve()), sha256=sha(path),
                                dimension=data["dimension"], phase=data["phase"],
                                runtime=data.get("runtime", data.get("execution"))))
+    acceptance = None
+    if args.accepted_audit:
+        acceptance = json.loads(args.accepted_audit.read_text())
+        require(acceptance.get('status') == 'accepted_for_screen', 'Result audit does not accept this screen')
+        require(acceptance.get('export_sha256') == {str(p['dimension']):p['sha256'] for p in provenance}, 'Audit/export hashes differ')
+        require(acceptance.get('generator_sha256') == sha(__file__), 'Audit/generator hash differs')
     groups = defaultdict(list)
     for r in allrows:
         groups[r["dimension"], r["Lc"], r["source"], r["config"]].append(r)
@@ -270,8 +326,9 @@ def main():
     for (dim, lc, source, config), rr in groups.items():
         if rr[0]["selected"]:
             key = dim, lc, source, rr[0]["category"]
-            assert key not in chosen, "Multiple selected settings in one category"
+            require(key not in chosen, "Multiple selected settings in one category")
             chosen[key] = rr
+    unavailable_choices = sorted({(dim,lc,source,rr[0]['category']) for (dim,lc,source,_),rr in groups.items()} - chosen.keys())
     comparisons = []
     for (dim, lc, source, category), rr in sorted(chosen.items()):
         ordinary = chosen.get((dim, lc, source, "ordinary"))
@@ -281,7 +338,18 @@ def main():
     primary = [c for c in comparisons if c["source"] == "B"
                and c["Lc"] == {2: 32, 3: 16}[c["dimension"]]
                and c["category"] in ("bank_base", "bank")]
+    require(len(primary) == len({c['dimension'] for c in primary}), 'Duplicate primary comparison')
+    for c in comparisons:
+        if c not in primary:
+            c.update(accuracy_gate=None,gate_status='not_applicable',gate_reason='Not a prespecified primary comparison')
     primary_by_dim = {c["dimension"]: c for c in primary}
+    for dim,lc in ((2,32),(3,16)):
+        if dim not in primary_by_dim:
+            fallback = groups[dim,lc,'B','linear']
+            c = dict(dimension=dim,Lc=lc,source='B',category='bank_base' if dim == 2 else 'bank',
+                     accuracy_gate=None,gate_status='not_evaluable',gate_reason='Required frozen bank or classical selection is unavailable',
+                     cases=COHORT[dim][1],input_admitted=sum(r['input_eligible'] for r in fallback))
+            primary.append(c);primary_by_dim[dim]=c
     fixed_maps = []
     for (dim,lc,source,category),rr in sorted(chosen.items()):
         if source == 'B':
@@ -302,24 +370,30 @@ def main():
             baselines += [(LABEL[cat],chosen[dim,lc,source,cat]) for cat in pod_categories if (dim,lc,source,cat) in chosen]
         for label,baseline in baselines:
             result = compare(rr,baseline)
-            result['accuracy_gate'] = None  # The prespecified gate applies to the selected classical comparator.
+            result.update(accuracy_gate=None,gate_status='not_applicable',gate_reason='Descriptive control comparison')
             control_comparisons.append(dict(dimension=dim,Lc=lc,category=category,strict=strict,
                                             baseline_label=label,**result))
-    evidence = diagnostic_evidence(roots, chosen)
+    conditioning_choices = dict(chosen)
+    for (dim,lc,source,_),rr in groups.items():
+        if rr[0]['strict'] and source == 'B':
+            conditioning_choices[dim,lc,source,rr[0]['category']+'_fixed'] = rr
+    evidence = diagnostic_evidence(roots, conditioning_choices)
     sentences = []
     for dim in sorted({r["dimension"] for r in allrows}):
         c = primary_by_dim.get(dim)
-        if c is None:
-            sentences.append(f"The {dim}D primary comparison has no available frozen selection.")
+        if c['gate_status'] == 'not_evaluable':
+            sentences.append(f"The {dim}D primary accuracy gate is not evaluable: {c['gate_reason']}.")
         else:
             verdict = "passes" if c["accuracy_gate"] else "does not pass"
             sentences.append(f"The {dim}D decoder {verdict} the prespecified accuracy gate "
                              f"against development-selected classical reconstruction.")
     lines = ["# Burgers reconstruction from the same coarse samples", "",
-             "This report compares interpolation and learned-basis reconstruction using identical "
-             "coarse field samples. Numerical tables are generated from the completed validation exports; "
-             "scientific acceptance also requires the accompanying independent result audit.", "",
+             "This report compares classical and learned-basis reconstruction using identical "
+             "coarse field samples. "+('The numbers are final for this bounded screen after independent result review; numerical-reference and training-information qualifications remain explicit.'
+                                       if acceptance else 'The numbers are provisional pending independent returned-result and reporting review.'), "",
              " ".join(sentences), "", "## What is being compared", "",
+             ("Unavailable frozen selections: "+'; '.join(f'{d}D L{lc} {s} {LABEL[cat]}' for d,lc,s,cat in unavailable_choices)+'.'
+              if unavailable_choices else 'Every declared method family has an available frozen selection.'), "",
              "Source A supplies exact samples of the stored fine-reference array. Source B supplies "
              "an actual coarse numerical solution. Every method receives the same field at the same "
              "physical time, coordinates and zero boundary values. There is no rollout or subsequent "
@@ -358,11 +432,11 @@ def main():
     comparison_rows = []
     for c in comparisons:
         comparison_rows.append([c["dimension"], c["Lc"], c["source"], LABEL[c["category"]],
-                                fmt(c["ratio_of_medians"]), fmt(c['reference_eps_max'],100), c["wins"], c["ties"], c["losses"],
+                                fmt(c["ratio_of_medians"]), fmt(c['reference_eps_max'],100) if c['source'] == 'B' else '—', c["wins"], c["ties"], c["losses"],
                                 f"{c['failed_pairs']}/{c['cases']}",
-                                f"{c['time_pairs_stable']}/{c['time_pairs_checked']}" if c['source'] == 'B' else '—'])
+                                f"{c['time_pairs_stable']}/{c['time_pairs_checked']}/{c['cases']}" if c['source'] == 'B' else '—'])
     lines += [table(["Dimension", "Coarse intervals", "Source", "Method family", "Median error ratio",
-                     "Max reference ε (%)", "Wins", "Ties", "Losses", "Failed pairs / all", "Time check stable / checked"], comparison_rows), "",
+                     "Max reference ε (%)", "Wins", "Ties", "Losses", "Failed pairs / all", "Time check stable / checked / all"], comparison_rows), "",
               "The ratio is method median error divided by the selected classical method's median error; smaller is better. "
               "It is not the median of paired ratios. Source A wins describe completion of fixed numerical "
               "arrays, with a numerical tie tolerance. Source B wins exceed twice the stored reference "
@@ -469,7 +543,7 @@ def main():
               "the method's lower uncertainty envelope exceeds the selected classical method's upper envelope:", "",
               r"$$\max_i\max(0,e_{i,\mathrm{method}}-\epsilon_i)>\max_i(e_{i,\mathrm{classical}}+\epsilon_i).$$", "",
               table(["Dimension", "Primary coarse intervals", "Accuracy gate", "Input admitted / all"],
-                    [[dim, c["Lc"], "Pass" if c["accuracy_gate"] else "Does not pass",
+                    [[dim, c["Lc"], {'pass':'Pass','not_pass':'Does not pass','not_evaluable':'Not evaluable'}[c['gate_status']],
                       f"{c['input_admitted']}/{c['cases']}"] for dim,c in sorted(primary_by_dim.items())]),
               "", "## Provenance", ""]
     for item in provenance:
@@ -513,30 +587,41 @@ def main():
               "- **Oracle:** a diagnostic fitted directly to fine targets, unavailable to an admissible reconstruction method.",
               "- **Observability / amplification:** whether coarse samples identify basis coefficients / how much an input "
               "perturbation can change the reconstructed field.",
+              "- **Invalid amplification cases:** entries with non-finite or negative amplification; "
+              "their configuration maximum is unavailable, rather than silently ignoring them.",
               "- **Reference uncertainty:** estimated numerical uncertainty of the fine comparison field.",
               "- **Max reference ε:** largest case-specific reference uncertainty in the displayed cohort; "
               "paired decisions and worst-error envelopes still use each case's own value.",
-              "- **Time check stable / checked:** paired classifications unchanged under the preceding coarse "
-              "time-step level / pairs with complete perturbation evidence.",
+              "- **Time check stable / checked / all:** paired classifications unchanged under the preceding coarse "
+              "time-step level / pairs with complete perturbation evidence / all declared pairs.",
               "- **Output change / error-vector change:** change in reconstructed fields / change in "
               "reconstruction-minus-reference fields when numerical inputs are perturbed.",
               "- **Exposed / sealed / out-of-distribution:** already available for method development / reserved and unopened / "
               "outside the tested training-family conditions.",
               "- **PDE / rollout:** partial differential equation / advancing a state through time.", ""]
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text("\n".join(lines))
-    args.out.with_suffix(".json").write_text(json.dumps(dict(
-        provenance=provenance, gate=GATE, selected_cases=[r for r in allrows if r['selected'] or r['strict']], comparisons=comparisons,
+    json_content=json.dumps(json_safe(dict(
+        provenance=provenance, acceptance=acceptance, gate=GATE, selected_cases=[r for r in allrows if r['selected'] or r['strict']], comparisons=comparisons,
         primary=primary, fixed_maps=fixed_maps, control_comparisons=control_comparisons,
-        diagnostic_evidence=evidence), indent=2, allow_nan=False)+"\n")
+        unavailable_choices=unavailable_choices,diagnostic_evidence=evidence)), indent=2, allow_nan=False)+"\n"
     configuration_rows = []
     for (dim, lc, source, config), rr in sorted(groups.items()):
         configuration_rows.append(dict(dimension=dim, coarse_intervals=lc, fine_intervals=rr[0]['Lf'],
                                        source=source, configuration=config, category=rr[0]['category'],
                                        selected=rr[0]['selected'], strict_control=rr[0]['strict'], **summarize(rr)))
-    with args.out.with_name(args.out.stem+'.configurations.csv').open('w',newline='') as f:
-        writer=csv.DictWriter(f,fieldnames=list(configuration_rows[0]))
-        writer.writeheader(); writer.writerows(configuration_rows)
+    csv_buffer=io.StringIO(newline='')
+    writer=csv.DictWriter(csv_buffer,fieldnames=list(configuration_rows[0]))
+    writer.writeheader();writer.writerows(configuration_rows)
+    # Serialize every artifact before touching published outputs. Install the
+    # markdown last so it cannot announce companions that failed serialization.
+    outputs={args.out.with_suffix('.json'):json_content,
+             args.out.with_name(args.out.stem+'.configurations.csv'):csv_buffer.getvalue(),
+             args.out:'\n'.join(lines)}
+    with tempfile.TemporaryDirectory(prefix='.reconstruction-build-',dir=args.out.parent) as temporary:
+        for target,content in outputs.items():
+            Path(temporary,target.name).write_text(content)
+        for target in outputs:
+            os.replace(Path(temporary,target.name),target)
     print(args.out)
 
 

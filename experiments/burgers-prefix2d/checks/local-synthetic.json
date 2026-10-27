@@ -1,0 +1,31 @@
+{
+  "pass": true,
+  "backend": "gpu",
+  "x64": true,
+  "checks": {
+    "BE_affine": {
+      "residual": 4.440892098500626e-16,
+      "column_jacobian": 0.0,
+      "autodiff_jacobian": 2.220446049250313e-16
+    },
+    "BE_pure": {
+      "residual": 1.1102230246251565e-16,
+      "column_jacobian": 0.0,
+      "autodiff_jacobian": 2.220446049250313e-16
+    },
+    "CN_affine": {
+      "residual": 1.1102230246251565e-16,
+      "column_jacobian": 0.0,
+      "autodiff_jacobian": 2.220446049250313e-16
+    },
+    "CN_pure": {
+      "residual": 2.220446049250313e-16,
+      "column_jacobian": 0.0,
+      "autodiff_jacobian": 2.220446049250313e-16
+    },
+    "injection": 0.0,
+    "tail_loss": 1.0176599457038837,
+    "baseline_states": 0.0,
+    "failed_coarse_restores_baseline": true
+  }
+}

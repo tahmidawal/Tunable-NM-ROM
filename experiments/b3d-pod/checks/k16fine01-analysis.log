@@ -1,0 +1,33 @@
+{
+  "Q1": {
+    "k16": {
+      "pass_": true,
+      "nonstationary_steps": 0,
+      "steps": 100,
+      "median_error": 0.020366654797841194,
+      "worst_error": 0.022809853769308747
+    },
+    "none": {
+      "pass_": true,
+      "nonstationary_steps": 0,
+      "steps": 100,
+      "median_error": 0.02040161486237499,
+      "worst_error": 0.022806496389512303
+    }
+  },
+  "admission": {
+    "common_layer_pass": false,
+    "shared_field_case_mask": {
+      "0": true,
+      "5": false,
+      "30": true,
+      "43": true
+    },
+    "extra_gradient_pass": false,
+    "extra_full_stationarity_bad_steps": 7,
+    "extra_full_stationarity_pass": false,
+    "both_layers_pass": false
+  },
+  "full64_adapter_release": false,
+  "offline_checks_pass": true
+}

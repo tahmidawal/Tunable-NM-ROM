@@ -1,11 +1,11 @@
 {
-  "status": "implementation_reviews_and_preflight_fixes",
+  "status": "boundary_gradient_API_fix_before_any_submission",
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "2D final preflight source/config diff review",
-    "3D final preflight source/config diff review, then2Dsmokepass",
-    "ROM infrastructure independent code review"
+    "both_dimensions_volume_side_boundary_trace_fix_and_independent_diff_review",
+    "fresh_staging_verification_then_2Dsmoke",
+    "3Dsmoke_after_2Dpass"
   ],
   "staged_unsubmitted": [
     {
@@ -26,5 +26,10 @@
   "completed_allocated_gpu_hours": 0,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
-  "no_merges": true
+  "no_merges": true,
+  "rom_retention_fix": {
+    "source_commit": "511faa165",
+    "review": "independent_Codex_PASS_synthetic_only",
+    "manifest_sha256": "cd84e2b28217b7e699baaf050e25f98666ddfe797b690f1eeb947b77af2e2908"
+  }
 }

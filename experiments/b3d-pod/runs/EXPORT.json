@@ -1023,7 +1023,7 @@
     "target_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/runs/fit32/collected/output/target.npy"
   },
   "lane_final_scope": {
-    "all_lane_jobs_terminal": true,
+    "all_lane_jobs_terminal": false,
     "qualified_full_residual_POD_available": true,
     "qualified_hyper_reduced_POD_available": false,
     "qualified_HR_comparison": "unresolved; frozen supports fail common fields and the one support extension failed construction",
@@ -1037,7 +1037,7 @@
   },
   "a3_replay": {
     "attempt": "k16fine01",
-    "state": "FROZEN_PENDING_EXACT_JOB_GATE",
+    "state": "SUBMITTED",
     "hard_gpu_hours": 0.4,
     "selection_sha256": "46ddebe8b6e2f582ad9791a5819460ab0f928b60a9c457d0e0e6e5d621a211fa",
     "config_sha256": "7e911ac90ffd88ce1608fb7298569632d41232efc4be972e8a42236fd893c9de",
@@ -1053,9 +1053,11 @@
     },
     "selection_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/inputs/FINE-SELECTION.json",
     "design_gate": "READY",
-    "code_control_gate": "READY, exact bindings recheck pending",
-    "exact_job_gate": "PENDING",
+    "code_control_gate": "READY",
+    "exact_job_gate": "READY",
     "original_failures_and_constructor_stop_preserved": true,
-    "no_rollout_yet": true
+    "no_rollout_yet": false,
+    "job_id": 6529465,
+    "source_tar_sha256": "4ae6aade3b19f9bc48a39261cd66005df8bfb158d648c2067641af8f2751d6f7"
   }
 }

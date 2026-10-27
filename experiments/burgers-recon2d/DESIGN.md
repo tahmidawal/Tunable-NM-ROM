@@ -38,3 +38,7 @@ No numeric job is submitted until the coordinator's independent design/code/exac
 - E0 ST: existing space-and-time-refined reference campaign, with conditional numerical uncertainty.
 - CN: Crank–Nicolson time stepping; BE: backward Euler startup or training stepping.
 - Oracle: a diagnostic fit allowed to see the full reference; never an admissible reconstruction.
+
+## A1: one extra input-qualification rung before reconstruction outcomes
+
+Initial preparation reveals coarse-CNR inputs that miss the unchanged temporal gap threshold at the last registered time step. Before any reconstruction outcome is computed, permit exactly one extra rung, $\Delta t=0.00015625$, on those failed-admission cases only. Increase the runtime stage-record capacity to 2000 without editing the vendored PDE equations. Retain all original levels and metadata; supplement writes a separate directory. No threshold relaxation, additional rung, or dropping failed cases. Any remaining failures are descriptive inputs without a qualified spatial-error interpretation. This amendment requires the same independent exact-code/job review.

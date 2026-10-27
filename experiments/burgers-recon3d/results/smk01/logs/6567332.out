@@ -1,0 +1,25 @@
+host=pax008 source_commit=db1ba37611076e319222338034551cc7296a8048
+NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.33:/projects/paralab  4.6T  1.3T  3.3T  29% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu
+{"status": "pass", "results": [{"dim": 2, "status": "pass", "sampled_rank": 3, "fine_rank": 4, "eigenbasis_invariance": true, "sine_exact": true, "covariance_ridge_checked": true}, {"dim": 3, "status": "pass", "sampled_rank": 3, "fine_rank": 4, "eigenbasis_invariance": true, "sine_exact": true, "covariance_ridge_checked": true}]}
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA H200
+{"status": "pass", "sine_physical_amplitude": true, "idw_coincident_exact": true, "snapshot_view_switch": true}
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA H200
+coarse dev4/0 L16 eligible=False gap=1.1373808522214277e-05
+coarse dev4/0 L32 eligible=False gap=1.3419004216938235e-05
+training n=33 rows=1/4 sec=3.9
+training n=33 rows=4/4 sec=4.3
+training n=65 rows=1/4 sec=2.4
+training n=65 rows=4/4 sec=3.0
+training n=129 rows=1/4 sec=3.0
+training n=129 rows=4/4 sec=6.2
+POD pod_matched range power=0 sec=2.7
+POD pod_matched range power=1 sec=3.1
+POD pod_matched range power=2 sec=11.3
+POD pod_stronger range power=0 sec=0.6
+POD pod_stronger range power=1 sec=0.8
+POD pod_stronger range power=2 sec=1.4
+ALL-DONE

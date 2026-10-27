@@ -230,6 +230,8 @@ def randomized_pod(view, out, name, ranks, seed, powers=2, oversample=128):
             phi0 = b.T @ (eig[:,:r]/sig[None,:])
             phi, rr = jnp.linalg.qr(phi0,mode='reduced')
             phi = phi * jnp.sign(jnp.diag(rr))[None,:]
+            qr_correction=float(jnp.linalg.norm(phi-phi0)/jnp.linalg.norm(phi0))
+            qr_offdiagonal=float(jnp.linalg.norm(rr-jnp.diag(jnp.diag(rr)))/jnp.linalg.norm(rr))
             ortho = float(jnp.linalg.norm(phi.T @ phi-jnp.eye(r))/jnp.sqrt(r))
             assert ortho <= 1e-9, ortho
             np.save(out/f'{name}_q{power}_basis.npy',np.asarray(phi))
@@ -247,9 +249,11 @@ def randomized_pod(view, out, name, ranks, seed, powers=2, oversample=128):
                 captured += np.asarray(jnp.sum(z*z,axis=0))
                 eprobe = x @ pj - z @ (phi.T @ pj)
                 probe_residual += float(jnp.sum(eprobe*eprobe))
+            np.save(out/f'{name}_q{power}_variances.npy',captured/m)
             cum = np.cumsum(captured)
             assert np.min(total-cum) >= -1e-10*total
-            captures[f'q{power}'] = dict(orthogonality=ortho, total_sq=total,
+            captures[f'q{power}'] = dict(orthogonality=ortho, qr_correction=qr_correction,
+                qr_offdiagonal=qr_offdiagonal, actual_column_variance_sha256=digest(captured/m),total_sq=total,
                 residual_fraction={str(rr):max(0.,float((total-cum[rr-1])/total)) for rr in ranks if rr<=r},
                 random_probe_residual_sq=probe_residual,
                 projected_singular_values=np.asarray(sig).tolist(),seconds=time.perf_counter()-t0)
@@ -278,6 +282,8 @@ def prepare_bank(bank_path, out):
 
 def prepare_coarse_inputs(out, smoke=False):
     meta={}
+    # Buffer capacity only; the approved fifth temporal rung has 1602 stages.
+    RC.NST = 2000
     solvers={l:RC.make_solver(3,l,adv='central',max_newton=40) for l in (16,32)}
     for name,count in [('dev4',4),('val64',64)]:
         if smoke and name=='val64': continue
@@ -297,7 +303,7 @@ def prepare_coarse_inputs(out, smoke=False):
                 last=None
                 previous=None
                 accepted=False
-                for dt in [.0025,.00125,.000625,.0003125]:
+                for dt in [.0025,.00125,.000625,.0003125,.00015625]:
                     rr=solve(coh.ic(l,case),coh.nu(case),dt,'cnr',1e-11,1e-12)
                     fields=np.asarray(rr['out']); ns=int(rr['stages'])
                     res=np.asarray(rr['res'])[:ns]; nit=np.asarray(rr['nwt'])[:ns]

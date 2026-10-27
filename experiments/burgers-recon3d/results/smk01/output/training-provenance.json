@@ -1,0 +1,56 @@
+{
+  "seed": 923701,
+  "original_count": 1536,
+  "used_count": 4,
+  "table_sha256": "a59381ba5b3fc7974c0193d1f57ab25fb306aa2337a4e5be60e7e2e94c905add",
+  "steps": [
+    0,
+    1,
+    2,
+    4,
+    7,
+    10,
+    15,
+    20,
+    25,
+    30,
+    40,
+    50
+  ],
+  "groups": {
+    "33": {
+      "points": 29791,
+      "snapshots": 48,
+      "indices_sha256": "66ad34d68cd71b8335c87083d876beeda994d09afc904568f610d3c8e9bc3fa3",
+      "sampled_values_sha256": "199872301c26d44e96b5197033de11fd874d0b0d77a5be66474890451f567663",
+      "normalization_sha256": "ca9dd7b7dcbef25273b34312eec185e1999607e5dad20a806e3e1e611832c65f",
+      "stronger_common_grid_sha256": null,
+      "max_residual": 8.184851148696585e-09,
+      "seconds": 4.503039879724383
+    },
+    "65": {
+      "points": 250047,
+      "snapshots": 48,
+      "indices_sha256": "ad88e5681a0b9ae81d1df14d9b576366ff6ecf12c5c7f739c1aab9a8855060c0",
+      "sampled_values_sha256": "fc122b280d8e36c9f5105986b6a88c717f26dcd7a035bc72816b5fdf91461074",
+      "normalization_sha256": "be8c30f1423f317f02d70c18feb8b46546d5359a3fcbf9b07112bdb340b3a144",
+      "stronger_common_grid_sha256": null,
+      "max_residual": 7.2836453180281205e-09,
+      "seconds": 3.156764879822731
+    },
+    "129": {
+      "points": 250047,
+      "snapshots": 48,
+      "indices_sha256": "a866953d7c8cdcd8bcaec9c16ee2cd12a81e0e72ef2e3b7721083c7f4b7a4780",
+      "sampled_values_sha256": "56d722d41c9519826cb754f26d3dc0cf797e41bcd2d76f63e61332224a274f0a",
+      "normalization_sha256": "c984af4ca3d5448755f8d9e12167ce4e2280c592630ab03af889da8c307581f0",
+      "stronger_common_grid_sha256": "e37b54155175fc083754c81f6c3c0aedf0f40bf6f63fcf69e664efb88c2d3302",
+      "max_residual": 9.555693307150223e-09,
+      "seconds": 6.360877810046077
+    }
+  },
+  "weighting": "equal groups and snapshots; each mapped field divided by original sampled-field RMS",
+  "exact_info_extension": "33-node sine; 65-node identity; 129-node fixed 8NN IDW inverse squared distance",
+  "stronger_extension": "33-node sine; 65-node identity; 129-node full native field injection; extra original-unsampled values",
+  "total_seconds": 104.6442254204303
+}

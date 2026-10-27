@@ -342,3 +342,116 @@ pressure: physical pressure divided by density. Traction: force per area on a su
 Blockage: stated obstacle-to-pipe width or area ratio. Reached state: a solution actually
 returned by the reduced solve. Gate: prospective acceptance rule. Query: all work needed
 to return the declared output. Offline: reusable preparation, still charged in break-even.
+
+## A1 — Pre-data clarification after independent Codex design review, 2026-10-27
+
+No numerical run has occurred. This amendment resolves draft ambiguity; the original draft
+is preserved at commit b0cd5eddc. No failed threshold is relaxed.
+
+**Release boundaries.** G2-steady covers geometry, analytic plus manufactured nonzero-
+convection controls, stationary tolerances, space, forces, balances and domain/outlet checks.
+G2-transient is a separate unpassed gate. G3 needs G2-steady only. A full three-component
+manufactured divergence-free velocity with nonzero convection and nonconstant pressure,
+consistent source and exact nonzero natural outlet traction is required for 3D code admission;
+2D has the analogous mixed control. Control forcing/traction are never used in the physical
+unforced obstacle case. Derivatives are independently checked symbolically or by AD.
+
+**Time alignment.** The proposed 3D transient ladder is replaced before execution by
+$\Delta t=0.05,0.025,0.0125$, all dividing output spacing $0.1$ and ramp time $1$.
+Use fixed-step BDF2 after an independently checked second-order startup, not unverified
+shortened steps or interpolation. This does not release the transient stage.
+
+**Field metrics.** On the declared common physical-volume rule $Q$, define
+$\|f\|_Q^2=\sum w_i|f_i|^2$ and $V_Q=\sum w_i$. Velocity error is
+$\|u-u_{ref}\|_Q/\max(\|u_{ref}\|_Q,10^{-12}U\sqrt{V_Q})$.
+Primary pressure error is characteristic-scaled RMS,
+$\|p-p_{ref}\|_Q/(U^2\sqrt{V_Q})$, in the unshifted outlet convention. All pressure
+thresholds in §§4,6,7 use that convention. Reference-relative pressure error is retained as
+an explicitly secondary diagnostic. For domain extension compare pressure *differences*
+across the same physical probes, since outlet-fixed absolute levels include the added pipe
+pressure loss. Relative drag error divides by $|C_{D,ref}|$; transverse forces use absolute
+coefficient error. Report raw norms, denominators and coefficients with every derived metric.
+
+**Algebra and reduced metrics.** Before first execution the reference code must serialize
+its free-DOF residual normalization (including fixed velocity/pressure units and initial
+Stokes residual floor), linear residual criterion, damping and maximum iterations in the
+exact reviewed configuration; the physical output tightening gate cannot be replaced by
+that algebraic value. Reduced tests use reference-geometry dimensionless H1 velocity Gram
+$G_v=\int(v_i\cdot v_j+\nabla v_i:\nabla v_j)$ and L2 pressure Gram
+$G_q=\int q_iq_j$, Cholesky-whitened once and fixed across Reynolds number, quadrature,
+iteration and mesh-output sweeps. Whiten unknown coordinates by full-rule physical velocity
+L2 and pressure L2 Gram matrices when computing Jacobian conditioning and inf-sup values.
+Exact rank cutoff is $10^{-12}$ times largest singular value; if the retained dimension
+changes, store original/retained counts and apply the same rule to both methods.
+
+Quadrature operator and Jacobian gaps use the Euclidean/Frobenius norm of whitened vectors/
+matrices, divided by the sum of corresponding full-rule separate viscous, advective,
+pressure/lifting and continuity term norms, with floor $10^{-12}$. Never divide by their
+nearly canceled total. Save numerator and denominator. Derivative checks use centered
+finite differences at step sizes $10^{-4},10^{-5},10^{-6}$ in whitened coefficient directions,
+require an interior error plateau or reduction and best relative error ≤1e−6; no claimed
+Jacobian accuracy when the finite-difference signal lies below roundoff.
+
+**Uncertainty and matching.** After decreasing three-level h differences and an independent
+p cross-check, use conditional estimate
+$\delta_y=2\max(d_{y,h_{fine}},d_{y,p})+d_{y,solver}+d_{y,quad}$ in the declared output metric.
+Store every constituent and reject unresolved/nondecreasing spatial behavior. This is not
+a rigorous bound. Reference uncertainty must fit the one-fifth comparison budget in §7.
+For matching, form conditional error interval $[\max(0,e-\delta),e+\delta]$ for each output;
+a competitor jointly matches only if its upper interval is no larger than the bank lower
+interval for every primary output, with all physics gates passed. Matching a common target
+is reported separately from a resolved error dominance claim. If zero-error floors prevent
+resolved ordering, report unresolved rather than force a winner.
+
+**Geometry/envelopes.** FE Dirichlet trace tolerance applies on that FE geometry; neural
+analytic zero trace applies on the exact geometry. Record exact-to-FE boundary distances,
+volume/surface errors and the neural correction trace sampled on both boundaries. Before
+ROM training, define and review the geometry evaluation map, require approximate-boundary
+trace discrepancy/U ≤1e−6 for eligible reconstructed fields, and verify its contribution
+under geometry-order refinement. This is a separate geometry consistency gate, not a
+relaxation of the exact essential trace criterion. If it fails, defer the continuous bank
+until an exact geometry map or a qualified consistent representation exists. In 3D the
+inlet factor is always $(x-x_{in})/(x_{out}-x_{in})$.
+
+**Scope and comparators.** Central 3D domain $[-5,15]$ and its separately prescribed
+extensions supersede the discovery suggestion $[-10,20]$ before data. Full-3D comparisons
+are labelled as the tested three-component solver ladder; no best-possible sphere-FOM
+claim without a qualified axisymmetric comparator if symmetry holds. Give both bank and
+POD exact quadratic tensor evaluation, alongside unsampled quadrature and fitted positive
+rules; tensor precomputation/storage/reconstruction are charged consistently.
+
+**Outlet sensitivity.** In addition to length controls, run a named alternative symmetric-
+physical-traction-zero outlet on the longer domain. It is a different boundary model, not
+the DFG definition. The same common-local-field and force tolerances apply; pressure drop
+is compared on common probes. Failure limits domain/outlet independence and blocks generic
+wake/force-reference use; finite-domain DFG source comparison remains separately labelled.
+
+## A2 — Physical balance and finite-domain scope clarification, 2026-10-27
+
+Still before numerical runs. The second independent Codex review confirms core conventions
+and adds these release details. The finite-domain DFG numerical-reference gate and domain-
+insensitivity gate are recorded separately. A correctly reproduced DFG reference can pass
+while the broader wake/force expansion gate fails. This campaign deliberately requires both
+before expanding the production family; it does not claim a length-sensitive finite-domain
+solution is numerically wrong. If insensitivity fails, the original DFG outcome is retained
+and any changed-domain family needs a separately frozen specification.
+
+For the actually discretized advective/gradient weak PDE, save independently evaluated
+balances with finite-divergence corrections. Writing $\tau=\nu\nabla u-pI$, stationary
+momentum mismatch is
+$$B_m=\int_{\partial\Omega}[u(u\cdot n)-\tau n]\,ds
+-\int_\Omega u\nabla\cdot u\,dx.$$
+The gradient-form energy mismatch is
+$$B_e=\nu\int_\Omega|\nabla u|^2
++\frac12\int_{\partial\Omega}|u|^2u\cdot n
+-\int_{\partial\Omega}u\cdot\tau n
+-\frac12\int_\Omega |u|^2\nabla\cdot u
+-\int_\Omega p\nabla\cdot u.$$
+Include $dE/dt$ for a transient and body-force work for manufactured controls. Physical
+symmetric-stress balance is a separately reported continuum consistency diagnostic, not
+quietly substituted for this exact discrete-form accounting. Normalize by sum of absolute
+term magnitudes with characteristic force/power floor $10^{-12}$ in nondimensional units.
+
+The low-Re Barber–Emerson drag comparison remains auxiliary: its zero-axial-gradient outlet
+is not established identical to ours, and its reported no-slip normal-stress discrepancy
+precludes treating the rounded table as exact truth or assigning it our tight reference gate.

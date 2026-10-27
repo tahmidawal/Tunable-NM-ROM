@@ -19,7 +19,7 @@ GATE = {"median_ratio_max": .8, "resolved_win_fraction_min": .75}
 COHORT = {2: ("val32", 32, {32, 64, 128}, 256), 3: ("val64", 64, {16, 32}, 64)}
 CONFIG_COUNTS = {2: {32: 77, 64: 77, 128: 145}, 3: {16: 93, 32: 93}}
 LABEL = {
-    "ordinary": "Development-selected interpolation",
+    "ordinary": "Selected classical reconstruction",
     "bank_base": "Fine-trained decoder",
     "bank_coarse": "Coarse-trained decoder",
     "pod_base": "Fine-data POD",
@@ -64,6 +64,23 @@ def normalize(path, expected_dimension):
                        decode_seconds=(r["timing_median"] or {}).get("decode_seconds"))
         row.update({k: r[k] for k in ("source", "cohort", "case", "config", "status", "selected", "input_eligible")})
         row["finite"] = row["status"] == "complete" and finite(row["error"])
+        if dim == 2:
+            alts = r['reference_level_sensitivity'] if row['source'] == 'A' else r['coarse_time_sensitivity']
+            expected = 2 if row['source'] == 'A' else 1
+            fields = ['output_change_vs_primary', 'error_vector_change' if row['source'] == 'A' else 'error_against_fixed_reference']
+            sensitive = len(alts) == expected and all(
+                len(a.get(k, [])) == 5 and all(finite(v) and v >= 0 for v in a[k])
+                for a in alts for k in fields)
+            row['prediction_change'] = max(v for a in alts for v in a['output_change_vs_primary']) if sensitive else None
+            row['error_vector_change'] = max(v for a in alts for v in a['error_vector_change']) if sensitive and row['source'] == 'A' else None
+            row['previous_error'] = max(alts[0]['error_against_fixed_reference']) if sensitive and row['source'] == 'B' else None
+        else:
+            alts = r['alternative_input_errors']
+            sensitive = len(alts) == (2 if row['source'] == 'A' else 1) and all(finite(v) and v >= 0 for v in alts)
+            row['prediction_change'] = r['input_sensitivity_max'] if sensitive else None
+            row['error_vector_change'] = r['error_vector_sensitivity_max'] if sensitive and row['source'] == 'A' else None
+            row['previous_error'] = alts[0] if sensitive and row['source'] == 'B' else None
+        row['sensitivity_complete'] = bool(sensitive)
         if row["status"] == "complete":
             error_times = r["error_t"] if dim == 2 else r["error_times"][1:]
             assert len(error_times) == 5 and all(finite(e) and e >= 0 for e in error_times)
@@ -101,12 +118,16 @@ def summarize(rows):
     errors = [r["error"] for r in valid]
     timings = {key: [r[key] for r in valid if finite(r[key])]
                for key in ("seconds", "fit_seconds", "decode_seconds")}
+    sensitivity = [r for r in valid if r['sensitivity_complete']]
     return dict(cases=len(rows), finite_cases=len(valid), failures=len(rows)-len(valid),
                 input_admitted=sum(r["input_eligible"] for r in rows),
                 median=median(errors) if errors else None, worst=max(errors) if errors else None,
                 above_one_percent=sum(e > .01 for e in errors),
                 **{key: median(values) if len(values) == len(rows) else None
                    for key, values in timings.items()},
+                sensitivity_cases=len(sensitivity),
+                prediction_change=max(r['prediction_change'] for r in sensitivity) if len(sensitivity) == len(rows) else None,
+                error_vector_change=max(r['error_vector_change'] for r in sensitivity) if len(sensitivity) == len(rows) and rows[0]['source'] == 'A' else None,
                 eps_max=max(r["eps"] for r in rows),
                 amplification=max((r["amplification"] for r in valid
                                    if finite(r["amplification"])), default=None))
@@ -126,8 +147,11 @@ def compare(method, baseline):
         ok = x["finite"] and y["finite"]
         gap = y["error"]-x["error"] if ok else None
         width = 1e-14 if source == "A" else 2*x["eps"]
+        old_gap = (y['previous_error']-x['previous_error'] if source == 'B' and ok
+                   and finite(y['previous_error']) and finite(x['previous_error']) else None)
         pairs.append(dict(case=case, finite=ok, win=bool(ok and gap > width),
                           loss=bool(ok and gap < -width), difference=gap,
+                          time_classification_stable=((old_gap > width, old_gap < -width) == (gap > width, gap < -width)) if old_gap is not None else None,
                           input_admitted=x["input_eligible"] and y["input_eligible"]))
     full = all(p["finite"] for p in pairs)
     sm, sb = summarize(method), summarize(baseline)
@@ -142,6 +166,8 @@ def compare(method, baseline):
                 reference_eps_max=sm['eps_max'],
                 wins=wins, losses=losses, ties=sum(p["finite"] for p in pairs)-wins-losses,
                 failed_pairs=sum(not p["finite"] for p in pairs), ratio_of_medians=ratio,
+                time_pairs_checked=sum(p['time_classification_stable'] is not None for p in pairs),
+                time_pairs_stable=sum(p['time_classification_stable'] is True for p in pairs),
                 no_resolved_worst_deterioration=worst_ok if source == "B" else None,
                 method_worst_lower=method_worst_lower, baseline_worst_upper=baseline_worst_upper,
                 accuracy_gate=bool(source == "B" and ratio is not None
@@ -256,6 +282,29 @@ def main():
                and c["Lc"] == {2: 32, 3: 16}[c["dimension"]]
                and c["category"] in ("bank_base", "bank")]
     primary_by_dim = {c["dimension"]: c for c in primary}
+    fixed_maps = []
+    for (dim,lc,source,category),rr in sorted(chosen.items()):
+        if source == 'B':
+            sampled = groups[dim,lc,'A',rr[0]['config']]
+            fixed_maps.append(dict(dimension=dim,Lc=lc,category=category,config=rr[0]['config'],
+                                   sampled_reference=summarize(sampled),actual_coarse=summarize(rr)))
+    control_comparisons = []
+    learned = [(dim,lc,source,category,rr,False) for (dim,lc,source,category),rr in sorted(chosen.items())
+               if category.startswith('bank')]
+    learned += [(dim,lc,source,rr[0]['category'],rr,True) for (dim,lc,source,_),rr in sorted(groups.items())
+                if rr[0]['strict'] and rr[0]['category'].startswith('bank')]
+    for dim,lc,source,category,rr,strict in learned:
+        baselines = [(label,groups[dim,lc,source,name]) for name,label in CLASSICAL.items()]
+        if strict:
+            baselines.append(('POD fixed coarse-data control',groups[dim,lc,source,'pod_coarse_r384_ridge0']))
+        else:
+            pod_categories = ['pod_'+category.split('_',1)[1]] if dim == 2 else ['pod_matched','pod_stronger']
+            baselines += [(LABEL[cat],chosen[dim,lc,source,cat]) for cat in pod_categories if (dim,lc,source,cat) in chosen]
+        for label,baseline in baselines:
+            result = compare(rr,baseline)
+            result['accuracy_gate'] = None  # The prespecified gate applies to the selected classical comparator.
+            control_comparisons.append(dict(dimension=dim,Lc=lc,category=category,strict=strict,
+                                            baseline_label=label,**result))
     evidence = diagnostic_evidence(roots, chosen)
     sentences = []
     for dim in sorted({r["dimension"] for r in allrows}):
@@ -265,7 +314,7 @@ def main():
         else:
             verdict = "passes" if c["accuracy_gate"] else "does not pass"
             sentences.append(f"The {dim}D decoder {verdict} the prespecified accuracy gate "
-                             f"against development-selected interpolation.")
+                             f"against development-selected classical reconstruction.")
     lines = ["# Burgers reconstruction from the same coarse samples", "",
              "This report compares interpolation and learned-basis reconstruction using identical "
              "coarse field samples. Numerical tables are generated from the completed validation exports; "
@@ -280,6 +329,10 @@ def main():
              "does not add observations: any improvement comes from the learned representation "
              "and its regularization. Direct fitting to a fine reference is an oracle diagnostic, "
              "excluded from the reconstruction comparison.", "",
+             "The classical candidate pool contains exact interpolation and regularized sine reconstructions. "
+             "A filtered method generally changes the supplied coarse values, so the selected classical "
+             "comparator is not necessarily interpolation in the strict sense. Linear, cubic and full "
+             "sine interpolation are reported separately.", "",
              "Errors use the volume-weighted fine-grid norm, divided by the fixed initial-reference "
              "norm. Each case is scored by its maximum error across the evolved observation times:", "",
              r"$$e_i=\max_{t>0}\frac{\|\widehat u_i(t)-u_{i,\mathrm{ref}}(t)\|_{h_f}}{\|u_{i,\mathrm{ref}}(0)\|_{h_f}}.$$", "",
@@ -301,19 +354,46 @@ def main():
               "column preserves the full denominator, and the full-cohort improvement ratio is unavailable. "
               "An unadmitted coarse input still permits a same-input accuracy comparison, but its "
               "error cannot be attributed cleanly to spatial discretization alone.", "",
-              "## Paired comparisons with selected interpolation", ""]
+              "## Paired comparisons with selected classical reconstruction", ""]
     comparison_rows = []
     for c in comparisons:
         comparison_rows.append([c["dimension"], c["Lc"], c["source"], LABEL[c["category"]],
                                 fmt(c["ratio_of_medians"]), fmt(c['reference_eps_max'],100), c["wins"], c["ties"], c["losses"],
-                                f"{c['failed_pairs']}/{c['cases']}"])
+                                f"{c['failed_pairs']}/{c['cases']}",
+                                f"{c['time_pairs_stable']}/{c['time_pairs_checked']}" if c['source'] == 'B' else '—'])
     lines += [table(["Dimension", "Coarse intervals", "Source", "Method family", "Median error ratio",
-                     "Max reference ε (%)", "Wins", "Ties", "Losses", "Failed pairs / all"], comparison_rows), "",
-              "The ratio is method median error divided by interpolation median error; smaller is better. "
+                     "Max reference ε (%)", "Wins", "Ties", "Losses", "Failed pairs / all", "Time check stable / checked"], comparison_rows), "",
+              "The ratio is method median error divided by the selected classical method's median error; smaller is better. "
               "It is not the median of paired ratios. Source A wins describe completion of fixed numerical "
               "arrays, with a numerical tie tolerance. Source B wins exceed twice the stored reference "
               "uncertainty estimate. That estimate is a conditional numerical resolution rule, not a "
               "certified physical-error bound or a statistical confidence interval.", "",
+              "The time check repeats each frozen reconstruction map on the preceding coarse-solver "
+              "time-step level and asks whether its paired win/tie/loss classification changes. "
+              "Missing diagnostics do not count as stable checks.", "",
+              "## Holding the reconstruction map fixed", "",
+              table(["Dimension", "Coarse intervals", "B-selected family", "Frozen configuration",
+                     "A median error (%)", "B median error (%)", "A worst error (%)", "B worst error (%)",
+                     "A / B failed cases"],
+                    [[r['dimension'],r['Lc'],LABEL[r['category']],f"`{r['config']}`",
+                      fmt(r['sampled_reference']['median'],100),fmt(r['actual_coarse']['median'],100),
+                      fmt(r['sampled_reference']['worst'],100),fmt(r['actual_coarse']['worst'],100),
+                      f"{r['sampled_reference']['failures']} / {r['actual_coarse']['failures']}"] for r in fixed_maps]), "",
+              "This table applies the same B-selected map to both input sources. It separates the "
+              "effect of changing observations from changing reconstruction settings. For the fixed "
+              "linear maps tested here, the error vectors obey:", "",
+              r"$$\widehat u_B-u_{\mathrm{ref}}=(\widehat u_A-u_{\mathrm{ref}})+T(y_B-y_A).$$", "",
+              "Their norms do not form an additive error split. A is completion of the stored numerical "
+              "array; B additionally contains coarse-solver input error, including any unresolved temporal contribution.", "",
+              "## Decoder comparisons with literal interpolation and POD", "",
+              table(["Dimension", "Coarse intervals", "Source", "Decoder configuration", "Comparator",
+                     "Median error ratio", "Wins", "Ties", "Losses", "Failed pairs / all"],
+                    [[c['dimension'],c['Lc'],c['source'],f"`{c['method']}`"+(' (fixed control)' if c['strict'] else ''),
+                      c['baseline_label'],fmt(c['ratio_of_medians']),c['wins'],c['ties'],c['losses'],
+                      f"{c['failed_pairs']}/{c['cases']}"] for c in control_comparisons]), "",
+              "These comparisons use each fixed interpolation method and the separately frozen POD "
+              "settings. They do not choose a new comparator from validation results. The fixed "
+              "coarse-data decoder is paired with the fixed coarse-data POD control as well.", "",
               "## Fixed ordinary methods and coarse-training control", ""]
     controls = []
     for (dim, lc, source, config), rr in sorted(groups.items()):
@@ -331,6 +411,17 @@ def main():
               "research cohorts, rather than sealed generalization tests. Coarse-data training refers "
               "to the solution values used in training; it does not erase the architecture's and "
               "recipe's earlier development history.", "",
+              "## Sensitivity to the numerical inputs", "",
+              table(["Dimension", "Coarse intervals", "Source", "Selected family", "Max output change (%)",
+                     "Max A error-vector change (%)", "Complete / all"],
+                    [[dim, lc, source, LABEL[category], fmt(summarize(rr)['prediction_change'],100),
+                      fmt(summarize(rr)['error_vector_change'],100),
+                      f"{summarize(rr)['sensitivity_cases']}/{len(rr)}"]
+                     for (dim,lc,source,category),rr in sorted(chosen.items())]), "",
+              "Source A varies both sampled inputs and targets across the saved reference levels; "
+              "the error-vector change accounts for their dependence. Source B varies the coarse "
+              "time-step level while keeping the fine target fixed. These are measured perturbations, "
+              "not certified bounds on unknown physical error.", "",
               "## Do the samples determine the representation?", "",
               table(["Dimension", "Coarse intervals", "Selected B family", "Requested directions",
                      "Retained fine directions", "Sampled rank", "Retained-spectrum condition", "Amplification", "Status"],
@@ -375,15 +466,15 @@ def main():
               "deterioration of the cohort's worst error. Ties and failed pairs do not count as wins. "
               "This is an accuracy-screen gate; training-information, conditioning and input qualifications "
               "still constrain the scientific claim. Worst-error deterioration is resolved only when "
-              "the method's lower uncertainty envelope exceeds interpolation's upper envelope:", "",
-              r"$$\max_i\max(0,e_{i,\mathrm{method}}-\epsilon_i)>\max_i(e_{i,\mathrm{interp}}+\epsilon_i).$$", "",
+              "the method's lower uncertainty envelope exceeds the selected classical method's upper envelope:", "",
+              r"$$\max_i\max(0,e_{i,\mathrm{method}}-\epsilon_i)>\max_i(e_{i,\mathrm{classical}}+\epsilon_i).$$", "",
               table(["Dimension", "Primary coarse intervals", "Accuracy gate", "Input admitted / all"],
                     [[dim, c["Lc"], "Pass" if c["accuracy_gate"] else "Does not pass",
                       f"{c['input_admitted']}/{c['cases']}"] for dim,c in sorted(primary_by_dim.items())]),
               "", "## Provenance", ""]
     for item in provenance:
         lines.append(f"- {item['dimension']}D validation export: `{item['path']}`; SHA-256 `{item['sha256']}`.")
-    lines += ["", "The companion JSON contains normalized case records, full comparison pairs, "
+    lines += ["", "The companion JSON contains normalized selected-case records, full comparison pairs, "
               "runtime metadata and the gate constants used to generate these tables.", "",
               f"The [complete configuration table]({args.out.stem}.configurations.csv) retains every "
               "tested setting, including failed and unselected configurations. Error summaries in that "
@@ -413,7 +504,9 @@ def main():
               "- **Input admitted:** coarse computation passed its fixed solver and time-step checks.",
               "- **Warm query:** fitting and evaluating one field after reusable setup and GPU warm-up.",
               "- **Wins / ties / losses:** paired comparisons using the source-specific resolution rule; failed pairs are separate.",
-              "- **Median error ratio:** method cohort median divided by the interpolation cohort median.",
+              "- **Median error ratio:** method cohort median divided by the named comparator's cohort median.",
+              "- **Classical reconstruction:** geometry-based interpolation or a fixed spectral filter; "
+              "its chosen regularization can use development references, but it has no learned spatial bank.",
               "- **Full sine / cubic / linear:** boundary-compatible spectral interpolation / tensor cubic spline / tensor linear interpolation.",
               "- **Matched observations / extra fine samples:** training observations matching the bank's recorded sampling "
               "pattern / a deliberately stronger comparator with additional fine-grid values.",
@@ -423,14 +516,19 @@ def main():
               "- **Reference uncertainty:** estimated numerical uncertainty of the fine comparison field.",
               "- **Max reference ε:** largest case-specific reference uncertainty in the displayed cohort; "
               "paired decisions and worst-error envelopes still use each case's own value.",
+              "- **Time check stable / checked:** paired classifications unchanged under the preceding coarse "
+              "time-step level / pairs with complete perturbation evidence.",
+              "- **Output change / error-vector change:** change in reconstructed fields / change in "
+              "reconstruction-minus-reference fields when numerical inputs are perturbed.",
               "- **Exposed / sealed / out-of-distribution:** already available for method development / reserved and unopened / "
               "outside the tested training-family conditions.",
               "- **PDE / rollout:** partial differential equation / advancing a state through time.", ""]
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text("\n".join(lines))
     args.out.with_suffix(".json").write_text(json.dumps(dict(
-        provenance=provenance, gate=GATE, cases=allrows, comparisons=comparisons,
-        primary=primary, diagnostic_evidence=evidence), indent=2, allow_nan=False)+"\n")
+        provenance=provenance, gate=GATE, selected_cases=[r for r in allrows if r['selected'] or r['strict']], comparisons=comparisons,
+        primary=primary, fixed_maps=fixed_maps, control_comparisons=control_comparisons,
+        diagnostic_evidence=evidence), indent=2, allow_nan=False)+"\n")
     configuration_rows = []
     for (dim, lc, source, config), rr in sorted(groups.items()):
         configuration_rows.append(dict(dimension=dim, coarse_intervals=lc, fine_intervals=rr[0]['Lf'],

@@ -1,0 +1,64 @@
+{
+  "schema": "ns-obstacle-3d-control-v1",
+  "release_status": "NOT_RELEASED_requires_coordinator_exact_review",
+  "scope": "geometry_then_CPU_FE_control_only_after_2D_smoke_and_independent_memory_review_no_reference_admission",
+  "seed": 27102026,
+  "threads": 4,
+  "geometry": {
+    "sphere_diameter": 1.0,
+    "pipe_radius": 2.5,
+    "x_in": -5.0,
+    "x_out": 15.0
+  },
+  "physics": {
+    "mean_speed": 1.0,
+    "rho": 1.0,
+    "nu": 0.1,
+    "outlet": "gradient"
+  },
+  "mesh": {
+    "maxh": 2.0,
+    "wall_maxh": 1.5,
+    "sphere_maxh": 0.6,
+    "geometry_order": 3,
+    "max_elements": 6000
+  },
+  "fe": {
+    "velocity_order": 2,
+    "pressure_order": 1,
+    "quadrature_order": 10,
+    "diagnostic_quadrature_order": 12,
+    "inverse": "umfpack"
+  },
+  "solver": {
+    "max_newton": 20,
+    "relative_free_residual": 1e-10,
+    "initial_residual_floor": 1.0,
+    "linear_relative_residual": 1e-10,
+    "max_backtracks": 12,
+    "armijo": 0.0001,
+    "continuation": [
+      0.0,
+      0.25,
+      0.5,
+      1.0
+    ]
+  },
+  "guards": {
+    "max_dofs": 15000,
+    "factor_estimate_gib_max": 48.0,
+    "rss_gib_max": 48.0,
+    "case_seconds_max": 300.0,
+    "total_seconds_max": 1000.0,
+    "factor_memory_formula": "128 * total_mixed_dofs**2 bytes + 4GiB reserve; conservative screen, not guarantee"
+  },
+  "cases": [
+    "geometry_sphere",
+    "empty",
+    "manufactured"
+  ],
+  "output": "output",
+  "gate_policy": "all outputs diagnostic; no physical reference or training gate may be marked passed by this smoke",
+  "campaign_file": "CAMPAIGN.predata-A2.json",
+  "campaign_sha256": "b6fcb71041ddabb0a04180a629b53a43c46ba4129e4b83314422c26665981e53"
+}

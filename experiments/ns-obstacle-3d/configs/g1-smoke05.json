@@ -1,0 +1,76 @@
+{
+  "schema": "ns-obstacle-3d-control-v1",
+  "release_status": "NOT_RELEASED_requires_coordinator_exact_review",
+  "scope": "geometry_then_CPU_FE_control_only_after_2D_smoke_and_independent_memory_review_no_reference_admission",
+  "seed": 27102026,
+  "threads": 4,
+  "geometry": {
+    "sphere_diameter": 1.0,
+    "pipe_radius": 2.5,
+    "x_in": -5.0,
+    "x_out": 15.0
+  },
+  "physics": {
+    "mean_speed": 1.0,
+    "rho": 1.0,
+    "nu": 0.1,
+    "outlet": "gradient"
+  },
+  "mesh": {
+    "maxh": 2.0,
+    "wall_maxh": 1.5,
+    "sphere_maxh": 0.6,
+    "geometry_order": 3,
+    "max_elements": 6000,
+    "normal_sampling_order": 4
+  },
+  "fe": {
+    "velocity_order": 2,
+    "pressure_order": 1,
+    "quadrature_order": 10,
+    "diagnostic_quadrature_order": 12,
+    "inverse": "umfpack"
+  },
+  "solver": {
+    "max_newton": 20,
+    "relative_free_residual": 1e-10,
+    "initial_residual_floor": 1.0,
+    "linear_relative_residual": 1e-10,
+    "max_backtracks": 12,
+    "armijo": 0.0001,
+    "continuation": [
+      0.0,
+      0.25,
+      0.5,
+      1.0
+    ]
+  },
+  "guards": {
+    "max_dofs": 15000,
+    "factor_estimate_gib_max": 48.0,
+    "rss_gib_max": 48.0,
+    "case_seconds_max": 300.0,
+    "total_seconds_max": 850.0,
+    "factor_memory_formula": "128 * total_mixed_dofs**2 bytes + 4GiB reserve; conservative screen, not guarantee"
+  },
+  "cases": [
+    "geometry_sphere",
+    "empty",
+    "manufactured"
+  ],
+  "output": "output",
+  "gate_policy": "all outputs diagnostic; no physical reference or training gate may be marked passed by this smoke",
+  "campaign_file": "CAMPAIGN.predata-A3.json",
+  "campaign_sha256": "7df6e1f87e2cb9feee8c1bf55a2da8d37c6537c6eef318370b6c13016f5920a0",
+  "candidate": "g1-smoke05-strict-scalar-point-return",
+  "preflight": {
+    "tiny_fe_backend": "umfpack",
+    "tiny_fe_dofs_max": 1000,
+    "tiny_fe_relative_residual": 1e-12,
+    "volume_and_boundary_mapped_export_required": true,
+    "face_traction_absolute_tolerance": 1e-10,
+    "boundary_derivative_trace": "BoundaryFromVolumeCF before BND normals"
+  },
+  "dependency_repair_file": "DEPENDENCY-REPAIR.json",
+  "dependency_repair_sha256": "c3176cdbd3a351cb84a0361d53241adf75d77acc13a095ab6cf32b6bef5652b0"
+}

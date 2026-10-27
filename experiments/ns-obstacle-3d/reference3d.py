@@ -91,6 +91,21 @@ def surface(cf, mesh, boundary, order):
     return value
 
 
+def scalar_point_value(raw):
+    """Require one finite real value, retaining the API's representation metadata."""
+    raw_type=type(raw).__module__+"."+type(raw).__qualname__
+    if not (np.isscalar(raw) or isinstance(raw,(tuple,np.ndarray))):
+        raise TypeError(f"Scalar coefficient return must be scalar/tuple/array, got {raw_type}")
+    array=np.asarray(raw)
+    representation={"return_type":raw_type,"return_shape":list(array.shape),"return_dtype":str(array.dtype),"return_size":int(array.size)}
+    if array.size!=1 or array.dtype.kind not in "iuf":
+        raise ValueError(f"Expected exactly one real numeric coefficient value: {representation}")
+    value=float(array.reshape(-1)[0])
+    if not math.isfinite(value):
+        raise ValueError(f"Nonfinite scalar coefficient value: {representation}")
+    return value,representation
+
+
 def preflight_call(label, operation):
     """Keep the last entered native operation visible even after a native crash."""
     print("native_preflight="+label+".begin",flush=True)
@@ -169,7 +184,8 @@ def tiny_fe_api_preflight(cfg, folder):
     # Grad(VectorH1) is a VOL operator. Map the derivative, not a traction
     # containing a BND normal, into the adjacent volume element first.
     gradient_b=preflight_call("vector.wrap_boundary_gradient",lambda: ng.BoundaryFromVolumeCF(gradient_v))
-    divergence_b=preflight_call("vector.wrap_boundary_divergence",lambda: ng.BoundaryFromVolumeCF(ng.div(vector)))
+    divergence_v=preflight_call("vector.divergence_operator",lambda: ng.div(vector))
+    divergence_b=preflight_call("vector.wrap_boundary_divergence",lambda: ng.BoundaryFromVolumeCF(divergence_v))
     for name,el in elements.items():
         # Mapped points borrow the transformation; retain it throughout use.
         trafo=preflight_call(name+".get_trafo",lambda: mesh.GetTrafo(ng.ElementId(el)))
@@ -183,6 +199,17 @@ def tiny_fe_api_preflight(cfg, folder):
         samples[name]["linear_vector_gradient_error"]=float(np.linalg.norm(gradient-np.eye(3)))
         if samples[name]["linear_vector_value_error"]>1e-10 or samples[name]["linear_vector_gradient_error"]>1e-10:
             raise RuntimeError("Mapped vector/gradient convention preflight failed")
+        divergence_cf=divergence_b if name=="boundary" else divergence_v
+        raw_divergence=preflight_call(name+".divergence_value",lambda: divergence_cf(mip))
+        divergence,representation=scalar_point_value(raw_divergence)
+        samples[name]["linear_vector_divergence_point"]={"value":divergence,"absolute_error":abs(divergence-3),**representation}
+        print("scalar_point_representation="+json.dumps({"scope":name+".divergence",**representation}),flush=True)
+        if abs(divergence-3)>cfg["preflight"]["face_traction_absolute_tolerance"]:
+            raise RuntimeError("Mapped scalar divergence preflight failed")
+        raw_scalar=preflight_call(name+".scalar_gridfunction_value",lambda: solution(mip))
+        scalar,representation=scalar_point_value(raw_scalar)
+        samples[name]["scalar_gridfunction_point"]={"value":scalar,**representation}
+        print("scalar_point_representation="+json.dumps({"scope":name+".scalar_gridfunction",**representation}),flush=True)
     n=ng.specialcf.normal(3)
     gradient_traction=gradient_b*n  # unit viscosity, zero pressure
     symmetric_traction=(gradient_b+gradient_b.trans)*n
@@ -575,11 +602,11 @@ def diagnostics(mesh,cfg,case,gfu,bc,X,ri,f,uex,pex,Gex,folder):
             mp=mesh(*point)
             if mp.nr<0:
                 raise RuntimeError("MeshPoint.nr < 0: exact probe outside computational mesh")
-            pressure=float(p(mp))
+            pressure,pressure_representation=scalar_point_value(p(mp))
             velocity=[float(v) for v in u(mp)]
             if not math.isfinite(pressure) or not all(math.isfinite(v) for v in velocity):
                 raise RuntimeError("Nonfinite exact-point probe evaluation")
-            probes.append({"point":point,"pressure":pressure,"velocity":velocity,"status":"evaluated_on_FE_geometry_no_nearest_node_replacement"})
+            probes.append({"point":point,"pressure":pressure,"pressure_return_representation":pressure_representation,"velocity":velocity,"status":"evaluated_on_FE_geometry_no_nearest_node_replacement"})
         except Exception as exc:
             probes.append({"point":point,"status":"unresolved_exact_point","error":str(exc)})
     return {"boundary_derivative_trace":"BoundaryFromVolumeCF(Grad(GridFunction)) before BND normals","integration_ladder":out,"gradient_weak_reaction_force":reactions,"reaction_force_checks":reaction_checks,"pressure_probes":probes,"reference_admitted":False,"admission_note":"Requires independent multi-level convergence, trace-maximum and signed-curved-Jacobian gates; this smoke cannot admit references"}

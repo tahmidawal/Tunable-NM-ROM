@@ -1,0 +1,15 @@
+# Scalar point return repair — candidate g1-smoke05
+
+The coordinator reported a distinct API mismatch in 2D job `6567633`: after mappings, normals, inverse construction and the first wrapped gradient evaluation, direct `float(...)` conversion of a wrapped divergence result failed because that scalar-valued coefficient returned a tuple. The retained 2D evidence is referenced by its [job ledger](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/ledger/6567633.json) and `artifacts/g1-smoke05/RETENTION.json`. This observed Python type error does not establish the cause of the earlier native crash; that location remains unresolved.
+
+The previous unexecuted 3D candidate is preserved at commit `656bdae7cb69f844b9dbffc4e55004213cb891f3`, with its existing config and batch files and a copied candidate-specific dependency-repair binding. It did not evaluate the wrapped divergence at a point: it only integrated it. Its pressure probe did use direct `float(p(point))` conversion and required the same defensive repair.
+
+Candidate 05 adds `scalar_point_value`. It accepts a finite real scalar or a tuple/NumPy array containing exactly one real numeric element. Other element counts, nonfinite values, complex values, booleans, strings, object arrays and unsupported containers fail explicitly. It never selects one component from a larger return, averages values or silently replaces an invalid result.
+
+Pressure probes now use this extractor and save the raw return's type, shape, dtype and element count. The tiny cube preflight additionally evaluates volume and wrapped-boundary divergence and its scalar grid function at mapped points, recording the same representation details. The new divergence point check uses the existing preflight tolerance and the same exact field as the integrated check. Coefficient-function algebra, quadrature, solver thresholds and physical settings are unchanged. Scalar results of the integration API and mapped geometric measures use separate APIs and retain their prior conversion; vector/matrix point evaluations retain their explicit shape handling.
+
+`checks/test_scalar_point_value.py` exercises only the exact extractor function isolated through Python's AST. It imports no NGSolve and performs no native FE/JAX operation. Its captured result is `scalar-point-tests.txt`; Python/shell parsing also passed. This does not validate the actual library return type on 3D meshes. There has been no package installation, candidate staging, cluster submission or FE execution in this lane. The 2D pass and exact independent release gates remain in force.
+
+## Glossary
+
+**Scalar-valued coefficient:** a field with one numerical value at a point. **Return representation:** the Python container/type used to carry that value. **Shape:** dimensions of an array. **Dtype:** numeric element type. **AST:** parsed Python code structure, used here to test one pure function without importing the native solver. **Native crash:** failure inside compiled code, distinct from a handled Python conversion error.

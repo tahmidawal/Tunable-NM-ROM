@@ -1,5 +1,5 @@
 {
-  "status": "numerical_artifacts_accepted_pending_remote_cleanup",
+  "status": "numerical_artifacts_accepted_pending_durable_retention",
   "reviewer": "independent read-only Codex reconstruction_numerical_review",
   "job_id": 6569458,
   "source": "7c58b45eaa734a9fac5eaa764c25698f66fd77e1",
@@ -31,7 +31,14 @@
     "Conditional numerical-reference estimates, not certified physical bounds or statistical confidence.",
     "Recipe-reproduced approximate POD; not byte-identical archived training data.",
     "Exposed research cohorts; sealed and out-of-distribution cohorts remain closed.",
-    "Only same-sample reconstruction; no rollout or fine PDE correction."
+    "Only same-sample reconstruction; no ROM rollout or fine PDE correction."
   ],
-  "pending": "Agent records local archive retention and checksum-backed cleanup of its own remote duplicates; final combined report/figure review."
+  "pending": "Expanded arrays are intact and checksum-verified, but the final independent check found no tracked run archives/direct blobs. The lane is repairing durable Git retention before final acceptance.",
+  "operational_review": {
+    "remote_cleanup_independently_verified": true,
+    "cleanup_receipt_sha256": "422ef3abddf51768d6731e00eac4b9dd02a13e1ca532747205b4c475a87f9828",
+    "expanded_data_intact": true,
+    "tracked_run_files_before_repair": 0,
+    "durability_repair_status": "in progress"
+  }
 }

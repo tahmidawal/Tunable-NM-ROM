@@ -460,8 +460,8 @@ def main():
               if unavailable_choices else 'Every declared method family has an available frozen selection.'), "",
              "Source A supplies exact samples of the stored fine-reference array. Source B supplies "
              "an actual coarse numerical solution. Every method receives the same field at the same "
-             "physical time, coordinates and zero boundary values. There is no rollout or subsequent "
-             "PDE correction. Sealed and out-of-distribution cohorts remain closed.", "",
+             "physical time, coordinates and zero boundary values. Reconstructed fields are not advanced "
+             "through time or corrected with a fine PDE solve. Sealed and out-of-distribution cohorts remain closed.", "",
              "The coarse inputs use central differences and Crank–Nicolson stepping with backward-Euler "
              "startup. Historical bank training values use the inherited upwind/backward-Euler recipe. "
              "That numerical-prior mismatch is part of the inherited system tested here.", "",

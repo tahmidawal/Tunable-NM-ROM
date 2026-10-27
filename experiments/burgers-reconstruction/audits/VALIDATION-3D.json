@@ -1,5 +1,5 @@
 {
-  "status": "numerical_artifacts_accepted_pending_remote_cleanup",
+  "status": "accepted_for_screen",
   "reviewer": "independent read-only Codex reconstruction_numerical_review",
   "job_id": 6570205,
   "source": "37a91f156aff168ef8eff3b80f51d19df16a8ae0",
@@ -36,7 +36,16 @@
     "Conditional numerical-reference estimates, not certified physical bounds or statistical confidence.",
     "Exposed research cohorts; sealed and out-of-distribution cohorts remain closed.",
     "POD approximation/training-information qualifications remain unchanged.",
-    "Only same-sample reconstruction; no rollout or fine PDE correction."
+    "Only same-sample reconstruction; no ROM rollout or fine PDE correction."
   ],
-  "pending": "Agent records checksum-backed cleanup of its own remote duplicates and regenerable scratch; final combined report/figure review."
+  "operational_acceptance": {
+    "independently_verified": true,
+    "retained_arrays": 1685,
+    "expanded_and_git_archive_storage_verified": true,
+    "remote_namespace_empty": true,
+    "retention_record": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-burgers-recon3d/experiments/burgers-recon3d/results/RETENTION.json",
+    "retention_record_sha256": "91ccfae84b214fcedd18a900e759c35fb73dbef2a494e23dd48a62f8d8363515",
+    "lane_commit": "d7e21d00e",
+    "mirror_commit": "6221252fb"
+  }
 }

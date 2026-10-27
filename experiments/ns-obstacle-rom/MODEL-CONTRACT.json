@@ -247,5 +247,14 @@
     "actual_reference_data_G2_admission",
     "JAX_training_runtime_validation",
     "physical_pilot_and_quadrature_qualification"
-  ]
+  ],
+  "fe_adapter_verification": {
+    "stored_numeric_precision": "float64_before_conversion",
+    "precision_check": "NPY headers before payload loading",
+    "mode_weighted_relative_discrepancy_max": 1e-10,
+    "mode_gram_spectral_error_max": 1e-10,
+    "failure_policy": "stop_without_rank_threshold_change_or_reorthogonalization",
+    "infsup_pressure_gram": "actual_reconstructed_FE_evaluations",
+    "scalar_CF": "finite_real_scalar_or_singleton_only"
+  }
 }

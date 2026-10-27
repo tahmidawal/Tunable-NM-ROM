@@ -7,13 +7,15 @@ Only this module owns the adapter; it never imports or mutates the FOM solver mo
 from __future__ import annotations
 import hashlib
 import json
+import math
 from pathlib import Path
 import resource
 import time
 import zipfile
 import numpy as np
-from fe_algebra import array_digest, coefficient_pod, reference_inf_sup
-from spaces import canonicalize_eigenmodes, select_test_columns, weighted_gram
+from fe_algebra import (array_digest, coefficient_pod, reference_inf_sup,
+                        verify_reconstructed_modes)
+from spaces import canonicalize_eigenmodes, select_test_columns
 
 SCHEMA = 'ns-obstacle-fe-training-v1'
 REYNOLDS = [15 + 1.25*j for j in range(9)]
@@ -82,18 +84,54 @@ def read_training_manifest(path):
 
 
 def load_npz_bounded(path):
+    # Inspect ORIGINAL NPY headers before loading/converting any payload. This both
+    # preserves f64 provenance and prevents f32->f64 conversion from hiding size growth.
     with zipfile.ZipFile(path) as z:
-        if sum(x.file_size for x in z.infolist()) > CAPS['archive_bytes']:
+        entries = z.infolist()
+        if sum(x.file_size for x in entries) > CAPS['archive_bytes']:
             raise MemoryError('uncompressed FE archive exceeds bound')
+        if len({x.filename for x in entries}) != len(entries):
+            raise ValueError('duplicate FE archive member')
+        for entry in entries:
+            if not entry.filename.endswith('.npy'):
+                raise ValueError('FE archive contains a non-NPY member')
+            with z.open(entry) as stream:
+                version = np.lib.format.read_magic(stream)
+                if version == (1, 0):
+                    shape, _, dtype = np.lib.format.read_array_header_1_0(stream)
+                elif version == (2, 0):
+                    shape, _, dtype = np.lib.format.read_array_header_2_0(stream)
+                else:
+                    raise ValueError('unsupported NPY header version')
+            if dtype.kind != 'f' or dtype.itemsize != 8:
+                raise TypeError(f'FE array {entry.filename} must be stored float64, got {dtype}')
+            check_allocation(shape)
     with np.load(path, allow_pickle=False) as z:
-        result = {k: np.array(z[k], dtype=np.float64, copy=True) for k in z.files}
-    if any(not np.isfinite(v).all() for v in result.values()):
-        raise ValueError('nonfinite FE archive')
+        result = {}
+        for key in z.files:
+            original = z[key]
+            if original.dtype.kind != 'f' or original.dtype.itemsize != 8:
+                raise TypeError(f'FE array {key} changed dtype after header verification')
+            if not np.isfinite(original).all():
+                raise ValueError(f'nonfinite FE array {key}')
+            # Only byte order/layout may change here; original precision is already f64.
+            result[key] = np.array(original, dtype=np.float64, copy=True)
     return result
 
 
+def strict_scalar(value, label='FE scalar'):
+    """Finite real scalar or singleton tuple/array; never select from a larger CF."""
+    array = np.asarray(value)
+    if array.size != 1 or array.dtype.kind not in 'fiu':
+        raise ValueError(f'{label}: expected one real scalar, got shape {array.shape}, dtype {array.dtype}')
+    scalar = float(array.reshape(-1)[0])
+    if not math.isfinite(scalar):
+        raise ValueError(f'{label}: nonfinite value')
+    return scalar
+
+
 def check_allocation(shape):
-    count = int(np.prod(shape)) * 8
+    count = math.prod(shape) * 8
     if count > CAPS['single_array_bytes']:
         raise MemoryError(f'proposed array exceeds adapter cap: {shape}')
     if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024 + count > CAPS['process_rss_bytes']:
@@ -262,7 +300,7 @@ class TrainingFEAdapter:
             for ip in ng.IntegrationRule(el.type, self.cfg['diagnostic_order']):
                 if len(points) >= cap:
                     raise MemoryError('mapped integration point cap')
-                mip = tr(ip); w = float(ip.weight*mip.measure)
+                mip = tr(ip); w = strict_scalar(ip.weight, 'reference weight')*strict_scalar(mip.measure, 'mapped measure')
                 if not np.isfinite(w) or w <= 0:
                     raise ValueError('nonpositive mapped integration weight')
                 points.append(np.array(mip.point, copy=True)); weights.append(w)
@@ -310,7 +348,7 @@ class TrainingFEAdapter:
             derivative = ng.Grad(g)
             if boundary: derivative = ng.BoundaryFromVolumeCF(derivative)
             for i, mip in enumerate(self.iter_mapped(boundary, points)):
-                values[..., j][i] = np.asarray(g(mip))
+                values[..., j][i] = (np.asarray(g(mip)) if vector else strict_scalar(g(mip), 'FE scalar point value'))
                 gradients[..., j][i] = np.asarray(derivative(mip)).reshape((2, 2) if vector else (2,))
         if not np.isfinite(values).all() or not np.isfinite(gradients).all():
             raise ValueError('nonfinite reconstructed FE fields')
@@ -406,6 +444,14 @@ class TrainingFEAdapter:
             raise ArithmeticError('constant pressure coefficient reconstruction failed')
         pod = coefficient_pod(self.velocity_corrections, uv.transpose(2, 0, 1),
             self.pressure_corrections, pv.T, one, self.weights)
+        # Back-transforming C @ V / sigma can cancel near the frozen singular cutoff.
+        # Verify the actual FE functions before assembling any reduced pressure coupling.
+        actual_u, _ = self.evaluate(pod['velocity_coefficients'])
+        actual_p, _ = self.evaluate(pod['pressure_coefficients'], False)
+        pod_velocity_gram, pod_u_check = verify_reconstructed_modes(
+            actual_u, pod['velocity_values'], self.weights, 'velocity')
+        pressure_gram, pod_p_check = verify_reconstructed_modes(
+            actual_p, pod['pressure_values'], self.weights, 'pressure')
         pressure = pod['pressure_coefficients']; count = pressure.shape[1]
         h1v, mv, dx = self.metric_matrices(self.V, True)
         h1q, mq, _ = self.metric_matrices(self.Q, False)
@@ -437,7 +483,7 @@ class TrainingFEAdapter:
         _, _, qm = select_test_columns(qq, self.weights, 16)
         tests_v = candidates_v[:, vm['candidate_indices']] @ np.asarray(vm['transform'])
         tests_q = candidates_q[:, qm['candidate_indices']] @ np.asarray(qm['transform'])
-        pressure_gram = weighted_gram(pod['pressure_values'], self.weights)
+        # Use the verified ACTUAL FE pressure Gram, matching psi in B and the supremizers.
         ref_beta = {str(p): reference_inf_sup(rhs[:, :p], sf[:, :p], pressure_gram[:p, :p])
                     for p in sorted(set(min(r, count) for r in (2, 4, 8)))}
         # Same dimensionless full-rule metric must reproduce the assembled metric.
@@ -454,6 +500,9 @@ class TrainingFEAdapter:
                 'reference_admission_sha256', 'campaign_sha256', 'mesh_reload')},
             'source_case_files': [c['case'] for c in self.cases],
             'layout_sha256': self.layout_sha256, 'pod': pod['metadata'],
+            'pod_reconstruction': {'velocity': pod_u_check, 'pressure': pod_p_check},
+            'pod_velocity_L2_gram_reconstructed': pod_velocity_gram.tolist(),
+            'pressure_gram_source': 'actual reconstructed FE pressure evaluations on full rule',
             'supremizer_residual': float(residual), 'reference_inf_sup': ref_beta,
             'momentum_candidates': ['all maximum-prefix supremizers', 'vector H1 eigenmodes'],
             'continuity_candidates': ['constant', 'all pressure modes', 'scalar Neumann Laplace eigenmodes'],

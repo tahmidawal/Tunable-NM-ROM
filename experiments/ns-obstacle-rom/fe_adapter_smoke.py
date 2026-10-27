@@ -6,9 +6,9 @@ import tempfile
 import time
 import numpy as np
 from scipy.sparse import diags
-from fe_algebra import coefficient_pod, reference_inf_sup
+from fe_algebra import coefficient_pod, reference_inf_sup, verify_reconstructed_modes
 from fe_adapter import (TrainingFEAdapter, bounded_eigenmodes, bounded_factor,
-                        read_training_manifest, adapter_digest)
+                        read_training_manifest, adapter_digest, load_npz_bounded, strict_scalar)
 from spaces import weighted_gram
 
 
@@ -28,6 +28,53 @@ def run():
             'velocity_L2_orthonormal': float(np.max(np.abs(weighted_gram(ur, w)-np.eye(8)))),
             'pressure_L2_orthonormal': float(np.max(np.abs(weighted_gram(pr, w)-np.eye(8))))}
     assert max(gaps.values()) < 1e-12
+    actual_u_gram, uc = verify_reconstructed_modes(ur, pod['velocity_values'], w, 'velocity')
+    actual_p_gram, pcheck = verify_reconstructed_modes(pr, pod['pressure_values'], w, 'pressure')
+    assert np.array_equal(actual_u_gram, weighted_gram(ur, w))
+    assert np.array_equal(actual_p_gram, weighted_gram(pr, w))
+    # A small allowed discrepancy still returns the actual Gram, never ideal identity.
+    perturbed = pr*(1.+1e-12)
+    perturbed_gram, _ = verify_reconstructed_modes(perturbed, pod['pressure_values'], w, 'pressure')
+    assert np.array_equal(perturbed_gram, weighted_gram(perturbed, w))
+    assert np.max(np.abs(perturbed_gram-weighted_gram(pod['pressure_values'], w))) > 1e-12
+    # A per-mode discrepancy below its tolerance can still fail the distinct Gram gate.
+    gram_rejected = False
+    try: verify_reconstructed_modes(pr*(1.+.75e-10), pr, w, 'pressure')
+    except ArithmeticError as exc:
+        report = json.loads(str(exc).split(': ', 1)[1])
+        gram_rejected = (report['weighted_relative_discrepancy_max'] <= report['weighted_relative_tolerance']
+                         and report['actual_gram_spectral_error'] > report['gram_spectral_tolerance'])
+    assert gram_rejected
+    # Actual near-cutoff back-transforms: retain the original 1e-12 rank test, but
+    # reject cancellation after C @ V / sigma. No fabricated perturbation is added.
+    left, _ = np.linalg.qr(rng.normal(size=(18, 2)))
+    right, _ = np.linalg.qr(rng.normal(size=(9, 2)))
+    tiny_vc = (left*np.array([1., 4e-12]))@right.T
+    orth_map, _ = np.linalg.qr(rng.normal(size=(2*n, 18)))
+    orth_map = (orth_map/np.repeat(np.sqrt(w), 2)[:, None]).reshape(n, 2, 18)
+    tiny_u = np.einsum('ndk,ks->snd', orth_map, tiny_vc)
+    tiny_pod = coefficient_pod(tiny_vc, tiny_u, pc, p, one, w)
+    tiny_ur = np.einsum('ndk,kr->ndr', orth_map, tiny_pod['velocity_coefficients'])
+    conditioned = {}
+    try: verify_reconstructed_modes(tiny_ur, tiny_pod['velocity_values'], w, 'velocity')
+    except ArithmeticError as exc:
+        conditioned['velocity'] = json.loads(str(exc).split(': ', 1)[1])
+    assert 'velocity' in conditioned
+    assert tiny_pod['metadata']['velocity']['numerical_rank'] == 2
+    pressure_map = rng.normal(size=(n, 2))
+    pressure_map -= (w@pressure_map/w.sum())[None, :]
+    pressure_map, _ = np.linalg.qr(np.sqrt(w[:, None])*pressure_map)
+    pressure_map = np.c_[np.ones(n), pressure_map/np.sqrt(w[:, None])]
+    tiny_pc = np.r_[np.zeros((1, 9)), np.diag([1., 4e-12])@right.T]
+    tiny_pressure = (pressure_map@tiny_pc).T
+    one_p = np.array([1., 0., 0.])
+    tiny_ppod = coefficient_pod(vc, u, tiny_pc, tiny_pressure, one_p, w)
+    tiny_pr = pressure_map@tiny_ppod['pressure_coefficients']
+    try: verify_reconstructed_modes(tiny_pr, tiny_ppod['pressure_values'], w, 'pressure')
+    except ArithmeticError as exc:
+        conditioned['pressure'] = json.loads(str(exc).split(': ', 1)[1])
+    assert 'pressure' in conditioned
+    assert tiny_ppod['metadata']['pressure']['centered_numerical_rank'] == 2
     # Pressure constant stays solved even when training corrections are all constant.
     pc0 = one[:, None] @ np.arange(1., 10.)[None, :]
     cp0 = coefficient_pod(vc, u, pc0, (pm@pc0).T, one, w)
@@ -55,6 +102,33 @@ def run():
     assert split_block_rejected
     # Closed G2 rejects before looking for nonexistent FE files or importing ngsolve.
     with tempfile.TemporaryDirectory(prefix='adapter-synthetic-', dir=Path(__file__).parent) as d:
+        # Inspect original archive dtypes before np.load can convert/allocate payloads.
+        archive = Path(d)/'typed.npz'
+        dtype_rejections = []
+        for dtype in (np.float32, np.float16, np.int64, np.complex128):
+            np.savez_compressed(archive, values=np.array([1., 2.], dtype=dtype))
+            original_load = np.load
+            def forbidden_payload_load(*args, **kwargs):
+                raise AssertionError('non-f64 payload must be rejected from its header')
+            np.load = forbidden_payload_load
+            try:
+                try: load_npz_bounded(archive)
+                except TypeError: dtype_rejections.append(np.dtype(dtype).name)
+            finally:
+                np.load = original_load
+        assert len(dtype_rejections) == 4
+        for dtype in (np.dtype('<f8'), np.dtype('>f8')):
+            expected = np.array([1., 2.], dtype=dtype)
+            np.savez_compressed(archive, values=expected)
+            loaded = load_npz_bounded(archive)['values']
+            assert loaded.dtype == np.float64 and np.array_equal(loaded, expected)
+        scalar_accepted = [1.25, (1.25,), np.array([1.25]), np.array([[1.25]])]
+        assert all(strict_scalar(value) == 1.25 for value in scalar_accepted)
+        scalar_rejected = 0
+        for value in ((1., 2.), np.array([1., 2.]), (), np.nan, (np.inf,), 1.+2.j, '1.25'):
+            try: strict_scalar(value)
+            except ValueError: scalar_rejected += 1
+        assert scalar_rejected == 7
         path = Path(d)/'manifest.json'
         path.write_text(json.dumps({'schema': 'ns-obstacle-fe-training-v1', 'gate': 'G1',
                                     'passed': True, 'split': 'training', 'cases': []}))
@@ -72,6 +146,14 @@ def run():
     return {'scope': 'synthetic coefficient/matrix algebra only; no FE execution',
             'passed': True, 'physical_admission': False, 'pinned_NGSolve_integration': 'not_run',
             'coefficient_reconstruction_gaps': gaps, 'constant_pressure_count': 1,
+            'verified_mode_reconstruction': {'velocity': uc, 'pressure': pcheck},
+            'actual_pressure_gram_returned': True,
+            'orthonormality_gate_rejection_below_discrepancy_tolerance': gram_rejected,
+            'near_rank_cutoff_cancellation_rejections': conditioned,
+            'stored_dtype_rejected_before_payload_load': dtype_rejections,
+            'native_and_opposite_endian_float64_preserved': True,
+            'scalar_or_singleton_accepted': len(scalar_accepted),
+            'nonscalar_or_nonfinite_rejected': scalar_rejected,
             'full_velocity_reference_beta_gap': abs(beta-direct),
             'generalized_eigen_residuals': em['residuals'],
             'eigenblock_cutoff_rejected': split_block_rejected,

@@ -1,6 +1,7 @@
 """Small algebra for a training-only FE bridge; no NGSolve import or FE execution."""
 from __future__ import annotations
 import hashlib
+import json
 import numpy as np
 from spaces import (canonicalize_eigenmodes, checked_cholesky, pressure_basis,
                     weighted_gram, weighted_pod)
@@ -74,3 +75,42 @@ def reference_inf_sup(rhs, supremizers, pressure_gram):
     return {'beta': float(np.sqrt(eigenvalues[0])), 'squared_singular_values': eigenvalues.tolist(),
             'norms': 'dimensionless velocity H1 / pressure L2',
             'schur_gram': gram.tolist(), 'pressure_gram': np.asarray(pressure_gram).tolist()}
+
+
+# Prospective fixed numerical-consistency gates, separate from physical error targets.
+MODE_WEIGHTED_RELATIVE_TOLERANCE = 1e-10
+MODE_GRAM_SPECTRAL_TOLERANCE = 1e-10
+
+
+def verify_reconstructed_modes(actual, ideal, weights, label):
+    """Compare actual FE evaluation of POD coefficients against their SVD sample modes.
+
+    The relative discrepancy is checked per column in the original weighted L2 norm;
+    the Gram spectral error is measured against identity. No new rank truncation or
+    re-orthogonalization is allowed when either check fails. Return the ACTUAL Gram.
+    """
+    a = np.asarray(actual); target = np.asarray(ideal)
+    if (a.shape != target.shape or a.ndim < 2 or a.shape[-1] < 1 or
+        not np.isfinite(a).all() or not np.isfinite(target).all()):
+        raise ValueError(f'{label}: invalid reconstructed/sample mode arrays')
+    error_gram = weighted_gram(a-target, weights)
+    ideal_gram = weighted_gram(target, weights)
+    gram = weighted_gram(a, weights)
+    ideal_norms = np.sqrt(np.diag(ideal_gram))
+    if np.any(ideal_norms <= 0):
+        raise ValueError(f'{label}: zero ideal mode')
+    relative = np.sqrt(np.maximum(np.diag(error_gram), 0.))/ideal_norms
+    gram_error = float(np.linalg.norm(gram-np.eye(a.shape[-1]), ord=2))
+    report = {'field': label, 'mode_count': a.shape[-1],
+              'weighted_relative_discrepancy_per_mode': relative.tolist(),
+              'weighted_relative_discrepancy_max': float(np.max(relative)),
+              'weighted_relative_tolerance': MODE_WEIGHTED_RELATIVE_TOLERANCE,
+              'actual_gram_spectral_error': gram_error,
+              'gram_spectral_tolerance': MODE_GRAM_SPECTRAL_TOLERANCE,
+              'ideal_sample_gram_spectral_error': float(np.linalg.norm(ideal_gram-np.eye(a.shape[-1]), ord=2)),
+              'actual_gram': gram.tolist(), 'rank_or_threshold_changed': False}
+    report['passed'] = bool(np.max(relative) <= MODE_WEIGHTED_RELATIVE_TOLERANCE and
+                            gram_error <= MODE_GRAM_SPECTRAL_TOLERANCE)
+    if not report['passed']:
+        raise ArithmeticError('FE coefficient mode reconstruction failed: '+json.dumps(report, allow_nan=False))
+    return gram, report

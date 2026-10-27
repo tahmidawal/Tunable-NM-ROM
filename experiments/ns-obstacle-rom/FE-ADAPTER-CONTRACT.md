@@ -14,7 +14,7 @@ The reference author explicitly has **not** certified that `.vol` retains the cu
 
 | Artifact | Required content |
 |---|---|
-| `full_rule.npz` | Existing arrays plus `jacobians[n,2,2]` from the same ordered mapped volume rule. Retain solution and Stokes coefficient vectors. All numeric arrays are finite float64. |
+| `full_rule.npz` | Existing arrays plus `jacobians[n,2,2]` from the same ordered mapped volume rule. Retain solution and Stokes coefficient vectors. All numeric arrays must already be stored as finite float64. The adapter checks every NPY member header and declared allocation size before loading array payloads, rejecting other dtypes; it never upgrades float32 provenance to float64. |
 | `fe_layout.json` | `{"layout": record, "sha256": digest}` using the exact `layout_record(mesh,V,Q,ng)` algorithm below. |
 | `reload_checks.json` | `passed: true`, `policy: "saved_curved_verified_no_recurve"`, saved/reloaded geometry order evidence and numerical comparisons of mapped points, weights, Jacobians, volume/boundary values and gradients. This must come from a real reload, not a source inspection. |
 | `config.json` | Existing exact configuration, `release: "G2_steady_training_export"`, `precision: "float64"`, central campaign hash. A G1 release is rejected. |
@@ -32,6 +32,16 @@ For physical diameter $D$, dimensionless integration weight is $w/D^2$. Velocity
 
 All velocity correction essential DOFs must be within the fixed roundoff threshold before being set exactly to zero; the removed maximum is recorded. Weighted POD uses the existing full-rule algorithm and carries its snapshot combinations back to FE coefficients, so every retained mode can be evaluated at arbitrary physical points. Pressure uses the same existing constant-first weighted-mean-removed training-correction construction and rank threshold. POD singular-value clusters use the existing coefficient-row pivot convention and save the rotation, keeping coefficient and sampled field representations consistent. POD prefixes above the actual weighted numerical rank are marked ineligible; smaller registered prefixes remain available. There is no manufactured zero-filled mode. No data outside training enter any basis or eigenproblem.
 
+After carrying the retained SVD modes back to FE coefficients, independently evaluate those coefficients on the full mapped rule. For every velocity and pressure mode require
+
+$$
+\frac{\|\phi_j^{FE}-\phi_j^{SVD}\|_Q}{\|\phi_j^{SVD}\|_Q}\le10^{-10},\qquad
+\|G^{FE}-I\|_2\le10^{-10}.
+$$
+
+These are fixed numerical reconstruction/orthonormality checks, separate from the physical field targets. Cancellation in $CV/\sigma$ near the existing singular cutoff causes a hard failure with the discrepancy/Gram diagnostics retained in the exception. Do not re-orthogonalize, drop extra columns, change the rank threshold or quietly substitute the ideal sample modes after failure. The pressure Gram used by the full-velocity reference inf-sup calculation is formed from these **actual reconstructed FE evaluations**, matching the pressure coefficients used in the divergence coupling and supremizers. Both velocity and pressure checks, their actual Grams and fixed thresholds are exported in metadata.
+
+
 Let $M$ denote dimensionless FE mass and $K$ the dimensionless gradient Gram. The velocity supremizer solves
 
 $$
@@ -48,7 +58,7 @@ The fixed enumeration is all maximum-prefix supremizers then velocity eigenmodes
 
 The prospective caps are encoded in `CAPS`: mixed unknowns, elements, volume/boundary rule points, sparse nonzeros, individual arrays/archives, estimated factor storage and process peak RSS. They are hard stops. The factor estimate repeats the FOM's conservative fill model; it is not a memory guarantee. A reviewed cluster launcher must additionally impose a hard memory/time limit and charge all failed setup work. This source provides no launcher and authorizes no job.
 
-Future invocation is `TrainingFEAdapter.open(manifest).build().export(new_directory)`. There is no CLI that searches for snapshots automatically. NGSolve is imported only after admission and source/file checks. The `.sol` vector must match the archived mixed coefficients, and evaluating those coefficients must reproduce all archived volume and boundary fields/gradients, mapped points/weights/Jacobians and normal labels. Raw-point evaluation rejects a point outside the saved FE geometry; exact/approximate curved-boundary consistency is a separate gate.
+Future invocation is `TrainingFEAdapter.open(manifest).build().export(new_directory)`. There is no CLI that searches for snapshots automatically. NGSolve is imported only after admission and source/file checks. Scalar coefficient-function evaluation accepts only a finite real scalar or an array/tuple with exactly one element. Larger, empty, complex or nonfinite results are errors; this explicitly handles the pinned-library singleton-tuple behavior. The `.sol` vector must match the archived mixed coefficients, and evaluating those coefficients must reproduce all archived volume and boundary fields/gradients, mapped points/weights/Jacobians and normal labels. Raw-point evaluation rejects a point outside the saved FE geometry; exact/approximate curved-boundary consistency is a separate gate.
 
 The export contains:
 
@@ -70,4 +80,4 @@ Independent adapter/source review and a real pinned-library serialization/evalua
 
 ## Glossary
 
-FE: finite elements. DOF: one coefficient in an FE space. G1: preliminary controls. G2: admitted reference/data gate. POD: weighted training snapshot basis. H1: value-plus-gradient function norm. L2: value-only function norm. Supremizer: a velocity enrichment exposing a pressure mode through divergence. Inf-sup: a scaled pressure/velocity coupling diagnostic. Eigenmode: a generalized matrix eigenvector interpreted as an FE function. Prefix: the first columns of one fixed ordered space. Round-trip: saving, reloading and comparing the same geometric/field data. Shift-invert: solve-based eigensolver transformation. COLAMD: a fixed sparse-factor ordering algorithm. RSS: measured process memory. SHA256: content digest. COO: sparse coordinate-list representation. Physical admission: all required scientific checks on actual flow results, distinct from source or array-algebra checks.
+FE: finite elements. DOF: one coefficient in an FE space. G1: preliminary controls. G2: admitted reference/data gate. POD: weighted training snapshot basis. H1: value-plus-gradient function norm. L2: value-only function norm. Supremizer: a velocity enrichment exposing a pressure mode through divergence. Inf-sup: a scaled pressure/velocity coupling diagnostic. Eigenmode: a generalized matrix eigenvector interpreted as an FE function. Prefix: the first columns of one fixed ordered space. Round-trip: saving, reloading and comparing the same geometric/field data. Shift-invert: solve-based eigensolver transformation. COLAMD: a fixed sparse-factor ordering algorithm. RSS: measured process memory. Gram matrix: weighted inner products between basis functions. SVD: singular-value matrix factorization. Spectral norm: largest singular value of a matrix. Cancellation: loss of numerical precision when subtracting nearly equal quantities. SHA256: content digest. COO: sparse coordinate-list representation. Physical admission: all required scientific checks on actual flow results, distinct from source or array-algebra checks.

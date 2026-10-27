@@ -1,5 +1,6 @@
-**2026-10-27 — New incompressible obstacle-flow campaign in discovery/design (Codex).**
-- Fixed 2D cylinder-in-channel and 3D sphere-in-circular-pipe work is isolated in four `2026-10-27-ns-obstacle{,-2d,-3d,-rom}` worktrees from the current consolidated fork. Central design and checkpoints: `worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/`.
-- Existing periodic NS solvers are not obstacle references. New curved mixed finite-element reference/control code is being prepared. Independent Codex design reviews permit control implementation only; Claude review and numerical releases are pending. No jobs or training have run, and no new accuracy/speed claim exists.
-- Initial ceiling is 12 allocated GPU-hours including CPU FE allocations and failures. Sealed cohorts remain closed; branches remain unmerged. The completed Burgers findings below remain unchanged.
+**2026-10-27 — Incompressible obstacle-flow campaign: control implementation active (Codex).**
+- Fixed 2D cylinder/channel and 3D sphere/circular-pipe lanes, plus ROM/POD infrastructure, remain isolated in four `2026-10-27-ns-obstacle{,-2d,-3d,-rom}` worktrees from fork `93f399faa`. Design and evidence: `worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/`.
+- Independent Codex and Claude design/implementation reviews completed. A later pinned-library API check found and repaired surface-gradient evaluation in both dimensions before any flow run; earlier source-readiness notes are explicitly superseded. Source review permits bounded controls only.
+- First allocation 6566869 failed after 33 seconds (0.0091666667 allocated GPU-hours) during geometry-library import. GPU/f64 and wheel hashes passed; no FE case ran. Complete failed evidence is collected with checksums; a targeted private dependency-layout repair is being prepared. No admitted reference, training, ROM result or comparative accuracy/cost claim exists.
+- Initial ceiling remains 12 allocated GPU-hours including failures. No live campaign job after the failure. Reference and dependent training gates remain closed; sealed cohorts remain closed; branches remain unmerged. Earlier Burgers findings remain unchanged.
 

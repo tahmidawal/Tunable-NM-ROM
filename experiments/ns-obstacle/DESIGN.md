@@ -530,3 +530,18 @@ linearly dependent candidates at relative cutoff $10^{-12}$ until the fixed64/16
 reached; failure to achieve them blocks that setting. Freeze eigensolver, deterministic
 orientation/tie convention and retained candidate indices in exported metadata. The code
 review must check the actual enumeration, not assume stability from the labels.
+
+
+## Implementation amendment A5 — private native-library layout, 2026-10-27
+
+The first bounded G1 allocation failed before FE execution: the pinned OCCT wheel's native
+libraries were absent after pip `--target` installation. All wheel hashes and JAX GPU/f64
+preflight passed; the retained ledger and failure archive record the actual attempt.
+One ordinary repair for this distinct infrastructure error installs the same pinned wheels
+with `--no-deps --no-index --ignore-installed --prefix` into a fresh job-owned directory.
+The designated interpreter is unchanged. Only that job's `PYTHONPATH` and native-library
+search path point to its prefix; no new interpreter environment or shared-package mutation
+is permitted. Verify native RECORD files, package import and post-import GPU/f64 before FE
+controls. Exact source/config review and fresh checksummed staging precede the single retry.
+All physics, scientific acceptance criteria, populations and resource ceilings are unchanged.
+The original target-install outcome is retained; no flow result existed to reinterpret.

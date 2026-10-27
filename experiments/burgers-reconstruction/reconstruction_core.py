@@ -7,6 +7,7 @@ numerical work. Cached basis/factorization preparation must be timed separately.
 from __future__ import annotations
 
 import time
+import hashlib
 from dataclasses import dataclass
 from typing import Any
 
@@ -254,6 +255,7 @@ def benchmark(plan, y_host, repetitions=3, burn_seconds=.1):
     while time.perf_counter() < deadline:
         ready(plan.query(y))
     reps = []
+    field_repetitions, coefficient_repetitions = [], []
     last_fields = last_coeff = None
     for _ in range(repetitions):
         start = time.perf_counter()
@@ -269,9 +271,17 @@ def benchmark(plan, y_host, repetitions=3, burn_seconds=.1):
         # common field-output service contract and timed separately.
         last_coeff = np.array(jax.device_get(coeff), copy=True)
         ta = time.perf_counter()
+        field_hash = hashlib.sha256(last_fields.tobytes(order='C')).hexdigest()
+        coefficient_hash = hashlib.sha256(last_coeff.tobytes(order='C')).hexdigest()
+        field_repetitions.append(last_fields)
+        coefficient_repetitions.append(last_coeff)
         reps.append(dict(input_seconds=ti-start, fit_seconds=tf-ti,
                          decode_seconds=td-tf, output_seconds=to-td,
                          device_query_seconds=td-ti, host_query_seconds=to-start,
-                         audit_coefficient_seconds=ta-to))
+                         audit_coefficient_seconds=ta-to,
+                         field_sha256=field_hash, coefficient_sha256=coefficient_hash))
     return dict(repetitions=reps, compile_warm_seconds=compile_warm,
-                fields=last_fields, coefficients=last_coeff)
+                fields=last_fields, coefficients=last_coeff,
+                field_repetitions=field_repetitions,
+                coefficient_repetitions=coefficient_repetitions,
+                repeated_fields_identical=len({r['field_sha256'] for r in reps}) == 1)

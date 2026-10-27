@@ -60,7 +60,7 @@ def main():
             median_error=float(np.median(vals)) if vals else None,p90_error=float(np.quantile(vals,.9)) if vals else None,
             worst_error=max(vals) if vals else None,selected=rr[0]['selected'],
             qualified_subset_median_error=float(np.median(qualified)) if qualified else None,
-            descriptor=rr[0]['descriptor'],unqualified_reference_bound_applies_only_to_full_field=True)
+            descriptor=rr[0]['descriptor'],reference_uncertainty_scope='Conditional E0 full-field comparison; A fixed-array observation dependence has separate level perturbations, without an inherited physical bound.')
     comparisons=[]
     selected_rows=[r for r in rows if r['selected']]
     for lc in (16,32):

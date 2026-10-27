@@ -34,6 +34,9 @@ bad=[dict(r) for r in rows];bad[1]['case']=0
 try:select(bad)
 except AssertionError:pass
 else:raise AssertionError('duplicate development case accepted')
+try:select([dict(r,cohort='val64') for r in rows])
+except AssertionError:pass
+else:raise AssertionError('validation rows accepted by selector')
 
 spec=importlib.util.spec_from_file_location('export_fixture',HERE/'export3d.py')
 module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)

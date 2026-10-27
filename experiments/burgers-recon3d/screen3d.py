@@ -34,7 +34,7 @@ def sha(path):
 
 
 def source_contract():
-    paths=['screen3d.py','prepare3d.py','vendor/PROVENANCE.json','configs/frozen_inputs.json']
+    paths=['screen3d.py','export3d.py','prepare3d.py','vendor/PROVENANCE.json','configs/frozen_inputs.json']
     paths+=['vendor/'+p for p in json.loads((HERE/'vendor/PROVENANCE.json').read_text())]
     return {p:sha(HERE/p) for p in sorted(paths)}
 
@@ -319,6 +319,7 @@ def run_cohort(prepared,out,lc,phase,plans,desc,geometries,failures,selected=Non
 
 
 def select(rows):
+    assert rows and all(r['cohort']=='dev4' for r in rows), 'selection accepts development cohort only'
     choices,details={},{}
     for lc in (16,32):
         for source in ('A','B'):

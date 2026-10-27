@@ -75,6 +75,8 @@ def run(cfg,artifacts,out):
     save()
     full,hr,meta=I.archived_data(artifacts/'Phi.npz',artifacts/'HR~ecsw~512~k16.npz')
     data=dict(none=full,k16=hr);trust=meta['trust_radius'];arms=['k16','none']
+    assert trust==endpoint['trust_radius'] and meta['basis_sha256']==sel['basis_sha256']
+    for name,source_pin in sel['source_pins'].items():assert X.digest(HERE/'inputs'/name)==source_pin['sha256']
     common={};native={};cert={};sch={};st={};stt={}
     for a in arms:
         kind='none' if a=='none' else 'ecsw'

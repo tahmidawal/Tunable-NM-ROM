@@ -63,5 +63,23 @@
   "unrun_validation_attempts": {
     "k32pilot": "construction failed; not run",
     "k32val": "construction failed; not run"
-  }
+  },
+  "A3_replay_authorization": {
+    "attempt": "k16fine01",
+    "state": "FROZEN_PENDING_EXACT_JOB_GATE",
+    "hard_gpu_hours": 0.4,
+    "selection_sha256": "46ddebe8b6e2f582ad9791a5819460ab0f928b60a9c457d0e0e6e5d621a211fa",
+    "config_sha256": "7e911ac90ffd88ce1608fb7298569632d41232efc4be972e8a42236fd893c9de",
+    "support": "archived k16, unchanged; no fit/refit",
+    "selected": {
+      "subject_id": "POD512_none_CN_25steps_g1e-4",
+      "scheme": "CN",
+      "dt": 0.01,
+      "steps": 25,
+      "gtol": 0.0001,
+      "tolf": 1e-09,
+      "trust_radius": 3.097916703945634
+    }
+  },
+  "additional_support_fitting_jobs_authorized": false
 }

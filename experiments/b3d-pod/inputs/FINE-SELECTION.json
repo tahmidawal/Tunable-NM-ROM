@@ -1,0 +1,233 @@
+{
+  "independent_results_gate": "READY",
+  "source_audit_attempt": "podtune05",
+  "source_pins": {
+    "fine_tuning_result.json": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/results/podtune05/raw/output/result.json",
+      "sha256": "a76209188147a8bbc961d6f61bdc8edf47cf308264af52cb721daf251fcd8594"
+    },
+    "fine_tuning_config.json": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/configs/pod-tune-tight.json",
+      "sha256": "5210a3707c8d598df4684660163a4ddc871026f7b16e5f0f66b49fca56ef4a5a"
+    },
+    "fine_tuning_audit.json": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/results/podtune05/AUDIT.json",
+      "sha256": "96d48f6a9c2613b9d1e154c837cb85794b49641e93b30f549134d3e3d4f46530"
+    },
+    "fine_tuning_endpoint.json": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/POD-ENDPOINT.json",
+      "sha256": "cd186327c320968dd13e7018da93a3136df3d0b41843e2502b8416983d81c7a0"
+    }
+  },
+  "source_commit": "dd4d0c3dd34e0771f3a4cbeb1ac35c155fb12fe2",
+  "source_job_id": "6529066",
+  "cohort_sha256": "b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c",
+  "eligible_candidates": [
+    {
+      "subject_id": "POD512_none_BDF2_40steps",
+      "worst_error": 0.023457996246023516,
+      "median_error": 0.02063560569105603
+    },
+    {
+      "subject_id": "POD512_none_BDF2_15steps",
+      "worst_error": 0.032208481958947786,
+      "median_error": 0.027047083988014878
+    },
+    {
+      "subject_id": "POD512_none_BDF2_10steps_g1e-4",
+      "worst_error": 0.04578374004623793,
+      "median_error": 0.039700664728597866
+    },
+    {
+      "subject_id": "POD512_none_BDF2_20steps_g1e-4",
+      "worst_error": 0.026838545152367988,
+      "median_error": 0.022599630283630764
+    },
+    {
+      "subject_id": "POD512_none_BDF2_40steps_g1e-4",
+      "worst_error": 0.023457869661807306,
+      "median_error": 0.020635562710085174
+    },
+    {
+      "subject_id": "POD512_none_CN_25steps_g1e-4",
+      "worst_error": 0.022806496389512293,
+      "median_error": 0.02040161486237499
+    },
+    {
+      "subject_id": "POD512_none_BDF2_15steps_g1e-4",
+      "worst_error": 0.032208481958947786,
+      "median_error": 0.027034258365369428
+    }
+  ],
+  "selection_rule": "minimum worst error, then median error, then subject ID",
+  "selected": {
+    "subject_id": "POD512_none_CN_25steps_g1e-4",
+    "scheme": "CN",
+    "dt": 0.01,
+    "steps": 25,
+    "gtol": 0.0001,
+    "tolf": 1e-09,
+    "trust_radius": 3.097916703945634
+  },
+  "actual_schedule": {
+    "dt": 0.01,
+    "steps": 25,
+    "co": [
+      1.0,
+      -1.0,
+      0.0,
+      0.5,
+      0.5
+    ],
+    "nstart": 0,
+    "slot": [
+      0,
+      -1,
+      -1,
+      -1,
+      -1,
+      1,
+      -1,
+      -1,
+      -1,
+      -1,
+      2,
+      -1,
+      -1,
+      -1,
+      -1,
+      3,
+      -1,
+      -1,
+      -1,
+      -1,
+      4,
+      -1,
+      -1,
+      -1,
+      -1,
+      5
+    ],
+    "gtol": 0.0001,
+    "tolf": 1e-09
+  },
+  "input_sha256": {
+    "0": "8a4de1f10780de772ebe8c0650f592b5d9e5f458782f4cb95fb615be72722f23",
+    "5": "f83e6ebf17c01c45321733c72e4a8d5b56667c479da6c77ae7cfb46a2dc4de4e",
+    "30": "f0c822e61f84ec7c1ebf60a80bf9b00cfe0ebdab9dc43a10d551ca658b371dbf",
+    "43": "a4f955e482b361ad195acb8790462fccb4ba4b6fd5301c74d219f56cee46e993"
+  },
+  "source_input_hash_kind": "raw-contiguous-bytes",
+  "basis_sha256": "7dc39cf9fbb5ea06d77001e4f8ccd69113dcdc8f22838f3cc12d0159b3431b2c",
+  "source_arrays": {
+    "0": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/results/podtune05/raw/output/POD512_none_CN_25steps_g1e-4_c000.npz",
+      "sha256": "0c93746c34269cd9832e8608e1fe5cfdb22738dd5010d00b9613d71a256ec8de",
+      "source_C_raw_sha256": "501e850d0026bfb5da3e3b23b158791d1a25aa341f0d43df47f89d19e059781f",
+      "source_fused_fields_raw_sha256": "ac6c2eb45933d1fce4721ed3a0c127f6173e1eeade23e517e39fa0a688509fba"
+    },
+    "5": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/results/podtune05/raw/output/POD512_none_CN_25steps_g1e-4_c005.npz",
+      "sha256": "629720319f17c278613cce9d6772c6883690935ac5155acf574e7c93680ea560",
+      "source_C_raw_sha256": "fcb9c5b958d056bfc6f824db3d7e4f2b5395f541a5c09ece4cb42eb3617c9fd9",
+      "source_fused_fields_raw_sha256": "35c7604616fa14fd6f304c64caa29bb6738a205937f1e76a9b05fd69e5110bd2"
+    },
+    "30": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/results/podtune05/raw/output/POD512_none_CN_25steps_g1e-4_c030.npz",
+      "sha256": "71d9a12a3776d68e3bace07134bd0fadb62710d95325a7bbbb8b2905137c6ff2",
+      "source_C_raw_sha256": "8c3f3d5b7e0f237b00c7cb105bc165ebb787cb8576476762ac08151171442023",
+      "source_fused_fields_raw_sha256": "62d8c89cbac4dcdd9d90b68b6e29dddd4f17cd7cfd75a7a107282755f7bc177c"
+    },
+    "43": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-solver/experiments/b3d-solver/results/podtune05/raw/output/POD512_none_CN_25steps_g1e-4_c043.npz",
+      "sha256": "c2fef9a4811680ff0f41237bc0155247e80cc829dbf0257d72268d4be37b8c25",
+      "source_C_raw_sha256": "3748de885c1f9e1796e23a345f297a9f61e63a035375948653d183c0b03b4f54",
+      "source_fused_fields_raw_sha256": "a9ceeea132d35a64f393613ea24bc5ad7e6541af02702e7e4bafde7c95743af4"
+    }
+  },
+  "reference_fixture": "inputs/fine_endpoint.npz",
+  "reference_fixture_sha256": "82da65824c7ccae14ff7f23c957f10b2e0254f816edaa3c4b64d4a1137411946",
+  "reference_field_reconstruction": {
+    "0": {
+      "method": "NumPy W @ frozen Phi.T; reconstructed bytes are not asserted equal to old fused bytes",
+      "raw_sha256": "79196dd45882626cb5a015bec41710ac94cd681707aa0f32d840b55835114516",
+      "six_source_errors": [
+        0.007903639484299214,
+        0.005081239790946464,
+        0.005258014988292821,
+        0.0055524923368250574,
+        0.005506608673115807,
+        0.006170185073387868
+      ],
+      "six_recomputed_errors": [
+        0.00790363948429921,
+        0.0050812397909464685,
+        0.005258014988292819,
+        0.0055524923368250574,
+        0.005506608673115812,
+        0.00617018507338787
+      ]
+    },
+    "5": {
+      "method": "NumPy W @ frozen Phi.T; reconstructed bytes are not asserted equal to old fused bytes",
+      "raw_sha256": "b99dcd70a59c1782fea1e60caf671bd8487593ae2bf99a4d2a48917b5de489f7",
+      "six_source_errors": [
+        0.0006722092056145458,
+        0.002143556966073168,
+        0.005228965738260936,
+        0.01248518476599137,
+        0.0170148701363349,
+        0.022682771203889184
+      ],
+      "six_recomputed_errors": [
+        0.0006722092056145469,
+        0.0021435569660731768,
+        0.0052289657382609345,
+        0.012485184765991359,
+        0.017014870136334896,
+        0.022682771203889188
+      ]
+    },
+    "30": {
+      "method": "NumPy W @ frozen Phi.T; reconstructed bytes are not asserted equal to old fused bytes",
+      "raw_sha256": "c9e9e4fcaa908a2b16314213fc623101fa3b005b6cb87bbfdc488d4042c10af7",
+      "six_source_errors": [
+        0.0009213339777813609,
+        0.003946759404811658,
+        0.009056624703714513,
+        0.011960169671228685,
+        0.015317070865876706,
+        0.01812045852086079
+      ],
+      "six_recomputed_errors": [
+        0.000921333977781364,
+        0.003946759404811675,
+        0.00905662470371451,
+        0.011960169671228696,
+        0.015317070865876706,
+        0.018120458520860788
+      ]
+    },
+    "43": {
+      "method": "NumPy W @ frozen Phi.T; reconstructed bytes are not asserted equal to old fused bytes",
+      "raw_sha256": "a0c5e97804030d7d21203e7024fbecf0b7c921a3fe734d6da0dbf18941a89f38",
+      "six_source_errors": [
+        0.0007928784283419564,
+        0.0025476019530129117,
+        0.006692463905711133,
+        0.01382162461859663,
+        0.01959846747759451,
+        0.022806496389512293
+      ],
+      "six_recomputed_errors": [
+        0.0007928784283419563,
+        0.0025476019530129073,
+        0.006692463905711131,
+        0.013821624618596635,
+        0.019598467477594517,
+        0.022806496389512303
+      ]
+    }
+  },
+  "reference_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+}

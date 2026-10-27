@@ -1032,6 +1032,30 @@
     "further_support_search_stopped": true,
     "fair_schedule_adapter_available_to_solver_lane": true,
     "actual_gpu_hours": 1.0047222222222223,
-    "cap_gpu_hours": 4
+    "cap_gpu_hours": 4,
+    "all_authorized_work_complete": false
+  },
+  "a3_replay": {
+    "attempt": "k16fine01",
+    "state": "FROZEN_PENDING_EXACT_JOB_GATE",
+    "hard_gpu_hours": 0.4,
+    "selection_sha256": "46ddebe8b6e2f582ad9791a5819460ab0f928b60a9c457d0e0e6e5d621a211fa",
+    "config_sha256": "7e911ac90ffd88ce1608fb7298569632d41232efc4be972e8a42236fd893c9de",
+    "support": "archived k16, unchanged; no fit/refit",
+    "selected": {
+      "subject_id": "POD512_none_CN_25steps_g1e-4",
+      "scheme": "CN",
+      "dt": 0.01,
+      "steps": 25,
+      "gtol": 0.0001,
+      "tolf": 1e-09,
+      "trust_radius": 3.097916703945634
+    },
+    "selection_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-26-b3d-pod/experiments/b3d-pod/inputs/FINE-SELECTION.json",
+    "design_gate": "READY",
+    "code_control_gate": "READY, exact bindings recheck pending",
+    "exact_job_gate": "PENDING",
+    "original_failures_and_constructor_stop_preserved": true,
+    "no_rollout_yet": true
   }
 }

@@ -14,28 +14,36 @@ import hr_interface as I
 from analyse import sha
 
 HERE=Path(__file__).resolve().parent
+PHI_SHA=I.I.PHI_SHA
 def raw_hash(a):return hashlib.sha256(np.ascontiguousarray(a).tobytes()).hexdigest()
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--result',required=True);p.add_argument('--config',required=True)
     p.add_argument('--audit-status',required=True);p.add_argument('--attempt',required=True)
+    p.add_argument('--endpoint-manifest',required=True)
     p.add_argument('--references',default='/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references')
     a=p.parse_args();result=Path(a.result);config=Path(a.config);audit=Path(a.audit_status)
     j=json.loads(result.read_text());ar=json.loads(audit.read_text())['jobs'][a.attempt]
     assert ar['results'].startswith('READY') and j['complete'] and j['config']['cases']==[0,5,30,43]
     assert sha(config)==j['config_sha256']
+    ep_path=Path(a.endpoint_manifest);ep=json.loads(ep_path.read_text())
+    assert ep['result']['sha256']==sha(result) and ep['config']['sha256']==sha(config) and ep['audit']['sha256']==sha(audit)
+    assert ep['source_commit']==j['source_commit'] and ep['cohort_sha256']==j['cohort_sha256']
     choices=[dict(subject_id=name,worst_error=r['worst_error'],median_error=r['median_error'])
         for name,r in j['selection'].items() if r['qualified_subset'] and r['eligible_cases']==[0,5,30,43]]
     assert choices;winner=min(choices,key=lambda r:(r['worst_error'],r['median_error'],r['subject_id']))['subject_id']
+    assert winner==ep['subject']
     rows={i:j['runs'][f'{winner}|case{i}'] for i in [0,5,30,43]};row=rows[0]
     assert all((r['scheme'],r['dt'],r['steps'],r['production_stopping_gtol'])==
         (row['scheme'],row['dt'],row['steps'],row['production_stopping_gtol']) for r in rows.values())
     selected=dict(subject_id=winner,scheme=row['scheme'],dt=row['dt'],steps=row['steps'],
-        gtol=row['production_stopping_gtol'],tolf=I.R.LEVELS['prod'][1])
+        gtol=row['production_stopping_gtol'],tolf=I.R.LEVELS['prod'][1],trust_radius=ep['trust'])
+    assert selected['trust_radius']==j['setup']['POD']['metadata']['trust_radius']
+    assert all(selected[k]==ep['schedule'][k] for k in ('scheme','dt','steps','gtol','tolf'))
     ss=I.H.sched(selected['scheme'],selected['dt'],nmax=selected['steps'])
     schedule=dict({k:np.asarray(v).tolist() for k,v in ss.items() if k!='nsave'},gtol=selected['gtol'],tolf=selected['tolf'])
-    assert sha(HERE/'inputs/Phi.npz')==I.PHI_SHA
+    assert sha(HERE/'inputs/Phi.npz')==PHI_SHA==ep['basis_sha256']==j['setup']['POD']['metadata']['basis_sha256']
     Phi=np.load(HERE/'inputs/Phi.npz')['Phi'][:,:512]
     sys.path.insert(0,a.references);import refstore as RS
     data={};pins={};reconstruction={};slot=np.flatnonzero(np.asarray(ss['slot'])>=0)
@@ -56,13 +64,14 @@ def main():
     assert not fixture.exists() and not dest.exists(),'endpoint already frozen; no replacement'
     np.savez_compressed(fixture,**data)
     copies={}
-    for src,name in [(result,'fine_tuning_result.json'),(config,'fine_tuning_config.json'),(audit,'fine_tuning_audit.json')]:
+    for src,name in [(result,'fine_tuning_result.json'),(config,'fine_tuning_config.json'),(audit,'fine_tuning_audit.json'),
+                     (ep_path,'fine_tuning_endpoint.json')]:
         dst=HERE/'inputs'/name;assert not dst.exists();shutil.copyfile(src,dst);copies[name]=dict(path=str(src.resolve()),sha256=sha(src))
     sel=dict(independent_results_gate='READY',source_audit_attempt=a.attempt,source_pins=copies,
         source_commit=j['source_commit'],source_job_id=j['job_id'],cohort_sha256=j['cohort_sha256'],
         eligible_candidates=choices,selection_rule='minimum worst error, then median error, then subject ID',selected=selected,
         actual_schedule=schedule,input_sha256={str(i):r['input_sha256'] for i,r in rows.items()},
-        source_input_hash_kind='raw-contiguous-bytes',basis_sha256=I.PHI_SHA,source_arrays=pins,
+        source_input_hash_kind='raw-contiguous-bytes',basis_sha256=PHI_SHA,source_arrays=pins,
         reference_fixture=str(fixture.relative_to(HERE)),reference_fixture_sha256=sha(fixture),
         reference_field_reconstruction=reconstruction,reference_store_version=RS.store_version())
     dest.write_text(json.dumps(sel,indent=2)+'\n')

@@ -7,6 +7,7 @@ from pathlib import Path
 import argparse,json,shutil,time
 import numpy as np
 import adapter as A
+import data_manifest as DM
 
 EXTRA_DT=.00015625
 CAPACITY=2000
@@ -17,6 +18,7 @@ def main():
     if out.exists() and any(out.iterdir()): raise RuntimeError('fresh output required')
     out.mkdir(parents=True,exist_ok=True)
     A.verify_inputs(); A.write_json(out/'runtime.json',A.runtime())
+    source_manifest_sha256=DM.verify(src)
     A.RC.NST=CAPACITY
     source_summary=json.loads((src/'coarse/summary.json').read_text())
     records=[]; failures=[]
@@ -49,5 +51,6 @@ def main():
             if not md['accepted']: failures.append(key)
             A.log('extra rung',key,'accepted',md['accepted'],'gap',gap)
     A.write_json(out/'coarse/summary.json',records)
-    A.write_json(out/'COMPLETE.json',dict(before_failed=before,after_failed=len(failures),remaining_failures=failures,extra_dt=EXTRA_DT,runtime_NST=CAPACITY,source_summary_sha256=A.sha_file(src/'coarse/summary.json'),no_reconstruction_performed=True))
+    A.write_json(out/'COMPLETE.json',dict(before_failed=before,after_failed=len(failures),remaining_failures=failures,extra_dt=EXTRA_DT,runtime_NST=CAPACITY,source_summary_sha256=A.sha_file(src/'coarse/summary.json'),no_reconstruction_performed=True,source_consumed_manifest_sha256=source_manifest_sha256))
+    DM.build(out)
 if __name__=='__main__': main()

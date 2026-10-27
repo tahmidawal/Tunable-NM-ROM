@@ -11,6 +11,7 @@ import jax
 import jax.numpy as jnp
 import adapter as A
 import reconstruction_core as C
+import data_manifest as DM
 RANKS=(128,256,384,512)
 
 def arrsave(path,**arrays):
@@ -54,10 +55,10 @@ def make_plans(data,out,L):
 def run_case(plan,ys,levels,meta,idx,out,source,cohort,case,L):
     ref=levels[-1]; n0=meta['n0']; off=np.ones(ref.shape[-1],dtype=bool); off[idx]=False
     score=[]; coefficients=[]; repetition_fields=[]; timing=[]; initial={}
-    for ti in range(1,6):
-        # One method/case/source block contains five single-field timings. Burn before
-        # its first time; subsequent GPU queries stay active with only small host scoring.
-        result=C.benchmark(plan,ys[ti:ti+1],repetitions=3,burn_seconds=.1 if ti==1 else 0.)
+    # One uninterrupted method/case/source block: five single-field invocations,
+    # with no host error norms, persistence or reference access between them.
+    results=[C.benchmark(plan,ys[ti:ti+1],repetitions=3,burn_seconds=.1 if ti==1 else 0.) for ti in range(1,6)]
+    for ti,result in enumerate(results,start=1):
         fields=np.stack(result['field_repetitions'])[:,0,:]
         coeff=np.stack(result['coefficient_repetitions'])[:,0,:]
         errors=np.linalg.norm(fields-ref[ti],axis=1)/n0
@@ -117,7 +118,8 @@ def main():
     if out.exists() and any(out.iterdir()): raise RuntimeError('output directory must be fresh')
     out.mkdir(parents=True,exist_ok=True)
     A.verify_inputs(); runtime=A.runtime(); A.write_json(out/'runtime.json',runtime)
-    hashes={fn:A.sha_file(A.HERE/fn) for fn in ['screen.py','adapter.py','reconstruction_core.py','INPUTS.json','CORE_SOURCE.json']}
+    hashes={fn:A.sha_file(A.HERE/fn) for fn in ['screen.py','adapter.py','reconstruction_core.py','data_manifest.py','INPUTS.json','CORE_SOURCE.json']}
+    hashes['consumed_data_manifest']=DM.verify(data)
     hashes['bases_manifest']=A.sha_file(data/'bases/bases.json'); hashes['coarse_manifest']=A.sha_file(data/'coarse/summary.json')
     if args.phase=='val':
         if not args.frozen: raise ValueError('validation requires frozen development choices')
@@ -138,6 +140,9 @@ def main():
             md['_penultimate']=coarse[-2]
             # A-level input and B temporal input sensitivities are retained independently.
             inputs={'A':levels[-1][:,idx],'B':coarse[-1]}
+            # Sustained GPU burn before the case; later method blocks have their own burn.
+            burn_y=jnp.asarray(inputs['B'][1:2]); deadline=time.perf_counter()+1.
+            while time.perf_counter()<deadline: C.ready(plans[-1].query(burn_y))
             order=np.random.default_rng(7201+case+L).permutation(len(plans))
             for ii in order:
                 plan=plans[int(ii)]

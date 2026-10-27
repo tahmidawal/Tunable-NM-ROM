@@ -95,10 +95,25 @@ def run(cfg,artifacts,out):
         dg=np.concatenate([m['delta_g'] for m in mm]);gg=np.concatenate([m['full_gamma'] for m in mm])
         finite=bool(all(all(m['finite']) for m in mm) and np.isfinite(dg).all() and np.isfinite(gg).all())
         dist=[rep['cases'][str(i)]['k32_to_none'] for i in ids]
+        field_mask={str(i):bool(np.isfinite(rep['cases'][str(i)]['k32_to_none']) and
+                                rep['cases'][str(i)]['k32_to_none']<=.00025) for i in ids}
+        gradient_mask={str(i):bool(all(rep['cases'][str(i)]['k32']['whole_residual']['finite']) and
+                                   np.isfinite(rep['cases'][str(i)]['k32']['whole_residual']['delta_g']).all() and
+                                   max(rep['cases'][str(i)]['k32']['whole_residual']['delta_g'])<=.001) for i in ids}
+        full_bad_masks={str(i):(np.asarray(rep['cases'][str(i)]['k32']['whole_residual']['full_gamma'])>.001).tolist() for i in ids}
+        own_q1=bool(all(q['q1'] for q in rep['Q1'].values()))
+        common_pass=bool(own_q1 and all(field_mask.values()))
+        gradient_pass=bool(finite and all(gradient_mask.values()))
+        full_stationarity_pass=bool(finite and (gg>.001).sum()<=.01*len(gg))
         rep['HR']=dict(delta_g_max=float(dg.max()),full_gamma_max=float(gg.max()),full_nonstat=int((gg>.001).sum()),
                        steps=len(gg),field_max=max(dist),finite=finite,
-                       pass_=bool(finite and dg.max()<=.001 and (gg>.001).sum()<=.01*len(gg) and max(dist)<=.00025
-                                  and all(q['q1'] for q in rep['Q1'].values())))
+                       own_objective_Q1_pass=own_q1,
+                       shared_field_checks=dict(bar=.00025,case_mask=field_mask,pass_=all(field_mask.values())),
+                       common_layer_pass=common_pass,
+                       extra_POD_gradient_checks=dict(bar=.001,case_mask=gradient_mask,pass_=gradient_pass),
+                       extra_POD_full_stationarity=dict(bar=.001,pooled_bad_fraction_limit=.01,
+                           per_case_bad_step_mask=full_bad_masks,pass_=full_stationarity_pass),
+                       pass_=bool(common_pass and gradient_pass and full_stationarity_pass))
     # All repeated costs and errors belong to the same actual invocation; no cross-job ratio is formed.
     panels=[(i,r) for i in cfg['timing_cases'] for r in range(cfg['timing_reps'])]
     np.random.default_rng(20261026).shuffle(panels)

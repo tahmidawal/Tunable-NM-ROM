@@ -1,0 +1,26 @@
+{
+  "backend": "gpu",
+  "test_grid_L": 5,
+  "rank": 4,
+  "subjects": [
+    {
+      "name": "POD4_none_CN_25steps",
+      "steps": 25,
+      "split_difference": 0.0,
+      "distance_difference": 3.969082239909119e-18,
+      "prod_valid": true,
+      "tight_anchor": true,
+      "tighter_anchor": true
+    },
+    {
+      "name": "POD4_none_BDF2_40steps",
+      "steps": 40,
+      "split_difference": 0.0,
+      "distance_difference": 2.6461309272224343e-18,
+      "prod_valid": true,
+      "tight_anchor": true,
+      "tighter_anchor": true
+    }
+  ],
+  "pass_": true
+}

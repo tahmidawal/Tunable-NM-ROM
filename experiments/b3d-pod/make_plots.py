@@ -16,14 +16,14 @@ grad=[max(max(v[a]['whole_residual']['delta_g']) for v in j['cases'].values()) f
 plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
 fig,ax=plt.subplots(1,2,figsize=(10,3.8),constrained_layout=True)
 for a,y,bar,label in zip(ax,[field,grad],[j['config']['admission']['field_distance'],j['config']['admission']['gradient']],
-                         ['Maximum rollout distance to full residual','Maximum whole-residual gradient discrepancy']):
+                         ['Maximum rollout distance','Maximum whole-residual gradient discrepancy']):
     a.plot(points,y,'o-',color='#9c2f2f',lw=2,ms=7,label='Frozen ECSW supports')
-    a.axhline(bar,color='#374151',ls='--',label='Frozen admission bar')
+    a.axhline(bar,color='#374151',ls='--',label=f'Frozen admission bar ({bar:g})')
     a.set_xscale('log',base=2);a.set_yscale('log');a.set_xticks(points,[str(x) for x in points])
     a.set_xlabel('Weighted residual points');a.set_ylabel(label)
     for x,v in zip(points,y):a.annotate(f'{v/bar:.2f}× bar',(x,v),xytext=(0,8),textcoords='offset points',ha='center')
     a.grid(alpha=.2,which='both')
-ax[0].legend(frameon=False,loc='lower left')
+for a in ax:a.legend(frameon=False,loc='lower left')
 fig.suptitle(f'Frozen POD hyper-reduction fails the new admission contract\nSelected validation cases {", ".join(map(str,ids))}; diagnostic scope')
 fig.savefig(dest/'pod_pilot_convergence.png',dpi=180)
 plt.close(fig)

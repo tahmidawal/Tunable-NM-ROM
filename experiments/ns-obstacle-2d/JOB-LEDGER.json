@@ -1,0 +1,41 @@
+{
+  "lane": "ns-obstacle-2d-20261027",
+  "jobs": [
+    {
+      "job_id": 6566869,
+      "attempt": "g1-smoke03",
+      "status_at_submission": "PENDING",
+      "submitted_utc": "2026-10-27 20:30:46 UTC",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03",
+      "submit_host": "tufts-login",
+      "exact_submit_command": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03 cluster/smoke.sh",
+      "command_cwd": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke03",
+      "source_commit": "1ac56b2d7c3305f4e961149c31e087b422d2600f",
+      "source_mirror": "f040ac93b",
+      "manifest_sha256": "0dde96f33990f4e05054b4390de595d782db790231954eb31fcf636e0756ea13",
+      "source_sha256sums_sha256": "e6bd8c12752e6127d54881ef6e02f383e3393325818f20efbb269b948bca9b70",
+      "partition": "gpu",
+      "gpu_type": "h200",
+      "gpus": 1,
+      "cpus": 16,
+      "memory_GiB": 64,
+      "wall_seconds_cap": 1200,
+      "gpu_hours_reservation_cap": 0.3333333333333333,
+      "elapsed_gpu_hours": null,
+      "compute": "CPU finite elements; GPU for required preflight only",
+      "queue_before": [],
+      "queue_after": [
+        6566869
+      ],
+      "released_scope": "one G1 smoke only",
+      "training_released": false,
+      "reference_data_admitted": false,
+      "retry_authorized": false,
+      "collection": "pending terminal state; checksum pull required before remote duplicate deletion"
+    }
+  ],
+  "submitted_allocations": 1,
+  "completed_allocated_gpu_hours": 0,
+  "active_cost": "unaccounted until terminal allocation accounting",
+  "reservation_gpu_hours_cap": 0.3333333333333333
+}

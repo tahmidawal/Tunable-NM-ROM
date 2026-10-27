@@ -60,7 +60,7 @@
    "code_commit": "8196120c5ade3992bacfc02379799aa00a0cf4a3",
    "code_small_controls": "READY",
    "exact_job": "READY",
-   "results": "PENDING full independent results gate; complete checksum collection verified",
+   "results": "READY complete independently audited full64 paired frontier; all actual admission masks retained",
    "reviewer": "/root/independent_review",
    "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
    "job_id": 6533177,
@@ -74,13 +74,17 @@
      "path": "results/front6402/POD-INDEPENDENT-REVIEW.json",
      "sha256": "d356be2c7734480535669a7a1d20c689d07ce71fbf38ae8f53710f13770719bc"
     }
+   },
+   "independent_review": {
+    "path": "results/front6402/INDEPENDENT-REVIEW.json",
+    "sha256": "1dcd00ebeceaa1d3a38b0095388aa0af566ef472a76d55a5664e22925439614c"
    }
   },
   "mesh01": {
    "code_commit": "0cfd1119cda6cfd46b74accf93dd47a9b2eebd5a",
    "code_small_controls": "READY",
    "exact_job": "READY",
-   "results": "PENDING partial collection/results audit; failed120GB memory guard",
+   "results": "NOT RELEASED incomplete mesh; retained verified memory-guard failure, superseded by accepted mesh02",
    "reviewer": "/root/independent_review",
    "manifest_sha256": "e12ead96f0efcb210a80af72ff3460af7266a3b084fb181392cd5559392bf2b0",
    "job_id": 6541155,

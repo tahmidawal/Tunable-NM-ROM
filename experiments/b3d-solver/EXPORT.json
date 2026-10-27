@@ -61,7 +61,7 @@
     "code_commit": "8196120c5ade3992bacfc02379799aa00a0cf4a3",
     "code_small_controls": "READY",
     "exact_job": "READY",
-    "results": "PENDING full independent results gate; complete checksum collection verified",
+    "results": "READY complete independently audited full64 paired frontier; all actual admission masks retained",
     "reviewer": "/root/independent_review",
     "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
     "job_id": 6533177,
@@ -75,13 +75,17 @@
       "path": "results/front6402/POD-INDEPENDENT-REVIEW.json",
       "sha256": "d356be2c7734480535669a7a1d20c689d07ce71fbf38ae8f53710f13770719bc"
      }
+    },
+    "independent_review": {
+     "path": "results/front6402/INDEPENDENT-REVIEW.json",
+     "sha256": "1dcd00ebeceaa1d3a38b0095388aa0af566ef472a76d55a5664e22925439614c"
     }
    },
    "mesh01": {
     "code_commit": "0cfd1119cda6cfd46b74accf93dd47a9b2eebd5a",
     "code_small_controls": "READY",
     "exact_job": "READY",
-    "results": "PENDING partial collection/results audit; failed120GB memory guard",
+    "results": "NOT RELEASED incomplete mesh; retained verified memory-guard failure, superseded by accepted mesh02",
     "reviewer": "/root/independent_review",
     "manifest_sha256": "e12ead96f0efcb210a80af72ff3460af7266a3b084fb181392cd5559392bf2b0",
     "job_id": 6541155,
@@ -103,8 +107,8 @@
    }
   }
  },
- "status": "frozen campaign in progress; consult actual collection and independent-gate state",
- "scope": "Accepted diagnostic subsets plus any actual collected full64/mesh data; pending or incomplete data remain unreleased.",
+ "status": "complete independently audited frozen campaign",
+ "scope": "Same-allocation full64 paired frontier and separate within-job fixed-mode mesh diagnostics; finite exposed validation sets and per-query masks apply.",
  "gpu_hours": 2.877222222222222,
  "budget_gpu_hours": 8,
  "jobs": [
@@ -37765,7 +37769,7 @@
     "code_commit": "8196120c5ade3992bacfc02379799aa00a0cf4a3",
     "code_small_controls": "READY",
     "exact_job": "READY",
-    "results": "PENDING full independent results gate; complete checksum collection verified",
+    "results": "READY complete independently audited full64 paired frontier; all actual admission masks retained",
     "reviewer": "/root/independent_review",
     "manifest_sha256": "7a0f26a5e29c47949f703b3cded2da4a2a7ff3501f29abfd6185470adf9c00f2",
     "job_id": 6533177,
@@ -37779,6 +37783,10 @@
       "path": "results/front6402/POD-INDEPENDENT-REVIEW.json",
       "sha256": "d356be2c7734480535669a7a1d20c689d07ce71fbf38ae8f53710f13770719bc"
      }
+    },
+    "independent_review": {
+     "path": "results/front6402/INDEPENDENT-REVIEW.json",
+     "sha256": "1dcd00ebeceaa1d3a38b0095388aa0af566ef472a76d55a5664e22925439614c"
     }
    },
    "complete": true
@@ -37808,7 +37816,7 @@
     "code_commit": "0cfd1119cda6cfd46b74accf93dd47a9b2eebd5a",
     "code_small_controls": "READY",
     "exact_job": "READY",
-    "results": "PENDING partial collection/results audit; failed120GB memory guard",
+    "results": "NOT RELEASED incomplete mesh; retained verified memory-guard failure, superseded by accepted mesh02",
     "reviewer": "/root/independent_review",
     "manifest_sha256": "e12ead96f0efcb210a80af72ff3460af7266a3b084fb181392cd5559392bf2b0",
     "job_id": 6541155,
@@ -46190,9 +46198,7 @@
   "bank": "Smooth-test weak residual with analytic continuum advection quadrature and discrete sine diffusion; inherited diffusion-dependent row weighting. No upwind substitution.",
   "spectral": "Frozen3/2 oversampled sine ETDRK4 implementation; no exact de-aliasing claim"
  },
- "next_open": [
-  "Complete immutable full64 collection and independent results gate"
- ],
+ "next_open": [],
  "historical_tight_quadrature": {
   "path": "results/historical-tight-quadrature.json",
   "sha256": "7589d7c060cad5d917c39a0d3b6ec48635a749e16a5fa3337c145b0ecbea1568",
@@ -47851,7 +47857,7 @@
   }
  },
  "campaign_status": {
-  "full64_complete_results_gate": false,
+  "full64_complete_results_gate": true,
   "mesh_complete_results_gate": true,
   "active_jobs": []
  },

@@ -18,8 +18,8 @@
     },
     {
       "path": "dependencies.py",
-      "sha256": "aef6f4e7de9c6022bce32fd2e73a83d679735854ff11d2f998d3ef6e75696ca0",
-      "bytes": 2498
+      "sha256": "f1d4b641c9ff30c2909ab810985add3186ea37aa1c9d5b40f9d22b331edc85e7",
+      "bytes": 6382
     },
     {
       "path": "smoke_summary.py",
@@ -37,14 +37,19 @@
       "bytes": 4432
     },
     {
+      "path": "REPAIR.json",
+      "sha256": "c6b8e992988d0a4817166e0be14d4f015940ef4586ffadca74452e44682a231e",
+      "bytes": 924
+    },
+    {
       "path": "campaign-A2.json",
       "sha256": "9507f516c0daea29d84f15c120ef0c0fb128df4f8ba7bb8325552618dcaca262",
       "bytes": 5565
     },
     {
       "path": "cluster/smoke.sh",
-      "sha256": "76a12dc82639e6693b7d4cbb5f9a8a75d1c85a89a1ab67de827ec055705d9127",
-      "bytes": 2792
+      "sha256": "9aeb6dd31badfbe8d764d4759fecf3789314b0267b2c68f82eccabdb692f2e07",
+      "bytes": 3568
     },
     {
       "path": "configs/channel-smoke.json",
@@ -62,7 +67,7 @@
       "bytes": 1148
     }
   ],
-  "source_parent_when_manifest_generated": "9fb7abc53c64e967d7b16f34a2f09695b9401c9f",
+  "source_parent_when_manifest_generated": "d6011073349f4366869baf8e1f7e84e2bdfa56b8",
   "execution_source_commit_binding": "SOURCE_COMMIT.txt is created from exact source commit at staging and separately recorded in staging manifest",
   "command": "sbatch --gres=gpu:h200:1 --chdir=<fresh unique namespace attempt> cluster/smoke.sh",
   "allocation": {

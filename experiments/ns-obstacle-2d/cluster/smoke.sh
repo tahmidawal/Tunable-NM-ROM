@@ -47,8 +47,24 @@ printf 'cpu_model='
 lscpu | sed -n 's/^Model name:[[:space:]]*//p'
 nvidia-smi --query-gpu=name,uuid,memory.total --format=csv
 run_stage dependencies "$PY" dependencies.py --wheel-dir wheels --install --target "$JOB_DIR/deps"
-export PYTHONPATH="$JOB_DIR/deps${PYTHONPATH:+:$PYTHONPATH}"
-run_stage dependency_import "$PY" -c "import ngsolve,netgen,numpy,jax; print('ngsolve='+ngsolve.__version__); print('numpy='+numpy.__version__); print('jax_after_dependency_import='+jax.__version__); print('backend_after_dependency_import='+jax.default_backend())"
+DEPS_SITE=$("$PY" -c "import sysconfig; print(sysconfig.get_path('purelib', vars={'base':'$JOB_DIR/deps','platbase':'$JOB_DIR/deps'}))")
+export PYTHONPATH="$DEPS_SITE${PYTHONPATH:+:$PYTHONPATH}"
+export LD_LIBRARY_PATH="$JOB_DIR/deps/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+run_stage dependency_import "$PY" - <<'PY'
+import json, pathlib, sys
+import ngsolve, netgen, numpy, jax
+prefix=pathlib.Path('deps').resolve()
+for module in [ngsolve,netgen]:
+    assert pathlib.Path(module.__file__).resolve().is_relative_to(prefix), module.__file__
+report={'ngsolve':ngsolve.__version__,'ngsolve_path':ngsolve.__file__,
+        'netgen_path':netgen.__file__,'numpy':numpy.__version__,'jax':jax.__version__,
+        'jax_backend':jax.default_backend(),'jax_x64':jax.config.x64_enabled,
+        'matmul_precision':jax.config.jax_default_matmul_precision}
+pathlib.Path('results/dependency_runtime.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report),flush=True)
+sys.exit(0 if report['jax_backend']=='gpu' and report['jax_x64']
+         and report['matmul_precision']=='highest' else 42)
+PY
 run_stage api_and_inverse_preflight "$PY" preflight.py --out results/preflight.json
 run_stage channel "$PY" fom.py --config configs/channel-smoke.json --out results/channel
 run_stage manufactured "$PY" fom.py --config configs/manufactured-smoke.json --out results/manufactured

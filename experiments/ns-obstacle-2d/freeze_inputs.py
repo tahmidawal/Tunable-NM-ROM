@@ -2,7 +2,7 @@
 import hashlib,json,subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parent
-files=['preflight.py','benchmark.json','fom.py','dependencies.py','smoke_summary.py','manufactured_witness.json','DEPENDENCIES.json','campaign-A2.json','cluster/smoke.sh']
+files=['preflight.py','benchmark.json','fom.py','dependencies.py','smoke_summary.py','manufactured_witness.json','DEPENDENCIES.json','REPAIR.json','campaign-A2.json','cluster/smoke.sh']
 files+=sorted(str(p.relative_to(root)) for p in (root/'configs').glob('*.json'))
 records=[{'path':name,'sha256':hashlib.sha256((root/name).read_bytes()).hexdigest(),'bytes':(root/name).stat().st_size} for name in files]
 (root/'SOURCE-SHA256SUMS').write_text(''.join(r['sha256']+'  '+r['path']+'\n' for r in records))

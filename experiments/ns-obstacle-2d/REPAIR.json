@@ -1,0 +1,18 @@
+{
+  "repair_counter": 1,
+  "repair_limit": 1,
+  "status": "review_candidate_no_install_or_submission_release",
+  "failed_job_id": 6566869,
+  "failed_attempt": "g1-smoke03",
+  "fresh_attempt": "g1-smoke04",
+  "reason": "pip --target omitted all OCCT .data/data/lib files; Netgen import raised KeyError tkernel before any FE case",
+  "change": "same pinned wheels installed with --no-deps --no-index --ignore-installed --prefix to fresh job-owned deps; raw RECORD existence/hash audit plus explicit OCCT and OpenBLAS checks",
+  "source_equations_changed": false,
+  "thresholds_changed": false,
+  "shared_interpreter_changed": false,
+  "shared_environment_changed": false,
+  "automatic_retry": false,
+  "requires_independent_diff_review_and_coordinator_release": true,
+  "failed_evidence": "artifacts/g1-smoke03/RETENTION.json",
+  "pip_prefix_documentation": "https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-prefix"
+}

@@ -51,6 +51,20 @@ allocation before comparative cost claims. Give it the same output schedule and 
 requirements. If qualification does not close, show its diagnostic status and forbid a
 qualified-POD superiority claim.
 
+POD receives the same integration opportunity. Before the final freeze, evaluate the fixed
+rank512 full-residual POD on the same four diagnostic cases with BDF2 steps0.025/0.0125/0.00625,
+CN step0.01, and its historical BDF2 step1/60. Use the reviewed explicit-buffer factory;
+the40-step scheme must not reuse a25-step buffer. Every schedule gets its own production,
+native tight and native tighter Q1 checks; do not transfer the existing no-HR step1/60
+certificate to a new schedule. Freeze at most two qualified endpoint picks: minimum total
+query cost and minimum worst E0 error, with median error then schedule name breaking ties.
+If the same schedule wins both, retain it alone. Retain all failed/unqualified tuning rows.
+The old qualified schedule can remain an explicitly historical anchor. If the separately
+fitted k32 hyper-reduction rule qualifies before this freeze, admit it under the same
+schedule grid and independent sampled/full-operator checks; otherwise label the missing
+qualified hyper-reduced comparator as an open limitation. A qualified full-residual POD
+model is not called hyper-reduced.
+
 ## Frozen full solvers; no broad retuning
 
 Use spectral selections N14/step0.025, N16/step0.025, N24/step0.01 and N32/step0.005,

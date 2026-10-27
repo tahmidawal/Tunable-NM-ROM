@@ -14,7 +14,7 @@
  },
  "status": "diagnostic subset; consult per-job independent audit verdicts",
  "scope": "validation diagnostics; no new frontier or comparator win claim",
- "gpu_hours": 0.075,
+ "gpu_hours": 0.07888888888888888,
  "budget_gpu_hours": 8,
  "jobs": [
   {
@@ -69,6 +69,19 @@
    "collection_sha256": "262e90c53e25da6b2d126ea511af816f13d18453edc6744bc4e209f7649b98f4",
    "checksums_verified": true,
    "remote_duplicate_deleted": true
+  },
+  {
+   "attempt": "qpilot02",
+   "job_id": 6525763,
+   "status": "FAILED",
+   "source_commit": "e4375c9bee261975f49e614175aed04ace9a704a",
+   "gpu": "h200",
+   "elapsed_seconds": 14,
+   "gpu_hours": 0.0038888888888888888,
+   "collection_sha256": "87eafbd55c8f9eb3b227c5c725d5e5148e2eb6efacb4a60aeaa3d76237447847",
+   "checksums_verified": true,
+   "remote_duplicate_deleted": true,
+   "reason": "one-ULP derived peak-normalisation difference; stopped before physics"
   }
  ],
  "observations": [

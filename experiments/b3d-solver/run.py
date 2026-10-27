@@ -18,6 +18,7 @@ import qn_policy
 import t2core as T2
 import refstore as RS
 import diagcore as DC
+import canonical_cohort as CC
 import jax
 import jax.numpy as jnp
 
@@ -54,9 +55,13 @@ class Context:
         np.savez_compressed(self.out/'regenerated_cohort.npz',**self.tab)
         cohort_check=dict(expected_sha256=expected,actual_sha256=self.tab['sha256'],passed=self.tab['sha256']==expected,
                           source_commit=os.environ['SOURCE_COMMIT'],gpu=C3.gpu_info(),rows={})
+        approved_normalisers=[]
         for j in range(64):
             meta=json.loads(RS._read(f'3d/val64/ST/c{j:03d}.json'))
+            assert (meta['dim'],meta['cohort'],meta['case'],meta['kind'])==(3,'val64',j,'ST')
+            assert meta['cohort_sha256']==expected
             row=C3.C.b3.table_row(self.tab,j);desc=meta['desc'];b=int(row['B'])
+            approved_normalisers.append(desc['s_star'])
             delta={}
             for key in ('c','w','rho'):
                 delta[key]=float(np.max(np.abs(np.asarray(row[key])[:b]-np.asarray(desc[key]))))
@@ -64,6 +69,13 @@ class Context:
                 delta[key]=float(abs(row[key]-desc[key]))
             delta['s_star']=float(self.tab['s_star'][j]-desc['s_star'])
             cohort_check['rows'][j]=delta
+        dump(self.out/'cohort_identity.json',cohort_check)
+        try:
+            self.tab,norm_audit=CC.restore(self.tab,approved_normalisers,expected)
+        except BaseException as e:
+            cohort_check['normalisation_failure']=repr(e);dump(self.out/'cohort_identity.json',cohort_check);raise
+        cohort_check.update(raw_passed=cohort_check['passed'],passed=True,canonical_sha256=self.tab['sha256'],normalisation_audit=norm_audit)
+        np.savez_compressed(self.out/'canonical_cohort.npz',**self.tab)
         dump(self.out/'cohort_identity.json',cohort_check)
         assert cohort_check['passed'],cohort_check
         self.cases=cfg['cases']; assert all(j in range(64) for j in self.cases)
@@ -285,10 +297,14 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--config',required=True);ap.add_argument('--out',required=True)
     args=ap.parse_args();p=Path(args.config).resolve();cfg=json.loads(p.read_text());cfg['_config_path']=str(p)
     assert cfg['seed']==923801
-    assert cfg['mode'] in ('solver','quadrature')
+    assert cfg['mode'] in ('solver','quadrature','time')
     cx=Context(cfg,args.out);cx.save()
     try:
-        (dsolver if cfg['mode']=='solver' else dquad)(cx)
+        if cfg['mode']=='time':
+            import time_run
+            time_run.run(cx)
+        else:
+            (dsolver if cfg['mode']=='solver' else dquad)(cx)
         cx.rep['execution_complete']=True
         cx.rep['diagnostic_anchors_usable']=bool(cx.rep['restarts']) and all(x['anchor_usable'] for x in cx.rep['restarts'].values())
         cx.rep['complete']=True;cx.save()

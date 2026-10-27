@@ -8,6 +8,9 @@ import diagcore as DC
 import t2core as T2
 import qn3
 import qn_policy
+import p1core as P1
+import canonical_cohort as CC
+import hashlib
 
 def main():
     rng=np.random.default_rng(7); r,M,m=4,10,24
@@ -48,8 +51,41 @@ def main():
     assert float(jnp.linalg.norm(wrong-res(c,args)))>1e-5
     G=rng.normal(size=(25,r));L=np.linalg.cholesky(G.T@G);diff=rng.normal(size=(6,r))
     assert np.allclose(np.linalg.norm(diff@L,axis=1),np.linalg.norm(diff@G.T,axis=1),rtol=1e-14)
+    d['hmask']=(d['lam']>jnp.median(d['lam'])).astype(jnp.float64)
+    ev40=P1.make_evolve(DC.C3.nl3,DC.C3.nlJ3,'LSPG',r,1.,nrec=41)
+    sch40=P1.sched('BDF2',.00625,1e-7,0.)
+    w40,stats40=jax.jit(ev40)(W[0],nu,jnp.float64(1.),d,sch40)
+    assert np.array_equal(np.asarray(w40),np.asarray(stats40['states'])[::8])
+    assert stats40['states'].shape==(41,r)
+    assert np.isfinite(np.asarray(stats40['states'])).all()
+    root=Path(__file__).resolve().parent
+    fixture=np.load(root/'results/qpilot02/raw/output/regenerated_cohort.npz',allow_pickle=False)
+    table={k:fixture[k] for k in fixture.files};table['sha256']=str(table['sha256'])
+    reference=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/store')
+    manifest={p.strip():h for line in (root/'vendor/e0/store/MANIFEST.sha256').read_text().splitlines() if line.strip() for h,p in [line.split(None,1)]}
+    normalisers=[]
+    for j in range(64):
+        rel=f'3d/val64/ST/c{j:03d}.json';raw=(reference/rel).read_bytes()
+        assert hashlib.sha256(raw).hexdigest()==manifest[rel]
+        normalisers.append(json.loads(raw)['desc']['s_star'])
+    expected='b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c'
+    restored,na=CC.restore(table,normalisers,expected)
+    assert na['changed_cases']==[1] and na['maximum_ulp']==1. and restored['sha256']==expected
+    bad=dict(table,s_star=np.asarray(normalisers).copy());bad['s_star'][1]=np.nextafter(np.nextafter(normalisers[1],np.inf),np.inf)
+    bad['sha256']=CC.table_hash(bad)
+    try:CC.restore(bad,normalisers,expected)
+    except AssertionError:pass
+    else:raise AssertionError('two-ULP normaliser change admitted')
+    bad=dict(restored,c=restored['c'].copy());idx=int(np.flatnonzero(restored['B']<3)[0])
+    bad['c'][idx,2,0]=np.nextafter(bad['c'][idx,2,0],np.inf);bad['sha256']=CC.table_hash(bad)
+    try:CC.restore(bad,normalisers,expected)
+    except AssertionError:pass
+    else:raise AssertionError('inactive raw-draw mutation admitted')
     out=dict(passed=True,x64=jax.config.x64_enabled,backend=jax.default_backend(),
              policy_extension_baseline_bitwise=True,metric_factor_control=True,
+             recording_40_step_slots=True,
+             actual_failed_cohort_restored=True,two_ulp_rejected=True,
+             inactive_draw_mutation_rejected=True,
              derivative_relative=errors,lm_original_match=matches,fresh_certificate_difference=float(np.max(np.abs(g-fresh))))
     dest=Path(__file__).resolve().parent/'audits'/'small-controls.json'
     dest.parent.mkdir(exist_ok=True)

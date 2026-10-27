@@ -1,0 +1,33 @@
+{
+ "seed": 923801,
+ "mode": "time",
+ "cases": [
+  0,
+  5,
+  30,
+  43
+ ],
+ "widths": [
+  1024
+ ],
+ "dts": [
+  0.025,
+  0.0125,
+  0.00625
+ ],
+ "rules": [
+  "gl40",
+  "gl48",
+  "gl56"
+ ],
+ "gtols": {
+  "tight": 1e-07,
+  "tighter": 1e-08
+ },
+ "candidate_policy": {
+  "qmax": 12,
+  "refresh": 1,
+  "trust_factor": 1.0,
+  "g_in": 0.0005
+ }
+}

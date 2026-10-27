@@ -36,6 +36,8 @@ def runtime():
     assert jax.config.jax_enable_x64
     assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')=='highest'
     assert Path(ST.sc.__file__).resolve()==(SMOOTH/'deps/sep_common.py').resolve()
+    assert (ST.bf.SEED,ST.bf.N_TRAIN,ST.bf.N_VAL)==(0,512,64), 'historical generator environment changed'
+    assert len(os.environ.get('SOURCE_COMMIT',''))==40, 'SOURCE_COMMIT must identify frozen source'
     return dict(backend=jax.default_backend(),f64=bool(jax.config.jax_enable_x64),precision=os.environ['JAX_DEFAULT_MATMUL_PRECISION'],gpu=str(jax.devices()[0]),gpu_kind=jax.devices()[0].device_kind,jax=jax.__version__,job_id=os.environ.get('SLURM_JOB_ID'),commit=os.environ.get('SOURCE_COMMIT'))
 
 def verify_inputs():
@@ -191,9 +193,10 @@ def coarse_fields(out,dt_ladder=(.0025,.00125,.000625,.0003125),tol=1e-5,meshes=
                 for dt in dt_ladder:
                     t=time.perf_counter(); ans=solve(U0,p[-1],dt,'cnr',1e-11,1e-12); sync(ans)
                     u=np.asarray(ans['out']); n=int(ans['stages']); residual=np.asarray(ans['res'])[:n]
-                    good=bool(np.isfinite(u).all() and np.isfinite(residual).all() and np.all(residual<=2e-11))
+                    complete=bool(n==RC.n_stages(dt,'cnr') and int(ans['units'])==2*int(round(.25/dt)))
+                    good=bool(complete and np.isfinite(u).all() and np.isfinite(residual).all() and np.all(residual<=2e-11))
                     gap=None if not fields else float(np.max(np.linalg.norm(u[1:]-fields[-1][1:],axis=1))/norm_c)
-                    fields.append(u); levels.append(dict(dt=dt,stages=n,max_residual=float(np.max(residual)),solver_pass=good,relative_refinement_gap=gap,seconds=time.perf_counter()-t,newton=np.asarray(ans['nwt'])[:n].tolist(),residual=residual.tolist(),compile_seconds=solve.compile_seconds))
+                    fields.append(u); levels.append(dict(dt=dt,stages=n,units=int(ans['units']),complete=complete,minimum_field=float(np.min(u)),maximum_field=float(np.max(u)),max_residual=float(np.max(residual)),solver_pass=good,relative_refinement_gap=gap,seconds=time.perf_counter()-t,newton=np.asarray(ans['nwt'])[:n].tolist(),residual=residual.tolist(),compile_seconds=solve.compile_seconds))
                     if len(fields)>1 and good and levels[-2]['solver_pass'] and gap<=tol:
                         accepted=True; break
                 key=f'{coh}_c{j:03d}_L{L}'

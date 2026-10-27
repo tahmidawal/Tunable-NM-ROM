@@ -10,6 +10,11 @@
 set -euo pipefail
 : "${JOB_ROOT:?must set the unique absolute job directory}"
 cd "$JOB_ROOT"
+: "${SOURCE_COMMIT:?must identify the frozen lane commit}"
+: "${EXPECTED_STAGE_SHA256:?must identify the reviewed staging manifest}"
+test "$(sha256sum STAGED.sha256 | cut -d' ' -f1)" = "$EXPECTED_STAGE_SHA256"
+sha256sum --check STAGED.sha256
+export SEED=0 N_TRAIN=512 N_VAL=64
 export JAX_DEFAULT_MATMUL_PRECISION=highest
 export JAX_ENABLE_X64=true
 export XLA_PYTHON_CLIENT_PREALLOCATE=false

@@ -16,6 +16,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('output');a=p.parse_args();root=Path(a.output)
     execution=json.loads((root/'execution.json').read_text())
     phase=execution['phase'];cohort,count=('dev4',4) if phase=='dev' else ('val64',64)
+    selected=json.loads((root/'selection.json').read_text())['selected']
     rows=json.loads((root/'all_scores.json').read_text());lookup={}
     for row in rows:
         key=(row['Lc'],row['source'],row['case'],row['method'])
@@ -27,6 +28,8 @@ def main():
         setup=json.loads((root/f'L{lc}/plans/setup.json').read_text())
         expected=set(setup['plans'])|set(setup['failures'])
         for source in ('A','B'):
+            chosen={value for key,value in selected.items() if key.startswith(f'{lc}/{source}/') and value is not None}
+            assert chosen<=expected,('selected configuration absent',lc,source,chosen-expected)
             for case in range(count):
                 case_dir=root/f'L{lc}/{cohort}/c{case:03d}'
                 record=json.loads((case_dir/f'{source}_scores.json').read_text())
@@ -58,6 +61,9 @@ def main():
                 assert set(arrays.files)==expected_keys,('unexpected or missing coefficient keys',case_dir,source)
                 if phase=='val' and case==0:
                     fields=np.load(case_dir/f'{source}_selected_fields.npz')
+                    expected_field_keys={f'{method}__t{ti}' for method in chosen for ti in range(6)
+                                         if lookup[(lc,source,case,method)]['e_t'][ti] is not None}
+                    assert set(fields.files)==expected_field_keys,('missing or extra representative fields',lc,source)
                     for key in fields.files:
                         method,t=key.rsplit('__t',1);ti=int(t)
                         row=lookup[(lc,source,case,method)]

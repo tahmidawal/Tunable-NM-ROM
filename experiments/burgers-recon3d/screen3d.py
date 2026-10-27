@@ -17,7 +17,7 @@ import time
 import numpy as np
 import jax
 import jax.numpy as jnp
-from prepare3d import HERE, LF, RANKS, RS, dump, digest, guard, log
+from prepare3d import HERE, LF, RS, dump, digest, guard, log
 sys.path.insert(0, str(HERE/'vendor'))
 import reconstruction_core as K
 
@@ -68,7 +68,7 @@ def build_plans(prepared, out, lc, phase):
     ix = K.restriction_indices(lc, LF, 3)
     specs = [('bank',2,r) for r in PREFIXES]
     specs += [(n,q,r) for n in ('pod_matched','pod_stronger')
-              for q in ([1,2] if phase=='dev' else [2]) for r in RANKS]
+              for q in ([1,2] if phase=='dev' else [2]) for r in PREFIXES]
     for category, power, rank in specs:
         label = f'{category}_q{power}_r{rank}'
         started = time.perf_counter()

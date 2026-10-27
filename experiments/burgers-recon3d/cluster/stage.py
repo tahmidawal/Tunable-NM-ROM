@@ -28,6 +28,7 @@ cmd=(f'"$PY" -u {LANE}/prepare3d.py --bank experiments/jcp-combined/inputs/model
 if a.mode=='smoke': cmd=f'\"$PY\" -u {LANE}/vendor/check_core.py && \"$PY\" -u {LANE}/check_prepare.py && '+cmd
 if a.mode in ('dev','val'):
  cmd=f'"$PY" -u {LANE}/vendor/check_core.py && "$PY" -u {LANE}/screen3d.py --phase {a.mode} --prepared {NS}/{a.prepared}/output --out "$TASK_ROOT/output"'
+ cmd+=f' && "$PY" -u {LANE}/audit_artifacts.py "$TASK_ROOT/output"'
  cmd+=f' && "$PY" -u {LANE}/export3d.py --input "$TASK_ROOT/output"'
 script=f'''#!/bin/bash
 #SBATCH --job-name=br3_{a.attempt}

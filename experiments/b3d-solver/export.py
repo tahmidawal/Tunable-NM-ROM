@@ -12,7 +12,7 @@ def main():
     audits=json.loads((HERE/'AUDIT-STATUS.json').read_text())
     out=dict(audits=audits,status='diagnostic subset; consult per-job independent audit verdicts',scope='validation diagnostics; no new frontier or comparator win claim',
              gpu_hours=sum(e.get('gpu_hours',0.) for e in ledger['entries']),budget_gpu_hours=ledger['budget_gpu_hours'],
-             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],quadrature_witnesses=[],time_diagnostics=[],time_quadrature=[],POD_tuning=[],POD_tuning_jobs=[],
+             jobs=ledger['entries'],observations=[],same_history=[],archive_identities=[],quadrature=[],quadrature_witnesses=[],time_diagnostics=[],time_quadrature=[],POD_tuning=[],POD_tuning_jobs=[],full64_frontier=[],mesh_results=[],retention_manifests=[],
              time_intervention_scope='Time-step/method package: dt changes integration, inherited diffusion-scaled residual row weights and time-discrete LSPG directions. Q1/Q2 control nonlinear/quadrature effects; this does not isolate pure temporal truncation.',
              next_open=['Full64 paired same-invocation frontier validation running; results audit pending',
                         'Fixed-mode65/129 mesh costs and operator diagnostics: separate code/control/job gates pending'])
@@ -20,6 +20,11 @@ def main():
         rp=HERE/'results'/entry['attempt']/'raw/output/result.json'
         if not rp.exists():continue
         z=json.loads(rp.read_text());source=dict(path=str(rp.relative_to(HERE)),sha256=sha(rp),job_id=entry['job_id'],source_commit=z['source_commit'],gpu=z['gpu'])
+        for mode,filename,collection in [('front','front_result.json','full64_frontier'),('mesh','mesh_result.json','mesh_results')]:
+            actual=rp.parent/filename
+            if z['config']['mode']==mode and actual.exists():
+                out[collection].append(dict(source=source,result=dict(path=str(actual.relative_to(HERE)),sha256=sha(actual)),
+                    independent_audit=audits['jobs'].get(entry['attempt'],{}),complete=json.loads(actual.read_text())['execution']['complete']))
         if z['config']['mode']=='pod_tune':
             out['POD_tuning_jobs'].append(dict(source=source,scope=z['scope'],execution_complete=z['complete'],failure=z.get('failure'),
                 selection=z.get('selection',{}),frozen_picks=z.get('frozen_picks',[]),identity_probes=z.get('identity_probes',{})))
@@ -66,6 +71,11 @@ def main():
     if qr.exists():out['historical_tight_quadrature']=dict(path=str(qr.relative_to(HERE)),sha256=sha(qr),data=json.loads(qr.read_text()))
     ts=HERE/'results/time-selection.json'
     if ts.exists():out['time_selection']=dict(path=str(ts.relative_to(HERE)),sha256=sha(ts),data=json.loads(ts.read_text()))
+    for p in sorted((HERE/'results').glob('*/RETENTION.json')):
+        retained=json.loads(p.read_text())
+        out['retention_manifests'].append(dict(path=str(p.relative_to(HERE)),sha256=sha(p),attempt=retained['attempt'],job_id=retained['job_id'],
+            archive=dict(path=retained['independent_local_collection_archive'],sha256=retained['collection_archive_sha256']),
+            bulk_arrays=[r for r in retained['arrays'] if r['retention'].startswith('local bulk')],archival_precondition=retained['archival_precondition']))
     (HERE/'EXPORT.json').write_text(json.dumps(out,indent=1)+'\n')
     print(json.dumps(dict(observations=len(out['observations']),same_history=len(out['same_history']),gpu_hours=out['gpu_hours'])))
 

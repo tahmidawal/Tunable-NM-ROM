@@ -136,8 +136,10 @@ def validate(cx,result,b,qid,runner,u,scale,j,o,out_n):
 
 def qualify(result,qid):
     rows=list(result['case_results'][qid].values());steps=sum(r['steps'] for r in rows);bad=sum(r['nonstationary'] for r in rows)
+    cases=result['queries'][qid]['cases'];assert set(map(int,result['case_results'][qid]))==set(cases)
     passed=bool(all(r['common_rollout_check'] and r['native_rollout_check'] is not False for r in rows) and bad<=.01*steps)
-    return dict(passed=passed,nonstationary=bad,steps=steps,scope='four exposed cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64')
+    return dict(passed=passed,nonstationary=bad,steps=steps,case_ids=cases,case_count=len(cases),
+        scope=f'{len(cases)} exposed diagnostic cases only; common65 and declared growing-native distances, fresh every-step gamma; not full64')
 
 def quadrature(cx,result,b,main_id,definitions,outputs):
     main,next_id,finer_id=definitions
@@ -157,7 +159,8 @@ def quadrature(cx,result,b,main_id,definitions,outputs):
             passed=bool(valid and np.isfinite(rho).all() and rho.max()<=.116 and dist<=2.5e-4 and fine<=2.5e-4),
             raw=dict(path=str(p.relative_to(cx.out)),sha256=sha(p))))
     result['queries'][main_id]['Q2']=dict(passed=all(r['passed'] for r in rows),cases=rows,
-        target=main[0],successors=[next_id[0],finer_id[0]],scope='four-case own-new-state Q2; successor stationarity retained separately, no full-population certificate')
+        target=main[0],successors=[next_id[0],finer_id[0]],case_ids=result['queries'][main_id]['cases'],case_count=len(rows),
+        scope=f'{len(rows)}-case own-new-state Q2; successor stationarity retained separately, no full-population certificate')
     save(cx,result)
 
 def timings(cx,result,b,qid,runner,path,n,rule,anchor,anchor_prepare):
@@ -200,6 +203,7 @@ def timings(cx,result,b,qid,runner,path,n,rule,anchor,anchor_prepare):
 
 def run(cx):
     assert cx.cases==[0,5,30,43]
+    cx.rep['scope']='fixed-mode65/129 mesh campaign on four exposed cases with case5-only operator interventions; per-query masks carry exact populations'
     assert cx.cfg['nodes']==[65,129] and cx.cfg['timing_repetitions']==cx.cfg['phase_repetitions']==3
     assert cx.cfg['M2']==dict(r=512,M=2052,rules=['gl32','gl40','gl48'],scheme='BDF2',dt=.05/3,refresh=4,contracts=['mf','mesh'])
     assert cx.cfg['W1024']==dict(r=1024,M=4097,rules=['gl56','gl64','gl80'],schemes=[['CN',.01,'fs',1],['BDF2',.00625,'qn',1]],interventions=['baseline','composite','lambda','moments'],held_projection_nodes=65)

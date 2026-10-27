@@ -1,0 +1,239 @@
+{
+  "campaign": "ns-obstacle-20261027",
+  "version": "predata-A6",
+  "status": "G1_control_only_by_exact_job_ledger_reference_and_training_closed",
+  "design_sha256": "0bd0613e64fc3a67a5b7db5201eee80cf05b704052eebcec11931f2d859f7a9e",
+  "fork": {
+    "local": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "mirror": "5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f"
+  },
+  "physics": {
+    "density": 1.0,
+    "pressure": "kinematic",
+    "outlet": "nu_grad_u_minus_pI_times_fluid_normal_equals_zero",
+    "additional_pressure_gauge": false,
+    "force_normal": "solid_to_fluid",
+    "physical_stress": "minus_pI_plus_nu_grad_u_plus_transpose",
+    "reference_weak_form": "advective_gradient_mixed",
+    "geometry": "fixed_stationary"
+  },
+  "case2d": {
+    "label": "DFG2D1_and_fixed_inlet_viscosity_family",
+    "xmin": 0.0,
+    "xmax": 2.2,
+    "height": 0.41,
+    "obstacle_center": [
+      0.2,
+      0.2
+    ],
+    "radius": 0.05,
+    "inlet_max": 0.3,
+    "inlet_mean": 0.2,
+    "benchmark_nu": 0.001,
+    "training_Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "development_Re": [
+      16.875,
+      23.125
+    ],
+    "validation_Re": [
+      16.0,
+      18.0,
+      22.0,
+      24.0
+    ],
+    "viscosity_rule": "0.02/Re",
+    "pressure_probes": [
+      [
+        0.15,
+        0.2
+      ],
+      [
+        0.25,
+        0.2
+      ]
+    ],
+    "upstream_extension_xmin": -0.2,
+    "downstream_extension_xmax": 4.4,
+    "target": "steady"
+  },
+  "case3d": {
+    "label": "project_defined_confined_sphere",
+    "xmin": -5.0,
+    "xmax": 15.0,
+    "pipe_radius": 2.5,
+    "sphere_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "sphere_radius": 0.5,
+    "inlet_mean": 1.0,
+    "inlet_max": 2.0,
+    "pilot_Re": 10.0,
+    "pilot_nu": 0.1,
+    "conditional_training_Re": [
+      8.0,
+      10.0,
+      12.0
+    ],
+    "conditional_development_Re": [
+      9.0
+    ],
+    "conditional_validation_Re": [
+      11.0
+    ],
+    "upstream_extension_xmin": -10.0,
+    "downstream_extension_xmax": 30.0,
+    "pressure_probes": [
+      [
+        -0.5,
+        0.0,
+        0.0
+      ],
+      [
+        0.5,
+        0.0,
+        0.0
+      ]
+    ],
+    "transient": {
+      "status": "separate_gate_not_released",
+      "ramp_time": 1.0,
+      "horizon": 2.0,
+      "output_interval": 0.1,
+      "dt": [
+        0.05,
+        0.025,
+        0.0125
+      ],
+      "startup": "must_be_reviewed_second_order"
+    }
+  },
+  "reference_gates": {
+    "geometry_relative": 1e-05,
+    "analytic_velocity_relative": 1e-06,
+    "analytic_pressure_scaled": 1e-06,
+    "free_dof_residual": 1e-09,
+    "mass_2d": 1e-07,
+    "mass_3d": 1e-06,
+    "divergence_scaled": 0.001,
+    "essential_trace_over_U": 1e-10,
+    "h_velocity_relative": 0.001,
+    "h_pressure_scaled": 0.002,
+    "h_drag_relative": 0.002,
+    "h_transverse_absolute_2d": 0.0001,
+    "h_transverse_absolute_3d": 0.0002,
+    "dfg_drag_relative": 0.002,
+    "dfg_pressure_drop_relative": 0.002,
+    "dfg_lift_absolute": 0.0001,
+    "balance_scaled": 0.005,
+    "uncertainty_recipe": "2*max(last_h_diff,p_diff)+solver_diff+quadrature_diff",
+    "uncertainty_is_bound": false,
+    "uncertainty_max_fraction_target": 0.2,
+    "requires_decreasing_h_differences": true,
+    "domain_independence_is_separate": true,
+    "physical_gradient_drag_gap_relative": 0.0002,
+    "physical_gradient_transverse_gap_absolute": 1e-05
+  },
+  "pilot_accuracy": {
+    "u_relative": 0.01,
+    "p_scaled": 0.02,
+    "drag_relative": 0.02,
+    "transverse_absolute": 0.002,
+    "divergence_scaled": 0.005,
+    "relative_flux_mismatch": 0.001
+  },
+  "rom": {
+    "velocity_prefixes": [
+      2,
+      4,
+      8
+    ],
+    "pressure_rank": "min(r,1+numerical_rank(weighted_mean_removed_training_pressure_snapshots))",
+    "supremizers_per_pressure": 1,
+    "fixed_momentum_tests": 64,
+    "fixed_continuity_tests": 16,
+    "quadrature_candidates": [
+      320,
+      640,
+      1280,
+      2560
+    ],
+    "numerical_rank_relative_cutoff": 1e-12,
+    "inf_sup_absolute_min": 0.001,
+    "inf_sup_reference_fraction": 0.5,
+    "jacobian_condition_max": 10000000000.0,
+    "approximate_boundary_trace_over_U_max": 1e-06,
+    "formulation": "weak_residual_least_squares",
+    "exact_quadratic_tensor_control": [
+      "bank",
+      "POD"
+    ],
+    "representation_development_velocity_gate": 0.002,
+    "representation_development_pressure_scaled_gate": 0.004,
+    "mandatory_interpolation_control": "training_POD_coefficients_PCHIP",
+    "mandatory_mixed_Galerkin_control": true,
+    "pressure_constant_is_solved": true
+  },
+  "resources": {
+    "allocated_gpu_hours_total": 12.0,
+    "reference_reserve": 8.0,
+    "conditional_rom_reserve": 4.0,
+    "concurrent_allocations_max": 2,
+    "gpus_per_job": 1,
+    "cpu_cores_per_job_max": 16,
+    "first_smoke_seconds_per_dimension_max": 1200,
+    "first_smoke_memory_GiB": 64,
+    "new_local_unique_GiB_max": 60,
+    "remote_temporary_GiB_max": 50,
+    "first_3d_max_dofs": 15000,
+    "first_3d_factor_estimate_bytes": "128*dofs**2+4*2**30",
+    "first_3d_factor_estimate_max_GiB": 48
+  },
+  "seeds": {
+    "mesh": 27102026,
+    "training": 27102027,
+    "quadrature": 27102028
+  },
+  "cost": {
+    "primary_device": "CPU",
+    "same_allocation": true,
+    "same_core_count": true,
+    "timing_repetitions": 7,
+    "alternating_order": true,
+    "same_invocation_cost_accuracy": true,
+    "gpu_training_is_offline": true,
+    "output_contracts": [
+      "full_velocity_pressure_fields",
+      "fixed_probes",
+      "integrated_forces"
+    ]
+  },
+  "adapter_A6": {
+    "status": "policy_reviewed_implementation_and_runtime_pending",
+    "construction": "pivoted_mass_metric_reorthogonalized_QR_small_R_SVD",
+    "preserve_sampled_rank_rules": true,
+    "numerical_consistency_tolerance": 1e-10,
+    "component_block_relative_tolerance": 1e-12,
+    "scalar_velocity_eigen_candidates": 48,
+    "component_copies": 2,
+    "scalar_pressure_eigen_candidates": 32,
+    "cluster_gap": "max(64*eps64,1e-10*max(abs(adjacent_sigma_over_sigma1)))",
+    "cluster_cut_policy": "reject_declared_cut_without_hidden_rank_reduction",
+    "pivot_score": "squared_residual_or_row_norm",
+    "pivot_tie_relative": 1.4210854715202004e-14,
+    "velocity_scale": "original_sampled_sigma1",
+    "pressure_scale": "max(1,original_uncentered_sampled_sigma1)",
+    "shared_Stokes_lift_allowed_with_validation": true
+  }
+}

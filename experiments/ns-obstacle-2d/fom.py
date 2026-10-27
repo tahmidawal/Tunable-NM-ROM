@@ -17,6 +17,7 @@ import traceback
 
 import numpy as np
 from scalars import scalar_value, scalar_observations
+import reference_export as rex
 
 
 def dump(path, value):
@@ -47,6 +48,13 @@ def run_case(cfg, out):
     H, xmin, xmax = cfg['H'], cfg['xmin'], cfg['xmax']
     L = xmax-xmin
     kind = cfg['kind']
+    reference_controls=rex.enabled(cfg)
+    if reference_controls:
+        campaign_file=cfg.get('campaign_file','campaign-A2.json')
+        if campaign_file not in ('campaign-A2.json','g2/campaign-A6.json'):raise ValueError('unregistered campaign source')
+        campaign_path=Path(__file__).parent/campaign_file
+        if sha(campaign_path)!=cfg['campaign_sha256']:raise ValueError('central gate binding mismatch')
+        central=json.loads(campaign_path.read_text())
     obstacle = kind in ('dfg','manufactured')
     if kind not in ('dfg', 'channel', 'manufactured'):
         raise ValueError(kind)
@@ -65,11 +73,9 @@ def run_case(cfg, out):
                       rightdomain=1, bc='obstacle', maxh=cfg['obstacle_h'])
     # Netgen optimize/mesh operations are single-threaded here; recorded seed is
     # retained as provenance, not a claim that Netgen accepts an RNG seed option.
-    mesh = ng.Mesh(geo.GenerateMesh(maxh=cfg['maxh']))
-    mesh.Curve(cfg['geometry_order'])
+    mesh,mesh_origin=rex.make_or_reuse_mesh(cfg,out,geo,ng)
     from preflight import mapped_probe
     dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))
-    mesh.ngmesh.Save(str(out/'mesh.vol'))
     if mesh.ne > cfg['max_elements']:
         raise MemoryError(f'pre-space element guard: {mesh.ne}')
     V = ng.VectorH1(mesh, order=cfg['velocity_order'], dirichlet='inlet|wall.*|obstacle')
@@ -77,6 +83,15 @@ def run_case(cfg, out):
     X = V*Q
     if X.ndof > cfg['max_dofs']:
         raise MemoryError(f'pre-assembly DOF guard: {X.ndof}')
+    if reference_controls:
+        layout,digest=rex.layout_record(mesh,V,Q,ng)
+        layout_evidence={'layout':layout,'sha256':digest}
+        dump(out/'fe_layout.json',layout_evidence)
+        if mesh_origin.get('source_layout_sha256',digest)!=digest:
+            raise ValueError('immutable mesh reuse changed FE DOF layout')
+        orientation=rex.affine_gradient_orientation(mesh,cfg,ng)
+        dump(out/'affine_gradient_orientation.json',orientation)
+        if not orientation['passed']:raise ArithmeticError('non-symmetric affine gradient orientation failed')
     (u, p), (v, q) = X.TnT()
     g = ng.GridFunction(X)
     uh, ph = g.components
@@ -126,6 +141,10 @@ def run_case(cfg, out):
         uh.Set(boundary_u, definedon=mesh.Boundaries('inlet|wall.*|obstacle'))
     else:
         uh.Set(boundary_u, definedon=mesh.Boundaries('inlet'))
+    prescribed_FE_trace=None
+    if reference_controls:
+        prescribed_FE_trace=ng.GridFunction(V)
+        prescribed_FE_trace.vec.data=uh.vec
     ds_out = ng.ds('outlet', bonus_intorder=cfg['assembly_bonus_order'])
     dx = ng.dx(bonus_intorder=cfg['assembly_bonus_order'])
     viscous = nu*ng.InnerProduct(grad(u),grad(v))
@@ -173,6 +192,7 @@ def run_case(cfg, out):
             raise MemoryError(f'pre-factorization guard {record}')
         return mat.Inverse(X.FreeDofs(), inverse=cfg['inverse_backend'])
     memory_checks = []
+    stokes_started=time.perf_counter()
     stokes.Assemble()
     r = rhs.vec.CreateVector()
     r.data = rhs.vec-stokes.mat*g.vec
@@ -187,6 +207,9 @@ def run_case(cfg, out):
     g.vec.data += delta
     del inv
     stokes_state = arr(g.vec).copy()
+    stokes_completed=time.perf_counter()
+    if reference_controls:g.Save(str(out/'stokes.sol'))
+    nonlinear_started=time.perf_counter()
     r = residual()
     initial = free_norm(r)
     denominator = max(initial, cfg['residual_floor'])
@@ -230,6 +253,7 @@ def run_case(cfg, out):
     dump(out/'memory_checks.json', memory_checks)
     if not converged:
         raise ArithmeticError('Newton iteration limit: no accepted solution')
+    nonlinear_completed=time.perf_counter()
     independent = true_residual()
     independent_norm = free_norm(independent)
     independent_difference = metric(np.linalg.norm(((arr(independent)-arr(r))/row_scale)[free]),
@@ -275,6 +299,7 @@ def run_case(cfg, out):
     reducing=len(useful)>=2 and any(values[j+1]<=values[j] for j in range(len(values)-1))
     if not useful or min(values)>1e-6 or not (plateau or reducing):
         raise ArithmeticError('Jacobian finite difference mismatch or unresolved signal/plateau')
+    diagnostics_started=time.perf_counter()
     # Quadrature-specific metrics and boundary traces are sampled independently of DOFs.
     qo = cfg['diagnostic_order']
     def integ(cf, boundary=None, order=qo):
@@ -290,20 +315,23 @@ def run_case(cfg, out):
         circumference=2*math.pi*cfg['radius']
         geometry['obstacle_perimeter_error']=metric(abs(boundary_measures['obstacle']-circumference),circumference,'perimeter error / exact circumference')
     # Full positive mapped rule exporter; checks mapped Jacobians and FE traces.
-    points=[]; weights=[]; vals=[]; grads=[]; pressures=[]; boundaries=[]
+    points=[]; weights=[]; vals=[]; grads=[]; pressures=[]; boundaries=[];jacobians=[]
     min_det=float('inf')
     for el in mesh.Elements(ng.VOL):
         ir=ng.IntegrationRule(el.type,qo)
         tr=mesh.GetTrafo(el)
         for ip in ir:
+            if reference_controls and len(points)>=rex.CAPS['volume_points']:
+                raise MemoryError('reference export exceeds unchanged adapter volume-point cap')
             mip=tr(ip)
             jac=np.array(mip.jacobi,dtype=float,copy=True)
             determinant=float(np.linalg.det(jac))
             min_det=min(min_det,determinant)
             w=float(ip.weight*mip.measure)
-            if w<=0 or determinant<=0:
+            if not math.isfinite(w) or not math.isfinite(determinant) or w<=0 or determinant<=0:
                 raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
             points.append(list(mip.point));weights.append(w)
+            jacobians.append(jac.copy())
             # Persist an owning gradient array, never a possible native view.
             vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(scalar_value(ph(mip),'volume_pressure_point'))
     # A VectorH1 volume derivative is not a BND differential operator.
@@ -315,6 +343,8 @@ def run_case(cfg, out):
         tr=mesh.GetTrafo(el)
         label=el.mat
         for ip in ir:
+            if reference_controls and len(boundaries)>=rex.CAPS['boundary_points']:
+                raise MemoryError('reference export exceeds unchanged adapter boundary-point cap')
             mip=tr(ip)
             uv=np.array(uh(mip),dtype=float,copy=True); xy=np.array(mip.point,dtype=float,copy=True)
             bv=np.asarray(boundary_u(mip)) if (kind=='manufactured' or label=='inlet') else np.zeros(2)
@@ -332,13 +362,19 @@ def run_case(cfg, out):
     geometry['minimum_sampled_jacobian_determinant']=min_det
     geometry['max_sampled_obstacle_distance']=obstacle_distance_max
     geometry['mapped_weight_sum']=sum(weights)
+    distances,obstacle_rule=rex.obstacle_quadrature(points,weights,cfg)
+    geometry['analytic_obstacle_quadrature']=obstacle_rule
     if obstacle:
         geometry['sampled_obstacle_normal_dot_radial_range']=[min(obstacle_normal_dot),max(obstacle_normal_dot)]
         if max(obstacle_normal_dot)>-.99:
             raise ArithmeticError('obstacle outward-fluid normal orientation invalid')
+    extra_arrays={'jacobians':np.asarray(jacobians,dtype=np.float64)}
+    if distances is not None:extra_arrays['signed_obstacle_distance']=distances
+    if reference_controls:extra_arrays['prescribed_FE_trace_coefficients']=prescribed_FE_trace.vec.FV().NumPy().copy()
+    dump(out/'geometry_checks.json',geometry)
     np.savez_compressed(out/'full_rule.npz',points=np.asarray(points),weights=np.asarray(weights),
                         velocity=np.asarray(vals),velocity_gradient=np.asarray(grads),pressure=np.asarray(pressures),
-                        stokes_coefficients=stokes_state,solution_coefficients=reference)
+                        stokes_coefficients=stokes_state,solution_coefficients=reference,**extra_arrays)
     dump(out/'boundary_rule.json',boundaries)
     g.Save(str(out/'solution.sol'))
     # Gradient-form and symmetric-stress diagnostics both keep nonzero boundary work.
@@ -484,10 +520,35 @@ def run_case(cfg, out):
         expected_wall=12*nu*U*L/H
         metrics['wall_shear_sign_control']={'force_on_both_walls':wall_force,'analytic_axial_force':expected_wall,
              'axial_error':metric(abs(wall_force[0]-expected_wall),abs(expected_wall),'force on both walls versus positive analytic Poiseuille drag')}
-    elapsed=time.perf_counter()-started
+    wake=rex.wake_centerline(mesh,uh,cfg,ng)
+    if wake is not None:dump(out/'wake_centerline.json',wake)
+    reload_started=time.perf_counter()
+    reload_evidence=None
+    if reference_controls:
+        trace=rex.essential_trace_certificate(mesh,uh,prescribed_FE_trace,cfg['velocity_order'],U,ng)
+        dump(out/'essential_trace_certificate.json',trace)
+        metrics['prescribed_FE_essential_trace']=trace
+        if trace['upper_bound_over_U']>central['reference_gates']['essential_trace_over_U']:
+            raise ArithmeticError('prescribed FE essential trace bound fails central threshold')
+        if obstacle and not obstacle_rule['no_obstacle_quadrature']:
+            raise ArithmeticError('full mapped rule contains points inside exact obstacle; none were silently removed')
+        reload_evidence=rex.reload_certificate(out,cfg,mesh,layout_evidence,ng)
+        if cfg.get('export_common_stokes_lift',False):
+            from shared_lift import export_common_lift
+            export_common_lift(out,cfg,sha(out/'mesh.vol'),layout_evidence,stokes_state,stokes_linear_metric,
+                               stokes_completed-stokes_started)
+    completed=time.perf_counter();elapsed=completed-started
     result={'status':'completed_control_not_reference_admission','configuration':cfg,
             'scalar_return_contract':scalar_observations(),
             'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
+            'mesh_origin':mesh_origin,'reload_checks':reload_evidence,
+            'timing_use':'reference generation and diagnostics only; not a tuned paired FOM query benchmark',
+            'reference_phase_seconds':{'geometry_spaces_fields_forms':stokes_started-started,
+                'stokes_lift':stokes_completed-stokes_started,'stokes_checkpoint':nonlinear_started-stokes_completed,
+                'newton_query':nonlinear_completed-nonlinear_started,
+                'independent_residual_and_Jacobian':diagnostics_started-nonlinear_completed,
+                'reference_diagnostics_and_export':reload_started-diagnostics_started,
+                'trace_certificate_and_reload':completed-reload_started,'total':elapsed},
             'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',
             'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
             'versions':{'ngsolve':ng.__version__,'numpy':np.__version__,'python':platform.python_version()},
@@ -495,6 +556,14 @@ def run_case(cfg, out):
             'provenance':{'execution_source_commit':Path('SOURCE_COMMIT.txt').read_text().strip() if Path('SOURCE_COMMIT.txt').exists() else None,'source_sha256':sha(__file__),'config_sha256':sha(out/'config.json'),
                           'job_id':os.environ.get('SLURM_JOB_ID'),'hostname':platform.node()}}
     dump(out/'result.json',result)
+    if reference_controls:
+        import importlib.metadata
+        dump(out/'EXPORT-MANIFEST.json',{'schema':'ns-obstacle-reference-producer-v1','physical_admission':False,
+             'case':{'kind':kind,'Re':U*D/nu,'split':cfg.get('split','control'),'release':cfg['release']},
+             'campaign_sha256':cfg['campaign_sha256'],'layout_sha256':layout_evidence['sha256'],
+             'versions':{name:importlib.metadata.version(name) for name in ('ngsolve','netgen-mesher','netgen-occt','ngsolve-openblas','numpy')},
+             'producer_source_sha256':{name:sha(Path(__file__).with_name(name)) for name in ('fom.py','reference_export.py','shared_lift.py','preflight.py','scalars.py')},
+             'files':{p.name:sha(p) for p in sorted(out.iterdir()) if p.is_file()}})
     return result
 
 

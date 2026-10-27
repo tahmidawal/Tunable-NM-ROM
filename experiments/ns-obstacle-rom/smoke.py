@@ -13,6 +13,7 @@ from solver import jacobian_check,solve_steady
 from quadrature import fit_positive,output_moments,convection_candidate
 from interpolation import CoefficientPCHIP
 from metrics import field_errors,representation_admission
+from timing import paired_cpu,outputs_sha256
 
 
 def polynomial_rule():
@@ -142,6 +143,34 @@ def main():
                      (radius*np.cos(theta))[:,None],np.zeros((128,2,2)),np.zeros(128),1.)
     assert np.max(np.abs(fm["pressure"][:,0]-[-2*np.pi*radius**2,0.]))<1e-12
     report["force_pressure_gradient_fixture"]=fm["pressure"].tolist()
+    # Deliberately reuse the SAME arrays and nested accounting objects on every call.
+    shared={"output_contract":"fixed_probes","outputs":{"velocity":np.zeros((2,2))},
+            "work":{"calls":0,"nested":{"history":[]}},"component_seconds":{"solve":0.}}
+    def reused_query():
+        count=shared["work"]["calls"]+1
+        shared["work"]["calls"]=count
+        shared["work"]["nested"]["history"].append(count)
+        shared["outputs"]["velocity"][:]=count
+        shared["component_seconds"]["solve"]=count/1000.
+        return shared
+    timing=paired_cpu({"first":reused_query,"second":reused_query},"fixed_probes",1,burn_seconds=0.)
+    shared["outputs"]["velocity"][:]=-999
+    shared["work"]["calls"]=-999
+    shared["work"]["nested"]["history"].append(-999)
+    shared["component_seconds"]["solve"]=-999.
+    for index,(row,actual) in enumerate(zip(timing["repetitions"],timing["actual_invocation_outputs"])):
+        expected=index+3 # two discarded warmups precede the retained invocations
+        assert np.all(actual["outputs"]["velocity"]==expected)
+        assert not actual["outputs"]["velocity"].flags.writeable
+        assert outputs_sha256(actual["outputs"])==row["output_sha256"]
+        assert row["work"]["calls"]==expected
+        assert row["work"]["nested"]["history"]==list(range(1,expected+1))
+        assert row["component_seconds"]["solve"]==expected/1000.
+    report["timing_reused_buffer_regression"]={"passed":True,"retained_invocations":len(timing["repetitions"]),
+              "output_hashes":[row["output_sha256"] for row in timing["repetitions"]],
+              "work_counts":[row["work"]["calls"] for row in timing["repetitions"]],
+              "owner_mutated_after_collection":True,"stored_arrays_read_only":True,
+              "burn_in_disabled_for_regression_only":True}
     report["seconds"]=time.perf_counter()-start
     print(json.dumps(report,indent=2,allow_nan=False))
 

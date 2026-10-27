@@ -4,6 +4,7 @@ The launcher must pin the CPU core/thread policy for NGSolve and NumPy. This uti
 not turn heterogeneous device timings or different output contracts into a fair comparison.
 """
 from __future__ import annotations
+import copy
 import hashlib
 import os
 import time
@@ -43,10 +44,21 @@ def paired_cpu(calls,contract,cores,repetitions=7,burn_seconds=.25):
             cpu=time.process_time()-cpu_start;elapsed=time.perf_counter()-start
             if record.get("output_contract")!=contract or "outputs" not in record or "work" not in record:
                 raise ValueError("query did not return its output contract, actual outputs and work")
-            checksum=outputs_sha256(record["outputs"])
+            # Callers may reuse FE/NumPy output buffers and mutable accounting dictionaries.
+            # Snapshot EVERYTHING before another invocation can overwrite this evidence.
+            evidence_start=time.perf_counter()
+            snapshot=copy.deepcopy(record)
+            for key,value in snapshot["outputs"].items():
+                array=np.asarray(value)
+                array.setflags(write=False)
+                snapshot["outputs"][key]=array
+            checksum=outputs_sha256(snapshot["outputs"])
+            evidence_seconds=time.perf_counter()-evidence_start
             rows.append({"repetition":rep,"method":name,"elapsed_seconds":elapsed,"cpu_seconds":cpu,
-                         "output_sha256":checksum,"work":record["work"],
-                         "component_seconds":record.get("component_seconds",{}),"order":order})
-            retained_outputs.append({"repetition":rep,"method":name,"outputs":record["outputs"]})
+                         "output_sha256":checksum,"work":snapshot["work"],
+                         "component_seconds":snapshot.get("component_seconds",{}),"order":list(order),
+                         "evidence_snapshot_seconds":evidence_seconds})
+            retained_outputs.append({"repetition":rep,"method":name,"outputs":snapshot["outputs"]})
     return {"contract":contract,"cores":cores,"device":"CPU","warmups_discarded":len(warmup),
-            "repetitions":rows,"actual_invocation_outputs":retained_outputs,"burn_seconds":burn_seconds}
+            "repetitions":rows,"actual_invocation_outputs":retained_outputs,"burn_seconds":burn_seconds,
+            "evidence_snapshot_timing":"reported separately after query; caller-required output copies belong inside query"}

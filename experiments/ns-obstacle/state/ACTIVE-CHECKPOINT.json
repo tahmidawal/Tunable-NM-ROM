@@ -1,37 +1,13 @@
 {
-  "status": "2d_A8_control_retry_live_3d_signed_J_diagnostic_implementation",
-  "numerical_jobs": [
-    {
-      "job_id": 6612209,
-      "lane": "2d",
-      "attempt": "g1-smoke07",
-      "state": "PENDING",
-      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07"
-    }
-  ],
+  "status": "2d_A8_controls_completed_collecting_3d_serialization_diagnostic_design",
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor job6612209; do not duplicate; collect and independently review all G1 outcomes",
-    "3D source-only signed-facet-Jacobian implementation with strict curved reload parity; no release yet",
-    "G2 export point/resource projections before reference ladder; training remains closed"
+    "Independently audit retained2Djob6612209 G1 controls and certificates; mirror then checksum-verified remote cleanup",
+    "Prepare separately declared3D text-reload audit, regenerated-mesh diagnosis and binary round-trip control for source review",
+    "Review G2 source/export delta and measured resource projections before release"
   ],
-  "staged_unsubmitted": [
-    {
-      "lane": "2d",
-      "attempt": "g1-smoke01",
-      "source_commit": "09784dba13b1301231dd7c571bb137d03873ff15",
-      "manifest": "fa0b11e140612bfe85117c9bee84f18b940a91311a703bbce1dcf0282485c953",
-      "will_be_superseded_by": "g1-smoke02"
-    },
-    {
-      "lane": "3d",
-      "attempt": "g1-smoke01",
-      "source_commit": "485d4252f740d54fccb172f089ecc48a0db88438",
-      "manifest": "22911ce4bd4905b705879eae65bbaa8e94d0bd38f1213ae403c4e5021300606a",
-      "will_be_superseded_by": "g1-smoke02"
-    }
-  ],
-  "completed_allocated_gpu_hours": 0.04527777777777778,
+  "completed_allocated_gpu_hours": 0.05388888888888889,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -47,12 +23,33 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T19:14:45.971801+00:00",
+  "last_checkpoint_utc": "2026-10-28T19:20:09.080329+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",
     "rom_recovery",
     "numerical_recovery"
   ],
-  "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md"
+  "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
+  "historical_unsubmitted_staging": [
+    {
+      "lane": "2d",
+      "attempt": "g1-smoke01",
+      "source_commit": "09784dba13b1301231dd7c571bb137d03873ff15",
+      "manifest": "fa0b11e140612bfe85117c9bee84f18b940a91311a703bbce1dcf0282485c953",
+      "will_be_superseded_by": "g1-smoke02"
+    },
+    {
+      "lane": "3d",
+      "attempt": "g1-smoke01",
+      "source_commit": "485d4252f740d54fccb172f089ecc48a0db88438",
+      "manifest": "22911ce4bd4905b705879eae65bbaa8e94d0bd38f1213ae403c4e5021300606a",
+      "will_be_superseded_by": "g1-smoke02"
+    }
+  ],
+  "historical_unsubmitted_staging_note": "Superseded initial attempts, retained as historical records only; not current execution candidates.",
+  "ROM_current_source": {
+    "commit": "d1b4eb952abe0e454d06f3406a5cd26eab09e770",
+    "status": "A6 source/synthetic review READY; native integration and G2 data not passed"
+  }
 }

@@ -75,3 +75,15 @@ to test the adapter. Generated control tables and provisional field figures live
 coordinator tree; final reports and presentation remain future campaign deliverables.
 The ledger currently charges 135 GPU-seconds (0.0375 GPU-hours). No merge,
 sealed-population access or unique-data deletion occurred.
+
+### Obstacle-flow A8 retry and unresolved 3D geometry (Codex coordinator)
+
+The 3D diagnostic job 6611259 completed, but native exterior-facet and all-element-boundary geometric identities failed; no 3D flow or normal repair is admitted. Its arrays and pinned source diagnosis are retained in the 3D lane, with independently verified archive and remote-duplicate cleanup. Negative facet Jacobians are a hypothesis, not a measured cause. Pinned Netgen source shows text mesh curved coefficients written with limited decimal precision. The next source-only proposal separates strict retained-file reload parity from an independently regenerated unchanged-recipe diagnostic; neither can reconstruct the original unsaved in-memory state. A binary archive path requires a clean-process measured round trip before G2 selection.
+
+A8 normal-repair review preserved Claude's initial NEEDS-FIXES. The final isolated source 262a0ef0546bdbecb1507fd3a48d22c10b137067 checks every actual returned boundary coefficient-function value, reports witness margins, preserves the accepted scoped false-stop risk, and includes a complete callsite audit. Independent Codex delta review resolved the requested fixes before staging. The original force/trace/geometry gates were not relaxed.
+
+Job 6612209 was submitted in g1-smoke07 and, while still pending with zero runtime, its H200-specific request was changed once to H100 using scontrol. Exact ID/owner/name/pending-state guards and before/after receipts are retained. No cancellation, duplication or source change occurred. It completed in 31 seconds on pax063 with all thirteen G1 run checks passing across the channel, manufactured and coarse DFG cases. All 820 collected files pass checksums; archive SHA256 is 962e5cf5ac28760bf4edde5659aaeab4a8cd638c8152df4a1afccd2cd8ce4a80. Independent numerical review and lane backup/cleanup are still pending. Coarse force and pressure discrepancies remain diagnostic; successful G1 controls confer no reference admission. Total terminal charge is now 194 GPU-seconds (0.0538888889 GPU-hours).
+
+A coordinator-spawned automatic Git repack consumed a large temporary pack. Exact process ownership was verified before terminating only that repack and removing its unpublished incomplete temporary file. Existing Git packs and all experiment evidence were retained; the event is recorded in GIT-AUTO-GC-INTERRUPTION.json. Subsequent commands disable auto-GC only per command/process, without a persistent configuration change.
+
+No training, method comparison, sealed-data access, worktree merge or unique experiment-data deletion occurred. The next 2D work is G2 source/export and resource qualification after independent G1 admission.

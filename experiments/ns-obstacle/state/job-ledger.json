@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "2d_A8_control_retry_pending_3d_geometry_followup_source_only",
+  "status": "2d_A8_all_three_controls_completed_collecting_for_independent_review",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -249,9 +249,9 @@
       "source_mirror": "3251c8429",
       "manifest_sha256": "aba95446b27cac75d7beb75e1945e8c36eef81a635a369daf4f2c03cee271d56",
       "submitted_utc": "2026-10-28T19:12:12Z",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "COMPLETED",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07",
-      "gpu_type_requested": "h200",
+      "gpu_type_requested": "h100",
       "gpus": 1,
       "cpus_reserved": 16,
       "memory_GiB": 64,
@@ -259,12 +259,34 @@
       "purpose": "single_isolated_A8_G1_normal_repair_retry",
       "release_record": "reviews/RESPONSE-A8.md",
       "G2_source_included": false,
-      "device_for_FE": "CPU"
+      "device_for_FE": "CPU",
+      "resource_request_history": [
+        {
+          "submitted_type": "h200",
+          "submitted_utc": "2026-10-28T19:12:12Z"
+        },
+        {
+          "updated_type": "h100",
+          "updated_utc": "2026-10-28T19:18:24Z",
+          "method": "scontrol update existing pending job; no cancel/resubmit",
+          "same_resources_except_type": true
+        }
+      ],
+      "resource_update_receipt": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/staging/g1-smoke07/GRES-UPDATE.json",
+      "elapsed_seconds": 31,
+      "allocated_gpu_hours": 0.008611111111111111,
+      "node": "pax063",
+      "actual_gpu_type": "H100",
+      "case_states": {
+        "channel": "completed_pending_independent_review",
+        "manufactured": "completed_pending_independent_review",
+        "dfg": "completed_control_pending_independent_review"
+      },
+      "batch_MaxRSS_KiB": 1182176,
+      "reference_admitted": false
     }
   ],
-  "live_job_ids": [
-    6612209
-  ],
-  "completed_gpu_hours": 0.04527777777777778,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.05388888888888889,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

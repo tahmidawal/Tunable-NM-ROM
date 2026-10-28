@@ -1,0 +1,2782 @@
+{
+  "status": "completed_control_not_reference_admission",
+  "configuration": {
+    "U": 0.2,
+    "D": 0.1,
+    "nu": 0.001,
+    "H": 0.41,
+    "xmin": 0.0,
+    "xmax": 2.2,
+    "center": [
+      0.2,
+      0.2
+    ],
+    "radius": 0.05,
+    "outlet": "gradient",
+    "velocity_order": 3,
+    "pressure_order": 2,
+    "geometry_order": 3,
+    "maxh": 0.08,
+    "obstacle_h": 0.02,
+    "assembly_bonus_order": 6,
+    "diagnostic_order": 12,
+    "threads": 16,
+    "seed": 27102026,
+    "newton_max": 30,
+    "nonlinear_relative_tolerance": 1e-10,
+    "linear_relative_tolerance": 1e-10,
+    "residual_floor": 1.0,
+    "damping_sequence": [
+      1,
+      0.5,
+      0.25,
+      0.125,
+      0.0625,
+      0.03125,
+      0.015625
+    ],
+    "armijo": 0.0001,
+    "inverse_backend": "umfpack",
+    "max_elements": 20000,
+    "max_dofs": 100000,
+    "max_nnz": 12000000,
+    "factor_fill_estimate": 100,
+    "memory_stop_gib": 48,
+    "jacobian_steps": [
+      0.0001,
+      1e-05,
+      1e-06
+    ],
+    "jacobian_state_perturbation": 0.1,
+    "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+    "design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+    "release": "G2_steady_control_candidate",
+    "precision": "float64",
+    "kind": "dfg",
+    "reference_export_controls": true,
+    "export_common_stokes_lift": false,
+    "campaign_file": "g2/campaign-A6.json",
+    "split": "control",
+    "purpose": "one native producer and fresh-process binary reload; no reference admission"
+  },
+  "scalar_return_contract": [
+    {
+      "label": "normal_P0_constant",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "oriented_normal_moment",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "normal_geometry_volume",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "volume_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "boundary_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "volume_pressure_point",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "boundary_pressure_point",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "reaction_inner_product",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "exact_pressure_probe",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    }
+  ],
+  "geometry": {
+    "volume": 0.8941458750115616,
+    "volume_error": {
+      "numerator": 1.4335446396618323e-07,
+      "denominator": 0.8941460183660256,
+      "value": 1.6032556318726454e-07,
+      "definition": "area error / exact fluid area"
+    },
+    "boundary_measures": {
+      "inlet": 0.40999999999999726,
+      "obstacle": 0.3141622198421888,
+      "outlet": 0.40999999999999726,
+      "wall_bottom": 2.1999999999999864,
+      "wall_top": 2.1999999999999864
+    },
+    "element_count": 415,
+    "ndof": 4889,
+    "velocity_ndof": 3978,
+    "pressure_ndof": 911,
+    "geometry_order": 3,
+    "coordinate_derivative_convention": "component,coordinate",
+    "obstacle_perimeter_error": {
+      "numerator": 2.954483209471892e-06,
+      "denominator": 0.3141592653589793,
+      "value": 9.404412141389186e-06,
+      "definition": "perimeter error / exact circumference"
+    },
+    "minimum_sampled_jacobian_determinant": 0.0003079791579499372,
+    "max_sampled_obstacle_distance": 6.094303132989087e-06,
+    "mapped_weight_sum": 0.8941458750115603,
+    "analytic_obstacle_quadrature": {
+      "obstacle_present": true,
+      "sign": "radius from exact center minus exact radius; negative inside solid",
+      "minimum_signed_distance": 2.5311756660040263e-05,
+      "minimum_signed_distance_over_D": 0.00025311756660040263,
+      "candidate_excluded_count": 0,
+      "candidate_excluded_weight": 0.0,
+      "candidate_excluded_weight_fraction": 0.0,
+      "actually_removed_count": 0,
+      "actually_removed_weight": 0.0,
+      "no_obstacle_quadrature": true,
+      "classification": "strict signed distance < 0; no clipping or tolerance offset"
+    },
+    "sampled_obstacle_normal_dot_radial_range": [
+      -0.9999999999976446,
+      -0.9999951895836835
+    ]
+  },
+  "metrics": {
+    "mass": {
+      "numerator": 2.7755575615628914e-17,
+      "denominator": 0.0819999999999995,
+      "value": 3.384826294588912e-16,
+      "definition": "abs(Qout-Qin)/abs(Qin)"
+    },
+    "divergence": {
+      "numerator": 0.0041592518690215475,
+      "denominator": 0.1891185739171657,
+      "value": 0.021992825891566356,
+      "definition": "D||div u||/(U sqrt(volume))"
+    },
+    "boundary_trace": {
+      "numerator": 2.220446049250313e-16,
+      "denominator": 0.2,
+      "value": 1.1102230246251565e-15,
+      "definition": "maximum sampled essential FE trace error/U"
+    },
+    "Qin": 0.0819999999999995,
+    "Qout": 0.08199999999999948,
+    "mass_scope": "physical inlet/outlet mass",
+    "global_boundary_flux": {
+      "numerator": 1.3877787807814457e-17,
+      "denominator": 0.16399999999999895,
+      "value": 8.462065736472284e-17,
+      "definition": "abs(total boundary flux) / total absolute boundary flux"
+    },
+    "independent_residual": {
+      "numerator": 1.5067187345388863e-15,
+      "denominator": 1.3133228587588013,
+      "value": 1.1472569174367832e-15,
+      "definition": "scaled free-DOF residual / max(initial Stokes scaled residual, fixed floor)"
+    },
+    "independent_assembly_agreement": {
+      "numerator": 0.0,
+      "denominator": 1.3133228587588013,
+      "value": 0.0,
+      "definition": "independent coefficient residual versus operator apply"
+    },
+    "pressure_mean": 0.019876507867530434,
+    "pressure_gauge": "fixed by natural outlet, no pin and no shift",
+    "row_scale_momentum": 0.004000000000000001,
+    "row_scale_continuity": 0.020000000000000004,
+    "residual_initial_stokes_norm": 1.3133228587588013,
+    "residual_floor": 1.0,
+    "residual_mode": "relative to initial Stokes residual in scaled row units",
+    "stokes_linear_residual": {
+      "numerator": 8.423749495144761e-16,
+      "denominator": 1.3651500561970478,
+      "value": 6.170566713091696e-16,
+      "definition": "scaled linear residual / scaled RHS"
+    },
+    "energy": {
+      "terms": {
+        "dissipation": 0.005906573265423347,
+        "convection_boundary": -1.936509093378733e-05,
+        "physical_traction_work": -0.005890818186158262,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.210854317421e-07,
+        "finite_divergence_pressure": 7.304997425578298e-20,
+        "finite_divergence_viscous": -1.0954319625931359e-07
+      },
+      "individual_contributions": {
+        "convective_flux_inlet": -0.0025302857142856985,
+        "convective_flux_obstacle": 0.0,
+        "convective_flux_outlet": 0.002510920623351911,
+        "convective_flux_wall_bottom": 0.0,
+        "convective_flux_wall_top": 0.0,
+        "traction_work_inlet": -0.00589067854426034,
+        "traction_work_obstacle": -0.0,
+        "traction_work_outlet": -1.3964189792362937e-07,
+        "traction_work_wall_bottom": 1.0705998867260125e-20,
+        "traction_work_wall_top": -2.5205061828164375e-21,
+        "dissipation": 0.005906573265423347,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.210854317421e-07,
+        "finite_divergence_pressure": 7.304997425578298e-20,
+        "finite_divergence_viscous_volume": -1.7299376109959227e-06,
+        "finite_divergence_viscous_inlet": 1.6228372673178662e-06,
+        "finite_divergence_viscous_obstacle": 0.0,
+        "finite_divergence_viscous_outlet": -2.4428525812571346e-09,
+        "finite_divergence_viscous_wall_bottom": 0.0,
+        "finite_divergence_viscous_wall_top": 0.0
+      },
+      "physical_raw": {
+        "numerator": 3.610011668702274e-06,
+        "denominator": 0.01684237409238186,
+        "value": 0.00021434102157457446,
+        "definition": "raw physical balance / sum absolute terms"
+      },
+      "corrected": {
+        "numerator": 4.1406402967036145e-06,
+        "denominator": 0.01684237409238186,
+        "value": 0.00024584659347855886,
+        "definition": "finite-divergence-corrected physical balance / sum absolute terms"
+      }
+    },
+    "gradient_energy": {
+      "terms": {
+        "dissipation": 0.005904698329854985,
+        "convection_boundary": -1.936509093378733e-05,
+        "gradient_traction_work": -0.0058890527937861615,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.2108543174210337e-07,
+        "finite_divergence_pressure": 7.220294130852868e-20
+      },
+      "individual_contributions": {
+        "convective_flux_inlet": -0.0025302857142856985,
+        "convective_flux_obstacle": 0.0,
+        "convective_flux_outlet": 0.002510920623351911,
+        "convective_flux_wall_bottom": 0.0,
+        "convective_flux_wall_top": 0.0,
+        "traction_work_inlet": -0.005889055706993021,
+        "traction_work_obstacle": -0.0,
+        "traction_work_outlet": 2.9132068595482454e-09,
+        "traction_work_wall_bottom": 1.0705998867260125e-20,
+        "traction_work_wall_top": -2.5205061828164375e-21,
+        "dissipation": 0.005904698329854985,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.2108543174210337e-07,
+        "finite_divergence_pressure": 7.220294130852868e-20
+      },
+      "corrected": {
+        "numerator": 4.140640296705586e-06,
+        "denominator": 0.016835384373124217,
+        "value": 0.00024594866413122404,
+        "definition": "A2 gradient-form energy including body forcing and finite divergence"
+      }
+    },
+    "gradient_momentum": [
+      {
+        "terms": {
+          "convection": -6.151888269903191e-05,
+          "gradient_traction": 2.2956395301691908e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.592780392729252e-07
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": -0.019679999999999878,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": 0.019618481117300846,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "gradient_traction_inlet": -0.028467663113682762,
+          "gradient_traction_obstacle": 0.011130500545575664,
+          "gradient_traction_outlet": -7.162797416635485e-08,
+          "gradient_traction_wall_bottom": 0.00864894058329462,
+          "gradient_traction_wall_top": 0.008711250008088334,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.592780392729252e-07
+        },
+        "corrected": {
+          "numerator": 3.892176543661293e-05,
+          "denominator": 0.09625726627395555,
+          "value": 0.0004043514525525648,
+          "definition": "A2 gradient-form momentum including body forcing and finite divergence"
+        }
+      },
+      {
+        "terms": {
+          "convection": -1.2884847495737926e-05,
+          "gradient_traction": 2.7301143762268296e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.6362279392635377e-08
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": 0.0,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": -1.2884847495737926e-05,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "gradient_traction_inlet": 5.582627649679309e-06,
+          "gradient_traction_obstacle": 3.31237270001527e-05,
+          "gradient_traction_outlet": -3.2461660584879953e-09,
+          "gradient_traction_wall_bottom": -0.04424380652372652,
+          "gradient_traction_wall_top": 0.04423240455900502,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.6362279392635377e-08
+        },
+        "corrected": {
+          "numerator": 1.4432658545923006e-05,
+          "denominator": 0.08852782189332256,
+          "value": 0.00016302963562477105,
+          "definition": "A2 gradient-form momentum including body forcing and finite divergence"
+        }
+      }
+    ],
+    "momentum": [
+      {
+        "terms": {
+          "convection": -6.151888269903191e-05,
+          "physical_traction": 2.6664536524201644e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.5927803927288453e-07,
+          "finite_divergence_viscous": -3.708141222511205e-06
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": -0.019679999999999878,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": 0.019618481117300846,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "physical_traction_inlet": -0.0284774395276493,
+          "physical_traction_obstacle": 0.011143981910558334,
+          "physical_traction_outlet": -6.843776779072187e-08,
+          "physical_traction_wall_bottom": 0.00864894058329462,
+          "physical_traction_wall_top": 0.008711250008088334,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.5927803927288453e-07,
+          "finite_divergence_viscous_inlet": 9.776413966533035e-06,
+          "finite_divergence_viscous_obstacle": -1.3481364982668607e-05,
+          "finite_divergence_viscous_outlet": -3.1902063756322224e-09,
+          "finite_divergence_viscous_wall_bottom": 0.0,
+          "finite_divergence_viscous_wall_top": 0.0
+        },
+        "corrected": {
+          "numerator": 3.8921765436614356e-05,
+          "denominator": 0.09630378183185395,
+          "value": 0.00040415614731072153,
+          "definition": "physical momentum corrected for discrete divergence"
+        }
+      },
+      {
+        "terms": {
+          "convection": -1.2884847495737926e-05,
+          "physical_traction": 1.4515198681892233e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.6362279392635377e-08,
+          "finite_divergence_viscous": 1.2785945080375433e-05
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": 0.0,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": -1.2884847495737927e-05,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "physical_traction_inlet": 5.582627649679207e-06,
+          "physical_traction_obstacle": 1.71428371470465e-05,
+          "physical_traction_outlet": -3.2461660585454298e-09,
+          "physical_traction_wall_bottom": -0.044247855119890746,
+          "physical_traction_wall_top": 0.04423964809994197,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.6362279392635377e-08,
+          "finite_divergence_viscous_inlet": 0.0,
+          "finite_divergence_viscous_obstacle": 1.598088985310628e-05,
+          "finite_divergence_viscous_outlet": 0.0,
+          "finite_divergence_viscous_wall_bottom": 4.048596164215439e-06,
+          "finite_divergence_viscous_wall_top": -7.2435409369462845e-06
+        },
+        "corrected": {
+          "numerator": 1.4432658545922375e-05,
+          "denominator": 0.0885504061675249,
+          "value": 0.0001629880558494313,
+          "definition": "physical momentum corrected for discrete divergence"
+        }
+      }
+    ],
+    "forces": {
+      "normalization": 0.0020000000000000005,
+      "reaction_force": [
+        0.011159568821667272,
+        2.2066397598784475e-05
+      ],
+      "reaction_coefficient": [
+        5.579784410833635,
+        0.011033198799392234
+      ],
+      "gradient_order12": {
+        "force": [
+          0.011130500545575666,
+          3.3123727000152706e-05
+        ],
+        "coefficient": [
+          5.565250272787831,
+          0.016561863500076348
+        ]
+      },
+      "gradient_order16": {
+        "force": [
+          0.011130500545576462,
+          3.312372700333907e-05
+        ],
+        "coefficient": [
+          5.56525027278823,
+          0.01656186350166953
+        ]
+      },
+      "physical_symmetric_order12": {
+        "force": [
+          0.011143981910558333,
+          1.7142837147046555e-05
+        ],
+        "coefficient": [
+          5.571990955279165,
+          0.008571418573523275
+        ]
+      },
+      "physical_symmetric_order16": {
+        "force": [
+          0.011143981910558752,
+          1.7142837150121258e-05
+        ],
+        "coefficient": [
+          5.571990955279375,
+          0.008571418575060627
+        ]
+      },
+      "pressure_probes": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.13158638837040076,
+          0.014712505125413852
+        ],
+        "difference": 0.11687388324498692,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      }
+    },
+    "prescribed_FE_essential_trace": {
+      "target": "prescribed FE Dirichlet trace; analytic-data approximation remains a separate diagnostic",
+      "method": "degree-p reference-edge polynomial; stationary-point maximum estimate and Chebyshev coefficient upper bound plus verified roundoff allowance",
+      "maximum_estimate_over_U": 0.0,
+      "upper_bound_over_U": 1e-12,
+      "roundoff_check_over_U": 1e-12,
+      "interval_arithmetic": false,
+      "elements": [
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 0,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 1,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 2,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 3,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 4,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 5,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 6,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 7,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 8,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 9,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 10,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 11,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 12,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 13,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 14,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 15,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 16,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 17,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 18,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 19,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 20,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 21,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 22,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 23,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 24,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 25,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 26,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 27,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 33,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 34,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 35,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 36,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 37,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 38,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 39,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 40,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 41,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 42,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 43,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 44,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 45,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 46,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 47,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 48,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 49,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 50,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 51,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 52,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 53,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 54,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 55,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 56,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 57,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 58,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 59,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 60,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 61,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 62,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 63,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 64,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 65,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 66,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 67,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 68,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 69,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 70,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 71,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 72,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 73,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 74,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 75,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 76,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 77,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 78,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 79,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 80,
+          "label": "obstacle"
+        }
+      ]
+    }
+  },
+  "elapsed_seconds": 4.263670432381332,
+  "normal_orientation": {
+    "passed": true,
+    "factors": {
+      "wall_bottom": 1,
+      "outlet": 1,
+      "wall_top": 1,
+      "inlet": 1,
+      "obstacle": -1
+    },
+    "certificate_sha256": "2cd2f2320b3ea04ccf8ec3ac9720e8b3fd4326b5e2f54ce6c95fae618e54e74c"
+  },
+  "mesh_origin": {
+    "mode": "generated",
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "mesh_sha256": "598f209a4834b0df5cab8f2ececcfc481440b5abdf6b247bfa0a59db0c1102da"
+  },
+  "reload_checks": {
+    "passed": true,
+    "policy": "saved_curved_binary_verified_fresh_process_no_recurve",
+    "threshold": 1e-10,
+    "checks": {
+      "solution_coefficients": {
+        "numerator": 0.0,
+        "denominator": 1.021322468263851,
+        "value": 0.0
+      },
+      "stokes_coefficients": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "volume_points": {
+        "numerator": 0.0,
+        "denominator": 2.1999212368312335,
+        "value": 0.0
+      },
+      "volume_weights": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "volume_jacobians": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "volume_velocity": {
+        "numerator": 0.0,
+        "denominator": 0.3991081723242789,
+        "value": 0.0
+      },
+      "volume_velocity_gradient": {
+        "numerator": 0.0,
+        "denominator": 29.75936926970268,
+        "value": 0.0
+      },
+      "volume_pressure": {
+        "numerator": 0.0,
+        "denominator": 0.1316012950647074,
+        "value": 0.0
+      },
+      "boundary_points": {
+        "numerator": 0.0,
+        "denominator": 2.2,
+        "value": 0.0
+      },
+      "boundary_weights": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "boundary_normals": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "boundary_raw_normals": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "boundary_velocity": {
+        "numerator": 0.0,
+        "denominator": 0.30000000000000016,
+        "value": 0.0
+      },
+      "boundary_velocity_gradient": {
+        "numerator": 0.0,
+        "denominator": 31.05288323685323,
+        "value": 0.0
+      },
+      "boundary_pressure": {
+        "numerator": 0.0,
+        "denominator": 0.13163752295128953,
+        "value": 0.0
+      }
+    },
+    "curve_orders": {
+      "configured": 3,
+      "original": 3,
+      "reloaded": 3
+    },
+    "source_files": {
+      "mesh.vol.bin": "598f209a4834b0df5cab8f2ececcfc481440b5abdf6b247bfa0a59db0c1102da",
+      "solution.sol": "1dc39a7646629163141c64e21735ae23a576a251f61b2bd98756178257c1bbdd",
+      "stokes.sol": "2aa9d5f3af98e75cadb1aa933191afdf2951797a3c45aae42a666ae87e99e0e1",
+      "full_rule.npz": "acfc9bfe0997bcb8a93d8adbd5efff9f337fb6eebc693e992fe59791ba8e8b4d",
+      "boundary_rule.json": "5491265c090de46c8b24c21a09966132164850670e052605f5020fdb83b91291",
+      "fe_layout.json": "117645ebd172a74b3aeb2ebafcc275fe03794f8932d624903229902304f30ebd"
+    },
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "execution": {
+      "pid": 937148,
+      "parent_pid": 937008,
+      "producer_pid": 937008,
+      "executable": "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "fresh_interpreter": true
+    },
+    "layout_sha256": "75ee15cb72e8937cf6713829d892b84fd7a69dc63f5c5bdca06aa077fb419b8a",
+    "normal_orientation": {
+      "passed": true,
+      "factors": {
+        "wall_bottom": 1,
+        "outlet": 1,
+        "wall_top": 1,
+        "inlet": 1,
+        "obstacle": -1
+      },
+      "certificate_sha256": "e6ed67eeed2030c5e2d18b28b5faaa8d5fc79b937d25babea1252400fc343dad"
+    },
+    "analytic_normal_checks": {
+      "passed": true,
+      "unit_normal_max_error": 2.220446049250313e-16,
+      "side_max_errors": {
+        "inlet": 0.0,
+        "outlet": 0.0,
+        "wall_top": 0.0,
+        "wall_bottom": 0.0
+      },
+      "closed_components": {
+        "outer_union": {
+          "normal_integral": [
+            3.642919299551295e-17,
+            3.9118014383277e-16
+          ],
+          "numerator": 3.9287274152240566e-16,
+          "boundary_measure_denominator": 5.219999999999966,
+          "value": 7.526297730314334e-17
+        },
+        "obstacle": {
+          "normal_integral": [
+            -8.998878031629687e-18,
+            -1.1926223897340549e-17
+          ],
+          "numerator": 1.494036888024001e-17,
+          "boundary_measure_denominator": 0.3141622198421886,
+          "value": 4.755622393980067e-17
+        }
+      },
+      "tolerance": 1e-10,
+      "obstacle_orientation_max_dot_limit": -0.99,
+      "obstacle_normal_dot_radial_range": [
+        -0.9999999999976446,
+        -0.9999951895836834
+      ]
+    },
+    "seconds": 1.2768614999949932,
+    "peak_rss_bytes": 274493440
+  },
+  "timing_use": "reference generation and diagnostics only; not a tuned paired FOM query benchmark",
+  "reference_phase_seconds": {
+    "geometry_spaces_fields_forms": 0.16188608389347792,
+    "stokes_lift": 0.06843619327992201,
+    "stokes_checkpoint": 0.00842288788408041,
+    "newton_query": 0.9324970105662942,
+    "independent_residual_and_Jacobian": 0.10461500938981771,
+    "reference_diagnostics_and_export": 0.9474546033889055,
+    "trace_certificate_and_reload": 2.040358643978834,
+    "total": 4.263670432381332
+  },
+  "cpu_work": "NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration",
+  "peak_rss_bytes": 274493440,
+  "versions": {
+    "ngsolve": "6.2.2608",
+    "numpy": "2.5.0",
+    "python": "3.13.2"
+  },
+  "threading": {
+    "requested": 16,
+    "TaskManager": true,
+    "actual_effective_concurrency": "unmeasured; no performance claim"
+  },
+  "provenance": {
+    "execution_source_commit": "b29448620cabd7efe957364eec99a83e7f73368c",
+    "source_sha256": "915d3144cfef53dd2c9837fdd2130702740520b70261c7377250c78d84911912",
+    "config_sha256": "fa2fdc9b2686a9711085b796e1d915ca81aa19c91f22b6b676a33c0808444e11",
+    "job_id": "6613426",
+    "hostname": "pax009"
+  }
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "points": 290080,
+    "source": "projected point count; replace with actual retained rule count",
+    "volume_payload_components_bytes": {
+      "geometry": 20885760,
+      "lift_u": 13923840,
+      "lift_p_per_nu": 6961920,
+      "pod_velocity": 111390720,
+      "pressure": 55695360,
+      "supremizers": 111390720,
+      "momentum_tests": 891125760,
+      "continuity_tests": 111390720
+    },
+    "volume_expanded_archive_bytes": 1322764800,
+    "largest_volume_array_momentum_gradients_bytes": 594083840,
+    "training_expanded_archive_bytes": 157803592,
+    "maximum_velocity_candidate_values_and_gradients_bytes": 1448079360,
+    "maximum_pressure_candidate_values_and_gradients_bytes": 285438720,
+    "six_models_retained_enriched_velocity_fields_bytes": 779735040,
+    "bank_evaluation_conservative_temporary_envelope_bytes": 2376335360,
+    "dense_moment_rows": 633,
+    "dense_moment_bytes": 1468965120,
+    "blocked_matrix_persistent_disk_bytes": 1468965120,
+    "blocked_fit_resident_workspace_envelope_bytes": 393012224,
+    "sparse_metric_capacity": {
+      "matrix_nnz_cap": 12000000,
+      "CSR_bytes_per_matrix_at_cap": 144400004,
+      "retained_metric_matrices": 6,
+      "factor_estimate_cap_bytes": 8589934592
+    },
+    "remaining_limits": {
+      "point_cap_current": 100000,
+      "archive_expanded_cap_current_bytes": 1073741824,
+      "single_array_cap_unchanged_bytes": 1073741824,
+      "process_cap_unchanged_bytes": 17179869184
+    },
+    "required_prospective_changes": [
+      "separately reviewed measured point ceiling",
+      "per-array volume archives with original hashes/units instead of one oversized archive",
+      "exact blocked moment fitting; preserve every raw point/moment block"
+    ],
+    "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",
+    "physical_admission": false,
+    "execution_released": false
+  },
+  {
+    "points": 325360,
+    "source": "projected point count; replace with actual retained rule count",
+    "volume_payload_components_bytes": {
+      "geometry": 23425920,
+      "lift_u": 15617280,
+      "lift_p_per_nu": 7808640,
+      "pod_velocity": 124938240,
+      "pressure": 62469120,
+      "supremizers": 124938240,
+      "momentum_tests": 999505920,
+      "continuity_tests": 124938240
+    },
+    "volume_expanded_archive_bytes": 1483641600,
+    "largest_volume_array_momentum_gradients_bytes": 666337280,
+    "training_expanded_archive_bytes": 176995912,
+    "maximum_velocity_candidate_values_and_gradients_bytes": 1624197120,
+    "maximum_pressure_candidate_values_and_gradients_bytes": 320154240,
+    "six_models_retained_enriched_velocity_fields_bytes": 874567680,
+    "bank_evaluation_conservative_temporary_envelope_bytes": 2665349120,
+    "dense_moment_rows": 633,
+    "dense_moment_bytes": 1647623040,
+    "blocked_matrix_persistent_disk_bytes": 1647623040,
+    "blocked_fit_resident_workspace_envelope_bytes": 394141184,
+    "sparse_metric_capacity": {
+      "matrix_nnz_cap": 12000000,
+      "CSR_bytes_per_matrix_at_cap": 144400004,
+      "retained_metric_matrices": 6,
+      "factor_estimate_cap_bytes": 8589934592
+    },
+    "remaining_limits": {
+      "point_cap_current": 100000,
+      "archive_expanded_cap_current_bytes": 1073741824,
+      "single_array_cap_unchanged_bytes": 1073741824,
+      "process_cap_unchanged_bytes": 17179869184
+    },
+    "required_prospective_changes": [
+      "separately reviewed measured point ceiling",
+      "per-array volume archives with original hashes/units instead of one oversized archive",
+      "exact blocked moment fitting; preserve every raw point/moment block"
+    ],
+    "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",
+    "physical_admission": false,
+    "execution_released": false
+  }
+]

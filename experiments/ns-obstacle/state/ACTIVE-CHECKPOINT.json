@@ -1,9 +1,22 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6613813,
+      "lane": "rom",
+      "attempt": "native-interface01",
+      "observed_state": "RUNNING"
+    },
+    {
+      "job_id": 6613821,
+      "lane": "2d",
+      "attempt": "g2-ladder01",
+      "observed_state": "PENDING"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
-    "Two reviewed allocations released for single submission: initial2D h ladder and native ROM interface; await actual job IDs",
+    "Monitor/collect/audit actual submitted jobs6613813 ROM interface and6613821 reference ladder; no duplicate or automatic retry",
     "Collect and independently audit spatial convergence and actual ROM interface/eigen controls",
     "Complete bank/POD driver; physical reference and training admission remain closed"
   ],
@@ -23,7 +36,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T19:55:13.871925+00:00",
+  "last_checkpoint_utc": "2026-10-28T20:04:51.722439+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",

@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "2d_native_producer_reload_completed_collecting",
+  "status": "two_bounded_2d_controls_submitted",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -324,9 +324,55 @@
       "cleanup_mirror": "57b8ca3af",
       "remote_cleanup": "verified_complete",
       "independent_review": "PASS scoped native producer and binary reload; no physical admission"
+    },
+    {
+      "job_id": 6613813,
+      "lane": "rom",
+      "attempt": "native-interface01",
+      "source_commit": "cb9db577ec96375007e7929befb2980105ae7857",
+      "submitted_utc": "2026-10-28T20:03:50Z",
+      "state_last_observed": "RUNNING",
+      "node": "pax009",
+      "input_manifest_sha256": "8fd4f5dafa2e77cab5f93f7950944bf6b5a481b54f818d527b66a0fc214024eb",
+      "source_checksums_sha256": "e8ded5524408e7ba0e48852aa16d8bcf0561d54349c57b294d771c987f41698b",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-interface01",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "gpu_type_requested": "h200",
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true
+    },
+    {
+      "job_id": 6613821,
+      "lane": "2d",
+      "attempt": "g2-ladder01",
+      "source_commit": "fd535479439f8634781bc93843f6da4151983261",
+      "submitted_utc": "2026-10-28T20:04:02Z",
+      "state_last_observed": "PENDING",
+      "input_manifest_sha256": "38c5b2ee08e1f09a99ccc5a60293b5b51821ef4a651c49eceddea3de4d09628d",
+      "source_checksums_sha256": "6689eccab0eee0d6c9f445356ae15498c71cbd7099ee2f3b5990fbb21978cd59",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "gpu_type_requested": "h200",
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6613813,
+    6613821
+  ],
   "completed_gpu_hours": 0.06388888888888888,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

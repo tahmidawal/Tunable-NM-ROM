@@ -83,3 +83,53 @@ def select_test_columns_blocks(blocks,target_count,expected_points,with_gradient
       'factorization':'all-point TSQR then identical ordered singular-value decisions',
       'orientation':'positive diagonal selected R','blocks':blocks_used,'points':cursor,
       'physical_admission':False}
+
+
+def mapped_batches(adapter,boundary=False,block_points=4096):
+    """Native MeshPoint arrays in original order; retain all source lifetimes."""
+    if not 1<=block_points<=16384:raise ValueError('unreviewed native batch capacity')
+    ng=adapter.ng;parts=[];owners=[];used=0;start=0
+    for element in adapter.mesh.Elements(ng.BND if boundary else ng.VOL):
+        transform=adapter.mesh.GetTrafo(element)
+        rule=ng.IntegrationRule(element.type,adapter.cfg['diagnostic_order'])
+        mapped=transform(rule)
+        if len(mapped)!=len(rule):raise ValueError('native mapped rule point count differs')
+        offset=0
+        while offset<len(mapped):
+            count=min(block_points-used,len(mapped)-offset)
+            parts.append(mapped[offset:offset+count]);owners.append((transform,rule,mapped))
+            used+=count;offset+=count
+            if used==block_points:
+                # owners remains strongly referenced across the yield. No native
+                # coefficient is evaluated after its mapping owners are discarded.
+                yield start,start+used,np.concatenate(parts)
+                start+=used;used=0;parts=[];owners=[]
+    if used:yield start,start+used,np.concatenate(parts)
+
+
+def evaluated_blocks_batched(adapter,coefficients,vector=True,boundary=False,block_points=4096):
+    """Prospective native-batched equivalent; requires native replay before selection."""
+    from fe_adapter import check_allocation
+    ng=adapter.ng;space=adapter.V if vector else adapter.Q;c=np.asarray(coefficients)
+    if c.ndim==1:c=c[:,None]
+    if c.dtype!=np.dtype('float64') or c.ndim!=2 or c.shape[0]!=space.ndof or not np.isfinite(c).all():
+        raise ValueError('original-f64 compatible coefficient columns required')
+    check_allocation((block_points,6 if vector else 3,c.shape[1]))
+    fields=[];derivatives=[]
+    for j in range(c.shape[1]):
+        field=ng.GridFunction(space);field.vec.FV().NumPy()[:]=c[:,j]
+        derivative=ng.Grad(field)
+        if boundary:derivative=ng.BoundaryFromVolumeCF(derivative)
+        fields.append(field);derivatives.append(derivative)
+    for start,end,mapped in mapped_batches(adapter,boundary,block_points):
+        n=end-start
+        values=np.empty((n,2,c.shape[1]) if vector else (n,c.shape[1]))
+        gradients=np.empty((n,2,2,c.shape[1]) if vector else (n,2,c.shape[1]))
+        for j,(field,derivative) in enumerate(zip(fields,derivatives)):
+            raw=np.asarray(field(mapped));grad=np.asarray(derivative(mapped))
+            if raw.dtype!=np.dtype('float64') or grad.dtype!=np.dtype('float64'):
+                raise TypeError('native batched values must originate as float64')
+            values[...,j]=raw.reshape((n,2) if vector else (n,))
+            gradients[...,j]=grad.reshape((n,2,2) if vector else (n,2))
+        if not np.isfinite(values).all() or not np.isfinite(gradients).all():raise ValueError('nonfinite native batched output')
+        yield start,end,values,gradients

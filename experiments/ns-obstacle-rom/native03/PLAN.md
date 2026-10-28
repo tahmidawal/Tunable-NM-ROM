@@ -1,0 +1,7 @@
+# Native batched evaluation equivalence
+
+This prospective one-allocation control repeats the admitted scope of native-block02 with the same retained unadmitted producer input. The only evaluator change is calling the pinned library's declared `ElementTransformation(IntegrationRule)` and `CoefficientFunction(ArrayLike[MeshPoint])` APIs. Mesh, element transformations, integration rules and mapped arrays stay alive until each block's native evaluations finish. The original point order, original mapped integration rules, scalar/vector values, wrapped boundary gradients and float64 precision are unchanged.
+
+The fixture compares every volume and boundary value/gradient against the unchanged scalar-point evaluator, saves all replay arrays, compares dense and batched TSQR selection/assembled metric, and retains sparse eigen matrices/vectors. All thresholds are those used by native-block02. It never creates a G2 admission or trains a bank. Existing production block evaluation remains on its validated pointwise path until this native batching control is independently accepted.
+
+Use one fresh native-batch03 directory, one available compatible GPU on gpu partition, sixteen CPUs, 64 GiB and twenty minutes. The same coarse rule and 8 GiB planning workspace/1 GiB results envelope apply; measure actual peak RSS and elapsed allocation. Retain all results, exact inputs, hashes and failures; no automatic retry. Source review and exact coordinator release precede staging/submission.

@@ -19,7 +19,7 @@
     "working_set_projection_GiB": 16,
     "result_projection_GiB": 3
   },
-  "schema": "ns-obstacle-native-adapter-control-release-v1",
+  "schema": "ns-obstacle-fine-metric-capacity-control-v1",
   "physical_admission": false,
   "training_released": false,
   "source_commit": "b06667963df0c657f738e8987aebef83f10826e9",
@@ -29,5 +29,6 @@
   "scope": "Fine-P4 capacity measurement only; no factorization/eigensolve/training or production-cap change",
   "verified_runtime_files": 17,
   "verified_producer_files": 5,
-  "fresh_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-capacity04"
+  "fresh_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-capacity04",
+  "pre_staging_correction": "Use capacity entrypoint schema; prior adapter schema was rejected before staging, with no job submitted."
 }

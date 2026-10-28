@@ -43,3 +43,35 @@ superseded pending this implementation review and actual FE/data controls. The t
 released. Provisional empty-channel field plots were generated directly from saved
 arrays with hashes, under the coordinator's experiments/ns-obstacle/figures directory.
 No merge, sealed-population access or unique-data deletion occurred.
+
+### Obstacle-flow controls — measured boundary-normal convention (Codex coordinator)
+
+After reset recovery, independent review accepted the retained 2D API and empty-channel
+controls. The channel needed zero Newton updates because its Stokes solution already
+solves Poiseuille flow; it does not validate nonlinear obstacle convergence. Operational
+A7 prospectively released only the exact tiny 3D infrastructure controls. Job 6610494
+passed cube/API/UMFPACK/nonsymmetric-gradient controls, then failed the raw sphere-normal
+check before any flow solve; full evidence is retained at 3D commit 091970665 and mirror
+98f28ebd3, with checksum-verified remote-duplicate cleanup recorded at c66a5ff21.
+
+A separately reviewed unchanged-geometry 2D diagnostic, job 6610978, completed and was
+independently audited. Ordinary boundary integration agrees with raw mapped normals and
+has relative divergence-theorem defect 0.0175678828431; the adjacent-volume facet and
+all-element-boundary paths give 9.80909507011e-15. Offset/adjacency witnesses consistently
+place the positive raw circle-normal direction in the fluid. The fresh channel-minus-circle
+mesh is geometrically correct within its control. This withdraws the source assumption
+that raw boundary normals automatically mean outward-fluid normals. It does not recreate
+the missing original failed mesh. No obstacle solve or physical reference was admitted.
+
+Implementation amendment A8 authorizes a scoped, topology-verified orientation repair
+for ordinary boundary evaluation, preserving actual curved normals and raw evidence.
+Exact implementation/configuration plus Codex and Claude review precede its single repair
+retry. The 3D normal diagnostic is separately reviewed before staging; its initial missing
+installer-binding defect was caught before execution and repaired without changing geometry.
+
+ROM A6 commit d1b4eb952 (mirror 532cfa22a) passed independent source and synthetic algebra
+review. Native FE/data integration remains closed, and no fictitious G2 admission is allowed
+to test the adapter. Generated control tables and provisional field figures live in the
+coordinator tree; final reports and presentation remain future campaign deliverables.
+The ledger currently charges 135 GPU-seconds (0.0375 GPU-hours). No merge,
+sealed-population access or unique-data deletion occurred.

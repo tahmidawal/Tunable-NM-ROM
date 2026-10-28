@@ -1,6 +1,6 @@
 {
   "attempt": "g1-smoke07",
-  "state": "staged_verified_waiting_coordinator_remote_match",
+  "state": "submitted_once_pending",
   "verified_utc": "2026-10-28T19:11:36.410914+00:00",
   "source_commit": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
   "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07",
@@ -9,7 +9,7 @@
   "all_19_source_hashes_passed": true,
   "intended_remote_files": 21,
   "queue_at_staging": [],
-  "submitted": false,
+  "submitted": true,
   "dependencies_installed": false,
   "numerical_execution": false,
   "exact_submit": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07 cluster/smoke.sh",
@@ -23,5 +23,10 @@
   },
   "local_free_GiB_at_staging": 53,
   "local_free_reserve_GiB": 10,
-  "no_G2_source": true
+  "no_G2_source": true,
+  "job_id": 6612209,
+  "submitted_utc": "2026-10-28T19:12:12Z",
+  "coordinator_remote_byte_match": true,
+  "post_submit_state": "PENDING",
+  "post_submit_reason": "Priority"
 }

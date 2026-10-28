@@ -1,0 +1,44 @@
+{
+  "status": "source_only_not_staged_or_released",
+  "origin_attempt": "g1-smoke06",
+  "origin_job": 6610494,
+  "shared_2d_facet_source_commit": "09a660f7b",
+  "files": [
+    {
+      "source_path": "experiments/ns-obstacle-3d/diagnostics/normal01/diagnose.py",
+      "sha256": "81ebd842e45b29fa83f724d5aeac5fbee347dfe723a2eddfc0a50cc1f9840c8b",
+      "bytes": 16308
+    },
+    {
+      "source_path": "experiments/ns-obstacle-3d/diagnostics/normal01/diagnostic.json",
+      "sha256": "eacab0379ed9db8c78f5a433d573e010dc01bd4044c3da3a71b36116a0e36a7c",
+      "bytes": 897
+    },
+    {
+      "source_path": "experiments/ns-obstacle-3d/diagnostics/normal01/g1-smoke06.json",
+      "sha256": "637837aecc59da58b9c0f7c582be9f27d4aa97707baf711038fd57e06f541350",
+      "bytes": 2220
+    },
+    {
+      "source_path": "experiments/ns-obstacle-3d/diagnostics/normal01/geometry.sbatch",
+      "sha256": "5d8c45f7fd16b605514f9bd51b9b126abce16a4c6925e6e3fa028967cde660b5",
+      "bytes": 1980
+    },
+    {
+      "source_path": "experiments/ns-obstacle-3d/install_deps.py",
+      "sha256": "2e01600450d2eb9473276972a6a98aa442284b63c11795afeceaf5b9d5dda747",
+      "bytes": 8810
+    },
+    {
+      "source_path": "experiments/ns-obstacle-3d/DEPENDENCIES.discovery.json",
+      "sha256": "547cb7ad225cddf2a88589e0c1bc09c8356a7b3bbd82ca30e853c14fbdc81fa2",
+      "bytes": 4064
+    },
+    {
+      "source_path": "experiments/ns-obstacle-3d/requirements.lock",
+      "sha256": "662f98254fdc5a52c3059246361c3694f69d82a9067f9e5cb80de3b8664e7525",
+      "bytes": 402
+    }
+  ],
+  "validation": "Python compilation and bash -n only; no native geometry execution"
+}

@@ -57,9 +57,16 @@ there is no performance comparison.
 Before any staging, independently review this source and its configuration.
 The prospective staging set is `diagnose.py`, `diagnostic.json`, the frozen
 `g1-smoke06.json`, `geometry.sbatch`, and unchanged lane `install_deps.py`,
-`DEPENDENCIES.discovery.json`, `requirements.lock`. Bind them and
+`DEPENDENCIES.discovery.json`, `requirements.lock`, plus this candidate's
+`DEPENDENCY-REPAIR.json` binding the installer to the fresh `g1-normal01` directory.
+Bind them and
 `SOURCE_COMMIT.txt` in an input manifest in a fresh `g1-normal01` directory.
 No job is released by this README.
+
+The batch saves CPU details, GPU model/UUID and device visibility before native
+package installation. Independent prelaunch review caught the missing dependency
+binding in the initial source-only candidate. That candidate never ran; its bytes
+remain in history. The frozen geometry and facet code are unchanged by this fix.
 
 ## Terms
 

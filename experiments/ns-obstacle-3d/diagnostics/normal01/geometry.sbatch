@@ -19,6 +19,10 @@ export TMPDIR="$PWD/tmp" PIP_CACHE_DIR="$PWD/pip-cache"
 mkdir -p "$TMPDIR" "$PIP_CACHE_DIR"
 sha256sum -c INPUTS.sha256
 timeout --signal=TERM --kill-after=10 90 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); print('jax_x64='+str(jax.config.x64_enabled),flush=True); assert jax.config.x64_enabled; assert jax.config.jax_default_matmul_precision=='highest'; sys.exit(0 if b=='gpu' else 42)"
+printf 'CUDA_VISIBLE_DEVICES=%s\n' "${CUDA_VISIBLE_DEVICES:-unset}" > HARDWARE-VISIBILITY.txt
+timeout --signal=TERM --kill-after=5 15 nvidia-smi --query-gpu=index,name,uuid,memory.total --format=csv,noheader > HARDWARE-GPU.csv
+timeout --signal=TERM --kill-after=5 15 lscpu > HARDWARE-CPU.txt
+cat HARDWARE-VISIBILITY.txt HARDWARE-GPU.csv HARDWARE-CPU.txt
 timeout --signal=TERM --kill-after=10 300 "$PY" install_deps.py --prefix "$PWD/deps" --metadata DEPENDENCIES.discovery.json
 DEPS_SITE=$("$PY" -c "import sysconfig,sys; print(sysconfig.get_path('purelib',vars={'base':sys.argv[1],'platbase':sys.argv[1]}))" "$PWD/deps")
 export PYTHONPATH="$DEPS_SITE${PYTHONPATH:+:$PYTHONPATH}"

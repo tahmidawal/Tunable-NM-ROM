@@ -21,8 +21,8 @@
     },
     {
       "source_path": "experiments/ns-obstacle-3d/diagnostics/normal01/geometry.sbatch",
-      "sha256": "5d8c45f7fd16b605514f9bd51b9b126abce16a4c6925e6e3fa028967cde660b5",
-      "bytes": 1980
+      "sha256": "6f2e33134093ddd4a996ddc630d8fb751261dee8121e53e3a4a2e888c7e57731",
+      "bytes": 2334
     },
     {
       "source_path": "experiments/ns-obstacle-3d/install_deps.py",
@@ -38,7 +38,13 @@
       "source_path": "experiments/ns-obstacle-3d/requirements.lock",
       "sha256": "662f98254fdc5a52c3059246361c3694f69d82a9067f9e5cb80de3b8664e7525",
       "bytes": 402
+    },
+    {
+      "source_path": "experiments/ns-obstacle-3d/diagnostics/normal01/DEPENDENCY-REPAIR.json",
+      "sha256": "f92aeab8a181c7f93fa50e19be0c614f5b1ada5a1a0bb2e7dd75e12f086b5dc1",
+      "bytes": 975
     }
   ],
-  "validation": "Python compilation and bash -n only; no native geometry execution"
+  "validation": "Python compilation and bash -n only; no native geometry execution",
+  "prelaunch_repair": "Add required installer directory binding and bounded hardware provenance queries; geometry/facet source unchanged."
 }

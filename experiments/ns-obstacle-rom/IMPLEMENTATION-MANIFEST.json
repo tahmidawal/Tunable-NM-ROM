@@ -1,9 +1,9 @@
 {
   "schema": "ns-obstacle-rom-source-v2",
-  "status": "A6_source_candidate_independent_review_required",
+  "status": "A8_binary_adapter_source_candidate_independent_review_required",
   "physical_admission": false,
   "NGSolve_imported": false,
-  "adapter_source_sha256": "585136ba94515cb3e0c64ac4c18c1d8dde0bf04ffb50bc6c5675b146f242d146",
+  "adapter_source_sha256": "7ced27b2b02d204edbcb071469d055fe6b2b8fdabc0f57a97435971e6c9a05bd",
   "files": [
     {
       "path": "experiments/ns-obstacle-rom/A6-PROPOSAL.md",
@@ -11,9 +11,29 @@
       "sha256": "6e5b93faab6b3b1572b769ee2e5580b18e210fdc37a97dd0a759279eb3ee0370"
     },
     {
+      "path": "experiments/ns-obstacle-rom/A8-ADAPTER-A6-REGRESSIONS.json",
+      "bytes": 41385,
+      "sha256": "d8f8d9a23a6d9b1e95b5ce993540e1ed9d705145d4e6a52397ce94731f2d9989"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/A8-ADAPTER-LEGACY-REGRESSIONS.json",
+      "bytes": 9214,
+      "sha256": "0fc4a86fc2e3e69665827b397db985ee93df3c88804047032e55f95b0a942b83"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/A8-BINARY-ADAPTER.md",
+      "bytes": 2909,
+      "sha256": "228278b7d4d55cfc254b1bee1b042bbd8a835ea6095fc609cd6b7371ccc7de87"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/A8-HELPER-PROVENANCE.json",
+      "bytes": 592,
+      "sha256": "cd6c8e0f88a8191dc2bf1057fc1400e2039ea7fd1b30e7c441c32b9f5838b4de"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/API.md",
-      "bytes": 11740,
-      "sha256": "78e7d0a712015d929481141a2bf17e6534928eb3d0f2ce55f5cb2a3017b9ea27"
+      "bytes": 11976,
+      "sha256": "6cc46c79ae7a85f2d55260cf6bfba744c0f67a75bbeaaf36e6b406ff97facca1"
     },
     {
       "path": "experiments/ns-obstacle-rom/CPU-SMOKE.json",
@@ -42,8 +62,8 @@
     },
     {
       "path": "experiments/ns-obstacle-rom/FE-ADAPTER-CONTRACT.md",
-      "bytes": 17303,
-      "sha256": "ec592eace7154965338c895ad44d6b97662ced66374cbd01e84a95934df7fb62"
+      "bytes": 17772,
+      "sha256": "43226b9d7c78ee499fcf42aba937e9db4963d2c947a289a48fba94759f29dcfe"
     },
     {
       "path": "experiments/ns-obstacle-rom/FE-ADAPTER-SOURCES.json",
@@ -57,8 +77,8 @@
     },
     {
       "path": "experiments/ns-obstacle-rom/MODEL-CONTRACT.json",
-      "bytes": 8872,
-      "sha256": "14133cd39f7e17ee448de924c5ea61537108623656eebf320ef0b0cf787487ce"
+      "bytes": 9347,
+      "sha256": "833e1f1f3bc2940390213d82df6edc29a399ccdd3d4d3f2b12267379b6f71617"
     },
     {
       "path": "experiments/ns-obstacle-rom/REVIEW-RESPONSE.md",
@@ -87,8 +107,8 @@
     },
     {
       "path": "experiments/ns-obstacle-rom/fe_adapter.py",
-      "bytes": 43634,
-      "sha256": "d1b707129ba426efa3408e283a9c48985fe7d2c31595e3b05e3890d9319b6a63"
+      "bytes": 47678,
+      "sha256": "1190358011b8193f4c580b39e3669adfa9c037e7afee3b81a194f75d305f26f9"
     },
     {
       "path": "experiments/ns-obstacle-rom/fe_adapter_smoke.py",
@@ -191,14 +211,49 @@
       "sha256": "f0912683827004f3696fa19c16ead0426173405446f9311009fe7da9d5a4387f"
     },
     {
+      "path": "experiments/ns-obstacle-rom/legacy/d1b4eb952/API.md",
+      "bytes": 11740,
+      "sha256": "78e7d0a712015d929481141a2bf17e6534928eb3d0f2ce55f5cb2a3017b9ea27"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/d1b4eb952/FE-ADAPTER-CONTRACT.md",
+      "bytes": 17303,
+      "sha256": "ec592eace7154965338c895ad44d6b97662ced66374cbd01e84a95934df7fb62"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/d1b4eb952/MODEL-CONTRACT.json",
+      "bytes": 8872,
+      "sha256": "14133cd39f7e17ee448de924c5ea61537108623656eebf320ef0b0cf787487ce"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/d1b4eb952/PROVENANCE.json",
+      "bytes": 881,
+      "sha256": "f4429841bd4eb6487e7f5baf8e5db891e1bd495cd7621565fa6bd5c49ab5a3ed"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/d1b4eb952/fe_adapter.py",
+      "bytes": 43634,
+      "sha256": "d1b707129ba426efa3408e283a9c48985fe7d2c31595e3b05e3890d9319b6a63"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/metrics.py",
       "bytes": 1638,
       "sha256": "29998831737dfc21fcf1c0d8fee3ddbcf57f4a46cddd524ba4c243d45bc7aa87"
     },
     {
+      "path": "experiments/ns-obstacle-rom/oriented_normals.py",
+      "bytes": 15221,
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/quadrature.py",
       "bytes": 5286,
       "sha256": "154d2d6e6f13e244d7e8ce7a823f7f9ac503b1c433ad0113c44bc61e8f6ecacf"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/scalars.py",
+      "bytes": 1687,
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de"
     },
     {
       "path": "experiments/ns-obstacle-rom/smoke.py",

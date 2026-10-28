@@ -1,6 +1,6 @@
 {
   "schema": "ns-obstacle-rom-infrastructure-v1",
-  "status": "A6_implementation_candidate_source_review_required_no_G2_data",
+  "status": "A8_binary_adapter_source_candidate_no_native_or_G2_admission",
   "central_campaign_version": "predata-A6",
   "central_campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
   "central_design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
@@ -301,5 +301,13 @@
     "required_for_adapter": true,
     "same_validated_lift_reusable_by_FOM": true,
     "one_time_construction_cost": "offline_for_both_methods"
+  },
+  "adapter_input": {
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "mesh_reload": "saved_curved_binary_verified_fresh_process_no_recurve",
+    "normal_helper_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+    "normal_policy": "topology-inferred signs on raw curved ordinary-BND normals, independently certified; native volume-facet normals unchanged",
+    "evidence_directory_required": true
   }
 }

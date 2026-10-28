@@ -18,12 +18,18 @@ from fe_pod_a6 import (coefficient_pod_a6, validate_actual_pod, orient_clusters,
                        expand_components, check_component_blocks)
 from fe_controls_a6 import boundary_control, gradient_control
 from spaces import select_test_columns
+from oriented_normals import fluid_outward_normal
 
 SCHEMA = 'ns-obstacle-fe-training-v1'
 REYNOLDS = [15 + 1.25*j for j in range(9)]
 ESSENTIAL = 'inlet|wall.*|obstacle'
-FILES = ('config.json', 'mesh.vol', 'full_rule.npz', 'boundary_rule.json',
-         'solution.sol', 'result.json', 'fe_layout.json', 'reload_checks.json')
+MESH_FILENAME = 'mesh.vol.bin'
+MESH_FORMAT = 'netgen-binary-archive-v6.2.2608'
+RELOAD_POLICY = 'saved_curved_binary_verified_fresh_process_no_recurve'
+FILES = ('config.json', MESH_FILENAME, 'full_rule.npz', 'boundary_rule.json',
+         'solution.sol', 'result.json', 'fe_layout.json', 'reload_checks.json',
+         'mesh_identity.json', 'normal_orientation.json', 'reload_normal_orientation.json',
+         'EXPORT-MANIFEST.json')
 CAPS = {'mixed_dofs': 100000, 'elements': 20000, 'volume_points': 100000,
         'boundary_points': 30000, 'matrix_nnz': 12000000,
         'single_array_bytes': 2**30, 'archive_bytes': 2**30,
@@ -43,7 +49,23 @@ def sha_file(path):
 def adapter_digest():
     root = Path(__file__).parent
     return hashlib.sha256(json.dumps({name: sha_file(root/name) for name in
-        ('fe_adapter.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+        ('fe_adapter.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+
+
+def verify_mesh_contract(record, policy_key='policy'):
+    """Require the declared binary format; no text-mesh or automatic re-curve fallback."""
+    if (record.get('mesh_filename') != MESH_FILENAME or record.get('mesh_format') != MESH_FORMAT
+            or record.get(policy_key) != RELOAD_POLICY):
+        raise ValueError('explicit binary mesh/fresh-process reload contract required')
+
+
+def verify_normal_certificate(record):
+    if (record.get('schema') != 'ns-obstacle-2d-fluid-outward-normal-v1' or
+            record.get('passed') is not True or
+            record.get('helper_sha256') != sha_file(Path(__file__).with_name('oriented_normals.py')) or
+            record.get('returned_CF_point_checks', {}).get('passed') is not True):
+        raise ValueError('reviewed A8 actual returned-normal certificate required')
+    return record['factors']
 
 
 def read_shared_lift_admission(path, expected_sha256):
@@ -88,8 +110,7 @@ def read_training_manifest(path):
         value = manifest.get(name, '')
         if len(value) != 64 or any(c not in '0123456789abcdef' for c in value):
             raise ValueError(f'missing SHA256 evidence: {name}')
-    if manifest.get('mesh_reload') != 'saved_curved_verified_no_recurve':
-        raise RuntimeError('curved .vol reload must be verified; automatic re-Curve is forbidden')
+    verify_mesh_contract(manifest, 'mesh_reload')
     contract = json.loads(Path(__file__).with_name('MODEL-CONTRACT.json').read_text())
     if manifest['campaign_sha256'] != contract['central_campaign_sha256']:
         raise ValueError('manifest does not match the frozen central campaign contract')
@@ -106,7 +127,7 @@ def read_training_manifest(path):
             file = folder / name
             if file.stat().st_size > CAPS['archive_bytes'] or sha_file(file) != case['files'][name]:
                 raise ValueError(f'FE case artifact size/hash mismatch: {file}')
-        mesh_hashes.append(case['files']['mesh.vol'])
+        mesh_hashes.append(case['files'][MESH_FILENAME])
         case['resolved_directory'] = str(folder)
     if len(set(mesh_hashes)) != 1:
         raise ValueError('training adapter requires one byte-identical admitted curved mesh')
@@ -276,13 +297,18 @@ def bounded_eigenmodes(h1, mass, solve_h1, count):
 
 class TrainingFEAdapter:
     @classmethod
-    def open(cls, manifest_path):
+    def open(cls, manifest_path, evidence_directory=None):
         admission = read_training_manifest(manifest_path)
+        if evidence_directory is None:
+            raise ValueError('fresh evidence directory required for native adapter controls')
+        evidence_directory = Path(evidence_directory)
+        evidence_directory.mkdir(parents=True, exist_ok=False)
         import ngsolve as ng  # Deliberately below all data admission checks.
-        return cls(admission, ng)
+        return cls(admission, ng, evidence_directory)
 
-    def __init__(self, admission, ng):
+    def __init__(self, admission, ng, evidence_directory):
         self.ng = ng; self.admission = admission; self.started = time.perf_counter()
+        self.evidence_directory = Path(evidence_directory)
         self.cases = []
         for case in admission['cases']:
             folder = Path(case['resolved_directory'])
@@ -301,8 +327,22 @@ class TrainingFEAdapter:
                 raise ValueError('Re/viscosity mismatch')
             if result['versions']['ngsolve'] != ng.__version__:
                 raise ValueError('NGSolve version differs from exported coefficients')
-            if reload_checks.get('passed') is not True or reload_checks.get('policy') != 'saved_curved_verified_no_recurve':
+            verify_mesh_contract(reload_checks)
+            execution = reload_checks.get('execution', {})
+            if (reload_checks.get('passed') is not True or execution.get('fresh_interpreter') is not True
+                    or execution.get('pid') == execution.get('producer_pid')):
                 raise RuntimeError('exporter reload admission missing')
+            identity = json.loads((folder/'mesh_identity.json').read_text())
+            exporter = json.loads((folder/'EXPORT-MANIFEST.json').read_text())
+            verify_mesh_contract(identity)
+            verify_mesh_contract(exporter, 'reload_policy')
+            if (identity.get('reload_passed') is not True or identity.get('mesh_sha256') != case['files'][MESH_FILENAME]
+                    or identity.get('reload_checks_sha256') != case['files']['reload_checks.json']):
+                raise ValueError('binary mesh identity differs from admitted bytes/reload evidence')
+            original = json.loads((folder/'normal_orientation.json').read_text())
+            reloaded = json.loads((folder/'reload_normal_orientation.json').read_text())
+            if verify_normal_certificate(original) != verify_normal_certificate(reloaded):
+                raise ValueError('producer/reload normal orientation factors differ')
             self.cases.append({'case': case, 'folder': folder, 'cfg': cfg, 'result': result})
         self.cfg = self.cases[0]['cfg']; self.U = self.cfg['U']; self.D = self.cfg['D']
         shared = ('velocity_order', 'pressure_order', 'geometry_order', 'diagnostic_order', 'threads')
@@ -313,9 +353,18 @@ class TrainingFEAdapter:
         if not 1 <= self.cfg['threads'] <= 16:
             raise ValueError('CPU thread cap')
         ng.SetNumThreads(self.cfg['threads'])
-        self.mesh = ng.Mesh(str(self.cases[0]['folder']/'mesh.vol'))  # Never re-Curve.
+        self.mesh = ng.Mesh(str(self.cases[0]['folder']/MESH_FILENAME))  # Never re-Curve.
         if self.mesh.dim != 2 or self.mesh.ne > CAPS['elements']:
             raise MemoryError('unsupported dimension or element cap')
+        if int(self.mesh.GetCurveOrder()) != self.cfg['geometry_order']:
+            raise ValueError('binary mesh curved order differs from declared geometry')
+        self.normal, self.normal_certificate = fluid_outward_normal(self.mesh, self.cfg['center'],
+            order=self.cfg['diagnostic_order'], evidence_path=self.evidence_directory/'normal_orientation.json')
+        factors = verify_normal_certificate(self.normal_certificate)
+        for c in self.cases:
+            saved = json.loads((c['folder']/'normal_orientation.json').read_text())
+            if factors != verify_normal_certificate(saved):
+                raise ValueError('adapter and producer normal orientation factors differ')
         self.V = ng.VectorH1(self.mesh, order=self.cfg['velocity_order'], dirichlet=ESSENTIAL)
         self.Q = ng.H1(self.mesh, order=self.cfg['pressure_order'])
         self.S = ng.H1(self.mesh, order=self.cfg['velocity_order'], dirichlet=ESSENTIAL)
@@ -339,8 +388,8 @@ class TrainingFEAdapter:
     def mapped_rule(self, boundary=False):
         ng = self.ng; vb = ng.BND if boundary else ng.VOL
         cap = CAPS['boundary_points'] if boundary else CAPS['volume_points']
-        points = []; weights = []; labels = []; normals = []; jacobians = []
-        normal = ng.specialcf.normal(2)
+        points = []; weights = []; labels = []; normals = []; raw_normals = []; factors = []; jacobians = []
+        raw_normal = ng.specialcf.normal(2)
         for el in self.mesh.Elements(vb):
             tr = self.mesh.GetTrafo(el)
             for ip in ng.IntegrationRule(el.type, self.cfg['diagnostic_order']):
@@ -351,7 +400,10 @@ class TrainingFEAdapter:
                     raise ValueError('nonpositive mapped integration weight')
                 points.append(np.array(mip.point, copy=True)); weights.append(w)
                 if boundary:
-                    labels.append(str(el.mat)); normals.append(np.array(normal(mip), copy=True))
+                    label = str(el.mat)
+                    labels.append(label); normals.append(np.array(self.normal(mip), copy=True))
+                    raw_normals.append(np.array(raw_normal(mip), copy=True))
+                    factors.append(self.normal_certificate['factors'][label])
                 else:
                     jac = np.array(mip.jacobi, copy=True)
                     if np.linalg.det(jac) <= 0:
@@ -359,7 +411,8 @@ class TrainingFEAdapter:
                     jacobians.append(jac)
         result = {'points': np.asarray(points), 'weights': np.asarray(weights)}
         if boundary:
-            result.update(labels=np.asarray(labels), normals_fluid=np.asarray(normals))
+            result.update(labels=np.asarray(labels), normals_fluid=np.asarray(normals),
+                          normals_raw=np.asarray(raw_normals), orientation_factors=np.asarray(factors))
         else:
             result['jacobians'] = np.asarray(jacobians)
         return result
@@ -514,7 +567,9 @@ class TrainingFEAdapter:
                 checks[key] = relative_gap(actual, data[key], scale)
             b = json.loads((c['folder']/'boundary_rule.json').read_text())
             for key, actual in [('point', self.boundary['points']), ('weight', self.boundary['weights']),
-                                ('normal', self.boundary['normals_fluid'])]:
+                                ('normal', self.boundary['normals_fluid']),
+                                ('raw_normal', self.boundary['normals_raw']),
+                                ('normal_orientation_factor', self.boundary['orientation_factors'])]:
                 checks['boundary_'+key] = relative_gap(actual, np.asarray([r[key] for r in b]))
             if [r['label'] for r in b] != self.boundary['labels'].tolist():
                 raise ValueError('boundary enumeration differs on reload')
@@ -530,7 +585,7 @@ class TrainingFEAdapter:
         sol = np.asarray(solutions)
         nv = self.V.ndof
         shared = self.admission['resolved_common_stokes_lift']; meta = shared['metadata']
-        if (meta['mesh_sha256'] != self.cases[0]['case']['files']['mesh.vol'] or
+        if (meta['mesh_sha256'] != self.cases[0]['case']['files'][MESH_FILENAME] or
             meta['layout_sha256'] != self.layout_sha256 or meta['U'] != self.U or meta['D'] != self.D or
             meta['velocity_ndof'] != nv or meta['pressure_ndof'] != self.Q.ndof):
             raise ValueError('common Stokes lift geometry/space/scales mismatch')
@@ -651,6 +706,8 @@ class TrainingFEAdapter:
             'eigen_velocity': em_v, 'eigen_scalar': em_q, 'factor_velocity': fm_v, 'factor_scalar': fm_q,
             'factor_velocity_scalar': fm_s, 'component_maps': self.component_map_evidence,
             'component_blocks': component_blocks, 'analytic_controls': self.analytic_controls,
+            'mesh_filename': MESH_FILENAME, 'mesh_format': MESH_FORMAT,
+            'normal_orientation': self.normal_certificate,
             'momentum_H1_gram': cv.tolist(), 'continuity_L2_gram': cq.tolist(),
             'pressure_L2_gram': pressure_gram.tolist(),
             'trace_coefficient_roundoff_removed': self.trace_coefficient_roundoff_removed,
@@ -668,7 +725,8 @@ class TrainingFEAdapter:
             arrays = {'points_dimensionless': mapped['points']/self.D, 'points_physical': mapped['points'],
                       'weights_dimensionless': mapped['weights']/self.D**(1 if boundary else 2)}
             if boundary:
-                arrays.update(labels=mapped['labels'], normals_fluid=mapped['normals_fluid'])
+                arrays.update(labels=mapped['labels'], normals_fluid=mapped['normals_fluid'],
+                              normals_raw=mapped['normals_raw'], orientation_factors=mapped['orientation_factors'])
             else: arrays['jacobians_physical'] = mapped['jacobians']
             for key, c in self.coefficients.items():
                 vector = key in ('lift_u', 'pod_velocity', 'supremizers', 'momentum_tests')

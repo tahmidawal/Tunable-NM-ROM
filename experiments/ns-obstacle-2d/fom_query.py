@@ -108,7 +108,7 @@ class SteadyFOMQuery:
             work['Newton_updates']+=1
         if not converged:raise ArithmeticError('Newton iteration cap; no accepted solution')
         # Evaluator cost is included in the query; diagnostic scoring is external.
-        outputs=self.evaluators[output_contract](*self.g.components)
+        outputs=self.evaluators[output_contract](*self.g.components,nu)
         work['output_evaluations']+=1
         work['status']='root_converged'
         return {'output_contract':output_contract,'outputs':outputs,'work':work,

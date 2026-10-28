@@ -19,7 +19,7 @@ import numpy as np
 from scalars import scalar_value
 
 ESSENTIAL='inlet|wall.*|obstacle'
-CAPS={'volume_points':500000,'boundary_points':30000,'archive_bytes':2**30}
+CAPS={'volume_points':1300000,'boundary_points':30000,'archive_bytes':2**30}
 RELOAD_TOL=1e-10
 POLYNOMIAL_CHECK_OVER_U=1e-12
 MESH_FILENAME='mesh.vol.bin'

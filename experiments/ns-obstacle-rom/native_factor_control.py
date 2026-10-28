@@ -71,7 +71,8 @@ def run(case,release_path,out):
    'reused_relative_residual':(np.linalg.norm(vfree@reused-rhs,axis=0)/np.maximum(np.linalg.norm(rhs,axis=0),1e-300)).tolist()}
   (out/'comparison.json').write_text(json.dumps({'aggregate_gaps':gaps,'per_rhs_column':per_column,
     'tolerance':1e-10,'full_factor':meta_v,'scalar_factor':meta_s},indent=2)+'\n')
-  if max(max(values) for values in per_column.values())>1e-10:
+  if (not all(np.isfinite(values).all() for values in per_column.values()) or
+      max(max(values) for values in per_column.values())>1e-10):
    raise ArithmeticError('unchanged full solve/component solve equivalence failed in an RHS column')
   result={'passed':True,'physical_admission':False,'training_released':False,'scope':'coarse actual native matrices; factor reuse equivalence only',
    'seed':27102028,'matrix_block_evidence':block_evidence,'component_map_evidence':map_evidence,

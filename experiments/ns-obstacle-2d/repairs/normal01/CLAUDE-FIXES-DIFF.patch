@@ -1,0 +1,194 @@
+--- 4b8fe1905/oriented_normals.py
++++ claude-fixes/oriented_normals.py
+@@ -30,20 +30,31 @@
+         if abs(norm-1) > API_TOL or distance <= 0:
+             raise ValueError('nonunit normal or degenerate adjacent-volume witness')
+         cosine = float(normal@inward/(norm*distance))
++        row['raw_normal_dot_toward_adjacent_volume'] = float(normal@inward)
++        row['raw_normal_cosine_toward_adjacent_volume'] = cosine
+         if abs(cosine) <= MIN_WITNESS_COSINE:
+-            raise ValueError('adjacent-volume direction is too nearly tangential')
++            raise ValueError('absolute adjacency witness cosine is at most 1e-8')
+         factor = -1 if cosine > 0 else 1
+         label = row['label']
+         if label in factors and factors[label] != factor:
+             raise ValueError(f'normal orientation is not constant on boundary label {label}')
+         factors[label] = factor
+-        row['raw_normal_dot_toward_adjacent_volume'] = float(normal@inward)
+-        row['raw_normal_cosine_toward_adjacent_volume'] = cosine
+         row['orientation_factor'] = factor
+         row['fluid_outward_normal'] = (factor*normal).tolist()
+     if not factors:
+         raise ValueError('no boundary orientation samples')
+     return factors
++
++
++def witness_margins(samples):
++    """Observed normalized normal-component margins, including partial failures."""
++    margins = {}
++    for row in samples:
++        if 'raw_normal_cosine_toward_adjacent_volume' in row:
++            value = abs(row['raw_normal_cosine_toward_adjacent_volume'])
++            label = row['label']
++            margins[label] = min(margins.get(label, value), value)
++    return dict(sorted(margins.items()))
+ 
+ 
+ def fluid_outward_normal(mesh, center=None, order=12, evidence_path=None):
+@@ -62,7 +73,9 @@
+               'method': 'raw curved normal times topology-inferred, independently verified per-label sign',
+               'volume_facet_normals_modified': False, 'analytic_normals_substituted': False,
+               'order': max(6, int(order)), 'threshold': API_TOL,
+-              'minimum_adjacency_witness_cosine': MIN_WITNESS_COSINE,
++              'adjacency_witness_guard_absolute_cosine': MIN_WITNESS_COSINE,
++              'adjacency_witness_guard_meaning': 'reject abs(raw_normal dot inward)/(norm(raw_normal)*norm(inward)) <= 1e-8; a near-zero numerical guard, not a mesh-quality criterion',
++              'future_mesh_false_stop_risk_accepted': True,
+               'samples': samples}
+     def persist():
+         if evidence_path is not None:
+@@ -112,12 +125,48 @@
+         persist()
+         factors = infer_label_factors(samples)
+         record['factors'] = factors
++        record['minimum_observed_absolute_witness_cosine_by_label'] = witness_margins(samples)
+         if set(factors) != expected_labels:
+             raise ValueError('missing sampled boundary label')
++        factor_cf = mesh.BoundaryCF({label: ng.CF(factor) for label, factor in factors.items()})
++        oriented = factor_cf*raw
++        record['returned_CF_point_checks'] = {'passed': False, 'samples_checked': 0,
++            'maximum_absolute_error': 0., 'maximum_raw_replay_error': 0.,
++            'maximum_absolute_error_by_label': {}, 'threshold': API_TOL}
++        point_checks = record['returned_CF_point_checks']
++        sample_index = 0
++        for element in mesh.Elements(ng.BND):
++            tr = mesh.GetTrafo(element)
++            ir = ng.IntegrationRule(element.type, qorder)
++            for index, ip in enumerate(ir):
++                mip = tr(ip)
++                row = samples[sample_index]
++                if row['element'] != int(element.nr) or row['point_in_element'] != index or row['label'] != str(element.mat):
++                    raise ArithmeticError('certificate sample enumeration changed')
++                actual = np.array(oriented(mip), dtype=np.float64, copy=True)
++                raw_now = np.array(raw(mip), dtype=np.float64, copy=True)
++                if actual.shape != (2,) or raw_now.shape != (2,) or not np.isfinite(actual).all() or not np.isfinite(raw_now).all():
++                    raise ArithmeticError('invalid returned normal coefficient function sample')
++                error = float(np.linalg.norm(actual-factors[row['label']]*raw_now))
++                raw_error = float(np.linalg.norm(raw_now-np.array(row['raw_normal'])))
++                row['returned_normal'] = actual.tolist()
++                row['returned_normal_absolute_error'] = error
++                row['returned_raw_replay_error'] = raw_error
++                point_checks['samples_checked'] += 1
++                point_checks['maximum_absolute_error'] = max(point_checks['maximum_absolute_error'], error)
++                point_checks['maximum_raw_replay_error'] = max(point_checks['maximum_raw_replay_error'], raw_error)
++                label_errors = point_checks['maximum_absolute_error_by_label']
++                label_errors[row['label']] = max(label_errors.get(row['label'], 0.), error)
++                if error > API_TOL or raw_error > API_TOL:
++                    raise ArithmeticError('returned normal coefficient function differs from factor times raw normal')
++                sample_index += 1
++        if sample_index != len(samples):
++            raise ArithmeticError('returned coefficient function did not cover all certificate samples')
++        point_checks['passed'] = True
+         record['analytic_checks'] = {}
+         for label in expected_labels:
+             rows = [row for row in samples if row['label'] == label]
+-            normals = np.array([row['fluid_outward_normal'] for row in rows])
++            normals = np.array([row['returned_normal'] for row in rows])
+             if label in directions:
+                 error = float(np.max(np.linalg.norm(normals-directions[label], axis=1)))
+                 record['analytic_checks'][label] = {'maximum_vector_error': error}
+@@ -133,8 +182,6 @@
+                                                    'unchanged_maximum_dot_threshold': -.99}
+                 if dots.max() > -.99:
+                     raise ArithmeticError('oriented obstacle normal fails unchanged radial sign check')
+-        factor_cf = mesh.BoundaryCF({label: ng.CF(factor) for label, factor in factors.items()})
+-        oriented = factor_cf*raw
+         # Use a verified constant-one test to access the actual volume-facet
+         # integration path. Never put factor_cf or oriented into this path.
+         V = ng.L2(mesh, order=0, dgjumps=True)
+@@ -202,6 +249,7 @@
+         persist()
+         return oriented, record
+     except Exception as exc:
++        record['minimum_observed_absolute_witness_cosine_by_label'] = witness_margins(samples)
+         record['error'] = repr(exc)
+         persist()
+         raise
+--- 4b8fe1905/checks/test_oriented_normals.py
++++ claude-fixes/checks/test_oriented_normals.py
+@@ -9,7 +9,7 @@
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(ROOT))
+-from oriented_normals import infer_label_factors
++from oriented_normals import infer_label_factors, witness_margins, MIN_WITNESS_COSINE
+ 
+ sample_path = ROOT/'artifacts/g1-normal01/results/geometry/boundary_samples.json'
+ result_path = ROOT/'artifacts/g1-normal01/results/geometry/result.json'
+@@ -56,4 +56,9 @@
+     'result_source_sha256': hashlib.sha256(result_path.read_bytes()).hexdigest(),
+     'helper_source_sha256': hashlib.sha256((ROOT/'oriented_normals.py').read_bytes()).hexdigest(),
+     'factors': factors, 'raw_sign_reversal_invariance': True, 'rejections': rejections,
++    'minimum_observed_absolute_witness_cosine_by_label': witness_margins(samples),
++    'guard_absolute_cosine': MIN_WITNESS_COSINE,
++    'guard_meaning': 'reject normalized absolute raw-normal component toward adjacent mapped interior point <= 1e-8; not a mesh-quality criterion',
++    'future_mesh_identity_with_saved_mesh_asserted': False,
++    'future_mesh_false_stop_risk_accepted': True,
+     'maximum_replayed_corrected_moment_error_per_measure': max(moment_errors)}, indent=2))
+--- 4b8fe1905/repairs/normal01/REVIEW-NOTE.md
++++ claude-fixes/repairs/normal01/REVIEW-NOTE.md
+@@ -7,8 +7,12 @@
+ 
+ The new `oriented_normals.py` retains NGSolve's curved boundary normal and
+ infers its orientation factor from the unique topologically adjacent fluid
+-triangle's mapped interior point. It rejects nonunit vectors, degenerate or
+-nearly tangential witnesses, and mixed signs under one boundary label. It never
++triangle's mapped interior point. It rejects nonunit vectors, degenerate
++witnesses, normalized absolute witness cosines at most $10^{-8}$, and mixed
++signs under one boundary label. The cosine is the raw normal's component along
++the vector toward the mapped interior point, divided by both vector lengths.
++This threshold is a near-zero numerical guard, not a mesh-quality criterion or
++a guarantee of a useful angular margin. It never
+ selects a sign from a boundary's name or substitutes an analytic radial normal.
+ 
+ The candidate then checks the inferred normal against independent information:
+@@ -17,6 +21,11 @@
+ `LinearForm` path. The divergence theorem checks the total oriented boundary.
+ Closure is only a supplementary check; it cannot select the obstacle's sign.
+ Raw samples are saved before inference, and failed certificates are retained.
++Every sampled point also evaluates the actual returned coefficient function,
++compares it to the factor times the freshly evaluated raw normal at tolerance
++$10^{-10}$, and retains the value and error. Analytic checks use those returned
++values. The certificate records every per-label minimum absolute witness cosine,
++including observations available before a failure.
+ 
+ Only ordinary boundary transformations receive the `BoundaryCF` sign factors.
+ The volume-facet control uses native normals without those factors, preventing
+@@ -31,6 +40,13 @@
+ a distorted cell; ambiguity stops the helper. Constant sign across a label is
+ verified at the diagnostic quadrature points, not asserted for arbitrary
+ geometry. Independent analytic and volume-facet checks constrain the inference.
++The existing inference algorithm and $10^{-8}$ guard are unchanged. We accept
++the risk of a false stop on a future distorted or differently generated mesh;
++no identity between future preflight/channel/manufactured/DFG meshes and the
++saved diagnostic mesh is asserted. Each actual mesh must produce its own
++certificate. Observed margins from the retained diagnostic are generated in
++`checks/oriented-normal-replay.json`; an imagined thin margin is not a measured
++failure of that mesh.
+ The native helper and `BoundaryCF` combination still require the reviewed run.
+ 
+ The helper's extra vector assemblies are reference/control setup costs. They
+@@ -46,7 +62,13 @@
+ source inputs are byte-identical to smoke06 except the private-prefix attempt
+ binding. `INPUT-CANDIDATE.json` freezes the eighteen proposed inputs. No job has
+ been staged or released. Local checks are syntax checks and saved-array replay;
+-the replay is not native repair execution or a physical result.
++the replay is not native repair execution or a physical result. The original
++Claude NEEDS-FIXES review is preserved in the coordinator's review directory;
++`CLAUDE-REVIEW-RESPONSE.json` binds it to these fixes. The earlier claim that the
++line-based call-site list was complete is withdrawn. `make_callsite_audit.py`
++now captures every `normal`/`raw_normal` AST name load in full statement spans,
++including multiline expressions and preflight; assignments and certificate
++metadata are separately identified.
+ 
+ ## Glossary
+ 

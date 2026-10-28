@@ -1,0 +1,28 @@
+{
+  "original_review": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/CLAUDE-NORMAL-REPAIR-REVIEW.txt",
+  "original_review_sha256": "9a8e58a3356f6acd889de80ca532bb2ec44320081ecf7b29073bbbbdda1c0bc9",
+  "original_verdict": "NEEDS-FIXES",
+  "reviewed_base": "26e9b8272",
+  "original_review_preserved": true,
+  "evidence_delta_retained": "4b8fe1905",
+  "fixes": {
+    "R1": "Actual returned oriented(mip) checked at every certificate quadrature point against factor times fresh raw(mip), with values and per-point/per-label/global errors persisted; analytic checks now use returned values.",
+    "R2": "Current pointwise adjacency inference and 1e-8 guard unchanged. Minimum observed absolute witness cosine is reported per label in runtime certificate and saved-array replay. Future meshes each require a certificate; fail-closed false-stop risk accepted.",
+    "D1": "Old line grep completeness claim withdrawn. New AST generator covers every normal/raw_normal Name load with complete statement spans in FOM and preflight; bindings and certificate metadata separate.",
+    "D2": "Guard documented as rejecting normalized absolute normal component <=1e-8, a near-zero numerical guard rather than mesh-quality margin."
+  },
+  "adjudication": {
+    "outer_labels": "mapped_probe already checked returned normals on all outer labels at order2; its body was omitted from the Claude packet. R1 nevertheless improves every-point certificate coverage.",
+    "thin_margin": "Claude scenario was hypothetical, not observed. Saved diagnostic margins are generated from actual arrays below.",
+    "geometry_identity": "Future meshes are not asserted identical to the saved mesh; exact recipe/configuration preservation does not prove mesh identity."
+  },
+  "observed_saved_array_minima": {
+    "inlet": 0.40935042269078026,
+    "obstacle": 0.22141354010117187,
+    "outlet": 0.38521599162036746,
+    "wall_bottom": 0.39967500668186184,
+    "wall_top": 0.4615351639871621
+  },
+  "native_repair_execution": false,
+  "requires_focused_Codex_review": true
+}

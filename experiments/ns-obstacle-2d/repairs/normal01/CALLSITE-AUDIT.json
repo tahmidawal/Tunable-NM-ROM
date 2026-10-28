@@ -1,5 +1,7 @@
 {
-  "scope": "G1 candidate only; G2 propagation not included",
+  "schema": "ns-obstacle-normal-callsite-ast-v1",
+  "scope": "isolated G1 candidate; G2 source excluded",
+  "method": "Every AST Name load of normal/raw_normal is grouped by its nearest full statement span, including multiline dictionaries/comprehensions/lambdas. Bindings and certificate-only metadata are separate.",
   "changed_files": [
     {
       "path": "fom.py",
@@ -12,136 +14,551 @@
       "new_sha256": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3"
     }
   ],
-  "normal_consumers": [
-    {
-      "line": 75,
-      "source": "normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,"
+  "files": {
+    "fom.py": {
+      "sha256": "9e2fbbed57de5d943e5159e98fabc07cdc1ecb999b6a48dff96c711285529ca9",
+      "normal_name_load_count": 35,
+      "covered_load_count": 35,
+      "bindings": [
+        {
+          "start": 87,
+          "end": 87,
+          "scope": "run_case",
+          "source": "raw_normal = ng.specialcf.normal(2)",
+          "name": "raw_normal",
+          "kind": "assignment"
+        },
+        {
+          "start": 75,
+          "end": 76,
+          "scope": "run_case",
+          "source": "normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,\n        order=cfg['diagnostic_order'], evidence_path=out/'normal_orientation.json')",
+          "name": "normal",
+          "kind": "assignment"
+        }
+      ],
+      "uses": [
+        {
+          "start": 77,
+          "end": 77,
+          "scope": "run_case",
+          "source": "dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 77,
+              "column": 109
+            }
+          ]
+        },
+        {
+          "start": 107,
+          "end": 107,
+          "scope": "run_case",
+          "source": "traction = (nu*gu-exact_p*I)*normal",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 107,
+              "column": 37
+            }
+          ]
+        },
+        {
+          "start": 330,
+          "end": 330,
+          "scope": "run_case",
+          "source": "obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 330,
+              "column": 60
+            }
+          ]
+        },
+        {
+          "start": 332,
+          "end": 335,
+          "scope": "run_case",
+          "source": "boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),\n                               'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],\n                               'label':label,'velocity':uv.tolist(),'pressure':scalar_value(ph(mip),'boundary_pressure_point'),\n                               'velocity_gradient':np.asarray(gradient_on_boundary(mip)).reshape(2,2).tolist()})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 332,
+              "column": 103
+            },
+            {
+              "name": "raw_normal",
+              "line": 333,
+              "column": 49
+            }
+          ]
+        },
+        {
+          "start": 353,
+          "end": 353,
+          "scope": "run_case",
+          "source": "qin=-integ(uh*normal,'inlet')",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 353,
+              "column": 18
+            }
+          ]
+        },
+        {
+          "start": 353,
+          "end": 353,
+          "scope": "run_case",
+          "source": "qout=integ(uh*normal,'outlet')",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 353,
+              "column": 48
+            }
+          ]
+        },
+        {
+          "start": 354,
+          "end": 369,
+          "scope": "run_case",
+          "source": "metrics={'mass':metric(abs(qout-qin),max(abs(qin),1e-30),'abs(Qout-Qin)/abs(Qin)'),\n             'divergence':metric(D*math.sqrt(max(integ(div*div),0)),U*math.sqrt(volume),'D||div u||/(U sqrt(volume))'),\n             'boundary_trace':metric(trace_max,U,'maximum sampled essential FE trace error/U'),\n             'Qin':qin,'Qout':qout,\n             'mass_scope':('physical inlet/outlet mass' if kind!='manufactured' else 'inlet/outlet only; not a manufactured-control gate'),\n             'global_boundary_flux':metric(abs(sum(integ(uh*normal,b) for b in boundary_measures)),\n                                         max(sum(integ(ng.sqrt((uh*normal)**2),b) for b in boundary_measures),1e-12*U*D),\n                                         'abs(total boundary flux) / total absolute boundary flux'),\n             'independent_residual':metric(independent_norm,denominator,'scaled free-DOF residual / max(initial Stokes scaled residual, fixed floor)'),\n             'independent_assembly_agreement':independent_difference,\n             'pressure_mean':integ(ph)/volume,\n             'pressure_gauge':'fixed by natural outlet, no pin and no shift',\n             'row_scale_momentum':U**2*D,'row_scale_continuity':U*D,\n             'residual_initial_stokes_norm':initial,'residual_floor':cfg['residual_floor'],\n             'residual_mode':('absolute in scaled row units' if initial<=cfg['residual_floor'] else 'relative to initial Stokes residual in scaled row units'),\n             'stokes_linear_residual':stokes_linear_metric}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 359,
+              "column": 60
+            },
+            {
+              "name": "normal",
+              "line": 360,
+              "column": 67
+            }
+          ]
+        },
+        {
+          "start": 372,
+          "end": 379,
+          "scope": "run_case",
+          "source": "terms={'dissipation':2*nu*integ(ng.InnerProduct(eps,eps)),\n           'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),\n           'physical_traction_work':-sum(integ(uh*(sigma_boundary*normal),b) for b in boundary_measures),\n           'body_force_work':-integ(force*uh),\n           'finite_divergence_convection':-.5*integ((uh*uh)*div),\n           'finite_divergence_pressure':-integ(ph*div),\n           # \u0394u formulation differs from div(2\u03b5) by grad(div u).\n           'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 373,
+              "column": 58
+            },
+            {
+              "name": "normal",
+              "line": 374,
+              "column": 66
+            },
+            {
+              "name": "normal",
+              "line": 379,
+              "column": 89
+            }
+          ]
+        },
+        {
+          "start": 381,
+          "end": 381,
+          "scope": "run_case",
+          "source": "physical_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 381,
+              "column": 64
+            }
+          ]
+        },
+        {
+          "start": 382,
+          "end": 382,
+          "scope": "run_case",
+          "source": "physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma_boundary*normal),b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 382,
+              "column": 74
+            }
+          ]
+        },
+        {
+          "start": 386,
+          "end": 386,
+          "scope": "run_case",
+          "source": "physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 386,
+              "column": 90
+            }
+          ]
+        },
+        {
+          "start": 390,
+          "end": 395,
+          "scope": "run_case",
+          "source": "gt={'dissipation':nu*integ(ng.InnerProduct(gu,gu)),\n        'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),\n        'gradient_traction_work':-sum(integ(uh*(tau_boundary*normal),b) for b in boundary_measures),\n        'body_force_work':-integ(force*uh),\n        'finite_divergence_convection':-.5*integ((uh*uh)*div),\n        'finite_divergence_pressure':-integ(ph*div)}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 391,
+              "column": 55
+            },
+            {
+              "name": "normal",
+              "line": 392,
+              "column": 61
+            }
+          ]
+        },
+        {
+          "start": 397,
+          "end": 397,
+          "scope": "run_case",
+          "source": "gt['symmetric_pde_adjustment']=nu*integ(div*div)-sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 397,
+              "column": 87
+            }
+          ]
+        },
+        {
+          "start": 398,
+          "end": 398,
+          "scope": "run_case",
+          "source": "gradient_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 398,
+              "column": 64
+            }
+          ]
+        },
+        {
+          "start": 399,
+          "end": 399,
+          "scope": "run_case",
+          "source": "gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau_boundary*normal),b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 399,
+              "column": 72
+            }
+          ]
+        },
+        {
+          "start": 403,
+          "end": 403,
+          "scope": "run_case",
+          "source": "gradient_parts.update({f'symmetric_div_{b}':-nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 403,
+              "column": 79
+            }
+          ]
+        },
+        {
+          "start": 407,
+          "end": 409,
+          "scope": "run_case",
+          "source": "terms_m={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),\n                 'gradient_traction':-sum(integ((tau_boundary*normal)[i],b) for b in boundary_measures),\n                 'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div)}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 407,
+              "column": 50
+            },
+            {
+              "name": "normal",
+              "line": 408,
+              "column": 62
+            }
+          ]
+        },
+        {
+          "start": 411,
+          "end": 411,
+          "scope": "run_case",
+          "source": "terms_m['symmetric_pde_adjustment']=-sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures)",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 411,
+              "column": 75
+            }
+          ]
+        },
+        {
+          "start": 412,
+          "end": 412,
+          "scope": "run_case",
+          "source": "pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 412,
+              "column": 55
+            }
+          ]
+        },
+        {
+          "start": 413,
+          "end": 413,
+          "scope": "run_case",
+          "source": "pieces.update({f'gradient_traction_{b}':-integ((tau_boundary*normal)[i],b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 413,
+              "column": 69
+            }
+          ]
+        },
+        {
+          "start": 416,
+          "end": 416,
+          "scope": "run_case",
+          "source": "pieces.update({f'symmetric_div_{b}':-nu*integ(div_boundary*normal[i],b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 416,
+              "column": 71
+            }
+          ]
+        },
+        {
+          "start": 421,
+          "end": 424,
+          "scope": "run_case",
+          "source": "mt={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),\n            'physical_traction':-sum(integ((sigma_boundary*normal)[i],b) for b in boundary_measures),\n            'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div),\n            'finite_divergence_viscous':sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 421,
+              "column": 45
+            },
+            {
+              "name": "normal",
+              "line": 422,
+              "column": 59
+            },
+            {
+              "name": "normal",
+              "line": 424,
+              "column": 66
+            }
+          ]
+        },
+        {
+          "start": 425,
+          "end": 425,
+          "scope": "run_case",
+          "source": "pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 425,
+              "column": 55
+            }
+          ]
+        },
+        {
+          "start": 426,
+          "end": 426,
+          "scope": "run_case",
+          "source": "pieces.update({f'physical_traction_{b}':-integ((sigma_boundary*normal)[i],b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 426,
+              "column": 71
+            }
+          ]
+        },
+        {
+          "start": 429,
+          "end": 429,
+          "scope": "run_case",
+          "source": "pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*normal[i],b) for b in boundary_measures})",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 429,
+              "column": 82
+            }
+          ]
+        },
+        {
+          "start": 456,
+          "end": 456,
+          "scope": "run_case",
+          "source": "ff=[-integ((stress*normal)[i],'obstacle',order) for i in range(2)]",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 456,
+              "column": 35
+            }
+          ]
+        },
+        {
+          "start": 487,
+          "end": 487,
+          "scope": "run_case",
+          "source": "wall_force=[-integ((sigma_boundary*normal)[i],'wall.*') for i in range(2)]",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 487,
+              "column": 43
+            }
+          ]
+        }
+      ],
+      "metadata": [
+        {
+          "start": 492,
+          "end": 502,
+          "scope": "run_case",
+          "source": "result={'status':'completed_control_not_reference_admission','configuration':cfg,\n            'scalar_return_contract':scalar_observations(),\n            'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,\n            'normal_orientation':{'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],\n                                  'certificate_sha256':sha(out/'normal_orientation.json')},\n            'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',\n            'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,\n            'versions':{'ngsolve':ng.__version__,'numpy':np.__version__,'python':platform.python_version()},\n            'threading':{'requested':cfg['threads'],'TaskManager':True,'actual_effective_concurrency':'unmeasured; no performance claim'},\n            'provenance':{'execution_source_commit':Path('SOURCE_COMMIT.txt').read_text().strip() if Path('SOURCE_COMMIT.txt').exists() else None,'source_sha256':sha(__file__),'config_sha256':sha(out/'config.json'),\n                          'job_id':os.environ.get('SLURM_JOB_ID'),'hostname':platform.node()}}",
+          "category": "certificate_metadata_not_normal_consumer"
+        }
+      ]
     },
-    {
-      "line": 77,
-      "source": "dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))"
-    },
-    {
-      "line": 90,
-      "source": "exact_u = exact_p = force = traction = None"
-    },
-    {
-      "line": 96,
-      "source": "traction = ng.CF((0, 0))"
-    },
-    {
-      "line": 107,
-      "source": "traction = (nu*gu-exact_p*I)*normal"
-    },
-    {
-      "line": 126,
-      "source": "force, traction = ng.CF((0,0)), ng.CF((0,0))"
-    },
-    {
-      "line": 332,
-      "source": "boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),"
-    },
-    {
-      "line": 353,
-      "source": "qin=-integ(uh*normal,'inlet');qout=integ(uh*normal,'outlet')"
-    },
-    {
-      "line": 359,
-      "source": "'global_boundary_flux':metric(abs(sum(integ(uh*normal,b) for b in boundary_measures)),"
-    },
-    {
-      "line": 373,
-      "source": "'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),"
-    },
-    {
-      "line": 374,
-      "source": "'physical_traction_work':-sum(integ(uh*(sigma_boundary*normal),b) for b in boundary_measures),"
-    },
-    {
-      "line": 379,
-      "source": "'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}"
-    },
-    {
-      "line": 382,
-      "source": "physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma_boundary*normal),b) for b in boundary_measures})"
-    },
-    {
-      "line": 383,
-      "source": "physical_parts.update({k:z for k,z in terms.items() if k not in ('convection_boundary','physical_traction_work','finite_divergence_viscous')})"
-    },
-    {
-      "line": 385,
-      "source": "physical_parts['finite_divergence_viscous_volume']=-nu*integ(div*div)"
-    },
-    {
-      "line": 386,
-      "source": "physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})"
-    },
-    {
-      "line": 388,
-      "source": "metrics['energy']={'terms':terms,'individual_contributions':physical_parts,'physical_raw':metric(abs(sum(terms[k] for k in ('dissipation','convection_boundary','physical_traction_work','body_force_work'))),denominator_energy,'raw physical balance / sum absolute terms'),"
-    },
-    {
-      "line": 391,
-      "source": "'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),"
-    },
-    {
-      "line": 392,
-      "source": "'gradient_traction_work':-sum(integ(uh*(tau_boundary*normal),b) for b in boundary_measures),"
-    },
-    {
-      "line": 399,
-      "source": "gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau_boundary*normal),b) for b in boundary_measures})"
-    },
-    {
-      "line": 400,
-      "source": "gradient_parts.update({k:z for k,z in gt.items() if k not in ('convection_boundary','gradient_traction_work','symmetric_pde_adjustment')})"
-    },
-    {
-      "line": 407,
-      "source": "terms_m={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),"
-    },
-    {
-      "line": 421,
-      "source": "mt={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),"
-    },
-    {
-      "line": 424,
-      "source": "'finite_divergence_viscous':sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}"
-    },
-    {
-      "line": 427,
-      "source": "pieces.update({k:z for k,z in mt.items() if k not in ('convection','physical_traction','finite_divergence_viscous')})"
-    },
-    {
-      "line": 429,
-      "source": "pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*normal[i],b) for b in boundary_measures})"
-    },
-    {
-      "line": 456,
-      "source": "ff=[-integ((stress*normal)[i],'obstacle',order) for i in range(2)]"
-    },
-    {
-      "line": 487,
-      "source": "wall_force=[-integ((sigma_boundary*normal)[i],'wall.*') for i in range(2)]"
+    "preflight.py": {
+      "sha256": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+      "normal_name_load_count": 4,
+      "covered_load_count": 4,
+      "bindings": [
+        {
+          "start": 20,
+          "end": 20,
+          "scope": "mapped_probe",
+          "name": "normal",
+          "kind": "function_parameter"
+        },
+        {
+          "start": 87,
+          "end": 87,
+          "scope": "run",
+          "source": "normal, orientation = fluid_outward_normal(mesh, order=6, evidence_path=orientation_evidence_path)",
+          "name": "normal",
+          "kind": "assignment"
+        }
+      ],
+      "uses": [
+        {
+          "start": 23,
+          "end": 23,
+          "scope": "mapped_probe",
+          "source": "if normal is None:raise ValueError('explicit verified ordinary-BND normal required')",
+          "category": "guard",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 23,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "start": 48,
+          "end": 48,
+          "scope": "mapped_probe",
+          "source": "nn=traced(point_call+'.normal_copy',lambda:np.array(normal(mip),dtype=float,copy=True),enabled=diagnostic)",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 48,
+              "column": 64
+            }
+          ]
+        },
+        {
+          "start": 88,
+          "end": 88,
+          "scope": "run",
+          "source": "result=mapped_probe(mesh,diagnostic=True,normal=normal)",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 88,
+              "column": 52
+            }
+          ]
+        },
+        {
+          "start": 144,
+          "end": 145,
+          "scope": "run",
+          "source": "measured=np.array([scalar_value(traced(f'{name}.{label}.traction[{i}]',ng.Integrate,\n                (stress*normal)[i],mesh,definedon=mesh.Boundaries(label),order=6),'traction_integral') for i in range(2)])",
+          "category": "ordinary_BND_consumer_or_forwarding",
+          "occurrences": [
+            {
+              "name": "normal",
+              "line": 145,
+              "column": 24
+            }
+          ]
+        }
+      ],
+      "metadata": [
+        {
+          "start": 89,
+          "end": 89,
+          "scope": "run",
+          "source": "result['normal_orientation']=orientation",
+          "category": "certificate_metadata_not_normal_consumer"
+        }
+      ]
     }
-  ],
-  "raw_normal_uses": [
-    {
-      "line": 87,
-      "source": "raw_normal = ng.specialcf.normal(2)  # retained for provenance, not forces/fluxes"
-    },
-    {
-      "line": 333,
-      "source": "'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],"
-    }
-  ],
-  "volume_facet_scope": "oriented_normals.py uses raw native normal for facet_terms and oriented normal only for ordinary_terms",
-  "source_only_checks": [
-    "Python compilation",
-    "bash -n",
-    "saved-array sign-inference replay with orientation reversal and negative cases"
-  ],
-  "native_repair_execution": false,
-  "evidence_only_followup": "CLI --out now supplies a protected sibling orientation-certificate path through run() to the helper; output parent created before run; mathematics/configuration unchanged"
+  },
+  "helper_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+  "volume_facet_scope": "helper uses terms(oriented) for ordinary integration and terms(raw) for volume-facet LinearForm; factor_cf/oriented never enter facet integrands",
+  "evidence_only_delta": "4b8fe1905 sibling certificate path retained",
+  "native_repair_execution": false
 }

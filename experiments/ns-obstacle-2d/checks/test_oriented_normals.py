@@ -9,7 +9,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from oriented_normals import infer_label_factors
+from oriented_normals import infer_label_factors, witness_margins, MIN_WITNESS_COSINE
 
 sample_path = ROOT/'artifacts/g1-normal01/results/geometry/boundary_samples.json'
 result_path = ROOT/'artifacts/g1-normal01/results/geometry/result.json'
@@ -56,4 +56,9 @@ print(json.dumps({'status': 'passed_saved_array_replay_only', 'native_repair_exe
     'result_source_sha256': hashlib.sha256(result_path.read_bytes()).hexdigest(),
     'helper_source_sha256': hashlib.sha256((ROOT/'oriented_normals.py').read_bytes()).hexdigest(),
     'factors': factors, 'raw_sign_reversal_invariance': True, 'rejections': rejections,
+    'minimum_observed_absolute_witness_cosine_by_label': witness_margins(samples),
+    'guard_absolute_cosine': MIN_WITNESS_COSINE,
+    'guard_meaning': 'reject normalized absolute raw-normal component toward adjacent mapped interior point <= 1e-8; not a mesh-quality criterion',
+    'future_mesh_identity_with_saved_mesh_asserted': False,
+    'future_mesh_false_stop_risk_accepted': True,
     'maximum_replayed_corrected_moment_error_per_measure': max(moment_errors)}, indent=2))

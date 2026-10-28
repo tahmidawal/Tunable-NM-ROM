@@ -30,20 +30,31 @@ def infer_label_factors(samples):
         if abs(norm-1) > API_TOL or distance <= 0:
             raise ValueError('nonunit normal or degenerate adjacent-volume witness')
         cosine = float(normal@inward/(norm*distance))
+        row['raw_normal_dot_toward_adjacent_volume'] = float(normal@inward)
+        row['raw_normal_cosine_toward_adjacent_volume'] = cosine
         if abs(cosine) <= MIN_WITNESS_COSINE:
-            raise ValueError('adjacent-volume direction is too nearly tangential')
+            raise ValueError('absolute adjacency witness cosine is at most 1e-8')
         factor = -1 if cosine > 0 else 1
         label = row['label']
         if label in factors and factors[label] != factor:
             raise ValueError(f'normal orientation is not constant on boundary label {label}')
         factors[label] = factor
-        row['raw_normal_dot_toward_adjacent_volume'] = float(normal@inward)
-        row['raw_normal_cosine_toward_adjacent_volume'] = cosine
         row['orientation_factor'] = factor
         row['fluid_outward_normal'] = (factor*normal).tolist()
     if not factors:
         raise ValueError('no boundary orientation samples')
     return factors
+
+
+def witness_margins(samples):
+    """Observed normalized normal-component margins, including partial failures."""
+    margins = {}
+    for row in samples:
+        if 'raw_normal_cosine_toward_adjacent_volume' in row:
+            value = abs(row['raw_normal_cosine_toward_adjacent_volume'])
+            label = row['label']
+            margins[label] = min(margins.get(label, value), value)
+    return dict(sorted(margins.items()))
 
 
 def fluid_outward_normal(mesh, center=None, order=12, evidence_path=None):
@@ -62,7 +73,9 @@ verification stop the call; no sign is guessed from a boundary's name.
               'method': 'raw curved normal times topology-inferred, independently verified per-label sign',
               'volume_facet_normals_modified': False, 'analytic_normals_substituted': False,
               'order': max(6, int(order)), 'threshold': API_TOL,
-              'minimum_adjacency_witness_cosine': MIN_WITNESS_COSINE,
+              'adjacency_witness_guard_absolute_cosine': MIN_WITNESS_COSINE,
+              'adjacency_witness_guard_meaning': 'reject abs(raw_normal dot inward)/(norm(raw_normal)*norm(inward)) <= 1e-8; a near-zero numerical guard, not a mesh-quality criterion',
+              'future_mesh_false_stop_risk_accepted': True,
               'samples': samples}
     def persist():
         if evidence_path is not None:
@@ -112,12 +125,48 @@ verification stop the call; no sign is guessed from a boundary's name.
         persist()
         factors = infer_label_factors(samples)
         record['factors'] = factors
+        record['minimum_observed_absolute_witness_cosine_by_label'] = witness_margins(samples)
         if set(factors) != expected_labels:
             raise ValueError('missing sampled boundary label')
+        factor_cf = mesh.BoundaryCF({label: ng.CF(factor) for label, factor in factors.items()})
+        oriented = factor_cf*raw
+        record['returned_CF_point_checks'] = {'passed': False, 'samples_checked': 0,
+            'maximum_absolute_error': 0., 'maximum_raw_replay_error': 0.,
+            'maximum_absolute_error_by_label': {}, 'threshold': API_TOL}
+        point_checks = record['returned_CF_point_checks']
+        sample_index = 0
+        for element in mesh.Elements(ng.BND):
+            tr = mesh.GetTrafo(element)
+            ir = ng.IntegrationRule(element.type, qorder)
+            for index, ip in enumerate(ir):
+                mip = tr(ip)
+                row = samples[sample_index]
+                if row['element'] != int(element.nr) or row['point_in_element'] != index or row['label'] != str(element.mat):
+                    raise ArithmeticError('certificate sample enumeration changed')
+                actual = np.array(oriented(mip), dtype=np.float64, copy=True)
+                raw_now = np.array(raw(mip), dtype=np.float64, copy=True)
+                if actual.shape != (2,) or raw_now.shape != (2,) or not np.isfinite(actual).all() or not np.isfinite(raw_now).all():
+                    raise ArithmeticError('invalid returned normal coefficient function sample')
+                error = float(np.linalg.norm(actual-factors[row['label']]*raw_now))
+                raw_error = float(np.linalg.norm(raw_now-np.array(row['raw_normal'])))
+                row['returned_normal'] = actual.tolist()
+                row['returned_normal_absolute_error'] = error
+                row['returned_raw_replay_error'] = raw_error
+                point_checks['samples_checked'] += 1
+                point_checks['maximum_absolute_error'] = max(point_checks['maximum_absolute_error'], error)
+                point_checks['maximum_raw_replay_error'] = max(point_checks['maximum_raw_replay_error'], raw_error)
+                label_errors = point_checks['maximum_absolute_error_by_label']
+                label_errors[row['label']] = max(label_errors.get(row['label'], 0.), error)
+                if error > API_TOL or raw_error > API_TOL:
+                    raise ArithmeticError('returned normal coefficient function differs from factor times raw normal')
+                sample_index += 1
+        if sample_index != len(samples):
+            raise ArithmeticError('returned coefficient function did not cover all certificate samples')
+        point_checks['passed'] = True
         record['analytic_checks'] = {}
         for label in expected_labels:
             rows = [row for row in samples if row['label'] == label]
-            normals = np.array([row['fluid_outward_normal'] for row in rows])
+            normals = np.array([row['returned_normal'] for row in rows])
             if label in directions:
                 error = float(np.max(np.linalg.norm(normals-directions[label], axis=1)))
                 record['analytic_checks'][label] = {'maximum_vector_error': error}
@@ -133,8 +182,6 @@ verification stop the call; no sign is guessed from a boundary's name.
                                                    'unchanged_maximum_dot_threshold': -.99}
                 if dots.max() > -.99:
                     raise ArithmeticError('oriented obstacle normal fails unchanged radial sign check')
-        factor_cf = mesh.BoundaryCF({label: ng.CF(factor) for label, factor in factors.items()})
-        oriented = factor_cf*raw
         # Use a verified constant-one test to access the actual volume-facet
         # integration path. Never put factor_cf or oriented into this path.
         V = ng.L2(mesh, order=0, dgjumps=True)
@@ -202,6 +249,7 @@ verification stop the call; no sign is guessed from a boundary's name.
         persist()
         return oriented, record
     except Exception as exc:
+        record['minimum_observed_absolute_witness_cosine_by_label'] = witness_margins(samples)
         record['error'] = repr(exc)
         persist()
         raise

@@ -3,7 +3,7 @@
   "native_repair_execution": false,
   "sample_source_sha256": "ec15d054c4fd5691c49b0b9673f17cb50046e5dcdee26ad1883e63da6c113963",
   "result_source_sha256": "7ba0d6b7695a2482e78db2fcbe9c9ab3d8abe9b32790456ea1078c161bb7413b",
-  "helper_source_sha256": "4872f4f2c0893ce296fd5980b0aabefd5b44332c8895d5f9cab15bdff9c00b32",
+  "helper_source_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
   "factors": {
     "wall_bottom": 1,
     "outlet": 1,
@@ -26,8 +26,19 @@
     {
       "name": "tangent_witness",
       "rejected": true,
-      "message": "adjacent-volume direction is too nearly tangential"
+      "message": "absolute adjacency witness cosine is at most 1e-8"
     }
   ],
+  "minimum_observed_absolute_witness_cosine_by_label": {
+    "inlet": 0.40935042269078026,
+    "obstacle": 0.22141354010117187,
+    "outlet": 0.38521599162036746,
+    "wall_bottom": 0.39967500668186184,
+    "wall_top": 0.4615351639871621
+  },
+  "guard_absolute_cosine": 1e-08,
+  "guard_meaning": "reject normalized absolute raw-normal component toward adjacent mapped interior point <= 1e-8; not a mesh-quality criterion",
+  "future_mesh_identity_with_saved_mesh_asserted": false,
+  "future_mesh_false_stop_risk_accepted": true,
   "maximum_replayed_corrected_moment_error_per_measure": 6.055761952500893e-16
 }

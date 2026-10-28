@@ -1,0 +1,277 @@
+{
+  "status": "source_only_unexecuted_no_staging_or_submission",
+  "physical_admission": false,
+  "training_released": false,
+  "adapter_source_sha256": "7ced27b2b02d204edbcb071469d055fe6b2b8fdabc0f57a97435971e6c9a05bd",
+  "fixture_source_sha256": "621def60e255650ded5cd25ccfcab32bb7c8c60e7a99c043311133eb0e22f73e",
+  "block_source_sha256": "f7354b17c71765c7220b50c70d91b28ee1ed6a3445e238496a91c9364064e78b",
+  "producer_manifest_sha256": "f4a6504b19706a351fd9e6cf672bf4c8170f85a7251a4248b0b56bd66e5516b4",
+  "producer_retention_commit": "13083eb5b",
+  "producer_retention_mirror": "2ef3375f2",
+  "fresh_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-block02",
+  "caps": {
+    "gpu": 1,
+    "CPUs": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200,
+    "working_set_projection_GiB": 8,
+    "result_projection_GiB": 1
+  },
+  "files": [
+    {
+      "source": "native_block_control.py",
+      "destination": "native_block_control.py",
+      "sha256": "621def60e255650ded5cd25ccfcab32bb7c8c60e7a99c043311133eb0e22f73e",
+      "bytes": 14357
+    },
+    {
+      "source": "fe_blocks.py",
+      "destination": "fe_blocks.py",
+      "sha256": "f7354b17c71765c7220b50c70d91b28ee1ed6a3445e238496a91c9364064e78b",
+      "bytes": 5604
+    },
+    {
+      "source": "fe_adapter.py",
+      "destination": "fe_adapter.py",
+      "sha256": "1190358011b8193f4c580b39e3669adfa9c037e7afee3b81a194f75d305f26f9",
+      "bytes": 47678
+    },
+    {
+      "source": "fe_algebra.py",
+      "destination": "fe_algebra.py",
+      "sha256": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb",
+      "bytes": 6202
+    },
+    {
+      "source": "fe_pod_a6.py",
+      "destination": "fe_pod_a6.py",
+      "sha256": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252",
+      "bytes": 16160
+    },
+    {
+      "source": "fe_controls_a6.py",
+      "destination": "fe_controls_a6.py",
+      "sha256": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32",
+      "bytes": 3531
+    },
+    {
+      "source": "spaces.py",
+      "destination": "spaces.py",
+      "sha256": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee",
+      "bytes": 10737
+    },
+    {
+      "source": "weak.py",
+      "destination": "weak.py",
+      "sha256": "342dda01e3659b16edee826dfc87b28dd31945d27f43f4c952bc17e02b742977",
+      "bytes": 11601
+    },
+    {
+      "source": "train_bank.py",
+      "destination": "train_bank.py",
+      "sha256": "f3105ea96a2cfc585f3acbcb88de2d6aa9adbc2620cb84ccf32da076dd065eef",
+      "bytes": 5065
+    },
+    {
+      "source": "oriented_normals.py",
+      "destination": "oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "bytes": 15221
+    },
+    {
+      "source": "scalars.py",
+      "destination": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
+      "source": "MODEL-CONTRACT.json",
+      "destination": "MODEL-CONTRACT.json",
+      "sha256": "833e1f1f3bc2940390213d82df6edc29a399ccdd3d4d3f2b12267379b6f71617",
+      "bytes": 9347
+    },
+    {
+      "source": "native02/dependencies.py",
+      "destination": "dependencies.py",
+      "sha256": "34a32358b9179b7146745dddbdcf53df4de103157161badf651b376a9f0ce3ec",
+      "bytes": 6383
+    },
+    {
+      "source": "native02/DEPENDENCIES.json",
+      "destination": "DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432
+    },
+    {
+      "source": "native02/PROVISION.json",
+      "destination": "REPAIR.json",
+      "sha256": "dd0c7c39d505ffb627f0da86346a563c7d261d347207a07cc29c18015de7e267",
+      "bytes": 113
+    },
+    {
+      "source": "native02/native.sh",
+      "destination": "native.sh",
+      "sha256": "6f6ea2993aca10837e042171580036fbd5b48fe84356ee8c4e5b45fbf5e665c9",
+      "bytes": 3214
+    }
+  ],
+  "producer_inputs": [
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/EXPORT-MANIFEST.json",
+      "destination": "inputcase/EXPORT-MANIFEST.json",
+      "sha256": "f4a6504b19706a351fd9e6cf672bf4c8170f85a7251a4248b0b56bd66e5516b4",
+      "bytes": 3585
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/affine_gradient_orientation.json",
+      "destination": "inputcase/affine_gradient_orientation.json",
+      "sha256": "b27c113a1a248bbe711c7cde64f68f216a273b06dd405053d74b9d7eb3e1fbe7",
+      "bytes": 563
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/boundary_rule.json",
+      "destination": "inputcase/boundary_rule.json",
+      "sha256": "5491265c090de46c8b24c21a09966132164850670e052605f5020fdb83b91291",
+      "bytes": 295258
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/config.json",
+      "destination": "inputcase/config.json",
+      "sha256": "fa2fdc9b2686a9711085b796e1d915ca81aa19c91f22b6b676a33c0808444e11",
+      "bytes": 1360
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/early_geometry_api_checks.json",
+      "destination": "inputcase/early_geometry_api_checks.json",
+      "sha256": "af37d7dbee1a440fb72db83230fe93870b2dd2db91814ae76df36a6ddf898b0e",
+      "bytes": 720
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/essential_trace_certificate.json",
+      "destination": "inputcase/essential_trace_certificate.json",
+      "sha256": "954d8b62ecafe35e337fc1e9130c52eecbd4131cb202092b0aed32dc3daf4e79",
+      "bytes": 40525
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/fe_layout.json",
+      "destination": "inputcase/fe_layout.json",
+      "sha256": "117645ebd172a74b3aeb2ebafcc275fe03794f8932d624903229902304f30ebd",
+      "bytes": 269090
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/full_rule.npz",
+      "destination": "inputcase/full_rule.npz",
+      "sha256": "acfc9bfe0997bcb8a93d8adbd5efff9f337fb6eebc693e992fe59791ba8e8b4d",
+      "bytes": 1749326
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/geometry_checks.json",
+      "destination": "inputcase/geometry_checks.json",
+      "sha256": "9ea146b64f1777b2062469f4e97a4c959a987b3300323687e0b30bd8eac3a013",
+      "bytes": 1667
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/jacobian_checks.json",
+      "destination": "inputcase/jacobian_checks.json",
+      "sha256": "d0fccb1cff4c25b76ac1bc29e386ef58f1bb1fd2d6f473fad90c032afac81fbb",
+      "bytes": 1001
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/memory_checks.json",
+      "destination": "inputcase/memory_checks.json",
+      "sha256": "583de72b8ce3c4b63960c2272d1f7ab6ba57dc5add96b96c54fa70d81a124371",
+      "bytes": 645
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/mesh.vol.bin",
+      "destination": "inputcase/mesh.vol.bin",
+      "sha256": "598f209a4834b0df5cab8f2ececcfc481440b5abdf6b247bfa0a59db0c1102da",
+      "bytes": 44075
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/mesh_identity.json",
+      "destination": "inputcase/mesh_identity.json",
+      "sha256": "31abfe618283bf63a51367b7e06152e9abe6b5cfc6764dafca2200c4b628a268",
+      "bytes": 801
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/newton_history.json",
+      "destination": "inputcase/newton_history.json",
+      "sha256": "53502a824e7ff86b74043dff2e6b5aa3aedf36b150948746d0e9da313a4117d2",
+      "bytes": 2423
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/normal_orientation.json",
+      "destination": "inputcase/normal_orientation.json",
+      "sha256": "2cd2f2320b3ea04ccf8ec3ac9720e8b3fd4326b5e2f54ce6c95fae618e54e74c",
+      "bytes": 457265
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/reload.stderr.log",
+      "destination": "inputcase/reload.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/reload.stdout.log",
+      "destination": "inputcase/reload.stdout.log",
+      "sha256": "25eb52fc6ca08b6c04ae6995965e83d1a119735e0593cec6627f9576a8f84d5f",
+      "bytes": 975
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/reload_checks.json",
+      "destination": "inputcase/reload_checks.json",
+      "sha256": "1b5aaf54c3af3f1be447c13c8b027da7d3214bdcedbf30c0efd4cec7f3f6d122",
+      "bytes": 4152
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/reload_normal_orientation.json",
+      "destination": "inputcase/reload_normal_orientation.json",
+      "sha256": "e6ed67eeed2030c5e2d18b28b5faaa8d5fc79b937d25babea1252400fc343dad",
+      "bytes": 457301
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/reload_process.json",
+      "destination": "inputcase/reload_process.json",
+      "sha256": "d2ccc64c61ad16a66e822744a91dfb55522c1aaaa8c31f13594e7a8e9c02cbb6",
+      "bytes": 334
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/reload_request.json",
+      "destination": "inputcase/reload_request.json",
+      "sha256": "cb6385cbb36e10957735ddf9790a909572e10ef108515d278456fd6ea003c969",
+      "bytes": 496
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/result.json",
+      "destination": "inputcase/result.json",
+      "sha256": "8177857a50edfd49c0f9d3d5da87c63a2345e2e230b43369852e0914ab88b1f1",
+      "bytes": 72785
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/solution.sol",
+      "destination": "inputcase/solution.sol",
+      "sha256": "1dc39a7646629163141c64e21735ae23a576a251f61b2bd98756178257c1bbdd",
+      "bytes": 39112
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/stokes.sol",
+      "destination": "inputcase/stokes.sol",
+      "sha256": "2aa9d5f3af98e75cadb1aa933191afdf2951797a3c45aae42a666ae87e99e0e1",
+      "bytes": 39112
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-native01/results/dfg/wake_centerline.json",
+      "destination": "inputcase/wake_centerline.json",
+      "sha256": "bd8e9768ddc6864830ee4780f0c2a37e615cafa1645a3407703d92f3df3f272b",
+      "bytes": 77496
+    }
+  ],
+  "staging_generated_files": [
+    "CONTROL-RELEASE.json with independently reviewed exact-source/producer binding",
+    "SOURCE_COMMIT.txt",
+    "INPUT-MANIFEST.json",
+    "SOURCE-SHA256SUMS covering every staged runtime input"
+  ],
+  "no_automatic_retry": true
+}

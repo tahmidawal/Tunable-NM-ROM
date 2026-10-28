@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-28T21:00:06.206217+00:00",
+  "command": "cd /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend g2/p4trend/p4trend.sh",
+  "returncode": 0,
+  "stdout": "6615818\n",
+  "stderr": "",
+  "source_commit": "aa5cd1a4a56c0b9ffa68a20ef933d07c5c0dc01e",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend",
+  "single_submission": true,
+  "release": "root4a48450f6 trend only"
+}

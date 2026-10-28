@@ -1,0 +1,31 @@
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+           6615359       gpu ctol_nso  tawal01 PD       0:00      1 (Priority)
+JobId=6615359 JobName=ctol_nsobs2d_h3
+   UserId=tawal01(34493) GroupId=tawal01_g(1034493) MCS_label=N/A
+   Priority=1025 Nice=0 Account=default QOS=normal
+   JobState=PENDING Reason=Priority Dependency=(null)
+   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=00:20:00 TimeMin=N/A
+   SubmitTime=2026-10-28T16:42:51 EligibleTime=2026-10-28T16:42:51
+   AccrueTime=2026-10-28T16:42:51
+   StartTime=Unknown EndTime=Unknown Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-28T16:42:51 Scheduler=Main
+   Partition=gpu AllocNode:Sid=login-p02:2027673
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=
+   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=16,mem=64G,node=1,billing=16,gres/gpu=1
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   MinCPUsNode=16 MinMemoryNode=64G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=NO Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3/g2/h3/h3.sh
+   SubmitLine=sbatch --parsable --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3 g2/h3/h3.sh
+   WorkDir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3
+   StdErr=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3/slurm-6615359.err
+   StdIn=/dev/null
+   StdOut=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3/slurm-6615359.out
+   TresPerNode=gres/gpu:h200:1
+   TresPerTask=cpu=16
+

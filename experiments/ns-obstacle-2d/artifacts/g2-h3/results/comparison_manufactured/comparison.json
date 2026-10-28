@@ -1,0 +1,49 @@
+{
+  "status": "common_rule_fields_evaluated_no_physical_admission",
+  "physical_admission": false,
+  "rule_case": "manufactured_h3",
+  "full_rule_preserved": true,
+  "comparisons": [
+    {
+      "case": "manufactured_h1",
+      "reference": "manufactured_h2",
+      "purpose": "two successive differences on complete fixed h3 rule",
+      "velocity_relative": {
+        "numerator": 4.333757421097136e-09,
+        "denominator": 0.22810613299370405,
+        "value": 1.8998864099882628e-08
+      },
+      "pressure_scaled": {
+        "numerator": 7.484574211258451e-09,
+        "denominator": 0.03782371781472855,
+        "value": 1.978804476048613e-07
+      },
+      "volume": 0.8941460183301331,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": true
+    },
+    {
+      "case": "manufactured_h2",
+      "reference": "manufactured_h3",
+      "purpose": "two successive differences on complete fixed h3 rule",
+      "velocity_relative": {
+        "numerator": 1.633308482408772e-10,
+        "denominator": 0.22810613299394583,
+        "value": 7.160300606437977e-10
+      },
+      "pressure_scaled": {
+        "numerator": 5.471546557148692e-10,
+        "denominator": 0.03782371781472855,
+        "value": 1.446591417572937e-08
+      },
+      "volume": 0.8941460183301331,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": true
+    }
+  ],
+  "peak_rss_bytes": 474832896,
+  "source_sha256": "9724bfee2073735cfefc98e0cb4ea3198c3a17b3ed451ce0b4c2e67e5c785367",
+  "plan_sha256": "f700661b90c53be86f6b48ae4c74617f48e65fb793e346166c74b4327d79b594"
+}

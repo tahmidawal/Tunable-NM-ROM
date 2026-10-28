@@ -1,0 +1,154 @@
+{
+  "passed": true,
+  "policy": "saved_curved_binary_verified_fresh_process_no_recurve",
+  "threshold": 1e-10,
+  "checks": {
+    "solution_coefficients": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "stokes_coefficients": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_points": {
+      "numerator": 0.0,
+      "denominator": 2.199989662818987,
+      "value": 0.0
+    },
+    "volume_weights": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_jacobians": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_velocity": {
+      "numerator": 0.0,
+      "denominator": 0.7496640696890375,
+      "value": 0.0
+    },
+    "volume_velocity_gradient": {
+      "numerator": 0.0,
+      "denominator": 2.0,
+      "value": 0.0
+    },
+    "volume_pressure": {
+      "numerator": 0.0,
+      "denominator": 0.11997726822003058,
+      "value": 0.0
+    },
+    "boundary_points": {
+      "numerator": 0.0,
+      "denominator": 2.2,
+      "value": 0.0
+    },
+    "boundary_weights": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_normals": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_raw_normals": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_velocity": {
+      "numerator": 0.0,
+      "denominator": 0.7498554289010663,
+      "value": 0.0
+    },
+    "boundary_velocity_gradient": {
+      "numerator": 0.0,
+      "denominator": 2.0,
+      "value": 0.0
+    },
+    "boundary_pressure": {
+      "numerator": 0.0,
+      "denominator": 0.11999074673204002,
+      "value": 0.0
+    }
+  },
+  "curve_orders": {
+    "configured": 3,
+    "original": 3,
+    "reloaded": 3
+  },
+  "source_files": {
+    "mesh.vol.bin": "91d5790b382eeffaa39b6105eabb68e5c2ee8d466182b27586bd7ade325f4249",
+    "solution.sol": "d52cb786019f4f41c28ace75d72eed414dea2b4fded510c0850ecaa80163ec6e",
+    "stokes.sol": "564bf04ba9971e74fd8cf6912d07852f8630632cc4aecf9e61167f0708e531b3",
+    "full_rule.npz": "7d6cb80c91859ba340a8eb30a25fed08ea54677c6a862b2f59183394610aa3d2",
+    "boundary_rule.json": "b79b84dbff0c8ef597cf3c76205d3d7e37860afe9b2d55133233e585d4bc539b",
+    "fe_layout.json": "be04b0ae62e129c2a3923828bdc1efe37464e36ea3f2efec3eb2349308933b3f"
+  },
+  "mesh_filename": "mesh.vol.bin",
+  "mesh_format": "netgen-binary-archive-v6.2.2608",
+  "execution": {
+    "pid": 3925952,
+    "parent_pid": 3925678,
+    "producer_pid": 3925678,
+    "executable": "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+    "fresh_interpreter": true
+  },
+  "layout_sha256": "3515037c0d752a7ce3f9599eca26967647606ab42d31342bd490ea3a5eb7fc7d",
+  "normal_orientation": {
+    "passed": true,
+    "factors": {
+      "wall_bottom": 1,
+      "outlet": 1,
+      "wall_top": 1,
+      "inlet": 1,
+      "obstacle": -1
+    },
+    "certificate_sha256": "a4875a8134f82cf6cab7bb5e2aaa3f4d36c5ea0bcbb7d420da9ddf562b761e07"
+  },
+  "analytic_normal_checks": {
+    "passed": true,
+    "unit_normal_max_error": 2.220446049250313e-16,
+    "side_max_errors": {
+      "inlet": 0.0,
+      "outlet": 0.0,
+      "wall_top": 0.0,
+      "wall_bottom": 0.0
+    },
+    "closed_components": {
+      "outer_union": {
+        "normal_integral": [
+          1.0213184464813452e-16,
+          2.0165076206057897e-15
+        ],
+        "numerator": 2.0190923450036787e-15,
+        "boundary_measure_denominator": 5.219999999999965,
+        "value": 3.867992998091364e-16
+      },
+      "obstacle": {
+        "normal_integral": [
+          -1.7945409427119058e-16,
+          -5.3939058081153846e-17
+        ],
+        "numerator": 1.8738514865745215e-16,
+        "boundary_measure_denominator": 0.31415926607682365,
+        "value": 5.964654520539576e-16
+      }
+    },
+    "tolerance": 1e-10,
+    "obstacle_orientation_max_dot_limit": -0.99,
+    "obstacle_normal_dot_radial_range": [
+      -1.0000000000000002,
+      -0.9999999999915126
+    ]
+  },
+  "seconds": 60.255824447609484,
+  "peak_rss_bytes": 2156068864
+}

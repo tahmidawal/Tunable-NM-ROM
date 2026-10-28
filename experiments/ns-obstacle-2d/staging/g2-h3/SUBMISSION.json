@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-28T20:42:51.101288+00:00",
+  "command": "cd /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3 && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3 g2/h3/h3.sh",
+  "returncode": 0,
+  "stdout": "6615359\n",
+  "stderr": "",
+  "source_commit": "c618e752a0a357b96823edec58b0d0b42340181c",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3",
+  "single_submission": true,
+  "sequencing_release": "root743e6994e permits run while independent prior archive push remains active; no cleanup until backed up"
+}

@@ -1,0 +1,29 @@
+{
+  "cases": {
+    "dfg_h1": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3/inputs/dfg_h1",
+      "export_manifest_sha256": "381b8816becfa40bbdf1d9b7883733bd82b9f76d0b3fc41e53a7df1ebf98a6df"
+    },
+    "dfg_h2": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3/inputs/dfg_h2",
+      "export_manifest_sha256": "016ad8204f140b66e6ceaec0a2a2058cfc422a4aa005423d5037335b6a8f0702"
+    },
+    "dfg_h3": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3/results/dfg_h3",
+      "export_manifest_sha256": "e5348c6ea9993e7ce06df83b52dc84fecec5329a95666bfbb0d838d0fbdc0285"
+    }
+  },
+  "rule_case": "dfg_h3",
+  "comparisons": [
+    {
+      "case": "dfg_h1",
+      "reference": "dfg_h2",
+      "purpose": "two successive differences on complete fixed h3 rule"
+    },
+    {
+      "case": "dfg_h2",
+      "reference": "dfg_h3",
+      "purpose": "two successive differences on complete fixed h3 rule"
+    }
+  ]
+}

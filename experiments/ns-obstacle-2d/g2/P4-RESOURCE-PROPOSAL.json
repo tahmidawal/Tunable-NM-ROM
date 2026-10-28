@@ -1,0 +1,95 @@
+{
+  "status": "prospective_resource_plan_no_execution_release",
+  "scientific_role": "P4 cannot inherit P3 metrics or h-trend. Evaluate P4/g4 at existing h1,h2,h3. P3/g4 at h3 isolates geometry effects against retained P3/g3. Independent p adequacy policy must be reviewed before interpreting P4 as primary reference; optional P5/g4 estimate is included, not authorized.",
+  "new_h_levels": 0,
+  "rows": [
+    {
+      "case": "p4_g4_h1",
+      "role": "prospective complete P4 h trend or separate P3 geometry control",
+      "baseline_result_sha256": "3c84ee7f9ecf8b4c8702e2d80778a1db2e036a690178b4f43cbaed18ca1c27f5",
+      "baseline_memory_sha256": "10e9e6025fd80c766c56d59652a2b84c90507768b654bce0b6a8949e6b353782",
+      "baseline_retention": "full checksum verified archive retained",
+      "projected_cells": 1480,
+      "projected_dofs": 31518,
+      "projected_nnz": 1768918,
+      "projected_volume_points": 72520,
+      "factor_accounting_bytes": 2838337408,
+      "working_envelope_bytes": 3679781651,
+      "planning_seconds_not_guarantee": 24.100393403281693
+    },
+    {
+      "case": "p4_g4_h2",
+      "role": "prospective complete P4 h trend or separate P3 geometry control",
+      "baseline_result_sha256": "1e88098ab20c30be6241726fdfbcae5f07c73a97b5190fa3ca38bb902381e193",
+      "baseline_memory_sha256": "2b365d2271fe1a7abd77fdb077e31e365f2f9c3a2fd5bc81973adc4eed1d7378",
+      "baseline_retention": "full checksum verified archive retained",
+      "projected_cells": 5444,
+      "projected_dofs": 114002,
+      "projected_nnz": 6472398,
+      "projected_volume_points": 266756,
+      "factor_accounting_bytes": 10385021312,
+      "working_envelope_bytes": 12217308246,
+      "planning_seconds_not_guarantee": 71.87608310479595
+    },
+    {
+      "case": "p3_g4_h3",
+      "role": "prospective complete P4 h trend or separate P3 geometry control",
+      "baseline_result_sha256": "f8de091ebfe6f8abfbc4b2e010cb494e6af55d3a21b6af7c06bbb77ab18e59be",
+      "baseline_memory_sha256": "9b4cfab928442b71440fee25c644294807dbae0df58a9e7e32a2af0ea8400183",
+      "baseline_retention": "h3 preliminary immutable result copied after case completion; full job still running",
+      "projected_cells": 21153,
+      "projected_dofs": 235231,
+      "projected_nnz": 10591019,
+      "projected_volume_points": 1036497,
+      "factor_accounting_bytes": 17005849536,
+      "working_envelope_bytes": 21317683768,
+      "planning_seconds_not_guarantee": 139.79994921572506
+    },
+    {
+      "case": "p4_g4_h3",
+      "role": "prospective complete P4 h trend or separate P3 geometry control",
+      "baseline_result_sha256": "f8de091ebfe6f8abfbc4b2e010cb494e6af55d3a21b6af7c06bbb77ab18e59be",
+      "baseline_memory_sha256": "9b4cfab928442b71440fee25c644294807dbae0df58a9e7e32a2af0ea8400183",
+      "baseline_retention": "h3 preliminary immutable result copied after case completion; full job still running",
+      "projected_cells": 21153,
+      "projected_dofs": 438385,
+      "projected_nnz": 25067501,
+      "projected_volume_points": 1036497,
+      "factor_accounting_bytes": 40220228160,
+      "working_envelope_bytes": 46422638711,
+      "planning_seconds_not_guarantee": 281.8314827646544
+    },
+    {
+      "case": "p5_g4_h3",
+      "role": "separate optional p5 independent adequacy proposal; not released",
+      "baseline_result_sha256": "f8de091ebfe6f8abfbc4b2e010cb494e6af55d3a21b6af7c06bbb77ab18e59be",
+      "baseline_memory_sha256": "9b4cfab928442b71440fee25c644294807dbae0df58a9e7e32a2af0ea8400183",
+      "baseline_retention": "h3 preliminary immutable result copied after case completion; full job still running",
+      "projected_cells": 21153,
+      "projected_dofs": 705693,
+      "projected_nnz": 50902693,
+      "projected_volume_points": 1036497,
+      "factor_accounting_bytes": 81624966208,
+      "working_envelope_bytes": 90314977192,
+      "planning_seconds_not_guarantee": 488.12428611018856
+    }
+  ],
+  "p4_proposed_caps": {
+    "elements": 30000,
+    "dofs": 500000,
+    "nnz": 30000000,
+    "volume_points": 1300000,
+    "archive_bytes": 1073741824,
+    "working_guard_GiB": 48,
+    "allocation_GiB": 64
+  },
+  "optional_p5_requires_separate_review": {
+    "dofs": 800000,
+    "nnz": 60000000,
+    "working_guard_GiB": 96,
+    "allocation_GiB": 128,
+    "per_process_seconds": 600
+  },
+  "unchanged_physical_thresholds": true,
+  "physical_admission": false
+}

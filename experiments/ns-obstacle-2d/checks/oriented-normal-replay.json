@@ -1,0 +1,33 @@
+{
+  "status": "passed_saved_array_replay_only",
+  "native_repair_execution": false,
+  "sample_source_sha256": "ec15d054c4fd5691c49b0b9673f17cb50046e5dcdee26ad1883e63da6c113963",
+  "result_source_sha256": "7ba0d6b7695a2482e78db2fcbe9c9ab3d8abe9b32790456ea1078c161bb7413b",
+  "helper_source_sha256": "4872f4f2c0893ce296fd5980b0aabefd5b44332c8895d5f9cab15bdff9c00b32",
+  "factors": {
+    "wall_bottom": 1,
+    "outlet": 1,
+    "wall_top": 1,
+    "inlet": 1,
+    "obstacle": -1
+  },
+  "raw_sign_reversal_invariance": true,
+  "rejections": [
+    {
+      "name": "mixed_orientation",
+      "rejected": true,
+      "message": "normal orientation is not constant on boundary label obstacle"
+    },
+    {
+      "name": "nonunit_normal",
+      "rejected": true,
+      "message": "nonunit normal or degenerate adjacent-volume witness"
+    },
+    {
+      "name": "tangent_witness",
+      "rejected": true,
+      "message": "adjacent-volume direction is too nearly tangential"
+    }
+  ],
+  "maximum_replayed_corrected_moment_error_per_measure": 6.055761952500893e-16
+}

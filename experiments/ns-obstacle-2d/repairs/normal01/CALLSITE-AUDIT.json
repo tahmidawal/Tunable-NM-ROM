@@ -1,0 +1,146 @@
+{
+  "scope": "G1 candidate only; G2 propagation not included",
+  "changed_files": [
+    {
+      "path": "fom.py",
+      "old_sha256": "5d09cd0439364098286862ac2edf5467d89bf0e54229f2e72b4f2ea8b50febe6",
+      "new_sha256": "9e2fbbed57de5d943e5159e98fabc07cdc1ecb999b6a48dff96c711285529ca9"
+    },
+    {
+      "path": "preflight.py",
+      "old_sha256": "8afd20368568da16e0e3a73c127856516f417d58293677893283772c3d645fa7",
+      "new_sha256": "e9e5d4c34ba1d605e758b9f7301a03b86f70d4cf48a3db5a48ee9fb2b3a3d087"
+    }
+  ],
+  "normal_consumers": [
+    {
+      "line": 75,
+      "source": "normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,"
+    },
+    {
+      "line": 77,
+      "source": "dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))"
+    },
+    {
+      "line": 90,
+      "source": "exact_u = exact_p = force = traction = None"
+    },
+    {
+      "line": 96,
+      "source": "traction = ng.CF((0, 0))"
+    },
+    {
+      "line": 107,
+      "source": "traction = (nu*gu-exact_p*I)*normal"
+    },
+    {
+      "line": 126,
+      "source": "force, traction = ng.CF((0,0)), ng.CF((0,0))"
+    },
+    {
+      "line": 332,
+      "source": "boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),"
+    },
+    {
+      "line": 353,
+      "source": "qin=-integ(uh*normal,'inlet');qout=integ(uh*normal,'outlet')"
+    },
+    {
+      "line": 359,
+      "source": "'global_boundary_flux':metric(abs(sum(integ(uh*normal,b) for b in boundary_measures)),"
+    },
+    {
+      "line": 373,
+      "source": "'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 374,
+      "source": "'physical_traction_work':-sum(integ(uh*(sigma_boundary*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 379,
+      "source": "'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}"
+    },
+    {
+      "line": 382,
+      "source": "physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma_boundary*normal),b) for b in boundary_measures})"
+    },
+    {
+      "line": 383,
+      "source": "physical_parts.update({k:z for k,z in terms.items() if k not in ('convection_boundary','physical_traction_work','finite_divergence_viscous')})"
+    },
+    {
+      "line": 385,
+      "source": "physical_parts['finite_divergence_viscous_volume']=-nu*integ(div*div)"
+    },
+    {
+      "line": 386,
+      "source": "physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})"
+    },
+    {
+      "line": 388,
+      "source": "metrics['energy']={'terms':terms,'individual_contributions':physical_parts,'physical_raw':metric(abs(sum(terms[k] for k in ('dissipation','convection_boundary','physical_traction_work','body_force_work'))),denominator_energy,'raw physical balance / sum absolute terms'),"
+    },
+    {
+      "line": 391,
+      "source": "'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 392,
+      "source": "'gradient_traction_work':-sum(integ(uh*(tau_boundary*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 399,
+      "source": "gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau_boundary*normal),b) for b in boundary_measures})"
+    },
+    {
+      "line": 400,
+      "source": "gradient_parts.update({k:z for k,z in gt.items() if k not in ('convection_boundary','gradient_traction_work','symmetric_pde_adjustment')})"
+    },
+    {
+      "line": 407,
+      "source": "terms_m={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 421,
+      "source": "mt={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 424,
+      "source": "'finite_divergence_viscous':sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}"
+    },
+    {
+      "line": 427,
+      "source": "pieces.update({k:z for k,z in mt.items() if k not in ('convection','physical_traction','finite_divergence_viscous')})"
+    },
+    {
+      "line": 429,
+      "source": "pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*normal[i],b) for b in boundary_measures})"
+    },
+    {
+      "line": 456,
+      "source": "ff=[-integ((stress*normal)[i],'obstacle',order) for i in range(2)]"
+    },
+    {
+      "line": 487,
+      "source": "wall_force=[-integ((sigma_boundary*normal)[i],'wall.*') for i in range(2)]"
+    }
+  ],
+  "raw_normal_uses": [
+    {
+      "line": 87,
+      "source": "raw_normal = ng.specialcf.normal(2)  # retained for provenance, not forces/fluxes"
+    },
+    {
+      "line": 333,
+      "source": "'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],"
+    }
+  ],
+  "volume_facet_scope": "oriented_normals.py uses raw native normal for facet_terms and oriented normal only for ordinary_terms",
+  "source_only_checks": [
+    "Python compilation",
+    "bash -n",
+    "saved-array sign-inference replay with orientation reversal and negative cases"
+  ],
+  "native_repair_execution": false
+}

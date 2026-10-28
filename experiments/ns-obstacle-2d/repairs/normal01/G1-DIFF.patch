@@ -1,0 +1,99 @@
+--- smoke06/fom.py
++++ normal01/fom.py
+@@ -38,7 +38,7 @@
+ def run_case(cfg, out):
+     import ngsolve as ng
+     from netgen.geom2d import SplineGeometry
+-    ng.SetNumThreads(int(cfg['threads']))
++    # main() sets threads before entering TaskManager.
+     out = Path(out)
+     out.mkdir(parents=True, exist_ok=False)
+     dump(out / 'config.json', cfg)
+@@ -67,11 +67,14 @@
+     # retained as provenance, not a claim that Netgen accepts an RNG seed option.
+     mesh = ng.Mesh(geo.GenerateMesh(maxh=cfg['maxh']))
+     mesh.Curve(cfg['geometry_order'])
+-    from preflight import mapped_probe
+-    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))
+     mesh.ngmesh.Save(str(out/'mesh.vol'))
+     if mesh.ne > cfg['max_elements']:
+         raise MemoryError(f'pre-space element guard: {mesh.ne}')
++    from preflight import mapped_probe
++    from oriented_normals import fluid_outward_normal
++    normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,
++        order=cfg['diagnostic_order'], evidence_path=out/'normal_orientation.json')
++    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))
+     V = ng.VectorH1(mesh, order=cfg['velocity_order'], dirichlet='inlet|wall.*|obstacle')
+     Q = ng.H1(mesh, order=cfg['pressure_order'])
+     X = V*Q
+@@ -81,7 +84,7 @@
+     g = ng.GridFunction(X)
+     uh, ph = g.components
+     x, y = ng.x, ng.y
+-    normal = ng.specialcf.normal(2)
++    raw_normal = ng.specialcf.normal(2)  # retained for provenance, not forces/fluxes
+     I = ng.Id(2)
+     grad = ng.Grad
+     exact_u = exact_p = force = traction = None
+@@ -327,6 +330,7 @@
+                 obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))
+                 obstacle_distance_max=max(obstacle_distance_max,abs(np.linalg.norm(xy-np.array(cfg['center']))-cfg['radius']))
+             boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),
++                               'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],
+                                'label':label,'velocity':uv.tolist(),'pressure':scalar_value(ph(mip),'boundary_pressure_point'),
+                                'velocity_gradient':np.asarray(gradient_on_boundary(mip)).reshape(2,2).tolist()})
+     geometry['minimum_sampled_jacobian_determinant']=min_det
+@@ -488,6 +492,8 @@
+     result={'status':'completed_control_not_reference_admission','configuration':cfg,
+             'scalar_return_contract':scalar_observations(),
+             'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
++            'normal_orientation':{'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
++                                  'certificate_sha256':sha(out/'normal_orientation.json')},
+             'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',
+             'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+             'versions':{'ngsolve':ng.__version__,'numpy':np.__version__,'python':platform.python_version()},
+--- smoke06/preflight.py
++++ normal01/preflight.py
+@@ -17,10 +17,10 @@
+     return value
+ 
+ 
+-def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False):
++def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False, normal=None):
+     import ngsolve as ng
+     record={'volume':None,'boundary':None,'normal_checks':{},'api_status':'unverified'}
+-    normal=ng.specialcf.normal(2)
++    if normal is None:raise ValueError('explicit verified ordinary-BND normal required')
+     for el in mesh.Elements(ng.VOL):
+         ir=traced('volume.rule',ng.IntegrationRule,el.type,sample_order,enabled=diagnostic)
+         ip=ir[0]  # Pinned binding returns this IntegrationPoint by value.
+@@ -83,7 +83,10 @@
+     ngmesh=traced('generate_mesh',geo.GenerateMesh,maxh=.6)
+     mesh=traced('mesh_wrapper',ng.Mesh,ngmesh)
+     traced('curve_mesh',mesh.Curve,3)
+-    result=mapped_probe(mesh,diagnostic=True)
++    from oriented_normals import fluid_outward_normal
++    normal, orientation = fluid_outward_normal(mesh, order=6)
++    result=mapped_probe(mesh,diagnostic=True,normal=normal)
++    result['normal_orientation']=orientation
+     V=traced('scalar_space',ng.H1,mesh,order=2,dirichlet='wall_bottom|wall_top|inlet|outlet')
+     marker('scalar_forms','before')
+     u,v=V.TnT();a=ng.BilinearForm(V);a+=(ng.grad(u)*ng.grad(v)+u*v)*ng.dx
+@@ -108,15 +111,14 @@
+     result['umfpack']={'free_dofs':int(sum(free)),'residual_numerator':n,'residual_denominator':d,'relative_residual':n/d}
+     if n/d>1e-10:raise ArithmeticError('tiny UMFPACK residual failure')
+     # Exercise the same boundary trace + normal + Integrate path as force/balance
+-    # diagnostics. Wrapping a whole traction containing normal would be wrong:
+-    # normal is a BND quantity and stays outside BoundaryFromVolumeCF.
++    # diagnostics. The verified ordinary-BND normal stays outside the volume
++    # derivative wrapper; no orientation factor enters volume-facet integrals.
+     VV=traced('vector_space',ng.VectorH1,mesh,order=2)
+     exact_vector=traced('vector_gridfunction',ng.GridFunction,VV)
+     traced('vector_set_identity',exact_vector.Set,ng.CF((ng.x,ng.y)))
+     marker('boundary_derivative_wrappers','before')
+     gradient_b=ng.BoundaryFromVolumeCF(ng.Grad(exact_vector))
+     divergence_b=ng.BoundaryFromVolumeCF(ng.div(exact_vector))
+-    normal=ng.specialcf.normal(2)
+     identity=ng.Id(2)
+     marker('boundary_derivative_wrappers','after')
+     trace_gradient_max=0.;trace_div_max=0.

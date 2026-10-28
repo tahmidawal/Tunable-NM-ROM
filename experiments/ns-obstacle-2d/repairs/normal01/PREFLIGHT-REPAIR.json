@@ -1,0 +1,22 @@
+{
+  "repair_kind": "native mapped-point lifetime and crash observability",
+  "native_preflight_repair_counter": 1,
+  "native_preflight_repair_limit": 1,
+  "prior_dependency_layout_repair_counter": 1,
+  "prior_dependency_layout_repair_status": "succeeded on job6567287; exact wheel pins and installer unchanged",
+  "status": "review_candidate_no_staging_or_execution_release",
+  "failed_job_id": 6567287,
+  "failed_attempt": "g1-smoke04",
+  "fresh_attempt": "g1-smoke05",
+  "measured_failure": "api_and_inverse_preflight exited139 without per-call markers or available core; precise original native call/cause unresolved",
+  "source_hazard": "temporary ElementTransformation destroyed while mapped point retains non-owning pointer; fixed with named live owners",
+  "diagnostic_change": "PYTHONFAULTHANDLER=1, unbuffered output, flushed before/after mapped/solver/trace call markers",
+  "array_ownership_audit": "mapped arrays retained by exports explicitly copied; finite-difference residual vectors named while their NumPy views are read",
+  "source_equations_changed": false,
+  "scientific_thresholds_changed": false,
+  "mesh_and_control_settings_changed": false,
+  "automatic_retry": false,
+  "failed_evidence": "artifacts/g1-smoke04/RETENTION.json",
+  "interpretation_limit": "a corrected-path pass cannot retrospectively prove exact cause of original crash",
+  "requires_independent_diff_review_and_coordinator_release": true
+}

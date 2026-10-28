@@ -1,0 +1,11 @@
+# Scoped amendment and prospective derived-field retention review
+
+Independent Codex reviewer `numerical_resume` verified the FD1 contract digest `31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76` and all linked campaign/design/amendment hashes. The scope contract passes: the named qualification is distinct, original G2/domain failure remains explicit, population/thresholds/resources stay unchanged, and training is not released by the amendment.
+
+The reviewer accepts developing prospective coefficient-primary retention for derived reference and FE-preparation fields, subject to exact implementation review and measured replay. This is a storage representation, not removal of numerical checks or permission to delete existing unique evidence.
+
+Required retained evidence includes lossless f64 coefficient vectors; exact immutable binary mesh, layout and geometry maps; complete original points, weights and ordering (including invalid diagnostic points); environment/source/configuration hashes; and all small raw Jacobian, force, constraint, coverage, finite-value and noise constituents. Shared immutable objects may be deduplicated only through a complete verified dependency closure. A reviewer must be able to reproduce every gate from those artifacts without a new PDE solve. An incomplete closure must fail explicitly.
+
+Before adopting this representation, measure representative round-trip export/replay across the spaces and rules actually used. Preserve original export digests, comparisons and provenance. Distinguish bitwise primary-state retention from numerical reproducibility of derived fields; do not claim bitwise derived-field recovery without checksum equality. Use the existing equivalence requirements; no threshold is loosened. Archive the derivation recipe and record regeneration as offline cost, including on-demand phases. Storage reduction alone earns no compute-cost credit.
+
+Actual training inputs, fit evidence, every actual paired-timing output/state and repetition array, and irreproducible failure/lookup evidence remain retained. Existing unique evidence remains preserved. This review does not yet approve a production storage schema, population submission, preparation run or numerical admission; those depend on exact source and measured results.

@@ -34,6 +34,13 @@ Manufactured flux uses all boundaries, since its inlet flux is nearly zero and i
 
 The reaction and surface-force estimates disagree on this coarse mesh. All definitions are retained; selecting the most favorable estimate does not qualify a reference. The exact-coordinate pressure difference is 0.116873883245; its absolute gap from the stored benchmark anchor is 0.000646283725. The stricter reference tests remain unpassed.
 
+The initial refinement batch stopped at the manufactured h1 Jacobian diagnostic after Newton convergence. Its completed DFG cases are provisional: the finer mesh still fails the divergence threshold; h2 and common-rule comparisons were not run.
+
+| Mesh | Elements | Scaled divergence | Reaction drag | Reaction lift | Symmetric drag | Symmetric lift | Pressure drop |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| h0 | 415 | 0.0219928259 | 5.57978441083 | 0.0110331987994 | 5.57199095528 | 0.00857141857352 | 0.116873883245 |
+| h1 | 1480 | 0.00604354121 | 5.5797125406 | 0.0105883949094 | 5.58406468937 | 0.0101434554368 | 0.117236160719 |
+
 The normal diagnostic uses a fresh mesh generated with the unchanged geometry recipe. It cannot reconstruct the missing mesh or vectors from the original failed run. The table compares the relative defect in $\int_{\partial\Omega}x\cdot n\,ds=2|\Omega|$.
 
 | Normal evaluation path | Relative divergence-theorem defect |
@@ -65,9 +72,11 @@ The 3D geometry diagnostic completed, but its geometric identity checks fail. Th
 | 6610978 | 2d_reference / g1-normal01 | COMPLETED | 25 |
 | 6611259 | 3d_reference / g1-normal01 | COMPLETED | 28 |
 | 6612209 | 2d_reference / g1-smoke07 | COMPLETED | 31 |
-| 6613426 | 2d / g2-native01 | RUNNING | pending accounting |
+| 6613426 | 2d / g2-native01 | COMPLETED | 36 |
+| 6613813 | rom / native-interface01 | COMPLETED | 30 |
+| 6613821 | 2d / g2-ladder01 | FAILED | 44 |
 
-Total recorded allocation: 194 GPU-seconds (0.0538888889 GPU-hours). Finite-element calculations run on CPU within these GPU allocations; this is resource accounting, not a GPU-acceleration measurement.
+Total recorded allocation: 304 GPU-seconds (0.0844444444 GPU-hours). Finite-element calculations run on CPU within these GPU allocations; this is resource accounting, not a GPU-acceleration measurement.
 
 ## Glossary
 

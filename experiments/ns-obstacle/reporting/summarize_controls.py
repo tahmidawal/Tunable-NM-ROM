@@ -85,6 +85,28 @@ def generate(repository: Path, destination: Path) -> None:
                   f'{diagnostic["pressure_probes"]["difference"]:.12g}; its absolute gap from '
                   f'the stored benchmark anchor is {diagnostic["pressure_drop_reference_abs_gap"]:.9g}. '
                   'The stricter reference tests remain unpassed.']
+    ladder = two / 'artifacts/g2-ladder01/results'
+    if (ladder / 'dfg_h1/result.json').exists():
+        refinement = []
+        for level in ('h0', 'h1'):
+            result = read(ladder / ('dfg_' + level) / 'result.json')
+            forces = result['metrics']['forces']
+            refinement.append({'level': level, 'elements': result['geometry']['element_count'],
+                'divergence': result['metrics']['divergence']['value'],
+                'reaction': forces['reaction_coefficient'],
+                'symmetric': forces['physical_symmetric_order12']['coefficient'],
+                'pressure_drop': forces['pressure_probes']['difference']})
+        payload['partial_ladder01'] = {'rows': refinement, 'reference_admitted': False,
+            'status': 'failed at manufactured h1 Jacobian diagnostic; h2 and comparisons absent'}
+        lines += ['', 'The initial refinement batch stopped at the manufactured h1 Jacobian diagnostic '
+                  'after Newton convergence. Its completed DFG cases are provisional: the finer mesh '
+                  'still fails the divergence threshold; h2 and common-rule comparisons were not run.', '',
+                  '| Mesh | Elements | Scaled divergence | Reaction drag | Reaction lift | Symmetric drag | Symmetric lift | Pressure drop |',
+                  '|---|---:|---:|---:|---:|---:|---:|---:|']
+        lines += [f'| {r["level"]} | {r["elements"]} | {r["divergence"]:.9g} | '
+                  f'{r["reaction"][0]:.12g} | {r["reaction"][1]:.12g} | '
+                  f'{r["symmetric"][0]:.12g} | {r["symmetric"][1]:.12g} | {r["pressure_drop"]:.12g} |'
+                  for r in refinement]
     normal_path = two / 'artifacts/g1-normal01/results/geometry/result.json'
     if normal_path.exists():
         normal = read(normal_path)

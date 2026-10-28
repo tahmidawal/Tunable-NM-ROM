@@ -339,10 +339,10 @@
       "lane": "2d",
       "attempt": "g2-native01",
       "source_commit": "b29448620cabd7efe957364eec99a83e7f73368c",
-      "state_last_observed": "RUNNING",
-      "elapsed_seconds": null,
+      "state_last_observed": "COMPLETED",
+      "elapsed_seconds": 36,
       "observed_elapsed_seconds": 9,
-      "allocated_gpu_hours": null,
+      "allocated_gpu_hours": 0.01,
       "gpus": 1,
       "cpus": 16,
       "memory_GiB": 64,
@@ -355,7 +355,80 @@
       "source_checksums_sha256": "de48eb92fe2787f1b0829ba930620e5b508fba9c10b3b7727660c0ea4e1e3b3d",
       "source_candidate_sha256": "59adc25aa64288f4976762db0adba92e71ae93d4ea1680536d7b7a24e90bb25f",
       "single_submission": true,
-      "reference_admitted": false
+      "reference_admitted": false,
+      "batch_MaxRSS_KiB": 1209164,
+      "native_summary_passed": true,
+      "collection_status": "complete_verified",
+      "archive_sha256": "2aac4b002501d553a807b5ba7d035566841684cd9ca28999e817a922128f9120",
+      "retention_commit": "13083eb5b",
+      "retention_mirror": "2ef3375f2",
+      "cleanup_commit": "e88019fc2",
+      "cleanup_mirror": "57b8ca3af",
+      "remote_cleanup": "verified_complete",
+      "independent_review": "PASS scoped native producer and binary reload; no physical admission"
+    },
+    {
+      "job_id": 6613813,
+      "lane": "rom",
+      "attempt": "native-interface01",
+      "source_commit": "cb9db577ec96375007e7929befb2980105ae7857",
+      "submitted_utc": "2026-10-28T20:03:50Z",
+      "state_last_observed": "COMPLETED",
+      "node": "pax009",
+      "input_manifest_sha256": "8fd4f5dafa2e77cab5f93f7950944bf6b5a481b54f818d527b66a0fc214024eb",
+      "source_checksums_sha256": "e8ded5524408e7ba0e48852aa16d8bcf0561d54349c57b294d771c987f41698b",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-interface01",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "gpu_type_requested": "h200",
+      "elapsed_seconds": 30,
+      "allocated_gpu_hours": 0.008333333333333333,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true,
+      "native_interface_reported_pass": true,
+      "collection_status": "complete_verified",
+      "result_review": "PASS scoped native interface; no training or physical admission",
+      "archive_sha256": "b35b31000bdbdcdd7ed5e9b96be679353448c5826618ab19b7b449c772a97924",
+      "retention_commit": "4667682a7",
+      "retention_mirror": "660f59847",
+      "cleanup_commit": "bd6d1f91c",
+      "cleanup_mirror": "570887700",
+      "remote_cleanup": "verified_complete"
+    },
+    {
+      "job_id": 6613821,
+      "lane": "2d",
+      "attempt": "g2-ladder01",
+      "source_commit": "fd535479439f8634781bc93843f6da4151983261",
+      "submitted_utc": "2026-10-28T20:04:02Z",
+      "state_last_observed": "FAILED",
+      "input_manifest_sha256": "38c5b2ee08e1f09a99ccc5a60293b5b51821ef4a651c49eceddea3de4d09628d",
+      "source_checksums_sha256": "6689eccab0eee0d6c9f445356ae15498c71cbd7099ee2f3b5990fbb21978cd59",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "gpu_type_requested": "h200",
+      "elapsed_seconds": 44,
+      "allocated_gpu_hours": 0.012222222222222223,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true,
+      "node": "pax009",
+      "batch_MaxRSS_KiB": 764316,
+      "failure_stage": "manufactured_h1_directional_Jacobian_after_Newton_convergence",
+      "collection_status": "complete_verified",
+      "archive_sha256": "6f9fa30a7b6383824dd475264236443dd52b1a795911cdccb42d319a7abe1479",
+      "result_review": "independent review confirms diagnostic failure; no h2 or comparisons",
+      "retention_commit": "4f22ce5c2",
+      "retention_mirror": "11be81669",
+      "cleanup_commit": "eb2460db3",
+      "cleanup_mirror": "51a462f52",
+      "remote_cleanup": "verified_complete"
     }
   ],
   "repaired_2d_initial_controls": {
@@ -599,6 +672,40 @@
     "outlet": "nu du/dn - p n = 0; no additional pressure gauge",
     "force_normalization": "2F/(rho Umean^2 diameter), force per unit span"
   },
+  "partial_ladder01": {
+    "rows": [
+      {
+        "level": "h0",
+        "elements": 415,
+        "divergence": 0.02199282589156639,
+        "reaction": [
+          5.579784410833633,
+          0.011033198799392073
+        ],
+        "symmetric": [
+          5.571990955279165,
+          0.008571418573523167
+        ],
+        "pressure_drop": 0.11687388324498686
+      },
+      {
+        "level": "h1",
+        "elements": 1480,
+        "divergence": 0.006043541205424582,
+        "reaction": [
+          5.579712540603852,
+          0.010588394909358784
+        ],
+        "symmetric": [
+          5.584064689367565,
+          0.010143455436775152
+        ],
+        "pressure_drop": 0.11723616071905325
+      }
+    ],
+    "reference_admitted": false,
+    "status": "failed at manufactured h1 Jacobian diagnostic; h2 and comparisons absent"
+  },
   "normal_diagnostic": {
     "status": "diagnostic_completed_not_reference_admission",
     "facet_status": "completed_diagnostic_not_admission",
@@ -647,5 +754,5 @@
       ]
     ]
   },
-  "charged_gpu_seconds": 194
+  "charged_gpu_seconds": 304
 }

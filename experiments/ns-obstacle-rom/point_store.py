@@ -35,7 +35,9 @@ def write_volume(adapter,directory,block_points=4096,max_payload_bytes=2**28,
     field_specs={}
     for name,c in adapter.coefficients.items():
         vector=name in ('lift_u','pod_velocity','supremizers','momentum_tests')
-        count=np.asarray(c).shape[-1]
+        coefficient=np.asarray(c)
+        if coefficient.ndim not in (1,2):raise ValueError('coefficient vector or column matrix required')
+        count=1 if coefficient.ndim==1 else coefficient.shape[1]
         field_specs[name]={'vector':vector,'columns':count,'scalars_per_point':(6 if vector else 3)*count}
     projected=projected_geometry+n*8*sum(s['scalars_per_point'] for s in field_specs.values())
     # NPZ headers/file systems add small overhead; reserve 1 MiB per field block.

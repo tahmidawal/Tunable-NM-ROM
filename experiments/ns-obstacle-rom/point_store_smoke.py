@@ -13,7 +13,7 @@ expected={}
 for name,label in [('lift_u','vector_volume'),('pressure','scalar_volume')]:
  with np.load(base/('results/interface/'+label+'-dense.npz'),allow_pickle=False) as d:
   expected[name]={k:d[k].copy() for k in d.files}
-adapter=SimpleNamespace(volume=volume,D=.1,coefficients={'lift_u':np.zeros((2,1)), 'pressure':np.zeros((1,1))})
+adapter=SimpleNamespace(volume=volume,D=.1,coefficients={'lift_u':np.zeros(2), 'pressure':np.zeros(3)})
 def replay(adapter,coefficients,vector,boundary,block_points):
  data=expected['lift_u' if vector else 'pressure']
  for start in range(0,len(volume['points']),block_points):
@@ -23,6 +23,7 @@ with tempfile.TemporaryDirectory() as root:
  path=Path(root)/'volume'
  with patch('fe_blocks.evaluated_blocks_batched',side_effect=replay):
   manifest=write_volume(adapter,path,block_points=4096)
+ assert all(field['columns']==1 for field in manifest['fields'].values())
  store=PointVolumeStore(path,sha(path/'manifest.json'))
  count=0
  for start,end,block in store.iter_blocks():

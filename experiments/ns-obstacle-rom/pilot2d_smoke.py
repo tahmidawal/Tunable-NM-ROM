@@ -59,7 +59,7 @@ def main():
             expected=np.linalg.lstsq(volume['pod_velocity'][...,:2].reshape(-1,2),
                 training['velocity_corrections'].reshape(9,-1).T,rcond=None)[0].T
             assert np.allclose(model.interpolator.evaluate(TRAIN_RE[3])[:2],expected[3],atol=1e-12)
-            reference=dict(model.reconstruct(state,20.), Re=20.,
+            reference=dict(model.reconstruct(state,20.,gradients=True), Re=20.,
                 force_coefficient=model.force_output(state,20.),force_definition='physical_symmetric')
             scored=evaluate_case(model,reference,boundary)
             assert set(scored['methods'])=={'exact_tensor_weak_LS','mixed_Galerkin','coefficient_PCHIP'}
@@ -101,7 +101,7 @@ def main():
         return value
     def synthetic_refs(reynolds,split):
         return [{'Re':re,'split':split,'reference_admitted':False,
-                 'velocity':np.zeros((96,2)),'pressure':np.zeros(96),
+                 'velocity':np.zeros((96,2)),'pressure':np.zeros(96),'velocity_gradient':np.zeros((96,2,2)),
                  'force_coefficient':[1.,0.], 'force_definition':'physical_symmetric'} for re in reynolds]
     with tempfile.TemporaryDirectory() as root:
         out=Path(root)/'pilot';opened=[]

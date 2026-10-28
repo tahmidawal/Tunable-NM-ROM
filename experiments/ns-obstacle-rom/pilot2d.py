@@ -279,6 +279,14 @@ def score_state(model, state, reference, boundary, weights):
     re = reference['Re']; full = model.reconstruct(state, re, gradients=True)
     b = model.reconstruct(state, re, 'boundary')
     errors = field_errors(full['velocity'], full['pressure'], reference['velocity'], reference['pressure'], weights)
+    expected_gradient = np.asarray(reference['velocity_gradient'])
+    if expected_gradient.shape != full['velocity_gradient'].shape or not np.isfinite(expected_gradient).all():
+        raise ValueError('dimensionless reference velocity gradient required')
+    gradient_error = full['velocity_gradient']-expected_gradient
+    gradient_numerator = float(np.sqrt(np.einsum('n,nij,nij->', weights, gradient_error, gradient_error)))
+    gradient_reference_norm = float(np.sqrt(np.einsum('n,nij,nij->', weights, expected_gradient, expected_gradient)))
+    gradient_volume_scale = float(np.sqrt(weights.sum()))
+    gradient_denominator = max(gradient_reference_norm, 1e-12*gradient_volume_scale)
     div = np.trace(full['velocity_gradient'], axis1=1, axis2=2)
     divergence = float(np.sqrt(weights@(div*div)/weights.sum()))
     labels = boundary['labels']; bw = boundary['weights_dimensionless']
@@ -298,6 +306,12 @@ def score_state(model, state, reference, boundary, weights):
     return dict(errors, Re=float(re), model=model.name, force_coefficient=force.tolist(),
         drag_relative=drag, transverse_absolute=lift, divergence=divergence,
         inlet_flux=qin, outlet_flux=qout, mass=mass, boundary_trace=trace,
+        velocity_gradient_L2_error=gradient_numerator,
+        velocity_gradient_reference_L2_norm=gradient_reference_norm,
+        velocity_gradient_relative_denominator=gradient_denominator,
+        velocity_gradient_relative=gradient_numerator/gradient_denominator,
+        velocity_gradient_scaled=gradient_numerator/gradient_volume_scale,
+        velocity_gradient_definition='weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only',
         reference_force_definition=reference['force_definition'],
         target_checks=checks, accuracy_targets_passed=all(checks.values()), physical_admission=False)
 
@@ -441,14 +455,15 @@ def load_reference_population(path, expected_sha256, split, volume_rule_hash):
     record = json.loads(path.read_text())
     if (record.get('schema') != 'ns-obstacle-pilot-reference-population-v1'
         or record.get('passed') is not True or record.get('split') != split
-        or record.get('volume_rule_sha256') != volume_rule_hash):
+        or record.get('volume_rule_sha256') != volume_rule_hash
+        or record.get('velocity_gradient_units') != 'd(u/U)/d(x/D)'):
         raise ValueError('qualified common-rule reference population required')
     cases = []
     for row in record['cases']:
         source = path.parent/row['array_file']
         if sha_file(source) != row['array_sha256']: raise ValueError('reference arrays differ')
         arrays = _read_arrays(source, 2**30)
-        if set(arrays) != {'velocity', 'pressure'}: raise ValueError('reference field contract')
+        if set(arrays) != {'velocity', 'pressure', 'velocity_gradient'}: raise ValueError('reference field contract')
         cases.append(dict(row, **arrays))
     check_population(cases, split)
     return cases
@@ -595,7 +610,8 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
             'metrics': {metric: {'median': float(np.median([v[metric] for v in values])),
                                   'worst': float(max(v[metric] for v in values))}
                         for metric in ('velocity_relative', 'pressure_scaled', 'drag_relative',
-                                       'transverse_absolute', 'divergence', 'mass') if values}}
+                                       'transverse_absolute', 'divergence', 'mass', 'velocity_gradient_scaled',
+                                       'velocity_gradient_relative', 'boundary_trace') if values}}
     summary = {'source_sha256': source_digest(), 'records': records, 'construction_failures': failures,
                'bank_development_gate': bank_gate, 'frozen_choices': choices, 'validation': aggregates,
                'no_validation_refit': True, 'physical_admission': False,

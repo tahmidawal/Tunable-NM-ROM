@@ -10,6 +10,14 @@
       "job_id": "6618591",
       "actual_gpu_seconds": 1429,
       "reason": "Missing historical generator preconditioner; strict data residual gate stopped execution"
+    },
+    {
+      "attempt": "prep02",
+      "reserved_seconds": 3600,
+      "status": "reviewed_ready",
+      "source_commit": "4514fafed2c607829aeaaec5bcf62de5bfd47c11",
+      "remote": "/cluster/tufts/paralab/tawal01/bshared-20261028/prep02",
+      "reason": "One reviewed repair restoring exact historical generator"
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -17,6 +25,13 @@
     "shared_preparation": 3600,
     "step_screen": 900,
     "replay_screen": 900,
-    "remaining_conditional": 1800
+    "remaining_conditional": 371
+  },
+  "budget_accounting": {
+    "charged_gpu_seconds": 1429,
+    "preparation_reservation": 3600,
+    "planned_screen_reservations": 1800,
+    "unreserved_seconds": 371,
+    "rule": "Replace terminal reservations by actual allocated seconds; no cap increase"
   }
 }

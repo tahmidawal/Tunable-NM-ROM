@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "fixed_channel_qualification_pending_batch_audit",
+  "status": "fixed_channel_domain_diagnostics_running_qualification_pending",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -824,9 +824,40 @@
       "elapsed_seconds": 316,
       "allocated_gpu_hours": 0.08777777777777777,
       "node": "pax009"
+    },
+    {
+      "attempt": "g2-domain-comparison01",
+      "source_commit": "f3b84165796c7a1ad45d8b35f09f5d2a2c05c59d",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-domain-comparison01",
+      "manifest_sha256": "8e323f84d3336c9e0ebc97a45f92df615fb63bea5ed07035746ccbd544902b5f",
+      "source_checksums_sha256": "ba92d72c27684645280362d0d783bc938d87f71c49e393b97d35c5c2bf51f78f",
+      "candidate_sha256": "45b6a9273ed54f73ff353fa68ff7a5b8d6ac66ff1146792395d1a488f914145a",
+      "expected_regular_files": 121,
+      "local_free_bytes": 32610652160,
+      "dependency_metadata_preflight_passed": true,
+      "submitted": true,
+      "staging_helper_sha256": "39f16a8661394ff21156430712516957c185b39b537e55fe010ed4dbb01222de",
+      "pre_submit_local_free_bytes": 32370155520,
+      "job_id": 6619041,
+      "submitted_utc": "2026-10-28T23:36:26.986993+00:00",
+      "chosen_GPU_type": "h200",
+      "all_runtime_hashes_verified": true,
+      "lane": "2d",
+      "state_last_observed": "submitted",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false,
+      "release": "93665bcfd"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6619041
+  ],
   "completed_gpu_hours": 1.305,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
   "total_allocated_gpu_hours_completed": 1.305,

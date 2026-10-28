@@ -1,6 +1,12 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6619041,
+      "attempt": "g2-domain-comparison01",
+      "release": "93665bcfd"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
     "Audit batch export6618469 and finish domain diagnostics; original sensitivity gate remains failed",
@@ -113,5 +119,10 @@
   "noise_protocol": "reviews/RESOLVED-NOISE-PROTOCOL.md at51e30b95b, empirical intervals; unchanged delta",
   "disk_recovery": "Stopped verified detached auto-GC and removed only orphan scratch16,058,810,368bytes; committed data untouched",
   "scope_amendment": "FD1-2026-10-28",
-  "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76"
+  "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+  "FD1_loader_review": {
+    "source": "818acbd6c",
+    "status": "independent_source_and_rejection_checks_PASS_no_data_admission"
+  },
+  "field_plot": "generated/fixed-channel/PROVENANCE.json"
 }

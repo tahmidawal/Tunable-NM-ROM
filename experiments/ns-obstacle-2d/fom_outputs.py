@@ -6,6 +6,7 @@ probe points, or sparse boundary-supported linear coefficient contractions.
 """
 from pathlib import Path
 import time
+import json
 import numpy as np
 from oriented_normals import fluid_outward_normal
 from scalars import scalar_value
@@ -18,7 +19,9 @@ def _f64(value,shape,label):
     return a.reshape(shape)
 
 
-def make_output_factory(ng,expected_volume,expected_boundary,normal_evidence_path):
+def make_output_factory(ng,expected_volume,expected_boundary,normal_evidence_path,*,field_rule_mode="native_exact",requested_point_cap=1300000):
+    if field_rule_mode not in ("native_exact","certified_requested_points"):raise ValueError("unknown field rule mode")
+    if type(requested_point_cap) is not int or not 0<requested_point_cap<=3000000:raise ValueError("invalid requested-point cap")
     def factory(mesh,V,Q,X,cfg):
         if mesh.dim!=2 or cfg['kind']!='dfg' or cfg['outlet']!='gradient':
             raise ValueError('fixed unforced DFG family required')
@@ -45,11 +48,53 @@ def make_output_factory(ng,expected_volume,expected_boundary,normal_evidence_pat
                 raise ValueError('batched and scalar mapped coordinates differ')
             owners.append(array)
             return array,points,weights,np.asarray(labels),np.asarray(normals)
-        volume,vpoints,vweights,_,_=cache()
-        for actual,key in ((vpoints,'points'),(vweights,'weights')):
-            expected=np.asarray(expected_volume[key])
-            if actual.shape!=expected.shape or not np.allclose(actual,expected,rtol=1e-12,atol=1e-14):
-                raise ValueError('full output rule differs from admitted '+key)
+        mapping_evidence={'mode':field_rule_mode,'physical_coordinates_changed':False,'points_dropped':0}
+        if field_rule_mode=='native_exact':
+            volume,vpoints,vweights,_,_=cache()
+            for actual,key in ((vpoints,'points'),(vweights,'weights')):
+                expected=np.asarray(expected_volume[key])
+                if actual.shape!=expected.shape or not np.allclose(actual,expected,rtol=1e-12,atol=1e-14):
+                    raise ValueError('full output rule differs from admitted '+key)
+            requested_order=None
+        else:
+            # Coarser eligible FOM meshes still return every fine-reference output
+            # coordinate. Inverse mapping and admissibility checks are offline.
+            from g2.exact_lookup import ExactPointLocator
+            vpoints=np.asarray(expected_volume['points']);vweights=np.asarray(expected_volume['weights'])
+            count=len(vweights)
+            if count==0 or count>requested_point_cap or vpoints.shape!=(count,2) or vweights.shape!=(count,):
+                raise ValueError('requested full rule shape/cap mismatch')
+            _f64(vpoints,(count,2),'requested points');_f64(vweights,(count,),'requested weights')
+            if np.any(vweights<=0):raise ValueError('requested weights must remain positive')
+            locator=ExactPointLocator(mesh,ng,D);groups={};references=np.full((count,3),np.nan);mapped=np.full((count,2),np.nan);element_numbers=np.full(count,-1,dtype=np.int64);fallbacks=[];invalid=[]
+            for index,xy in enumerate(vpoints):
+                try:
+                    mip,point_owners,certificate,fallback=locator.locate(xy)
+                    nr=int(certificate['element_number']);element_numbers[index]=nr
+                    references[index]=certificate['reference_coordinates'];mapped[index]=np.array(coordinate(mip),copy=True)
+                    groups.setdefault(nr,[]).append(index)
+                    if fallback is not None:fallbacks.append({'index':index,**fallback})
+                except Exception as exc:
+                    invalid.append({'index':index,'requested_point':xy.tolist(),'error':repr(exc)})
+                    if hasattr(exc,'lookup_evidence'):fallbacks.append({'index':index,**exc.lookup_evidence})
+            evidence_path=Path(normal_evidence_path).with_suffix('.mapping.npz')
+            np.savez_compressed(evidence_path,requested_points=vpoints,weights=vweights,mapped_points=mapped,reference_coordinates=references,element_numbers=element_numbers)
+            mapping_evidence.update(point_count=count,fallbacks=fallbacks,invalid=invalid,weights_unchanged=True,source_mesh_cells=int(mesh.ne))
+            evidence_path.with_suffix('.json').write_text(json.dumps(mapping_evidence,indent=2)+'\n')
+            if invalid:raise ValueError('requested full output rule has invalid source-mesh points; original diagnostics retained')
+            batches=[];order=[];elements={int(el.nr):el for el in mesh.Elements(ng.VOL)}
+            for nr,indices in sorted(groups.items()):
+                ir=ng.IntegrationRule([tuple(x) for x in references[indices,:2]],[1.]*len(indices));tr=mesh.GetTrafo(elements[nr]);batch=tr(ir)
+                owners.append((tr,ir,batch));batches.append(batch);order.extend(indices)
+            volume=np.concatenate(batches);native_to_requested=np.asarray(order,dtype=np.int64);requested_order=np.argsort(native_to_requested);owners.append(volume)
+            batched_coordinates=_f64(coordinate(volume),(count,2),'requested mapped batch')
+            errors=np.linalg.norm(batched_coordinates-vpoints[native_to_requested],axis=1)
+            if float(errors.max())>1e-10*D:raise ValueError('requested native batch reconstruction failed')
+            mapping_evidence.update(point_count=count,max_reconstruction_error=float(errors.max()),fallbacks=fallbacks,
+                source_mesh_cells=int(mesh.ne),weights_unchanged=True)
+            np.savez_compressed(evidence_path.with_name(evidence_path.stem+'.batch.npz'),native_to_requested=native_to_requested,reconstruction_errors=errors)
+            evidence_path.with_suffix('.json').write_text(json.dumps(mapping_evidence,indent=2)+'\n')
+        if len(vpoints)>requested_point_cap:raise MemoryError('field output rule exceeds explicit cap')
         boundary,bpoints,bweights,labels,normals=cache(True)
         if labels.tolist()!=[r['label'] for r in expected_boundary]:raise ValueError('boundary labels differ')
         for actual,key in ((bpoints,'point'),(bweights,'weight'),(normals,'normal')):
@@ -106,8 +151,9 @@ def make_output_factory(ng,expected_volume,expected_boundary,normal_evidence_pat
         va[:]=0;pa[:]=0
         force_assembly_seconds=time.perf_counter()-force_started
         def fields(u,p,nu):
-            return {'velocity':_f64(u(volume),(len(vpoints),2),'velocity')/U,
-                    'pressure':_f64(p(volume),(len(vpoints),),'pressure')/U**2}
+            velocity=_f64(u(volume),(len(vpoints),2),'velocity');pressure=_f64(p(volume),(len(vpoints),),'pressure')
+            if requested_order is not None:velocity=velocity[requested_order];pressure=pressure[requested_order]
+            return {'velocity':velocity/U,'pressure':pressure/U**2}
         def probes(u,p,nu):
             return {'velocity':np.array([np.asarray(u(m)) for m in probe_points],dtype=np.float64)/U,
                     'pressure':np.array([scalar_value(p(m),'pole pressure') for m in probe_points],dtype=np.float64)/U**2}
@@ -119,7 +165,9 @@ def make_output_factory(ng,expected_volume,expected_boundary,normal_evidence_pat
         keep_alive=(mesh,owners,probe_points,volume,boundary)
         for function in (fields,probes,forces):function.native_owners=keep_alive
         forces.offline_evidence={'mapping_certification_seconds':mapping_seconds,'force_assembly_seconds':force_assembly_seconds,
-            'offline_total_seconds':time.perf_counter()-offline_started,'timing_claim':False}
+            'offline_total_seconds':time.perf_counter()-offline_started,'timing_claim':False,'field_rule_mode':field_rule_mode,
+            'requested_point_cap':requested_point_cap,'requested_point_count':len(vpoints)}
+        fields.mapping_evidence=mapping_evidence
         forces.contraction_evidence={'velocity_ids':velocity_ids,'pressure_ids':pressure_ids,
             'velocity_force_per_nu':velocity_force,'pressure_force':pressure_force,
             'normal_definition':'verified fluid outward; force on solid = -sigma n',

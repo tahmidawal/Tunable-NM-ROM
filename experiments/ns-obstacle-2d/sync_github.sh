@@ -11,6 +11,8 @@
 # Usage (after every `git commit` on the lane): bash experiments/ns-obstacle-2d/sync_github.sh
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
+# Freeze the committed source while a prior snapshot uploads asynchronously.
+SOURCE_HEAD=$(git rev-parse HEAD)
 
 LOCAL_BASE=93f399faad67f94ea2b56fe25f13003143e64694    # exp/2026-09-25-t2-ns3d-test (lane fork point)
 REMOTE_BASE=5a64899fdcfbeb6cfe5b3371af1a8d8a3d2b568f   # origin/codeonly/exp/2026-09-25-t2-ns3d-test (its mirror)
@@ -25,13 +27,13 @@ GIT_INDEX_FILE=$(mktemp)
 trap 'rm -f "$GIT_INDEX_FILE"' EXIT
 git read-tree "$REMOTE_BASE^{tree}"
 
-git diff --no-renames --name-status -z "$LOCAL_BASE" HEAD |
+git diff --no-renames --name-status -z "$LOCAL_BASE" "$SOURCE_HEAD" |
 while IFS= read -r -d '' status && IFS= read -r -d '' path; do
   if [ "$status" = D ]; then
     git update-index --force-remove -- "$path"
     continue
   fi
-  read -r mode type sha size _ < <(git ls-tree -l HEAD -- "$path")
+  read -r mode type sha size _ < <(git ls-tree -l "$SOURCE_HEAD" -- "$path")
   if [ "$type" = blob ] && [ "$size" -gt "$MAX_BYTES" ]; then
     echo "skipped (>${MAX_BYTES} bytes, track by SHA256): $path"
     git update-index --force-remove -- "$path"
@@ -45,7 +47,7 @@ if [ "$TREE" = "$(git rev-parse "$PARENT^{tree}")" ]; then
   echo "mirror up to date: origin/$MIRROR"
   exit 0
 fi
-MSG="mirror of $(git rev-parse --short HEAD): $(git log -1 --format=%s HEAD)"
+MSG="mirror of $(git rev-parse --short "$SOURCE_HEAD"): $(git log -1 --format=%s "$SOURCE_HEAD")"
 NEW=$(git commit-tree "$TREE" -p "$PARENT" -m "$MSG")
 git push -q origin "$NEW:refs/heads/$MIRROR"
 echo "pushed origin/$MIRROR -> ${NEW:0:9} ($MSG)"

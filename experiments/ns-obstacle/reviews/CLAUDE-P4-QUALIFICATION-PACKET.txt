@@ -1,0 +1,116 @@
+Independent numerical-method consultation requested for a 2D steady incompressible cylinder ROM campaign. You cannot inspect the repository; all relevant evidence is below. Give concrete scientific blockers, required fixes, optional improvements and remaining uncertainty. Do not conflate prospective requirements with tests already completed. No training or G2 physical reference admission has occurred.
+
+Physics: rectangle [0,2.2] x [0,.41], circular obstacle centre(.2,.2), radius.05. D=.1, inlet mean U=.2, parabolic peak.3, Re20 nu=.001, rho=1 kinematic pressure. No-slip walls/obstacle, prescribed inlet; natural gradient traction (nu grad u-pI)n=0 at outlet, no pressure pin or shift. Physical force on solid uses minus integral of symmetric stress on fluid outward normal, coefficient2F/(rho U^2 D). Exact pressure poles(.15,.2),(.25,.2). Curved Taylor-Hood FE: original P3/P2 with geometry3; prospective adopted reference P4/P3 geometry4. Reproducible binary mesh persistence and exact normal/gradient orientation have native controls. G1 analytic/manufactured and Jacobian controls pass independent Codex review; P4 manufactured finest u/p screen passes. The fine P3 attempt failed two lift checks and remains failed. Independent Codex verified all P4 collection hashes, full quadrature arrays, Jacobian perturbations, divergence and force values. No result below establishes final qualification.
+
+Frozen remaining requirements: independent 100x solver-tolerance tightening; quadrature assembly+4 and volume diagnostic12->16; boundary force12 vs16; upstream xmin=-.2, downstream xmax=4.4 and separate symmetric-traction long outlet. Domain local velocity/drag relative thresholds .002; transverse absolute2e-4. Unchanged reference spatial finest u .001, pressure .002, drag .002 relative, lift1e-4 absolute; two resolved decreasing differences. Physical-gradient drag2e-4 relative/lift1e-5 absolute, reaction-gradient drag .002/lift1e-4. Divergence .001 decreasing; mass1e-7, FE trace1e-10U, independent residual1e-9. DFG anchor drag/pressure-drop .002 relative, lift1e-4 absolute. Uncertainty delta_y=2max(d_h,d_p)+d_solver+d_quad must fit one fifth of comparison budgets u1%,p2%,drag2%,lift.002 absolute. This is an empirical conditional estimate, not a rigorous unknown-error bound. Retain noise floors/raw denominators and unresolved cases cannot rank.
+
+Population: nine train Re15+1.25j, two development16.875/23.125, four validation16/18/22/24, nu=.02/Re. Re20 alone must not automatically qualify all15; case-specific coverage protocol remains to be finalized before export/training. No validation-driven ROM tuning. Strong timed FOM is independently development-selected from cheaper eligible meshes/tolerances at matched accuracy, never automatically the finest truth mesh. Reference truth admission and cheaper comparator eligibility have separate roles. ROM architecture/accuracy conclusions are outside this request.
+
+Please review the prospective P4 role below against these requirements. In particular assess the conservative common-denominator p/geometry envelope and what direct noise/domain/population evidence is necessary before admission. Distinguish scientific necessity from optional extra P5 or P4/g5 controls; do not silently change thresholds. Recommend a bounded next sequence and identify any concrete flawed inference. Current post-P4 controls are not yet numerical results.
+
+
+
+Prospective P4 role
+
+# Prospective higher-order reference role on existing meshes
+
+Independent review confirms the frozen design requires an independent solution-order cross-check, not necessarily an order higher than the adopted reference. Approve source preparation for a P4/g4 reference candidate on existing h1/h2/h3 meshes. No h4 is introduced and no P3 failure is erased.
+
+The candidate requires its own resolved decreasing three-mesh field and physical-force differences, with thresholds applied to the finest pair. The P3/g4 versus P4/g4 comparison at h3 isolates solution order; its complete measured difference enters the unchanged conditional uncertainty formula. The failing P3 state contributes no passing physical metrics to P4. The minimum frozen matrix includes retained P3/g3 versus P3/g4 at h3 as the independent fixed-solution-order geometry check. Retain its measured gap, the P3/g4 versus P4/g4 gap, and geometric error metrics; explicitly assess their coverage by the unchanged conditional uncertainty. Direct P4/g5 at h3 is a conditional follow-up if geometry sensitivity remains unresolved, not an additional frozen acceptance bar.
+
+All adopted-state geometry, residual, mass, divergence, trace, force, balance and benchmark gates remain unchanged. Solver tightening, quadrature refinement, upstream/downstream/alternative-outlet controls and conditional uncertainty must apply to the adopted reference, with every constituent retained. Each training/development/validation state still requires its own coverage. Native immutable-mesh/shared-lift reuse remains required before training.
+
+The resource proposal a29b917e4 is accepted for bounded source preparation only: projected P4/h3 working memory is43.23445GiB under the unchanged48GiB guard, using500000DOF and30000000nnz caps. Actual pre-factorization memory guards remain mandatory; heuristic count estimates are not guarantees. Preserve64GiB allocation,16CPUs,oneGPU,1200seconds perjob;600seconds per P4 process may be used in reviewed new packages. Split groups so full comparisons and controls fit. If needed, P4/g5 must receive its own projection and release. P5/128GiB is not authorized and is unnecessary unless later evidence justifies a separate proposal.
+
+This approves scientific scope and source preparation, not any execution. Exact hashes, per-job capacity/retention estimates and independent package review precede each bounded release. No admission or performance claim follows from source readiness.
+
+Clarification before execution: the first draft elevated a reviewer suggestion for direct P4/g5 into a requirement. That interpretation is corrected here; A3 requires an independent geometry increase at fixed solution order, which the retained P3/g3→P3/g4 control supplies. No numerical result was interpreted under the extra condition.
+
+## Explicit conditional geometry coverage before P4 results
+
+Retain two predeclared solution-order contrasts on one complete physical rule: P4/g4 versus P3/g4, and P4/g4 versus retained P3/g3. Define the single reported p constituent conservatively as the maximum of those two measured gaps, retaining both raw numerators and a common adopted-P4 denominator for velocity and relative drag. Pressure uses the unchanged characteristic scale and lift remains absolute. Retain ordinary pairwise diagnostics separately. The measured P3/g3→P3/g4 geometry gap is then no greater than the sum of the two contrasts, so its measured contribution is covered by the existing two-times-p envelope. The uncertainty formula itself is unchanged.
+
+This is conditional empirical evidence, not a bound on the unmeasured P4 geometry-order interaction. Require adopted P4 geometric/physical gates, finite resolved fixed-order geometry diagnostics, consistent measured envelope and the unchanged one-fifth uncertainty budget. State explicitly that geometry sensitivity was checked at P3 and P4/g4→g5 was not directly tested. If geometry evidence remains unresolved or inconsistent, a separately reviewed P4/g5 control is the direct remedy. No automatic higher-order or mesh expansion is released.
+
+A geometry gap below numerical noise does not need to be resolvably nonzero: a retained noise bound already below the relevant adequacy budget can support “no resolved geometry sensitivity within that bound.” Require additional geometry evidence only when noise prevents establishing adequacy. The separate decreasing-h requirement remains unchanged.
+
+
+
+P4 h trend
+
+# Provisional spatial refinement screen
+
+Numerical h-trend screen; raw-array review and resolved noise bounds still required. No reference admission.
+
+| Check | Earlier | Finest | Finest limit | Decreasing | Finest passes |
+|---|---:|---:|---:|---|---|
+| velocity_relative | 1.29337946e-05 | 1.31698999e-06 | 0.001 | True | True |
+| pressure_scaled | 3.87765511e-05 | 5.91725368e-06 | 0.002 | True | True |
+| physical_drag_relative | 0.000119148142 | 1.49051762e-05 | 0.002 | True | True |
+| physical_lift_absolute | 8.08961215e-05 | 2.04030393e-05 | 0.0001 | True | True |
+| scaled_divergence | 9.33769457e-05 | 1.80288702e-05 | 0.001 | True | True |
+
+The threshold applies only to the finest pair. The earlier pair establishes the decreasing trend. Divergence is a per-mesh constraint, not a pair difference.
+
+## Glossary
+
+Earlier/finest: successive mesh differences for fields and forces; second/last mesh values for divergence. Relative: divided by the finer result norm or drag. Scaled pressure: normalized by the frozen physical pressure scale. Lift: transverse force coefficient. Decreasing: numerical trend only; a measured noise floor is still required to resolve it.
+
+
+
+P4 per-case screen
+
+# Provisional reference qualification screen
+
+provisional per-case screen only; cross-run and raw evidence audit required. No training admission is issued.
+
+| Case | Check | Saved value | Threshold | Result |
+|---|---|---:|---:|---|
+| dfg_p4_g4_h3 | fluid_area_relative | 2.47089824e-14 | 1e-05 | within threshold |
+| dfg_p4_g4_h3 | obstacle_perimeter_relative | 2.64162736e-13 | 1e-05 | within threshold |
+| dfg_p4_g4_h3 | independent_free_residual | 2.08910911e-15 | 1e-09 | within threshold |
+| dfg_p4_g4_h3 | prescribed_FE_trace_over_U | 1e-12 | 1e-10 | within threshold |
+| dfg_p4_g4_h3 | scaled_divergence | 1.80288702e-05 | 0.001 | within threshold |
+| dfg_p4_g4_h3 | inlet_outlet_mass | 5.07723944e-16 | 1e-07 | within threshold |
+| dfg_p4_g4_h3 | physical_energy_balance | 7.75077193e-10 | 0.005 | within threshold |
+| dfg_p4_g4_h3 | physical_momentum_0 | 1.84923969e-07 | 0.005 | within threshold |
+| dfg_p4_g4_h3 | physical_momentum_1 | 5.09134023e-08 | 0.005 | within threshold |
+| dfg_p4_g4_h3 | physical_gradient_drag_relative | 8.04044603e-08 | 0.0002 | within threshold |
+| dfg_p4_g4_h3 | physical_gradient_lift_absolute | 1.90955134e-08 | 1e-05 | within threshold |
+| dfg_p4_g4_h3 | reaction_gradient_drag_relative | 2.32087599e-06 | 0.002 | within threshold |
+| dfg_p4_g4_h3 | reaction_gradient_lift_absolute | 3.23336883e-06 | 0.0001 | within threshold |
+| dfg_p4_g4_h3 | physical_DFG_drag_relative | 2.24055772e-06 | 0.002 | within threshold |
+| dfg_p4_g4_h3 | physical_DFG_lift_absolute | 3.21485517e-06 | 0.0001 | within threshold |
+| dfg_p4_g4_h3 | DFG_pressure_drop_relative | 3.50271329e-07 | 0.002 | within threshold |
+| manufactured_p4_g4_h3 | fluid_area_relative | 2.45848166e-14 | 1e-05 | within threshold |
+| manufactured_p4_g4_h3 | obstacle_perimeter_relative | 2.63986039e-13 | 1e-05 | within threshold |
+| manufactured_p4_g4_h3 | independent_free_residual | 3.26518498e-12 | 1e-09 | within threshold |
+| manufactured_p4_g4_h3 | prescribed_FE_trace_over_U | 1e-12 | 1e-10 | within threshold |
+| manufactured_p4_g4_h3 | scaled_divergence | 6.37564845e-11 | 0.001 | within threshold |
+| manufactured_p4_g4_h3 | analytic_velocity | 9.48044354e-13 | 1e-06 | within threshold |
+| manufactured_p4_g4_h3 | analytic_pressure | 2.39929559e-11 | 1e-06 | within threshold |
+| manufactured_p4_g4_h3 | physical_energy_balance | 1.15861865e-12 | 0.005 | within threshold |
+| manufactured_p4_g4_h3 | physical_momentum_0 | 6.77740905e-13 | 0.005 | within threshold |
+| manufactured_p4_g4_h3 | physical_momentum_1 | 1.08574836e-12 | 0.005 | within threshold |
+
+Cross-run controls not assessed by this screen: two_decreasing_h_differences, p4_g4_crosscheck, p3_g4_geometry, solver_100x, quadrature_plus4, upstream_extension, downstream_extension, symmetric_outlet_long_domain, conditional_uncertainty, shared_mesh_lift_reuse, parameter_population_coverage, independent_raw_evidence_review.
+
+Raw per-case controls not assessed here: positive_mapped_Jacobians_and_fluid_points, normal_and_binary_reload_certificates, surface_rule_12_vs_16, outlet_backflow, manufactured_force_and_derivative_controls, wall_shear_sign_control, manufactured_global_flux.
+
+## Glossary
+
+Case: one saved solver invocation. Saved value: the recorded metric or the explicit force/probe difference derived from it. Threshold: the frozen campaign limit. Within threshold: this one check passes; it does not qualify the reference. FE trace: prescribed finite-element boundary velocity. Divergence: local incompressibility error. DFG: cylinder-in-channel benchmark. Reaction force: force recovered from the discrete equations; gradient and physical forces use different stress conventions. Cross-run: evidence requiring more than one independently retained solve. Conditional uncertainty: a refinement-based estimate, not a rigorous error bound.
+
+
+
+Remaining resources
+
+# Prospective resources for remaining P4 reference controls
+
+Coordinator and independent numerical review accept the resource plan at reference commit89cb4193f, conditional on exact runtime-package review. This amends resources only; physical thresholds, mesh sizes and polynomial orders remain unchanged. It does not release a job, increase ROM production caps, or admit a reference.
+
+The plan derives from the retained actual P4 h3 result and memory hashes in g2/POST-P4-RESOURCE-PROPOSAL.json. Each upstream, downstream and symmetric-long-domain solve gets a separate allocation: one GPU on gpu partition,16CPUs,128GiB memory,112GiB hard working guard,900seconds per process,1100seconds runner and1200seconds allocation. Proposed early caps are60k elements,1.2M mixed DOFs,70M nonzeros and3M volume points. Actual factor estimate plus current resident memory must pass before factorization; caps alone never establish feasibility. The long-domain projection includes20percent planning margin and is close to the hard guard. Exceeding any guard stops and preserves the run; no automatic larger retry or coarsening is allowed.
+
+Solver/quadrature controls remain64GiB allocation with48GiB hard guard on the identical adopted P4 mesh. Tolerance tightening is100-fold; the quadrature control adds4 assembly orders and uses diagnostic order16. The projected1,713,393 volume points require a separately explicit2M point ceiling, verified against the pinned native rule before allocation. Process/runner/allocation limits are600/1100/1200seconds. Split controls if the grouped runtime projection does not fit.
+
+Every exact package must retain GPU/f64/highest preflight, input hashes, unique output namespace, queue checks, disk reserves, actual resource stops and checksummed collection. Global12GPU-hour and two-concurrent-job ceilings remain. Preserve failure evidence and remote copies until durable mirrored retention. The source inventory and first release will be separate records.

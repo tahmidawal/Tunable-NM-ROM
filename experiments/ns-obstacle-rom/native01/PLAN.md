@@ -1,37 +1,17 @@
-# Separate native adapter control
+# Selected native interface control package
 
-This is an unexecuted source candidate. It consumes the one actual coarse DFG
-producer control from job 6613426 and never treats it as admitted training data.
-The reviewed production loader is unchanged.
+The selected fixture is `native_interface_control.py` at the source hash in
+`SOURCE-CANDIDATE.json`. It includes the independently requested complete boundary
+replay and all actual saved normal factors. The complete original overlapping worker
+alternative is preserved under `legacy/558d2dce8-overlap/`, not included in execution.
 
-`native_adapter_control.py` uses a distinct `ControlView` with only the reusable
-geometry, mapped evaluation and metric methods. It exposes no production
-`open`, `build` or `export` entry point. It checks the binary mesh and ordered
-layout, recomputes the actual A8 normal certificate, replays the saved solution,
-checks affine gradients and scalar/vector component maps, compares sampled and
-assembled dimensionless metrics, and runs the fixed bounded scalar eigen routines.
+The selected batch is `native01/native.sh`, staged as `native.sh`, and is bound to
+`/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-interface01`.
+The selected installer changes only the accepted prefix installer's namespace;
+`native01/PROVISION.json` maps to `REPAIR.json` and binds this same fresh directory.
+The selected runtime arguments use `inputcase/`, `CONTROL-RELEASE.json`, and
+`results/interface/`. No other request schema or alternate fixture is staged.
 
-There is no fabricated nine-state family, bank/POD fitting, reference accuracy
-claim, changed scientific threshold or memory-cap increase. A successful result
-would qualify these native implementation primitives only. Actual pressure POD,
-supremizers, mixed reduced stability and end-to-end solves remain dependent on
-genuine G2 data and their runtime checks.
-
-The exact selected input files and source hashes are in `SOURCE-CANDIDATE.json`;
-the proposed request and resource projection are alongside it. The runtime request
-uses a relative `control/` directory containing those exact bytes. The source has
-not been staged or submitted. An independently reviewed launcher must retain
-the standard job-owned library prefix, GPU/f64/highest preflight, GPU partition,
-single-job directory, CPU/thread policy and allocation deadline.
-
-The script retains full field replay, normal certificate, sparse metric matrices,
-eigenvectors and JSON diagnostics, including partial output on a check failure.
-All arrays are diagnostic evidence, not a training export.
-
-## Glossary
-
-DFG identifies the fixed cylinder-in-channel case. G2 is physical reference/data
-qualification. A component map identifies how scalar coefficients occupy vector
-finite-element coefficients. H1 includes both values and gradients; mass/L2
-includes values only. The eigen routines construct candidate test functions;
-their residual checks do not prove complete spectral enumeration.
+`SOURCE-CANDIDATE.json` freezes every selected source and all exact native01 producer
+case files. Root must supply the exact independently reviewed control release and final
+staging/commit/hash receipts. No staging, submission or native execution has occurred.

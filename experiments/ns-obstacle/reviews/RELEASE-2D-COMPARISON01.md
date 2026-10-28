@@ -1,0 +1,7 @@
+# Release one exact-coordinate comparison control
+
+Release exactly one fresh g2-comparison01 allocation from sourceb466b0d6cf9f653d22a91366508fcd787bd6474e, inventory7c67ff20c7f8a3aae612f1fc226a181016e712535b40521ffa0ab29846ecff88. Independent reviewer and coordinator verified all171runtime/retained input bytes against the commit, with unique staging destinations.
+
+The original ladder02 remains failed. This job reuses its six immutable completed solutions; it performs no PDE solves. First certify both originally failed physical points with native inverse-map and affine controls. Then evaluate both unchanged complete finest-rule comparisons. Physical coordinates, every quadrature point and weight, 64epsilon membership and 1e-10D reconstruction tolerances remain unchanged. Bounded adjacent-triangle inverse lookup retains original and fallback certificates; no extrapolated field values or subset comparisons are admitted.
+
+Use one compatible available GPU in gpu partition,sixteen CPUs,64GiB,twenty minutes, with existing per-process300second deadline. At most two campaign jobs active. Require exact source hashes, private prefix,GPU/f64/highest preflight,disk reserve and queue checks before/after submission. Preserve/checksum all results; no automatic retry. Native lookup behavior and field convergence remain unmeasured until the saved-result audit. No physical admission or training follows solely from execution.

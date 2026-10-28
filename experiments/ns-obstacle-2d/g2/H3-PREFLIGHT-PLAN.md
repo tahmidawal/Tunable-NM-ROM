@@ -1,0 +1,15 @@
+# Bounded next-mesh control preflight
+
+This is source preparation, not an execution release. The sole next spatial level is h3: maxh and obstacle_h are each halved relative to h2. No h4 is implied. The h2 divergence diagnostic remains above the unchanged reference gate; successful nonlinear convergence is insufficient.
+
+Before freezing h3, use retained h2 element/DOF/nonzero counts, parent and fresh-reload peaks, and phase timings. Project mesh counts by four, direct-factor work conservatively by eight, and quadrature/export storage by four. Include coefficient diagnostics, Python mapped-point objects, parent/child coexistence, compression, and comparison arrays. Identify every producer cap that needs a resource-only amendment. Preserve complete quadrature and the existing physical thresholds; downstream ROM capacities are reviewed separately. Actual counts remain guarded at runtime.
+
+The prospective allocation contains DFG and manufactured h3 controls in separate processes, each with replay arrays and fresh-process binary reload. Before its comparison plan is released, resolve the retained ladder02 common-rule failure using its saved membership and mapped-coordinate evidence. No point clipping, nudging, extrapolation, subset norm or pressure shift is permitted. Retain the original failed comparison. If a comparison-method amendment is required, review its scientific equivalence independently before execution.
+
+After spatial qualification, separate p4/g4 and p3/g4 controls distinguish solution-order from geometry-order error. Solver tightening, quadrature tightening, upstream/downstream and separate symmetric-outlet controls remain required. Use actual selected-level counts to group these controls into bounded allocations, accounting for failures within the existing campaign budget. None can be dropped because a drag coefficient happens to match the benchmark.
+
+An immutable binary mesh/layout and independently certified common Stokes lift must then be reused across the full declared training/development/validation family, with native reuse validation and source-bound manifests. Re20 qualification does not automatically qualify the other parameters. The extracted query in `fom_query.py` needs native equivalence against the retained producer, exact output evaluators and paired accuracy/cost review before timing. Its constructor and common lift are offline costs; every online invocation begins from the same cached lift and retains its actual returned coefficients.
+
+## Glossary
+
+h3: the single next mesh level after h2. DOF: one finite-element coefficient. Nonzero count: stored entries in the assembled matrix. Replay: reconstructing saved numerical results from their raw arrays or reloaded binary files. p4/g4: fourth-order velocity and fourth-order geometry control. Source-bound: exact code and input hashes recorded with the result. Offline: preparation paid before solving a new parameter query. Common Stokes lift: shared boundary-compatible linear solution used to initialize each query.

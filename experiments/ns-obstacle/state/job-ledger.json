@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "two_scoped_integration_controls_submitted",
+  "status": "both_integration_controls_complete_pending_audit",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -427,7 +427,7 @@
       "attempt": "native-block02",
       "source_commit": "8b123c7051ecbc47621de84988a139eba090456c",
       "submitted_utc": "2026-10-28T20:29:15Z",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "COMPLETED",
       "input_manifest_sha256": "dd1e89d6e74e468855fec7f89bd2e621fde7044e7aacb0b692576e6065b33596",
       "source_checksums_sha256": "26d981146e84dccfe4fa343ba5bb1521235e243641abfbb0d5409fc12244e0ee",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-block02",
@@ -436,11 +436,21 @@
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
       "gpu_type_requested": "h200",
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 55,
+      "allocated_gpu_hours": 0.015277777777777777,
       "reference_admitted": false,
       "training_released": false,
-      "single_submission": true
+      "single_submission": true,
+      "node": "pax009",
+      "collection_status": "complete_verified",
+      "batch_MaxRSS_KiB": 1047960,
+      "native_control_reported_pass": true,
+      "independent_review": "PASS scoped native block/eigen/TSQR integration; no physical admission",
+      "archive_sha256": "c1d3eb40a7c50f3f6f5a628a201952241d718f12b1a999c83bfbf708b62bd599",
+      "retention_commit": "f0e3580b1",
+      "retention_mirror": "368c16ec9",
+      "cleanup_commit": "5ecca24f6",
+      "remote_cleanup": "verified_complete_cleanup_mirror_pending"
     },
     {
       "job_id": 6614742,
@@ -448,7 +458,7 @@
       "attempt": "g2-comparison01",
       "source_commit": "b466b0d6cf9f653d22a91366508fcd787bd6474e",
       "submitted_utc": "2026-10-28T20:30:29.363001Z",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "COMPLETED",
       "input_manifest_sha256": "43a1f8410034f0b40b7f096875b1a6452999a18a89cb73cdb3c24d3b478c42fb",
       "source_checksums_sha256": "95a954db703acd4cc9ed817c796c6e4e907e35c044b8fc0316ceb883a42b2001",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01",
@@ -457,17 +467,22 @@
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
       "gpu_type_requested": "h200",
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 136,
+      "allocated_gpu_hours": 0.03777777777777778,
       "reference_admitted": false,
       "training_released": false,
-      "single_submission": true
+      "single_submission": true,
+      "observed_elapsed_seconds": 75,
+      "node": "pax009",
+      "two_point_control_reported_pass": true,
+      "batch_MaxRSS_KiB": 753228,
+      "full_comparisons_reported_complete": true,
+      "collection_status": "959_files_independently_verified_mirror_pending",
+      "archive_sha256": "ea7e2256b306847052b50c0b102d91b3abdf839f30458fee2ce3272075d9bc21",
+      "independent_review": "PASS full exact-coordinate comparisons; alloriginalpoints/weights retained; physicalG2 remains unpassed"
     }
   ],
-  "live_job_ids": [
-    6614673,
-    6614742
-  ],
-  "completed_gpu_hours": 0.12222222222222222,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.17527777777777778,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

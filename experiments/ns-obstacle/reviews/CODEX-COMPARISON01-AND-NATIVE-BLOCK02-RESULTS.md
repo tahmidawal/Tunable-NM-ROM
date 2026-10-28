@@ -1,0 +1,7 @@
+# Independent integration result audits
+
+Reviewer numerical_resume accepts comparison01job6614742, archiveea7e2256b306847052b50c0b102d91b3abdf839f30458fee2ce3272075d9bc21, after verifying959files and precision/runtime guards. Both originally failed points resolve to actual adjacent triangles137/411 in two inverse iterations, with zero physical/affine discrepancy and positive barycentric coordinates. All266756originalpoints/weights are byte-identical; allsixmesh evaluations valid, maximum physical reconstruction discrepancy1.24e-16. Recomputed DFG differences h0→h1 are velocity0.00106235964/pressure0.00154231748 and h1→h2 are0.000176960252/0.000416630739. First velocity difference and finer physical gates still fail. MMS differences independently replay. No original failure is relabeled.
+
+Reviewer also accepts nativeblock02job6614673, archivec1d3eb40a7c50f3f6f5a628a201952241d718f12b1a999c83bfbf708b62bd599, after990file checks. Full scalar/vector volume/boundary dense and blocked values/gradients are identical. Sparse eigen residuals independently recompute below3.503e-15; massGram2norm below3.04e-15. Native mapped selection/rejections match TSQR, mapped orthonormality below4.89e-15 and subspace below1.03e-14; mapped/assembledGram gap below1.43e-14. Coarse interface measured peak818159616bytes; no timing advantage claim.
+
+These audits establish implementation controls only. Qualified references, production capacity, actual bank training/reduced accuracy and paired performance remain incomplete. Owners close durable retention/remote cleanup separately.

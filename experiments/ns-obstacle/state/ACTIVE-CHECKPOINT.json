@@ -1,11 +1,18 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6614416,
+      "lane": "2d",
+      "attempt": "g2-ladder02",
+      "observed_state": "PENDING"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
-    "Close verified retention/mirrors/remote duplicate cleanup for interface01 and ladder01",
-    "Review prospective all-case Jacobian steps and diagnostic arrays before one bounded ladder02 retry",
-    "Complete and independently review actual bank/POD driver; G2 and training admission remain closed"
+    "Monitor/collect/audit job6614416; no duplicate retry",
+    "Review fair FOM callback and exact streamed ROM moment capacity proposal",
+    "Qualify physical references/common lift before training"
   ],
   "completed_allocated_gpu_hours": 0.08444444444444445,
   "global_ceiling_gpu_hours": 12,
@@ -23,7 +30,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T20:13:00.993898+00:00",
+  "last_checkpoint_utc": "2026-10-28T20:18:54.539186+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",

@@ -1,0 +1,45 @@
+{
+  "completed": [
+    {
+      "name": "solver_100x",
+      "returncode": 0,
+      "seconds": 177.0875773858279,
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/fom.py",
+        "--config",
+        "g2/solverquad/solver_100x.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/results/solver_100x"
+      ]
+    },
+    {
+      "name": "quadrature_plus4",
+      "returncode": 0,
+      "seconds": 247.31207163166255,
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/fom.py",
+        "--config",
+        "g2/solverquad/quadrature_plus4.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/results/quadrature_plus4"
+      ]
+    },
+    {
+      "name": "comparison_solver_quad",
+      "returncode": 0,
+      "seconds": 393.7879627039656,
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/g2/compare_fields.py",
+        "--plan",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/results/comparison-plan.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/results/comparison_solver_quad"
+      ]
+    }
+  ],
+  "failed": null,
+  "physical_admission": false
+}

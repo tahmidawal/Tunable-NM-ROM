@@ -1,0 +1,29 @@
+{
+  "cases": {
+    "p4_g4_h3": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/inputs/p4_g4_h3",
+      "export_manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b"
+    },
+    "solver_100x": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/results/solver_100x",
+      "export_manifest_sha256": "8a3f1c12ca3506ff91a8cfc05cdff73d8806bd06d9278043d53c22fc17f98223"
+    },
+    "quadrature_plus4": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01/results/quadrature_plus4",
+      "export_manifest_sha256": "6a67d1a3afc3a6346da08c3b9768941a6cbdd255364ed85f336eb8f281696ac2"
+    }
+  },
+  "rule_case": "quadrature_plus4",
+  "comparisons": [
+    {
+      "case": "solver_100x",
+      "reference": "p4_g4_h3",
+      "purpose": "numerical sensitivity against adopted P4; common original-P4 denominator on complete higher quadrature rule"
+    },
+    {
+      "case": "quadrature_plus4",
+      "reference": "p4_g4_h3",
+      "purpose": "numerical sensitivity against adopted P4; common original-P4 denominator on complete higher quadrature rule"
+    }
+  ]
+}

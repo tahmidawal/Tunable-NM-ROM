@@ -96,6 +96,10 @@ class CandidateStokesLift(CommonStokesLift):
             if not np.allclose(states[index,~free],trace[~free],rtol=0,atol=1e-12*expected_U):raise ValueError('candidate essential trace mismatch')
         self=cls();self.velocity=u.copy();self.pressure_per_nu=p.copy();self.velocity.setflags(write=False);self.pressure_per_nu.setflags(write=False)
         self.metadata=meta;self.usage_role=role;self.eligibility_sha256=sha(path);self.configuration_sha256=configuration_digest;self.offline_load_seconds=time.perf_counter()-started
+        self.truth_reference_admission_sha256=eligibility.get('truth_reference_admission_sha256')
+        self.selection_sha256=eligibility.get('selection_sha256')
+        self.selection_review_sha256=eligibility.get('selection_review_sha256')
+        self.selection_frozen=eligibility.get('selection_frozen') is True
         return self
 
     def allows_Re(self,Re):

@@ -1,0 +1,109 @@
+CONTROL-RELEASE.json: OK
+DEPENDENCIES.json: OK
+INPUT-MANIFEST.json: OK
+MODEL-CONTRACT.json: OK
+REPAIR.json: OK
+SOURCE_COMMIT.txt: OK
+dependencies.py: OK
+fe_adapter.py: OK
+fe_algebra.py: OK
+fe_blocks.py: OK
+fe_controls_a6.py: OK
+fe_pod_a6.py: OK
+inputcase/EXPORT-MANIFEST.json: OK
+inputcase/affine_gradient_orientation.json: OK
+inputcase/boundary_rule.json: OK
+inputcase/config.json: OK
+inputcase/early_geometry_api_checks.json: OK
+inputcase/essential_trace_certificate.json: OK
+inputcase/fe_layout.json: OK
+inputcase/full_rule.npz: OK
+inputcase/geometry_checks.json: OK
+inputcase/jacobian_checks.json: OK
+inputcase/memory_checks.json: OK
+inputcase/mesh.vol.bin: OK
+inputcase/mesh_identity.json: OK
+inputcase/newton_history.json: OK
+inputcase/normal_orientation.json: OK
+inputcase/reload.stderr.log: OK
+inputcase/reload.stdout.log: OK
+inputcase/reload_checks.json: OK
+inputcase/reload_normal_orientation.json: OK
+inputcase/reload_process.json: OK
+inputcase/reload_request.json: OK
+inputcase/result.json: OK
+inputcase/solution.sol: OK
+inputcase/stokes.sol: OK
+inputcase/wake_centerline.json: OK
+native.sh: OK
+native_block_control.py: OK
+oriented_normals.py: OK
+scalars.py: OK
+spaces.py: OK
+train_bank.py: OK
+weak.py: OK
+8b123c7051ecbc47621de84988a139eba090456c
+jax_backend=gpu
+jax_devices=[CudaDevice(id=0)]
+jax_x64=True
+matmul_precision=highest
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           46 bits physical, 57 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  96
+On-line CPU(s) list:                     0-95
+Vendor ID:                               GenuineIntel
+Model name:                              INTEL(R) XEON(R) PLATINUM 8568Y+
+CPU family:                              6
+Model:                                   207
+Thread(s) per core:                      1
+Core(s) per socket:                      48
+Socket(s):                               2
+Stepping:                                2
+CPU(s) scaling MHz:                      94%
+CPU max MHz:                             4000.0000
+CPU min MHz:                             800.0000
+BogoMIPS:                                4600.00
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hfi vnmi avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr ibt amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities
+Virtualization:                          VT-x
+L1d cache:                               4.5 MiB (96 instances)
+L1i cache:                               3 MiB (96 instances)
+L2 cache:                                192 MiB (96 instances)
+L3 cache:                                600 MiB (2 instances)
+NUMA node(s):                            2
+NUMA node0 CPU(s):                       0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94
+NUMA node1 CPU(s):                       1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI BHI_DIS_S
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsx async abort:           Not affected
+name, uuid, memory.total [MiB]
+NVIDIA H200, GPU-ff5d079b-3cd9-8094-02d4-f80e11943f20, 143771 MiB
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff", "bytes": 30204991}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122", "bytes": 8506176}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94", "bytes": 25610800}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141", "bytes": 15064649}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-block02/deps/lib/python3.13/site-packages"}
+{"ngsolve": "6.2.2608", "netgen_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-block02/deps/lib/python3.13/site-packages/netgen/__init__.py", "numpy": "2.5.0", "scipy": "1.18.0", "jax": "0.10.2", "jax_backend": "gpu", "jax_x64": true, "matmul_precision": "highest"}
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}

@@ -126,7 +126,7 @@ def generate(repository: Path, destination: Path) -> None:
                   'hypothesis. No correction inferred from the 2D case is admitted here.', '',
                   '| 3D geometric diagnostic | Saved or directly derived value |', '|---|---:|']
         lines += [f'| {name} | {value:.9g} |' for name, value in rows3]
-    seconds = sum(a.get('elapsed_seconds', 0) * a['gpus'] for a in ledger['allocations'])
+    seconds = sum((a.get('elapsed_seconds') or 0) * a['gpus'] for a in ledger['allocations'])
     payload['charged_gpu_seconds'] = seconds
     lines += ['', '| Allocation | Lane / attempt | Recorded state | Charged GPU-seconds |', '|---|---|---|---:|']
     for allocation in ledger['allocations']:

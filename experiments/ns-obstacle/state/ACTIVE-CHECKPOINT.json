@@ -1,6 +1,14 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6613426,
+      "lane": "2d",
+      "attempt": "g2-native01",
+      "observed_state": "RUNNING",
+      "node": "pax009"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
     "Review/execute bounded2D native producer and binary clean-process reload control",
@@ -23,7 +31,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T19:37:22.978844+00:00",
+  "last_checkpoint_utc": "2026-10-28T19:48:19.968990+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",
@@ -49,8 +57,9 @@
   ],
   "historical_unsubmitted_staging_note": "Superseded initial attempts, retained as historical records only; not current execution candidates.",
   "ROM_current_source": {
-    "commit": "d1b4eb952abe0e454d06f3406a5cd26eab09e770",
-    "status": "A6 source/synthetic review READY; native integration and G2 data not passed"
+    "commit": "6224e96848f7b850b921f90c5b9094dc974a25dd",
+    "status": "independent source READY; actual native controls and G2 data unpassed",
+    "adapter_digest": "7ced27b2b02d204edbcb071469d055fe6b2b8fdabc0f57a97435971e6c9a05bd"
   },
   "active_scope": "User direction2026-10-28: working2D ROM first; all3D work deferred",
   "deferred_3d": {

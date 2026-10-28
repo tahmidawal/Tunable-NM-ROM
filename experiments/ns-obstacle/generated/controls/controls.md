@@ -65,6 +65,7 @@ The 3D geometry diagnostic completed, but its geometric identity checks fail. Th
 | 6610978 | 2d_reference / g1-normal01 | COMPLETED | 25 |
 | 6611259 | 3d_reference / g1-normal01 | COMPLETED | 28 |
 | 6612209 | 2d_reference / g1-smoke07 | COMPLETED | 31 |
+| 6613426 | 2d / g2-native01 | RUNNING | pending accounting |
 
 Total recorded allocation: 194 GPU-seconds (0.0538888889 GPU-hours). Finite-element calculations run on CPU within these GPU allocations; this is resource accounting, not a GPU-acceleration measurement.
 

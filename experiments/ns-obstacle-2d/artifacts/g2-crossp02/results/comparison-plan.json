@@ -1,0 +1,29 @@
+{
+  "cases": {
+    "p3_g3_h3": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02/inputs/p3_g3_h3",
+      "export_manifest_sha256": "e5348c6ea9993e7ce06df83b52dc84fecec5329a95666bfbb0d838d0fbdc0285"
+    },
+    "p3_g4_h3": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02/inputs/p3_g4_h3",
+      "export_manifest_sha256": "2f84a89dd4e787503f652003d399b019de84a6b20b32251daed88f75042422bf"
+    },
+    "p4_g4_h3": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02/inputs/p4_g4_h3",
+      "export_manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b"
+    }
+  },
+  "rule_case": "p4_g4_h3",
+  "comparisons": [
+    {
+      "case": "p3_g3_h3",
+      "reference": "p4_g4_h3",
+      "purpose": "raw p contrast with adopted P4 denominator; conservative envelope uses maximum of both"
+    },
+    {
+      "case": "p3_g4_h3",
+      "reference": "p4_g4_h3",
+      "purpose": "raw p contrast with adopted P4 denominator; conservative envelope uses maximum of both"
+    }
+  ]
+}

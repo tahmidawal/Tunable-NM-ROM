@@ -250,7 +250,24 @@ def analytic_normal_certificate(boundary,cfg):
     return record
 
 
-def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None,volume_point_limit=None):
+def batched_export_enabled(cfg):
+    flag=cfg.get('batch_reference_export',False)
+    if type(flag) is not bool:raise TypeError('batch_reference_export must be boolean')
+    return flag
+
+
+def field_values_batched(velocity,pressure,derivative,transformation,rule):
+    """Same native mapped points; copy values while all native owners live."""
+    mapped=transformation(rule);count=len(rule);outputs=[]
+    for function,shape in ((velocity,(count,2)),(derivative,(count,2,2)),(pressure,(count,))):
+        values=np.asarray(function(mapped))
+        if values.dtype!=np.dtype('float64') or values.size!=int(np.prod(shape)) or not np.isfinite(values).all():
+            raise ValueError('invalid finite f64 native field batch')
+        outputs.append(np.array(values.reshape(shape),copy=True))
+    return tuple(outputs)
+
+
+def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None,volume_point_limit=None,batched=False):
     points=[];weights=[];values=[];gradients=[];pressures=[];jacobians=[];normals=[];labels=[]
     derivative=ng.Grad(velocity)
     if boundary:derivative=ng.BoundaryFromVolumeCF(derivative)
@@ -260,13 +277,18 @@ def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None,volume_po
     cap=CAPS['boundary_points'] if boundary else volume_point_cap({} if volume_point_limit is None else {'max_volume_points':volume_point_limit})
     for el in mesh.Elements(ng.BND if boundary else ng.VOL):
         tr=mesh.GetTrafo(el);ir=ng.IntegrationRule(el.type,order)
-        for ip in ir:
+        if len(points)+len(ir)>cap:raise MemoryError('reload rule exceeds reviewed producer point cap')
+        batch=field_values_batched(velocity,pressure,derivative,tr,ir) if batched else None
+        for index,ip in enumerate(ir):
             if len(points)>=cap:raise MemoryError('reload rule exceeds reviewed producer point cap')
             mip=tr(ip);w=scalar_value(ip.weight,'reload_reference_weight')*scalar_value(mip.measure,'reload_mapped_measure')
             if w<=0:raise ValueError('nonpositive reloaded weight')
             points.append(np.array(mip.point,dtype=float,copy=True));weights.append(w)
-            values.append(np.array(velocity(mip),dtype=float,copy=True));gradients.append(np.array(derivative(mip),dtype=float,copy=True).reshape(2,2))
-            pressures.append(scalar_value(pressure(mip),'reloaded_pressure'))
+            if batch is None:
+                values.append(np.array(velocity(mip),dtype=float,copy=True));gradients.append(np.array(derivative(mip),dtype=float,copy=True).reshape(2,2))
+                pressures.append(scalar_value(pressure(mip),'reloaded_pressure'))
+            else:
+                values.append(batch[0][index].copy());gradients.append(batch[1][index].copy());pressures.append(float(batch[2][index]))
             if boundary:
                 normals.append(np.array(normal(mip),dtype=float,copy=True));labels.append(str(el.mat))
                 raw_normals.append(np.array(raw_normal(mip),dtype=float,copy=True))
@@ -332,7 +354,7 @@ def _reload_certificate(out,cfg,original_curve_order,original_layout,ng,request)
         for name,g in [('solution',solution),('stokes',stokes)]:
             report['checks'][name+'_coefficients']=relative_max_record(g.vec.FV().NumPy().copy(),data[name+'_coefficients'])
         uh,ph=solution.components
-        volume=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],False,ng,volume_point_limit=volume_point_cap(cfg))
+        volume=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],False,ng,volume_point_limit=volume_point_cap(cfg),batched=batched_export_enabled(cfg))
         scales={'points':cfg['D'],'weights':1.,'jacobians':1.,'velocity':cfg['U'],'velocity_gradient':cfg['U']/cfg['D'],'pressure':cfg['U']**2}
         for key,scale in scales.items():report['checks']['volume_'+key]=relative_max_record(volume[key],data[key],scale)
         from oriented_normals import fluid_outward_normal
@@ -342,7 +364,7 @@ def _reload_certificate(out,cfg,original_curve_order,original_layout,ng,request)
         if normal_certificate['factors']!=original_normals['factors']:raise ArithmeticError('reloaded boundary orientation factors changed')
         report['normal_orientation']={'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
                                       'certificate_sha256':sha_file(out/'reload_normal_orientation.json')}
-        boundary=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],True,ng,normal=normal)
+        boundary=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],True,ng,normal=normal,batched=batched_export_enabled(cfg))
         report['analytic_normal_checks']=analytic_normal_certificate(boundary,cfg)
         if not report['analytic_normal_checks']['passed']:raise ArithmeticError('reloaded analytic normal orientation/closure failed')
         saved=json.loads((out/'boundary_rule.json').read_text())

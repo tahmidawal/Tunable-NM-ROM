@@ -1,0 +1,133 @@
+{
+  "passed": true,
+  "physical_admission": false,
+  "source_manifest_sha256": "381b8816becfa40bbdf1d9b7883733bd82b9f76d0b3fc41e53a7df1ebf98a6df",
+  "mesh_sha256": "fed6f71aab57eac2f9df7d27b10cfccf8514a99180c2446644f10b4fe7b9c409",
+  "layout_sha256": "013ad4c230eca2c69cdc505571301bcb164bd2f33911b20b91f695126170f76f",
+  "states": [
+    {
+      "state": 0,
+      "nu": 0.0010000000000000002,
+      "checks": {
+        "full_velocity_pressure_fields__velocity": {
+          "max_absolute": 6.661338147750939e-16,
+          "scale": 1.9926440294874899,
+          "scaled_max": 3.3429644478267615e-16,
+          "tolerance": 1e-10
+        },
+        "full_velocity_pressure_fields__pressure": {
+          "max_absolute": 8.881784197001252e-16,
+          "scale": 3.2993701867722214,
+          "scaled_max": 2.6919635246175014e-16,
+          "tolerance": 1e-10
+        },
+        "fixed_probes__velocity": {
+          "max_absolute": 0.0,
+          "scale": 1.0,
+          "scaled_max": 0.0,
+          "tolerance": 1e-10
+        },
+        "fixed_probes__pressure": {
+          "max_absolute": 0.0,
+          "scale": 3.299127493378399,
+          "scaled_max": 0.0,
+          "tolerance": 1e-10
+        },
+        "integrated_forces__force_coefficient": {
+          "max_absolute": 8.881784197001252e-16,
+          "scale": 5.584064689367566,
+          "scaled_max": 1.5905589729131837e-16,
+          "tolerance": 1e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "state": 1,
+      "nu": 0.0013333333333333335,
+      "checks": {
+        "full_velocity_pressure_fields__velocity": {
+          "max_absolute": 5.551115123125783e-17,
+          "scale": 1.0,
+          "scaled_max": 5.551115123125783e-17,
+          "tolerance": 1e-10
+        },
+        "full_velocity_pressure_fields__pressure": {
+          "max_absolute": 2.220446049250313e-16,
+          "scale": 1.0,
+          "scaled_max": 2.220446049250313e-16,
+          "tolerance": 1e-10
+        },
+        "fixed_probes__velocity": {
+          "max_absolute": 0.0,
+          "scale": 1.0,
+          "scaled_max": 0.0,
+          "tolerance": 1e-10
+        },
+        "fixed_probes__pressure": {
+          "max_absolute": 0.0,
+          "scale": 1.0,
+          "scaled_max": 0.0,
+          "tolerance": 1e-10
+        },
+        "integrated_forces__force_coefficient": {
+          "max_absolute": 2.220446049250313e-16,
+          "scale": 1.0,
+          "scaled_max": 2.220446049250313e-16,
+          "tolerance": 1e-10
+        }
+      },
+      "passed": true
+    },
+    {
+      "state": 2,
+      "nu": 0.0008000000000000001,
+      "checks": {
+        "full_velocity_pressure_fields__velocity": {
+          "max_absolute": 6.661338147750939e-16,
+          "scale": 1.9861662840716927,
+          "scaled_max": 3.3538672976036137e-16,
+          "tolerance": 1e-10
+        },
+        "full_velocity_pressure_fields__pressure": {
+          "max_absolute": 8.881784197001252e-16,
+          "scale": 3.297377625155062,
+          "scaled_max": 2.693590242513876e-16,
+          "tolerance": 1e-10
+        },
+        "fixed_probes__velocity": {
+          "max_absolute": 0.0,
+          "scale": 1.0,
+          "scaled_max": 0.0,
+          "tolerance": 1e-10
+        },
+        "fixed_probes__pressure": {
+          "max_absolute": 0.0,
+          "scale": 3.2969490211826207,
+          "scaled_max": 0.0,
+          "tolerance": 1e-10
+        },
+        "integrated_forces__force_coefficient": {
+          "max_absolute": 8.881784197001252e-16,
+          "scale": 5.190087410061272,
+          "scaled_max": 1.7112976131738016e-16,
+          "tolerance": 1e-10
+        }
+      },
+      "passed": true
+    }
+  ],
+  "offline_setup_seconds_diagnostic_only": 2.2813016660511494,
+  "offline_components": {
+    "mapping_certification_seconds": 2.2421792233362794,
+    "force_assembly_seconds": 0.038168071769177914,
+    "offline_total_seconds": 2.280355241149664,
+    "timing_claim": false
+  },
+  "timing_claim": false,
+  "field_rule_points": 72520,
+  "force_velocity_support": 504,
+  "force_pressure_support": 140,
+  "all_original_rule_points_used": true,
+  "no_new_PDE_solve": true
+}

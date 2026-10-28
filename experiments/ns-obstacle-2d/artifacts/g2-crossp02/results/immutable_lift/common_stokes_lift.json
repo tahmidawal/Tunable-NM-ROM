@@ -1,0 +1,26 @@
+{
+  "schema": "ns-obstacle-common-stokes-v1",
+  "physical_admission": false,
+  "coordinator_admission_required": true,
+  "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+  "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+  "U": 0.2,
+  "D": 0.1,
+  "base_nu": 0.001,
+  "velocity_ndof": 340996,
+  "pressure_ndof": 96144,
+  "outlet": "gradient",
+  "pressure_gauge": "natural outlet, unshifted",
+  "linear_control": {
+    "numerator": 2.021679912901411e-15,
+    "denominator": 0.6520937405567593,
+    "value": 3.1002903220253204e-15,
+    "definition": "scaled linear residual / scaled RHS"
+  },
+  "linear_tolerance": 1e-10,
+  "reference_stokes_phase_seconds": 9.926481517031789,
+  "timing_scope": "reference linear assembly/factor/solve/check only; preceding mesh/space/form setup recorded separately; no tuned offline timing claim",
+  "coefficient_file": "common_stokes_lift.npz",
+  "coefficient_sha256": "47c1a9954361079cb94d438be8ee3237299e71c07d8c90d00f8a2f813efc95cb",
+  "query_contract": "cache these arrays offline; each query copies velocity and scales pressure by its viscosity; no repeated Stokes factorization"
+}

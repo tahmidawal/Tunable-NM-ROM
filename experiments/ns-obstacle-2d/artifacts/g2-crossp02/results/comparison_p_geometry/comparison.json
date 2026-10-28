@@ -1,0 +1,49 @@
+{
+  "status": "common_rule_fields_evaluated_no_physical_admission",
+  "physical_admission": false,
+  "rule_case": "p4_g4_h3",
+  "full_rule_preserved": true,
+  "comparisons": [
+    {
+      "case": "p3_g3_h3",
+      "reference": "p4_g4_h3",
+      "purpose": "raw p contrast with adopted P4 denominator; conservative envelope uses maximum of both",
+      "velocity_relative": {
+        "numerator": 9.04504603506234e-07,
+        "denominator": 0.209125026530404,
+        "value": 4.325185839843664e-06
+      },
+      "pressure_scaled": {
+        "numerator": 9.065415058542199e-07,
+        "denominator": 0.037823717815487296,
+        "value": 2.396754095608834e-05
+      },
+      "volume": 0.8941460183660065,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": true
+    },
+    {
+      "case": "p3_g4_h3",
+      "reference": "p4_g4_h3",
+      "purpose": "raw p contrast with adopted P4 denominator; conservative envelope uses maximum of both",
+      "velocity_relative": {
+        "numerator": 9.045041764365614e-07,
+        "denominator": 0.209125026530404,
+        "value": 4.325183797669757e-06
+      },
+      "pressure_scaled": {
+        "numerator": 9.065416059977581e-07,
+        "denominator": 0.037823717815487296,
+        "value": 2.3967543603727014e-05
+      },
+      "volume": 0.8941460183660065,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": true
+    }
+  ],
+  "peak_rss_bytes": 506679296,
+  "source_sha256": "9724bfee2073735cfefc98e0cb4ea3198c3a17b3ed451ce0b4c2e67e5c785367",
+  "plan_sha256": "268db48ebe2a90d82e8def1bb026239e0faf35249b01da6825c1edb3fbf16fb2"
+}

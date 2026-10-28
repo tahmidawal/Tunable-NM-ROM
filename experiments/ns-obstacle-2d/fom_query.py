@@ -21,7 +21,10 @@ class SteadyFOMQuery:
         if cfg['kind']!='dfg' or cfg['outlet']!='gradient':
             raise ValueError('registered unforced DFG gradient-outlet family only')
         if not isinstance(common_lift,CommonStokesLift):
-            raise TypeError('genuinely admitted cached common lift required')
+            raise TypeError('reviewed cached common lift required')
+        if hasattr(common_lift,'configuration_sha256'):
+            from candidate_lift import configuration_sha256
+            if common_lift.configuration_sha256!=configuration_sha256(cfg):raise ValueError('candidate lift configuration binding changed')
         if not callable(output_evaluator_factory):
             raise TypeError('reviewed same-mesh output evaluator factory required')
         if cfg['pressure_order']!=cfg['velocity_order']-1 or cfg['velocity_order']<2:
@@ -56,12 +59,26 @@ class SteadyFOMQuery:
         self.scale=np.r_[np.full(self.V.ndof,U**2*D),np.full(self.Q.ndof,U*D)]
         self.offline_seconds=time.perf_counter()-started
 
+    def diagnostics_from_evidence(self,evidence):
+        """Untimed evaluation of a retained invocation state; never re-solve."""
+        coefficients=np.asarray(evidence['state']);Re=float(evidence['Re'])
+        nu=self.cfg['U']*self.cfg['D']/Re
+        if (coefficients.dtype!=np.dtype('float64') or coefficients.shape!=(self.X.ndof,)
+            or not np.isfinite(coefficients).all() or not 15<=Re<=25 or evidence['nu']!=nu):
+            raise ValueError('invalid same-invocation diagnostic evidence')
+        if hasattr(self.lift,'allows_Re') and not self.lift.allows_Re(Re):raise ValueError('diagnostic parameter outside reviewed candidate role')
+        function=getattr(self.evaluators['full_velocity_pressure_fields'],'diagnostics',None)
+        if not callable(function):raise ValueError('reviewed untimed state diagnostics unavailable')
+        retained=self.ng.GridFunction(self.X);retained.vec.FV().NumPy()[:]=coefficients
+        return function(*retained.components,nu)
+
     @staticmethod
     def _array(vector):return vector.FV().NumPy()
 
     def query(self, Re, output_contract):
         if not np.isfinite(Re) or not 15<=Re<=25 or output_contract not in OUTPUT_CONTRACTS:
             raise ValueError('outside registered Reynolds family/output contract')
+        if hasattr(self.lift,'allows_Re') and not self.lift.allows_Re(Re):raise ValueError('query parameter outside reviewed candidate role')
         cfg=self.cfg;nu=cfg['U']*cfg['D']/Re;self.nu.Set(nu)
         # Every invocation starts from the identical cached lift. No warm state leaks.
         self._array(self.g.vec)[:]=self.lift.state_for_nu(nu)
@@ -114,5 +131,5 @@ class SteadyFOMQuery:
         return {'output_contract':output_contract,'outputs':outputs,'work':work,
                 'evidence':{'state':self._array(self.g.vec).copy(),'Re':float(Re),'nu':nu,
                     'converged':converged,'history':histories,'memory_checks':memory,
-                    'initialization':'cached_common_Stokes_lift','pressure_gauge':'natural outlet, unshifted'},
+                    'initialization':'cached_common_Stokes_lift','lift_role':getattr(self.lift,'usage_role','G2_truth_admitted'),'pressure_gauge':'natural outlet, unshifted'},
                 'physical_admission':False,'scope':'native equivalence and paired runtime validation pending'}

@@ -50,6 +50,7 @@ def run_case(cfg, out):
     kind = cfg['kind']
     reference_controls=rex.enabled(cfg)
     volume_point_limit=rex.volume_point_cap(cfg)
+    batched_reference_export=rex.batched_export_enabled(cfg)
     if reference_controls:
         campaign_file=cfg.get('campaign_file','campaign-A2.json')
         if campaign_file not in ('campaign-A2.json','g2/campaign-A6.json'):raise ValueError('unregistered campaign source')
@@ -335,7 +336,9 @@ def run_case(cfg, out):
     for el in mesh.Elements(ng.VOL):
         ir=ng.IntegrationRule(el.type,qo)
         tr=mesh.GetTrafo(el)
-        for ip in ir:
+        if reference_controls and len(points)+len(ir)>volume_point_limit:raise MemoryError('reference export exceeds reviewed producer volume-point cap')
+        batch=rex.field_values_batched(uh,ph,grad(uh),tr,ir) if batched_reference_export else None
+        for index,ip in enumerate(ir):
             if reference_controls and len(points)>=volume_point_limit:
                 raise MemoryError('reference export exceeds reviewed producer volume-point cap')
             mip=tr(ip)
@@ -348,7 +351,10 @@ def run_case(cfg, out):
             points.append(list(mip.point));weights.append(w)
             jacobians.append(jac.copy())
             # Persist an owning gradient array, never a possible native view.
-            vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(scalar_value(ph(mip),'volume_pressure_point'))
+            if batch is None:
+                vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(scalar_value(ph(mip),'volume_pressure_point'))
+            else:
+                vals.append(batch[0][index].tolist());grads.append(batch[1][index].copy());pressures.append(scalar_value(float(batch[2][index]),'volume_pressure_point'))
     # A VectorH1 volume derivative is not a BND differential operator.
     # Trace only the field derivative; retain normals on the boundary transform.
     gradient_on_boundary=ng.BoundaryFromVolumeCF(grad(uh))

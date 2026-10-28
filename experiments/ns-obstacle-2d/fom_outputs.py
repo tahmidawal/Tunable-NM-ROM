@@ -161,9 +161,27 @@ def make_output_factory(ng,expected_volume,expected_boundary,normal_evidence_pat
             if not np.isfinite(nu) or nu<=0:raise ValueError('actual positive viscosity required')
             return {'force_coefficient':nu*(velocity_force@u.vec.FV().NumPy()[velocity_ids])+
                     pressure_force@p.vec.FV().NumPy()[pressure_ids]}
+        def diagnostics(u,p,nu):
+            # Untimed scorer receives the exact retained invocation coefficients,
+            # bound to this mesh/space; this callback never solves or warm-starts.
+            field_values=fields(u,p,nu)
+            gradient=_f64(ng.Grad(u)(volume),(len(vpoints),2,2),'diagnostic volume gradient')
+            if requested_order is not None:gradient=gradient[requested_order]
+            boundary_gradient=_f64(ng.BoundaryFromVolumeCF(ng.Grad(u))(boundary),(len(bpoints),2,2),'diagnostic boundary gradient')
+            return {'velocity':field_values['velocity'],'pressure':field_values['pressure'],
+                'velocity_gradient':gradient*(D/U),'volume_points':vpoints.copy(),'volume_weights':vweights.copy()/D**2,
+                'boundary_velocity':_f64(u(boundary),(len(bpoints),2),'diagnostic boundary velocity')/U,
+                'boundary_pressure':_f64(p(boundary),(len(bpoints),),'diagnostic boundary pressure')/U**2,
+                'boundary_velocity_gradient':boundary_gradient*(D/U),'boundary_labels':labels.copy(),
+                'boundary_points':bpoints.copy(),'boundary_weights':bweights.copy()/D,'fluid_normals':normals.copy(),
+                'force_coefficient':forces(u,p,nu)['force_coefficient'],
+                'units':{'velocity':'u/U','pressure':'p/U^2','velocity_gradient':'d(u/U)/d(x/D)',
+                    'volume_weights':'dA/D^2','boundary_weights':'ds/D','points':'physical coordinates'},
+                'diagnostic_scope':'untimed evaluation of same retained physical state; no new solve'}
+        fields.diagnostics=diagnostics
         # Closure keeps all transformation, integration-rule and mesh objects alive.
         keep_alive=(mesh,owners,probe_points,volume,boundary)
-        for function in (fields,probes,forces):function.native_owners=keep_alive
+        for function in (fields,probes,forces,diagnostics):function.native_owners=keep_alive
         forces.offline_evidence={'mapping_certification_seconds':mapping_seconds,'force_assembly_seconds':force_assembly_seconds,
             'offline_total_seconds':time.perf_counter()-offline_started,'timing_claim':False,'field_rule_mode':field_rule_mode,
             'requested_point_cap':requested_point_cap,'requested_point_count':len(vpoints)}

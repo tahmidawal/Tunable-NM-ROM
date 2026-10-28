@@ -18,6 +18,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 import reference_export as rex
 from scalars import scalar_value
+from exact_lookup import ExactPointLocator
 
 
 def field_metrics(velocity,pressure,reference_velocity,reference_pressure,weights,U):
@@ -71,14 +72,16 @@ def evaluate_case(folder,cfg,points,out,label,ng):
     element_types={int(el.nr):str(el.type) for el in mesh.Elements(ng.VOL)}
     lookup_tolerance=1e-12
     reference_membership_roundoff=64*np.finfo(np.float64).eps
+    locator=ExactPointLocator(mesh,ng,cfg['D']);fallbacks=[]
     for i,xy in enumerate(points):
         try:
-            mip=mesh(*[float(v) for v in xy],tol=lookup_tolerance)
-            element_numbers[i]=int(mip.nr)
-            if mip.nr<0:raise ValueError('requested physical point outside candidate mesh')
-            if mip.vb!=ng.VOL or element_types.get(int(mip.nr))!='ET.TRIG':
+            mip,owners,certificate,fallback=locator.locate(xy)
+            if fallback is not None:fallbacks.append({'index':i,**fallback})
+            element_numbers[i]=int(certificate['element_number'])
+            if element_numbers[i]<0:raise ValueError('requested physical point outside candidate mesh')
+            if element_types.get(int(element_numbers[i]))!='ET.TRIG':
                 raise ValueError('common-rule lookup requires a volume triangle')
-            ref=np.asarray(mip.pnt,dtype=np.float64)
+            ref=np.asarray(certificate['reference_coordinates'],dtype=np.float64)
             reference_coordinates[i]=ref
             if ref.shape!=(3,) or not np.isfinite(ref).all():raise ValueError('invalid reference coordinates')
             barycentric[i]=[ref[0],ref[1],1-ref[0]-ref[1]]
@@ -91,14 +94,16 @@ def evaluate_case(folder,cfg,points,out,label,ng):
             pressure[i]=scalar_value(p(mip),'comparison_pressure_point')
             if not np.isfinite(values[i]).all() or not np.isfinite(pressure[i]):raise ValueError('nonfinite evaluated field')
             valid[i]=True
-        except Exception as exc:errors.append({'index':i,'point':xy.tolist(),'error':repr(exc)})
+        except Exception as exc:
+            errors.append({'index':i,'point':xy.tolist(),'error':repr(exc)})
+            if hasattr(exc,'lookup_evidence'):fallbacks.append({'index':i,**exc.lookup_evidence})
     np.savez_compressed(out/(label+'.npz'),requested_points=points,mapped_points=mapped,
                         velocity=values,pressure=pressure,valid=valid,reference_coordinates=reference_coordinates,
                         barycentric_coordinates=barycentric,element_numbers=element_numbers)
     rex.dump(out/(label+'-validity.json'),{'all_valid':bool(valid.all()),'invalid_count':len(errors),'errors':errors,
                                          'point_adjustments':0,'discarded_points':0,'layout_sha256':digest,
                                          'lookup_tolerance':lookup_tolerance,'reference_membership_roundoff':reference_membership_roundoff,
-                                         'element_types':element_types,'membership_rule':'all triangle barycentric coordinates >= -64eps; reference z within64eps; no coordinate alteration'})
+                                         'fallbacks':fallbacks,'fallback_count':len(fallbacks),'element_types':element_types,'membership_rule':'all triangle barycentric coordinates >= -64eps; reference z within64eps; no coordinate alteration'})
     if not valid.all():raise ValueError(f'{label}: invalid common-rule points; no subset comparison performed')
     return values,pressure
 

@@ -1,0 +1,2377 @@
+{
+  "status": "prospective_not_population_release",
+  "generated_utc": "2026-10-28T22:58:14.992609+00:00",
+  "noise_protocol": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/RESOLVED-NOISE-PROTOCOL.md",
+    "sha256": "8c3df2b53a3ab87d257ac9c583fa41efaf8dc78cabdf6bd8aa17a63045ffacce"
+  },
+  "population": {
+    "train": [
+      15,
+      16.25,
+      17.5,
+      18.75,
+      20,
+      21.25,
+      22.5,
+      23.75,
+      25
+    ],
+    "development": [
+      16.875,
+      23.125
+    ],
+    "validation": [
+      16,
+      18,
+      22,
+      24
+    ]
+  },
+  "baseline_states": [
+    {
+      "state": "p4_g4_h1",
+      "baseline_directory": "artifacts/g2-p4trend/results/dfg_h1",
+      "result_sha256": "08be335f55c33812e07180c6fae737f303bca8e9de626ab3fefc2a4a26eb7b0d",
+      "manifest_sha256": "1a57a54934eb650cde0599ef8dc81ed5421293be89e4c03d98b522a3c628ca22",
+      "immutable_mesh_sha256": "bcc562d338a206b4a8d9de73be5ef1afd0f4d448f78d8a8ae1f823b41cbe229e",
+      "layout_sha256": "4a49bc7ac173fbfeed30f87e414aeb0dfe1c1c71ea05f4ca523fe3477e3cd04f",
+      "actual_Re20_phase_seconds": {
+        "geometry_spaces_fields_forms": 0.30713262408971786,
+        "stokes_lift": 0.39341361355036497,
+        "stokes_checkpoint": 0.007327035069465637,
+        "newton_query": 3.4641338773071766,
+        "independent_residual_and_Jacobian": 0.574814897030592,
+        "reference_diagnostics_and_export": 3.3320369152352214,
+        "trace_certificate_and_reload": 4.920279502868652,
+        "total": 12.99913846515119
+      },
+      "actual_export_member_bytes": 14829874,
+      "prospective_per_parameter_variant_seconds": {
+        "baseline": 14.99913846515119,
+        "solver_100x": 15.865171934477985,
+        "quadrature_plus4": 21.57511184179718
+      },
+      "physics_admission_scope": "Only adopted P4/g4/h3 must be admitted; other states supply their own diagnostic contrasts, never donated metrics."
+    },
+    {
+      "state": "p4_g4_h2",
+      "baseline_directory": "artifacts/g2-p4trend/results/dfg_h2",
+      "result_sha256": "703019fdddc413b846a15aa9a944c5df69fee5417190f19519e70cf74c8253d1",
+      "manifest_sha256": "fd234202b6f2784514d3718652798f83c518b78dfb5ab5a7041a882c5cfce4a5",
+      "immutable_mesh_sha256": "c15599ab35f5179b69f77a16a55f76699b42632c0dcff22bcd7026a122e7306c",
+      "layout_sha256": "6b92d21972abaabb7c582de5a4a17c3e5bb752e3704e67d94a2bb36e79158299",
+      "actual_Re20_phase_seconds": {
+        "geometry_spaces_fields_forms": 0.8435296500101686,
+        "stokes_lift": 1.971453420817852,
+        "stokes_checkpoint": 0.012473436072468758,
+        "newton_query": 11.826877506449819,
+        "independent_residual_and_Jacobian": 0.8811449185013771,
+        "reference_diagnostics_and_export": 11.785609197802842,
+        "trace_certificate_and_reload": 16.931504575535655,
+        "total": 44.25259270519018
+      },
+      "actual_export_member_bytes": 49318874,
+      "prospective_per_parameter_variant_seconds": {
+        "baseline": 46.25259270519018,
+        "solver_100x": 49.209312081802636,
+        "quadrature_plus4": 68.89049592278232
+      },
+      "physics_admission_scope": "Only adopted P4/g4/h3 must be admitted; other states supply their own diagnostic contrasts, never donated metrics."
+    },
+    {
+      "state": "p4_g4_h3",
+      "baseline_directory": "artifacts/g2-p4trend/results/dfg_h3",
+      "result_sha256": "4204e15635d7ac8249e73a8f94bc9879d244d8db90afe0e2e42d66489f4a9c1f",
+      "manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b",
+      "immutable_mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+      "actual_Re20_phase_seconds": {
+        "geometry_spaces_fields_forms": 3.2418128373101354,
+        "stokes_lift": 9.926481517031789,
+        "stokes_checkpoint": 0.03577307518571615,
+        "newton_query": 53.12271108478308,
+        "independent_residual_and_Jacobian": 2.406776973977685,
+        "reference_diagnostics_and_export": 46.04557764530182,
+        "trace_certificate_and_reload": 61.459942700341344,
+        "total": 176.23907583393157
+      },
+      "actual_export_member_bytes": 178384869,
+      "prospective_per_parameter_variant_seconds": {
+        "baseline": 178.23907583393157,
+        "solver_100x": 191.51975360512733,
+        "quadrature_plus4": 265.63015146234204
+      },
+      "physics_admission_scope": "Only adopted P4/g4/h3 must be admitted; other states supply their own diagnostic contrasts, never donated metrics."
+    },
+    {
+      "state": "p3_g3_h3",
+      "baseline_directory": "artifacts/g2-h3/results/dfg_h3",
+      "result_sha256": "f8de091ebfe6f8abfbc4b2e010cb494e6af55d3a21b6af7c06bbb77ab18e59be",
+      "manifest_sha256": "e5348c6ea9993e7ce06df83b52dc84fecec5329a95666bfbb0d838d0fbdc0285",
+      "immutable_mesh_sha256": "0ef06a23785ab1ddc99532ac7d66cded77edce779a06dded53b53fc94dc46c62",
+      "layout_sha256": "3515037c0d752a7ce3f9599eca26967647606ab42d31342bd490ea3a5eb7fc7d",
+      "actual_Re20_phase_seconds": {
+        "geometry_spaces_fields_forms": 3.033504252322018,
+        "stokes_lift": 3.9477991918101907,
+        "stokes_checkpoint": 0.25306498166173697,
+        "newton_query": 22.55954472720623,
+        "independent_residual_and_Jacobian": 1.4991964474320412,
+        "reference_diagnostics_and_export": 45.897584547288716,
+        "trace_certificate_and_reload": 62.60925506800413,
+        "total": 139.79994921572506
+      },
+      "actual_export_member_bytes": 140477173,
+      "prospective_per_parameter_variant_seconds": {
+        "baseline": 141.79994921572506,
+        "solver_100x": 147.43983539752662,
+        "quadrature_plus4": 220.48483616051416
+      },
+      "physics_admission_scope": "Only adopted P4/g4/h3 must be admitted; other states supply their own diagnostic contrasts, never donated metrics."
+    },
+    {
+      "state": "p3_g4_h3",
+      "baseline_directory": "artifacts/g2-p4controls/results/dfg_p3_g4_h3",
+      "result_sha256": "9a6a97523d13e48096d64509182144d99b5fc508e35aa0a28c09929f58cd0ec3",
+      "manifest_sha256": "2f84a89dd4e787503f652003d399b019de84a6b20b32251daed88f75042422bf",
+      "immutable_mesh_sha256": "ded70bfcba414978641cd24ffa613208f8f4289668d1dde128dd7bc9b72f92ba",
+      "layout_sha256": "3515037c0d752a7ce3f9599eca26967647606ab42d31342bd490ea3a5eb7fc7d",
+      "actual_Re20_phase_seconds": {
+        "geometry_spaces_fields_forms": 3.0892619295045733,
+        "stokes_lift": 3.843030007556081,
+        "stokes_checkpoint": 0.018870449624955654,
+        "newton_query": 21.621084946207702,
+        "independent_residual_and_Jacobian": 1.5235191145911813,
+        "reference_diagnostics_and_export": 47.56446410343051,
+        "trace_certificate_and_reload": 62.00702075660229,
+        "total": 139.6672513075173
+      },
+      "actual_export_member_bytes": 140491953,
+      "prospective_per_parameter_variant_seconds": {
+        "baseline": 141.6672513075173,
+        "solver_100x": 147.07252254406922,
+        "quadrature_plus4": 220.74808099124658
+      },
+      "physics_admission_scope": "Only adopted P4/g4/h3 must be admitted; other states supply their own diagnostic contrasts, never donated metrics."
+    }
+  ],
+  "coverage": [
+    {
+      "Re": 15,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.25,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 17.5,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18.75,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 20,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "retained",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": "artifacts/g2-p4trend/results/dfg_h1",
+          "on_original_common_rule": true
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 21.25,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22.5,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.75,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 25,
+      "split": "train",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.875,
+      "split": "development",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16,
+      "split": "validation",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18,
+      "split": "validation",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22,
+      "split": "validation",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 24,
+      "split": "validation",
+      "state": "p4_g4_h1",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 14.99913846515119,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 15.865171934477985,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 21.57511184179718,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 15,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.25,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 17.5,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18.75,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 20,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "retained",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": "artifacts/g2-p4trend/results/dfg_h2",
+          "on_original_common_rule": true
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 21.25,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22.5,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.75,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 25,
+      "split": "train",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.875,
+      "split": "development",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16,
+      "split": "validation",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18,
+      "split": "validation",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22,
+      "split": "validation",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 24,
+      "split": "validation",
+      "state": "p4_g4_h2",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 46.25259270519018,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 49.209312081802636,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 68.89049592278232,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 15,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.25,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 17.5,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18.75,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 20,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "retained",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": "artifacts/g2-p4trend/results/dfg_h3",
+          "on_original_common_rule": true
+        },
+        "solver_100x": {
+          "status": "retained",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": "artifacts/g2-solverquad01/results/solver_100x",
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "retained",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": "artifacts/g2-solverquad01/results/quadrature_plus4",
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 21.25,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22.5,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.75,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 25,
+      "split": "train",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.875,
+      "split": "development",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16,
+      "split": "validation",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18,
+      "split": "validation",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22,
+      "split": "validation",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 24,
+      "split": "validation",
+      "state": "p4_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 178.23907583393157,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 191.51975360512733,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 265.63015146234204,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 15,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.25,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 17.5,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18.75,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 20,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "retained",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": "artifacts/g2-h3/results/dfg_h3",
+          "on_original_common_rule": true
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 21.25,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22.5,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.75,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 25,
+      "split": "train",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.875,
+      "split": "development",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16,
+      "split": "validation",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18,
+      "split": "validation",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22,
+      "split": "validation",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 24,
+      "split": "validation",
+      "state": "p3_g3_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.79994921572506,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.43983539752662,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.48483616051416,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 15,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.25,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 17.5,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18.75,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 20,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "retained",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": "artifacts/g2-p4controls/results/dfg_p3_g4_h3",
+          "on_original_common_rule": true
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 21.25,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22.5,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.75,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 25,
+      "split": "train",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16.875,
+      "split": "development",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 16,
+      "split": "validation",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 18,
+      "split": "validation",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 22,
+      "split": "validation",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    },
+    {
+      "Re": 24,
+      "split": "validation",
+      "state": "p3_g4_h3",
+      "variants": {
+        "baseline": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 141.6672513075173,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "solver_100x": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 147.07252254406922,
+          "source_directory": null,
+          "on_original_common_rule": false
+        },
+        "quadrature_plus4": {
+          "status": "direct_run_required",
+          "planning_seconds_before_contingency": 220.74808099124658,
+          "source_directory": null,
+          "on_original_common_rule": false
+        }
+      },
+      "independent_R": "reuse compatible same-rule retained replay where verified; otherwise fresh coefficient evaluation required, no extra PDE solve",
+      "noise_policy": "eta=S+Q+max(R,1e-12); no parameter or endpoint inheritance"
+    }
+  ],
+  "counts": {
+    "parameters": 15,
+    "baseline_state_rows": 75,
+    "total_baseline_and_S_Q_states": 225,
+    "retained_states": 7,
+    "pending_PDE_states": 218,
+    "new_common_rule_evaluations_before_replay": 220,
+    "fresh_replay_upper_count": 75
+  },
+  "common_rule": {
+    "source": "artifacts/g2-p4trend/results/dfg_h3/full_rule.npz",
+    "sha256": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+    "point_count": 1036497,
+    "policy": "Use every original P4 h3 point/weight, adopted-P4 denominator per parameter. Re-evaluate higher-quadrature coefficient states on this rule; preserve existing higher-rule comparison separately. No masking, pressure shifting or remeshing the shared training mesh."
+  },
+  "cost": {
+    "cross_job_speed_claim": false,
+    "purpose": "conservative allocation planning from actual phase evidence",
+    "contingency_multiplier": 1.25,
+    "solver_variant_extra_Newton_phase_fraction": 0.25,
+    "quad_compute_multiplier": 1.25,
+    "quad_readout_multiplier": 1.653061224489796,
+    "actual_fine_solver_result_sha256": "816056e2724843a67ffd3caeb3f4c997bfaf1793fffd4815e0e9895d3a2ca785",
+    "actual_fine_quad_result_sha256": "d628ea1266cc0bb4d854c71cedf7fc7f5f5133bcbd4081a4a7c0f931c492a7b3",
+    "pending_native_seconds_without_batch_speedup": 33863.4890993038,
+    "scalar_comparison_records": [
+      {
+        "path": "artifacts/g2-p4trend/results/p4_progress.json",
+        "sha256": "e5abebf9c0323fd1e37ee3ea3a352dc948ca822542695bb82b7a9a1721d512ba",
+        "stage": "comparison_dfg",
+        "seconds": 232.44676560349762,
+        "state_count": 3,
+        "seconds_per_state": 77.48225520116587
+      },
+      {
+        "path": "artifacts/g2-crossp02/results/crossp_progress.json",
+        "sha256": "84726a1d82da1c2b7316ab185c4e4010988de0b14d989c9dc7f115b8e78e2e02",
+        "stage": "comparison_p_geometry",
+        "seconds": 240.10180967766792,
+        "state_count": 3,
+        "seconds_per_state": 80.03393655922264
+      }
+    ],
+    "scalar_common_fields_and_replay_seconds": 29512.514106213348,
+    "existing_and_reserved_campaign_seconds": 6046.0,
+    "ledger_snapshot_sha256": "1d623b10474117e35c556d422327b46994a15525dad07b1a8ceb3fa9084e737f",
+    "export_batch_proof_max_seconds": 1200,
+    "combined_unoptimized_seconds": 70622.00320551715,
+    "campaign_ceiling_seconds": 43200,
+    "fits_unoptimized_before_any_ROM_training": false,
+    "ROM_training_and_paired_timing_reserve": "must be supplied by coordinator/ROM owner before admission; not silently zero",
+    "speedup_assumed": false
+  },
+  "critical_cost_work": [
+    {
+      "step": "review and run exact export-batch01 saved-state proof",
+      "source_commit": "d57f23e9a",
+      "status": "source review pending; no speed credited"
+    },
+    {
+      "step": "reuse existing certified original-rule element/reference-coordinate arrays on each immutable mesh; build native batched evaluation and fresh-process replay",
+      "status": "source/native equivalence and measured phase cost still required",
+      "scope": "Geometry mapping cache may be shared across parameters only because exact binary mesh and original physical rule hashes match; this is not parameterwise physics/noise inheritance."
+    },
+    {
+      "step": "regenerate budget from measured controls; split jobs to1100s runner/1200s allocation with reserve for collection",
+      "status": "required before population release"
+    }
+  ],
+  "disk": {
+    "free_bytes_at_generation": 21864095744,
+    "minimum_untouched_reserve_bytes": 10737418240,
+    "submission_free_guard_bytes": 23622320128,
+    "future_export_raw_envelope_bytes_before_new_common_fields": 27463661747.142857,
+    "future_common_fields_uncompressed_upper_bytes": 7338398760,
+    "current_duplicate_only_candidates": [
+      {
+        "path": "runs/g2-ladder01",
+        "bytes": 361147778,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-ladder01-collection.tar.gz",
+        "bytes": 169376967,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-ladder01/payload",
+        "bytes": 200024,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-ladder02",
+        "bytes": 482160214,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-ladder02-collection.tar.gz",
+        "bytes": 270993422,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-ladder02/payload",
+        "bytes": 200841,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-comparison01-collection.tar.gz",
+        "bytes": 378351003,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-comparison01/payload",
+        "bytes": 111808107,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-h3-collection.tar.gz",
+        "bytes": 958186562,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-h3/payload",
+        "bytes": 103647276,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-p4trend-collection.tar.gz",
+        "bytes": 600356581,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-p4trend/payload",
+        "bytes": 197041,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-p4controls-collection.tar.gz",
+        "bytes": 419377638,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-p4controls/payload",
+        "bytes": 194901,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-crossp01",
+        "bytes": 551082557,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-crossp01-collection.tar.gz",
+        "bytes": 467492183,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-crossp01/payload",
+        "bytes": 471674588,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-crossp02",
+        "bytes": 1052965809,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "runs/g2-crossp02-collection.tar.gz",
+        "bytes": 780665825,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      },
+      {
+        "path": "staging/g2-crossp02/payload",
+        "bytes": 471677129,
+        "precondition": "Verify matching RETENTION archive/member/chunk hashes and durable code-only mirror before duplicate-only removal; preserve canonical artifact evidence."
+      }
+    ],
+    "duplicate_only_reclaim_bytes": 7651756446,
+    "policy": "Current full-expanded-plus-archive-plus-chunks retention is too expensive for the whole population. Before population release, review archive-only lossless retention with pinned commit/chunk/member hashes, explicit recovery, and temporary rehydration; no Git history rewrite/pruning, no unique evidence deletion, no assumed dedup gain. Keep at most a bounded current batch warm; immutable inputs/dependencies need not be recopied into every future archive if their exact recoverable source is pinned and verified.",
+    "archive_only_source_or_recovery_ready": false
+  },
+  "domain_coverage": {
+    "measured_control_Re": 20,
+    "jobs": [
+      6617599,
+      6617721,
+      6617840
+    ],
+    "common_original_domain_comparison": "pending exact package after all three collections",
+    "scope": "Domain/outlet flow evidence is separate; disclose remeshing and compare pressure drops. No assumption that Re20 proves parameterwise domain adequacy. Coordinator must explicitly fix family domain-coverage policy before population release; additional direct controls would add to this budget, not be hidden."
+  },
+  "admission": false
+}

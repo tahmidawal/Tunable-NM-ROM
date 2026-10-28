@@ -35,6 +35,8 @@ def main():
     subprocess.run(['scp','-r','-o','ConnectTimeout=15','-o','ServerAliveInterval=15','-o','ServerAliveCountMax=3',str(P)+'/.','tufts-login:'+remote+'/'],check=True)
     verified=remote_call('cd '+shlex.quote(remote)+' && sha256sum -c SOURCE-SHA256SUMS && find . -type f | wc -l');(S/'REMOTE-VERIFICATION.txt').write_text(verified.stdout+verified.stderr)
     if verified.returncode or int(verified.stdout.splitlines()[-1])!=record['expected_regular_files']:raise ValueError('remote source verification failed')
+    record['pre_submit_local_free_bytes']=shutil.disk_usage(B).free;dump(S/'STAGING.json',record)
+    if record['pre_submit_local_free_bytes']<=22*1024**3:raise MemoryError('local reserve changed during staging; no submission')
     queue(S/'PRE-SUBMIT-QUEUE.txt')
     command='cd '+shlex.quote(remote)+' && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir='+shlex.quote(remote)+' '+shlex.quote(a.batch)
     result=remote_call(command);receipt={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':command,'returncode':result.returncode,'stdout':result.stdout,'stderr':result.stderr,'source_commit':commit,'remote_directory':remote,'single_submission':True,'release':a.release};dump(S/'SUBMISSION.json',receipt);print(json.dumps(receipt),flush=True)

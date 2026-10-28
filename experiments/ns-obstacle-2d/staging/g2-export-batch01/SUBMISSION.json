@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-28T23:07:24.178994+00:00",
+  "command": "cd /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-export-batch01 && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-export-batch01 g2/export-batch01/run.sh",
+  "returncode": 0,
+  "stdout": "6618469\n",
+  "stderr": "",
+  "source_commit": "d57f23e9a0f6cc56ed72596027881bc16e831329",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-export-batch01",
+  "single_submission": true,
+  "release": "root895625af8"
+}

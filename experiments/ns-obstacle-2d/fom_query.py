@@ -15,6 +15,11 @@ from reference_export import layout_record
 
 OUTPUT_CONTRACTS=('full_velocity_pressure_fields','fixed_probes','integrated_forces')
 
+class FOMQueryFailure(RuntimeError):
+    def __init__(self,message,invocation):
+        super().__init__(message);self.invocation=invocation
+
+
 class SteadyFOMQuery:
     def __init__(self, ng, mesh_path, cfg, common_lift, output_evaluator_factory):
         started=time.perf_counter()
@@ -76,22 +81,46 @@ class SteadyFOMQuery:
     def _array(vector):return vector.FV().NumPy()
 
     def query(self, Re, output_contract):
-        query_started=time.perf_counter()
+        context={'started':time.perf_counter(),'state_available':False,'converged':False,
+                 'history':[],'memory_checks':[],'work':{},'outputs_available':False}
+        try:return self._query_impl(Re,output_contract,context)
+        except Exception as exc:
+            stopped=time.perf_counter();solve=context.get('solve_started');output=context.get('output_started')
+            evidence={'Re':Re,'nu':context.get('nu'),'converged':context['converged'],
+                      'history':context['history'],'memory_checks':context['memory_checks'],
+                      'state_available':context['state_available'],'initialization':'cached_common_Stokes_lift',
+                      'lift_role':getattr(self.lift,'usage_role','G2_truth_admitted'),'pressure_gauge':'natural outlet, unshifted'}
+            if context['state_available']:evidence['state']=self._array(self.g.vec).copy()
+            work=context['work'];work['status']='query_failed_after_root_convergence' if context['converged'] else 'query_failed'
+            invocation={'output_contract':output_contract,'outputs':context.get('outputs'),'outputs_available':context['outputs_available'],
+                        'work':work,'evidence':evidence,'query_failed':True,'exception':repr(exc),'physical_admission':False,
+                        'peak_host_rss_bytes':int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)*1024,
+                        'peak_host_rss_scope':'process lifetime high-water at invocation failure; includes offline setup and prior invocations',
+                        'component_seconds':{'initialization':(solve if solve is not None else stopped)-context['started'],
+                            'coefficient_solve':0. if solve is None else (output if output is not None else stopped)-solve,
+                            'output_reconstruction':0. if output is None else context.get('output_seconds',stopped-output),
+                            'total_query':time.perf_counter()-context['started']},
+                        'scope':'failed actual invocation retained; no eligibility or fabricated outputs'}
+            raise FOMQueryFailure(str(exc),invocation) from exc
+
+    def _query_impl(self, Re, output_contract, context):
+        query_started=context['started']
         if not np.isfinite(Re) or not 15<=Re<=25 or output_contract not in OUTPUT_CONTRACTS:
             raise ValueError('outside registered Reynolds family/output contract')
         if hasattr(self.lift,'allows_Re') and not self.lift.allows_Re(Re):raise ValueError('query parameter outside reviewed candidate role')
-        cfg=self.cfg;nu=cfg['U']*cfg['D']/Re;self.nu.Set(nu)
+        cfg=self.cfg;nu=cfg['U']*cfg['D']/Re;context['nu']=nu;self.nu.Set(nu)
         # Every invocation starts from the identical cached lift. No warm state leaks.
         self._array(self.g.vec)[:]=self.lift.state_for_nu(nu)
+        context['state_available']=True
         work={'residual_evaluations':0,'Jacobian_assemblies':0,'factorizations':0,'linear_solves':0,
               'Newton_updates':0,'output_evaluations':0}
-        histories=[];memory=[]
+        histories=context['history'];memory=context['memory_checks'];context['work']=work
         def norm(vector):return float(np.linalg.norm((self._array(vector)/self.scale)[self.free]))
         def residual():
             r=self.g.vec.CreateVector();self.form.Apply(self.g.vec,r)
             work['residual_evaluations']+=1
             return r
-        solve_started=time.perf_counter()
+        solve_started=time.perf_counter();context['solve_started']=solve_started
         initialization_seconds=solve_started-query_started
         initial=norm(residual());denominator=max(initial,cfg['residual_floor'])
         converged=False
@@ -100,7 +129,7 @@ class SteadyFOMQuery:
             row={'iteration':iteration,'scaled_residual_norm':value,'residual_denominator':denominator,
                  'relative_residual':value/denominator};histories.append(row)
             if value/denominator<=cfg['nonlinear_relative_tolerance']:
-                converged=True;break
+                converged=True;context['converged']=True;break
             if iteration==cfg['newton_max']:break
             self.form.AssembleLinearization(self.g.vec);work['Jacobian_assemblies']+=1
             nnz=int(self.form.mat.nze)
@@ -129,16 +158,17 @@ class SteadyFOMQuery:
         if not converged:raise ArithmeticError('Newton iteration cap; no accepted solution')
         solve_seconds=time.perf_counter()-solve_started
         # Evaluator cost is included in the query; diagnostic scoring is external.
-        output_started=time.perf_counter()
+        output_started=time.perf_counter();context['output_started']=output_started
         outputs=self.evaluators[output_contract](*self.g.components,nu)
         output_seconds=time.perf_counter()-output_started
+        context.update(outputs=outputs,outputs_available=True,output_seconds=output_seconds)
         work['output_evaluations']+=1
         work['status']='root_converged'
         retained_state=self._array(self.g.vec).copy()
         peak_rss=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
         component_seconds={'initialization':initialization_seconds,'coefficient_solve':solve_seconds,
             'output_reconstruction':output_seconds,'total_query':time.perf_counter()-query_started}
-        return {'output_contract':output_contract,'outputs':outputs,'work':work,'component_seconds':component_seconds,
+        return {'output_contract':output_contract,'outputs':outputs,'outputs_available':True,'query_failed':False,'work':work,'component_seconds':component_seconds,
                 'peak_host_rss_bytes':peak_rss,'peak_host_rss_scope':'process lifetime high-water at invocation end; includes offline setup and prior invocations',
                 'evidence':{'state':retained_state,'Re':float(Re),'nu':nu,
                     'converged':converged,'history':histories,'memory_checks':memory,

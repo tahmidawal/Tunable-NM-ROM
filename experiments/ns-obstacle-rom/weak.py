@@ -59,7 +59,7 @@ class WeakRule:
         rc=np.einsum("n,nq,n->q",self.weights,self.scalar_tests,np.trace(du,axis1=1,axis2=2))
         return rm,rc
 
-    def tensor(self,chunk=1024,formulation="weak_residual_least_squares"):
+    def tensor_moments(self,chunk=1024,formulation="weak_residual_least_squares"):
         if formulation=="mixed_Galerkin" and not (
                 np.array_equal(self.tests,self.velocity) and
                 np.array_equal(self.test_gradient,self.velocity_gradient) and
@@ -84,7 +84,12 @@ class WeakRule:
         qg=np.einsum("n,nq,nr->qr",self.weights,self.scalar_tests,self.scalar_tests)
         ug=np.einsum("n,nia,nib->ab",self.weights,self.velocity,self.velocity)
         pg=np.einsum("n,na,nb->ab",self.weights,self.pressure,self.pressure)
-        return WeakOperator(tensor,viscous,pressure,plift,continuity,vg,qg,ug,pg,formulation)
+        return dict(convection=tensor,viscous=viscous,pressure=pressure,pressure_lift=plift,
+                    continuity=continuity,velocity_test_gram=vg,scalar_test_gram=qg,
+                    velocity_unknown_gram=ug,pressure_unknown_gram=pg)
+
+    def tensor(self,chunk=1024,formulation="weak_residual_least_squares"):
+        return WeakOperator(**self.tensor_moments(chunk,formulation),formulation=formulation)
 
 
 @dataclass

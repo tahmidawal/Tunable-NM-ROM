@@ -42,7 +42,8 @@ def sha_file(path):
 def source_digest():
     root = Path(__file__).parent
     names = ('pilot2d.py', 'MODEL-CONTRACT.json', 'bank.py', 'geometry.py', 'interpolation.py', 'metrics.py',
-             'quadrature.py', 'solver.py', 'spaces.py', 'weak.py', 'timing.py', 'train_bank.py')
+             'quadrature.py', 'solver.py', 'spaces.py', 'weak.py', 'timing.py', 'train_bank.py',
+             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py')
     return hashlib.sha256(json.dumps({n: sha_file(root/n) for n in names}, sort_keys=True).encode()).hexdigest()
 
 
@@ -91,10 +92,12 @@ def load_preparation(directory, release_path):
         raise ValueError('reference admission differs from released preparation')
     for name, digest in meta['coefficient_files'].items():
         if sha_file(folder/name) != digest: raise ValueError(f'prepared artifact hash mismatch: {name}')
+    arrays = {name: _read_arrays(folder/(name+'.npz'), CAPS['archive_bytes']) for name in ('boundary','training')}
     if meta.get('volume_storage') == 'point-block-v1':
-        raise RuntimeError('point-block production consumer requires separate reviewed integration; no dense fallback')
-    arrays = {name: _read_arrays(folder/(name+'.npz'), CAPS['archive_bytes'])
-              for name in ('volume', 'boundary', 'training')}
+        from point_store import PointVolumeStore
+        arrays['volume'] = PointVolumeStore(folder/'volume', meta['coefficient_files']['volume/manifest.json'])
+    else:
+        arrays['volume'] = _read_arrays(folder/'volume.npz', CAPS['archive_bytes'])
     if len(arrays['volume']['points_physical']) > CAPS['volume_points']:
         raise MemoryError('prepared full-rule point cap')
     return arrays, meta, release
@@ -204,6 +207,9 @@ def build_model(kind, prefix, arrays, metadata, probes, bank=None):
     """Same FE pressure/supremizers/lift/tests for bank and POD; no physical pass flag."""
     if kind not in ('bank', 'POD') or prefix not in PREFIXES:
         raise ValueError('unregistered method or prefix')
+    if hasattr(arrays['volume'], 'iter_blocks'):
+        from pilot2d_blocked import build_block_model
+        return build_block_model(kind, prefix, arrays, metadata, probes, bank)
     start = time.perf_counter(); volume = arrays['volume']; training = arrays['training']
     pressure_count = min(prefix, volume['pressure'].shape[-1])
     if kind == 'bank' and (bank is None or bank.geometry != CHANNEL or bank.rank < prefix):
@@ -260,6 +266,7 @@ def build_model(kind, prefix, arrays, metadata, probes, bank=None):
 def galerkin_operator(model):
     """Mandatory square POD control; test space equals the actual enriched trial space."""
     if model.kind != 'POD': raise ValueError('registered mixed Galerkin comparator is POD')
+    if hasattr(model.rule, 'galerkin'): return model.rule.galerkin()
     return replace(model.rule, tests=model.rule.velocity,
         test_gradient=model.rule.velocity_gradient, scalar_tests=model.rule.pressure).tensor(formulation='mixed_Galerkin')
 
@@ -322,17 +329,23 @@ def fit_candidates(model, points_dimensionless, supports=QUADRATURE_SUPPORTS, ma
     """Fit once from reconstructed training states only; retain every failed attempt."""
     if tuple(supports) != QUADRATURE_SUPPORTS:
         raise ValueError('only the frozen ordered support sequence is allowed')
-    moments = output_moments(model.rule, model.training_coefficients[:, :model.operator.nv],
-                             points_dimensionless, max_bytes=max_bytes)
+    blocked = hasattr(model.rule, 'iter_rules')
+    if blocked:
+        from quadrature_blocked import MemoryMomentBlocks,fit_positive_blocks
+        moments = MemoryMomentBlocks(model.rule, model.training_coefficients[:, :model.operator.nv], points_dimensionless)
+    else:
+        moments = output_moments(model.rule, model.training_coefficients[:, :model.operator.nv],
+                                 points_dimensionless, max_bytes=max_bytes)
     results = []
     for support in supports:
         try:
-            fit = fit_positive(moments, model.rule.weights, support)
+            fit = (fit_positive_blocks if blocked else fit_positive)(moments, model.rule.weights, support)
         except Exception as exc:
             fit = {'passed': False, 'exception': repr(exc)}
         row = {'support_cap': support, 'fit': fit, 'operator': None, 'physical_admission': False}
         if fit['passed']:
-            row['operator'] = convection_candidate(model.operator, model.rule, fit)
+            row['operator'] = (model.rule.fitted_convection(model.operator, fit) if blocked else
+                               convection_candidate(model.operator, model.rule, fit))
         results.append(row)
     return results
 

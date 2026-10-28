@@ -78,6 +78,10 @@ class PointVolumeStore:
         if sha(path)!=expected_manifest_sha256:raise ValueError('point-store manifest hash')
         self.manifest=json.loads(path.read_text());m=self.manifest
         if m['schema']!='ns-obstacle-point-volume-v1' or m['all_original_points'] is not True:raise ValueError('point-store schema')
+        if type(m['points']) is not int or m['points']<=0 or type(m['block_points']) is not int or m['block_points']<=0:
+            raise ValueError('positive integer point counts required')
+        if m['units']!={'values':'dimensionless','gradients':'d/d(x/D)','weights':'dx/D**2'}:
+            raise ValueError('point-store units differ')
         self.max_payload_bytes=max_payload_bytes;self.point_count=m['points']
         if m['actual_compressed_bytes']>max_total_bytes or m['projected_expanded_bytes']>max_total_bytes:raise MemoryError('point-store total size cap')
         actual=0
@@ -89,9 +93,16 @@ class PointVolumeStore:
         if actual!=m['actual_compressed_bytes'] or actual>max_total_bytes:raise ValueError('point-store size differs')
         if m['geometry_file'] not in m['files']:raise ValueError('unbound geometry file')
         self.geometry=read_npz(self.directory/m['geometry_file'],max_payload_bytes)
-        if any(len(a)!=self.point_count for a in self.geometry.values()):raise ValueError('geometry point count differs')
+        shapes={'points_physical':(self.point_count,2),'points_dimensionless':(self.point_count,2),
+                'weights_dimensionless':(self.point_count,),'jacobians_physical':(self.point_count,2,2)}
+        if set(self.geometry)!=set(shapes) or any(self.geometry[k].shape!=shape for k,shape in shapes.items()):
+            raise ValueError('geometry keys/shapes differ')
+        if np.min(self.geometry['weights_dimensionless'])<=0 or np.min(np.linalg.det(self.geometry['jacobians_physical']))<=0:
+            raise ValueError('positive mapped weights/Jacobians required')
         expected_ranges=None
         for name,field in m['fields'].items():
+            if type(field['columns']) is not int or field['columns']<=0 or type(field['vector']) is not bool:
+                raise ValueError('positive field columns and explicit vector flag required')
             cursor=0;ranges=[]
             for row in field['blocks']:
                 if row['start']!=cursor or not cursor<row['end']<=self.point_count:raise ValueError('incomplete/reordered field points')
@@ -101,6 +112,9 @@ class PointVolumeStore:
             if expected_ranges is not None and ranges!=expected_ranges:raise ValueError('different field partitions')
             expected_ranges=ranges
         self.ranges=expected_ranges
+
+    def __getitem__(self,key):
+        return self.geometry[key]
 
     def iter_blocks(self):
         for index,(start,end) in enumerate(self.ranges):

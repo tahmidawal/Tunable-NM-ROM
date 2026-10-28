@@ -40,9 +40,27 @@ def main():
     gaps={}
     for kind in ('bank','POD'):
         model=build_model(kind,2,arrays,metadata,probes,bank)
+        class MemoryBlocks:
+            point_count=len(volume['points_physical'])
+            manifest={'fields':{'pressure':{'columns':8},'pod_velocity':{'columns':8}}}
+            def __getitem__(self,key):return volume[key]
+            def iter_blocks(self):
+                for start in range(0,self.point_count,17):
+                    end=min(self.point_count,start+17)
+                    yield start,end,{key:value[start:end] for key,value in volume.items()}
+        blocked=build_model(kind,2,dict(arrays,volume=MemoryBlocks()),metadata,probes,bank)
+        for name,value in vars(model.operator).items():
+            if isinstance(value,np.ndarray):np.testing.assert_allclose(value,getattr(blocked.operator,name),rtol=1e-11,atol=1e-12)
+        for location in model.fields:
+            for name,value in model.fields[location].items():np.testing.assert_allclose(value,blocked.fields[location][name],rtol=1e-13,atol=1e-13)
+        exact_fit={'passed':True,'support':list(range(96)),'weights':volume['weights_dimensionless'].tolist()}
+        np.testing.assert_allclose(blocked.rule.fitted_convection(blocked.operator,exact_fit).convection,model.operator.convection,rtol=1e-12,atol=1e-12)
         state=rng.normal(size=model.operator.nv+model.operator.np)*.01
         gap=float(np.max(np.abs(np.r_[model.rule.direct(state,.05)]-model.operator.residual(state,.05,False))))
         assert gap<1e-10
+        np.testing.assert_allclose(np.r_[blocked.rule.direct(state,.05)],np.r_[model.rule.direct(state,.05)],rtol=1e-12,atol=1e-12)
+        np.testing.assert_allclose(blocked.query(20.,'integrated_forces')['outputs']['force_coefficient'],
+            model.query(20.,'integrated_forces')['outputs']['force_coefficient'],rtol=1e-9,atol=1e-10)
         assert jacobian_check(model.operator,state,.05,np.ones(len(state)))['passed']
         f=model.fields['boundary']; ids=boundary['labels']=='obstacle'
         gradient=f['lift_gradient']+f['velocity_gradient']@state[:model.operator.nv]
@@ -81,6 +99,7 @@ def main():
             assert arm['quadrature_reached_state_check']['numerical_checks_passed']
             assert arm['quadrature_reached_state_check']['solver_statuses'] == {'full':'max_iterations','fitted':'stationary'}
             assert not arm['quadrature_reached_state_check']['passed'] and not arm['eligible_accuracy']
+            np.testing.assert_allclose(galerkin_operator(blocked).convection,galerkin_operator(model).convection,rtol=1e-12,atol=1e-12)
             op=galerkin_operator(model)
             assert op.residual(state,.05).shape==state.shape
             for index,re in enumerate(TRAIN_RE):

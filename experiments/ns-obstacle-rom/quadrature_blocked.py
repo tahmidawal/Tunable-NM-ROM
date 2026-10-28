@@ -101,6 +101,7 @@ def fit_positive_blocks(blocks,full_weights,max_support,relative_tolerance=1e-8,
     target_norm=max(float(np.linalg.norm(target)),1e-12)
     selected=[]; columns=[]; weights=np.empty(0); history=[]; residual=target.copy();reason='support_cap'
     for count in range(max_support):
+        iteration_started=time.perf_counter()
         score=np.empty(blocks.points)
         for start,end,a in blocks.iter_blocks():
             matrix=a/scale[:,None]; corr=matrix.T@residual
@@ -114,13 +115,17 @@ def fit_positive_blocks(blocks,full_weights,max_support,relative_tolerance=1e-8,
         except RuntimeError:
             reason='nnls_iteration_limit';break
         residual=target-active@weights; relative=float(np.linalg.norm(residual)/target_norm)
-        history.append({'support':len(selected),'relative_moment_residual':relative})
+        history.append({'support':len(selected),'relative_moment_residual':relative,
+                        'iteration_seconds':time.perf_counter()-iteration_started})
         if relative<=relative_tolerance:
             reason='fit_tolerance';break
     common={'selected':selected,'history':history,'max_support':max_support,
         'relative_tolerance':relative_tolerance,'kkt_tolerance':kkt_tolerance,
         'row_scaling':scale.tolist(),'training_scope':'decoder output/gradient moments only',
-        'moment_manifest_sha256':_hash(blocks.directory/'manifest.json'),
+        'moment_manifest_sha256':(blocks.manifest_sha256 if hasattr(blocks,'manifest_sha256') else _hash(blocks.directory/'manifest.json')),
+        'moment_manifest':blocks.manifest,
+        'normalized_target':target.copy(),
+        'selected_normalized_columns':np.column_stack(columns) if columns else np.empty((blocks.rows,0)),
         'all_points_searched':blocks.points,'elapsed_seconds':time.perf_counter()-started,
         'summation_policy':'increasing contiguous point blocks; floating-point sums may differ from dense order'}
     if len(weights)!=len(selected):
@@ -137,3 +142,49 @@ def fit_positive_blocks(blocks,full_weights,max_support,relative_tolerance=1e-8,
         selected_weights=weights.tolist(),support=np.asarray(selected)[positive].tolist(),
         weights=weights[positive].tolist(),relative_moment_residual=relative,kkt=kkt,
         kkt_scope='restricted selected-support NNLS; no full-dictionary optimality claim')
+
+
+class MemoryMomentBlocks:
+    """Derived all-point workspace, hash-retained without redundant disk matrices."""
+    def __init__(self,rule,coefficients,points,max_block_bytes=2**28,
+                 max_matrix_bytes=8*2**30,max_process_bytes=16*2**30):
+        import resource
+        self.points=len(rule.weights);self.arrays=[];records=[];cursor=0;rows=None
+        started=time.perf_counter()
+        for start,end,local in rule.iter_rules():
+            if start!=cursor or not start<end<=self.points:raise ValueError('complete ordered moment points required')
+            if rows is None:
+                d=local.lift.shape[1];rows=1+d+len(coefficients)*(d+d*d+local.tests.shape[-1])
+                matrix_bytes=rows*self.points*8
+                # Account for original blocks, scaled/absolute/block-building work,
+                # full correlation/norm vectors and the largest selected NNLS matrix.
+                workspace=4*max_block_bytes+4*self.points*8+4*rows*2560*8
+                current=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
+                if matrix_bytes>max_matrix_bytes or current+matrix_bytes+workspace>max_process_bytes:
+                    raise MemoryError('full derived moment workspace exceeds reviewed capacity')
+                self.capacity={'matrix_bytes':matrix_bytes,'workspace_envelope_bytes':workspace,
+                    'preconstruction_peak_rss_bytes':current,'process_cap_bytes':max_process_bytes,
+                    'matrix_cap_bytes':max_matrix_bytes,'block_cap_bytes':max_block_bytes}
+            matrix=output_moments(local,coefficients,points[start:end],max_bytes=max_block_bytes)
+            if matrix.shape!=(rows,end-start) or not np.isfinite(matrix).all():raise ValueError('invalid full moment block')
+            matrix.setflags(write=False);self.arrays.append((start,end,matrix))
+            records.append({'start':start,'end':end,'shape':list(matrix.shape),'dtype':str(matrix.dtype),
+                            'sha256':hashlib.sha256(matrix.tobytes(order='C')).hexdigest()})
+            cursor=end
+        if cursor!=self.points or rows is None:raise ValueError('incomplete moment matrix')
+        self.rows=rows
+        self.manifest={'schema':'ns-obstacle-derived-memory-moments-v1','points':self.points,'rows':rows,
+            'blocks':records,'all_original_points':True,'storage':'derived RAM workspace; no unique source discarded',
+            'coefficient_shape':list(np.asarray(coefficients).shape),
+            'coefficient_sha256':hashlib.sha256(np.asarray(coefficients).tobytes()).hexdigest(),
+            'source_sha256':_hash(Path(__file__)),
+            'moment_source_sha256':_hash(Path(__file__).with_name('quadrature.py')),
+            'numpy_version':np.__version__,'capacity':self.capacity,
+            'generation_seconds':time.perf_counter()-started,'physical_admission':False}
+        self.manifest_sha256=hashlib.sha256(json.dumps(self.manifest,sort_keys=True).encode()).hexdigest()
+    def iter_blocks(self):
+        yield from self.arrays
+    def column(self,index,scale):
+        for start,end,a in self.arrays:
+            if start<=index<end:return np.array(a[:,index-start]/scale,copy=True)
+        raise IndexError(index)

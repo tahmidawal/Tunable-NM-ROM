@@ -37,5 +37,15 @@
   "physical_admission": false,
   "remote_cleanup": "completed_exact_duplicate_only_after_verification_and_durable_mirror",
   "retention_commit": "f0e3580b1",
-  "retention_mirror": "368c16ec9"
+  "retention_mirror": "368c16ec9",
+  "local_duplicate_cleanup": {
+    "utc": "2026-10-28T21:39:26.707605+00:00",
+    "removed_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/collections/native-block02",
+    "removed_whole_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/collections/native-block02.collection.tar.gz",
+    "allocated_bytes_recovered": 601444352,
+    "verified_archive_sha256": "c1d3eb40a7c50f3f6f5a628a201952241d718f12b1a999c83bfbf708b62bd599",
+    "recovery": "Scientific outputs remain expanded here. Concatenate ordered chunks, verify archive_sha256, extract original paths and verify COLLECTION-SHA256SUMS.",
+    "unique_evidence_removed": false,
+    "preflight_record": "checks/native-collection-cleanup-preflight.json"
+  }
 }

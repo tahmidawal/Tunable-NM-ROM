@@ -107,6 +107,7 @@ class SteadyFOMQuery:
         # Evaluator cost is included in the query; diagnostic scoring is external.
         outputs=self.evaluators[output_contract](*self.g.components)
         work['output_evaluations']+=1
+        work['status']='root_converged'
         return {'output_contract':output_contract,'outputs':outputs,'work':work,
                 'evidence':{'state':self._array(self.g.vec).copy(),'Re':float(Re),'nu':nu,
                     'converged':converged,'history':histories,'memory_checks':memory,

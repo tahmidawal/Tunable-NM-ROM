@@ -1,0 +1,1358 @@
+You are an independent numerical-analysis and scientific-computing consultant. Review this exact unexecuted 2D Navier–Stokes normal-orientation repair before a bounded control retry. Tools are disabled: all relevant code/data are supplied. Do not invent execution or claim to inspect omitted files. Give READY or NEEDS-FIXES, concrete actual defects (with code locations), and scope/remaining runtime tests. Focus realistic PDE/normal/API/numerical errors, not fabricated-file attacks. Another Codex reviewer is reviewing independently; its verdict is not included.
+
+Physics: fixed rectangle [0,2.2]×[0,.41] minus circle center(.2,.2), radius.05. Fluid outward normal points into obstacle. rho1, kinematic pressure. Advective weak mixed form nu grad(u):grad(v) - p div(v) + q div(u), inlet/wall/obstacle essential velocity, gradient traction (nu grad(u)-pI)n_fluid=0 at outlet, no pressure pin/shift. Physical solid force=-integral sigma n_fluid, sigma=-pI+nu(grad(u)+grad(u)^T). Actual curved mesh normals must be preserved, not replaced by analytic sphere/circle normals. Computed boundary derivatives use BoundaryFromVolumeCF before composing with ordinary BND normals.
+
+Context: shared native API checks and an analytic empty channel passed; no nonlinear obstacle solve has completed or reference/training been admitted. First obstacle control stopped before solve because raw normal was not fluid-outward; original mesh/vector was not saved. A new unchanged-geometry diagnostic saved all samples and compared raw BND, ordinary Integrate, and constant-P0 LinearForm ds(skeleton=True) using adjacent volume facets. This is measured on the new mesh only. All105 raw circle samples point toward adjacent fluid; all315 positive-normal offsets are in fluid, all315 negative offsets outside. Mesh and analytic membership agree. All20335 volume samples have positive weights/determinants and exclude the analytic obstacle. Area error1.6032556467725343e-7. Ordinary Integrate and raw match within2.22e-15. Raw/ordinary boundary position-normal sum1.8197082499768376 versus2V1.7882917500231206: relative defect.017567882843115952. Facet and all-element-boundary sums1.7882917500231381, defect9.80909507011408e-15. Circle radial moments ordinary+.01570824997684975/facet-.015708249976849747. Closure alone misses the sign.
+
+Pinned NGSolve6.2.2608 source shows ordinary boundary Integrate uses boundary transforms; LinearForm with ds(label,skeleton=True) instead uses an adjacent volume transform and facet normal. The chosen installer/layout and scalar extraction already passed runtime. Python3.13/NumPy2.5 on cluster, f64/highest, private pinned libraries; CPU FE under one GPU allocation16CPU64GiB20min. No local native FE is run. The frozen G1 repair starts from executed9d431a0cc and excludes newer G2 producer additions. Geometry/physical thresholds and exact G1 configs unchanged; duplicate thread setup removed as an independent documented repair.
+
+Proposed helper infers ±1 per boundary label from raw normal versus its unique adjacent volume triangle's mapped interior point. It rejects ambiguity/nonunit/mixed signs, applies factors only in ordinary BND contexts, and verifies analytic orientation and native facet moments. Native volume-facet normals receive no factors. Audit every force/flux/balance/load/export consumer, topology limitations, double-flip/wrapper risks and whether runtime certificates meaningfully protect this narrow fixed geometry. The old manufactured trace metric still compares to analytic target; its prospective G2 correction is excluded. Known later reference/mesh/p/tolerance/domain tests and native replay remain required regardless of this source review.
+
+3D is NOT released by this review: its new diagnostic has unresolved curved-volume/facet identity discrepancies. Do not generalize this 2D repair to 3D. No threshold relaxation or search for favorable method results is authorized.
+
+Exact source commit: 26e9b8272309a28d0f006fe8a6aa688f6a39f456
+
+
+===== experiments/ns-obstacle-2d/oriented_normals.py =====
+"""Verified fluid-outward normals for ordinary 2D boundary transformations.
+
+NGSolve's raw BND normal follows the geometry edge orientation. Preserve that
+curved unit normal and multiply it by a verified boundary-wise sign. This helper
+is never used inside volume-facet integration, whose normals are already oriented
+by their adjacent volume element. No analytic normal replaces a curved normal.
+"""
+from __future__ import annotations
+import json
+import hashlib
+import math
+from pathlib import Path
+
+import numpy as np
+from scalars import scalar_value
+
+API_TOL = 1e-10
+MIN_WITNESS_COSINE = 1e-8
+
+
+def infer_label_factors(samples):
+    """Infer signs from uncorrected normals and interior adjacency witnesses."""
+    factors = {}
+    for row in samples:
+        normal = np.asarray(row['raw_normal'], dtype=np.float64)
+        inward = np.asarray(row['adjacent_volume_point'], dtype=np.float64)-np.asarray(row['point'], dtype=np.float64)
+        if normal.shape != (2,) or inward.shape != (2,) or not np.isfinite(normal).all() or not np.isfinite(inward).all():
+            raise ValueError('invalid normal or adjacent-volume witness')
+        norm = float(np.linalg.norm(normal)); distance = float(np.linalg.norm(inward))
+        if abs(norm-1) > API_TOL or distance <= 0:
+            raise ValueError('nonunit normal or degenerate adjacent-volume witness')
+        cosine = float(normal@inward/(norm*distance))
+        if abs(cosine) <= MIN_WITNESS_COSINE:
+            raise ValueError('adjacent-volume direction is too nearly tangential')
+        factor = -1 if cosine > 0 else 1
+        label = row['label']
+        if label in factors and factors[label] != factor:
+            raise ValueError(f'normal orientation is not constant on boundary label {label}')
+        factors[label] = factor
+        row['raw_normal_dot_toward_adjacent_volume'] = float(normal@inward)
+        row['raw_normal_cosine_toward_adjacent_volume'] = cosine
+        row['orientation_factor'] = factor
+        row['fluid_outward_normal'] = (factor*normal).tolist()
+    if not factors:
+        raise ValueError('no boundary orientation samples')
+    return factors
+
+
+def fluid_outward_normal(mesh, center=None, order=12, evidence_path=None):
+    """Return an ordinary-BND-only CF and its source-independent certificate.
+
+Sign selection uses the unique topologically adjacent triangle's mapped interior
+point. Analytic signs, closed components and a separate volume-facet LinearForm
+then verify the choice. Unsupported geometry, inconsistent signs, or failed
+verification stop the call; no sign is guessed from a boundary's name.
+    """
+    import ngsolve as ng
+    samples = []
+    record = {'schema': 'ns-obstacle-2d-fluid-outward-normal-v1', 'passed': False,
+              'helper_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+              'scope': 'ordinary BND mapped points and ordinary BND integrals only',
+              'method': 'raw curved normal times topology-inferred, independently verified per-label sign',
+              'volume_facet_normals_modified': False, 'analytic_normals_substituted': False,
+              'order': max(6, int(order)), 'threshold': API_TOL,
+              'minimum_adjacency_witness_cosine': MIN_WITNESS_COSINE,
+              'samples': samples}
+    def persist():
+        if evidence_path is not None:
+            Path(evidence_path).write_text(json.dumps(record, indent=2, allow_nan=False)+'\n')
+    try:
+        qorder = record['order']
+        raw = ng.specialcf.normal(2)
+        directions = {'inlet': np.array([-1., 0.]), 'outlet': np.array([1., 0.]),
+                      'wall_top': np.array([0., 1.]), 'wall_bottom': np.array([0., -1.])}
+        expected_labels = set(directions) | ({'obstacle'} if center is not None else set())
+        if set(mesh.GetBoundaries()) != expected_labels:
+            raise ValueError('unexpected boundary labels for fixed channel geometry')
+        adjacency, interior = {}, {}
+        for element in mesh.Elements(ng.VOL):
+            vertices = tuple(int(v.nr) for v in element.vertices)
+            if len(vertices) != 3:
+                raise ValueError('normal helper requires the declared triangular mesh')
+            for i in range(3):
+                edge = tuple(sorted((vertices[i], vertices[(i+1) % 3])))
+                adjacency.setdefault(edge, []).append(int(element.nr))
+            tr = mesh.GetTrafo(element)
+            ir = ng.IntegrationRule(element.type, 0)
+            ip = ir[0]
+            mip = tr(ip)
+            interior[int(element.nr)] = np.array(mip.point, dtype=np.float64, copy=True)
+            if not np.isfinite(interior[int(element.nr)]).all():
+                raise ValueError('invalid mapped interior point')
+        for element in mesh.Elements(ng.BND):
+            edge = tuple(sorted(int(v.nr) for v in element.vertices))
+            neighbors = adjacency.get(edge, [])
+            if len(neighbors) != 1:
+                raise ValueError('boundary does not have exactly one adjacent fluid element')
+            tr = mesh.GetTrafo(element)
+            ir = ng.IntegrationRule(element.type, qorder)
+            for index, ip in enumerate(ir):
+                mip = tr(ip)
+                point = np.array(mip.point, dtype=np.float64, copy=True)
+                normal = np.array(raw(mip), dtype=np.float64, copy=True)
+                weight = float(ip.weight*mip.measure)
+                if not np.isfinite(point).all() or not math.isfinite(weight) or weight <= 0:
+                    raise ValueError('invalid boundary point or weight')
+                samples.append({'element': int(element.nr), 'point_in_element': index,
+                    'label': str(element.mat), 'point': point.tolist(), 'weight': weight,
+                    'raw_normal': normal.tolist(), 'adjacent_volume_element': neighbors[0],
+                    'adjacent_volume_point': interior[neighbors[0]].tolist()})
+        # Save raw data before inference or checks can fail.
+        persist()
+        factors = infer_label_factors(samples)
+        record['factors'] = factors
+        if set(factors) != expected_labels:
+            raise ValueError('missing sampled boundary label')
+        record['analytic_checks'] = {}
+        for label in expected_labels:
+            rows = [row for row in samples if row['label'] == label]
+            normals = np.array([row['fluid_outward_normal'] for row in rows])
+            if label in directions:
+                error = float(np.max(np.linalg.norm(normals-directions[label], axis=1)))
+                record['analytic_checks'][label] = {'maximum_vector_error': error}
+                if error > API_TOL:
+                    raise ArithmeticError('oriented outer normal disagrees with analytic direction')
+            else:
+                radial = np.array([row['point'] for row in rows])-np.array(center)
+                length = np.linalg.norm(radial, axis=1)
+                if np.any(length <= 0):
+                    raise ArithmeticError('invalid radial direction')
+                dots = np.sum(normals*radial/length[:, None], axis=1)
+                record['analytic_checks'][label] = {'radial_dot_range': [float(dots.min()), float(dots.max())],
+                                                   'unchanged_maximum_dot_threshold': -.99}
+                if dots.max() > -.99:
+                    raise ArithmeticError('oriented obstacle normal fails unchanged radial sign check')
+        factor_cf = mesh.BoundaryCF({label: ng.CF(factor) for label, factor in factors.items()})
+        oriented = factor_cf*raw
+        # Use a verified constant-one test to access the actual volume-facet
+        # integration path. Never put factor_cf or oriented into this path.
+        V = ng.L2(mesh, order=0, dgjumps=True)
+        one = ng.GridFunction(V); one.Set(ng.CF(1))
+        coefficients = np.array(one.vec.FV().NumPy(), dtype=np.float64, copy=True)
+        test = V.TestFunction()
+        constant_error = 0.
+        for element in mesh.Elements(ng.VOL):
+            tr = mesh.GetTrafo(element); ir = ng.IntegrationRule(element.type, 0)
+            ip = ir[0]; mip = tr(ip)
+            constant_error = max(constant_error, abs(scalar_value(one(mip), 'normal_P0_constant')-1.))
+        record['constant_test_error'] = constant_error
+        if constant_error > API_TOL:
+            raise ArithmeticError('facet integration test is not constant one')
+        x = ng.CF((ng.x, ng.y))
+        reference_center = (0., 0.) if center is None else tuple(center)
+        radial_cf = x-ng.CF(reference_center)
+        def terms(n):
+            return {'normal_x': n[0], 'normal_y': n[1],
+                    'position_dot_normal': ng.InnerProduct(x, n),
+                    'radial_dot_normal': ng.InnerProduct(radial_cf, n)}
+        ordinary_terms, facet_terms = terms(oriented), terms(raw)
+        moments = {}; record['moment_checks'] = moments
+        for label in sorted(expected_labels):
+            rows = [row for row in samples if row['label'] == label]
+            measure = sum(row['weight'] for row in rows)
+            coordinate_scale = max(1., max(np.linalg.norm(row['point']) for row in rows),
+                                   max(np.linalg.norm(np.array(row['point'])-reference_center) for row in rows))
+            normal_sum = np.sum([row['weight']*np.array(row['fluid_outward_normal']) for row in rows], axis=0)
+            entry = {'measure': measure, 'sampled_normal_integral': normal_sum.tolist(), 'moments': {}}
+            moments[label] = entry
+            for name in ordinary_terms:
+                ordinary = scalar_value(ng.Integrate(ordinary_terms[name], mesh,
+                    definedon=mesh.Boundaries(label), order=qorder), 'oriented_normal_moment')
+                form = ng.LinearForm(V)
+                form += facet_terms[name]*test*ng.ds(label, skeleton=True, bonus_intorder=qorder)
+                form.Assemble()
+                facet = float(coefficients@np.array(form.vec.FV().NumPy(), dtype=np.float64, copy=True))
+                scale = measure*(1. if name.startswith('normal_') else coordinate_scale)
+                error = abs(ordinary-facet)/scale
+                entry['moments'][name] = {'ordinary': ordinary, 'volume_facet': facet,
+                                          'scale': scale, 'relative_difference': error}
+                if not math.isfinite(error) or error > API_TOL:
+                    raise ArithmeticError('ordinary oriented normal does not match volume-facet moments')
+        volume = scalar_value(ng.Integrate(ng.CF(1), mesh, order=qorder), 'normal_geometry_volume')
+        surface_sum = sum(row['moments']['position_dot_normal']['ordinary'] for row in moments.values())
+        defect = abs(surface_sum-2*volume)/(2*volume)
+        record['divergence_theorem'] = {'boundary_position_dot_normal': surface_sum,
+            'twice_volume': 2*volume, 'relative_defect': defect}
+        if not math.isfinite(defect) or defect > API_TOL:
+            raise ArithmeticError('oriented normal violates the volume divergence theorem')
+        groups = {'outer_rectangle': set(directions)}
+        if center is not None:
+            groups['obstacle'] = {'obstacle'}
+        record['closed_components'] = {}
+        for name, labels in groups.items():
+            total = np.sum([moments[label]['sampled_normal_integral'] for label in labels], axis=0)
+            measure = sum(moments[label]['measure'] for label in labels)
+            error = float(np.linalg.norm(total))/measure
+            record['closed_components'][name] = {'normal_integral': total.tolist(), 'measure': measure,
+                                                  'relative_defect': error}
+            if not math.isfinite(error) or error > API_TOL:
+                raise ArithmeticError('oriented closed boundary normal sum failed')
+        record['passed'] = True
+        persist()
+        return oriented, record
+    except Exception as exc:
+        record['error'] = repr(exc)
+        persist()
+        raise
+
+
+===== experiments/ns-obstacle-2d/repairs/normal01/REVIEW-NOTE.md =====
+# Verified fluid-outward boundary orientation repair
+
+This is an unexecuted G1 source candidate. It preserves the existing geometry,
+finite-element spaces, equations, physical acceptance thresholds and exact
+control-configuration bytes. `fom.py` and `preflight.py` start from the executed
+smoke06 source, not the later unexecuted G2 producer.
+
+The new `oriented_normals.py` retains NGSolve's curved boundary normal and
+infers its orientation factor from the unique topologically adjacent fluid
+triangle's mapped interior point. It rejects nonunit vectors, degenerate or
+nearly tangential witnesses, and mixed signs under one boundary label. It never
+selects a sign from a boundary's name or substitutes an analytic radial normal.
+
+The candidate then checks the inferred normal against independent information:
+outer-wall directions, the unchanged obstacle radial-sign requirement, closed
+component sums, and ordinary boundary moments versus the actual volume-facet
+`LinearForm` path. The divergence theorem checks the total oriented boundary.
+Closure is only a supplementary check; it cannot select the obstacle's sign.
+Raw samples are saved before inference, and failed certificates are retained.
+
+Only ordinary boundary transformations receive the `BoundaryCF` sign factors.
+The volume-facet control uses native normals without those factors, preventing
+double correction. The public helper returns one ordinary-boundary coefficient
+function, used by the FOM's manufactured outlet load, force integration, mass
+flux, energy and momentum balances, and boundary quadrature exports. Exports
+retain raw normals and their orientation factors beside the oriented normals.
+The presolve mapped checks receive that same verified coefficient function.
+
+The helper is deliberately limited to the declared fixed triangular
+channel/circle meshes. Mapped interior-point direction can become ambiguous on
+a distorted cell; ambiguity stops the helper. Constant sign across a label is
+verified at the diagnostic quadrature points, not asserted for arbitrary
+geometry. Independent analytic and volume-facet checks constrain the inference.
+The native helper and `BoundaryCF` combination still require the reviewed run.
+
+The helper's extra vector assemblies are reference/control setup costs. They
+are not comparative query timings and must not be charged repeatedly only to a
+future FOM benchmark when a validated common mesh can reuse its certificate.
+
+All old G1 thresholds remain active, including the existing manufactured trace
+comparison against its analytic target. This repair does not silently replace
+that metric with a comparison against the prescribed FE trace; the separate G2
+producer design addresses that distinction, and is not included here.
+
+`G1-DIFF.patch` records the narrow changes to the old FOM/preflight. The other
+source inputs are byte-identical to smoke06 except the private-prefix attempt
+binding. `INPUT-CANDIDATE.json` freezes the eighteen proposed inputs. No job has
+been staged or released. Local checks are syntax checks and saved-array replay;
+the replay is not native repair execution or a physical result.
+
+## Glossary
+
+G1: runtime and small analytic controls before reference qualification.
+G2: the separate reference/data-production gate.
+FOM: the full-order finite-element flow solver.
+BoundaryCF: a coefficient function that assigns values by boundary label.
+Volume facet: a face integrated using the adjacent volume element's orientation.
+P0: an elementwise constant finite-element space, used here only as an integration test.
+Certificate: persisted observations and checks supporting the orientation choice.
+
+
+===== experiments/ns-obstacle-2d/repairs/normal01/G1-DIFF.patch =====
+--- smoke06/fom.py
++++ normal01/fom.py
+@@ -38,7 +38,7 @@
+ def run_case(cfg, out):
+     import ngsolve as ng
+     from netgen.geom2d import SplineGeometry
+-    ng.SetNumThreads(int(cfg['threads']))
++    # main() sets threads before entering TaskManager.
+     out = Path(out)
+     out.mkdir(parents=True, exist_ok=False)
+     dump(out / 'config.json', cfg)
+@@ -67,11 +67,14 @@
+     # retained as provenance, not a claim that Netgen accepts an RNG seed option.
+     mesh = ng.Mesh(geo.GenerateMesh(maxh=cfg['maxh']))
+     mesh.Curve(cfg['geometry_order'])
+-    from preflight import mapped_probe
+-    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))
+     mesh.ngmesh.Save(str(out/'mesh.vol'))
+     if mesh.ne > cfg['max_elements']:
+         raise MemoryError(f'pre-space element guard: {mesh.ne}')
++    from preflight import mapped_probe
++    from oriented_normals import fluid_outward_normal
++    normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,
++        order=cfg['diagnostic_order'], evidence_path=out/'normal_orientation.json')
++    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))
+     V = ng.VectorH1(mesh, order=cfg['velocity_order'], dirichlet='inlet|wall.*|obstacle')
+     Q = ng.H1(mesh, order=cfg['pressure_order'])
+     X = V*Q
+@@ -81,7 +84,7 @@
+     g = ng.GridFunction(X)
+     uh, ph = g.components
+     x, y = ng.x, ng.y
+-    normal = ng.specialcf.normal(2)
++    raw_normal = ng.specialcf.normal(2)  # retained for provenance, not forces/fluxes
+     I = ng.Id(2)
+     grad = ng.Grad
+     exact_u = exact_p = force = traction = None
+@@ -327,6 +330,7 @@
+                 obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))
+                 obstacle_distance_max=max(obstacle_distance_max,abs(np.linalg.norm(xy-np.array(cfg['center']))-cfg['radius']))
+             boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),
++                               'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],
+                                'label':label,'velocity':uv.tolist(),'pressure':scalar_value(ph(mip),'boundary_pressure_point'),
+                                'velocity_gradient':np.asarray(gradient_on_boundary(mip)).reshape(2,2).tolist()})
+     geometry['minimum_sampled_jacobian_determinant']=min_det
+@@ -488,6 +492,8 @@
+     result={'status':'completed_control_not_reference_admission','configuration':cfg,
+             'scalar_return_contract':scalar_observations(),
+             'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
++            'normal_orientation':{'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
++                                  'certificate_sha256':sha(out/'normal_orientation.json')},
+             'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',
+             'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+             'versions':{'ngsolve':ng.__version__,'numpy':np.__version__,'python':platform.python_version()},
+--- smoke06/preflight.py
++++ normal01/preflight.py
+@@ -17,10 +17,10 @@
+     return value
+ 
+ 
+-def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False):
++def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False, normal=None):
+     import ngsolve as ng
+     record={'volume':None,'boundary':None,'normal_checks':{},'api_status':'unverified'}
+-    normal=ng.specialcf.normal(2)
++    if normal is None:raise ValueError('explicit verified ordinary-BND normal required')
+     for el in mesh.Elements(ng.VOL):
+         ir=traced('volume.rule',ng.IntegrationRule,el.type,sample_order,enabled=diagnostic)
+         ip=ir[0]  # Pinned binding returns this IntegrationPoint by value.
+@@ -83,7 +83,10 @@
+     ngmesh=traced('generate_mesh',geo.GenerateMesh,maxh=.6)
+     mesh=traced('mesh_wrapper',ng.Mesh,ngmesh)
+     traced('curve_mesh',mesh.Curve,3)
+-    result=mapped_probe(mesh,diagnostic=True)
++    from oriented_normals import fluid_outward_normal
++    normal, orientation = fluid_outward_normal(mesh, order=6)
++    result=mapped_probe(mesh,diagnostic=True,normal=normal)
++    result['normal_orientation']=orientation
+     V=traced('scalar_space',ng.H1,mesh,order=2,dirichlet='wall_bottom|wall_top|inlet|outlet')
+     marker('scalar_forms','before')
+     u,v=V.TnT();a=ng.BilinearForm(V);a+=(ng.grad(u)*ng.grad(v)+u*v)*ng.dx
+@@ -108,15 +111,14 @@
+     result['umfpack']={'free_dofs':int(sum(free)),'residual_numerator':n,'residual_denominator':d,'relative_residual':n/d}
+     if n/d>1e-10:raise ArithmeticError('tiny UMFPACK residual failure')
+     # Exercise the same boundary trace + normal + Integrate path as force/balance
+-    # diagnostics. Wrapping a whole traction containing normal would be wrong:
+-    # normal is a BND quantity and stays outside BoundaryFromVolumeCF.
++    # diagnostics. The verified ordinary-BND normal stays outside the volume
++    # derivative wrapper; no orientation factor enters volume-facet integrals.
+     VV=traced('vector_space',ng.VectorH1,mesh,order=2)
+     exact_vector=traced('vector_gridfunction',ng.GridFunction,VV)
+     traced('vector_set_identity',exact_vector.Set,ng.CF((ng.x,ng.y)))
+     marker('boundary_derivative_wrappers','before')
+     gradient_b=ng.BoundaryFromVolumeCF(ng.Grad(exact_vector))
+     divergence_b=ng.BoundaryFromVolumeCF(ng.div(exact_vector))
+-    normal=ng.specialcf.normal(2)
+     identity=ng.Id(2)
+     marker('boundary_derivative_wrappers','after')
+     trace_gradient_max=0.;trace_div_max=0.
+
+
+===== experiments/ns-obstacle-2d/repairs/normal01/CALLSITE-AUDIT.json =====
+{
+  "scope": "G1 candidate only; G2 propagation not included",
+  "changed_files": [
+    {
+      "path": "fom.py",
+      "old_sha256": "5d09cd0439364098286862ac2edf5467d89bf0e54229f2e72b4f2ea8b50febe6",
+      "new_sha256": "9e2fbbed57de5d943e5159e98fabc07cdc1ecb999b6a48dff96c711285529ca9"
+    },
+    {
+      "path": "preflight.py",
+      "old_sha256": "8afd20368568da16e0e3a73c127856516f417d58293677893283772c3d645fa7",
+      "new_sha256": "e9e5d4c34ba1d605e758b9f7301a03b86f70d4cf48a3db5a48ee9fb2b3a3d087"
+    }
+  ],
+  "normal_consumers": [
+    {
+      "line": 75,
+      "source": "normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,"
+    },
+    {
+      "line": 77,
+      "source": "dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))"
+    },
+    {
+      "line": 90,
+      "source": "exact_u = exact_p = force = traction = None"
+    },
+    {
+      "line": 96,
+      "source": "traction = ng.CF((0, 0))"
+    },
+    {
+      "line": 107,
+      "source": "traction = (nu*gu-exact_p*I)*normal"
+    },
+    {
+      "line": 126,
+      "source": "force, traction = ng.CF((0,0)), ng.CF((0,0))"
+    },
+    {
+      "line": 332,
+      "source": "boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),"
+    },
+    {
+      "line": 353,
+      "source": "qin=-integ(uh*normal,'inlet');qout=integ(uh*normal,'outlet')"
+    },
+    {
+      "line": 359,
+      "source": "'global_boundary_flux':metric(abs(sum(integ(uh*normal,b) for b in boundary_measures)),"
+    },
+    {
+      "line": 373,
+      "source": "'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 374,
+      "source": "'physical_traction_work':-sum(integ(uh*(sigma_boundary*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 379,
+      "source": "'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}"
+    },
+    {
+      "line": 382,
+      "source": "physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma_boundary*normal),b) for b in boundary_measures})"
+    },
+    {
+      "line": 383,
+      "source": "physical_parts.update({k:z for k,z in terms.items() if k not in ('convection_boundary','physical_traction_work','finite_divergence_viscous')})"
+    },
+    {
+      "line": 385,
+      "source": "physical_parts['finite_divergence_viscous_volume']=-nu*integ(div*div)"
+    },
+    {
+      "line": 386,
+      "source": "physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})"
+    },
+    {
+      "line": 388,
+      "source": "metrics['energy']={'terms':terms,'individual_contributions':physical_parts,'physical_raw':metric(abs(sum(terms[k] for k in ('dissipation','convection_boundary','physical_traction_work','body_force_work'))),denominator_energy,'raw physical balance / sum absolute terms'),"
+    },
+    {
+      "line": 391,
+      "source": "'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 392,
+      "source": "'gradient_traction_work':-sum(integ(uh*(tau_boundary*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 399,
+      "source": "gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau_boundary*normal),b) for b in boundary_measures})"
+    },
+    {
+      "line": 400,
+      "source": "gradient_parts.update({k:z for k,z in gt.items() if k not in ('convection_boundary','gradient_traction_work','symmetric_pde_adjustment')})"
+    },
+    {
+      "line": 407,
+      "source": "terms_m={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 421,
+      "source": "mt={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),"
+    },
+    {
+      "line": 424,
+      "source": "'finite_divergence_viscous':sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}"
+    },
+    {
+      "line": 427,
+      "source": "pieces.update({k:z for k,z in mt.items() if k not in ('convection','physical_traction','finite_divergence_viscous')})"
+    },
+    {
+      "line": 429,
+      "source": "pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*normal[i],b) for b in boundary_measures})"
+    },
+    {
+      "line": 456,
+      "source": "ff=[-integ((stress*normal)[i],'obstacle',order) for i in range(2)]"
+    },
+    {
+      "line": 487,
+      "source": "wall_force=[-integ((sigma_boundary*normal)[i],'wall.*') for i in range(2)]"
+    }
+  ],
+  "raw_normal_uses": [
+    {
+      "line": 87,
+      "source": "raw_normal = ng.specialcf.normal(2)  # retained for provenance, not forces/fluxes"
+    },
+    {
+      "line": 333,
+      "source": "'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],"
+    }
+  ],
+  "volume_facet_scope": "oriented_normals.py uses raw native normal for facet_terms and oriented normal only for ordinary_terms",
+  "source_only_checks": [
+    "Python compilation",
+    "bash -n",
+    "saved-array sign-inference replay with orientation reversal and negative cases"
+  ],
+  "native_repair_execution": false
+}
+
+
+===== experiments/ns-obstacle-2d/repairs/normal01/fom.py =====
+"""Curved mixed FE steady controls. No time stepping or ROM training.
+
+Run only under the reviewed configuration. NGSolve solve kernels are CPU kernels.
+All NumPy arrays are float64; Grad has [velocity component, spatial coordinate].
+"""
+from __future__ import annotations
+import argparse
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import resource
+import time
+import traceback
+
+import numpy as np
+from scalars import scalar_value, scalar_observations
+
+
+def dump(path, value):
+    Path(path).write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
+
+
+def metric(numerator, denominator, definition):
+    numerator, denominator = float(numerator), float(denominator)
+    if not math.isfinite(numerator) or not math.isfinite(denominator) or denominator <= 0:
+        raise ValueError(f"invalid metric {definition}: {numerator}, {denominator}")
+    return {"numerator": numerator, "denominator": denominator,
+            "value": numerator / denominator, "definition": definition}
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def run_case(cfg, out):
+    import ngsolve as ng
+    from netgen.geom2d import SplineGeometry
+    # main() sets threads before entering TaskManager.
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=False)
+    dump(out / 'config.json', cfg)
+    started = time.perf_counter()
+    U, D, nu = float(cfg['U']), float(cfg['D']), float(cfg['nu'])
+    H, xmin, xmax = cfg['H'], cfg['xmin'], cfg['xmax']
+    L = xmax-xmin
+    kind = cfg['kind']
+    obstacle = kind in ('dfg','manufactured')
+    if kind not in ('dfg', 'channel', 'manufactured'):
+        raise ValueError(kind)
+    if cfg['velocity_order'] < 2 or cfg['pressure_order'] != cfg['velocity_order']-1:
+        raise ValueError('Taylor-Hood k/(k-1) required')
+    if not (1 <= cfg['newton_max'] <= 30):
+        raise ValueError('Newton cap must be between 1 and 30')
+    if cfg['outlet'] not in ('gradient', 'symmetric'):
+        raise ValueError('unknown outlet')
+    if cfg['outlet'] == 'symmetric' and kind != 'dfg':
+        raise ValueError('only named DFG-domain-sensitivity case uses symmetric outlet')
+    geo = SplineGeometry()
+    geo.AddRectangle((xmin, 0), (xmax, H), bcs=('wall_bottom', 'outlet', 'wall_top', 'inlet'))
+    if obstacle:
+        geo.AddCircle(tuple(cfg['center']), cfg['radius'], leftdomain=0,
+                      rightdomain=1, bc='obstacle', maxh=cfg['obstacle_h'])
+    # Netgen optimize/mesh operations are single-threaded here; recorded seed is
+    # retained as provenance, not a claim that Netgen accepts an RNG seed option.
+    mesh = ng.Mesh(geo.GenerateMesh(maxh=cfg['maxh']))
+    mesh.Curve(cfg['geometry_order'])
+    mesh.ngmesh.Save(str(out/'mesh.vol'))
+    if mesh.ne > cfg['max_elements']:
+        raise MemoryError(f'pre-space element guard: {mesh.ne}')
+    from preflight import mapped_probe
+    from oriented_normals import fluid_outward_normal
+    normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,
+        order=cfg['diagnostic_order'], evidence_path=out/'normal_orientation.json')
+    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))
+    V = ng.VectorH1(mesh, order=cfg['velocity_order'], dirichlet='inlet|wall.*|obstacle')
+    Q = ng.H1(mesh, order=cfg['pressure_order'])
+    X = V*Q
+    if X.ndof > cfg['max_dofs']:
+        raise MemoryError(f'pre-assembly DOF guard: {X.ndof}')
+    (u, p), (v, q) = X.TnT()
+    g = ng.GridFunction(X)
+    uh, ph = g.components
+    x, y = ng.x, ng.y
+    raw_normal = ng.specialcf.normal(2)  # retained for provenance, not forces/fluxes
+    I = ng.Id(2)
+    grad = ng.Grad
+    exact_u = exact_p = force = traction = None
+    witness = None
+    if kind == 'channel':
+        exact_u = ng.CF((6*U*y*(H-y)/H**2, 0))
+        exact_p = 12*nu*U*(xmax-x)/H**2
+        force = ng.CF((0, 0))
+        traction = ng.CF((0, 0))
+    elif kind == 'manufactured':
+        xx, yy = (x-xmin)/L, y/H
+        psi = U*H*(xx**2*yy + xx*yy**2 + 0.25*xx**3*yy**3)
+        exact_u = ng.CF((psi.Diff(y), -psi.Diff(x)))
+        exact_p = U**2*(xx+yy+xx*yy)
+        gu = ng.CF(tuple(exact_u[i].Diff(c) for i in range(2)
+                         for c in (x, y)), dims=(2, 2))
+        lap = ng.CF(tuple(sum(exact_u[i].Diff(c).Diff(c) for c in (x,y)) for i in range(2)))
+        gp = ng.CF((exact_p.Diff(x), exact_p.Diff(y)))
+        force = gu*exact_u - nu*lap + gp
+        traction = (nu*gu-exact_p*I)*normal
+        witness_path = Path(__file__).with_name('manufactured_witness.json')
+        witness = json.loads(witness_path.read_text())
+        if not np.allclose(witness['obstacle_force']['gradient'],witness['obstacle_force']['physical_symmetric'],rtol=1e-12,atol=1e-15):
+            raise AssertionError('independent manufactured closed-surface stress integrals disagree')
+        if any(abs(cfg[k]-witness['configuration'][k]) > 1e-14 for k in ('U','nu','H','xmin','xmax')):
+            raise ValueError('manufactured witness is tied to its exact configuration')
+        checks = []
+        for record in witness['samples']:
+            mip = mesh(*record['point'])
+            values = np.r_[np.asarray(exact_u(mip)), scalar_value(exact_p(mip),'manufactured_pressure_point'),
+                            np.asarray(gu(mip)).ravel(), np.asarray(force(mip))]
+            expected = np.array(record['u']+[record['p']]+record['gradient']+record['forcing'])
+            checks.append(metric(np.linalg.norm(values-expected), max(np.linalg.norm(expected), 1.0),
+                                 'CF analytic derivatives versus independent SymPy witness'))
+        dump(out/'manufactured_derivative_checks.json', checks)
+        if max(a['value'] for a in checks) > 1e-12:
+            raise AssertionError('manufactured analytical derivative witness mismatch')
+    else:
+        force, traction = ng.CF((0,0)), ng.CF((0,0))
+    boundary_u = exact_u if exact_u is not None else ng.CF((6*U*y*(H-y)/H**2,0))
+    if kind == 'manufactured':
+        uh.Set(boundary_u, definedon=mesh.Boundaries('inlet|wall.*|obstacle'))
+    else:
+        uh.Set(boundary_u, definedon=mesh.Boundaries('inlet'))
+    ds_out = ng.ds('outlet', bonus_intorder=cfg['assembly_bonus_order'])
+    dx = ng.dx(bonus_intorder=cfg['assembly_bonus_order'])
+    viscous = nu*ng.InnerProduct(grad(u),grad(v))
+    if cfg['outlet'] == 'symmetric':
+        viscous = 2*nu*ng.InnerProduct(ng.Sym(grad(u)),ng.Sym(grad(v)))
+    stokes = ng.BilinearForm(X)
+    stokes += (viscous - p*ng.div(v)-q*ng.div(u))*dx
+    rhs = ng.LinearForm(X)
+    rhs += force*v*dx + traction*v*ds_out
+    rhs.Assemble()
+    residual_form = ng.BilinearForm(X)
+    residual_form += (viscous + (grad(u)*u)*v-p*ng.div(v)-q*ng.div(u))*dx
+    free = np.array([bool(b) for b in X.FreeDofs()], dtype=bool)
+    row_scale = np.r_[np.full(V.ndof, U**2*D), np.full(Q.ndof, U*D)]
+    if len(row_scale) != X.ndof:
+        raise AssertionError('mixed block DOF layout mismatch')
+    def arr(vec):
+        return vec.FV().NumPy()
+    def free_norm(vec):
+        return float(np.linalg.norm((arr(vec)/row_scale)[free]))
+    def true_residual():
+        # Independent assembly path: state is a coefficient, not symbolic trial.
+        form = ng.LinearForm(X)
+        vf = nu*ng.InnerProduct(grad(uh),grad(v))
+        if cfg['outlet'] == 'symmetric':
+            vf = 2*nu*ng.InnerProduct(ng.Sym(grad(uh)),ng.Sym(grad(v)))
+        form += (vf+(grad(uh)*uh)*v-ph*ng.div(v)-q*ng.div(uh)-force*v)*dx
+        form += -traction*v*ds_out
+        form.Assemble()
+        return form.vec
+    def residual():
+        r = g.vec.CreateVector()
+        residual_form.Apply(g.vec,r)
+        r.data -= rhs.vec
+        return r
+    def factor(mat):
+        # Conservative declared accounting model, not a solver-memory guarantee.
+        nnz = int(mat.nze)
+        estimated = nnz*16*cfg['factor_fill_estimate'] + X.ndof*8*32
+        rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
+        record = {'nnz':nnz,'estimated_factor_bytes':estimated,'current_maxrss_bytes':rss}
+        memory_checks.append(record)
+        dump(out/'memory_checks.json',memory_checks)
+        if nnz > cfg['max_nnz'] or estimated+rss > cfg['memory_stop_gib']*2**30:
+            raise MemoryError(f'pre-factorization guard {record}')
+        return mat.Inverse(X.FreeDofs(), inverse=cfg['inverse_backend'])
+    memory_checks = []
+    stokes.Assemble()
+    r = rhs.vec.CreateVector()
+    r.data = rhs.vec-stokes.mat*g.vec
+    inv = factor(stokes.mat)
+    delta = g.vec.CreateVector()
+    delta.data = inv*r
+    linear = r.CreateVector()
+    linear.data = stokes.mat*delta-r
+    stokes_linear_metric = metric(free_norm(linear), max(free_norm(r),1e-30), 'scaled linear residual / scaled RHS')
+    if stokes_linear_metric['value'] > cfg['linear_relative_tolerance']:
+        raise ArithmeticError('Stokes direct solve residual failed')
+    g.vec.data += delta
+    del inv
+    stokes_state = arr(g.vec).copy()
+    r = residual()
+    initial = free_norm(r)
+    denominator = max(initial, cfg['residual_floor'])
+    histories = []
+    converged = False
+    for it in range(cfg['newton_max']+1):
+        r = residual()
+        value = free_norm(r)
+        rec = {'iteration':it,'scaled_residual_norm':value,'residual_denominator':denominator,
+               'relative_residual':value/denominator}
+        histories.append(rec)
+        dump(out/'newton_history.json', histories)
+        if value/denominator <= cfg['nonlinear_relative_tolerance']:
+            converged = True
+            break
+        if it == cfg['newton_max']:
+            break
+        residual_form.AssembleLinearization(g.vec)
+        inv = factor(residual_form.mat)
+        delta.data = inv*r
+        linear.data = residual_form.mat*delta-r
+        linmet = metric(free_norm(linear),max(value,1e-30),'scaled linear residual / scaled RHS')
+        rec['linear_residual'] = linmet
+        if linmet['value'] > cfg['linear_relative_tolerance']:
+            raise ArithmeticError('Newton direct solve residual failed')
+        base = arr(g.vec).copy()
+        accepted = False
+        for damping in cfg['damping_sequence']:
+            arr(g.vec)[:] = base-damping*arr(delta)
+            candidate = free_norm(residual())
+            if candidate <= (1-cfg['armijo']*damping)*value:
+                accepted = True
+                rec['damping'] = damping
+                rec['step_l2_coefficients'] = float(np.linalg.norm(damping*arr(delta)))
+                break
+        del inv
+        if not accepted:
+            arr(g.vec)[:] = base
+            raise ArithmeticError('no declared Newton damping accepted')
+    dump(out/'newton_history.json', histories)
+    dump(out/'memory_checks.json', memory_checks)
+    if not converged:
+        raise ArithmeticError('Newton iteration limit: no accepted solution')
+    independent = true_residual()
+    independent_norm = free_norm(independent)
+    independent_difference = metric(np.linalg.norm(((arr(independent)-arr(r))/row_scale)[free]),
+                                    denominator,'independent coefficient residual versus operator apply')
+    if independent_norm/denominator > cfg['nonlinear_relative_tolerance'] or independent_difference['value'] > 1e-11:
+        raise ArithmeticError('independent residual did not certify returned solution')
+    # Directional Jacobian check at a deterministic perturbed admissible state.
+    rng = np.random.default_rng(cfg['seed'])
+    reference = arr(g.vec).copy()
+    direction = rng.normal(size=X.ndof)
+    direction[~free] = 0
+    direction[:V.ndof] *= U
+    direction[V.ndof:] *= U**2
+    direction /= np.linalg.norm(direction/np.r_[np.full(V.ndof,U),np.full(Q.ndof,U**2)])
+    arr(g.vec)[:] += cfg['jacobian_state_perturbation']*direction
+    perturbed = arr(g.vec).copy()
+    residual_form.AssembleLinearization(g.vec)
+    vector = g.vec.CreateVector()
+    arr(vector)[:] = direction
+    action = vector.CreateVector()
+    action.data = residual_form.mat*vector
+    jv = (arr(action)/row_scale)[free].copy()
+    checks=[]
+    for h in cfg['jacobian_steps']:
+        arr(g.vec)[:] = perturbed+h*direction
+        plus_residual = residual()  # Own the native vector while its NumPy view is used.
+        plus = (arr(plus_residual)/row_scale)[free].copy()
+        arr(g.vec)[:] = perturbed-h*direction
+        minus_residual = residual()
+        minus = (arr(minus_residual)/row_scale)[free].copy()
+        fd=(plus-minus)/(2*h)
+        checks.append({'h':h,'agreement':metric(np.linalg.norm(fd-jv),max(np.linalg.norm(jv),1e-30),
+                                              'centered difference versus assembled Jacobian action'),
+                       'signal_norm':float(np.linalg.norm(plus-minus)),
+                       'signal_floor':float(100*np.finfo(float).eps*max(np.linalg.norm(plus),np.linalg.norm(minus),1.0))})
+    arr(g.vec)[:] = reference
+    dump(out/'jacobian_checks.json', checks)
+    useful=[a for a in checks if a['signal_norm']>a['signal_floor']]
+    values=[a['agreement']['value'] for a in useful]
+    # At a quadratic residual, centered differences are exact in real arithmetic;
+    # a uniformly small roundoff plateau is expected, not an artificial O(h²) fit.
+    plateau=len(useful)>=2 and max(values)<=1e-8
+    reducing=len(useful)>=2 and any(values[j+1]<=values[j] for j in range(len(values)-1))
+    if not useful or min(values)>1e-6 or not (plateau or reducing):
+        raise ArithmeticError('Jacobian finite difference mismatch or unresolved signal/plateau')
+    # Quadrature-specific metrics and boundary traces are sampled independently of DOFs.
+    qo = cfg['diagnostic_order']
+    def integ(cf, boundary=None, order=qo):
+        value=ng.Integrate(cf,mesh,definedon=mesh.Boundaries(boundary),order=order) if boundary else ng.Integrate(cf,mesh,order=order)
+        return scalar_value(value,'boundary_integral' if boundary else 'volume_integral')
+    volume=integ(1)
+    exact_volume=L*H-(math.pi*cfg['radius']**2 if obstacle else 0)
+    boundary_measures={b:integ(1,b) for b in sorted(set(mesh.GetBoundaries()))}
+    geometry={'volume':volume,'volume_error':metric(abs(volume-exact_volume),exact_volume,'area error / exact fluid area'),
+              'boundary_measures':boundary_measures,'element_count':mesh.ne,'ndof':X.ndof,'velocity_ndof':V.ndof,
+              'pressure_ndof':Q.ndof,'geometry_order':cfg['geometry_order'],'coordinate_derivative_convention':'component,coordinate'}
+    if obstacle:
+        circumference=2*math.pi*cfg['radius']
+        geometry['obstacle_perimeter_error']=metric(abs(boundary_measures['obstacle']-circumference),circumference,'perimeter error / exact circumference')
+    # Full positive mapped rule exporter; checks mapped Jacobians and FE traces.
+    points=[]; weights=[]; vals=[]; grads=[]; pressures=[]; boundaries=[]
+    min_det=float('inf')
+    for el in mesh.Elements(ng.VOL):
+        ir=ng.IntegrationRule(el.type,qo)
+        tr=mesh.GetTrafo(el)
+        for ip in ir:
+            mip=tr(ip)
+            jac=np.array(mip.jacobi,dtype=float,copy=True)
+            determinant=float(np.linalg.det(jac))
+            min_det=min(min_det,determinant)
+            w=float(ip.weight*mip.measure)
+            if w<=0 or determinant<=0:
+                raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
+            points.append(list(mip.point));weights.append(w)
+            # Persist an owning gradient array, never a possible native view.
+            vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(scalar_value(ph(mip),'volume_pressure_point'))
+    # A VectorH1 volume derivative is not a BND differential operator.
+    # Trace only the field derivative; retain normals on the boundary transform.
+    gradient_on_boundary=ng.BoundaryFromVolumeCF(grad(uh))
+    trace_max=0.0; obstacle_distance_max=0.0; obstacle_normal_dot=[]
+    for el in mesh.Elements(ng.BND):
+        ir=ng.IntegrationRule(el.type,qo)
+        tr=mesh.GetTrafo(el)
+        label=el.mat
+        for ip in ir:
+            mip=tr(ip)
+            uv=np.array(uh(mip),dtype=float,copy=True); xy=np.array(mip.point,dtype=float,copy=True)
+            bv=np.asarray(boundary_u(mip)) if (kind=='manufactured' or label=='inlet') else np.zeros(2)
+            if label!='outlet':
+                trace_max=max(trace_max,float(np.linalg.norm(uv-bv)))
+            if float(ip.weight*mip.measure)<=0:
+                raise ArithmeticError('nonpositive boundary rule weight')
+            if label=='obstacle':
+                radial=xy-np.array(cfg['center'])
+                obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))
+                obstacle_distance_max=max(obstacle_distance_max,abs(np.linalg.norm(xy-np.array(cfg['center']))-cfg['radius']))
+            boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),
+                               'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],
+                               'label':label,'velocity':uv.tolist(),'pressure':scalar_value(ph(mip),'boundary_pressure_point'),
+                               'velocity_gradient':np.asarray(gradient_on_boundary(mip)).reshape(2,2).tolist()})
+    geometry['minimum_sampled_jacobian_determinant']=min_det
+    geometry['max_sampled_obstacle_distance']=obstacle_distance_max
+    geometry['mapped_weight_sum']=sum(weights)
+    if obstacle:
+        geometry['sampled_obstacle_normal_dot_radial_range']=[min(obstacle_normal_dot),max(obstacle_normal_dot)]
+        if max(obstacle_normal_dot)>-.99:
+            raise ArithmeticError('obstacle outward-fluid normal orientation invalid')
+    np.savez_compressed(out/'full_rule.npz',points=np.asarray(points),weights=np.asarray(weights),
+                        velocity=np.asarray(vals),velocity_gradient=np.asarray(grads),pressure=np.asarray(pressures),
+                        stokes_coefficients=stokes_state,solution_coefficients=reference)
+    dump(out/'boundary_rule.json',boundaries)
+    g.Save(str(out/'solution.sol'))
+    # Gradient-form and symmetric-stress diagnostics both keep nonzero boundary work.
+    gu=grad(uh); div=ng.div(uh)
+    div_boundary=ng.BoundaryFromVolumeCF(div)
+    tau_boundary=nu*gradient_on_boundary-ph*I
+    sigma_boundary=nu*(gradient_on_boundary+gradient_on_boundary.trans)-ph*I
+    qin=-integ(uh*normal,'inlet');qout=integ(uh*normal,'outlet')
+    metrics={'mass':metric(abs(qout-qin),max(abs(qin),1e-30),'abs(Qout-Qin)/abs(Qin)'),
+             'divergence':metric(D*math.sqrt(max(integ(div*div),0)),U*math.sqrt(volume),'D||div u||/(U sqrt(volume))'),
+             'boundary_trace':metric(trace_max,U,'maximum sampled essential FE trace error/U'),
+             'Qin':qin,'Qout':qout,
+             'mass_scope':('physical inlet/outlet mass' if kind!='manufactured' else 'inlet/outlet only; not a manufactured-control gate'),
+             'global_boundary_flux':metric(abs(sum(integ(uh*normal,b) for b in boundary_measures)),
+                                         max(sum(integ(ng.sqrt((uh*normal)**2),b) for b in boundary_measures),1e-12*U*D),
+                                         'abs(total boundary flux) / total absolute boundary flux'),
+             'independent_residual':metric(independent_norm,denominator,'scaled free-DOF residual / max(initial Stokes scaled residual, fixed floor)'),
+             'independent_assembly_agreement':independent_difference,
+             'pressure_mean':integ(ph)/volume,
+             'pressure_gauge':'fixed by natural outlet, no pin and no shift',
+             'row_scale_momentum':U**2*D,'row_scale_continuity':U*D,
+             'residual_initial_stokes_norm':initial,'residual_floor':cfg['residual_floor'],
+             'residual_mode':('absolute in scaled row units' if initial<=cfg['residual_floor'] else 'relative to initial Stokes residual in scaled row units'),
+             'stokes_linear_residual':stokes_linear_metric}
+    # Raw and finite-divergence-corrected physical energy equation.
+    eps=ng.Sym(gu)
+    terms={'dissipation':2*nu*integ(ng.InnerProduct(eps,eps)),
+           'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),
+           'physical_traction_work':-sum(integ(uh*(sigma_boundary*normal),b) for b in boundary_measures),
+           'body_force_work':-integ(force*uh),
+           'finite_divergence_convection':-.5*integ((uh*uh)*div),
+           'finite_divergence_pressure':-integ(ph*div),
+           # Δu formulation differs from div(2ε) by grad(div u).
+           'finite_divergence_viscous':(-nu*integ(div*div)+sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)) if cfg['outlet']=='gradient' else 0.0}
+    energy_floor=1e-12*U**3*D
+    physical_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}
+    physical_parts.update({f'traction_work_{b}':-integ(uh*(sigma_boundary*normal),b) for b in boundary_measures})
+    physical_parts.update({k:z for k,z in terms.items() if k not in ('convection_boundary','physical_traction_work','finite_divergence_viscous')})
+    if cfg['outlet']=='gradient':
+        physical_parts['finite_divergence_viscous_volume']=-nu*integ(div*div)
+        physical_parts.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})
+    denominator_energy=max(sum(abs(z) for z in physical_parts.values()),energy_floor)
+    metrics['energy']={'terms':terms,'individual_contributions':physical_parts,'physical_raw':metric(abs(sum(terms[k] for k in ('dissipation','convection_boundary','physical_traction_work','body_force_work'))),denominator_energy,'raw physical balance / sum absolute terms'),
+                       'corrected':metric(abs(sum(terms.values())),denominator_energy,'finite-divergence-corrected physical balance / sum absolute terms')}
+    gt={'dissipation':nu*integ(ng.InnerProduct(gu,gu)),
+        'convection_boundary':sum(.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures),
+        'gradient_traction_work':-sum(integ(uh*(tau_boundary*normal),b) for b in boundary_measures),
+        'body_force_work':-integ(force*uh),
+        'finite_divergence_convection':-.5*integ((uh*uh)*div),
+        'finite_divergence_pressure':-integ(ph*div)}
+    if cfg['outlet']=='symmetric':
+        gt['symmetric_pde_adjustment']=nu*integ(div*div)-sum(nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures)
+    gradient_parts={f'convective_flux_{b}':.5*integ((uh*uh)*(uh*normal),b) for b in boundary_measures}
+    gradient_parts.update({f'traction_work_{b}':-integ(uh*(tau_boundary*normal),b) for b in boundary_measures})
+    gradient_parts.update({k:z for k,z in gt.items() if k not in ('convection_boundary','gradient_traction_work','symmetric_pde_adjustment')})
+    if cfg['outlet']=='symmetric':
+        gradient_parts['symmetric_div_volume']=nu*integ(div*div)
+        gradient_parts.update({f'symmetric_div_{b}':-nu*integ(div_boundary*(uh*normal),b) for b in boundary_measures})
+    metrics['gradient_energy']={'terms':gt,'individual_contributions':gradient_parts,'corrected':metric(abs(sum(gt.values())),max(sum(abs(z) for z in gradient_parts.values()),energy_floor),'A2 gradient-form energy including body forcing and finite divergence')}
+    gm=[]
+    for i in range(2):
+        terms_m={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),
+                 'gradient_traction':-sum(integ((tau_boundary*normal)[i],b) for b in boundary_measures),
+                 'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div)}
+        if cfg['outlet']=='symmetric':
+            terms_m['symmetric_pde_adjustment']=-sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures)
+        pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}
+        pieces.update({f'gradient_traction_{b}':-integ((tau_boundary*normal)[i],b) for b in boundary_measures})
+        pieces.update({k:z for k,z in terms_m.items() if k not in ('convection','gradient_traction','symmetric_pde_adjustment')})
+        if cfg['outlet']=='symmetric':
+            pieces.update({f'symmetric_div_{b}':-nu*integ(div_boundary*normal[i],b) for b in boundary_measures})
+        gm.append({'terms':terms_m,'individual_contributions':pieces,'corrected':metric(abs(sum(terms_m.values())),max(sum(abs(z) for z in pieces.values()),1e-12*U**2*D),'A2 gradient-form momentum including body forcing and finite divergence')})
+    metrics['gradient_momentum']=gm
+    momentum=[]
+    for i in range(2):
+        mt={'convection':sum(integ(uh[i]*(uh*normal),b) for b in boundary_measures),
+            'physical_traction':-sum(integ((sigma_boundary*normal)[i],b) for b in boundary_measures),
+            'body_force':-integ(force[i]),'finite_divergence_convection':-integ(uh[i]*div),
+            'finite_divergence_viscous':sum(nu*integ(div_boundary*normal[i],b) for b in boundary_measures) if cfg['outlet']=='gradient' else 0.0}
+        pieces={f'convective_flux_{b}':integ(uh[i]*(uh*normal),b) for b in boundary_measures}
+        pieces.update({f'physical_traction_{b}':-integ((sigma_boundary*normal)[i],b) for b in boundary_measures})
+        pieces.update({k:z for k,z in mt.items() if k not in ('convection','physical_traction','finite_divergence_viscous')})
+        if cfg['outlet']=='gradient':
+            pieces.update({f'finite_divergence_viscous_{b}':nu*integ(div_boundary*normal[i],b) for b in boundary_measures})
+        momentum.append({'terms':mt,'individual_contributions':pieces,'corrected':metric(abs(sum(mt.values())),max(sum(abs(z) for z in pieces.values()),1e-12*U**2*D),'physical momentum corrected for discrete divergence')})
+    metrics['momentum']=momentum
+    if exact_u is not None:
+        eu=uh-exact_u; ep=ph-exact_p
+        unorm=math.sqrt(max(integ(exact_u*exact_u),0))
+        metrics['velocity_error']=metric(math.sqrt(max(integ(eu*eu),0)),max(unorm,1e-12*U*math.sqrt(volume)),'weighted velocity L2 error / reference L2')
+        metrics['pressure_reference_relative_secondary']=metric(math.sqrt(max(integ(ep*ep),0)),max(math.sqrt(max(integ(exact_p*exact_p),0)),1e-12*U**2*math.sqrt(volume)),'secondary pressure L2 / reference pressure L2')
+        metrics['pressure_error']=metric(math.sqrt(max(integ(ep*ep),0)),U**2*math.sqrt(volume),'unshifted pressure RMS error / U²')
+        exact_grad=ng.CF(tuple(exact_u[i].Diff(c) for i in range(2) for c in (x,y)),dims=(2,2))
+        eg=gu-exact_grad
+        metrics['velocity_gradient_error']=metric(math.sqrt(max(integ(ng.InnerProduct(eg,eg)),0)),max(math.sqrt(max(integ(ng.InnerProduct(exact_grad,exact_grad)),0)),1e-12*U/D*math.sqrt(volume)),'gradient L2 error / reference gradient L2')
+    if obstacle:
+        forces={}
+        rforce=true_residual()
+        reaction=[]
+        for i in range(2):
+            test=ng.GridFunction(X)
+            unit=ng.CF(tuple(1.0 if j==i else 0.0 for j in range(2)))
+            test.components[0].Set(unit,definedon=mesh.Boundaries('obstacle'))
+            reaction.append(-scalar_value(ng.InnerProduct(rforce,test.vec),'reaction_inner_product'))
+        norm=0.5*U**2*D
+        forces['normalization']=norm
+        forces['reaction_force']=reaction
+        forces['reaction_coefficient']=[z/norm for z in reaction]
+        for stress_name,stress in [('gradient',tau_boundary),('physical_symmetric',sigma_boundary)]:
+            for order in [qo,qo+4]:
+                ff=[-integ((stress*normal)[i],'obstacle',order) for i in range(2)]
+                forces[f'{stress_name}_order{order}']={'force':ff,'coefficient':[z/norm for z in ff]}
+        # Probe points are geometrical spline vertices; evaluate FE interpolation,
+        # never nearest-node substitution or a fitted pressure shift.
+        cx,cy=cfg['center'];rad=cfg['radius']
+        probes=[(cx-rad,cy),(cx+rad,cy)]
+        pressures_probe=[];probe_errors=[]
+        for pt in probes:
+            try:
+                mp=mesh(*pt)
+                if mp.nr<0:raise ValueError('exact pressure probe is outside FE mesh')
+                value=scalar_value(ph(mp),'exact_pressure_probe')
+                if not math.isfinite(value):raise ValueError('nonfinite exact pressure probe')
+                pressures_probe.append(value);probe_errors.append(None)
+            except Exception as exc:
+                pressures_probe.append(None);probe_errors.append(repr(exc))
+        probes_valid=all(z is not None for z in pressures_probe)
+        forces['pressure_probes']={'points':probes,'values':pressures_probe,
+            'difference':pressures_probe[0]-pressures_probe[1] if probes_valid else None,
+            'valid':probes_valid,'errors':probe_errors,
+            'G2_pressure_gate_eligible':probes_valid,
+            'evaluation':'exact coordinate FE interpolation; no nearest node, shift or nudge'}
+        if kind=='manufactured':
+            forces['analytic_force']=witness['obstacle_force']
+            for stress_name in ['gradient','physical_symmetric']:
+                expected=np.asarray(witness['obstacle_force'][stress_name])
+                measured=np.asarray(forces[f'{stress_name}_order{qo+4}']['force'])
+                forces[f'{stress_name}_analytic_error']=metric(np.linalg.norm(measured-expected),U**2*D,'force difference norm / U²D; includes source-driven manufactured force')
+            forces['reaction_analytic_error']=metric(np.linalg.norm(np.asarray(reaction)-np.asarray(witness['obstacle_force']['gradient'])),U**2*D,'reaction force minus analytic gradient force / U²D')
+        metrics['forces']=forces
+    if kind=='channel':
+        wall_force=[-integ((sigma_boundary*normal)[i],'wall.*') for i in range(2)]
+        expected_wall=12*nu*U*L/H
+        metrics['wall_shear_sign_control']={'force_on_both_walls':wall_force,'analytic_axial_force':expected_wall,
+             'axial_error':metric(abs(wall_force[0]-expected_wall),abs(expected_wall),'force on both walls versus positive analytic Poiseuille drag')}
+    elapsed=time.perf_counter()-started
+    result={'status':'completed_control_not_reference_admission','configuration':cfg,
+            'scalar_return_contract':scalar_observations(),
+            'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
+            'normal_orientation':{'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
+                                  'certificate_sha256':sha(out/'normal_orientation.json')},
+            'cpu_work':'NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration',
+            'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+            'versions':{'ngsolve':ng.__version__,'numpy':np.__version__,'python':platform.python_version()},
+            'threading':{'requested':cfg['threads'],'TaskManager':True,'actual_effective_concurrency':'unmeasured; no performance claim'},
+            'provenance':{'execution_source_commit':Path('SOURCE_COMMIT.txt').read_text().strip() if Path('SOURCE_COMMIT.txt').exists() else None,'source_sha256':sha(__file__),'config_sha256':sha(out/'config.json'),
+                          'job_id':os.environ.get('SLURM_JOB_ID'),'hostname':platform.node()}}
+    dump(out/'result.json',result)
+    return result
+
+
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--config',required=True)
+    parser.add_argument('--out',required=True)
+    args=parser.parse_args()
+    cfg=json.loads(Path(args.config).read_text())
+    if os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')!='highest' or os.environ.get('JAX_ENABLE_X64')!='true':
+        raise RuntimeError('required precision environment missing')
+    target=Path(args.out)
+    if target.exists():
+        raise FileExistsError('refusing to overwrite an existing attempt directory')
+    try:
+        import ngsolve as ng
+        ng.SetNumThreads(int(cfg['threads']))
+        with ng.TaskManager():
+            result=run_case(cfg,target)
+        print(json.dumps({'status':result['status'],'out':str(target),'elapsed_seconds':result['elapsed_seconds']}),flush=True)
+    except Exception as exc:
+        target.mkdir(parents=True,exist_ok=True)
+        dump(target/'FAILED.json',{'error':repr(exc),'traceback':traceback.format_exc(),'source_sha256':sha(__file__),'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'job_id':os.environ.get('SLURM_JOB_ID'),'scalar_return_contract':scalar_observations()})
+        raise
+
+if __name__=='__main__':
+    main()
+
+
+===== experiments/ns-obstacle-2d/repairs/normal01/cluster/smoke.sh =====
+#!/usr/bin/env bash
+#SBATCH --job-name=ctol_nsobs2d_g1
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --time=00:20:00
+#SBATCH --output=slurm-%j.out
+#SBATCH --error=slurm-%j.err
+set -euo pipefail
+: "${SLURM_JOB_ID:?must be submitted as reviewed batch job}"
+JOB_DIR=$(pwd -P)
+case "$JOB_DIR" in /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/*) ;; *) exit 64;; esac
+PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
+export JAX_DEFAULT_MATMUL_PRECISION=highest JAX_ENABLE_X64=true
+export PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=16 OPENBLAS_NUM_THREADS=16 MKL_NUM_THREADS=16
+export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export TMPDIR="$JOB_DIR/tmp" XDG_CACHE_HOME="$JOB_DIR/cache"
+export MPLCONFIGDIR="$JOB_DIR/cache/matplotlib" PIP_CACHE_DIR="$JOB_DIR/cache/pip"
+mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$MPLCONFIGDIR" "$PIP_CACHE_DIR" "$JOB_DIR/results"
+JOB_PHASE=source_verification
+finish() {
+  task_status=$?
+  trap - EXIT
+  set +e
+  "$PY" smoke_summary.py results --exit-code "$task_status" --failed-stage "$JOB_PHASE"
+  summary_status=$?
+  if [ "$task_status" -eq 0 ] && [ "$summary_status" -ne 0 ]; then task_status=$summary_status; fi
+  exit "$task_status"
+}
+trap finish EXIT
+run_stage() {
+  JOB_PHASE=$1
+  shift
+  set +e
+  "$@"
+  stage_status=$?
+  set -e
+  printf '{"stage":"%s","exit_code":%s}\n' "$JOB_PHASE" "$stage_status" >> results/stage_exit_codes.jsonl
+  return "$stage_status"
+}
+run_stage source_verification sha256sum -c SOURCE-SHA256SUMS
+run_stage source_commit_present test -s SOURCE_COMMIT.txt
+cat SOURCE_COMMIT.txt
+run_stage gpu_preflight "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}'); print('jax_version='+jax.__version__); print('jax_devices='+str(jax.devices())); print('jax_x64='+str(jax.config.x64_enabled)); sys.exit(0 if b=='gpu' and jax.config.x64_enabled else 42)"
+printf 'cpu_model='
+lscpu | sed -n 's/^Model name:[[:space:]]*//p'
+nvidia-smi --query-gpu=name,uuid,memory.total --format=csv
+run_stage dependencies "$PY" dependencies.py --wheel-dir wheels --install --target "$JOB_DIR/deps"
+DEPS_SITE=$("$PY" -c "import sysconfig; print(sysconfig.get_path('purelib', vars={'base':'$JOB_DIR/deps','platbase':'$JOB_DIR/deps'}))")
+export PYTHONPATH="$DEPS_SITE${PYTHONPATH:+:$PYTHONPATH}"
+export LD_LIBRARY_PATH="$JOB_DIR/deps/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+run_stage dependency_import "$PY" - <<'PY'
+import json, pathlib, sys
+import ngsolve, netgen, numpy, jax
+prefix=pathlib.Path('deps').resolve()
+for module in [ngsolve,netgen]:
+    assert pathlib.Path(module.__file__).resolve().is_relative_to(prefix), module.__file__
+report={'ngsolve':ngsolve.__version__,'ngsolve_path':ngsolve.__file__,
+        'netgen_path':netgen.__file__,'numpy':numpy.__version__,'jax':jax.__version__,
+        'jax_backend':jax.default_backend(),'jax_x64':jax.config.x64_enabled,
+        'matmul_precision':jax.config.jax_default_matmul_precision}
+pathlib.Path('results/dependency_runtime.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report),flush=True)
+sys.exit(0 if report['jax_backend']=='gpu' and report['jax_x64']
+         and report['matmul_precision']=='highest' else 42)
+PY
+run_stage api_and_inverse_preflight "$PY" preflight.py --out results/preflight.json
+run_stage channel "$PY" fom.py --config configs/channel-smoke.json --out results/channel
+run_stage manufactured "$PY" fom.py --config configs/manufactured-smoke.json --out results/manufactured
+run_stage dfg "$PY" fom.py --config configs/dfg-smoke.json --out results/dfg
+JOB_PHASE=completed
+
+
+===== experiments/ns-obstacle-2d/repairs/normal01/configs/manufactured-smoke.json =====
+{
+  "U": 0.2,
+  "D": 0.1,
+  "nu": 0.001,
+  "H": 0.41,
+  "xmin": 0.0,
+  "xmax": 2.2,
+  "center": [
+    0.2,
+    0.2
+  ],
+  "radius": 0.05,
+  "outlet": "gradient",
+  "velocity_order": 3,
+  "pressure_order": 2,
+  "geometry_order": 3,
+  "maxh": 0.08,
+  "obstacle_h": 0.02,
+  "assembly_bonus_order": 6,
+  "diagnostic_order": 12,
+  "threads": 16,
+  "seed": 27102026,
+  "newton_max": 30,
+  "nonlinear_relative_tolerance": 1e-10,
+  "linear_relative_tolerance": 1e-10,
+  "residual_floor": 1.0,
+  "damping_sequence": [
+    1,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+  ],
+  "armijo": 0.0001,
+  "inverse_backend": "umfpack",
+  "max_elements": 20000,
+  "max_dofs": 100000,
+  "max_nnz": 12000000,
+  "factor_fill_estimate": 100,
+  "memory_stop_gib": 48,
+  "jacobian_steps": [
+    0.0001,
+    1e-05,
+    1e-06
+  ],
+  "jacobian_state_perturbation": 0.1,
+  "campaign_sha256": "9507f516c0daea29d84f15c120ef0c0fb128df4f8ba7bb8325552618dcaca262",
+  "design_sha256": "0d9d077f456a2f4963764863cd0c06edccb1dccf0bc0513f4749071042e0e6bf",
+  "release": "G1_smoke_only_not_reference_admission",
+  "precision": "float64",
+  "kind": "manufactured"
+}
+
+
+===== experiments/ns-obstacle-2d/repairs/normal01/INPUT-CANDIDATE.json =====
+{
+  "status": "source_candidate_no_release",
+  "files": [
+    {
+      "staged_path": "DEPENDENCIES.json",
+      "source_path": "repairs/normal01/DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432
+    },
+    {
+      "staged_path": "NORMAL-REPAIR.json",
+      "source_path": "repairs/normal01/NORMAL-REPAIR.json",
+      "sha256": "fa2c4d6f657f73b1e8764479535dea4e57d8516f6b863bb4efb1a6e80ff1a82f",
+      "bytes": 1214
+    },
+    {
+      "staged_path": "PREFLIGHT-REPAIR.json",
+      "source_path": "repairs/normal01/PREFLIGHT-REPAIR.json",
+      "sha256": "2fc801ca6941b192e1a517d3a5cf9a9236532783bab098bb093413b8b5e3d0f4",
+      "bytes": 1432
+    },
+    {
+      "staged_path": "REPAIR.json",
+      "source_path": "repairs/normal01/REPAIR.json",
+      "sha256": "88f667b72060b56710f1eddffdf9be4ef235b133014d025605e2146e8e202b85",
+      "bytes": 928
+    },
+    {
+      "staged_path": "SCALAR-REPAIR.json",
+      "source_path": "repairs/normal01/SCALAR-REPAIR.json",
+      "sha256": "6c085e80d0ce6cfa65654c41bab519976335b66784f143725ed1f814067b408f",
+      "bytes": 1188
+    },
+    {
+      "staged_path": "benchmark.json",
+      "source_path": "repairs/normal01/benchmark.json",
+      "sha256": "e5ff1685142a61e963a23e2b0fea4954b1ef779d8d9cb513482cc1c2473cfd82",
+      "bytes": 840
+    },
+    {
+      "staged_path": "campaign-A2.json",
+      "source_path": "repairs/normal01/campaign-A2.json",
+      "sha256": "9507f516c0daea29d84f15c120ef0c0fb128df4f8ba7bb8325552618dcaca262",
+      "bytes": 5565
+    },
+    {
+      "staged_path": "cluster/smoke.sh",
+      "source_path": "repairs/normal01/cluster/smoke.sh",
+      "sha256": "887dc745eab18626e7438c04c1d789853c1cfcdb8ea36c05294d6be5893894d7",
+      "bytes": 3615
+    },
+    {
+      "staged_path": "configs/channel-smoke.json",
+      "source_path": "repairs/normal01/configs/channel-smoke.json",
+      "sha256": "3554cbe4e180594203b2db36df2928509f1290f3c63f7053f42dc4307899a105",
+      "bytes": 1143
+    },
+    {
+      "staged_path": "configs/dfg-smoke.json",
+      "source_path": "repairs/normal01/configs/dfg-smoke.json",
+      "sha256": "65a01fc2d871c60853947ab8d93b7c043ffdf6b77241c85c1577eb74fca98b2f",
+      "bytes": 1139
+    },
+    {
+      "staged_path": "configs/manufactured-smoke.json",
+      "source_path": "repairs/normal01/configs/manufactured-smoke.json",
+      "sha256": "f03d13ba9404a1a8e8e42bd411b3729ae0a58ac67fd788a546f8b4265660bdda",
+      "bytes": 1148
+    },
+    {
+      "staged_path": "dependencies.py",
+      "source_path": "repairs/normal01/dependencies.py",
+      "sha256": "f1d4b641c9ff30c2909ab810985add3186ea37aa1c9d5b40f9d22b331edc85e7",
+      "bytes": 6382
+    },
+    {
+      "staged_path": "fom.py",
+      "source_path": "repairs/normal01/fom.py",
+      "sha256": "9e2fbbed57de5d943e5159e98fabc07cdc1ecb999b6a48dff96c711285529ca9",
+      "bytes": 32639
+    },
+    {
+      "staged_path": "manufactured_witness.json",
+      "source_path": "repairs/normal01/manufactured_witness.json",
+      "sha256": "1b55be8cea8261ce84c7f06e56f0ee3a4cb0a78578a0bc56568e591618b1b1c4",
+      "bytes": 3034
+    },
+    {
+      "staged_path": "preflight.py",
+      "source_path": "repairs/normal01/preflight.py",
+      "sha256": "e9e5d4c34ba1d605e758b9f7301a03b86f70d4cf48a3db5a48ee9fb2b3a3d087",
+      "bytes": 10066
+    },
+    {
+      "staged_path": "scalars.py",
+      "source_path": "repairs/normal01/scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
+      "staged_path": "smoke_summary.py",
+      "source_path": "repairs/normal01/smoke_summary.py",
+      "sha256": "6a55eaab2b975dad0753127a43d2a99920ab1bcac8cfe24324ca64d49e310f3f",
+      "bytes": 4393
+    },
+    {
+      "staged_path": "oriented_normals.py",
+      "source_path": "oriented_normals.py",
+      "sha256": "4872f4f2c0893ce296fd5980b0aabefd5b44332c8895d5f9cab15bdff9c00b32",
+      "bytes": 11989
+    }
+  ],
+  "scope": "G1 normal repair only; no G2 producer source",
+  "base_control_manifest": "artifacts/g1-smoke06/INPUT-MANIFEST.json",
+  "configuration_bytes_unchanged": true,
+  "requires_review": true
+}
+
+
+===== experiments/ns-obstacle-2d/checks/oriented-normal-replay.json =====
+{
+  "status": "passed_saved_array_replay_only",
+  "native_repair_execution": false,
+  "sample_source_sha256": "ec15d054c4fd5691c49b0b9673f17cb50046e5dcdee26ad1883e63da6c113963",
+  "result_source_sha256": "7ba0d6b7695a2482e78db2fcbe9c9ab3d8abe9b32790456ea1078c161bb7413b",
+  "helper_source_sha256": "4872f4f2c0893ce296fd5980b0aabefd5b44332c8895d5f9cab15bdff9c00b32",
+  "factors": {
+    "wall_bottom": 1,
+    "outlet": 1,
+    "wall_top": 1,
+    "inlet": 1,
+    "obstacle": -1
+  },
+  "raw_sign_reversal_invariance": true,
+  "rejections": [
+    {
+      "name": "mixed_orientation",
+      "rejected": true,
+      "message": "normal orientation is not constant on boundary label obstacle"
+    },
+    {
+      "name": "nonunit_normal",
+      "rejected": true,
+      "message": "nonunit normal or degenerate adjacent-volume witness"
+    },
+    {
+      "name": "tangent_witness",
+      "rejected": true,
+      "message": "adjacent-volume direction is too nearly tangential"
+    }
+  ],
+  "maximum_replayed_corrected_moment_error_per_measure": 6.055761952500893e-16
+}

@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-28T19:47:17.753627+00:00",
+  "command": "cd /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-native01 && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-native01 g2/native01/native.sh",
+  "returncode": 0,
+  "stdout": "6613426\n",
+  "stderr": "",
+  "GPU_type": "h200",
+  "source_commit": "b29448620cabd7efe957364eec99a83e7f73368c",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-native01",
+  "single_submission": true,
+  "job_id": 6613426
+}

@@ -4,11 +4,11 @@ This source-only milestone is unexecuted and grants no numerical release or phys
 
 ## Controls and export contract
 
-`reference_export_controls=true` is permitted only for `G2_steady_control_candidate` or future `G2_steady_training_export`. Existing G1 configurations do not enable these controls. Future G2 drafts bind the exact central A6 campaign/design at `de62124b1`. The released G1 binding is unchanged. The layout algorithm and export contract retain reviewed ROM commit `97847a479`; additional A6 controls are prospective.
+`reference_export_controls=true` is permitted only for `G2_steady_control_candidate` or future `G2_steady_training_export`. Existing G1 configurations do not enable these controls. Future G2 drafts bind the final central A6 campaign/design hashes recorded in `native01/SOURCE-CANDIDATE.json`. The released G1 binding is unchanged. The layout algorithm and export contract retain reviewed ROM commit `97847a479`; additional A6 controls are prospective.
 
 The full mapped volume rule preserves every point and positive weight. For the exact circular solid it records signed radius error, the number and total weight of points strictly inside, their weight fraction and minimum signed distance. No point is removed or reweighted. A G2 candidate fails if an inside point occurs. The exporter adds ordered mapped Jacobians and the exact ordered mixed-space layout digest used by the reviewed adapter. Its pure test compares the layout function's syntax tree with the reviewed source.
 
-`reload_checks.json` is produced by actual independent loading of `mesh.vol`, rebuilding the FE spaces, loading both solution and Stokes coefficients, and re-evaluating every volume/boundary sample. It checks curve order, coefficient order, physical points, positive weights, Jacobians, values, gradients, pressure, normals and boundary labels. For each numeric array the saved metric is
+`reload_checks.json` is produced by actual loading of `mesh.vol.bin` in a separate fresh Python interpreter, rebuilding the FE spaces, loading both solution and Stokes coefficients, and re-evaluating every volume/boundary sample. It checks curve order, coefficient order, physical points, positive weights, Jacobians, values, gradients, pressure, normals and boundary labels. For each numeric array the saved metric is
 
 $$e=\frac{\max|a-b|}{\max(\max|b|,s)}.$$
 
@@ -41,7 +41,7 @@ The robust reference generator retains independent Stokes solves as control work
 
 ## Prospective normal-orientation repair propagation
 
-The isolated G1 normal repair at `26e9b8272` is under review. Its helper is now
+The isolated G1 normal repair at `262a0ef05` passed source review and smoke07 native controls. Its helper is now
 propagated into this separate G2 development source, with no G2 release. Both
 original generation and actual mesh reload derive and independently verify
 fluid-outward signs from adjacent volume topology. The raw curved normals,
@@ -58,7 +58,7 @@ fairly instead of charging repeated helper assemblies only to the FOM.
 
 ## Resource projection and remaining gates
 
-`plan.py` generates the draft matrix and optionally projects from explicit collected G1 mesh counts, reading array headers rather than field values. Exact mesh sizes are unresolved; no G2 config is runnable. The existing adapter point, coefficient, element and archive caps remain fixed. A projected cap violation requires a reviewed resource-only amendment or separately qualified deterministic rule, never a silently weaker reference rule.
+`plan.py` generates the draft matrix and optionally projects from explicit collected G1 mesh counts, reading array headers rather than field values. The full ladder remains unfrozen; `native01/` contains one exact coarse producer/reload candidate awaiting source review and release. The existing adapter point, coefficient, element and archive caps remain fixed. A projected cap violation requires a reviewed resource-only amendment or separately qualified deterministic rule, never a silently weaker reference rule.
 
 The matrix includes three mesh levels, independent geometry/p-order controls, solver and quadrature tightening, upstream/downstream extensions and the separately named symmetric outlet problem. Common-domain field comparison and uncertainty aggregation still need a reviewed comparison implementation. Every eventual training/development/validation reference must pass the common gates; Re20 does not confer admission on other viscosities. The shared-lift adapter connection, actual curved-file round trip, native gradient/trace APIs, exact resource counts and the eventual tuned FOM query runner all remain unverified until their appropriate reviews and authorized runs.
 

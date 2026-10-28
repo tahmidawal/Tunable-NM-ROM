@@ -19,7 +19,7 @@ Generated from `plan.py`; exact sizes and execution are not released. No G2 nume
 | downstream_extension | 0.25 | 3/2 | 3 | 32 | 32 | 32 |
 | symmetric_outlet_long_domain | 0.25 | 3/2 | 3 | 32 | 32 | 32 |
 
-Absolute DOFs, points and memory are unresolved until explicit collected G1 counts are provided. Multipliers are mesh-scaling estimates, not measured counts or memory guarantees. The existing adapter caps remain unchanged. A cap violation requires a reviewed resource-only amendment or separately qualified rule, never silent coarsening or quadrature weakening.
+Absolute estimates are in the JSON when an explicit collected G1 baseline is supplied; refined counts and actual peak memory remain unmeasured. Multipliers are mesh-scaling estimates, not measured counts or memory guarantees. The existing adapter caps remain unchanged. A cap violation requires a reviewed resource-only amendment or separately qualified rule, never silent coarsening or quadrature weakening.
 
 ## Glossary
 

@@ -539,7 +539,7 @@ def run_case(cfg, out):
         reload_evidence=rex.reload_certificate(out,cfg,mesh,layout_evidence,ng)
         if cfg.get('export_common_stokes_lift',False):
             from shared_lift import export_common_lift
-            export_common_lift(out,cfg,sha(out/'mesh.vol'),layout_evidence,stokes_state,stokes_linear_metric,
+            export_common_lift(out,cfg,sha(out/rex.MESH_FILENAME),layout_evidence,stokes_state,stokes_linear_metric,
                                stokes_completed-stokes_started)
     completed=time.perf_counter();elapsed=completed-started
     result={'status':'completed_control_not_reference_admission','configuration':cfg,
@@ -565,6 +565,7 @@ def run_case(cfg, out):
     if reference_controls:
         import importlib.metadata
         dump(out/'EXPORT-MANIFEST.json',{'schema':'ns-obstacle-reference-producer-v1','physical_admission':False,
+             'mesh_filename':rex.MESH_FILENAME,'mesh_format':rex.MESH_FORMAT,'reload_policy':rex.RELOAD_POLICY,
              'case':{'kind':kind,'Re':U*D/nu,'split':cfg.get('split','control'),'release':cfg['release']},
              'campaign_sha256':cfg['campaign_sha256'],'layout_sha256':layout_evidence['sha256'],
              'versions':{name:importlib.metadata.version(name) for name in ('ngsolve','netgen-mesher','netgen-occt','ngsolve-openblas','numpy')},

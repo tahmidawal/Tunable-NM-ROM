@@ -4,26 +4,26 @@
   "numerical_execution_authorized": false,
   "absolute_mesh_sizes_frozen": false,
   "status": "prospective source review only, no runtime claims",
-  "normal_repair_candidate": "26e9b8272",
+  "normal_repair_candidate": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
   "normal_propagation_native_execution": false,
-  "source_parent": "26e9b8272309a28d0f006fe8a6aa688f6a39f456",
-  "released_G1_source_unchanged": "9d431a0ccdf3f9477370e032a95d3f0c1a0b4323",
-  "configuration_binding": "prospective G2 bound to central A6 de62124b1; released G1 binding unchanged",
+  "source_parent": "c3a6c8a76052e01eeddf603acb79aa7739ee7f1b",
+  "released_G1_source_unchanged": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
+  "configuration_binding": "prospective G2 bound to final A6 campaign/design; A8 helper byte-identical to executed smoke07; G1 artifacts unchanged",
   "files": [
     {
       "path": "oriented_normals.py",
-      "bytes": 11989,
-      "sha256": "4872f4f2c0893ce296fd5980b0aabefd5b44332c8895d5f9cab15bdff9c00b32"
+      "bytes": 15221,
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b"
     },
     {
       "path": "fom.py",
-      "bytes": 37725,
-      "sha256": "7db262ec2d64cb4a4ed6ccbed5401e25e04ca311be96895fdcaf09c7029c94ff"
+      "bytes": 37844,
+      "sha256": "915d3144cfef53dd2c9837fdd2130702740520b70261c7377250c78d84911912"
     },
     {
       "path": "reference_export.py",
-      "bytes": 22648,
-      "sha256": "52b8f1976f9bd0e5436812553748f57020e06061ca070b34d8809d6a8df3e090"
+      "bytes": 26378,
+      "sha256": "372eb8f5696850b9c6caadc0125d80da9da19c19a31a766be9fdfac4495e791a"
     },
     {
       "path": "shared_lift.py",
@@ -37,8 +37,8 @@
     },
     {
       "path": "preflight.py",
-      "bytes": 10066,
-      "sha256": "e9e5d4c34ba1d605e758b9f7301a03b86f70d4cf48a3db5a48ee9fb2b3a3d087"
+      "bytes": 10414,
+      "sha256": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3"
     },
     {
       "path": "freeze_inputs.py",
@@ -52,13 +52,13 @@
     },
     {
       "path": "g2/campaign-A6.json",
-      "bytes": 6446,
-      "sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d"
+      "bytes": 6507,
+      "sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27"
     },
     {
       "path": "g2/DESIGN-A6.md",
-      "bytes": 45902,
-      "sha256": "0bd0613e64fc3a67a5b7db5201eee80cf05b704052eebcec11931f2d859f7a9e"
+      "bytes": 46353,
+      "sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1"
     },
     {
       "path": "benchmark.json",
@@ -82,28 +82,28 @@
     },
     {
       "path": "g2/plan.py",
-      "bytes": 9178,
-      "sha256": "d70d93c4c4b42aea606417727c60bcc220b10b85246e64d44f9ff70eb7c3f5c1"
+      "bytes": 9225,
+      "sha256": "34250419de6e1691c410c0d72c1a5dcecb1cf1a25b44c1f6a592a58c5c5fba11"
     },
     {
       "path": "g2/freeze_source.py",
-      "bytes": 1583,
-      "sha256": "9a39fa791a4d555ff950032c8aa4bd1e2b59ca3341e126870435b67c311b9612"
+      "bytes": 1803,
+      "sha256": "685f37f1c96c8f43573c1e8e02d9cf43124132d672334ef99a1b3604102767af"
     },
     {
       "path": "g2/IMPLEMENTATION.md",
-      "bytes": 9792,
-      "sha256": "02366adad99c56f05a65f8f40c8a4402e2f27083d72c64c263f70fddfd3c17d4"
+      "bytes": 9968,
+      "sha256": "ec2cebf1fe25b11ae6da205b807a4775641dc8780d6ae26bb08ed3683dc03035"
     },
     {
       "path": "g2/CASE-MATRIX.DRAFT.json",
-      "bytes": 17054,
-      "sha256": "401387241760336245d3b81c179b6933aa57ddfa6ac0333dce329a3f8a1bf333"
+      "bytes": 22913,
+      "sha256": "a13d8376816e77f2261bd9cb6779fdf89323f5b033744505029b2120cbfe5f8b"
     },
     {
       "path": "g2/CASE-MATRIX.DRAFT.md",
-      "bytes": 1737,
-      "sha256": "5176f7b887ce0ab4ecefd5d990b5192f45890ce46e483b6bd459aa57db8c1c4f"
+      "bytes": 1784,
+      "sha256": "2568e8b02a5957c587ebf3720c0c66dd79c7144658f28c78fb5b1be08a88e046"
     },
     {
       "path": "checks/test_reference_export.py",
@@ -129,6 +129,101 @@
       "path": "configs/manufactured-smoke.json",
       "bytes": 1148,
       "sha256": "f03d13ba9404a1a8e8e42bd411b3729ae0a58ac67fd788a546f8b4265660bdda"
+    },
+    {
+      "path": "g2/native01/DELTA-AGAINST-A8.patch",
+      "bytes": 13421,
+      "sha256": "06a1ece1a5930b0eea3a77a50f01415416617026e8d0f013decbd46014f15503"
+    },
+    {
+      "path": "g2/native01/RESOURCE-PROJECTION.json",
+      "bytes": 21581,
+      "sha256": "bda6aca1bb5b183b22bb58ade9324ad81ae40d5f374e598f718c51d200b1ed28"
+    },
+    {
+      "path": "g2/native01/REVIEW-NOTE.md",
+      "bytes": 4542,
+      "sha256": "532925403ffe3280cf2e47ce99692b4b1b1bdaeb792af89bf336422cdfd665b6"
+    },
+    {
+      "path": "g2/native01/SOURCE-CANDIDATE.json",
+      "bytes": 4631,
+      "sha256": "a52ed88a016d7fbb94d794f875e831e8f8e190351ee96559fece535f743a56d5"
+    },
+    {
+      "path": "g2/native01/SOURCE-CHECKS.txt",
+      "bytes": 386,
+      "sha256": "e7192b9e2fd96a0dff61190cc64932f02ada5c609129082a49085213d78047b6"
+    },
+    {
+      "path": "g2/native01/dfg-native-control.json",
+      "bytes": 1360,
+      "sha256": "fa2fdc9b2686a9711085b796e1d915ca81aa19c91f22b6b676a33c0808444e11"
+    },
+    {
+      "path": "g2/native01/freeze.py",
+      "bytes": 2756,
+      "sha256": "900f83490d98f46177fd6bf82c750470bb51aba922e5d01138cc1a38f9fb8bbb"
+    },
+    {
+      "path": "g2/native01/native.sh",
+      "bytes": 3467,
+      "sha256": "3daa2c27ec1e923982ca97a8e933bf68161f06d1df14290193cc43b43527ea70"
+    },
+    {
+      "path": "g2/native01/project_resources.py",
+      "bytes": 6943,
+      "sha256": "5eda1f92bb9be62a41fd415beb516967b7c871e4eba2812c86bff5b1638664ad"
+    },
+    {
+      "path": "g2/native01/source-evidence/NETGEN-LICENSE",
+      "bytes": 26430,
+      "sha256": "a190dc9c8043755d90f8b0a75fa66b9e42d4af4c980bf5ddc633f0124db3cee7"
+    },
+    {
+      "path": "g2/native01/source-evidence/NGSOLVE-LICENSE",
+      "bytes": 26430,
+      "sha256": "a190dc9c8043755d90f8b0a75fa66b9e42d4af4c980bf5ddc633f0124db3cee7"
+    },
+    {
+      "path": "g2/native01/source-evidence/SOURCES.json",
+      "bytes": 1761,
+      "sha256": "16faf859c754ccdb863593fd5f21e17f93ed9bc84ad69738addc12a4a698cd26"
+    },
+    {
+      "path": "g2/native01/source-evidence/netgen-libsrc__core__archive.cpp",
+      "bytes": 1355,
+      "sha256": "9211b9bb4e158be5e07f0658c94aaaaa8ccedb5b24cead14426aff813fbdb12c"
+    },
+    {
+      "path": "g2/native01/source-evidence/netgen-libsrc__core__archive.hpp",
+      "bytes": 43320,
+      "sha256": "1574a483e32ab0d0275f2407b32d0fa9c654d6aa65c5d1de7a34d4eeb220abd6"
+    },
+    {
+      "path": "g2/native01/source-evidence/netgen-libsrc__meshing__curvedelems.cpp",
+      "bytes": 179402,
+      "sha256": "867fda48ac9d298767faee28320f9daf083d328951d6f6550994b900cb6a65b2"
+    },
+    {
+      "path": "g2/native01/source-evidence/netgen-libsrc__meshing__meshclass.cpp",
+      "bytes": 253288,
+      "sha256": "5f79e8f788ac3a3c81b6baa6942c6f7fdd9334ce31b05250f10b1ba9c2cecebe"
+    },
+    {
+      "path": "g2/native01/source-evidence/netgen-libsrc__meshing__python_mesh.cpp",
+      "bytes": 104444,
+      "sha256": "9515a8086bb8477d063a6cad9e87ad2ff89e6e5061be069cb8606d741af20b48"
+    },
+    {
+      "path": "g2/native01/source-evidence/ngsolve-comp__python_comp_mesh.cpp",
+      "bytes": 62428,
+      "sha256": "c636d1c245913a5fd9b15acee77b8c990876980c3922146fffd5ea09002f99ed"
+    },
+    {
+      "path": "g2/native01/summary.py",
+      "bytes": 2228,
+      "sha256": "7d0bc3341eff005b785649cb0e5e6839f5434e8115f2b7ea76f87605759a68e1"
     }
   ]
 }

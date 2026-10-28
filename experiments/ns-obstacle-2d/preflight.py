@@ -72,7 +72,7 @@ def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False, normal=Non
     return record
 
 
-def run():
+def run(orientation_evidence_path=None):
     marker('ngsolve_and_geometry_import','before')
     import ngsolve as ng
     from netgen.geom2d import SplineGeometry
@@ -84,7 +84,7 @@ def run():
     mesh=traced('mesh_wrapper',ng.Mesh,ngmesh)
     traced('curve_mesh',mesh.Curve,3)
     from oriented_normals import fluid_outward_normal
-    normal, orientation = fluid_outward_normal(mesh, order=6)
+    normal, orientation = fluid_outward_normal(mesh, order=6, evidence_path=orientation_evidence_path)
     result=mapped_probe(mesh,diagnostic=True,normal=normal)
     result['normal_orientation']=orientation
     V=traced('scalar_space',ng.H1,mesh,order=2,dirichlet='wall_bottom|wall_top|inlet|outlet')
@@ -162,8 +162,11 @@ if __name__=='__main__':
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);args=ap.parse_args()
     target=Path(args.out)
     if target.exists():raise FileExistsError('preflight output exists')
+    orientation_target=target.with_name(target.stem+'-normal-orientation.json')
+    if orientation_target.exists():raise FileExistsError('preflight orientation certificate exists')
+    target.parent.mkdir(parents=True,exist_ok=True)
     try:
-        result=run()
+        result=run(orientation_evidence_path=orientation_target)
     except Exception as exc:
         target.write_text(json.dumps({'passed':False,'error':repr(exc),'traceback':traceback.format_exc(),
             'scalar_return_contract':scalar_observations()},indent=2)+'\n')

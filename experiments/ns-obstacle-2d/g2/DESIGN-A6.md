@@ -566,6 +566,11 @@ sampled-SVD rank references/cutoffs determine the required modes; inability to c
 those modes is a hard failure, with no accuracy-tolerance-based column dropping.
 Pressure QR uses spatially centered pressure corrections, retains the original uncentered
 rank reference, and keeps the normalized constant first.
+Protect that known normalized constant as an orthogonalization direction during both
+pressure CGS2 passes, before normalization or the small SVD. This maintains the intended
+centered subspace in finite precision; retain the backward-error check against the original
+centered coefficient matrix. It is not a pressure-gauge change, extra rank cutoff or repair
+of failed output modes. The initial synthetic constant-contamination rejection is preserved.
 
 The fixed consistency scales are $S_v=\sigma_{v,1}$ for nonzero velocity corrections and
 $S_p=\max(1,\sigma_{p,1}^{\rm uncentered})$ for pressure. Zero velocity corrections have no

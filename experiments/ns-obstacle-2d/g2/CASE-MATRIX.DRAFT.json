@@ -1,8 +1,17 @@
 {
   "status": "DRAFT_UNFROZEN_NOT_EXECUTABLE_NO_G2_RELEASE",
-  "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+  "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
   "adapter_contract_commit": "97847a479",
-  "baseline_G1_counts": null,
+  "baseline_G1_counts": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke07/results/dfg/result.json",
+    "sha256": "8e081ae1a2426d109692003c3ee911d9fb2ca1be33e2e20a8663d079c12beae8",
+    "elements": 415,
+    "dofs": 4889,
+    "volume_points": 20335,
+    "nnz": 211621,
+    "peak_rss_bytes": 295583744,
+    "wall_seconds_reference_pipeline": 1.8467893367633224
+  },
   "case_count": 14,
   "cases": [
     {
@@ -26,14 +35,23 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 1.0,
         "dofs_asymptotic_triangles": 1.0,
         "nnz_local_stencil_estimate": 1.0,
         "volume_points_rule_estimate": 1.0
       },
-      "projection": null
+      "projection": {
+        "elements": 415,
+        "dofs": 4889,
+        "nnz": 211621,
+        "volume_points": 20335,
+        "factor_estimate_plus_coarse_peak_bytes": 635428928,
+        "full_volume_arrays_bytes_only": 2550432,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": []
+      }
     },
     {
       "case": "manufactured_h0",
@@ -56,14 +74,23 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 1.0,
         "dofs_asymptotic_triangles": 1.0,
         "nnz_local_stencil_estimate": 1.0,
         "volume_points_rule_estimate": 1.0
       },
-      "projection": null
+      "projection": {
+        "elements": 415,
+        "dofs": 4889,
+        "nnz": 211621,
+        "volume_points": 20335,
+        "factor_estimate_plus_coarse_peak_bytes": 635428928,
+        "full_volume_arrays_bytes_only": 2550432,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": []
+      }
     },
     {
       "case": "dfg_h0",
@@ -86,14 +113,23 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 1.0,
         "dofs_asymptotic_triangles": 1.0,
         "nnz_local_stencil_estimate": 1.0,
         "volume_points_rule_estimate": 1.0
       },
-      "projection": null
+      "projection": {
+        "elements": 415,
+        "dofs": 4889,
+        "nnz": 211621,
+        "volume_points": 20335,
+        "factor_estimate_plus_coarse_peak_bytes": 635428928,
+        "full_volume_arrays_bytes_only": 2550432,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": []
+      }
     },
     {
       "case": "manufactured_h1",
@@ -116,14 +152,23 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 4.0,
         "dofs_asymptotic_triangles": 4.0,
         "nnz_local_stencil_estimate": 4.0,
         "volume_points_rule_estimate": 4.0
       },
-      "projection": null
+      "projection": {
+        "elements": 1660,
+        "dofs": 19556,
+        "nnz": 846484,
+        "volume_points": 81340,
+        "factor_estimate_plus_coarse_peak_bytes": 1654964480,
+        "full_volume_arrays_bytes_only": 10201704,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": []
+      }
     },
     {
       "case": "dfg_h1",
@@ -146,14 +191,23 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 4.0,
         "dofs_asymptotic_triangles": 4.0,
         "nnz_local_stencil_estimate": 4.0,
         "volume_points_rule_estimate": 4.0
       },
-      "projection": null
+      "projection": {
+        "elements": 1660,
+        "dofs": 19556,
+        "nnz": 846484,
+        "volume_points": 81340,
+        "factor_estimate_plus_coarse_peak_bytes": 1654964480,
+        "full_volume_arrays_bytes_only": 10201704,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": []
+      }
     },
     {
       "case": "manufactured_h2",
@@ -176,14 +230,25 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 16.0,
         "dofs_asymptotic_triangles": 16.0,
         "nnz_local_stencil_estimate": 16.0,
         "volume_points_rule_estimate": 16.0
       },
-      "projection": null
+      "projection": {
+        "elements": 6640,
+        "dofs": 78224,
+        "nnz": 3385936,
+        "volume_points": 325360,
+        "factor_estimate_plus_coarse_peak_bytes": 5733106688,
+        "full_volume_arrays_bytes_only": 40806800,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "dfg_h2",
@@ -206,14 +271,25 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": true,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 16.0,
         "dofs_asymptotic_triangles": 16.0,
         "nnz_local_stencil_estimate": 16.0,
         "volume_points_rule_estimate": 16.0
       },
-      "projection": null
+      "projection": {
+        "elements": 6640,
+        "dofs": 78224,
+        "nnz": 3385936,
+        "volume_points": 325360,
+        "factor_estimate_plus_coarse_peak_bytes": 5733106688,
+        "full_volume_arrays_bytes_only": 40806800,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "dfg_p4_g4",
@@ -236,7 +312,7 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "role": "independent p cross-check; geometry difference resolved by separate p3/g4 case",
       "projection_multipliers": {
         "elements": 16.0,
@@ -244,7 +320,19 @@
         "nnz_local_stencil_estimate": 37.8698224852071,
         "volume_points_rule_estimate": 16.0
       },
-      "projection": null
+      "projection": {
+        "elements": 6640,
+        "dofs": 145782,
+        "nnz": 8014050,
+        "volume_points": 325360,
+        "factor_estimate_plus_coarse_peak_bytes": 13155383936,
+        "full_volume_arrays_bytes_only": 42329928,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "dofs",
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "dfg_p3_g4",
@@ -267,7 +355,7 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "role": "geometry order only, fixed solution order",
       "projection_multipliers": {
         "elements": 16.0,
@@ -275,7 +363,18 @@
         "nnz_local_stencil_estimate": 16.0,
         "volume_points_rule_estimate": 16.0
       },
-      "projection": null
+      "projection": {
+        "elements": 6640,
+        "dofs": 78224,
+        "nnz": 3385936,
+        "volume_points": 325360,
+        "factor_estimate_plus_coarse_peak_bytes": 5733106688,
+        "full_volume_arrays_bytes_only": 40806800,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "dfg_solver_100x",
@@ -298,14 +397,25 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 16.0,
         "dofs_asymptotic_triangles": 16.0,
         "nnz_local_stencil_estimate": 16.0,
         "volume_points_rule_estimate": 16.0
       },
-      "projection": null
+      "projection": {
+        "elements": 6640,
+        "dofs": 78224,
+        "nnz": 3385936,
+        "volume_points": 325360,
+        "factor_estimate_plus_coarse_peak_bytes": 5733106688,
+        "full_volume_arrays_bytes_only": 40806800,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "dfg_quadrature_plus4",
@@ -328,14 +438,25 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "projection_multipliers": {
         "elements": 16.0,
         "dofs_asymptotic_triangles": 16.0,
         "nnz_local_stencil_estimate": 16.0,
         "volume_points_rule_estimate": 26.44897959183674
       },
-      "projection": null
+      "projection": {
+        "elements": 6640,
+        "dofs": 78224,
+        "nnz": 3385936,
+        "volume_points": 537841,
+        "factor_estimate_plus_coarse_peak_bytes": 5733106688,
+        "full_volume_arrays_bytes_only": 66304520,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "upstream_extension",
@@ -358,7 +479,7 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "comparison": "common-domain velocity and force; common-pole pressure difference, no shifted pressure L2",
       "projection_multipliers": {
         "elements": 17.454545454545457,
@@ -366,7 +487,18 @@
         "nnz_local_stencil_estimate": 17.454545454545457,
         "volume_points_rule_estimate": 17.454545454545457
       },
-      "projection": null
+      "projection": {
+        "elements": 7244,
+        "dofs": 85336,
+        "nnz": 3693749,
+        "volume_points": 354939,
+        "factor_estimate_plus_coarse_peak_bytes": 6227428160,
+        "full_volume_arrays_bytes_only": 44516624,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "downstream_extension",
@@ -389,7 +521,7 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "comparison": "common-domain velocity and force; common-pole pressure difference, no shifted pressure L2",
       "projection_multipliers": {
         "elements": 32.0,
@@ -397,7 +529,19 @@
         "nnz_local_stencil_estimate": 32.0,
         "volume_points_rule_estimate": 32.0
       },
-      "projection": null
+      "projection": {
+        "elements": 13280,
+        "dofs": 156448,
+        "nnz": 6771872,
+        "volume_points": 650720,
+        "factor_estimate_plus_coarse_peak_bytes": 11170629632,
+        "full_volume_arrays_bytes_only": 81613592,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "dofs",
+          "volume_points"
+        ]
+      }
     },
     {
       "case": "symmetric_outlet_long_domain",
@@ -420,7 +564,7 @@
       "release": "G2_steady_control_candidate",
       "export_common_stokes_lift": false,
       "campaign_file": "g2/campaign-A6.json",
-      "campaign_sha256": "156197a7afb443d3a4811e442b042b1c2d897fb802acd959cbed726d26c4b03d",
+      "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
       "problem": "separate symmetric-traction-zero boundary model; never DFG",
       "projection_multipliers": {
         "elements": 32.0,
@@ -428,7 +572,19 @@
         "nnz_local_stencil_estimate": 32.0,
         "volume_points_rule_estimate": 32.0
       },
-      "projection": null
+      "projection": {
+        "elements": 13280,
+        "dofs": 156448,
+        "nnz": 6771872,
+        "volume_points": 650720,
+        "factor_estimate_plus_coarse_peak_bytes": 11170629632,
+        "full_volume_arrays_bytes_only": 81613592,
+        "work_model": "2D h^-2 only; no runtime promise; curved local refinement and native fill can differ",
+        "cap_violations": [
+          "dofs",
+          "volume_points"
+        ]
+      }
     }
   ],
   "existing_caps_unchanged": {

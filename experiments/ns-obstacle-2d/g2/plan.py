@@ -91,7 +91,7 @@ def main():
            '|---|---:|---|---:|---:|---:|---:|']
     for r in rows:
         m=r['projection_multipliers'];table.append(f"| {r['case']} | {r['relative_h_factor']:g} | {r['velocity_order']}/{r['pressure_order']} | {r['geometry_order']} | {m['elements']:.4g} | {m['dofs_asymptotic_triangles']:.4g} | {m['volume_points_rule_estimate']:.4g} |")
-    table+=['','Absolute DOFs, points and memory are unresolved until explicit collected G1 counts are provided. Multipliers are mesh-scaling estimates, not measured counts or memory guarantees. The existing adapter caps remain unchanged. A cap violation requires a reviewed resource-only amendment or separately qualified rule, never silent coarsening or quadrature weakening.','',
+    table+=['','Absolute estimates are in the JSON when an explicit collected G1 baseline is supplied; refined counts and actual peak memory remain unmeasured. Multipliers are mesh-scaling estimates, not measured counts or memory guarantees. The existing adapter caps remain unchanged. A cap violation requires a reviewed resource-only amendment or separately qualified rule, never silent coarsening or quadrature weakening.','',
             '## Glossary','','h/h0: proposed mesh-size ratio to the eventual frozen coarse level. P: finite-element polynomial degree. Geometry: curved-mapping polynomial order. DOF: one solver coefficient. Full rule: all positive mapped element quadrature points. Multiplier: estimated work/storage growth relative to the coarse case. Draft: no numerical execution is authorized.']
     (ROOT/'g2/CASE-MATRIX.DRAFT.md').write_text('\n'.join(table)+'\n')
 

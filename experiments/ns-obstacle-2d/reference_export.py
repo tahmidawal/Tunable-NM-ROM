@@ -7,8 +7,12 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
+import resource
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import time
 import zipfile
 import numpy as np
@@ -18,6 +22,9 @@ ESSENTIAL='inlet|wall.*|obstacle'
 CAPS={'volume_points':100000,'boundary_points':30000,'archive_bytes':2**30}
 RELOAD_TOL=1e-10
 POLYNOMIAL_CHECK_OVER_U=1e-12
+MESH_FILENAME='mesh.vol.bin'
+MESH_FORMAT='netgen-binary-archive-v6.2.2608'
+RELOAD_POLICY='saved_curved_binary_verified_fresh_process_no_recurve'
 
 
 def dump(path,value):
@@ -64,8 +71,9 @@ def make_or_reuse_mesh(cfg,out,geo,ng):
     out=Path(out);source=cfg.get('immutable_mesh')
     if source is None:
         mesh=ng.Mesh(geo.GenerateMesh(maxh=cfg['maxh']))
-        mesh.Curve(cfg['geometry_order']);mesh.ngmesh.Save(str(out/'mesh.vol'))
-        return mesh,{'mode':'generated','mesh_sha256':sha_file(out/'mesh.vol')}
+        mesh.Curve(cfg['geometry_order']);mesh.ngmesh.Save(str(out/MESH_FILENAME))
+        return mesh,{'mode':'generated','mesh_filename':MESH_FILENAME,'mesh_format':MESH_FORMAT,
+                     'mesh_sha256':sha_file(out/MESH_FILENAME)}
     if not enabled(cfg):raise ValueError('immutable mesh reuse requires reviewed G2 controls')
     mesh_path=Path(source['mesh_path']).resolve();identity_path=Path(source['identity_path']).resolve()
     for path,key in ((mesh_path,'mesh_sha256'),(identity_path,'identity_sha256')):
@@ -75,18 +83,20 @@ def make_or_reuse_mesh(cfg,out,geo,ng):
     reload_path=identity_path.with_name('reload_checks.json')
     if sha_file(reload_path)!=identity.get('reload_checks_sha256'):raise ValueError('immutable source reload-evidence hash mismatch')
     reload_record=json.loads(reload_path.read_text())
-    if (reload_record.get('passed') is not True or reload_record.get('policy')!='saved_curved_verified_no_recurve'
-        or reload_record.get('source_files',{}).get('mesh.vol')!=source['mesh_sha256']):
+    if (reload_record.get('passed') is not True or reload_record.get('policy')!=RELOAD_POLICY
+        or reload_record.get('source_files',{}).get(MESH_FILENAME)!=source['mesh_sha256']):
         raise ValueError('immutable source reload evidence does not certify these mesh bytes')
-    if (identity.get('policy')!='saved_curved_verified_no_recurve' or identity.get('reload_passed') is not True
+    if (identity.get('policy')!=RELOAD_POLICY or identity.get('reload_passed') is not True
+        or identity.get('mesh_filename')!=MESH_FILENAME or identity.get('mesh_format')!=MESH_FORMAT
         or identity.get('geometry')!=geometry_signature(cfg) or identity.get('mesh_sha256')!=source['mesh_sha256']
         or identity.get('ngsolve_version')!=ng.__version__
         or identity.get('mesh_construction')!={k:cfg[k] for k in ('maxh','obstacle_h','seed')}):
         raise ValueError('immutable source lacks matching geometry/reload identity')
-    shutil.copyfile(mesh_path,out/'mesh.vol')
-    mesh=ng.Mesh(str(out/'mesh.vol'))  # Never silently Curve or regenerate a loaded mesh.
+    shutil.copyfile(mesh_path,out/MESH_FILENAME)
+    mesh=ng.Mesh(str(out/MESH_FILENAME))  # Never silently Curve or regenerate a loaded mesh.
     if int(mesh.GetCurveOrder())!=cfg['geometry_order']:raise ValueError('loaded curve order mismatch')
-    return mesh,{'mode':'immutable_byte_copy','mesh_sha256':sha_file(out/'mesh.vol'),
+    return mesh,{'mode':'immutable_byte_copy','mesh_filename':MESH_FILENAME,'mesh_format':MESH_FORMAT,
+                 'mesh_sha256':sha_file(out/MESH_FILENAME),
                  'source_identity_sha256':source['identity_sha256'],'source_layout_sha256':identity['layout_sha256']}
 
 
@@ -264,19 +274,43 @@ def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None):
 
 
 def reload_certificate(out,cfg,original_mesh,original_layout,ng):
+    """Exec a fresh interpreter; no original native mesh or FE object reaches it."""
+    out=Path(out).resolve()
+    request={'producer_pid':os.getpid(),'original_curve_order':int(original_mesh.GetCurveOrder()),
+             'mesh_filename':MESH_FILENAME,'mesh_format':MESH_FORMAT,
+             'mesh_sha256':sha_file(out/MESH_FILENAME),'config_sha256':sha_file(out/'config.json'),
+             'layout_file_sha256':sha_file(out/'fe_layout.json'),
+             'layout_sha256':original_layout['sha256']}
+    dump(out/'reload_request.json',request)
+    command=[sys.executable,str(Path(__file__).resolve()),'--reload-case',str(out)]
+    with (out/'reload.stdout.log').open('w') as stdout,(out/'reload.stderr.log').open('w') as stderr:
+        completed=subprocess.run(command,stdout=stdout,stderr=stderr,check=False)
+    dump(out/'reload_process.json',{'command':command,'producer_pid':os.getpid(),'returncode':completed.returncode})
+    if completed.returncode:raise RuntimeError(f'fresh-process reload failed: exit {completed.returncode}; evidence retained')
+    report=json.loads((out/'reload_checks.json').read_text())
+    if (report.get('passed') is not True or report.get('policy')!=RELOAD_POLICY
+        or report['execution']['pid']==os.getpid()):raise ArithmeticError('fresh-process reload certificate missing')
+    return report
+
+
+def _reload_certificate(out,cfg,original_curve_order,original_layout,ng,request):
     """Actually load saved files, reconstruct spaces and compare every mapped sample."""
     out=Path(out);start=time.perf_counter()
-    report={'passed':False,'policy':'saved_curved_verified_no_recurve','threshold':RELOAD_TOL,'checks':{},'curve_orders':{},'source_files':{}}
+    report={'passed':False,'policy':RELOAD_POLICY,'threshold':RELOAD_TOL,'checks':{},'curve_orders':{},'source_files':{},
+            'mesh_filename':MESH_FILENAME,'mesh_format':MESH_FORMAT,
+            'execution':{'pid':os.getpid(),'parent_pid':os.getppid(),'producer_pid':request['producer_pid'],
+                         'executable':sys.executable,'fresh_interpreter':True}}
     try:
-        for name in ('mesh.vol','solution.sol','stokes.sol','full_rule.npz','boundary_rule.json','fe_layout.json'):
+        if os.getpid()==request['producer_pid']:raise RuntimeError('reload must use a fresh process')
+        for name in (MESH_FILENAME,'solution.sol','stokes.sol','full_rule.npz','boundary_rule.json','fe_layout.json'):
             report['source_files'][name]=sha_file(out/name)
         with zipfile.ZipFile(out/'full_rule.npz') as archive:
             if sum(row.file_size for row in archive.infolist())>CAPS['archive_bytes']:raise MemoryError('reference archive exceeds adapter bound')
         with np.load(out/'full_rule.npz',allow_pickle=False) as archive:
             data={name:archive[name] for name in archive.files}
         if any(a.dtype!=np.dtype('float64') or not np.isfinite(a).all() for a in data.values()):raise TypeError('reference arrays must already be finite float64')
-        mesh=ng.Mesh(str(out/'mesh.vol'))
-        report['curve_orders']={'configured':cfg['geometry_order'],'original':int(original_mesh.GetCurveOrder()),'reloaded':int(mesh.GetCurveOrder())}
+        mesh=ng.Mesh(str(out/MESH_FILENAME))
+        report['curve_orders']={'configured':cfg['geometry_order'],'original':original_curve_order,'reloaded':int(mesh.GetCurveOrder())}
         if len(set(report['curve_orders'].values()))!=1:raise ValueError('saved mesh did not preserve curved order')
         V=ng.VectorH1(mesh,order=cfg['velocity_order'],dirichlet=ESSENTIAL);Q=ng.H1(mesh,order=cfg['pressure_order']);X=V*Q
         record,digest=layout_record(mesh,V,Q,ng)
@@ -310,12 +344,35 @@ def reload_certificate(out,cfg,original_mesh,original_layout,ng):
         report['failure']=repr(exc)
         raise
     finally:
-        report['seconds']=time.perf_counter()-start;dump(out/'reload_checks.json',report)
+        report['seconds']=time.perf_counter()-start
+        report['peak_rss_bytes']=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
+        dump(out/'reload_checks.json',report)
     dump(out/'mesh_identity.json',{'schema':'ns-obstacle-immutable-mesh-v1','policy':report['policy'],'reload_passed':True,
          'geometry':geometry_signature(cfg),'mesh_construction':{k:cfg[k] for k in ('maxh','obstacle_h','seed')},
-         'mesh_sha256':sha_file(out/'mesh.vol'),'layout_sha256':digest,'ngsolve_version':ng.__version__,
+         'mesh_filename':MESH_FILENAME,'mesh_format':MESH_FORMAT,
+         'mesh_sha256':sha_file(out/MESH_FILENAME),'layout_sha256':digest,'ngsolve_version':ng.__version__,
          'reload_checks_sha256':sha_file(out/'reload_checks.json')})
     return report
+
+
+def reload_main():
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--reload-case',required=True,type=Path)
+    args=parser.parse_args();out=args.reload_case.resolve()
+    if (out/'reload_checks.json').exists():raise FileExistsError('refusing to overwrite reload evidence')
+    request=json.loads((out/'reload_request.json').read_text())
+    if request['mesh_filename']!=MESH_FILENAME or request['mesh_format']!=MESH_FORMAT:
+        raise ValueError('unrecognized mesh filename/format; no text conversion permitted')
+    for name,key in ((MESH_FILENAME,'mesh_sha256'),('config.json','config_sha256'),('fe_layout.json','layout_file_sha256')):
+        if sha_file(out/name)!=request[key]:raise ValueError(f'reload request hash mismatch: {name}')
+    if os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')!='highest' or os.environ.get('JAX_ENABLE_X64')!='true':
+        raise RuntimeError('required precision environment missing')
+    cfg=json.loads((out/'config.json').read_text());layout=json.loads((out/'fe_layout.json').read_text())
+    if layout['sha256']!=request['layout_sha256']:raise ValueError('reload layout identity mismatch')
+    import ngsolve as ng
+    ng.SetNumThreads(int(cfg['threads']))
+    with ng.TaskManager():
+        _reload_certificate(out,cfg,request['original_curve_order'],layout,ng,request)
 
 
 def wake_centerline(mesh,velocity,cfg,ng):
@@ -337,3 +394,6 @@ def wake_centerline(mesh,velocity,cfg,ng):
     return {'status':'sampling diagnostic only, not an admission gate or inferred reference','x_start':start,'x_end':end,
             'target_spacing':target_dx,'actual_spacing':float(xs[1]-xs[0]),'height':cfg['center'][1],
             'count':len(rows),'valid_count':sum(row['valid'] for row in rows),'samples':rows,'pressure_probes_changed':False}
+
+
+if __name__=='__main__':reload_main()

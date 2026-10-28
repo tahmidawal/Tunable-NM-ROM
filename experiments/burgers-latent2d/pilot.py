@@ -93,6 +93,7 @@ def main():
     qnone = C.make_head_query(f.pf, 32, 256, f.trust, nrec=51, nstep=50)
     qfail = C.make_head_query(f.pf, 32, 256, f.trust, nrec=51, nstep=50,
                             seed=make_candidate(hc, hf, nl, nlJ, c.trust, 'physics', force_failure=True))
+    jax.block_until_ready(data)
     rep['setup'] = dict(seconds=time.perf_counter()-t, heads=dict(coarse=c.sha256, fine=f.sha256),
                         trust=dict(coarse=c.trust, fine=f.trust), memory=P.mem())
     rep['table_meta'] = fine.meta
@@ -198,7 +199,7 @@ def main():
                 elapsed,v=timed(lambda:call(qtim[arm],ci,arm!='direct'))
                 want=witnesses[(arm,ci)]
                 identity=all(np.array_equal(np.asarray(v[k]),want[k]) for k in ('W','fields')) and all(
-                    np.array_equal(v['stats'][k],x) for k,x in want['stats'].items())
+                    np.array_equal(v['stats'][k],x,equal_nan=True) for k,x in want['stats'].items())
                 path=f'timed_identity_{arm}_case{ci}.npz'
                 if not identity:
                     path=f'timed_variant_{arm}_case{ci}_block{block}.npz'; dump_npz(out/path,v)

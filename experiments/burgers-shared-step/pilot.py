@@ -214,6 +214,12 @@ def main():
                 auxiliary_failures=int(np.sum(~np.isin(info[:, 2], [1, 4]))) if arm == 'affine' else 0,
                 coarse_J=int(info[:, 9].sum()))
             if arm == 'affine':
+                direct = records[('direct', ci)]
+                np.testing.assert_allclose(v['W'][0], direct['W'][0], rtol=1e-12, atol=1e-13)
+                np.testing.assert_allclose(v['fields'][0], direct['fields'][0], rtol=1e-12, atol=1e-13)
+                for key in ('ic_it', 'ic_reason', 'ic_idx'):
+                    assert np.array_equal(st[key], direct['stats'][key])
+                entry['initial_state_matches_direct'] = True
                 diag = np.asarray(guard_check(states, st['seed_codes'], float(cases[ci, 4]), d, sch))
                 accepted = info[:, 0].astype(bool)
                 assert np.all(diag[:, 2] == 0.) and np.max(diag[:, 3]) <= 1e-12

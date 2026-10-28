@@ -46,6 +46,11 @@ def main():
                 assert valid or not r['valid']
                 assert int(z['it_sum']) == r['fine_corrections'] and 50+int(z['it_sum']) == r['fine_J']
                 if arm == 'affine':
+                    with np.load(path.parent/f'direct_case{c}.npz') as direct:
+                        np.testing.assert_allclose(z['W'][0], direct['W'][0], rtol=1e-12, atol=1e-13)
+                        np.testing.assert_allclose(z['fields'][0], direct['fields'][0], rtol=1e-12, atol=1e-13)
+                        assert all(np.array_equal(z[key], direct[key]) for key in ('ic_it', 'ic_reason', 'ic_idx'))
+                    assert r['initial_state_matches_direct']
                     info = z['seed_info']; accepted = info[:, 0].astype(bool)
                     assert np.all(info[:, 1] <= 600) and np.all(info[:, 12] == 0)
                     assert int(info[:, 9].sum()) == r['coarse_J'] == 50+int(info[:, 1].sum())

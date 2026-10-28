@@ -39,7 +39,7 @@ def sha(path):
 def run_case(cfg, out):
     import ngsolve as ng
     from netgen.geom2d import SplineGeometry
-    ng.SetNumThreads(int(cfg['threads']))
+    # main() sets the requested thread count before entering TaskManager.
     out = Path(out)
     out.mkdir(parents=True, exist_ok=False)
     dump(out / 'config.json', cfg)

@@ -114,8 +114,23 @@ def main():
     heads = {k: HC.Head(model_dir/f'h{k}.npz', bank.mdl) for k in (16, 32, 64)}
     for width, head in heads.items():
         assert head.K == width and len(head.Zsub) == 8192
+        assert np.isfinite(head.trust) and head.trust > 0 and 'hB' not in head.params
+        assert head.cfg['jcp_heads_steps'] == 200000
         assert head.trust == manifest['heads'][str(width)]['trust']
     f, c = heads[64], heads[16]
+    # Structural identity establishes the common map for every latent vector;
+    # the numerical field/derivative checks below test the implemented folding.
+    for width in (16, 32):
+        head = heads[width]
+        assert len(head.params['h']) == len(f.params['h'])
+        np.testing.assert_array_equal(head.params['h'][0][0], f.params['h'][0][0][:width])
+        np.testing.assert_array_equal(head.params['h'][0][1], f.params['h'][0][1])
+        for layer, fine_layer in zip(head.params['h'][1:], f.params['h'][1:]):
+            for param, fine_param in zip(layer, fine_layer):
+                np.testing.assert_array_equal(param, fine_param)
+        np.testing.assert_array_equal(head.params['h_lin'], f.params['h_lin'][:width])
+        np.testing.assert_array_equal(head.Zsub, f.Zsub[:, :width])
+    rep['checks']['shared_prefix_parameters'] = dict(passed=True)
     fine = HC.HeadSetting(bank, 'shared64', f, 'gauss128', M=M, nrec=51, nstep=NSTEPS)
     fine.check('main', bank); d = fine.data['main']
     assert d['A'].shape == (M, 512) and d['Gq'].shape == (128**2, 512)

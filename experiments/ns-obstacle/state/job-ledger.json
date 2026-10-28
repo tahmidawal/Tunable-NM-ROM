@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "both_lanes_raw_obstacle_normal_diagnostic_needed_no_live_jobs",
+  "status": "2d_normal_diagnostic_submitted",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -176,9 +176,29 @@
       "collection_archive_bytes": 158264439,
       "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d/artifacts/g1-smoke06/RETENTION.json",
       "remote_duplicate_removed": false
+    },
+    {
+      "job_id": 6610978,
+      "lane": "2d_reference",
+      "attempt": "g1-normal01",
+      "source_commit": "09a660f7b47926f3ef6dc8dea16f2d1848947dc4",
+      "manifest_sha256": "0692e4f30d5f8d2eb12a0f252560fb674148ad612cc793aafc2defe8c623bab6",
+      "submitted_utc": "2026-10-28T18:43:21Z",
+      "state_last_observed": "PENDING",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "purpose": "unchanged_geometry_raw_ordinary_volume_facet_normal_diagnostic",
+      "PDE_solve_permitted": false,
+      "device_for_FE": "CPU"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6610978
+  ],
   "completed_gpu_hours": 0.030555555555555555,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

@@ -1,6 +1,14 @@
 {
-  "status": "both_geometry_normal_diagnostics_pending_no_live_jobs",
-  "numerical_jobs": [],
+  "status": "2d_normal_diagnostic_live_no_other_jobs",
+  "numerical_jobs": [
+    {
+      "job_id": 6610978,
+      "lane": "2d",
+      "attempt": "g1-normal01",
+      "state": "PENDING",
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
     "2D unchanged-geometry raw/ordinary/facet normal diagnostic code review and release",
@@ -39,9 +47,10 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T18:39:23.409368+00:00",
+  "last_checkpoint_utc": "2026-10-28T18:43:47.687438+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
+    "reference_3d_recovery",
     "rom_recovery",
     "numerical_recovery"
   ],

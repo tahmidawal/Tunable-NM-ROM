@@ -49,7 +49,7 @@ def sha_file(path):
 def adapter_digest():
     root = Path(__file__).parent
     return hashlib.sha256(json.dumps({name: sha_file(root/name) for name in
-        ('fe_adapter.py', 'fe_blocks.py', 'point_store.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+        ('fe_adapter.py', 'fe_blocks.py', 'component_factor.py', 'point_store.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
 
 
 def verify_mesh_contract(record, policy_key='policy'):
@@ -666,7 +666,17 @@ class TrainingFEAdapter:
         pressure = pod['pressure_coefficients']; count = pressure.shape[1]
         ids = np.flatnonzero(self.free)
         hv = h1v[ids][:, ids]
-        factor_v, fm_v = bounded_factor(hv)
+        scalar_free = np.array([bool(v) for v in self.S.FreeDofs()])
+        scalar_ids = np.flatnonzero(scalar_free)
+        hs = h1s[scalar_ids][:, scalar_ids]; mss = ms[scalar_ids][:, scalar_ids]
+        # Actual component block identity was certified above on these same matrices.
+        # Share one bounded scalar factor with the existing scalar eigenproblem.
+        factor_s, fm_s = bounded_factor(hs)
+        from component_factor import ComponentFactorSolve
+        component_solver = ComponentFactorSolve(factor_s.solve, self.component_maps, self.free, scalar_free)
+        fm_v = dict(component_solver.evidence, backend='verified scalar H1 component factor reuse',
+            additional_factorizations=0, additional_factor_seconds=0.,
+            shared_factor_record='factor_velocity_scalar', matrix_sha256=sparse_digest(hv))
         rhs = np.empty((len(ids), count))
         test = self.V.TestFunction()
         for j in range(count):
@@ -674,14 +684,14 @@ class TrainingFEAdapter:
             form = ng.LinearForm(self.V); form += psi*ng.div(test)/self.D*dx
             with ng.TaskManager(): form.Assemble()
             rhs[:, j] = form.vec.FV().NumPy()[ids]
-        sf = factor_v.solve(rhs)
+        solve_started = time.perf_counter()
+        sf = component_solver.solve(rhs)
+        fm_v['component_solve_seconds'] = time.perf_counter()-solve_started
+        del component_solver  # Do not retain its bound SuperLU method after factor release.
         residual = np.linalg.norm(hv@sf-rhs)/max(np.linalg.norm(rhs), 1e-300)
         if residual > 1e-10: raise ArithmeticError('H1 supremizer linear residual failed')
         supremizers = np.zeros((self.V.ndof, count)); supremizers[ids] = sf
-        del factor_v
-        scalar_ids = np.flatnonzero(np.array([bool(v) for v in self.S.FreeDofs()]))
-        hs = h1s[scalar_ids][:, scalar_ids]; mss = ms[scalar_ids][:, scalar_ids]
-        factor_s, fm_s = bounded_factor(hs)
+        del hv
         eigen_s, em_v = bounded_eigenmodes(hs, mss, factor_s.solve, CAPS['velocity_scalar_eigen_candidates'])
         scalar_modes = np.zeros((self.S.ndof, eigen_s.shape[1])); scalar_modes[scalar_ids] = eigen_s
         ev = expand_components(scalar_modes, self.component_maps, self.V.ndof)

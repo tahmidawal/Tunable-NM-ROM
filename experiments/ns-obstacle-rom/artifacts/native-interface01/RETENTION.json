@@ -1,0 +1,35 @@
+{
+  "status": "complete_all_regular_files_verified",
+  "job_id": 6613813,
+  "archive_sha256": "b35b31000bdbdcdd7ed5e9b96be679353448c5826618ab19b7b449c772a97924",
+  "archive_bytes": 161265189,
+  "verified_regular_files": 812,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "a99a34ec1f1dd5371f2bdc9ec237674094cea94b1b3ad846ab6637df94c25e0d"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "6e068c00502e2be2038835891ff0ac190bfbf36be6cafe2101a7e2472b80fb65"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 50331648,
+      "sha256": "0e7852f7732c9e08574b4b5b867240ff23f1fa6e015676c63abb0cd1863c252f"
+    },
+    {
+      "path": "collection.tar.gz.part-003",
+      "bytes": 10270245,
+      "sha256": "531f67773081d0efe578a4e6e946adce9fe5613896eaa68b3674808344cac818"
+    }
+  ],
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/collections/native-interface01/native-interface01.collection.tar.gz",
+  "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/collections/native-interface01/native-interface01",
+  "recovery": "Concatenate ordered chunks, verify archive SHA, extract, then cd native-interface01 and sha256sum -c COLLECTION-SHA256SUMS. Full dependencies, wheels, sources and results retained.",
+  "physical_admission": false,
+  "training_released": false,
+  "remote_cleanup": "pending durable mirror"
+}

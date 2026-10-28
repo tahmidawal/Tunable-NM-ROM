@@ -1,7 +1,13 @@
 {
   "schema": "ns-obstacle-fe-adapter-input-source-v1",
   "scope": "source contracts only, no numerical snapshot access",
-  "records": [
+  "official_API_references": [
+    "https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.eigsh.html",
+    "https://docu.ngsolve.org/nightly/how_to/howto_numpy.html",
+    "https://docu.ngsolve.org/nightly/i-tutorials/unit-1.5-subdomains/subdomains.html"
+  ],
+  "review_status": "A6 implementation candidate: independent exact source review and native integration still required",
+  "previous_records": [
     {
       "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d",
       "path": "experiments/ns-obstacle-2d/fom.py",
@@ -31,10 +37,51 @@
       "sha256": "9507f516c0daea29d84f15c120ef0c0fb128df4f8ba7bb8325552618dcaca262"
     }
   ],
-  "official_API_references": [
-    "https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.eigsh.html",
-    "https://docu.ngsolve.org/nightly/how_to/howto_numpy.html",
-    "https://docu.ngsolve.org/nightly/i-tutorials/unit-1.5-subdomains/subdomains.html"
-  ],
-  "review_status": "independent adapter review required; pinned NGSolve integration not run"
+  "records": [
+    {
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle",
+      "path": "experiments/ns-obstacle/DESIGN.md",
+      "commit_at_read": "e2faad9b72e6630463cf2ea11694d3c75593fec7",
+      "path_has_uncommitted_changes": false,
+      "sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1"
+    },
+    {
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle",
+      "path": "experiments/ns-obstacle/campaign.json",
+      "commit_at_read": "e2faad9b72e6630463cf2ea11694d3c75593fec7",
+      "path_has_uncommitted_changes": false,
+      "sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27"
+    },
+    {
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle",
+      "path": "experiments/ns-obstacle/reviews/RESPONSE-A6.md",
+      "commit_at_read": "e2faad9b72e6630463cf2ea11694d3c75593fec7",
+      "path_has_uncommitted_changes": false,
+      "sha256": "b5441cbf0f0c710a3ae372e5a658b2c995bd9da73e4e5be4bdbf0ab79d0c6555"
+    },
+    {
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d",
+      "path": "experiments/ns-obstacle-2d/fom.py",
+      "commit_at_read": "6077a060fbfca8c5debe885a193e503209d6b358",
+      "path_has_uncommitted_changes": false,
+      "sha256": "c384553e2fa11be882510b0afa0fd8799ba7d222a0335f32f72b19e73c635b8b",
+      "scope": "source-only G2 proposal, not runtime admitted"
+    },
+    {
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d",
+      "path": "experiments/ns-obstacle-2d/reference_export.py",
+      "commit_at_read": "6077a060fbfca8c5debe885a193e503209d6b358",
+      "path_has_uncommitted_changes": false,
+      "sha256": "08dd98d6380af7d184ff890dbf63dc4434ecfa7d392b2466d734e1743625ed39",
+      "scope": "source-only G2 proposal, not runtime admitted"
+    },
+    {
+      "worktree": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d",
+      "path": "experiments/ns-obstacle-2d/shared_lift.py",
+      "commit_at_read": "6077a060fbfca8c5debe885a193e503209d6b358",
+      "path_has_uncommitted_changes": false,
+      "sha256": "26c30cf4b6f9ae570c01d5e7ac6cbfa33598a28bb6651a8ca8466028d8ef7b2d",
+      "scope": "source-only G2 proposal, not runtime admitted"
+    }
+  ]
 }

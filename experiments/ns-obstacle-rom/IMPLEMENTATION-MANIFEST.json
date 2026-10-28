@@ -1,11 +1,19 @@
 {
-  "schema": "ns-obstacle-rom-source-v1",
+  "schema": "ns-obstacle-rom-source-v2",
+  "status": "A6_source_candidate_independent_review_required",
   "physical_admission": false,
+  "NGSolve_imported": false,
+  "adapter_source_sha256": "585136ba94515cb3e0c64ac4c18c1d8dde0bf04ffb50bc6c5675b146f242d146",
   "files": [
     {
+      "path": "experiments/ns-obstacle-rom/A6-PROPOSAL.md",
+      "bytes": 3703,
+      "sha256": "6e5b93faab6b3b1572b769ee2e5580b18e210fdc37a97dd0a759279eb3ee0370"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/API.md",
-      "bytes": 11262,
-      "sha256": "69023517f912020ef16b9a8d6e49fe9c86980f8897763dff25b8264cd0c4071f"
+      "bytes": 11740,
+      "sha256": "78e7d0a712015d929481141a2bf17e6534928eb3d0f2ce55f5cb2a3017b9ea27"
     },
     {
       "path": "experiments/ns-obstacle-rom/CPU-SMOKE.json",
@@ -13,14 +21,34 @@
       "sha256": "d96ad9416257b48bec5f0aee8a0c6e7cc0feaa7a68d87d339f0374ef43c6d233"
     },
     {
+      "path": "experiments/ns-obstacle-rom/DISCOVERY.md",
+      "bytes": 23999,
+      "sha256": "7c96023176372f74aae06b64761faf8f5150dba82681049982c9a19bf092ea75"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/FE-A6-FAILURE01.log",
+      "bytes": 3888,
+      "sha256": "8ad881ac4fdb993623f9df6d40a4951a8a5b5a069dc4a07464fd3518f207d927"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/FE-A6-PREVIOUS-REGRESSIONS.json",
+      "bytes": 9213,
+      "sha256": "b50830b4d2d480c123b480f9455f0fcbb699c4714f9a31e875db107673035b6f"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/FE-A6-SYNTHETIC.json",
+      "bytes": 41385,
+      "sha256": "4cf5eed5fccadd2ad973bf323b93991f962f18df054c7f41c46394593f462d33"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/FE-ADAPTER-CONTRACT.md",
-      "bytes": 15009,
-      "sha256": "18a4f040a2d29bfbbd3c5bff58f959147f1adde40379ba45aebec35d4d21e710"
+      "bytes": 17303,
+      "sha256": "ec592eace7154965338c895ad44d6b97662ced66374cbd01e84a95934df7fb62"
     },
     {
       "path": "experiments/ns-obstacle-rom/FE-ADAPTER-SOURCES.json",
-      "bytes": 1942,
-      "sha256": "798c9a7343f607f24c92ede26225de50466d10c3498033863c9250e71266ebe4"
+      "bytes": 4354,
+      "sha256": "dc3803f86148d5ba3595211b75a47b0eee76527680c4e503ff98dab253613ce9"
     },
     {
       "path": "experiments/ns-obstacle-rom/FE-ADAPTER-SYNTHETIC.json",
@@ -29,13 +57,13 @@
     },
     {
       "path": "experiments/ns-obstacle-rom/MODEL-CONTRACT.json",
-      "bytes": 6786,
-      "sha256": "2b15bd4e7bc27f90d0e3856f897645a1341ab9738561d9982a989ccdcdac4a7f"
+      "bytes": 8872,
+      "sha256": "14133cd39f7e17ee448de924c5ea61537108623656eebf320ef0b0cf787487ce"
     },
     {
       "path": "experiments/ns-obstacle-rom/REVIEW-RESPONSE.md",
-      "bytes": 5212,
-      "sha256": "4990678a3cba8ce699400b39dff6c43e9e05d54bb9bb96210ff16f89a6b12411"
+      "bytes": 7581,
+      "sha256": "f5238d156e37aab7dc88f796126322f440a0a6cfc82f179aad114e241c82549f"
     },
     {
       "path": "experiments/ns-obstacle-rom/SMOKE-FAILURES.md",
@@ -43,14 +71,24 @@
       "sha256": "2ebb06291f3fad141fc343f5cf67d2dd84797f6619307ca6eadb5e38cfd81a2e"
     },
     {
+      "path": "experiments/ns-obstacle-rom/SOURCE-INVENTORY.json",
+      "bytes": 2377,
+      "sha256": "e9a4ab9953eaa198df0bf89616660c8a0af8d76c8c51a4c6090533084d45a6e7"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/bank.py",
       "bytes": 4509,
       "sha256": "173c4f3b0a2cf8ce5c42f5f70f9424fe168f2070433ede9c2aee14a5c6c8d09f"
     },
     {
+      "path": "experiments/ns-obstacle-rom/fe_a6_smoke.py",
+      "bytes": 8904,
+      "sha256": "f29f48aa8d309bea17cad9f8525a5a0af152712576d86aba6d2f2c33168adf23"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/fe_adapter.py",
-      "bytes": 33365,
-      "sha256": "a60f080e7e30ccbb55417fd16387cda072b6d4085a7b2beac354052e756a5dcd"
+      "bytes": 43634,
+      "sha256": "d1b707129ba426efa3408e283a9c48985fe7d2c31595e3b05e3890d9319b6a63"
     },
     {
       "path": "experiments/ns-obstacle-rom/fe_adapter_smoke.py",
@@ -63,6 +101,16 @@
       "sha256": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb"
     },
     {
+      "path": "experiments/ns-obstacle-rom/fe_controls_a6.py",
+      "bytes": 3531,
+      "sha256": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/fe_pod_a6.py",
+      "bytes": 16160,
+      "sha256": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252"
+    },
+    {
       "path": "experiments/ns-obstacle-rom/geometry.py",
       "bytes": 4007,
       "sha256": "fb329e874f8c9a82750d28afb18f541f6b02769b20bb1da6a7db519f0fda0252"
@@ -71,6 +119,76 @@
       "path": "experiments/ns-obstacle-rom/interpolation.py",
       "bytes": 1477,
       "sha256": "ebaccf2fe6fda285a2255c25632e8000fd482ec621aa3fbb0c6c512be354d505"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/97847a479/FE-ADAPTER-SYNTHETIC.json",
+      "bytes": 9214,
+      "sha256": "5806b9dae3698f594d3fda21fd55d28bfe3cf220c4905292ec40ef17fa4fca44"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/97847a479/PROVENANCE.json",
+      "bytes": 758,
+      "sha256": "8c39876f0f6f17684453b16d316df4d788af871f11092def34aaf0c3cdcc98b1"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/97847a479/fe_adapter.py",
+      "bytes": 33365,
+      "sha256": "a60f080e7e30ccbb55417fd16387cda072b6d4085a7b2beac354052e756a5dcd"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/97847a479/fe_adapter_smoke.py",
+      "bytes": 9766,
+      "sha256": "7376d2206da57f8f2afd1dcb3aa131b579d30848767eda6962928262f7877bc7"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/97847a479/fe_algebra.py",
+      "bytes": 6202,
+      "sha256": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-initial-centering/FE-A6-FAILURE01.log",
+      "bytes": 3888,
+      "sha256": "8ad881ac4fdb993623f9df6d40a4951a8a5b5a069dc4a07464fd3518f207d927"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-initial-centering/PROVENANCE.json",
+      "bytes": 512,
+      "sha256": "f4c5a566a44bd01e36e2456173d8002235127079f44a246bc3b4edeb04cadc31"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-initial-centering/fe_a6_smoke.py",
+      "bytes": 8653,
+      "sha256": "8da9a57fd88f02d94ec213d34906d8100f40010584822df6af9549000af7afc3"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-initial-centering/fe_pod_a6.py",
+      "bytes": 15186,
+      "sha256": "afd8a45bd5968b79ade2da69a470d0d2be16c97ca8ad24cd5a7fd114ee71a885"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-prefreeze/FE-A6-PREVIOUS-REGRESSIONS.json",
+      "bytes": 9214,
+      "sha256": "a2ddb3309cb50493f493393ac7fc418c724f773b43c18672ed9057cac22db23f"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-prefreeze/FE-A6-SYNTHETIC.json",
+      "bytes": 41111,
+      "sha256": "c5be424dba0ac0116ff0a1695518d6184bbca45093ce10b1f3c16fc56aa5f8ab"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-prefreeze/FE-ADAPTER-SOURCES.json",
+      "bytes": 1942,
+      "sha256": "798c9a7343f607f24c92ede26225de50466d10c3498033863c9250e71266ebe4"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-prefreeze/MODEL-CONTRACT.json",
+      "bytes": 6786,
+      "sha256": "2b15bd4e7bc27f90d0e3856f897645a1341ab9738561d9982a989ccdcdac4a7f"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/legacy/A6-prefreeze/PROVENANCE.json",
+      "bytes": 698,
+      "sha256": "f0912683827004f3696fa19c16ead0426173405446f9311009fe7da9d5a4387f"
     },
     {
       "path": "experiments/ns-obstacle-rom/metrics.py",
@@ -96,6 +214,11 @@
       "path": "experiments/ns-obstacle-rom/spaces.py",
       "bytes": 10737,
       "sha256": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee"
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/sync_github.sh",
+      "bytes": 2152,
+      "sha256": "99d9973217fecca6f739c96468121d7100fe3c9e40cc7f254d2148a96e293b9f"
     },
     {
       "path": "experiments/ns-obstacle-rom/timing.py",

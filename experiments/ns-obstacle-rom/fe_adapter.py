@@ -13,9 +13,11 @@ import resource
 import time
 import zipfile
 import numpy as np
-from fe_algebra import (array_digest, coefficient_pod, reference_inf_sup,
-                        verify_reconstructed_modes)
-from spaces import canonicalize_eigenmodes, select_test_columns
+from fe_algebra import array_digest, reference_inf_sup
+from fe_pod_a6 import (coefficient_pod_a6, validate_actual_pod, orient_clusters,
+                       expand_components, check_component_blocks)
+from fe_controls_a6 import boundary_control, gradient_control
+from spaces import select_test_columns
 
 SCHEMA = 'ns-obstacle-fe-training-v1'
 REYNOLDS = [15 + 1.25*j for j in range(9)]
@@ -26,7 +28,7 @@ CAPS = {'mixed_dofs': 100000, 'elements': 20000, 'volume_points': 100000,
         'boundary_points': 30000, 'matrix_nnz': 12000000,
         'single_array_bytes': 2**30, 'archive_bytes': 2**30,
         'factor_estimate_bytes': 8*2**30, 'process_rss_bytes': 16*2**30,
-        'vector_eigen_candidates': 96, 'scalar_eigen_candidates': 32,
+        'vector_eigen_candidates': 96, 'velocity_scalar_eigen_candidates': 48, 'scalar_eigen_candidates': 32,
         'eigensolver_iterations': 2000}
 
 
@@ -41,7 +43,36 @@ def sha_file(path):
 def adapter_digest():
     root = Path(__file__).parent
     return hashlib.sha256(json.dumps({name: sha_file(root/name) for name in
-        ('fe_adapter.py', 'fe_algebra.py', 'spaces.py', 'weak.py', 'train_bank.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+        ('fe_adapter.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+
+
+def read_shared_lift_admission(path, expected_sha256):
+    path = Path(path)
+    if sha_file(path) != expected_sha256: raise ValueError('common lift admission hash mismatch')
+    admission = json.loads(path.read_text())
+    if (admission.get('schema') != 'ns-obstacle-common-stokes-admission-v1' or
+        admission.get('gate') != 'G2-steady' or admission.get('passed') is not True):
+        raise RuntimeError('genuine G2 common Stokes lift admission required')
+    for key in ('reference_admission_sha256', 'review_sha256'):
+        digest = admission.get(key, '')
+        if len(digest) != 64 or any(c not in '0123456789abcdef' for c in digest):
+            raise ValueError('common lift review/reference digest missing')
+    folder = (path.parent/admission['directory']).resolve()
+    meta_file = folder/'common_stokes_lift.json'; array_file = folder/'common_stokes_lift.npz'
+    if (max(meta_file.stat().st_size, array_file.stat().st_size) > CAPS['archive_bytes'] or
+        sha_file(meta_file) != admission['manifest_sha256'] or
+        sha_file(array_file) != admission['coefficient_sha256']):
+        raise ValueError('common lift artifact size/hash mismatch')
+    meta = json.loads(meta_file.read_text())
+    if (meta.get('schema') != 'ns-obstacle-common-stokes-v1' or
+        meta.get('coefficient_sha256') != admission['coefficient_sha256'] or
+        meta.get('outlet') != 'gradient' or meta.get('pressure_gauge') != 'natural outlet, unshifted' or
+        not math.isfinite(meta['base_nu']) or meta['base_nu'] <= 0 or
+        not math.isfinite(meta['linear_control']['value']) or meta['linear_control']['value'] < 0 or
+        not math.isfinite(meta['linear_tolerance']) or meta['linear_tolerance'] <= 0 or
+        meta['linear_control']['value'] > meta['linear_tolerance']):
+        raise ValueError('invalid common lift configuration/linear control')
+    return {'metadata': meta, 'archive': str(array_file), 'admission_sha256': expected_sha256}
 
 
 def read_training_manifest(path):
@@ -79,6 +110,10 @@ def read_training_manifest(path):
         case['resolved_directory'] = str(folder)
     if len(set(mesh_hashes)) != 1:
         raise ValueError('training adapter requires one byte-identical admitted curved mesh')
+    common = manifest.get('common_stokes_lift')
+    if not common: raise RuntimeError('A6 requires one admitted shared Stokes lift identity')
+    manifest['resolved_common_stokes_lift'] = read_shared_lift_admission(
+        path.parent/common['admission_path'], common['admission_sha256'])
     manifest['manifest_sha256'] = sha_file(path)
     return manifest
 
@@ -216,7 +251,15 @@ def bounded_eigenmodes(h1, mass, solve_h1, count):
         np.linalg.norm(av, axis=0)+np.abs(lam)*np.linalg.norm(mv, axis=0), 1e-300)
     if np.max(errors) > 1e-9:
         raise ArithmeticError('generalized eigenpair residual gate')
-    vec, orientation = canonicalize_eigenmodes(lam, vec, vec.T @ mv)
+    if np.linalg.norm(vec.T@mv-np.eye(count), 2) > 1e-10:
+        raise ArithmeticError('scalar eigenvectors fail mass Gram check')
+    groups = []; start = 0
+    while start < count:
+        end = start+1
+        while end < count and abs(lam[end]-lam[end-1]) <= 1e-10*max(1., abs(lam[end]), abs(lam[end-1])):
+            end += 1
+        groups.append((start, end)); start = end
+    vec, orientation = orient_clusters(vec, groups)
     av = h1 @ vec; mv = mass @ vec
     oriented_errors = np.linalg.norm(av-mv*lam, axis=0) / np.maximum(
         np.linalg.norm(av, axis=0)+np.abs(lam)*np.linalg.norm(mv, axis=0), 1e-300)
@@ -227,7 +270,7 @@ def bounded_eigenmodes(h1, mass, solve_h1, count):
                  'orientation': orientation,
                  'h1_sha256': sparse_digest(h1), 'mass_sha256': sparse_digest(mass),
                  'eigensolver': 'scipy eigsh shift-invert sigma0 tol1e-12 seed27102026',
-                 'look_ahead_cluster_complete': True, 'look_ahead_eigenvalue': look_ahead,
+                 'gap_checked': True, 'scalar_spectral_count_verified': False, 'look_ahead_eigenvalue': look_ahead,
                  'boundary_eigenvalue_gap': boundary_gap}
 
 
@@ -275,6 +318,7 @@ class TrainingFEAdapter:
             raise MemoryError('unsupported dimension or element cap')
         self.V = ng.VectorH1(self.mesh, order=self.cfg['velocity_order'], dirichlet=ESSENTIAL)
         self.Q = ng.H1(self.mesh, order=self.cfg['pressure_order'])
+        self.S = ng.H1(self.mesh, order=self.cfg['velocity_order'], dirichlet=ESSENTIAL)
         self.X = self.V*self.Q
         if self.X.ndof > CAPS['mixed_dofs']:
             raise MemoryError('mixed DOF cap before any matrix assembly')
@@ -286,6 +330,8 @@ class TrainingFEAdapter:
         self.free = np.array(self.layout['velocity_free'], dtype=bool)
         self.volume = self.mapped_rule(boundary=False)
         self.boundary = self.mapped_rule(boundary=True)
+        self.analytic_controls = self.analytic_interface_controls()
+        self.component_maps, self.component_map_evidence = self.scalar_component_maps()
         self.weights = self.volume['weights']/self.D**2
         self.roundtrip = []
         self._load_coefficients()
@@ -369,8 +415,87 @@ class TrainingFEAdapter:
             for ip in ng.IntegrationRule(el.type, self.cfg['diagnostic_order']):
                 yield tr(ip)
 
+    def control_indices(self, boundary=False):
+        if not boundary:
+            return set(np.linspace(0, len(self.volume['points'])-1,
+                                   min(16, len(self.volume['points'])), dtype=int).tolist())
+        indices = set()
+        for label in np.unique(self.boundary['labels']):
+            group = np.flatnonzero(self.boundary['labels'] == label)
+            indices.update(int(group[j]) for j in (0, len(group)//2, len(group)-1))
+        return indices
+
+    def analytic_interface_controls(self):
+        ng = self.ng; b = self.boundary
+        report = {'normals': boundary_control(b['points'], b['weights'], b['normals_fluid'],
+                                              b['labels'], self.cfg['center']), 'gradient': []}
+        # Coordinate-map degree can exceed production velocity degree on a geometry rung.
+        # Only this analytic fixture uses the sufficient degree; production spaces stay fixed.
+        order = max(self.cfg['velocity_order'], self.cfg['geometry_order'])
+        fixture_space = ng.VectorH1(self.mesh, order=order)
+        if fixture_space.ndof > CAPS['mixed_dofs']:
+            raise MemoryError('auxiliary analytic-gradient fixture DOF cap')
+        for component, field in [(0, ng.CF((ng.y, 0))), (1, ng.CF((0, ng.x)))]:
+            fixture = ng.GridFunction(fixture_space); fixture.Set(field)
+            for boundary in (False, True):
+                selected = self.control_indices(boundary); points = []; values = []; gradients = []
+                derivative = ng.Grad(fixture)
+                if boundary: derivative = ng.BoundaryFromVolumeCF(derivative)
+                for i, mip in enumerate(self.iter_mapped(boundary)):
+                    if i in selected:
+                        points.append(np.array(mip.point, copy=True))
+                        values.append(np.array(fixture(mip), copy=True).reshape(2))
+                        gradients.append(np.array(derivative(mip), copy=True).reshape(2, 2))
+                    if i >= max(selected): break
+                check = gradient_control(points, values, gradients, component)
+                check.update(location='boundary' if boundary else 'volume', fixture_order=order,
+                             production_velocity_order=self.cfg['velocity_order'], sampled_indices=sorted(selected))
+                report['gradient'].append(check)
+        return report
+
+    def scalar_component_maps(self):
+        ng = self.ng
+        tagged = ng.GridFunction(self.V)
+        tagged.vec.FV().NumPy()[:] = np.arange(self.V.ndof, dtype=np.float64)+1
+        components = tagged.components
+        if len(components) != 2: raise ValueError('VectorH1 must expose two actual component views')
+        maps = []; scalar_free = np.array([bool(v) for v in self.S.FreeDofs()])
+        for component in components:
+            tags = np.array(component.vec.FV().NumPy(), copy=True)
+            ids = np.rint(tags).astype(np.int64)-1
+            if tags.shape != (self.S.ndof,) or not np.array_equal(tags, ids+1):
+                raise ValueError('component coefficient view does not identify scalar DOFs')
+            if np.any(ids < 0) or np.any(ids >= self.V.ndof) or not np.array_equal(self.free[ids], scalar_free):
+                raise ValueError('scalar/vector essential maps differ')
+            for el in self.mesh.Elements(ng.VOL):
+                if tuple(component.space.GetDofNrs(el)) != tuple(self.S.GetDofNrs(el)):
+                    raise ValueError('scalar/component local FE DOF enumeration differs')
+            maps.append(ids)
+        maps = np.asarray(maps)
+        if sorted(maps.ravel().tolist()) != list(range(self.V.ndof)):
+            raise ValueError('component views are not a disjoint complete vector-DOF map')
+        scalar = ng.GridFunction(self.S); scalar.Set(ng.x+2*ng.y)
+        scalar_coeff = scalar.vec.FV().NumPy().copy(); checks = []
+        for component in range(2):
+            vector = ng.GridFunction(self.V); vector.vec.FV().NumPy()[:] = 0
+            vector.vec.FV().NumPy()[maps[component]] = scalar_coeff
+            error = 0.; selected = self.control_indices(False)
+            for i, mip in enumerate(self.iter_mapped(False)):
+                if i in selected:
+                    expected = np.zeros(2); expected[component] = strict_scalar(scalar(mip))
+                    expected_gradient = np.zeros((2, 2))
+                    expected_gradient[component] = np.asarray(ng.Grad(scalar)(mip)).reshape(2)
+                    error = max(error, relative_gap(vector(mip), expected),
+                                relative_gap(np.asarray(ng.Grad(vector)(mip)).reshape(2, 2), expected_gradient))
+                if i >= max(selected): break
+            if error > 1e-10: raise ArithmeticError('component map field/gradient embedding failed')
+            checks.append(error)
+        return maps, {'component_maps': maps.tolist(), 'sha256': array_digest(maps),
+                      'local_DOF_enumeration_checked': True, 'essential_masks_checked': True,
+                      'field_gradient_embedding_max_gaps': checks, 'tolerance': 1e-10}
+
     def _load_coefficients(self):
-        ng = self.ng; solutions = []; stokes = []
+        ng = self.ng; solutions = []
         for c in self.cases:
             data = load_npz_bounded(c['folder']/'full_rule.npz')
             checks = {}
@@ -401,15 +526,23 @@ class TrainingFEAdapter:
             if max(checks.values()) > 1e-10:
                 raise ArithmeticError(f'FE serialization round-trip mismatch: {checks}')
             self.roundtrip.append({'Re': c['case']['Re'], 'relative_max_gaps': checks})
-            solutions.append(solution); stokes.append(lift)
-        sol = np.asarray(solutions); lifts = np.asarray(stokes)
+            solutions.append(solution)
+        sol = np.asarray(solutions)
         nv = self.V.ndof
-        self.lift_u = lifts[0, :nv]/self.U
-        self.lift_p_per_nu = lifts[0, nv:]*self.D/(self.U*self.cases[0]['cfg']['nu'])
-        for i, c in enumerate(self.cases):
-            if (relative_gap(lifts[i, :nv]/self.U, self.lift_u) > 1e-10 or
-                relative_gap(lifts[i, nv:]*self.D/(self.U*c['cfg']['nu']), self.lift_p_per_nu) > 1e-10):
-                raise ArithmeticError('fixed-inlet Stokes lift not viscosity-invariant/scaled')
+        shared = self.admission['resolved_common_stokes_lift']; meta = shared['metadata']
+        if (meta['mesh_sha256'] != self.cases[0]['case']['files']['mesh.vol'] or
+            meta['layout_sha256'] != self.layout_sha256 or meta['U'] != self.U or meta['D'] != self.D or
+            meta['velocity_ndof'] != nv or meta['pressure_ndof'] != self.Q.ndof):
+            raise ValueError('common Stokes lift geometry/space/scales mismatch')
+        lift_data = load_npz_bounded(shared['archive'])
+        if set(lift_data) != {'velocity_coefficients', 'pressure_coefficients_per_nu'}:
+            raise ValueError('unexpected common lift arrays')
+        if (lift_data['velocity_coefficients'].shape != (nv,) or
+            lift_data['pressure_coefficients_per_nu'].shape != (self.Q.ndof,)):
+            raise ValueError('common lift coefficient shape mismatch')
+        self.lift_u = lift_data['velocity_coefficients']/self.U
+        self.lift_p_per_nu = lift_data['pressure_coefficients_per_nu']*self.D/self.U
+        self.shared_lift_evidence = shared
         self.velocity_corrections = sol[:, :nv].T/self.U-self.lift_u[:, None]
         trace = np.max(np.abs(self.velocity_corrections[~self.free]), initial=0.)
         if trace > 1e-10: raise ValueError('velocity correction has nonzero essential FE trace coefficients')
@@ -442,21 +575,21 @@ class TrainingFEAdapter:
         one_values, _ = self.evaluate(one, False)
         if relative_gap(one_values[:, 0], np.ones(len(self.weights))) > 1e-12:
             raise ArithmeticError('constant pressure coefficient reconstruction failed')
-        pod = coefficient_pod(self.velocity_corrections, uv.transpose(2, 0, 1),
-            self.pressure_corrections, pv.T, one, self.weights)
-        # Back-transforming C @ V / sigma can cancel near the frozen singular cutoff.
-        # Verify the actual FE functions before assembling any reduced pressure coupling.
-        actual_u, _ = self.evaluate(pod['velocity_coefficients'])
-        actual_p, _ = self.evaluate(pod['pressure_coefficients'], False)
-        pod_velocity_gram, pod_u_check = verify_reconstructed_modes(
-            actual_u, pod['velocity_values'], self.weights, 'velocity')
-        pressure_gram, pod_p_check = verify_reconstructed_modes(
-            actual_p, pod['pressure_values'], self.weights, 'pressure')
-        pressure = pod['pressure_coefficients']; count = pressure.shape[1]
         h1v, mv, dx = self.metric_matrices(self.V, True)
         h1q, mq, _ = self.metric_matrices(self.Q, False)
+        h1s, ms, _ = self.metric_matrices(self.S, False)
+        component_blocks = check_component_blocks(h1v, mv, h1s, ms, self.component_maps)
+        pod = coefficient_pod_a6(self.velocity_corrections, uv.transpose(2, 0, 1),
+            self.pressure_corrections, pv.T, one, self.weights, mv, mq)
+        actual_u, _ = self.evaluate(pod['velocity_coefficients'])
+        actual_p, _ = self.evaluate(pod['pressure_coefficients'], False)
+        pod_velocity_gram, pod_u_check = validate_actual_pod(
+            actual_u, uv.transpose(2, 0, 1), self.weights, pod['metadata']['velocity'])
+        pressure_gram, pod_p_check = validate_actual_pod(
+            actual_p, pv.T, self.weights, pod['metadata']['pressure'], pressure=True)
+        pressure = pod['pressure_coefficients']; count = pressure.shape[1]
         ids = np.flatnonzero(self.free)
-        hv = h1v[ids][:, ids]; mvv = mv[ids][:, ids]
+        hv = h1v[ids][:, ids]
         factor_v, fm_v = bounded_factor(hv)
         rhs = np.empty((len(ids), count))
         test = self.V.TestFunction()
@@ -469,9 +602,16 @@ class TrainingFEAdapter:
         residual = np.linalg.norm(hv@sf-rhs)/max(np.linalg.norm(rhs), 1e-300)
         if residual > 1e-10: raise ArithmeticError('H1 supremizer linear residual failed')
         supremizers = np.zeros((self.V.ndof, count)); supremizers[ids] = sf
-        eigen_v, em_v = bounded_eigenmodes(hv, mvv, factor_v.solve, CAPS['vector_eigen_candidates'])
-        ev = np.zeros((self.V.ndof, eigen_v.shape[1])); ev[ids] = eigen_v
         del factor_v
+        scalar_ids = np.flatnonzero(np.array([bool(v) for v in self.S.FreeDofs()]))
+        hs = h1s[scalar_ids][:, scalar_ids]; mss = ms[scalar_ids][:, scalar_ids]
+        factor_s, fm_s = bounded_factor(hs)
+        eigen_s, em_v = bounded_eigenmodes(hs, mss, factor_s.solve, CAPS['velocity_scalar_eigen_candidates'])
+        scalar_modes = np.zeros((self.S.ndof, eigen_s.shape[1])); scalar_modes[scalar_ids] = eigen_s
+        ev = expand_components(scalar_modes, self.component_maps, self.V.ndof)
+        em_v.update(component_order=['(phi,0)', '(0,phi)'], expanded_candidate_count=ev.shape[1],
+                    scalar_polynomial_order=self.cfg['velocity_order'], component_multiplicity_explicit=True)
+        del factor_s
         factor_q, fm_q = bounded_factor(h1q)
         eq, em_q = bounded_eigenmodes(h1q, mq, factor_q.solve, CAPS['scalar_eigen_candidates'])
         del factor_q
@@ -493,7 +633,7 @@ class TrainingFEAdapter:
         self.coefficients = {'lift_u': self.lift_u, 'lift_p_per_nu': self.lift_p_per_nu,
             'pod_velocity': pod['velocity_coefficients'], 'pressure': pressure,
             'supremizers': supremizers, 'momentum_tests': tests_v, 'continuity_tests': tests_q}
-        self.metadata = {'schema': 'ns-obstacle-fe-adapter-v1', 'physical_admission': False,
+        self.metadata = {'schema': 'ns-obstacle-fe-adapter-A6', 'physical_admission': False,
             'split': 'training', 'Re': REYNOLDS, 'manifest_sha256': self.admission['manifest_sha256'],
             'adapter_source_sha256': adapter_digest(), 'caps': CAPS, 'roundtrip': self.roundtrip,
             'admission_evidence': {k: self.admission[k] for k in ('adapter_review_sha256',
@@ -503,11 +643,14 @@ class TrainingFEAdapter:
             'pod_reconstruction': {'velocity': pod_u_check, 'pressure': pod_p_check},
             'pod_velocity_L2_gram_reconstructed': pod_velocity_gram.tolist(),
             'pressure_gram_source': 'actual reconstructed FE pressure evaluations on full rule',
+            'shared_stokes_lift': self.shared_lift_evidence,
             'supremizer_residual': float(residual), 'reference_inf_sup': ref_beta,
-            'momentum_candidates': ['all maximum-prefix supremizers', 'vector H1 eigenmodes'],
+            'momentum_candidates': ['all maximum-prefix supremizers', 'scalar velocity-order H1 modes with explicit component copies'],
             'continuity_candidates': ['constant', 'all pressure modes', 'scalar Neumann Laplace eigenmodes'],
             'momentum_selection': vm, 'continuity_selection': qm,
             'eigen_velocity': em_v, 'eigen_scalar': em_q, 'factor_velocity': fm_v, 'factor_scalar': fm_q,
+            'factor_velocity_scalar': fm_s, 'component_maps': self.component_map_evidence,
+            'component_blocks': component_blocks, 'analytic_controls': self.analytic_controls,
             'momentum_H1_gram': cv.tolist(), 'continuity_L2_gram': cq.tolist(),
             'pressure_L2_gram': pressure_gram.tolist(),
             'trace_coefficient_roundoff_removed': self.trace_coefficient_roundoff_removed,
@@ -522,7 +665,7 @@ class TrainingFEAdapter:
         out = Path(directory); out.mkdir(parents=True, exist_ok=False)
         for boundary, name in ((False, 'volume'), (True, 'boundary')):
             mapped = self.boundary if boundary else self.volume
-            arrays = {'points_physical': mapped['points'],
+            arrays = {'points_dimensionless': mapped['points']/self.D, 'points_physical': mapped['points'],
                       'weights_dimensionless': mapped['weights']/self.D**(1 if boundary else 2)}
             if boundary:
                 arrays.update(labels=mapped['labels'], normals_fluid=mapped['normals_fluid'])
@@ -538,7 +681,7 @@ class TrainingFEAdapter:
         u, du = self.evaluate(self.velocity_corrections)
         p, _ = self.evaluate(self.pressure_corrections, False)
         from train_bank import array_hash  # Does not import JAX or run training.
-        training = {'points_physical': self.volume['points'], 'weights_dimensionless': self.weights,
+        training = {'points_dimensionless': self.volume['points']/self.D, 'points_physical': self.volume['points'], 'weights_dimensionless': self.weights,
                     'velocity_corrections': u.transpose(2, 0, 1),
                     'velocity_correction_gradients_dimensionless': (du*self.D).transpose(3, 0, 1, 2),
                     'pressure_corrections': p.T, 'Re': np.asarray(REYNOLDS)}
@@ -550,6 +693,13 @@ class TrainingFEAdapter:
         meta['total_preparation_seconds'] = time.perf_counter()-self.started
         meta['peak_rss_bytes'] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
         meta['scales'] = {'D': self.D, 'U': self.U, 'nu_hat': 'nu/(U*D)'}
+        meta['units'] = {'primary_coordinates': 'x/D', 'volume_weights': 'dx/D**2',
+            'boundary_weights': 'ds/D', 'velocity_lift': 'uL/U',
+            'pressure_lift_per_nu': 'pL*D/(U*nu)', 'velocity_pressure_modes_tests': 'dimensionless',
+            'all_exported_field_gradients': 'derivative with respect to x/D',
+            'already_dimensionless': True, 'physical_to_dimensionless_must_not_be_applied': True,
+            'physical_geometry_sidecars': ['points_physical', 'jacobians_physical'],
+            'physical_points_purpose': 'raw FE lookup and frozen coordinate-network geometry API only'}
         meta['gradient_axes'] = 'point, component, derivative_coordinate, column'
         meta['boundary_normals'] = 'outward fluid; negate only obstacle normals for force_moments'
         meta['coefficient_files'] = {name: sha_file(out/name) for name in

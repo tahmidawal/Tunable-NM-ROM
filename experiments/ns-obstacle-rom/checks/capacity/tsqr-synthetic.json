@@ -2,7 +2,7 @@
   "scope": "synthetic TSQR candidate reduction",
   "native_executed": false,
   "physical_admission": false,
-  "cases": [
+  "vector_H1_cases": [
     {
       "block_points": 17,
       "same_selected_and_rejected": true,
@@ -21,5 +21,18 @@
       "orthonormality_max_gap": 1.3322676295501878e-15,
       "subspace_max_gap": 3.9968028886505635e-15
     }
-  ]
+  ],
+  "scalar_L2_cases": [
+    {
+      "block_points": 13,
+      "same_selected_and_rejected": true,
+      "orthonormality_max_gap": 8.881784197001252e-16
+    },
+    {
+      "block_points": 257,
+      "same_selected_and_rejected": true,
+      "orthonormality_max_gap": 8.881784197001252e-16
+    }
+  ],
+  "incomplete_points_rejected": true
 }

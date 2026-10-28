@@ -1,0 +1,10 @@
+{
+  "job_id": 6616720,
+  "archive_sha256": "ffdc2abad6e268882e18ed00aa44ab6409c64ce7130f1f26ab1db54a12e41a0a",
+  "durable_mirror_commit": "454e0a3ea",
+  "cleanup_utc": "2026-10-28T22:32:34.627575+00:00",
+  "returncode": 0,
+  "stdout": "g2-crossp02-collection.tar.gz: OK\n2026-10-28T22:32:34Z\n",
+  "stderr": "",
+  "command": "cd /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027 && printf '%s  %s\\n' 'ffdc2abad6e268882e18ed00aa44ab6409c64ce7130f1f26ab1db54a12e41a0a' 'g2-crossp02-collection.tar.gz' | sha256sum -c - && rm -rf -- /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02 /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02-collection.tar.gz && test ! -e /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02 && test ! -e /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02-collection.tar.gz && date -u +%FT%TZ"
+}

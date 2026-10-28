@@ -58,6 +58,11 @@ def run(case,release,out):
   guard('layout_and_original_rule');metrics={}
   for label,space in [('velocity',V),('pressure',Q),('velocity_scalar',S)]:
    u,v=space.TnT();product=ng.InnerProduct(u,v);derivative=ng.InnerProduct(ng.Grad(u),ng.Grad(v))
+   local_sizes=[len(space.GetDofNrs(el)) for el in mesh.Elements(ng.VOL)]
+   structural_upper_entries=sum(size*size for size in local_sizes)
+   if structural_upper_entries>PROBE['matrix_nnz']:raise MemoryError('pre-assembly structural bound')
+   assembly_workspace=2*structural_upper_entries*16*3+16*max(local_sizes)**2*8*cfg['threads']
+   guard(label+'_before_native_assembly',extra=assembly_workspace)
    mass=ng.BilinearForm(space);h1=ng.BilinearForm(space)
    mass+=product/cfg['D']**2*dx;h1+=(product/cfg['D']**2+derivative)*dx
    with ng.TaskManager():mass.Assemble();h1.Assemble()
@@ -73,6 +78,9 @@ def run(case,release,out):
    del mass,h1,form
   estimates={}
   for label,space in [('velocity',V),('pressure',Q),('velocity_scalar',S)]:
+   parent=matrices[label+'_h1']
+   parent_bytes=parent.data.nbytes+parent.indices.nbytes+parent.indptr.nbytes
+   guard(label+'_before_free_submatrix',extra=3*parent_bytes+space.ndof*16)
    ids=np.flatnonzero(np.array([bool(v) for v in space.FreeDofs()]))
    matrix=matrices[label+'_h1'][ids][:,ids];estimate=int(matrix.nnz*16*100+matrix.shape[0]*8*32)
    estimates[label]={'free_dofs':len(ids),'free_nnz':matrix.nnz,'existing_factor_estimate_bytes':estimate,

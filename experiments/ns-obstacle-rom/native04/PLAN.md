@@ -18,3 +18,10 @@ bounds, not modifications of production limits. Full input/source/output hashes,
 matrices, failures and dependency evidence must be retained; maintain ten GiB local disk
 reserve during collection and durable retention. Production capacity decisions follow
 independent inspection of these measured matrices and remain separate from G2 gates.
+
+Before native assembly, the sum of squared element-local DOF counts bounds structural
+entries and reserves two forms plus conservative assembly workspace. Before free-DOF
+slicing, the probe reserves three parent sparse payloads and index workspace. These
+pre-allocation checks supplement, rather than replace, measured post-phase RSS guards.
+The launch inventory explicitly maps PROVISION.json to runtime REPAIR.json and includes
+both the native.sh batch entry and native_capacity_control.py executable source.

@@ -676,8 +676,13 @@ def paired_queries(calls, contract, cores, score_invocation, output_directory):
     timing = paired_cpu(calls, contract, cores)
     scored = []
     for row in timing['actual_invocation_outputs']:
-        scored.append({'method': row['method'], 'repetition': row['repetition'],
-                       'score': score_invocation(row['method'], row['invocation'])})
+        if row['invocation'].get('query_failed'):
+            score={'eligible_accuracy':False,'accuracy_targets_passed':False,
+                   'query_failed':True,'exception':row['invocation']['exception'],
+                   'state_or_output_available':False}
+        else:
+            score=score_invocation(row['method'], row['invocation'])
+        scored.append({'method': row['method'], 'repetition': row['repetition'],'score':score})
     record = {'timing': timing, 'same_invocation_accuracy': scored, 'physical_admission': False}
     save_evidence(output_directory, 'paired_'+contract, record)
     return record

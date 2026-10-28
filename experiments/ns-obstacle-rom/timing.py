@@ -29,7 +29,13 @@ def paired_cpu(calls,contract,cores,repetitions=7,burn_seconds=.25):
     names=list(calls)
     if len(names)<2:
         raise ValueError("paired comparison needs multiple methods")
-    warmup={name:calls[name]() for name in names}
+    warmup=[]
+    for name in names:
+        try:
+            record=calls[name]()
+            warmup.append({'method':name,'query_failed':False,'work':copy.deepcopy(record.get('work',{}))})
+        except Exception as exc:
+            warmup.append({'method':name,'query_failed':True,'exception':repr(exc)})
     rows=[];retained_outputs=[]
     for rep in range(repetitions):
         # Explicit CPU clock/cache burn immediately before the timed block.
@@ -40,7 +46,12 @@ def paired_cpu(calls,contract,cores,repetitions=7,burn_seconds=.25):
         order=names if rep%2==0 else names[::-1]
         for name in order:
             start=time.perf_counter();cpu_start=time.process_time()
-            record=calls[name]()
+            try:
+                record=calls[name]()
+            except Exception as exc:
+                record={'output_contract':contract,'outputs':{},'work':{'status':'query_failed'},
+                        'query_failed':True,'exception':repr(exc),
+                        'failure_evidence':'call raised; no returned state or output was available'}
             cpu=time.process_time()-cpu_start;elapsed=time.perf_counter()-start
             if record.get("output_contract")!=contract or "outputs" not in record or "work" not in record:
                 raise ValueError("query did not return its output contract, actual outputs and work")
@@ -56,10 +67,11 @@ def paired_cpu(calls,contract,cores,repetitions=7,burn_seconds=.25):
             evidence_seconds=time.perf_counter()-evidence_start
             rows.append({"repetition":rep,"method":name,"elapsed_seconds":elapsed,"cpu_seconds":cpu,
                          "output_sha256":checksum,"work":snapshot["work"],
+                         "query_failed":bool(snapshot.get("query_failed",False)),
                          "component_seconds":snapshot.get("component_seconds",{}),"order":list(order),
                          "evidence_snapshot_seconds":evidence_seconds})
             retained_outputs.append({"repetition":rep,"method":name,"outputs":snapshot["outputs"],
                                      "invocation":snapshot})
-    return {"contract":contract,"cores":cores,"device":"CPU","warmups_discarded":len(warmup),
+    return {"contract":contract,"cores":cores,"device":"CPU","warmups_discarded":len(warmup),"warmup_attempts":warmup,
             "repetitions":rows,"actual_invocation_outputs":retained_outputs,"burn_seconds":burn_seconds,
             "evidence_snapshot_timing":"reported separately after query; caller-required output copies belong inside query"}

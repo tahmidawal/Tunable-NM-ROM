@@ -1,0 +1,26 @@
+{
+  "schema": "ns-obstacle-3d-normal-diagnostic-v1",
+  "release": "NOT_RELEASED_independent_code_config_review_required",
+  "configuration": "g1-smoke06.json",
+  "configuration_sha256": "637837aecc59da58b9c0f7c582be9f27d4aa97707baf711038fd57e06f541350",
+  "origin_failed_job": 6610494,
+  "origin_source_commit": "1c2fd8fa141ded0d1dcdc15c850a5a8682572b00",
+  "sample_order": 4,
+  "volume_integration_order": 12,
+  "integration_orders": [
+    4,
+    12,
+    16
+  ],
+  "facet_bonus_order": 12,
+  "offset_fractions_of_D": [
+    0.0001,
+    0.001,
+    0.01
+  ],
+  "max_elements": 6000,
+  "max_volume_points": 1000000,
+  "max_boundary_points": 150000,
+  "scope": "unchanged regenerated geometry only; no PDE solve, sign correction, reference or training admission",
+  "claim_limit": "The original failed point and cosine are recorded but its mesh was not saved. A new mesh is not asserted identical."
+}

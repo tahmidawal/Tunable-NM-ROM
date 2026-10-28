@@ -1,0 +1,325 @@
+{
+  "status": "diagnostic_completed_not_reference_admission",
+  "normal_sign_corrections_applied": false,
+  "PDE_solve_performed": false,
+  "same_failed_run_mesh": false,
+  "volume": 392.18924586453215,
+  "analytic_volume": 392.17548292312586,
+  "volume_relative_geometry_error": 3.509383427978422e-05,
+  "volume_points": 31934,
+  "boundary_points": 3924,
+  "mapped_volume_weight_sum": 392.18924527488304,
+  "negative_sampled_volume_weight_count": 0,
+  "volume_integration_order": 12,
+  "minimum_volume_jacobian_determinant": 0.004193948053526554,
+  "volume_points_inside_analytic_sphere": 0,
+  "sphere_raw_radial_cosine_range": [
+    0.9999905352127035,
+    0.9999999968870661
+  ],
+  "sphere_raw_normal_dot_toward_adjacent_volume_range": [
+    0.0026612067622843877,
+    0.11241994686430125
+  ],
+  "raw_boundary_moments": {
+    "inlet": {
+      "measure": 19.636767346313256,
+      "normal_integral": [
+        -19.636767346313256,
+        0.0,
+        0.0
+      ],
+      "position_dot_normal": 98.18383673156622
+    },
+    "outlet": {
+      "measure": 19.636767981395327,
+      "normal_integral": [
+        19.636767981395327,
+        0.0,
+        0.0
+      ],
+      "position_dot_normal": 294.55151972092995
+    },
+    "wall": {
+      "measure": 314.16516790337437,
+      "normal_integral": [
+        -6.350820671167698e-07,
+        2.5951463200613034e-15,
+        -8.923417560424696e-15
+      ],
+      "position_dot_normal": 785.4034325716835
+    },
+    "sphere": {
+      "measure": 3.1418839226983137,
+      "normal_integral": [
+        -1.0581813203458523e-16,
+        1.7932703932910243e-16,
+        -8.083811398051921e-16
+      ],
+      "position_dot_normal": 1.5710073389133583
+    }
+  },
+  "raw_totals": {
+    "whole_boundary_normal_integral": [
+      3.26553647539635e-15,
+      2.774473359390406e-15,
+      -9.731798700229888e-15
+    ],
+    "sphere_normal_integral": [
+      -1.0581813203458523e-16,
+      1.7932703932910243e-16,
+      -8.083811398051921e-16
+    ],
+    "outer_pipe_normal_integral": [
+      3.3713546074309354e-15,
+      2.5951463200613034e-15,
+      -8.923417560424696e-15
+    ],
+    "boundary_position_dot_normal": 1179.7097963630931,
+    "expected_three_times_mapped_volume": 1176.5677375935966,
+    "divergence_theorem_relative_defect": 0.002670529429884687
+  },
+  "ordinary_BND_moments": {
+    "4": {
+      "inlet": {
+        "measure": 19.636767346313263,
+        "normal_integral": [
+          -19.63676734631326,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 98.18383673156627
+      },
+      "outlet": {
+        "measure": 19.636767981395323,
+        "normal_integral": [
+          19.636767981395323,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 294.5515197209299
+      },
+      "wall": {
+        "measure": 314.1651679033744,
+        "normal_integral": [
+          -6.350820671433539e-07,
+          1.4432899320127035e-15,
+          -1.1102230246251565e-15
+        ],
+        "position_dot_normal": 785.4034325716855
+      },
+      "sphere": {
+        "measure": 3.1418839226983106,
+        "normal_integral": [
+          -4.163336342344337e-17,
+          1.968911145233676e-16,
+          -5.898059818321144e-17
+        ],
+        "position_dot_normal": 1.5710073389133599
+      }
+    },
+    "12": {
+      "inlet": {
+        "measure": 19.636767346313015,
+        "normal_integral": [
+          -19.636767346313015,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 98.1838367315651
+      },
+      "outlet": {
+        "measure": 19.636767981395078,
+        "normal_integral": [
+          19.636767981395078,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 294.55151972092625
+      },
+      "wall": {
+        "measure": 314.1653724548106,
+        "normal_integral": [
+          -6.350820675354759e-07,
+          -8.104628079763643e-15,
+          -8.715250743307479e-15
+        ],
+        "position_dot_normal": 785.4033853289444
+      },
+      "sphere": {
+        "measure": 3.1418883631893246,
+        "normal_integral": [
+          5.793976409762536e-16,
+          1.46150452851046e-15,
+          1.4710455076283324e-15
+        ],
+        "position_dot_normal": 1.5710059599954618
+      }
+    },
+    "16": {
+      "inlet": {
+        "measure": 19.636767346313135,
+        "normal_integral": [
+          -19.636767346313132,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 98.18383673156565
+      },
+      "outlet": {
+        "measure": 19.636767981395202,
+        "normal_integral": [
+          19.636767981395202,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 294.55151972092796
+      },
+      "wall": {
+        "measure": 314.16537245480714,
+        "normal_integral": [
+          -6.350820669612283e-07,
+          -2.6645352591003757e-15,
+          -1.942890293094024e-15
+        ],
+        "position_dot_normal": 785.4033853289485
+      },
+      "sphere": {
+        "measure": 3.141888363189151,
+        "normal_integral": [
+          4.683753385137379e-17,
+          7.424616477180734e-16,
+          3.885780586188048e-16
+        ],
+        "position_dot_normal": 1.5710059599954704
+      }
+    }
+  },
+  "ordinary_BND_totals": {
+    "4": {
+      "whole_boundary_normal_integral": [
+        -3.802290242643086e-15,
+        1.6401810465360711e-15,
+        -1.169203622808368e-15
+      ],
+      "sphere_normal_integral": [
+        -4.163336342344337e-17,
+        1.968911145233676e-16,
+        -5.898059818321144e-17
+      ],
+      "outer_pipe_normal_integral": [
+        -3.760656879219643e-15,
+        1.4432899320127035e-15,
+        -1.1102230246251565e-15
+      ],
+      "boundary_position_dot_normal": 1179.709796363095,
+      "expected_three_times_mapped_volume": 1176.5677375935966,
+      "divergence_theorem_relative_defect": 0.002670529429886233
+    },
+    "12": {
+      "whole_boundary_normal_integral": [
+        -3.573381282713506e-15,
+        -6.643123551253183e-15,
+        -7.244205235679146e-15
+      ],
+      "sphere_normal_integral": [
+        5.793976409762536e-16,
+        1.46150452851046e-15,
+        1.4710455076283324e-15
+      ],
+      "outer_pipe_normal_integral": [
+        -4.1527789236897594e-15,
+        -8.104628079763643e-15,
+        -8.715250743307479e-15
+      ],
+      "boundary_position_dot_normal": 1179.7097477414313,
+      "expected_three_times_mapped_volume": 1176.5677375935966,
+      "divergence_theorem_relative_defect": 0.002670488104884658
+    },
+    "16": {
+      "whole_boundary_normal_integral": [
+        3.573733648419564e-15,
+        -1.9220736113823023e-15,
+        -1.5543122344752192e-15
+      ],
+      "sphere_normal_integral": [
+        4.683753385137379e-17,
+        7.424616477180734e-16,
+        3.885780586188048e-16
+      ],
+      "outer_pipe_normal_integral": [
+        3.52689611456819e-15,
+        -2.6645352591003757e-15,
+        -1.942890293094024e-15
+      ],
+      "boundary_position_dot_normal": 1179.7097477414375,
+      "expected_three_times_mapped_volume": 1176.5677375935966,
+      "divergence_theorem_relative_defect": 0.002670488104889876
+    }
+  },
+  "raw_vs_ordinary_same_order_max_absolute_moment_difference": 1.9326762412674725e-12,
+  "provenance": {
+    "source_sha256": "81ebd842e45b29fa83f724d5aeac5fbee347dfe723a2eddfc0a50cc1f9840c8b",
+    "job_id": "6611259",
+    "source_commit": "6db733531ab0a551baa4fa816f0f386927f7d8f8",
+    "hostname": "pax008",
+    "ngsolve": "6.2.2608",
+    "numpy": "2.5.0",
+    "precision": "float64"
+  },
+  "threading": {
+    "requested_before_TaskManager": 4,
+    "effective_concurrency": "unmeasured"
+  },
+  "volume_facet_control": {
+    "status": "completed_diagnostic_not_admission",
+    "method": "constant P0 test contracted with LinearForm",
+    "boundary_path": "ds(label,skeleton=True)",
+    "all_element_path": "dx(element_boundary=True)",
+    "bonus_integration_order": 12,
+    "per_boundary": {
+      "inlet": {
+        "measure": 19.636767346313015,
+        "normal_x": -19.636767346313015,
+        "normal_y": -1.1692742094264417e-16,
+        "normal_z": -9.62323431519702e-17,
+        "position_dot_normal": 98.18383673156508
+      },
+      "outlet": {
+        "measure": 19.63676798139508,
+        "normal_x": 19.63676798139508,
+        "normal_y": 3.9919258346510564e-18,
+        "normal_z": -6.252254972130146e-18,
+        "position_dot_normal": 294.55151972092625
+      },
+      "wall": {
+        "measure": 314.1653724548102,
+        "normal_x": 0.00017455413230528172,
+        "normal_y": 0.0319053804975592,
+        "normal_z": 0.0031987007339709106,
+        "position_dot_normal": 784.8276870842827
+      },
+      "sphere": {
+        "measure": 3.1418883631893255,
+        "normal_x": -4.544975507059235e-16,
+        "normal_y": -1.6705387073656652e-15,
+        "normal_z": -1.4693107841523556e-15,
+        "position_dot_normal": -1.5710059599954616
+      }
+    },
+    "all_element_boundaries": {
+      "normal_x": -0.00010148462498527251,
+      "normal_y": -0.002192380697496579,
+      "normal_z": 0.03370198479941072,
+      "position_dot_normal": 1176.0925435940085
+    },
+    "PDE_solve_performed": false,
+    "test_space_dofs": 2281,
+    "constant_test_error": 1.1102230246251565e-16,
+    "boundary_position_dot_normal": 1175.9920375767786,
+    "expected_three_times_mapped_volume": 1176.5677375935966,
+    "divergence_theorem_relative_defect": 0.0004893046090108528,
+    "all_element_divergence_theorem_relative_defect": 0.0004038815483416214
+  },
+  "peak_rss_bytes": 196100096
+}

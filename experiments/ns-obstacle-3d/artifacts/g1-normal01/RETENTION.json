@@ -1,0 +1,44 @@
+{
+  "status": "complete_all_regular_files_verified",
+  "archive_sha256": "2bba51cec28384cbf07d6a32d267dd0b8556d121db15d9b80e158d9d3e002eb9",
+  "archive_bytes": 160721811,
+  "verified_regular_files": 774,
+  "verified_symlinks": 0,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "c2c8e197559a65ed0dc9c30e7453d6a8081fa3e88215374da9004688e426d9e5"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "385d51ed89d6cd6362eae73ac785fd8870479f0de39bb2abcc4fa6588776f60b"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 50331648,
+      "sha256": "8b1f7c884ae6b2adf81956005bcac9d409a52ec0ac3b7baeee15249475156316"
+    },
+    {
+      "path": "collection.tar.gz.part-003",
+      "bytes": 9726867,
+      "sha256": "d62d6856b216c19d04671210126472a4c033e0bfe468666e7a951e8f2c713e86"
+    }
+  ],
+  "recovery": "Concatenate chunks in order, verify archive SHA, extract, then cd g1-normal01 and sha256sum -c COLLECTION-SHA256SUMS.",
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d/runs/g1-normal01-collection.tar.gz",
+  "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d/runs/g1-normal01",
+  "job_id": 6611259,
+  "elapsed_allocation_seconds": 28,
+  "allocated_gpu_hours": 0.0077777777777777776,
+  "node": "pax008",
+  "batch_peak_rss_KiB": 1204520,
+  "completed_scope": "geometry measurements only",
+  "nested_facet_status": "completed_diagnostic_not_admission",
+  "physical_identity_checks_passed": false,
+  "reference_data_admitted": false,
+  "PDE_solve_performed": false,
+  "normal_sign_correction_applied": false,
+  "remote_duplicate_removed": false
+}

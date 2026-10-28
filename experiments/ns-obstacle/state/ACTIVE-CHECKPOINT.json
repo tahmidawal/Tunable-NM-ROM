@@ -1,19 +1,11 @@
 {
-  "status": "2d_normal_diagnostic_live_no_other_jobs",
-  "numerical_jobs": [
-    {
-      "job_id": 6610978,
-      "lane": "2d",
-      "attempt": "g1-normal01",
-      "state": "PENDING",
-      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01"
-    }
-  ],
+  "status": "2d_orientation_diagnosed_A8_repair_preparation_3d_diagnostic_review",
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "2D unchanged-geometry raw/ordinary/facet normal diagnostic code review and release",
-    "3D checksum collection/retention and unchanged-geometry diagnostic preparation",
-    "ROM native integration only after separately reviewed fixture; G2 training data unavailable"
+    "2D A8 normal repair implementation and independent Codex/Claude review before retry",
+    "3D geometry diagnostic focused manifest repair review, staging and release",
+    "G2/native/data gates closed"
   ],
   "staged_unsubmitted": [
     {
@@ -31,7 +23,7 @@
       "will_be_superseded_by": "g1-smoke02"
     }
   ],
-  "completed_allocated_gpu_hours": 0.030555555555555555,
+  "completed_allocated_gpu_hours": 0.0375,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -47,7 +39,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T18:43:47.687438+00:00",
+  "last_checkpoint_utc": "2026-10-28T18:50:55.004995+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",

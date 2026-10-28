@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "2d_normal_diagnostic_submitted",
+  "status": "2d_normal_convention_diagnosed_repair_source_under_preparation",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -175,7 +175,11 @@
       "collection_archive_sha256": "8f2d00483d6483ce5f2dd1b9f21c75faffda2cf39363b2d465ec986f7e061b34",
       "collection_archive_bytes": 158264439,
       "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d/artifacts/g1-smoke06/RETENTION.json",
-      "remote_duplicate_removed": false
+      "remote_duplicate_removed": true,
+      "collection_commit": "091970665",
+      "collection_mirror": "98f28ebd3",
+      "cleanup_commit": "c66a5ff21",
+      "cleanup_mirror": "6cbdbd24e"
     },
     {
       "job_id": 6610978,
@@ -184,7 +188,7 @@
       "source_commit": "09a660f7b47926f3ef6dc8dea16f2d1848947dc4",
       "manifest_sha256": "0692e4f30d5f8d2eb12a0f252560fb674148ad612cc793aafc2defe8c623bab6",
       "submitted_utc": "2026-10-28T18:43:21Z",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "COMPLETED",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01",
       "gpu_type_requested": "h200",
       "gpus": 1,
@@ -193,12 +197,19 @@
       "wall_limit_seconds": 1200,
       "purpose": "unchanged_geometry_raw_ordinary_volume_facet_normal_diagnostic",
       "PDE_solve_permitted": false,
-      "device_for_FE": "CPU"
+      "device_for_FE": "CPU",
+      "elapsed_seconds": 25,
+      "allocated_gpu_hours": 0.006944444444444444,
+      "node": "pax008",
+      "diagnostic_result": "independently accepted raw/ordinary versus outward-fluid facet convention mismatch on regenerated geometry",
+      "full_G1_passed": false,
+      "collection_archive_sha256": "9ef375747ec3c50dae53a8a5165e5ba7c940254b697012b097d1e300ee0ae177",
+      "collection_archive_bytes": 158740683,
+      "collection_commit": "fb83802ca",
+      "remote_duplicate_removed": false
     }
   ],
-  "live_job_ids": [
-    6610978
-  ],
-  "completed_gpu_hours": 0.030555555555555555,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.0375,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

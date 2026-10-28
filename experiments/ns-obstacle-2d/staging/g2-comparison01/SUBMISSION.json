@@ -1,0 +1,10 @@
+{
+  "utc": "2026-10-28T20:30:29.363001+00:00",
+  "command": "cd /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01 && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01 g2/comparison01/compare.sh",
+  "returncode": 0,
+  "stdout": "6614742\n",
+  "stderr": "",
+  "source_commit": "b466b0d6cf9f653d22a91366508fcd787bd6474e",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01",
+  "single_submission": true
+}

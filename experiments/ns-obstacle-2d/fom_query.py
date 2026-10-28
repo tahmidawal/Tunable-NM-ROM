@@ -16,14 +16,14 @@ from reference_export import layout_record
 OUTPUT_CONTRACTS=('full_velocity_pressure_fields','fixed_probes','integrated_forces')
 
 class SteadyFOMQuery:
-    def __init__(self, ng, mesh_path, cfg, common_lift, output_evaluators):
+    def __init__(self, ng, mesh_path, cfg, common_lift, output_evaluator_factory):
         started=time.perf_counter()
         if cfg['kind']!='dfg' or cfg['outlet']!='gradient':
             raise ValueError('registered unforced DFG gradient-outlet family only')
         if not isinstance(common_lift,CommonStokesLift):
             raise TypeError('genuinely admitted cached common lift required')
-        if set(output_evaluators)!=set(OUTPUT_CONTRACTS):
-            raise ValueError('all three reviewed output evaluators required')
+        if not callable(output_evaluator_factory):
+            raise TypeError('reviewed same-mesh output evaluator factory required')
         if cfg['pressure_order']!=cfg['velocity_order']-1 or cfg['velocity_order']<2:
             raise ValueError('Taylor-Hood pair required')
         if not 1<=cfg['newton_max']<=30:raise ValueError('Newton cap')
@@ -33,7 +33,7 @@ class SteadyFOMQuery:
             raise ValueError('query binary mesh differs from admitted common lift')
         mesh=ng.Mesh(str(mesh_path))  # Exact binary curve coefficients, never re-Curve.
         self.ng,self.cfg,self.lift=ng,dict(cfg),common_lift
-        self.evaluators=dict(output_evaluators)
+        self.mesh=mesh
         self.V=ng.VectorH1(mesh,order=cfg['velocity_order'],dirichlet='inlet|wall.*|obstacle')
         self.Q=ng.H1(mesh,order=cfg['pressure_order']);self.X=self.V*self.Q
         _,digest=layout_record(mesh,self.V,self.Q,ng)
@@ -44,6 +44,9 @@ class SteadyFOMQuery:
         U,D=cfg['U'],cfg['D']
         if U!=common_lift.metadata['U'] or D!=common_lift.metadata['D']:
             raise ValueError('common lift scaling differs')
+        self.evaluators=dict(output_evaluator_factory(mesh,self.V,self.Q,self.X,dict(cfg)))
+        if set(self.evaluators)!=set(OUTPUT_CONTRACTS):
+            raise ValueError('all three reviewed output evaluators required')
         self.g=ng.GridFunction(self.X)
         (u,p),(v,q)=self.X.TnT()
         self.nu=ng.Parameter(cfg['nu'])

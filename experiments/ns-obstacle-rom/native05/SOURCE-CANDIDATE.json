@@ -1,0 +1,170 @@
+{
+  "status": "source_only_unexecuted_no_staging_or_submission",
+  "physical_admission": false,
+  "training_released": false,
+  "adapter_source_sha256": "b0539e5030178a2c19ae7bd534f11263166574cde2694d0d572359eee5323b56",
+  "fixture_source_sha256": "b2686e427510cdaa0c98ae4d992dc96eaa27f27060a406ca7e06d7735421a371",
+  "block_source_sha256": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+  "producer_manifest_sha256": "1a57a54934eb650cde0599ef8dc81ed5421293be89e4c03d98b522a3c628ca22",
+  "producer_retention_status": "retained candidate; coordinator verifies audit/mirror before release",
+  "fresh_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-factor05",
+  "release_schema": "ns-obstacle-component-factor-control-v1",
+  "component_factor_source_sha256": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+  "caps": {
+    "gpu": 1,
+    "CPUs": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200,
+    "working_set_projection_GiB": 8,
+    "result_projection_GiB": 1
+  },
+  "files": [
+    {
+      "source": "native_factor_control.py",
+      "destination": "native_factor_control.py",
+      "sha256": "b2686e427510cdaa0c98ae4d992dc96eaa27f27060a406ca7e06d7735421a371",
+      "bytes": 5678
+    },
+    {
+      "source": "component_factor.py",
+      "destination": "component_factor.py",
+      "sha256": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+      "bytes": 2100
+    },
+    {
+      "source": "fe_blocks.py",
+      "destination": "fe_blocks.py",
+      "sha256": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+      "bytes": 8587
+    },
+    {
+      "source": "point_store.py",
+      "destination": "point_store.py",
+      "sha256": "81e78dc9f9257ff373d3b512fcdb1d6e60b1a07ae7bc19363ff3170c36d40f2c",
+      "bytes": 8331
+    },
+    {
+      "source": "fe_adapter.py",
+      "destination": "fe_adapter.py",
+      "sha256": "28686213799b581fb9276fcf5c6054005068bb899d75048aa17d9de3e2da0fa7",
+      "bytes": 49913
+    },
+    {
+      "source": "fe_algebra.py",
+      "destination": "fe_algebra.py",
+      "sha256": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb",
+      "bytes": 6202
+    },
+    {
+      "source": "fe_pod_a6.py",
+      "destination": "fe_pod_a6.py",
+      "sha256": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252",
+      "bytes": 16160
+    },
+    {
+      "source": "fe_controls_a6.py",
+      "destination": "fe_controls_a6.py",
+      "sha256": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32",
+      "bytes": 3531
+    },
+    {
+      "source": "spaces.py",
+      "destination": "spaces.py",
+      "sha256": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee",
+      "bytes": 10737
+    },
+    {
+      "source": "weak.py",
+      "destination": "weak.py",
+      "sha256": "dcf73d9d0dbc7c4e1d7860cfd0ccdae0edbf6521421e6bf761af23d28fa72335",
+      "bytes": 11934
+    },
+    {
+      "source": "train_bank.py",
+      "destination": "train_bank.py",
+      "sha256": "61a6c9da8ffae5bc17cd8b56a1e8c41acab85fcf05538226f094938021a764f6",
+      "bytes": 6696
+    },
+    {
+      "source": "oriented_normals.py",
+      "destination": "oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "bytes": 15221
+    },
+    {
+      "source": "scalars.py",
+      "destination": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
+      "source": "MODEL-CONTRACT.json",
+      "destination": "MODEL-CONTRACT.json",
+      "sha256": "833e1f1f3bc2940390213d82df6edc29a399ccdd3d4d3f2b12267379b6f71617",
+      "bytes": 9347
+    },
+    {
+      "source": "native05/dependencies.py",
+      "destination": "dependencies.py",
+      "sha256": "34a32358b9179b7146745dddbdcf53df4de103157161badf651b376a9f0ce3ec",
+      "bytes": 6383
+    },
+    {
+      "source": "native05/DEPENDENCIES.json",
+      "destination": "DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432
+    },
+    {
+      "source": "native05/PROVISION.json",
+      "destination": "REPAIR.json",
+      "sha256": "43574f6c7e39ab76a390b8b36696cd7976652be366b9df7f6cd0f1d6fb00427d",
+      "bytes": 105
+    },
+    {
+      "source": "native05/native.sh",
+      "destination": "native.sh",
+      "sha256": "53e5a2cea39d5d04700ed3bb110e9debbf30143330d43cca957053b9152618e7",
+      "bytes": 3217
+    }
+  ],
+  "producer_inputs": [
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h1/EXPORT-MANIFEST.json",
+      "destination": "inputcase/EXPORT-MANIFEST.json",
+      "sha256": "1a57a54934eb650cde0599ef8dc81ed5421293be89e4c03d98b522a3c628ca22",
+      "bytes": 3680
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h1/config.json",
+      "destination": "inputcase/config.json",
+      "sha256": "72433d8c77a20dff38ba8197347423ed82c18b29b2f611923d313a23dc12c973",
+      "bytes": 1371
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h1/fe_layout.json",
+      "destination": "inputcase/fe_layout.json",
+      "sha256": "5f884d96b5082219aec966e6595ea6d2c2632ebf00fca25c7dcf8c0e18ddacfa",
+      "bytes": 1450225
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h1/mesh.vol.bin",
+      "destination": "inputcase/mesh.vol.bin",
+      "sha256": "bcc562d338a206b4a8d9de73be5ef1afd0f4d448f78d8a8ae1f823b41cbe229e",
+      "bytes": 124337
+    },
+    {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h1/result.json",
+      "destination": "inputcase/result.json",
+      "sha256": "08be335f55c33812e07180c6fae737f303bca8e9de626ab3fefc2a4a26eb7b0d",
+      "bytes": 124145
+    }
+  ],
+  "staging_generated_files": [
+    "CONTROL-RELEASE.json with independently reviewed exact-source/producer binding",
+    "SOURCE_COMMIT.txt",
+    "INPUT-MANIFEST.json",
+    "SOURCE-SHA256SUMS covering every staged runtime input"
+  ],
+  "no_automatic_retry": true
+}

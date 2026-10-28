@@ -4,6 +4,10 @@
     {
       "job_id": 6617371,
       "attempt": "g2-solverquad01"
+    },
+    {
+      "job_id": 6617599,
+      "attempt": "g2-domain-upstream"
     }
   ],
   "active_external_consults": [],
@@ -12,7 +16,7 @@
     "Complete adopted P4 p/geometry/solver/quadrature/domain and population qualification; no P3 metric splicing",
     "Complete point-block ROM production capacity and strong FOM output equivalence before training"
   ],
-  "completed_allocated_gpu_hours": 0.7147222222222223,
+  "completed_allocated_gpu_hours": 0.72,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -112,5 +116,9 @@
     "packet": "../reviews/CLAUDE-P4-QUALIFICATION-PACKET.txt",
     "response": "../reviews/CLAUDE-P4-QUALIFICATION-RESPONSE.txt",
     "process_exit_code": 0
-  }
+  },
+  "native_factor_result": "Native05 independent raw audit PASS; production scalar reuse source review next",
+  "domain_execution_release": "c3df82835; exact a886389af three packages, one allocation each as slots free, max two campaign jobs",
+  "noise_protocol": "reviews/RESOLVED-NOISE-PROTOCOL.md at51e30b95b, empirical intervals; unchanged delta",
+  "disk_recovery": "Stopped verified detached auto-GC and removed only orphan scratch16,058,810,368bytes; committed data untouched"
 }

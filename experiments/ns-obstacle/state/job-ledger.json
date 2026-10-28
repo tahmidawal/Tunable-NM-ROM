@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "solverquad_submitted_crossp_capacity_audited",
+  "status": "solverquad_running_domains_released_native_factor_complete",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -691,13 +691,59 @@
       "reference_admitted": false,
       "training_released": false,
       "single_submission": true,
+      "state_last_observed": "RUNNING"
+    },
+    {
+      "job_id": 6617452,
+      "lane": "rom",
+      "attempt": "native-factor05",
+      "source_commit": "e3efb9f8dd0443e39ad131735cee27c3411c68b9",
+      "submitted_utc": "2026-10-28T22:22:56Z",
+      "input_manifest_sha256": "89843c83d663158eb7686a8238b7e815325a557c471fa6c0891b8f629dd698fc",
+      "source_checksums_sha256": "2081b6cad6e2bdf5d5fcab359b01a769c02f42e7cab4600908e2e1c8d02df879",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-factor05",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "state": "COMPLETED",
+      "state_last_observed": "COMPLETED",
+      "elapsed_seconds": 19,
+      "allocated_gpu_hours": 0.005277777777777778,
+      "node": "pax008",
+      "exit_code": "0:0",
+      "reference_admitted": false,
+      "training_released": false,
+      "collection": "in progress; raw audit pending",
+      "independent_result_review": "PASS803 hashes; all8 RHS full/component solution and residual checks"
+    },
+    {
+      "job_id": 6617599,
+      "lane": "2d",
+      "attempt": "g2-domain-upstream",
+      "source_commit": "a886389af6b2182f39ed84cb7fc79d931183e55d",
+      "submitted_utc": "2026-10-28T22:31:18.811165+00:00",
+      "input_manifest_sha256": "0240b2c24edbda3de464f6b578f12f1c8467d83fb732d9156562a0233fb7c786",
+      "source_checksums_sha256": "02c55e085689dbce8b6461679d65ebc7fa0f2d0d60704f5420f08f0f055fd749",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-domain-upstream",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 128,
+      "working_guard_GiB": 112,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true,
       "state_last_observed": "PENDING"
     }
   ],
   "live_job_ids": [
-    6617371
+    6617371,
+    6617599
   ],
   "completed_gpu_hours": 0.3877777777777778,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
-  "total_allocated_gpu_hours_completed": 0.7147222222222223
+  "total_allocated_gpu_hours_completed": 0.72
 }

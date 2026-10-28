@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "partial_2d_controls_accepted_full_G1_failed_tiny3d_released_A7",
+  "status": "both_lanes_raw_obstacle_normal_diagnostic_needed_no_live_jobs",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -145,9 +145,40 @@
       "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke06/RETENTION.json",
       "collection_commit": "b1121569e",
       "collection_mirror": "7d2da09c7"
+    },
+    {
+      "job_id": 6610494,
+      "lane": "3d_reference",
+      "attempt": "g1-smoke06",
+      "source_commit": "1c2fd8fa141ded0d1dcdc15c850a5a8682572b00",
+      "manifest_sha256": "5336879b7d02f722144cb3b738d5c99e1cebfca599755d3d81852b61a06836b9",
+      "release": "reviews/OPERATIONAL-A7-3D-G1-RELEASE.md",
+      "state_last_observed": "FAILED",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke06",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": 29,
+      "allocated_gpu_hours": 0.008055555555555555,
+      "device_for_FE": "CPU",
+      "node": "pax008",
+      "failure_stage": "geometry_sphere_normal_check_before_case_solve",
+      "api_preflight_passed": true,
+      "FE_cases_solved": false,
+      "case_states": {
+        "geometry_sphere": "failed_raw_mapped_normal_orientation",
+        "empty": "not_run",
+        "manufactured": "not_run"
+      },
+      "collection_archive_sha256": "8f2d00483d6483ce5f2dd1b9f21c75faffda2cf39363b2d465ec986f7e061b34",
+      "collection_archive_bytes": 158264439,
+      "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d/artifacts/g1-smoke06/RETENTION.json",
+      "remote_duplicate_removed": false
     }
   ],
   "live_job_ids": [],
-  "completed_gpu_hours": 0.0225,
+  "completed_gpu_hours": 0.030555555555555555,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

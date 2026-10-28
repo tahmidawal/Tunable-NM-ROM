@@ -1,5 +1,5 @@
 {
-  "status": "submitted_pending_priority",
+  "status": "failed_collected_verified_remote_duplicate_removed",
   "recorded_utc": "2026-10-28T18:35:40.563330+00:00",
   "job_id": 6610494,
   "reviewed_source_commit": "1c2fd8fa141ded0d1dcdc15c850a5a8682572b00",
@@ -26,5 +26,12 @@
   "scope": "bounded diagnostic controls only; no reference/training/physical sphere release",
   "full_2d_G1": "failed; historical prerequisite replaced only for this exact candidate by A7",
   "numerical_admission": false,
-  "monitoring": "Check actual scheduler and job outputs; never submit a duplicate."
+  "monitoring": "Check actual scheduler and job outputs; never submit a duplicate.",
+  "elapsed_seconds": 29,
+  "allocated_gpu_hours": 0.008055555555555555,
+  "node": "pax008",
+  "batch_MaxRSS_KiB": 1204388,
+  "exit_code": "1:0",
+  "failure_stage": "geometry_sphere_normal_orientation_before_case_solve",
+  "collection_manifest": "../artifacts/g1-smoke06/RETENTION.json"
 }

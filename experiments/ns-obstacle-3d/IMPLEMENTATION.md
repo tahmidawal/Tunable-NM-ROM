@@ -1,5 +1,13 @@
 # Three-component reference controls: implementation checkpoint
 
+Current status (2026-10-28): the exact smoke06 candidate ran once under the coordinator's
+operational A7 release. Its dependency and cube/API controls passed, then sphere normal
+orientation stopped the run before any case solve. Complete retained evidence is in
+`artifacts/g1-smoke06/`; no reference or training gate passed. The original source and
+configuration are unchanged. The sections below describe historical preparation, so
+statements that the candidate was unexecuted are superseded by this dated status. A new
+normal diagnostic is source-only and unreleased in `diagnostics/normal01/`.
+
 Candidate `g1-smoke06` contains revised, unexecuted finite-element code for independent diff review. Independent review found an invalid boundary-gradient evaluation in earlier candidates; their release is withdrawn. The earlier staged `g1-smoke01` remains immutable and has not run; candidate 02 was never staged. See `checks/BOUNDARY-TRACE-AUDIT-CORRECTION.md`. The only completed checks are Python/shell parsing and an independent symbolic manufactured-field derivation; no numerical reference, dependency import, geometry or solver gate has passed.
 
 ## Authoritative specification

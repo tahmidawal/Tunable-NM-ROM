@@ -39,7 +39,7 @@ def head_fn(pf):
 
 
 def make_head_evolve(hz, nl, nlJ, K, trust, budget=600, ridge=1e-10, solver='lu', clip=True, mutation=None, nrec=0,
-                     nstep=NSTEP, seed=None):
+                     nstep=NSTEP, seed=None, stop_on_invalid=False, force_failure_step=None):
     """evolve(z0, nu, scale, data, sch) -> (Z (6, K), stats), the text of p1core.make_evolve (form LSPG) with
     c = hz(z). data: A (M, R'), lam (M,), hmask (M,) plus the point-rule blocks. mutation in (None, 'jflip')."""
     assert mutation in (None, 'jflip')
@@ -74,7 +74,7 @@ def make_head_evolve(hz, nl, nlJ, K, trust, budget=600, ridge=1e-10, solver='lu'
     lm = T2.make_lm(evalJ, budget, trust, ridge, solver, clip)
     be = jnp.asarray(T2.BE_CO, jnp.float64)
 
-    def evolve(z0, nu, scale, data, sch):
+    def evolve(z0, nu, scale, data, sch, initial_valid=True):
         A, lam, hm = data['A'], data['lam'], data['hmask']
         dt = sch['dt']
         M = A.shape[0]
@@ -89,6 +89,10 @@ def make_head_evolve(hz, nl, nlJ, K, trust, budget=600, ridge=1e-10, solver='lu'
                       replay_info=jnp.zeros((nstep, 5), jnp.float64))
         if nrec:
             stats0['states'] = jnp.full((nrec, K), jnp.nan).at[0].set(z0)
+        if stop_on_invalid:
+            stats0['failed_code'] = jnp.full(K, jnp.nan)
+            stats0['initial_valid'] = jnp.asarray(initial_valid)
+            stats0['states'] = jnp.where(initial_valid, stats0['states'], jnp.nan)
         nA0 = jnp.linalg.norm(A @ hz(z0)) + 1e-300
         thr = T2.ALT_TAU * jnp.max(jnp.abs(A @ hz(z0)))
 
@@ -112,8 +116,13 @@ def make_head_evolve(hz, nl, nlJ, K, trust, budget=600, ridge=1e-10, solver='lu'
             else:
                 replay_info = jnp.zeros(5, jnp.float64)
             z2, rn, it, reason, gn, rej, lamn = lm(zi, args, tol, sch['gtol'], lam0)
+            if force_failure_step is not None:
+                reason = jnp.where(k == force_failure_step, jnp.int32(3), reason)
             conv = (gn <= sch['gtol']) | (rn <= tol)
             ok = jnp.isfinite(rn) & conv & (reason != 0) & (reason != 3)
+            if stop_on_invalid:
+                st = dict(st, failed_code=jnp.where(ok, st['failed_code'], z2))
+                z2 = jnp.where(ok, z2, zv)
             Ac2 = A @ hz(z2)
             dcur = hm * (Ac2 - Acn)
             pr = dcur * dprev
@@ -133,7 +142,9 @@ def make_head_evolve(hz, nl, nlJ, K, trust, budget=600, ridge=1e-10, solver='lu'
                       step_reason=st['step_reason'].at[jnp.minimum(k, nstep - 1)].set(reason),
                       step_it=st['step_it'].at[jnp.minimum(k, nstep - 1)].set(it),
                       replay_info=st['replay_info'].at[jnp.minimum(k, nstep - 1)].set(replay_info),
-                      **({'states': st['states'].at[jnp.minimum(k + 1, nrec - 1)].set(z2)} if nrec else {}))
+                      **({'failed_code': st['failed_code'], 'initial_valid': st['initial_valid']} if stop_on_invalid else {}),
+                      **({'states': st['states'].at[jnp.minimum(k + 1, nrec - 1)].set(
+                          jnp.where(ok, z2, jnp.nan) if stop_on_invalid else z2)} if nrec else {}))
             kk = k + 1
             store = (kk % sch['keep']) == 0
             idx = jnp.clip(kk // sch['keep'], 0, 5)
@@ -142,14 +153,24 @@ def make_head_evolve(hz, nl, nlJ, K, trust, budget=600, ridge=1e-10, solver='lu'
 
         c0 = (jnp.int32(0), z0, z0, z0, jnp.asarray(1e-6, jnp.float64), jnp.zeros(M, jnp.float64),
               jnp.zeros(M, jnp.int32), out0, stats0)
-        k, *_rest, out, st = jax.lax.while_loop(lambda c: c[0] < sch['steps'], body, c0)
+        def keep_going(c):
+            if stop_on_invalid:
+                return (c[0] < sch['steps']) & initial_valid & (c[-1]['nfail'] == 0)
+            return c[0] < sch['steps']
+        k, *_rest, out, st = jax.lax.while_loop(keep_going, body, c0)
+        if stop_on_invalid:
+            valid_steps = k - st['nfail']
+            available = initial_valid & (jnp.arange(6) * sch['keep'] <= valid_steps)
+            out = jnp.where(available[:, None], out, jnp.nan)
+            st = dict(st, valid_steps=valid_steps, output_available=available)
         st = dict(st, steps=k, alt_index=jnp.where(st['alt_den'] > 0, st['alt_num'] / (st['alt_den'] + 1e-300), 0.))
         return out, st
 
     return evolve, res, evalJ
 
 
-def make_head_query(pf, K, L, trust, mutation=None, budget=600, nrec=0, nstep=NSTEP, ic_budget=400, ic_gtol=1e-6, seed=None):
+def make_head_query(pf, K, L, trust, mutation=None, budget=600, nrec=0, nstep=NSTEP, ic_budget=400, ic_gtol=1e-6,
+                    seed=None, stop_on_invalid=False, force_failure_step=None):
     """Split head query (init / evolve / decode / fused), the head analogue of p1core.make_split_query.
     init: the deployed q = 0 initial fit (hfast.make_query.initialize): Gauss-48 sampling of the supplied field,
     nearest candidate code by the whitened distance, stationary GJ LM in z (budget ic_budget, gtol ic_gtol)."""
@@ -158,7 +179,8 @@ def make_head_query(pf, K, L, trust, mutation=None, budget=600, nrec=0, nstep=NS
     hz = head_fn(pf)
     nl, nlJ = Q.tested_value('point', L), Q.tested_jac('point', L)
     evolve, res, evalJ = make_head_evolve(hz, nl, nlJ, K, trust, budget=budget, mutation=mutation, nrec=nrec,
-                                          nstep=nstep, seed=seed)
+                                          nstep=nstep, seed=seed, stop_on_invalid=stop_on_invalid,
+                                          force_failure_step=force_failure_step)
     ic_lm = A_.make_stationary_lm(lambda z, tgt, Rm: Rm @ hz(z) - tgt, ic_budget, gtol=ic_gtol, linear='gj')
 
     def initialize(u0, cold):
@@ -178,7 +200,11 @@ def make_head_query(pf, K, L, trust, mutation=None, budget=600, nrec=0, nstep=NS
 
     def query(u0, nu, data, cold, sch):
         z0, scale, ic = initialize(u0, cold)
-        Z, st = evolve(z0, nu, scale, data, sch)
+        if stop_on_invalid:
+            ic_ok = ((ic['ic_reason'] == 1) | (ic['ic_reason'] == 4)) & jnp.all(jnp.isfinite(z0)) & jnp.isfinite(ic['ic_gn'])
+            Z, st = evolve(z0, nu, scale, data, sch, initial_valid=ic_ok)
+        else:
+            Z, st = evolve(z0, nu, scale, data, sch)
         return dict(fields=decode(Z, data), W=Z, w0=z0, stats=dict(st, **ic))
 
     return dict(init=jax.jit(initialize), evolve=jax.jit(evolve), decode=jax.jit(decode), fused=jax.jit(query),

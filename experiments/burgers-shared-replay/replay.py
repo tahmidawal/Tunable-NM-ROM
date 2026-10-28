@@ -23,14 +23,15 @@ def make_guard(hfine, nl, force_failure=False):
     return seed
 
 
-def make_query(coarse, fine, L=1024, record=False, force_failure=False):
+def make_query(coarse, fine, L=1024, record=False, force_failure_step=None):
     """All work is inside this fused query, including both IC fits and previews.
 
     The coarse query records every state because replay needs all 50 guesses.
     Fine replay receives only those states and validity flags as extra data;
     its residual histories and carried damping are the original fine ones.
     """
-    small = H.make_head_query(coarse.pf, 16, L, coarse.trust, nrec=51, nstep=50)
+    small = C.make_head_query(coarse.pf, 16, L, coarse.trust, nrec=51, nstep=50,
+                              stop_on_invalid=True, force_failure_step=force_failure_step)
     nl = H.Q.tested_value('point', L)
     seed = make_guard(H.head_fn(fine.pf), nl)
     large = C.make_head_query(fine.pf, 64, L, fine.trust, nrec=51 if record else 0,
@@ -39,9 +40,6 @@ def make_query(coarse, fine, L=1024, record=False, force_failure=False):
     def query(u0, nu, data, cold_fine, cold_coarse, sch):
         cv = small['fused'](u0, nu, data, cold_coarse, sch)
         cs = cv['stats']
-        if force_failure:
-            # Test the real invalid-history path, not only the last guard flag.
-            cs = dict(cs, step_reason=cs['step_reason'].at[0].set(3), nfail=cs['nfail'] + 1)
         ic_ok = ((cs['ic_reason'] == 1) | (cs['ic_reason'] == 4)) & jnp.all(jnp.isfinite(cv['w0']))
         step_ok = (jnp.all(jnp.isfinite(cs['states'][1:]), axis=1) & jnp.isfinite(cs['step_gn']) &
                    jnp.isfinite(cs['step_tolratio']) &

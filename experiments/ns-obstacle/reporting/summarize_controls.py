@@ -43,6 +43,48 @@ def generate(repository: Path, destination: Path) -> None:
              '| Channel control | Saved value | Declared threshold |',
              '|---|---:|---:|']
     lines += [f'| {k} | {v:.9g} | {t:.9g} |' for k, v, t in rows]
+    repaired_root = two / 'artifacts/g1-smoke07/results'
+    if repaired_root.exists():
+        repaired = read(repaired_root / 'smoke_summary.json')
+        case_rows = []
+        for kind in ('channel', 'manufactured', 'dfg'):
+            case_result = read(repaired_root / kind / 'result.json')
+            case_metrics = case_result['metrics']
+            case_rows.append({'case': kind,
+                              'residual': case_metrics['independent_residual']['value'],
+                              'divergence': case_metrics['divergence']['value'],
+                              'sampled_analytic_trace': case_metrics['boundary_trace']['value'],
+                              'flux': case_metrics['global_boundary_flux' if kind == 'manufactured' else 'mass']['value']})
+        payload['repaired_2d_initial_controls'] = {
+            'passed_initial_checks': repaired['passed'], 'checks': repaired['checks'],
+            'cases': case_rows, 'physical_reference_admitted': False,
+            'nongating_benchmark': repaired['nongating']['dfg']}
+        passed = sum(bool(c['passed']) for c in repaired['checks'])
+        lines += ['', 'The repaired 2D run passes '
+                  f'{passed}/{len(repaired["checks"])} frozen initial-control checks. '
+                  'Independent review accepts this implementation milestone. These coarse values '
+                  'remain provisional for reference use; refinement and reference qualification '
+                  'are unfinished.', '',
+                  '| Repaired control | Scaled residual | Scaled divergence | Sampled analytic trace / U | Flux imbalance |',
+                  '|---|---:|---:|---:|---:|']
+        lines += [f'| {r["case"]} | {r["residual"]:.9g} | {r["divergence"]:.9g} | '
+                  f'{r["sampled_analytic_trace"]:.9g} | {r["flux"]:.9g} |' for r in case_rows]
+        lines += ['', 'Manufactured flux uses all boundaries, since its inlet flux is nearly zero '
+                  'and its analytic wall data are not no-slip. Other cases use inlet/outlet imbalance. '
+                  'The sampled analytic trace is distinct from enforcement of the prescribed FE trace.', '',
+                  '| Coarse benchmark force definition | Drag coefficient | Lift coefficient |',
+                  '|---|---:|---:|']
+        diagnostic = repaired['nongating']['dfg']
+        lines += [f'| {name} | {row["coefficient"][0]:.12g} | {row["coefficient"][1]:.12g} |'
+                  for name, row in diagnostic['force_rows'].items()]
+        benchmark = read(two / 'artifacts/g1-smoke07/benchmark.json')
+        payload['stored_benchmark_anchor'] = benchmark
+        lines += ['', 'The reaction and surface-force estimates disagree on this coarse mesh. '
+                  'All definitions are retained; selecting the most favorable estimate does not '
+                  'qualify a reference. The exact-coordinate pressure difference is '
+                  f'{diagnostic["pressure_probes"]["difference"]:.12g}; its absolute gap from '
+                  f'the stored benchmark anchor is {diagnostic["pressure_drop_reference_abs_gap"]:.9g}. '
+                  'The stricter reference tests remain unpassed.']
     normal_path = two / 'artifacts/g1-normal01/results/geometry/result.json'
     if normal_path.exists():
         normal = read(normal_path)
@@ -102,6 +144,11 @@ def generate(repository: Path, destination: Path) -> None:
               'Divergence measures local incompressibility error. Essential trace is prescribed boundary velocity; '
               'a sampled maximum is not a continuous maximum certificate. A facet is a volume element face '
               'or edge. An outward-fluid normal points out of the fluid, including into an excluded obstacle. '
+              'DFG names the established cylinder-in-channel benchmark. A manufactured control uses a chosen '
+              'analytic solution and its matching forcing and boundary data. Weak reaction estimates force '
+              'from the discrete equations; gradient and symmetric surface estimates integrate different '
+              'stress forms and must satisfy the declared consistency checks. Drag and lift coefficients '
+              'are normalized streamwise and transverse forces. '
               'POD is a weighted linear snapshot basis. A reference is an independently qualified numerical solution.']
     destination.mkdir(parents=True, exist_ok=True)
     (destination / 'controls.json').write_text(json.dumps(payload, indent=2) + '\n')

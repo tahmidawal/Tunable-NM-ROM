@@ -87,3 +87,15 @@ Job 6612209 was submitted in g1-smoke07 and, while still pending with zero runti
 A coordinator-spawned automatic Git repack consumed a large temporary pack. Exact process ownership was verified before terminating only that repack and removing its unpublished incomplete temporary file. Existing Git packs and all experiment evidence were retained; the event is recorded in GIT-AUTO-GC-INTERRUPTION.json. Subsequent commands disable auto-GC only per command/process, without a persistent configuration change.
 
 No training, method comparison, sealed-data access, worktree merge or unique experiment-data deletion occurred. The next 2D work is G2 source/export and resource qualification after independent G1 admission.
+
+### User direction: complete the 2D ROM first (Codex coordinator)
+
+The user explicitly narrowed the active objective to making the 2D ROM work and asked to make it the goal. A durable conversation goal is now active, covering qualified references, reproducible exports, learned bank and ordered prefixes, fair POD, actual reduced solves, velocity/pressure/forces/constraints, quadrature validation and matched-cost comparison with generated report/presentation/handoff. Smoke/source success is not the completion target. All further 3D work is deferred; its incomplete, unexecuted diagnostic source is preserved at ba83a8855 / mirror d3a1e9db4, with no active process or allocation.
+
+Independent saved-array review accepts the 2D smoke07 G1 controls. The operational condition is now closed: retention a893210f5 / mirror98b803bd1 and checksum-backed remote cleanup c3a6c8a76 / mirror777213ba6 are complete, with the exact remote job directory independently confirmed absent. All stricter G2 blockers remain visible, including coarse divergence, force consistency and benchmark pressure/lift discrepancies. Generated control tables and an all-saved-point cylinder field figure preserve the coarse/provisional scope.
+
+The 2D owner is implementing one bounded native producer and separate-process binary mesh reload control with unchanged physical settings and reload tolerance. The resumed ROM owner works in the existing clean ROM lane, integrating the final A8 normal contract and explicit mesh persistence contract before completing the actual bank/POD driver. No new native job or training has been released. Existing resource ceilings, scientific thresholds and stop rules remain unchanged.
+
+A second previously detached Git auto-repack from the 2D lane was identified by exact process/cwd/stderr and stopped; only its unpublished incomplete temporary pack was removed after all related processes exited. Existing packs and experiment data remained intact. The event is retained in GIT-AUTO-GC-INTERRUPTION-2D.json; resumed lane commands use per-command/process gc.auto=0.
+
+No sealed cohorts were opened, no branches merged, and no unique experiment data deleted.

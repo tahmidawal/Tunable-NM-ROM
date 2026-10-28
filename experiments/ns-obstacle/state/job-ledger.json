@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "2d_A8_all_three_controls_completed_collecting_for_independent_review",
+  "status": "2d_G1_accepted_G2_native_export_preparation_3d_deferred",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -278,12 +278,19 @@
       "node": "pax063",
       "actual_gpu_type": "H100",
       "case_states": {
-        "channel": "completed_pending_independent_review",
-        "manufactured": "completed_pending_independent_review",
-        "dfg": "completed_control_pending_independent_review"
+        "channel": "completed_independently_accepted_G1_control_not_reference",
+        "manufactured": "completed_independently_accepted_G1_control_not_reference",
+        "dfg": "completed_independently_accepted_G1_control_not_reference"
       },
       "batch_MaxRSS_KiB": 1182176,
-      "reference_admitted": false
+      "reference_admitted": false,
+      "independent_review": "PASS scoped G1 controls",
+      "retention_commit": "a893210f5",
+      "retention_mirror": "98b803bd1",
+      "cleanup_commit": "c3a6c8a76",
+      "cleanup_mirror": "777213ba6",
+      "remote_cleanup": "verified_complete",
+      "archive_sha256": "962e5cf5ac28760bf4edde5659aaeab4a8cd638c8152df4a1afccd2cd8ce4a80"
     }
   ],
   "live_job_ids": [],

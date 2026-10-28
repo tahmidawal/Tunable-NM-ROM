@@ -1,6 +1,9 @@
 # Fixed-obstacle incompressible Navier–Stokes campaign
 
-Status: discovery and pre-production design; no reference or ROM results exist yet.
+The user directed the campaign to complete and validate the 2D ROM first on 2026-10-28.
+All 3D work is deferred. The canonical LAB-LOG records current numerical status; the
+2D initial controls have passed independent review, while reference qualification and
+the end-to-end ROM remain unfinished.
 
 The authoritative request is saved in USER-REQUEST.txt. The canonical project log remains
 `/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md`. Experimental fork is consolidated
@@ -12,16 +15,16 @@ The authoritative request is saved in USER-REQUEST.txt. The canonical project lo
 | Lane | Owner | Worktree suffix | Cluster namespace |
 |---|---|---|---|
 | design, integration, evidence | coordinator | 2026-10-27-ns-obstacle | ns-obstacle-20261027 |
-| cylinder reference | reference_2d | 2026-10-27-ns-obstacle-2d | ns-obstacle-2d-20261027 |
-| sphere reference and feasibility | reference_3d | 2026-10-27-ns-obstacle-3d | ns-obstacle-3d-20261027 |
-| coordinate bank, quadrature and POD | rom_baselines | 2026-10-27-ns-obstacle-rom | ns-obstacle-rom-20261027 |
+| cylinder reference | reference_2d_recovery | 2026-10-27-ns-obstacle-2d | ns-obstacle-2d-20261027 |
+| sphere reference and feasibility, deferred | reference_3d_recovery | 2026-10-27-ns-obstacle-3d | ns-obstacle-3d-20261027 |
+| coordinate bank, quadrature and POD | rom_2d_completion | 2026-10-27-ns-obstacle-rom | ns-obstacle-rom-20261027 |
 
 Each namespace is below `/cluster/tufts/paralab/tawal01/`. Independent reviewers are
 read-only. Discovery precedes design review; reference/data admission precedes training.
 
 ## Initial resource ceiling
 
-Proposed first envelope, to be frozen in reviewed DESIGN.md before any run: twelve total
+The reviewed envelope remains twelve total
 allocated GPU-hours, including allocations running CPU FE work, with eight for reference
 verification and four reserved for a conditional small ROM/POD pilot. At most two campaign
 allocations simultaneously, one GPU and at most sixteen CPU cores per allocation; first
@@ -34,8 +37,9 @@ gates. Any stage failing its declared stop rule is recorded, not repeatedly opti
 
 ## Review and current release
 
-`DESIGN.md` with A1/A2 and `campaign.json` are the authoritative prospective contract.
+`DESIGN.md` and `campaign.json`, frozen at A6, are the authoritative scientific contract;
+separately recorded A7/A8 changes govern bounded infrastructure and normal repair.
 Discovery proposals are preserved as history and do not override these files. Independent
-Codex numerical and physics reviews permit reference/control implementation; code, exact
-job configuration and required Claude design review remain necessary before numerical
-submission. No production data, bank fitting or performance claim is released.
+Codex and Claude reviews have been reconciled for the completed 2D initial controls.
+Code and exact job reviews remain necessary for new execution. No production data,
+bank fitting or performance claim is released by the initial controls alone.

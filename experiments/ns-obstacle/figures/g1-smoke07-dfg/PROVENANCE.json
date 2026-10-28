@@ -1,0 +1,51 @@
+{
+  "status": "provisional_control_visualization_not_reference_admission",
+  "source_case": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke07/results/dfg",
+  "inputs": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke07/results/dfg/result.json",
+      "sha256": "8e081ae1a2426d109692003c3ee911d9fb2ca1be33e2e20a8663d079c12beae8"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke07/results/dfg/full_rule.npz",
+      "sha256": "58a07233a5490b936b7523ec997c69b8d9056d0bdb1e275f72ef3c3108a171aa"
+    }
+  ],
+  "generator_sha256": "75a52291cac84d353495480253d3fddd296d436dc672cfcb8e915f4d6d1e07f1",
+  "rendering": "all saved fluid quadrature points; no interpolation or outlier removal",
+  "point_count": 20335,
+  "ranges": [
+    {
+      "quantity": "Speed $|\\mathbf{u}|/U$",
+      "minimum": 1.5303906635207087e-05,
+      "maximum": 2.0354689293741983
+    },
+    {
+      "quantity": "Pressure $p/U^2$",
+      "minimum": -0.30865643775859536,
+      "maximum": 3.2900323766176833
+    },
+    {
+      "quantity": "Divergence $D\\nabla\\!\\cdot\\!\\mathbf{u}/U$",
+      "minimum": -1.3116334800759288,
+      "maximum": 1.1249108694668442
+    }
+  ],
+  "outputs": [
+    {
+      "path": "experiments/ns-obstacle/figures/g1-smoke07-dfg/fields.png",
+      "sha256": "258abf06dca9f828bbfcd0dfc8a752c731eb58d94cfb9a5b5a4dc7b1255b0081"
+    },
+    {
+      "path": "experiments/ns-obstacle/figures/g1-smoke07-dfg/fields.pdf",
+      "sha256": "0386bca06dd795d98d437be54bc61613f1dd536e226f9d9ad246e4a385c2aa60"
+    }
+  ],
+  "source_provenance": {
+    "execution_source_commit": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
+    "source_sha256": "9e2fbbed57de5d943e5159e98fabc07cdc1ecb999b6a48dff96c711285529ca9",
+    "config_sha256": "65a01fc2d871c60853947ab8d93b7c043ffdf6b77241c85c1577eb74fca98b2f",
+    "job_id": "6612209",
+    "hostname": "pax063"
+  }
+}

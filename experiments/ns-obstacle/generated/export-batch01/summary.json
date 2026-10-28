@@ -1,0 +1,51 @@
+{
+  "status": "readout_control_summary_no_independent_review_inferred",
+  "source_control_sha256": "e758ada4b22106aac4761e4a008208c82b43827ba36effc9337f952945205a18",
+  "source_case_manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b",
+  "scope": "diagnostic readout only; not complete producer/query cost or cross-job speedup",
+  "physical_admission": false,
+  "peak_rss_bytes": 2363797504,
+  "rows": [
+    {
+      "readout": "boundary/batched",
+      "repetition_seconds": [
+        0.1867509474977851,
+        0.18762122094631195,
+        0.18713286612182856
+      ],
+      "median_seconds": 0.18713286612182856,
+      "max_normalized_gap": 3.4736365105828897e-16
+    },
+    {
+      "readout": "boundary/scalar",
+      "repetition_seconds": [
+        0.23406477645039558,
+        0.232180617749691,
+        0.23329711146652699
+      ],
+      "median_seconds": 0.23329711146652699,
+      "max_normalized_gap": 0.0
+    },
+    {
+      "readout": "volume/batched",
+      "repetition_seconds": [
+        38.63198463059962,
+        38.590790873393416,
+        38.80216680280864
+      ],
+      "median_seconds": 38.63198463059962,
+      "max_normalized_gap": 4.632916082230859e-16
+    },
+    {
+      "readout": "volume/scalar",
+      "repetition_seconds": [
+        56.28652962483466,
+        56.114082884043455,
+        56.05214270763099
+      ],
+      "median_seconds": 56.114082884043455,
+      "max_normalized_gap": 0.0
+    }
+  ],
+  "generator_sha256": "1c1764a0093cb42565f44ed01f1399c11077b6fe70288ee619b3dec993b59832"
+}

@@ -38,9 +38,11 @@ def verify_release(manifest_path, release_path):
     return release, admission
 
 
-def prepare(manifest_path, release_path, output):
+def prepare(manifest_path, release_path, output, point_block_volume=False):
     started = time.perf_counter()
     release, admission = verify_release(manifest_path, release_path)
+    if release.get('point_block_volume', False) is not point_block_volume:
+        raise ValueError('volume layout differs from exact preparation release')
     output = Path(output)
     if output.exists(): raise FileExistsError('fresh preparation directory required')
     output.mkdir(parents=True, exist_ok=False)
@@ -49,7 +51,7 @@ def prepare(manifest_path, release_path, output):
     try:
         adapter = TrainingFEAdapter.open(manifest_path, output/'native_evidence')
         stage = 'basis_build'; adapter.build()
-        stage = 'array_export'; metadata = adapter.export(output/'prepared')
+        stage = 'array_export'; metadata = adapter.export(output/'prepared', point_block_volume=point_block_volume)
         stage = 'exact_pressure_probes'; probes = prepare_probe_arrays(adapter)
         for name, array in probes.items():
             if array.dtype != np.dtype('float64') or not np.isfinite(array).all():
@@ -82,8 +84,9 @@ def main():
     parser.add_argument('--training-manifest', required=True, type=Path)
     parser.add_argument('--release', required=True, type=Path)
     parser.add_argument('--out', required=True, type=Path)
+    parser.add_argument('--point-block-volume', action='store_true')
     args = parser.parse_args()
-    print(json.dumps(prepare(args.training_manifest, args.release, args.out), indent=2))
+    print(json.dumps(prepare(args.training_manifest, args.release, args.out, args.point_block_volume), indent=2))
 
 
 if __name__ == '__main__': main()

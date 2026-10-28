@@ -49,7 +49,7 @@ def sha_file(path):
 def adapter_digest():
     root = Path(__file__).parent
     return hashlib.sha256(json.dumps({name: sha_file(root/name) for name in
-        ('fe_adapter.py', 'fe_blocks.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+        ('fe_adapter.py', 'fe_blocks.py', 'point_store.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
 
 
 def verify_mesh_contract(record, policy_key='policy'):
@@ -717,12 +717,16 @@ class TrainingFEAdapter:
             'versions': {'ngsolve': ng.__version__, 'numpy': np.__version__, 'scipy': scipy.__version__}}
         return self
 
-    def export(self, directory):
+    def export(self, directory, point_block_volume=False):
         """Persist arrays, FE coefficient bases and their provenance; no integration pass flag."""
         if not hasattr(self, 'coefficients'): raise RuntimeError('build required')
         export_started = time.perf_counter()
         out = Path(directory); out.mkdir(parents=True, exist_ok=False)
         for boundary, name in ((False, 'volume'), (True, 'boundary')):
+            if not boundary and point_block_volume:
+                from point_store import write_volume
+                write_volume(self, out/'volume')
+                continue
             mapped = self.boundary if boundary else self.volume
             arrays = {'points_dimensionless': mapped['points']/self.D, 'points_physical': mapped['points'],
                       'weights_dimensionless': mapped['weights']/self.D**(1 if boundary else 2)}
@@ -762,7 +766,12 @@ class TrainingFEAdapter:
             'physical_points_purpose': 'raw FE lookup and frozen coordinate-network geometry API only'}
         meta['gradient_axes'] = 'point, component, derivative_coordinate, column'
         meta['boundary_normals'] = 'outward fluid; negate only obstacle normals for force_moments'
-        meta['coefficient_files'] = {name: sha_file(out/name) for name in
-                                    ('volume.npz', 'boundary.npz', 'coefficients.npz', 'training.npz')}
+        files = ['boundary.npz', 'coefficients.npz', 'training.npz']
+        if point_block_volume:
+            files.extend(str(path.relative_to(out)) for path in sorted((out/'volume').iterdir()) if path.is_file())
+        else:
+            files.append('volume.npz')
+        meta['volume_storage'] = 'point-block-v1' if point_block_volume else 'single-archive-v1'
+        meta['coefficient_files'] = {name: sha_file(out/name) for name in files}
         (out/'manifest.json').write_text(json.dumps(meta, indent=2, allow_nan=False)+'\n')
         return meta

@@ -91,6 +91,8 @@ def load_preparation(directory, release_path):
         raise ValueError('reference admission differs from released preparation')
     for name, digest in meta['coefficient_files'].items():
         if sha_file(folder/name) != digest: raise ValueError(f'prepared artifact hash mismatch: {name}')
+    if meta.get('volume_storage') == 'point-block-v1':
+        raise RuntimeError('point-block production consumer requires separate reviewed integration; no dense fallback')
     arrays = {name: _read_arrays(folder/(name+'.npz'), CAPS['archive_bytes'])
               for name in ('volume', 'boundary', 'training')}
     if len(arrays['volume']['points_physical']) > CAPS['volume_points']:

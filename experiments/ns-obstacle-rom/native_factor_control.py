@@ -40,9 +40,15 @@ def run(case,release_path,out):
   a.free=np.array(layout['velocity_free'],dtype=bool);a.volume=a.mapped_rule()
   maps,map_evidence=a.scalar_component_maps();sf=np.array([bool(v) for v in a.S.FreeDofs()])
   hv,mv,dx=a.metric_matrices(a.V,True);hs,ms,_=a.metric_matrices(a.S,False)
+  # Raw operator/map evidence survives a failed block-identity assertion.
+  matrices={}
+  for name,matrix in [('velocity_h1',hv),('velocity_mass',mv),('scalar_h1',hs),('scalar_mass',ms)]:
+   path=out/(name+'.npz');save_npz(path,matrix);matrices[name]={'sha256':sha_file(path),'matrix_sha256':sparse_digest(matrix),'nnz':matrix.nnz}
+  np.savez_compressed(out/'map_arrays.npz',component_maps=maps,vector_free=a.free,scalar_free=sf)
+  (out/'map_evidence.json').write_text(json.dumps({'layout_sha256':digest,'component_map_evidence':map_evidence,
+    'matrices':matrices},indent=2)+'\n')
   block_evidence=check_component_blocks(hv,mv,hs,ms,maps)
   vids=np.flatnonzero(a.free);sids=np.flatnonzero(sf);vfree=hv[vids][:,vids];sfree=hs[sids][:,sids]
-  factor_v,meta_v=bounded_factor(vfree)
   rng=np.random.default_rng(27102028);rhs=rng.normal(size=(len(vids),8));pressure_coefficients=rng.normal(size=(a.Q.ndof,4))
   test=a.V.TestFunction()
   for j in range(4):
@@ -50,22 +56,27 @@ def run(case,release_path,out):
    form=ng.LinearForm(a.V);form+=p*ng.div(test)/a.D*dx
    with ng.TaskManager():form.Assemble()
    rhs[:,4+j]=form.vec.FV().NumPy()[vids]
-  full=factor_v.solve(rhs);del factor_v
+  np.savez_compressed(out/'rhs_arrays.npz',rhs=rhs,pressure_coefficients=pressure_coefficients)
+  factor_v,meta_v=bounded_factor(vfree)
+  full=factor_v.solve(rhs);np.savez_compressed(out/'full_solution.npz',full_solution=full);del factor_v
   factor_s,meta_s=bounded_factor(sfree);solver=ComponentFactorSolve(factor_s.solve,maps,a.free,sf)
   reused=solver.solve(rhs)
   gaps={'solution_relative':float(np.linalg.norm(reused-full)/np.linalg.norm(full)),
         'full_relative_residual':float(np.linalg.norm(vfree@full-rhs)/np.linalg.norm(rhs)),
         'reused_relative_residual':float(np.linalg.norm(vfree@reused-rhs)/np.linalg.norm(rhs))}
-  if max(gaps.values())>1e-10:raise ArithmeticError('unchanged full solve/component solve equivalence failed')
-  matrices={}
-  for name,matrix in [('velocity_h1',hv),('velocity_mass',mv),('scalar_h1',hs),('scalar_mass',ms)]:
-   path=out/(name+'.npz');save_npz(path,matrix);matrices[name]={'sha256':sha_file(path),'matrix_sha256':sparse_digest(matrix),'nnz':matrix.nnz}
   np.savez_compressed(out/'solve_arrays.npz',component_maps=maps,vector_free=a.free,scalar_free=sf,rhs=rhs,
    full_solution=full,component_solution=reused,pressure_coefficients=pressure_coefficients)
+  per_column={'solution_relative':(np.linalg.norm(reused-full,axis=0)/np.maximum(np.linalg.norm(full,axis=0),1e-300)).tolist(),
+   'full_relative_residual':(np.linalg.norm(vfree@full-rhs,axis=0)/np.maximum(np.linalg.norm(rhs,axis=0),1e-300)).tolist(),
+   'reused_relative_residual':(np.linalg.norm(vfree@reused-rhs,axis=0)/np.maximum(np.linalg.norm(rhs,axis=0),1e-300)).tolist()}
+  (out/'comparison.json').write_text(json.dumps({'aggregate_gaps':gaps,'per_rhs_column':per_column,
+    'tolerance':1e-10,'full_factor':meta_v,'scalar_factor':meta_s},indent=2)+'\n')
+  if max(max(values) for values in per_column.values())>1e-10:
+   raise ArithmeticError('unchanged full solve/component solve equivalence failed in an RHS column')
   result={'passed':True,'physical_admission':False,'training_released':False,'scope':'coarse actual native matrices; factor reuse equivalence only',
    'seed':27102028,'matrix_block_evidence':block_evidence,'component_map_evidence':map_evidence,
    'scalar_reuse':solver.evidence,'full_factor':meta_v,'scalar_factor':meta_s,'gaps':gaps,'tolerance':1e-10,
-   'matrices':matrices,'solve_arrays_sha256':sha_file(out/'solve_arrays.npz'),'layout_sha256':digest,
+   'per_rhs_column':per_column,'matrices':matrices,'solve_arrays_sha256':sha_file(out/'solve_arrays.npz'),'layout_sha256':digest,
    'counts':{'elements':a.mesh.ne,'velocity_dofs':a.V.ndof,'scalar_dofs':a.S.ndof,'pressure_dofs':a.Q.ndof},
    'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'elapsed_seconds':time.perf_counter()-started,
    'production_caps_unchanged':CAPS,'versions':{'ngsolve':ng.__version__,'numpy':np.__version__}}

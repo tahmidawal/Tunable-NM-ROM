@@ -179,3 +179,9 @@ If planned P4testing eventually passes where P3fails, a P4state must receive its
 H3job6615359 is running onpax009. The owner reports completed DFGh3 in141.94seconds with21153cells/235231DOFs,~2.157GBpeakRSS andscaleddivergence0.00042797544226594574, belowunchanged0.001. This is a provisional completed-case observation; manufacturedh3, fullcomparisons, independent saved-result audit and remainingphysicalcontrols are pending. No G2admission.
 
 PinnedNGSolve6.2.2608 fem.pyi exposes elementtransformation IntegrationRule→MeshPointarray and coefficientfunction MeshPointarray→NumPy evaluation overloads. Those source-backed native batch interfaces were sent to the reference owner for the strong FOM output implementation; actual native equivalence is required, not assumed.
+
+### H3 force observations and next reference role
+
+While job6615359 remainsRUNNING(311seconds onpax009 observed), the completed DFGh3case provisionally reports physicalC_D5.579684981633073,C_L0.010569450004408992 andpressure-drop0.11751521917094485. Physical benchmarkliftgap4.9498141591e-5 and reaction-gradientliftgap3.6164947740e-5 both pass their1e-4bars. Physical-gradientliftgap1.4162881236e-5 remains aboveits1e-5bar. An owner message implying two force-consistency failures was corrected immediately; distinct thresholds remain unchanged. Full saved-result and finest-pair force audit are pending. No P3reference is admitted.
+
+A prospective P4reference role on existingh1/h2/h3levels is being assessed, with its own resolved convergence and complete controls, not P4metrics inserted into P3. No newmeshlevel or relaxedthreshold is released. The ROM derivedmomentworkspace proposal uses bounded RAMblocks and retains frozeninputs,blockhashes,fit diagnostics and reconstruction recipe rather than writing six redundant multi-gigabyte derived matrices; independent fullmemory review and measuredlimits remain required before actualfitting.

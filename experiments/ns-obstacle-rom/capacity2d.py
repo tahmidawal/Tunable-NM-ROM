@@ -1,5 +1,5 @@
 """Prospective shape accounting, not measured RSS or execution authorization."""
-import argparse,json
+import argparse,json,hashlib
 from pathlib import Path
 
 def estimate(n):
@@ -63,6 +63,21 @@ def estimate(n):
   'physical_admission':False,'execution_released':False}
 
 if __name__=='__main__':
- p=argparse.ArgumentParser();p.add_argument('--points',type=int,nargs='+',required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--points',type=int,nargs='+',required=True)
+ p.add_argument('--case-metadata',type=Path);a=p.parse_args()
  if any(n<=0 for n in a.points):raise ValueError('positive counts required')
- print(json.dumps([estimate(n) for n in a.points],indent=2))
+ rows=[estimate(n) for n in a.points]
+ if a.case_metadata is not None:
+  if len(rows)!=1:raise ValueError('one point count per actual case metadata')
+  path=a.case_metadata;record=json.loads(path.read_text());g=record['geometry'];v=g['velocity_ndof'];q=g['pressure_ndof']
+  rows[0]['case_metadata']={'path':str(path.resolve()),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+   'elements':g['element_count'],'velocity_dofs':v,'pressure_dofs':q,'mixed_dofs':g['ndof'],
+   'point_count_status':'caller supplied; verify against retained full_rule array before release',
+   'FOM_process_peak_rss_bytes_not_ROM_peak':record['peak_rss_bytes']}
+  rows[0]['native_coefficient_arrays']={
+   'velocity_104_candidate_columns_bytes':104*v*8,
+   'velocity_104_GridFunction_storage_additional_bytes':104*v*8,
+   'pressure_41_candidate_columns_bytes':41*q*8,
+   'two_scalar_48_eigenvector_copies_bytes':2*48*(v//2)*8,
+   'six_sparse_metrics_and_factorization':'actual metric nnz and retained-factor lifetimes still require measurement; mixed FOM Jacobian is not a substitute'}
+ print(json.dumps(rows,indent=2))

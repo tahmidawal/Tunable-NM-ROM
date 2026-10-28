@@ -45,6 +45,10 @@ def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_
     evidence=TrainingEvidence(evidence_directory,{'training_array_sha256':digest,'admission':admission,
         'step_cap':steps,'time_cap_seconds':max_seconds,'architecture':{'rank':8,'width':64,'depth':2},
         'optimizer':'Adam constant learning rate 0.001','precision':'float64','matmul_precision':'highest'})
+    return evidence.guarded(lambda:_train_gpu(x,y,w,geometry,admission,steps,max_seconds,evidence,digest))
+
+
+def _train_gpu(x,y,w,geometry,admission,steps,max_seconds,evidence,digest):
     # Import only after all admission checks. Any invocation must be under jaxrun locally.
     import jax
     jax.config.update("jax_enable_x64",True)
@@ -82,7 +86,7 @@ def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_
         changes,state=optimizer.update(grad,state,p)
         return optax.apply_updates(p,changes),state,loss
 
-    start=time.perf_counter()
+    start=time.perf_counter();evidence.fit_started=start;evidence.stage='optimization'
     history=[]
     try:
         evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'initial')
@@ -99,17 +103,15 @@ def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_
             if i==0 or (i+1)%100==0:
                 evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'periodic')
         evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'loop_complete')
-    except Exception as exc:
-        evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'failed')
-        evidence.finish('failed',time.perf_counter()-start,repr(exc))
+    except Exception:
+        try:evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'failed')
+        except Exception as retention_error:evidence.retention_errors.append(repr(retention_error))
         raise
-    try:
-        layers=[(np.asarray(ww),np.asarray(bb)) for ww,bb in params]
-        raw=FrozenBank(geometry,layers,np.eye(8),{})
-        vals=raw.values_blocked(x)
-        transform,ordering=ordered_transform(vals,y,w)
-    except Exception as exc:
-        evidence.finish('ordering_failed',time.perf_counter()-start,repr(exc));raise
+    evidence.stage='ordering'
+    layers=[(np.asarray(ww),np.asarray(bb)) for ww,bb in params]
+    raw=FrozenBank(geometry,layers,np.eye(8),{})
+    vals=raw.values_blocked(x)
+    transform,ordering=ordered_transform(vals,y,w)
     evidence.finish('completed',time.perf_counter()-start)
     metadata={"trained":True,"seed":27102027,"width":64,"depth":2,"rank":8,
               "steps_executed":len(history),"steps_cap":steps,"time_cap_seconds":max_seconds,

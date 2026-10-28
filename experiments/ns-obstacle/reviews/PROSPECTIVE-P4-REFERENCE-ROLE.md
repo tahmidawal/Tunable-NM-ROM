@@ -1,0 +1,11 @@
+# Prospective higher-order reference role on existing meshes
+
+Independent review confirms the frozen design requires an independent solution-order cross-check, not necessarily an order higher than the adopted reference. Approve source preparation for a P4/g4 reference candidate on existing h1/h2/h3 meshes. No h4 is introduced and no P3 failure is erased.
+
+The candidate requires its own resolved decreasing three-mesh field and physical-force differences, with thresholds applied to the finest pair. The P3/g4 versus P4/g4 comparison at h3 isolates solution order; its complete measured difference enters the unchanged conditional uncertainty formula. The failing P3 state contributes no passing physical metrics to P4. Add P4/g5 at h3 to independently check geometry order while holding solution order fixed; the existing P3/g3 versus P3/g4 comparison alone is insufficient for that P4 claim.
+
+All adopted-state geometry, residual, mass, divergence, trace, force, balance and benchmark gates remain unchanged. Solver tightening, quadrature refinement, upstream/downstream/alternative-outlet controls and conditional uncertainty must apply to the adopted reference, with every constituent retained. Each training/development/validation state still requires its own coverage. Native immutable-mesh/shared-lift reuse remains required before training.
+
+The resource proposal a29b917e4 is accepted for bounded source preparation only: projected P4/h3 working memory is43.23445GiB under the unchanged48GiB guard, using500000DOF and30000000nnz caps. Actual pre-factorization memory guards remain mandatory; heuristic count estimates are not guarantees. Preserve64GiB allocation,16CPUs,oneGPU,1200seconds perjob;600seconds per P4 process may be used in reviewed new packages. Split groups so full comparisons and controls fit. P4/g5 must receive its own projection. P5/128GiB is not authorized and is unnecessary unless later evidence justifies a separate proposal.
+
+This approves scientific scope and source preparation, not any execution. Exact hashes, per-job capacity/retention estimates and independent package review precede each bounded release. No admission or performance claim follows from source readiness.

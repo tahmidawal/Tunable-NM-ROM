@@ -1,0 +1,22 @@
+{
+  "status": "submitted_pending_priority",
+  "recorded_utc": "2026-10-28T18:53:01.786820+00:00",
+  "job_id": 6611259,
+  "reviewed_source_commit": "6db733531ab0a551baa4fa816f0f386927f7d8f8",
+  "source_sha256": "81ebd842e45b29fa83f724d5aeac5fbee347dfe723a2eddfc0a50cc1f9840c8b",
+  "input_manifest_sha256": "1f4ff9e60c44609af52fe8a7c6b7c9bf1d9bf7f976495cf22c74d14bfdcc9ca5",
+  "remote_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-normal01",
+  "execution_release": "Independent focused review READY and explicit coordinator remote-byte-match ACK before submission; source-only A8 repair-preparation document is not the execution authority.",
+  "submit_command": "sbatch --parsable --gres=gpu:h200:1 geometry.sbatch",
+  "partition": "gpu",
+  "gpus": 1,
+  "gpu_type_requested": "h200",
+  "cpus_reserved": 16,
+  "threads_requested": 4,
+  "memory_GiB": 64,
+  "wall_limit_seconds": 1200,
+  "pre_submit_queue": [],
+  "scope": "unchanged geometry normal diagnostic only; no PDE solve or sign correction",
+  "reference_or_training_admitted": false,
+  "monitoring": "Never duplicate live or completed job."
+}

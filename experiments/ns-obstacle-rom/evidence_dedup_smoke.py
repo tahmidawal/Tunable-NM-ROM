@@ -1,6 +1,8 @@
 """Lossless repeated-buffer evidence control; no solve or physical admission."""
 from pathlib import Path
 import json,tempfile
+from types import SimpleNamespace
+from unittest.mock import patch
 import numpy as np
 from pilot2d import save_evidence
 x=np.arange(12,dtype=np.float64).reshape(3,4)
@@ -20,4 +22,9 @@ with tempfile.TemporaryDirectory() as tmp:
    assert actual.tobytes()==expected.tobytes()
  assert wrapper['record']['first']['array']==wrapper['record']['separate_identical_buffer']['array']
  assert wrapper['record']['positive_zero']['array']!=wrapper['record']['negative_zero']['array']
+ with patch('pilot2d.shutil.disk_usage',return_value=SimpleNamespace(free=10*2**30)):
+  try:save_evidence(tmp,'capacity_reject',original)
+  except OSError:pass
+  else:raise AssertionError('reserve violation must reject before writing')
+ assert not (Path(tmp)/'capacity_reject.npz').exists() and not (Path(tmp)/'capacity_reject.json').exists()
  print(json.dumps(wrapper['array_retention'],indent=2))

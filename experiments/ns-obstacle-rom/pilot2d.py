@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import time
 import zipfile
+import shutil
 
 import numpy as np
 
@@ -478,13 +479,22 @@ def save_evidence(directory, name, record):
         if isinstance(value, (list, tuple)): return [encode(v) for v in value]
         return value
     encoded = encode(record)
+    unique_bytes=sum(a.nbytes for a in arrays.values())
+    # Lossless ZIP can slightly expand incompressible inputs; include header/JSON
+    # overhead before writing, rather than relying on hoped-for compression.
+    projected_bytes=(unique_bytes+(unique_bytes+99)//100+max(2**20,len(arrays)*2**16)
+                     +2*len(json.dumps(encoded,allow_nan=False)))
+    reserve_bytes=10*2**30
+    if shutil.disk_usage(directory).free<reserve_bytes+projected_bytes:
+        raise OSError('evidence write would violate ten-GiB retained disk reserve')
     np.savez_compressed(array_path, **arrays)
     wrapped = {'record': encoded, 'array_file': array_path.name,
                'array_sha256': sha_file(array_path), 'physical_admission': False,
                'array_retention':{'policy':'lossless dtype/shape/bytes content deduplication with byte-equality check',
                    'unique_arrays':len(arrays),'array_references':len(reference_bytes),
                    'unique_expanded_bytes':sum(a.nbytes for a in arrays.values()),
-                   'logical_expanded_reference_bytes':sum(reference_bytes)}}
+                   'logical_expanded_reference_bytes':sum(reference_bytes),
+                   'disk_reserve_bytes':reserve_bytes,'projected_output_bytes':projected_bytes}}
     path.write_text(json.dumps(wrapped, indent=2, allow_nan=False)+'\n')
     return {'record_file': path.name, 'record_sha256': sha_file(path),
             'array_file': array_path.name, 'array_sha256': sha_file(array_path)}

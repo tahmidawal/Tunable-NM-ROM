@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder02/g2/compare_fields.py", line 161, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder02/g2/compare_fields.py", line 138, in main
+    fields[label]=evaluate_case(case_folder,case_cfg,points,args.out,label,ng)
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder02/g2/compare_fields.py", line 102, in evaluate_case
+    if not valid.all():raise ValueError(f'{label}: invalid common-rule points; no subset comparison performed')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: dfg_h0: invalid common-rule points; no subset comparison performed

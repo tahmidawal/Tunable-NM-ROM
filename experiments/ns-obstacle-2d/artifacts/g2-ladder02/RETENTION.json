@@ -1,0 +1,44 @@
+{
+  "status": "complete_all_regular_files_verified_failed_run_retained",
+  "job_id": 6614416,
+  "archive_sha256": "825f469c36a66d61cbd0aea0329b00b58a2c2167f6d3a3e62125297ba956d7af",
+  "archive_bytes": 270993422,
+  "verified_regular_files": 966,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "725a5123efb5bba5293be8b268832c825e95a908e583cd3aaef1f93dc373350e"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "86677305ea3695f038351ceb9548dea32ce9c6c4c756824ff4f52887515d983c"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 50331648,
+      "sha256": "268edd5150a9e331a0aca78be25a2bda33381810901624586e762960cb38bb5d"
+    },
+    {
+      "path": "collection.tar.gz.part-003",
+      "bytes": 50331648,
+      "sha256": "0de12c615a809524d7353daed54a2c96fad5586daaa0f755b5b3144dadd8241b"
+    },
+    {
+      "path": "collection.tar.gz.part-004",
+      "bytes": 50331648,
+      "sha256": "d22b34828c573ca8808ba1a9ac18916fcbfe4091add83bc6dcc43ab4fe87b821"
+    },
+    {
+      "path": "collection.tar.gz.part-005",
+      "bytes": 19335182,
+      "sha256": "424d1f2c0b1f3a557dd1632bfbd0824441f1dbd31226a602ae09843021d9a9b3"
+    }
+  ],
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-ladder02-collection.tar.gz",
+  "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-ladder02",
+  "recovery": "Concatenate ordered chunks, verify archive SHA, extract, then cd g2-ladder02 and sha256sum -c COLLECTION-SHA256SUMS. Full dependencies, source and all six FOM results plus failed comparison retained.",
+  "reference_data_admitted": false,
+  "remote_cleanup": "pending_durable_mirror"
+}

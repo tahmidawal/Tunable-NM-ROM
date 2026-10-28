@@ -84,5 +84,10 @@
   },
   "next_scope": "source inspection and reviewable bounded geometry diagnostic; no sign flip, geometry edit, threshold change or retry released",
   "collection": "RETENTION.json",
-  "remote_cleanup": "pending durable mirror"
+  "remote_cleanup": "exact remote duplicate removed after local checksum verification and durable mirror; see REMOTE-CLEANUP.txt",
+  "source_inspection_after_run": {
+    "ordinary_boundary_Integrate": "ngsolve-python_comp.cpp lines 3768-3804 uses GetTrafo on BND elements; no explicit volume-side normal reorientation at this call site",
+    "mapped_normal": "retained smoke04 intrule.hpp lines 533-540 derives 2D normal from boundary Jacobian",
+    "limitation": "source-path inference only; measured raw/integrated orientation and adjacency still pending"
+  }
 }

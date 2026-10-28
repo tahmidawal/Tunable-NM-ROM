@@ -5,7 +5,8 @@
   "physical_admission": false,
   "source_commit_binding": "exact reviewed commit plus these content hashes; filled only in staging receipt after release",
   "G1_A8_reviewed_and_executed_base": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
-  "source_parent_at_freeze": "c3a6c8a76052e01eeddf603acb79aa7739ee7f1b",
+  "fresh_cluster_attempt": "g2-native01",
+  "source_parent_at_freeze": "2515eac48c49acae7b32077be731c7e0a0ee0324",
   "unchanged_A8_normal_helper_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
   "configuration_delta_against_executed_DFG": {
     "campaign_file": {
@@ -137,6 +138,12 @@
       "destination": "g2/native01/native.sh",
       "sha256": "3daa2c27ec1e923982ca97a8e933bf68161f06d1df14290193cc43b43527ea70",
       "bytes": 3467
+    },
+    {
+      "source": "g2/native01/PROVISION.json",
+      "destination": "REPAIR.json",
+      "sha256": "8f72852a4e7427f0cb29c23961e249a32efb227adc3c81760811baf997832783",
+      "bytes": 592
     }
   ]
 }

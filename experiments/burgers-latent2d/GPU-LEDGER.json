@@ -31,10 +31,17 @@
     {
       "attempt": "gate04",
       "reserved_seconds": 1200,
-      "status": "submitted",
+      "status": "COMPLETED",
       "commit": "210a255ee838079d850acc2f1e0c40d3009477b0",
       "remote": "/cluster/tufts/paralab/tawal01/blatent2d-20261028/gate04",
-      "job_id": "6617281"
+      "job_id": "6617281",
+      "charged_seconds": 150,
+      "exit_code": "0:0",
+      "gpu": "NVIDIA H200",
+      "node": "pax008"
     }
-  ]
+  ],
+  "total_charged_seconds": 150,
+  "remaining_seconds": 3450,
+  "stopped_reason": "Both predeclared cost gates failed; no further numerical work authorized by this outcome."
 }

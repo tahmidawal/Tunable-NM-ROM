@@ -1,0 +1,224 @@
+{
+  "scope": "dev6 bounded latent initialization cost screen",
+  "source_result_sha256": "a790981117d2cf39ef9801b9089374bb99456fea1eccf4f936e6d770f838304a",
+  "job_id": "6617281",
+  "commit": "210a255ee838079d850acc2f1e0c40d3009477b0",
+  "gpu": [
+    "NVIDIA H200, GPU-0603978b-01ce-16f6-4753-599dad36006b, 143771 MiB"
+  ],
+  "settings": {
+    "L": 256,
+    "fine_K": 32,
+    "coarse_K": 16,
+    "bank_R": 512,
+    "M": 128,
+    "rule": "gauss96",
+    "scheme": "BE",
+    "dt": 0.005,
+    "steps": 50,
+    "gtol": 0.001,
+    "tolf": 1e-09,
+    "fit_budget": 4,
+    "coarse_budget": 2,
+    "fine_budget": 600,
+    "repetitions": 7,
+    "order_seed": 20261028
+  },
+  "arms": {
+    "direct": {
+      "median_query_ms": 35.28064116835594,
+      "median_paired_ratio": 1.0,
+      "per_case_ratios": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "slower_pairs": 0,
+      "total_pairs": 42,
+      "median_fine_corrections": 65.0,
+      "total_fine_corrections": 405,
+      "total_fine_physics_J": 705,
+      "total_fine_physics_residual_with_J": 705,
+      "total_predictor_residual_calls": 900,
+      "initial_fit_iterations": [
+        14,
+        22,
+        11,
+        7,
+        9,
+        6
+      ],
+      "initial_fit_J_count": "not exposed by unchanged retained initializer; included in elapsed time",
+      "total_coarse_J": 0,
+      "total_coarse_residual_with_J": 0,
+      "total_guard_residual_calls": 0,
+      "total_down_residual_calls": 0.0,
+      "total_up_residual_calls": 0.0,
+      "total_down_J": 0.0,
+      "total_up_J": 0.0,
+      "accepted_candidates": 0.0,
+      "auxiliary_failures": 0,
+      "production_stationarity": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cost_gate": null
+    },
+    "physics": {
+      "median_query_ms": 120.56013522669673,
+      "median_paired_ratio": 3.376892408014194,
+      "per_case_ratios": [
+        3.2763066537264285,
+        3.3674229942629856,
+        3.1444126754603077,
+        3.386361821765403,
+        3.6379422549620486,
+        3.61087661534865
+      ],
+      "slower_pairs": 42,
+      "total_pairs": 42,
+      "median_fine_corrections": 65.0,
+      "total_fine_corrections": 407,
+      "total_fine_physics_J": 707,
+      "total_fine_physics_residual_with_J": 707,
+      "total_predictor_residual_calls": 900,
+      "initial_fit_iterations": [
+        14,
+        22,
+        11,
+        7,
+        9,
+        6
+      ],
+      "initial_fit_J_count": "not exposed by unchanged retained initializer; included in elapsed time",
+      "total_coarse_J": 900,
+      "total_coarse_residual_with_J": 900,
+      "total_guard_residual_calls": 600,
+      "total_down_residual_calls": 2082.0,
+      "total_up_residual_calls": 2533.0,
+      "total_down_J": 882.0,
+      "total_up_J": 1333.0,
+      "accepted_candidates": 4.0,
+      "auxiliary_failures": 0,
+      "production_stationarity": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cost_gate": false,
+      "bounded_transfer_diagnostics": {
+        "normalization": "initial fine decoded field norm; not PDE-reference error or optimal manifold projection error",
+        "gauss128_down_relative_median": 0.022006617393344488,
+        "gauss128_down_relative_max": 0.2619306214215486,
+        "gauss128_up_relative_median": 0.003902592000138305,
+        "gauss128_up_relative_max": 0.23250256975955977,
+        "coarse_improves_downfit_objective": 270,
+        "upfit_improves_original_fine_objective": 4
+      }
+    },
+    "transfer": {
+      "median_query_ms": 94.02371384203434,
+      "median_paired_ratio": 2.6163693276127487,
+      "per_case_ratios": [
+        2.585624897508588,
+        2.610326800117415,
+        2.4544469818936663,
+        2.622411855108082,
+        2.874489695651945,
+        2.8140232437122505
+      ],
+      "slower_pairs": 42,
+      "total_pairs": 42,
+      "median_fine_corrections": 65.0,
+      "total_fine_corrections": 405,
+      "total_fine_physics_J": 705,
+      "total_fine_physics_residual_with_J": 705,
+      "total_predictor_residual_calls": 900,
+      "initial_fit_iterations": [
+        14,
+        22,
+        11,
+        7,
+        9,
+        6
+      ],
+      "initial_fit_J_count": "not exposed by unchanged retained initializer; included in elapsed time",
+      "total_coarse_J": 0,
+      "total_coarse_residual_with_J": 0,
+      "total_guard_residual_calls": 600,
+      "total_down_residual_calls": 2082.0,
+      "total_up_residual_calls": 2531.0,
+      "total_down_J": 882.0,
+      "total_up_J": 1331.0,
+      "accepted_candidates": 1.0,
+      "auxiliary_failures": 0,
+      "production_stationarity": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "cost_gate": false,
+      "bounded_transfer_diagnostics": {
+        "normalization": "initial fine decoded field norm; not PDE-reference error or optimal manifold projection error",
+        "gauss128_down_relative_median": 0.022006617393344488,
+        "gauss128_down_relative_max": 0.2619299347975066,
+        "gauss128_up_relative_median": 0.004511562083393962,
+        "gauss128_up_relative_max": 0.24769597895757656,
+        "coarse_improves_downfit_objective": 0,
+        "upfit_improves_original_fine_objective": 1
+      }
+    }
+  },
+  "all_fresh_certificates": true,
+  "all_baseline_controls": true,
+  "all_timed_identities": true,
+  "strong_accuracy_checks": "not run in cost screen; conditional tight/tighter and successor qualification required after a cost pass",
+  "continue_accuracy": false,
+  "elapsed_program_seconds": 137.75294057000428,
+  "setup": {
+    "seconds": 25.313770535402,
+    "heads": {
+      "coarse": "764633e87de101243bf8154fb3352ccda4018249ae19926728850794358dab8f",
+      "fine": "63f287d1f907bc3fe779a86999dfaec9a2029c73e34e8fce743cfbaa55380031"
+    },
+    "trust": {
+      "coarse": 0.05256511659045252,
+      "fine": 0.16926198522359154
+    },
+    "memory": {
+      "in_use": 609834496,
+      "peak": 1180879360,
+      "limit": 105077800960
+    }
+  },
+  "checks": {
+    "metric": {
+      "relative_squared_norm_gap": 7.747984626814211e-18,
+      "rank": 512,
+      "condition": 3.2126691647326235
+    },
+    "fine": {
+      "identity_transfer": true,
+      "fit_matches_retained_solver": true,
+      "analytic_AD_gap": 1.0971370130225233e-16
+    },
+    "coarse": {
+      "identity_transfer": true,
+      "fit_matches_retained_solver": true,
+      "analytic_AD_gap": 1.0992068751163176e-16
+    }
+  }
+}

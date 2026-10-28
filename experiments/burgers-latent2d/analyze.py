@@ -69,6 +69,16 @@ def main():
             production_stationarity=stationarity,
             cost_gate=None if arm=='direct' else x['gate'][arm]['passed'])
         if arm!='direct':
+            diag=[np.load(path.parent/f'diagnostics_{arm}_case{c}.npz') for c in range(6)]
+            obj=np.concatenate([z['objectives'] for z in diag])
+            down=np.concatenate([z['down128']/z['initial_field_norm'] for z in diag])
+            up=np.concatenate([z['up128']/z['initial_field_norm'] for z in diag])
+            summary['arms'][arm]['bounded_transfer_diagnostics']=dict(
+                normalization='initial fine decoded field norm; not PDE-reference error or optimal manifold projection error',
+                gauss128_down_relative_median=float(np.median(down)),gauss128_down_relative_max=float(np.max(down)),
+                gauss128_up_relative_median=float(np.median(up)),gauss128_up_relative_max=float(np.max(up)),
+                coarse_improves_downfit_objective=int(np.sum(obj[:,2]<obj[:,1])),
+                upfit_improves_original_fine_objective=int(np.sum(obj[:,3]<obj[:,0])))
             for z in zrec:
                 info=z['seed_info']
                 assert np.all(info[:,1]<=4) and np.all(info[:,5]<=2) and np.all(info[:,8]<=4)

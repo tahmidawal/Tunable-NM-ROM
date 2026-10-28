@@ -1,0 +1,21 @@
+NVIDIA H200, GPU-0603978b-01ce-16f6-4753-599dad36006b, 143771 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.35:/projects/paralab  4.6T  1.4T  3.3T  30% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+SETUP_PASS 80.496
+RECORDED 0 [('direct', 74, True), ('physics', 74, True), ('transfer', 74, True)]
+RECORDED 1 [('direct', 65, True), ('physics', 65, True), ('transfer', 65, True)]
+RECORDED 2 [('direct', 84, True), ('physics', 87, True), ('transfer', 84, True)]
+RECORDED 3 [('direct', 65, True), ('physics', 65, True), ('transfer', 65, True)]
+RECORDED 4 [('direct', 58, True), ('physics', 58, True), ('transfer', 58, True)]
+RECORDED 5 [('direct', 59, True), ('physics', 58, True), ('transfer', 59, True)]
+TIMING_BLOCK 0
+TIMING_BLOCK 1
+TIMING_BLOCK 2
+TIMING_BLOCK 3
+TIMING_BLOCK 4
+TIMING_BLOCK 5
+TIMING_BLOCK 6
+FINAL {"physics": {"per_case_paired_median_ratios": [3.2763066537264285, 3.3674229942629856, 3.1444126754603077, 3.386361821765403, 3.6379422549620486, 3.61087661534865], "median_ratio": 3.376892408014194, "maximum_case_ratio": 3.6379422549620486, "all_numerically_valid": true, "all_timing_identities": true, "passed": false}, "transfer": {"per_case_paired_median_ratios": [2.585624897508588, 2.610326800117415, 2.4544469818936663, 2.622411855108082, 2.874489695651945, 2.8140232437122505], "median_ratio": 2.6163693276127487, "maximum_case_ratio": 2.874489695651945, "all_numerically_valid": true, "all_timing_identities": true, "passed": false}}
+ALL-DONE

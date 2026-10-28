@@ -14,14 +14,15 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('attempt');a=ap.parse_args();assert a.attempt.isalnum()
     commit=subprocess.check_output(['git','-c','gc.auto=0','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()
     dest=ROOT/LANE/'runs'/a.attempt;dest.mkdir(parents=True,exist_ok=False);remote=f'{NS}/{a.attempt}'
-    paths=[f'{LANE}/{x}' for x in ('train.py','regenerate.py','make_reference.py','DESIGN.md','checks/training-reference.json','cluster/stage.py')]
+    paths=[f'{LANE}/{x}' for x in ('train.py','regenerate.py','make_reference.py','DESIGN.md','checks/training-reference.json','checks/legacy-data-manifest.sha256','vendor/PROVENANCE.json','vendor/patch_bf_precond.py','cluster/stage.py')]
     paths+=['experiments/separable-decoder/sep_common.py','experiments/separable-decoder/sep_coeff_extract.py',
             'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl',
             'experiments/burgers2d-rom-latent-stepping/blat_common.py','experiments/nonlinear-decoder-architecture/nda_arch.py',
             'experiments/jcp-heads/sep_hfit.py','experiments/mr-burgers2d/engines.py']
     mapping={p:p for p in paths}
     for name in ('burgers2d-coord-rom/burgers2d_film.py','multistage-precision/ms_parametric.py','multistage-precision/ms_autodecoder.py'):
-        mapping['experiments/burgers2d-rom-latent-stepping/deps/'+name]='experiments/wave2d-rom-latent-stepping/deps/'+name
+        mapping['experiments/burgers2d-rom-latent-stepping/deps/'+name]=(f'{LANE}/vendor/burgers2d_film.py'
+            if name.endswith('burgers2d_film.py') else 'experiments/wave2d-rom-latent-stepping/deps/'+name)
     proof=[]
     for target,source in mapping.items():
         b=subprocess.check_output(['git','-c','gc.auto=0','-C',str(ROOT),'show',f'{commit}:{source}'])
@@ -54,7 +55,7 @@ nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 trap 'rc=$?; cd "$TASK_ROOT"; find output -type f -print0 | sort -z | xargs -0 -r sha256sum > OUTPUTS.sha256; exit "$rc"' EXIT
-env N=256 K=16 R=512 MAX_SNAPS=131072 T_EARLY=5 N_TEST=8 SEED0=0 LOOSE=0 N_TRAIN=512 N_VAL=64 SEED=0 TEST_SEED=1 \\
+env N=256 K=16 R=512 MAX_SNAPS=131072 T_EARLY=5 N_TEST=8 SEED0=0 LOOSE=0 N_TRAIN=512 N_VAL=64 SEED=0 TEST_SEED=1 NEWTON_ITERS=8 LIN_TOL=1e-10 LIN_MAXITER=2000 \\
  EXTRA_SEED=1000 EXTRA_TRAJ=4032 GEN_CHUNK=64 PROJ_CHUNK=256 IDENT_ROWS=64 \\
  CKPT="$TASK_ROOT/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl" \\
  OUT_PREFIX="$TASK_ROOT/output/extracted/" \\

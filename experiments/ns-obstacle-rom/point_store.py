@@ -9,6 +9,7 @@ import json
 import shutil
 import zipfile
 import numpy as np
+from fe_algebra import array_digest
 
 
 def sha(path):
@@ -62,7 +63,8 @@ def write_volume(adapter,directory,block_points=4096,max_payload_bytes=2**28,
             np.savez_compressed(path,values=values,gradients=gradients)
             digest=sha(path);files[filename]=digest;actual+=path.stat().st_size
             if actual>max_total_bytes:raise MemoryError('actual point-store disk budget')
-            rows.append({'start':start,'end':end,'file':filename,'sha256':digest})
+            rows.append({'start':start,'end':end,'file':filename,'sha256':digest,
+                         'array_sha256':array_digest(values,gradients)})
         fields[name]=dict(field_specs[name],blocks=rows)
     manifest={'schema':'ns-obstacle-point-volume-v1','points':n,'block_points':block_points,
         'fields':fields,'files':files,'geometry_file':'geometry.npz','all_original_points':True,
@@ -126,5 +128,7 @@ class PointVolumeStore:
                 count=field['columns'];shape=(end-start,2,count) if field['vector'] else (end-start,count)
                 gshape=(end-start,2,2,count) if field['vector'] else (end-start,2,count)
                 if set(data)!={'values','gradients'} or data['values'].shape!=shape or data['gradients'].shape!=gshape:raise ValueError('field block shape')
+                if 'array_sha256' in row and array_digest(data['values'],data['gradients'])!=row['array_sha256']:
+                    raise ValueError('field block array byte hash')
                 arrays[name]=data['values'];arrays[name+'_gradient_dimensionless']=data['gradients']
             yield start,end,arrays

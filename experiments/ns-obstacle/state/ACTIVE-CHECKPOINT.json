@@ -1,20 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6613821,
-      "lane": "2d",
-      "attempt": "g2-ladder01",
-      "observed_state": "PENDING"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor/collect/audit actual submitted jobs6613813 ROM interface and6613821 reference ladder; no duplicate or automatic retry",
-    "Collect and independently audit spatial convergence and actual ROM interface/eigen controls",
-    "Complete bank/POD driver; physical reference and training admission remain closed"
+    "Close verified retention/mirrors/remote duplicate cleanup for interface01 and ladder01",
+    "Review prospective all-case Jacobian steps and diagnostic arrays before one bounded ladder02 retry",
+    "Complete and independently review actual bank/POD driver; G2 and training admission remain closed"
   ],
-  "completed_allocated_gpu_hours": 0.07222222222222222,
+  "completed_allocated_gpu_hours": 0.08444444444444445,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -30,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T20:06:25.592754+00:00",
+  "last_checkpoint_utc": "2026-10-28T20:13:00.993898+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",
@@ -57,7 +50,7 @@
   "historical_unsubmitted_staging_note": "Superseded initial attempts, retained as historical records only; not current execution candidates.",
   "ROM_current_source": {
     "commit": "6224e96848f7b850b921f90c5b9094dc974a25dd",
-    "status": "independent source READY; actual native controls and G2 data unpassed",
+    "status": "native interface independently accepted; full driver and G2 data pending",
     "adapter_digest": "7ced27b2b02d204edbcb071469d055fe6b2b8fdabc0f57a97435971e6c9a05bd"
   },
   "active_scope": "User direction2026-10-28: working2D ROM first; all3D work deferred",

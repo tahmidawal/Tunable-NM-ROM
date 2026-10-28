@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "two_bounded_2d_controls_submitted",
+  "status": "native_interface_accepted_reference_ladder_diagnostic_failure",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -347,8 +347,14 @@
       "training_released": false,
       "single_submission": true,
       "native_interface_reported_pass": true,
-      "collection_status": "in_progress",
-      "result_review": "pending"
+      "collection_status": "complete_verified",
+      "result_review": "PASS scoped native interface; no training or physical admission",
+      "archive_sha256": "b35b31000bdbdcdd7ed5e9b96be679353448c5826618ab19b7b449c772a97924",
+      "retention_commit": "4667682a7",
+      "retention_mirror": "660f59847",
+      "cleanup_commit": "bd6d1f91c",
+      "cleanup_mirror": "570887700",
+      "remote_cleanup": "verified_complete"
     },
     {
       "job_id": 6613821,
@@ -356,7 +362,7 @@
       "attempt": "g2-ladder01",
       "source_commit": "fd535479439f8634781bc93843f6da4151983261",
       "submitted_utc": "2026-10-28T20:04:02Z",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "FAILED",
       "input_manifest_sha256": "38c5b2ee08e1f09a99ccc5a60293b5b51821ef4a651c49eceddea3de4d09628d",
       "source_checksums_sha256": "6689eccab0eee0d6c9f445356ae15498c71cbd7099ee2f3b5990fbb21978cd59",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01",
@@ -365,16 +371,20 @@
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
       "gpu_type_requested": "h200",
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 44,
+      "allocated_gpu_hours": 0.012222222222222223,
       "reference_admitted": false,
       "training_released": false,
-      "single_submission": true
+      "single_submission": true,
+      "node": "pax009",
+      "batch_MaxRSS_KiB": 764316,
+      "failure_stage": "manufactured_h1_directional_Jacobian_after_Newton_convergence",
+      "collection_status": "verified_mirror_pending",
+      "archive_sha256": "6f9fa30a7b6383824dd475264236443dd52b1a795911cdccb42d319a7abe1479",
+      "result_review": "independent review confirms diagnostic failure; no h2 or comparisons"
     }
   ],
-  "live_job_ids": [
-    6613821
-  ],
-  "completed_gpu_hours": 0.07222222222222222,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.08444444444444445,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

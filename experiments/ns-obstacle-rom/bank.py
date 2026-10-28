@@ -64,6 +64,18 @@ class FrozenBank:
         tr = self.transform[:,:rank]
         return values@tr, gradients@tr
 
+    def values_blocked(self, points, block_points=4096):
+        """All original point values, without retaining full-grid derivative temporaries."""
+        x=np.asarray(points,dtype=np.float64)
+        if not 1<=block_points<=16384:raise ValueError("unreviewed bank evaluation block size")
+        shape=(len(x),self.geometry.dimension,self.rank)
+        if np.prod(shape,dtype=np.int64)*8>2**30:raise MemoryError("bank values exceed single-array cap")
+        values=np.empty(shape,dtype=np.float64)
+        for start in range(0,len(x),block_points):
+            end=min(start+block_points,len(x))
+            values[start:end]=self.evaluate(x[start:end])[0]
+        return values
+
     def save(self, path):
         meta = dict(self.metadata, schema="ns-obstacle-frozen-bank-v1", geometry=self.geometry.as_dict(),
                     layers=len(self.layers), value_units="u/U", gradient_coordinates="physical",

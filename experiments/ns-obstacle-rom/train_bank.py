@@ -89,7 +89,7 @@ def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_
         history.append({"step":i+1,"pre_update_relative_squared_loss":value,"elapsed_seconds":time.perf_counter()-start})
     layers=[(np.asarray(ww),np.asarray(bb)) for ww,bb in params]
     raw=FrozenBank(geometry,layers,np.eye(8),{})
-    vals,_=raw.evaluate(x)
+    vals=raw.values_blocked(x)
     transform,ordering=ordered_transform(vals,y,w)
     metadata={"trained":True,"seed":27102027,"width":64,"depth":2,"rank":8,
               "steps_executed":len(history),"steps_cap":steps,"time_cap_seconds":max_seconds,

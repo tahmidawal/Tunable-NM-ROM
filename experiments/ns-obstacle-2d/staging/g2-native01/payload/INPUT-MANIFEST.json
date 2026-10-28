@@ -1,0 +1,120 @@
+{
+  "attempt": "g2-native01",
+  "source_commit": "b29448620cabd7efe957364eec99a83e7f73368c",
+  "reviewed_candidate_manifest_sha256": "59adc25aa64288f4976762db0adba92e71ae93d4ea1680536d7b7a24e90bb25f",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-native01",
+  "files": [
+    {
+      "path": "DEPENDENCIES.json",
+      "source_path": "experiments/ns-obstacle-2d/DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432
+    },
+    {
+      "path": "REPAIR.json",
+      "source_path": "experiments/ns-obstacle-2d/g2/native01/PROVISION.json",
+      "sha256": "8f72852a4e7427f0cb29c23961e249a32efb227adc3c81760811baf997832783",
+      "bytes": 592
+    },
+    {
+      "path": "SOURCE_COMMIT.txt",
+      "source_path": "reviewed exact commit",
+      "sha256": "bad9c1ba3531b5ed9dea32141613f32063dfd8ad1bda775d26a10b230b20e78d",
+      "bytes": 41
+    },
+    {
+      "path": "benchmark.json",
+      "source_path": "experiments/ns-obstacle-2d/benchmark.json",
+      "sha256": "e5ff1685142a61e963a23e2b0fea4954b1ef779d8d9cb513482cc1c2473cfd82",
+      "bytes": 840
+    },
+    {
+      "path": "dependencies.py",
+      "source_path": "experiments/ns-obstacle-2d/dependencies.py",
+      "sha256": "f1d4b641c9ff30c2909ab810985add3186ea37aa1c9d5b40f9d22b331edc85e7",
+      "bytes": 6382
+    },
+    {
+      "path": "fom.py",
+      "source_path": "experiments/ns-obstacle-2d/fom.py",
+      "sha256": "915d3144cfef53dd2c9837fdd2130702740520b70261c7377250c78d84911912",
+      "bytes": 37844
+    },
+    {
+      "path": "g2/DESIGN-A6.md",
+      "source_path": "experiments/ns-obstacle-2d/g2/DESIGN-A6.md",
+      "sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+      "bytes": 46353
+    },
+    {
+      "path": "g2/campaign-A6.json",
+      "source_path": "experiments/ns-obstacle-2d/g2/campaign-A6.json",
+      "sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+      "bytes": 6507
+    },
+    {
+      "path": "g2/native01/dfg-native-control.json",
+      "source_path": "experiments/ns-obstacle-2d/g2/native01/dfg-native-control.json",
+      "sha256": "fa2fdc9b2686a9711085b796e1d915ca81aa19c91f22b6b676a33c0808444e11",
+      "bytes": 1360
+    },
+    {
+      "path": "g2/native01/native.sh",
+      "source_path": "experiments/ns-obstacle-2d/g2/native01/native.sh",
+      "sha256": "3daa2c27ec1e923982ca97a8e933bf68161f06d1df14290193cc43b43527ea70",
+      "bytes": 3467
+    },
+    {
+      "path": "g2/native01/summary.py",
+      "source_path": "experiments/ns-obstacle-2d/g2/native01/summary.py",
+      "sha256": "7d0bc3341eff005b785649cb0e5e6839f5434e8115f2b7ea76f87605759a68e1",
+      "bytes": 2228
+    },
+    {
+      "path": "manufactured_witness.json",
+      "source_path": "experiments/ns-obstacle-2d/manufactured_witness.json",
+      "sha256": "1b55be8cea8261ce84c7f06e56f0ee3a4cb0a78578a0bc56568e591618b1b1c4",
+      "bytes": 3034
+    },
+    {
+      "path": "oriented_normals.py",
+      "source_path": "experiments/ns-obstacle-2d/oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "bytes": 15221
+    },
+    {
+      "path": "preflight.py",
+      "source_path": "experiments/ns-obstacle-2d/preflight.py",
+      "sha256": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+      "bytes": 10414
+    },
+    {
+      "path": "reference_export.py",
+      "source_path": "experiments/ns-obstacle-2d/reference_export.py",
+      "sha256": "372eb8f5696850b9c6caadc0125d80da9da19c19a31a766be9fdfac4495e791a",
+      "bytes": 26378
+    },
+    {
+      "path": "scalars.py",
+      "source_path": "experiments/ns-obstacle-2d/scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
+      "path": "shared_lift.py",
+      "source_path": "experiments/ns-obstacle-2d/shared_lift.py",
+      "sha256": "26c30cf4b6f9ae570c01d5e7ac6cbfa33598a28bb6651a8ca8466028d8ef7b2d",
+      "bytes": 5524
+    }
+  ],
+  "source_checksums_sha256": "de48eb92fe2787f1b0829ba930620e5b508fba9c10b3b7727660c0ea4e1e3b3d",
+  "allocation": {
+    "gpus": 1,
+    "gpu_type_requested": "h100",
+    "CPUs": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200
+  },
+  "physical_admission": false,
+  "training_released": false
+}

@@ -5,10 +5,11 @@ from pathlib import Path
 import tempfile
 from unittest.mock import patch
 import copy
+import weakref
 import numpy as np
 from bank import initialize
 from geometry import CHANNEL
-from pilot2d import build_model, galerkin_operator, save_evidence, TRAIN_RE, evaluate_case
+from pilot2d import build_model, galerkin_operator, save_evidence, TRAIN_RE, evaluate_case, run_accuracy_pilot, DEV_RE, VALIDATION_RE
 from solver import jacobian_check
 from timing import paired_cpu
 
@@ -89,6 +90,34 @@ def main():
                 query=model.query(re,'full_velocity_pressure_fields',interpolate=True)
                 assert np.array_equal(reference['velocity'],query['outputs']['velocity'])
         gaps[kind]=gap
+    # Full source-level orchestration on explicitly unadmitted synthetic arrays.
+    # Only the physical-population gate is bypassed inside this test; production
+    # release/load paths are never called or given a synthetic admission manifest.
+    live=[]; maximum_live=[0]
+    def tracked_build(*args, **kwargs):
+        assert sum(ref() is not None for ref in live)==0, 'previous full model retained'
+        value=build_model(*args, **kwargs);live.append(weakref.ref(value))
+        maximum_live[0]=max(maximum_live[0],sum(ref() is not None for ref in live))
+        return value
+    def synthetic_refs(reynolds,split):
+        return [{'Re':re,'split':split,'reference_admitted':False,
+                 'velocity':np.zeros((96,2)),'pressure':np.zeros(96),
+                 'force_coefficient':[1.,0.], 'force_definition':'physical_symmetric'} for re in reynolds]
+    with tempfile.TemporaryDirectory() as root:
+        out=Path(root)/'pilot';opened=[]
+        def validation_loader():
+            assert (out/'frozen_development_choices.json').is_file()
+            opened.append(True)
+            return synthetic_refs(VALIDATION_RE,'validation')
+        with patch('pilot2d.build_model',side_effect=tracked_build), \
+                patch('pilot2d.check_population',return_value=None):
+            summary=run_accuracy_pilot(arrays,metadata,probes,bank,
+                synthetic_refs(DEV_RE,'development'),validation_loader,out,fit_quadrature=False)
+        assert maximum_live[0]==1 and opened==[True]
+        assert not summary['construction_failures'],summary['construction_failures']
+        assert summary['model_memory_policy']=='one full field model at a time'
+        assert summary['physical_admission'] is False
+        assert len(summary['offline_rebuilds'])>=6
     # Mutation regression: actual coefficient evidence survives later reuse of buffers.
     buffer=np.zeros(1); counter=[0]
     def call():
@@ -103,6 +132,7 @@ def main():
         info=save_evidence(folder,'timed',timed)
         assert Path(folder,'timed.json').is_file() and Path(folder,'timed.npz').is_file()
     print(json.dumps({'scope':'synthetic array integration only','physical_admission':False,
-                      'direct_tensor_max_abs_gap':gaps,'same_invocation_retention':True},indent=2))
+                      'direct_tensor_max_abs_gap':gaps,'same_invocation_retention':True, 'maximum_simultaneous_full_models':maximum_live[0],
+                      'validation_opened_after_choices_frozen':True},indent=2))
 
 if __name__=='__main__':main()

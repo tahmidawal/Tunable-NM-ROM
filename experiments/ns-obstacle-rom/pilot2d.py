@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 import hashlib
+import gc
 import json
 from pathlib import Path
 import time
@@ -453,6 +454,15 @@ def load_reference_population(path, expected_sha256, split, volume_rule_hash):
     return cases
 
 
+def model_fingerprint(model):
+    arrays = {'training_coefficients': model.training_coefficients}
+    arrays.update({'operator_'+name: value for name, value in vars(model.operator).items()
+                   if isinstance(value, np.ndarray)})
+    arrays.update({'force_'+name: value for name, value in model.force.items()
+                   if isinstance(value, np.ndarray)})
+    return array_digest(arrays)
+
+
 def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_loader,
                        output_directory, fit_quadrature=True):
     """Actual model construction/solves with development-only quadrature selection.
@@ -461,9 +471,11 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
     solver failures are retained per arm; failed bank floors do not remove POD controls.
     Timing/FOM comparison is a separately reviewed invocation of paired_queries below.
     """
+    pilot_started = time.perf_counter()
     check_population(development, 'development')
     out = Path(output_directory); out.mkdir(parents=True, exist_ok=False)
     models = {}; failures = {}; floors = {}; records = {}; fitted = {}; choices = {}
+    rebuilds = []
     # Fixed ordering contains no performance or validation-data selection.
     for kind in ('bank', 'POD'):
         for prefix in PREFIXES:
@@ -472,7 +484,7 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
                 model = build_model(kind, prefix, arrays, metadata, probes, bank)
                 floors[name] = [projection_diagnostic(model, r, arrays['boundary'], model.rule.weights)
                                 for r in development]
-                models[name] = model
+                models[name] = {'kind': kind, 'prefix': prefix, 'fingerprint': model_fingerprint(model)}
                 records[name+'_model'] = save_evidence(out, name+'_model', {
                     'source': model.source, 'stability': model.stability,
                     'unknown_counts': {'velocity': model.operator.nv, 'pressure': model.operator.np},
@@ -480,13 +492,28 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
                     'development_projection': floors[name]})
             except Exception as exc:
                 failures[name] = {'phase': 'model_construction_or_projection', 'exception': repr(exc)}
+            finally:
+                model = None
+                gc.collect()
     bank_gate = (representation_admission(floors['bank_r8']) if 'bank_r8' in floors else
                  {'passed': False, 'reason': 'maximum-prefix bank construction/projection failed'})
     save_evidence(out, 'development_floors', {'rows': floors, 'bank_online_gate': bank_gate,
                                            'failures': failures, 'validation_seen': False})
-    for name, model in models.items():
-        if model.kind == 'bank' and not bank_gate['passed']:
+    for name, specification in models.items():
+        if specification['kind'] == 'bank' and not bank_gate['passed']:
             choices[name] = {'selected_support': None, 'reason': 'bank_development_floor_stop'}
+            continue
+        try:
+            model = build_model(specification['kind'], specification['prefix'], arrays, metadata, probes, bank)
+            if model_fingerprint(model) != specification['fingerprint']:
+                raise ValueError('offline model rebuild changed frozen operators/coefficient projections')
+            rebuilds.append({'model': name, 'phase': 'development',
+                             'offline_build_seconds': model.source['offline_build_seconds']})
+        except Exception as exc:
+            failures[name+'_development_rebuild'] = {'exception': repr(exc)}
+            choices[name] = {'selected_support': None, 'reason': 'development_rebuild_failed'}
+            model = None
+            gc.collect()
             continue
         attempted = []; selected = None
         if fit_quadrature and model.stability['passed']:
@@ -525,13 +552,27 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
             except Exception as exc: record = {'failure': repr(exc), 'physical_admission': False}
             key = name+'_development_'+str(reference['Re'])
             records[key] = save_evidence(out, key, record)
+        model = None
+        gc.collect()
     save_evidence(out, 'frozen_development_choices', {'choices': choices, 'bank_gate': bank_gate,
                                                     'validation_seen': False})
     validation = validation_loader()
     check_population(validation, 'validation')
     scores = []
-    for name, model in models.items():
-        if model.kind == 'bank' and not bank_gate['passed']: continue
+    for name, specification in models.items():
+        if specification['kind'] == 'bank' and not bank_gate['passed']: continue
+        if name not in fitted: continue
+        try:
+            model = build_model(specification['kind'], specification['prefix'], arrays, metadata, probes, bank)
+            if model_fingerprint(model) != specification['fingerprint']:
+                raise ValueError('validation rebuild changed frozen operators/coefficient projections')
+            rebuilds.append({'model': name, 'phase': 'validation',
+                             'offline_build_seconds': model.source['offline_build_seconds']})
+        except Exception as exc:
+            failures[name+'_validation_rebuild'] = {'exception': repr(exc)}
+            model = None
+            gc.collect()
+            continue
         for reference in validation:
             try:
                 record = evaluate_case(model, reference, arrays['boundary'], bank_gate, fitted.get(name))
@@ -542,6 +583,8 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
             except Exception as exc: record = {'failure': repr(exc), 'physical_admission': False}
             key = name+'_validation_'+str(reference['Re'])
             records[key] = save_evidence(out, key, record)
+        model = None
+        gc.collect()
     aggregates = {}
     for key in sorted({(r['model'], r['method']) for r in scores}):
         rows = [r for r in scores if (r['model'], r['method']) == key]
@@ -556,7 +599,9 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
     summary = {'source_sha256': source_digest(), 'records': records, 'construction_failures': failures,
                'bank_development_gate': bank_gate, 'frozen_choices': choices, 'validation': aggregates,
                'no_validation_refit': True, 'physical_admission': False,
-               'timing_comparison_performed': False}
+               'timing_comparison_performed': False, 'model_memory_policy': 'one full field model at a time',
+               'offline_rebuilds': rebuilds, 'model_fingerprints': models,
+               'accuracy_pilot_elapsed_seconds': time.perf_counter()-pilot_started}
     save_evidence(out, 'summary', summary)
     return summary
 

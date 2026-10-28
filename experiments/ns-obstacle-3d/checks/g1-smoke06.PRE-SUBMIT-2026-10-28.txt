@@ -1,0 +1,49 @@
+             JOBID    PARTITION                             NAME     STATE       TIME     NODELIST(REASON)
+NODELIST STATE GRES CPUS(A/I/O/T)
+pax003 mix gpu:a100:2(S:0) 16/16/0/32
+pax007 mix gpu:a100:8(S:0-1) 53/11/0/64
+pax008 mix- gpu:h200:8(S:0-1) 60/36/0/96
+pax009 mix gpu:h200:8(S:0-1) 52/44/0/96
+pax010 mix- gpu:h200:8(S:0-1) 52/44/0/96
+pax011 mix- gpu:h200:8(S:0-1) 38/58/0/96
+pax020 alloc gpu:l40s:4(S:0-1) 64/0/0/64
+pax021 mix gpu:l40s:4(S:0-1) 32/32/0/64
+pax022 mix gpu:l40s:4(S:0-1) 44/20/0/64
+pax023 mix gpu:l40s:4(S:0-1) 20/44/0/64
+pax024 mix gpu:l40s:4(S:0-1) 52/12/0/64
+pax025 mix gpu:l40s:4(S:0-1) 52/12/0/64
+pax026 mix gpu:l40s:4(S:0-1) 52/12/0/64
+pax049 mix gpu:a100:8(S:0-1) 56/8/0/64
+pax050 mix gpu:a100:8(S:0-1) 56/8/0/64
+pax051 alloc gpu:a100:8(S:0) 32/0/0/32
+pax052 alloc gpu:a100:8(S:0) 32/0/0/32
+pax063 mix gpu:h100:3(S:0-1) 42/70/0/112
+pax105 mix gpu:a100:8(S:0-1) 62/2/0/64
+pax106 mix gpu:a100:8(S:0-1) 48/16/0/64
+pax142 alloc gpu:a100:8(S:0) 32/0/0/32
+pax143 mix gpu:a100:8(S:0) 30/2/0/32
+pax144 mix gpu:a100:8(S:0) 31/1/0/32
+pax186 mix gpu:rtx_pro_6000:8(S:0-1) 64/64/0/128
+pax187 mix gpu:rtx_pro_6000:8(S:0-1) 52/76/0/128
+5336879b7d02f722144cb3b738d5c99e1cebfca599755d3d81852b61a06836b9  INPUTS.sha256
+CAMPAIGN.predata-A3.json: OK
+DEPENDENCIES.discovery.json: OK
+DEPENDENCY-REPAIR.json: OK
+SOURCE_COMMIT.txt: OK
+cluster/g1-smoke06.sbatch: OK
+configs/g1-smoke06.json: OK
+install_deps.py: OK
+reference3d.py: OK
+requirements.lock: OK
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.30:/projects/paralab  4.6T  1.4T  3.3T  30% /cluster/tufts/paralab
+./CAMPAIGN.predata-A3.json
+./DEPENDENCIES.discovery.json
+./DEPENDENCY-REPAIR.json
+./INPUTS.sha256
+./SOURCE_COMMIT.txt
+./cluster/g1-smoke06.sbatch
+./configs/g1-smoke06.json
+./install_deps.py
+./reference3d.py
+./requirements.lock

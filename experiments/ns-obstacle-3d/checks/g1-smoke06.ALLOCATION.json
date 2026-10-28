@@ -1,0 +1,30 @@
+{
+  "status": "submitted_pending_priority",
+  "recorded_utc": "2026-10-28T18:35:40.563330+00:00",
+  "job_id": 6610494,
+  "reviewed_source_commit": "1c2fd8fa141ded0d1dcdc15c850a5a8682572b00",
+  "source_sha256": "84c66d03a84844866f1298a6dae74449a2708ea64c848560e83f8b64ea1b68aa",
+  "input_manifest_sha256": "5336879b7d02f722144cb3b738d5c99e1cebfca599755d3d81852b61a06836b9",
+  "remote_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke06",
+  "execution_release": "OPERATIONAL-A7-3D-G1-RELEASE.md",
+  "execution_release_sha256": "b3311bed13505457b7913bfb705cff7736866c1b500d994fb0b9671e1eee0007",
+  "coordinator_release_commit": "56b421213",
+  "submit_command": "sbatch --parsable --gres=gpu:h200:1 cluster/g1-smoke06.sbatch",
+  "partition": "gpu",
+  "gpus": 1,
+  "gpu_type_requested": "h200",
+  "cpus_reserved": 16,
+  "threads_requested": 4,
+  "memory_GiB": 64,
+  "wall_limit_seconds": 1200,
+  "pre_submit_queue": [],
+  "cases": [
+    "geometry_sphere",
+    "empty",
+    "manufactured"
+  ],
+  "scope": "bounded diagnostic controls only; no reference/training/physical sphere release",
+  "full_2d_G1": "failed; historical prerequisite replaced only for this exact candidate by A7",
+  "numerical_admission": false,
+  "monitoring": "Check actual scheduler and job outputs; never submit a duplicate."
+}

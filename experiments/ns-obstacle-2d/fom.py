@@ -280,12 +280,17 @@ def run_case(cfg, out):
     action.data = residual_form.mat*vector
     jv = (arr(action)/row_scale)[free].copy()
     checks=[]
+    plus_coefficients=[]; minus_coefficients=[]; plus_raw=[]; minus_raw=[]
     for h in cfg['jacobian_steps']:
         arr(g.vec)[:] = perturbed+h*direction
         plus_residual = residual()  # Own the native vector while its NumPy view is used.
+        plus_coefficients.append(arr(g.vec).copy())
+        plus_raw.append(arr(plus_residual).copy())
         plus = (arr(plus_residual)/row_scale)[free].copy()
         arr(g.vec)[:] = perturbed-h*direction
         minus_residual = residual()
+        minus_coefficients.append(arr(g.vec).copy())
+        minus_raw.append(arr(minus_residual).copy())
         minus = (arr(minus_residual)/row_scale)[free].copy()
         fd=(plus-minus)/(2*h)
         checks.append({'h':h,'agreement':metric(np.linalg.norm(fd-jv),max(np.linalg.norm(jv),1e-30),
@@ -293,6 +298,12 @@ def run_case(cfg, out):
                        'signal_norm':float(np.linalg.norm(plus-minus)),
                        'signal_floor':float(100*np.finfo(float).eps*max(np.linalg.norm(plus),np.linalg.norm(minus),1.0))})
     arr(g.vec)[:] = reference
+    # Persist independent replay evidence before any diagnostic acceptance failure.
+    np.savez_compressed(out/'jacobian_arrays.npz', reference=reference, perturbed=perturbed,
+                        free_mask=free, row_scale=row_scale, direction=direction,
+                        action_raw=arr(action).copy(), steps=np.asarray(cfg['jacobian_steps'],dtype=np.float64),
+                        plus_coefficients=np.asarray(plus_coefficients), minus_coefficients=np.asarray(minus_coefficients),
+                        plus_residual_raw=np.asarray(plus_raw), minus_residual_raw=np.asarray(minus_raw))
     dump(out/'jacobian_checks.json', checks)
     useful=[a for a in checks if a['signal_norm']>a['signal_floor']]
     values=[a['agreement']['value'] for a in useful]

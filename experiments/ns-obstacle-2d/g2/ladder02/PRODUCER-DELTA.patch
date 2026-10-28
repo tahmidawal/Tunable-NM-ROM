@@ -1,0 +1,71 @@
+--- native01/fom.py
++++ ladder02/fom.py
+@@ -280,12 +280,17 @@
+     action.data = residual_form.mat*vector
+     jv = (arr(action)/row_scale)[free].copy()
+     checks=[]
++    plus_coefficients=[]; minus_coefficients=[]; plus_raw=[]; minus_raw=[]
+     for h in cfg['jacobian_steps']:
+         arr(g.vec)[:] = perturbed+h*direction
+         plus_residual = residual()  # Own the native vector while its NumPy view is used.
++        plus_coefficients.append(arr(g.vec).copy())
++        plus_raw.append(arr(plus_residual).copy())
+         plus = (arr(plus_residual)/row_scale)[free].copy()
+         arr(g.vec)[:] = perturbed-h*direction
+         minus_residual = residual()
++        minus_coefficients.append(arr(g.vec).copy())
++        minus_raw.append(arr(minus_residual).copy())
+         minus = (arr(minus_residual)/row_scale)[free].copy()
+         fd=(plus-minus)/(2*h)
+         checks.append({'h':h,'agreement':metric(np.linalg.norm(fd-jv),max(np.linalg.norm(jv),1e-30),
+@@ -293,6 +298,12 @@
+                        'signal_norm':float(np.linalg.norm(plus-minus)),
+                        'signal_floor':float(100*np.finfo(float).eps*max(np.linalg.norm(plus),np.linalg.norm(minus),1.0))})
+     arr(g.vec)[:] = reference
++    # Persist independent replay evidence before any diagnostic acceptance failure.
++    np.savez_compressed(out/'jacobian_arrays.npz', reference=reference, perturbed=perturbed,
++                        free_mask=free, row_scale=row_scale, direction=direction,
++                        action_raw=arr(action).copy(), steps=np.asarray(cfg['jacobian_steps'],dtype=np.float64),
++                        plus_coefficients=np.asarray(plus_coefficients), minus_coefficients=np.asarray(minus_coefficients),
++                        plus_residual_raw=np.asarray(plus_raw), minus_residual_raw=np.asarray(minus_raw))
+     dump(out/'jacobian_checks.json', checks)
+     useful=[a for a in checks if a['signal_norm']>a['signal_floor']]
+     values=[a['agreement']['value'] for a in useful]
+@@ -325,7 +336,7 @@
+         tr=mesh.GetTrafo(el)
+         for ip in ir:
+             if reference_controls and len(points)>=rex.CAPS['volume_points']:
+-                raise MemoryError('reference export exceeds unchanged adapter volume-point cap')
++                raise MemoryError('reference export exceeds reviewed producer volume-point cap')
+             mip=tr(ip)
+             jac=np.array(mip.jacobi,dtype=float,copy=True)
+             determinant=float(np.linalg.det(jac))
+@@ -347,7 +358,7 @@
+         label=el.mat
+         for ip in ir:
+             if reference_controls and len(boundaries)>=rex.CAPS['boundary_points']:
+-                raise MemoryError('reference export exceeds unchanged adapter boundary-point cap')
++                raise MemoryError('reference export exceeds reviewed producer boundary-point cap')
+             mip=tr(ip)
+             uv=np.array(uh(mip),dtype=float,copy=True); xy=np.array(mip.point,dtype=float,copy=True)
+             bv=np.asarray(boundary_u(mip)) if (kind=='manufactured' or label=='inlet') else np.zeros(2)
+--- native01/reference_export.py
++++ ladder02/reference_export.py
+@@ -19,7 +19,7 @@
+ from scalars import scalar_value
+ 
+ ESSENTIAL='inlet|wall.*|obstacle'
+-CAPS={'volume_points':100000,'boundary_points':30000,'archive_bytes':2**30}
++CAPS={'volume_points':500000,'boundary_points':30000,'archive_bytes':2**30}
+ RELOAD_TOL=1e-10
+ POLYNOMIAL_CHECK_OVER_U=1e-12
+ MESH_FILENAME='mesh.vol.bin'
+@@ -253,7 +253,7 @@
+     for el in mesh.Elements(ng.BND if boundary else ng.VOL):
+         tr=mesh.GetTrafo(el);ir=ng.IntegrationRule(el.type,order)
+         for ip in ir:
+-            if len(points)>=cap:raise MemoryError('reload rule exceeds unchanged adapter point cap')
++            if len(points)>=cap:raise MemoryError('reload rule exceeds reviewed producer point cap')
+             mip=tr(ip);w=scalar_value(ip.weight,'reload_reference_weight')*scalar_value(mip.measure,'reload_mapped_measure')
+             if w<=0:raise ValueError('nonpositive reloaded weight')
+             points.append(np.array(mip.point,dtype=float,copy=True));weights.append(w)

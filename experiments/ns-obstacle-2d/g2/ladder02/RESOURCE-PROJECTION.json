@@ -1,0 +1,253 @@
+{
+  "status": "prospective_resource_only_amendment_requires_review",
+  "native_result_sha256": "8177857a50edfd49c0f9d3d5da87c63a2345e2e230b43369852e0914ab88b1f1",
+  "measured_native_seconds": 4.263670432381332,
+  "measured_native_rss_bytes": 274493440,
+  "projection": "h^-2 mesh scaling; factor accounting unchanged; 2048 bytes per point combined export/replay workspace; solver time N^1.5 plus linear export time, not a guarantee",
+  "cases": [
+    {
+      "case": "dfg_h0",
+      "config_delta": {
+        "purpose": {
+          "native": "one native producer and fresh-process binary reload; no reference admission",
+          "candidate": "initial spatial refinement candidate; no reference admission"
+        },
+        "jacobian_steps": {
+          "native": [
+            0.0001,
+            1e-05,
+            1e-06
+          ],
+          "candidate": [
+            0.01,
+            0.001,
+            0.0001
+          ]
+        }
+      },
+      "projected_elements": 415,
+      "projected_dofs": 4889,
+      "projected_volume_points": 20335,
+      "projected_nnz": 211621,
+      "factor_accounting_bytes": 339845184,
+      "export_parent_child_workspace_envelope_bytes": 41646080,
+      "projected_working_bytes": 655984704,
+      "planning_seconds_not_guarantee": 4.263670432381332
+    },
+    {
+      "case": "manufactured_h0",
+      "config_delta": {
+        "purpose": {
+          "native": "one native producer and fresh-process binary reload; no reference admission",
+          "candidate": "initial spatial refinement candidate; no reference admission"
+        },
+        "jacobian_steps": {
+          "native": [
+            0.0001,
+            1e-05,
+            1e-06
+          ],
+          "candidate": [
+            0.01,
+            0.001,
+            0.0001
+          ]
+        },
+        "kind": {
+          "native": "dfg",
+          "candidate": "manufactured"
+        }
+      },
+      "projected_elements": 415,
+      "projected_dofs": 4889,
+      "projected_volume_points": 20335,
+      "projected_nnz": 211621,
+      "factor_accounting_bytes": 339845184,
+      "export_parent_child_workspace_envelope_bytes": 41646080,
+      "projected_working_bytes": 655984704,
+      "planning_seconds_not_guarantee": 4.263670432381332
+    },
+    {
+      "case": "dfg_h1",
+      "config_delta": {
+        "purpose": {
+          "native": "one native producer and fresh-process binary reload; no reference admission",
+          "candidate": "initial spatial refinement candidate; no reference admission"
+        },
+        "jacobian_steps": {
+          "native": [
+            0.0001,
+            1e-05,
+            1e-06
+          ],
+          "candidate": [
+            0.01,
+            0.001,
+            0.0001
+          ]
+        },
+        "obstacle_h": {
+          "native": 0.02,
+          "candidate": 0.01
+        },
+        "maxh": {
+          "native": 0.08,
+          "candidate": 0.04
+        }
+      },
+      "projected_elements": 1660,
+      "projected_dofs": 19556,
+      "projected_volume_points": 81340,
+      "projected_nnz": 846484,
+      "factor_accounting_bytes": 1359380736,
+      "export_parent_child_workspace_envelope_bytes": 166584320,
+      "projected_working_bytes": 1800458496,
+      "planning_seconds_not_guarantee": 22.158110469579697
+    },
+    {
+      "case": "manufactured_h1",
+      "config_delta": {
+        "purpose": {
+          "native": "one native producer and fresh-process binary reload; no reference admission",
+          "candidate": "initial spatial refinement candidate; no reference admission"
+        },
+        "jacobian_steps": {
+          "native": [
+            0.0001,
+            1e-05,
+            1e-06
+          ],
+          "candidate": [
+            0.01,
+            0.001,
+            0.0001
+          ]
+        },
+        "obstacle_h": {
+          "native": 0.02,
+          "candidate": 0.01
+        },
+        "maxh": {
+          "native": 0.08,
+          "candidate": 0.04
+        },
+        "kind": {
+          "native": "dfg",
+          "candidate": "manufactured"
+        }
+      },
+      "projected_elements": 1660,
+      "projected_dofs": 19556,
+      "projected_volume_points": 81340,
+      "projected_nnz": 846484,
+      "factor_accounting_bytes": 1359380736,
+      "export_parent_child_workspace_envelope_bytes": 166584320,
+      "projected_working_bytes": 1800458496,
+      "planning_seconds_not_guarantee": 22.158110469579697
+    },
+    {
+      "case": "dfg_h2",
+      "config_delta": {
+        "purpose": {
+          "native": "one native producer and fresh-process binary reload; no reference admission",
+          "candidate": "initial spatial refinement candidate; no reference admission"
+        },
+        "jacobian_steps": {
+          "native": [
+            0.0001,
+            1e-05,
+            1e-06
+          ],
+          "candidate": [
+            0.01,
+            0.001,
+            0.0001
+          ]
+        },
+        "obstacle_h": {
+          "native": 0.02,
+          "candidate": 0.005
+        },
+        "maxh": {
+          "native": 0.08,
+          "candidate": 0.02
+        }
+      },
+      "projected_elements": 6640,
+      "projected_dofs": 78224,
+      "projected_volume_points": 325360,
+      "projected_nnz": 3385936,
+      "factor_accounting_bytes": 5437522944,
+      "export_parent_child_workspace_envelope_bytes": 666337280,
+      "projected_working_bytes": 6378353664,
+      "planning_seconds_not_guarantee": 129.45987179875374
+    },
+    {
+      "case": "manufactured_h2",
+      "config_delta": {
+        "purpose": {
+          "native": "one native producer and fresh-process binary reload; no reference admission",
+          "candidate": "initial spatial refinement candidate; no reference admission"
+        },
+        "jacobian_steps": {
+          "native": [
+            0.0001,
+            1e-05,
+            1e-06
+          ],
+          "candidate": [
+            0.01,
+            0.001,
+            0.0001
+          ]
+        },
+        "obstacle_h": {
+          "native": 0.02,
+          "candidate": 0.005
+        },
+        "maxh": {
+          "native": 0.08,
+          "candidate": 0.02
+        },
+        "kind": {
+          "native": "dfg",
+          "candidate": "manufactured"
+        }
+      },
+      "projected_elements": 6640,
+      "projected_dofs": 78224,
+      "projected_volume_points": 325360,
+      "projected_nnz": 3385936,
+      "factor_accounting_bytes": 5437522944,
+      "export_parent_child_workspace_envelope_bytes": 666337280,
+      "projected_working_bytes": 6378353664,
+      "planning_seconds_not_guarantee": 129.45987179875374
+    }
+  ],
+  "producer_volume_point_cap": {
+    "previous": 100000,
+    "proposed": 500000
+  },
+  "unchanged_caps": {
+    "dofs": 100000,
+    "elements": 20000,
+    "nnz": 12000000,
+    "boundary_points": 30000,
+    "archive_bytes": 1073741824,
+    "memory_stop_GiB": 48,
+    "allocation_GiB": 64,
+    "CPUs": 16,
+    "GPUs": 1,
+    "wall_seconds": 1200
+  },
+  "downstream_ROM_caps": "unchanged; not exercised by this job",
+  "comparison_planning_seconds_unmeasured": 180,
+  "total_planning_seconds_not_guarantee": 491.76330540142953,
+  "per_process_timeout_seconds": 300,
+  "runner_internal_budget_seconds": 1100,
+  "retention_working_copies_GiB_envelope": 12,
+  "local_free_bytes": 53190586368,
+  "required_local_reserve_bytes": 10737418240,
+  "retention_plus_reserve_fits": true,
+  "physical_admission": false
+}

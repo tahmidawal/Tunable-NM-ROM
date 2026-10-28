@@ -16,7 +16,7 @@ base=dict(U=b['inlet_mean'],D=2*b['radius'],nu=b['benchmark_nu'],H=b['height'],x
           residual_floor=1.0,damping_sequence=[1,.5,.25,.125,.0625,.03125,.015625],armijo=1e-4,
           inverse_backend='umfpack',max_elements=20000,max_dofs=100000,max_nnz=12000000,
           factor_fill_estimate=100,memory_stop_gib=48,
-          jacobian_steps=[1e-4,1e-5,1e-6],jacobian_state_perturbation=.1,
+          jacobian_steps=[1e-2,1e-3,1e-4],jacobian_state_perturbation=.1,
           campaign_sha256=hashlib.sha256(raw).hexdigest(),design_sha256=c['design_sha256'],
           release='G1_smoke_only_not_reference_admission',precision='float64')
 for kind in ['channel','manufactured','dfg']:

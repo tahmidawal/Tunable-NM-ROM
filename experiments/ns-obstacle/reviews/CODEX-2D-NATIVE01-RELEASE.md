@@ -21,7 +21,10 @@ source evidence; the job must establish actual curved-mesh round-trip behavior.
 
 Release one unchanged coarse DFG producer/reload control in the new exact directory
 under the 2D namespace. Limits remain one GPU, sixteen CPUs, 64 GiB and twenty minutes;
-use an available H100 with the mandatory GPU/f64/highest preflight. Before submission,
+use an available H100, H200, A100 or L40S with the mandatory GPU/f64/highest preflight.
+This scheduling-only choice was broadened prospectively after H100 availability changed
+during staging; the exact requested and actual device are recorded, and no cross-job
+timing claim is permitted. Before submission,
 the owner must verify remote bytes against the exact reviewed input inventory, preserve
 the staging receipt, check disk and squeue, and confirm no existing job or used output
 directory. Record squeue after submission and the exact submitted command/job ID.

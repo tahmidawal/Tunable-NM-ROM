@@ -1,0 +1,106 @@
+# Review of the 2D fluid-normal repair (normal01, commit 26e9b827)
+
+**Verdict: NEEDS-FIXES.** The fixes are narrow and touch no physics.
+
+The PDE, force, flux and balance consumers are correct with a fluid-outward normal. I found no sign, double-flip or wrapper error in `fom.py`. Two certificate and robustness gaps in `oriented_normals.py` should be closed before the bounded retry, plus two documentation corrections. All of this is source reading only; nothing was executed.
+
+---
+
+## Required fixes
+
+### R1. The certificate never checks the returned coefficient function point by point
+
+- The analytic checks (`oriented_normals.py:≈117–135`) use `row['fluid_outward_normal']`. That value is the Python product `factor*raw` computed at `:43`, not `oriented(mip)`.
+- The returned `factor_cf*raw` is checked only through `Integrate` moments, which use the batched evaluation path.
+- Downstream code evaluates `normal(mip)` one point at a time from `mesh.GetTrafo(BND el)`. This happens in the `fom.py` boundary export (`fom.py:330–335`, which writes `boundary_rule.json`) and in `mapped_probe`.
+- For the outer labels, nothing checks that single-point path.
+
+**Fix:** in the sample loop (or a second pass after `:137`), evaluate `oriented(mip)` at every sample and require `‖oriented(mip) − factor·raw(mip)‖ ≤ API_TOL`. Record the maximum in the certificate. This is cheap and makes the certificate cover the exact object and the exact evaluation path that consumers use.
+
+### R2. The sign witness has a thin, unmeasured margin near segment endpoints
+
+The witness at `:26` is the vector from each boundary quadrature point to the adjacent triangle's mapped centroid.
+
+- The order-12 rule puts points about 0.025·h from the segment ends.
+- On the obstacle, each segment subtends about 2π/15 ≈ 0.42 rad, so the curved tangent at the ends is tilted about 0.2 rad from the chord.
+- Rough straight-sided estimate: the normal component of the witness is about `d − θ·Δt`. Here `d` is the centroid's height above the chord and `Δt` is its tangential offset from the point.
+- For an obtuse boundary triangle with angles of about 20°, 40° and 120°, this is roughly 0.008·h, a cosine of about 0.01.
+- Slightly worse cells give a negative cosine at an end point. That trips the mixed-sign error and stops the run.
+- This is fail-closed: it cannot silently pick a wrong sign, because the midpoint samples dominate and the independent checks would also fail. But it can waste the bounded retry on a mesh the diagnostic did not measure (manufactured and DFG meshes, if they differ from the diagnostic mesh).
+- `MIN_WITNESS_COSINE = 1e-8` (`:18`) provides essentially no "nearly tangential" guard, despite the review note's wording.
+
+**Fix (preferred):** infer one sign per boundary element from the segment's midpoint (reference parameter ½) against the mapped centroid. Then require `raw(ip)·raw(mid) > 0` for every point in that element, and keep the per-label consistency check. Report the minimum witness cosine per label in the certificate. A meaningful threshold (around 1e-2) then becomes defensible.
+
+**Minimum acceptable alternative:** add the per-label minimum cosine to `oriented-normal-replay.json` from the saved arrays. Also confirm that the channel, manufactured and DFG G1 meshes are the measured mesh, or accept the false-stop risk explicitly.
+
+---
+
+## Documentation and audit defects (non-blocking, but fix before freezing)
+
+### D1. `CALLSITE-AUDIT.json` is incomplete
+
+It looks like a line grep that missed continuation lines and several consumers:
+
+- `fom.py:330` `obstacle_normal_dot` (`normal(mip)`, a gated check)
+- The global-flux denominator `ng.sqrt((uh*normal)**2)`
+- Every `pieces = {convective_flux_…}`, `gradient_traction_…`, `physical_traction_…`, `symmetric_div_…` entry
+- `gt['symmetric_pde_adjustment']`, `terms_m['symmetric_pde_adjustment']` and `'gradient_traction'`
+- `physical_parts` and `gradient_parts` `convective_flux_…`
+
+It also lists non-consumers (lines 383, 385, 400, 427). Separately, it omits `preflight.py` entirely: the `mapped_probe` body and the boundary-trace `Integrate` block in preflight's main.
+
+The code is still correct by construction. `normal` has exactly one binding in `run_case` (the helper's return value), so every consumer gets the oriented CF. The audit should be regenerated so its claimed coverage matches.
+
+### D2. `REVIEW-NOTE.md` overstates the tangential rejection
+
+It says nearly tangential witnesses are rejected. At 1e-8 they effectively are not (see R2).
+
+**Scope limit on my audit:** only the `mapped_probe` signature diff was supplied, not its body. I cannot confirm that every use of `normal` inside it is a single-point BND evaluation. A `BoundaryCF` evaluated in a VOL or facet context would give wrong values (zero or index-aliased), not a clean error.
+
+---
+
+## Consumer audit: no defects found
+
+| Consumer | Check |
+|---|---|
+| Manufactured outlet traction (`rhs` and `true_residual`, `ds_out`) | Ordinary BND `ds`. Outlet factor is +1, so the FE system is unchanged by this repair. Only gating and diagnostics change. |
+| Obstacle force `ff = −∫(τ\|σ)·n` | With `n_fluid` pointing into the obstacle, `−∫σ n_fluid` is the force on the solid. Matches the stated convention. |
+| Reaction force | `−R(u_h)·lift_e_i` equals `−∫(ν∇u − pI)n_fluid·e_i`, the same convention as `ff`. It is independent of the normal, so it is a genuine orientation cross-check. |
+| Mass `qin = −∫u·n`(inlet) | `n = (−1, 0)`, so `qin > 0`. Correct. |
+| Energy, momentum, finite-divergence terms | All written for outward `n`. `BoundaryFromVolumeCF` wraps only `grad uh` and `div uh`; `normal` multiplies outside the wrapper. No double flip. |
+| Channel wall force | `−∫(σn)_x` over the walls equals `12νUL/H`, positive. Orientation (factor +1) agrees. |
+| Export | Records `normal`, `raw_normal` and the factor. Consistent once R1 is in place. |
+| Helper facet path | `facet_terms = terms(raw)`, so native normals never get factors. `factor_cf` and `oriented` never enter `ds(skeleton=True)`. |
+| P0 trick | `coefficients @ vec = ∫ f·one`. This holds for any basis normalisation, and the constant-one check makes it equal `∫ f`. |
+| Topology | Adjacency is keyed by a sorted vertex pair. A non-unique neighbour raises; non-triangles raise. Both fail closed. |
+| JSON | All values are Python or `np.float64` floats, so no serialisation failure is expected in the error path. |
+| Thread repair | `SetNumThreads` now runs before `TaskManager` in `main()` only. Fine. |
+
+**Do the certificates protect this geometry?** Yes, meaningfully.
+
+- The sign is inferred from topology alone.
+- It is then confirmed by two independent sources:
+  - analytic directions (exact outer normals, and obstacle radial dot ≤ −0.99);
+  - native volume-facet moments.
+- On the obstacle, the radial moment discriminates by about 0.1 relative, against a 1e-10 tolerance.
+- The divergence identity is a third, global check.
+
+The analytic checks hard-code this rectangle and circle, which is correct for this scope and makes the helper deliberately non-reusable.
+
+**Do not extend this to 3D.** `normal(2)`, the 3-vertex requirement and the analytic table all hard-fail outside 2D. That is the right behaviour.
+
+---
+
+## Runtime tests still required (unchanged by this review)
+
+1. **Helper on every mesh.** Preflight, channel, manufactured and DFG certificates pass, with the minimum witness cosine reported (R2) and the pointwise CF check from R1.
+2. **Channel.** Existing gates, including the wall-shear sign control.
+3. **Manufactured.**
+   - The obstacle has non-zero Dirichlet data, so orientation actually matters here.
+   - Both the orientation-dependent surface force and the orientation-independent reaction must meet the unchanged analytic-force thresholds.
+   - Energy and momentum balances must close.
+   - The witness's force convention is not visible in what was supplied. Agreement between reaction and witness confirms it.
+   - The old trace metric against the analytic target stays as it is. A failure there is not evidence about normals.
+4. **DFG.** Record drag sign and surface-integral versus reaction agreement as diagnostics. This is not reference admission, and no new gate or threshold should be added unless it is pre-registered.
+5. **Offline after the run.** Check `boundary_rule.json` `normal == factor·raw_normal` at every point, and that the certificate SHA in `result.json` matches the file.
+6. **Later requirements.** Reference, mesh, p, tolerance and domain studies, plus native replay, remain required whatever this review concludes.

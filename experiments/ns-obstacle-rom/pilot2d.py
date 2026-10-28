@@ -388,12 +388,21 @@ def evaluate_case(model, reference, boundary, bank_gate=None, fitted=None):
                 'physical_admission': False}
         except Exception as exc:
             rows[name] = {'failure': repr(exc), 'eligible_accuracy': False, 'physical_admission': False}
-    if (fitted is not None and model.stability['passed'] and
-            all('invocation' in rows[name] for name in ('exact_tensor_weak_LS', 'fitted_convection_weak_LS'))):
-        rows['fitted_convection_weak_LS']['quadrature_reached_state_check'] = quadrature_state_check(model,
-            fitted, rows['exact_tensor_weak_LS']['invocation']['evidence']['state'],
-            rows['fitted_convection_weak_LS']['invocation']['evidence']['state'], reference['Re'])
-        rows['fitted_convection_weak_LS']['eligible_accuracy'] &= rows['fitted_convection_weak_LS']['quadrature_reached_state_check']['passed']
+    if fitted is not None:
+        full_row = rows['exact_tensor_weak_LS']; fitted_row = rows['fitted_convection_weak_LS']
+        statuses = {name: row.get('invocation', {}).get('work', {}).get('status', 'missing_invocation')
+                    for name, row in [('full', full_row), ('fitted', fitted_row)]}
+        both_converged = all(status in ('stationary', 'root_converged') for status in statuses.values())
+        diagnostic = {'passed': False, 'solver_statuses': statuses,
+                      'both_solves_converged': both_converged}
+        if model.stability['passed'] and all('invocation' in row for row in (full_row, fitted_row)):
+            diagnostic.update(quadrature_state_check(model, fitted,
+                full_row['invocation']['evidence']['state'],
+                fitted_row['invocation']['evidence']['state'], reference['Re']))
+            diagnostic['numerical_checks_passed'] = diagnostic['passed']
+            diagnostic['passed'] = bool(diagnostic['passed'] and both_converged)
+        fitted_row['quadrature_reached_state_check'] = diagnostic
+        fitted_row['eligible_accuracy'] &= diagnostic['passed']
     return {'model': model.name, 'Re': reference['Re'], 'stability': model.stability, 'methods': rows}
 
 

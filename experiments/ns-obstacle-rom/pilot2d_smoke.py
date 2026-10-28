@@ -3,6 +3,8 @@ import json
 import os
 from pathlib import Path
 import tempfile
+from unittest.mock import patch
+import copy
 import numpy as np
 from bank import initialize
 from geometry import CHANNEL
@@ -61,6 +63,23 @@ def main():
             scored=evaluate_case(model,reference,boundary)
             assert set(scored['methods'])=={'exact_tensor_weak_LS','mixed_Galerkin','coefficient_PCHIP'}
             assert all('failure' not in row for row in scored['methods'].values()),scored
+            # Even identical reached states cannot qualify a fitted arm when the
+            # full-rule solve failed; all numerical scores remain available.
+            original_query = model.query
+            def controlled_query(*args, **kwargs):
+                record = copy.deepcopy(original_query(*args, **kwargs))
+                operator = args[2] if len(args)>2 else kwargs.get('operator')
+                record['work']['status'] = 'max_iterations' if operator is model.operator else 'stationary'
+                return record
+            from dataclasses import replace
+            fitted = replace(model.operator)
+            with patch.object(model, 'query', side_effect=controlled_query), \
+                    patch('pilot2d.quadrature_state_check', return_value={'passed': True}):
+                controlled = evaluate_case(model, reference, boundary, fitted=fitted)
+            arm = controlled['methods']['fitted_convection_weak_LS']
+            assert arm['quadrature_reached_state_check']['numerical_checks_passed']
+            assert arm['quadrature_reached_state_check']['solver_statuses'] == {'full':'max_iterations','fitted':'stationary'}
+            assert not arm['quadrature_reached_state_check']['passed'] and not arm['eligible_accuracy']
             op=galerkin_operator(model)
             assert op.residual(state,.05).shape==state.shape
             for index,re in enumerate(TRAIN_RE):

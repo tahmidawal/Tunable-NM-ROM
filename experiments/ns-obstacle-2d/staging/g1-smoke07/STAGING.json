@@ -15,7 +15,7 @@
   "exact_submit": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07 cluster/smoke.sh",
   "allocation": {
     "partition": "gpu",
-    "gpu_type": "h200",
+    "gpu_type": "h100",
     "gpus": 1,
     "cpus": 16,
     "memory_GiB": 64,
@@ -28,5 +28,14 @@
   "submitted_utc": "2026-10-28T19:12:12Z",
   "coordinator_remote_byte_match": true,
   "post_submit_state": "PENDING",
-  "post_submit_reason": "Priority"
+  "post_submit_reason": "Priority",
+  "original_submit_gpu_type": "h200",
+  "gpu_type_update": {
+    "status": "scontrol_update_succeeded_same_pending_job",
+    "utc": "2026-10-28T19:18:24.163838+00:00",
+    "receipt": "GRES-UPDATE.json",
+    "reason": "coordinator resource-only review; CPU FE control, GPU/f64/highest preflight unchanged",
+    "cancelled_or_resubmitted": false,
+    "source_changed": false
+  }
 }

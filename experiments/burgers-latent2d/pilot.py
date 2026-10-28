@@ -167,8 +167,9 @@ def main():
             assert P.gcert_ok(np.asarray(g),np.asarray(vt['stats']['step_gn']))
             # Same roundoff envelope as gcert: relative1e-7 + absolute1e-12.
             np.testing.assert_allclose(vt['stats']['step_tolratio'],np.asarray(rn)/(float(scale)*1e-9+1e-300),rtol=1e-7,atol=1e-12)
-            assert int(vt['stats']['nfail'])==0
-            assert np.all((np.asarray(vt['stats']['step_gn'])<=1e-3)|(np.asarray(vt['stats']['step_tolratio'])<=1))
+            entry['timed_production_stationarity']=bool(int(vt['stats']['nfail'])==0 and
+                np.all((np.asarray(vt['stats']['step_gn'])<=1e-3)|(np.asarray(vt['stats']['step_tolratio'])<=1)))
+            entry['valid']=entry['valid'] and entry['timed_production_stationarity']
             for k in ('step_it','step_reason','it_sum','it_max','rej','exits','nfail','ic_it','ic_reason','ic_idx'):
                 assert np.array_equal(vt['stats'][k],st[k])
             if arm!='direct':

@@ -76,7 +76,16 @@ def make_candidate(hc, hf, nl, nlJ, coarse_trust, mode, force_failure=False):
             zc, crn, cit, creason, cgn, crej, clam = lm(zfit, args, coarse_tol, 1e-3, jnp.asarray(1e-6))
         else:
             zc, cit, creason, cgn, crej = zfit, jnp.int32(0), jnp.int32(-1), jnp.asarray(0.), jnp.int32(0)
+            crn = jnp.asarray(0.)
         zu, urn, uit, ureason, ugn, uJ, ures, urn0 = up(warm, R @ hc(zc), R)
+        down_finite = jnp.all(jnp.isfinite(zfit)) & jnp.isfinite(drn) & jnp.isfinite(dgn)
+        coarse_finite = jnp.all(jnp.isfinite(zc)) & jnp.isfinite(crn) & jnp.isfinite(cgn)
+        up_finite = jnp.all(jnp.isfinite(zu)) & jnp.isfinite(urn) & jnp.isfinite(ugn)
+        # Normalize nonfinite failures to the retained invalid-exit flag so they
+        # remain distinguishable from a finite objective-guard rejection.
+        dreason = jnp.where(down_finite,dreason,jnp.int32(3))
+        creason = jnp.where(coarse_finite,creason,jnp.int32(3))
+        ureason = jnp.where(up_finite,ureason,jnp.int32(3))
         if force_failure:
             dreason = jnp.int32(3)
         # Evaluate precisely the same coefficient residual on both fine states.
@@ -84,8 +93,7 @@ def make_candidate(hc, hf, nl, nlJ, coarse_trust, mode, force_failure=False):
         rc = T2.lspg_residual(nl, co, dt, nu, d, hist)
         r0, r1 = rc(hf(warm)), rc(hf(zu))
         f0, f1 = jnp.vdot(r0, r0), jnp.vdot(r1, r1)
-        finite = (jnp.all(jnp.isfinite(zfit)) & jnp.all(jnp.isfinite(zc)) & jnp.all(jnp.isfinite(zu)) &
-                  jnp.isfinite(drn) & jnp.isfinite(urn) & jnp.isfinite(dgn) & jnp.isfinite(ugn) & jnp.isfinite(cgn))
+        finite = down_finite & coarse_finite & up_finite
         take = (finite & (dreason != 3) & (creason != 3) & (ureason != 3) &
                 jnp.isfinite(f0) & jnp.isfinite(f1) & (f1 < f0) & (f1 <= (1 - 1e-8) * f0))
         info = jnp.array([take, dit, dreason, dJ, dres, cit, creason, crej,

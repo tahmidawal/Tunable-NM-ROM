@@ -33,12 +33,20 @@ def main():
         ratios=ts/base; med=np.median(ratios,axis=1)
         rec=[r for r in x['records'] if r['arm']==arm]
         zrec=[np.load(path.parent/f'{arm}_case{c}.npz') for c in range(6)]
-        for z in zrec:
-            assert np.all(np.isfinite(z['gamma_fresh']))
-            assert np.all((z['gamma_fresh']<=1e-3)|(z['step_tolratio']<=1))
-            assert np.all(np.abs(z['gamma_fresh']-z['step_gn'])<=1e-7*np.abs(z['step_gn'])+1e-12)
+        stationarity=[]
+        for z,r in zip(zrec,rec):
+            stop=bool(np.all(np.isfinite(z['gamma_fresh'])) and
+                np.all((z['gamma_fresh']<=1e-3)|(z['step_tolratio']<=1)))
+            stationarity.append(stop)
+            assert stop or not r['valid']
+            if np.all(np.isfinite(z['gamma_fresh'])):
+                assert np.all(np.abs(z['gamma_fresh']-z['step_gn'])<=1e-7*np.abs(z['step_gn'])+1e-12)
         if arm!='direct':
             np.testing.assert_allclose(med,x['gate'][arm]['per_case_paired_median_ratios'],rtol=1e-14,atol=1e-14)
+            quality=all(r['valid'] for r in x['records'] if r['arm'] in ('direct',arm))
+            identity=all(t['identity'] and t['online_valid'] for t in x['timings'] if t['arm'] in ('direct',arm))
+            passed=bool(quality and identity and np.median(med)<=.85 and np.max(med)<=1.10)
+            assert passed==x['gate'][arm]['passed']
         summary['arms'][arm]=dict(median_query_ms=float(np.median(np.median(ts,axis=1))*1e3),
             median_paired_ratio=float(np.median(med)),per_case_ratios=med.tolist(),
             slower_pairs=int(np.sum(ratios>1)),total_pairs=42,
@@ -58,6 +66,7 @@ def main():
             total_up_J=sum(r['auxiliary_sums']['up_J'] for r in rec),
             accepted_candidates=sum(r['auxiliary_sums']['accepted'] for r in rec),
             auxiliary_failures=sum(r['auxiliary_failures'] for r in rec),
+            production_stationarity=stationarity,
             cost_gate=None if arm=='direct' else x['gate'][arm]['passed'])
         if arm!='direct':
             for z in zrec:

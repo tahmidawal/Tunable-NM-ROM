@@ -134,10 +134,12 @@ def run():
                                     'passed': True, 'split': 'training', 'cases': []}))
         closed_rejected = False
         try: TrainingFEAdapter.open(path)
-        except RuntimeError as exc: closed_rejected = 'G2-steady' in str(exc)
+        except RuntimeError as exc: closed_rejected = 'FD1' in str(exc)
         assert closed_rejected
-        path.write_text(json.dumps({'schema': 'ns-obstacle-fe-training-v1', 'gate': 'G2-steady',
-            'passed': True, 'split': 'validation', 'adapter_source_sha256': adapter_digest()}))
+        from qualification import GATE, expected_scope
+        path.write_text(json.dumps({'schema': 'ns-obstacle-fe-training-v1', 'gate': GATE,
+            'passed': True, 'qualification_scope': expected_scope(),
+            'split': 'validation', 'adapter_source_sha256': adapter_digest()}))
         validation_rejected = False
         try: read_training_manifest(path)
         except RuntimeError: validation_rejected = True

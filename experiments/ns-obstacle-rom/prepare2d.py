@@ -1,6 +1,6 @@
 """Source-bound production preparation; never creates reference admission.
 
-Use only after independent G2 training/common-lift admission and an exact-source
+Use only after independent FD1-scoped training/common-lift admission and an exact-source
 preparation release. This program has no training or validation-data path.
 """
 from __future__ import annotations
@@ -13,6 +13,7 @@ import time
 import numpy as np
 from fe_adapter import TrainingFEAdapter, adapter_digest, read_training_manifest, CAPS, sha_file
 from pilot2d import prepare_probe_arrays, source_digest
+from qualification import require_qualification
 
 
 def preparation_digest():
@@ -32,6 +33,8 @@ def verify_release(manifest_path, release_path):
     if sha_file(manifest_path) != release['training_manifest_sha256']:
         raise ValueError('training manifest differs from exact release')
     admission = read_training_manifest(manifest_path)
+    if require_qualification(release.get('reference_qualification')) != require_qualification(admission):
+        raise ValueError('native preparation qualification scope differs')
     for key in ('reference_admission_sha256', 'adapter_review_sha256'):
         if admission[key] != release[key]:
             raise ValueError('preparation release differs from '+key)
@@ -61,6 +64,7 @@ def prepare(manifest_path, release_path, output, point_block_volume=False):
         if probe_file.stat().st_size > CAPS['archive_bytes']: raise MemoryError('probe archive cap')
         record = {'schema': 'ns-obstacle-native-preparation-result-v1',
             'source_sha256': preparation_digest(), 'release_sha256': sha_file(release_path),
+            'reference_qualification': require_qualification(admission),
             'training_manifest_sha256': sha_file(manifest_path),
             'reference_admission_sha256': admission['reference_admission_sha256'],
             'adapter_manifest_sha256': sha_file(output/'prepared/manifest.json'),
@@ -74,6 +78,7 @@ def prepare(manifest_path, release_path, output, point_block_volume=False):
         return record
     except Exception as exc:
         (output/'failure.json').write_text(json.dumps({'stage': stage, 'error': repr(exc),
+            'reference_qualification': require_qualification(admission),
             'source_sha256': preparation_digest(), 'release_sha256': sha_file(release_path),
             'elapsed_seconds': time.perf_counter()-started, 'physical_admission': False}, indent=2)+'\n')
         raise

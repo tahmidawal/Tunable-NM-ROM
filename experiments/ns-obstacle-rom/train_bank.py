@@ -1,6 +1,6 @@
 """Gated one-architecture training library. No production dataset is bundled or opened.
 
-Caller must supply a reviewed G2-steady admission and frozen training data hash. Actual
+Caller must supply a reviewed FD1-scoped admission and frozen training data hash. Actual
 job launcher adds source/config/input hashes and enforces the hard allocation ceiling.
 """
 from __future__ import annotations
@@ -9,6 +9,7 @@ import time
 import numpy as np
 from bank import initialize,FrozenBank
 from spaces import ordered_transform,positive_weights
+from qualification import require_qualification
 
 
 def array_hash(*arrays):
@@ -21,8 +22,9 @@ def array_hash(*arrays):
 
 def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_seconds=1800.,evidence_directory=None):
     """Only trained max-r bank; snapshots [case,point,component] in velocity/U units."""
-    if admission.get("gate")!="G2-steady" or admission.get("passed") is not True or admission.get("split")!="training":
-        raise RuntimeError("G2-steady reviewed training admission required")
+    require_qualification(admission)
+    if admission.get("split")!="training":
+        raise RuntimeError("FD1 reviewed training-only admission required")
     if not admission.get("review_record") or not admission.get("reference_manifest_sha256"):
         raise RuntimeError("reference manifest and independent review record required")
     x=np.asarray(points,dtype=np.float64)

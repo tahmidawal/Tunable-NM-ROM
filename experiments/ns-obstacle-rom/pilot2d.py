@@ -44,7 +44,7 @@ def source_digest():
     root = Path(__file__).parent
     names = ('pilot2d.py', 'MODEL-CONTRACT.json', 'bank.py', 'geometry.py', 'interpolation.py', 'metrics.py',
              'quadrature.py', 'solver.py', 'spaces.py', 'weak.py', 'timing.py', 'train_bank.py',
-             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py', 'fom_bridge2d.py')
+             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py', 'fom_bridge2d.py', 'qualification.py', 'FD1-SCOPE-CONTRACT.json')
     return hashlib.sha256(json.dumps({n: sha_file(root/n) for n in names}, sort_keys=True).encode()).hexdigest()
 
 
@@ -86,6 +86,10 @@ def load_preparation(directory, release_path):
     if sha_file(meta_path) != release['adapter_manifest_sha256']:
         raise ValueError('released adapter artifact differs')
     meta = json.loads(meta_path.read_text())
+    from qualification import require_qualification
+    qualification = require_qualification(meta.get('reference_qualification'))
+    if require_qualification(release.get('reference_qualification')) != qualification:
+        raise ValueError('released preparation qualification scope differs')
     if (meta.get('split') != 'training' or meta.get('Re') != TRAIN_RE.tolist() or
             meta.get('units', {}).get('already_dimensionless') is not True):
         raise ValueError('exact training-only dimensionless adapter export required')
@@ -109,12 +113,13 @@ def train_from_preparation(directory, release_path, output_path):
     from train_bank import train
     arrays, meta, release = load_preparation(directory, release_path)
     data = arrays['training']
-    admission = {'gate': 'G2-steady', 'passed': True, 'split': 'training',
+    from qualification import require_qualification
+    admission = dict(require_qualification(meta['reference_qualification']), **{'split': 'training',
         'Re': TRAIN_RE.tolist(), 'review_record': release['reference_admission_sha256'],
         'reference_manifest_sha256': meta['manifest_sha256'],
         'array_sha256': meta['training_array_sha256'],
-        'source_sha256':release['source_sha256'],'adapter_manifest_sha256':release['adapter_manifest_sha256']}
-    # The passed value above is a translation of the already checked, genuine producer
+        'source_sha256':release['source_sha256'],'adapter_manifest_sha256':release['adapter_manifest_sha256']})
+    # The scoped passed value above is a translation of the already checked, genuine producer
     # admission, never a way to run against smoke or synthetic reference data.
     target = Path(output_path)
     if target.exists(): raise FileExistsError('bank output already exists')
@@ -505,6 +510,8 @@ def load_reference_population(path, expected_sha256, split, volume_rule_hash):
     path = Path(path)
     if sha_file(path) != expected_sha256: raise ValueError('released reference population differs')
     record = json.loads(path.read_text())
+    from qualification import require_qualification
+    qualification = require_qualification(record)
     if (record.get('schema') != 'ns-obstacle-pilot-reference-population-v1'
         or record.get('passed') is not True or record.get('split') != split
         or record.get('volume_rule_sha256') != volume_rule_hash
@@ -516,7 +523,7 @@ def load_reference_population(path, expected_sha256, split, volume_rule_hash):
         if sha_file(source) != row['array_sha256']: raise ValueError('reference arrays differ')
         arrays = _read_arrays(source, 2**30)
         if set(arrays) != {'velocity', 'pressure', 'velocity_gradient'}: raise ValueError('reference field contract')
-        cases.append(dict(row, **arrays))
+        cases.append(dict(row, **arrays, reference_qualification=qualification))
     check_population(cases, split)
     return cases
 
@@ -664,7 +671,8 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
                         for metric in ('velocity_relative', 'pressure_scaled', 'drag_relative',
                                        'transverse_absolute', 'divergence', 'mass', 'velocity_gradient_scaled',
                                        'velocity_gradient_relative', 'boundary_trace') if values}}
-    summary = {'source_sha256': source_digest(), 'records': records, 'construction_failures': failures,
+    summary = {'reference_qualification': metadata.get('reference_qualification'),
+               'source_sha256': source_digest(), 'records': records, 'construction_failures': failures,
                'bank_development_gate': bank_gate, 'frozen_choices': choices, 'validation': aggregates,
                'no_validation_refit': True, 'physical_admission': False,
                'timing_comparison_performed': False, 'model_memory_policy': 'one full field model at a time',

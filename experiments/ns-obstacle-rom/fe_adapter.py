@@ -1,7 +1,7 @@
 """Gated, bounded 2D NGSolve-to-ROM bridge. No FE operation runs on import.
 
 This source has NOT passed a pinned-library FE integration test. A future reviewed job
-must supply a genuine G2 training manifest; current G1 control files are rejected.
+must supply a genuine FD1-scoped training manifest; current G1 control files are rejected.
 Only this module owns the adapter; it never imports or mutates the FOM solver module.
 """
 from __future__ import annotations
@@ -18,6 +18,7 @@ from fe_algebra import array_digest, reference_inf_sup
 from fe_pod_a6 import (coefficient_pod_a6, validate_actual_pod, orient_clusters,
                        expand_components, check_component_blocks)
 from fe_controls_a6 import boundary_control, gradient_control
+from qualification import require_qualification, EXPORT_RELEASE, SCOPE_SHA256
 from spaces import select_test_columns
 from oriented_normals import fluid_outward_normal
 
@@ -50,7 +51,7 @@ def sha_file(path):
 def adapter_digest():
     root = Path(__file__).parent
     return hashlib.sha256(json.dumps({name: sha_file(root/name) for name in
-        ('fe_adapter.py', 'fe_blocks.py', 'component_factor.py', 'point_store.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+        ('fe_adapter.py', 'fe_blocks.py', 'component_factor.py', 'qualification.py', 'FD1-SCOPE-CONTRACT.json', 'point_store.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
 
 
 def verify_mesh_contract(record, policy_key='policy'):
@@ -73,9 +74,9 @@ def read_shared_lift_admission(path, expected_sha256):
     path = Path(path)
     if sha_file(path) != expected_sha256: raise ValueError('common lift admission hash mismatch')
     admission = json.loads(path.read_text())
-    if (admission.get('schema') != 'ns-obstacle-common-stokes-admission-v1' or
-        admission.get('gate') != 'G2-steady' or admission.get('passed') is not True):
-        raise RuntimeError('genuine G2 common Stokes lift admission required')
+    qualification = require_qualification(admission)
+    if admission.get('schema') != 'ns-obstacle-common-stokes-admission-v1':
+        raise RuntimeError('genuine scoped common Stokes lift admission required')
     for key in ('reference_admission_sha256', 'review_sha256'):
         digest = admission.get(key, '')
         if len(digest) != 64 or any(c not in '0123456789abcdef' for c in digest):
@@ -95,16 +96,18 @@ def read_shared_lift_admission(path, expected_sha256):
         not math.isfinite(meta['linear_tolerance']) or meta['linear_tolerance'] <= 0 or
         meta['linear_control']['value'] > meta['linear_tolerance']):
         raise ValueError('invalid common lift configuration/linear control')
-    return {'metadata': meta, 'archive': str(array_file), 'admission_sha256': expected_sha256}
+    return {'metadata': meta, 'archive': str(array_file), 'admission_sha256': expected_sha256,
+            'reference_qualification': qualification,
+            'reference_admission_sha256': admission['reference_admission_sha256']}
 
 
 def read_training_manifest(path):
     """Check admission before opening any mesh/state archive or importing NGSolve."""
     path = Path(path)
     manifest = json.loads(path.read_text())
-    if (manifest.get('schema') != SCHEMA or manifest.get('gate') != 'G2-steady' or
-        manifest.get('passed') is not True or manifest.get('split') != 'training'):
-        raise RuntimeError('reviewed G2-steady TRAINING manifest required; G1 is not admission')
+    qualification = require_qualification(manifest)
+    if manifest.get('schema') != SCHEMA or manifest.get('split') != 'training':
+        raise RuntimeError('reviewed scoped TRAINING manifest required; controls are not admission')
     if manifest.get('adapter_source_sha256') != adapter_digest():
         raise RuntimeError('review must bind the exact adapter source')
     for name in ('adapter_review_sha256', 'reference_admission_sha256', 'campaign_sha256'):
@@ -136,6 +139,10 @@ def read_training_manifest(path):
     if not common: raise RuntimeError('A6 requires one admitted shared Stokes lift identity')
     manifest['resolved_common_stokes_lift'] = read_shared_lift_admission(
         path.parent/common['admission_path'], common['admission_sha256'])
+    shared = manifest['resolved_common_stokes_lift']
+    if (shared['reference_qualification'] != qualification or
+        shared['reference_admission_sha256'] != manifest['reference_admission_sha256']):
+        raise ValueError('training and shared lift qualification differ')
     manifest['manifest_sha256'] = sha_file(path)
     return manifest
 
@@ -317,7 +324,8 @@ class TrainingFEAdapter:
             result = json.loads((folder/'result.json').read_text())
             reload_checks = json.loads((folder/'reload_checks.json').read_text())
             if (cfg.get('kind') != 'dfg' or cfg.get('outlet') != 'gradient' or
-                cfg.get('release') != 'G2_steady_training_export' or cfg.get('precision') != 'float64'):
+                cfg.get('release') != EXPORT_RELEASE or cfg.get('scope_contract_sha256') != SCOPE_SHA256 or
+                cfg.get('precision') != 'float64'):
                 raise ValueError('only declared 2D homogeneous-outlet steady training exports supported')
             if cfg['campaign_sha256'] != admission['campaign_sha256']:
                 raise ValueError('campaign mismatch')
@@ -723,6 +731,7 @@ class TrainingFEAdapter:
             'pod_velocity': pod['velocity_coefficients'], 'pressure': pressure,
             'supremizers': supremizers, 'momentum_tests': tests_v, 'continuity_tests': tests_q}
         self.metadata = {'schema': 'ns-obstacle-fe-adapter-A6', 'physical_admission': False,
+            'reference_qualification': require_qualification(self.admission),
             'split': 'training', 'Re': REYNOLDS, 'manifest_sha256': self.admission['manifest_sha256'],
             'adapter_source_sha256': adapter_digest(), 'caps': CAPS, 'roundtrip': self.roundtrip,
             'admission_evidence': {k: self.admission[k] for k in ('adapter_review_sha256',

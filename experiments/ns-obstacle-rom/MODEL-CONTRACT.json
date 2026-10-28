@@ -1,6 +1,6 @@
 {
   "schema": "ns-obstacle-rom-infrastructure-v1",
-  "status": "A8_binary_adapter_source_candidate_no_native_or_G2_admission",
+  "status": "FD1_source_candidate_no_scoped_reference_or_training_admission",
   "central_campaign_version": "predata-A6",
   "central_campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
   "central_design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
@@ -176,7 +176,7 @@
     "optimizer": "Adam",
     "learning_rate": 0.001,
     "loss": "volume_weighted_QR_projection_no_ridge",
-    "requires_gate": "G2-steady",
+    "requires_gate": "G2_FIXED_FINITE_CHANNEL_V1",
     "split": "training_only"
   },
   "required_controls": [
@@ -251,7 +251,7 @@
   "dependency_gaps": [
     "reviewed_FE_adapter",
     "actual_FE_test_and_supremizer_export",
-    "actual_reference_data_G2_admission",
+    "actual_FD1_scoped_reference_qualification",
     "JAX_training_runtime_validation",
     "physical_pilot_and_quadrature_qualification"
   ],
@@ -309,5 +309,13 @@
     "normal_helper_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
     "normal_policy": "topology-inferred signs on raw curved ordinary-BND normals, independently certified; native volume-facet normals unchanged",
     "evidence_directory_required": true
+  },
+  "reference_scope_amendment": {
+    "id": "FD1-2026-10-28",
+    "contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "qualification_gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "original_G2_status": "not_admitted_domain_sensitivity_failed",
+    "domain_sensitivity_status": "failed",
+    "domain_independence_admitted": false
   }
 }

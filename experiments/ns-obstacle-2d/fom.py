@@ -325,7 +325,7 @@ def run_case(cfg, out):
         tr=mesh.GetTrafo(el)
         for ip in ir:
             if reference_controls and len(points)>=rex.CAPS['volume_points']:
-                raise MemoryError('reference export exceeds unchanged adapter volume-point cap')
+                raise MemoryError('reference export exceeds reviewed producer volume-point cap')
             mip=tr(ip)
             jac=np.array(mip.jacobi,dtype=float,copy=True)
             determinant=float(np.linalg.det(jac))
@@ -347,7 +347,7 @@ def run_case(cfg, out):
         label=el.mat
         for ip in ir:
             if reference_controls and len(boundaries)>=rex.CAPS['boundary_points']:
-                raise MemoryError('reference export exceeds unchanged adapter boundary-point cap')
+                raise MemoryError('reference export exceeds reviewed producer boundary-point cap')
             mip=tr(ip)
             uv=np.array(uh(mip),dtype=float,copy=True); xy=np.array(mip.point,dtype=float,copy=True)
             bv=np.asarray(boundary_u(mip)) if (kind=='manufactured' or label=='inlet') else np.zeros(2)

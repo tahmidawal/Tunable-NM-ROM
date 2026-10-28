@@ -66,10 +66,24 @@ def evaluate_case(folder,cfg,points,out,label,ng):
     solution=ng.GridFunction(X);solution.Load(str(folder/'solution.sol'));u,p=solution.components
     coordinate=ng.CF((ng.x,ng.y));values=np.full((len(points),2),np.nan);pressure=np.full(len(points),np.nan)
     mapped=np.full_like(points,np.nan);valid=np.zeros(len(points),dtype=bool);errors=[]
+    reference_coordinates=np.full((len(points),3),np.nan);barycentric=np.full((len(points),3),np.nan)
+    element_numbers=np.full(len(points),-1,dtype=np.int64)
+    element_types={int(el.nr):str(el.type) for el in mesh.Elements(ng.VOL)}
+    lookup_tolerance=1e-12
+    reference_membership_roundoff=64*np.finfo(np.float64).eps
     for i,xy in enumerate(points):
         try:
-            mip=mesh(*[float(v) for v in xy])
+            mip=mesh(*[float(v) for v in xy],tol=lookup_tolerance)
+            element_numbers[i]=int(mip.nr)
             if mip.nr<0:raise ValueError('requested physical point outside candidate mesh')
+            if mip.vb!=ng.VOL or element_types.get(int(mip.nr))!='ET.TRIG':
+                raise ValueError('common-rule lookup requires a volume triangle')
+            ref=np.asarray(mip.pnt,dtype=np.float64)
+            reference_coordinates[i]=ref
+            if ref.shape!=(3,) or not np.isfinite(ref).all():raise ValueError('invalid reference coordinates')
+            barycentric[i]=[ref[0],ref[1],1-ref[0]-ref[1]]
+            if (abs(ref[2])>reference_membership_roundoff or np.min(barycentric[i]) < -reference_membership_roundoff):
+                raise ValueError('returned reference point lies outside triangle; no extrapolation')
             mapped[i]=np.array(coordinate(mip),dtype=float,copy=True)
             if np.linalg.norm(mapped[i]-xy)>rex.RELOAD_TOL*cfg['D']:
                 raise ValueError('physical point lookup discrepancy; no coordinate nudge')
@@ -79,9 +93,12 @@ def evaluate_case(folder,cfg,points,out,label,ng):
             valid[i]=True
         except Exception as exc:errors.append({'index':i,'point':xy.tolist(),'error':repr(exc)})
     np.savez_compressed(out/(label+'.npz'),requested_points=points,mapped_points=mapped,
-                        velocity=values,pressure=pressure,valid=valid)
+                        velocity=values,pressure=pressure,valid=valid,reference_coordinates=reference_coordinates,
+                        barycentric_coordinates=barycentric,element_numbers=element_numbers)
     rex.dump(out/(label+'-validity.json'),{'all_valid':bool(valid.all()),'invalid_count':len(errors),'errors':errors,
-                                         'point_adjustments':0,'discarded_points':0,'layout_sha256':digest})
+                                         'point_adjustments':0,'discarded_points':0,'layout_sha256':digest,
+                                         'lookup_tolerance':lookup_tolerance,'reference_membership_roundoff':reference_membership_roundoff,
+                                         'element_types':element_types,'membership_rule':'all triangle barycentric coordinates >= -64eps; reference z within64eps; no coordinate alteration'})
     if not valid.all():raise ValueError(f'{label}: invalid common-rule points; no subset comparison performed')
     return values,pressure
 

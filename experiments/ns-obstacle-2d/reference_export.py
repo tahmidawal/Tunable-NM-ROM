@@ -19,7 +19,7 @@ import numpy as np
 from scalars import scalar_value
 
 ESSENTIAL='inlet|wall.*|obstacle'
-CAPS={'volume_points':100000,'boundary_points':30000,'archive_bytes':2**30}
+CAPS={'volume_points':500000,'boundary_points':30000,'archive_bytes':2**30}
 RELOAD_TOL=1e-10
 POLYNOMIAL_CHECK_OVER_U=1e-12
 MESH_FILENAME='mesh.vol.bin'
@@ -253,7 +253,7 @@ def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None):
     for el in mesh.Elements(ng.BND if boundary else ng.VOL):
         tr=mesh.GetTrafo(el);ir=ng.IntegrationRule(el.type,order)
         for ip in ir:
-            if len(points)>=cap:raise MemoryError('reload rule exceeds unchanged adapter point cap')
+            if len(points)>=cap:raise MemoryError('reload rule exceeds reviewed producer point cap')
             mip=tr(ip);w=scalar_value(ip.weight,'reload_reference_weight')*scalar_value(mip.measure,'reload_mapped_measure')
             if w<=0:raise ValueError('nonpositive reloaded weight')
             points.append(np.array(mip.point,dtype=float,copy=True));weights.append(w)

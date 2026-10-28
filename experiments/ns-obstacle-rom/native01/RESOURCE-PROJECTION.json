@@ -1,0 +1,37 @@
+{
+  "scope": "coarse single-control native implementation harness; no training, POD or physical admission",
+  "source_job": 6613426,
+  "input_bytes": 2864024,
+  "elements": 415,
+  "mixed_dofs": 4889,
+  "eigen_candidates": {
+    "velocity_scalar": 48,
+    "pressure_scalar": 32,
+    "look_ahead_each": 1
+  },
+  "hard_allocation": {
+    "gpus": 1,
+    "cpus": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200
+  },
+  "existing_adapter_caps_unchanged": {
+    "mixed_dofs": 100000,
+    "elements": 20000,
+    "volume_points": 100000,
+    "boundary_points": 30000,
+    "matrix_nnz": 12000000,
+    "single_array_bytes": 1073741824,
+    "archive_bytes": 1073741824,
+    "factor_estimate_bytes": 8589934592,
+    "process_rss_bytes": 17179869184,
+    "vector_eigen_candidates": 96,
+    "velocity_scalar_eigen_candidates": 48,
+    "scalar_eigen_candidates": 32,
+    "eigensolver_iterations": 2000
+  },
+  "output_budget_bytes": 67108864,
+  "work": "one solution replay, analytic gradients, component maps, six sparse metrics, two sparse shifted eigenproblems; no neural training, synthetic nine-state family, POD, or learned reduced solve",
+  "baseline_producer_peak_rss_bytes": 274493440,
+  "working_memory_note": "Uses existing conservative sparse factor and process RSS guards; measure actual peak. The control does not allocate the full candidate field bank used in production."
+}

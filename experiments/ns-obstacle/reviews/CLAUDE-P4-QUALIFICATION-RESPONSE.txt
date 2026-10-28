@@ -1,0 +1,93 @@
+# Independent review: prospective P4/g4 reference role
+
+## Bottom line
+
+The P4/g4 role is scientifically sound as a scope for source preparation. The common-denominator envelope is valid, with conditions listed below. Nothing shown so far supports admission. Every post-P4 control is still prospective.
+
+Two things need fixing before results are seen:
+1. The three-way comparison must be defined so the triangle inequality actually holds.
+2. The remedy to apply if the P3 contrast fails should be declared in advance.
+
+Lift is the most likely binding quantity, and the likely cause would be the P3 comparator, not P4.
+
+## 1. The envelope argument
+
+**What is valid.** Let a = |P4g4 − P3g4|, b = |P4g4 − P3g3|, g = |P3g4 − P3g3| and d_p = max(a, b). Then g ≤ a + b ≤ 2·d_p. This holds only if all three numerators use the same norm, the same evaluation operator and the same denominator.
+
+**Conditions it needs (required):**
+- **A common evaluation set inside both discrete domains.** The g3 and g4 discrete boundaries differ between nodes. Field-norm points near the cylinder must lie inside every mapped domain, or use one documented inverse-map/extrapolation rule applied identically to all three pairs. If each pair builds its own point set, the inequality is not guaranteed.
+- **Pressure poles.** (.15,.2) and (.25,.2) lie exactly on the circle. Confirm they are geometry nodes in both g3 and g4 meshes, or that pole evaluation never extrapolates.
+- **One denominator everywhere.** Use the adopted P4/h3 denominator for d_h as well, not "the finer result" pair by pair. The numerical effect is negligible, but the rule should be exact and stated in advance.
+- **Matched provenance for P3/g3.** The retained P3/g3 h3 solve predates the current code (native output controls, quadrature changes). Either rerun P3/g3 in the same reviewed package as P3/g4, or show that a reproduction matches the retained arrays to noise level. Otherwise g mixes geometry with code-version differences.
+- **Per-solve validity for P3/g3.** It may be used as a measurement despite its failed lift checks. It still needs passing residual, trace, mass and Jacobian checks, plus its own noise floor.
+
+**Overstated inference.** The statement that g is "covered by the existing two-times-p envelope" is weaker than it sounds. The factor 2 is the one safety margin for unmeasured order and h error, and here it absorbs geometry as well. The true error decomposition is roughly order error plus geometry error, which could reach a + g ≤ 3·d_p.
+
+This is acceptable under the conditional-empirical framing, mainly because g measures the g3 error and so probably overestimates the g4 error. The wording should change to "measured g ≤ 2·d_p; the factor 2 is shared, not an independent geometry margin." Also report g against budget/5 on its own. If g alone exceeds budget/5, treat the evidence as inconsistent and trigger the P4/g5 remedy.
+
+**Geometry metrics.** Area (2.5e-14) and perimeter (2.6e-13) are integral quantities and can superconverge. For the "finite resolved fixed-order geometry diagnostics" the role requires, also retain:
+- maximum pointwise radial deviation, and
+- maximum normal-angle deviation
+
+at the boundary force quadrature points for g3 and g4. These are the quantities that actually feed the forces. They are diagnostics, not new thresholds.
+
+## 2. Concrete blockers and required fixes before execution
+
+1. **Declare the remedy branches before results.**
+   - If a (the order contrast at fixed g4) exceeds the budget, the failure is driven by solution order. P4/g5 cannot fix it. The scientifically appropriate remedy would be a higher-order contrast such as P5/g4 versus P4/g4 at h3. That would need a separately reviewed amendment and resource proposal, with the P3 results retained and disclosed.
+   - If only b or g is large while a is small, the issue is geometry, and P4/g5 is the remedy.
+   - Do not decide afterwards to drop the P3/g3 contrast from the max.
+2. **Check that the solver-tightening control is feasible.** The DFG independent residual is already 2.1e-15. If the baseline nonlinear tolerance is near round-off, a 100x tighter tolerance may be unreachable (spurious failure) or met trivially (no-op). Before release, state the baseline tolerance, the stopping criterion, and the achievable floor. If 100x is infeasible, any replacement specification (for example, fixed extra Newton steps or iterative refinement) is a reviewed amendment, not a silent substitution.
+3. **Define "resolved."** If the exact noise multiple used to call a difference resolved is not already frozen, fix it now, before any noise data exist.
+4. **Noise floors on every constituent, not just the adopted state.** The current plan measures d_solver and d_quad on P4/h3 only. Resolving the earlier h-difference needs noise bounds at h1 and h2. Resolving the p-contrast needs noise bounds for both P3 solves. These are cheap and the margins are probably large, but they must be measured, not assumed.
+5. **Raw FE trace value.** Both cases report exactly `1e-12`. That looks like a floor, clamp or formatting artifact, not a measurement. Retain the raw value.
+6. **Comparing pressure across domains.** There is no pin, so the absolute pressure level shifts with domain length (Poiseuille gradient × added length) and with outlet form. Across domains, compare only shift-invariant quantities: velocity, drag, lift and the pole Δp. The frozen domain metrics already follow this; make sure no diagnostic compares raw pressure across domains.
+7. **Discretization in the domain controls.** Extended meshes should reproduce the original [0,2.2] mesh exactly and append elements, or else measure and report the remeshing difference. Otherwise the domain difference is contaminated by discretization differences.
+
+## 3. Evidence needed before admission, by role
+
+**Noise:**
+- solver 100x
+- assembly +4 / volume diagnostic 12→16
+- boundary rule 12 vs 16
+- then d_solver and d_quad, with raw numerators and denominators retained
+
+**Domain:**
+- upstream xmin = −.2
+- downstream xmax = 4.4
+- separate symmetric-traction long outlet
+
+Each is checked against .002 relative (velocity, drag) and 2e-4 absolute transverse. These are problem-definition adequacy checks for the fixed DFG domain. They are not part of delta_y, and the formula should not acquire a domain term.
+
+**Population.** Re20 does not cover Re25: the wake is longer and the boundary layers thinner, so h and domain sensitivity are probably worst there. Upstream elliptic influence is probably strongest at Re15. A protocol to freeze before any population result:
+- **All 15 states:** per-case gates (residual, mass, trace, divergence, force consistency, balance, backflow) plus the P4 h1/h2/h3 trend and the P3/g4 h3 contrast. This is likely affordable and avoids monotonicity arguments.
+- **Re15 and Re25 (plus Re20):** full noise controls and the P3/g3 geometry contrast.
+- **Domain extremes:** downstream and symmetric outlet at Re25, upstream at Re15, in addition to Re20.
+
+Qualifying validation states as reference truth is not ROM tuning. Any reference remedy they trigger must be applied population-wide, not case by case. Check the 12 GPU-hour total before freezing this protocol.
+
+## 4. Optional, not scientifically necessary now
+
+- **P5 controls:** only under branch 1 of blocker 1.
+- **P4/g5:** only under the geometry branch.
+- **Graded downstream extension beyond x = 2.2** to relieve the near-guard memory projection. This needs its own resolution argument.
+- **Observed-order reporting:** current ratios are about 9.8 (velocity), 6.6 (pressure), 8.0 (drag), 4.0 (lift) and 5.2 (divergence), below asymptotic P4 rates. Report these, but do not gate on them.
+
+## 5. Recommended bounded sequence
+
+0. Freeze, without running anything: the comparison operator and denominators, the resolution criterion, the remedy branches, the solver-tightening feasibility specification, and the population protocol.
+1. Independent raw audit of the existing P4 arrays: raw trace value, pointwise geometry deviations, surface rule 12 vs 16, backflow, wall-shear sign, manufactured flux and force controls.
+2. Re20 noise controls on P4/h3, plus cheap noise brackets on h1/h2 and on the P3 solves.
+3. Re20 p/geometry matrix: P3/g4, plus P3/g3 rerun or reproduced. Compute a, b, g and delta_y.
+4. Only if step 3 passes: Re20 domain controls, each as a separate allocation.
+5. Population protocol from section 3, then the immutable-mesh/shared-lift reuse checks.
+
+## 6. Where the risk lies
+
+On current provisional Re20 numbers, 2·d_h is at least 10x below every budget/5. Delta_y will therefore be dominated by d_p, and the binding quantity is most likely lift against the 4e-4 absolute budget, given the P3 lift failures. The DFG deviations (drag 2.2e-6, lift 3.2e-6) are about 6x below the finest h-differences, which fits the refinement picture. They are an anchor gate, not a calibration of delta_y, and they are limited by the precision of the literature reference values.
+
+## 7. Remaining uncertainty
+
+- The P4 geometry-order interaction is unmeasured. Geometry sensitivity has been checked at P3 only; P4/g4→g5 has not been tested.
+- delta_y is a conditional empirical estimate, not an error bound.
+- The manufactured P4 case reproduces the analytic solution to about 1e-12. That suggests it lies in the mapped discrete space, so it tests exactness, not convergence. Confirm that a non-polynomial manufactured convergence study is part of the passed G1 evidence.

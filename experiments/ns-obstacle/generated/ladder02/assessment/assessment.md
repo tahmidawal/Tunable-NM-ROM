@@ -7,7 +7,7 @@ provisional per-case screen only; cross-run and raw evidence audit required. No 
 | dfg_h2 | fluid_area_relative | 5.35194323e-10 | 1e-05 | within threshold |
 | dfg_h2 | obstacle_perimeter_relative | 3.05090531e-08 | 1e-05 | within threshold |
 | dfg_h2 | independent_free_residual | 1.77245989e-15 | 1e-09 | within threshold |
-| dfg_h2 | prescribed_FE_trace_over_U | 1e-12 | 1e-10 | within threshold |
+| dfg_h2 | prescribed_FE_trace_bound_over_U | 1e-12 | 1e-10 | within threshold |
 | dfg_h2 | scaled_divergence | 0.00140247734 | 0.001 | fails |
 | dfg_h2 | inlet_outlet_mass | 0 | 1e-07 | within threshold |
 | dfg_h2 | physical_energy_balance | 1.46224193e-07 | 0.005 | within threshold |
@@ -23,7 +23,7 @@ provisional per-case screen only; cross-run and raw evidence audit required. No 
 | manufactured_h2 | fluid_area_relative | 5.35194447e-10 | 1e-05 | within threshold |
 | manufactured_h2 | obstacle_perimeter_relative | 3.05090532e-08 | 1e-05 | within threshold |
 | manufactured_h2 | independent_free_residual | 6.24142254e-12 | 1e-09 | within threshold |
-| manufactured_h2 | prescribed_FE_trace_over_U | 1e-12 | 1e-10 | within threshold |
+| manufactured_h2 | prescribed_FE_trace_bound_over_U | 1e-12 | 1e-10 | within threshold |
 | manufactured_h2 | scaled_divergence | 1.09260438e-07 | 0.001 | within threshold |
 | manufactured_h2 | analytic_velocity | 7.14004288e-10 | 1e-06 | within threshold |
 | manufactured_h2 | analytic_pressure | 1.43986327e-08 | 1e-06 | within threshold |
@@ -37,4 +37,4 @@ Raw per-case controls not assessed here: positive_mapped_Jacobians_and_fluid_poi
 
 ## Glossary
 
-Case: one saved solver invocation. Saved value: the recorded metric or the explicit force/probe difference derived from it. Threshold: the frozen campaign limit. Within threshold: this one check passes; it does not qualify the reference. FE trace: prescribed finite-element boundary velocity. Divergence: local incompressibility error. DFG: cylinder-in-channel benchmark. Reaction force: force recovered from the discrete equations; gradient and physical forces use different stress conventions. Cross-run: evidence requiring more than one independently retained solve. Conditional uncertainty: a refinement-based estimate, not a rigorous error bound.
+Case: one saved solver invocation. Saved value: the recorded metric or the explicit force/probe difference derived from it. Threshold: the frozen campaign limit. Within threshold: this one check passes; it does not qualify the reference. FE trace bound: bound on error against prescribed finite-element boundary velocity, including a fixed roundoff allowance; it is not a raw observed error. Raw polynomial coefficients and independent check residuals are retained in the producer certificate. Divergence: local incompressibility error. DFG: cylinder-in-channel benchmark. Reaction force: force recovered from the discrete equations; gradient and physical forces use different stress conventions. Cross-run: evidence requiring more than one independently retained solve. Conditional uncertainty: a refinement-based estimate, not a rigorous error bound.

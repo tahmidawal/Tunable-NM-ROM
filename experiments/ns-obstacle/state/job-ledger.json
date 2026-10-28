@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "p4_jobs_complete_collection_pending",
+  "status": "dependency_package_repair_before_replacement_release",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -591,10 +591,34 @@
       "state": "COMPLETED",
       "node": "pax008",
       "collection": "in progress; independent audit pending"
+    },
+    {
+      "job_id": 6616304,
+      "lane": "2d",
+      "attempt": "g2-crossp01",
+      "source_commit": "1ee2ca6a80de7a1de2edb478ad010bedaa88c001",
+      "submitted_utc": "2026-10-28T21:24:46.218937+00:00",
+      "input_manifest_sha256": "fec775b5d1cb22208d015ad8b00a4829413426c02e3860459d0a7e27e57357b7",
+      "source_checksums_sha256": "5c49bda23ea6f8b4020b5f1b12a56732e85f57550c13ede8b8c156572d1428fd",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp01",
+      "state": "FAILED",
+      "state_last_observed": "FAILED",
+      "elapsed_seconds": 17,
+      "allocated_gpu_hours": 0.004722222222222222,
+      "node": "pax008",
+      "exit_code": "1:0",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "reference_admitted": false,
+      "training_released": false,
+      "failure": "dependency metadata REPAIR.json omitted; no scientific execution",
+      "collection": "owner collecting original failure"
     }
   ],
   "live_job_ids": [],
   "completed_gpu_hours": 0.3877777777777778,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
-  "total_allocated_gpu_hours_completed": 0.6266666666666667
+  "total_allocated_gpu_hours_completed": 0.6313888888888889
 }

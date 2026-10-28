@@ -40,7 +40,7 @@ def assess(plan_path, output):
         if cfg['kind']!='channel':
             check('obstacle_perimeter_relative',geo['obstacle_perimeter_error']['value'],gates['geometry_relative'])
         check('independent_free_residual',m['independent_residual']['value'],gates['free_dof_residual'])
-        check('prescribed_FE_trace_over_U',m['prescribed_FE_essential_trace']['upper_bound_over_U'],gates['essential_trace_over_U'])
+        check('prescribed_FE_trace_bound_over_U',m['prescribed_FE_essential_trace']['upper_bound_over_U'],gates['essential_trace_over_U'])
         check('scaled_divergence',m['divergence']['value'],gates['divergence_scaled'])
         if cfg['kind']=='dfg':
             check('inlet_outlet_mass',m['mass']['value'],gates['mass_2d'])
@@ -85,7 +85,7 @@ def assess(plan_path, output):
             lines.append(f"| {case['name']} | {row['check']} | {row['value']:.9g} | {row['threshold']:.9g} | {'within threshold' if row['within_threshold'] else 'fails'} |")
     lines+=['','Cross-run controls not assessed by this screen: '+', '.join(REQUIRED_CONTROLS)+'.','',
             'Raw per-case controls not assessed here: '+', '.join(UNASSESSED_RAW_CHECKS)+'.','',
-            '## Glossary','', 'Case: one saved solver invocation. Saved value: the recorded metric or the explicit force/probe difference derived from it. Threshold: the frozen campaign limit. Within threshold: this one check passes; it does not qualify the reference. FE trace: prescribed finite-element boundary velocity. Divergence: local incompressibility error. DFG: cylinder-in-channel benchmark. Reaction force: force recovered from the discrete equations; gradient and physical forces use different stress conventions. Cross-run: evidence requiring more than one independently retained solve. Conditional uncertainty: a refinement-based estimate, not a rigorous error bound.']
+            '## Glossary','', 'Case: one saved solver invocation. Saved value: the recorded metric or the explicit force/probe difference derived from it. Threshold: the frozen campaign limit. Within threshold: this one check passes; it does not qualify the reference. FE trace bound: bound on error against prescribed finite-element boundary velocity, including a fixed roundoff allowance; it is not a raw observed error. Raw polynomial coefficients and independent check residuals are retained in the producer certificate. Divergence: local incompressibility error. DFG: cylinder-in-channel benchmark. Reaction force: force recovered from the discrete equations; gradient and physical forces use different stress conventions. Cross-run: evidence requiring more than one independently retained solve. Conditional uncertainty: a refinement-based estimate, not a rigorous error bound.']
     (out/'assessment.md').write_text('\n'.join(lines)+'\n')
 
 if __name__=='__main__':

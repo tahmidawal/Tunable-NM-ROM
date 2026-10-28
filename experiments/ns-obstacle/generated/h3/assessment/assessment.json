@@ -30,7 +30,7 @@
           "scope": "per_case"
         },
         {
-          "check": "prescribed_FE_trace_over_U",
+          "check": "prescribed_FE_trace_bound_over_U",
           "value": 1e-12,
           "threshold": 1e-10,
           "within_threshold": true,
@@ -150,7 +150,7 @@
           "scope": "per_case"
         },
         {
-          "check": "prescribed_FE_trace_over_U",
+          "check": "prescribed_FE_trace_bound_over_U",
           "value": 1e-12,
           "threshold": 1e-10,
           "within_threshold": true,
@@ -244,5 +244,5 @@
     }
   ],
   "plan_sha256": "6349b2dafe1de0d40c126cdb76d552db16250e1347a21246648be44675043a15",
-  "generator_sha256": "56f94ef7109c15f13c6ff1685913b4fb41b2a3658c4e3da5e00a9915a5353d1d"
+  "generator_sha256": "5b748414f0fd7a8a7d7388a85442cff279cd8e2c44e440b51703e37a4cbf09a9"
 }

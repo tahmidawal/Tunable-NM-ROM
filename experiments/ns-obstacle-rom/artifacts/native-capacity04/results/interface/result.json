@@ -1,0 +1,333 @@
+{
+  "passed": true,
+  "scope": "candidate fine metric capacity measurement only",
+  "physical_admission": false,
+  "training_released": false,
+  "factorizations_performed": 0,
+  "eigenproblems_performed": 0,
+  "counts": {
+    "elements": 21153,
+    "velocity_dofs": 340996,
+    "pressure_dofs": 96144,
+    "scalar_velocity_dofs": 170498,
+    "volume_points": 1036497
+  },
+  "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+  "metrics": {
+    "velocity_h1": {
+      "shape": [
+        340996,
+        340996
+      ],
+      "native_nnz": 15937632,
+      "CSC_nnz": 15937632,
+      "CSC_bytes": 192615572,
+      "matrix_sha256": "5d8b0d2d1d225c6c579917ba8d0dbb21377b9f92294437080cf3130f5dd13e05",
+      "file_sha256": "129198c658d42c6f677283a524192e8925be3d4dc7421b0e17347ea50832aa9d",
+      "file_bytes": 51338867
+    },
+    "velocity_mass": {
+      "shape": [
+        340996,
+        340996
+      ],
+      "native_nnz": 15937632,
+      "CSC_nnz": 15937632,
+      "CSC_bytes": 192615572,
+      "matrix_sha256": "9cfb0e7d708136e8b2835694a27507b61b2c15c2d54f190091630b87ec223e0c",
+      "file_sha256": "e9e388d6df970dac39414aac0fe90f4d9ac4ea99cbae15aa9cb406a5a55950cc",
+      "file_bytes": 38328152
+    },
+    "pressure_h1": {
+      "shape": [
+        96144,
+        96144
+      ],
+      "native_nnz": 1622982,
+      "CSC_nnz": 1622982,
+      "CSC_bytes": 19860364,
+      "matrix_sha256": "c44acd14f2d88729af3e578723ffecbef5c3217c8538824c3a7a58468ff479e4",
+      "file_sha256": "2e284e756670fdaa44ac2215a5dff83690630b0e8c4a67700275a056d7ebfd66",
+      "file_bytes": 9559636
+    },
+    "pressure_mass": {
+      "shape": [
+        96144,
+        96144
+      ],
+      "native_nnz": 1622982,
+      "CSC_nnz": 1622982,
+      "CSC_bytes": 19860364,
+      "matrix_sha256": "004b8c4ee13d33634d614b70e767c9f00e117868df04fc27612bf68462414501",
+      "file_sha256": "96d03f84190e94bfee1fca8e3750e25388239039d2a8f6c5bdaa873ad230d564",
+      "file_bytes": 7030200
+    },
+    "velocity_scalar_h1": {
+      "shape": [
+        170498,
+        170498
+      ],
+      "native_nnz": 3984408,
+      "CSC_nnz": 3984408,
+      "CSC_bytes": 48494892,
+      "matrix_sha256": "3e96b15cf37d2b803cdb24902ed3217941d5231024b2bbff90d2919caca3705e",
+      "file_sha256": "3ed33e628ff6069aba604177658f54e4f3f1be24a317024c7ebdc2c18b6632e6",
+      "file_bytes": 21511790
+    },
+    "velocity_scalar_mass": {
+      "shape": [
+        170498,
+        170498
+      ],
+      "native_nnz": 3984408,
+      "CSC_nnz": 3984408,
+      "CSC_bytes": 48494892,
+      "matrix_sha256": "25dae4d51a7abc054340b7fc78be915ebbdcd507d0918dfa8dab449a4f71b212",
+      "file_sha256": "65d29549966e4204aa21828dd5f5f2757fe727d14264f7691b1c181ec302cf05",
+      "file_bytes": 14813400
+    }
+  },
+  "existing_factor_estimates": {
+    "velocity": {
+      "free_dofs": 336226,
+      "free_nnz": 15613660,
+      "existing_factor_estimate_bytes": 25067929856,
+      "existing_matrix_cap_would_pass": false,
+      "existing_factor_cap_would_pass": false,
+      "existing_combined_process_estimate_would_pass": false
+    },
+    "pressure": {
+      "free_dofs": 96144,
+      "free_nnz": 1622982,
+      "existing_factor_estimate_bytes": 2621384064,
+      "existing_matrix_cap_would_pass": true,
+      "existing_factor_cap_would_pass": true,
+      "existing_combined_process_estimate_would_pass": true
+    },
+    "velocity_scalar": {
+      "free_dofs": 168113,
+      "free_nnz": 3903415,
+      "existing_factor_estimate_bytes": 6288500928,
+      "existing_matrix_cap_would_pass": true,
+      "existing_factor_cap_would_pass": true,
+      "existing_combined_process_estimate_would_pass": true
+    }
+  },
+  "probe_caps": {
+    "elements": 30000,
+    "mixed_dofs": 500000,
+    "matrix_nnz": 30000000,
+    "single_array_bytes": 1073741824,
+    "process_rss_bytes": 17179869184,
+    "output_bytes": 3221225472
+  },
+  "production_caps_unchanged": {
+    "mixed_dofs": 100000,
+    "elements": 20000,
+    "volume_points": 100000,
+    "boundary_points": 30000,
+    "matrix_nnz": 12000000,
+    "single_array_bytes": 1073741824,
+    "archive_bytes": 1073741824,
+    "factor_estimate_bytes": 8589934592,
+    "process_rss_bytes": 17179869184,
+    "vector_eigen_candidates": 96,
+    "velocity_scalar_eigen_candidates": 48,
+    "scalar_eigen_candidates": 32,
+    "eigensolver_iterations": 2000
+  },
+  "elapsed_seconds": 10.281507353298366,
+  "peak_rss_bytes": 1538297856,
+  "phases": [
+    {
+      "stage": "layout_and_original_rule",
+      "elapsed_seconds": 0.940344856120646,
+      "peak_rss_bytes": 269197312,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "velocity_before_native_assembly",
+      "elapsed_seconds": 1.0218905750662088,
+      "peak_rss_bytes": 269197312,
+      "prospective_extra_bytes": 1829462400
+    },
+    {
+      "stage": "velocity_native_assembly",
+      "elapsed_seconds": 1.1040963670238853,
+      "peak_rss_bytes": 692264960,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "before_COO_conversion",
+      "elapsed_seconds": 1.1071131518110633,
+      "peak_rss_bytes": 692264960,
+      "prospective_extra_bytes": 1147509504
+    },
+    {
+      "stage": "before_symmetry_check",
+      "elapsed_seconds": 1.376953735947609,
+      "peak_rss_bytes": 1149673472,
+      "prospective_extra_bytes": 577846716
+    },
+    {
+      "stage": "velocity_h1_saved",
+      "elapsed_seconds": 3.8626513816416264,
+      "peak_rss_bytes": 1341190144,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "before_COO_conversion",
+      "elapsed_seconds": 3.8682796582579613,
+      "peak_rss_bytes": 1341190144,
+      "prospective_extra_bytes": 1147509504
+    },
+    {
+      "stage": "before_symmetry_check",
+      "elapsed_seconds": 4.113156526349485,
+      "peak_rss_bytes": 1347207168,
+      "prospective_extra_bytes": 577846716
+    },
+    {
+      "stage": "velocity_mass_saved",
+      "elapsed_seconds": 6.460091232322156,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "pressure_before_native_assembly",
+      "elapsed_seconds": 6.7263442212715745,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 203273600
+    },
+    {
+      "stage": "pressure_native_assembly",
+      "elapsed_seconds": 6.743509808555245,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "before_COO_conversion",
+      "elapsed_seconds": 6.74690418317914,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 116854704
+    },
+    {
+      "stage": "before_symmetry_check",
+      "elapsed_seconds": 6.771373709663749,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 59581092
+    },
+    {
+      "stage": "pressure_h1_saved",
+      "elapsed_seconds": 7.223120170645416,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "before_COO_conversion",
+      "elapsed_seconds": 7.227629095315933,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 116854704
+    },
+    {
+      "stage": "before_symmetry_check",
+      "elapsed_seconds": 7.24190785177052,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 59581092
+    },
+    {
+      "stage": "pressure_mass_saved",
+      "elapsed_seconds": 7.630390997976065,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "velocity_scalar_before_native_assembly",
+      "elapsed_seconds": 7.891702839173377,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 457365600
+    },
+    {
+      "stage": "velocity_scalar_native_assembly",
+      "elapsed_seconds": 7.918215379118919,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "before_COO_conversion",
+      "elapsed_seconds": 7.92257238458842,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 286877376
+    },
+    {
+      "stage": "before_symmetry_check",
+      "elapsed_seconds": 7.975688048638403,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 145484676
+    },
+    {
+      "stage": "velocity_scalar_h1_saved",
+      "elapsed_seconds": 8.995411518029869,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "before_COO_conversion",
+      "elapsed_seconds": 9.00046165380627,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 286877376
+    },
+    {
+      "stage": "before_symmetry_check",
+      "elapsed_seconds": 9.036603693850338,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 145484676
+    },
+    {
+      "stage": "velocity_scalar_mass_saved",
+      "elapsed_seconds": 9.934319779276848,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "velocity_before_free_submatrix",
+      "elapsed_seconds": 9.940258969552815,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 583302652
+    },
+    {
+      "stage": "velocity_free_submatrix_estimate",
+      "elapsed_seconds": 10.155720492824912,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "pressure_before_free_submatrix",
+      "elapsed_seconds": 10.159371767193079,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 61119396
+    },
+    {
+      "stage": "pressure_free_submatrix_estimate",
+      "elapsed_seconds": 10.201371082104743,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    },
+    {
+      "stage": "velocity_scalar_before_free_submatrix",
+      "elapsed_seconds": 10.20447598863393,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 148212644
+    },
+    {
+      "stage": "velocity_scalar_free_submatrix_estimate",
+      "elapsed_seconds": 10.277943415567279,
+      "peak_rss_bytes": 1538297856,
+      "prospective_extra_bytes": 0
+    }
+  ],
+  "versions": {
+    "ngsolve": "6.2.2608",
+    "numpy": "2.5.0"
+  }
+}

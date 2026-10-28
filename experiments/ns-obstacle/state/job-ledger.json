@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "reviewed_ladder02_submitted",
+  "status": "ladder02_six_solves_complete_comparison_failed",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -394,7 +394,7 @@
       "attempt": "g2-ladder02",
       "source_commit": "c18b38a3bf082069ab92d763d6660a11d73389cc",
       "submitted_utc": "2026-10-28T20:18:20.410082Z",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "FAILED",
       "input_manifest_sha256": "78034de391502b7180a5d9dd0bf750c97db5d82be7c50b4a92767f881afa1b01",
       "source_checksums_sha256": "f6b39cc094ba68da41a3c9fc1cd7f54e4dbe94ba59d4569254affd6bb065b604",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder02",
@@ -403,18 +403,19 @@
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
       "gpu_type_requested": "h200",
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 136,
+      "allocated_gpu_hours": 0.03777777777777778,
       "reference_admitted": false,
       "training_released": false,
       "single_submission": true,
       "node": "pax009",
-      "observed_elapsed_seconds": 55
+      "observed_elapsed_seconds": 55,
+      "batch_MaxRSS_KiB": 1335680,
+      "failure_stage": "comparison_dfg_after_all_six_FOM_cases_completed",
+      "collection_status": "in_progress"
     }
   ],
-  "live_job_ids": [
-    6614416
-  ],
-  "completed_gpu_hours": 0.08444444444444445,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.12222222222222222,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

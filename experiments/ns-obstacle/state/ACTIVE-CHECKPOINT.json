@@ -1,20 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6614416,
-      "lane": "2d",
-      "attempt": "g2-ladder02",
-      "observed_state": "RUNNING"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor/collect/audit job6614416; no duplicate retry",
-    "Review fair FOM callback and exact streamed ROM moment capacity proposal",
-    "Qualify physical references/common lift before training"
+    "Collect/audit ladder02 all six solves and failed comparison; no auto retry",
+    "Review one prospective h3 extension and resolve common-rule comparison failure without dropping points",
+    "Review streamed moment capacity and fair FOM query native equivalence"
   ],
-  "completed_allocated_gpu_hours": 0.08444444444444445,
+  "completed_allocated_gpu_hours": 0.12222222222222222,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,

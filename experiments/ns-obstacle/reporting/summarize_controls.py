@@ -10,6 +10,7 @@ from pathlib import Path
 def generate(repository: Path, destination: Path) -> None:
     campaign = repository / 'worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle'
     two = repository / 'worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d'
+    three = repository / 'worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d'
     sources = []
 
     def read(path):
@@ -60,6 +61,29 @@ def generate(repository: Path, destination: Path) -> None:
         lines += [f'| {name} | {value:.9g} |' for name, value in comparisons]
         lines += ['', f'Nested volume-facet status: `{facet["status"]}`. '
                   'Normal closure alone is insufficient to establish outward orientation.']
+    three_path = three / 'artifacts/g1-normal01/output/result.json'
+    if three_path.exists():
+        result3 = read(three_path)
+        facet3 = result3['volume_facet_control']
+        ordinary3 = result3['ordinary_BND_moments']['12']
+        rows3 = [
+            ('Fluid-volume error against analytic geometry', result3['volume_relative_geometry_error']),
+            ('Native exterior-facet divergence defect', facet3['divergence_theorem_relative_defect']),
+            ('All-element-boundary divergence defect', facet3['all_element_divergence_theorem_relative_defect']),
+            ('All-element minus exterior position-normal integral',
+             facet3['all_element_boundaries']['position_dot_normal'] - facet3['boundary_position_dot_normal']),
+            ('Wall facet minus ordinary boundary area', facet3['per_boundary']['wall']['measure'] - ordinary3['wall']['measure']),
+            ('Wall facet minus ordinary position-normal integral',
+             facet3['per_boundary']['wall']['position_dot_normal'] - ordinary3['wall']['position_dot_normal']),
+        ]
+        payload['3d_failed_geometry_controls'] = {'status': 'unresolved; no repair or reference admission',
+                                                'metrics': rows3}
+        lines += ['', 'The 3D geometry diagnostic completed, but its geometric identity checks fail. '
+                  'These failures block a 3D repair/flow release. Positive Jacobians at the saved interior '
+                  'samples do not rule out inversion elsewhere; curved-map folding remains an unmeasured '
+                  'hypothesis. No correction inferred from the 2D case is admitted here.', '',
+                  '| 3D geometric diagnostic | Saved or directly derived value |', '|---|---:|']
+        lines += [f'| {name} | {value:.9g} |' for name, value in rows3]
     seconds = sum(a.get('elapsed_seconds', 0) * a['gpus'] for a in ledger['allocations'])
     payload['charged_gpu_seconds'] = seconds
     lines += ['', '| Allocation | Lane / attempt | Recorded state | Charged GPU-seconds |', '|---|---|---|---:|']

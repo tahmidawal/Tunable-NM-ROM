@@ -248,6 +248,35 @@
       "collection_archive_sha256": "9ef375747ec3c50dae53a8a5165e5ba7c940254b697012b097d1e300ee0ae177",
       "collection_archive_bytes": 158740683,
       "collection_commit": "fb83802ca",
+      "remote_duplicate_removed": true,
+      "collection_mirror": "d926f37b5",
+      "cleanup_commit": "16e5c7834",
+      "cleanup_mirror": "e5eab6d46"
+    },
+    {
+      "job_id": 6611259,
+      "lane": "3d_reference",
+      "attempt": "g1-normal01",
+      "source_commit": "6db733531ab0a551baa4fa816f0f386927f7d8f8",
+      "manifest_sha256": "1f4ff9e60c44609af52fe8a7c6b7c9bf1d9bf7f976495cf22c74d14bfdcc9ca5",
+      "state_last_observed": "COMPLETED",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-normal01",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "requested_FE_threads": 4,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "purpose": "unchanged_geometry_raw_ordinary_volume_facet_normal_diagnostic",
+      "PDE_solve_permitted": false,
+      "device_for_FE": "CPU",
+      "elapsed_seconds": 28,
+      "allocated_gpu_hours": 0.0077777777777777776,
+      "node": "pax008",
+      "diagnostic_result": "raw sphere normal into fluid; volume-facet geometric identities also unresolved",
+      "physical_identity_checks_passed": false,
+      "collection_archive_sha256": "2bba51cec28384cbf07d6a32d267dd0b8556d121db15d9b80e158d9d3e002eb9",
+      "collection_archive_bytes": 160721811,
       "remote_duplicate_removed": false
     }
   ],
@@ -270,5 +299,34 @@
       ]
     ]
   },
-  "charged_gpu_seconds": 135
+  "3d_failed_geometry_controls": {
+    "status": "unresolved; no repair or reference admission",
+    "metrics": [
+      [
+        "Fluid-volume error against analytic geometry",
+        3.509383427978422e-05
+      ],
+      [
+        "Native exterior-facet divergence defect",
+        0.0004893046090108528
+      ],
+      [
+        "All-element-boundary divergence defect",
+        0.0004038815483416214
+      ],
+      [
+        "All-element minus exterior position-normal integral",
+        0.10050601722991814
+      ],
+      [
+        "Wall facet minus ordinary boundary area",
+        -3.979039320256561e-13
+      ],
+      [
+        "Wall facet minus ordinary position-normal integral",
+        -0.5756982446616803
+      ]
+    ]
+  },
+  "charged_gpu_seconds": 163
 }

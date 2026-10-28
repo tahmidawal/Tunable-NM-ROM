@@ -24,6 +24,17 @@ The normal diagnostic uses a fresh mesh generated with the unchanged geometry re
 
 Nested volume-facet status: `completed_diagnostic_not_admission`. Normal closure alone is insufficient to establish outward orientation.
 
+The 3D geometry diagnostic completed, but its geometric identity checks fail. These failures block a 3D repair/flow release. Positive Jacobians at the saved interior samples do not rule out inversion elsewhere; curved-map folding remains an unmeasured hypothesis. No correction inferred from the 2D case is admitted here.
+
+| 3D geometric diagnostic | Saved or directly derived value |
+|---|---:|
+| Fluid-volume error against analytic geometry | 3.50938343e-05 |
+| Native exterior-facet divergence defect | 0.000489304609 |
+| All-element-boundary divergence defect | 0.000403881548 |
+| All-element minus exterior position-normal integral | 0.100506017 |
+| Wall facet minus ordinary boundary area | -3.97903932e-13 |
+| Wall facet minus ordinary position-normal integral | -0.575698245 |
+
 | Allocation | Lane / attempt | Recorded state | Charged GPU-seconds |
 |---|---|---|---:|
 | 6566869 | 2d_reference / g1-smoke03 | FAILED | 33 |
@@ -32,8 +43,9 @@ Nested volume-facet status: `completed_diagnostic_not_admission`. Normal closure
 | 6567998 | 2d_reference / g1-smoke06 | FAILED | 15 |
 | 6610494 | 3d_reference / g1-smoke06 | FAILED | 29 |
 | 6610978 | 2d_reference / g1-normal01 | COMPLETED | 25 |
+| 6611259 | 3d_reference / g1-normal01 | COMPLETED | 28 |
 
-Total recorded allocation: 135 GPU-seconds (0.0375 GPU-hours). Finite-element calculations run on CPU within these GPU allocations; this is resource accounting, not a GPU-acceleration measurement.
+Total recorded allocation: 163 GPU-seconds (0.0452777778 GPU-hours). Finite-element calculations run on CPU within these GPU allocations; this is resource accounting, not a GPU-acceleration measurement.
 
 ## Glossary
 

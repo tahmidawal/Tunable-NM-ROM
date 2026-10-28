@@ -1,0 +1,62 @@
+{
+  "physical_admission": false,
+  "training_released": false,
+  "completed": [
+    {
+      "name": "dfg_h0",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py",
+        "--config",
+        "g2/ladder01/dfg_h0.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/results/dfg_h0"
+      ],
+      "returncode": 0,
+      "seconds": 5.7259153025224805
+    },
+    {
+      "name": "manufactured_h0",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py",
+        "--config",
+        "g2/ladder01/manufactured_h0.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/results/manufactured_h0"
+      ],
+      "returncode": 0,
+      "seconds": 4.380486981011927
+    },
+    {
+      "name": "dfg_h1",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py",
+        "--config",
+        "g2/ladder01/dfg_h1.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/results/dfg_h1"
+      ],
+      "returncode": 0,
+      "seconds": 13.795070400461555
+    },
+    {
+      "name": "manufactured_h1",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py",
+        "--config",
+        "g2/ladder01/manufactured_h1.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/results/manufactured_h1"
+      ],
+      "returncode": 1,
+      "seconds": 3.383160810917616
+    }
+  ],
+  "failed": {
+    "error": "RuntimeError('manufactured_h1 failed with exit 1')",
+    "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/g2/ladder01/run.py\", line 33, in <module>\n    execute(case['name'],[sys.executable,str(ROOT/'fom.py'),'--config',case['configuration'],'--out',str(OUT/case['name'])])\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/g2/ladder01/run.py\", line 29, in execute\n    if result.returncode:raise RuntimeError(f'{label} failed with exit {result.returncode}')\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: manufactured_h1 failed with exit 1\n"
+  }
+}

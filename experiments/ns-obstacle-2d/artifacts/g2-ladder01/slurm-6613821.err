@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/g2/ladder01/run.py", line 33, in <module>
+    execute(case['name'],[sys.executable,str(ROOT/'fom.py'),'--config',case['configuration'],'--out',str(OUT/case['name'])])
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/g2/ladder01/run.py", line 29, in execute
+    if result.returncode:raise RuntimeError(f'{label} failed with exit {result.returncode}')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: manufactured_h1 failed with exit 1

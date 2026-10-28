@@ -1,0 +1,41 @@
+{
+  "error": "ArithmeticError('Jacobian finite difference mismatch or unresolved signal/plateau')",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py\", line 592, in main\n    result=run_case(cfg,target)\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py\", line 304, in run_case\n    raise ArithmeticError('Jacobian finite difference mismatch or unresolved signal/plateau')\nArithmeticError: Jacobian finite difference mismatch or unresolved signal/plateau\n",
+  "source_sha256": "a8ab61afbab55c248c9f5813ee79191c02194174f1178575e5d8e1fe7a473b8b",
+  "peak_rss_bytes": 350437376,
+  "job_id": "6613821",
+  "scalar_return_contract": [
+    {
+      "label": "normal_P0_constant",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "oriented_normal_moment",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "normal_geometry_volume",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "manufactured_pressure_point",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    }
+  ]
+}

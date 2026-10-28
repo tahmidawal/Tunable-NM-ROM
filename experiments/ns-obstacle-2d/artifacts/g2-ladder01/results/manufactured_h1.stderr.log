@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py", line 600, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py", line 592, in main
+    result=run_case(cfg,target)
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-ladder01/fom.py", line 304, in run_case
+    raise ArithmeticError('Jacobian finite difference mismatch or unresolved signal/plateau')
+ArithmeticError: Jacobian finite difference mismatch or unresolved signal/plateau

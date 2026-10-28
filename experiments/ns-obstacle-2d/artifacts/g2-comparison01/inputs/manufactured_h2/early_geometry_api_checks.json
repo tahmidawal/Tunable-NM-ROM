@@ -1,0 +1,40 @@
+{
+  "volume": {
+    "point": [
+      0.01,
+      0.009761904761904805
+    ],
+    "jacobian": [
+      [
+        0.0,
+        0.02
+      ],
+      [
+        -0.01952380952380961,
+        -0.01952380952380961
+      ]
+    ],
+    "determinant": 0.0003904761904761921,
+    "weight": 6.507936507936537e-05
+  },
+  "boundary": {
+    "label": "wall_bottom",
+    "point": [
+      0.015773502691896257,
+      0.0
+    ],
+    "normal": [
+      -0.0,
+      -1.0
+    ],
+    "weight": 0.01
+  },
+  "normal_checks": {
+    "wall_bottom": 0.0,
+    "outlet": 0.0,
+    "wall_top": 0.0,
+    "inlet": 0.0,
+    "obstacle": 9.277356660675196e-11
+  },
+  "api_status": "passed_sampled_mapping_and_normals"
+}

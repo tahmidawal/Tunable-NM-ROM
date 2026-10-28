@@ -1,0 +1,29 @@
+{
+  "cases": {
+    "manufactured_h0": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01/inputs/manufactured_h0",
+      "export_manifest_sha256": "2e2b8a2e149d5ee658c1802b07323ef4c187447b278418b74fcb242bf7e05587"
+    },
+    "manufactured_h1": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01/inputs/manufactured_h1",
+      "export_manifest_sha256": "39ef08e0d4c599068de01912ebe21ce5415ce7065fda9e3fa51724133dde0742"
+    },
+    "manufactured_h2": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01/inputs/manufactured_h2",
+      "export_manifest_sha256": "33d4c052e7ce0e17cc1f317f1633a2d973ed03137a1d72c971867d8516dd87ae"
+    }
+  },
+  "rule_case": "manufactured_h2",
+  "comparisons": [
+    {
+      "case": "manufactured_h0",
+      "reference": "manufactured_h1",
+      "purpose": "unchanged complete h2 rule; exact-coordinate lookup repair"
+    },
+    {
+      "case": "manufactured_h1",
+      "reference": "manufactured_h2",
+      "purpose": "unchanged complete h2 rule; exact-coordinate lookup repair"
+    }
+  ]
+}

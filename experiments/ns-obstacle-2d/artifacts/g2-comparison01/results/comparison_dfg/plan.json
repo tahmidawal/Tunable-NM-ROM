@@ -1,0 +1,29 @@
+{
+  "cases": {
+    "dfg_h0": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01/inputs/dfg_h0",
+      "export_manifest_sha256": "d4575381ad87b1d7334be03609ecfa67d94ccc7b578a2a8734561976aa9af0a2"
+    },
+    "dfg_h1": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01/inputs/dfg_h1",
+      "export_manifest_sha256": "381b8816becfa40bbdf1d9b7883733bd82b9f76d0b3fc41e53a7df1ebf98a6df"
+    },
+    "dfg_h2": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-comparison01/inputs/dfg_h2",
+      "export_manifest_sha256": "016ad8204f140b66e6ceaec0a2a2058cfc422a4aa005423d5037335b6a8f0702"
+    }
+  },
+  "rule_case": "dfg_h2",
+  "comparisons": [
+    {
+      "case": "dfg_h0",
+      "reference": "dfg_h1",
+      "purpose": "unchanged complete h2 rule; exact-coordinate lookup repair"
+    },
+    {
+      "case": "dfg_h1",
+      "reference": "dfg_h2",
+      "purpose": "unchanged complete h2 rule; exact-coordinate lookup repair"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "2d_repair_reviews_active_3d_geometry_identity_unresolved",
+  "status": "2d_A8_control_retry_pending_3d_geometry_followup_source_only",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -235,10 +235,36 @@
       "physical_identity_checks_passed": false,
       "collection_archive_sha256": "2bba51cec28384cbf07d6a32d267dd0b8556d121db15d9b80e158d9d3e002eb9",
       "collection_archive_bytes": 160721811,
-      "remote_duplicate_removed": false
+      "remote_duplicate_removed": true,
+      "collection_commit": "dffde66c1",
+      "collection_mirror": "643dc9e49",
+      "cleanup_audit_commit": "561d7f62dc925415981d636ec9a844662865c7f3",
+      "cleanup_audit_mirror": "3c8f5feb3"
+    },
+    {
+      "job_id": 6612209,
+      "lane": "2d_reference",
+      "attempt": "g1-smoke07",
+      "source_commit": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
+      "source_mirror": "3251c8429",
+      "manifest_sha256": "aba95446b27cac75d7beb75e1945e8c36eef81a635a369daf4f2c03cee271d56",
+      "submitted_utc": "2026-10-28T19:12:12Z",
+      "state_last_observed": "PENDING",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "purpose": "single_isolated_A8_G1_normal_repair_retry",
+      "release_record": "reviews/RESPONSE-A8.md",
+      "G2_source_included": false,
+      "device_for_FE": "CPU"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6612209
+  ],
   "completed_gpu_hours": 0.04527777777777778,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

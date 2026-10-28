@@ -1,11 +1,19 @@
 {
-  "status": "2d_A8_final_source_released_for_exact_staging_3d_geometry_unresolved",
-  "numerical_jobs": [],
+  "status": "2d_A8_control_retry_live_3d_signed_J_diagnostic_implementation",
+  "numerical_jobs": [
+    {
+      "job_id": 6612209,
+      "lane": "2d",
+      "attempt": "g1-smoke07",
+      "state": "PENDING",
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
-    "2D exact candidate262a0ef05 staging g1-smoke07 then root remote verification before single retry",
-    "3D signed-facet-Jacobian diagnostic proposal; no repair release",
-    "G2/reference/training closed"
+    "Monitor job6612209; do not duplicate; collect and independently review all G1 outcomes",
+    "3D source-only signed-facet-Jacobian implementation with strict curved reload parity; no release yet",
+    "G2 export point/resource projections before reference ladder; training remains closed"
   ],
   "staged_unsubmitted": [
     {
@@ -39,7 +47,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T19:01:11.575011+00:00",
+  "last_checkpoint_utc": "2026-10-28T19:14:45.971801+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",

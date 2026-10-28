@@ -1,0 +1,334 @@
+{
+  "scope": "one coarse native producer plus separate fresh-process binary reload",
+  "physical_admission": false,
+  "training_released": false,
+  "native_summary_passed": true,
+  "source_commit": "b29448620cabd7efe957364eec99a83e7f73368c",
+  "result_sha256": "8177857a50edfd49c0f9d3d5da87c63a2345e2e230b43369852e0914ab88b1f1",
+  "export_manifest_sha256": "f4a6504b19706a351fd9e6cf672bf4c8170f85a7251a4248b0b56bd66e5516b4",
+  "all_export_manifest_hashes_verified": true,
+  "mesh_identity": {
+    "schema": "ns-obstacle-immutable-mesh-v1",
+    "policy": "saved_curved_binary_verified_fresh_process_no_recurve",
+    "reload_passed": true,
+    "geometry": {
+      "xmin": 0.0,
+      "xmax": 2.2,
+      "H": 0.41,
+      "geometry_order": 3,
+      "obstacle": true,
+      "center": [
+        0.2,
+        0.2
+      ],
+      "radius": 0.05
+    },
+    "mesh_construction": {
+      "maxh": 0.08,
+      "obstacle_h": 0.02,
+      "seed": 27102026
+    },
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "mesh_sha256": "598f209a4834b0df5cab8f2ececcfc481440b5abdf6b247bfa0a59db0c1102da",
+    "layout_sha256": "75ee15cb72e8937cf6713829d892b84fd7a69dc63f5c5bdca06aa077fb419b8a",
+    "ngsolve_version": "6.2.2608",
+    "reload_checks_sha256": "1b5aaf54c3af3f1be447c13c8b027da7d3214bdcedbf30c0efd4cec7f3f6d122"
+  },
+  "mesh_bytes": 44075,
+  "fresh_reload_execution": {
+    "pid": 937148,
+    "parent_pid": 937008,
+    "producer_pid": 937008,
+    "executable": "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+    "fresh_interpreter": true
+  },
+  "reload_passed": true,
+  "reload_check_count": 15,
+  "maximum_relative_reload_error": 0.0,
+  "reload_checks": {
+    "solution_coefficients": {
+      "numerator": 0.0,
+      "denominator": 1.021322468263851,
+      "value": 0.0
+    },
+    "stokes_coefficients": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_points": {
+      "numerator": 0.0,
+      "denominator": 2.1999212368312335,
+      "value": 0.0
+    },
+    "volume_weights": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_jacobians": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_velocity": {
+      "numerator": 0.0,
+      "denominator": 0.3991081723242789,
+      "value": 0.0
+    },
+    "volume_velocity_gradient": {
+      "numerator": 0.0,
+      "denominator": 29.75936926970268,
+      "value": 0.0
+    },
+    "volume_pressure": {
+      "numerator": 0.0,
+      "denominator": 0.1316012950647074,
+      "value": 0.0
+    },
+    "boundary_points": {
+      "numerator": 0.0,
+      "denominator": 2.2,
+      "value": 0.0
+    },
+    "boundary_weights": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_normals": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_raw_normals": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_velocity": {
+      "numerator": 0.0,
+      "denominator": 0.30000000000000016,
+      "value": 0.0
+    },
+    "boundary_velocity_gradient": {
+      "numerator": 0.0,
+      "denominator": 31.05288323685323,
+      "value": 0.0
+    },
+    "boundary_pressure": {
+      "numerator": 0.0,
+      "denominator": 0.13163752295128953,
+      "value": 0.0
+    }
+  },
+  "prescribed_FE_trace_bound_over_U": 1e-12,
+  "affine_gradient_orientation": {
+    "velocity": "(y,0)",
+    "expected_gradient": [
+      [
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "axes": "component,coordinate",
+    "fixture_velocity_degree": 3,
+    "production_velocity_degree": 3,
+    "geometry_order": 3,
+    "maximum_Frobenius_errors": {
+      "volume": 9.36159812085085e-13,
+      "boundary": 9.149851121774795e-13
+    },
+    "sample_counts": {
+      "volume": 1245,
+      "boundary": 162
+    },
+    "threshold": 1e-10,
+    "passed": true,
+    "interpretation": "checks transpose orientation; no assertion that previous Grad was incorrect"
+  },
+  "normal_certificates": {
+    "normal_orientation.json": {
+      "sha256": "2cd2f2320b3ea04ccf8ec3ac9720e8b3fd4326b5e2f54ce6c95fae618e54e74c",
+      "passed": true,
+      "factors": {
+        "wall_bottom": 1,
+        "outlet": 1,
+        "wall_top": 1,
+        "inlet": 1,
+        "obstacle": -1
+      },
+      "returned_CF_point_checks": {
+        "passed": true,
+        "samples_checked": 567,
+        "maximum_absolute_error": 0.0,
+        "maximum_raw_replay_error": 0.0,
+        "maximum_absolute_error_by_label": {
+          "wall_bottom": 0.0,
+          "outlet": 0.0,
+          "wall_top": 0.0,
+          "inlet": 0.0,
+          "obstacle": 0.0
+        },
+        "threshold": 1e-10
+      },
+      "minimum_observed_absolute_witness_cosine_by_label": {
+        "inlet": 0.40935042269078026,
+        "obstacle": 0.22141354010117187,
+        "outlet": 0.38521599162036746,
+        "wall_bottom": 0.39967500668186184,
+        "wall_top": 0.4615351639871621
+      },
+      "divergence_theorem": {
+        "boundary_position_dot_normal": 1.7882917500231381,
+        "twice_volume": 1.7882917500231235,
+        "relative_defect": 8.194940185158585e-15
+      }
+    },
+    "reload_normal_orientation.json": {
+      "sha256": "e6ed67eeed2030c5e2d18b28b5faaa8d5fc79b937d25babea1252400fc343dad",
+      "passed": true,
+      "factors": {
+        "wall_bottom": 1,
+        "outlet": 1,
+        "wall_top": 1,
+        "inlet": 1,
+        "obstacle": -1
+      },
+      "returned_CF_point_checks": {
+        "passed": true,
+        "samples_checked": 567,
+        "maximum_absolute_error": 0.0,
+        "maximum_raw_replay_error": 0.0,
+        "maximum_absolute_error_by_label": {
+          "wall_bottom": 0.0,
+          "outlet": 0.0,
+          "wall_top": 0.0,
+          "inlet": 0.0,
+          "obstacle": 0.0
+        },
+        "threshold": 1e-10
+      },
+      "minimum_observed_absolute_witness_cosine_by_label": {
+        "inlet": 0.40935042269078026,
+        "obstacle": 0.22141354010117187,
+        "outlet": 0.38521599162036746,
+        "wall_bottom": 0.39967500668186184,
+        "wall_top": 0.4615351639871621
+      },
+      "divergence_theorem": {
+        "boundary_position_dot_normal": 1.7882917500231381,
+        "twice_volume": 1.7882917500231235,
+        "relative_defect": 8.194940185158585e-15
+      }
+    }
+  },
+  "full_rule_array_layout": {
+    "points": {
+      "shape": [
+        20335,
+        2
+      ],
+      "dtype": "float64",
+      "bytes": 325360
+    },
+    "weights": {
+      "shape": [
+        20335
+      ],
+      "dtype": "float64",
+      "bytes": 162680
+    },
+    "velocity": {
+      "shape": [
+        20335,
+        2
+      ],
+      "dtype": "float64",
+      "bytes": 325360
+    },
+    "velocity_gradient": {
+      "shape": [
+        20335,
+        2,
+        2
+      ],
+      "dtype": "float64",
+      "bytes": 650720
+    },
+    "pressure": {
+      "shape": [
+        20335
+      ],
+      "dtype": "float64",
+      "bytes": 162680
+    },
+    "stokes_coefficients": {
+      "shape": [
+        4889
+      ],
+      "dtype": "float64",
+      "bytes": 39112
+    },
+    "solution_coefficients": {
+      "shape": [
+        4889
+      ],
+      "dtype": "float64",
+      "bytes": 39112
+    },
+    "jacobians": {
+      "shape": [
+        20335,
+        2,
+        2
+      ],
+      "dtype": "float64",
+      "bytes": 650720
+    },
+    "signed_obstacle_distance": {
+      "shape": [
+        20335
+      ],
+      "dtype": "float64",
+      "bytes": 162680
+    },
+    "prescribed_FE_trace_coefficients": {
+      "shape": [
+        3978
+      ],
+      "dtype": "float64",
+      "bytes": 31824
+    }
+  },
+  "full_rule_weight_sum": 0.8941458750115603,
+  "minimum_saved_signed_jacobian_determinant": 0.0003079791579499372,
+  "analytic_obstacle_quadrature": {
+    "obstacle_present": true,
+    "sign": "radius from exact center minus exact radius; negative inside solid",
+    "minimum_signed_distance": 2.5311756660040263e-05,
+    "minimum_signed_distance_over_D": 0.00025311756660040263,
+    "candidate_excluded_count": 0,
+    "candidate_excluded_weight": 0.0,
+    "candidate_excluded_weight_fraction": 0.0,
+    "actually_removed_count": 0,
+    "actually_removed_weight": 0.0,
+    "no_obstacle_quadrature": true,
+    "classification": "strict signed distance < 0; no clipping or tolerance offset"
+  },
+  "element_count": 415,
+  "mixed_dofs": 4889,
+  "reported_producer_peak_rss_bytes": 274493440,
+  "reported_reload_peak_rss_bytes": 274493440,
+  "limitations": [
+    "Fresh-process parity is measured on this newly generated coarse mesh, not the old rounded text artifact.",
+    "This verifies the producer interface; coarse physical DFG errors and all G2 refinement/domain gates remain.",
+    "No shared-lift, native ROM adapter or training admission is implied.",
+    "Per-process RSS values are reported separately; no simultaneous or timing advantage claim."
+  ]
+}

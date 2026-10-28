@@ -1,11 +1,24 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6614673,
+      "lane": "rom",
+      "attempt": "native-block02",
+      "observed_state": "PENDING"
+    },
+    {
+      "job_id": 6614742,
+      "lane": "2d",
+      "attempt": "g2-comparison01",
+      "observed_state": "PENDING"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
-    "Collect/audit ladder02 all six solves and failed comparison; no auto retry",
-    "Review one prospective h3 extension and resolve common-rule comparison failure without dropping points",
-    "Review streamed moment capacity and fair FOM query native equivalence"
+    "Monitor/collect/audit nativeblock6614673 and released comparison01; no duplicate retries",
+    "Review singleh3 prospective resource-only extension using measuredh2",
+    "Complete bounded blocked export/model consumers and fair FOM native equivalence before training"
   ],
   "completed_allocated_gpu_hours": 0.12222222222222222,
   "global_ceiling_gpu_hours": 12,

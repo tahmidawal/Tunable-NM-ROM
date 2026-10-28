@@ -1,9 +1,16 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6615359,
+      "lane": "2d",
+      "attempt": "g2-h3",
+      "observed_state": "PENDING"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
-    "Finish comparison01durablemirror then submit releasedsingleh3 exactlyonce; monitor collect independently audit",
+    "Monitor/collect/audit singleh3job6615359; no duplicate retry or h4; preserve independent comparison backup",
     "Complete exact point-block production export/consumer and measuredcapacity release",
     "Complete strong cached/batched FOMoutput and nativeequivalence, then remaining physicalcontrols and qualifiedtraining"
   ],
@@ -80,8 +87,8 @@
   "h3_release": {
     "source": "c618e752a0a357b96823edec58b0d0b42340181c",
     "release_commit": "a609cef47",
-    "submission": "not_yet_received",
-    "prerequisite": "comparison01durablemirror and operational guards"
+    "submission": 6615359,
+    "prerequisite": "immutable h3source/inputs already mirrored; comparison archive upload may overlap under743e6994e; preserve remote copy until mirror"
   },
   "verified_wait": {
     "kind": "git_push",

@@ -1,0 +1,112 @@
+# Consultation: finite-inlet sensitivity failure in the NS cylinder reference
+
+No solves or training were run, and no repository files were changed.
+
+## Bottom line
+
+- **Path A is not justified.** It would be a post-result removal of a failed training gate, not a scope clarification.
+- **Path B is procedurally sound** because it changes the target problem prospectively and leaves every threshold unchanged.
+- **Path B as written (adopt x_min = −0.2, test at −0.4) will probably fail its own gate.** The rough estimate below puts the predicted drag change between 0.24% and 1.1%, against a 0.2% limit.
+- **Recommendation: B′.** Adopt a fixed x_min = −0.6, run one gate test at −0.8 against unchanged limits, and stop permanently if it fails. Freeze all of this in one dated amendment before any new solve.
+
+## 1. Why Path A fails procedurally
+
+The frozen text settles this.
+
+- "The canonical DFG geometry remains the literature benchmark even if its upstream length sensitivity fails" protects canonical DFG's **benchmark status** only.
+- The next sentence is categorical: a failed length-adequacy gate "must be resolved before the associated production family is admitted."
+- The reference table places the domain limits among the pre-training G2 gates.
+
+Re-reading "resolved" as "scoped out" would turn a failed gate into a disclaimer. That is exactly the post-result relaxation the rules forbid. A dated amendment does not fix this, because amendments may change the science prospectively, not waive a criterion that has already failed.
+
+A finite-DFG ROM is a well-posed scientific target. The sponsor would have had to choose it before seeing this result. If anyone still wants it, it can only be recorded as a declared protocol deviation, labelled as such, and it cannot count as G2 admission.
+
+## 2. Why Path B is legitimate in principle
+
+- The task permits choosing a stationary channel. The geometry stays fixed across all production parameters.
+- No threshold changes. The canonical failure stays on record.
+- Canonical DFG becomes the solver and benchmark control at Re 20 only. It is no longer a production candidate.
+
+The forking-path risk (trying geometries until one passes) is controlled by three things: a single pre-registered geometry, a single gate test, and a stop rule.
+
+## 3. Why x_min = −0.2 is likely to fail its own gate
+
+This is a rough estimate, recorded only to inform the choice. It must never be used as a gate.
+
+**Why the decay is exponential.** The cylinder's upstream disturbance is carried mainly by the elliptic pressure and potential part of the flow, which advection does not sweep away. That disturbance decays in channel eigenmodes of the form exp(−k|x|) with H = 0.41:
+
+| Mode | Decay rate k | Ratio r per 0.2 of extension |
+|---|---|---|
+| n = 1 (antisymmetric; weakly excited by the 0.005 off-centre cylinder; likely drives lift) | π/H ≈ 7.7 | 0.22 |
+| Stokes Papkovich–Fadle | ≈ 10.3 | 0.13 |
+| n = 2 (symmetric; doublet; likely drives drag) | 2π/H ≈ 15.3 | 0.047 |
+
+**Predicted step changes.** Each further 0.2 of extension should shrink the next force difference by roughly r. Starting from the measured differences (drag 5.09%, lift 7.29e-4):
+
+| Gate pair | Predicted drag change | Predicted lift change | Verdict vs limits (0.2%, 2e-4) |
+|---|---|---|---|
+| −0.2 vs −0.4 | 0.24% to 1.1% | about 1.6e-4 | Drag likely fails; lift marginal |
+| −0.4 vs −0.6 | 0.011% to 0.24% | — | Not robust |
+| −0.6 vs −0.8 | ≤ 0.05% | ≤ 1e-5 | About 4× margin even in the worst case |
+
+The extra upstream region carries little flow structure. Most of the cost is the added inlet-region cells meshed at the canonical inlet sizing. This is negligible next to requalification.
+
+If the sponsor prefers B exactly as written, it remains procedurally valid. But the bounded escalation would most likely end in a terminal failure.
+
+## 4. Is one further inlet test sufficient?
+
+**For admission under the existing contract: yes.** One single-extension test against unchanged limits is what the contract requires, given these conditions:
+
+- **Identical mesh in the common region.** The gate mesh must be the adopted mesh plus an appended upstream block, with the same nodes in the common region. Otherwise the solution difference mixes domain effects with discretization error. If identical meshes are impossible, you must show that the discretization uncertainty of the difference is well below each limit.
+- **Comparison region and fields.** Compare on the full adopted domain [−0.6, 2.2] using local velocity, drag, and lift. Also report the comparison on [0, 2.2].
+- **Reynolds-number coverage.** Test at Re 15, 20 and 25. Lower Re means weaker advection and slower viscous decay, so the low end is the worst case for inlet sensitivity. A single Re 20 test cannot support admission of a family spanning Re 15 to 25. Adding the endpoints makes the test stricter, which is acceptable only if it is frozen in the amendment.
+
+**For a "length-independent" claim, more evidence is needed.** One difference below the limit does not bound the remaining tail. The tail is roughly d·r/(1 − r).
+
+No extra solve is needed for this. The existing (0, −0.2) pair and the gate pair (−0.6, −0.8) give an empirical decay ratio, r³ = d_gate / d_first. Pre-register two conditions:
+
+- the decay must be monotone (r < 1);
+- the reported tail bound must be below each limit.
+
+If these conditions fail while the gate passes, admission still stands, but the length-independence claim is withheld.
+
+## 5. Required before any training
+
+1. **Finish the canonical record (record-keeping only).** Complete the full common-domain field comparison for 0 vs −0.2, and the raw review of the canonical x = 4.4 and symmetric-traction outlet solves. Do this before freezing the amendment, so a single amendment covers both inlet and outlet evidence. The forces have already failed, so these results do not change the decision.
+
+2. **One dated amendment, frozen before any new solve.** It should state:
+   - the adopted geometry (x_min = −0.6), its rationale with the estimate above attached, and that it is not labelled DFG;
+   - unchanged thresholds;
+   - the gate pair, the Re set, the mesh-identity requirement and the comparison regions;
+   - the decay-ratio condition for the length-independence claim;
+   - the stop rule: on any gate failure, preserve the result and stop, with no further extension;
+   - re-scoping of canonical DFG to benchmark control at Re 20. Its population and noise ledger work beyond that is dropped as no longer applicable, not waived.
+
+3. **Outlet check on the adopted geometry.** Run [−0.6, 4.4] against [−0.6, 2.2] at Re 15, 20 and 25 with unchanged limits. Canonical outlet results must not be transferred.
+
+4. **Full requalification of the adopted geometry.** This covers three-mesh P4 h/p convergence, geometry order 4, the solver 100× check, quadrature +4, manufactured controls, divergence, mass and balance, the noise ledger, and all 15 population states. The canonical P3 h3 failure stays failed. Production uses P4.
+
+5. **Cost checkpoint.** After the domain gates pass, and before requalification, project GPU-hours from measured solve times. The batched-readout speedup counts only after its same-state proof has been measured. If the projection plus a training reserve exceeds the remaining roughly 10.8 GPU-hours, or would breach the 128 GiB memory or disk reserves, stop and record why.
+
+6. **Independent review** of all the above before G2.
+
+## 6. Optional robustness (not gating)
+
+- A symmetric-traction outlet comparison on the adopted geometry.
+- A diagnostic at −0.2 or −0.4 to fill in the decay curve.
+- A −1.0 extension.
+
+None of these may be used to choose the geometry after the fact.
+
+## 7. Claim limits if B′ passes
+
+**Permitted claim:** a project-defined fixed confined channel, x ∈ [−0.6, 2.2], with D/H ≈ 0.24. Within the stated limits at Re 15, 20 and 25, its reference solutions are insensitive to further inlet and outlet extension. If the decay condition holds, they are length-adequate with the reported tail bound.
+
+**Not permitted:**
+- calling the geometry "DFG", or comparing extended Cd/Cl against DFG literature values;
+- any "isolated" or "unconfined cylinder" claim (the walls are fixed, so blockage effects remain);
+- extrapolating beyond Re 15 to 25.
+
+The canonical results (Cd 5.5795…, matching the literature to about 1e-7) remain the solver and benchmark evidence only. The canonical 5.09% upstream-sensitivity failure is reported permanently.
+
+**If B′ fails:** no production family is admitted under the current budget, and no training occurs. The outcome is reported as such.

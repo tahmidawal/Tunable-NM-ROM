@@ -1,0 +1,335 @@
+{
+  "status": "tiny_fe_api_preflight_passed",
+  "scope": "backend/API only, not a PDE reference",
+  "backend": "umfpack",
+  "scalar_dofs": 9,
+  "relative_linear_residual": 1.7126751988344092e-15,
+  "samples": {
+    "volume": {
+      "point": [
+        0.3454915030320036,
+        0.9309016993259162,
+        0.20729490160358677
+      ],
+      "jacobian_shape": [
+        3,
+        3
+      ],
+      "measure": 0.5000000008073888,
+      "determinant": 0.5000000008073888,
+      "linear_vector_value_error": 1.1102230246251565e-16,
+      "linear_vector_gradient_error": 6.753309297172135e-16,
+      "nonsymmetric_affine_gradient": {
+        "velocity_formula": "(y,z,x)",
+        "convention": "rows are velocity components; columns are x,y,z derivatives",
+        "expected": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "evaluated": [
+          [
+            -3.3306690738754696e-16,
+            1.0000000000000002,
+            -1.1102230246251565e-16
+          ],
+          [
+            -1.6755284944154366e-17,
+            0.0,
+            0.9999999999999998
+          ],
+          [
+            0.9999999999999998,
+            -1.1102230246251565e-16,
+            -1.1102230246251565e-16
+          ]
+        ],
+        "frobenius_error": 5.441540030464163e-16
+      },
+      "linear_vector_divergence_point": {
+        "value": 3.0,
+        "absolute_error": 0.0,
+        "return_type": "builtins.tuple",
+        "return_shape": [
+          1
+        ],
+        "return_dtype": "float64",
+        "return_size": 1
+      },
+      "scalar_gridfunction_point": {
+        "value": 0.9999999999999998,
+        "return_type": "builtins.float",
+        "return_shape": [],
+        "return_dtype": "float64",
+        "return_size": 1
+      }
+    },
+    "boundary": {
+      "point": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "jacobian_shape": [
+        3,
+        2
+      ],
+      "measure": 1.0,
+      "normal": [
+        -1.0,
+        -0.0,
+        0.0
+      ],
+      "linear_vector_value_error": 1.7919104382131593e-16,
+      "linear_vector_gradient_error": 5.734087879816855e-16,
+      "nonsymmetric_affine_gradient": {
+        "velocity_formula": "(y,z,x)",
+        "convention": "rows are velocity components; columns are x,y,z derivatives",
+        "expected": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "evaluated": [
+          [
+            -3.3306690738754696e-16,
+            0.9999999999999999,
+            -1.774639723417349e-16
+          ],
+          [
+            -2.220446049250313e-16,
+            0.0,
+            1.0
+          ],
+          [
+            0.9999999999999998,
+            2.700016236768265e-17,
+            2.776712154907406e-17
+          ]
+        ],
+        "frobenius_error": 5.048372142381343e-16
+      },
+      "linear_vector_divergence_point": {
+        "value": 2.9999999999999996,
+        "absolute_error": 4.440892098500626e-16,
+        "return_type": "builtins.tuple",
+        "return_shape": [
+          1
+        ],
+        "return_dtype": "float64",
+        "return_size": 1
+      },
+      "scalar_gridfunction_point": {
+        "value": 0.9999999999999996,
+        "return_type": "builtins.float",
+        "return_shape": [],
+        "return_dtype": "float64",
+        "return_size": 1
+      }
+    }
+  },
+  "boundary_derivative_trace": "BoundaryFromVolumeCF(Grad(GridFunction)) before BND normals",
+  "face_traction_control": {
+    "x0": {
+      "normal": [
+        -1,
+        0,
+        0
+      ],
+      "area": 0.999999999999996,
+      "gradient_traction": [
+        -0.9999999999999958,
+        2.7499123393241716e-16,
+        3.3113790826571787e-16
+      ],
+      "symmetric_traction": [
+        -1.9999999999999916,
+        3.0351119603484677e-16,
+        2.497740538327627e-16
+      ],
+      "divergence_integral": 2.9999999999999876,
+      "gradient_power": 1.6830231238974882e-16,
+      "symmetric_power": 8.856756543153723e-18,
+      "absolute_errors": {
+        "area": 3.9968028886505635e-15,
+        "gradient_traction": 4.240748361678555e-15,
+        "symmetric_traction": 8.446845732004514e-15,
+        "divergence": 1.2434497875801753e-14,
+        "gradient_power": 1.6830231238974882e-16,
+        "symmetric_power": 8.856756543153723e-18
+      }
+    },
+    "x1": {
+      "normal": [
+        1,
+        0,
+        0
+      ],
+      "area": 0.999999999999996,
+      "gradient_traction": [
+        0.9999999999999956,
+        1.6909797607470645e-16,
+        3.3584070000009567e-16
+      ],
+      "symmetric_traction": [
+        1.9999999999999911,
+        1.6909797607470643e-16,
+        1.1379609507506523e-16
+      ],
+      "divergence_integral": 2.999999999999987,
+      "gradient_power": 0.9999999999999957,
+      "symmetric_power": 1.9999999999999911,
+      "absolute_errors": {
+        "area": 3.9968028886505635e-15,
+        "gradient_traction": 4.4567819928525126e-15,
+        "symmetric_traction": 8.88412259026563e-15,
+        "divergence": 1.2878587085651816e-14,
+        "gradient_power": 4.3298697960381105e-15,
+        "symmetric_power": 8.881784197001252e-15
+      }
+    },
+    "y0": {
+      "normal": [
+        0,
+        -1,
+        0
+      ],
+      "area": 0.999999999999996,
+      "gradient_traction": [
+        2.1948008281005592e-16,
+        -0.9999999999999958,
+        3.330891022422478e-16
+      ],
+      "symmetric_traction": [
+        2.9062497644752946e-16,
+        -1.9999999999999916,
+        4.0371029810138703e-16
+      ],
+      "divergence_integral": 2.999999999999987,
+      "gradient_power": 2.4725912696716475e-16,
+      "symmetric_power": 2.5403409856620715e-16,
+      "absolute_errors": {
+        "area": 3.9968028886505635e-15,
+        "gradient_traction": 4.2376637467868934e-15,
+        "symmetric_traction": 8.452345330020807e-15,
+        "divergence": 1.2878587085651816e-14,
+        "gradient_power": 2.4725912696716475e-16,
+        "symmetric_power": 2.5403409856620715e-16
+      }
+    },
+    "y1": {
+      "normal": [
+        0,
+        1,
+        0
+      ],
+      "area": 0.999999999999996,
+      "gradient_traction": [
+        -1.639689312646728e-16,
+        0.9999999999999964,
+        1.1004163694808176e-16
+      ],
+      "symmetric_traction": [
+        -2.7499123372718795e-16,
+        1.999999999999993,
+        -3.3953498568982307e-19
+      ],
+      "divergence_integral": 2.9999999999999876,
+      "gradient_power": 0.9999999999999964,
+      "symmetric_power": 1.9999999999999927,
+      "absolute_errors": {
+        "area": 3.9968028886505635e-15,
+        "gradient_traction": 3.558197500957259e-15,
+        "symmetric_traction": 7.110746671627078e-15,
+        "divergence": 1.2434497875801753e-14,
+        "gradient_power": 3.552713678800501e-15,
+        "symmetric_power": 7.327471962526033e-15
+      }
+    },
+    "z0": {
+      "normal": [
+        0,
+        0,
+        -1
+      ],
+      "area": 0.999999999999996,
+      "gradient_traction": [
+        -1.9289985706512542e-18,
+        3.340475731042529e-16,
+        -0.9999999999999956
+      ],
+      "symmetric_traction": [
+        1.1021137038791529e-17,
+        3.482193632529932e-16,
+        -1.9999999999999911
+      ],
+      "divergence_integral": 2.9999999999999876,
+      "gradient_power": 1.603651889117798e-16,
+      "symmetric_power": 1.731213684880486e-16,
+      "absolute_errors": {
+        "area": 3.9968028886505635e-15,
+        "gradient_traction": 4.45343846175712e-15,
+        "symmetric_traction": 8.888614555289655e-15,
+        "divergence": 1.2434497875801753e-14,
+        "gradient_power": 1.603651889117798e-16,
+        "symmetric_power": 1.731213684880486e-16
+      }
+    },
+    "z1": {
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "area": 0.999999999999996,
+      "gradient_traction": [
+        -2.1818660787537258e-16,
+        1.0906097103505045e-16,
+        0.9999999999999962
+      ],
+      "symmetric_traction": [
+        -3.294540767277989e-16,
+        -1.9613314274647495e-18,
+        1.9999999999999925
+      ],
+      "divergence_integral": 2.9999999999999876,
+      "gradient_power": 0.9999999999999961,
+      "symmetric_power": 1.9999999999999922,
+      "absolute_errors": {
+        "area": 3.9968028886505635e-15,
+        "gradient_traction": 3.782631331733744e-15,
+        "symmetric_traction": 7.556701941833596e-15,
+        "divergence": 1.2434497875801753e-14,
+        "gradient_power": 3.885780586188048e-15,
+        "symmetric_power": 7.771561172376096e-15
+      }
+    }
+  },
+  "boundary_gradient_L2_error": 1.5638009805969229e-15,
+  "elapsed_seconds": 0.016892531886696815,
+  "peak_rss_gib": 0.14216232299804688
+}

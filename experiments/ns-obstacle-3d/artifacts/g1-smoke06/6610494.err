@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke06/reference3d.py", line 709, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke06/reference3d.py", line 676, in main
+    row["normal_orientation"]=normal_orientation_samples(mesh,cfg,name!="empty")
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke06/reference3d.py", line 298, in normal_orientation_samples
+    raise RuntimeError(f"Normal orientation failed on {label}: point={point.tolist()}, dot={dot}")
+RuntimeError: Normal orientation failed on sphere: point=[-0.1246369491883945, -0.2513200158174869, -0.41422753860652256], dot=0.9999938602570858

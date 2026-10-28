@@ -1,0 +1,12 @@
+{
+  "schema": "ns-obstacle-3d-dependency-layout-repair-v1",
+  "fresh_attempt": "g1-smoke06",
+  "layout": "pip --prefix (not flattened --target)",
+  "reason": "2D first allocation failed before FE: --target omitted OCCT native libraries and netgen import raised KeyError tkernel",
+  "reviewed_2d_commit": "d345b0b05cd57811e5c698f4fb0d593adef525f2",
+  "reviewed_2d_dependencies_sha256": "f1d4b641c9ff30c2909ab810985add3186ea37aa1c9d5b40f9d22b331edc85e7",
+  "prior_3d_source_commit": "7a5a6e4277aa3c532c4b0d19c20c3cf118f1f18b",
+  "wheel_versions_and_hashes_changed": false,
+  "scientific_settings_changed": false,
+  "runtime_release": "requires 2D G1 pass and coordinator exact staging release"
+}

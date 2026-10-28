@@ -1,0 +1,476 @@
+{
+  "schema": "ns-obstacle-3d-control-results-v1",
+  "config": {
+    "schema": "ns-obstacle-3d-control-v1",
+    "release_status": "NOT_RELEASED_requires_coordinator_exact_review",
+    "scope": "geometry_then_CPU_FE_control_only_after_2D_smoke_and_independent_memory_review_no_reference_admission",
+    "seed": 27102026,
+    "threads": 4,
+    "geometry": {
+      "sphere_diameter": 1.0,
+      "pipe_radius": 2.5,
+      "x_in": -5.0,
+      "x_out": 15.0
+    },
+    "physics": {
+      "mean_speed": 1.0,
+      "rho": 1.0,
+      "nu": 0.1,
+      "outlet": "gradient"
+    },
+    "mesh": {
+      "maxh": 2.0,
+      "wall_maxh": 1.5,
+      "sphere_maxh": 0.6,
+      "geometry_order": 3,
+      "max_elements": 6000,
+      "normal_sampling_order": 4
+    },
+    "fe": {
+      "velocity_order": 2,
+      "pressure_order": 1,
+      "quadrature_order": 10,
+      "diagnostic_quadrature_order": 12,
+      "inverse": "umfpack"
+    },
+    "solver": {
+      "max_newton": 20,
+      "relative_free_residual": 1e-10,
+      "initial_residual_floor": 1.0,
+      "linear_relative_residual": 1e-10,
+      "max_backtracks": 12,
+      "armijo": 0.0001,
+      "continuation": [
+        0.0,
+        0.25,
+        0.5,
+        1.0
+      ]
+    },
+    "guards": {
+      "max_dofs": 15000,
+      "factor_estimate_gib_max": 48.0,
+      "rss_gib_max": 48.0,
+      "case_seconds_max": 300.0,
+      "total_seconds_max": 850.0,
+      "factor_memory_formula": "128 * total_mixed_dofs**2 bytes + 4GiB reserve; conservative screen, not guarantee"
+    },
+    "cases": [
+      "geometry_sphere",
+      "empty",
+      "manufactured"
+    ],
+    "output": "output",
+    "gate_policy": "all outputs diagnostic; no physical reference or training gate may be marked passed by this smoke",
+    "campaign_file": "CAMPAIGN.predata-A3.json",
+    "campaign_sha256": "7df6e1f87e2cb9feee8c1bf55a2da8d37c6537c6eef318370b6c13016f5920a0",
+    "candidate": "g1-smoke06-nonsymmetric-affine-gradient-convention",
+    "preflight": {
+      "tiny_fe_backend": "umfpack",
+      "tiny_fe_dofs_max": 1000,
+      "tiny_fe_relative_residual": 1e-12,
+      "volume_and_boundary_mapped_export_required": true,
+      "face_traction_absolute_tolerance": 1e-10,
+      "boundary_derivative_trace": "BoundaryFromVolumeCF before BND normals"
+    },
+    "dependency_repair_file": "DEPENDENCY-REPAIR.json",
+    "dependency_repair_sha256": "0403ebdf9826e24cfc7d1967f675598cc79eb60ae0068f6889a594c67479f17d"
+  },
+  "config_sha256": "637837aecc59da58b9c0f7c582be9f27d4aa97707baf711038fd57e06f541350",
+  "source_sha256": "84c66d03a84844866f1298a6dae74449a2708ea64c848560e83f8b64ea1b68aa",
+  "source_commit": "1c2fd8fa141ded0d1dcdc15c850a5a8682572b00",
+  "job_id": "6610494",
+  "python": "3.13.2 (main, Jun 27 2025, 16:52:43) [GCC 12.4.0]",
+  "ngsolve_version": "6.2.2608",
+  "numpy_version": "2.5.0",
+  "platform": "Linux-5.14.0-570.60.1+21.1.el9_6_ciq.x86_64-x86_64-with-glibc2.34",
+  "cpu": "x86_64",
+  "thread_env": {
+    "OMP_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4"
+  },
+  "arithmetic": "real64 FE/NumPy; GPU JAX preflight external; no FE GPU acceleration claim",
+  "cases": [
+    {
+      "case": "geometry_sphere",
+      "status": "started",
+      "seed": 27102026,
+      "mesh_seed_scope": "NumPy seed recorded; Netgen deterministic default seed/control requires runtime verification",
+      "mapped_api_first_volume": {
+        "point": [
+          -0.7382352805170974,
+          -0.22678599901674587,
+          -0.39616757947900033
+        ],
+        "jacobian_shape": [
+          3,
+          3
+        ],
+        "measure": 0.051420213917170936,
+        "determinant": 0.051420213917170936
+      },
+      "mapped_api_first_boundary": {
+        "point": [
+          -4.456592296354721,
+          -2.3305104974632354,
+          -0.9047680425174774
+        ],
+        "jacobian_shape": [
+          3,
+          2
+        ],
+        "measure": 1.3048995059726936,
+        "normal": [
+          0.0008958406745532048,
+          -0.9315985492513761,
+          -0.3634877446382713
+        ]
+      }
+    }
+  ],
+  "reference_admitted": false,
+  "cpu_info": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           46 bits physical, 57 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  96\nOn-line CPU(s) list:                     0-95\nVendor ID:                               GenuineIntel\nModel name:                              INTEL(R) XEON(R) PLATINUM 8568Y+\nCPU family:                              6\nModel:                                   207\nThread(s) per core:                      1\nCore(s) per socket:                      48\nSocket(s):                               2\nStepping:                                2\nCPU(s) scaling MHz:                      94%\nCPU max MHz:                             4000.0000\nCPU min MHz:                             800.0000\nBogoMIPS:                                4600.00\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hfi vnmi avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr ibt amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities\nVirtualization:                          VT-x\nL1d cache:                               4.5 MiB (96 instances)\nL1i cache:                               3 MiB (96 instances)\nL2 cache:                                192 MiB (96 instances)\nL3 cache:                                600 MiB (2 instances)\nNUMA node(s):                            2\nNUMA node0 CPU(s):                       0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94\nNUMA node1 CPU(s):                       1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95\nVulnerability Gather data sampling:      Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Not affected\nVulnerability Spec rstack overflow:      Not affected\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI BHI_DIS_S\nVulnerability Srbds:                     Not affected\nVulnerability Tsx async abort:           Not affected\n",
+  "gpu_info": "NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB\n",
+  "preflight": {
+    "status": "tiny_fe_api_preflight_passed",
+    "scope": "backend/API only, not a PDE reference",
+    "backend": "umfpack",
+    "scalar_dofs": 9,
+    "relative_linear_residual": 1.7126751988344092e-15,
+    "samples": {
+      "volume": {
+        "point": [
+          0.3454915030320036,
+          0.9309016993259162,
+          0.20729490160358677
+        ],
+        "jacobian_shape": [
+          3,
+          3
+        ],
+        "measure": 0.5000000008073888,
+        "determinant": 0.5000000008073888,
+        "linear_vector_value_error": 1.1102230246251565e-16,
+        "linear_vector_gradient_error": 6.753309297172135e-16,
+        "nonsymmetric_affine_gradient": {
+          "velocity_formula": "(y,z,x)",
+          "convention": "rows are velocity components; columns are x,y,z derivatives",
+          "expected": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "evaluated": [
+            [
+              -3.3306690738754696e-16,
+              1.0000000000000002,
+              -1.1102230246251565e-16
+            ],
+            [
+              -1.6755284944154366e-17,
+              0.0,
+              0.9999999999999998
+            ],
+            [
+              0.9999999999999998,
+              -1.1102230246251565e-16,
+              -1.1102230246251565e-16
+            ]
+          ],
+          "frobenius_error": 5.441540030464163e-16
+        },
+        "linear_vector_divergence_point": {
+          "value": 3.0,
+          "absolute_error": 0.0,
+          "return_type": "builtins.tuple",
+          "return_shape": [
+            1
+          ],
+          "return_dtype": "float64",
+          "return_size": 1
+        },
+        "scalar_gridfunction_point": {
+          "value": 0.9999999999999998,
+          "return_type": "builtins.float",
+          "return_shape": [],
+          "return_dtype": "float64",
+          "return_size": 1
+        }
+      },
+      "boundary": {
+        "point": [
+          0.0,
+          0.5,
+          1.0
+        ],
+        "jacobian_shape": [
+          3,
+          2
+        ],
+        "measure": 1.0,
+        "normal": [
+          -1.0,
+          -0.0,
+          0.0
+        ],
+        "linear_vector_value_error": 1.7919104382131593e-16,
+        "linear_vector_gradient_error": 5.734087879816855e-16,
+        "nonsymmetric_affine_gradient": {
+          "velocity_formula": "(y,z,x)",
+          "convention": "rows are velocity components; columns are x,y,z derivatives",
+          "expected": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "evaluated": [
+            [
+              -3.3306690738754696e-16,
+              0.9999999999999999,
+              -1.774639723417349e-16
+            ],
+            [
+              -2.220446049250313e-16,
+              0.0,
+              1.0
+            ],
+            [
+              0.9999999999999998,
+              2.700016236768265e-17,
+              2.776712154907406e-17
+            ]
+          ],
+          "frobenius_error": 5.048372142381343e-16
+        },
+        "linear_vector_divergence_point": {
+          "value": 2.9999999999999996,
+          "absolute_error": 4.440892098500626e-16,
+          "return_type": "builtins.tuple",
+          "return_shape": [
+            1
+          ],
+          "return_dtype": "float64",
+          "return_size": 1
+        },
+        "scalar_gridfunction_point": {
+          "value": 0.9999999999999996,
+          "return_type": "builtins.float",
+          "return_shape": [],
+          "return_dtype": "float64",
+          "return_size": 1
+        }
+      }
+    },
+    "boundary_derivative_trace": "BoundaryFromVolumeCF(Grad(GridFunction)) before BND normals",
+    "face_traction_control": {
+      "x0": {
+        "normal": [
+          -1,
+          0,
+          0
+        ],
+        "area": 0.999999999999996,
+        "gradient_traction": [
+          -0.9999999999999958,
+          2.7499123393241716e-16,
+          3.3113790826571787e-16
+        ],
+        "symmetric_traction": [
+          -1.9999999999999916,
+          3.0351119603484677e-16,
+          2.497740538327627e-16
+        ],
+        "divergence_integral": 2.9999999999999876,
+        "gradient_power": 1.6830231238974882e-16,
+        "symmetric_power": 8.856756543153723e-18,
+        "absolute_errors": {
+          "area": 3.9968028886505635e-15,
+          "gradient_traction": 4.240748361678555e-15,
+          "symmetric_traction": 8.446845732004514e-15,
+          "divergence": 1.2434497875801753e-14,
+          "gradient_power": 1.6830231238974882e-16,
+          "symmetric_power": 8.856756543153723e-18
+        }
+      },
+      "x1": {
+        "normal": [
+          1,
+          0,
+          0
+        ],
+        "area": 0.999999999999996,
+        "gradient_traction": [
+          0.9999999999999956,
+          1.6909797607470645e-16,
+          3.3584070000009567e-16
+        ],
+        "symmetric_traction": [
+          1.9999999999999911,
+          1.6909797607470643e-16,
+          1.1379609507506523e-16
+        ],
+        "divergence_integral": 2.999999999999987,
+        "gradient_power": 0.9999999999999957,
+        "symmetric_power": 1.9999999999999911,
+        "absolute_errors": {
+          "area": 3.9968028886505635e-15,
+          "gradient_traction": 4.4567819928525126e-15,
+          "symmetric_traction": 8.88412259026563e-15,
+          "divergence": 1.2878587085651816e-14,
+          "gradient_power": 4.3298697960381105e-15,
+          "symmetric_power": 8.881784197001252e-15
+        }
+      },
+      "y0": {
+        "normal": [
+          0,
+          -1,
+          0
+        ],
+        "area": 0.999999999999996,
+        "gradient_traction": [
+          2.1948008281005592e-16,
+          -0.9999999999999958,
+          3.330891022422478e-16
+        ],
+        "symmetric_traction": [
+          2.9062497644752946e-16,
+          -1.9999999999999916,
+          4.0371029810138703e-16
+        ],
+        "divergence_integral": 2.999999999999987,
+        "gradient_power": 2.4725912696716475e-16,
+        "symmetric_power": 2.5403409856620715e-16,
+        "absolute_errors": {
+          "area": 3.9968028886505635e-15,
+          "gradient_traction": 4.2376637467868934e-15,
+          "symmetric_traction": 8.452345330020807e-15,
+          "divergence": 1.2878587085651816e-14,
+          "gradient_power": 2.4725912696716475e-16,
+          "symmetric_power": 2.5403409856620715e-16
+        }
+      },
+      "y1": {
+        "normal": [
+          0,
+          1,
+          0
+        ],
+        "area": 0.999999999999996,
+        "gradient_traction": [
+          -1.639689312646728e-16,
+          0.9999999999999964,
+          1.1004163694808176e-16
+        ],
+        "symmetric_traction": [
+          -2.7499123372718795e-16,
+          1.999999999999993,
+          -3.3953498568982307e-19
+        ],
+        "divergence_integral": 2.9999999999999876,
+        "gradient_power": 0.9999999999999964,
+        "symmetric_power": 1.9999999999999927,
+        "absolute_errors": {
+          "area": 3.9968028886505635e-15,
+          "gradient_traction": 3.558197500957259e-15,
+          "symmetric_traction": 7.110746671627078e-15,
+          "divergence": 1.2434497875801753e-14,
+          "gradient_power": 3.552713678800501e-15,
+          "symmetric_power": 7.327471962526033e-15
+        }
+      },
+      "z0": {
+        "normal": [
+          0,
+          0,
+          -1
+        ],
+        "area": 0.999999999999996,
+        "gradient_traction": [
+          -1.9289985706512542e-18,
+          3.340475731042529e-16,
+          -0.9999999999999956
+        ],
+        "symmetric_traction": [
+          1.1021137038791529e-17,
+          3.482193632529932e-16,
+          -1.9999999999999911
+        ],
+        "divergence_integral": 2.9999999999999876,
+        "gradient_power": 1.603651889117798e-16,
+        "symmetric_power": 1.731213684880486e-16,
+        "absolute_errors": {
+          "area": 3.9968028886505635e-15,
+          "gradient_traction": 4.45343846175712e-15,
+          "symmetric_traction": 8.888614555289655e-15,
+          "divergence": 1.2434497875801753e-14,
+          "gradient_power": 1.603651889117798e-16,
+          "symmetric_power": 1.731213684880486e-16
+        }
+      },
+      "z1": {
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "area": 0.999999999999996,
+        "gradient_traction": [
+          -2.1818660787537258e-16,
+          1.0906097103505045e-16,
+          0.9999999999999962
+        ],
+        "symmetric_traction": [
+          -3.294540767277989e-16,
+          -1.9613314274647495e-18,
+          1.9999999999999925
+        ],
+        "divergence_integral": 2.9999999999999876,
+        "gradient_power": 0.9999999999999961,
+        "symmetric_power": 1.9999999999999922,
+        "absolute_errors": {
+          "area": 3.9968028886505635e-15,
+          "gradient_traction": 3.782631331733744e-15,
+          "symmetric_traction": 7.556701941833596e-15,
+          "divergence": 1.2434497875801753e-14,
+          "gradient_power": 3.885780586188048e-15,
+          "symmetric_power": 7.771561172376096e-15
+        }
+      }
+    },
+    "boundary_gradient_L2_error": 1.5638009805969229e-15,
+    "elapsed_seconds": 0.016892531886696815,
+    "peak_rss_gib": 0.14216232299804688
+  },
+  "status": "failed",
+  "exception": "Normal orientation failed on sphere: point=[-0.1246369491883945, -0.2513200158174869, -0.41422753860652256], dot=0.9999938602570858",
+  "exception_type": "RuntimeError",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke06/reference3d.py\", line 676, in main\n    row[\"normal_orientation\"]=normal_orientation_samples(mesh,cfg,name!=\"empty\")\n                              ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-smoke06/reference3d.py\", line 298, in normal_orientation_samples\n    raise RuntimeError(f\"Normal orientation failed on {label}: point={point.tolist()}, dot={dot}\")\nRuntimeError: Normal orientation failed on sphere: point=[-0.1246369491883945, -0.2513200158174869, -0.41422753860652256], dot=0.9999938602570858\n",
+  "elapsed_seconds": 0.3080451646819711,
+  "peak_rss_gib": 0.14509201049804688
+}

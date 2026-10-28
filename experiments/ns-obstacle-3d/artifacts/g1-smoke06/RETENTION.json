@@ -1,0 +1,48 @@
+{
+  "status": "complete_all_regular_files_verified",
+  "archive_sha256": "8f2d00483d6483ce5f2dd1b9f21c75faffda2cf39363b2d465ec986f7e061b34",
+  "archive_bytes": 158264439,
+  "verified_regular_files": 766,
+  "verified_symlinks": 0,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "500a6675d7a47e0f6e1e73bc4bb87c5562fd60e1f635ea552914e963fc303dc8"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "c0a2b08fce6c3d4a63cd03bf93e19fed38a8eb5cd5df64624d259110e93cfff4"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 50331648,
+      "sha256": "3b4cfc671ffdaf24864d12d0fb23487479220948ecd729547cf60e565c7dc88b"
+    },
+    {
+      "path": "collection.tar.gz.part-003",
+      "bytes": 7269495,
+      "sha256": "807a0cf80284f72f70b503cfbae0d6f49ac62b4ac522b47ad2a73dae943684c0"
+    }
+  ],
+  "recovery": "Concatenate chunks in order, verify archive SHA, extract, then cd g1-smoke06 and sha256sum -c COLLECTION-SHA256SUMS. Symlink inventory is COLLECTION-SYMLINKS.txt.",
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d/runs/g1-smoke06-collection.tar.gz",
+  "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-3d/experiments/ns-obstacle-3d/runs/g1-smoke06",
+  "job_id": 6610494,
+  "elapsed_allocation_seconds": 29,
+  "allocated_gpu_hours": 0.008055555555555555,
+  "node": "pax008",
+  "gpu": "NVIDIA H200",
+  "batch_peak_rss_KiB": 1204388,
+  "completed_cases": [],
+  "failed_case": "geometry_sphere normal orientation, before case DOF screen/factorization",
+  "unstarted_cases": [
+    "empty",
+    "manufactured"
+  ],
+  "preflight_completed": true,
+  "reference_data_admitted": false,
+  "observed_failure": "Normal orientation failed on sphere: point=[-0.1246369491883945, -0.2513200158174869, -0.41422753860652256], dot=0.9999938602570858",
+  "remote_duplicate_removed": false
+}

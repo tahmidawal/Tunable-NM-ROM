@@ -58,7 +58,8 @@ def paired_cpu(calls,contract,cores,repetitions=7,burn_seconds=.25):
                          "output_sha256":checksum,"work":snapshot["work"],
                          "component_seconds":snapshot.get("component_seconds",{}),"order":list(order),
                          "evidence_snapshot_seconds":evidence_seconds})
-            retained_outputs.append({"repetition":rep,"method":name,"outputs":snapshot["outputs"]})
+            retained_outputs.append({"repetition":rep,"method":name,"outputs":snapshot["outputs"],
+                                     "invocation":snapshot})
     return {"contract":contract,"cores":cores,"device":"CPU","warmups_discarded":len(warmup),
             "repetitions":rows,"actual_invocation_outputs":retained_outputs,"burn_seconds":burn_seconds,
             "evidence_snapshot_timing":"reported separately after query; caller-required output copies belong inside query"}

@@ -1,0 +1,88 @@
+{
+  "status": "prospective_resource_review_only_no_release",
+  "spatial_extension": "single h3 only; h1/h2/h3 differences remain required",
+  "proposed_mesh": {
+    "maxh": 0.01,
+    "obstacle_h": 0.0025,
+    "velocity_order": 3,
+    "pressure_order": 2,
+    "geometry_order": 3
+  },
+  "producer_caps_proposed": {
+    "elements": {
+      "old": 20000,
+      "new": 30000
+    },
+    "dofs": {
+      "old": 100000,
+      "new": 300000
+    },
+    "volume_points": {
+      "old": 500000,
+      "new": 1300000
+    }
+  },
+  "unchanged_caps": {
+    "nnz": 12000000,
+    "factor_fill_estimate": 100,
+    "memory_guard_GiB": 48,
+    "allocation_GiB": 64,
+    "archive_bytes": 1073741824,
+    "boundary_points": 30000,
+    "gpus": 1,
+    "cpus": 16,
+    "wall_seconds": 1200,
+    "per_case_timeout_seconds": 300
+  },
+  "cases": [
+    {
+      "case": "dfg_h3",
+      "baseline_result_sha256": "1e88098ab20c30be6241726fdfbcae5f07c73a97b5190fa3ca38bb902381e193",
+      "baseline_memory_sha256": "2b365d2271fe1a7abd77fdb077e31e365f2f9c3a2fd5bc81973adc4eed1d7378",
+      "baseline_points": 266756,
+      "projected_elements": 21776,
+      "projected_dofs": 244688,
+      "projected_nnz": 10938352,
+      "projected_points": 1067024,
+      "factor_estimate_bytes": 17564003328,
+      "mapped_export_replay_comparison_workspace_bytes": 2185265152,
+      "Jacobian_evidence_workspace_bytes": 33277568,
+      "measured_peak_times_four_allowance_bytes": 2726854656,
+      "total_working_envelope_bytes": 22509400704,
+      "planning_seconds_not_guarantee": 173.7952867858112
+    },
+    {
+      "case": "manufactured_h3",
+      "baseline_result_sha256": "febc919f600e8af179ab75dc2af092fd15ad0c3b4ffd1defc479690b52a10c48",
+      "baseline_memory_sha256": "9ba69a7c271bcc1bd4114a878b7efdd2a239fafcb2876246d1eacc3202b4d6b0",
+      "baseline_points": 266756,
+      "projected_elements": 21776,
+      "projected_dofs": 244688,
+      "projected_nnz": 10938352,
+      "projected_points": 1067024,
+      "factor_estimate_bytes": 17564003328,
+      "mapped_export_replay_comparison_workspace_bytes": 2185265152,
+      "Jacobian_evidence_workspace_bytes": 33277568,
+      "measured_peak_times_four_allowance_bytes": 2600157184,
+      "total_working_envelope_bytes": 22382703232,
+      "planning_seconds_not_guarantee": 168.71105414256454
+    }
+  ],
+  "planning_total_seconds_not_guarantee": 342.5063409283757,
+  "conditions": [
+    "comparison repair validated before h3 execution release",
+    "complete fresh native replay at h3",
+    "full positive quadrature unchanged; no artificial point deletion or reduced integration",
+    "source-bound independent capacity and method review",
+    "one level only, no automatic h4",
+    "producer caps separate from ROM fitting caps"
+  ],
+  "p_geometry_followup": {
+    "p3_g4_same_h3_dofs_estimate": 244688,
+    "p4_g4_same_h3_dofs_estimate": 456009,
+    "p4_nnz_estimate": 25889591,
+    "requires_separate_capacity_review": true
+  },
+  "physical_admission": false,
+  "training_released": false
+}

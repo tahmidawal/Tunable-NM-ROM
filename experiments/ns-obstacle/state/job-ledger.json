@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "corrected_crossp_and_capacity_controls_submitted",
+  "status": "solverquad_submitted_crossp_capacity_audited",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -629,11 +629,20 @@
       "cpus_reserved": 16,
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 276,
+      "allocated_gpu_hours": 0.07666666666666666,
       "reference_admitted": false,
       "training_released": false,
-      "single_submission": true
+      "single_submission": true,
+      "state": "COMPLETED",
+      "state_last_observed": "COMPLETED",
+      "node": "pax008",
+      "exit_code": "0:0",
+      "independent_result_review": "PASS in stated control scope; no reference admission",
+      "verified_file_count": 920,
+      "archive_sha256": "ffdc2abad6e268882e18ed00aa44ab6409c64ce7130f1f26ab1db54a12e41a0a",
+      "retention_commit": "2ed97b3d8",
+      "remote_cleanup": "pending durable mirror"
     },
     {
       "job_id": 6616726,
@@ -648,18 +657,47 @@
       "cpus_reserved": 16,
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
+      "elapsed_seconds": 24,
+      "allocated_gpu_hours": 0.006666666666666667,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true,
+      "state": "COMPLETED",
+      "state_last_observed": "COMPLETED",
+      "node": "pax008",
+      "exit_code": "0:0",
+      "independent_result_review": "PASS in stated control scope; no reference admission",
+      "verified_file_count": 801,
+      "archive_sha256": "11540da71fe4b376915d43e95fd44145f22332cd744fa583a07745598b226f87",
+      "retention_commit": "b7d7f177b",
+      "retention_mirror": "b55311ab3",
+      "remote_cleanup_commit": "654878d71"
+    },
+    {
+      "job_id": 6617371,
+      "lane": "2d",
+      "attempt": "g2-solverquad01",
+      "source_commit": "a886389af6b2182f39ed84cb7fc79d931183e55d",
+      "submitted_utc": "2026-10-28T22:17:56.331755+00:00",
+      "input_manifest_sha256": "ed6139585195f59a0e9269674c129aafa91b17b3d1b8c5986c24f5c6b26639e5",
+      "source_checksums_sha256": "16f46ae309561f572435641f1e9b47f8f3c4db8c736708eb10af59e5503d380a",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-solverquad01",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
       "elapsed_seconds": null,
       "allocated_gpu_hours": null,
       "reference_admitted": false,
       "training_released": false,
-      "single_submission": true
+      "single_submission": true,
+      "state_last_observed": "PENDING"
     }
   ],
   "live_job_ids": [
-    6616720,
-    6616726
+    6617371
   ],
   "completed_gpu_hours": 0.3877777777777778,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
-  "total_allocated_gpu_hours_completed": 0.6313888888888889
+  "total_allocated_gpu_hours_completed": 0.7147222222222223
 }

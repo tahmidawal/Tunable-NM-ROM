@@ -1,0 +1,48 @@
+{
+  "status": "prospective lower bound on conservative release envelope; not authorization",
+  "measurement_sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
+  "boundary_sha256": "5e4dc61e443e48b911675a31fb1de8d4663eccd15ad3ace530cc79b578493c59",
+  "points": 1036497,
+  "boundary_points": 4459,
+  "per_full_field_output_bytes": 24875928,
+  "prepared_expanded_payload_bytes": {
+    "volume": 4726426320,
+    "training": 563854440,
+    "spectral_replay": 640306896,
+    "coefficients": 240194208,
+    "boundary": 20564908,
+    "total": 6191346772
+  },
+  "accuracy_driver_maximum_logical_payload": {
+    "quadrature_candidate_invocations": 144,
+    "regular_invocations": 108,
+    "candidate_field_bytes": 3582133632,
+    "regular_field_bytes": 2686600224,
+    "selected_fit_column_bytes": 145843200,
+    "subtotal": 6414577056
+  },
+  "two_copy_preparation_and_accuracy_plus_reserve_bytes": 35949265896,
+  "local_free_bytes_at_generation": 27189501952,
+  "shortfall_before_other_required_payload_bytes": 8759763944,
+  "timing_full_field_bytes_additional": {
+    "FOM_plus_one_ROM_per_model": 8358311808,
+    "FOM_plus_all_registered_methods_per_model": 16716623616
+  },
+  "not_in_subtotal": [
+    "qualified family/common-lift inputs",
+    "training checkpoints and history",
+    "timing outputs and returned FOM coefficients",
+    "JSON/ZIP/file-system overhead",
+    "extra chunks for files exceeding mirror size limit",
+    "transient Git transport workspace"
+  ],
+  "retention_policy": [
+    "no assumed byte-identical outputs or compression savings",
+    "one immutable preparation; no whole duplicate collection archive",
+    "exact file checksums and only lossless duplicate elimination",
+    "mirror large results in bounded incremental batches; final manifest only after complete verification",
+    "preserve ten-GiB reserve throughout"
+  ],
+  "physical_admission": false,
+  "execution_released": false
+}

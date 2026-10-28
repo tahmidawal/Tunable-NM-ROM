@@ -162,11 +162,20 @@ def main():
             dump_npz(out/f'{arm}_case{ci}.npz',v,gamma_fresh=g,residual_norm_fresh=rn)
             _, vt = timed(lambda:call(qtim[arm],ci,arm!='direct'))
             np.testing.assert_allclose(vt['W'],v['W'],rtol=1e-12,atol=1e-13)
-            for k in ('step_it','step_reason'):
+            np.testing.assert_allclose(vt['fields'],v['fields'],rtol=1e-12,atol=1e-13)
+            assert P.gcert_ok(np.asarray(g),np.asarray(vt['stats']['step_gn']))
+            # Same roundoff envelope as gcert: relative1e-7 + absolute1e-12.
+            np.testing.assert_allclose(vt['stats']['step_tolratio'],np.asarray(rn)/(float(scale)*1e-9+1e-300),rtol=1e-7,atol=1e-12)
+            assert int(vt['stats']['nfail'])==0
+            assert np.all((np.asarray(vt['stats']['step_gn'])<=1e-3)|(np.asarray(vt['stats']['step_tolratio'])<=1))
+            for k in ('step_it','step_reason','it_sum','it_max','rej','exits','nfail','ic_it','ic_reason','ic_idx'):
                 assert np.array_equal(vt['stats'][k],st[k])
+            if arm!='direct':
+                assert np.array_equal(vt['stats']['seed_info'][:,:12],st['seed_info'][:,:12])
+            entry['timed_certificate_matches']=True
             dump_npz(out/f'timed_identity_{arm}_case{ci}.npz',vt)
             witnesses[(arm,ci)] = {k: np.asarray(vt[k]) for k in ('W','fields')}
-            witnesses[(arm,ci)].update({k:np.asarray(vt['stats'][k]) for k in ('step_it','step_reason')})
+            witnesses[(arm,ci)]['stats']={k:np.asarray(x) for k,x in vt['stats'].items()}
         vd = records[('direct',ci)]
         for label,q in [('disabled',qnone)]+([('forced_failure',qfail)] if ci==0 else []):
             _,vv = timed(lambda:call(q,ci,label=='forced_failure'))
@@ -180,6 +189,7 @@ def main():
                 assert not np.any(np.asarray(vv['stats']['seed_info'])[:,0])
         print('RECORDED',ci,[(x['arm'],x['fine_corrections'],x['valid']) for x in rep['records'][-3:]],flush=True); save()
     rng=np.random.default_rng(SEED)
+    QS.burn(.1)  # Compile the burn kernel before any measured block.
     for block in range(7):
         for ci_ in rng.permutation(6):
             ci=int(ci_)
@@ -188,13 +198,13 @@ def main():
                 elapsed,v=timed(lambda:call(qtim[arm],ci,arm!='direct'))
                 want=witnesses[(arm,ci)]
                 identity=all(np.array_equal(np.asarray(v[k]),want[k]) for k in ('W','fields')) and all(
-                    np.array_equal(v['stats'][k],want[k]) for k in ('step_it','step_reason'))
+                    np.array_equal(v['stats'][k],x) for k,x in want['stats'].items())
                 path=f'timed_identity_{arm}_case{ci}.npz'
                 if not identity:
                     path=f'timed_variant_{arm}_case{ci}_block{block}.npz'; dump_npz(out/path,v)
                 rep['timings'].append(dict(block=block,case=ci,arm=arm,seconds=elapsed,identity=identity,
                     W_sha256=sha(v['W']),fields_sha256=sha(v['fields']),array_witness=path,
-                    fine_corrections=int(v['stats']['it_sum']),online_valid=bool(harm.run_valid(v))))
+                    fine_corrections=int(v['stats']['it_sum']),online_valid=bool(harm.run_valid(v) and int(v['stats']['nfail'])==0)))
         print('TIMING_BLOCK',block,flush=True); save()
     # Transfer diagnostics on every reached step, outside measured invocations.
     X128,w128=Q.offmesh_rule('gauss128'); B128,_,_=bank.mdl.values_grads(X128,512)

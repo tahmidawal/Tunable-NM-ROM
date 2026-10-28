@@ -50,3 +50,7 @@ Each candidate independently clears the early cost gate only if the median over 
 ## Glossary
 
 K: number of optimized latent coordinates. Bank: frozen spatial patterns. Head: nonlinear map from latent coordinates to bank coefficients. M: number of weak residual test modes. Gauss rule: points and weights for integrals. LM: damped least-squares iteration. Warm start: prediction from accepted previous fine states. Transfer: fitting the same spatial field in another embedding. Gate: prospective pass/stop rule.
+
+## Pre-execution measurement clarification
+
+The unrecorded timed invocation must match recorded fields/codes to relative1e-12, absolute1e-13, fine iteration/exit/aggregate counts exactly, and auxiliary decision/count columns exactly. Its per-step gradient certificate must match fresh AD with the retained relative1e-7 plus absolute1e-12 envelope; its residual/tolerance ratio uses that same roundoff envelope. Every timed step must meet the existing fine stopping condition. Every repetition must reproduce all fields, codes and returned online statistics exactly or retain its own variant and fail the timing-identity gate. Burn-kernel compilation precedes the timing loop; each query then receives a separate GPU burn. This adds measurement validation only, before any outcome is observed.

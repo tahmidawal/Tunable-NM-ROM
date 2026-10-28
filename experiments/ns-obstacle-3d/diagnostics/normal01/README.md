@@ -1,5 +1,12 @@
 # Pipe–sphere normal diagnostic candidate
 
+The frozen candidate described below has now executed under an explicit
+coordinator release. Its diagnostic completed, while the geometry-volume and
+fluid-boundary identity checks failed. Retained evidence is in
+`../../artifacts/g1-normal01/`; the generated audit and unexecuted follow-up
+proposal are in `../../checks/normal01-source-diagnosis/`. No sign repair or PDE
+solve is admitted. The remaining text records the historical preparation scope.
+
 This source-only candidate follows the first measured 3D normal failure. It is
 not staged or released. It regenerates the same CSG pipe-minus-sphere recipe,
 mesh sizes and curvature as the failed control, saves the new mesh before

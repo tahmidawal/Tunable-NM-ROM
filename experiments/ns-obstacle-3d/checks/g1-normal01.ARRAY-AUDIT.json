@@ -1,0 +1,478 @@
+{
+  "status": "array_audit_only_no_new_native_result",
+  "reference_admitted": false,
+  "geometry_order": 3,
+  "elements": 2281,
+  "vertices": 572,
+  "saved_volume_samples": 31934,
+  "saved_boundary_samples": 3924,
+  "signed_volume_determinant_range": [
+    0.004193948053526554,
+    32.65813793514439
+  ],
+  "nonpositive_saved_volume_determinant_count": 0,
+  "sampled_volume_weight_range": [
+    4.15282387172354e-05,
+    0.6133629702873894
+  ],
+  "nonpositive_saved_volume_weight_count": 0,
+  "sampled_volume_weight_sum": 392.18924527488304,
+  "high_order_volume": 392.18924586453215,
+  "volume_sampling_limit": "interior order4 samples only; no signed determinant at native facet or order12 volume points was saved",
+  "constant_test_error": 1.1102230246251565e-16,
+  "facet_control_status": "completed_diagnostic_not_admission",
+  "identity_acceptance": false,
+  "per_boundary": {
+    "inlet": {
+      "saved_points": 150,
+      "unique_faces": 25,
+      "weight_min": 0.06722714457472051,
+      "weight_max": 0.22556177123906695,
+      "nonpositive_weight_count": 0,
+      "normal_norm_range": [
+        0.9999999999999999,
+        1.0
+      ],
+      "boundary_cross_product_measure_range": [
+        1.2228481757499898,
+        2.0195197962750604
+      ],
+      "raw_normal_vs_cross_product_max_error": 1.1102230246251565e-16,
+      "raw_normal_dot_toward_adjacent_fluid_range": [
+        -0.35805882771424263,
+        -0.23856455677775476
+      ],
+      "recomputed_raw_measure": 19.636767346313263,
+      "recomputed_raw_normal_integral": [
+        -19.636767346313256,
+        0.0,
+        0.0
+      ],
+      "recomputed_raw_position_dot_normal": 98.1838367315663,
+      "ordinary_order12": {
+        "measure": 19.636767346313015,
+        "normal_integral": [
+          -19.636767346313015,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 98.1838367315651
+      },
+      "native_facet_order12": {
+        "measure": 19.636767346313015,
+        "normal_x": -19.636767346313015,
+        "normal_y": -1.1692742094264417e-16,
+        "normal_z": -9.62323431519702e-17,
+        "position_dot_normal": 98.18383673156508
+      },
+      "facet_minus_ordinary_measure": 0.0,
+      "facet_minus_ordinary_position_dot_normal": -1.4210854715202004e-14,
+      "offset_membership_counts": {
+        "-0.01": {
+          "samples": 150,
+          "mesh_inside": 150,
+          "analytic_inside": 150
+        },
+        "-0.001": {
+          "samples": 150,
+          "mesh_inside": 150,
+          "analytic_inside": 150
+        },
+        "-0.0001": {
+          "samples": 150,
+          "mesh_inside": 150,
+          "analytic_inside": 150
+        },
+        "0.0001": {
+          "samples": 150,
+          "mesh_inside": 132,
+          "analytic_inside": 0
+        },
+        "0.001": {
+          "samples": 150,
+          "mesh_inside": 0,
+          "analytic_inside": 0
+        },
+        "0.01": {
+          "samples": 150,
+          "mesh_inside": 0,
+          "analytic_inside": 0
+        }
+      }
+    },
+    "outlet": {
+      "saved_points": 150,
+      "unique_faces": 25,
+      "weight_min": 0.06754723361481697,
+      "weight_max": 0.23552746968270347,
+      "nonpositive_weight_count": 0,
+      "normal_norm_range": [
+        0.9999999999999999,
+        1.0
+      ],
+      "boundary_cross_product_measure_range": [
+        1.2286705307114514,
+        2.108745577665563
+      ],
+      "raw_normal_vs_cross_product_max_error": 1.1102230246251565e-16,
+      "raw_normal_dot_toward_adjacent_fluid_range": [
+        -0.5381611820443143,
+        -0.26697971948542865
+      ],
+      "recomputed_raw_measure": 19.636767981395327,
+      "recomputed_raw_normal_integral": [
+        19.636767981395337,
+        0.0,
+        0.0
+      ],
+      "recomputed_raw_position_dot_normal": 294.55151972092995,
+      "ordinary_order12": {
+        "measure": 19.636767981395078,
+        "normal_integral": [
+          19.636767981395078,
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 294.55151972092625
+      },
+      "native_facet_order12": {
+        "measure": 19.63676798139508,
+        "normal_x": 19.63676798139508,
+        "normal_y": 3.9919258346510564e-18,
+        "normal_z": -6.252254972130146e-18,
+        "position_dot_normal": 294.55151972092625
+      },
+      "facet_minus_ordinary_measure": 3.552713678800501e-15,
+      "facet_minus_ordinary_position_dot_normal": 0.0,
+      "offset_membership_counts": {
+        "-0.01": {
+          "samples": 150,
+          "mesh_inside": 150,
+          "analytic_inside": 150
+        },
+        "-0.001": {
+          "samples": 150,
+          "mesh_inside": 150,
+          "analytic_inside": 150
+        },
+        "-0.0001": {
+          "samples": 150,
+          "mesh_inside": 150,
+          "analytic_inside": 150
+        },
+        "0.0001": {
+          "samples": 150,
+          "mesh_inside": 150,
+          "analytic_inside": 0
+        },
+        "0.001": {
+          "samples": 150,
+          "mesh_inside": 0,
+          "analytic_inside": 0
+        },
+        "0.01": {
+          "samples": 150,
+          "mesh_inside": 0,
+          "analytic_inside": 0
+        }
+      }
+    },
+    "wall": {
+      "saved_points": 2868,
+      "unique_faces": 478,
+      "weight_min": 0.05543994105814388,
+      "weight_max": 0.2120158042408952,
+      "nonpositive_weight_count": 0,
+      "normal_norm_range": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "boundary_cross_product_measure_range": [
+        1.0084413255316376,
+        1.8982388346909178
+      ],
+      "raw_normal_vs_cross_product_max_error": 3.330858727204011e-16,
+      "raw_normal_dot_toward_adjacent_fluid_range": [
+        -1.0651330475634095,
+        -0.03750616785193678
+      ],
+      "recomputed_raw_measure": 314.1651679033745,
+      "recomputed_raw_normal_integral": [
+        -6.350820671166196e-07,
+        1.0754509164965386e-14,
+        1.0352785157634807e-15
+      ],
+      "recomputed_raw_position_dot_normal": 785.4034325716857,
+      "ordinary_order12": {
+        "measure": 314.1653724548106,
+        "normal_integral": [
+          -6.350820675354759e-07,
+          -8.104628079763643e-15,
+          -8.715250743307479e-15
+        ],
+        "position_dot_normal": 785.4033853289444
+      },
+      "native_facet_order12": {
+        "measure": 314.1653724548102,
+        "normal_x": 0.00017455413230528172,
+        "normal_y": 0.0319053804975592,
+        "normal_z": 0.0031987007339709106,
+        "position_dot_normal": 784.8276870842827
+      },
+      "facet_minus_ordinary_measure": -3.979039320256561e-13,
+      "facet_minus_ordinary_position_dot_normal": -0.5756982446616803,
+      "offset_membership_counts": {
+        "-0.01": {
+          "samples": 2868,
+          "mesh_inside": 2868,
+          "analytic_inside": 2868
+        },
+        "-0.001": {
+          "samples": 2868,
+          "mesh_inside": 2868,
+          "analytic_inside": 2868
+        },
+        "-0.0001": {
+          "samples": 2868,
+          "mesh_inside": 2868,
+          "analytic_inside": 1900
+        },
+        "0.0001": {
+          "samples": 2868,
+          "mesh_inside": 2200,
+          "analytic_inside": 478
+        },
+        "0.001": {
+          "samples": 2868,
+          "mesh_inside": 0,
+          "analytic_inside": 0
+        },
+        "0.01": {
+          "samples": 2868,
+          "mesh_inside": 0,
+          "analytic_inside": 0
+        }
+      }
+    },
+    "sphere": {
+      "saved_points": 756,
+      "unique_faces": 126,
+      "weight_min": 0.0020721161261477937,
+      "weight_max": 0.008138224411693177,
+      "nonpositive_weight_count": 0,
+      "normal_norm_range": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "boundary_cross_product_measure_range": [
+        0.0376913736383024,
+        0.07286387766712465
+      ],
+      "raw_normal_vs_cross_product_max_error": 3.188872858294072e-16,
+      "raw_normal_dot_toward_adjacent_fluid_range": [
+        0.0026612067622843877,
+        0.11241994686430125
+      ],
+      "recomputed_raw_measure": 3.1418839226983106,
+      "recomputed_raw_normal_integral": [
+        7.109496810760395e-18,
+        -5.700798600948942e-17,
+        2.7723877158962453e-17
+      ],
+      "recomputed_raw_position_dot_normal": 1.5710073389133599,
+      "ordinary_order12": {
+        "measure": 3.1418883631893246,
+        "normal_integral": [
+          5.793976409762536e-16,
+          1.46150452851046e-15,
+          1.4710455076283324e-15
+        ],
+        "position_dot_normal": 1.5710059599954618
+      },
+      "native_facet_order12": {
+        "measure": 3.1418883631893255,
+        "normal_x": -4.544975507059235e-16,
+        "normal_y": -1.6705387073656652e-15,
+        "normal_z": -1.4693107841523556e-15,
+        "position_dot_normal": -1.5710059599954616
+      },
+      "facet_minus_ordinary_measure": 8.881784197001252e-16,
+      "facet_minus_ordinary_position_dot_normal": -3.1420119199909236,
+      "offset_membership_counts": {
+        "-0.01": {
+          "samples": 756,
+          "mesh_inside": 452,
+          "analytic_inside": 0
+        },
+        "-0.001": {
+          "samples": 756,
+          "mesh_inside": 756,
+          "analytic_inside": 0
+        },
+        "-0.0001": {
+          "samples": 756,
+          "mesh_inside": 756,
+          "analytic_inside": 343
+        },
+        "0.0001": {
+          "samples": 756,
+          "mesh_inside": 756,
+          "analytic_inside": 742
+        },
+        "0.001": {
+          "samples": 756,
+          "mesh_inside": 756,
+          "analytic_inside": 756
+        },
+        "0.01": {
+          "samples": 756,
+          "mesh_inside": 756,
+          "analytic_inside": 756
+        }
+      }
+    }
+  },
+  "raw_totals": {
+    "whole_boundary_normal_integral": [
+      3.26553647539635e-15,
+      2.774473359390406e-15,
+      -9.731798700229888e-15
+    ],
+    "sphere_normal_integral": [
+      -1.0581813203458523e-16,
+      1.7932703932910243e-16,
+      -8.083811398051921e-16
+    ],
+    "outer_pipe_normal_integral": [
+      3.3713546074309354e-15,
+      2.5951463200613034e-15,
+      -8.923417560424696e-15
+    ],
+    "boundary_position_dot_normal": 1179.7097963630931,
+    "expected_three_times_mapped_volume": 1176.5677375935966,
+    "divergence_theorem_relative_defect": 0.002670529429884687
+  },
+  "ordinary_totals": {
+    "4": {
+      "whole_boundary_normal_integral": [
+        -3.802290242643086e-15,
+        1.6401810465360711e-15,
+        -1.169203622808368e-15
+      ],
+      "sphere_normal_integral": [
+        -4.163336342344337e-17,
+        1.968911145233676e-16,
+        -5.898059818321144e-17
+      ],
+      "outer_pipe_normal_integral": [
+        -3.760656879219643e-15,
+        1.4432899320127035e-15,
+        -1.1102230246251565e-15
+      ],
+      "boundary_position_dot_normal": 1179.709796363095,
+      "expected_three_times_mapped_volume": 1176.5677375935966,
+      "divergence_theorem_relative_defect": 0.002670529429886233
+    },
+    "12": {
+      "whole_boundary_normal_integral": [
+        -3.573381282713506e-15,
+        -6.643123551253183e-15,
+        -7.244205235679146e-15
+      ],
+      "sphere_normal_integral": [
+        5.793976409762536e-16,
+        1.46150452851046e-15,
+        1.4710455076283324e-15
+      ],
+      "outer_pipe_normal_integral": [
+        -4.1527789236897594e-15,
+        -8.104628079763643e-15,
+        -8.715250743307479e-15
+      ],
+      "boundary_position_dot_normal": 1179.7097477414313,
+      "expected_three_times_mapped_volume": 1176.5677375935966,
+      "divergence_theorem_relative_defect": 0.002670488104884658
+    },
+    "16": {
+      "whole_boundary_normal_integral": [
+        3.573733648419564e-15,
+        -1.9220736113823023e-15,
+        -1.5543122344752192e-15
+      ],
+      "sphere_normal_integral": [
+        4.683753385137379e-17,
+        7.424616477180734e-16,
+        3.885780586188048e-16
+      ],
+      "outer_pipe_normal_integral": [
+        3.52689611456819e-15,
+        -2.6645352591003757e-15,
+        -1.942890293094024e-15
+      ],
+      "boundary_position_dot_normal": 1179.7097477414375,
+      "expected_three_times_mapped_volume": 1176.5677375935966,
+      "divergence_theorem_relative_defect": 0.002670488104889876
+    }
+  },
+  "facet_relative_divergence_defect": 0.0004893046090108528,
+  "all_element_relative_divergence_defect": 0.0004038815483416214,
+  "all_element_minus_exterior_facet_position_moment": 0.10050601722991814,
+  "hypothetical_sphere_only_sign_change": {
+    "status": "arithmetic illustration from saved moments; not an executed repair or accepted normal field",
+    "boundary_position_dot_normal": 1176.5677358214402,
+    "relative_divergence_defect": 1.5062085092904702e-09
+  },
+  "ordinary_order12_vs16_max_absolute_moment_difference": 4.092726157978177e-12,
+  "rule_provenance": {
+    "runtime_saved_samples": {
+      "tetrahedron_requested_order": 4,
+      "points_per_tetrahedron": 14,
+      "triangle_requested_order": 4,
+      "points_per_triangle": [
+        6
+      ]
+    },
+    "source_inferred_aggregate_rules": {
+      "volume_order": 12,
+      "tetrahedron_points_per_element": 343,
+      "ordinary_triangle_orders": [
+        4,
+        12,
+        16
+      ],
+      "ordinary_triangle_points_per_face": {
+        "4": 6,
+        "12": 49,
+        "16": 81
+      },
+      "P0_order": 0,
+      "facet_bonus_order": 12,
+      "facet_actual_triangle_order": 12,
+      "facet_points_per_face": 49
+    },
+    "qualification": "aggregate reference nodes/weights were not exported by native forms; selections follow exact pinned source and config, not direct runtime enumeration"
+  },
+  "inputs": [
+    {
+      "path": "artifacts/g1-normal01/output/result.json",
+      "sha256": "568c4910393842d6624f1504c875633fa82bdf615c8ea1904d3c9d1e5f9a839e"
+    },
+    {
+      "path": "artifacts/g1-normal01/output/volume_rule.npz",
+      "sha256": "e44e104262aa9e4f1ec4996abe9bea8bb004d4a05cfff3b18f6707016fa63b4f"
+    },
+    {
+      "path": "artifacts/g1-normal01/output/boundary_samples.json",
+      "sha256": "3a1c7503780b86d9aed4150b6468a25e71c6fda6ff06371faf4c13e4dee1c5d2"
+    },
+    {
+      "path": "artifacts/g1-normal01/output/mesh_record.json",
+      "sha256": "fc8349a09c1a81ff361b0122096f9135471d6c391cffd74f66210ce6cdadb053"
+    },
+    {
+      "path": "artifacts/g1-normal01/output/policy.json",
+      "sha256": "eacab0379ed9db8c78f5a433d573e010dc01bd4044c3da3a71b36116a0e36a7c"
+    }
+  ],
+  "generator_sha256": "c6c6e721ab24f8eea0b7a122a5535f7f6b583a4620e0af5b6b2cc9a6af2e35ca"
+}

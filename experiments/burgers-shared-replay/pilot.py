@@ -117,6 +117,7 @@ def main():
         assert spec['file']==f'h{k}.npz' and spec['k']==k and HC.sha_file(path)==spec['sha256']
         with np.load(path) as z: raw[k]={n:np.asarray(z[n]) for n in z.files}
         assert int(raw[k]['k'])==k and int(raw[k]['steps'])==200000
+        assert 'hB' not in raw[k]
     for k in (16,32):
         assert np.array_equal(raw[k]['h0_w'],raw[64]['h0_w'][:k])
         assert np.array_equal(raw[k]['h_lin'],raw[64]['h_lin'][:k])

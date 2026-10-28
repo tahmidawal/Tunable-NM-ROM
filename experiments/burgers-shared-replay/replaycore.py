@@ -118,6 +118,9 @@ def make_head_evolve(hz, nl, nlJ, K, trust, budget=600, ridge=1e-10, solver='lu'
             z2, rn, it, reason, gn, rej, lamn = lm(zi, args, tol, sch['gtol'], lam0)
             if force_failure_step is not None:
                 reason = jnp.where(k == force_failure_step, jnp.int32(3), reason)
+            if stop_on_invalid:
+                finite_return = jnp.all(jnp.isfinite(z2)) & jnp.isfinite(rn) & jnp.isfinite(gn)
+                reason = jnp.where(finite_return, reason, jnp.int32(3))
             conv = (gn <= sch['gtol']) | (rn <= tol)
             ok = jnp.isfinite(rn) & conv & (reason != 0) & (reason != 3)
             if stop_on_invalid:
@@ -201,7 +204,8 @@ def make_head_query(pf, K, L, trust, mutation=None, budget=600, nrec=0, nstep=NS
     def query(u0, nu, data, cold, sch):
         z0, scale, ic = initialize(u0, cold)
         if stop_on_invalid:
-            ic_ok = ((ic['ic_reason'] == 1) | (ic['ic_reason'] == 4)) & jnp.all(jnp.isfinite(z0)) & jnp.isfinite(ic['ic_gn'])
+            ic_ok = (((ic['ic_reason'] == 1) | (ic['ic_reason'] == 4)) & jnp.all(jnp.isfinite(z0)) &
+                     jnp.isfinite(ic['ic_gn']) & jnp.isfinite(ic['ic_rn']))
             Z, st = evolve(z0, nu, scale, data, sch, initial_valid=ic_ok)
         else:
             Z, st = evolve(z0, nu, scale, data, sch)

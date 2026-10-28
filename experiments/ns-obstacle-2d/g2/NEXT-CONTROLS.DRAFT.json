@@ -1,0 +1,135 @@
+{
+  "status": "source_only_prospective_not_released",
+  "measured_h1_sha256": "a64bc71821c23528359720438ad95c1d0f5f5beb805f56d6f20ffb869dde9aed",
+  "measured_h1": {
+    "cells": 1480,
+    "dofs": 16912,
+    "points": 72520,
+    "nnz": 747368,
+    "peak_rss_bytes": 355868672,
+    "reference_pipeline_seconds": 13.237285164184868
+  },
+  "projection_assumptions": "h^-2 and domain-length mesh scaling; asymptotic p DOF scaling; these are not actual counts or memory guarantees",
+  "cases": [
+    {
+      "case": "h2_expected",
+      "projected": {
+        "elements": 5920,
+        "dofs": 67648,
+        "volume_points": 290080
+      },
+      "producer_cap_violations": [],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h3_if_needed",
+      "projected": {
+        "elements": 23680,
+        "dofs": 270592,
+        "volume_points": 1160320
+      },
+      "producer_cap_violations": [
+        "elements",
+        "dofs",
+        "volume_points"
+      ],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h2_p4_g4",
+      "projected": {
+        "elements": 5920,
+        "dofs": 126071,
+        "volume_points": 290080
+      },
+      "producer_cap_violations": [
+        "dofs"
+      ],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h2_p3_g4",
+      "projected": {
+        "elements": 5920,
+        "dofs": 67648,
+        "volume_points": 290080
+      },
+      "producer_cap_violations": [],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h2_solver_100x",
+      "projected": {
+        "elements": 5920,
+        "dofs": 67648,
+        "volume_points": 290080
+      },
+      "producer_cap_violations": [],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h2_quadrature_plus4",
+      "projected": {
+        "elements": 5920,
+        "dofs": 67648,
+        "volume_points": 479520
+      },
+      "producer_cap_violations": [],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h2_upstream_extension",
+      "projected": {
+        "elements": 6458,
+        "dofs": 73798,
+        "volume_points": 316451
+      },
+      "producer_cap_violations": [],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h2_downstream_extension",
+      "projected": {
+        "elements": 11840,
+        "dofs": 135296,
+        "volume_points": 580160
+      },
+      "producer_cap_violations": [
+        "dofs",
+        "volume_points"
+      ],
+      "ROM_point_cap_violation": true
+    },
+    {
+      "case": "h2_symmetric_outlet_long_domain",
+      "projected": {
+        "elements": 11840,
+        "dofs": 135296,
+        "volume_points": 580160
+      },
+      "producer_cap_violations": [
+        "dofs",
+        "volume_points"
+      ],
+      "ROM_point_cap_violation": true
+    }
+  ],
+  "next_decisions": [
+    "Wait for actual ladder02 h2 and complete common-rule comparisons; no extrapolated admission",
+    "If h2 fails physical gates or two successive differences, review refined h ladder and producer capacity using actual h2 counts before submission",
+    "Run p4/g4 and p3/g4, 100x solver tightening, +4 quadrature and domain controls on the selected qualified h level",
+    "Preserve symmetric-traction long outlet as separate BVP, never substitute into DFG reference",
+    "Qualify the full registered parameter family; Re20 alone does not admit other Reynolds numbers",
+    "Use one binary mesh and layout for training/dev/validation with explicit exact hashes; export one certified common Stokes lift and test immutable reuse natively",
+    "Resolve downstream ROM capacity separately; do not weaken producer quadrature or coarsen reference to fit old adapter caps"
+  ],
+  "admission_evidence": [
+    "per-case geometry/trace/divergence/mass/residual/force/benchmark diagnostics",
+    "two successive h field/force differences and p plus independent geometry comparison",
+    "solver/quadrature/domain comparisons with exact pressure poles",
+    "all constituents of conditional reference uncertainty with unresolved/nondecreasing cases rejected",
+    "source-bound saved-array independent review and complete checksum-backed retention"
+  ],
+  "physical_admission": false,
+  "training_released": false
+}

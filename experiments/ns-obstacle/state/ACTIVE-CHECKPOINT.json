@@ -1,9 +1,18 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6616720,
+      "attempt": "g2-crossp02"
+    },
+    {
+      "job_id": 6616726,
+      "attempt": "native-capacity04"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
-    "Retain crossp6616304 packaging failure; review corrected dependency metadata packages before fresh release; solverquad not submitted",
+    "Collect/audit crossp02 6616720 and capacity04 6616726; corrected solverquad/domains reviewed but no execution release",
     "Complete adopted P4 p/geometry/solver/quadrature/domain and population qualification; no P3 metric splicing",
     "Complete point-block ROM production capacity and strong FOM output equivalence before training"
   ],
@@ -23,7 +32,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T21:40:18.927038+00:00",
+  "last_checkpoint_utc": "2026-10-28T21:47:23.621036+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {

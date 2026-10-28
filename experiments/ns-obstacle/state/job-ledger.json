@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "dependency_package_repair_before_replacement_release",
+  "status": "corrected_crossp_and_capacity_controls_submitted",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -615,9 +615,50 @@
       "training_released": false,
       "failure": "dependency metadata REPAIR.json omitted; no scientific execution",
       "collection": "owner collecting original failure"
+    },
+    {
+      "job_id": 6616720,
+      "lane": "2d",
+      "attempt": "g2-crossp02",
+      "source_commit": "a886389af6b2182f39ed84cb7fc79d931183e55d",
+      "submitted_utc": "2026-10-28T21:46:03.451819+00:00",
+      "input_manifest_sha256": "c6bd0fed69d7da17c0b0049c22d1fa39138c705910e83977e7996e2e48e74db9",
+      "source_checksums_sha256": "61a41f9ca3827f99b846f8355167fa80242a7d2ce8895aced4b896ddf780e65c",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-crossp02",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true
+    },
+    {
+      "job_id": 6616726,
+      "lane": "rom",
+      "attempt": "native-capacity04",
+      "source_commit": "b06667963",
+      "submitted_utc": "2026-10-28T21:46:08Z",
+      "input_manifest_sha256": "8a082f003c81a1bb1ce9f3a4d329d667f85d9deba768e92e2c29a5abfd95246f",
+      "source_checksums_sha256": "c9bc155208380ca3077aa1bfa14d0a7b6a8107d050304e9fe02b6afc96d16e52",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-capacity04",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false,
+      "single_submission": true
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6616720,
+    6616726
+  ],
   "completed_gpu_hours": 0.3877777777777778,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
   "total_allocated_gpu_hours_completed": 0.6313888888888889

@@ -43,7 +43,7 @@ def source_digest():
     root = Path(__file__).parent
     names = ('pilot2d.py', 'MODEL-CONTRACT.json', 'bank.py', 'geometry.py', 'interpolation.py', 'metrics.py',
              'quadrature.py', 'solver.py', 'spaces.py', 'weak.py', 'timing.py', 'train_bank.py',
-             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py')
+             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py', 'fom_bridge2d.py')
     return hashlib.sha256(json.dumps({n: sha_file(root/n) for n in names}, sort_keys=True).encode()).hexdigest()
 
 

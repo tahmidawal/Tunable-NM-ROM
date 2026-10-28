@@ -19,7 +19,7 @@ def array_hash(*arrays):
     return h.hexdigest()
 
 
-def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_seconds=1800.):
+def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_seconds=1800.,evidence_directory=None):
     """Only trained max-r bank; snapshots [case,point,component] in velocity/U units."""
     if admission.get("gate")!="G2-steady" or admission.get("passed") is not True or admission.get("split")!="training":
         raise RuntimeError("G2-steady reviewed training admission required")
@@ -40,6 +40,11 @@ def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_
         raise ValueError("training array provenance mismatch")
     if not 1<=steps<=3000 or not 0<max_seconds<=1800:
         raise ValueError("recipe exceeds fixed pilot step/time cap")
+    if evidence_directory is None:raise ValueError("fresh training evidence directory required")
+    from training_evidence import TrainingEvidence
+    evidence=TrainingEvidence(evidence_directory,{'training_array_sha256':digest,'admission':admission,
+        'step_cap':steps,'time_cap_seconds':max_seconds,'architecture':{'rank':8,'width':64,'depth':2},
+        'optimizer':'Adam constant learning rate 0.001','precision':'float64','matmul_precision':'highest'})
     # Import only after all admission checks. Any invocation must be under jaxrun locally.
     import jax
     jax.config.update("jax_enable_x64",True)
@@ -79,21 +84,37 @@ def train(points,weights,velocity_corrections,geometry,admission,steps=3000,max_
 
     start=time.perf_counter()
     history=[]
-    for i in range(steps):
-        if time.perf_counter()-start>=max_seconds:
-            break
-        params,optstate,loss=update(params,optstate,inp,b,sw,target)
-        value=float(loss) # synchronize: the time cap includes device work and compilation
-        if not np.isfinite(value):
-            raise RuntimeError("nonfinite training objective; retain job log and stop")
-        history.append({"step":i+1,"pre_update_relative_squared_loss":value,"elapsed_seconds":time.perf_counter()-start})
-    layers=[(np.asarray(ww),np.asarray(bb)) for ww,bb in params]
-    raw=FrozenBank(geometry,layers,np.eye(8),{})
-    vals=raw.values_blocked(x)
-    transform,ordering=ordered_transform(vals,y,w)
+    try:
+        evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'initial')
+        for i in range(steps):
+            if time.perf_counter()-start>=max_seconds:
+                break
+            params,optstate,loss=update(params,optstate,inp,b,sw,target)
+            value=float(loss) # synchronize: the time cap includes device work and compilation
+            row={"step":i+1,"pre_update_relative_squared_loss":value if np.isfinite(value) else None,
+                 "elapsed_seconds":time.perf_counter()-start,"loss_finite":bool(np.isfinite(value))}
+            history.append(row);evidence.step(row)
+            if not np.isfinite(value):
+                raise RuntimeError("nonfinite training objective; retain job log and stop")
+            if i==0 or (i+1)%100==0:
+                evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'periodic')
+        evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'loop_complete')
+    except Exception as exc:
+        evidence.checkpoint(params,optstate,jax,time.perf_counter()-start,'failed')
+        evidence.finish('failed',time.perf_counter()-start,repr(exc))
+        raise
+    try:
+        layers=[(np.asarray(ww),np.asarray(bb)) for ww,bb in params]
+        raw=FrozenBank(geometry,layers,np.eye(8),{})
+        vals=raw.values_blocked(x)
+        transform,ordering=ordered_transform(vals,y,w)
+    except Exception as exc:
+        evidence.finish('ordering_failed',time.perf_counter()-start,repr(exc));raise
+    evidence.finish('completed',time.perf_counter()-start)
     metadata={"trained":True,"seed":27102027,"width":64,"depth":2,"rank":8,
               "steps_executed":len(history),"steps_cap":steps,"time_cap_seconds":max_seconds,
               "seconds":time.perf_counter()-start,"training_array_sha256":digest,
               "admission":admission,"ordering":ordering,"loss":"weighted velocity projection QR; no ridge",
-              "optimizer":"Adam constant learning rate 0.001","history":history}
+              "optimizer":"Adam constant learning rate 0.001","history":history,
+              "training_evidence_directory":str(evidence.path),"last_checkpoint":evidence.last_checkpoint}
     return FrozenBank(geometry,layers,transform,metadata)

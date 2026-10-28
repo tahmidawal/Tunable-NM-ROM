@@ -43,7 +43,7 @@ def source_digest():
     root = Path(__file__).parent
     names = ('pilot2d.py', 'MODEL-CONTRACT.json', 'bank.py', 'geometry.py', 'interpolation.py', 'metrics.py',
              'quadrature.py', 'solver.py', 'spaces.py', 'weak.py', 'timing.py', 'train_bank.py',
-             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py')
+             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py')
     return hashlib.sha256(json.dumps({n: sha_file(root/n) for n in names}, sort_keys=True).encode()).hexdigest()
 
 
@@ -111,13 +111,15 @@ def train_from_preparation(directory, release_path, output_path):
     admission = {'gate': 'G2-steady', 'passed': True, 'split': 'training',
         'Re': TRAIN_RE.tolist(), 'review_record': release['reference_admission_sha256'],
         'reference_manifest_sha256': meta['manifest_sha256'],
-        'array_sha256': meta['training_array_sha256']}
+        'array_sha256': meta['training_array_sha256'],
+        'source_sha256':release['source_sha256'],'adapter_manifest_sha256':release['adapter_manifest_sha256']}
     # The passed value above is a translation of the already checked, genuine producer
     # admission, never a way to run against smoke or synthetic reference data.
     target = Path(output_path)
     if target.exists(): raise FileExistsError('bank output already exists')
     bank = train(data['points_physical'], data['weights_dimensionless'],
-                 data['velocity_corrections'], CHANNEL, admission)
+                 data['velocity_corrections'], CHANNEL, admission,
+                 evidence_directory=target.with_name(target.name+'.training'))
     bank.save(target)
     return bank
 

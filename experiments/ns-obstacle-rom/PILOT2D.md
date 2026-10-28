@@ -37,3 +37,12 @@ integration and failed on its intentionally non-native stub; its patch now targe
 batched helper. The retained native array serialization then passes unchanged, including
 dimensionless gradient conversion and all original points. This fixture tests storage,
 while native-batch03 supplies the actual native evaluation evidence.
+
+The training entry now requires a fresh evidence directory. It keeps each completed
+step's pre-update loss and elapsed time, initial/first/every-hundredth/final parameter
+and Adam-state checkpoints, exact input/source/configuration and parameter hashes,
+optimizer-tree structure, and host/device memory records. Failed objective or ordering
+stages retain their completed progress. No resume API or retry authorization is added.
+A future separately reviewed resume must restore the exact optimizer state and immutable
+point/snapshot order and consume only the remaining original cumulative step/time budget.
+Initialization is seeded; the training loop has no stochastic operations after it.

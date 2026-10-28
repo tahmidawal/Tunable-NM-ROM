@@ -1,0 +1,7 @@
+# Release saved-state producer readout proof
+
+Release one fresh g2-export-batch01 allocation from d57f23e9a0f6cc56ed72596027881bc16e831329, inventory19d1b41b4a721dedb1676c2cfe416b453c9bf54d15b07f84676b31b189b99fb9. Independent and coordinator reviews verified all41 inputs,15 exact runtime files and dependency metadata closure. The exact runtime bundle is retained separately here.
+
+Re-evaluate the retained P4 state using original scalar and proposed batched readout, preserving every complete volume/boundary/gradient/geometry array and alternating three diagnostic repetitions. Each invocation retains its own returned arrays and timing, with exact lossless deduplication and GPU burn before each timed block. These timings characterize readout resource cost only; they are not the primary seven-repetition matched-ROM/FOM comparison. No PDE solve, production switch, reference admission or training is authorized.
+
+One GPU/16CPU/64GiB,48GiB process guard,900seconds control process and1200seconds allocation. Fresh namespace, exact hashes, GPU/f64/highest, queue-before/after, two-job maximum, local/remote disk reserves and complete failure retention remain mandatory. No automatic retry. Measure cost before giving batching any population-budget credit. The upstream domain failure remains failed and unresolved; this implementation proof is useful under either subsequently reviewed fixed geometry.

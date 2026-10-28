@@ -123,7 +123,7 @@ def main():
             if sum(row.file_size for row in archive.infolist())>rex.CAPS['archive_bytes']:raise MemoryError('rule archive cap')
         with np.load(folder/'full_rule.npz',allow_pickle=False) as data:
             points=data['points'].copy();weights=data['weights'].copy()
-        if (len(points)>rex.CAPS['volume_points'] or points.shape!=(len(weights),2)
+        if (len(points)>rex.volume_point_cap(cfg) or points.shape!=(len(weights),2)
             or points.dtype!=np.dtype('float64') or weights.dtype!=np.dtype('float64')
             or np.any(weights<=0) or not np.isfinite(points).all() or not np.isfinite(weights).all()):
             raise ValueError('invalid or oversized positive full rule')

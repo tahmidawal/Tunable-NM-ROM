@@ -49,6 +49,7 @@ def run_case(cfg, out):
     L = xmax-xmin
     kind = cfg['kind']
     reference_controls=rex.enabled(cfg)
+    volume_point_limit=rex.volume_point_cap(cfg)
     if reference_controls:
         campaign_file=cfg.get('campaign_file','campaign-A2.json')
         if campaign_file not in ('campaign-A2.json','g2/campaign-A6.json'):raise ValueError('unregistered campaign source')
@@ -335,7 +336,7 @@ def run_case(cfg, out):
         ir=ng.IntegrationRule(el.type,qo)
         tr=mesh.GetTrafo(el)
         for ip in ir:
-            if reference_controls and len(points)>=rex.CAPS['volume_points']:
+            if reference_controls and len(points)>=volume_point_limit:
                 raise MemoryError('reference export exceeds reviewed producer volume-point cap')
             mip=tr(ip)
             jac=np.array(mip.jacobi,dtype=float,copy=True)

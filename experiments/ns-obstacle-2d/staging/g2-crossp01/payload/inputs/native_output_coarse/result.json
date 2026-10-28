@@ -1,0 +1,4726 @@
+{
+  "status": "completed_control_not_reference_admission",
+  "configuration": {
+    "U": 0.2,
+    "D": 0.1,
+    "nu": 0.001,
+    "H": 0.41,
+    "xmin": 0.0,
+    "xmax": 2.2,
+    "center": [
+      0.2,
+      0.2
+    ],
+    "radius": 0.05,
+    "outlet": "gradient",
+    "velocity_order": 3,
+    "pressure_order": 2,
+    "geometry_order": 3,
+    "maxh": 0.04,
+    "obstacle_h": 0.01,
+    "assembly_bonus_order": 6,
+    "diagnostic_order": 12,
+    "threads": 16,
+    "seed": 27102026,
+    "newton_max": 30,
+    "nonlinear_relative_tolerance": 1e-10,
+    "linear_relative_tolerance": 1e-10,
+    "residual_floor": 1.0,
+    "damping_sequence": [
+      1,
+      0.5,
+      0.25,
+      0.125,
+      0.0625,
+      0.03125,
+      0.015625
+    ],
+    "armijo": 0.0001,
+    "inverse_backend": "umfpack",
+    "max_elements": 20000,
+    "max_dofs": 100000,
+    "max_nnz": 12000000,
+    "factor_fill_estimate": 100,
+    "memory_stop_gib": 48,
+    "jacobian_steps": [
+      0.01,
+      0.001,
+      0.0001
+    ],
+    "jacobian_state_perturbation": 0.1,
+    "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+    "design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+    "release": "G2_steady_control_candidate",
+    "precision": "float64",
+    "kind": "dfg",
+    "reference_export_controls": true,
+    "export_common_stokes_lift": false,
+    "campaign_file": "g2/campaign-A6.json",
+    "split": "control",
+    "purpose": "initial spatial refinement candidate; no reference admission"
+  },
+  "scalar_return_contract": [
+    {
+      "label": "normal_P0_constant",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "oriented_normal_moment",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "normal_geometry_volume",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "volume_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "boundary_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "volume_pressure_point",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "boundary_pressure_point",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "reaction_inner_product",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "exact_pressure_probe",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    }
+  ],
+  "geometry": {
+    "volume": 0.8941460083589442,
+    "volume_error": {
+      "numerator": 1.000708138576556e-08,
+      "denominator": 0.8941460183660256,
+      "value": 1.1191775370260703e-08,
+      "definition": "area error / exact fluid area"
+    },
+    "boundary_measures": {
+      "inlet": 0.4099999999999972,
+      "obstacle": 0.3141594668543606,
+      "outlet": 0.40999999999999726,
+      "wall_bottom": 2.199999999999986,
+      "wall_top": 2.1999999999999864
+    },
+    "element_count": 1480,
+    "ndof": 16912,
+    "velocity_ndof": 13794,
+    "pressure_ndof": 3118,
+    "geometry_order": 3,
+    "coordinate_derivative_convention": "component,coordinate",
+    "obstacle_perimeter_error": {
+      "numerator": 2.0149538126901234e-07,
+      "denominator": 0.3141592653589793,
+      "value": 6.413797187829883e-07,
+      "definition": "perimeter error / exact circumference"
+    },
+    "minimum_sampled_jacobian_determinant": 0.00010035412985276618,
+    "max_sampled_obstacle_distance": 2.369030241283765e-07,
+    "mapped_weight_sum": 0.8941460083589441,
+    "analytic_obstacle_quadrature": {
+      "obstacle_present": true,
+      "sign": "radius from exact center minus exact radius; negative inside solid",
+      "minimum_signed_distance": 1.311671413136567e-05,
+      "minimum_signed_distance_over_D": 0.0001311671413136567,
+      "candidate_excluded_count": 0,
+      "candidate_excluded_weight": 0.0,
+      "candidate_excluded_weight_fraction": 0.0,
+      "actually_removed_count": 0,
+      "actually_removed_weight": 0.0,
+      "no_obstacle_quadrature": true,
+      "classification": "strict signed distance < 0; no clipping or tolerance offset"
+    },
+    "sampled_obstacle_normal_dot_radial_range": [
+      -1.0000000000000002,
+      -0.9999999635166638
+    ]
+  },
+  "metrics": {
+    "mass": {
+      "numerator": 2.7755575615628914e-17,
+      "denominator": 0.08199999999999949,
+      "value": 3.384826294588913e-16,
+      "definition": "abs(Qout-Qin)/abs(Qin)"
+    },
+    "divergence": {
+      "numerator": 0.0011429459794054754,
+      "denominator": 0.18911858801915207,
+      "value": 0.006043541205424657,
+      "definition": "D||div u||/(U sqrt(volume))"
+    },
+    "boundary_trace": {
+      "numerator": 3.885780586188048e-16,
+      "denominator": 0.2,
+      "value": 1.942890293094024e-15,
+      "definition": "maximum sampled essential FE trace error/U"
+    },
+    "Qin": 0.08199999999999949,
+    "Qout": 0.08199999999999946,
+    "mass_scope": "physical inlet/outlet mass",
+    "global_boundary_flux": {
+      "numerator": 0.0,
+      "denominator": 0.16399999999999892,
+      "value": 0.0,
+      "definition": "abs(total boundary flux) / total absolute boundary flux"
+    },
+    "independent_residual": {
+      "numerator": 1.5368287307512772e-15,
+      "denominator": 1.0,
+      "value": 1.5368287307512772e-15,
+      "definition": "scaled free-DOF residual / max(initial Stokes scaled residual, fixed floor)"
+    },
+    "independent_assembly_agreement": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0,
+      "definition": "independent coefficient residual versus operator apply"
+    },
+    "pressure_mean": 0.01987480372604218,
+    "pressure_gauge": "fixed by natural outlet, no pin and no shift",
+    "row_scale_momentum": 0.004000000000000001,
+    "row_scale_continuity": 0.020000000000000004,
+    "residual_initial_stokes_norm": 0.9261030449217671,
+    "residual_floor": 1.0,
+    "residual_mode": "absolute in scaled row units",
+    "stokes_linear_residual": {
+      "numerator": 9.178062365797534e-16,
+      "denominator": 1.041170950669494,
+      "value": 8.815134882408941e-16,
+      "definition": "scaled linear residual / scaled RHS"
+    },
+    "energy": {
+      "terms": {
+        "dissipation": 0.005904099976194811,
+        "convection_boundary": -1.936252367030133e-05,
+        "physical_traction_work": -0.005884670943039423,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -1.3067439437557083e-08,
+        "finite_divergence_pressure": 1.584915276779166e-19,
+        "finite_divergence_viscous": -2.816808707741479e-08
+      },
+      "individual_contributions": {
+        "convective_flux_inlet": -0.0025302857142857,
+        "convective_flux_obstacle": 0.0,
+        "convective_flux_outlet": 0.0025109231906153976,
+        "convective_flux_wall_bottom": 0.0,
+        "convective_flux_wall_top": 0.0,
+        "traction_work_inlet": -0.005884525625950173,
+        "traction_work_obstacle": -0.0,
+        "traction_work_outlet": -1.4531708925028083e-07,
+        "traction_work_wall_bottom": 1.7760316520874845e-21,
+        "traction_work_wall_top": -2.41673760217794e-21,
+        "dissipation": 0.005904099976194811,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -1.3067439437557083e-08,
+        "finite_divergence_pressure": 1.584915276779166e-19,
+        "finite_divergence_viscous_volume": -1.3063255118391416e-07,
+        "finite_divergence_viscous_inlet": 1.0273787276144697e-07,
+        "finite_divergence_viscous_obstacle": 0.0,
+        "finite_divergence_viscous_outlet": -2.734086549475972e-10,
+        "finite_divergence_viscous_wall_bottom": 0.0,
+        "finite_divergence_viscous_wall_top": 0.0
+      },
+      "physical_raw": {
+        "numerator": 6.650948508645296e-08,
+        "denominator": 0.01683022653540737,
+        "value": 3.951787870860238e-06,
+        "definition": "raw physical balance / sum absolute terms"
+      },
+      "corrected": {
+        "numerator": 2.5273958571639582e-08,
+        "denominator": 0.01683022653540737,
+        "value": 1.5017004386998782e-06,
+        "definition": "finite-divergence-corrected physical balance / sum absolute terms"
+      }
+    },
+    "gradient_energy": {
+      "terms": {
+        "dissipation": 0.005903822526257231,
+        "convection_boundary": -1.93625236703022e-05,
+        "gradient_traction_work": -0.005884421661188922,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -1.3067439437557092e-08,
+        "finite_divergence_pressure": 1.589758419265664e-19
+      },
+      "individual_contributions": {
+        "convective_flux_inlet": -0.0025302857142856998,
+        "convective_flux_obstacle": 0.0,
+        "convective_flux_outlet": 0.0025109231906153976,
+        "convective_flux_wall_bottom": 0.0,
+        "convective_flux_wall_top": 0.0,
+        "traction_work_inlet": -0.0058844228880774105,
+        "traction_work_obstacle": -0.0,
+        "traction_work_outlet": 1.2268884882270622e-09,
+        "traction_work_wall_bottom": 1.7760316520874845e-21,
+        "traction_work_wall_top": -2.41673760217794e-21,
+        "dissipation": 0.005903822526257231,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -1.3067439437557092e-08,
+        "finite_divergence_pressure": 1.589758419265664e-19
+      },
+      "corrected": {
+        "numerator": 2.5273958569202546e-08,
+        "denominator": 0.016829468613563665,
+        "value": 1.5017680682343746e-06,
+        "definition": "A2 gradient-form energy including body forcing and finite divergence"
+      }
+    },
+    "gradient_momentum": [
+      {
+        "terms": {
+          "convection": -6.148678447370076e-05,
+          "gradient_traction": 6.332589670167259e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -2.1953462383669136e-07
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": -0.019679999999999885,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": 0.01961851321552618,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "gradient_traction_inlet": -0.028468105985805077,
+          "gradient_traction_obstacle": 0.01115756553676846,
+          "gradient_traction_outlet": -1.6168484089667905e-08,
+          "gradient_traction_wall_bottom": 0.008651860459516453,
+          "gradient_traction_wall_top": 0.008722022054705927,
+          "body_force": -0.0,
+          "finite_divergence_convection": -2.1953462383669136e-07
+        },
+        "corrected": {
+          "numerator": 1.6195776041351318e-06,
+          "denominator": 0.0962983029554299,
+          "value": 1.6818340037463868e-05,
+          "definition": "A2 gradient-form momentum including body forcing and finite divergence"
+        }
+      },
+      {
+        "terms": {
+          "convection": -1.2882642886152052e-05,
+          "gradient_traction": 1.2340618577874495e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -4.354288435855326e-08
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": 0.0,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": -1.288264288615205e-05,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "gradient_traction_inlet": 5.0278233948136974e-06,
+          "gradient_traction_obstacle": 2.0029611285034168e-05,
+          "gradient_traction_outlet": 1.247253973965354e-09,
+          "gradient_traction_wall_bottom": -0.04425611932862582,
+          "gradient_traction_wall_top": 0.04424340126526987,
+          "body_force": -0.0,
+          "finite_divergence_convection": -4.354288435855326e-08
+        },
+        "corrected": {
+          "numerator": 5.855671926361096e-07,
+          "denominator": 0.08853750546160002,
+          "value": 6.613775592424822e-06,
+          "definition": "A2 gradient-form momentum including body forcing and finite divergence"
+        }
+      }
+    ],
+    "momentum": [
+      {
+        "terms": {
+          "convection": -6.148678447370076e-05,
+          "physical_traction": 7.29112195322079e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -2.195346238366903e-07,
+          "finite_divergence_viscous": -9.58532283053059e-06
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": -0.01967999999999988,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": 0.01961851321552618,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "physical_traction_inlet": -0.028469087202372487,
+          "physical_traction_obstacle": 0.011168129378735132,
+          "physical_traction_outlet": -1.3471052820753512e-08,
+          "physical_traction_wall_bottom": 0.008651860459516453,
+          "physical_traction_wall_top": 0.008722022054705925,
+          "body_force": -0.0,
+          "finite_divergence_convection": -2.195346238366903e-07,
+          "finite_divergence_viscous_inlet": 9.812165674114821e-07,
+          "finite_divergence_viscous_obstacle": -1.0563841966673157e-05,
+          "finite_divergence_viscous_outlet": -2.6974312689140656e-09,
+          "finite_divergence_viscous_wall_bottom": 0.0,
+          "finite_divergence_viscous_wall_top": 0.0
+        },
+        "corrected": {
+          "numerator": 1.619577604139861e-06,
+          "denominator": 0.09632139307249807,
+          "value": 1.6814308353294435e-05,
+          "definition": "physical momentum corrected for discrete divergence"
+        }
+      },
+      {
+        "terms": {
+          "convection": -1.2882642886152048e-05,
+          "physical_traction": 1.14084911875219e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -4.354288435855822e-08,
+          "finite_divergence_viscous": 9.321273903482079e-07
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": 0.0,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": -1.2882642886152052e-05,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "physical_traction_inlet": 5.027823394813613e-06,
+          "physical_traction_obstacle": 2.0286910873549305e-05,
+          "physical_traction_outlet": 1.247253974011103e-09,
+          "physical_traction_wall_bottom": -0.04425795962081305,
+          "physical_traction_wall_top": 0.044244052130478245,
+          "body_force": -0.0,
+          "finite_divergence_convection": -4.354288435855822e-08,
+          "finite_divergence_viscous_inlet": 0.0,
+          "finite_divergence_viscous_obstacle": -2.5729958851499073e-07,
+          "finite_divergence_viscous_outlet": 0.0,
+          "finite_divergence_viscous_wall_bottom": 1.8402921872352777e-06,
+          "finite_divergence_viscous_wall_top": -6.508652083720777e-07
+        },
+        "corrected": {
+          "numerator": 5.855671926404989e-07,
+          "denominator": 0.08854300237556827,
+          "value": 6.613364997007091e-06,
+          "definition": "physical momentum corrected for discrete divergence"
+        }
+      }
+    ],
+    "forces": {
+      "normalization": 0.0020000000000000005,
+      "reaction_force": [
+        0.011159425081207706,
+        2.1176789818716704e-05
+      ],
+      "reaction_coefficient": [
+        5.579712540603852,
+        0.01058839490935835
+      ],
+      "gradient_order12": {
+        "force": [
+          0.01115756553676846,
+          2.0029611285034114e-05
+        ],
+        "coefficient": [
+          5.5787827683842295,
+          0.010014805642517055
+        ]
+      },
+      "gradient_order16": {
+        "force": [
+          0.011157565536768463,
+          2.0029611285034087e-05
+        ],
+        "coefficient": [
+          5.5787827683842295,
+          0.010014805642517041
+        ]
+      },
+      "physical_symmetric_order12": {
+        "force": [
+          0.011168129378735132,
+          2.028691087354925e-05
+        ],
+        "coefficient": [
+          5.5840646893675645,
+          0.010143455436774623
+        ]
+      },
+      "physical_symmetric_order16": {
+        "force": [
+          0.011168129378735134,
+          2.028691087354917e-05
+        ],
+        "coefficient": [
+          5.584064689367565,
+          0.010143455436774583
+        ]
+      },
+      "pressure_probes": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.13196509973513598,
+          0.014728939016082769
+        ],
+        "difference": 0.11723616071905321,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      }
+    },
+    "prescribed_FE_essential_trace": {
+      "target": "prescribed FE Dirichlet trace; analytic-data approximation remains a separate diagnostic",
+      "method": "degree-p reference-edge polynomial; stationary-point maximum estimate and Chebyshev coefficient upper bound plus verified roundoff allowance",
+      "maximum_estimate_over_U": 0.0,
+      "upper_bound_over_U": 1e-12,
+      "roundoff_check_over_U": 1e-12,
+      "interval_arithmetic": false,
+      "elements": [
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 0,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 1,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 2,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 3,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 4,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 5,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 6,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 7,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 8,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 9,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 10,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 11,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 12,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 13,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 14,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 15,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 16,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 17,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 18,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 19,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 20,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 21,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 22,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 23,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 24,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 25,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 26,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 27,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 28,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 29,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 30,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 31,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 32,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 33,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 34,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 35,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 36,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 37,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 38,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 39,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 40,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 41,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 42,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 43,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 44,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 45,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 46,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 47,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 48,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 49,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 50,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 51,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 52,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 53,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 54,
+          "label": "wall_bottom"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 65,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 66,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 67,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 68,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 69,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 70,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 71,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 72,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 73,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 74,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 75,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 76,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 77,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 78,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 79,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 80,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 81,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 82,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 83,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 84,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 85,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 86,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 87,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 88,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 89,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 90,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 91,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 92,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 93,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 94,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 95,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 96,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 97,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 98,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 99,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 100,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 101,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 102,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 103,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 104,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 105,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 106,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 107,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 108,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 109,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 110,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 111,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 112,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 113,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 114,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 115,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 116,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 117,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 118,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 119,
+          "label": "wall_top"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 120,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 121,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 122,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 123,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 124,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 125,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 126,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 127,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 128,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 129,
+          "label": "inlet"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 130,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 131,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 132,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 133,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 134,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 135,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 136,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 137,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 138,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 139,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 140,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 141,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 142,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 143,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 144,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 145,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 146,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 147,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 148,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 149,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 150,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 151,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 152,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 153,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 154,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 155,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 156,
+          "label": "obstacle"
+        },
+        {
+          "degree": 3,
+          "maximum_estimate": 0.0,
+          "coefficient_norm_upper_bound_with_roundoff": 2e-13,
+          "independent_polynomial_check_max": 0.0,
+          "roundoff_allowance": 2e-13,
+          "stationary_candidates": [
+            0.0,
+            1.0
+          ],
+          "chebyshev_coefficients": [
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "element_number": 157,
+          "label": "obstacle"
+        }
+      ]
+    }
+  },
+  "elapsed_seconds": 11.67289353068918,
+  "normal_orientation": {
+    "passed": true,
+    "factors": {
+      "wall_bottom": 1,
+      "outlet": 1,
+      "wall_top": 1,
+      "inlet": 1,
+      "obstacle": -1
+    },
+    "certificate_sha256": "03ec6e90e0b6478e3a14503f0699b531076fba6a121844c12ca10a83905c4952"
+  },
+  "mesh_origin": {
+    "mode": "generated",
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "mesh_sha256": "fed6f71aab57eac2f9df7d27b10cfccf8514a99180c2446644f10b4fe7b9c409"
+  },
+  "reload_checks": {
+    "passed": true,
+    "policy": "saved_curved_binary_verified_fresh_process_no_recurve",
+    "threshold": 1e-10,
+    "checks": {
+      "solution_coefficients": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "stokes_coefficients": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "volume_points": {
+        "numerator": 0.0,
+        "denominator": 2.1999582265317117,
+        "value": 0.0
+      },
+      "volume_weights": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "volume_jacobians": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "volume_velocity": {
+        "numerator": 0.0,
+        "denominator": 0.398528805897498,
+        "value": 0.0
+      },
+      "volume_velocity_gradient": {
+        "numerator": 0.0,
+        "denominator": 30.1364383075192,
+        "value": 0.0
+      },
+      "volume_pressure": {
+        "numerator": 0.0,
+        "denominator": 0.13197480747088888,
+        "value": 0.0
+      },
+      "boundary_points": {
+        "numerator": 0.0,
+        "denominator": 2.2,
+        "value": 0.0
+      },
+      "boundary_weights": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "boundary_normals": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "boundary_raw_normals": {
+        "numerator": 0.0,
+        "denominator": 1.0,
+        "value": 0.0
+      },
+      "boundary_velocity": {
+        "numerator": 0.0,
+        "denominator": 0.29999222998624175,
+        "value": 0.0
+      },
+      "boundary_velocity_gradient": {
+        "numerator": 0.0,
+        "denominator": 30.493408851834257,
+        "value": 0.0
+      },
+      "boundary_pressure": {
+        "numerator": 0.0,
+        "denominator": 0.13198588140090156,
+        "value": 0.0
+      }
+    },
+    "curve_orders": {
+      "configured": 3,
+      "original": 3,
+      "reloaded": 3
+    },
+    "source_files": {
+      "mesh.vol.bin": "fed6f71aab57eac2f9df7d27b10cfccf8514a99180c2446644f10b4fe7b9c409",
+      "solution.sol": "176122d631ec834f710fae405b506dcb5aae63f91604b217661c186e2ef5dffa",
+      "stokes.sol": "c706ddc82879cd256836f903df8c64412d35b577554ed019ccea366b1836c9c4",
+      "full_rule.npz": "16680ca751baf7955e1d47460a0965e53755a3f994d188d93a820c6b6a6280cd",
+      "boundary_rule.json": "441bc14d39afba110d58c8183e4d03fbcdc55b7e819dcf6cc0eff374c8dd56cc",
+      "fe_layout.json": "c0d1e6bfe291760b96a1e0074ab3cd5d7ef31cbe9dfd93ebec1fdd4185debe18"
+    },
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "execution": {
+      "pid": 2545392,
+      "parent_pid": 2536148,
+      "producer_pid": 2536148,
+      "executable": "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "fresh_interpreter": true
+    },
+    "layout_sha256": "013ad4c230eca2c69cdc505571301bcb164bd2f33911b20b91f695126170f76f",
+    "normal_orientation": {
+      "passed": true,
+      "factors": {
+        "wall_bottom": 1,
+        "outlet": 1,
+        "wall_top": 1,
+        "inlet": 1,
+        "obstacle": -1
+      },
+      "certificate_sha256": "5b043108199f3d0ee2e3034a2d52cd2a112721b5138511a74ca3654994c3f58c"
+    },
+    "analytic_normal_checks": {
+      "passed": true,
+      "unit_normal_max_error": 2.220446049250313e-16,
+      "side_max_errors": {
+        "inlet": 0.0,
+        "outlet": 0.0,
+        "wall_top": 0.0,
+        "wall_bottom": 0.0
+      },
+      "closed_components": {
+        "outer_union": {
+          "normal_integral": [
+            1.5699247457590104e-16,
+            -3.3219954564955856e-16
+          ],
+          "numerator": 3.674277822963828e-16,
+          "boundary_measure_denominator": 5.219999999999966,
+          "value": 7.03884640414531e-17
+        },
+        "obstacle": {
+          "normal_integral": [
+            2.4448758989548125e-17,
+            2.168404344971009e-18
+          ],
+          "numerator": 2.4544730463631078e-17,
+          "boundary_measure_denominator": 0.3141594668543606,
+          "value": 7.812825349302503e-17
+        }
+      },
+      "tolerance": 1e-10,
+      "obstacle_orientation_max_dot_limit": -0.99,
+      "obstacle_normal_dot_radial_range": [
+        -1.0,
+        -0.9999999635166636
+      ]
+    },
+    "seconds": 4.335370554588735,
+    "peak_rss_bytes": 369512448
+  },
+  "timing_use": "reference generation and diagnostics only; not a tuned paired FOM query benchmark",
+  "reference_phase_seconds": {
+    "geometry_spaces_fields_forms": 0.29136551544070244,
+    "stokes_lift": 0.19718366023153067,
+    "stokes_checkpoint": 0.023273495957255363,
+    "newton_query": 2.38531157374382,
+    "independent_residual_and_Jacobian": 0.5508256498724222,
+    "reference_diagnostics_and_export": 3.2086007967591286,
+    "trace_certificate_and_reload": 5.0163328386843204,
+    "total": 11.67289353068918
+  },
+  "cpu_work": "NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration",
+  "peak_rss_bytes": 369512448,
+  "versions": {
+    "ngsolve": "6.2.2608",
+    "numpy": "2.5.0",
+    "python": "3.13.2"
+  },
+  "threading": {
+    "requested": 16,
+    "TaskManager": true,
+    "actual_effective_concurrency": "unmeasured; no performance claim"
+  },
+  "provenance": {
+    "execution_source_commit": "c18b38a3bf082069ab92d763d6660a11d73389cc",
+    "source_sha256": "1833004f401a5e36803a58b6ebc62ba99ca25afb65f6127064d1ff9a4d97a579",
+    "config_sha256": "56bce24fb1e0242ae85de96161802e6a33b65946dc9d6b1a515fd6f83588673b",
+    "job_id": "6614416",
+    "hostname": "pax009"
+  }
+}

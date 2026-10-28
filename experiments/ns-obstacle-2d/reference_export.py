@@ -19,7 +19,15 @@ import numpy as np
 from scalars import scalar_value
 
 ESSENTIAL='inlet|wall.*|obstacle'
-CAPS={'volume_points':1300000,'boundary_points':30000,'archive_bytes':2**30}
+CAPS={'volume_points':3000000,'boundary_points':30000,'archive_bytes':2**30}
+DEFAULT_VOLUME_POINTS=1300000
+
+def volume_point_cap(cfg):
+    cap=cfg.get('max_volume_points',DEFAULT_VOLUME_POINTS)
+    if type(cap) is not int or not 0<cap<=CAPS['volume_points']:
+        raise ValueError('invalid explicit volume point cap')
+    return cap
+
 RELOAD_TOL=1e-10
 POLYNOMIAL_CHECK_OVER_U=1e-12
 MESH_FILENAME='mesh.vol.bin'
@@ -242,14 +250,14 @@ def analytic_normal_certificate(boundary,cfg):
     return record
 
 
-def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None):
+def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None,volume_point_limit=None):
     points=[];weights=[];values=[];gradients=[];pressures=[];jacobians=[];normals=[];labels=[]
     derivative=ng.Grad(velocity)
     if boundary:derivative=ng.BoundaryFromVolumeCF(derivative)
     if boundary and normal is None:raise ValueError('reload boundary export requires verified ordinary-BND normal')
     raw_normal=ng.specialcf.normal(2)
     raw_normals=[]
-    cap=CAPS['boundary_points' if boundary else 'volume_points']
+    cap=CAPS['boundary_points'] if boundary else volume_point_cap({} if volume_point_limit is None else {'max_volume_points':volume_point_limit})
     for el in mesh.Elements(ng.BND if boundary else ng.VOL):
         tr=mesh.GetTrafo(el);ir=ng.IntegrationRule(el.type,order)
         for ip in ir:
@@ -307,7 +315,10 @@ def _reload_certificate(out,cfg,original_curve_order,original_layout,ng,request)
         with zipfile.ZipFile(out/'full_rule.npz') as archive:
             if sum(row.file_size for row in archive.infolist())>CAPS['archive_bytes']:raise MemoryError('reference archive exceeds adapter bound')
         with np.load(out/'full_rule.npz',allow_pickle=False) as archive:
-            data={name:archive[name] for name in archive.files}
+            points=archive['points']
+            if len(points)>volume_point_cap(cfg):raise MemoryError('saved full rule exceeds configuration point cap')
+            data={name:archive[name] for name in archive.files if name!='points'}
+            data['points']=points
         if any(a.dtype!=np.dtype('float64') or not np.isfinite(a).all() for a in data.values()):raise TypeError('reference arrays must already be finite float64')
         mesh=ng.Mesh(str(out/MESH_FILENAME))
         report['curve_orders']={'configured':cfg['geometry_order'],'original':original_curve_order,'reloaded':int(mesh.GetCurveOrder())}
@@ -321,7 +332,7 @@ def _reload_certificate(out,cfg,original_curve_order,original_layout,ng,request)
         for name,g in [('solution',solution),('stokes',stokes)]:
             report['checks'][name+'_coefficients']=relative_max_record(g.vec.FV().NumPy().copy(),data[name+'_coefficients'])
         uh,ph=solution.components
-        volume=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],False,ng)
+        volume=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],False,ng,volume_point_limit=volume_point_cap(cfg))
         scales={'points':cfg['D'],'weights':1.,'jacobians':1.,'velocity':cfg['U'],'velocity_gradient':cfg['U']/cfg['D'],'pressure':cfg['U']**2}
         for key,scale in scales.items():report['checks']['volume_'+key]=relative_max_record(volume[key],data[key],scale)
         from oriented_normals import fluid_outward_normal

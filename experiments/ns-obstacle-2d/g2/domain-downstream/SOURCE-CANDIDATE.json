@@ -1,0 +1,113 @@
+{
+  "status": "source_review_candidate_no_execution_release",
+  "files": [
+    {
+      "source": "g2/domain-downstream/PROVISION.json",
+      "destination": "REPAIR.json",
+      "sha256": "1d36073d6b840bfc78dbd4c2d164fc466f36d9aa0b028d67a9c32a3a74f84cc5",
+      "bytes": 183
+    },
+    {
+      "source": "fom.py",
+      "destination": "fom.py",
+      "sha256": "6f84664ebc1e2314a566396238b1889b694688c314d97df62219e98cb7e996ab",
+      "bytes": 38772
+    },
+    {
+      "source": "reference_export.py",
+      "destination": "reference_export.py",
+      "sha256": "63a985c4318fd5e23144d7292002748731277bb38940ab5f828254f36259967a",
+      "bytes": 26992
+    },
+    {
+      "source": "shared_lift.py",
+      "destination": "shared_lift.py",
+      "sha256": "26c30cf4b6f9ae570c01d5e7ac6cbfa33598a28bb6651a8ca8466028d8ef7b2d",
+      "bytes": 5524
+    },
+    {
+      "source": "oriented_normals.py",
+      "destination": "oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "bytes": 15221
+    },
+    {
+      "source": "scalars.py",
+      "destination": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
+      "source": "dependencies.py",
+      "destination": "dependencies.py",
+      "sha256": "273de536a2bc9df980b36c6de55f3d0918133ad1d02f161dd9ad5d968eb51a72",
+      "bytes": 8290
+    },
+    {
+      "source": "preflight.py",
+      "destination": "preflight.py",
+      "sha256": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+      "bytes": 10414
+    },
+    {
+      "source": "DEPENDENCIES.json",
+      "destination": "DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432
+    },
+    {
+      "source": "benchmark.json",
+      "destination": "benchmark.json",
+      "sha256": "e5ff1685142a61e963a23e2b0fea4954b1ef779d8d9cb513482cc1c2473cfd82",
+      "bytes": 840
+    },
+    {
+      "source": "manufactured_witness.json",
+      "destination": "manufactured_witness.json",
+      "sha256": "1b55be8cea8261ce84c7f06e56f0ee3a4cb0a78578a0bc56568e591618b1b1c4",
+      "bytes": 3034
+    },
+    {
+      "source": "g2/campaign-A6.json",
+      "destination": "g2/campaign-A6.json",
+      "sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+      "bytes": 6507
+    },
+    {
+      "source": "g2/domain-downstream/run.py",
+      "destination": "g2/domain-downstream/run.py",
+      "sha256": "50c7e11a375fcc458cf6f5c8d6c19b2ec6c78163f98b6624a9174db2818cee75",
+      "bytes": 1267
+    },
+    {
+      "source": "g2/domain-downstream/run.sh",
+      "destination": "g2/domain-downstream/run.sh",
+      "sha256": "9616bdb92a4592f261024f54df07d713216c1787ddaf830964101cdd625749a2",
+      "bytes": 3441
+    },
+    {
+      "source": "g2/domain-downstream/summary.py",
+      "destination": "g2/domain-downstream/summary.py",
+      "sha256": "1769e79edae6bea0dcb416053ac1b18df36ebbf39795589b8437da75173e6080",
+      "bytes": 372
+    },
+    {
+      "source": "g2/domain-downstream/case.json",
+      "destination": "g2/domain-downstream/case.json",
+      "sha256": "85508534e26914bdcdc82fe51ab43d20aff203a5b193837fcee433acd5a6cd59",
+      "bytes": 1376
+    }
+  ],
+  "physical_admission": false,
+  "resource_proposal_sha256": "05d0bdaaafe7d5ed3aae5e2c37eee217a15c0e8870d500b1bce20ee74cd769e8",
+  "bounds": {
+    "allocation_seconds": 1200,
+    "runner_seconds": 1100,
+    "process_seconds": 900,
+    "allocation_GiB": 128,
+    "memory_stop_GiB": 112,
+    "volume_points_hard_cap": 3000000,
+    "cpus": 16
+  },
+  "scientific_scope": "one separate same-resolution domain case; no coarsening or new h level; symmetric is a separately labeled BVP"
+}

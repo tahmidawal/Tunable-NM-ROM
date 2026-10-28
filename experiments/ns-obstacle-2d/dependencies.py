@@ -70,14 +70,44 @@ def verify_prefix(prefix, meta, wheels):
     print(json.dumps({'prefix_layout_verified':True,'occt_libraries':len(occt),'site_packages':str(site)}),flush=True)
 
 
+def validate_install_metadata(root,target):
+    """Same read-only metadata closure for local staging and actual installation."""
+    root=Path(root);target=Path(target).resolve()
+    meta=json.loads((root/'DEPENDENCIES.json').read_text())
+    repair=json.loads((root/'REPAIR.json').read_text())
+    allowed=Path('/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027')
+    attempt=repair['fresh_attempt']
+    if not isinstance(attempt,str) or not attempt or Path(attempt).name!=attempt or attempt in ('.','..'):
+        raise ValueError('one explicit fresh namespace is required')
+    if target!=allowed/attempt/'deps':raise ValueError('dependency metadata is bound to another fresh attempt')
+    if not meta['candidates']:raise ValueError('empty dependency manifest')
+    for package in meta['candidates'].values():
+        wheels=package['cluster_candidate_wheels']
+        if len(wheels)!=1:raise ValueError('exactly one pinned wheel required')
+        wheel=wheels[0];digest=wheel['digests']['sha256']
+        if len(digest)!=64 or any(c not in '0123456789abcdef' for c in digest):raise ValueError('invalid wheel hash')
+        if type(wheel['size']) is not int or wheel['size']<=0 or not wheel['url'].startswith('https://'):
+            raise ValueError('invalid pinned wheel metadata')
+    return {'fresh_attempt':attempt,'target':str(target),'metadata_files':['DEPENDENCIES.json','REPAIR.json'],
+            'candidate_count':len(meta['candidates']),'metadata_only':True,'installed':False}
+
+
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument('--wheel-dir',required=True)
+    ap.add_argument('--wheel-dir')
+    ap.add_argument('--validate-metadata-only',action='store_true')
     ap.add_argument('--install',action='store_true')
     ap.add_argument('--target')
     args=ap.parse_args()
     root=Path(__file__).resolve().parent
     meta=json.loads((root/'DEPENDENCIES.json').read_text())
+    if args.validate_metadata_only:
+        if args.install or args.target is None:raise ValueError('metadata-only mode requires a target and forbids installation')
+        print(json.dumps(validate_install_metadata(root,Path(args.target)),sort_keys=True));return
+    if args.wheel_dir is None:raise ValueError('--wheel-dir required for download/install')
+    if args.install:
+        if args.target is None:raise ValueError('--target required for installation')
+        validate_install_metadata(root,Path(args.target))
     wheel_dir=Path(args.wheel_dir).resolve();wheel_dir.mkdir(parents=True,exist_ok=True)
     wheels=[]
     for name,package in meta['candidates'].items():
@@ -100,9 +130,7 @@ def main():
         if target.exists():raise FileExistsError('target exists: refusing to mix installations')
         allowed='/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/'
         if not str(target).startswith(allowed):raise ValueError('target must be inside this lane cluster namespace')
-        repair=json.loads((root/'REPAIR.json').read_text())
-        if target!=Path(allowed)/repair['fresh_attempt']/'deps':
-            raise ValueError('dependency repair is bound to the reviewed fresh attempt')
+        validate_install_metadata(root,target)
         if sys.executable!='/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python':
             raise RuntimeError('installation requires designated cluster interpreter')
         subprocess.run([sys.executable,'-m','pip','--isolated','install','--no-deps','--no-index',

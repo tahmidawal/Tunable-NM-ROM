@@ -1,6 +1,6 @@
 {
   "attempt": "g1-normal01",
-  "state": "staged_verified_waiting_coordinator_remote_match",
+  "state": "submitted_once_pending",
   "verified_utc": "2026-10-28T18:43:06.164779+00:00",
   "source_commit": "09a660f7b47926f3ef6dc8dea16f2d1848947dc4",
   "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01",
@@ -9,7 +9,7 @@
   "all_9_source_hashes_passed": true,
   "intended_remote_files": 11,
   "queue_at_staging": [],
-  "submitted": false,
+  "submitted": true,
   "dependencies_installed": false,
   "numerical_execution": false,
   "exact_submit": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01 geometry.sh",
@@ -22,5 +22,10 @@
     "wall_seconds": 1200
   },
   "local_free_GiB_at_staging": 55,
-  "local_free_reserve_GiB": 10
+  "local_free_reserve_GiB": 10,
+  "job_id": 6610978,
+  "submitted_utc": "2026-10-28T18:43:21Z",
+  "coordinator_remote_byte_match": true,
+  "post_submit_state": "PENDING",
+  "post_submit_reason": "Priority"
 }

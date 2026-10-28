@@ -49,7 +49,7 @@ def sha_file(path):
 def adapter_digest():
     root = Path(__file__).parent
     return hashlib.sha256(json.dumps({name: sha_file(root/name) for name in
-        ('fe_adapter.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
+        ('fe_adapter.py', 'fe_blocks.py', 'fe_algebra.py', 'fe_pod_a6.py', 'fe_controls_a6.py', 'spaces.py', 'weak.py', 'train_bank.py', 'oriented_normals.py', 'scalars.py', 'MODEL-CONTRACT.json')}, sort_keys=True).encode()).hexdigest()
 
 
 def verify_mesh_contract(record, policy_key='policy'):
@@ -672,10 +672,12 @@ class TrainingFEAdapter:
         del factor_q
         candidates_v = np.c_[supremizers, ev]
         candidates_q = np.c_[one, pressure, eq]
-        vv, vg = self.evaluate(candidates_v)
-        qq, _ = self.evaluate(candidates_q, False)
-        _, _, vm = select_test_columns(vv, self.weights, 64, vg*self.D)
-        _, _, qm = select_test_columns(qq, self.weights, 16)
+        from fe_blocks import evaluated_blocks, select_test_columns_blocks
+        def candidates_in_blocks(coefficients, vector):
+            for start, end, values, gradients in evaluated_blocks(self, coefficients, vector):
+                yield start, end, values, self.weights[start:end], gradients*self.D if vector else None
+        vm = select_test_columns_blocks(candidates_in_blocks(candidates_v, True), 64, len(self.weights), True)
+        qm = select_test_columns_blocks(candidates_in_blocks(candidates_q, False), 16, len(self.weights), False)
         tests_v = candidates_v[:, vm['candidate_indices']] @ np.asarray(vm['transform'])
         tests_q = candidates_q[:, qm['candidate_indices']] @ np.asarray(qm['transform'])
         # Use the verified ACTUAL FE pressure Gram, matching psi in B and the supremizers.

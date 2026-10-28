@@ -81,3 +81,7 @@ FE: finite elements. DOF: one coefficient in an FE space. G1: preliminary contro
 ## Prospective binary/A8 interface amendment
 
 The explicit binary mesh and fresh-process policy in `A8-BINARY-ADAPTER.md` supersede earlier text-mesh filename and raw-normal assumptions in this historical contract. No native or G2 admission follows from this source change; all numerical tolerances and memory caps remain unchanged. The exact reviewed helper is independently rerun on loaded geometry and its raw/oriented normals and orientation factors are retained.
+
+## Candidate selection memory update
+
+The production `build` path now consumes candidate field values/gradients through the native-verified original mapped-point block evaluator and all-point TSQR reduction. It preserves the full weighted test metric, candidate order and singular-value cutoff, with explicit positive-diagonal QR orientation. The resulting FE coefficient tests still undergo the original assembled Gram checks. No point, matrix, factor or process cap changes. The source digest includes `fe_blocks.py`; old exact-source releases do not authorize the changed adapter. Full production build/export on qualified data remains unexecuted.

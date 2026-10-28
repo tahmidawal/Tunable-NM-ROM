@@ -1,0 +1,7 @@
+# Release one 2D spatial ladder diagnostic retry
+
+Release exactly one allocation in the fresh 2D namespace directory `g2-ladder02`, using source `c18b38a3bf082069ab92d763d6660a11d73389cc` and inventory SHA256 `f91cd365fb22a81f9a67500ede71baad0102e62beac4cf25eb8f6b51083ecf94`. Coordinator and independent reviewer numerical_resume verified all 24 runtime inputs against committed bytes. All six configurations differ from ladder01 solely in the prospectively reviewed centered-difference steps. Full diagnostic replay arrays are saved before the unchanged acceptance check. Original ladder01 remains failed and fully retained.
+
+Use one compatible available GPU in the gpu partition, sixteen CPUs, 64 GiB and twenty minutes, with the existing internal and per-process deadlines, 48 GiB memory guard and producer capacity. At most two campaign jobs may be active. Check disk reserves and queue before/after submission, stage directly to the namespace, verify exact hashes, and require GPU/f64/highest preflight. Regenerate all data from recorded seeds. Preserve and checksum all results including failures. No automatic retry, threshold change, physical admission or training is authorized by this release.
+
+The scope is the original six DFG/manufactured h0/h1/h2 cases and full fine-rule comparisons. Successful execution does not by itself establish reference qualification. Actual h2 counts and errors must inform any further refinement or resource amendment.

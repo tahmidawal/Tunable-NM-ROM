@@ -487,7 +487,7 @@
       "attempt": "g2-h3",
       "source_commit": "c618e752a0a357b96823edec58b0d0b42340181c",
       "submitted_utc": "2026-10-28T20:42:51.101288+00:00",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "RUNNING",
       "input_manifest_sha256": "2d000cda8d6d81f68cd821fe66a20e74cf2994fbb157579bb6b3a12d858c80c7",
       "source_checksums_sha256": "7a56a04a7eecec4c058351b6c1dac99f504c6200f2cfcd74bb2cefb30d2c1eaf",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-h3",
@@ -500,7 +500,10 @@
       "allocated_gpu_hours": null,
       "reference_admitted": false,
       "training_released": false,
-      "single_submission": true
+      "single_submission": true,
+      "node": "pax009",
+      "observed_elapsed_seconds": 172,
+      "partial_case_status": "DFG_h3_completed_manufactured_and_comparisons_pending"
     }
   ],
   "live_job_ids": [

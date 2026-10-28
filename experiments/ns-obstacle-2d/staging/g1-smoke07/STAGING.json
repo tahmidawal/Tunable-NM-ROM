@@ -1,0 +1,27 @@
+{
+  "attempt": "g1-smoke07",
+  "state": "staged_verified_waiting_coordinator_remote_match",
+  "verified_utc": "2026-10-28T19:11:36.410914+00:00",
+  "source_commit": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07",
+  "manifest_sha256": "aba95446b27cac75d7beb75e1945e8c36eef81a635a369daf4f2c03cee271d56",
+  "source_checksums_sha256": "b4691da6445c21bfd55f2958ff808e425ab7f58c063704b03f61ebe4b23db2bc",
+  "all_19_source_hashes_passed": true,
+  "intended_remote_files": 21,
+  "queue_at_staging": [],
+  "submitted": false,
+  "dependencies_installed": false,
+  "numerical_execution": false,
+  "exact_submit": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07 cluster/smoke.sh",
+  "allocation": {
+    "partition": "gpu",
+    "gpu_type": "h200",
+    "gpus": 1,
+    "cpus": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200
+  },
+  "local_free_GiB_at_staging": 53,
+  "local_free_reserve_GiB": 10,
+  "no_G2_source": true
+}

@@ -1,0 +1,60 @@
+{
+  "status": "source_only_not_staged_not_released",
+  "inputs": [
+    {
+      "staged_path": "diagnose.py",
+      "source_path": "diagnostics/normal01/diagnose.py",
+      "sha256": "da4cded2f65830b6a3afb76071db7111697e99a6a223d79dfd9dfa4c548ba263",
+      "bytes": 12787
+    },
+    {
+      "staged_path": "diagnostic.json",
+      "source_path": "diagnostics/normal01/diagnostic.json",
+      "sha256": "e22e613d8212b788164b539eda29fa124e7659699440d8283b90fd462ee56a8b",
+      "bytes": 938
+    },
+    {
+      "staged_path": "manufactured-smoke.json",
+      "source_path": "diagnostics/normal01/manufactured-smoke.json",
+      "sha256": "f03d13ba9404a1a8e8e42bd411b3729ae0a58ac67fd788a546f8b4265660bdda",
+      "bytes": 1148
+    },
+    {
+      "staged_path": "geometry.sh",
+      "source_path": "diagnostics/normal01/geometry.sh",
+      "sha256": "20efbe02dbc0074495d2139ba3cd4a94ba4eaf3f39731621b22bd90d688ec376",
+      "bytes": 3438
+    },
+    {
+      "staged_path": "REPAIR.json",
+      "source_path": "diagnostics/normal01/REPAIR.json",
+      "sha256": "3e5a5c89027761622fbe53d9075f92b7ec91685b9d1a10279af815576fa96f16",
+      "bytes": 1024
+    },
+    {
+      "staged_path": "dependencies.py",
+      "source_path": "dependencies.py",
+      "sha256": "f1d4b641c9ff30c2909ab810985add3186ea37aa1c9d5b40f9d22b331edc85e7",
+      "bytes": 6382
+    },
+    {
+      "staged_path": "DEPENDENCIES.json",
+      "source_path": "DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432
+    },
+    {
+      "staged_path": "scalars.py",
+      "source_path": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    }
+  ],
+  "static_checks": [
+    "Python syntax compilation",
+    "bash -n",
+    "exact failed-case configuration bytes",
+    "no FOM/G2 imports"
+  ],
+  "native_execution": false
+}

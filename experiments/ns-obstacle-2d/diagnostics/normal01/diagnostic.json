@@ -1,0 +1,25 @@
+{
+  "schema": "ns-obstacle-2d-normal-diagnostic-v1",
+  "scope": "regenerated unchanged geometry only; no PDE solve, no normal correction, no reference admission",
+  "configuration": "manufactured-smoke.json",
+  "configuration_sha256": "f03d13ba9404a1a8e8e42bd411b3729ae0a58ac67fd788a546f8b4265660bdda",
+  "sample_order": 12,
+  "integration_orders": [
+    2,
+    12,
+    16
+  ],
+  "offset_fractions_of_D": [
+    0.0001,
+    0.001,
+    0.01
+  ],
+  "max_elements": 20000,
+  "max_volume_points": 500000,
+  "max_boundary_points": 50000,
+  "central_design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+  "central_campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+  "origin_failed_job": 6567998,
+  "fresh_attempt": "g1-normal01",
+  "claim_limit": "Observes regenerated geometry orientation only; original failed mesh/point/normal were not saved. All signed samples retained."
+}

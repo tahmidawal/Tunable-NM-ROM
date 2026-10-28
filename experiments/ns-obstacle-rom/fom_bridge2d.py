@@ -9,7 +9,7 @@ from pilot2d import score_field_arrays
 
 def score_fom_invocation(query,invocation,reference,common_weights,common_points):
     if invocation.get('query_failed'):
-        return {'eligible_accuracy':False,'query_failed':True,'state_or_output_available':False,
+        return {'eligible_accuracy':False,'query_failed':True,'state_or_output_available':bool('state' in invocation.get('evidence',{}) or invocation.get('outputs',{})),
                 'exception':invocation['exception'],'physical_admission':False}
     evidence=invocation['evidence']
     if float(evidence['Re'])!=float(reference['Re']):raise ValueError('FOM invocation/reference Re differs')

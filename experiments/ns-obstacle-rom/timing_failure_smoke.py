@@ -22,3 +22,21 @@ with tempfile.TemporaryDirectory() as tmp:
  assert result['timing']['warmup_attempts'][0]['query_failed']
  assert (Path(tmp)/('paired_'+contract+'.json')).exists()
  print('PASS synthetic failed warmup and seven failed invocations retained; no fabricated state/accuracy')
+partial_state=np.zeros(1,dtype=np.float64)
+def partial_failure():
+ partial_state[0]+=1
+ exc=RuntimeError('synthetic partial failure')
+ exc.invocation={'output_contract':contract,'outputs':None,'work':{'status':'query_failed'},
+                 'evidence':{'state':partial_state,'history':[{'iteration':1}],'converged':False},'state_available':True,'outputs_available':False}
+ raise exc
+def diagnostic_failure(name,record):raise ValueError('synthetic diagnostic failure')
+with tempfile.TemporaryDirectory() as tmp:
+ result=paired_queries({'FOM':partial_failure,'synthetic':good},contract,1,diagnostic_failure,Path(tmp))
+ states=[r['invocation']['evidence']['state'][0] for r in result['timing']['actual_invocation_outputs'] if r['method']=='FOM']
+ assert states==list(range(2,9))
+ for row in result['same_invocation_accuracy']:
+  assert not row['score']['eligible_accuracy']
+  if row['method']=='FOM':assert row['score']['state_or_output_available']
+  else:assert row['score']['diagnostic_failed'] and row['score']['actual_invocation_retained']
+ assert (Path(tmp)/('paired_'+contract+'.json')).exists()
+ print('PASS partial failure snapshots and diagnostic failures retain all actual timed invocations')

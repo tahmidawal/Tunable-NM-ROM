@@ -49,9 +49,16 @@ def paired_cpu(calls,contract,cores,repetitions=7,burn_seconds=.25):
             try:
                 record=calls[name]()
             except Exception as exc:
-                record={'output_contract':contract,'outputs':{},'work':{'status':'query_failed'},
-                        'query_failed':True,'exception':repr(exc),
-                        'failure_evidence':'call raised; no returned state or output was available'}
+                partial=getattr(exc,'invocation',None)
+                if isinstance(partial,dict):
+                    record=dict(partial)
+                    record.update(query_failed=True,exception=repr(exc))
+                    if record.get('outputs') is None and record.get('outputs_available') is False:
+                        record['outputs']={}  # Explicitly unavailable, never fabricated values.
+                else:
+                    record={'output_contract':contract,'outputs':{},'work':{'status':'query_failed'},
+                            'query_failed':True,'exception':repr(exc),
+                            'failure_evidence':'call raised; no returned state or output was available'}
             cpu=time.process_time()-cpu_start;elapsed=time.perf_counter()-start
             if record.get("output_contract")!=contract or "outputs" not in record or "work" not in record:
                 raise ValueError("query did not return its output contract, actual outputs and work")

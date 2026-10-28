@@ -689,9 +689,15 @@ def paired_queries(calls, contract, cores, score_invocation, output_directory):
         if row['invocation'].get('query_failed'):
             score={'eligible_accuracy':False,'accuracy_targets_passed':False,
                    'query_failed':True,'exception':row['invocation']['exception'],
-                   'state_or_output_available':False}
+                   'state_or_output_available':bool('state' in row['invocation'].get('evidence',{})
+                                                   or row['invocation'].get('outputs',{}))}
         else:
-            score=score_invocation(row['method'], row['invocation'])
+            try:
+                score=score_invocation(row['method'], row['invocation'])
+            except Exception as exc:
+                score={'eligible_accuracy':False,'accuracy_targets_passed':False,
+                       'diagnostic_failed':True,'exception':repr(exc),
+                       'actual_invocation_retained':True}
         scored.append({'method': row['method'], 'repetition': row['repetition'],'score':score})
     record = {'timing': timing, 'same_invocation_accuracy': scored, 'physical_admission': False}
     save_evidence(output_directory, 'paired_'+contract, record)

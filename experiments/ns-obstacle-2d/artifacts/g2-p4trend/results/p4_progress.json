@@ -1,0 +1,58 @@
+{
+  "completed": [
+    {
+      "name": "dfg_h1",
+      "returncode": 0,
+      "seconds": 13.569000872783363,
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/fom.py",
+        "--config",
+        "g2/p4trend/dfg_h1.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/results/dfg_h1"
+      ]
+    },
+    {
+      "name": "dfg_h2",
+      "returncode": 0,
+      "seconds": 44.97644105460495,
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/fom.py",
+        "--config",
+        "g2/p4trend/dfg_h2.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/results/dfg_h2"
+      ]
+    },
+    {
+      "name": "dfg_h3",
+      "returncode": 0,
+      "seconds": 177.5880541326478,
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/fom.py",
+        "--config",
+        "g2/p4trend/dfg_h3.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/results/dfg_h3"
+      ]
+    },
+    {
+      "name": "comparison_dfg",
+      "returncode": 0,
+      "seconds": 232.44676560349762,
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/g2/compare_fields.py",
+        "--plan",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/results/comparison-plan.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-p4trend/results/comparison_dfg"
+      ]
+    }
+  ],
+  "failed": null,
+  "physical_admission": false
+}

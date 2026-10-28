@@ -1,0 +1,48 @@
+{
+  "volume": 0.8941460183658024,
+  "volume_error": {
+    "numerator": 2.2315482794965646e-13,
+    "denominator": 0.8941460183660256,
+    "value": 2.495731383532329e-13,
+    "definition": "area error / exact fluid area"
+  },
+  "boundary_measures": {
+    "inlet": 0.40999999999999737,
+    "obstacle": 0.3141592653631486,
+    "outlet": 0.40999999999999737,
+    "wall_bottom": 2.1999999999999833,
+    "wall_top": 2.1999999999999833
+  },
+  "element_count": 5444,
+  "ndof": 113373,
+  "velocity_ndof": 88392,
+  "pressure_ndof": 24981,
+  "geometry_order": 4,
+  "coordinate_derivative_convention": "component,coordinate",
+  "obstacle_perimeter_error": {
+    "numerator": 4.169276035526082e-12,
+    "denominator": 0.3141592653589793,
+    "value": 1.3271217803371131e-11,
+    "definition": "perimeter error / exact circumference"
+  },
+  "minimum_sampled_jacobian_determinant": 1.8431701866270252e-05,
+  "max_sampled_obstacle_distance": 1.6201071734167627e-10,
+  "mapped_weight_sum": 0.8941460183658023,
+  "analytic_obstacle_quadrature": {
+    "obstacle_present": true,
+    "sign": "radius from exact center minus exact radius; negative inside solid",
+    "minimum_signed_distance": 5.20964239777294e-06,
+    "minimum_signed_distance_over_D": 5.20964239777294e-05,
+    "candidate_excluded_count": 0,
+    "candidate_excluded_weight": 0.0,
+    "candidate_excluded_weight_fraction": 0.0,
+    "actually_removed_count": 0,
+    "actually_removed_weight": 0.0,
+    "no_obstacle_quadrature": true,
+    "classification": "strict signed distance < 0; no clipping or tolerance offset"
+  },
+  "sampled_obstacle_normal_dot_radial_range": [
+    -1.0000000000000002,
+    -0.9999999999998148
+  ]
+}

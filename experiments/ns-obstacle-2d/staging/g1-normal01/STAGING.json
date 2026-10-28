@@ -1,0 +1,26 @@
+{
+  "attempt": "g1-normal01",
+  "state": "staged_verified_waiting_coordinator_remote_match",
+  "verified_utc": "2026-10-28T18:43:06.164779+00:00",
+  "source_commit": "09a660f7b47926f3ef6dc8dea16f2d1848947dc4",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01",
+  "manifest_sha256": "0692e4f30d5f8d2eb12a0f252560fb674148ad612cc793aafc2defe8c623bab6",
+  "source_checksums_sha256": "8c68adbfa2238a77d4575817292e1c42b511d3def8be7efda37b5503114b4f24",
+  "all_9_source_hashes_passed": true,
+  "intended_remote_files": 11,
+  "queue_at_staging": [],
+  "submitted": false,
+  "dependencies_installed": false,
+  "numerical_execution": false,
+  "exact_submit": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01 geometry.sh",
+  "allocation": {
+    "partition": "gpu",
+    "gpu_type": "h200",
+    "gpus": 1,
+    "cpus": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200
+  },
+  "local_free_GiB_at_staging": 55,
+  "local_free_reserve_GiB": 10
+}

@@ -1,0 +1,33 @@
+{
+  "adapter_source_sha256": "b0539e5030178a2c19ae7bd534f11263166574cde2694d0d572359eee5323b56",
+  "fixture_source_sha256": "1814191f4772f529fa665c9a9597ff7dcbcaae8a7b35b7cfe4bc93befe90b52a",
+  "block_source_sha256": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+  "producer_manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b",
+  "probe_caps": {
+    "elements": 30000,
+    "mixed_dofs": 500000,
+    "matrix_nnz": 30000000,
+    "single_array_bytes": 1073741824,
+    "process_rss_bytes": 17179869184,
+    "output_bytes": 3221225472
+  },
+  "caps": {
+    "gpu": 1,
+    "CPUs": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200,
+    "working_set_projection_GiB": 16,
+    "result_projection_GiB": 3
+  },
+  "schema": "ns-obstacle-native-adapter-control-release-v1",
+  "physical_admission": false,
+  "training_released": false,
+  "source_commit": "b06667963df0c657f738e8987aebef83f10826e9",
+  "inventory_sha256": "e0d5197629d48c7b52850def82a250a2cb179b0b280a6e1f80435460e4bb447a",
+  "one_allocation": true,
+  "no_automatic_retry": true,
+  "scope": "Fine-P4 capacity measurement only; no factorization/eigensolve/training or production-cap change",
+  "verified_runtime_files": 17,
+  "verified_producer_files": 5,
+  "fresh_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-capacity04"
+}

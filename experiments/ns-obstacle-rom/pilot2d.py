@@ -289,6 +289,12 @@ def score_state(model, state, reference, boundary, weights):
     """All scores derive from this invocation's returned state; no pressure shift."""
     re = reference['Re']; full = model.reconstruct(state, re, gradients=True)
     b = model.reconstruct(state, re, 'boundary')
+    return score_field_arrays(model.name,full,b,model.force_output(state,re),reference,boundary,weights)
+
+
+def score_field_arrays(name,full,b,force,reference,boundary,weights):
+    """Identical comparison metrics for actual ROM/FOM invocation diagnostic fields."""
+    re=reference['Re'];force=np.asarray(force)
     errors = field_errors(full['velocity'], full['pressure'], reference['velocity'], reference['pressure'], weights)
     expected_gradient = np.asarray(reference['velocity_gradient'])
     if expected_gradient.shape != full['velocity_gradient'].shape or not np.isfinite(expected_gradient).all():
@@ -308,13 +314,13 @@ def score_state(model, state, reference, boundary, weights):
     y = boundary['points_physical'][:, 1]; inlet = labels == 'inlet'
     target[inlet, 0] = 6*y[inlet]*(CHANNEL.height-y[inlet])/CHANNEL.height**2
     trace = float(np.max(np.linalg.norm(b['velocity'][essential]-target[essential], axis=1)))
-    force = model.force_output(state, re); expected_force = np.asarray(reference['force_coefficient'])
+    expected_force = np.asarray(reference['force_coefficient'])
     drag = float(abs(force[0]-expected_force[0])/max(abs(expected_force[0]), 1e-12))
     lift = float(abs(force[1]-expected_force[1]))
     checks = {'velocity': errors['velocity_relative'] <= .01, 'pressure': errors['pressure_scaled'] <= .02,
         'drag': drag <= .02, 'transverse': lift <= .002, 'divergence': divergence <= .005,
         'mass': mass <= .001, 'boundary_trace': trace <= 1e-6}
-    return dict(errors, Re=float(re), model=model.name, force_coefficient=force.tolist(),
+    return dict(errors, Re=float(re), model=name, force_coefficient=force.tolist(),
         drag_relative=drag, transverse_absolute=lift, divergence=divergence,
         inlet_flux=qin, outlet_flux=qout, mass=mass, boundary_trace=trace,
         velocity_gradient_L2_error=gradient_numerator,

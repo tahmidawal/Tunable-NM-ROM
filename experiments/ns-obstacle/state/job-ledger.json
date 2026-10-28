@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "2d_native_producer_reload_control_running",
+  "status": "2d_native_producer_reload_completed_collecting",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -297,10 +297,10 @@
       "lane": "2d",
       "attempt": "g2-native01",
       "source_commit": "b29448620cabd7efe957364eec99a83e7f73368c",
-      "state_last_observed": "RUNNING",
-      "elapsed_seconds": null,
+      "state_last_observed": "COMPLETED",
+      "elapsed_seconds": 36,
       "observed_elapsed_seconds": 9,
-      "allocated_gpu_hours": null,
+      "allocated_gpu_hours": 0.01,
       "gpus": 1,
       "cpus": 16,
       "memory_GiB": 64,
@@ -313,12 +313,20 @@
       "source_checksums_sha256": "de48eb92fe2787f1b0829ba930620e5b508fba9c10b3b7727660c0ea4e1e3b3d",
       "source_candidate_sha256": "59adc25aa64288f4976762db0adba92e71ae93d4ea1680536d7b7a24e90bb25f",
       "single_submission": true,
-      "reference_admitted": false
+      "reference_admitted": false,
+      "batch_MaxRSS_KiB": 1209164,
+      "native_summary_passed": true,
+      "collection_status": "complete_verified",
+      "archive_sha256": "2aac4b002501d553a807b5ba7d035566841684cd9ca28999e817a922128f9120",
+      "retention_commit": "13083eb5b",
+      "retention_mirror": "2ef3375f2",
+      "cleanup_commit": "e88019fc2",
+      "cleanup_mirror": "57b8ca3af",
+      "remote_cleanup": "verified_complete",
+      "independent_review": "PASS scoped native producer and binary reload; no physical admission"
     }
   ],
-  "live_job_ids": [
-    6613426
-  ],
-  "completed_gpu_hours": 0.05388888888888889,
+  "live_job_ids": [],
+  "completed_gpu_hours": 0.06388888888888888,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

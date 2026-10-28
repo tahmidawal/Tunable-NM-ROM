@@ -1,21 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6613426,
-      "lane": "2d",
-      "attempt": "g2-native01",
-      "observed_state": "RUNNING",
-      "node": "pax009"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Review/execute bounded2D native producer and binary clean-process reload control",
-    "Qualify2D reference refinement/tolerance/quadrature/domain matrix before training exports",
-    "Integrate finalA8 normals/binary loader and actual bank/POD driver in separate ROM lane; preserve genuineG2 gate"
+    "Review and execute initial DFG/manufactured h0,h1,h2 reference ladder with producer-only resource amendment",
+    "Review and execute isolated ROM native-interface fixture on real native01 outputs",
+    "Complete and audit bank/POD pilot driver while genuine reference and training gates remain closed"
   ],
-  "completed_allocated_gpu_hours": 0.05388888888888889,
+  "completed_allocated_gpu_hours": 0.06388888888888888,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -31,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T19:48:19.968990+00:00",
+  "last_checkpoint_utc": "2026-10-28T19:55:13.871925+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",
@@ -69,8 +61,8 @@
     "no_active_process_or_job": true
   },
   "active_authors": [
-    "reference_2d_recovery",
-    "rom_2d_completion"
+    "reference_2d_run",
+    "rom_2d_run"
   ],
-  "independent_reviewer": "numerical_recovery"
+  "independent_reviewer": "numerical_2d_run"
 }

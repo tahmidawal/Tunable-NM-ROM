@@ -99,3 +99,11 @@ The 2D owner is implementing one bounded native producer and separate-process bi
 A second previously detached Git auto-repack from the 2D lane was identified by exact process/cwd/stderr and stopped; only its unpublished incomplete temporary pack was removed after all related processes exited. Existing packs and experiment data remained intact. The event is retained in GIT-AUTO-GC-INTERRUPTION-2D.json; resumed lane commands use per-command/process gc.auto=0.
 
 No sealed cohorts were opened, no branches merged, and no unique experiment data deleted.
+
+### Continued 2D work: native producer accepted (Codex coordinator)
+
+The user reaffirmed autonomous continuation toward useful 2D results. Actual state was checked after interruption: no campaign jobs were queued and native01 job 6613426 had completed. Disconnected agents were replaced only after verifying they were absent; existing source and collection work were continued without duplicate submission.
+
+Independent read-only review accepts the native producer and fresh-process binary reload. All fifteen replay errors are exactly zero, with distinct producer/child interpreters, positive mapped weights/Jacobians, no quadrature inside the analytic solid, unchanged normal factors and zero prescribed essential-trace differences. The coarse physical solution agrees with smoke07 to roundoff. Full evidence is retained at 13083eb5b / mirror2ef3375f2; checksum-backed remote cleanup e88019fc2 / mirror57b8ca3af is complete. All nine allocations total230GPU-seconds; no physical reference or training admission follows.
+
+Next source work is an initial DFG/manufactured h0,h1,h2 ladder with full common-rule comparisons and a separate native ROM-interface fixture using the real producer output. Producer-only capacity changes are being projected separately from unchanged ROM-fitting caps. The actual bank/POD driver is being completed in its own lane. 3D remains deferred; no sealed data, merge or unique-data deletion occurred.

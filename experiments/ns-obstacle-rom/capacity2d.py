@@ -4,6 +4,10 @@ from pathlib import Path
 
 def estimate(n):
  rows=1+2+9*(2+4+64); b=8; block=min(n,16384)
+ gpu_primary={'input':2,'envelope':1,'flattened_weights':2,'target_nine_states':18,
+  'two_hidden_activations':128,'two_hidden_reverse_arrays':128,'raw_output':16,
+  'weighted_output':16,'thin_Q':16,'projection_residual':18,'QR_reverse_arrays':32}
+ gpu_workspace={'three_additional_hidden_array_pairs':384,'two_Q_copies':32,'residual_copy':18}
  volume={'geometry':9,'lift_u':6,'lift_p_per_nu':3,'pod_velocity':8*6,
   'pressure':8*3,'supremizers':8*6,'momentum_tests':64*6,'continuity_tests':16*3}
  arrays={name:count*n*b for name,count in volume.items()}
@@ -38,9 +42,11 @@ def estimate(n):
     'exact RAM-block moment fitting with immutable input provenance and per-block hashes'],
   'training_memory_shape_accounting':{
     'full_GPU_QR_objective_unchanged':True,
-    'GPU_primary_forward_and_reverse_arrays_estimate_bytes':477*n*b,
-    'GPU_additional_compiler_workspace_projection_bytes':434*n*b,
-    'GPU_projection_not_measured_peak_bytes':(477+434)*n*b,
+    'GPU_primary_array_projection_bytes':{key:value*n*b for key,value in gpu_primary.items()},
+    'GPU_primary_forward_and_reverse_arrays_estimate_bytes':sum(gpu_primary.values())*n*b,
+    'GPU_workspace_array_projection_bytes':{key:value*n*b for key,value in gpu_workspace.items()},
+    'GPU_additional_compiler_workspace_projection_bytes':sum(gpu_workspace.values())*n*b,
+    'GPU_projection_not_measured_peak_bytes':(sum(gpu_primary.values())+sum(gpu_workspace.values()))*n*b,
     'host_training_archive_bytes':n*68*b+9*b,
     'postfit_full_bank_values_bytes':n*16*b,
     'postfit_QR_ordering_conservative_array_envelope_bytes':n*16*b*8,

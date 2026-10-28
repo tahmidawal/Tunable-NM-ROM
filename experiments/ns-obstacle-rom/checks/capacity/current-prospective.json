@@ -54,9 +54,27 @@
     ],
     "training_memory_shape_accounting": {
       "full_GPU_QR_objective_unchanged": true,
-      "GPU_primary_forward_and_reverse_arrays_estimate_bytes": 1017940896,
+      "GPU_primary_array_projection_bytes": {
+        "input": 4268096,
+        "envelope": 2134048,
+        "flattened_weights": 4268096,
+        "target_nine_states": 38412864,
+        "two_hidden_activations": 273158144,
+        "two_hidden_reverse_arrays": 273158144,
+        "raw_output": 34144768,
+        "weighted_output": 34144768,
+        "thin_Q": 34144768,
+        "projection_residual": 38412864,
+        "QR_reverse_arrays": 68289536
+      },
+      "GPU_primary_forward_and_reverse_arrays_estimate_bytes": 804536096,
+      "GPU_workspace_array_projection_bytes": {
+        "three_additional_hidden_array_pairs": 819474432,
+        "two_Q_copies": 68289536,
+        "residual_copy": 38412864
+      },
       "GPU_additional_compiler_workspace_projection_bytes": 926176832,
-      "GPU_projection_not_measured_peak_bytes": 1944117728,
+      "GPU_projection_not_measured_peak_bytes": 1730712928,
       "host_training_archive_bytes": 145115336,
       "postfit_full_bank_values_bytes": 34144768,
       "postfit_QR_ordering_conservative_array_envelope_bytes": 273158144,
@@ -130,9 +148,27 @@
     ],
     "training_memory_shape_accounting": {
       "full_GPU_QR_objective_unchanged": true,
-      "GPU_primary_forward_and_reverse_arrays_estimate_bytes": 4068771840,
+      "GPU_primary_array_projection_bytes": {
+        "input": 17059840,
+        "envelope": 8529920,
+        "flattened_weights": 17059840,
+        "target_nine_states": 153538560,
+        "two_hidden_activations": 1091829760,
+        "two_hidden_reverse_arrays": 1091829760,
+        "raw_output": 136478720,
+        "weighted_output": 136478720,
+        "thin_Q": 136478720,
+        "projection_residual": 153538560,
+        "QR_reverse_arrays": 272957440
+      },
+      "GPU_primary_forward_and_reverse_arrays_estimate_bytes": 3215779840,
+      "GPU_workspace_array_projection_bytes": {
+        "three_additional_hidden_array_pairs": 3275489280,
+        "two_Q_copies": 272957440,
+        "residual_copy": 153538560
+      },
       "GPU_additional_compiler_workspace_projection_bytes": 3701985280,
-      "GPU_projection_not_measured_peak_bytes": 7770757120,
+      "GPU_projection_not_measured_peak_bytes": 6917765120,
       "host_training_archive_bytes": 580034632,
       "postfit_full_bank_values_bytes": 136478720,
       "postfit_QR_ordering_conservative_array_envelope_bytes": 1091829760,

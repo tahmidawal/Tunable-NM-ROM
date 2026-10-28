@@ -441,14 +441,29 @@ def save_evidence(directory, name, record):
     directory = Path(directory); directory.mkdir(parents=True, exist_ok=True)
     path = directory/(name+'.json'); array_path = directory/(name+'.npz')
     if path.exists() or array_path.exists(): raise FileExistsError('evidence already exists')
-    arrays = {}; seen = {}
+    arrays = {}; seen = {}; contents = {}; reference_bytes = []
+    def byte_view(array):return memoryview(array).cast('B') if array.size else b''
     def encode(value):
         if isinstance(value, np.ndarray):
             if value.dtype.kind not in 'biufUS': raise TypeError('unsupported evidence array dtype')
             if id(value) not in seen:
-                key = f'a{len(arrays):06d}'; seen[id(value)] = key; arrays[key] = value.copy()
-            key = seen[id(value)]
-            return {'array': key, 'shape': list(value.shape), 'dtype': str(value.dtype)}
+                contiguous=value if value.flags.c_contiguous else np.ascontiguousarray(value)
+                digest=hashlib.sha256()
+                digest.update(str((contiguous.dtype.str,contiguous.shape)).encode())
+                digest.update(byte_view(contiguous))
+                address=digest.hexdigest()
+                if address in contents:
+                    key=contents[address]
+                    if (arrays[key].dtype!=contiguous.dtype or arrays[key].shape!=contiguous.shape or
+                        byte_view(arrays[key])!=byte_view(contiguous)):
+                        raise ValueError('evidence content hash collision')
+                else:
+                    key=f'a{len(arrays):06d}';contents[address]=key;arrays[key]=contiguous.copy()
+                seen[id(value)]=(key,address)
+            key,address = seen[id(value)]
+            reference_bytes.append(value.nbytes)
+            return {'array': key, 'shape': list(value.shape), 'dtype': str(value.dtype),
+                    'content_sha256':address}
         if isinstance(value, np.generic): return encode(value.item())
         if isinstance(value, float) and not np.isfinite(value): return {'nonfinite_scalar': str(value)}
         if isinstance(value, dict): return {str(k): encode(v) for k, v in value.items()}
@@ -457,7 +472,11 @@ def save_evidence(directory, name, record):
     encoded = encode(record)
     np.savez_compressed(array_path, **arrays)
     wrapped = {'record': encoded, 'array_file': array_path.name,
-               'array_sha256': sha_file(array_path), 'physical_admission': False}
+               'array_sha256': sha_file(array_path), 'physical_admission': False,
+               'array_retention':{'policy':'lossless dtype/shape/bytes content deduplication with byte-equality check',
+                   'unique_arrays':len(arrays),'array_references':len(reference_bytes),
+                   'unique_expanded_bytes':sum(a.nbytes for a in arrays.values()),
+                   'logical_expanded_reference_bytes':sum(reference_bytes)}}
     path.write_text(json.dumps(wrapped, indent=2, allow_nan=False)+'\n')
     return {'record_file': path.name, 'record_sha256': sha_file(path),
             'array_file': array_path.name, 'array_sha256': sha_file(array_path)}

@@ -3,9 +3,9 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Review and execute initial DFG/manufactured h0,h1,h2 reference ladder with producer-only resource amendment",
-    "Review and execute isolated ROM native-interface fixture on real native01 outputs",
-    "Complete and audit bank/POD pilot driver while genuine reference and training gates remain closed"
+    "Two reviewed allocations released for single submission: initial2D h ladder and native ROM interface; await actual job IDs",
+    "Collect and independently audit spatial convergence and actual ROM interface/eigen controls",
+    "Complete bank/POD driver; physical reference and training admission remain closed"
   ],
   "completed_allocated_gpu_hours": 0.06388888888888888,
   "global_ceiling_gpu_hours": 12,
@@ -64,5 +64,11 @@
     "reference_2d_run",
     "rom_2d_run"
   ],
-  "independent_reviewer": "numerical_2d_run"
+  "independent_reviewer": "numerical_2d_run",
+  "active_thread": "01a18408-7af8-7f60-8742-5f283032a493",
+  "parent_thread": "01a17ee7-e42a-7233-96fe-7bb7d9c849fa",
+  "parent_workers": {
+    "rom_2d_completion": "interrupted; recent commands terminal; alternate work preserved",
+    "reference_2d_recovery": "completed; leftover reporting helper preserved"
+  }
 }

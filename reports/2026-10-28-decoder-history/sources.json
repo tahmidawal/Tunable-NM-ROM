@@ -1,0 +1,492 @@
+{
+  "cp": {
+    "ref": "839403136",
+    "path": "heat/src/tunable_rom_heat/models/decoder.py",
+    "commit": "839403136041bd3028e4f66ba836529597174b92",
+    "copy": "sources/cp/decoder.py",
+    "sha256": "0ca459937e635e93b8c521727086d478790f99e599825b0a8464f0a6f6d360ac"
+  },
+  "linearcp": {
+    "ref": "839403136",
+    "path": "poisson/src/tunable_rom_poisson/models/decoder.py",
+    "commit": "839403136041bd3028e4f66ba836529597174b92",
+    "copy": "sources/linearcp/decoder.py",
+    "sha256": "4384d65b9bec6f3a963268c469b8d17ab9b81974fdc23afb0789c2fb4b84804a"
+  },
+  "vit": {
+    "ref": "origin/decoder-explorer",
+    "path": "mirrored-vit-ablation/poisson/src/tunable_rom_vit_poisson/models/decoder.py",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/vit/decoder.py",
+    "sha256": "14d14c9ea6089d417de4f22196baccaa37f77cc311d13e728f1a96d3812161ca"
+  },
+  "siren": {
+    "ref": "origin/decoder-explorer",
+    "path": "Experiments/exploring-decoders/src/tunable_rom_decoders/decoders/modulated_siren.py",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/siren/modulated_siren.py",
+    "sha256": "27bff1945f5c6d1bb7eeb0cc2aed832114b0a22b4ff2f12f7e0ef030ff27776a"
+  },
+  "xattn": {
+    "ref": "origin/decoder-explorer",
+    "path": "Experiments/exploring-decoders/src/tunable_rom_decoders/decoders/cross_attn_inr.py",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/xattn/cross_attn_inr.py",
+    "sha256": "8379001adef284c84b14dcc06c2325a95f69fbbf9e5defc1af0b97378120058c"
+  },
+  "default_siren": {
+    "ref": "origin/decoder-explorer",
+    "path": "Experiments/exploring-decoders/src/tunable_rom_decoders/decoders/default_field_siren.py",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/default_siren/default_field_siren.py",
+    "sha256": "916bce82bc15d3fb21b5d5ce358d275403cb90cce99dd341579f7e299a1f4609"
+  },
+  "skip_siren": {
+    "ref": "origin/decoder-explorer",
+    "path": "Experiments/exploring-decoders/src/tunable_rom_decoders/decoders/linear_skip_siren.py",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/skip_siren/linear_skip_siren.py",
+    "sha256": "fb17db18d6a50058025594d309cf4edd4dd10b32c3cbc34bf5aef34d12a9620b"
+  },
+  "affine": {
+    "ref": "origin/inr-siren-speed-accuracy",
+    "path": "Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/src/tunable_rom_speed/decoders/affine_z.py",
+    "commit": "69f342a8daba6385d73e1553017ccd44561420be",
+    "copy": "sources/affine/affine_z.py",
+    "sha256": "f1a18a7e32921c13907417a5b8150d80fa13406c33a06c9ef966215aa8e83fbd"
+  },
+  "linear_affine": {
+    "ref": "origin/inr-siren-speed-accuracy",
+    "path": "Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/src/tunable_rom_speed/decoders/linear_affine_z.py",
+    "commit": "69f342a8daba6385d73e1553017ccd44561420be",
+    "copy": "sources/linear_affine/linear_affine_z.py",
+    "sha256": "7b016ece1b5836dc089c9ae34940f89f34bd5d742d17469e18165347fab242c2"
+  },
+  "may_journal": {
+    "ref": "origin/decoder-explorer",
+    "path": "Experiments/exploring-decoders/JOURNAL.tex",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/may_journal/JOURNAL.tex",
+    "sha256": "9eddbf2d4b6de92456ee02588e460f666bd4ddc15a684aa7c187ac0311b7b556"
+  },
+  "may_journey": {
+    "ref": "origin/decoder-explorer",
+    "path": "Experiments/exploring-decoders/journey-to-good-manifold.md",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/may_journey/journey-to-good-manifold.md",
+    "sha256": "c7d68739a7a030badd83099e31d69d5f5c802431b3dad4f2659a9ed69a462b92"
+  },
+  "may_speed": {
+    "ref": "origin/inr-siren-speed-accuracy",
+    "path": "Experiments/2026-05-18-INR-SIREN-SPEED-ACCURACY-TRADEOFF/SUMMARY.md",
+    "commit": "69f342a8daba6385d73e1553017ccd44561420be",
+    "copy": "sources/may_speed/SUMMARY.md",
+    "sha256": "83a5bde2005fd2d59db36afba064d778d38cdacfd2e814aa33ff5bcb80109bf4"
+  },
+  "vit_status": {
+    "ref": "origin/decoder-explorer",
+    "path": "mirrored-vit-ablation/STATUS.md",
+    "commit": "8b2dc440ca966101ad27e93149729278e6a2d85d",
+    "copy": "sources/vit_status/STATUS.md",
+    "sha256": "0889c9a33ab006d40a6761373de055f29a63896eca62d384f30f944fe503f979"
+  },
+  "concat": {
+    "ref": "exp/2026-08-12-coord-decoder",
+    "path": "experiments/coord-decoder/poisson2d_diag.py",
+    "commit": "918354cf92d1b4ff3b977ade750897b9b532bd56",
+    "copy": "sources/concat/poisson2d_diag.py",
+    "sha256": "915cfcb5f82d5fcc3dd7609f3ded5947af112d9ba4f225076461f5913bf2cca5"
+  },
+  "film": {
+    "ref": "exp/2026-08-12-coord-decoder",
+    "path": "experiments/coord-decoder/poisson2d_film.py",
+    "commit": "918354cf92d1b4ff3b977ade750897b9b532bd56",
+    "copy": "sources/film/poisson2d_film.py",
+    "sha256": "b9d557a2ce6856516d17afa966a70ff7d0ef676ff7ef64229d7a6f3d0ea95419"
+  },
+  "film_heat": {
+    "ref": "exp/2026-08-13-heat2d-coord-decoder",
+    "path": "experiments/heat2d-coord-decoder/heat2d_film.py",
+    "commit": "1229d7e6250511742b06c12a2d36b681fef805c4",
+    "copy": "sources/film_heat/heat2d_film.py",
+    "sha256": "925c3e0a217bf655df2b956b4795199319738d4bc9e6edffb1fbcfdc09ba38de"
+  },
+  "film_burgers": {
+    "ref": "exp/2026-08-14-burgers2d-coord-rom",
+    "path": "experiments/burgers2d-coord-rom/burgers2d_film.py",
+    "commit": "b32791599351036dfd77b34e2f07ca4daf1164a7",
+    "copy": "sources/film_burgers/burgers2d_film.py",
+    "sha256": "51b02f5cccf28b0e3eb9f53310c3a2a020af265d26dfb9d6918be46a2bd672e1"
+  },
+  "film_wave": {
+    "ref": "exp/2026-08-14-wave2d-coord-rom",
+    "path": "experiments/wave2d-coord-rom/wave2d_film.py",
+    "commit": "3c2e07818f1320bcd96a6640638ba1f2edee4d98",
+    "copy": "sources/film_wave/wave2d_film.py",
+    "sha256": "74554fec066e888eda1e561d2136135f118651741caa39ab0aca930d00ca62f3"
+  },
+  "staged": {
+    "ref": "exp/2026-08-14-multistage-precision",
+    "path": "experiments/multistage-precision/ms_parametric.py",
+    "commit": "b38946768056ab67be68e8ce14ec5032465d9794",
+    "copy": "sources/staged/ms_parametric.py",
+    "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+  },
+  "staged_ad": {
+    "ref": "exp/2026-08-14-multistage-precision",
+    "path": "experiments/multistage-precision/ms_autodecoder.py",
+    "commit": "b38946768056ab67be68e8ce14ec5032465d9794",
+    "copy": "sources/staged_ad/ms_autodecoder.py",
+    "sha256": "0fea6d8b867ca2b629e449ecbfd9a09d931018b6710ee8c32f79d2b231e1fe7f"
+  },
+  "film_arch": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/nonlinear-decoder-architecture/nda_arch.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/film_arch/nda_arch.py",
+    "sha256": "cccf0e698a634454c1871c0f774b1a378edf18694a88bb03627b69e568aff6fb"
+  },
+  "nda_numbers": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/nonlinear-decoder-architecture/summary.json",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/nda_numbers/summary.json",
+    "sha256": "8c89c08285805a806feda8197a75c18ccce0034b65c6bedf6251c69d108498cc"
+  },
+  "latent_burgers": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/burgers2d-rom-latent-stepping/blat_common.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/latent_burgers/blat_common.py",
+    "sha256": "5f7f121cb8bb20b08d2279668db3647c8950a7847832c4bb95da9ab4d26bb7c0"
+  },
+  "latent_heat": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/heat2d-rom-latent-stepping/hlat_common.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/latent_heat/hlat_common.py",
+    "sha256": "55b377a4adf91a615ee300fb16f3a6aeaf64cbf2a199805d2ca557189366c73c"
+  },
+  "latent_wave": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/wave2d-rom-latent-stepping/wlat_common.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/latent_wave/wlat_common.py",
+    "sha256": "af3a8c9db15d06d73799131476ad61f6dcde41138449e9a0b843305f19d3fb44"
+  },
+  "separable": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/separable-decoder/sep_common.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/separable/sep_common.py",
+    "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+  },
+  "headfit": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/separable-decoder/sep_hfit.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/headfit/sep_hfit.py",
+    "sha256": "5227ee315b90289c404165b9815b11d941b2aaa0e306b874335e82e51cdbb0a8"
+  },
+  "tensor": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/separable-decoder/b2d_tensor_common.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/tensor/b2d_tensor_common.py",
+    "sha256": "b526518b055f70918125364206233067e94f6ad5df3420edbe8163831ca7adf9"
+  },
+  "stokes": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/separable-decoder/stk2d_common.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/stokes/stk2d_common.py",
+    "sha256": "20552f843799849e921e7b8e811f1160f2d304140f4566ee2d81db7c18258625"
+  },
+  "wavebank": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/separable-decoder/wav2d_bank.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/wavebank/wav2d_bank.py",
+    "sha256": "dbe8ba8c147eab8e6e977de0d7aa852a87baab3742361123f341c834b8c90e11"
+  },
+  "correction": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/multiresolution-poisson/correction_core.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/correction/correction_core.py",
+    "sha256": "70738422a31393fe4bdc7d22acf7f03cf7d8f76804410c073a803f85e32e795c"
+  },
+  "linear_heat": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/mr-heat2d/run_linear.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/linear_heat/run_linear.py",
+    "sha256": "4b3332e6a5732da2adc023308191e7b9c413c5fc56b343172f09e0babf46cd7e"
+  },
+  "ns2d": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/ns2d/ns2d_decoder.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/ns2d/ns2d_decoder.py",
+    "sha256": "0b99e6a5d1a335e0f01f92c76c630c88b58f88e20d9095f925bd757e3cec175d"
+  },
+  "shift": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/ns3d-shift/shift_rom.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/shift/shift_rom.py",
+    "sha256": "22921d34d486bc3939f8ad3dfdae220390e78d57bc4ca9e88812290007bda4a3"
+  },
+  "shift_head": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/ns3d-shift-head/head_rom.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/shift_head/head_rom.py",
+    "sha256": "6d07ccfa7cbd64e01efc29091777a6159c35d07416d5e5a03fb9e08a4812204c"
+  },
+  "curlbank": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/ns3d-coordnet/coordnet.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/curlbank/coordnet.py",
+    "sha256": "d9e9c7fd090396ecb28af9da817f2454e9839a55fa6cd6bc6b9266e7723f6ff9"
+  },
+  "banktrain": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/ns3d-coordnet/train_bank.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/banktrain/train_bank.py",
+    "sha256": "75f1ae87001661199e4e364fe3de53ad30ed80e28a8f82a5fcbb71b41ddd28fe"
+  },
+  "ordered": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/quadrature-study/qcore.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/ordered/qcore.py",
+    "sha256": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b"
+  },
+  "current_step": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/jcp-combined/t2core.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/current_step/t2core.py",
+    "sha256": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9"
+  },
+  "current_head": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/jcp-heads/hcore.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/current_head/hcore.py",
+    "sha256": "e64fe3f92fa0545bb1241dc260849af8737b614744042aa063733ad91546aac5"
+  },
+  "wide": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/jcp-wide-bank/w3d.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/wide/w3d.py",
+    "sha256": "d3f0a1ff0402e9c9f58d45d0ce8fe89ee522d078fc1bee627d95972a842f610b"
+  },
+  "smooth": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/jcp-smooth-bank/smoothtrain.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/smooth/smoothtrain.py",
+    "sha256": "fb4206687a040e278cb965f4893fa93aa616ea276a37c85eb3ec6d00ac67bcf0"
+  },
+  "pod_hr": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/jcp-hr-baselines/hrcore.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/pod_hr/hrcore.py",
+    "sha256": "c30723ca6dc42d283e4fe74358e0e03cb6ade59e0658fea85e9f3cccc6d595ce"
+  },
+  "operators": {
+    "ref": "exp/2026-10-20-jcp-consolidated",
+    "path": "experiments/ns3d-operators/ops3d.py",
+    "commit": "93f399faad67f94ea2b56fe25f13003143e64694",
+    "copy": "sources/operators/ops3d.py",
+    "sha256": "2ced1f72c75f62f7c221baca92e18c56fb33c263928a83dab5f09cdfaf85e676"
+  },
+  "anchor": {
+    "ref": "exp/2026-09-06-b3d-anchor",
+    "path": "experiments/separable-decoder/b3d_arch_anchor.py",
+    "commit": "f0622144e9517f4023fb8356b202a9cd7c534c63",
+    "copy": "sources/anchor/b3d_arch_anchor.py",
+    "sha256": "112ad63bd9693eaaa1d3f855608377a2a48962d7195ada8fb5caaf6a1325a1d4"
+  },
+  "anchor_numbers": {
+    "ref": "exp/2026-09-06-b3d-anchor",
+    "path": "experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+    "commit": "f0622144e9517f4023fb8356b202a9cd7c534c63",
+    "copy": "sources/anchor_numbers/result.json",
+    "sha256": "7f984398210bf276bb568f0f00924852fc6e5a6c24701ea167a9f2bb927ec512"
+  },
+  "quadratic": {
+    "ref": "exp/2026-09-06-b3d-quadratic",
+    "path": "experiments/separable-decoder/b3d_arch_quadratic.py",
+    "commit": "4dbe77cbb3a6269ee3894d264bbc4769799b1500",
+    "copy": "sources/quadratic/b3d_arch_quadratic.py",
+    "sha256": "3160328e7f62cb1cc3f680edb08610b5bc474a70dbc64fad2421cb6760b41708"
+  },
+  "quadratic_numbers": {
+    "ref": "exp/2026-09-06-b3d-quadratic",
+    "path": "experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+    "commit": "4dbe77cbb3a6269ee3894d264bbc4769799b1500",
+    "copy": "sources/quadratic_numbers/result.json",
+    "sha256": "e9502ca582f2197a54c4688a47d0ac5e71d39509b295392ff86c621d81c58a20"
+  },
+  "encoder": {
+    "ref": "exp/2026-09-06-b3d-encoder",
+    "path": "experiments/separable-decoder/b3d_arch_encoder.py",
+    "commit": "d2ef9e12f55469c77bc27ea50f4b87dcded304bb",
+    "copy": "sources/encoder/b3d_arch_encoder.py",
+    "sha256": "daa54d1bb64d2c24dee50ad4ad1f8da2b4a6b4bb0c0fad41cc2bbac68ad8824d"
+  },
+  "encoder_numbers": {
+    "ref": "exp/2026-09-06-b3d-encoder",
+    "path": "experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+    "commit": "d2ef9e12f55469c77bc27ea50f4b87dcded304bb",
+    "copy": "sources/encoder_numbers/result.json",
+    "sha256": "f65f2080b71296b3b3b26254adc39e9c876fbf036542d8cab073f1214b5048c8"
+  },
+  "mixture": {
+    "ref": "exp/2026-09-06-b3d-mixture",
+    "path": "experiments/separable-decoder/b3d_arch_mixture.py",
+    "commit": "9ffaf558e2942a7cb4fb20f1b6c5bfdea54afdb5",
+    "copy": "sources/mixture/b3d_arch_mixture.py",
+    "sha256": "b66316815a64af2ae5ee3e921204df326de7319767d18e3d6160eae90534a071"
+  },
+  "mixture_numbers": {
+    "ref": "exp/2026-09-06-b3d-mixture",
+    "path": "experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json",
+    "commit": "9ffaf558e2942a7cb4fb20f1b6c5bfdea54afdb5",
+    "copy": "sources/mixture_numbers/result.json",
+    "sha256": "d5639665981f67524658c32051e7e5832694dfb4475ee2ac4ccafebb8bf909bf"
+  },
+  "mlp128_numbers": {
+    "ref": "exp/2026-09-06-burgers3d-repair",
+    "path": "experiments/separable-decoder/runs/b3d_architecture/mlp128/out/result.json",
+    "commit": "303bb6f6e582f876d9e4034da141f394b17f1dda",
+    "copy": "sources/mlp128_numbers/result.json",
+    "sha256": "b631307c22c0145647f4c1cb63a088322424d6b5cf25918a9d0fb16059634da1"
+  },
+  "mlp192_numbers": {
+    "ref": "exp/2026-09-06-burgers3d-repair",
+    "path": "experiments/separable-decoder/runs/b3d_architecture/mlp192/out/result.json",
+    "commit": "303bb6f6e582f876d9e4034da141f394b17f1dda",
+    "copy": "sources/mlp192_numbers/result.json",
+    "sha256": "de8308045e80ac5ff1c3309adf2c49fc5cc193334e17a5e8278813539603bfee"
+  },
+  "modcp": {
+    "ref": "exp/2026-09-10-modcp-burgers2d",
+    "path": "experiments/modcp-eq/common/decoders.py",
+    "commit": "214671eee17b6c9930c1581e4d206b5d0110985a",
+    "copy": "sources/modcp/decoders.py",
+    "sha256": "c60ebc254f5e9cb580ee715ff7c43a5c6674eb5aaf8452aecc2b4e2f29422444"
+  },
+  "qman": {
+    "ref": "exp/2026-09-22-quadratic-manifold",
+    "path": "experiments/quadratic-manifold/qman.py",
+    "commit": "440d63328b24993f294e534fb85b731ccbd5b4f7",
+    "copy": "sources/qman/qman.py",
+    "sha256": "771a299d93f9fc21d69fe810bd6563b36fab6a434192cc1dfef9261a35d129ae"
+  },
+  "masked": {
+    "ref": "exp/2026-09-20-nmrom-baselines",
+    "path": "experiments/nmrom-baselines/kimae.py",
+    "commit": "af6ca98ddbca9b0e79912d86df00dc8e07d368b4",
+    "copy": "sources/masked/kimae.py",
+    "sha256": "b321b7e02cbbfeef1b5f98c3dc0aa4084c796dfc034e9084026579f7f09ce46f"
+  },
+  "heat_vp": {
+    "ref": "exp/2026-09-21-heat3d-bank",
+    "path": "experiments/heat3d-bank/train_vp.py",
+    "commit": "5f1b048dcac33e078848d755ab1d963902192ae1",
+    "copy": "sources/heat_vp/train_vp.py",
+    "sha256": "18637ef12003519cb20873a8fad16f459f0dda74a8edfd075279b5ba076ffb41"
+  },
+  "prefix": {
+    "ref": "exp/2026-10-27-burgers-prefix2d",
+    "path": "experiments/burgers-prefix2d/prefixcore.py",
+    "commit": "6c5717b27901ab6abad3dfcbf6c08ab4bd7a964c",
+    "copy": "sources/prefix/prefixcore.py",
+    "sha256": "35e18094ef3194cddf0547be41d00c710fe1f554af6816143a5832620fc59c31"
+  },
+  "transfer": {
+    "ref": "exp/2026-10-28-burgers-latent2d",
+    "path": "experiments/burgers-latent2d/transfer.py",
+    "commit": "6740acb7aeab53679218a7ad89466e4783281987",
+    "copy": "sources/transfer/transfer.py",
+    "sha256": "fa2f633384bb07592ed07e3d9d3dacd8ad7e87ed3afa07eaa5f623dca70702f5"
+  },
+  "latent_numbers": {
+    "ref": "exp/2026-10-28-burgers-latent2d",
+    "path": "experiments/burgers-latent2d/checks/summary.json",
+    "commit": "6740acb7aeab53679218a7ad89466e4783281987",
+    "copy": "sources/latent_numbers/summary.json",
+    "sha256": "dba22a800c602a1a6f01bcea78e4ec384f422a0483ce3534f7e898ef02fa00f5"
+  },
+  "old_podmlp": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Neurips/share-bundle/code/lad/podmlp.py",
+    "commit": null,
+    "copy": "sources/old_podmlp/podmlp.py",
+    "sha256": "47c618e91b55987233a86b822a77ce21ee6b86caeaefdddb77dd9e6ecb7d2d4a"
+  },
+  "old_podmlp_rom": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Neurips/share-bundle/code/lad/podmlp_rom.py",
+    "commit": null,
+    "copy": "sources/old_podmlp_rom/podmlp_rom.py",
+    "sha256": "43443b4eb03b35c2a891ba3cfc3e1905d4b9a62571cc09d682bb248d282732c0"
+  },
+  "old_wave": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM/wave/src/tunable_rom_wave/models/pod_mlp.py",
+    "commit": null,
+    "copy": "sources/old_wave/pod_mlp.py",
+    "sha256": "94a772698a9a5d8682091b5bbdc2f221b80add10c2f2017d3442a99512dbd8c7"
+  },
+  "old_heat": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Neurips/h3red.py",
+    "commit": null,
+    "copy": "sources/old_heat/h3red.py",
+    "sha256": "3aa83028d46dd2003bdaa71a1c45ff688a082aaddd1c69c8aaada6b42e387d9f"
+  },
+  "old_heat_log": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Neurips/HEAT_ROUNDS.md",
+    "commit": null,
+    "copy": "sources/old_heat_log/HEAT_ROUNDS.md",
+    "sha256": "0498940ed83f7fb29006a1378d536e27c6d6b73c3b76945bb525c5e20605928f"
+  },
+  "old_ledger": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Neurips/MASTER-RESULTS.md",
+    "commit": null,
+    "copy": "sources/old_ledger/MASTER-RESULTS.md",
+    "sha256": "d2d2ef53369337b0ef1c638909753a15b6458d31bfea1ebb975d9c8b49b18c4c"
+  },
+  "old_readme": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Neurips/README.md",
+    "commit": null,
+    "copy": "sources/old_readme/README.md",
+    "sha256": "84c19f20e27049ec2039c387d639dd69b99b898798ee9a29c011203f3be50b7e"
+  },
+  "tree_plan": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/QuadtreeNMROM/PLAN.md",
+    "commit": null,
+    "copy": "sources/tree_plan/PLAN.md",
+    "sha256": "2270b54b65077fb42de0423fd6076d8702fde2b312f251581ec1777ae3012d3b"
+  },
+  "lablog": {
+    "ref": null,
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md",
+    "commit": null,
+    "copy": "sources/lablog/LAB-LOG.md",
+    "sha256": "a874069fa4ab2663d5cd3a9a9d2a47c83166a68dd43bece38ee1c6a80ca9a6cd"
+  }
+}

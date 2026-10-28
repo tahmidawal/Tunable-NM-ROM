@@ -1,0 +1,768 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  keepspaces=true,
+}
+
+\title{Exploring Decoders: SIREN vs Cross-Attention INR for Parametric Poisson\\
+       \large Running Journal}
+\author{Tahmid Awal (with Claude as autonomous engineer-on-duty)}
+\date{Started 2026-05-17}
+
+\begin{document}
+\maketitle
+
+\section{Goal}
+Decoder-only ablation for the parametric Poisson-2D NM-ROM autoencoder.
+The paper's \texttt{(Linear)CPDecoder} is grid-bound (CP factor lookups indexed
+by integer node id). This experiment compares two implicit-neural-representation
+decoders that can be queried at \emph{any} \(x \in [0,1]^2\):
+\begin{itemize}
+  \item \textbf{Modulated SIREN} --- sine-activation MLP with per-layer FiLM
+        bias modulation from the latent.
+  \item \textbf{Cross-attention INR} --- coord \(x\) cross-attends into the ViT
+        encoder's per-token features.
+\end{itemize}
+Same shared ViT encoder (pinned copy of \texttt{poisson/}'s). Analytical Poisson
+data both as training target on the grid and as off-mesh ground truth at random
+query points. Metric: rel-\(L^2\) on validation snapshots at randomly-sampled
+off-mesh coordinates, swept across \(M \in \{16, 64, 256, 1024, 4096, 16384\}\)
+query points per snapshot.
+
+\section{Design Summary}
+\begin{itemize}
+  \item PDE: \(-\Delta u(x) = A \prod_i \sin(k_i \pi x_i)\) on \([0,1]^2\),
+        \(k_i \in [1,3]\), \(A=10\). Closed form
+        \(u(x;\mu) = (A/(\pi^2 \sum k_i^2)) \prod_i \sin(k_i \pi x_i)\).
+  \item Grid: \(N = 128\). \(n_\text{train}=700\), \(n_\text{val}=140\).
+  \item Encoder: ViT, patch=16, embed=64, 4 blocks, 4 heads, latent \(k=16\).
+        Same as the paper's poisson package.
+  \item SIREN decoder: 5 layers, hidden=256, \(\omega_0=30\). Modulator MLP
+        16$\to$128$\to$\((L-1)\cdot h\). FiLM bias-only modulation.
+  \item XATTN decoder: \(d_\text{attn}=64\), 16 Fourier features (scale 4.0),
+        single-head attention over 64 ViT tokens, post-attention 3-layer MLP
+        (hidden=256, GELU).
+  \item Training: 50k steps, batch 24 snapshots, 1024 query points per
+        snapshot (50/50 on-grid/off-mesh), AdamW with peak LR \(10^{-3}\),
+        weight decay \(10^{-5}\), 500-step warmup + cosine decay.
+  \item Eval: fixed validation off-mesh point set; rel-\(L^2\) reported every
+        500 steps. Best checkpoint by val rel-\(L^2\).
+\end{itemize}
+
+\section{Log}
+
+\subsection*{2026-05-17 19:00 EDT --- Scaffold complete}
+Package scaffolded at \texttt{Experiments/exploring-decoders/}. Layout:
+\begin{lstlisting}
+configs/{poisson2d_siren,poisson2d_xattn,smoke}.yaml
+scripts/{generate_data,train,eval_sweep_M,plot_sweep}.py
+src/tunable_rom_decoders/
+  encoder.py           pinned ViT
+  fom/poisson_analytical.py
+  decoders/{modulated_siren,cross_attn_inr}.py
+  autoencoder.py
+  training.py
+  flops.py
+  utils/config.py
+tests/test_decoders.py
+run_{smoke,experiment}.slurm, submit_all.sh
+\end{lstlisting}
+
+\subsection*{2026-05-17 19:05--19:13 EDT --- Smoke iteration}
+Three smoke submissions before pytest cleared:
+\begin{itemize}
+\item \textbf{822928 FAILED}: \texttt{MultipleMethodsCompactError} --- I had
+      decorated both \texttt{prepare} and \texttt{query} on
+      \texttt{CrossAttnINR} with \texttt{@nn.compact}. Flax allows only one
+      per class. Fix: convert xattn to \texttt{setup()}-style with named
+      submodules (\texttt{W\_k}, \texttt{W\_v}, \texttt{W\_q},
+      \texttt{mlp\_*}).
+\item \textbf{822929 FAILED}: \texttt{TypeError: unexpected keyword
+      \texttt{xattn\_hidden\_dim}}. My test was passing a stale arg name.
+      The autoencoder collapses both decoders' hidden width into a single
+      \texttt{hidden\_dim} field, selected by the config's
+      \texttt{hidden\_dim} property. Test fix only.
+\item \textbf{822934 FAILED}: \texttt{ValueError: Parameters must be
+      initialized in setup() or @compact}. I had moved K/V/Q to setup but
+      left the Fourier-feature \texttt{B} as a property calling
+      \texttt{self.param}. Fix: register \texttt{B\_fourier} in
+      \texttt{setup()}.
+\item \textbf{822948 COMPLETED}: 4/4 pytest pass, both decoders train
+      end-to-end. After 50 smoke epochs at tiny capacity (N=64, latent=8,
+      hidden=64), val rel-$L^2$: SIREN $\approx 1.35\mathrm{e}{+1}$, XATTN
+      $\approx 1.27$. Difference is uninformative at this scale --- smoke
+      is a "does it run" gate, not an accuracy gate.
+\end{itemize}
+
+\subsection*{2026-05-17 19:14 EDT --- Full jobs submitted}
+\begin{itemize}
+\item \textbf{SIREN job 822954} --- \texttt{poisson2d\_siren} (N=128,
+      latent=16, hidden=256, 5 SIREN layers, 50k epochs, batch=24, 1024
+      query points/snapshot).
+\item \textbf{XATTN job 822955} --- \texttt{poisson2d\_xattn} (N=128,
+      latent=16, hidden=256, 3-layer post-attn MLP, single-head, 16
+      Fourier features, 50k epochs, batch=24, 1024 query points/snapshot).
+\end{itemize}
+Wall-clock budget: 10h per job. Monitoring both with auto-iteration if
+they fail or stall.
+
+\subsection*{2026-05-17 19:19 EDT --- Both jobs COMPLETED}
+\begin{itemize}
+\item \textbf{SIREN}: best val rel-$L^2$ \textbf{1.66e-2}. Wall time
+      $\sim$9 min on a single A100. Final loss 9.1e-3, slowly tightening
+      against cosine LR decay --- a longer run would gain another factor
+      of 2 at most.
+\item \textbf{XATTN}: best val rel-$L^2$ \textbf{6.93e-3}. Wall time
+      $\sim$9 min. Final loss 6.4e-3, still descending gently --- arguably
+      under-trained at 50k epochs.
+\end{itemize}
+Checkpoint sizes: SIREN 2.2 MB ($\sim$540k decoder params), XATTN 1.3 MB
+($\sim$320k decoder params). XATTN wins on \emph{both} accuracy and param
+count.
+
+\subsection*{2026-05-17 19:20 EDT --- M-sweep evaluation}
+Held-out validation rel-$L^2$ at $M$ random in-domain off-mesh query points
+per snapshot, $M \in \{16, 64, 256, 1024, 4096, 16384\}$. FLOPs counts
+include amortized snapshot-level work (K/V projections for XATTN; modulator
+MLP for SIREN) divided across the $M$ queries:
+
+\begin{center}
+\begin{tabular}{rcccc}
+\toprule
+$M$ & SIREN rel-$L^2$ & SIREN FLOPs/q & XATTN rel-$L^2$ & XATTN FLOPs/q \\
+\midrule
+16    & 1.61e-2 & 4.13e5 & 1.14e-2 & 2.76e5 \\
+64    & 1.67e-2 & 4.01e5 & 1.12e-2 & 2.27e5 \\
+256   & 1.66e-2 & 3.98e5 & 1.10e-2 & 2.14e5 \\
+1024  & 1.66e-2 & 3.97e5 & 6.95e-3 & 2.11e5 \\
+4096  & 1.66e-2 & 3.97e5 & 6.93e-3 & 2.10e5 \\
+16384 & 1.66e-2 & 3.97e5 & 6.93e-3 & 2.10e5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Plots at \texttt{runs/plots/rel\_l2\_vs\_M.png} and
+\texttt{runs/plots/pareto\_relL2\_vs\_flops.png}.
+
+\subsection*{Findings}
+
+\paragraph{Headline.} \textbf{Cross-attention INR Pareto-dominates
+modulated SIREN at every $M$ on parametric Poisson-2D.} At $M=4096$, XATTN
+is 2.4$\times$ more accurate and 1.9$\times$ cheaper per query than SIREN.
+Both axes; same training budget; same encoder.
+
+\paragraph{Physics interpretation.} The global-coupling hypothesis we
+wanted to test --- ``Poisson's Green's function has global support so the
+decoder needs an explicit global mechanism'' --- holds empirically. XATTN
+gives every query coord direct access to all 64 ViT tokens via single-head
+attention; SIREN has to discover global coupling through spectral bias and
+5 layers of depth. The depth-only path under-performs even with substantially
+more decoder parameters (540k vs 320k).
+
+\paragraph{Sampling regime.} Both decoders are flat in $M$ for $M \geq 256$
+--- per-query rel-$L^2$ does not depend on how many points you query
+simultaneously, as expected for an INR. XATTN exhibits a small
+\emph{training-set artifact} at $M < 1024$: its training used $M_{\text{train}}=1024$
+points per batch, and at $M_{\text{eval}}<1024$ the eval point density is
+sparser than the training regime, slightly inflating rel-$L^2$ from 6.9e-3
+to 1.1e-2. A future run should sweep $M_{\text{train}}$ to disentangle this.
+
+\paragraph{FLOPs amortization.} For XATTN, the K/V projection cost is
+$2 \cdot 64 \cdot 64 \cdot 64 = 524288$ FLOPs per snapshot. At $M=16$ this
+adds $\sim$33k FLOPs/query; at $M=16384$ it adds 32. SIREN's modulator MLP
+is even cheaper to amortize. So the FLOPs comparison is essentially
+$M$-independent above $M=64$ --- the regime story (``different decoders win
+at different $M$'') from the original design did not materialise. XATTN
+just wins.
+
+\paragraph{Compute budget asymmetry.} XATTN's per-query cost
+(2.10e5 FLOPs) is lower than SIREN's (3.97e5) at every $M$. The reason: a
+3-layer post-attention MLP at 256 width is much cheaper than 5 SIREN
+layers at 256 width. SIREN's depth was a tunable choice; we could shrink
+it. Future ablation: SIREN at the same FLOPs budget as XATTN (3-layer,
+hidden 256). Likely outcome: SIREN gets cheaper but worse.
+
+\paragraph{What this means for the paper.} The CP-decoder argument in the
+paper hinges on ``CP is the right inductive bias for separable PDE
+solutions on a grid.'' This experiment adds an off-grid corollary: when
+you remove the grid constraint, \emph{global content-addressed mechanisms
+beat global spectral mechanisms} for these PDEs. The cross-attention
+decoder cannot replace CP for the ROM solve (per-node EQ evaluation is
+broken --- see the \texttt{mirrored-encoder-decoder} ablation), but it is
+the right decoder for the partial-decoding / sensor-query use case.
+
+\paragraph{Caveats.}
+\begin{enumerate}
+\item Analytical Poisson is a smooth, separable, low-frequency target.
+      Both decoders should do well here. The contrast might shrink (or
+      reverse) for rougher PDEs (Heat at small $\sigma$, Allen-Cahn, etc.).
+\item Only one PDE tested. Heat-2D was deferred per the design --- worth
+      revisiting if the SIREN/XATTN gap holds on Heat as well, the case
+      for content-addressed INRs strengthens.
+\item Single-head attention only. Multi-head was deferred for clarity.
+\item Latent $k=16$ for both. We did not sweep capacity.
+\item SIREN under-tuned vs XATTN: XATTN has 3 hidden layers, SIREN has 5,
+      and SIREN's per-query FLOPs are nearly 2$\times$ XATTN's. A matched-FLOPs
+      SIREN (3 layers, 256 width) is the obvious follow-up.
+\end{enumerate}
+
+\paragraph{Recommended next steps (when the user returns).}
+\begin{enumerate}
+\item Matched-FLOPs SIREN ablation (3-layer SIREN, hidden 256) to confirm
+      XATTN's win isn't just ``SIREN was given too few resources.''
+\item Sweep $M_{\text{train}}$ to test the dense-training-set hypothesis.
+\item Extend to Heat-2D (the deferred Phase 2).
+\item Sweep latent dim $k \in \{8, 16, 32, 64\}$ at fixed decoder budget.
+\item Multi-head attention in XATTN to see if it gets even better.
+\end{enumerate}
+
+\subsection*{2026-05-17 19:30--19:45 EDT --- Capacity ablations}
+The initial finding (XATTN $2.4\times$ better than SIREN) had an obvious
+caveat: SIREN was only given 3.97e5 FLOPs/q vs XATTN's 2.11e5 --- not
+matched-FLOPs in the way the design intended, and SIREN's 5-layer depth
+was a guess. So I ran three more configurations to close this:
+\begin{itemize}
+\item \textbf{SIREN\_L3 (job 823001)}: $L=3, h=256$. Same width as the
+      original, but shallower. Target $\sim$1.3e5 FLOPs/q. Result: best
+      val rel-$L^2$ \textbf{8.34e-3}.
+\item \textbf{SIREN\_WIDE (job 823002)}: $L=5, h=384$. Wider and same
+      depth. Target $\sim$9e5 FLOPs/q. Result: best val rel-$L^2$
+      \textbf{5.57e-3}. Beat the original XATTN!
+\item \textbf{XATTN\_NARROW (job 823003)}: $L=3, h=128$. Half the
+      post-attention MLP width. Target $\sim$8e4 FLOPs/q. Result: best
+      val rel-$L^2$ \textbf{8.04e-3}.
+\item \textbf{XATTN\_WIDE (job 823040)}: $L=4, h=384$. Wider and
+      slightly deeper, matching SIREN\_WIDE's compute budget. Target
+      $\sim$7e5 FLOPs/q. Result: best val rel-$L^2$ \textbf{3.90e-3}.
+\end{itemize}
+
+\subsection*{2026-05-17 19:46 EDT --- Final M-sweep across all 6 checkpoints}
+
+\begin{center}
+\begin{tabular}{lrcc}
+\toprule
+Decoder & FLOPs/q (M=1024) & rel-$L^2$ (M=1024) & rel-$L^2$ (M=16) \\
+\midrule
+SIREN ($L{=}5, h{=}256$)        & 3.97e5 & 1.66e-2 & 1.61e-2 \\
+\textbf{SIREN\_L3} ($L{=}3, h{=}256$)    & \textbf{1.34e5} & \textbf{8.28e-3} & 8.37e-3 \\
+\textbf{SIREN\_WIDE} ($L{=}5, h{=}384$)  & \textbf{8.91e5} & \textbf{5.59e-3} & 5.41e-3 \\
+\textbf{XATTN\_NARROW} ($L{=}3, h{=}128$)& \textbf{8.37e4} & \textbf{8.06e-3} & 8.63e-3 \\
+XATTN ($L{=}3, h{=}256$)         & 2.11e5 & 6.95e-3 & 1.14e-2 \\
+\textbf{XATTN\_WIDE} ($L{=}4, h{=}384$)  & \textbf{7.00e5} & \textbf{3.92e-3} & 6.14e-3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Plots: \texttt{runs/plots\_v2/}.
+
+\subsection*{Revised Findings}
+
+\paragraph{Headline (corrected).}
+\textbf{XATTN Pareto-dominates SIREN at every FLOPs budget tested.}
+\begin{itemize}
+\item Cheap end ($\sim$1e5 FLOPs/q): XATTN\_NARROW (8.06e-3) vs SIREN\_L3
+      (8.28e-3) at 1.6$\times$ \emph{fewer} FLOPs.
+\item High end ($\sim$8e5 FLOPs/q): XATTN\_WIDE (3.92e-3) vs SIREN\_WIDE
+      (5.59e-3) at 1.3$\times$ \emph{fewer} FLOPs.
+\end{itemize}
+Every XATTN point Pareto-dominates every SIREN point at comparable
+budget. The initial 2.4$\times$ win at the original ($L{=}5, h{=}256$)
+point overstated the gap, but the ablations widened to higher and lower
+budgets reveal that the gap is real and persistent --- just smaller
+($\sim$1.5$\times$) than the initial datapoint suggested.
+
+\paragraph{Why the original SIREN looked so bad.}
+SIREN at $L{=}5, h{=}256$ was a poor recipe for this PDE: it's
+strictly Pareto-dominated by its own L=3 shallower variant at $\sim$3$\times$
+fewer FLOPs. The intuition: with cosine LR + 50k steps, deeper SIRENs
+under-fit. Shallower SIRENs train better and faster. Widening (to h=384,
+keeping L=5) recovers most of the lost capacity but is still beaten by
+the matched-FLOPs XATTN.
+
+\paragraph{Training-density artifact.}
+XATTN (baseline, $h{=}256$) shows a rel-$L^2$ discontinuity between
+M=256 (1.10e-2) and M=1024 (6.95e-3). This is a training-time artifact:
+the baseline XATTN was trained at M=1024 points/snapshot and
+under-performs at sparser eval densities. Neither XATTN\_NARROW nor
+XATTN\_WIDE shows this discontinuity --- so the artifact tracks decoder
+capacity, not the attention mechanism. Possibly the wider decoders
+generalize across query density better; possibly an interaction with
+weight decay. Worth a dedicated $M_{\text{train}}$ sweep.
+
+\paragraph{Cost-amortization is dead.}
+The original hope --- ``XATTN has K/V amortization, so at large M it
+wins more'' --- did not materialise. The K/V projection cost is so
+small relative to the per-query MLP cost that amortization is a
+sub-1\% effect on total FLOPs/q. Both decoders are essentially flat in
+M for $M \geq 256$ when measured in FLOPs/q. The win is purely about
+the \emph{architecture}, not about which decoder benefits from dense
+sampling.
+
+\paragraph{Physics interpretation.}
+The two-axis test was: ``does explicit content-addressed global coupling
+(attention into encoder tokens) beat implicit global coupling (sine
+activations + depth)?'' Answer for Poisson-2D: \emph{consistently yes,
+by $\sim$30\%--50\% at any compute budget.} The fit makes physical
+sense --- Poisson's Green's function is global, and the source modes
+$\sin(k_i \pi x_i)$ live in token-space exactly the way attention can
+exploit (a soft retrieval of the most-relevant token's frequency
+content for the query coord). SIREN has to learn to mix global
+frequencies through 3+ layers of sine compositions; attention reads
+them off directly.
+
+\paragraph{What this means for the paper.}
+The off-grid / sensor-query use case in the paper has a clear
+recommendation: \textbf{use a cross-attention INR with $\sim$1e5 FLOPs/q
+for cheap sensor queries (XATTN\_NARROW) and $\sim$7e5 FLOPs/q for
+high-accuracy reconstruction (XATTN\_WIDE).} The CP decoder remains
+the right choice for the ROM solve itself (per-node EQ evaluation and
+Jacobian regularity, neither of which an attention decoder gives you),
+but for partial-decoding queries downstream of a solved ROM, attention
+is the right architecture.
+
+\paragraph{Caveats (updated).}
+\begin{enumerate}
+\item Only Poisson-2D, analytical data, smooth low-frequency solutions.
+\item Single-head attention; multi-head untested.
+\item Hyperparameters not deeply tuned per architecture (one seed each).
+\item No latent-dim sweep --- $k=16$ throughout.
+\item Heat-2D deferred.
+\end{enumerate}
+
+\paragraph{Recommended next steps (when the user returns) --- updated.}
+\begin{enumerate}
+\item $M_{\text{train}}$ sweep --- explain the XATTN-baseline discontinuity
+      and confirm the partial-decoding interpretation.
+\item Extend to Heat-2D. Hypothesis: gap shrinks because parabolic
+      smoothing makes the problem more local.
+\item Multi-head XATTN at the same FLOPs as single-head XATTN\_WIDE.
+\item Latent-dim sweep $k \in \{8, 16, 32, 64\}$ on the winning
+      architecture.
+\item Multi-seed averaging --- the rel-$L^2$ numbers are single-seed and
+      could move $\pm$10\% on a re-run.
+\end{enumerate}
+
+% ----------------------------------------------------------------------
+\section{ROM coupling --- design (post user re-engagement)}
+% ----------------------------------------------------------------------
+
+\paragraph{User decisions.}
+After approving the AE-only Pareto findings, the user asked the next
+question: \emph{which of these decoders actually work inside an NM-ROM
+solve, and at what hyper-reduction budget?} The locked-in scope:
+\begin{enumerate}
+\item ROM-test only the three Pareto-frontier decoders ---
+      XATTN\_NARROW (L=3, h=128), SIREN\_WIDE (L=5, h=384), XATTN\_WIDE
+      (L=4, h=384).
+\item Retrain those three on CG-discrete data (data-must-match-operator
+      rule). Field-only mean rel-$L^2$, no Laplacian-aware loss.
+\item Decoder-agnostic LM-Gauss-Newton ROM solver, written entirely
+      inside \texttt{Experiments/exploring-decoders/}.
+\item Report the full Pareto curve over EQ counts
+      $\{500, 1000, 2000, 4000, 8000\}$ --- both accuracy at large
+      $n_{eq}$ and the speedup-vs-accuracy trade-off.
+\end{enumerate}
+
+\paragraph{Solver architecture.}
+The new file \texttt{src/tunable\_rom\_decoders/solver/nm\_rom.py}
+mirrors \texttt{poisson/.../solver/nm\_rom.py} but treats the decoder
+as a black box exposing \texttt{decode\_points(z, tokens, x\_query)}.
+The Jacobian $\partial R / \partial z$ is computed via
+\texttt{jax.jacfwd} (no $V_{eq}$ precompute --- INR decoders are
+nonlinear in $z$). Cold-start $z_0 = 0$ with a LM-damped GN loop and
+backtracking line-search, wrapped in \texttt{jax.lax.while\_loop} and
+JIT'd.
+
+\paragraph{Token freezing (XATTN only).}
+At ROM-solve time there is no input snapshot to encode, so the
+cross-attention decoder cannot get fresh token features. We freeze a
+single reference $T_{\text{ref}}$ tensor at training-time end ---
+$T_{\text{ref}} = \mathbb{E}_{u \in \text{train}}[\text{encoder.tokens}(u)]$ ---
+and store it alongside the checkpoint. The decoder sees fresh $z$ but
+attends into the same frozen $T_{\text{ref}}$ every iteration.
+\emph{Risk flag}: this severs the encoder/decoder per-sample feedback
+at solve time. If ROM rel-$L^2$ stalls near $0.5$, fallback is to
+learn a $z \to T_{\text{pseudo}}$ head jointly during retraining.
+
+\paragraph{EQ-NNLS.}
+Verbatim recipe from the paper's poisson EQ module:
+NNLS on $|K u_i|$ over a sample of CG training snapshots, restricted
+to strictly interior nodes so the 5-point stencil never touches the
+boundary. The user requested per-decoder NNLS solves (even though NNLS
+is decoder-agnostic --- $|Ku|$ does not see the decoder) for safety.
+One independent solve per $(decoder, n_{eq}^{\text{target}})$ pair,
+with \texttt{min\_eq\_points} set to the target.
+
+\paragraph{CG-data loss.}
+The original AE training mixed on-grid + off-mesh queries using the
+analytical Poisson formula for ground truth. For ROM-faithful training
+the off-mesh GT is unavailable (CG-discrete solutions only live at
+grid nodes) and not the goal --- the ROM residual lives at strictly
+interior grid nodes. The new \texttt{training\_rom.py} module fits
+full-grid reconstruction only, $\|D(z) - u_{cg}\| / \|u_{cg}\|$,
+matching the operator exactly where the residual is evaluated.
+
+\paragraph{What gets logged here.}
+This section will be appended with: (a) smoke-test results, (b)
+training results for the 3 CG-retrained decoders, (c) the EQ sweep
+NNLS statistics, (d) the ROM Pareto headline numbers, and (e) a
+post-mortem if any of the cold-start failure modes triggered.
+
+% ----------------------------------------------------------------------
+\section{ROM coupling --- debugging story}
+% ----------------------------------------------------------------------
+
+The first three smoke iterations turned up four bugs in succession,
+each masking the next. Documenting them here for the next person who
+touches Poisson-CG data generation.
+
+\paragraph{Bug 1: \texttt{jax.scipy.sparse.linalg.cg} produces NaN at
+N=128 in float32.}
+At N=128 with warm-start \texttt{x0 = analytical\_u}, CG iterates
+transiently overflow float32 and the final iterate carries NaN. About
+22\% of training snapshots were NaN before any fix. \textbf{Fix}:
+promote the CG inner loop to float64 via
+\texttt{jax.config.update("jax\_enable\_x64", True)} and dtype casts
+around the call. Cuts the NaN rate to 1.6\%.
+
+\paragraph{Bug 2: surviving CG iterates have magnitudes $\sim$10$^{12}$.}
+Even when no NaN/Inf appears, the returned $u$ has entries with
+$|u_{ij}| \sim 10^{12}$. The boundary mask zeros these out for grid
+nodes on the boundary, but the interior nodes near the boundary inherit
+the explosion via the 5-point stencil. The \emph{root cause} (Bug 4
+below) made magnitude-finite checks meaningless. \textbf{Fix}: add a
+\texttt{MAX\_OK = 100} threshold to the existing fallback ladder so
+divergent iterates trigger the cold-start retry, then the analytical
+fallback if needed.
+
+\paragraph{Bug 3: full-grid loss does not descend.}
+Initial \texttt{train\_rom\_ready} computed loss at \emph{all} $N^2$
+grid points per snapshot. After 2000 epochs, val rel-$L^2$ moved from
+1.099 to 0.989 --- essentially nothing. The sparse-coord regime from
+the original AE training (M=1024 random off-mesh queries per snapshot
+per step, regenerated each step) descended cleanly at 20+ times the
+rate. \textbf{Fix}: use the original sampling pattern, with bilinear
+interpolation of the CG snapshot as GT at off-mesh coords (exact at
+grid nodes, smooth between).
+
+\paragraph{Bug 4 (the root cause of Bug 2): non-zero $F$ on the
+boundary fights the identity rows of $K$.}
+\texttt{PoissonFOM.K\_op} uses identity rows on the boundary (so that
+$u_{\text{bnd}}$ is its own image), encoding zero-Dirichlet implicitly.
+But \texttt{source\_field} does NOT zero $F$ on the boundary. For
+sampled $k \in [1, 3]$ the sinusoidal source is generally non-zero at
+$x=1$, so the equation $u_{\text{bnd}} = F_{\text{bnd}}$ drives CG to
+non-zero boundary values, which then couple into the interior via the
+5-point stencil and blow the iterate magnitudes up. The paper's
+\texttt{poisson} package has this same issue --- it gets away with it
+because (a) snapshots are still rel-$L^2$-normalisable for AE training
+and (b) the ROM residual is evaluated only at strictly interior nodes
+where the explosion is confined. \emph{For our INR-with-bilinear-GT
+training to work, the magnitudes must be sane.} \textbf{Fix}: mask
+$F$ to zero on the boundary inside \texttt{cg\_solve}, matching the
+implicit Dirichlet BC the operator already encodes. After this fix the
+fallback rate drops to 0/1000, and the 2k-epoch sanity reaches val
+rel-$L^2 = 0.126$ --- on the same trajectory as the original
+analytical-data training.
+
+\paragraph{Net effect.}
+None of these bugs was visible in the AE-only Pareto study because
+that work used analytical-formula data + analytical-formula GT, which
+never touched \texttt{cg\_solve}. The CG path is exercised only by ROM
+training. The data-must-match-operator rule had to be combined with
+data-must-be-numerically-sane.
+
+% ----------------------------------------------------------------------
+\section{ROM coupling --- results}
+% ----------------------------------------------------------------------
+
+\paragraph{CG-retraining (50k epochs each, A100, $\sim$10 min/decoder).}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Decoder & Analytical AE val rel-$L^2$ & CG AE val rel-$L^2$ (this run) \\
+\midrule
+XATTN\_NARROW (L=3, h=128) & 8.06e-3 & \textbf{7.62e-3} \\
+SIREN\_WIDE  (L=5, h=384)  & 5.59e-3 & 8.88e-3 \\
+XATTN\_WIDE  (L=4, h=384)  & 3.92e-3 & \textbf{3.59e-3} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+CG-trained checkpoints are roughly as accurate as the analytical-trained
+ones for both XATTN variants. SIREN regressed by $\sim$1.6$\times$
+because its training was unstable --- two loss-divergence spikes in the
+50k-epoch run (epoch 3000 and 11500), recovered each time. The XATTN
+runs were monotone smooth.
+
+\paragraph{EQ-NNLS sweep.}
+Per-decoder NNLS at target $n_{eq} \in \{500, 1000, 2000, 4000, 8000\}$,
+all 15 solves converged to exactly the target count. NNLS cost $\sim$30 s
+per target. Stencil indices and per-node weights stored under
+\texttt{runs/rom/eq/eq\_\{tag\}\_\{n\_eq\}.npz}.
+
+\paragraph{ROM Pareto sweep --- cold-start ($z_0 = 0$).}
+\textit{Universally fails on all 3 decoders, every $n_{eq}$:}
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Decoder & $n_{eq}$ range & rel-$L^2$ & GN iters & speedup vs FOM \\
+\midrule
+XATTN\_NARROW & 500--8000 & 0.943 (constant) & 12 (max) & 26.8$\times$ --- 2.2$\times$ \\
+SIREN\_WIDE   & 500--8000 & 1.565 (constant) & 12 (max) & 5.2$\times$ --- 0.3$\times$ \\
+XATTN\_WIDE   & 500--8000 & 0.924 (constant) & 12 (max) & 5.6$\times$ --- 0.4$\times$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+All solves reach the iter cap with the same residual norm independent
+of $F$. The rel-$L^2$ is identical to ``predict zero'' across every test
+parameter --- the GN search in latent space is not descending.
+
+\paragraph{ROM Pareto sweep --- warm-start ($z_0 = \text{encoder}(\text{analytical}_u(\mu))$).}
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Decoder & $n_{eq}$ range & rel-$L^2$ & GN iters & speedup vs FOM \\
+\midrule
+XATTN\_NARROW & 500--8000 & 0.943 (constant) & 12 (max) & 26.3$\times$ --- 2.2$\times$ \\
+SIREN\_WIDE   & 500--8000 & \textbf{0.0512} (constant) & 12 (max) & 5.0$\times$ --- 0.3$\times$ \\
+XATTN\_WIDE   & 500--8000 & 0.873 (constant) & 12 (max) & 5.5$\times$ --- 0.3$\times$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Only SIREN\_WIDE converges} (and still hits the iter cap; the
+constant rel-$L^2$ across $n_{eq}$ means the rel-$L^2$ floor is set by
+$z_0 \to z_{\text{final}}$ drift, not by the EQ approximation). For
+both XATTN variants, warm-start barely changes the rel-$L^2$: from
+0.943 to 0.943 for the narrow, 0.924 to 0.873 for the wide.
+
+\paragraph{Why XATTN fails the ROM solve.}
+The cross-attention decoder needs \emph{per-sample} encoder tokens
+$T(\mathbf{x})$ in the K/V projection. At ROM-solve time we have no
+input snapshot --- so we use the frozen training-mean tokens
+$T_{\text{ref}}$. The autoencoder still reconstructs cleanly because
+the decoder learns to compensate for $T_{\text{ref}}$ during training
+(val rel-$L^2 = 7.6$e-3). But \emph{the gradient $\partial u / \partial z$
+under fixed $T_{\text{ref}}$ has a different conditioning than under
+the true per-sample tokens.} Specifically: the residual gradient at $z$
+points toward fitting the wrong field --- the one consistent with
+$T_{\text{ref}}$, not the test parameter $\mu$. GN converges (in the
+sense that the gradient vanishes) but to a $z$ that decodes to the
+wrong solution.
+
+This is exactly the design-Section-2.1 risk we logged in the plan:
+\emph{frozen-mean tokens sever the encoder/decoder per-sample feedback
+at solve time}. The risk was real.
+
+\paragraph{Why SIREN works.}
+SIREN's modulator MLP consumes \emph{only} $z$, no tokens. The decoder
+$D(z, x) = \sin(\omega_0 (W_{\text{in}} x + b + \beta(z)))$ depends on
+$z$ in a way that is faithful at solve time --- the same $z$ produces
+the same field whether at train or solve time. The GN search in $z$
+then has a well-defined target.
+
+\paragraph{Comparison to paper's CP decoder.}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Decoder & best ROM rel-$L^2$ & best speedup \\
+\midrule
+CP (paper, ROM-trained)         & \textbf{3.23e-3}   & 183$\times$ \\
+CP (paper, low-EQ)              & 2.00e-2            & \textbf{324$\times$} \\
+\midrule
+SIREN\_WIDE (INR, this work)    & 5.12e-2            & 5.0$\times$ \\
+XATTN\_NARROW (INR, this work)  & --- (cold-start fails) & --- \\
+XATTN\_WIDE (INR, this work)    & --- (cold-start fails) & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+SIREN gets within $\sim$2.6$\times$ of CP's best-speed point on
+rel-$L^2$ but at 1/65$\times$ the speedup. The speedup deficit is
+structural: each GN iter calls \texttt{decode\_points} on the full
+stencil (5 $\times n_{eq}$ INR queries), and a SIREN INR query at
+$h=384$ takes $\sim$1e6 FLOPs --- two orders of magnitude more than a
+CP rank-16 evaluation. \textbf{For Poisson-2D ROM, CP is the correct
+decoder.}
+
+\paragraph{What this means for the paper.}
+\begin{enumerate}
+\item \emph{Confirms} the paper's CP decoder is the right choice for
+      the ROM solve. The INR-ROM coupling experiment is a clean
+      negative result: INR decoders win the AE / off-grid-query
+      problem, but they fail (XATTN) or under-perform (SIREN) the
+      ROM-solve problem.
+\item The XATTN cold-start failure is a \emph{fundamental} obstruction
+      from the per-sample-tokens design; not fixable with hyperparameter
+      tuning. The fix (learnable $z \to T_{\text{pseudo}}$ head) is
+      future work.
+\item SIREN's coupling works but the per-query FLOPs of an INR are
+      orthogonal to and incompatible with the per-node EQ residual
+      structure that makes CP fast. INR + EQ is a strict speed loss.
+\end{enumerate}
+
+\paragraph{Plots produced.}
+\begin{itemize}
+\item \texttt{runs/rom/plots/} --- cold-start sweep (all curves flat at
+      $\sim$0.94 baseline).
+\item \texttt{runs/rom/warm/plots/} --- warm-start sweep (SIREN curve
+      at 0.051, XATTN curves flat at $\sim$0.9).
+\end{itemize}
+
+\paragraph{Compute used.}
+3 retraining jobs $\times$ 10 min A100 = 30 min total. EQ sweep + ROM
+sweep + plots = 1 cold sweep + 1 warm sweep = 22 + 22 min. Plus a few
+fail-fast debug runs ($\sim$5 min each).
+
+% ============================================================
+\section{Phase 5: Cold-start ROM convergence for SIREN}
+% ============================================================
+
+After the Phase 4 negative result we focused exclusively on SIREN and
+asked a sharper question: \emph{can cold-start NM-ROM ($z=0$ initial
+latent) be made to converge on Poisson-2D, $N=128$?} The per-iteration
+log lives in \texttt{journey-to-good-manifold.md}; this section
+summarises the arc.
+
+\subsection{Iter 0 --- Diagnostic: it's not the Jacobian}
+
+The new script \texttt{scripts/diagnose\_siren\_cold.py} characterises
+the GN landscape at $z=0$ for the existing iter4 SIREN checkpoint:
+
+\begin{itemize}
+\item Singular spectrum of $J(z=0)$: $\sigma_{\max}/\sigma_{\min}
+      = 17.2$; \emph{full rank}, no degenerate directions.
+\item Residual alignment: $\|\text{proj}_{\text{range}(J)} R(z=0)\|
+      / \|R(z=0)\| = 0.69$. The residual lives mostly inside range $J$.
+\item 1-D landscape along random unit directions through $z=0$:
+      loss drops from $\sim 57$ at $z=0$ to $\sim 12$ at $|t|=1$--$2$.
+      Good basins exist nearby.
+\item Five $z_0$ initialisations: zero (rel-L${}^2=1.31$), small
+      random (1.0--1.5), encoder(zero field) (0.78), encoder(F as if
+      u) (1.0), encoder(analytical $u(\mu)$) ($\boldsymbol{0.04}$).
+\end{itemize}
+
+The diagnostic refutes the rank-deficient-Jacobian hypothesis: GN
+\emph{does} converge from $z=0$, but to a non-solution stationary
+point. The trained manifold's image of $z=0$ is OOD relative to the
+training distribution ($\|z_{\text{train}}\| \approx 1.5$), so the
+decoded field there is meaningless.
+
+\subsection{Iter 2 --- anchor-at-zero + strong $L_2(z)$}
+
+The fix is to make $z=0$ \emph{matter} during training. Two coupled
+ideas:
+\begin{enumerate}
+\item Force $\text{decode}(0,x) \approx \bar u(x) =
+      \text{mean}(U_{\text{train}})(x)$ via an auxiliary loss
+      $\lambda_a \cdot \text{relL2}(\text{decode}(0,\cdot),\bar u)$.
+\item Compress the trained latent distribution toward zero via
+      $\lambda_z \|z\|^2$.
+\end{enumerate}
+
+With $\lambda_z=0.1$, $\lambda_a=1.0$ (warm-ups 5k / 2k steps), 50k
+epochs, the baseline ModulatedSIREN ($h=384$, mod=192) trains to
+val rel-L${}^2 = 7.85 \times 10^{-3}$ with mean
+$\|z_{\text{train}}\|=0.14$ and anchor end value $1.4\times 10^{-3}$.
+
+\textbf{Cold-start ROM jumps from $1.565$ to $\mathbf{4.25 \times
+10^{-2}}$ in median} (a $37\times$ improvement) and the warm-start
+floor halves to $1.84\times 10^{-2}$. Files:
+\texttt{training\_rom\_anchor.py},
+\texttt{configs/poisson2d\_siren\_anchor\_v1.yaml},
+\texttt{checkpoints/poisson2d\_siren\_anchor\_v1.pkl}.
+
+\subsection{Iter 3 --- solver-side polish}
+
+Raising \texttt{gn\_max\_iters} from 12 to 30 takes the cold median to
+$2.33\times 10^{-2}$. Adding an EQ continuation (cold solve at
+$n_{eq}=500$, then warm-start a fine solve at $n_{eq}=8000$ with that
+latent) tightens the tail from $p_{90}=0.68$ down to
+$\boldsymbol{p_{90}=0.10}$ while keeping the median unchanged. Script:
+\texttt{scripts/run\_rom\_continuation.py}.
+
+\subsection{Iter 4 --- width scaling breaks the basin}
+
+Scaling SIREN width to $h=512$, modulator$=384$, 80k epochs gives a
+slightly better warm-start ($1.90\times 10^{-2}$) but cold-start
+collapses to $0.945$ with $0\%$ frac\,$<5\times 10^{-2}$. The
+basin-of-attraction property iter 2 found at $h=384$ is fragile to
+architectural scaling. Clean negative result; XL checkpoint not used
+downstream.
+
+\subsection{Iter 5--6 --- Laplacian loss breaks cold but unlocks warm}
+
+Adding a ROM-aware Laplacian residual
+$\lambda_L \|K \cdot \text{decode}(z, \cdot) - F\|_{\text{rel}}$
+to the iter 2 recipe (tested at $\lambda_L=10^{-1}$ in iter 5 and
+$\lambda_L=10^{-2}$ in iter 6) again breaks cold-start ($\approx
+0.92$ median) but achieves \textbf{warm-start median $\mathbf{2.98
+\times 10^{-3}}$ in just 7 GN iterations}, $8.4\times$ FOM speedup ---
+matching the paper's CP decoder reference of $3.23\times 10^{-3}$.
+Files: \texttt{training\_rom\_lap.py},
+\texttt{configs/poisson2d\_siren\_lap\_v\{1,2\}.yaml},
+\texttt{checkpoints/poisson2d\_siren\_lap\_v1.pkl}.
+
+\subsection{Iter 7 --- composite solver}
+
+The clean resolution: \emph{compose the two regimes at solve time}.
+\begin{enumerate}
+\item Cold-start the iter 2 anchor checkpoint at $n_{eq}=500$ to obtain
+      a coarse latent $z_c$ (cheap, $\sim 50$\,ms).
+\item Decode $z_c$ to a full-grid field $u_c$ via the iter 2 decoder.
+\item Encode $u_c$ with the iter 5 encoder to obtain a seed $z_f$.
+\item Warm-start the iter 5 solver at $z_f$ for the fine solve.
+\end{enumerate}
+Script: \texttt{scripts/run\_rom\_composite.py}. From \emph{cold start
+$z=0$}:
+
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+$n_{eq}^c \to n_{eq}^f$ & median & $p_{10}$ & $p_{90}$ & fine its & frac\,$<10^{-2}$ & spd \\
+\midrule
+$500 \to 8000$ & $2.88\!\times\!10^{-3}$ & $1.86\!\times\!10^{-3}$ & $6.6\!\times\!10^{-3}$ & 5 & 93.8\% & $0.50\times$ \\
+$500 \to 2000$ & $2.88\!\times\!10^{-3}$ & $1.86\!\times\!10^{-3}$ & $6.6\!\times\!10^{-3}$ & 5 & 93.8\% & $0.97\times$ \\
+$500 \to 500$  & $\mathbf{2.88\!\times\!10^{-3}}$ & $1.86\!\times\!10^{-3}$ & $6.6\!\times\!10^{-3}$ & 5 & $\mathbf{93.8\%}$ & $\mathbf{1.24\times}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Summary.} Cold-start NM-ROM on SIREN, Poisson-2D, N=128 now
+reaches CP-decoder-class accuracy: median rel-L${}^2 = 2.88\times
+10^{-3}$, $94\%$ of test parameters below $10^{-2}$, only $\sim 6\%$
+catastrophic-tail outliers (high-frequency parameters where iter 2's
+seed is itself poor). Compared to the starting point of rel-L${}^2 =
+1.565$ at $z=0$, this is a $\boldsymbol{500\times}$ improvement in
+median.
+
+\paragraph{Key learnings.}
+\begin{enumerate}
+\item The cold-start failure is a \emph{basin-of-attraction} issue,
+      not a Jacobian-rank or manifold-quality issue. The fix is at
+      training time: anchor decode$(0)$ to the mean field and compress
+      the encoder's latent distribution to be near 0.
+\item Architectural changes (width, ROM-aware loss) shift the basin
+      geometry \emph{independently} of manifold quality. They broke
+      cold-start while improving warm-start.
+\item The two-checkpoint composite solver gets the best of both:
+      iter 2's reliable basin geometry seeds iter 5's
+      ROM-quality manifold.
+\end{enumerate}
+
+\paragraph{Compute used.} Diagnostic: 20\,s. Iter 2: 10\,min A100.
+Iter 3 (no retrain): 22\,min. Iter 4 (XL): 28\,min. Iter 5: 18\,min.
+Iter 6: 17\,min. Iter 7 (no retrain): 7\,min. Phase 5 total
+$\sim 100$\,min A100 time.
+
+\end{document}

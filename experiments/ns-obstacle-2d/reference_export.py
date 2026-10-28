@@ -232,11 +232,13 @@ def analytic_normal_certificate(boundary,cfg):
     return record
 
 
-def _mapped_state(mesh,velocity,pressure,order,boundary,ng):
+def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None):
     points=[];weights=[];values=[];gradients=[];pressures=[];jacobians=[];normals=[];labels=[]
     derivative=ng.Grad(velocity)
     if boundary:derivative=ng.BoundaryFromVolumeCF(derivative)
-    normal=ng.specialcf.normal(2)
+    if boundary and normal is None:raise ValueError('reload boundary export requires verified ordinary-BND normal')
+    raw_normal=ng.specialcf.normal(2)
+    raw_normals=[]
     cap=CAPS['boundary_points' if boundary else 'volume_points']
     for el in mesh.Elements(ng.BND if boundary else ng.VOL):
         tr=mesh.GetTrafo(el);ir=ng.IntegrationRule(el.type,order)
@@ -249,13 +251,14 @@ def _mapped_state(mesh,velocity,pressure,order,boundary,ng):
             pressures.append(scalar_value(pressure(mip),'reloaded_pressure'))
             if boundary:
                 normals.append(np.array(normal(mip),dtype=float,copy=True));labels.append(str(el.mat))
+                raw_normals.append(np.array(raw_normal(mip),dtype=float,copy=True))
             else:
                 jac=np.array(mip.jacobi,dtype=float,copy=True)
                 if np.linalg.det(jac)<=0:raise ValueError('nonpositive reloaded Jacobian')
                 jacobians.append(jac)
     result={name:np.asarray(data,dtype=np.float64) for name,data in
             [('points',points),('weights',weights),('velocity',values),('velocity_gradient',gradients),('pressure',pressures)]}
-    if boundary:result.update(normals=np.asarray(normals,dtype=np.float64),labels=labels)
+    if boundary:result.update(normals=np.asarray(normals,dtype=np.float64),raw_normals=np.asarray(raw_normals,dtype=np.float64),labels=labels)
     else:result['jacobians']=np.asarray(jacobians,dtype=np.float64)
     return result
 
@@ -287,12 +290,19 @@ def reload_certificate(out,cfg,original_mesh,original_layout,ng):
         volume=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],False,ng)
         scales={'points':cfg['D'],'weights':1.,'jacobians':1.,'velocity':cfg['U'],'velocity_gradient':cfg['U']/cfg['D'],'pressure':cfg['U']**2}
         for key,scale in scales.items():report['checks']['volume_'+key]=relative_max_record(volume[key],data[key],scale)
-        boundary=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],True,ng)
+        from oriented_normals import fluid_outward_normal
+        normal, normal_certificate=fluid_outward_normal(mesh, cfg['center'] if cfg['kind'] in ('dfg','manufactured') else None,
+            order=cfg['diagnostic_order'], evidence_path=out/'reload_normal_orientation.json')
+        original_normals=json.loads((out/'normal_orientation.json').read_text())
+        if normal_certificate['factors']!=original_normals['factors']:raise ArithmeticError('reloaded boundary orientation factors changed')
+        report['normal_orientation']={'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
+                                      'certificate_sha256':sha_file(out/'reload_normal_orientation.json')}
+        boundary=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],True,ng,normal=normal)
         report['analytic_normal_checks']=analytic_normal_certificate(boundary,cfg)
         if not report['analytic_normal_checks']['passed']:raise ArithmeticError('reloaded analytic normal orientation/closure failed')
         saved=json.loads((out/'boundary_rule.json').read_text())
         if [row['label'] for row in saved]!=boundary['labels']:raise ValueError('reloaded boundary enumeration differs')
-        for key,saved_key,scale in [('points','point',cfg['D']),('weights','weight',1.),('normals','normal',1.),('velocity','velocity',cfg['U']),('velocity_gradient','velocity_gradient',cfg['U']/cfg['D']),('pressure','pressure',cfg['U']**2)]:
+        for key,saved_key,scale in [('points','point',cfg['D']),('weights','weight',1.),('normals','normal',1.),('raw_normals','raw_normal',1.),('velocity','velocity',cfg['U']),('velocity_gradient','velocity_gradient',cfg['U']/cfg['D']),('pressure','pressure',cfg['U']**2)]:
             report['checks']['boundary_'+key]=relative_max_record(boundary[key],[row[saved_key] for row in saved],scale)
         if max(row['value'] for row in report['checks'].values())>RELOAD_TOL:raise ArithmeticError('saved FE reconstruction exceeds fixed parity threshold')
         report['passed']=True

@@ -38,6 +38,24 @@ The draft matrix marks only its canonical fine DFG case for `export_common_stoke
 
 The robust reference generator retains independent Stokes solves as control work. The future tuned paired FOM query runner must use the cached shared lift, charge one-time construction/loading offline, and include the necessary per-query coefficient copy/scaling and nonlinear work online. That runner, tolerances and paired timing experiments are not implemented or measured here. Per-point reference export/reload/diagnostic loops are timed separately and cannot be counted as competitor query work. Actual CPU concurrency remains unmeasured; no performance claim is made.
 
+
+## Prospective normal-orientation repair propagation
+
+The isolated G1 normal repair at `26e9b8272` is under review. Its helper is now
+propagated into this separate G2 development source, with no G2 release. Both
+original generation and actual mesh reload derive and independently verify
+fluid-outward signs from adjacent volume topology. The raw curved normals,
+per-label factors and complete certificates are retained. Reload checks compare
+both raw and oriented normals and require the same inferred factors.
+
+The helper's ordinary boundary coefficient function is used consistently by
+loads, fluxes, balances, forces and export; volume-facet controls retain native
+normals. Source provenance includes the helper. This propagation does not
+advance reference admission, update the currently provisional mesh-size matrix,
+or authorize any G2 execution. Setup verification is offline/reference work;
+a future matched-query benchmark must reuse a validated common-mesh certificate
+fairly instead of charging repeated helper assemblies only to the FOM.
+
 ## Resource projection and remaining gates
 
 `plan.py` generates the draft matrix and optionally projects from explicit collected G1 mesh counts, reading array headers rather than field values. Exact mesh sizes are unresolved; no G2 config is runnable. The existing adapter point, coefficient, element and archive caps remain fixed. A projected cap violation requires a reviewed resource-only amendment or separately qualified deterministic rule, never a silently weaker reference rule.

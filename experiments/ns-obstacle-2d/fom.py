@@ -74,10 +74,13 @@ def run_case(cfg, out):
     # Netgen optimize/mesh operations are single-threaded here; recorded seed is
     # retained as provenance, not a claim that Netgen accepts an RNG seed option.
     mesh,mesh_origin=rex.make_or_reuse_mesh(cfg,out,geo,ng)
-    from preflight import mapped_probe
-    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None))
     if mesh.ne > cfg['max_elements']:
         raise MemoryError(f'pre-space element guard: {mesh.ne}')
+    from preflight import mapped_probe
+    from oriented_normals import fluid_outward_normal
+    normal, normal_certificate = fluid_outward_normal(mesh, cfg['center'] if obstacle else None,
+        order=cfg['diagnostic_order'], evidence_path=out/'normal_orientation.json')
+    dump(out/'early_geometry_api_checks.json', mapped_probe(mesh,cfg['center'] if obstacle else None, normal=normal))
     V = ng.VectorH1(mesh, order=cfg['velocity_order'], dirichlet='inlet|wall.*|obstacle')
     Q = ng.H1(mesh, order=cfg['pressure_order'])
     X = V*Q
@@ -96,7 +99,7 @@ def run_case(cfg, out):
     g = ng.GridFunction(X)
     uh, ph = g.components
     x, y = ng.x, ng.y
-    normal = ng.specialcf.normal(2)
+    raw_normal = ng.specialcf.normal(2)  # provenance only; forces/fluxes use verified normal
     I = ng.Id(2)
     grad = ng.Grad
     exact_u = exact_p = force = traction = None
@@ -357,6 +360,7 @@ def run_case(cfg, out):
                 obstacle_normal_dot.append(float(np.asarray(normal(mip))@radial/np.linalg.norm(radial)))
                 obstacle_distance_max=max(obstacle_distance_max,abs(np.linalg.norm(xy-np.array(cfg['center']))-cfg['radius']))
             boundaries.append({'point':xy.tolist(),'weight':float(ip.weight*mip.measure),'normal':list(normal(mip)),
+                               'raw_normal':list(raw_normal(mip)), 'normal_orientation_factor':normal_certificate['factors'][label],
                                'label':label,'velocity':uv.tolist(),'pressure':scalar_value(ph(mip),'boundary_pressure_point'),
                                'velocity_gradient':np.asarray(gradient_on_boundary(mip)).reshape(2,2).tolist()})
     geometry['minimum_sampled_jacobian_determinant']=min_det
@@ -541,6 +545,8 @@ def run_case(cfg, out):
     result={'status':'completed_control_not_reference_admission','configuration':cfg,
             'scalar_return_contract':scalar_observations(),
             'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
+            'normal_orientation':{'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
+                                  'certificate_sha256':sha(out/'normal_orientation.json')},
             'mesh_origin':mesh_origin,'reload_checks':reload_evidence,
             'timing_use':'reference generation and diagnostics only; not a tuned paired FOM query benchmark',
             'reference_phase_seconds':{'geometry_spaces_fields_forms':stokes_started-started,
@@ -562,7 +568,7 @@ def run_case(cfg, out):
              'case':{'kind':kind,'Re':U*D/nu,'split':cfg.get('split','control'),'release':cfg['release']},
              'campaign_sha256':cfg['campaign_sha256'],'layout_sha256':layout_evidence['sha256'],
              'versions':{name:importlib.metadata.version(name) for name in ('ngsolve','netgen-mesher','netgen-occt','ngsolve-openblas','numpy')},
-             'producer_source_sha256':{name:sha(Path(__file__).with_name(name)) for name in ('fom.py','reference_export.py','shared_lift.py','preflight.py','scalars.py')},
+             'producer_source_sha256':{name:sha(Path(__file__).with_name(name)) for name in ('fom.py','reference_export.py','shared_lift.py','preflight.py','scalars.py','oriented_normals.py')},
              'files':{p.name:sha(p) for p in sorted(out.iterdir()) if p.is_file()}})
     return result
 

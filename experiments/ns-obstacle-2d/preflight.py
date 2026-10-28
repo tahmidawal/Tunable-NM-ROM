@@ -17,10 +17,10 @@ def traced(name, function, *args, enabled=True, **kwargs):
     return value
 
 
-def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False):
+def mapped_probe(mesh, center=None, sample_order=2, diagnostic=False, normal=None):
     import ngsolve as ng
     record={'volume':None,'boundary':None,'normal_checks':{},'api_status':'unverified'}
-    normal=ng.specialcf.normal(2)
+    if normal is None:raise ValueError('explicit verified ordinary-BND normal required')
     for el in mesh.Elements(ng.VOL):
         ir=traced('volume.rule',ng.IntegrationRule,el.type,sample_order,enabled=diagnostic)
         ip=ir[0]  # Pinned binding returns this IntegrationPoint by value.
@@ -83,7 +83,10 @@ def run():
     ngmesh=traced('generate_mesh',geo.GenerateMesh,maxh=.6)
     mesh=traced('mesh_wrapper',ng.Mesh,ngmesh)
     traced('curve_mesh',mesh.Curve,3)
-    result=mapped_probe(mesh,diagnostic=True)
+    from oriented_normals import fluid_outward_normal
+    normal, orientation = fluid_outward_normal(mesh, order=6)
+    result=mapped_probe(mesh,diagnostic=True,normal=normal)
+    result['normal_orientation']=orientation
     V=traced('scalar_space',ng.H1,mesh,order=2,dirichlet='wall_bottom|wall_top|inlet|outlet')
     marker('scalar_forms','before')
     u,v=V.TnT();a=ng.BilinearForm(V);a+=(ng.grad(u)*ng.grad(v)+u*v)*ng.dx
@@ -108,15 +111,14 @@ def run():
     result['umfpack']={'free_dofs':int(sum(free)),'residual_numerator':n,'residual_denominator':d,'relative_residual':n/d}
     if n/d>1e-10:raise ArithmeticError('tiny UMFPACK residual failure')
     # Exercise the same boundary trace + normal + Integrate path as force/balance
-    # diagnostics. Wrapping a whole traction containing normal would be wrong:
-    # normal is a BND quantity and stays outside BoundaryFromVolumeCF.
+    # diagnostics. The verified ordinary-BND normal stays outside the volume
+    # derivative wrapper; no orientation factor enters volume-facet integrals.
     VV=traced('vector_space',ng.VectorH1,mesh,order=2)
     exact_vector=traced('vector_gridfunction',ng.GridFunction,VV)
     traced('vector_set_identity',exact_vector.Set,ng.CF((ng.x,ng.y)))
     marker('boundary_derivative_wrappers','before')
     gradient_b=ng.BoundaryFromVolumeCF(ng.Grad(exact_vector))
     divergence_b=ng.BoundaryFromVolumeCF(ng.div(exact_vector))
-    normal=ng.specialcf.normal(2)
     identity=ng.Id(2)
     marker('boundary_derivative_wrappers','after')
     trace_gradient_max=0.;trace_div_max=0.

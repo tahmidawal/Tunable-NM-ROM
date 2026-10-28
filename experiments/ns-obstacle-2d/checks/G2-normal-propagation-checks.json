@@ -1,0 +1,24 @@
+{
+  "status": "source_only_G2_normal_propagation_not_released",
+  "native_execution": false,
+  "tests": {
+    "existing_pure_reference_export_tests": 7,
+    "passed": 7,
+    "command": "/home/tahmid/Dev/.venv/bin/python experiments/ns-obstacle-2d/checks/test_reference_export.py",
+    "output_observation": "unittest reported Ran 7 tests / OK to stderr; previous retained test log preserved"
+  },
+  "syntax_checks": [
+    "fom.py",
+    "preflight.py",
+    "reference_export.py",
+    "freeze_inputs.py"
+  ],
+  "source_sha256": {
+    "fom.py": "7db262ec2d64cb4a4ed6ccbed5401e25e04ca311be96895fdcaf09c7029c94ff",
+    "preflight.py": "e9e5d4c34ba1d605e758b9f7301a03b86f70d4cf48a3db5a48ee9fb2b3a3d087",
+    "reference_export.py": "52b8f1976f9bd0e5436812553748f57020e06061ca070b34d8809d6a8df3e090",
+    "freeze_inputs.py": "6750e70a82d8a6201964afdf16d17849f6a20ddb1c4404d022e48b6574648a7a",
+    "oriented_normals.py": "4872f4f2c0893ce296fd5980b0aabefd5b44332c8895d5f9cab15bdff9c00b32"
+  },
+  "isolated_G1_candidate_unchanged": "26e9b8272"
+}

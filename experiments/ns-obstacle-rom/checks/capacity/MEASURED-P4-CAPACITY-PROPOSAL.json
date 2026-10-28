@@ -1,0 +1,86 @@
+{
+  "status": "prospective source/resource amendment; not applied or released",
+  "physical_admission": false,
+  "training_released": false,
+  "measurement": {
+    "path": "experiments/ns-obstacle-rom/artifacts/native-capacity04/results/interface/result.json",
+    "sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
+    "job_id": 6616726,
+    "archive_sha256": "11540da71fe4b376915d43e95fd44145f22332cd744fa583a07745598b226f87",
+    "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44"
+  },
+  "current_caps": {
+    "mixed_dofs": 100000,
+    "elements": 20000,
+    "volume_points": 100000,
+    "boundary_points": 30000,
+    "matrix_nnz": 12000000,
+    "single_array_bytes": 1073741824,
+    "archive_bytes": 1073741824,
+    "factor_estimate_bytes": 8589934592,
+    "process_rss_bytes": 17179869184,
+    "vector_eigen_candidates": 96,
+    "velocity_scalar_eigen_candidates": 48,
+    "scalar_eigen_candidates": 32,
+    "eigensolver_iterations": 2000
+  },
+  "proposed_caps": {
+    "mixed_dofs": 437140,
+    "elements": 21153,
+    "volume_points": 1036497,
+    "boundary_points": 30000,
+    "matrix_nnz": 15937632,
+    "single_array_bytes": 1073741824,
+    "archive_bytes": 1073741824,
+    "factor_estimate_bytes": 8589934592,
+    "process_rss_bytes": 17179869184,
+    "vector_eigen_candidates": 96,
+    "velocity_scalar_eigen_candidates": 48,
+    "scalar_eigen_candidates": 32,
+    "eigensolver_iterations": 2000
+  },
+  "changes": {
+    "mixed_dofs": {
+      "old": 100000,
+      "proposed": 437140
+    },
+    "elements": {
+      "old": 20000,
+      "proposed": 21153
+    },
+    "volume_points": {
+      "old": 100000,
+      "proposed": 1036497
+    },
+    "matrix_nnz": {
+      "old": 12000000,
+      "proposed": 15937632
+    }
+  },
+  "factorization_prerequisite": "native05 raw audit must accept scalar component reuse before production wiring; scalar factor reused for existing scalar eigenproblem",
+  "factor_guards_unchanged": {
+    "factor_estimate_bytes": 8589934592,
+    "process_rss_bytes": 17179869184,
+    "single_array_bytes": 1073741824,
+    "archive_bytes": 1073741824
+  },
+  "measured_sparse_arrays_bytes": 521941656,
+  "measured_metric_process_peak_bytes": 1538297856,
+  "scalar_factor_estimate_bytes": 6288500928,
+  "pressure_factor_estimate_bytes": 2621384064,
+  "unchanged_math": [
+    "same original mesh/rule/coefficients and component maps",
+    "same scalar/vector H1 and pressure L2 metrics",
+    "same supremizer RHS and residual tolerance",
+    "same eigenproblem/seed/count/tolerance",
+    "same full-point training/weak objectives and NNLS fitting"
+  ],
+  "still_required": [
+    "genuine qualified immutable training family and common lift",
+    "independent exact-source integration review",
+    "measured full preparation memory/time",
+    "measured GPU training and RAM fitting memory/time",
+    "aggregate retention budget with at least10GiB disk reserve"
+  ],
+  "disk_policy": "single immutable point-block preparation; do not duplicate a whole prepared archive; preserve every unique timing array/state via exact lossless deduplication; no raw derived moment matrices on disk"
+}

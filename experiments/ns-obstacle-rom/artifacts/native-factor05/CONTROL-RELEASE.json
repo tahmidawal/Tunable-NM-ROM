@@ -1,0 +1,27 @@
+{
+  "adapter_source_sha256": "b0539e5030178a2c19ae7bd534f11263166574cde2694d0d572359eee5323b56",
+  "fixture_source_sha256": "369ee2bd8c620e21e199562f43e63e7f5a263a3caa88d2de88ba7d80cba20393",
+  "block_source_sha256": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+  "producer_manifest_sha256": "1a57a54934eb650cde0599ef8dc81ed5421293be89e4c03d98b522a3c628ca22",
+  "component_factor_source_sha256": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+  "caps": {
+    "gpu": 1,
+    "CPUs": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200,
+    "working_set_projection_GiB": 8,
+    "result_projection_GiB": 1
+  },
+  "schema": "ns-obstacle-component-factor-control-v1",
+  "physical_admission": false,
+  "training_released": false,
+  "source_commit": "e3efb9f8dd0443e39ad131735cee27c3411c68b9",
+  "inventory_sha256": "24a93a6ab282f450fdab9ef589352e5307e6fbb86c9c964bf7ce5021b46e8561",
+  "one_allocation": true,
+  "no_automatic_retry": true,
+  "scope": "Coarse P4 full-vector versus scalar-component factor equivalence only; no production wiring/training",
+  "verified_runtime_files": 18,
+  "verified_producer_files": 5,
+  "fresh_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-factor05",
+  "prerequisite": "Confirm exact source mirror before submission; max two campaign jobs with solverquad6617371"
+}

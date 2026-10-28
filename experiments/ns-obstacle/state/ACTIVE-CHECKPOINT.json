@@ -1,6 +1,14 @@
 {
-  "status": "2d_orientation_diagnosed_A8_repair_preparation_3d_diagnostic_review",
-  "numerical_jobs": [],
+  "status": "3d_normal_diagnostic_live_2d_A8_source_pending",
+  "numerical_jobs": [
+    {
+      "job_id": 6611259,
+      "lane": "3d",
+      "attempt": "g1-normal01",
+      "state": "PENDING",
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-normal01"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
     "2D A8 normal repair implementation and independent Codex/Claude review before retry",
@@ -39,7 +47,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T18:50:55.004995+00:00",
+  "last_checkpoint_utc": "2026-10-28T18:53:42.490373+00:00",
   "replacement_agents": [
     "reference_2d_recovery",
     "reference_3d_recovery",

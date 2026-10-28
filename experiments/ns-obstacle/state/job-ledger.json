@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "2d_normal_convention_diagnosed_repair_source_under_preparation",
+  "status": "3d_normal_diagnostic_submitted_2d_repair_source_pending",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -207,9 +207,29 @@
       "collection_archive_bytes": 158740683,
       "collection_commit": "fb83802ca",
       "remote_duplicate_removed": false
+    },
+    {
+      "job_id": 6611259,
+      "lane": "3d_reference",
+      "attempt": "g1-normal01",
+      "source_commit": "6db733531ab0a551baa4fa816f0f386927f7d8f8",
+      "manifest_sha256": "1f4ff9e60c44609af52fe8a7c6b7c9bf1d9bf7f976495cf22c74d14bfdcc9ca5",
+      "state_last_observed": "PENDING",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027/g1-normal01",
+      "gpu_type_requested": "h200",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "requested_FE_threads": 4,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "purpose": "unchanged_geometry_raw_ordinary_volume_facet_normal_diagnostic",
+      "PDE_solve_permitted": false,
+      "device_for_FE": "CPU"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6611259
+  ],
   "completed_gpu_hours": 0.0375,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

@@ -1,20 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6615359,
-      "lane": "2d",
-      "attempt": "g2-h3",
-      "observed_state": "RUNNING"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor/collect/audit singleh3job6615359; no duplicate retry or h4; preserve independent comparison backup",
-    "Complete exact point-block production export/consumer and measuredcapacity release",
-    "Complete strong cached/batched FOMoutput and nativeequivalence, then remaining physicalcontrols and qualifiedtraining"
+    "Collect and independently audit P4 trend6615818 and controls6615863; prepare common-rule p/geometry and remaining solver/quadrature/domain/population gates",
+    "Complete adopted P4 p/geometry/solver/quadrature/domain and population qualification; no P3 metric splicing",
+    "Complete point-block ROM production capacity and strong FOM output equivalence before training"
   ],
-  "completed_allocated_gpu_hours": 0.17527777777777778,
+  "completed_allocated_gpu_hours": 0.3877777777777778,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -95,5 +88,17 @@
     "pid": 2406209,
     "purpose": "comparison01retention mirror",
     "elapsed_seconds_observed": 57
-  }
+  },
+  "completion_scope_reminder": {
+    "original_request": "USER-REQUEST.txt sections6,10,12,15",
+    "steady_first": true,
+    "conditional_2d_unsteady": "Original section10 follows only after the steady pilot passes and temporal/reference/resource gates are reviewed; not silently removed from final scope.",
+    "conditional_sweeps": "Evidence-selected width/test/quadrature/mesh/solver sweeps only after pilot gates.",
+    "three_dimensional": "Deferred by latest user direction.",
+    "required_final": "Independent Codex/Claude interpretation; generated report, presentation PDF, handoff and merge question."
+  },
+  "total_allocated_gpu_hours_completed": 0.6266666666666667,
+  "h3_result": "Retained and independently audited; fields/divergence pass, physical-gradient lift and finest lift change fail",
+  "native_batch_result": "991 hashes and array equivalence independently pass; production wiring32389311c source reviewed",
+  "p4_result": "Both controls terminal; preliminary physical metrics promising, full raw audit pending. Remaining G2 solver/quad/domain/population admission incomplete."
 }

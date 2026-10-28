@@ -1,0 +1,248 @@
+{
+  "scope": "provisional per-case screen only; cross-run and raw evidence audit required",
+  "physical_admission": false,
+  "training_released": false,
+  "cases": [
+    {
+      "name": "dfg_h3",
+      "kind": "dfg",
+      "mesh_maxh": 0.01,
+      "rows": [
+        {
+          "check": "fluid_area_relative",
+          "value": 4.009560091394327e-11,
+          "threshold": 1e-05,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "obstacle_perimeter_relative",
+          "value": 2.2849693234249977e-09,
+          "threshold": 1e-05,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "independent_free_residual",
+          "value": 2.052157474190273e-15,
+          "threshold": 1e-09,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "prescribed_FE_trace_over_U",
+          "value": 1e-12,
+          "threshold": 1e-10,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "scaled_divergence",
+          "value": 0.00042797544226594574,
+          "threshold": 0.001,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "inlet_outlet_mass",
+          "value": 5.077239441883369e-16,
+          "threshold": 1e-07,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_energy_balance",
+          "value": 2.7012701193969157e-09,
+          "threshold": 0.005,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_momentum_0",
+          "value": 2.136701967181781e-06,
+          "threshold": 0.005,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_momentum_1",
+          "value": 4.955236339313895e-07,
+          "threshold": 0.005,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_gradient_drag_relative",
+          "value": 1.0858893280577685e-05,
+          "threshold": 0.0002,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_gradient_lift_absolute",
+          "value": 1.4162881235792527e-05,
+          "threshold": 1e-05,
+          "within_threshold": false,
+          "scope": "per_case"
+        },
+        {
+          "check": "reaction_gradient_drag_relative",
+          "value": 1.566565421234903e-05,
+          "threshold": 0.002,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "reaction_gradient_lift_absolute",
+          "value": 3.616494774009646e-05,
+          "threshold": 0.0001,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_DFG_drag_relative",
+          "value": 2.6838757494844532e-05,
+          "threshold": 0.002,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_DFG_lift_absolute",
+          "value": 4.9498141591011735e-05,
+          "threshold": 0.0001,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "DFG_pressure_drop_relative",
+          "value": 4.2101702054453074e-05,
+          "threshold": 0.002,
+          "within_threshold": true,
+          "scope": "per_case"
+        }
+      ],
+      "all_listed_per_case_checks_pass": false
+    },
+    {
+      "name": "manufactured_h3",
+      "kind": "manufactured",
+      "mesh_maxh": 0.01,
+      "rows": [
+        {
+          "check": "fluid_area_relative",
+          "value": 4.0095725079683746e-11,
+          "threshold": 1e-05,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "obstacle_perimeter_relative",
+          "value": 2.284969146727515e-09,
+          "threshold": 1e-05,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "independent_free_residual",
+          "value": 3.2652374064757725e-12,
+          "threshold": 1e-09,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "prescribed_FE_trace_over_U",
+          "value": 1e-12,
+          "threshold": 1e-10,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "scaled_divergence",
+          "value": 1.1231801161924352e-08,
+          "threshold": 0.001,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "analytic_velocity",
+          "value": 3.977246194541248e-11,
+          "threshold": 1e-06,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "analytic_pressure",
+          "value": 1.4752559445941184e-09,
+          "threshold": 1e-06,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_energy_balance",
+          "value": 4.317635903796698e-11,
+          "threshold": 0.005,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_momentum_0",
+          "value": 1.6896211712893964e-11,
+          "threshold": 0.005,
+          "within_threshold": true,
+          "scope": "per_case"
+        },
+        {
+          "check": "physical_momentum_1",
+          "value": 1.5479567991316437e-10,
+          "threshold": 0.005,
+          "within_threshold": true,
+          "scope": "per_case"
+        }
+      ],
+      "all_listed_per_case_checks_pass": true
+    }
+  ],
+  "required_unassessed_controls": [
+    "two_decreasing_h_differences",
+    "p4_g4_crosscheck",
+    "p3_g4_geometry",
+    "solver_100x",
+    "quadrature_plus4",
+    "upstream_extension",
+    "downstream_extension",
+    "symmetric_outlet_long_domain",
+    "conditional_uncertainty",
+    "shared_mesh_lift_reuse",
+    "parameter_population_coverage",
+    "independent_raw_evidence_review"
+  ],
+  "unassessed_raw_per_case_checks": [
+    "positive_mapped_Jacobians_and_fluid_points",
+    "normal_and_binary_reload_certificates",
+    "surface_rule_12_vs_16",
+    "outlet_backflow",
+    "manufactured_force_and_derivative_controls",
+    "wall_shear_sign_control",
+    "manufactured_global_flux"
+  ],
+  "sources": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/campaign.json",
+      "sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-h3/benchmark.json",
+      "sha256": "e5ff1685142a61e963a23e2b0fea4954b1ef779d8d9cb513482cc1c2473cfd82"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-h3/results/dfg_h3/result.json",
+      "sha256": "f8de091ebfe6f8abfbc4b2e010cb494e6af55d3a21b6af7c06bbb77ab18e59be"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-h3/results/manufactured_h3/result.json",
+      "sha256": "5718ce40a6508585147a2ff64a57d56fdb1128548d6ff78435e173dc76ba0037"
+    }
+  ],
+  "plan_sha256": "6349b2dafe1de0d40c126cdb76d552db16250e1347a21246648be44675043a15",
+  "generator_sha256": "56f94ef7109c15f13c6ff1685913b4fb41b2a3658c4e3da5e00a9915a5353d1d"
+}

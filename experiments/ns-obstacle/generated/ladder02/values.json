@@ -1,0 +1,64 @@
+{
+  "scope": "provisional; no physical reference admission",
+  "rows": [
+    {
+      "level": 0,
+      "cells": 415,
+      "divergence": 0.02199282589156634,
+      "drag_error": 0.0013521338686197707,
+      "lift_error": 0.002047529572477457,
+      "pressure_drop_error": 0.005499343148296738,
+      "physical_gradient_lift_gap": 0.007990444926552966,
+      "manufactured_velocity": 4.2917546066282163e-07,
+      "manufactured_pressure": 2.0069685124457915e-06
+    },
+    {
+      "level": 1,
+      "cells": 1480,
+      "divergence": 0.006043541205424657,
+      "drag_error": 0.0008117979970972387,
+      "lift_error": 0.0004754927092253773,
+      "pressure_drop_error": 0.0024166596956869046,
+      "physical_gradient_lift_gap": 0.00012864979425756748,
+      "manufactured_velocity": 1.897910659497439e-08,
+      "manufactured_pressure": 1.9739236130051647e-07
+    },
+    {
+      "level": 2,
+      "cells": 5444,
+      "divergence": 0.0014024773357450802,
+      "drag_error": 0.00015714550877937548,
+      "lift_error": 0.0001959269386658958,
+      "pressure_drop_error": 0.0005589333373834724,
+      "physical_gradient_lift_gap": 5.9013499855726376e-05,
+      "manufactured_velocity": 7.140042877225876e-10,
+      "manufactured_pressure": 1.4398632672028367e-08
+    }
+  ],
+  "thresholds": {
+    "geometry_relative": 1e-05,
+    "analytic_velocity_relative": 1e-06,
+    "analytic_pressure_scaled": 1e-06,
+    "free_dof_residual": 1e-09,
+    "mass_2d": 1e-07,
+    "mass_3d": 1e-06,
+    "divergence_scaled": 0.001,
+    "essential_trace_over_U": 1e-10,
+    "h_velocity_relative": 0.001,
+    "h_pressure_scaled": 0.002,
+    "h_drag_relative": 0.002,
+    "h_transverse_absolute_2d": 0.0001,
+    "h_transverse_absolute_3d": 0.0002,
+    "dfg_drag_relative": 0.002,
+    "dfg_pressure_drop_relative": 0.002,
+    "dfg_lift_absolute": 0.0001,
+    "balance_scaled": 0.005,
+    "uncertainty_recipe": "2*max(last_h_diff,p_diff)+solver_diff+quadrature_diff",
+    "uncertainty_is_bound": false,
+    "uncertainty_max_fraction_target": 0.2,
+    "requires_decreasing_h_differences": true,
+    "domain_independence_is_separate": true,
+    "physical_gradient_drag_gap_relative": 0.0002,
+    "physical_gradient_transverse_gap_absolute": 1e-05
+  }
+}

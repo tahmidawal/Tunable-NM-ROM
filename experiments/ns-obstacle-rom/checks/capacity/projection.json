@@ -1,5 +1,55 @@
 [
   {
+    "points": 266560,
+    "source": "projected point count; replace with actual retained rule count",
+    "volume_payload_components_bytes": {
+      "geometry": 19192320,
+      "lift_u": 12794880,
+      "lift_p_per_nu": 6397440,
+      "pod_velocity": 102359040,
+      "pressure": 51179520,
+      "supremizers": 102359040,
+      "momentum_tests": 818872320,
+      "continuity_tests": 102359040
+    },
+    "volume_expanded_archive_bytes": 1215513600,
+    "largest_volume_array_momentum_gradients_bytes": 545914880,
+    "training_expanded_archive_bytes": 145008712,
+    "maximum_velocity_candidate_values_and_gradients_bytes": 1330667520,
+    "maximum_velocity_candidate_gradient_single_array_bytes": 887111680,
+    "blocked_candidate_TSQR_workspace_envelope_bytes": 163577856,
+    "blocked_candidate_FE_coefficient_storage_not_included": "104 times actual velocity DOF count times 8 bytes, plus native GridFunction ownership; measure on selected mesh",
+    "maximum_pressure_candidate_values_and_gradients_bytes": 262295040,
+    "six_models_retained_enriched_velocity_fields_bytes": 716513280,
+    "bank_evaluation_conservative_temporary_envelope_bytes": 2183659520,
+    "dense_moment_rows": 633,
+    "dense_moment_bytes": 1349859840,
+    "blocked_matrix_persistent_disk_bytes": 1349859840,
+    "blocked_fit_resident_workspace_envelope_bytes": 392259584,
+    "sparse_metric_capacity": {
+      "matrix_nnz_cap": 12000000,
+      "CSR_bytes_per_matrix_at_cap": 144400004,
+      "retained_metric_matrices": 6,
+      "factor_estimate_cap_bytes": 8589934592
+    },
+    "remaining_limits": {
+      "point_cap_current": 100000,
+      "archive_expanded_cap_current_bytes": 1073741824,
+      "single_array_cap_unchanged_bytes": 1073741824,
+      "process_cap_unchanged_bytes": 17179869184
+    },
+    "required_prospective_changes": [
+      "separately reviewed measured point ceiling",
+      "point-blocked volume archives with original hashes/units; per-array split insufficient at h3",
+      "mapped-point block candidate evaluation and all-point TSQR selection",
+      "one model at a time and blocked bank derivative evaluation",
+      "exact blocked moment fitting; preserve every raw point/moment block"
+    ],
+    "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",
+    "physical_admission": false,
+    "execution_released": false
+  },
+  {
     "points": 290080,
     "source": "projected point count; replace with actual retained rule count",
     "volume_payload_components_bytes": {
@@ -16,6 +66,9 @@
     "largest_volume_array_momentum_gradients_bytes": 594083840,
     "training_expanded_archive_bytes": 157803592,
     "maximum_velocity_candidate_values_and_gradients_bytes": 1448079360,
+    "maximum_velocity_candidate_gradient_single_array_bytes": 965386240,
+    "blocked_candidate_TSQR_workspace_envelope_bytes": 163577856,
+    "blocked_candidate_FE_coefficient_storage_not_included": "104 times actual velocity DOF count times 8 bytes, plus native GridFunction ownership; measure on selected mesh",
     "maximum_pressure_candidate_values_and_gradients_bytes": 285438720,
     "six_models_retained_enriched_velocity_fields_bytes": 779735040,
     "bank_evaluation_conservative_temporary_envelope_bytes": 2376335360,
@@ -37,7 +90,9 @@
     },
     "required_prospective_changes": [
       "separately reviewed measured point ceiling",
-      "per-array volume archives with original hashes/units instead of one oversized archive",
+      "point-blocked volume archives with original hashes/units; per-array split insufficient at h3",
+      "mapped-point block candidate evaluation and all-point TSQR selection",
+      "one model at a time and blocked bank derivative evaluation",
       "exact blocked moment fitting; preserve every raw point/moment block"
     ],
     "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",
@@ -61,6 +116,9 @@
     "largest_volume_array_momentum_gradients_bytes": 666337280,
     "training_expanded_archive_bytes": 176995912,
     "maximum_velocity_candidate_values_and_gradients_bytes": 1624197120,
+    "maximum_velocity_candidate_gradient_single_array_bytes": 1082798080,
+    "blocked_candidate_TSQR_workspace_envelope_bytes": 163577856,
+    "blocked_candidate_FE_coefficient_storage_not_included": "104 times actual velocity DOF count times 8 bytes, plus native GridFunction ownership; measure on selected mesh",
     "maximum_pressure_candidate_values_and_gradients_bytes": 320154240,
     "six_models_retained_enriched_velocity_fields_bytes": 874567680,
     "bank_evaluation_conservative_temporary_envelope_bytes": 2665349120,
@@ -82,7 +140,59 @@
     },
     "required_prospective_changes": [
       "separately reviewed measured point ceiling",
-      "per-array volume archives with original hashes/units instead of one oversized archive",
+      "point-blocked volume archives with original hashes/units; per-array split insufficient at h3",
+      "mapped-point block candidate evaluation and all-point TSQR selection",
+      "one model at a time and blocked bank derivative evaluation",
+      "exact blocked moment fitting; preserve every raw point/moment block"
+    ],
+    "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",
+    "physical_admission": false,
+    "execution_released": false
+  },
+  {
+    "points": 1066240,
+    "source": "projected point count; replace with actual retained rule count",
+    "volume_payload_components_bytes": {
+      "geometry": 76769280,
+      "lift_u": 51179520,
+      "lift_p_per_nu": 25589760,
+      "pod_velocity": 409436160,
+      "pressure": 204718080,
+      "supremizers": 409436160,
+      "momentum_tests": 3275489280,
+      "continuity_tests": 409436160
+    },
+    "volume_expanded_archive_bytes": 4862054400,
+    "largest_volume_array_momentum_gradients_bytes": 2183659520,
+    "training_expanded_archive_bytes": 580034632,
+    "maximum_velocity_candidate_values_and_gradients_bytes": 5322670080,
+    "maximum_velocity_candidate_gradient_single_array_bytes": 3548446720,
+    "blocked_candidate_TSQR_workspace_envelope_bytes": 163577856,
+    "blocked_candidate_FE_coefficient_storage_not_included": "104 times actual velocity DOF count times 8 bytes, plus native GridFunction ownership; measure on selected mesh",
+    "maximum_pressure_candidate_values_and_gradients_bytes": 1049180160,
+    "six_models_retained_enriched_velocity_fields_bytes": 2866053120,
+    "bank_evaluation_conservative_temporary_envelope_bytes": 8734638080,
+    "dense_moment_rows": 633,
+    "dense_moment_bytes": 5399439360,
+    "blocked_matrix_persistent_disk_bytes": 5399439360,
+    "blocked_fit_resident_workspace_envelope_bytes": 417849344,
+    "sparse_metric_capacity": {
+      "matrix_nnz_cap": 12000000,
+      "CSR_bytes_per_matrix_at_cap": 144400004,
+      "retained_metric_matrices": 6,
+      "factor_estimate_cap_bytes": 8589934592
+    },
+    "remaining_limits": {
+      "point_cap_current": 100000,
+      "archive_expanded_cap_current_bytes": 1073741824,
+      "single_array_cap_unchanged_bytes": 1073741824,
+      "process_cap_unchanged_bytes": 17179869184
+    },
+    "required_prospective_changes": [
+      "separately reviewed measured point ceiling",
+      "point-blocked volume archives with original hashes/units; per-array split insufficient at h3",
+      "mapped-point block candidate evaluation and all-point TSQR selection",
+      "one model at a time and blocked bank derivative evaluation",
       "exact blocked moment fitting; preserve every raw point/moment block"
     ],
     "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",

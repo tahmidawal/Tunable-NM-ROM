@@ -57,7 +57,7 @@
       "proposed": 15937632
     }
   },
-  "factorization_prerequisite": "native05 raw audit must accept scalar component reuse before production wiring; scalar factor reused for existing scalar eigenproblem",
+  "factorization_prerequisite": "Native05 independent raw audit accepted; production scalar reuse source still requires review.",
   "factor_guards_unchanged": {
     "factor_estimate_bytes": 8589934592,
     "process_rss_bytes": 17179869184,
@@ -82,5 +82,29 @@
     "measured GPU training and RAM fitting memory/time",
     "aggregate retention budget with at least10GiB disk reserve"
   ],
-  "disk_policy": "single immutable point-block preparation; do not duplicate a whole prepared archive; preserve every unique timing array/state via exact lossless deduplication; no raw derived moment matrices on disk"
+  "disk_policy": "single immutable point-block preparation; do not duplicate a whole prepared archive; preserve every unique timing array/state via exact lossless deduplication; no raw derived moment matrices on disk",
+  "spectral_replay_retention": {
+    "source": "measured native04 CSC payloads and unchanged frozen rank/layout shapes",
+    "matrix_expanded_bytes": 521941656,
+    "array_expanded_bytes": {
+      "velocity_scalar_modes": 65471232,
+      "pressure_eigenmodes": 24612864,
+      "supremizer_rhs": 21518464,
+      "scalar_free_ids": 1344904,
+      "velocity_free_ids": 2689808,
+      "component_maps": 2727968
+    },
+    "array_total_bytes": 118365240,
+    "retained_live_payload_bytes": 640306896,
+    "projected_uncompressed_output_with_overhead_bytes": 663487180,
+    "additional_factorizations": 0,
+    "copy_policy": "exact actual operators and candidate arrays; separate archives; include in full retention/Git budget"
+  },
+  "native05_audit": {
+    "source_commit": "e3efb9f8dd0443e39ad131735cee27c3411c68b9",
+    "job_id": 6617452,
+    "retention_commit": "4984dd0fb",
+    "retention_mirror": "7a8ea4d64",
+    "archive_sha256": "db6e40f797bf05f74e4202ec45a7057d09486c1cfb3e3fedd8dce85b03d53fd5"
+  }
 }

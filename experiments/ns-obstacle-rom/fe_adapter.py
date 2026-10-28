@@ -10,6 +10,7 @@ import json
 import math
 from pathlib import Path
 import resource
+import shutil
 import time
 import zipfile
 import numpy as np
@@ -746,7 +747,39 @@ class TrainingFEAdapter:
             'trace_coefficient_roundoff_removed': self.trace_coefficient_roundoff_removed,
             'seconds_including_load': time.perf_counter()-self.started,
             'versions': {'ngsolve': ng.__version__, 'numpy': np.__version__, 'scipy': scipy.__version__}}
+        # Retain actual operators/candidates for independent eigen, component-block,
+        # supremizer and test-selection replay, without another native assembly.
+        self.replay_matrices = dict(velocity_h1=h1v, velocity_mass=mv,
+            pressure_h1=h1q, pressure_mass=mq, velocity_scalar_h1=h1s, velocity_scalar_mass=ms)
+        self.replay_arrays = dict(velocity_scalar_modes=scalar_modes, pressure_eigenmodes=eq,
+            supremizer_rhs=rhs, scalar_free_ids=scalar_ids, velocity_free_ids=ids,
+            component_maps=self.component_maps)
         return self
+
+    def export_replay(self, directory):
+        from scipy.sparse import save_npz
+        out = Path(directory)
+        matrix_bytes = sum(a.data.nbytes+a.indices.nbytes+a.indptr.nbytes for a in self.replay_matrices.values())
+        array_bytes = sum(a.nbytes for a in self.replay_arrays.values())
+        projected = (matrix_bytes+array_bytes)*101//100+16*2**20
+        if shutil.disk_usage(out).free < 10*2**30+projected:
+            raise OSError('spectral replay would violate ten-GiB retained disk reserve')
+        files = []
+        for name, matrix in self.replay_matrices.items():
+            filename = 'replay_metric_'+name+'.npz'
+            save_npz(out/filename, matrix); files.append(filename)
+        # Separate archives keep each measured P4 eigenvector/RHS payload below
+        # the individual archive bound and avoid one redundant combined copy.
+        for name, array in self.replay_arrays.items():
+            if array.nbytes > CAPS['single_array_bytes']:
+                raise MemoryError('spectral replay single-array cap')
+            filename = 'replay_'+name+'.npz'
+            np.savez_compressed(out/filename, values=array); files.append(filename)
+        (out/'replay_build.json').write_text(json.dumps(self.metadata, indent=2, allow_nan=False)+'\n')
+        files.append('replay_build.json')
+        return files, dict(matrix_expanded_bytes=matrix_bytes, array_expanded_bytes=array_bytes,
+            projected_output_bytes=projected, disk_reserve_bytes=10*2**30,
+            scope='actual assembled operators and computed candidate coefficients; no extra solve')
 
     def export(self, directory, point_block_volume=False):
         """Persist arrays, FE coefficient bases and their provenance; no integration pass flag."""
@@ -772,6 +805,7 @@ class TrainingFEAdapter:
                 arrays[key+'_gradient_dimensionless'] = self.D*gradients
             np.savez_compressed(out/(name+'.npz'), **arrays)
         np.savez_compressed(out/'coefficients.npz', **self.coefficients)
+        replay_files, replay_retention = self.export_replay(out)
         # One explicitly training-only archive; exact same population as all FE spaces.
         u, du = self.evaluate_batched(self.velocity_corrections)
         p, _ = self.evaluate_batched(self.pressure_corrections, False)
@@ -782,6 +816,7 @@ class TrainingFEAdapter:
                     'pressure_corrections': p.T, 'Re': np.asarray(REYNOLDS)}
         np.savez_compressed(out/'training.npz', **training)
         meta = dict(self.metadata)
+        meta['spectral_replay_retention'] = replay_retention
         meta['training_array_sha256'] = array_hash(training['points_physical'],
             training['weights_dimensionless'], training['velocity_corrections'])
         meta['export_seconds'] = time.perf_counter()-export_started
@@ -797,7 +832,7 @@ class TrainingFEAdapter:
             'physical_points_purpose': 'raw FE lookup and frozen coordinate-network geometry API only'}
         meta['gradient_axes'] = 'point, component, derivative_coordinate, column'
         meta['boundary_normals'] = 'outward fluid; negate only obstacle normals for force_moments'
-        files = ['boundary.npz', 'coefficients.npz', 'training.npz']
+        files = ['boundary.npz', 'coefficients.npz', 'training.npz']+replay_files
         if point_block_volume:
             files.extend(str(path.relative_to(out)) for path in sorted((out/'volume').iterdir()) if path.is_file())
         else:

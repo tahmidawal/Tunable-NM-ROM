@@ -8,7 +8,7 @@ training population, common lift or physical admission.
 The new NativeInterface class explicitly reuses mapping, field evaluation, analytic
 normal/gradient controls, component-map and metric assembly methods. It loads the exact
 binary mesh, verifies ordered FE layout, reconstructs the saved velocity/pressure and
-physical derivatives in dimensionless units, and compares every saved volume sample at
+physical derivatives in dimensionless units, and compares every saved volume and boundary sample (including the actual boundary evaluator, stress gradients and saved normal factors) at
 the existing 1e-10 tolerance. It assembles the scalar/vector metric blocks, checks their
 component identities, then exercises the registered bounded scalar eigenproblems with
 look-ahead, residual, Gram and orientation checks. Coefficients and all diagnostics remain

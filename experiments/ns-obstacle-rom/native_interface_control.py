@@ -118,7 +118,7 @@ def run(case, release_path, output):
             error = float(np.max(np.abs(actual-expected))/max(float(np.max(np.abs(expected))), scale))
             report['checks'][key] = error
             if not np.isfinite(error) or error > 1e-10: raise ArithmeticError(key+' replay failed')
-        expected_factors = np.asarray([a.normal_certificate['factors'][r['label']] for r in boundary])
+        expected_factors = np.asarray([r['normal_orientation_factor'] for r in boundary])
         if not np.array_equal(a.boundary['orientation_factors'], expected_factors):
             raise ValueError('boundary factors mismatch')
         h1v, mv, _ = a.metric_matrices(a.V, True)

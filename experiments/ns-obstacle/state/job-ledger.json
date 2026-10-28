@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "api_and_channel_completed_obstacle_normal_failure_collecting",
+  "status": "partial_2d_controls_accepted_full_G1_failed_tiny3d_released_A7",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -117,7 +117,6 @@
       "manifest_sha256": "d328eb94d5382adb463bae95710c2eaf54c059e8b5321108480a27d06080622f",
       "submitted_utc": "2026-10-27T21:07:35Z",
       "state_last_observed": "FAILED",
-      "pending_reason": "Priority",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke06",
       "gpu_type_requested": "h200",
       "gpus": 1,
@@ -133,7 +132,7 @@
       "failure_stage": "manufactured_early_geometry",
       "FE_cases_started": true,
       "case_states": {
-        "channel": "completed_control_pending_independent_review",
+        "channel": "independently_accepted_analytic_control_only_zero_Newton_updates",
         "manufactured": "failed_before_solve_wrong_obstacle_normal_sign",
         "dfg": "not_run"
       },
@@ -141,10 +140,14 @@
       "dependency_import_passed": true,
       "measured_failure": "raw mapped obstacle normal failed signed radial-dot threshold; exact dot was not saved",
       "collection_archive_sha256": "29b507647409347756caee62e505c1ef5826bb148f12f92bf52bc63597701738",
-      "collection_archive_bytes": 158609584
+      "collection_archive_bytes": 158609584,
+      "remote_duplicate_removed": true,
+      "collection_absolute_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g1-smoke06/RETENTION.json",
+      "collection_commit": "b1121569e",
+      "collection_mirror": "7d2da09c7"
     }
   ],
   "live_job_ids": [],
   "completed_gpu_hours": 0.0225,
-  "note": "All elapsed allocation including failed import charged. One targeted dependency-layout repair under review; no numerical result or reference accepted."
+  "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted."
 }

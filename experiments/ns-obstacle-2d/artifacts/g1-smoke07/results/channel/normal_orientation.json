@@ -1,0 +1,7821 @@
+{
+  "schema": "ns-obstacle-2d-fluid-outward-normal-v1",
+  "passed": true,
+  "helper_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+  "scope": "ordinary BND mapped points and ordinary BND integrals only",
+  "method": "raw curved normal times topology-inferred, independently verified per-label sign",
+  "volume_facet_normals_modified": false,
+  "analytic_normals_substituted": false,
+  "order": 12,
+  "threshold": 1e-10,
+  "adjacency_witness_guard_absolute_cosine": 1e-08,
+  "adjacency_witness_guard_meaning": "reject abs(raw_normal dot inward)/(norm(raw_normal)*norm(inward)) <= 1e-8; a near-zero numerical guard, not a mesh-quality criterion",
+  "future_mesh_false_stop_risk_accepted": true,
+  "samples": [
+    {
+      "element": 0,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        0.15314419311264532,
+        0.0
+      ],
+      "weight": 0.01017381877041066,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555556,
+      "raw_normal_cosine_toward_adjacent_volume": -0.41195905669847716,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 0,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        0.13683459315423813,
+        0.0
+      ],
+      "weight": 0.02197685218844317,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555556,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4747501949300219,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 0,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        0.11045926189393834,
+        0.0
+      ],
+      "weight": 0.030000932539687924,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555556,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6171729850691955,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 0,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        0.07857142857142857,
+        0.0
+      ],
+      "weight": 0.03283965014577259,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555556,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8669389343339051,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 0,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        0.046683595248918804,
+        0.0
+      ],
+      "weight": 0.030000932539687924,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555556,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9922700664009085,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 0,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        0.020308263988619006,
+        0.0
+      ],
+      "weight": 0.02197685218844317,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555556,
+      "raw_normal_cosine_toward_adjacent_volume": -0.817679050097495,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 0,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        0.003998664030211824,
+        0.0
+      ],
+      "weight": 0.01017381877041066,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555556,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6855185629624826,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 1,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        0.3102870502555024,
+        0.0
+      ],
+      "weight": 0.010173818770410657,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 1,
+      "adjacent_volume_point": [
+        0.247847864311435,
+        0.05010359623260621
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05010359623260621,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6258539645047358,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 1,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        0.2939774502970952,
+        0.0
+      ],
+      "weight": 0.021976852188443162,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 1,
+      "adjacent_volume_point": [
+        0.247847864311435,
+        0.05010359623260621
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05010359623260621,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7356801825364552,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 1,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        0.2676021190367954,
+        0.0
+      ],
+      "weight": 0.030000932539687913,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 1,
+      "adjacent_volume_point": [
+        0.247847864311435,
+        0.05010359623260621
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05010359623260621,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9303040412711705,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 1,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        0.23571428571428568,
+        0.0
+      ],
+      "weight": 0.032839650145772586,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 1,
+      "adjacent_volume_point": [
+        0.247847864311435,
+        0.05010359623260621
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05010359623260621,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9719066968929735,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 1,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        0.20382645239177594,
+        0.0
+      ],
+      "weight": 0.030000932539687913,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 1,
+      "adjacent_volume_point": [
+        0.247847864311435,
+        0.05010359623260621
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05010359623260621,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7512319634266744,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 1,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        0.17745112113147612,
+        0.0
+      ],
+      "weight": 0.021976852188443162,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 1,
+      "adjacent_volume_point": [
+        0.247847864311435,
+        0.05010359623260621
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05010359623260621,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5798595546251895,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 1,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        0.16114152117306896,
+        0.0
+      ],
+      "weight": 0.010173818770410657,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 1,
+      "adjacent_volume_point": [
+        0.247847864311435,
+        0.05010359623260621
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05010359623260621,
+      "raw_normal_cosine_toward_adjacent_volume": -0.500326993555874,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 2,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        0.4674299073983596,
+        0.0
+      ],
+      "weight": 0.010173818770410665,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 2,
+      "adjacent_volume_point": [
+        0.40302223286499717,
+        0.046479068822816536
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.046479068822816536,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5851795221949813,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 2,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        0.4511203074399524,
+        0.0
+      ],
+      "weight": 0.021976852188443176,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 2,
+      "adjacent_volume_point": [
+        0.40302223286499717,
+        0.046479068822816536
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.046479068822816536,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6949004627538551,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 2,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        0.42474497617965257,
+        0.0
+      ],
+      "weight": 0.030000932539687934,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 2,
+      "adjacent_volume_point": [
+        0.40302223286499717,
+        0.046479068822816536
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.046479068822816536,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9059401541862805,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 2,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        0.3928571428571428,
+        0.0
+      ],
+      "weight": 0.03283965014577261,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 2,
+      "adjacent_volume_point": [
+        0.40302223286499717,
+        0.046479068822816536
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.046479068822816536,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9769096971504301,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 2,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        0.360969309534633,
+        0.0
+      ],
+      "weight": 0.030000932539687934,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 2,
+      "adjacent_volume_point": [
+        0.40302223286499717,
+        0.046479068822816536
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.046479068822816536,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7415323463183858,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 2,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        0.33459397827433324,
+        0.0
+      ],
+      "weight": 0.021976852188443176,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 2,
+      "adjacent_volume_point": [
+        0.40302223286499717,
+        0.046479068822816536
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.046479068822816536,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5618788966932806,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 2,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        0.31828437831592604,
+        0.0
+      ],
+      "weight": 0.010173818770410665,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 2,
+      "adjacent_volume_point": [
+        0.40302223286499717,
+        0.046479068822816536
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.046479068822816536,
+      "raw_normal_cosine_toward_adjacent_volume": -0.48091154151327503,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 3,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        0.6245727645412167,
+        0.0
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 4,
+      "adjacent_volume_point": [
+        0.5589429653009403,
+        0.04579584760137012
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04579584760137012,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5722456003472498,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 3,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        0.6082631645828094,
+        0.0
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 4,
+      "adjacent_volume_point": [
+        0.5589429653009403,
+        0.04579584760137012
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04579584760137012,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6804392885371915,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 3,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        0.5818878333225096,
+        0.0
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 4,
+      "adjacent_volume_point": [
+        0.5589429653009403,
+        0.04579584760137012
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04579584760137012,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8940602986201955,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 3,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        0.5499999999999999,
+        0.0
+      ],
+      "weight": 0.03283965014577257,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 4,
+      "adjacent_volume_point": [
+        0.5589429653009403,
+        0.04579584760137012
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04579584760137012,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9814616164269566,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 3,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        0.5181121666774902,
+        0.0
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 4,
+      "adjacent_volume_point": [
+        0.5589429653009403,
+        0.04579584760137012
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04579584760137012,
+      "raw_normal_cosine_toward_adjacent_volume": -0.746409957616197,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 3,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        0.4917368354171904,
+        0.0
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 4,
+      "adjacent_volume_point": [
+        0.5589429653009403,
+        0.04579584760137012
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04579584760137012,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5631142480540258,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 3,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        0.47542723545878324,
+        0.0
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 4,
+      "adjacent_volume_point": [
+        0.5589429653009403,
+        0.04579584760137012
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04579584760137012,
+      "raw_normal_cosine_toward_adjacent_volume": -0.48080758086441594,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 4,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        0.7817156216840739,
+        0.0
+      ],
+      "weight": 0.010173818770410676,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 6,
+      "adjacent_volume_point": [
+        0.7157372732218771,
+        0.045622273469458935
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045622273469458935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5687460104036924,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 4,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        0.7654060217256669,
+        0.0
+      ],
+      "weight": 0.0219768521884432,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 6,
+      "adjacent_volume_point": [
+        0.7157372732218771,
+        0.045622273469458935
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045622273469458935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6764702845621747,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 4,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        0.739030690465367,
+        0.0
+      ],
+      "weight": 0.030000932539687965,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 6,
+      "adjacent_volume_point": [
+        0.7157372732218771,
+        0.045622273469458935
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045622273469458935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8906294809813107,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 4,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        0.7071428571428571,
+        0.0
+      ],
+      "weight": 0.03283965014577264,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 6,
+      "adjacent_volume_point": [
+        0.7157372732218771,
+        0.045622273469458935
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045622273469458935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9827148294814196,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 4,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        0.6752550238203473,
+        0.0
+      ],
+      "weight": 0.030000932539687965,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 6,
+      "adjacent_volume_point": [
+        0.7157372732218771,
+        0.045622273469458935
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045622273469458935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7479860961955853,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 4,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        0.6488796925600474,
+        0.0
+      ],
+      "weight": 0.0219768521884432,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 6,
+      "adjacent_volume_point": [
+        0.7157372732218771,
+        0.045622273469458935
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045622273469458935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5636535596913755,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 4,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        0.6325700926016403,
+        0.0
+      ],
+      "weight": 0.010173818770410676,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 6,
+      "adjacent_volume_point": [
+        0.7157372732218771,
+        0.045622273469458935
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045622273469458935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4809498391141053,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 5,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        0.9388584788269311,
+        0.0
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 8,
+      "adjacent_volume_point": [
+        0.8725536550170769,
+        0.04562886678258268
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562886678258268,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5669025093575649,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 5,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        0.9225488788685238,
+        0.0
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 8,
+      "adjacent_volume_point": [
+        0.8725536550170769,
+        0.04562886678258268
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562886678258268,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6741166971831096,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 5,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        0.896173547608224,
+        0.0
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 8,
+      "adjacent_volume_point": [
+        0.8725536550170769,
+        0.04562886678258268
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562886678258268,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8880686443440242,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 5,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        0.8642857142857143,
+        0.0
+      ],
+      "weight": 0.03283965014577257,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 8,
+      "adjacent_volume_point": [
+        0.8725536550170769,
+        0.04562886678258268
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562886678258268,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9839768281500952,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 5,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        0.8323978809632046,
+        0.0
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 8,
+      "adjacent_volume_point": [
+        0.8725536550170769,
+        0.04562886678258268
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562886678258268,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7506941685021327,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 5,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        0.8060225497029049,
+        0.0
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 8,
+      "adjacent_volume_point": [
+        0.8725536550170769,
+        0.04562886678258268
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562886678258268,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5655919028899793,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 5,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        0.7897129497444976,
+        0.0
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 8,
+      "adjacent_volume_point": [
+        0.8725536550170769,
+        0.04562886678258268
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562886678258268,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4824583256640494,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 6,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        1.0960013359697884,
+        0.0
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 10,
+      "adjacent_volume_point": [
+        1.0297598883684151,
+        0.045592166798267414
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045592166798267414,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5669608509175049,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 6,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        1.0796917360113811,
+        0.0
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 10,
+      "adjacent_volume_point": [
+        1.0297598883684151,
+        0.045592166798267414
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045592166798267414,
+      "raw_normal_cosine_toward_adjacent_volume": -0.674287261070782,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 6,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        1.0533164047510812,
+        0.0
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 10,
+      "adjacent_volume_point": [
+        1.0297598883684151,
+        0.045592166798267414
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045592166798267414,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8884214286096511,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 6,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        1.0214285714285714,
+        0.0
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 10,
+      "adjacent_volume_point": [
+        1.0297598883684151,
+        0.045592166798267414
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045592166798267414,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9837106678053719,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 6,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        0.9895407381060617,
+        0.0
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 10,
+      "adjacent_volume_point": [
+        1.0297598883684151,
+        0.045592166798267414
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045592166798267414,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7499131866396208,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 6,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        0.9631654068457618,
+        0.0
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 10,
+      "adjacent_volume_point": [
+        1.0297598883684151,
+        0.045592166798267414
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045592166798267414,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5649161657996793,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 6,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        0.9468558068873547,
+        0.0
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 10,
+      "adjacent_volume_point": [
+        1.0297598883684151,
+        0.045592166798267414
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045592166798267414,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4818775430156917,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 7,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        1.253144193112645,
+        0.0
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 12,
+      "adjacent_volume_point": [
+        1.186755593634872,
+        0.04562370191948739
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562370191948739,
+      "raw_normal_cosine_toward_adjacent_volume": -0.566373199133311,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 7,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        1.236834593154238,
+        0.0
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 12,
+      "adjacent_volume_point": [
+        1.186755593634872,
+        0.04562370191948739
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562370191948739,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6734590962172022,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 7,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        1.210459261893938,
+        0.0
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 12,
+      "adjacent_volume_point": [
+        1.186755593634872,
+        0.04562370191948739
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562370191948739,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8873811988235406,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 7,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        1.1785714285714284,
+        0.0
+      ],
+      "weight": 0.032839650145772524,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 12,
+      "adjacent_volume_point": [
+        1.186755593634872,
+        0.04562370191948739
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562370191948739,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9842888506558767,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 7,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        1.1466835952489187,
+        0.0
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 12,
+      "adjacent_volume_point": [
+        1.186755593634872,
+        0.04562370191948739
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562370191948739,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7513409097759642,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 7,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        1.120308263988619,
+        0.0
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 12,
+      "adjacent_volume_point": [
+        1.186755593634872,
+        0.04562370191948739
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562370191948739,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5660330397453837,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 7,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        1.103998664030212,
+        0.0
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 12,
+      "adjacent_volume_point": [
+        1.186755593634872,
+        0.04562370191948739
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04562370191948739,
+      "raw_normal_cosine_toward_adjacent_volume": -0.48279099456832175,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 8,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        1.4102870502555025,
+        0.0
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 14,
+      "adjacent_volume_point": [
+        1.344037291090083,
+        0.04559033213651632
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04559033213651632,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5668971010812796,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 8,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        1.3939774502970954,
+        0.0
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 14,
+      "adjacent_volume_point": [
+        1.344037291090083,
+        0.04559033213651632
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04559033213651632,
+      "raw_normal_cosine_toward_adjacent_volume": -0.674211257017809,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 8,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        1.3676021190367953,
+        0.0
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 14,
+      "adjacent_volume_point": [
+        1.344037291090083,
+        0.04559033213651632
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04559033213651632,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8883478377536937,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 8,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        1.3357142857142856,
+        0.0
+      ],
+      "weight": 0.03283965014577266,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 14,
+      "adjacent_volume_point": [
+        1.344037291090083,
+        0.04559033213651632
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04559033213651632,
+      "raw_normal_cosine_toward_adjacent_volume": -0.983741088337078,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 8,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        1.3038264523917757,
+        0.0
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 14,
+      "adjacent_volume_point": [
+        1.344037291090083,
+        0.04559033213651632
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04559033213651632,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7499678054898389,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 8,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        1.2774511211314759,
+        0.0
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 14,
+      "adjacent_volume_point": [
+        1.344037291090083,
+        0.04559033213651632
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04559033213651632,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5649486962505089,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 8,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        1.2611415211730688,
+        0.0
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 14,
+      "adjacent_volume_point": [
+        1.344037291090083,
+        0.04559033213651632
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04559033213651632,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4818997490907282,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 9,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        1.5674299073983597,
+        0.0
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 16,
+      "adjacent_volume_point": [
+        1.5011024696653144,
+        0.04561408767825191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04561408767825191,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5666466970780715,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 9,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        1.5511203074399527,
+        0.0
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 16,
+      "adjacent_volume_point": [
+        1.5011024696653144,
+        0.04561408767825191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04561408767825191,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6738312005840011,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 9,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        1.5247449761796528,
+        0.0
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 16,
+      "adjacent_volume_point": [
+        1.5011024696653144,
+        0.04561408767825191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04561408767825191,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8878280352250607,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 9,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        1.4928571428571429,
+        0.0
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 16,
+      "adjacent_volume_point": [
+        1.5011024696653144,
+        0.04561408767825191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04561408767825191,
+      "raw_normal_cosine_toward_adjacent_volume": -0.984052194260501,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 9,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        1.4609693095346332,
+        0.0
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 16,
+      "adjacent_volume_point": [
+        1.5011024696653144,
+        0.04561408767825191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04561408767825191,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7507725885093418,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 9,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        1.4345939782743333,
+        0.0
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 16,
+      "adjacent_volume_point": [
+        1.5011024696653144,
+        0.04561408767825191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04561408767825191,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5655980602575802,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 9,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        1.4182843783159262,
+        0.0
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 16,
+      "adjacent_volume_point": [
+        1.5011024696653144,
+        0.04561408767825191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04561408767825191,
+      "raw_normal_cosine_toward_adjacent_volume": -0.48243947271201526,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 10,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        1.724572764541217,
+        0.0
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 18,
+      "adjacent_volume_point": [
+        1.6585063139954452,
+        0.04554466846565963
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04554466846565963,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5675775459151828,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 10,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        1.7082631645828097,
+        0.0
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 18,
+      "adjacent_volume_point": [
+        1.6585063139954452,
+        0.04554466846565963
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04554466846565963,
+      "raw_normal_cosine_toward_adjacent_volume": -0.67519456109355,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 10,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        1.6818878333225098,
+        0.0
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 18,
+      "adjacent_volume_point": [
+        1.6585063139954452,
+        0.04554466846565963
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04554466846565963,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8896168862790944,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 10,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        1.6500000000000004,
+        0.0
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 18,
+      "adjacent_volume_point": [
+        1.6585063139954452,
+        0.04554466846565963
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04554466846565963,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9830021695470538,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 10,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        1.6181121666774905,
+        0.0
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 18,
+      "adjacent_volume_point": [
+        1.6585063139954452,
+        0.04554466846565963
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04554466846565963,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7481429802398969,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 10,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        1.5917368354171908,
+        0.0
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 18,
+      "adjacent_volume_point": [
+        1.6585063139954452,
+        0.04554466846565963
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04554466846565963,
+      "raw_normal_cosine_toward_adjacent_volume": -0.563505938884096,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 10,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        1.5754272354587835,
+        0.0
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 18,
+      "adjacent_volume_point": [
+        1.6585063139954452,
+        0.04554466846565963
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04554466846565963,
+      "raw_normal_cosine_toward_adjacent_volume": -0.48071229954720895,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 11,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        1.881715621684074,
+        0.0
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 20,
+      "adjacent_volume_point": [
+        1.8160004123604652,
+        0.045438425376032016
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045438425376032016,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5687299691679623,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 11,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        1.8654060217256667,
+        0.0
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 20,
+      "adjacent_volume_point": [
+        1.8160004123604652,
+        0.045438425376032016
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045438425376032016,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6769376288434448,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 11,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        1.8390306904653668,
+        0.0
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 20,
+      "adjacent_volume_point": [
+        1.8160004123604652,
+        0.045438425376032016
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045438425376032016,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8919713238382547,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 11,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        1.8071428571428574,
+        0.0
+      ],
+      "weight": 0.032839650145772524,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 20,
+      "adjacent_volume_point": [
+        1.8160004123604652,
+        0.045438425376032016
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045438425376032016,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9815250033308811,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 11,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        1.7752550238203475,
+        0.0
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 20,
+      "adjacent_volume_point": [
+        1.8160004123604652,
+        0.045438425376032016
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045438425376032016,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7445084403647805,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 11,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        1.7488796925600478,
+        0.0
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 20,
+      "adjacent_volume_point": [
+        1.8160004123604652,
+        0.045438425376032016
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045438425376032016,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5605906189926406,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 11,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        1.7325700926016405,
+        0.0
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 20,
+      "adjacent_volume_point": [
+        1.8160004123604652,
+        0.045438425376032016
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045438425376032016,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4782920930011407,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 12,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        2.0388584788269313,
+        0.0
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 22,
+      "adjacent_volume_point": [
+        1.9752145818866342,
+        0.04510224338830221
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04510224338830221,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5781978732642377,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 12,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        2.022548878868524,
+        0.0
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 22,
+      "adjacent_volume_point": [
+        1.9752145818866342,
+        0.04510224338830221
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04510224338830221,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6898312808703709,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 12,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        1.9961735476082243,
+        0.0
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 22,
+      "adjacent_volume_point": [
+        1.9752145818866342,
+        0.04510224338830221
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04510224338830221,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9068657747699397,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 12,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        1.9642857142857144,
+        0.0
+      ],
+      "weight": 0.03283965014577266,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 22,
+      "adjacent_volume_point": [
+        1.9752145818866342,
+        0.04510224338830221
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04510224338830221,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9718748169263594,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 12,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        1.9323978809632045,
+        0.0
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 22,
+      "adjacent_volume_point": [
+        1.9752145818866342,
+        0.04510224338830221
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04510224338830221,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7252437259340274,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 12,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        1.9060225497029046,
+        0.0
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 22,
+      "adjacent_volume_point": [
+        1.9752145818866342,
+        0.04510224338830221
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04510224338830221,
+      "raw_normal_cosine_toward_adjacent_volume": -0.546072435352966,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 12,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        1.8897129497444975,
+        0.0
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 22,
+      "adjacent_volume_point": [
+        1.9752145818866342,
+        0.04510224338830221
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04510224338830221,
+      "raw_normal_cosine_toward_adjacent_volume": -0.466567516737392,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 13,
+      "point_in_element": 0,
+      "label": "wall_bottom",
+      "point": [
+        2.1960013359697887,
+        0.0
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555555,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6855185629624809,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 13,
+      "point_in_element": 1,
+      "label": "wall_bottom",
+      "point": [
+        2.179691736011381,
+        0.0
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555555,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8176790500974961,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 13,
+      "point_in_element": 2,
+      "label": "wall_bottom",
+      "point": [
+        2.1533164047510813,
+        0.0
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555555,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9922700664009093,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 13,
+      "point_in_element": 3,
+      "label": "wall_bottom",
+      "point": [
+        2.121428571428572,
+        0.0
+      ],
+      "weight": 0.03283965014577257,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555555,
+      "raw_normal_cosine_toward_adjacent_volume": -0.866938934333906,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 13,
+      "point_in_element": 4,
+      "label": "wall_bottom",
+      "point": [
+        2.089540738106062,
+        0.0
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555555,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6171729850691954,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 13,
+      "point_in_element": 5,
+      "label": "wall_bottom",
+      "point": [
+        2.063165406845762,
+        0.0
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555555,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4747501949300213,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 13,
+      "point_in_element": 6,
+      "label": "wall_bottom",
+      "point": [
+        2.046855806887355,
+        0.0
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        -1.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555555,
+      "raw_normal_cosine_toward_adjacent_volume": -0.41195905669847704,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        -1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 14,
+      "point_in_element": 0,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.13318904067675516
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952195,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5130608275640659,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 14,
+      "point_in_element": 1,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.11900463101595861
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952195,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5806312192476795,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 14,
+      "point_in_element": 2,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.09606608534412213
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952195,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7198420588922448,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 14,
+      "point_in_element": 3,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.06833333333333333
+      ],
+      "weight": 0.028560544217687073,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952195,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9170479647565916,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 14,
+      "point_in_element": 4,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.04060058132254453
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952195,
+      "raw_normal_cosine_toward_adjacent_volume": -0.995555700762408,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 14,
+      "point_in_element": 5,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.017662035650708043
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952195,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8826535401749804,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 14,
+      "point_in_element": 6,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.0034776259899114955
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 24,
+      "adjacent_volume_point": [
+        2.147619047619048,
+        0.04555555555555555
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952195,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7796099916576748,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 15,
+      "point_in_element": 0,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.2698557073434218
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 27,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.2263809685769496
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6656551327973349,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 15,
+      "point_in_element": 1,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.25567129768262525
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 27,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.2263809685769496
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.79795980772085,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 15,
+      "point_in_element": 2,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.23273275201078877
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 27,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.2263809685769496
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9868497020459258,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 15,
+      "point_in_element": 3,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.205
+      ],
+      "weight": 0.028560544217687073,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 27,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.2263809685769496
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8757145357447258,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 15,
+      "point_in_element": 4,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.17726724798921117
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 27,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.2263809685769496
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6196934209652114,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 15,
+      "point_in_element": 5,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.1543287023173747
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 27,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.2263809685769496
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4739255524166768,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 15,
+      "point_in_element": 6,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.14014429265657816
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 27,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.2263809685769496
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.41012259820788727,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 16,
+      "point_in_element": 0,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.4065223740100885
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 26,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.3174920796880607
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.3993336236240482,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 16,
+      "point_in_element": 1,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.3923379643492919
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 26,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.3174920796880607
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4600366954380296,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 16,
+      "point_in_element": 2,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.3693994186774554
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 26,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.3174920796880607
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5985022705601659,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 16,
+      "point_in_element": 3,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.3416666666666667
+      ],
+      "weight": 0.028560544217687073,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 26,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.3174920796880607
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8486102338879066,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 16,
+      "point_in_element": 4,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.31393391465587783
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 26,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.3174920796880607
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9958169054340043,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 16,
+      "point_in_element": 5,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.2909953689840413
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 26,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.3174920796880607
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.825667051844493,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 16,
+      "point_in_element": 6,
+      "label": "outlet",
+      "point": [
+        2.2,
+        0.2768109593232448
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 26,
+      "adjacent_volume_point": [
+        2.1612210190515126,
+        0.3174920796880607
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03877898094848753,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6899821837608683,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal": [
+        1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 17,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        2.046855806887355,
+        0.41
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 28,
+      "adjacent_volume_point": [
+        2.1088400666705605,
+        0.3630476352436163
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0469523647563837,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6038135011817483,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 17,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        2.063165406845762,
+        0.41
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 28,
+      "adjacent_volume_point": [
+        2.1088400666705605,
+        0.3630476352436163
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0469523647563837,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7167924800969722,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 17,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        2.089540738106062,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 28,
+      "adjacent_volume_point": [
+        2.1088400666705605,
+        0.3630476352436163
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04695236475638365,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9249137129391757,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 17,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        2.121428571428572,
+        0.41
+      ],
+      "weight": 0.03283965014577257,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 28,
+      "adjacent_volume_point": [
+        2.1088400666705605,
+        0.3630476352436163
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0469523647563837,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9658864382488677,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 17,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        2.1533164047510813,
+        0.41
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 28,
+      "adjacent_volume_point": [
+        2.1088400666705605,
+        0.3630476352436163
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0469523647563837,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7259901208793248,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 17,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        2.179691736011381,
+        0.41
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 28,
+      "adjacent_volume_point": [
+        2.1088400666705605,
+        0.3630476352436163
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0469523647563837,
+      "raw_normal_cosine_toward_adjacent_volume": -0.552400503166966,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 17,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        2.1960013359697887,
+        0.41
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 28,
+      "adjacent_volume_point": [
+        2.1088400666705605,
+        0.3630476352436163
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0469523647563837,
+      "raw_normal_cosine_toward_adjacent_volume": -0.474251518132928,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 18,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        1.8897129497444978,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 29,
+      "adjacent_volume_point": [
+        1.9548866872030597,
+        0.364019675864237
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04598032413576297,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5764767665646476,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 18,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        1.9060225497029049,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 29,
+      "adjacent_volume_point": [
+        1.9548866872030597,
+        0.364019675864237
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04598032413576297,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6852899915794819,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 18,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        1.9323978809632045,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 29,
+      "adjacent_volume_point": [
+        1.9548866872030597,
+        0.364019675864237
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04598032413576292,
+      "raw_normal_cosine_toward_adjacent_volume": -0.898310831711179,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 18,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        1.9642857142857144,
+        0.41
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 29,
+      "adjacent_volume_point": [
+        1.9548866872030597,
+        0.364019675864237
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04598032413576297,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9797401888902232,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 18,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        1.9961735476082243,
+        0.41
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 29,
+      "adjacent_volume_point": [
+        1.9548866872030597,
+        0.364019675864237
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04598032413576297,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7440615336025378,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 18,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        2.022548878868524,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 29,
+      "adjacent_volume_point": [
+        1.9548866872030597,
+        0.364019675864237
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04598032413576297,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5620595140713806,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 18,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        2.0388584788269313,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 29,
+      "adjacent_volume_point": [
+        1.9548866872030597,
+        0.364019675864237
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04598032413576297,
+      "raw_normal_cosine_toward_adjacent_volume": -0.48028064466901144,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 19,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        1.7325700926016403,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 31,
+      "adjacent_volume_point": [
+        1.798116322079219,
+        0.36435183871249055
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045648161287509426,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5714928628993322,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 19,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        1.7488796925600478,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 31,
+      "adjacent_volume_point": [
+        1.798116322079219,
+        0.36435183871249055
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045648161287509426,
+      "raw_normal_cosine_toward_adjacent_volume": -0.679878519338654,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 19,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        1.7752550238203473,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 31,
+      "adjacent_volume_point": [
+        1.798116322079219,
+        0.36435183871249055
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04564816128750937,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8941354001848436,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 19,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        1.8071428571428574,
+        0.41
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 31,
+      "adjacent_volume_point": [
+        1.798116322079219,
+        0.36435183871249055
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045648161287509426,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9810044414807626,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 19,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        1.8390306904653668,
+        0.41
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 31,
+      "adjacent_volume_point": [
+        1.798116322079219,
+        0.36435183871249055
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045648161287509426,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7446632392093742,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 19,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        1.8654060217256667,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 31,
+      "adjacent_volume_point": [
+        1.798116322079219,
+        0.36435183871249055
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045648161287509426,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5613944156833683,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 19,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        1.8817156216840742,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 31,
+      "adjacent_volume_point": [
+        1.798116322079219,
+        0.36435183871249055
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045648161287509426,
+      "raw_normal_cosine_toward_adjacent_volume": -0.47924486276753775,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 20,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        1.5754272354587835,
+        0.41
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 33,
+      "adjacent_volume_point": [
+        1.6410333468489662,
+        0.3644290252301566
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0455709747698434,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5704901884613082,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 20,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        1.5917368354171906,
+        0.41
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 33,
+      "adjacent_volume_point": [
+        1.6410333468489662,
+        0.3644290252301566
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0455709747698434,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6788147884175346,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 20,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        1.6181121666774902,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 33,
+      "adjacent_volume_point": [
+        1.6410333468489662,
+        0.3644290252301566
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04557097476984334,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8933606260406971,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 20,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        1.6500000000000001,
+        0.41
+      ],
+      "weight": 0.03283965014577257,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 33,
+      "adjacent_volume_point": [
+        1.6410333468489662,
+        0.3644290252301566
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0455709747698434,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9811868252430926,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 20,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        1.6818878333225098,
+        0.41
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 33,
+      "adjacent_volume_point": [
+        1.6410333468489662,
+        0.3644290252301566
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0455709747698434,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7445877089362978,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 20,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        1.7082631645828097,
+        0.41
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 33,
+      "adjacent_volume_point": [
+        1.6410333468489662,
+        0.3644290252301566
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0455709747698434,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5610860737371521,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 20,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        1.7245727645412168,
+        0.41
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 33,
+      "adjacent_volume_point": [
+        1.6410333468489662,
+        0.3644290252301566
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0455709747698434,
+      "raw_normal_cosine_toward_adjacent_volume": -0.478884685389309,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 21,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        1.4182843783159262,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 35,
+      "adjacent_volume_point": [
+        1.4837560350758172,
+        0.36447720382689763
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552279617310234,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5708726047811447,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 21,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        1.4345939782743333,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 35,
+      "adjacent_volume_point": [
+        1.4837560350758172,
+        0.36447720382689763
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552279617310234,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6794271016223665,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 21,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        1.460969309534633,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 35,
+      "adjacent_volume_point": [
+        1.4837560350758172,
+        0.36447720382689763
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552279617310229,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8942280942669242,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 21,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        1.4928571428571429,
+        0.41
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 35,
+      "adjacent_volume_point": [
+        1.4837560350758172,
+        0.36447720382689763
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552279617310234,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9805949705615001,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 21,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        1.5247449761796528,
+        0.41
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 35,
+      "adjacent_volume_point": [
+        1.4837560350758172,
+        0.36447720382689763
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552279617310234,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7431445712186344,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 21,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        1.5511203074399527,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 35,
+      "adjacent_volume_point": [
+        1.4837560350758172,
+        0.36447720382689763
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552279617310234,
+      "raw_normal_cosine_toward_adjacent_volume": -0.559911419841742,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 21,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        1.5674299073983597,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 35,
+      "adjacent_volume_point": [
+        1.4837560350758172,
+        0.36447720382689763
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552279617310234,
+      "raw_normal_cosine_toward_adjacent_volume": -0.47790119103151585,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 22,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        1.2611415211730694,
+        0.41
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 37,
+      "adjacent_volume_point": [
+        1.3266836272625728,
+        0.3644635077740284
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04553649222597156,
+      "raw_normal_cosine_toward_adjacent_volume": -0.570574507012711,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 22,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        1.2774511211314765,
+        0.41
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 37,
+      "adjacent_volume_point": [
+        1.3266836272625728,
+        0.3644635077740284
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04553649222597156,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6790132455597451,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 22,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        1.3038264523917762,
+        0.4099999999999999
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 37,
+      "adjacent_volume_point": [
+        1.3266836272625728,
+        0.3644635077740284
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.0455364922259715,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8937279523300876,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 22,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        1.3357142857142859,
+        0.41
+      ],
+      "weight": 0.032839650145772524,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 37,
+      "adjacent_volume_point": [
+        1.3266836272625728,
+        0.3644635077740284
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04553649222597156,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9808968704712271,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 22,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        1.3676021190367957,
+        0.41
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 37,
+      "adjacent_volume_point": [
+        1.3266836272625728,
+        0.3644635077740284
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04553649222597156,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7438165887684132,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 22,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        1.3939774502970954,
+        0.41
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 37,
+      "adjacent_volume_point": [
+        1.3266836272625728,
+        0.3644635077740284
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04553649222597156,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5604292600714484,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 22,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        1.4102870502555025,
+        0.41
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 37,
+      "adjacent_volume_point": [
+        1.3266836272625728,
+        0.3644635077740284
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04553649222597156,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4783227971525124,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 23,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        1.103998664030212,
+        0.41
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 39,
+      "adjacent_volume_point": [
+        1.1694472538714524,
+        0.3644887025780956
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04551129742190435,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5709109937306498,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 23,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        1.120308263988619,
+        0.41
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 39,
+      "adjacent_volume_point": [
+        1.1694472538714524,
+        0.3644887025780956
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04551129742190435,
+      "raw_normal_cosine_toward_adjacent_volume": -0.679506359928437,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 23,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        1.146683595248919,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 39,
+      "adjacent_volume_point": [
+        1.1694472538714524,
+        0.3644887025780956
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045511297421904295,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8943642194978505,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 23,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        1.1785714285714288,
+        0.41
+      ],
+      "weight": 0.03283965014577266,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 39,
+      "adjacent_volume_point": [
+        1.1694472538714524,
+        0.3644887025780956
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04551129742190435,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9804897746975931,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 23,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        1.2104592618939387,
+        0.41
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 39,
+      "adjacent_volume_point": [
+        1.1694472538714524,
+        0.3644887025780956
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04551129742190435,
+      "raw_normal_cosine_toward_adjacent_volume": -0.742873246149448,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 23,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        1.2368345931542386,
+        0.41
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 39,
+      "adjacent_volume_point": [
+        1.1694472538714524,
+        0.3644887025780956
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04551129742190435,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5596827234718171,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 23,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        1.2531441931126457,
+        0.41
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 39,
+      "adjacent_volume_point": [
+        1.1694472538714524,
+        0.3644887025780956
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04551129742190435,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4777064081409506,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 24,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        0.9468558068873552,
+        0.41
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 41,
+      "adjacent_volume_point": [
+        1.0124380559425528,
+        0.36447314824476873
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045526851755231246,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5702574100906841,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 24,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        0.9631654068457622,
+        0.41
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 41,
+      "adjacent_volume_point": [
+        1.0124380559425528,
+        0.36447314824476873
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045526851755231246,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6786374257228203,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 24,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        0.9895407381060619,
+        0.4099999999999999
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 41,
+      "adjacent_volume_point": [
+        1.0124380559425528,
+        0.36447314824476873
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04552685175523119,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8933737760992548,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 24,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        1.0214285714285718,
+        0.41
+      ],
+      "weight": 0.032839650145772524,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 41,
+      "adjacent_volume_point": [
+        1.0124380559425528,
+        0.36447314824476873
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045526851755231246,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9810537487264277,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 24,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        1.0533164047510815,
+        0.41
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 41,
+      "adjacent_volume_point": [
+        1.0124380559425528,
+        0.36447314824476873
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045526851755231246,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7440723200263568,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 24,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        1.0796917360113811,
+        0.41
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 41,
+      "adjacent_volume_point": [
+        1.0124380559425528,
+        0.36447314824476873
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045526851755231246,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5605772513735938,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 24,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        1.0960013359697884,
+        0.41
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 41,
+      "adjacent_volume_point": [
+        1.0124380559425528,
+        0.36447314824476873
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045526851755231246,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4784218632966912,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 25,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        0.7897129497444976,
+        0.41
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 43,
+      "adjacent_volume_point": [
+        0.8553177823302683,
+        0.36451647460926107
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04548352539073891,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5697585405665597,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 25,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        0.8060225497029049,
+        0.41
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 43,
+      "adjacent_volume_point": [
+        0.8553177823302683,
+        0.36451647460926107
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04548352539073891,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6781209685626621,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 25,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        0.8323978809632047,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 43,
+      "adjacent_volume_point": [
+        0.8553177823302683,
+        0.36451647460926107
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045483525390738855,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8930237841070887,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 25,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        0.8642857142857145,
+        0.41
+      ],
+      "weight": 0.03283965014577266,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 43,
+      "adjacent_volume_point": [
+        0.8553177823302683,
+        0.36451647460926107
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04548352539073891,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9811112162294606,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 25,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        0.8961735476082244,
+        0.41
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 43,
+      "adjacent_volume_point": [
+        0.8553177823302683,
+        0.36451647460926107
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04548352539073891,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7439396168088561,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 25,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        0.9225488788685242,
+        0.41
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 43,
+      "adjacent_volume_point": [
+        0.8553177823302683,
+        0.36451647460926107
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04548352539073891,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5603403518023309,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 25,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        0.9388584788269315,
+        0.41
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 43,
+      "adjacent_volume_point": [
+        0.8553177823302683,
+        0.36451647460926107
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04548352539073891,
+      "raw_normal_cosine_toward_adjacent_volume": -0.478170352873367,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 26,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        0.6325700926016404,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 45,
+      "adjacent_volume_point": [
+        0.6986334815481648,
+        0.364577079964457
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04542292003554299,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5665655824478392,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 26,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        0.6488796925600475,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 45,
+      "adjacent_volume_point": [
+        0.6986334815481648,
+        0.364577079964457
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04542292003554299,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6742333198919315,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 26,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        0.6752550238203474,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 45,
+      "adjacent_volume_point": [
+        0.6986334815481648,
+        0.364577079964457
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045422920035542935,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8891436671143274,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 26,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        0.7071428571428572,
+        0.41
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 45,
+      "adjacent_volume_point": [
+        0.6986334815481648,
+        0.364577079964457
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04542292003554299,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9829012648423123,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 26,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        0.739030690465367,
+        0.41
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 45,
+      "adjacent_volume_point": [
+        0.6986334815481648,
+        0.364577079964457
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04542292003554299,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7472354656031556,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 26,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        0.7654060217256669,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 45,
+      "adjacent_volume_point": [
+        0.6986334815481648,
+        0.364577079964457
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04542292003554299,
+      "raw_normal_cosine_toward_adjacent_volume": -0.56245897668208,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 26,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        0.7817156216840739,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 45,
+      "adjacent_volume_point": [
+        0.6986334815481648,
+        0.364577079964457
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04542292003554299,
+      "raw_normal_cosine_toward_adjacent_volume": -0.47970969937644947,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 27,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        0.4754272354587831,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 47,
+      "adjacent_volume_point": [
+        0.5424344247376875,
+        0.3649351343136809
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04506486568631907,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5580684319632094,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 27,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        0.4917368354171904,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 47,
+      "adjacent_volume_point": [
+        0.5424344247376875,
+        0.3649351343136809
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04506486568631907,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6643666540761215,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 27,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        0.51811216667749,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 47,
+      "adjacent_volume_point": [
+        0.5424344247376875,
+        0.3649351343136809
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04506486568631901,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8800096288416823,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 27,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        0.5499999999999999,
+        0.41
+      ],
+      "weight": 0.03283965014577262,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 47,
+      "adjacent_volume_point": [
+        0.5424344247376875,
+        0.3649351343136809
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04506486568631907,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9861988894866506,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 27,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        0.5818878333225097,
+        0.41
+      ],
+      "weight": 0.030000932539687945,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 47,
+      "adjacent_volume_point": [
+        0.5424344247376875,
+        0.3649351343136809
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04506486568631907,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7523975242008596,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 27,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        0.6082631645828095,
+        0.41
+      ],
+      "weight": 0.021976852188443183,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 47,
+      "adjacent_volume_point": [
+        0.5424344247376875,
+        0.3649351343136809
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04506486568631907,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5648900822054898,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 27,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        0.6245727645412168,
+        0.41
+      ],
+      "weight": 0.010173818770410669,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 47,
+      "adjacent_volume_point": [
+        0.5424344247376875,
+        0.3649351343136809
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04506486568631907,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4810070592318333,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 28,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        0.3182843783159263,
+        0.41
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 49,
+      "adjacent_volume_point": [
+        0.38844061132428204,
+        0.3662250513302239
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04377494866977605,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5293666180067679,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 28,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        0.33459397827433346,
+        0.41
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 49,
+      "adjacent_volume_point": [
+        0.38844061132428204,
+        0.3662250513302239
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04377494866977605,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6308057768273019,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 28,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        0.36096930953463313,
+        0.4099999999999999
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 49,
+      "adjacent_volume_point": [
+        0.38844061132428204,
+        0.3662250513302239
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04377494866977599,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8470232336237862,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 28,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        0.3928571428571429,
+        0.41
+      ],
+      "weight": 0.032839650145772524,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 49,
+      "adjacent_volume_point": [
+        0.38844061132428204,
+        0.3662250513302239
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04377494866977605,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9949489555196618,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 28,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        0.42474497617965257,
+        0.41
+      ],
+      "weight": 0.03000093253968786,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 49,
+      "adjacent_volume_point": [
+        0.38844061132428204,
+        0.3662250513302239
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04377494866977605,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7697304159658613,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 28,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        0.45112030743995235,
+        0.41
+      ],
+      "weight": 0.021976852188443124,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 49,
+      "adjacent_volume_point": [
+        0.38844061132428204,
+        0.3662250513302239
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04377494866977605,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5725767947462466,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 28,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        0.4674299073983595,
+        0.41
+      ],
+      "weight": 0.01017381877041064,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 49,
+      "adjacent_volume_point": [
+        0.38844061132428204,
+        0.3662250513302239
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04377494866977605,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4847288674512985,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 29,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        0.16114152117306887,
+        0.41
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 51,
+      "adjacent_volume_point": [
+        0.2394194136999114,
+        0.3704068061692568
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03959319383074317,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4513514357978718,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 29,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        0.1774511211314761,
+        0.41
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 51,
+      "adjacent_volume_point": [
+        0.2394194136999114,
+        0.3704068061692568
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03959319383074317,
+      "raw_normal_cosine_toward_adjacent_volume": -0.538411876345562,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 29,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        0.2038264523917759,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 51,
+      "adjacent_volume_point": [
+        0.2394194136999114,
+        0.3704068061692568
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03959319383074311,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7436761364406758,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 29,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        0.23571428571428577,
+        0.41
+      ],
+      "weight": 0.03283965014577266,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 51,
+      "adjacent_volume_point": [
+        0.2394194136999114,
+        0.3704068061692568
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03959319383074317,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9956499490567873,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 29,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        0.2676021190367956,
+        0.41
+      ],
+      "weight": 0.030000932539687986,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 51,
+      "adjacent_volume_point": [
+        0.2394194136999114,
+        0.3704068061692568
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03959319383074317,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8146875533954553,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 29,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        0.2939774502970955,
+        0.41
+      ],
+      "weight": 0.021976852188443214,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 51,
+      "adjacent_volume_point": [
+        0.2394194136999114,
+        0.3704068061692568
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03959319383074317,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5873430043590511,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 29,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        0.3102870502555027,
+        0.41
+      ],
+      "weight": 0.010173818770410683,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 51,
+      "adjacent_volume_point": [
+        0.2394194136999114,
+        0.3704068061692568
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.03959319383074317,
+      "raw_normal_cosine_toward_adjacent_volume": -0.4877339705136464,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 30,
+      "point_in_element": 0,
+      "label": "wall_top",
+      "point": [
+        0.003998664030211822,
+        0.41
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555557,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6855185629624828,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 30,
+      "point_in_element": 1,
+      "label": "wall_top",
+      "point": [
+        0.020308263988618992,
+        0.41
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555557,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8176790500974951,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 30,
+      "point_in_element": 2,
+      "label": "wall_top",
+      "point": [
+        0.04668359524891876,
+        0.4099999999999999
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.045555555555555516,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9922700664009085,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 30,
+      "point_in_element": 3,
+      "label": "wall_top",
+      "point": [
+        0.07857142857142851,
+        0.41
+      ],
+      "weight": 0.03283965014577257,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555557,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8669389343339055,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 30,
+      "point_in_element": 4,
+      "label": "wall_top",
+      "point": [
+        0.11045926189393826,
+        0.41
+      ],
+      "weight": 0.030000932539687903,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555557,
+      "raw_normal_cosine_toward_adjacent_volume": -0.617172985069196,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 30,
+      "point_in_element": 5,
+      "label": "wall_top",
+      "point": [
+        0.13683459315423804,
+        0.41
+      ],
+      "weight": 0.021976852188443155,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555557,
+      "raw_normal_cosine_toward_adjacent_volume": -0.47475019493002224,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 30,
+      "point_in_element": 6,
+      "label": "wall_top",
+      "point": [
+        0.1531441931126452,
+        0.41
+      ],
+      "weight": 0.010173818770410653,
+      "raw_normal": [
+        -0.0,
+        1.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.04555555555555557,
+      "raw_normal_cosine_toward_adjacent_volume": -0.41195905669847754,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal": [
+        -0.0,
+        1.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 31,
+      "point_in_element": 0,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.2768109593232448
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05238095238095235,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5130608275640669,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 31,
+      "point_in_element": 1,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.2909953689840413
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05238095238095235,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5806312192476804,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 31,
+      "point_in_element": 2,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.31393391465587783
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05238095238095235,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7198420588922458,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 31,
+      "point_in_element": 3,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.3416666666666667
+      ],
+      "weight": 0.028560544217687073,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05238095238095235,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9170479647565922,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 31,
+      "point_in_element": 4,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.3693994186774554
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05238095238095235,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9955557007624081,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 31,
+      "point_in_element": 5,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.3923379643492919
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05238095238095235,
+      "raw_normal_cosine_toward_adjacent_volume": -0.882653540174981,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 31,
+      "point_in_element": 6,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.4065223740100885
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 53,
+      "adjacent_volume_point": [
+        0.05238095238095235,
+        0.3644444444444444
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.05238095238095235,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7796099916576753,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 32,
+      "point_in_element": 0,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.14014429265657816
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 54,
+      "adjacent_volume_point": [
+        0.043078009165534226,
+        0.2061375496704191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.043078009165534226,
+      "raw_normal_cosine_toward_adjacent_volume": -0.546614292966845,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 32,
+      "point_in_element": 1,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.1543287023173747
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 54,
+      "adjacent_volume_point": [
+        0.043078009165534226,
+        0.2061375496704191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.043078009165534226,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6393428936368246,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 32,
+      "point_in_element": 2,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.17726724798921117
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 54,
+      "adjacent_volume_point": [
+        0.043078009165534226,
+        0.2061375496704191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.043078009165534226,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8306983172950818,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 32,
+      "point_in_element": 3,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.205
+      ],
+      "weight": 0.028560544217687073,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 54,
+      "adjacent_volume_point": [
+        0.043078009165534226,
+        0.2061375496704191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.043078009165534226,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9996515243507995,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 32,
+      "point_in_element": 4,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.2327327520107888
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 54,
+      "adjacent_volume_point": [
+        0.043078009165534226,
+        0.2061375496704191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.043078009165534226,
+      "raw_normal_cosine_toward_adjacent_volume": -0.8509022175324413,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 32,
+      "point_in_element": 5,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.25567129768262525
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 54,
+      "adjacent_volume_point": [
+        0.043078009165534226,
+        0.2061375496704191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.043078009165534226,
+      "raw_normal_cosine_toward_adjacent_volume": -0.6562236885178444,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 32,
+      "point_in_element": 6,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.2698557073434218
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 54,
+      "adjacent_volume_point": [
+        0.043078009165534226,
+        0.2061375496704191
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.043078009165534226,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5600823343436307,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 33,
+      "point_in_element": 0,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.0034776259899114955
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952375,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7796099916576759,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 33,
+      "point_in_element": 1,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.017662035650708043
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952375,
+      "raw_normal_cosine_toward_adjacent_volume": -0.882653540174981,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 33,
+      "point_in_element": 2,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.04060058132254452
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952375,
+      "raw_normal_cosine_toward_adjacent_volume": -0.995555700762408,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 33,
+      "point_in_element": 3,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.06833333333333333
+      ],
+      "weight": 0.028560544217687073,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952375,
+      "raw_normal_cosine_toward_adjacent_volume": -0.9170479647565921,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 33,
+      "point_in_element": 4,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.09606608534412213
+      ],
+      "weight": 0.026091720117849798,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952375,
+      "raw_normal_cosine_toward_adjacent_volume": -0.7198420588922461,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 33,
+      "point_in_element": 5,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.11900463101595861
+      ],
+      "weight": 0.01911320175176724,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952375,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5806312192476807,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    },
+    {
+      "element": 33,
+      "point_in_element": 6,
+      "label": "inlet",
+      "point": [
+        0.0,
+        0.13318904067675516
+      ],
+      "weight": 0.008848139354872301,
+      "raw_normal": [
+        -1.0,
+        0.0
+      ],
+      "adjacent_volume_element": 0,
+      "adjacent_volume_point": [
+        0.052380952380952375,
+        0.04555555555555556
+      ],
+      "raw_normal_dot_toward_adjacent_volume": -0.052380952380952375,
+      "raw_normal_cosine_toward_adjacent_volume": -0.5130608275640672,
+      "orientation_factor": 1,
+      "fluid_outward_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal": [
+        -1.0,
+        0.0
+      ],
+      "returned_normal_absolute_error": 0.0,
+      "returned_raw_replay_error": 0.0
+    }
+  ],
+  "factors": {
+    "wall_bottom": 1,
+    "outlet": 1,
+    "wall_top": 1,
+    "inlet": 1
+  },
+  "minimum_observed_absolute_witness_cosine_by_label": {
+    "inlet": 0.5130608275640669,
+    "outlet": 0.3993336236240482,
+    "wall_bottom": 0.41195905669847704,
+    "wall_top": 0.41195905669847754
+  },
+  "returned_CF_point_checks": {
+    "passed": true,
+    "samples_checked": 238,
+    "maximum_absolute_error": 0.0,
+    "maximum_raw_replay_error": 0.0,
+    "maximum_absolute_error_by_label": {
+      "wall_bottom": 0.0,
+      "outlet": 0.0,
+      "wall_top": 0.0,
+      "inlet": 0.0
+    },
+    "threshold": 1e-10
+  },
+  "analytic_checks": {
+    "wall_bottom": {
+      "maximum_vector_error": 0.0
+    },
+    "outlet": {
+      "maximum_vector_error": 0.0
+    },
+    "wall_top": {
+      "maximum_vector_error": 0.0
+    },
+    "inlet": {
+      "maximum_vector_error": 0.0
+    }
+  },
+  "constant_test_error": 1.1102230246251565e-16,
+  "moment_checks": {
+    "inlet": {
+      "measure": 0.40999999999999726,
+      "sampled_normal_integral": [
+        -0.40999999999999714,
+        0.0
+      ],
+      "moments": {
+        "normal_x": {
+          "ordinary": -0.4099999999999973,
+          "volume_facet": -0.40999999999999714,
+          "scale": 0.40999999999999726,
+          "relative_difference": 4.0617915535066975e-16
+        },
+        "normal_y": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 0.40999999999999726,
+          "relative_difference": 0.0
+        },
+        "position_dot_normal": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 0.40999999999999726,
+          "relative_difference": 0.0
+        },
+        "radial_dot_normal": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 0.40999999999999726,
+          "relative_difference": 0.0
+        }
+      }
+    },
+    "outlet": {
+      "measure": 0.40999999999999726,
+      "sampled_normal_integral": [
+        0.40999999999999714,
+        0.0
+      ],
+      "moments": {
+        "normal_x": {
+          "ordinary": 0.4099999999999973,
+          "volume_facet": 0.40999999999999726,
+          "scale": 0.40999999999999726,
+          "relative_difference": 1.3539305178355658e-16
+        },
+        "normal_y": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 0.40999999999999726,
+          "relative_difference": 0.0
+        },
+        "position_dot_normal": {
+          "ordinary": 0.9019999999999939,
+          "volume_facet": 0.9019999999999939,
+          "scale": 0.9172700148047684,
+          "relative_difference": 0.0
+        },
+        "radial_dot_normal": {
+          "ordinary": 0.9019999999999939,
+          "volume_facet": 0.9019999999999939,
+          "scale": 0.9172700148047684,
+          "relative_difference": 0.0
+        }
+      }
+    },
+    "wall_bottom": {
+      "measure": 2.1999999999999855,
+      "sampled_normal_integral": [
+        0.0,
+        -2.199999999999986
+      ],
+      "moments": {
+        "normal_x": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 2.1999999999999855,
+          "relative_difference": 0.0
+        },
+        "normal_y": {
+          "ordinary": -2.1999999999999855,
+          "volume_facet": -2.1999999999999855,
+          "scale": 2.1999999999999855,
+          "relative_difference": 0.0
+        },
+        "position_dot_normal": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 4.831202939133504,
+          "relative_difference": 0.0
+        },
+        "radial_dot_normal": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 4.831202939133504,
+          "relative_difference": 0.0
+        }
+      }
+    },
+    "wall_top": {
+      "measure": 2.1999999999999855,
+      "sampled_normal_integral": [
+        0.0,
+        2.1999999999999855
+      ],
+      "moments": {
+        "normal_x": {
+          "ordinary": 0.0,
+          "volume_facet": 0.0,
+          "scale": 2.1999999999999855,
+          "relative_difference": 0.0
+        },
+        "normal_y": {
+          "ordinary": 2.199999999999985,
+          "volume_facet": 2.1999999999999855,
+          "scale": 2.1999999999999855,
+          "relative_difference": 2.0185873175002979e-16
+        },
+        "position_dot_normal": {
+          "ordinary": 0.901999999999994,
+          "volume_facet": 0.9019999999999939,
+          "scale": 4.914684714108545,
+          "relative_difference": 2.2589913477827957e-17
+        },
+        "radial_dot_normal": {
+          "ordinary": 0.9019999999999939,
+          "volume_facet": 0.9019999999999939,
+          "scale": 4.914684714108545,
+          "relative_difference": 0.0
+        }
+      }
+    }
+  },
+  "divergence_theorem": {
+    "boundary_position_dot_normal": 1.8039999999999878,
+    "twice_volume": 1.8039999999999705,
+    "relative_defect": 9.60059821737956e-15
+  },
+  "closed_components": {
+    "outer_rectangle": {
+      "normal_integral": [
+        0.0,
+        -4.440892098500626e-16
+      ],
+      "measure": 5.219999999999965,
+      "relative_defect": 8.507456127395893e-17
+    }
+  }
+}

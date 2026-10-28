@@ -1,0 +1,32 @@
+{
+  "status": "source_candidate_no_staging_or_execution_release",
+  "repair_kind": "fluid-outward ordinary-boundary normals verified against volume-facet controls",
+  "prior_failed_job": 6567998,
+  "diagnostic_job": 6610978,
+  "fresh_attempt": "g1-smoke07",
+  "geometry_changed": false,
+  "physics_thresholds_changed": false,
+  "G1_base_commit": "9d431a0ccdf3f9477370e032a95d3f0c1a0b4323",
+  "G2_changes_included": false,
+  "raw_curved_normals_retained": true,
+  "factor_scope": "ordinary boundary transformations only; never volume-facet integration",
+  "factor_inference": "unique topological adjacent triangle mapped interior point; fail on nonconstant per-label sign",
+  "independent_checks": [
+    "analytic outer directions and unchanged obstacle radial-dot threshold",
+    "ordinary corrected vs volume-facet moments",
+    "volume divergence theorem",
+    "closed component normal sums"
+  ],
+  "not_claimed": [
+    "actual effective concurrency",
+    "retrospective old failed mesh identity",
+    "reference admission",
+    "native repair execution"
+  ],
+  "requires": [
+    "independent Codex review",
+    "focused Claude review",
+    "exact staged input review",
+    "coordinator execution release"
+  ]
+}

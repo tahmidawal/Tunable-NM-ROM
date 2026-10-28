@@ -1,0 +1,523 @@
+DEPENDENCIES.json: OK
+NORMAL-REPAIR.json: OK
+PREFLIGHT-REPAIR.json: OK
+REPAIR.json: OK
+SCALAR-REPAIR.json: OK
+benchmark.json: OK
+campaign-A2.json: OK
+cluster/smoke.sh: OK
+configs/channel-smoke.json: OK
+configs/dfg-smoke.json: OK
+configs/manufactured-smoke.json: OK
+dependencies.py: OK
+fom.py: OK
+manufactured_witness.json: OK
+preflight.py: OK
+scalars.py: OK
+smoke_summary.py: OK
+oriented_normals.py: OK
+SOURCE_COMMIT.txt: OK
+262a0ef0546bdbecb1507fd3a48d22c10b137067
+jax_backend=gpu
+jax_version=0.10.2
+jax_devices=[CudaDevice(id=0)]
+jax_x64=True
+cpu_model=Intel(R) Xeon(R) Platinum 8480+
+name, uuid, memory.total [MiB]
+NVIDIA H100 PCIe, GPU-10ec25f0-2cb4-3d34-3750-0df3fc71a903, 81559 MiB
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff", "bytes": 30204991}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122", "bytes": 8506176}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94", "bytes": 25610800}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141", "bytes": 15064649}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07/deps/lib/python3.13/site-packages"}
+{"ngsolve": "6.2.2608", "ngsolve_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07/deps/lib/python3.13/site-packages/ngsolve/__init__.py", "netgen_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-smoke07/deps/lib/python3.13/site-packages/netgen/__init__.py", "numpy": "2.5.0", "jax": "0.10.2", "jax_backend": "gpu", "jax_x64": true, "matmul_precision": "highest"}
+{"preflight_call": "ngsolve_and_geometry_import", "phase": "before"}
+{"preflight_call": "ngsolve_and_geometry_import", "phase": "after"}
+{"preflight_call": "set_threads", "phase": "before"}
+{"preflight_call": "set_threads", "phase": "after"}
+{"preflight_call": "geometry_create", "phase": "before"}
+{"preflight_call": "geometry_create", "phase": "after"}
+{"preflight_call": "geometry_rectangle", "phase": "before"}
+{"preflight_call": "geometry_rectangle", "phase": "after"}
+{"preflight_call": "generate_mesh", "phase": "before"}
+{"preflight_call": "generate_mesh", "phase": "after"}
+{"preflight_call": "mesh_wrapper", "phase": "before"}
+{"preflight_call": "mesh_wrapper", "phase": "after"}
+{"preflight_call": "curve_mesh", "phase": "before"}
+{"preflight_call": "curve_mesh", "phase": "after"}
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"preflight_call": "volume.rule", "phase": "before"}
+{"preflight_call": "volume.rule", "phase": "after"}
+{"preflight_call": "volume.transformation", "phase": "before"}
+{"preflight_call": "volume.transformation", "phase": "after"}
+{"preflight_call": "volume.mapped_point", "phase": "before"}
+{"preflight_call": "volume.mapped_point", "phase": "after"}
+{"preflight_call": "volume.jacobian_copy", "phase": "before"}
+{"preflight_call": "volume.jacobian_copy", "phase": "after"}
+{"preflight_call": "volume.point_copy", "phase": "before"}
+{"preflight_call": "volume.point_copy", "phase": "after"}
+{"preflight_call": "boundary[0].rule", "phase": "before"}
+{"preflight_call": "boundary[0].rule", "phase": "after"}
+{"preflight_call": "boundary[0].transformation", "phase": "before"}
+{"preflight_call": "boundary[0].transformation", "phase": "after"}
+{"preflight_call": "boundary[0].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[0].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[0].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[0].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[0].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[0].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[0].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[0].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[0].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[0].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[0].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[0].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[1].rule", "phase": "before"}
+{"preflight_call": "boundary[1].rule", "phase": "after"}
+{"preflight_call": "boundary[1].transformation", "phase": "before"}
+{"preflight_call": "boundary[1].transformation", "phase": "after"}
+{"preflight_call": "boundary[1].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[1].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[1].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[1].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[1].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[1].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[1].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[1].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[1].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[1].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[1].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[1].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[2].rule", "phase": "before"}
+{"preflight_call": "boundary[2].rule", "phase": "after"}
+{"preflight_call": "boundary[2].transformation", "phase": "before"}
+{"preflight_call": "boundary[2].transformation", "phase": "after"}
+{"preflight_call": "boundary[2].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[2].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[2].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[2].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[2].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[2].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[2].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[2].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[2].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[2].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[2].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[2].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[3].rule", "phase": "before"}
+{"preflight_call": "boundary[3].rule", "phase": "after"}
+{"preflight_call": "boundary[3].transformation", "phase": "before"}
+{"preflight_call": "boundary[3].transformation", "phase": "after"}
+{"preflight_call": "boundary[3].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[3].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[3].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[3].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[3].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[3].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[3].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[3].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[3].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[3].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[3].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[3].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[4].rule", "phase": "before"}
+{"preflight_call": "boundary[4].rule", "phase": "after"}
+{"preflight_call": "boundary[4].transformation", "phase": "before"}
+{"preflight_call": "boundary[4].transformation", "phase": "after"}
+{"preflight_call": "boundary[4].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[4].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[4].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[4].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[4].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[4].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[4].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[4].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[4].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[4].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[4].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[4].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[5].rule", "phase": "before"}
+{"preflight_call": "boundary[5].rule", "phase": "after"}
+{"preflight_call": "boundary[5].transformation", "phase": "before"}
+{"preflight_call": "boundary[5].transformation", "phase": "after"}
+{"preflight_call": "boundary[5].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[5].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[5].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[5].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[5].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[5].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[5].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[5].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[5].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[5].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[5].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[5].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[6].rule", "phase": "before"}
+{"preflight_call": "boundary[6].rule", "phase": "after"}
+{"preflight_call": "boundary[6].transformation", "phase": "before"}
+{"preflight_call": "boundary[6].transformation", "phase": "after"}
+{"preflight_call": "boundary[6].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[6].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[6].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[6].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[6].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[6].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[6].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[6].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[6].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[6].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[6].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[6].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[7].rule", "phase": "before"}
+{"preflight_call": "boundary[7].rule", "phase": "after"}
+{"preflight_call": "boundary[7].transformation", "phase": "before"}
+{"preflight_call": "boundary[7].transformation", "phase": "after"}
+{"preflight_call": "boundary[7].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[7].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[7].point[0].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[7].point[0].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[7].point[0].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[7].point[0].coordinate_copy", "phase": "after"}
+{"preflight_call": "boundary[7].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "boundary[7].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "boundary[7].point[1].normal_copy", "phase": "before"}
+{"preflight_call": "boundary[7].point[1].normal_copy", "phase": "after"}
+{"preflight_call": "boundary[7].point[1].coordinate_copy", "phase": "before"}
+{"preflight_call": "boundary[7].point[1].coordinate_copy", "phase": "after"}
+{"preflight_call": "scalar_space", "phase": "before"}
+{"preflight_call": "scalar_space", "phase": "after"}
+{"preflight_call": "scalar_forms", "phase": "before"}
+{"preflight_call": "scalar_forms", "phase": "after"}
+{"preflight_call": "task_manager_enter", "phase": "before"}
+{"preflight_call": "task_manager_enter", "phase": "after"}
+{"preflight_call": "scalar_bilinear_assemble", "phase": "before"}
+{"preflight_call": "scalar_bilinear_assemble", "phase": "after"}
+{"preflight_call": "scalar_linear_assemble", "phase": "before"}
+{"preflight_call": "scalar_linear_assemble", "phase": "after"}
+{"preflight_call": "umfpack_factorization", "phase": "before"}
+{"preflight_call": "umfpack_factorization", "phase": "after"}
+{"preflight_call": "umfpack_solve", "phase": "before"}
+{"preflight_call": "umfpack_solve", "phase": "after"}
+{"preflight_call": "scalar_residual", "phase": "before"}
+{"preflight_call": "scalar_residual", "phase": "after"}
+{"preflight_call": "task_manager_exit", "phase": "after"}
+{"preflight_call": "vector_space", "phase": "before"}
+{"preflight_call": "vector_space", "phase": "after"}
+{"preflight_call": "vector_gridfunction", "phase": "before"}
+{"preflight_call": "vector_gridfunction", "phase": "after"}
+{"preflight_call": "vector_set_identity", "phase": "before"}
+{"preflight_call": "vector_set_identity", "phase": "after"}
+{"preflight_call": "boundary_derivative_wrappers", "phase": "before"}
+{"preflight_call": "boundary_derivative_wrappers", "phase": "after"}
+{"preflight_call": "trace[0].transformation", "phase": "before"}
+{"preflight_call": "trace[0].transformation", "phase": "after"}
+{"preflight_call": "trace[0].rule", "phase": "before"}
+{"preflight_call": "trace[0].rule", "phase": "after"}
+{"preflight_call": "trace[0].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[0].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[0].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[0].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[0].point[0].divergence", "phase": "before"}
+{"scalar_return_contract": {"label": "wrapped_divergence_point", "python_type": "builtins.tuple", "shape": [1], "dtype": "float64", "finite": true, "accepted": true}}
+{"preflight_call": "trace[0].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[0].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[0].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[0].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[0].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[0].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[0].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[0].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[0].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[0].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[0].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[0].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[0].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[0].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[0].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[0].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[0].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[0].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[0].point[3].divergence", "phase": "after"}
+{"preflight_call": "trace[1].transformation", "phase": "before"}
+{"preflight_call": "trace[1].transformation", "phase": "after"}
+{"preflight_call": "trace[1].rule", "phase": "before"}
+{"preflight_call": "trace[1].rule", "phase": "after"}
+{"preflight_call": "trace[1].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[1].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[1].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[1].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[1].point[0].divergence", "phase": "before"}
+{"preflight_call": "trace[1].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[1].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[1].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[1].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[1].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[1].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[1].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[1].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[1].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[1].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[1].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[1].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[1].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[1].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[1].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[1].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[1].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[1].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[1].point[3].divergence", "phase": "after"}
+{"preflight_call": "trace[2].transformation", "phase": "before"}
+{"preflight_call": "trace[2].transformation", "phase": "after"}
+{"preflight_call": "trace[2].rule", "phase": "before"}
+{"preflight_call": "trace[2].rule", "phase": "after"}
+{"preflight_call": "trace[2].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[2].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[2].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[2].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[2].point[0].divergence", "phase": "before"}
+{"preflight_call": "trace[2].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[2].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[2].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[2].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[2].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[2].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[2].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[2].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[2].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[2].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[2].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[2].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[2].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[2].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[2].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[2].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[2].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[2].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[2].point[3].divergence", "phase": "after"}
+{"preflight_call": "trace[3].transformation", "phase": "before"}
+{"preflight_call": "trace[3].transformation", "phase": "after"}
+{"preflight_call": "trace[3].rule", "phase": "before"}
+{"preflight_call": "trace[3].rule", "phase": "after"}
+{"preflight_call": "trace[3].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[3].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[3].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[3].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[3].point[0].divergence", "phase": "before"}
+{"preflight_call": "trace[3].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[3].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[3].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[3].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[3].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[3].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[3].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[3].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[3].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[3].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[3].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[3].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[3].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[3].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[3].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[3].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[3].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[3].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[3].point[3].divergence", "phase": "after"}
+{"preflight_call": "trace[4].transformation", "phase": "before"}
+{"preflight_call": "trace[4].transformation", "phase": "after"}
+{"preflight_call": "trace[4].rule", "phase": "before"}
+{"preflight_call": "trace[4].rule", "phase": "after"}
+{"preflight_call": "trace[4].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[4].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[4].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[4].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[4].point[0].divergence", "phase": "before"}
+{"preflight_call": "trace[4].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[4].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[4].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[4].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[4].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[4].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[4].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[4].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[4].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[4].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[4].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[4].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[4].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[4].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[4].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[4].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[4].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[4].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[4].point[3].divergence", "phase": "after"}
+{"preflight_call": "trace[5].transformation", "phase": "before"}
+{"preflight_call": "trace[5].transformation", "phase": "after"}
+{"preflight_call": "trace[5].rule", "phase": "before"}
+{"preflight_call": "trace[5].rule", "phase": "after"}
+{"preflight_call": "trace[5].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[5].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[5].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[5].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[5].point[0].divergence", "phase": "before"}
+{"preflight_call": "trace[5].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[5].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[5].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[5].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[5].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[5].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[5].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[5].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[5].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[5].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[5].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[5].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[5].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[5].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[5].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[5].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[5].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[5].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[5].point[3].divergence", "phase": "after"}
+{"preflight_call": "trace[6].transformation", "phase": "before"}
+{"preflight_call": "trace[6].transformation", "phase": "after"}
+{"preflight_call": "trace[6].rule", "phase": "before"}
+{"preflight_call": "trace[6].rule", "phase": "after"}
+{"preflight_call": "trace[6].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[6].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[6].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[6].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[6].point[0].divergence", "phase": "before"}
+{"preflight_call": "trace[6].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[6].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[6].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[6].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[6].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[6].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[6].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[6].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[6].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[6].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[6].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[6].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[6].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[6].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[6].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[6].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[6].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[6].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[6].point[3].divergence", "phase": "after"}
+{"preflight_call": "trace[7].transformation", "phase": "before"}
+{"preflight_call": "trace[7].transformation", "phase": "after"}
+{"preflight_call": "trace[7].rule", "phase": "before"}
+{"preflight_call": "trace[7].rule", "phase": "after"}
+{"preflight_call": "trace[7].point[0].mapped_point", "phase": "before"}
+{"preflight_call": "trace[7].point[0].mapped_point", "phase": "after"}
+{"preflight_call": "trace[7].point[0].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[7].point[0].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[7].point[0].divergence", "phase": "before"}
+{"preflight_call": "trace[7].point[0].divergence", "phase": "after"}
+{"preflight_call": "trace[7].point[1].mapped_point", "phase": "before"}
+{"preflight_call": "trace[7].point[1].mapped_point", "phase": "after"}
+{"preflight_call": "trace[7].point[1].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[7].point[1].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[7].point[1].divergence", "phase": "before"}
+{"preflight_call": "trace[7].point[1].divergence", "phase": "after"}
+{"preflight_call": "trace[7].point[2].mapped_point", "phase": "before"}
+{"preflight_call": "trace[7].point[2].mapped_point", "phase": "after"}
+{"preflight_call": "trace[7].point[2].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[7].point[2].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[7].point[2].divergence", "phase": "before"}
+{"preflight_call": "trace[7].point[2].divergence", "phase": "after"}
+{"preflight_call": "trace[7].point[3].mapped_point", "phase": "before"}
+{"preflight_call": "trace[7].point[3].mapped_point", "phase": "after"}
+{"preflight_call": "trace[7].point[3].gradient_copy", "phase": "before"}
+{"preflight_call": "trace[7].point[3].gradient_copy", "phase": "after"}
+{"preflight_call": "trace[7].point[3].divergence", "phase": "before"}
+{"preflight_call": "trace[7].point[3].divergence", "phase": "after"}
+{"preflight_call": "gradient.inlet.traction[0]", "phase": "before"}
+{"preflight_call": "gradient.inlet.traction[0]", "phase": "after"}
+{"scalar_return_contract": {"label": "traction_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"preflight_call": "gradient.inlet.traction[1]", "phase": "before"}
+{"preflight_call": "gradient.inlet.traction[1]", "phase": "after"}
+{"preflight_call": "gradient.outlet.traction[0]", "phase": "before"}
+{"preflight_call": "gradient.outlet.traction[0]", "phase": "after"}
+{"preflight_call": "gradient.outlet.traction[1]", "phase": "before"}
+{"preflight_call": "gradient.outlet.traction[1]", "phase": "after"}
+{"preflight_call": "gradient.wall_top.traction[0]", "phase": "before"}
+{"preflight_call": "gradient.wall_top.traction[0]", "phase": "after"}
+{"preflight_call": "gradient.wall_top.traction[1]", "phase": "before"}
+{"preflight_call": "gradient.wall_top.traction[1]", "phase": "after"}
+{"preflight_call": "gradient.wall_bottom.traction[0]", "phase": "before"}
+{"preflight_call": "gradient.wall_bottom.traction[0]", "phase": "after"}
+{"preflight_call": "gradient.wall_bottom.traction[1]", "phase": "before"}
+{"preflight_call": "gradient.wall_bottom.traction[1]", "phase": "after"}
+{"preflight_call": "physical_symmetric.inlet.traction[0]", "phase": "before"}
+{"preflight_call": "physical_symmetric.inlet.traction[0]", "phase": "after"}
+{"preflight_call": "physical_symmetric.inlet.traction[1]", "phase": "before"}
+{"preflight_call": "physical_symmetric.inlet.traction[1]", "phase": "after"}
+{"preflight_call": "physical_symmetric.outlet.traction[0]", "phase": "before"}
+{"preflight_call": "physical_symmetric.outlet.traction[0]", "phase": "after"}
+{"preflight_call": "physical_symmetric.outlet.traction[1]", "phase": "before"}
+{"preflight_call": "physical_symmetric.outlet.traction[1]", "phase": "after"}
+{"preflight_call": "physical_symmetric.wall_top.traction[0]", "phase": "before"}
+{"preflight_call": "physical_symmetric.wall_top.traction[0]", "phase": "after"}
+{"preflight_call": "physical_symmetric.wall_top.traction[1]", "phase": "before"}
+{"preflight_call": "physical_symmetric.wall_top.traction[1]", "phase": "after"}
+{"preflight_call": "physical_symmetric.wall_bottom.traction[0]", "phase": "before"}
+{"preflight_call": "physical_symmetric.wall_bottom.traction[0]", "phase": "after"}
+{"preflight_call": "physical_symmetric.wall_bottom.traction[1]", "phase": "before"}
+{"preflight_call": "physical_symmetric.wall_bottom.traction[1]", "phase": "after"}
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "volume_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "boundary_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "volume_pressure_point", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "boundary_pressure_point", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"status": "completed_control_not_reference_admission", "out": "results/channel", "elapsed_seconds": 0.2713350923731923}
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "manufactured_pressure_point", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "volume_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "boundary_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "volume_pressure_point", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "boundary_pressure_point", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "reaction_inner_product", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "exact_pressure_probe", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"status": "completed_control_not_reference_admission", "out": "results/manufactured", "elapsed_seconds": 1.7000833051279187}
+{"scalar_return_contract": {"label": "normal_P0_constant", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "oriented_normal_moment", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "normal_geometry_volume", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "volume_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "boundary_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "volume_pressure_point", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "boundary_pressure_point", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "reaction_inner_product", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"scalar_return_contract": {"label": "exact_pressure_probe", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"status": "completed_control_not_reference_admission", "out": "results/dfg", "elapsed_seconds": 1.8467893367633224}
+{
+  "gate": "G1_smoke",
+  "passed": true,
+  "run_exit_code": 0,
+  "case_states": {
+    "channel": {
+      "state": "completed_control_not_reference"
+    },
+    "manufactured": {
+      "state": "completed_control_not_reference"
+    },
+    "dfg": {
+      "state": "completed_control_not_reference"
+    }
+  }
+}

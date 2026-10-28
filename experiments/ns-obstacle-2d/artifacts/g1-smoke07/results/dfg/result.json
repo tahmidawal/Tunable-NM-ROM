@@ -1,0 +1,531 @@
+{
+  "status": "completed_control_not_reference_admission",
+  "configuration": {
+    "U": 0.2,
+    "D": 0.1,
+    "nu": 0.001,
+    "H": 0.41,
+    "xmin": 0.0,
+    "xmax": 2.2,
+    "center": [
+      0.2,
+      0.2
+    ],
+    "radius": 0.05,
+    "outlet": "gradient",
+    "velocity_order": 3,
+    "pressure_order": 2,
+    "geometry_order": 3,
+    "maxh": 0.08,
+    "obstacle_h": 0.02,
+    "assembly_bonus_order": 6,
+    "diagnostic_order": 12,
+    "threads": 16,
+    "seed": 27102026,
+    "newton_max": 30,
+    "nonlinear_relative_tolerance": 1e-10,
+    "linear_relative_tolerance": 1e-10,
+    "residual_floor": 1.0,
+    "damping_sequence": [
+      1,
+      0.5,
+      0.25,
+      0.125,
+      0.0625,
+      0.03125,
+      0.015625
+    ],
+    "armijo": 0.0001,
+    "inverse_backend": "umfpack",
+    "max_elements": 20000,
+    "max_dofs": 100000,
+    "max_nnz": 12000000,
+    "factor_fill_estimate": 100,
+    "memory_stop_gib": 48,
+    "jacobian_steps": [
+      0.0001,
+      1e-05,
+      1e-06
+    ],
+    "jacobian_state_perturbation": 0.1,
+    "campaign_sha256": "9507f516c0daea29d84f15c120ef0c0fb128df4f8ba7bb8325552618dcaca262",
+    "design_sha256": "0d9d077f456a2f4963764863cd0c06edccb1dccf0bc0513f4749071042e0e6bf",
+    "release": "G1_smoke_only_not_reference_admission",
+    "precision": "float64",
+    "kind": "dfg"
+  },
+  "scalar_return_contract": [
+    {
+      "label": "normal_P0_constant",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "oriented_normal_moment",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "normal_geometry_volume",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "volume_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "boundary_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "volume_pressure_point",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "boundary_pressure_point",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "reaction_inner_product",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "exact_pressure_probe",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    }
+  ],
+  "geometry": {
+    "volume": 0.8941458750115615,
+    "volume_error": {
+      "numerator": 1.4335446407720553e-07,
+      "denominator": 0.8941460183660256,
+      "value": 1.6032556331143028e-07,
+      "definition": "area error / exact fluid area"
+    },
+    "boundary_measures": {
+      "inlet": 0.40999999999999726,
+      "obstacle": 0.31416221984218873,
+      "outlet": 0.40999999999999726,
+      "wall_bottom": 2.199999999999987,
+      "wall_top": 2.1999999999999864
+    },
+    "element_count": 415,
+    "ndof": 4889,
+    "velocity_ndof": 3978,
+    "pressure_ndof": 911,
+    "geometry_order": 3,
+    "coordinate_derivative_convention": "component,coordinate",
+    "obstacle_perimeter_error": {
+      "numerator": 2.954483209416381e-06,
+      "denominator": 0.3141592653589793,
+      "value": 9.404412141212488e-06,
+      "definition": "perimeter error / exact circumference"
+    },
+    "minimum_sampled_jacobian_determinant": 0.0003079791579499372,
+    "max_sampled_obstacle_distance": 6.094303132989087e-06,
+    "mapped_weight_sum": 0.8941458750115603,
+    "sampled_obstacle_normal_dot_radial_range": [
+      -0.9999999999976446,
+      -0.9999951895836835
+    ]
+  },
+  "metrics": {
+    "mass": {
+      "numerator": 4.163336342344337e-17,
+      "denominator": 0.0819999999999995,
+      "value": 5.077239441883368e-16,
+      "definition": "abs(Qout-Qin)/abs(Qin)"
+    },
+    "divergence": {
+      "numerator": 0.004159251869021541,
+      "denominator": 0.1891185739171657,
+      "value": 0.02199282589156632,
+      "definition": "D||div u||/(U sqrt(volume))"
+    },
+    "boundary_trace": {
+      "numerator": 2.220446049250313e-16,
+      "denominator": 0.2,
+      "value": 1.1102230246251565e-15,
+      "definition": "maximum sampled essential FE trace error/U"
+    },
+    "Qin": 0.0819999999999995,
+    "Qout": 0.08199999999999946,
+    "mass_scope": "physical inlet/outlet mass",
+    "global_boundary_flux": {
+      "numerator": 2.7755575615628914e-17,
+      "denominator": 0.16399999999999895,
+      "value": 1.6924131472944568e-16,
+      "definition": "abs(total boundary flux) / total absolute boundary flux"
+    },
+    "independent_residual": {
+      "numerator": 1.4709898587366916e-15,
+      "denominator": 1.3133228587588013,
+      "value": 1.1200519726938268e-15,
+      "definition": "scaled free-DOF residual / max(initial Stokes scaled residual, fixed floor)"
+    },
+    "independent_assembly_agreement": {
+      "numerator": 0.0,
+      "denominator": 1.3133228587588013,
+      "value": 0.0,
+      "definition": "independent coefficient residual versus operator apply"
+    },
+    "pressure_mean": 0.019876507867530434,
+    "pressure_gauge": "fixed by natural outlet, no pin and no shift",
+    "row_scale_momentum": 0.004000000000000001,
+    "row_scale_continuity": 0.020000000000000004,
+    "residual_initial_stokes_norm": 1.3133228587588013,
+    "residual_floor": 1.0,
+    "residual_mode": "relative to initial Stokes residual in scaled row units",
+    "stokes_linear_residual": {
+      "numerator": 9.214246691795577e-16,
+      "denominator": 1.3651500561970478,
+      "value": 6.749621882201043e-16,
+      "definition": "scaled linear residual / scaled RHS"
+    },
+    "energy": {
+      "terms": {
+        "dissipation": 0.005906573265423346,
+        "convection_boundary": -1.9365090933788198e-05,
+        "physical_traction_work": -0.005890818186158263,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.210854317419289e-07,
+        "finite_divergence_pressure": 3.5542296560178493e-19,
+        "finite_divergence_viscous": -1.095431962589661e-07
+      },
+      "individual_contributions": {
+        "convective_flux_inlet": -0.0025302857142856985,
+        "convective_flux_obstacle": 0.0,
+        "convective_flux_outlet": 0.0025109206233519103,
+        "convective_flux_wall_bottom": 0.0,
+        "convective_flux_wall_top": 0.0,
+        "traction_work_inlet": -0.00589067854426034,
+        "traction_work_obstacle": -0.0,
+        "traction_work_outlet": -1.3964189792366208e-07,
+        "traction_work_wall_bottom": 1.0705998867260131e-20,
+        "traction_work_wall_top": -2.5205061828164375e-21,
+        "dissipation": 0.005906573265423346,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.210854317419289e-07,
+        "finite_divergence_pressure": 3.5542296560178493e-19,
+        "finite_divergence_viscous_volume": -1.7299376109959176e-06,
+        "finite_divergence_viscous_inlet": 1.62283726731819e-06,
+        "finite_divergence_viscous_obstacle": 0.0,
+        "finite_divergence_viscous_outlet": -2.4428525812384234e-09,
+        "finite_divergence_viscous_wall_bottom": 0.0,
+        "finite_divergence_viscous_wall_top": 0.0
+      },
+      "physical_raw": {
+        "numerator": 3.6100116687057433e-06,
+        "denominator": 0.016842374092381856,
+        "value": 0.00021434102157478048,
+        "definition": "raw physical balance / sum absolute terms"
+      },
+      "corrected": {
+        "numerator": 4.140640296706283e-06,
+        "denominator": 0.016842374092381856,
+        "value": 0.0002458465934787173,
+        "definition": "finite-divergence-corrected physical balance / sum absolute terms"
+      }
+    },
+    "gradient_energy": {
+      "terms": {
+        "dissipation": 0.005904698329854985,
+        "convection_boundary": -1.936509093378863e-05,
+        "gradient_traction_work": -0.0058890527937861615,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.2108543174192634e-07,
+        "finite_divergence_pressure": 3.5542296560178493e-19
+      },
+      "individual_contributions": {
+        "convective_flux_inlet": -0.002530285714285699,
+        "convective_flux_obstacle": 0.0,
+        "convective_flux_outlet": 0.0025109206233519103,
+        "convective_flux_wall_bottom": 0.0,
+        "convective_flux_wall_top": 0.0,
+        "traction_work_inlet": -0.005889055706993021,
+        "traction_work_obstacle": -0.0,
+        "traction_work_outlet": 2.913206859534721e-09,
+        "traction_work_wall_bottom": 1.0705998867260131e-20,
+        "traction_work_wall_top": -2.5205061828164375e-21,
+        "dissipation": 0.005904698329854985,
+        "body_force_work": -0.0,
+        "finite_divergence_convection": -4.2108543174192634e-07,
+        "finite_divergence_pressure": 3.5542296560178493e-19
+      },
+      "corrected": {
+        "numerator": 4.1406402967064275e-06,
+        "denominator": 0.016835384373124217,
+        "value": 0.000245948664131274,
+        "definition": "A2 gradient-form energy including body forcing and finite divergence"
+      }
+    },
+    "gradient_momentum": [
+      {
+        "terms": {
+          "convection": -6.151888269903538e-05,
+          "gradient_traction": 2.2956395301691834e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.5927803927227234e-07
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": -0.019679999999999878,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": 0.019618481117300843,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "gradient_traction_inlet": -0.028467663113682762,
+          "gradient_traction_obstacle": 0.011130500545575663,
+          "gradient_traction_outlet": -7.162797416642904e-08,
+          "gradient_traction_wall_bottom": 0.00864894058329462,
+          "gradient_traction_wall_top": 0.008711250008088336,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.5927803927227234e-07
+        },
+        "corrected": {
+          "numerator": 3.892176543661582e-05,
+          "denominator": 0.09625726627395553,
+          "value": 0.00040435145255259485,
+          "definition": "A2 gradient-form momentum including body forcing and finite divergence"
+        }
+      },
+      {
+        "terms": {
+          "convection": -1.288484749573801e-05,
+          "gradient_traction": 2.7301143762259982e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.6362279392162415e-08
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": 0.0,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": -1.288484749573801e-05,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "gradient_traction_inlet": 5.582627649677412e-06,
+          "gradient_traction_obstacle": 3.312372700015314e-05,
+          "gradient_traction_outlet": -3.2461660584898234e-09,
+          "gradient_traction_wall_bottom": -0.04424380652372654,
+          "gradient_traction_wall_top": 0.044232404559005026,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.6362279392162415e-08
+        },
+        "corrected": {
+          "numerator": 1.4432658545914134e-05,
+          "denominator": 0.08852782189332259,
+          "value": 0.00016302963562467076,
+          "definition": "A2 gradient-form momentum including body forcing and finite divergence"
+        }
+      }
+    ],
+    "momentum": [
+      {
+        "terms": {
+          "convection": -6.151888269903538e-05,
+          "physical_traction": 2.666453652420147e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.592780392722481e-07,
+          "finite_divergence_viscous": -3.7081412225095254e-06
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": -0.019679999999999878,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": 0.019618481117300843,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "physical_traction_inlet": -0.0284774395276493,
+          "physical_traction_obstacle": 0.011143981910558333,
+          "physical_traction_outlet": -6.84377677908953e-08,
+          "physical_traction_wall_bottom": 0.008648940583294622,
+          "physical_traction_wall_top": 0.008711250008088334,
+          "body_force": -0.0,
+          "finite_divergence_convection": -3.592780392722481e-07,
+          "finite_divergence_viscous_inlet": 9.77641396653424e-06,
+          "finite_divergence_viscous_obstacle": -1.3481364982668224e-05,
+          "finite_divergence_viscous_outlet": -3.1902063755329165e-09,
+          "finite_divergence_viscous_wall_bottom": 0.0,
+          "finite_divergence_viscous_wall_top": 0.0
+        },
+        "corrected": {
+          "numerator": 3.8921765436615684e-05,
+          "denominator": 0.09630378183185395,
+          "value": 0.00040415614731073536,
+          "definition": "physical momentum corrected for discrete divergence"
+        }
+      },
+      {
+        "terms": {
+          "convection": -1.288484749573801e-05,
+          "physical_traction": 1.451519868188414e-05,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.636227939215998e-08,
+          "finite_divergence_viscous": 1.2785945080374074e-05
+        },
+        "individual_contributions": {
+          "convective_flux_inlet": 0.0,
+          "convective_flux_obstacle": 0.0,
+          "convective_flux_outlet": -1.288484749573801e-05,
+          "convective_flux_wall_bottom": 0.0,
+          "convective_flux_wall_top": 0.0,
+          "physical_traction_inlet": 5.58262764967731e-06,
+          "physical_traction_obstacle": 1.714283714704715e-05,
+          "physical_traction_outlet": -3.2461660584912197e-09,
+          "physical_traction_wall_bottom": -0.04424785511989075,
+          "physical_traction_wall_top": 0.04423964809994197,
+          "body_force": -0.0,
+          "finite_divergence_convection": 1.636227939215998e-08,
+          "finite_divergence_viscous_inlet": 0.0,
+          "finite_divergence_viscous_obstacle": 1.598088985310618e-05,
+          "finite_divergence_viscous_outlet": 0.0,
+          "finite_divergence_viscous_wall_bottom": 4.048596164214949e-06,
+          "finite_divergence_viscous_wall_top": -7.243540936947055e-06
+        },
+        "corrected": {
+          "numerator": 1.4432658545912365e-05,
+          "denominator": 0.08855040616752491,
+          "value": 0.00016298805584931826,
+          "definition": "physical momentum corrected for discrete divergence"
+        }
+      }
+    ],
+    "forces": {
+      "normalization": 0.0020000000000000005,
+      "reaction_force": [
+        0.011159568821667269,
+        2.2066397598784068e-05
+      ],
+      "reaction_coefficient": [
+        5.579784410833633,
+        0.011033198799392031
+      ],
+      "gradient_order12": {
+        "force": [
+          0.011130500545575663,
+          3.312372700015317e-05
+        ],
+        "coefficient": [
+          5.56525027278783,
+          0.01656186350007658
+        ]
+      },
+      "gradient_order16": {
+        "force": [
+          0.011130500545576464,
+          3.312372700333945e-05
+        ],
+        "coefficient": [
+          5.565250272788231,
+          0.01656186350166972
+        ]
+      },
+      "physical_symmetric_order12": {
+        "force": [
+          0.011143981910558333,
+          1.7142837147047124e-05
+        ],
+        "coefficient": [
+          5.571990955279165,
+          0.008571418573523561
+        ]
+      },
+      "physical_symmetric_order16": {
+        "force": [
+          0.011143981910558749,
+          1.7142837150121732e-05
+        ],
+        "coefficient": [
+          5.571990955279373,
+          0.008571418575060864
+        ]
+      },
+      "pressure_probes": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.13158638837040068,
+          0.014712505125413862
+        ],
+        "difference": 0.11687388324498682,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      }
+    }
+  },
+  "elapsed_seconds": 1.8467893367633224,
+  "normal_orientation": {
+    "passed": true,
+    "factors": {
+      "wall_bottom": 1,
+      "outlet": 1,
+      "wall_top": 1,
+      "inlet": 1,
+      "obstacle": -1
+    },
+    "certificate_sha256": "a794110e97da0007f5d9f721a76d3d9f1d6aac02e26235a9a656a2a4f4f34171"
+  },
+  "cpu_work": "NGSolve finite elements and NumPy; GPU allocation is not GPU acceleration",
+  "peak_rss_bytes": 295583744,
+  "versions": {
+    "ngsolve": "6.2.2608",
+    "numpy": "2.5.0",
+    "python": "3.13.2"
+  },
+  "threading": {
+    "requested": 16,
+    "TaskManager": true,
+    "actual_effective_concurrency": "unmeasured; no performance claim"
+  },
+  "provenance": {
+    "execution_source_commit": "262a0ef0546bdbecb1507fd3a48d22c10b137067",
+    "source_sha256": "9e2fbbed57de5d943e5159e98fabc07cdc1ecb999b6a48dff96c711285529ca9",
+    "config_sha256": "65a01fc2d871c60853947ab8d93b7c043ffdf6b77241c85c1577eb74fca98b2f",
+    "job_id": "6612209",
+    "hostname": "pax063"
+  }
+}

@@ -100,6 +100,27 @@ def run(case, release_path, output):
                 error = float(np.max(np.abs(actual-expected))/max(float(np.max(np.abs(expected))), scale))
                 report['checks'][key] = error
                 if not np.isfinite(error) or error > 1e-10: raise ArithmeticError(key+' replay failed')
+        boundary = json.loads((case/'boundary_rule.json').read_text())
+        if a.boundary['labels'].tolist() != [r['label'] for r in boundary]:
+            raise ValueError('boundary enumeration mismatch')
+        uv, duv = a.evaluate(state.components[0].vec.FV().NumPy().copy()/a.U, boundary=True)
+        pv, _ = a.evaluate(state.components[1].vec.FV().NumPy().copy()/a.U**2, False, boundary=True)
+        saved = lambda key: np.asarray([r[key] for r in boundary], dtype=np.float64)
+        pairs = {'boundary_points': (a.boundary['points'], saved('point'), a.D),
+            'boundary_weights': (a.boundary['weights'], saved('weight'), 1.),
+            'boundary_raw_normals': (a.boundary['normals_raw'], saved('raw_normal'), 1.),
+            'boundary_normals': (a.boundary['normals_fluid'], saved('normal'), 1.),
+            'boundary_velocity': (uv[..., 0], saved('velocity')/a.U, 1.),
+            'boundary_gradient': (duv[..., 0]*a.D, saved('velocity_gradient')*a.D/a.U, 1.),
+            'boundary_pressure': (pv[..., 0], saved('pressure')/a.U**2, 1.)}
+        for key, (actual, expected, scale) in pairs.items():
+            if actual.shape != expected.shape: raise ValueError(key+' shape mismatch')
+            error = float(np.max(np.abs(actual-expected))/max(float(np.max(np.abs(expected))), scale))
+            report['checks'][key] = error
+            if not np.isfinite(error) or error > 1e-10: raise ArithmeticError(key+' replay failed')
+        expected_factors = np.asarray([a.normal_certificate['factors'][r['label']] for r in boundary])
+        if not np.array_equal(a.boundary['orientation_factors'], expected_factors):
+            raise ValueError('boundary factors mismatch')
         h1v, mv, _ = a.metric_matrices(a.V, True)
         h1s, ms, _ = a.metric_matrices(a.S, False)
         h1q, mq, _ = a.metric_matrices(a.Q, False)

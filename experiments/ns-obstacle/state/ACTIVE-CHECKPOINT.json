@@ -7,7 +7,7 @@
     "Complete adopted P4 p/geometry/solver/quadrature/domain and population qualification; no P3 metric splicing",
     "Complete point-block ROM production capacity and strong FOM output equivalence before training"
   ],
-  "completed_allocated_gpu_hours": 0.3877777777777778,
+  "completed_allocated_gpu_hours": 0.6266666666666667,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -23,13 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T20:18:54.539186+00:00",
-  "replacement_agents": [
-    "reference_2d_recovery",
-    "reference_3d_recovery",
-    "rom_recovery",
-    "numerical_recovery"
-  ],
+  "last_checkpoint_utc": "2026-10-28T21:19:43.738936+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -48,11 +42,6 @@
     }
   ],
   "historical_unsubmitted_staging_note": "Superseded initial attempts, retained as historical records only; not current execution candidates.",
-  "ROM_current_source": {
-    "commit": "6224e96848f7b850b921f90c5b9094dc974a25dd",
-    "status": "native interface independently accepted; full driver and G2 data pending",
-    "adapter_digest": "7ced27b2b02d204edbcb071469d055fe6b2b8fdabc0f57a97435971e6c9a05bd"
-  },
   "active_scope": "User direction2026-10-28: working2D ROM first; all3D work deferred",
   "deferred_3d": {
     "source_checkpoint": "ba83a8855",
@@ -83,12 +72,6 @@
     "submission": 6615359,
     "prerequisite": "immutable h3source/inputs already mirrored; comparison archive upload may overlap under743e6994e; preserve remote copy until mirror"
   },
-  "verified_wait": {
-    "kind": "git_push",
-    "pid": 2406209,
-    "purpose": "comparison01retention mirror",
-    "elapsed_seconds_observed": 57
-  },
   "completion_scope_reminder": {
     "original_request": "USER-REQUEST.txt sections6,10,12,15",
     "steady_first": true,
@@ -97,8 +80,26 @@
     "three_dimensional": "Deferred by latest user direction.",
     "required_final": "Independent Codex/Claude interpretation; generated report, presentation PDF, handoff and merge question."
   },
-  "total_allocated_gpu_hours_completed": 0.6266666666666667,
   "h3_result": "Retained and independently audited; fields/divergence pass, physical-gradient lift and finest lift change fail",
   "native_batch_result": "991 hashes and array equivalence independently pass; production wiring32389311c source reviewed",
-  "p4_result": "Both controls terminal; preliminary physical metrics promising, full raw audit pending. Remaining G2 solver/quad/domain/population admission incomplete."
+  "p4_result": "Independent raw-array/hash audit passes own P4 trend and currently listed physical checks. Generated h-trend and per-case tables retained. Full G2 admission remains incomplete.",
+  "historical_replacement_agents": [
+    "reference_2d_recovery",
+    "reference_3d_recovery",
+    "rom_recovery",
+    "numerical_recovery"
+  ],
+  "historical_ROM_interface_source": {
+    "commit": "6224e96848f7b850b921f90c5b9094dc974a25dd",
+    "status": "native interface independently accepted; full driver and G2 data pending",
+    "adapter_digest": "7ced27b2b02d204edbcb071469d055fe6b2b8fdabc0f57a97435971e6c9a05bd"
+  },
+  "historical_verified_wait": {
+    "kind": "git_push",
+    "pid": 2406209,
+    "purpose": "comparison01retention mirror",
+    "elapsed_seconds_observed": 57,
+    "status": "completed; comparison mirror9957c5a67 and remote cleanup confirmed"
+  },
+  "post_p4_resource_plan": "reviewed conditional resource amendment; exact source-package review required before submission"
 }

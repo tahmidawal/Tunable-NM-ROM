@@ -1,0 +1,145 @@
+{
+  "scope": "Numerical h-trend screen; raw-array review and resolved noise bounds still required",
+  "physical_admission": false,
+  "training_released": false,
+  "cases": [
+    "dfg_h1",
+    "dfg_h2",
+    "dfg_h3"
+  ],
+  "rows": [
+    {
+      "check": "velocity_relative",
+      "earlier": 1.2933794573418132e-05,
+      "finest": 1.316989987196121e-06,
+      "threshold": 0.001,
+      "decreasing": true,
+      "finest_within_threshold": true,
+      "raw": [
+        {
+          "numerator": 2.7047801331823558e-06,
+          "denominator": 0.2091250265209322,
+          "value": 1.2933794573418132e-05
+        },
+        {
+          "numerator": 2.7541556601266523e-07,
+          "denominator": 0.209125026530404,
+          "value": 1.316989987196121e-06
+        }
+      ]
+    },
+    {
+      "check": "pressure_scaled",
+      "earlier": 3.877655114172492e-05,
+      "finest": 5.917253684749965e-06,
+      "threshold": 0.002,
+      "decreasing": true,
+      "finest_within_threshold": true,
+      "raw": [
+        {
+          "numerator": 1.466673328242415e-06,
+          "denominator": 0.037823717815487296,
+          "value": 3.877655114172492e-05
+        },
+        {
+          "numerator": 2.2381253361463508e-07,
+          "denominator": 0.037823717815487296,
+          "value": 5.917253684749965e-06
+        }
+      ]
+    },
+    {
+      "check": "physical_drag_relative",
+      "earlier": 0.00011914814214435269,
+      "finest": 1.4905176161127449e-05,
+      "threshold": 0.002,
+      "decreasing": true,
+      "finest_within_threshold": true,
+      "raw": [
+        [
+          5.580295701908141,
+          0.010555240208641301
+        ],
+        [
+          5.579630899252644,
+          0.01063613633015489
+        ],
+        [
+          5.5795477351107525,
+          0.010615733290831356
+        ]
+      ]
+    },
+    {
+      "check": "physical_lift_absolute",
+      "earlier": 8.089612151358956e-05,
+      "finest": 2.0403039323534447e-05,
+      "threshold": 0.0001,
+      "decreasing": true,
+      "finest_within_threshold": true,
+      "raw": [
+        [
+          5.580295701908141,
+          0.010555240208641301
+        ],
+        [
+          5.579630899252644,
+          0.01063613633015489
+        ],
+        [
+          5.5795477351107525,
+          0.010615733290831356
+        ]
+      ]
+    },
+    {
+      "check": "scaled_divergence",
+      "earlier": 9.337694570473143e-05,
+      "finest": 1.8028870212164495e-05,
+      "threshold": 0.001,
+      "decreasing": true,
+      "finest_within_threshold": true,
+      "raw": [
+        0.0005785451644649537,
+        9.337694570473143e-05,
+        1.8028870212164495e-05
+      ]
+    }
+  ],
+  "numerical_screen_pass": true,
+  "sources": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-p4trend/results/comparison_dfg/comparison.json",
+      "sha256": "09fe917ea1e634a8a747fcb0a681f034efa17ee51f46774d2dec6d35c83aceb3"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-p4trend/results/dfg_h1/result.json",
+      "sha256": "08be335f55c33812e07180c6fae737f303bca8e9de626ab3fefc2a4a26eb7b0d"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-p4trend/results/dfg_h2/result.json",
+      "sha256": "703019fdddc413b846a15aa9a944c5df69fee5417190f19519e70cf74c8253d1"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-p4trend/results/dfg_h3/result.json",
+      "sha256": "4204e15635d7ac8249e73a8f94bc9879d244d8db90afe0e2e42d66489f4a9c1f"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/campaign.json",
+      "sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27"
+    }
+  ],
+  "generator_sha256": "d199586a569840fa4cfa70fa2100cf4e1e2cebac35ecbd832b5d6cca8377ac53",
+  "remaining": [
+    "raw full-rule/validity audit",
+    "resolved differences versus measured noise",
+    "p/geometry",
+    "solver",
+    "quadrature",
+    "domain",
+    "conditional uncertainty",
+    "per-case physical checks",
+    "common lift",
+    "all-parameter coverage"
+  ]
+}

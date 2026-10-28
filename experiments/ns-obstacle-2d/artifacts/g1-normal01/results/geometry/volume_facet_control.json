@@ -1,0 +1,56 @@
+{
+  "status": "completed_diagnostic_not_admission",
+  "method": "constant P0 test contracted with assembled LinearForm",
+  "boundary_path": "ds(label, skeleton=True)",
+  "all_element_path": "dx(element_boundary=True)",
+  "bonus_integration_order": 12,
+  "constant_test_error": 1.1102230246251565e-16,
+  "per_boundary": {
+    "wall_bottom": {
+      "measure": 2.1999999999999855,
+      "normal_x": 0.0,
+      "normal_y": -2.1999999999999855,
+      "position_dot_normal": -9.736715309342673e-20,
+      "radial_dot_normal": 0.43999999999999717
+    },
+    "outlet": {
+      "measure": 0.40999999999999726,
+      "normal_x": 0.40999999999999726,
+      "normal_y": 0.0,
+      "position_dot_normal": 0.9019999999999938,
+      "radial_dot_normal": 0.8199999999999945
+    },
+    "wall_top": {
+      "measure": 2.1999999999999855,
+      "normal_x": 0.0,
+      "normal_y": 2.1999999999999855,
+      "position_dot_normal": 0.901999999999994,
+      "radial_dot_normal": 0.46199999999999686
+    },
+    "inlet": {
+      "measure": 0.40999999999999726,
+      "normal_x": -0.40999999999999726,
+      "normal_y": 0.0,
+      "position_dot_normal": -2.1725721320184186e-19,
+      "radial_dot_normal": 0.08199999999999945
+    },
+    "obstacle": {
+      "measure": 0.31416221984218873,
+      "normal_x": 1.734723475976807e-18,
+      "normal_y": -1.3877787807814457e-17,
+      "position_dot_normal": -0.01570824997684975,
+      "radial_dot_normal": -0.015708249976849747
+    }
+  },
+  "all_element_boundaries": {
+    "normal_x": 7.696141358752574e-18,
+    "normal_y": -2.4475864043860263e-17,
+    "position_dot_normal": 1.7882917500231381
+  },
+  "PDE_solve_performed": false,
+  "test_space_dofs": 415,
+  "boundary_position_dot_normal": 1.7882917500231381,
+  "expected_twice_mapped_volume": 1.7882917500231206,
+  "divergence_theorem_relative_defect": 9.80909507011408e-15,
+  "all_element_divergence_theorem_relative_defect": 9.80909507011408e-15
+}

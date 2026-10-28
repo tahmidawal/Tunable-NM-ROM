@@ -1,0 +1,66 @@
+diagnose.py: OK
+diagnostic.json: OK
+manufactured-smoke.json: OK
+geometry.sh: OK
+REPAIR.json: OK
+dependencies.py: OK
+DEPENDENCIES.json: OK
+scalars.py: OK
+SOURCE_COMMIT.txt: OK
+09a660f7b47926f3ef6dc8dea16f2d1848947dc4
+jax_backend=gpu
+jax_version=0.10.2
+jax_devices=[CudaDevice(id=0)]
+jax_x64=True
+cpu_model=INTEL(R) XEON(R) PLATINUM 8568Y+
+name, uuid, memory.total [MiB]
+NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff", "bytes": 30204991}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122", "bytes": 8506176}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94", "bytes": 25610800}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141", "bytes": 15064649}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01/deps/lib/python3.13/site-packages"}
+{"ngsolve": "6.2.2608", "ngsolve_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01/deps/lib/python3.13/site-packages/ngsolve/__init__.py", "netgen_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01/deps/lib/python3.13/site-packages/netgen/__init__.py", "numpy": "2.5.0", "jax": "0.10.2", "jax_backend": "gpu", "jax_x64": true, "matmul_precision": "highest"}
+{"geometry_diagnostic_phase": "unchanged_geometry_create"}
+{"geometry_diagnostic_phase": "volume_mapping"}
+{"geometry_diagnostic_phase": "raw_boundary_mapping_and_adjacent_fluid_witnesses"}
+{"geometry_diagnostic_phase": "ordinary_boundary_Integrate"}
+{"scalar_return_contract": {"label": "normal_diagnostic_integral", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"geometry_diagnostic_phase": "volume_facet_controls"}
+{"scalar_return_contract": {"label": "P0_constant_test", "python_type": "builtins.float", "shape": [], "dtype": "float64", "finite": true, "accepted": true}}
+{"geometry_diagnostic_phase": "volume_facet_wall_bottom_measure"}
+{"geometry_diagnostic_phase": "volume_facet_wall_bottom_normal_x"}
+{"geometry_diagnostic_phase": "volume_facet_wall_bottom_normal_y"}
+{"geometry_diagnostic_phase": "volume_facet_wall_bottom_position_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_wall_bottom_radial_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_outlet_measure"}
+{"geometry_diagnostic_phase": "volume_facet_outlet_normal_x"}
+{"geometry_diagnostic_phase": "volume_facet_outlet_normal_y"}
+{"geometry_diagnostic_phase": "volume_facet_outlet_position_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_outlet_radial_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_wall_top_measure"}
+{"geometry_diagnostic_phase": "volume_facet_wall_top_normal_x"}
+{"geometry_diagnostic_phase": "volume_facet_wall_top_normal_y"}
+{"geometry_diagnostic_phase": "volume_facet_wall_top_position_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_wall_top_radial_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_inlet_measure"}
+{"geometry_diagnostic_phase": "volume_facet_inlet_normal_x"}
+{"geometry_diagnostic_phase": "volume_facet_inlet_normal_y"}
+{"geometry_diagnostic_phase": "volume_facet_inlet_position_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_inlet_radial_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_obstacle_measure"}
+{"geometry_diagnostic_phase": "volume_facet_obstacle_normal_x"}
+{"geometry_diagnostic_phase": "volume_facet_obstacle_normal_y"}
+{"geometry_diagnostic_phase": "volume_facet_obstacle_position_dot_normal"}
+{"geometry_diagnostic_phase": "volume_facet_obstacle_radial_dot_normal"}
+{"geometry_diagnostic_phase": "all_element_boundaries_normal_x"}
+{"geometry_diagnostic_phase": "all_element_boundaries_normal_y"}
+{"geometry_diagnostic_phase": "all_element_boundaries_position_dot_normal"}
+{"geometry_diagnostic_phase": "summarize_without_admission"}

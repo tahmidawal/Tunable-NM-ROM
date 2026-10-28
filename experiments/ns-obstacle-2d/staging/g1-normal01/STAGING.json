@@ -1,6 +1,6 @@
 {
   "attempt": "g1-normal01",
-  "state": "submitted_once_pending",
+  "state": "terminal_completed_diagnostic_collected",
   "verified_utc": "2026-10-28T18:43:06.164779+00:00",
   "source_commit": "09a660f7b47926f3ef6dc8dea16f2d1848947dc4",
   "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01",
@@ -27,5 +27,13 @@
   "submitted_utc": "2026-10-28T18:43:21Z",
   "coordinator_remote_byte_match": true,
   "post_submit_state": "PENDING",
-  "post_submit_reason": "Priority"
+  "post_submit_reason": "Priority",
+  "terminal_state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed_seconds": 25,
+  "allocated_gpu_hours": 0.006944444444444444,
+  "node": "pax008",
+  "batch_MaxRSS_KiB": 1177716,
+  "collection": "artifacts/g1-normal01/RETENTION.json",
+  "remote_cleanup": "pending durable retention mirror"
 }

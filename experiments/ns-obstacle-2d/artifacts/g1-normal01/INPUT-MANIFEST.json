@@ -1,0 +1,73 @@
+{
+  "attempt": "g1-normal01",
+  "source_commit": "09a660f7b47926f3ef6dc8dea16f2d1848947dc4",
+  "reviewed_candidate_manifest_sha256": "87cc82472de0a8bd128aecbf268dec30ecd0a5a8d034f46137ced3b17f5fd0b5",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01",
+  "files": [
+    {
+      "path": "diagnose.py",
+      "sha256": "3b9758ac53916dc3df6837951fe13600de426272d5d5be646e09795883f77b6f",
+      "bytes": 17008,
+      "source_path": "experiments/ns-obstacle-2d/diagnostics/normal01/diagnose.py"
+    },
+    {
+      "path": "diagnostic.json",
+      "sha256": "9869c3ab0e712417afe7ef8bfe4f02418c4e1b92daf78be6920eb27a48e139e3",
+      "bytes": 965,
+      "source_path": "experiments/ns-obstacle-2d/diagnostics/normal01/diagnostic.json"
+    },
+    {
+      "path": "manufactured-smoke.json",
+      "sha256": "f03d13ba9404a1a8e8e42bd411b3729ae0a58ac67fd788a546f8b4265660bdda",
+      "bytes": 1148,
+      "source_path": "experiments/ns-obstacle-2d/diagnostics/normal01/manufactured-smoke.json"
+    },
+    {
+      "path": "geometry.sh",
+      "sha256": "20efbe02dbc0074495d2139ba3cd4a94ba4eaf3f39731621b22bd90d688ec376",
+      "bytes": 3438,
+      "source_path": "experiments/ns-obstacle-2d/diagnostics/normal01/geometry.sh"
+    },
+    {
+      "path": "REPAIR.json",
+      "sha256": "3e5a5c89027761622fbe53d9075f92b7ec91685b9d1a10279af815576fa96f16",
+      "bytes": 1024,
+      "source_path": "experiments/ns-obstacle-2d/diagnostics/normal01/REPAIR.json"
+    },
+    {
+      "path": "dependencies.py",
+      "sha256": "f1d4b641c9ff30c2909ab810985add3186ea37aa1c9d5b40f9d22b331edc85e7",
+      "bytes": 6382,
+      "source_path": "experiments/ns-obstacle-2d/dependencies.py"
+    },
+    {
+      "path": "DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432,
+      "source_path": "experiments/ns-obstacle-2d/DEPENDENCIES.json"
+    },
+    {
+      "path": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687,
+      "source_path": "experiments/ns-obstacle-2d/scalars.py"
+    },
+    {
+      "path": "SOURCE_COMMIT.txt",
+      "sha256": "cb10099d4710edf6817cb365feadcd5513be5304b43671e46d0ac2edc3ba5eca",
+      "bytes": 41
+    }
+  ],
+  "allocation": {
+    "partition": "gpu",
+    "gpu_type": "h200",
+    "gpus": 1,
+    "cpus": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200
+  },
+  "scope": "diagnostic only; fresh unchanged-geometry mesh; no PDE or G1 admission",
+  "no_FOM_or_G2_source": true,
+  "command": "sbatch --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g1-normal01 geometry.sh",
+  "source_checksums_sha256": "8c68adbfa2238a77d4575817292e1c42b511d3def8be7efda37b5503114b4f24"
+}

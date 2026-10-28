@@ -1,0 +1,373 @@
+{
+  "status": "diagnostic_completed_not_reference_admission",
+  "physical_gate_passed": false,
+  "normal_sign_corrections_applied": false,
+  "same_failed_run_mesh": false,
+  "PDE_solve_performed": false,
+  "volume": 0.8941458750115603,
+  "analytic_volume": 0.8941460183660256,
+  "volume_relative_geometry_error": 1.6032556467725343e-07,
+  "volume_points": 20335,
+  "boundary_points": 567,
+  "minimum_volume_point_radial_distance": 0.05002531175666004,
+  "volume_points_inside_analytic_obstacle": 0,
+  "minimum_volume_jacobian_determinant": 0.0003079791579499372,
+  "obstacle_raw_radial_cosine_range": [
+    0.9999951895836836,
+    0.9999999999976446
+  ],
+  "obstacle_raw_normal_dot_toward_adjacent_volume_range": [
+    0.003295612887188936,
+    0.008833475250670835
+  ],
+  "raw_boundary_moments": {
+    "wall_bottom": {
+      "measure": 2.1999999999999846,
+      "normal_integral": [
+        0.0,
+        -2.1999999999999846
+      ],
+      "position_dot_normal": 0.0,
+      "radial_dot_normal": 0.4399999999999967
+    },
+    "outlet": {
+      "measure": 0.40999999999999737,
+      "normal_integral": [
+        0.40999999999999737,
+        0.0
+      ],
+      "position_dot_normal": 0.9019999999999939,
+      "radial_dot_normal": 0.8199999999999947
+    },
+    "wall_top": {
+      "measure": 2.199999999999986,
+      "normal_integral": [
+        0.0,
+        2.199999999999986
+      ],
+      "position_dot_normal": 0.9019999999999927,
+      "radial_dot_normal": 0.4619999999999975
+    },
+    "inlet": {
+      "measure": 0.40999999999999737,
+      "normal_integral": [
+        -0.40999999999999737,
+        0.0
+      ],
+      "position_dot_normal": 0.0,
+      "radial_dot_normal": 0.08199999999999943
+    },
+    "obstacle": {
+      "measure": 0.3141622198421888,
+      "normal_integral": [
+        8.998878031629687e-18,
+        1.1926223897340549e-17
+      ],
+      "position_dot_normal": 0.015708249976849758,
+      "radial_dot_normal": 0.015708249976849747
+    }
+  },
+  "raw_totals": {
+    "whole_boundary_normal_integral": [
+      8.998878031629687e-18,
+      1.3441938534475284e-15
+    ],
+    "outer_rectangle_normal_integral": [
+      0.0,
+      1.3322676295501878e-15
+    ],
+    "obstacle_normal_integral": [
+      8.998878031629687e-18,
+      1.1926223897340549e-17
+    ],
+    "boundary_position_dot_normal": 1.8197082499768364,
+    "expected_twice_mapped_volume": 1.7882917500231206,
+    "divergence_theorem_relative_defect": 0.01756788284311533
+  },
+  "Integrate_boundary_moments": {
+    "2": {
+      "wall_bottom": {
+        "measure": 2.2,
+        "normal_integral": [
+          0.0,
+          -2.2
+        ],
+        "position_dot_normal": 0.0,
+        "radial_dot_normal": 0.44000000000000017
+      },
+      "outlet": {
+        "measure": 0.4099999999999999,
+        "normal_integral": [
+          0.4099999999999999,
+          0.0
+        ],
+        "position_dot_normal": 0.902,
+        "radial_dot_normal": 0.8199999999999998
+      },
+      "wall_top": {
+        "measure": 2.2,
+        "normal_integral": [
+          0.0,
+          2.2
+        ],
+        "position_dot_normal": 0.9019999999999997,
+        "radial_dot_normal": 0.4619999999999998
+      },
+      "inlet": {
+        "measure": 0.4099999999999999,
+        "normal_integral": [
+          -0.41,
+          0.0
+        ],
+        "position_dot_normal": 0.0,
+        "radial_dot_normal": 0.08199999999999999
+      },
+      "obstacle": {
+        "measure": 0.31414683844022306,
+        "normal_integral": [
+          0.0,
+          0.0
+        ],
+        "position_dot_normal": 0.015707830272192042,
+        "radial_dot_normal": 0.015707830272192035
+      }
+    },
+    "12": {
+      "wall_bottom": {
+        "measure": 2.1999999999999864,
+        "normal_integral": [
+          0.0,
+          -2.199999999999987
+        ],
+        "position_dot_normal": 0.0,
+        "radial_dot_normal": 0.4399999999999972
+      },
+      "outlet": {
+        "measure": 0.4099999999999973,
+        "normal_integral": [
+          0.40999999999999726,
+          0.0
+        ],
+        "position_dot_normal": 0.901999999999994,
+        "radial_dot_normal": 0.8199999999999946
+      },
+      "wall_top": {
+        "measure": 2.1999999999999864,
+        "normal_integral": [
+          0.0,
+          2.1999999999999864
+        ],
+        "position_dot_normal": 0.9019999999999938,
+        "radial_dot_normal": 0.46199999999999675
+      },
+      "inlet": {
+        "measure": 0.40999999999999726,
+        "normal_integral": [
+          -0.40999999999999726,
+          0.0
+        ],
+        "position_dot_normal": 0.0,
+        "radial_dot_normal": 0.08199999999999946
+      },
+      "obstacle": {
+        "measure": 0.31416221984218873,
+        "normal_integral": [
+          3.469446951953614e-18,
+          1.3877787807814457e-17
+        ],
+        "position_dot_normal": 0.015708249976849747,
+        "radial_dot_normal": 0.01570824997684975
+      }
+    },
+    "16": {
+      "wall_bottom": {
+        "measure": 2.199999999999987,
+        "normal_integral": [
+          0.0,
+          -2.199999999999987
+        ],
+        "position_dot_normal": 0.0,
+        "radial_dot_normal": 0.4399999999999972
+      },
+      "outlet": {
+        "measure": 0.4099999999999973,
+        "normal_integral": [
+          0.40999999999999737,
+          0.0
+        ],
+        "position_dot_normal": 0.9019999999999943,
+        "radial_dot_normal": 0.8199999999999946
+      },
+      "wall_top": {
+        "measure": 2.1999999999999873,
+        "normal_integral": [
+          0.0,
+          2.1999999999999873
+        ],
+        "position_dot_normal": 0.9019999999999939,
+        "radial_dot_normal": 0.46199999999999675
+      },
+      "inlet": {
+        "measure": 0.4099999999999973,
+        "normal_integral": [
+          -0.40999999999999737,
+          0.0
+        ],
+        "position_dot_normal": 0.0,
+        "radial_dot_normal": 0.08199999999999946
+      },
+      "obstacle": {
+        "measure": 0.3141622198421886,
+        "normal_integral": [
+          -8.673617379884035e-19,
+          3.469446951953614e-18
+        ],
+        "position_dot_normal": 0.01570824997684975,
+        "radial_dot_normal": 0.01570824997684975
+      }
+    }
+  },
+  "Integrate_totals": {
+    "2": {
+      "whole_boundary_normal_integral": [
+        -5.551115123125783e-17,
+        0.0
+      ],
+      "outer_rectangle_normal_integral": [
+        -5.551115123125783e-17,
+        0.0
+      ],
+      "obstacle_normal_integral": [
+        0.0,
+        0.0
+      ],
+      "boundary_position_dot_normal": 1.8197078302721919,
+      "expected_twice_mapped_volume": 1.7882917500231206,
+      "divergence_theorem_relative_defect": 0.01756764814726965
+    },
+    "12": {
+      "whole_boundary_normal_integral": [
+        3.469446951953614e-18,
+        -4.3021142204224816e-16
+      ],
+      "outer_rectangle_normal_integral": [
+        0.0,
+        -4.440892098500626e-16
+      ],
+      "obstacle_normal_integral": [
+        3.469446951953614e-18,
+        1.3877787807814457e-17
+      ],
+      "boundary_position_dot_normal": 1.8197082499768376,
+      "expected_twice_mapped_volume": 1.7882917500231206,
+      "divergence_theorem_relative_defect": 0.017567882843115952
+    },
+    "16": {
+      "whole_boundary_normal_integral": [
+        -8.673617379884035e-19,
+        4.475586568020162e-16
+      ],
+      "outer_rectangle_normal_integral": [
+        0.0,
+        4.440892098500626e-16
+      ],
+      "obstacle_normal_integral": [
+        -8.673617379884035e-19,
+        3.469446951953614e-18
+      ],
+      "boundary_position_dot_normal": 1.819708249976838,
+      "expected_twice_mapped_volume": 1.7882917500231206,
+      "divergence_theorem_relative_defect": 0.017567882843116202
+    }
+  },
+  "volume_facet_control": {
+    "status": "completed_diagnostic_not_admission",
+    "method": "constant P0 test contracted with assembled LinearForm",
+    "boundary_path": "ds(label, skeleton=True)",
+    "all_element_path": "dx(element_boundary=True)",
+    "bonus_integration_order": 12,
+    "constant_test_error": 1.1102230246251565e-16,
+    "per_boundary": {
+      "wall_bottom": {
+        "measure": 2.1999999999999855,
+        "normal_x": 0.0,
+        "normal_y": -2.1999999999999855,
+        "position_dot_normal": -9.736715309342673e-20,
+        "radial_dot_normal": 0.43999999999999717
+      },
+      "outlet": {
+        "measure": 0.40999999999999726,
+        "normal_x": 0.40999999999999726,
+        "normal_y": 0.0,
+        "position_dot_normal": 0.9019999999999938,
+        "radial_dot_normal": 0.8199999999999945
+      },
+      "wall_top": {
+        "measure": 2.1999999999999855,
+        "normal_x": 0.0,
+        "normal_y": 2.1999999999999855,
+        "position_dot_normal": 0.901999999999994,
+        "radial_dot_normal": 0.46199999999999686
+      },
+      "inlet": {
+        "measure": 0.40999999999999726,
+        "normal_x": -0.40999999999999726,
+        "normal_y": 0.0,
+        "position_dot_normal": -2.1725721320184186e-19,
+        "radial_dot_normal": 0.08199999999999945
+      },
+      "obstacle": {
+        "measure": 0.31416221984218873,
+        "normal_x": 1.734723475976807e-18,
+        "normal_y": -1.3877787807814457e-17,
+        "position_dot_normal": -0.01570824997684975,
+        "radial_dot_normal": -0.015708249976849747
+      }
+    },
+    "all_element_boundaries": {
+      "normal_x": 7.696141358752574e-18,
+      "normal_y": -2.4475864043860263e-17,
+      "position_dot_normal": 1.7882917500231381
+    },
+    "PDE_solve_performed": false,
+    "test_space_dofs": 415,
+    "boundary_position_dot_normal": 1.7882917500231381,
+    "expected_twice_mapped_volume": 1.7882917500231206,
+    "divergence_theorem_relative_defect": 9.80909507011408e-15,
+    "all_element_divergence_theorem_relative_defect": 9.80909507011408e-15
+  },
+  "raw_vs_Integrate_same_order_max_absolute_moment_difference": 2.220446049250313e-15,
+  "scalar_return_contract": [
+    {
+      "label": "normal_diagnostic_integral",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    },
+    {
+      "label": "P0_constant_test",
+      "python_type": "builtins.float",
+      "shape": [],
+      "dtype": "float64",
+      "finite": true,
+      "accepted": true
+    }
+  ],
+  "provenance": {
+    "source_sha256": "3b9758ac53916dc3df6837951fe13600de426272d5d5be646e09795883f77b6f",
+    "job_id": "6610978",
+    "source_commit": "09a660f7b47926f3ef6dc8dea16f2d1848947dc4",
+    "hostname": "pax008",
+    "ngsolve": "6.2.2608",
+    "numpy": "2.5.0",
+    "precision": "float64",
+    "matmul_precision": "highest"
+  },
+  "peak_rss_bytes": 212103168,
+  "threading": {
+    "requested_before_TaskManager": 16,
+    "effective_concurrency": "unmeasured"
+  }
+}

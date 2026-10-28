@@ -1,0 +1,61 @@
+{
+  "status": "measured_convention_difference_on_regenerated_mesh_pending_independent_review",
+  "measured": {
+    "source_result_sha256": "7ba0d6b7695a2482e78db2fcbe9c9ab3d8abe9b32790456ea1078c161bb7413b",
+    "raw_radial_cosine_range": [
+      0.9999951895836836,
+      0.9999999999976446
+    ],
+    "raw_toward_adjacent_fluid_dot_range": [
+      0.003295612887188936,
+      0.008833475250670835
+    ],
+    "raw_vs_ordinary_same_order_moment_max_error": 2.220446049250313e-15,
+    "ordinary_divergence_theorem_relative_defect": 0.017567882843115952,
+    "facet_divergence_theorem_relative_defect": 9.80909507011408e-15,
+    "facet_nested_status": "completed_diagnostic_not_admission",
+    "raw_obstacle_radial_moment": 0.015708249976849747,
+    "facet_obstacle_radial_moment": -0.015708249976849747,
+    "offset_membership_counts": {
+      "-1e-05": {
+        "total": 105,
+        "mesh_contains": 0,
+        "analytic_fluid_contains": 0
+      },
+      "1e-05": {
+        "total": 105,
+        "mesh_contains": 105,
+        "analytic_fluid_contains": 105
+      },
+      "-0.0001": {
+        "total": 105,
+        "mesh_contains": 0,
+        "analytic_fluid_contains": 0
+      },
+      "0.0001": {
+        "total": 105,
+        "mesh_contains": 105,
+        "analytic_fluid_contains": 105
+      },
+      "-0.001": {
+        "total": 105,
+        "mesh_contains": 0,
+        "analytic_fluid_contains": 0
+      },
+      "0.001": {
+        "total": 105,
+        "mesh_contains": 105,
+        "analytic_fluid_contains": 105
+      }
+    },
+    "volume_relative_geometry_error": 1.6032556467725343e-07,
+    "volume_points_inside_analytic_obstacle": 0
+  },
+  "interpretation": "The unchanged regenerated geometry excludes the obstacle. Raw boundary-transform and ordinary boundary Integrate normals point from the obstacle into fluid; the volume-facet LinearForm normals point outward from fluid. The latter satisfies the volume divergence theorem. Closed normal sums alone do not distinguish these opposite signs.",
+  "limits": [
+    "Original job6567998 obstacle mesh/normal were not saved; exact old vectors cannot be recovered.",
+    "No PDE solve or reference admission occurred.",
+    "No normal sign repair or geometry change was tested."
+  ],
+  "next": "independent numerical review, then a source-bound volume-oriented normal strategy reviewed before any FOM retry"
+}

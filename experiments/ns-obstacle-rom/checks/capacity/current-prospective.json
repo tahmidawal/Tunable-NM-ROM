@@ -1,0 +1,154 @@
+[
+  {
+    "points": 266756,
+    "source": "projected point count; replace with actual retained rule count",
+    "volume_payload_components_bytes": {
+      "geometry": 19206432,
+      "lift_u": 12804288,
+      "lift_p_per_nu": 6402144,
+      "pod_velocity": 102434304,
+      "pressure": 51217152,
+      "supremizers": 102434304,
+      "momentum_tests": 819474432,
+      "continuity_tests": 102434304
+    },
+    "volume_expanded_archive_bytes": 1216407360,
+    "largest_volume_array_momentum_gradients_bytes": 546316288,
+    "training_expanded_archive_bytes": 145115336,
+    "maximum_velocity_candidate_values_and_gradients_bytes": 1331645952,
+    "maximum_velocity_candidate_gradient_single_array_bytes": 887763968,
+    "blocked_candidate_TSQR_workspace_envelope_bytes": 163577856,
+    "blocked_candidate_FE_coefficient_storage_not_included": "104 times actual velocity DOF count times 8 bytes, plus native GridFunction ownership; measure on selected mesh",
+    "maximum_pressure_candidate_values_and_gradients_bytes": 262487904,
+    "legacy_six_models_retained_enriched_velocity_fields_bytes": 717040128,
+    "current_one_model_max_trial_fields_bytes": 275292192,
+    "bank_evaluation_conservative_temporary_envelope_bytes": 2185265152,
+    "dense_moment_rows": 633,
+    "dense_moment_bytes": 1350852384,
+    "legacy_disk_moment_matrix_bytes_not_used_by_current_RAM_fitter": 1350852384,
+    "current_RAM_moment_matrix_bytes": 1350852384,
+    "blocked_fit_resident_workspace_envelope_bytes": 392265856,
+    "sparse_metric_capacity": {
+      "matrix_nnz_cap": 12000000,
+      "CSR_bytes_per_matrix_at_cap": 144400004,
+      "retained_metric_matrices": 6,
+      "factor_estimate_cap_bytes": 8589934592
+    },
+    "remaining_limits": {
+      "point_cap_current": 100000,
+      "archive_expanded_cap_current_bytes": 1073741824,
+      "single_array_cap_unchanged_bytes": 1073741824,
+      "process_cap_unchanged_bytes": 17179869184
+    },
+    "required_before_production": [
+      "separately reviewed measured point and DOF ceilings",
+      "native fine-population integration and measured phase RSS/GPU memory/time",
+      "exact retained artifact, archive and Git duplication disk envelope",
+      "actual full-support NNLS elapsed/memory measurement"
+    ],
+    "implemented_source_capacity_changes": [
+      "point-blocked volume archives with original hashes/units; per-array split insufficient at h3",
+      "mapped-point block candidate evaluation and all-point TSQR selection",
+      "one model at a time and blocked bank derivative evaluation",
+      "exact RAM-block moment fitting with immutable input provenance and per-block hashes"
+    ],
+    "training_memory_shape_accounting": {
+      "full_GPU_QR_objective_unchanged": true,
+      "GPU_primary_forward_and_reverse_arrays_estimate_bytes": 1017940896,
+      "GPU_additional_compiler_workspace_projection_bytes": 926176832,
+      "GPU_projection_not_measured_peak_bytes": 1944117728,
+      "host_training_archive_bytes": 145115336,
+      "postfit_full_bank_values_bytes": 34144768,
+      "postfit_QR_ordering_conservative_array_envelope_bytes": 273158144,
+      "bank_derivative_temporary_block_projection_bytes": 33554432,
+      "warning": "XLA aliasing, QR workspace, native allocator and host/device lifetimes must be measured; estimates are not caps or authorization."
+    },
+    "retained_disk_projection": {
+      "one_preparation_volume_plus_training_bytes": 1361522696,
+      "archive_plus_expanded_plus_git_three_copy_upper_projection_bytes": 4084568088,
+      "timing_full_field_arrays_seven_reps_four_cases_six_methods_bytes": 1075560192,
+      "reference_archives_common_lift_mesh_and_coefficients": "additional measured inputs, never silently excluded",
+      "chosen_policy": "immutable preparation once; no redundant moment matrices; one model at a time; preserve every actual timing invocation",
+      "minimum_free_reserve_bytes": 10737418240
+    },
+    "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",
+    "physical_admission": false,
+    "execution_released": false
+  },
+  {
+    "points": 1066240,
+    "source": "projected point count; replace with actual retained rule count",
+    "volume_payload_components_bytes": {
+      "geometry": 76769280,
+      "lift_u": 51179520,
+      "lift_p_per_nu": 25589760,
+      "pod_velocity": 409436160,
+      "pressure": 204718080,
+      "supremizers": 409436160,
+      "momentum_tests": 3275489280,
+      "continuity_tests": 409436160
+    },
+    "volume_expanded_archive_bytes": 4862054400,
+    "largest_volume_array_momentum_gradients_bytes": 2183659520,
+    "training_expanded_archive_bytes": 580034632,
+    "maximum_velocity_candidate_values_and_gradients_bytes": 5322670080,
+    "maximum_velocity_candidate_gradient_single_array_bytes": 3548446720,
+    "blocked_candidate_TSQR_workspace_envelope_bytes": 163577856,
+    "blocked_candidate_FE_coefficient_storage_not_included": "104 times actual velocity DOF count times 8 bytes, plus native GridFunction ownership; measure on selected mesh",
+    "maximum_pressure_candidate_values_and_gradients_bytes": 1049180160,
+    "legacy_six_models_retained_enriched_velocity_fields_bytes": 2866053120,
+    "current_one_model_max_trial_fields_bytes": 1100359680,
+    "bank_evaluation_conservative_temporary_envelope_bytes": 8734638080,
+    "dense_moment_rows": 633,
+    "dense_moment_bytes": 5399439360,
+    "legacy_disk_moment_matrix_bytes_not_used_by_current_RAM_fitter": 5399439360,
+    "current_RAM_moment_matrix_bytes": 5399439360,
+    "blocked_fit_resident_workspace_envelope_bytes": 417849344,
+    "sparse_metric_capacity": {
+      "matrix_nnz_cap": 12000000,
+      "CSR_bytes_per_matrix_at_cap": 144400004,
+      "retained_metric_matrices": 6,
+      "factor_estimate_cap_bytes": 8589934592
+    },
+    "remaining_limits": {
+      "point_cap_current": 100000,
+      "archive_expanded_cap_current_bytes": 1073741824,
+      "single_array_cap_unchanged_bytes": 1073741824,
+      "process_cap_unchanged_bytes": 17179869184
+    },
+    "required_before_production": [
+      "separately reviewed measured point and DOF ceilings",
+      "native fine-population integration and measured phase RSS/GPU memory/time",
+      "exact retained artifact, archive and Git duplication disk envelope",
+      "actual full-support NNLS elapsed/memory measurement"
+    ],
+    "implemented_source_capacity_changes": [
+      "point-blocked volume archives with original hashes/units; per-array split insufficient at h3",
+      "mapped-point block candidate evaluation and all-point TSQR selection",
+      "one model at a time and blocked bank derivative evaluation",
+      "exact RAM-block moment fitting with immutable input provenance and per-block hashes"
+    ],
+    "training_memory_shape_accounting": {
+      "full_GPU_QR_objective_unchanged": true,
+      "GPU_primary_forward_and_reverse_arrays_estimate_bytes": 4068771840,
+      "GPU_additional_compiler_workspace_projection_bytes": 3701985280,
+      "GPU_projection_not_measured_peak_bytes": 7770757120,
+      "host_training_archive_bytes": 580034632,
+      "postfit_full_bank_values_bytes": 136478720,
+      "postfit_QR_ordering_conservative_array_envelope_bytes": 1091829760,
+      "bank_derivative_temporary_block_projection_bytes": 33554432,
+      "warning": "XLA aliasing, QR workspace, native allocator and host/device lifetimes must be measured; estimates are not caps or authorization."
+    },
+    "retained_disk_projection": {
+      "one_preparation_volume_plus_training_bytes": 5442089032,
+      "archive_plus_expanded_plus_git_three_copy_upper_projection_bytes": 16326267096,
+      "timing_full_field_arrays_seven_reps_four_cases_six_methods_bytes": 4299079680,
+      "reference_archives_common_lift_mesh_and_coefficients": "additional measured inputs, never silently excluded",
+      "chosen_policy": "immutable preparation once; no redundant moment matrices; one model at a time; preserve every actual timing invocation",
+      "minimum_free_reserve_bytes": 10737418240
+    },
+    "not_a_total_peak_guarantee": "Phase lifetimes, native factor storage, JAX autodiff/QR and compression workspaces require actual allocated-node RSS measurement before admission.",
+    "physical_admission": false,
+    "execution_released": false
+  }
+]

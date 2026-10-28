@@ -417,6 +417,27 @@ class TrainingFEAdapter:
             result['jacobians'] = np.asarray(jacobians)
         return result
 
+    def evaluate_batched(self, coefficients, vector=True, boundary=False, points=None):
+        """Accepted native block evaluation with the unchanged coefficient/units API."""
+        if points is not None:
+            return self.evaluate(coefficients, vector, boundary, points)
+        from fe_blocks import evaluated_blocks_batched
+        c=np.asarray(coefficients,dtype=np.float64)
+        if c.ndim==1:c=c[:,None]
+        space=self.V if vector else self.Q
+        if c.ndim!=2 or c.shape[0]!=space.ndof or not np.isfinite(c).all():
+            raise ValueError('invalid FE coefficient matrix')
+        n=len((self.boundary if boundary else self.volume)['points'])
+        check_allocation((n,6 if vector else 3,c.shape[1]))
+        values=np.empty((n,2,c.shape[1]) if vector else (n,c.shape[1]))
+        gradients=np.empty((n,2,2,c.shape[1]) if vector else (n,2,c.shape[1]))
+        covered=0
+        for start,end,value,gradient in evaluated_blocks_batched(self,c,vector,boundary):
+            if start!=covered or end>n:raise ValueError('native batch point coverage differs')
+            values[start:end]=value;gradients[start:end]=gradient;covered=end
+        if covered!=n:raise ValueError('incomplete native batch point coverage')
+        return values,gradients
+
     def evaluate(self, coefficients, vector=True, boundary=False, points=None):
         """FE coefficients -> dimensionless values and physical-coordinate derivatives.
 
@@ -561,7 +582,7 @@ class TrainingFEAdapter:
             if solution.shape != (self.X.ndof,) or lift.shape != solution.shape:
                 raise ValueError('coefficient block layout mismatch')
             checks['sol_vs_coefficients'] = relative_gap(saved.vec.FV().NumPy(), solution)
-            uv, gu = self.evaluate(solution[:self.V.ndof]); pp, _ = self.evaluate(solution[self.V.ndof:], False)
+            uv, gu = self.evaluate_batched(solution[:self.V.ndof]); pp, _ = self.evaluate_batched(solution[self.V.ndof:], False)
             for key, actual, scale in [('velocity', uv[..., 0], self.U),
                 ('velocity_gradient', gu[..., 0], self.U/self.D), ('pressure', pp[:, 0], self.U**2)]:
                 checks[key] = relative_gap(actual, data[key], scale)
@@ -573,8 +594,8 @@ class TrainingFEAdapter:
                 checks['boundary_'+key] = relative_gap(actual, np.asarray([r[key] for r in b]))
             if [r['label'] for r in b] != self.boundary['labels'].tolist():
                 raise ValueError('boundary enumeration differs on reload')
-            bv, bg = self.evaluate(solution[:self.V.ndof], boundary=True)
-            bp, _ = self.evaluate(solution[self.V.ndof:], False, boundary=True)
+            bv, bg = self.evaluate_batched(solution[:self.V.ndof], boundary=True)
+            bp, _ = self.evaluate_batched(solution[self.V.ndof:], False, boundary=True)
             for key, actual, scale in [('velocity', bv[..., 0], self.U),
                 ('velocity_gradient', bg[..., 0], self.U/self.D), ('pressure', bp[:, 0], self.U**2)]:
                 checks['boundary_'+key] = relative_gap(actual, [r[key] for r in b], scale)
@@ -623,11 +644,11 @@ class TrainingFEAdapter:
         """Offline training-only spaces. The returned object is NOT physical admission."""
         ng = self.ng
         import scipy
-        uv, _ = self.evaluate(self.velocity_corrections)
-        pv, _ = self.evaluate(self.pressure_corrections, False)
+        uv, _ = self.evaluate_batched(self.velocity_corrections)
+        pv, _ = self.evaluate_batched(self.pressure_corrections, False)
         constant = ng.GridFunction(self.Q); constant.Set(1.)
         one = constant.vec.FV().NumPy().copy()
-        one_values, _ = self.evaluate(one, False)
+        one_values, _ = self.evaluate_batched(one, False)
         if relative_gap(one_values[:, 0], np.ones(len(self.weights))) > 1e-12:
             raise ArithmeticError('constant pressure coefficient reconstruction failed')
         h1v, mv, dx = self.metric_matrices(self.V, True)
@@ -636,8 +657,8 @@ class TrainingFEAdapter:
         component_blocks = check_component_blocks(h1v, mv, h1s, ms, self.component_maps)
         pod = coefficient_pod_a6(self.velocity_corrections, uv.transpose(2, 0, 1),
             self.pressure_corrections, pv.T, one, self.weights, mv, mq)
-        actual_u, _ = self.evaluate(pod['velocity_coefficients'])
-        actual_p, _ = self.evaluate(pod['pressure_coefficients'], False)
+        actual_u, _ = self.evaluate_batched(pod['velocity_coefficients'])
+        actual_p, _ = self.evaluate_batched(pod['pressure_coefficients'], False)
         pod_velocity_gram, pod_u_check = validate_actual_pod(
             actual_u, uv.transpose(2, 0, 1), self.weights, pod['metadata']['velocity'])
         pressure_gram, pod_p_check = validate_actual_pod(
@@ -672,7 +693,7 @@ class TrainingFEAdapter:
         del factor_q
         candidates_v = np.c_[supremizers, ev]
         candidates_q = np.c_[one, pressure, eq]
-        from fe_blocks import evaluated_blocks, select_test_columns_blocks
+        from fe_blocks import evaluated_blocks_batched as evaluated_blocks, select_test_columns_blocks
         def candidates_in_blocks(coefficients, vector):
             for start, end, values, gradients in evaluated_blocks(self, coefficients, vector):
                 yield start, end, values, self.weights[start:end], gradients*self.D if vector else None
@@ -736,14 +757,14 @@ class TrainingFEAdapter:
             else: arrays['jacobians_physical'] = mapped['jacobians']
             for key, c in self.coefficients.items():
                 vector = key in ('lift_u', 'pod_velocity', 'supremizers', 'momentum_tests')
-                values, gradients = self.evaluate(c, vector, boundary)
+                values, gradients = self.evaluate_batched(c, vector, boundary)
                 arrays[key] = values
                 arrays[key+'_gradient_dimensionless'] = self.D*gradients
             np.savez_compressed(out/(name+'.npz'), **arrays)
         np.savez_compressed(out/'coefficients.npz', **self.coefficients)
         # One explicitly training-only archive; exact same population as all FE spaces.
-        u, du = self.evaluate(self.velocity_corrections)
-        p, _ = self.evaluate(self.pressure_corrections, False)
+        u, du = self.evaluate_batched(self.velocity_corrections)
+        p, _ = self.evaluate_batched(self.pressure_corrections, False)
         from train_bank import array_hash  # Does not import JAX or run training.
         training = {'points_dimensionless': self.volume['points']/self.D, 'points_physical': self.volume['points'], 'weights_dimensionless': self.weights,
                     'velocity_corrections': u.transpose(2, 0, 1),

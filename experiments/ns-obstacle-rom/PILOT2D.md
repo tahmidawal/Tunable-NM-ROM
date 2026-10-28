@@ -23,3 +23,17 @@ The accuracy orchestration retains only one full field model at a time. First it
 Development projection and solve records now include dimensionless velocity-gradient errors as required by the design: raw weighted L2 error, raw reference-gradient norm, relative denominator and scaled error. Scaling divides by the square root of dimensionless volume; the relative denominator floors the reference norm at 1e-12 times that scale. These are diagnostic fields with no added acceptance threshold. Reference population archives must contain `velocity_gradient` along with velocity and pressure and declare units `d(u/U)/d(x/D)`. Validation summaries also retain gradient and boundary-trace medians/worst cases.
 
 The declared point-block layout now has a production consumer. It streams fixed-test arrays and assembles complete weak moments before whitening, while retaining only bounded small-prefix trial fields. Dense/block synthetic controls preserve fields, weak operators, direct residuals, Galerkin and force outputs. Fitting uses hash-retained derived RAM moment blocks with explicit capacity checks and full selected-column/target/timing evidence; no point subsampling or dense oversized-gradient fallback occurs. The newly bound source still requires independent review, qualified inputs and measured capacity release.
+
+Native-batch03 independently passed all four scalar/vector volume/boundary value and
+physical-gradient replays, full-rule test-space selection and retained sparse eigen
+checks. Preparation now calls that accepted batched primitive for coefficient reload
+checks, POD fields, training export, candidate TSQR and point-block export. The original
+pointwise `evaluate` remains the independent oracle and handles explicit raw probes.
+Full-output assembly checks original point coverage and the existing allocation cap;
+no point/DOF/resource ceilings or physical admission requirements are raised here.
+
+A serialization smoke initially still patched the former pointwise helper after this
+integration and failed on its intentionally non-native stub; its patch now targets the
+batched helper. The retained native array serialization then passes unchanged, including
+dimensionless gradient conversion and all original points. This fixture tests storage,
+while native-batch03 supplies the actual native evaluation evidence.

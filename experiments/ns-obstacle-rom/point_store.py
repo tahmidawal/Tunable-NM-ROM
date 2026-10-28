@@ -27,7 +27,7 @@ def read_npz(path,max_bytes):
 
 def write_volume(adapter,directory,block_points=4096,max_payload_bytes=2**28,
                  max_total_bytes=8*2**30,reserve_bytes=10*2**30):
-    from fe_blocks import evaluated_blocks
+    from fe_blocks import evaluated_blocks_batched as evaluated_blocks
     directory=Path(directory)
     if directory.exists():raise FileExistsError('fresh point-store directory required')
     n=len(adapter.volume['points'])

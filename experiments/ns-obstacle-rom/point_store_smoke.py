@@ -21,7 +21,7 @@ def replay(adapter,coefficients,vector,boundary,block_points):
   yield start,end,data['values'][start:end],data['gradients'][start:end]
 with tempfile.TemporaryDirectory() as root:
  path=Path(root)/'volume'
- with patch('fe_blocks.evaluated_blocks',side_effect=replay):
+ with patch('fe_blocks.evaluated_blocks_batched',side_effect=replay):
   manifest=write_volume(adapter,path,block_points=4096)
  store=PointVolumeStore(path,sha(path/'manifest.json'))
  count=0

@@ -24,6 +24,10 @@ The independent observations are:
 - Fluid volume and the divergence-theorem identity
   $\int_{\partial\Omega} x\cdot n\,ds=2|\Omega|$, plus separate closed outer and
   obstacle normal sums. A zero closed normal sum cannot determine its sign.
+- A separate volume-facet control using a constant, verified P0 test in a
+  `LinearForm` with `ds(label, skeleton=True)`, and an all-element-boundary
+  control with `dx(element_boundary=True)`. The form vector is contracted with
+  the coefficients of the constant-one function; no equation is solved.
 
 These observations distinguish a wrong geometric region from a boundary normal
 convention and detect disagreement between raw point evaluation and ordinary
@@ -31,6 +35,17 @@ boundary integration. The retained pinned sources suggest the latter use the
 same boundary transformations, but runtime evidence must decide. The diagnostic
 does not use `BoundaryFromVolumeCF` because it evaluates geometry and normals,
 not a derivative of a finite-element field.
+
+The [official DG tutorial](https://ngsolve.org/ngsolve/docs/i-tutorials/unit-2.8-DG/DG.html)
+distinguishes boundary facets from ordinary boundary transformations. In pinned
+v6.2.2608 source, `Integral::T_Integrate` in `comp/postproc.cpp` does not dispatch
+`ds(skeleton=True)` to a volume-facet integrator. The diagnostic therefore uses
+the `LinearForm` path: `MakeLinearFormIntegrator` selects
+`SymbolicFacetLinearFormIntegrator`, and `comp/linearform.cpp` selects the
+adjacent volume element before calling `CalcFacetVector`. This is an API-path
+check, not an alteration of the production method. Raw samples and ordinary
+integration moments are saved before that extra control; errors in the extra
+control are retained in its own file.
 
 No scientific threshold is weakened. A completed diagnostic only means the
 measurements were saved; the failed G1 result stays failed. A repair requires an

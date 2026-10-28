@@ -39,6 +39,77 @@ def finite_array(value, shape):
     return result
 
 
+def facet_controls(mesh, out, ng, coordinates, radial, normal, volume, policy):
+    """Use a constant P0 test to select the volume-facet linear-form path.
+
+Pinned Integral::T_Integrate uses the ordinary BND transformation for ds even
+with skeleton=True. LinearForm instead dispatches to CalcFacetVector on the
+adjacent volume element. No matrix, factorization or PDE solve is needed.
+    """
+    target = out/'volume_facet_control.json'
+    record = {'status': 'started', 'method': 'constant P0 test contracted with assembled LinearForm',
+              'boundary_path': 'ds(label, skeleton=True)',
+              'all_element_path': 'dx(element_boundary=True)',
+              'bonus_integration_order': policy['facet_bonus_order'],
+              'constant_test_error': None, 'per_boundary': {}, 'all_element_boundaries': {},
+              'PDE_solve_performed': False}
+    dump(target, record)
+    try:
+        V = ng.L2(mesh, order=0, dgjumps=True)
+        record['test_space_dofs'] = int(V.ndof)
+        test = V.TestFunction()
+        one = ng.GridFunction(V)
+        one.Set(ng.CF(1))
+        coeff = finite_array(one.vec.FV().NumPy(), (V.ndof,))
+        constant_error = 0.
+        for el in mesh.Elements(ng.VOL):
+            tr = mesh.GetTrafo(el)
+            ir = ng.IntegrationRule(el.type, 0)
+            ip = ir[0]
+            mip = tr(ip)
+            constant_error = max(constant_error, abs(scalar_value(one(mip),'P0_constant_test')-1.))
+        record['constant_test_error'] = constant_error
+        if constant_error > 1e-12:
+            raise ArithmeticError('P0 integration test is not constant one')
+        terms = {'measure': ng.CF(1), 'normal_x': normal[0], 'normal_y': normal[1],
+                 'position_dot_normal': ng.InnerProduct(coordinates, normal),
+                 'radial_dot_normal': ng.InnerProduct(radial, normal)}
+        def contract(expression, differential):
+            form = ng.LinearForm(V)
+            form += expression*test*differential
+            form.Assemble()
+            vector = finite_array(form.vec.FV().NumPy(), (V.ndof,))
+            value = float(coeff@vector)
+            if not math.isfinite(value):
+                raise ArithmeticError('nonfinite facet integral')
+            return value
+        for label in ('wall_bottom', 'outlet', 'wall_top', 'inlet', 'obstacle'):
+            record['per_boundary'][label] = {}
+            for name, expression in terms.items():
+                marker('volume_facet_'+label+'_'+name)
+                ds = ng.ds(label, skeleton=True, bonus_intorder=policy['facet_bonus_order'])
+                record['per_boundary'][label][name] = contract(expression, ds)
+                dump(target, record)
+        for name in ('normal_x', 'normal_y', 'position_dot_normal'):
+            marker('all_element_boundaries_'+name)
+            dx = ng.dx(element_boundary=True, bonus_intorder=policy['facet_bonus_order'])
+            record['all_element_boundaries'][name] = contract(terms[name], dx)
+            dump(target, record)
+        surface_sum = sum(row['position_dot_normal'] for row in record['per_boundary'].values())
+        record['boundary_position_dot_normal'] = surface_sum
+        record['expected_twice_mapped_volume'] = 2*volume
+        record['divergence_theorem_relative_defect'] = abs(surface_sum-2*volume)/(2*volume)
+        record['all_element_divergence_theorem_relative_defect'] = abs(
+            record['all_element_boundaries']['position_dot_normal']-2*volume)/(2*volume)
+        record['status'] = 'completed_diagnostic_not_admission'
+    except Exception as exc:
+        record['status'] = 'failed_extra_control_original_geometry_evidence_preserved'
+        record['error'] = repr(exc)
+        record['traceback'] = traceback.format_exc()
+    dump(target, record)
+    return record
+
+
 def run(policy, cfg, out, ng):
     from netgen.geom2d import SplineGeometry
     marker('unchanged_geometry_create')
@@ -175,6 +246,11 @@ def run(policy, cfg, out, ng):
                 'position_dot_normal': integrate(ng.InnerProduct(coordinates, normal)),
                 'radial_dot_normal': integrate(normal_radial_dot)}
         integrated[str(qorder)] = per_label
+    # Persist the raw and ordinary integration paths before trying the separate
+    # volume-facet API. An unsupported extra path must not erase these results.
+    dump(out/'ordinary_boundary_moments.json', {'raw': raw, 'Integrate': integrated})
+    marker('volume_facet_controls')
+    facet_result = facet_controls(mesh, out, ng, coordinates, radial, normal, volume, policy)
     marker('summarize_without_admission')
     def totals(rows):
         full = np.sum([row['normal_integral'] for row in rows.values()], axis=0)
@@ -204,6 +280,7 @@ def run(policy, cfg, out, ng):
         'raw_boundary_moments': raw, 'raw_totals': totals(raw),
         'Integrate_boundary_moments': integrated,
         'Integrate_totals': {key: totals(value) for key,value in integrated.items()},
+        'volume_facet_control': facet_result,
         'raw_vs_Integrate_same_order_max_absolute_moment_difference': max(
             float(np.max(np.abs(np.asarray(raw[label][quantity])-np.asarray(integrated[str(order)][label][quantity]))))
             for label in labels for quantity in raw[label]),

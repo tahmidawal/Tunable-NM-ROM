@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "configurations": 1310,
+  "figures": 153,
+  "independent_reference_loader_raw_spot_checks": 4,
+  "independent_3d_field_decode_checks": {
+    "M2": {
+      "direct_lattice_decode_vs_gram_max_difference": 7.039941546382877e-14,
+      "passed": true
+    },
+    "W1024": {
+      "direct_lattice_decode_vs_gram_max_difference": 5.04717795335452e-14,
+      "passed": true
+    }
+  },
+  "configuration_counts": {
+    "2D": 476,
+    "3D": 834
+  },
+  "timing_linked_case_records": 3574,
+  "retained_admitted_timing_repetitions": 8651,
+  "source_scoring_witnesses": 508,
+  "checks": [
+    "unique configuration keys",
+    "fixed population and error aggregation",
+    "same-output timed score and reference identity retention",
+    "timing repetition aggregation",
+    "no runtime inferred from first-call or cross-job historical 3D data",
+    "no 3D solver K label misrepresented as latent dimension",
+    "knob coverage and image existence",
+    "all retained artifact checksums"
+  ],
+  "limits": [
+    "Recorded historical qualification audits are reused; numerical solvers are not rerun.",
+    "Reference uncertainty is conditional; no sealed cohort or new validation is accessed.",
+    "3D nonlinear-head K and complete matched tolerance timing ladders remain absent."
+  ]
+}

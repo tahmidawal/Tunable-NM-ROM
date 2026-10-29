@@ -147,13 +147,49 @@ def main():
       'mesh3d':ROOT/'reports/2026-10-26-burgers3d-refinement/data/frozen-mesh.json.gz',
       'solver3d':ROOT/'reports/2026-10-26-burgers3d-refinement/data/lane-solver-export.json',
       'values3d':ROOT/'reports/2026-10-26-burgers3d-refinement/VALUES.json',
+      'inventory3d':ROOT/'reports/2026-10-26-burgers3d-refinement/data/inventory.json.gz',
     }
-    provenance={}
+    provenance=json.loads((HERE/'SOURCES.json').read_text()) if (HERE/'SOURCES.json').exists() else {}
     for name,p in sources.items():
         b=p.read_bytes();doc=json.loads(gzip.decompress(b) if p.suffix=='.gz' else b)
         dump(DATA/f'{name}.json.gz',doc)
         provenance[name]={'source':str(p),'sha256':sha(p),'retained':f'data/{name}.json.gz'}
     (HERE/'SOURCES.json').write_text(json.dumps(provenance,indent=2)+'\n')
+    target=DATA/'historical3d-work.json.gz'
+    if not target.exists():
+        print('Collecting 3D invocation work',flush=True)
+        inventory=json.loads(gzip.decompress(sources['inventory3d'].read_bytes()))
+        selected=[o for o in inventory['observations'] if o['lane']=='dims' and o['cohort']=='val64'
+                  and o['n_scored']==64 and o.get('selection_allowed')]
+        bypath={}
+        for o in selected:bypath.setdefault(o['result'],[]).append(o)
+        out=[]
+        for path,obs in bypath.items():
+            raw=json.loads(Path(path).read_text()); raw_sha=sha(path)
+            bykey={}
+            for row in raw.get('rows',[]):
+                if 'tag' in row and 'spec' in row:
+                    bykey.setdefault(row['tag']+'|'+row['spec'],{})[str(row['case'])]=row
+            for o in obs:
+                rows=bykey.get(o['config_key'],{})
+                if sorted(map(int,rows))!=list(range(64)):continue
+                scorepath=Path(o['source']);scores=json.loads(scorepath.read_text())['scores'][o['config_key']]
+                assert sorted(map(int,scores))==list(range(64))
+                cases={}
+                for cid,row in rows.items():
+                    st=row.get('steps',{})
+                    if not isinstance(st,dict) or not any(k in st for k in ['it','step_it','q']):break
+                    iterations=st.get('it',st.get('step_it',st.get('q')))
+                    gamma=st.get('gn',st.get('step_gn',st.get('gam')))
+                    cases[cid]={'e':scores[cid]['e'],'eps':scores[cid]['eps_ref'],
+                      'iterations':sum(iterations),'residual_median':float(np.median(st['rn'])) if 'rn' in st else None,
+                      'gamma_max':float(max(gamma)) if gamma else None,'valid':row['valid']}
+                if len(cases)!=64:continue
+                out.append({'identity':o['identity'],'key':o['config_key'],'attempt':o['attempt'],
+                  'job_id':o['job_id'],'source_result':path,'result_sha256':raw_sha,
+                  'source_scores':str(scorepath),'scores_sha256':sha(scorepath),'cases':cases,
+                  'qualification_evidence':o['qualification_evidence'],'qualification_scope':o['qualification_scope']})
+        dump(target,out)
 
 
 if __name__=='__main__':main()

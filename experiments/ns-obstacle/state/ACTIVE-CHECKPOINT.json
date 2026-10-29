@@ -1,19 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6624571,
-      "attempt": "g2-population-re20-02",
-      "release": "d931edeeb"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
     "Audit actual repaired Re20 completion, then frozen remaining14-group source/resource release",
     "Complete finite-channel numerical qualification/all15 noise evidence and measured runtime/disk plan",
     "Complete scoped admission and actual ROM preparation/training/solves/held-out comparisons"
   ],
-  "completed_allocated_gpu_hours": 1.5575,
+  "completed_allocated_gpu_hours": 1.6436111111111111,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -132,5 +126,5 @@
   "cold_archive_recovery": "Independently accepted Git-only archive recovery; source89da05782, README in retention; canonical numerical arrays remain warm",
   "cache_primary01_result": "Independent1305-file/208-array/28-comparison/25-closure raw audit PASS; reviews/CACHE-PRIMARY01-RESULT-REVIEW.json; no physical admission",
   "population_re20_release": "reviews/RELEASE-POPULATION-RE20-01.json; single submission authorized, eight controls, no admission",
-  "population_re20_result": "Job6623674 FAILED32s before first solve: missing adjacent mesh reload_checks.json; runtime-closure approval retracted; fresh reviewed package required"
+  "population_re20_result": "Repaired6624571 COMPLETED310s/all8solves and commonreadout; full raw audit pending. Failed01 remains retained and charged."
 }

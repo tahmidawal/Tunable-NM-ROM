@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "fine_preparation_terminal_pending_review",
+  "status": "bank_fit_submitted",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -1393,9 +1393,35 @@
       "allocated_gpu_hours": 0.1763888888888889,
       "node": "pax023",
       "execution_report": "Process completed; full prepared and restored fields present; independent numerical/retention review pending."
+    },
+    {
+      "job_id": 6634647,
+      "attempt": "bank-fit01",
+      "phase": "fixed_architecture_bank_training",
+      "budget_bucket": "ROM",
+      "source_commit": "b95841034a2435c43e59a17210a8e4320dc703da",
+      "release_commit": "3f45682bb",
+      "release_sha256": "9e821d59f825a5591225a773e7bea9c6778edd2582eee9e8f4f376592fe24a49",
+      "candidate_sha256": "04f32d7e764ee2b98005a204a8338982f5b0a8dedbc86c64fad322df1f2f8ef2",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/bank-fit01",
+      "submitted_utc": "2026-10-29T12:21:34.698106+00:00",
+      "state": "PENDING",
+      "state_last_observed": "PENDING",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "allocation_seconds_reserved": 2100,
+      "outer_process_ceiling_seconds": 2095,
+      "optimizer_seconds_cap": 1800,
+      "optimizer_step_cap": 3000,
+      "single_submission": true,
+      "resume_authorized": false,
+      "validation_access_authorized": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6634647
+  ],
   "completed_gpu_hours": 4.391666666666667,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
   "total_allocated_gpu_hours_completed": 4.391666666666667,

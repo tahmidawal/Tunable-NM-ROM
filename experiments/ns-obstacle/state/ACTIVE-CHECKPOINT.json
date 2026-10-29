@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": false
   },
-  "next_action": "ROM owner single-submit bank-fit01 under fresh guards; monitor actual fit and preserve checkpoints. Prepare separate120s development materialization proposal debited from3600s development phase.",
+  "next_action": "Monitor actual bank6634647, collect checkpoints and fixed recipe outcome; independently review2-case development-materialization proposal within120s debit from3600.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -212,7 +212,9 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [],
+  "live_job_ids": [
+    6634647
+  ],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -281,6 +283,22 @@
     "allocation_seconds": 2100,
     "optimizer_seconds": 1800,
     "steps": 3000,
-    "submitted": false
+    "submitted": true
+  },
+  "bank_fit_submission": {
+    "release_sha256": "9e821d59f825a5591225a773e7bea9c6778edd2582eee9e8f4f376592fe24a49",
+    "candidate_sha256": "04f32d7e764ee2b98005a204a8338982f5b0a8dedbc86c64fad322df1f2f8ef2",
+    "time_unix": 1793276494.6981056,
+    "queue_before": "",
+    "namespace_bytes": {
+      "ns-obstacle-rom-20261027": 19433450288,
+      "ns-obstacle-2d-20261027": 4014258810,
+      "ns-obstacle-3d-20261027": 133799
+    },
+    "maximum_global_bytes": 25595326545,
+    "job_id": 6634647,
+    "queue_after": "6634647|ctol_nsobsrom_bank|PENDING\n",
+    "submitted_once": true,
+    "local_free_bytes_after": 11648335872
   }
 }

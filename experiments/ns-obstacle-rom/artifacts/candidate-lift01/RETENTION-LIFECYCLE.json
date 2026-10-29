@@ -44,7 +44,13 @@
   "logical_duplicate_bytes_removed": 824962699,
   "free_before_bytes": 16581484544,
   "free_after_bytes": 17408991232,
-  "remote_cleanup": "completed_exact_duplicate_only_after_audit_and_durable_mirror",
+  "remote_cleanup": "completed_after_fresh_847_file_archive_result_and_terminal_checks",
   "unique_data_deleted": false,
-  "remote_cleanup_receipt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  "remote_cleanup_receipt_sha256": "31720a7171802cc5f7cc883a0160ab8ac5282a0d06a59de4da1054646bbab464",
+  "retracted_remote_cleanup_claim": {
+    "commit": "1594e05f1",
+    "reason": "Remote terminal-status assertion failed before deletion; following shell step incorrectly marked cleanup complete against an empty receipt. Original empty receipt and commit are preserved.",
+    "scientific_or_unique_data_affected": false
+  },
+  "remote_cleanup_receipt": "experiments/ns-obstacle-rom/checks/candidate-lift-remote-cleanup-verified.json"
 }

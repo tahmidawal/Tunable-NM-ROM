@@ -1,0 +1,49 @@
+{
+  "schema": "ns-obstacle-fd1-handoff-release-v1",
+  "authorized_stage": "development_population_materialization",
+  "split": "development",
+  "source_sha256": "ef0fb7638f05a7aea40a16a1267f18d06f9bad3336451bd9f88cd4adaa5c8353",
+  "plan_sha256": "f7c88ddaab9dacfca0ae373bbbaf86f019a0b12ff7b4a0cf19d4032cf1f9903a",
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "single_execution": true,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01",
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01/results/population",
+  "launcher_sha256": "42a33b526ee8e9c93f7d8d9426a48a46875e8af4eb9b441d0ebb4a06da8b0cdf",
+  "input_inventory_sha256": "cec6c210d366c834d40624a9e81426042981b5d7ba7f6d593c980f714a9f788f",
+  "allocation_seconds": 120,
+  "outer_timeout_seconds": 110,
+  "outer_kill_grace_seconds": 5,
+  "debit_from_existing_development_reservation_seconds": 120,
+  "remaining_development_reservation_seconds": 3480,
+  "fom_reservation_unchanged_seconds": 2160,
+  "remote_workspace_archive_envelope_bytes": 4294967296,
+  "retain_bank_collection_future_envelope_bytes": 2147483648,
+  "global_remote_limit_bytes": 53687091200,
+  "local_floor_bytes": 10737418240,
+  "other_local_reserved_bytes": 268435456,
+  "independent_packet_review_sha256": "d0d525e4b82da4b25d6c4152eeaaed0585b412a0c63e1d8a4e4ddf5d224a5164",
+  "staging_policy": "Direct upload of exact canonical warm inputs only; fail closed on missing/changed files. No local bulk copy or automatic cold fallback.",
+  "required_guards": [
+    "Fresh all92 input hashes/types and complete staged SOURCE-SHA256SUMS",
+    "Fresh pre/post account queue and maximum2 campaign allocations",
+    "Fresh total3namespace usage plus new4GiB and outstanding bank retention envelope below50GiB",
+    "Fresh10GiB+256MiB local floor; actual output/archive measurement before any collection",
+    "Unique never-used execution directory/claim; one submission; no automatic retry"
+  ],
+  "training_or_calibration_released": false,
+  "validation_access_authorized": false,
+  "output_review_required_before_use": true
+}

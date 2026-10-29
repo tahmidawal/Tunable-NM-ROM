@@ -1,0 +1,32 @@
+{
+  "schema": "ns-obstacle-accuracy-first-neural-proposal-v2",
+  "status": "source_review_candidate_not_execution_release",
+  "variant": "POD-guided supervised spatial modes with bounded envelope and multiscale inputs",
+  "training_only": true,
+  "validation_allowed": false,
+  "rank4_is_first_candidate_not_accuracy_ceiling": true,
+  "multiple_changes_not_isolated_causal_ablation": true,
+  "mode_weights": "normalized sqrt(sigma_i/sigma_1), i=1..4",
+  "objective": "sum_i weight_i*(full weighted value error squared / teacher value norm squared + full weighted dimensionless gradient error squared / teacher gradient norm squared)",
+  "checkpoint_selection": "lowest measured post-update full-training objective; never development/validation",
+  "optimizer": "cosine-decay Adam then deterministic full-rule blocked safeguarded L-BFGS with Armijo search",
+  "parameter_count": 36872,
+  "theta_gradient_checkpoint_bytes": 589952,
+  "maximum_measured_checkpoints": 322,
+  "raw_output_reservation_bytes": 536870912,
+  "raw_plus_archive_reservation_bytes": 1073741824,
+  "prospective_job_seconds": 3600,
+  "walltime_selection_pending_throughput_review": true,
+  "throughput_planning": {
+    "assumed_full_objective_gradient_seconds": 5,
+    "expected_lbfgs_evaluations_per_step": 2,
+    "full_adam_checks": 21,
+    "lbfgs_iterations": 300,
+    "full_evaluation_projection_seconds": 3105,
+    "other_setup_adam_retention_allowance_seconds": 495,
+    "assumptions_not_measurements": true
+  },
+  "resume": "separately released exact continuation; restore optimizer/RNG/phase/curvature and cumulative elapsed/counts; no automatic reset",
+  "original_bank_trainer_pilot_unchanged": true,
+  "physical_admission": false
+}

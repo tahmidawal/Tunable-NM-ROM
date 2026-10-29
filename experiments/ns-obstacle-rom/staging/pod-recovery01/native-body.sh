@@ -2,7 +2,7 @@
 set -euo pipefail
 : "${SLURM_JOB_ID:?reviewed batch allocation required}"
 JOB_DIR=$(pwd -P)
-[ "$JOB_DIR" = /cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01 ] || exit 64
+[ "$JOB_DIR" = /cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/pod-recovery01 ] || exit 64
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 export JAX_DEFAULT_MATMUL_PRECISION=highest JAX_ENABLE_X64=true
 export PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1

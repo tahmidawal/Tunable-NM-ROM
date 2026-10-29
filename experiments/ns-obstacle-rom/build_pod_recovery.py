@@ -44,7 +44,7 @@ def build():
     # floating arithmetic; exact checks still reject any actual difference.
     outer=outer.replace('#SBATCH --partition=gpu','#SBATCH --partition=gpu\n#SBATCH --nodelist=pax023')
     (out/'native.sh').write_text(outer)
-    body=(old/'native-body.sh').read_text().replace('development_launch2d.py','pod_recovery2d.py')
+    body=(old/'native-body.sh').read_text().replace('development_launch2d.py','pod_recovery2d.py').replace('model-development01','pod-recovery01')
     body=body.replace('--candidate STAGE-CANDIDATE.json --release STAGE-RELEASE.json','--plan RECOVERY-PLAN.json --release RECOVERY-RELEASE.json')
     body=body.replace('results/development-stage/STAGE-RESULT.json','results/recovery/RECOVERY.json').replace('execution_completed_pending_independent_review','completed_unsampled_controls_pending_independent_review').replace('JOB_PHASE=frozen_model_development','JOB_PHASE=missing_unsampled_pod_controls')
     body=body.replace('sha256sum -c SOURCE-SHA256SUMS','export ROM_ALLOCATION_START_UNIX_SECONDS=$("$PY" -c "import time; print(time.time())")\nsha256sum -c SOURCE-SHA256SUMS')

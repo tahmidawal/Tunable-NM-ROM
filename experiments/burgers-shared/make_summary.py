@@ -15,7 +15,7 @@ def main():
     result['gpu_seconds'] = sum(e['actual_gpu_seconds'] for e in ledger['entries'])
     result['gpu_cap_seconds'] = ledger['cap_seconds']
     for name, arm in (('step', 'affine'), ('replay', 'replay')):
-        path = HERE/f'runs/{name}-screen01/output/dev6/result.json'
+        path = HERE/f'checks/source-results/{name}.json'
         data = json.loads(path.read_text())
         assert data['complete'] and not data['gate']['passed'] and not data['continue_accuracy']
         timings = {(t['arm'], t['case'], t['block']): t for t in data['timings']}

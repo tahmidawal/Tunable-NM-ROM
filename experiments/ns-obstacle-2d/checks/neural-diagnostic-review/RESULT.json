@@ -1,0 +1,93 @@
+{
+  "schema": "ns-obstacle-neural-diagnostic-saved-array-audit-v1",
+  "passed": true,
+  "physical_admission": false,
+  "pressure_metric": "scaled RMS error divided by U^2; not pressure-relative error",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.18279756160245342,
+        "pressure_scaled": 0.14961815959011154,
+        "divergence": 0.005450791922862584,
+        "velocity_gradient_scaled": 0.5890657941251615,
+        "mass": 0.008070393590047784,
+        "boundary_trace": 3.542728165553694e-14,
+        "drag_relative": 0.36476080181705245,
+        "transverse_absolute": 0.4286564970168632
+      },
+      "force": [
+        3.886584611116782,
+        0.4488400379928881
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.3101467498345634e-15,
+      "finite_difference_errors": [
+        1.1709909310466545e-12,
+        1.62092997679285e-11,
+        4.98360506708919e-10
+      ],
+      "stationarity_gradient": 8.8041164081391e-11,
+      "residual_norm": 0.19667371770998035,
+      "projection_floor": 0.1474010630072039,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.2127763330679679,
+        "pressure_scaled": 0.15938912260154262,
+        "divergence": 0.006499892073272859,
+        "velocity_gradient_scaled": 0.6915102130277347,
+        "mass": 0.007587415681473368,
+        "boundary_trace": 1.0906526003779649e-13,
+        "drag_relative": 0.44262263721962825,
+        "transverse_absolute": 0.4339868288299714
+      },
+      "force": [
+        2.886458964763489,
+        0.4384170167435198
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.2030736829514734e-15,
+      "finite_difference_errors": [
+        2.0356644470527445e-12,
+        2.0669434904824465e-11,
+        8.422119806125314e-11
+      ],
+      "stationarity_gradient": 6.522993945981574e-10,
+      "residual_norm": 0.19642868859152915,
+      "projection_floor": 0.16601847872577472,
+      "floor_consistent": true
+    }
+  ],
+  "provenance": {
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/DIAGNOSTIC.json": "94cd246c362cce71c41a8427d4fb5595014d067d087ee90027bbe420c6f1262c",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/diagnostic_status_005.json": "b5ca43bf0929f2fe876615d354e284f52540711d1b69cdb4b5b1d64d722fb8b0",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/diagnostic_status_005.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_diagnostic_model.json": "d2fa92baba827f68d8969399fec46e85eaac2b81a026bf1270dc6cd2570a97e0",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_diagnostic_model.npz": "71a0727db4625e6ab9e5a92c25450a1a1fbb474e8535aa320ff317d837711335",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01/results/preparation/prepared/manifest.json": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01/results/preparation/prepared/training.npz": "222acff57eb387c949a960b43f58b472bbd1d047fa7c7efd4d6ed367dbf2bc0d",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01/results/preparation/prepared/boundary.npz": "7965a23c84dcd515322efb779aec7c4da3462206a211781a3d1f7d9ae51e619f",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize02/results/population/development.json": "7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize02/results/population/16.875/fields.npz": "a18b2110f55bcfb652f0f7506332d7ea4c17d24b383b59d60454b43af72d7608",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_16.875_raw_invocation.json": "f282b36f6080ff8bcfb4ad844fa5476b8176f95ef571e35ff1f77d96b8fd561a",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_16.875_raw_invocation.npz": "d789139658d3230d55f257f765a1e4b8d468f606cf50ff7d9643b5b339fec67d",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_16.875_diagnostic_arrays.json": "b2b4882e328ba04f6a9926d6b77a031e32d3872062632da358b1842224abba07",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_16.875_diagnostic_arrays.npz": "5bcdf7fd4482078136da987feb6a070e5914e5cd6e3f8c201f70303cad6e2bc2",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize02/results/population/23.125/fields.npz": "3f46c7530afb54520d96e444024aacfdf6eeb08f1d34606dbc7c6cfd67be9263",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_23.125_raw_invocation.json": "d424dcd57a80dc979b1755d0ae8e97a8bb930e4b881d1be27e66e0c6f11c3d92",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_23.125_raw_invocation.npz": "903db8da98fa6e717d12d08f157eece94843ee3495cb8fbc4419dc79923c848b",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_23.125_diagnostic_arrays.json": "05a6cd30ce5c255496eaa4c26d5114162c1e3a368c6701628c0842a4ce0410e2",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01/results/diagnostic/bank_r8_23.125_diagnostic_arrays.npz": "60a8b2146aa5bcc00df8b57c74eaffdad86bc4833b963945497c60f9eb2121d7"
+  },
+  "elapsed_seconds": 3.8987377579906024,
+  "peak_rss_bytes": 594817024,
+  "limitations": [
+    "No native FE assembly or new solve.",
+    "Saved direct arrays compared with independently replayed saved tensor.",
+    "Force contraction replay, not fresh boundary traction assembly.",
+    "No original full-operator fingerprint equality claim."
+  ]
+}

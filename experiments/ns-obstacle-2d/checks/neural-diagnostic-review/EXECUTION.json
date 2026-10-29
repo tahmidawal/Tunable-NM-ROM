@@ -1,0 +1,31 @@
+{
+  "schema": "ns-obstacle-consolidated-audit-execution-and-corrections-v1",
+  "script_sha256": "d72705794fd068d717d1988f512b89501417bdb492b01810d2a994b94edce0f3",
+  "result_sha256": "2d91c2efc7c423cc849e09c59ab161142732434f0cf5cc5a8d0568b3fdba8f4c",
+  "executor": "independent numerical_resume reviewer",
+  "command": "SSH stdin to tufts-login: OPENBLAS_NUM_THREADS=1 /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python -B -",
+  "subprocess_timeout_seconds": 60,
+  "exit_code": 0,
+  "stderr_empty": true,
+  "result_origin": "verbatim reviewer-returned corrected consolidated execution JSON; reference owner did not repeat execution",
+  "prior_audit_only_corrections": [
+    {
+      "incorrect": "asserting ROM stationarity gradient below1e-10",
+      "correct": "original solver.py uses gradient_tolerance1e-9 times max(initial gradient,1); current saved audit verifies even the sufficient absolute1e-9 bound",
+      "effect": "prior audit-only assertion retracted; no solver/code/state/threshold change"
+    },
+    {
+      "incorrect": "using semantic training_array_sha256 as training NPZ container hash",
+      "correct": "container identity from prepared manifest coefficient_files; semantic array identity remains separate"
+    },
+    {
+      "incorrect": "requiring exact force contraction equality across BLAS summation paths",
+      "correct": "audit permits1e-13 absolute replay discrepancy; current corrected execution replay gap0"
+    }
+  ],
+  "original_solver_sha256": "8d9681d4691a2f06187d1d19dcc36b7bbfbb967d921dc40c5586d5a09b6cdc43",
+  "finite_difference_direction": "independent physical all-ones direction; not claimed to duplicate original diagnostic direction",
+  "no_new_solve_or_native_computation": true,
+  "physical_admission": false,
+  "backup_status": "pending disk reserve recovery; no Git/mirror writes authorized at current below10GiB headroom"
+}

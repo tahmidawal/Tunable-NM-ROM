@@ -1,0 +1,29 @@
+{
+  "schema": "ns-obstacle-fd1-handoff-release-v1",
+  "source_sha256": "ef0fb7638f05a7aea40a16a1267f18d06f9bad3336451bd9f88cd4adaa5c8353",
+  "plan_sha256": "46bcddb691c813ccf2c2b1ffa2bdad2497704887f4d36bf6a61ff21ef7a69f13",
+  "split": "training",
+  "single_execution": true,
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "output_directory": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/datasets/fd1-training01-handoff",
+  "scope": "Local metadata-only training-manifest handoff from nine independently reviewed materializations",
+  "raw_archive_source_commit": "859cf77af1b56e7e2af46dcfd86b53c16da2e59f",
+  "raw_archive_mirror_commit": "6967aa98f5887862c73be706e745cd4c0ada3c8c",
+  "case_review_report_sha256": "4b01d2d62f941d5431c0411942ef6afb69d6ae342b8a6e8ed24a0c5d00bc7826",
+  "adapter_review_sha256": "86e8bc4fd05d5a28e03ef44bf0f6473a956a8687639af3454f6a7c4e2984dfde",
+  "native_compute_released": false,
+  "bank_training_released": false
+}

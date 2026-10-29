@@ -49,7 +49,7 @@ def build(a):
     (out/'capacity/evidence').mkdir()
     for key in ('measurement', 'factor_reuse', 'native_control_review'):
         original = Path(amend[key]['path'])
-        target = out/'capacity/evidence'/(key+'.json')
+        target = out/'capacity/evidence'/(key+original.suffix)
         shutil.copyfile(original, target)
         assert sha_file(target) == amend[key]['sha256']
         amend[key]['path'] = 'evidence/'+target.name
@@ -84,9 +84,17 @@ def build(a):
     lift_folder = Path(admitted['resolved_common_stokes_lift']['archive']).parent
     paths.update([lift_admission, lift_folder/'common_stokes_lift.json', lift_folder/'common_stokes_lift.npz'])
     rows = []
+    archive_root = ROOT/'artifacts/training-materialize01'
+    cold_path = archive_root/'GIT-COLD-ARCHIVE.json'
+    cold = json.loads(cold_path.read_text())
     for path in sorted(paths):
-        rows.append({'source':str(path.relative_to(ROOT)), 'destination':str(path.relative_to(ROOT)),
-                     'sha256':sha_file(path), 'bytes':path.stat().st_size, 'role':'scientific_input'})
+        row = {'source':str(path.relative_to(ROOT)), 'destination':str(path.relative_to(ROOT)),
+               'sha256':sha_file(path), 'bytes':path.stat().st_size, 'role':'scientific_input'}
+        if path.is_relative_to(archive_root):
+            row['archive_source'] = {'manifest_source':str(cold_path.relative_to(ROOT)),
+                'manifest_sha256':sha_file(cold_path),
+                'member':'training-materialize01/'+str(path.relative_to(archive_root))}
+        rows.append(row)
     for name in source_closure():
         path = ROOT/name
         rows.append({'source':name, 'destination':name, 'sha256':sha_file(path),
@@ -99,7 +107,12 @@ def build(a):
     inventory = {'schema':'ns-obstacle-fine-preparation-input-inventory-v1',
         'preparation_source_sha256':preparation_digest(), 'builder_sha256':sha_file(__file__),
         'training_manifest':manifest_rel, 'files':rows, 'bulk_inputs_copied_locally':False,
-        'reference_admission_sha256':admitted['reference_admission_sha256']}
+        'reference_admission_sha256':admitted['reference_admission_sha256'],
+        'staging_source_sha256':sha_file(ROOT/'stage_preparation_packet.py'),
+        'source_inputs_sha256':sha_file(ROOT/'reference_inputs/source_inputs.py'),
+        'archive_recovery_sha256':sha_file(ROOT/'reference_inputs/git_archive_recovery.py'),
+        'all_unique_cold_recovery_bytes':cold['archive_bytes'],
+        'verify_warm_archives':True, 'conservative_recovery_reservations_unchanged':True}
     (out/'INPUT-INVENTORY.json').write_text(json.dumps(inventory, indent=2)+'\n')
     plan = {'schema':'ns-obstacle-fine-preparation-launch-candidate-v1', 'execution_released':False,
         'job_directory':JOB, 'allocation_seconds':1350, 'outer_timeout_seconds':1335,
@@ -115,7 +128,9 @@ def build(a):
         'bank_training_released':False,
         'required_release_fields':['capacity_amendment','capacity_review','launcher_sha256',
             'input_inventory_sha256','single_execution','allocation_seconds','outer_timeout_seconds',
-            'outer_kill_grace_seconds','job_directory'],
+            'outer_kill_grace_seconds','job_directory','source_commit','staging_source_sha256',
+            'source_inputs_sha256','archive_recovery_sha256','verify_warm_archives',
+            'conservative_recovery_reservations_unchanged','local_other_reserved_bytes'],
         'required_before_staging':['actual training handoff review','exact capacity review',
             'fresh local input/cold-recovery/native staging guards','global remote namespace ledger',
             'single exact coordinator release']}

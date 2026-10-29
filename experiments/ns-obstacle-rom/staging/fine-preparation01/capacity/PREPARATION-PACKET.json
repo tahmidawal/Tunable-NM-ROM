@@ -1,0 +1,89 @@
+{
+  "schema": "ns-obstacle-first-preparation-packet-candidate-v1",
+  "execution_released": false,
+  "physical_admission_created": false,
+  "source_sha256": "0c78a99ddd52ebcfe4112165b51bb821c29ab2d3d0cf23402d7d3b23d2465754",
+  "preparation_source_sha256": "6c38b93a1dc63ab781db02cbdbdd74610750e81eaab82221f500096c08037b16",
+  "training_manifest": {
+    "path": "datasets/fd1-training01-handoff/training.json",
+    "sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f"
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "capacity_amendment_sha256": "263ca735e3e19eaa14e9e9dd2deb13254fa53e45acd0630a66ea8e777fff2e07",
+  "mandatory_preparation_options": {
+    "point_block_volume": true,
+    "verify_primary_volume": true
+  },
+  "original_ROM_subcap_seconds": 14400,
+  "original_preparation_reservation_seconds": 1800,
+  "prospective_subreservations_seconds": {
+    "nine_case_materialization_including_setup_finalization": 450,
+    "fine_preparation_and_replay_including_setup_finalization": 1350
+  },
+  "runtime_assessment": {
+    "control_sha256": "8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6",
+    "observed_single_state_fresh_replay_seconds": 6.876741833053529,
+    "eight_primary_reconstructions_component_projection_seconds": 55.013934664428234,
+    "inference_not_measurement": true,
+    "unmeasured": [
+      "NPZ writes and hashes",
+      "legacy derivation",
+      "fine basis/eigensolve/export/replay"
+    ],
+    "hard_bounds_are_not_completion_guarantees": true
+  },
+  "materialization_and_previous_preparation_seconds_must_be_deducted": true,
+  "disk": {
+    "actual_warm_scientific_input_file_bytes": 1097722508,
+    "actual_full_rule_expanded_bytes_by_case": [
+      134103128,
+      134103128,
+      134103128,
+      134103128,
+      134103128,
+      134103128,
+      134103128,
+      134103128,
+      134103128
+    ],
+    "prospective_original_primary_restored_workspace_bytes": 13230238999,
+    "projection_sha256": "8e0a873de49240ee70e446d7603092dccf7b2728a179fd50def6ddec0cac4b57",
+    "other_active_reservation_bytes": 268435456,
+    "minimum_free_reserve_bytes": 10737418240,
+    "additional_workspace_plus_reserve_bytes": 24236092695,
+    "fresh_staging_inputs_plus_workspace_and_reserve_bytes": 25333815203,
+    "local_free_bytes_now": 12660142080,
+    "not_in_envelope": [
+      "native wheel/venv staging",
+      "Git transport or complete collection copies",
+      "JSON/ZIP overhead and other allocated stage outputs"
+    ],
+    "compression_or_duplicate_savings_assumed": false
+  },
+  "required_before_execution": [
+    "independent actual training handoff review",
+    "independent exact capacity amendment review",
+    "measured job/staging and transport disk packet including listed exclusions",
+    "remaining original preparation-time ledger and hard-wall release",
+    "exact native preparation release binding training manifest, source, reference and capacity review"
+  ],
+  "required_after_execution": [
+    "independent full fine primary replay and native basis/probe evidence review",
+    "actual peak RSS, elapsed time and retained bytes",
+    "no derived original/restored omission before review",
+    "fresh-consumer release binds actual result and native preparation review"
+  ]
+}

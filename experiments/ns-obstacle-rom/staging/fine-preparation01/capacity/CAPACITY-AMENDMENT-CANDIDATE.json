@@ -1,0 +1,61 @@
+{
+  "schema": "ns-obstacle-rom-count-capacity-amendment-v1",
+  "source_sha256": "6c38b93a1dc63ab781db02cbdbdd74610750e81eaab82221f500096c08037b16",
+  "scientific_changes": false,
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "original_caps": {
+    "mixed_dofs": 100000,
+    "elements": 20000,
+    "volume_points": 100000,
+    "boundary_points": 30000,
+    "matrix_nnz": 12000000,
+    "single_array_bytes": 1073741824,
+    "archive_bytes": 1073741824,
+    "factor_estimate_bytes": 8589934592,
+    "process_rss_bytes": 17179869184,
+    "vector_eigen_candidates": 96,
+    "velocity_scalar_eigen_candidates": 48,
+    "scalar_eigen_candidates": 32,
+    "eigensolver_iterations": 2000
+  },
+  "proposed_caps": {
+    "mixed_dofs": 437140,
+    "elements": 21153,
+    "volume_points": 1036497,
+    "boundary_points": 30000,
+    "matrix_nnz": 15937632,
+    "single_array_bytes": 1073741824,
+    "archive_bytes": 1073741824,
+    "factor_estimate_bytes": 8589934592,
+    "process_rss_bytes": 17179869184,
+    "vector_eigen_candidates": 96,
+    "velocity_scalar_eigen_candidates": 48,
+    "scalar_eigen_candidates": 32,
+    "eigensolver_iterations": 2000
+  },
+  "measurement": {
+    "path": "evidence/measurement.json",
+    "sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d"
+  },
+  "factor_reuse": {
+    "path": "evidence/factor_reuse.json",
+    "sha256": "85734edc5497d3bde956d4b71179875819e80e777f41dd8fe421a0b3f0e706cd"
+  },
+  "native_control_review": {
+    "path": "evidence/native_control_review.md",
+    "sha256": "8198c000885a5cd153c9317ec70d771e35357a5c5f5d1d9a526f4f9acc0992e3"
+  }
+}

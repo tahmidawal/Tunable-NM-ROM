@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "native_primary_replay_submitted_reference_cache_pending",
+  "status": "native_primary_replay_completed_pending_audit_reference_cache_pending",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -874,23 +874,23 @@
       "minimum_free_reserve_bytes": 10737418240,
       "lane": "rom",
       "attempt": "native-primary06",
-      "state_last_observed": "SUBMITTED",
+      "state_last_observed": "COMPLETED",
       "gpus": 1,
       "cpus_reserved": 16,
       "memory_GiB": 64,
       "wall_limit_seconds": 1200,
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 41,
+      "allocated_gpu_hours": 0.01138888888888889,
       "reference_admitted": false,
-      "training_released": false
+      "training_released": false,
+      "state": "COMPLETED",
+      "exit_code": "0:0"
     }
   ],
-  "live_job_ids": [
-    6620172
-  ],
-  "completed_gpu_hours": 1.4002777777777777,
+  "live_job_ids": [],
+  "completed_gpu_hours": 1.4116666666666666,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
-  "total_allocated_gpu_hours_completed": 1.4002777777777777,
+  "total_allocated_gpu_hours_completed": 1.4116666666666666,
   "last_accounting_utc": "2026-10-28T23:18:32.446161+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

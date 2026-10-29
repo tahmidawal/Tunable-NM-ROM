@@ -1,19 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6620172,
-      "attempt": "native-primary06",
-      "release": "d368e4d67"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
     "Audit batch export6618469 and finish domain diagnostics; original sensitivity gate remains failed",
     "Complete finite-channel numerical qualification/all15 noise evidence and measured runtime/disk plan",
     "Complete scoped admission and actual ROM preparation/training/solves/held-out comparisons"
   ],
-  "completed_allocated_gpu_hours": 1.4002777777777777,
+  "completed_allocated_gpu_hours": 1.4116666666666666,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -127,5 +121,6 @@
   "field_plot": "generated/fixed-channel/PROVENANCE.json",
   "export_batch01_result": "Independent retained-array audit PASS; generated/export-batch01/summary.json; only diagnostic readout timing",
   "domain_comparison01_result": "Independent899file/all4states/fullrule audit PASS as diagnostic; inlet sensitivity remains failed; generated/domain-comparison01/summary.json",
-  "fixed_channel_display_review": "Independent hashes/raw ranges/source/visual review PASS; provisional FE display only"
+  "fixed_channel_display_review": "Independent hashes/raw ranges/source/visual review PASS; provisional FE display only",
+  "native_primary06_result": "COMPLETED41s; collection and independent audit pending"
 }

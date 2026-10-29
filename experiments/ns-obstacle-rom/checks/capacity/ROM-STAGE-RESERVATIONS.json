@@ -1,6 +1,6 @@
 {
   "status": "source_only_reservation_not_execution_release",
-  "source_sha256": "64b59f9dc6fb97dfc3ecb6d327b4d27e806b2d05e3fff0595d7cb836534965fa",
+  "source_sha256": "b0b179282bb7f85c5c0c99421fccedf10913180166fe4fd9e1698a92fe63802c",
   "capacity_projection_sha256": "8e0a873de49240ee70e446d7603092dccf7b2728a179fd50def6ddec0cac4b57",
   "measurement_sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
   "allocation_seconds": {
@@ -26,8 +26,8 @@
     "all_registered_paired_full_outputs": 16716623616,
     "paired_returned_states_upper_bound": 1762838784,
     "training_checkpoint_allowance": 134217728,
-    "FOM_calibration_per_candidate": 586450400,
-    "native_scalar_readout_per_candidate": 82919760,
+    "FOM_calibration_per_candidate": 652786208,
+    "native_scalar_readout_per_candidate": 149255568,
     "base_new_archive_only_payload": 25148111447,
     "minimum_free_reserve": 10737418240,
     "fine_remote_original_primary_restored_workspace": 13230238999
@@ -41,21 +41,21 @@
   "calibration_ladder_scenarios": [
     {
       "candidate_count": 2,
-      "new_archive_only_payload_bytes": 26321012247,
-      "payload_plus_reserve_before_transport_bytes": 37058430487
+      "new_archive_only_payload_bytes": 26453683863,
+      "payload_plus_reserve_before_transport_bytes": 37191102103
     },
     {
       "candidate_count": 4,
-      "new_archive_only_payload_bytes": 27493913047,
-      "payload_plus_reserve_before_transport_bytes": 38231331287
+      "new_archive_only_payload_bytes": 27759256279,
+      "payload_plus_reserve_before_transport_bytes": 38496674519
     },
     {
       "candidate_count": 6,
-      "new_archive_only_payload_bytes": 28666813847,
-      "payload_plus_reserve_before_transport_bytes": 39404232087
+      "new_archive_only_payload_bytes": 29064828695,
+      "payload_plus_reserve_before_transport_bytes": 39802246935
     }
   ],
-  "local_free_bytes_at_generation": 14625349632,
+  "local_free_bytes_at_generation": 22254161920,
   "disk_flow": [
     "Keep actual FD1 input/cache hashes and paths warm; materialize derived full-rule/prepared fields only in fresh allocated jobs.",
     "Fine preparation must complete exact primary replay; originals remain until independent acceptance.",

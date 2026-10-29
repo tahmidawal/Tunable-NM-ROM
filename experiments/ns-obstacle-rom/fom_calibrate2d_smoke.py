@@ -35,7 +35,9 @@ def main():
     fields=NS(native_owners=(None,[(lambda ip:ip,list(points),None),points,(lambda ip:ip,list(points),None),points],list(points),points,points))
     native=NS(ng=ng,X=None,cfg={'U':1.,'D':1.},evaluators={'full_velocity_pressure_fields':fields},
         diagnostics_from_evidence=lambda evidence:{'boundary_labels':np.array(['obstacle','obstacle']),
-            'fluid_normals':np.array([[1.,0.],[1.,0.]]),'boundary_weights':np.array([.5,.5])})
+            'fluid_normals':np.array([[1.,0.],[1.,0.]]),'boundary_weights':np.array([.5,.5]),
+            'velocity_gradient':np.repeat(gradient[None],2,axis=0),'boundary_velocity':points,
+            'boundary_velocity_gradient':np.repeat(gradient[None],2,axis=0),'boundary_pressure':np.array([0.,1.])})
     candidate=NS(native=native,points=points,release={'field_rule_mode':'native_exact'})
     with tempfile.TemporaryDirectory() as folder:
         root=Path(folder)
@@ -48,7 +50,7 @@ def main():
             result=readout_control(candidate,invocation,root,out)
             assert result['passed'],result
         candidate.release['field_rule_mode']='certified_requested_points'
-        fields.native_owners=(None,[(lambda ip:ip,list(points[::-1]),None),points],list(points),points,points)
+        fields.native_owners=(None,[(lambda ip:ip,list(points[::-1]),None),points,(lambda ip:ip,list(points),None),points],list(points),points,points)
         np.savez_compressed(root/'normal_orientation.mapping.batch.npz',native_to_requested=np.array([1,0]))
         out=root/'permutation';out.mkdir()
         invocation={'output_contract':'full_velocity_pressure_fields','outputs':{'velocity':points,'pressure':np.array([0.,1.])},'evidence':{'state':np.zeros(2),'Re':20.}}

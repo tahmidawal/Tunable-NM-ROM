@@ -32,6 +32,9 @@ def verify(plan_path,release_path):
         raise ValueError('frozen development-only ladder/selection policy required')
     if type(r.get('allocation_seconds')) is not int or not 0<r['allocation_seconds']<=2400:
         raise ValueError('fixed calibration allocation cap required')
+    if type(r.get('finalization_reserve_seconds')) is not int or not 60<=r['finalization_reserve_seconds']<=300 or r['finalization_reserve_seconds']>=r['allocation_seconds']:
+        raise ValueError('explicit finalization reserve within original allocation required')
+    if r.get('launcher_hard_wall_seconds')!=r['allocation_seconds']:raise ValueError('reviewed launcher hard wall must enforce original cap')
     if type(p.get('cores')) is not int or not 1<=p['cores']<=16:raise ValueError('fixed CPU policy required')
     if type(p.get('max_common_points')) is not int or not 0<p['max_common_points']<=1300000:raise ValueError('full common point cap required')
     if p.get('repetitions')!=7:raise ValueError('seven actual repetitions required')
@@ -116,12 +119,14 @@ def run(plan_path,release_path,output):
     elapsed_before_entry=time.time()-allocation_start
     if not np.isfinite(elapsed_before_entry) or elapsed_before_entry<0 or elapsed_before_entry>=release['allocation_seconds']:
         raise TimeoutError('original allocation setup already exhausted or invalid')
-    deadline=time.perf_counter()+release['allocation_seconds']-elapsed_before_entry
+    deadline=time.perf_counter()+release['allocation_seconds']-elapsed_before_entry-release['finalization_reserve_seconds']
     with (Path.cwd()/'FOM-CALIBRATION-CLAIM.json').open('x') as claim:json.dump({'release_sha256':sha_file(release_path),'job_id':os.environ['SLURM_JOB_ID']},claim)
     out=Path(output);out.mkdir(exist_ok=False);blocks=[];failures=[];source=source_digest()
     ledger={'status':'running','blocks':blocks,'construction_failures':failures,'physical_admission':False,'validation_used':False,
             'plan_sha256':sha_file(plan_path),'source_sha256':source,'reference_qualification':qualification,
-            'allocation_start_unix_seconds':allocation_start,'elapsed_setup_before_entry_seconds':elapsed_before_entry}
+            'allocation_start_unix_seconds':allocation_start,'elapsed_setup_before_entry_seconds':elapsed_before_entry,
+            'finalization_reserve_seconds':release['finalization_reserve_seconds'],
+            'cooperative_checks_do_not_bound_inflight_native_work':True,'launcher_hard_wall_seconds':release['launcher_hard_wall_seconds']}
     try:
         for candidate,files,cfg,layout in resolved:
             identifier=candidate['id'];directory=out/identifier;directory.mkdir()
@@ -135,9 +140,10 @@ def run(plan_path,release_path,output):
                 references=load_reference_population(population,plan['development_population']['sha256'],'development',query.rule_hash)
                 for reference in references:
                     for contract in OUTPUTS:
+                        if time.perf_counter()>=deadline:raise TimeoutError('science budget exhausted; preserve finalization reserve')
                         blockdir=directory/f"Re{reference['Re']}_{contract}";blockdir.mkdir()
                         values={'full_velocity_pressure_fields':len(query.points)*3,'fixed_probes':6,'integrated_forces':2}[contract]
-                        payload=7*8*(values+query.native.X.ndof)+len(query.points)*5*8+2**20
+                        payload=7*8*(values+query.native.X.ndof)+len(query.points)*9*8+2**20
                         if shutil.disk_usage(out).free<10*2**30+2*(payload+payload//50+16*2**20):raise OSError('next actual block/durable copy exceeds disk reserve')
                         if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024+3*payload+candidate['runtime_workspace_reserve_bytes']>16*2**30:
                             raise MemoryError('native workspace plus actual output retention exceeds16GiB')
@@ -147,17 +153,19 @@ def run(plan_path,release_path,output):
                         timing=calibration_cpu(call,contract,plan['cores']);receipt=save_evidence(blockdir,'actual_invocations',timing)
                         scores=[];control=None
                         for row in timing['actual_invocation_outputs']:
+                            if time.perf_counter()>=deadline:
+                                scores.append({'eligible_accuracy':False,'diagnostics_unavailable_budget':True});continue
                             try:score=score_fom_invocation(query.native,row['invocation'],reference,query.weights,query.points)
                             except Exception as exc:score={'eligible_accuracy':False,'diagnostic_failed':True,'exception':repr(exc)}
                             scores.append(score)
                         successful=[row for row in timing['actual_invocation_outputs'] if not row['invocation'].get('query_failed')]
-                        if successful:
+                        if successful and time.perf_counter()<deadline:
                             from fom_readout2d import readout_control
                             try:control=readout_control(query,successful[-1]['invocation'],directory/'construction',blockdir,deadline)
                             except Exception as exc:control={'passed':False,'exception':repr(exc)}
                         eligible=all(s.get('eligible_accuracy') is True for s in scores) and bool(control and control.get('passed'))
                         scored=save_evidence(blockdir,'accuracy',{'same_invocation_scores':scores,'readout_control':control,'timing_record':receipt})
-                        blocks.append({'candidate':identifier,'Re':reference['Re'],'contract':contract,'eligible':eligible,
+                        blocks.append({'candidate':identifier,'Re':reference['Re'],'contract':contract,'eligible':eligible,'readout_passed':bool(control and control.get('passed')),
                             'elapsed_seconds':[r['elapsed_seconds'] for r in timing['repetitions']],
                             'evidence':{'path':str(blockdir/scored['record_file']),'sha256':scored['record_sha256']},
                             'raw_evidence':receipt,'measured_block_bytes':sum(p.stat().st_size for p in blockdir.rglob('*') if p.is_file())})
@@ -170,9 +178,10 @@ def run(plan_path,release_path,output):
         evidence=out/'CALIBRATION.json';evidence.write_text(json.dumps(ledger,indent=2)+'\n')
         for contract in OUTPUTS:
             winner,ranking=choose(plan['candidates'],blocks,contract)
-            selection={'schema':'ns-obstacle-fom-development-selection-v1','selection_frozen':True,
-                'development_only':True,'validation_used':False,'matched_accuracy':winner is not None,
-                'development_Re':list(DEV_RE),'output_contract':contract,'selected_candidate':winner,'rankings':ranking,
+            selection={'schema':'ns-obstacle-fom-development-common-target-screen-v1','selection_frozen':False,
+                'development_only':True,'validation_used':False,'matched_accuracy':False,
+                'common_targets_passed':winner is not None,'bank_matching_performed':False,
+                'development_Re':list(DEV_RE),'output_contract':contract,'diagnostic_best_common_target_candidate':winner,'rankings':ranking,
                 'reference_qualification':qualification,'reference_admission_sha256':sha_file(truth),
                 'native_source_sha256':native_digest(),'calibration_source_sha256':source,'runtime_versions':plan['runtime_versions'],
                 'common_rule_points':plan['common_rule_points'],'volume_rule_sha256':plan['volume_rule_sha256'],
@@ -180,7 +189,7 @@ def run(plan_path,release_path,output):
             if winner is not None:
                 c,files,_,_=next(row for row in resolved if row[0]['id']==winner)
                 selection.update(field_rule_mode=c['field_rule_mode'],**{k:{'path':str(files[k]),'sha256':sha_file(files[k])} for k in ('config','mesh','layout','boundary','common_geometry')})
-            (out/(contract+'-selection.json')).write_text(json.dumps(selection,indent=2)+'\n')
+            (out/(contract+'-common-target-screen.json')).write_text(json.dumps(selection,indent=2)+'\n')
     except Exception as exc:ledger.update(status='failed',exception=repr(exc));raise
     finally:
         # Final accounting stays separate: frozen selections bind immutable CALIBRATION.json.

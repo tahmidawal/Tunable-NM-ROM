@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "nine_case_reconstruction_completed_pending_raw_and_semantic_audit",
+  "status": "fine_preparation_submitted",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -1368,9 +1368,31 @@
       "elapsed_seconds": 103,
       "allocated_gpu_hours": 0.02861111111111111,
       "execution_report": "all nine cases completed; batch passed; raw and semantic audit pending"
+    },
+    {
+      "job_id": 6633574,
+      "attempt": "fine-preparation01",
+      "phase": "fine_grid_preparation_and_full_primary_replay",
+      "budget_bucket": "ROM",
+      "source_commit": "355b3dbd1c30c6337a0970e8a31b5bd49cc02ed5",
+      "release_commit": "e0cb7f869",
+      "release_sha256": "f4a1ed7aab4bfd77c8d35313aa13287e12bb54557911d8e60d2334d1dde3b3dc",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01",
+      "submitted_utc": "2026-10-29T10:50:32.178199+00:00",
+      "state": "PENDING",
+      "state_last_observed": "PENDING",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "allocation_seconds_reserved": 1350,
+      "outer_process_ceiling_seconds": 1345,
+      "single_submission": true,
+      "training_released": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6633574
+  ],
   "completed_gpu_hours": 4.215277777777778,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
   "total_allocated_gpu_hours_completed": 4.215277777777778,

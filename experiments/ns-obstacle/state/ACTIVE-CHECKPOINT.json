@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": false
   },
-  "next_action": "Stage and submit exact1350-second fine preparation with full original/restored primary replay; bank training not released.",
+  "next_action": "Monitor fine preparation6633574; review actual complete original/restored replay and measured retention before any bank-fit release.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -212,7 +212,9 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [],
+  "live_job_ids": [
+    6633574
+  ],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -234,5 +236,17 @@
     "semantic_arrays_verified": 90
   },
   "training_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
-  "fine_preparation_release_sha256": "f4a1ed7aab4bfd77c8d35313aa13287e12bb54557911d8e60d2334d1dde3b3dc"
+  "fine_preparation_release_sha256": "f4a1ed7aab4bfd77c8d35313aa13287e12bb54557911d8e60d2334d1dde3b3dc",
+  "fine_preparation_submission": {
+    "job_id": 6633574,
+    "source_commit": "355b3dbd1c30c6337a0970e8a31b5bd49cc02ed5",
+    "release_sha256": "f4a1ed7aab4bfd77c8d35313aa13287e12bb54557911d8e60d2334d1dde3b3dc",
+    "allocation_seconds_reserved": 1350,
+    "outer_process_ceiling_seconds": 1345,
+    "namespace_bytes": {
+      "ns-obstacle-rom-20261027": 1098235508,
+      "ns-obstacle-2d-20261027": 4014258810,
+      "ns-obstacle-3d-20261027": 133799
+    }
+  }
 }

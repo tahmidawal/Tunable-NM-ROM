@@ -1,0 +1,129 @@
+{
+  "scope": "lossless extraction of accepted native-batch03 basis inputs; not training/reference admission",
+  "physical_admission": false,
+  "source_job_id": 6615810,
+  "source_archive_sha256": "5d862ba106cadf49dca5c3d8fbedff257415c98a03294f9cfd064f3b4b0e919f",
+  "source_report_sha256": "a8db28b8392aa5b76d9484434636aae08d93d04e6a3b3c08d75bf2532dfb3995",
+  "source_report_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/native-batch03/results/interface/result.json",
+  "source_arrays": {
+    "velocity": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/native-batch03/results/interface/velocity_TSQR.npz",
+      "sha256": "56201060c6f1b3f5a78fd0c8ec250dbd03c149b6a9de54197d5a6089b87d3e0b"
+    },
+    "pressure": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/native-batch03/results/interface/pressure_TSQR.npz",
+      "sha256": "08861fb28512a4c1fd12b2bb698195fa6bef76c7d7cc19a4075c42ac0199030a"
+    }
+  },
+  "source_keys": {
+    "candidates": "candidate_coefficients",
+    "transform": "blocked_transform"
+  },
+  "extraction_script_sha256": "59fd8eb16844cb1c1a890b3f8a7bb886234a316e881fcb6e0124d336ac5f3dfd",
+  "producer_manifest_sha256": "f4a6504b19706a351fd9e6cf672bf4c8170f85a7251a4248b0b56bd66e5516b4",
+  "array_file_sha256": "6e5e6fea78937346a1779f58fa8377d582d525333b8dfc1190ffa54a000874da",
+  "selected_indices": {
+    "velocity": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64
+    ],
+    "pressure": [
+      0,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "array_shapes": {
+    "velocity_candidates": [
+      3978,
+      97
+    ],
+    "velocity_transform": [
+      64,
+      64
+    ],
+    "pressure_candidates": [
+      911,
+      34
+    ],
+    "pressure_transform": [
+      16,
+      16
+    ]
+  }
+}

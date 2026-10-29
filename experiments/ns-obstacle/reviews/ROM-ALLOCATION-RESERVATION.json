@@ -20,5 +20,17 @@
     "Unused reference headroom does not enlarge the conditional ROM cap",
     "A runtime cap hit requires review, not automatic retry",
     "All prior native capacity/replay allocations are infrastructure; no trained ROM executed"
-  ]
+  ],
+  "population_schedule_proposal": {
+    "status": "independent_arithmetic_review_pass_exact_source_release_pending",
+    "completed_infrastructure_seconds": 5575,
+    "Re20_allocation_max_seconds": 1000,
+    "remaining_parameter_groups": 14,
+    "per_group_allocation_max_seconds": 1500,
+    "per_group_runner_max_seconds": 1400,
+    "maximum_infrastructure_total_seconds": 27575,
+    "maximum_campaign_total_seconds": 41975,
+    "remaining_infrastructure_headroom_seconds": 1225,
+    "condition": "Setup/finalization must fit reserved overhead; reduce runner by actual elapsed setup if needed. No automatic retry over either cap."
+  }
 }

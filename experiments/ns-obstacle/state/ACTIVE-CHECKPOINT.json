@@ -1,19 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6631480,
-      "group": "re24",
-      "state_last_observed": "RUNNING"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
     "Execute and independently audit frozen remaining14 reference groups under bounded rollout release",
     "Assemble genuine all15 candidate and independent full-population admission review",
     "Run actual ROM preparation/training/solves and held-out comparisons, then final reviews and reporting"
   ],
-  "completed_allocated_gpu_hours": 3.992777777777778,
+  "completed_allocated_gpu_hours": 4.179722222222222,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -29,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T07:53:09.771675+00:00",
+  "last_checkpoint_utc": "2026-10-29T08:16:36.652374+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -150,10 +144,10 @@
   "remaining_population_first_jobs": "Historical initial groups now completed; current numerical_jobs and pending_collections are authoritative.",
   "pending_collections": [
     {
-      "job_id": 6631131,
-      "group": "re22",
+      "job_id": 6631480,
+      "group": "re24",
       "state": "COMPLETED",
-      "elapsed_seconds": 670
+      "elapsed_seconds": 673
     }
   ],
   "ROM_first_prep_workflow": {
@@ -178,11 +172,12 @@
     "re16p875": "reviews/FD1-RE16P875-ROW-REVIEW.json",
     "re23p125": "reviews/FD1-RE23P125-ROW-REVIEW.json",
     "re16": "reviews/FD1-RE16-ROW-REVIEW.json",
-    "re18": "reviews/FD1-RE18-ROW-REVIEW.json"
+    "re18": "reviews/FD1-RE18-ROW-REVIEW.json",
+    "re22": "reviews/FD1-RE22-ROW-REVIEW.json"
   },
   "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged",
   "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use",
-  "pending_row_audit": "None;13 rows accepted; validation22/24 remain. Raw backup/cooling requirements separate.",
+  "pending_row_audit": "None;14 rows accepted; validationRe24 remains. Raw retention and aggregate admission remain separate.",
   "ROM_storage_planning": "13.230GB remote workspace, not local RAM/staging; actual archive A collection needs2A+bounded scratch+10GiB under current verified cold-tier procedure.1.911GB post-review warm runtime projection; no collection released.",
   "full_break_even": "Unresolved without valid common-platform offline cost basis; campaign resource ledger is accounting, online ratios remain paired within allocation.",
   "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit",
@@ -195,5 +190,6 @@
   "mirror_batching": "Independent source/integration and two exact temporary-index tree proofs PASS; synca9f75d79/helper3f7a2fa7; same oversize exclusions/history/seed/bounded-push policy",
   "ROM_actual_training_input_precheck": "All9 adopted warm closures pass;632,194,895 input bytes,1,601,093,055 uncompressed derived-output projection. Three cold archives total4,994,418,310bytes; conservative staging plus recovery5,626,613,205bytes above10GiB. Existing reviewed warm helper may avoid recovery of6 unique archive-backed inputs totaling40,265,344bytes, without reducing reserved bound.",
   "legacy_duplicate_retirement_release": "reviews/RELEASE-LEGACY-DUPLICATE-HEADROOM.json; exact479 files,1,862,184,960B conservative credit; fresh owner checks/lifecycle required",
-  "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released"
+  "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released",
+  "legacy_duplicate_retirement_result": "Exact479-file owner retirement complete after fresh checks; lifecycle in reference staging/LEGACY-DUPLICATE-RETIREMENT/LIFECYCLE.json; observed free-space gain1,861,390,336bytes; protected inputs preserved."
 }

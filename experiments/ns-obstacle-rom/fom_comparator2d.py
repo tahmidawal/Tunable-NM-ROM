@@ -72,6 +72,8 @@ def verify_documents(selection_path,review_path,eligibility_path,truth_path,rele
     if any(r.get('reference_admission_sha256')!=release['reference_admission_sha256'] for r in (selection,review)):
         raise ValueError('selection/review truth admission differs')
     if selection.get('native_source_sha256')!=native_digest():raise ValueError('selected FOM source differs')
+    if selection.get('field_rule_mode') not in ('native_exact','certified_requested_points'):
+        raise ValueError('frozen development field evaluation mode required')
     contract=release.get('output_contract');population=release.get('population')
     expected={'development':list(DEV_RE),'validation':list(VALIDATION_RE)}
     if (contract not in OUTPUTS or selection.get('output_contract')!=contract or population not in expected or
@@ -170,16 +172,18 @@ class FrozenFOMComparator:
             factory=modules['fom_outputs'].make_output_factory(ng,
                 {'points':geometry['points_physical'],'weights':geometry['weights_dimensionless']*cfg['D']**2},
                 read_json(files['boundary']),out/'normal_orientation.json',
-                field_rule_mode='certified_requested_points',requested_point_cap=release['max_common_points'])
+                field_rule_mode=selection['field_rule_mode'],requested_point_cap=release['max_common_points'])
             query=modules['fom_query'].SteadyFOMQuery(ng,files['mesh'],cfg,lift,factory)
             self=cls();self.native=query;self.release=release;self.qualification=qualification
+            self.release_file_sha256=sha_file(release_path)
             self.rule_hash=rule_hash;self.points=geometry['points_physical'];self.weights=geometry['weights_dimensionless']
             self.configuration_digest=modules['candidate_lift'].configuration_sha256
             self.expected_configuration=self.configuration_digest(cfg)
             self.binding_digest=self.configuration_digest({'release':release,'qualification':qualification})
             self.check_bindings()
             report.update(status='constructed_pending_actual_paired_invocations',native_query_offline_seconds=query.offline_seconds,
-                          lift_load_seconds=lift.offline_load_seconds,common_rule_points=n,volume_rule_sha256=rule_hash)
+                          lift_load_seconds=lift.offline_load_seconds,common_rule_points=n,volume_rule_sha256=rule_hash,
+                          field_rule_mode=selection['field_rule_mode'])
             return self
         except Exception as exc:
             report.update(status='construction_failed',failure_stage=stage,exception=repr(exc));raise
@@ -206,8 +210,9 @@ class FrozenFOMComparator:
         invocation=dict(invocation)
         invocation['frozen_comparator']={k:self.release[k] for k in
             ('selection_sha256','selection_review_sha256','eligibility_sha256','reference_admission_sha256',
-             'consumer_source_sha256','output_contract','population')}
-        invocation['frozen_comparator']['reference_qualification']=self.qualification
+             'consumer_source_sha256','reference_population_sha256','output_contract','population')}
+        invocation['frozen_comparator'].update(reference_qualification=self.qualification,
+            runtime_release_sha256=self.release_file_sha256,volume_rule_sha256=self.rule_hash)
         return invocation
 
     def query(self,reynolds):

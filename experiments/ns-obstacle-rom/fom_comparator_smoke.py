@@ -23,7 +23,7 @@ def fixture(root,change=None):
         'selection_frozen':True,'development_only':True,'validation_used':False,'matched_accuracy':True,
         'development_Re':list(DEV_RE),'reference_admission_sha256':truth,'reference_qualification':qualification,
         'native_source_sha256':native_digest(),'output_contract':'integrated_forces',
-        'common_rule_points':2,'volume_rule_sha256':'a'*64,
+        'common_rule_points':2,'volume_rule_sha256':'a'*64,'field_rule_mode':'certified_requested_points',
         'runtime_versions':{k:'structural-fixture' for k in ('python','ngsolve','numpy','scipy','jax')},
         **{k:descriptor(v) for k,v in [('config','cfg.json'),('mesh','mesh'),('layout','layout'),
          ('boundary','boundary'),('common_geometry','geometry'),('development_evidence','development')]}}
@@ -60,7 +60,7 @@ def main():
     digest=modules['candidate_lift'].configuration_sha256;cfg={'U':.2};config_hash=digest(cfg)
     qualification={'gate':GATE,'passed':True,'qualification_scope':expected_scope()}
     release={k:'a'*64 for k in ('selection_sha256','selection_review_sha256','eligibility_sha256',
-                                'reference_admission_sha256','consumer_source_sha256')}
+                                'reference_admission_sha256','consumer_source_sha256','reference_population_sha256')}
     release.update(output_contract='integrated_forces',population='development',reynolds=[20.])
     lift=SimpleNamespace(usage_role='frozen_fom_comparator',selection_frozen=True,
         selection_sha256='a'*64,selection_review_sha256='a'*64,eligibility_sha256='a'*64,
@@ -76,6 +76,7 @@ def main():
             raise exc
     comparator=FrozenFOMComparator.__new__(FrozenFOMComparator);comparator.native=Native()
     comparator.release=release;comparator.qualification=qualification
+    comparator.release_file_sha256='f'*64;comparator.rule_hash='b'*64
     comparator.configuration_digest=digest;comparator.expected_configuration=config_hash
     comparator.binding_digest=digest({'release':release,'qualification':qualification})
     old={k:os.environ.get(k) for k in ('OMP_NUM_THREADS','OPENBLAS_NUM_THREADS')}
@@ -95,7 +96,7 @@ def main():
     except ValueError:pass
     else:raise AssertionError('post-selection config mutation accepted')
     assert comparator.native.calls==8
-    print('PASS structural selection gates, unchanged source imports, and seven actual mock partial states; no native/admission/selection execution')
+    print('PASS structural selection gates, unchanged source imports, and seven distinct mock partial states; no native/admission/selection execution')
 
 
 if __name__=='__main__':main()

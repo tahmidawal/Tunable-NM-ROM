@@ -1497,21 +1497,23 @@
       "source_commit": "d4e2d019fb832c65d7fe267c4e255fb2cfbd9277",
       "source_manifest_sha256": "4149b0bf43e165add3a5bbf8d83252ee18f281044186795df5233c088a723ce2",
       "release_sha256": "1b6eb106885818012c3157f3a8164abd85a6d13b4328791c42af77f666d3cef5",
-      "state": "PENDING",
-      "state_last_observed": "PENDING",
+      "state": "FAILED",
+      "state_last_observed": "FAILED",
       "gpus": 1,
       "allocation_seconds_reserved": 2160,
       "single_submission": true,
       "validation_access_authorized": false,
-      "submitted_utc": "2026-10-29T15:14:31.860393+00:00"
+      "submitted_utc": "2026-10-29T15:14:31.860393+00:00",
+      "elapsed_seconds": 99,
+      "allocated_gpu_hours": 0.0275,
+      "node": "pax021",
+      "execution_report": "Requested-point permutation variable shadows integer boundary quadrature order; zero timed blocks; complete-workload guard rejected result. Narrow fix reviewed, no retry yet."
     }
   ],
-  "live_job_ids": [
-    6638028
-  ],
-  "completed_gpu_hours": 5.456666666666667,
+  "live_job_ids": [],
+  "completed_gpu_hours": 5.484166666666667,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
-  "total_allocated_gpu_hours_completed": 5.456666666666667,
+  "total_allocated_gpu_hours_completed": 5.484166666666667,
   "last_accounting_utc": "2026-10-29T15:09:52.617281+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

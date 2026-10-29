@@ -1,0 +1,477 @@
+{
+  "schema": "ns-obstacle-fine-local-cold-noop-inventory-v1",
+  "passed": true,
+  "scientific_compact_file_count": 45,
+  "logical_compact_scientific_bytes": 1313326813,
+  "actual_local_artifact_regular_files": 32,
+  "actual_local_artifact_regular_bytes": 19920682,
+  "exact_scientific_paths": [
+    {
+      "archive_scientific_relative_path": "native_evidence/normal_orientation.json",
+      "expected_sha256": "95e16e80207e14782d1b5c95c793c8b79fc01c29ecc2e8dc9fe8da6b04f3a06e",
+      "expected_bytes": 3543363,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/native_evidence/normal_orientation.json",
+      "exists": true,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "present metadata retained"
+    },
+    {
+      "archive_scientific_relative_path": "native_evidence/probe_lookup.json",
+      "expected_sha256": "31e2c4b01de88c411ab5441464138b01e45474ecb679de969543e3edc00bac4f",
+      "expected_bytes": 1249,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/native_evidence/probe_lookup.json",
+      "exists": true,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "present metadata retained"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/boundary.npz",
+      "expected_sha256": "7965a23c84dcd515322efb779aec7c4da3462206a211781a3d1f7d9ae51e619f",
+      "expected_bytes": 9920015,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/boundary.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/coefficients.npz",
+      "expected_sha256": "94e38679fd0bc5798765483ba35a18d6f261aaffe11a54f3f44768c16bd15c8b",
+      "expected_bytes": 229441321,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/coefficients.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/manifest.json",
+      "expected_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+      "expected_bytes": 9701333,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/manifest.json",
+      "exists": true,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "present metadata retained"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_build.json",
+      "expected_sha256": "dfaf9378cd0da9cc05f78c6f6f566a81ce003b3895f24f750af5f4c3904bc68b",
+      "expected_bytes": 9505323,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_build.json",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_component_maps.npz",
+      "expected_sha256": "2e6e2dcd2487b5ac104c7d65028c2cd00055211ed08acadcbd2a37cf89efdb8c",
+      "expected_bytes": 516398,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_component_maps.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_metric_pressure_h1.npz",
+      "expected_sha256": "2e284e756670fdaa44ac2215a5dff83690630b0e8c4a67700275a056d7ebfd66",
+      "expected_bytes": 9559636,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_metric_pressure_h1.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_metric_pressure_mass.npz",
+      "expected_sha256": "96d03f84190e94bfee1fca8e3750e25388239039d2a8f6c5bdaa873ad230d564",
+      "expected_bytes": 7030200,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_metric_pressure_mass.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_metric_velocity_h1.npz",
+      "expected_sha256": "129198c658d42c6f677283a524192e8925be3d4dc7421b0e17347ea50832aa9d",
+      "expected_bytes": 51338867,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_metric_velocity_h1.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_metric_velocity_mass.npz",
+      "expected_sha256": "e9e388d6df970dac39414aac0fe90f4d9ac4ea99cbae15aa9cb406a5a55950cc",
+      "expected_bytes": 38328152,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_metric_velocity_mass.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_metric_velocity_scalar_h1.npz",
+      "expected_sha256": "3ed33e628ff6069aba604177658f54e4f3f1be24a317024c7ebdc2c18b6632e6",
+      "expected_bytes": 21511790,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_metric_velocity_scalar_h1.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_metric_velocity_scalar_mass.npz",
+      "expected_sha256": "65d29549966e4204aa21828dd5f5f2757fe727d14264f7691b1c181ec302cf05",
+      "expected_bytes": 14813400,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_metric_velocity_scalar_mass.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_pressure_eigenmodes.npz",
+      "expected_sha256": "e55dca630c1d0274f39827654397ade96dee29074e3c856d07f3bc42814f4a55",
+      "expected_bytes": 23808025,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_pressure_eigenmodes.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_scalar_free_ids.npz",
+      "expected_sha256": "d93eab21d6f9b0d9a3b2aa6c17ef81074fa6727427773906d69dd39001c61cc3",
+      "expected_bytes": 254728,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_scalar_free_ids.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_supremizer_rhs.npz",
+      "expected_sha256": "30647ae7096544074d94c1a9524caefdc633e3710e69a93b3a3f0ef0ee37726b",
+      "expected_bytes": 19324907,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_supremizer_rhs.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_velocity_free_ids.npz",
+      "expected_sha256": "ebd286b276e0ce8d2d34448de59a91ef3a99857b95350a67bda3da8f6916b936",
+      "expected_bytes": 509231,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_velocity_free_ids.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/replay_velocity_scalar_modes.npz",
+      "expected_sha256": "c766eeadf05ba335b0548ebe1d5fa74353495558e30513319dcc037aaa8e902f",
+      "expected_bytes": 62555454,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/replay_velocity_scalar_modes.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "prepared/training.npz",
+      "expected_sha256": "222acff57eb387c949a960b43f58b472bbd1d047fa7c7efd4d6ed367dbf2bc0d",
+      "expected_bytes": 520598161,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/prepared/training.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_replay.json",
+      "expected_sha256": "953104b89c0f18d337bdcf58925cc6bedbbea72c76fe9b1abfc5e38d6ea973d8",
+      "expected_bytes": 1335,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_replay.json",
+      "exists": true,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "present metadata retained"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/coefficients.npz",
+      "expected_sha256": "94e38679fd0bc5798765483ba35a18d6f261aaffe11a54f3f44768c16bd15c8b",
+      "expected_bytes": 229441321,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/coefficients.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/config.json",
+      "expected_sha256": "fb07c30f2f313b3262b824d312566ea873dbe861fe811de768424d0af87e985b",
+      "expected_bytes": 2294,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/config.json",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/fe_layout.json",
+      "expected_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "expected_bytes": 21581066,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/fe_layout.json",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/geometry.npz",
+      "expected_sha256": "45bfc1aef3f47975dc3116da9429feb3eb0a7d4232d42fa8da33ab267beb6bcc",
+      "expected_bytes": 27053966,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/geometry.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/manifest.json",
+      "expected_sha256": "a47923c941b9fbe2a354cc96e94dfb27b06f419c2d327c65c4e7f5ffc60c9c40",
+      "expected_bytes": 658157,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/manifest.json",
+      "exists": true,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "present metadata retained"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/mesh.vol.bin",
+      "expected_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "expected_bytes": 1413980,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/mesh.vol.bin",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/FD1-SCOPE-CONTRACT.json",
+      "expected_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "expected_bytes": 1116,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/FD1-SCOPE-CONTRACT.json",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/MODEL-CONTRACT.json",
+      "expected_sha256": "e049b9db7d53eb04a823e9a13b17d30b8ea106c42df3fe57caa6ce368ee841dd",
+      "expected_bytes": 9739,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/MODEL-CONTRACT.json",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/component_factor.py",
+      "expected_sha256": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+      "expected_bytes": 2100,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/component_factor.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/fe_adapter.py",
+      "expected_sha256": "62342db041444632d6dd95b8208a2751f7b218c4f64ac7db13ac69733b8dbf5f",
+      "expected_bytes": 56285,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/fe_adapter.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/fe_algebra.py",
+      "expected_sha256": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb",
+      "expected_bytes": 6202,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/fe_algebra.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/fe_blocks.py",
+      "expected_sha256": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+      "expected_bytes": 8587,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/fe_blocks.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/fe_controls_a6.py",
+      "expected_sha256": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32",
+      "expected_bytes": 3531,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/fe_controls_a6.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/fe_pod_a6.py",
+      "expected_sha256": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252",
+      "expected_bytes": 16160,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/fe_pod_a6.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/oriented_normals.py",
+      "expected_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "expected_bytes": 15221,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/oriented_normals.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/point_store.py",
+      "expected_sha256": "adfcf7f62f91518f364f33c1622361185e0f7b39ad1648aac4a8ec8fdbacd84e",
+      "expected_bytes": 8788,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/point_store.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/primary_volume.py",
+      "expected_sha256": "b182ac101028332df36b8dd377a983bee89ff0e967b999fd7df187c9cd3eb97f",
+      "expected_bytes": 17143,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/primary_volume.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/qualification.py",
+      "expected_sha256": "b87390af1df8bc5a526af5386e1779e2080f7d12f86e2a1de00a66ff6af648a6",
+      "expected_bytes": 1875,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/qualification.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/scalars.py",
+      "expected_sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "expected_bytes": 1687,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/scalars.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/spaces.py",
+      "expected_sha256": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee",
+      "expected_bytes": 10737,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/spaces.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/train_bank.py",
+      "expected_sha256": "a9e0ad22e5e76882499caecb8c30d8ad97f653f06f8f2c317166aff4f16987a1",
+      "expected_bytes": 6704,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/train_bank.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/source/weak.py",
+      "expected_sha256": "dcf73d9d0dbc7c4e1d7860cfd0ccdae0edbf6521421e6bf761af23d28fa72335",
+      "expected_bytes": 11934,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/source/weak.py",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "primary_volume/volume-manifest.json",
+      "expected_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+      "expected_bytes": 717499,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/primary_volume/volume-manifest.json",
+      "exists": false,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "probes.npz",
+      "expected_sha256": "f8de76569517ddb8ebb4fbf59bfe92ce5d8c906dcdd67bed131ff9efbb8b852c",
+      "expected_bytes": 11388,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/probes.npz",
+      "exists": false,
+      "payload_container": true,
+      "eligible_for_retirement": false,
+      "reason": "not locally materialized; no bytes reclaimable"
+    },
+    {
+      "archive_scientific_relative_path": "result.json",
+      "expected_sha256": "ae77a4635b9cdca6ffbbbbf4a6ec47c902480e742eb2260969315ecf03348707",
+      "expected_bytes": 6445,
+      "local_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/fine-preparation01/results/preparation/result.json",
+      "exists": true,
+      "payload_container": false,
+      "eligible_for_retirement": false,
+      "reason": "present metadata retained"
+    }
+  ],
+  "eligible_payload_paths": [],
+  "reclaimable_payload_bytes": 0,
+  "metadata_source_commit": "f775b07afda415181b9242dc47f9f076a7ce7645",
+  "metadata_mirror_commit": "4e80bc7dc4a01a1f3e0d74a5dac12aff429ba445",
+  "metadata_sha256": {
+    "RETENTION.json": "6558726b959019e2c176fdce4d2cf2b0ff54ca4b3a1f11499eaed5063d4605c0",
+    "COMPOSITION-R2.json": "4442959cc15761a82b0653a3191ddd749dce8c1cc188d04b08f5bc644e5aaee6",
+    "DELTA-RETENTION-MAP.json": "22b1ecaeb464067e93e82968f30b6c146451097dc82b895219371af81922a767"
+  },
+  "archive_sha256": "e00b31ce4ddbbf9f170f64f03f4fec60332baf266d3f9f206c5c90d15bc513b3",
+  "archive_bytes": 1112308651,
+  "archive_replay_performed": false,
+  "reason_archive_replay_not_needed": "no proposed local scientific payload exists; prior archive acceptance remains untouched, no new recovery proof claimed",
+  "deletions_performed": false,
+  "numerical_arrays_opened": false,
+  "scope_correction": "1.313GB is logical compact scientific closure retained archive-only, not local warm duplicate footprint; different training-materialize01 candidate requires separate scope authorization",
+  "owner_confirmation": "ROM owner confirms no local fine scientific expansion; all active jobs use remote immutable trees"
+}

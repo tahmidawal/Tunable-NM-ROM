@@ -3,8 +3,8 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Execute and audit released actual successor neural PDE diagnostic",
-    "Continue training-only warm L-BFGS refinement, guided by actual development flow and force errors",
+    "Monitor unchanged-objective warm neural refinement6649439; audit selected model and repeat actual PDE solve",
+    "Use flow/force/conservation errors to guide further accuracy improvements",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
   "completed_allocated_gpu_hours": 6.089722222222222,
@@ -466,7 +466,10 @@
     "actual_PDE_diagnostic_job": 6649088,
     "actual_PDE_diagnostic_state": "COMPLETED",
     "actual_PDE_diagnostic_seconds": 534,
-    "actual_PDE_scientific_review_pending": true,
-    "actual_PDE_accuracy_targets_passed": false
+    "actual_PDE_scientific_review_pending": false,
+    "actual_PDE_accuracy_targets_passed": false,
+    "warm_refinement_job": 6649439,
+    "warm_refinement_state": "RUNNING",
+    "actual_PDE_retention_review_passed": true
   }
 }

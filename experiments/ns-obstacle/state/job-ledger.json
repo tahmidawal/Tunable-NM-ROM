@@ -1599,9 +1599,27 @@
       "budget_bucket": "ROM",
       "physical_admission": false,
       "scientific_review_pending": true
+    },
+    {
+      "job_id": 6649439,
+      "attempt": "neural-pod-guided-refine01",
+      "budget_bucket": "ROM",
+      "state_last_observed": "PENDING",
+      "source_commit": "6c4ee9bcd267cd70983dc0dd06c2e140df65b424",
+      "source_manifest_sha256": "154da733dd8b78eb9b5b6c1fb7813fb8bc94af7de78bc72cf906cef85386c331",
+      "release_sha256": "d335357e3b076797ead159cd560749f7cd8d108b1b43052db775f60b656090cb",
+      "allocation_seconds_reserved": 3600,
+      "gpus": 1,
+      "actual_full_preflight_passed": true,
+      "same_training_objective": true,
+      "new_adam_steps": 0,
+      "warm_restart": true,
+      "validation_allowed": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6649439
+  ],
   "completed_gpu_hours": 6.089722222222222,
   "note": "POD4/POD8 development review passed. New neural actual diagnostic greatly improves velocity and drag but lift/divergence/mass fail; independent review pending. Longer unchanged-objective refinement in preparation. Validation closed.",
   "total_allocated_gpu_hours_completed": 6.089722222222222,

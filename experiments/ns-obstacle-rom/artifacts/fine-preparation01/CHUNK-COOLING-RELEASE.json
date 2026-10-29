@@ -1,0 +1,19 @@
+{
+  "schema": "ns-obstacle-exact-fine-chunk-cooling-release-v1",
+  "proposal_sha256": "c40321ee5d44bfa718d34610c354e0367269f13e2cbfb83453e86fd92ca1374d",
+  "proposal_source": "f41d8748a",
+  "proposal_mirror": "417aeba37",
+  "independent_reviewer": "numerical_resume",
+  "passed": true,
+  "authorized_files": 23,
+  "maximum_allocated_credit_bytes": 1112338432,
+  "cold_proof_sha256": "fb3e1f75592de937766badd98e992e23aeb764e567e1f1d3a1cf2922bda13254",
+  "archive_sha256": "e00b31ce4ddbbf9f170f64f03f4fec60332baf266d3f9f206c5c90d15bc513b3",
+  "requirements": [
+    "Recheck fresh advertised mirror ancestry, exact chunk hashes/sizes/blob IDs and single-link status before action",
+    "Remove only proposal-listed23 working chunk duplicates; preserve all reachable Git histories and metadata",
+    "Preserve original RETENTION unchanged and accepted delta/base/composition/primary replay closure",
+    "Record exact lifecycle and observed actual freed space; no other cleanup authorized"
+  ],
+  "scientific_recovery_scope": "Fine archive remains a delta; not a standalone full SourceInputs archive"
+}

@@ -1,0 +1,48 @@
+{
+  "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+  "passed": true,
+  "qualification_scope": {
+    "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "amendment_id": "FD1-2026-10-28",
+    "original_G2_status": "not_admitted_domain_sensitivity_failed",
+    "domain_sensitivity_status": "failed",
+    "domain_independence_admitted": false,
+    "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+    "geometry_population_and_numerical_thresholds_unchanged": true
+  },
+  "schema": "ns-obstacle-pilot-reference-population-v1",
+  "split": "development",
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "volume_rule_sha256": "1b8cb44f65c64b3e2cbfeefc5848bc3f3dc06c2b30b8123797bb6fe5c74b4590",
+  "velocity_gradient_units": "d(u/U)/d(x/D)",
+  "cases": [
+    {
+      "Re": 16.875,
+      "split": "development",
+      "reference_admitted": true,
+      "force_definition": "physical_symmetric",
+      "force_coefficient": [
+        6.118300983683085,
+        0.020183540976024848
+      ],
+      "array_file": "16.875/fields.npz",
+      "array_sha256": "a18b2110f55bcfb652f0f7506332d7ea4c17d24b383b59d60454b43af72d7608",
+      "original_export_sha256": "438caf6c6910a9a006bf5ef8ccde8f3ff16ffc9dbc76cfdf96f45963c85af91e",
+      "replay_sha256": "33cb4b90de906b851030f58e03ce054b8e829f11e3571265543ea675b1b8bd8a"
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "reference_admitted": true,
+      "force_definition": "physical_symmetric",
+      "force_coefficient": [
+        5.178644052504991,
+        0.004430187913548351
+      ],
+      "array_file": "23.125/fields.npz",
+      "array_sha256": "3f46c7530afb54520d96e444024aacfdf6eeb08f1d34606dbc7c6cfd67be9263",
+      "original_export_sha256": "2533c0d6713237beb7844969ced4eb179fc6c06bcd4f3f5713eb4ffce2fcd354",
+      "replay_sha256": "b9519dadf41969677aeb12625d0bff373a0a4bc220ce7532267b2c77a81d40d0"
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "reconstruction": {
+    "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+    "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+    "no_PDE_solve": true,
+    "fresh_native_state_from_primary": true,
+    "portable_closure_only": true,
+    "runtime_integrity_verified": true,
+    "audit_inventory_retained_but_not_reaudited_here": true,
+    "rules": {
+      "volume": {
+        "mapping": {
+          "all_points_preserved": true,
+          "point_adjustments": 0,
+          "discarded_points": 0,
+          "point_count": 1036497,
+          "max_reconstruction_error": 0.0,
+          "physical_tolerance": 1.0000000000000001e-11,
+          "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+          "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092"
+        },
+        "offline_seconds": 0.7641485277563334,
+        "evaluation": {
+          "evaluation_seconds": 0.2095091687515378,
+          "point_count": 1036497,
+          "all_points_evaluated": true,
+          "field_content_sha256": {
+            "velocity": "0ee0c5cb0a9eeda34216d5c355161f4f9b2dceb8115571f313685019ab471128",
+            "pressure": "0f4f21a3d6b4dce25ec600466cb4a871d83b871bf2b8138cc1149b801ab8b2a4",
+            "velocity_gradient": "d8b0afde51570671575fb87a4fff5e8143c280ce459281f5b611733f6a72e056"
+          }
+        }
+      },
+      "boundary": {
+        "mapping": {
+          "all_points_preserved": true,
+          "point_adjustments": 0,
+          "discarded_points": 0,
+          "point_count": 4459,
+          "max_reconstruction_error": 0.0,
+          "physical_tolerance": 1.0000000000000001e-11,
+          "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+          "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092"
+        },
+        "offline_seconds": 0.018645888194441795,
+        "evaluation": {
+          "evaluation_seconds": 0.0013640513643622398,
+          "point_count": 4459,
+          "all_points_evaluated": true,
+          "field_content_sha256": {
+            "velocity": "c0b8a0e2dfedd6d2d1e53540bc44622c9a188f8c481dd429e9d05d355eddcee9",
+            "pressure": "ddb1fac666162c27a99e4f214a4d8e133da21376387cddd9927b40193496d537",
+            "velocity_gradient": "12e15aee98e46d4df2720af985a765e3bb54ccbafb2ae1a5b7498c3a1bd9185c"
+          }
+        }
+      }
+    }
+  },
+  "actual": {
+    "points": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "5dd52d05ffb8911cdc0429971500b8fa61d57f61c471f05e0ef3303c43899e03"
+    },
+    "weights": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "d6d56c033882a78aeb2ff2d64e545e85ee699d4ade1ed8fcef6b0efea36cbb78"
+    },
+    "velocity": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "0ee0c5cb0a9eeda34216d5c355161f4f9b2dceb8115571f313685019ab471128"
+    },
+    "velocity_gradient": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "d8b0afde51570671575fb87a4fff5e8143c280ce459281f5b611733f6a72e056"
+    },
+    "pressure": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "0f4f21a3d6b4dce25ec600466cb4a871d83b871bf2b8138cc1149b801ab8b2a4"
+    },
+    "stokes_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "e9ec0d5d906b6d1b16ece05d2ca8a7b119ef6d233badfe42e912e2818b1d3b61"
+    },
+    "solution_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "089631461182a935717147640c5f715c35eca5134cbf458ff847498a85e11240"
+    },
+    "jacobians": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "5123872b1bfb4fcd107eab726d40e7ecb1d402e22c5cbb481bbec47390372d69"
+    },
+    "signed_obstacle_distance": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "75db20920de436bfdf08c2b2505c3eff499cf6ce3fc95faa54864e74ec3e1fc7"
+    },
+    "prescribed_FE_trace_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        340996
+      ],
+      "content_sha256": "741d0822bc4a68e8e5d3387660cf592cb7090e4d953b4c2a895fdd5198e8eb58"
+    }
+  },
+  "expected": {
+    "points": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "5dd52d05ffb8911cdc0429971500b8fa61d57f61c471f05e0ef3303c43899e03"
+    },
+    "weights": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "d6d56c033882a78aeb2ff2d64e545e85ee699d4ade1ed8fcef6b0efea36cbb78"
+    },
+    "velocity": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "0ee0c5cb0a9eeda34216d5c355161f4f9b2dceb8115571f313685019ab471128"
+    },
+    "velocity_gradient": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "d8b0afde51570671575fb87a4fff5e8143c280ce459281f5b611733f6a72e056"
+    },
+    "pressure": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "0f4f21a3d6b4dce25ec600466cb4a871d83b871bf2b8138cc1149b801ab8b2a4"
+    },
+    "stokes_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "e9ec0d5d906b6d1b16ece05d2ca8a7b119ef6d233badfe42e912e2818b1d3b61"
+    },
+    "solution_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "089631461182a935717147640c5f715c35eca5134cbf458ff847498a85e11240"
+    },
+    "jacobians": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "5123872b1bfb4fcd107eab726d40e7ecb1d402e22c5cbb481bbec47390372d69"
+    },
+    "signed_obstacle_distance": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "75db20920de436bfdf08c2b2505c3eff499cf6ce3fc95faa54864e74ec3e1fc7"
+    },
+    "prescribed_FE_trace_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        340996
+      ],
+      "content_sha256": "741d0822bc4a68e8e5d3387660cf592cb7090e4d953b4c2a895fdd5198e8eb58"
+    }
+  },
+  "original_export_sha256": "438caf6c6910a9a006bf5ef8ccde8f3ff16ffc9dbc76cfdf96f45963c85af91e",
+  "raw_archive_sha256": "a969b57ceb8c0c0a9d7be0b6e2dd79494085dc83c65b045cf639e9e64618cfbc",
+  "elapsed_seconds": 6.4297341937199235,
+  "peak_rss_bytes": 1158557696,
+  "worker_sha256": "1bcce56ada4e367064e723a8e205c4177016a302e50f24a475502d0f2b536bf2"
+}

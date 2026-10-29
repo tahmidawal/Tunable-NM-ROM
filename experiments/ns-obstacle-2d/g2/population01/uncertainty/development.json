@@ -1,0 +1,614 @@
+{
+  "schema": "ns-obstacle-reference-conditional-uncertainty-v1",
+  "split": "development",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "qualification_candidate_sha256": "4ababff9172387d6953cc2962fc89c96ec1ac35399aa3c1017172671d6dd5802",
+  "volume_rule_sha256": "1b8cb44f65c64b3e2cbfeefc5848bc3f3dc06c2b30b8123797bb6fe5c74b4590",
+  "volume_rule_hash_algorithm": "sha256_sorted_named_c_arrays_shape_dtype_v1",
+  "physical_rule_identity": {
+    "points_sha256": "5dd52d05ffb8911cdc0429971500b8fa61d57f61c471f05e0ef3303c43899e03",
+    "weights_sha256": "d6d56c033882a78aeb2ff2d64e545e85ee699d4ade1ed8fcef6b0efea36cbb78",
+    "hash_algorithm": "sha256_json_dtype_shape_and_contiguous_bytes_v1",
+    "original_container_sha256": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5"
+  },
+  "rows": [
+    {
+      "Re": 16.875,
+      "split": "development",
+      "metrics": {
+        "velocity_relative": {
+          "h_fine": 1.1068921183843223e-06,
+          "p": 3.6492194817680196e-06,
+          "solver": 5.694387366145129e-12,
+          "quadrature": 1.3185701723418068e-15,
+          "delta": 7.298444659241976e-06,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 2.3156057746651885e-07,
+              "denominator": 0.2091988673697639,
+              "value": 1.1068921183843223e-06
+            },
+            "p_same_geometry": {
+              "numerator": 7.634121122994715e-07,
+              "denominator": 0.2091988673697639,
+              "value": 3.649217234766968e-06
+            },
+            "p_combined": {
+              "numerator": 7.634125823695465e-07,
+              "denominator": 0.2091988673697639,
+              "value": 3.6492194817680196e-06
+            },
+            "solver": {
+              "numerator": 1.191259387362254e-12,
+              "denominator": 0.2091988673697639,
+              "value": 5.694387366145129e-12
+            },
+            "quadrature": {
+              "numerator": 2.7584338660146035e-16,
+              "denominator": 0.2091988673697639,
+              "value": 1.3185701723418068e-15
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 1.115102264123359e-05,
+              "pair_noise": 1.3394855634625622e-11,
+              "interval": [
+                1.1151009246377956e-05,
+                1.1151036036089223e-05
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 1.1068921183843223e-06,
+              "pair_noise": 1.339260406448179e-11,
+              "interval": [
+                1.106878725780258e-06,
+                1.1069055109883867e-06
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "be908169332682f0ff00ab95c408dc6e0c3998e5dc6e39f7fe356283a2e67d89",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "845fa0dadc158e947e73f5f1c10e5ad389d7fa0218333785c988b575c8d15468",
+            "truth_field_npz": "fdd983dd79dfb7af920e09ae0714e803d3bca92f8225390c1ccbcd164a9539f0",
+            "h_fine_field_npz": "70020fa686ecc305235aa058b013c7cf7250122520b3d4b7b9d35b4247ee06d2",
+            "p_same_geometry_field_npz": "ba789d1eb23cfb36d342912c5fba225a07461b0955f3b3c50f952f07c1f11fb8",
+            "p_combined_field_npz": "08e628fbc63949c33aa232b994c3106dfc5acf6eff9ae6ab787590c5b2af2ec4",
+            "solver_field_npz": "80c78d939d598157b1343494b98fe313eba25c1f419b065a14dc5c14f09b4cd4",
+            "quadrature_field_npz": "f559c2245ff151db8cf6de81a38c58f728d39fcf0a9b2ae1a5265208ebc6f5db"
+          }
+        },
+        "pressure_scaled": {
+          "h_fine": 5.747470620599409e-06,
+          "p": 2.3481292594122428e-05,
+          "solver": 6.3089241467243645e-12,
+          "quadrature": 2.269666251775506e-14,
+          "delta": 4.6962591519865664e-05,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 2.1739070690635568e-07,
+              "denominator": 0.037823717815487296,
+              "value": 5.747470620599409e-06
+            },
+            "p_same_geometry": {
+              "numerator": 8.881497850229784e-07,
+              "denominator": 0.037823717815487296,
+              "value": 2.3481292594122428e-05
+            },
+            "p_combined": {
+              "numerator": 8.881496670904794e-07,
+              "denominator": 0.037823717815487296,
+              "value": 2.3481289476171425e-05
+            },
+            "solver": {
+              "numerator": 2.386269666450163e-13,
+              "denominator": 0.037823717815487296,
+              "value": 6.3089241467243645e-12
+            },
+            "quadrature": {
+              "numerator": 8.584721584249149e-16,
+              "denominator": 0.037823717815487296,
+              "value": 2.269666251775506e-14
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 3.8140803049745026e-05,
+              "pair_noise": 1.466458276691845e-11,
+              "interval": [
+                3.814078838516226e-05,
+                3.814081771432779e-05
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 5.747470620599409e-06,
+              "pair_noise": 1.4663659709757177e-11,
+              "interval": [
+                5.7474559569396995e-06,
+                5.747485284259118e-06
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "be908169332682f0ff00ab95c408dc6e0c3998e5dc6e39f7fe356283a2e67d89",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "845fa0dadc158e947e73f5f1c10e5ad389d7fa0218333785c988b575c8d15468",
+            "truth_field_npz": "fdd983dd79dfb7af920e09ae0714e803d3bca92f8225390c1ccbcd164a9539f0",
+            "h_fine_field_npz": "70020fa686ecc305235aa058b013c7cf7250122520b3d4b7b9d35b4247ee06d2",
+            "p_same_geometry_field_npz": "ba789d1eb23cfb36d342912c5fba225a07461b0955f3b3c50f952f07c1f11fb8",
+            "p_combined_field_npz": "08e628fbc63949c33aa232b994c3106dfc5acf6eff9ae6ab787590c5b2af2ec4",
+            "solver_field_npz": "80c78d939d598157b1343494b98fe313eba25c1f419b065a14dc5c14f09b4cd4",
+            "quadrature_field_npz": "f559c2245ff151db8cf6de81a38c58f728d39fcf0a9b2ae1a5265208ebc6f5db"
+          }
+        },
+        "drag_relative": {
+          "h_fine": 1.200988988365597e-05,
+          "p": 2.048443579471217e-05,
+          "solver": 3.746047175757725e-12,
+          "quadrature": 3.3388523558390886e-15,
+          "delta": 4.0968875338810365e-05,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 7.348012108909785e-05,
+              "denominator": 6.118300983683085,
+              "value": 1.200988988365597e-05
+            },
+            "p_same_geometry": {
+              "numerator": 0.0001251674036479855,
+              "denominator": 6.118300983683085,
+              "value": 2.0457869591867878e-05
+            },
+            "p_combined": {
+              "numerator": 0.00012532994367298045,
+              "denominator": 6.118300983683085,
+              "value": 2.048443579471217e-05
+            },
+            "solver": {
+              "numerator": 2.2919444120361732e-11,
+              "denominator": 6.118300983683085,
+              "value": 3.746047175757725e-12
+            },
+            "quadrature": {
+              "numerator": 2.042810365310288e-14,
+              "denominator": 6.118300983683085,
+              "value": 3.3388523558390886e-15
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 0.00010318655994071143,
+              "pair_noise": 9.49630420883368e-12,
+              "interval": [
+                0.00010318655044440722,
+                0.00010318656943701565
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 1.200988988365597e-05,
+              "pair_noise": 9.497175213796074e-12,
+              "interval": [
+                1.2009880386480756e-05,
+                1.2009899380831184e-05
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "be908169332682f0ff00ab95c408dc6e0c3998e5dc6e39f7fe356283a2e67d89",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "845fa0dadc158e947e73f5f1c10e5ad389d7fa0218333785c988b575c8d15468",
+            "truth_field_npz": "fdd983dd79dfb7af920e09ae0714e803d3bca92f8225390c1ccbcd164a9539f0",
+            "h_fine_field_npz": "70020fa686ecc305235aa058b013c7cf7250122520b3d4b7b9d35b4247ee06d2",
+            "p_same_geometry_field_npz": "ba789d1eb23cfb36d342912c5fba225a07461b0955f3b3c50f952f07c1f11fb8",
+            "p_combined_field_npz": "08e628fbc63949c33aa232b994c3106dfc5acf6eff9ae6ab787590c5b2af2ec4",
+            "solver_field_npz": "80c78d939d598157b1343494b98fe313eba25c1f419b065a14dc5c14f09b4cd4",
+            "quadrature_field_npz": "f559c2245ff151db8cf6de81a38c58f728d39fcf0a9b2ae1a5265208ebc6f5db"
+          }
+        },
+        "transverse_absolute": {
+          "h_fine": 1.978071764276515e-05,
+          "p": 4.9703838957384366e-05,
+          "solver": 6.828397222657934e-11,
+          "quadrature": 2.9178048865929895e-15,
+          "delta": 9.940774620165876e-05,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 1.978071764276515e-05,
+              "denominator": 1.0,
+              "value": 1.978071764276515e-05
+            },
+            "p_same_geometry": {
+              "numerator": 4.9698510769642656e-05,
+              "denominator": 1.0,
+              "value": 4.9698510769642656e-05
+            },
+            "p_combined": {
+              "numerator": 4.9703838957384366e-05,
+              "denominator": 1.0,
+              "value": 4.9703838957384366e-05
+            },
+            "solver": {
+              "numerator": 6.828397222657934e-11,
+              "denominator": 1.0,
+              "value": 6.828397222657934e-11
+            },
+            "quadrature": {
+              "numerator": 2.9178048865929895e-15,
+              "denominator": 1.0,
+              "value": 2.9178048865929895e-15
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 8.573938949260965e-05,
+              "pair_noise": 1.385610888259816e-10,
+              "interval": [
+                8.573925093152082e-05,
+                8.573952805369848e-05
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 1.978071764276515e-05,
+              "pair_noise": 1.3857319719584392e-10,
+              "interval": [
+                1.9780579069567955e-05,
+                1.9780856215962345e-05
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "be908169332682f0ff00ab95c408dc6e0c3998e5dc6e39f7fe356283a2e67d89",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "845fa0dadc158e947e73f5f1c10e5ad389d7fa0218333785c988b575c8d15468",
+            "truth_field_npz": "fdd983dd79dfb7af920e09ae0714e803d3bca92f8225390c1ccbcd164a9539f0",
+            "h_fine_field_npz": "70020fa686ecc305235aa058b013c7cf7250122520b3d4b7b9d35b4247ee06d2",
+            "p_same_geometry_field_npz": "ba789d1eb23cfb36d342912c5fba225a07461b0955f3b3c50f952f07c1f11fb8",
+            "p_combined_field_npz": "08e628fbc63949c33aa232b994c3106dfc5acf6eff9ae6ab787590c5b2af2ec4",
+            "solver_field_npz": "80c78d939d598157b1343494b98fe313eba25c1f419b065a14dc5c14f09b4cd4",
+            "quadrature_field_npz": "f559c2245ff151db8cf6de81a38c58f728d39fcf0a9b2ae1a5265208ebc6f5db"
+          }
+        }
+      },
+      "noise_ledger_sha256": "641de547d244f2db0d7886adac7c35e1c08d00846e6c805329406bd971f663b8",
+      "noise_ledger_path": "g2/population01/frozen/re16p875/noise.json",
+      "geometry_checked_at_P3": true,
+      "P4_g5_interaction_measured": false
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "metrics": {
+        "velocity_relative": {
+          "h_fine": 1.538199306389229e-06,
+          "p": 5.0195183109858215e-06,
+          "solver": 2.228586386684336e-16,
+          "quadrature": 1.3529509380774096e-15,
+          "delta": 1.0039036623547453e-05,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 3.2162953135178135e-07,
+              "denominator": 0.20909483577051854,
+              "value": 1.538199306389229e-06
+            },
+            "p_same_geometry": {
+              "numerator": 1.0495550349778248e-06,
+              "denominator": 0.20909483577051854,
+              "value": 5.019516771469721e-06
+            },
+            "p_combined": {
+              "numerator": 1.049555356882691e-06,
+              "denominator": 0.20909483577051854,
+              "value": 5.0195183109858215e-06
+            },
+            "solver": {
+              "numerator": 4.659859045241745e-17,
+              "denominator": 0.20909483577051854,
+              "value": 2.228586386684336e-16
+            },
+            "quadrature": {
+              "numerator": 2.8289505420286495e-16,
+              "denominator": 0.20909483577051854,
+              "value": 1.3529509380774096e-15
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 1.4789245706079772e-05,
+              "pair_noise": 2.0078013730389995e-12,
+              "interval": [
+                1.4789243698278398e-05,
+                1.4789247713881146e-05
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 1.538199306389229e-06,
+              "pair_noise": 2.0043399728639397e-12,
+              "interval": [
+                1.5381973020492561e-06,
+                1.5382013107292018e-06
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "ed836024cbd8f23b35b64b7990cf2fcf3f266e5040515400e8a5203882485e42",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "fa2cde5c1ecfc7eb80ff2455448e73aae72462c0504d50cf21ef91f152ef21d1",
+            "truth_field_npz": "ac3d56cf38b3826c855130af7cfeb0612ee54514ab1c18134069b7593d91ca2d",
+            "h_fine_field_npz": "6a4d4214b19ab148b960ebef59ff2c3acd64114e14624d161b01817b2420d6b3",
+            "p_same_geometry_field_npz": "4b26f7ebe47742b2824c046ab0b870820b54a0214a978ca3d558aebc7b3ac36f",
+            "p_combined_field_npz": "cd09f032f3c1328b48163aef3033453af56516a389eddcba621b9ebf1ff9a51c",
+            "solver_field_npz": "9644ea5e8c8925c264687dfd7daa62d49e47ce473efd3625feca84b6a2ea7fcc",
+            "quadrature_field_npz": "eda960c6a592ea95be4eee236b732a740c2576ec6f6f52e98e4bed9b1189cb14"
+          }
+        },
+        "pressure_scaled": {
+          "h_fine": 6.07182594506925e-06,
+          "p": 2.4483312722204126e-05,
+          "solver": 1.4715488145991117e-16,
+          "quadrature": 1.7444191347465002e-14,
+          "delta": 4.8966625461999594e-05,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 2.2965903117105376e-07,
+              "denominator": 0.037823717815487296,
+              "value": 6.07182594506925e-06
+            },
+            "p_same_geometry": {
+              "numerator": 9.26049911592979e-07,
+              "denominator": 0.037823717815487296,
+              "value": 2.4483312722204126e-05
+            },
+            "p_combined": {
+              "numerator": 9.260498213745022e-07,
+              "denominator": 0.037823717815487296,
+              "value": 2.4483310336968565e-05
+            },
+            "solver": {
+              "numerator": 5.5659447115111636e-18,
+              "denominator": 0.037823717815487296,
+              "value": 1.4715488145991117e-16
+            },
+            "quadrature": {
+              "numerator": 6.598041710458814e-16,
+              "denominator": 0.037823717815487296,
+              "value": 1.7444191347465002e-14
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 3.9596503884954234e-05,
+              "pair_noise": 2.0370505093024954e-12,
+              "interval": [
+                3.9596501847903726e-05,
+                3.959650592200474e-05
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 6.07182594506925e-06,
+              "pair_noise": 2.035645186815021e-12,
+              "interval": [
+                6.071823909424063e-06,
+                6.071827980714436e-06
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "ed836024cbd8f23b35b64b7990cf2fcf3f266e5040515400e8a5203882485e42",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "fa2cde5c1ecfc7eb80ff2455448e73aae72462c0504d50cf21ef91f152ef21d1",
+            "truth_field_npz": "ac3d56cf38b3826c855130af7cfeb0612ee54514ab1c18134069b7593d91ca2d",
+            "h_fine_field_npz": "6a4d4214b19ab148b960ebef59ff2c3acd64114e14624d161b01817b2420d6b3",
+            "p_same_geometry_field_npz": "4b26f7ebe47742b2824c046ab0b870820b54a0214a978ca3d558aebc7b3ac36f",
+            "p_combined_field_npz": "cd09f032f3c1328b48163aef3033453af56516a389eddcba621b9ebf1ff9a51c",
+            "solver_field_npz": "9644ea5e8c8925c264687dfd7daa62d49e47ce473efd3625feca84b6a2ea7fcc",
+            "quadrature_field_npz": "eda960c6a592ea95be4eee236b732a740c2576ec6f6f52e98e4bed9b1189cb14"
+          }
+        },
+        "drag_relative": {
+          "h_fine": 1.787406277322187e-05,
+          "p": 2.901374884307936e-05,
+          "solver": 1.7150791031302867e-16,
+          "quadrature": 2.9156344753214872e-15,
+          "delta": 5.8027497689245866e-05,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 9.256340887464631e-05,
+              "denominator": 5.178644052504991,
+              "value": 1.787406277322187e-05
+            },
+            "p_same_geometry": {
+              "numerator": 0.00015012270978420617,
+              "denominator": 5.178644052504991,
+              "value": 2.898880638679723e-05
+            },
+            "p_combined": {
+              "numerator": 0.0001502518778870865,
+              "denominator": 5.178644052504991,
+              "value": 2.901374884307936e-05
+            },
+            "solver": {
+              "numerator": 8.881784197001252e-16,
+              "denominator": 5.178644052504991,
+              "value": 1.7150791031302867e-16
+            },
+            "quadrature": {
+              "numerator": 1.509903313490213e-14,
+              "denominator": 5.178644052504991,
+              "value": 2.9156344753214872e-15
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 0.00013587838639969086,
+              "pair_noise": 2.00737484014346e-12,
+              "interval": [
+                0.00013587838439231602,
+                0.0001358783884070657
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 1.787406277322187e-05,
+              "pair_noise": 2.006860316412521e-12,
+              "interval": [
+                1.7874060766361556e-05,
+                1.7874064780082186e-05
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "ed836024cbd8f23b35b64b7990cf2fcf3f266e5040515400e8a5203882485e42",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "fa2cde5c1ecfc7eb80ff2455448e73aae72462c0504d50cf21ef91f152ef21d1",
+            "truth_field_npz": "ac3d56cf38b3826c855130af7cfeb0612ee54514ab1c18134069b7593d91ca2d",
+            "h_fine_field_npz": "6a4d4214b19ab148b960ebef59ff2c3acd64114e14624d161b01817b2420d6b3",
+            "p_same_geometry_field_npz": "4b26f7ebe47742b2824c046ab0b870820b54a0214a978ca3d558aebc7b3ac36f",
+            "p_combined_field_npz": "cd09f032f3c1328b48163aef3033453af56516a389eddcba621b9ebf1ff9a51c",
+            "solver_field_npz": "9644ea5e8c8925c264687dfd7daa62d49e47ce473efd3625feca84b6a2ea7fcc",
+            "quadrature_field_npz": "eda960c6a592ea95be4eee236b732a740c2576ec6f6f52e98e4bed9b1189cb14"
+          }
+        },
+        "transverse_absolute": {
+          "h_fine": 2.1224262930781557e-05,
+          "p": 4.331773772949833e-05,
+          "solver": 1.3010426069826053e-17,
+          "quadrature": 2.4901955497647066e-15,
+          "delta": 8.663547546149987e-05,
+          "raw_norms": {
+            "h_fine": {
+              "numerator": 2.1224262930781557e-05,
+              "denominator": 1.0,
+              "value": 2.1224262930781557e-05
+            },
+            "p_same_geometry": {
+              "numerator": 4.3312667154359746e-05,
+              "denominator": 1.0,
+              "value": 4.3312667154359746e-05
+            },
+            "p_combined": {
+              "numerator": 4.331773772949833e-05,
+              "denominator": 1.0,
+              "value": 4.331773772949833e-05
+            },
+            "solver": {
+              "numerator": 1.3010426069826053e-17,
+              "denominator": 1.0,
+              "value": 1.3010426069826053e-17
+            },
+            "quadrature": {
+              "numerator": 2.4901955497647066e-15,
+              "denominator": 1.0,
+              "value": 2.4901955497647066e-15
+            }
+          },
+          "p_definition": "max(p_same_geometry,p_combined)",
+          "resolved_h": {
+            "earlier": {
+              "difference": 7.728976184016509e-05,
+              "pair_noise": 2.004858960456211e-12,
+              "interval": [
+                7.728975983530612e-05,
+                7.728976384502405e-05
+              ],
+              "resolved": true
+            },
+            "finest": {
+              "difference": 2.1224262930781557e-05,
+              "pair_noise": 2.004922277863084e-12,
+              "interval": [
+                2.122426092585928e-05,
+                2.1224264935703833e-05
+              ],
+              "resolved": true
+            },
+            "decreasing": true
+          },
+          "evidence_sha256": {
+            "readout_json": "ed836024cbd8f23b35b64b7990cf2fcf3f266e5040515400e8a5203882485e42",
+            "rule_npz": "860034e16a98a8f85de37c3540974e5e6181d7a5bed0e5bd7274cf4fee4d8b0d",
+            "assembler_source": "5a0fb1c5ccae5089093438c4650e55b720fc15405849a5e372d3c90a76a112b7",
+            "population_plan": "45457f19566974dad34d99a20ae713ccb431c5f5852a1bb3f0ade3ca55ea2f51",
+            "original_rule": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+            "R_record": "fa2cde5c1ecfc7eb80ff2455448e73aae72462c0504d50cf21ef91f152ef21d1",
+            "truth_field_npz": "ac3d56cf38b3826c855130af7cfeb0612ee54514ab1c18134069b7593d91ca2d",
+            "h_fine_field_npz": "6a4d4214b19ab148b960ebef59ff2c3acd64114e14624d161b01817b2420d6b3",
+            "p_same_geometry_field_npz": "4b26f7ebe47742b2824c046ab0b870820b54a0214a978ca3d558aebc7b3ac36f",
+            "p_combined_field_npz": "cd09f032f3c1328b48163aef3033453af56516a389eddcba621b9ebf1ff9a51c",
+            "solver_field_npz": "9644ea5e8c8925c264687dfd7daa62d49e47ce473efd3625feca84b6a2ea7fcc",
+            "quadrature_field_npz": "eda960c6a592ea95be4eee236b732a740c2576ec6f6f52e98e4bed9b1189cb14"
+          }
+        }
+      },
+      "noise_ledger_sha256": "e7a77e8fc8c63970008e996617f69e9164bdcefda82eeb49f2130afdc291713e",
+      "noise_ledger_path": "g2/population01/frozen/re23p125/noise.json",
+      "geometry_checked_at_P3": true,
+      "P4_g5_interaction_measured": false
+    }
+  ],
+  "conditional_not_rigorous": true,
+  "original_domain_gate": "failed",
+  "generator_sha256": "4ac24c6506509691a64ffdd4cba51167eb55cb183aec8014bb6935c80fdda462",
+  "independent_uncertainty_review_required": true,
+  "training_released": false
+}

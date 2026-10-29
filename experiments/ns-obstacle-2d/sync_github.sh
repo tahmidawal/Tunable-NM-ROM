@@ -27,20 +27,8 @@ GIT_INDEX_FILE=$(mktemp)
 trap 'rm -f "$GIT_INDEX_FILE"' EXIT
 git read-tree "$REMOTE_BASE^{tree}"
 
-git diff --no-renames --name-status -z "$LOCAL_BASE" "$SOURCE_HEAD" |
-while IFS= read -r -d '' status && IFS= read -r -d '' path; do
-  if [ "$status" = D ]; then
-    git update-index --force-remove -- "$path"
-    continue
-  fi
-  read -r mode type sha size _ < <(git ls-tree -l "$SOURCE_HEAD" -- "$path")
-  if [ "$type" = blob ] && [ "$size" -gt "$MAX_BYTES" ]; then
-    echo "skipped (>${MAX_BYTES} bytes, track by SHA256): $path"
-    git update-index --force-remove -- "$path"
-    continue
-  fi
-  git update-index --add --cacheinfo "$mode,$sha,$path"
-done
+/home/tahmid/Dev/.venv/bin/python experiments/ns-obstacle-2d/g2/build_mirror_index.py \
+  --source "$SOURCE_HEAD" --base "$LOCAL_BASE" --max-bytes "$MAX_BYTES"
 
 TREE=$(git write-tree)
 if [ "$TREE" = "$(git rev-parse "$PARENT^{tree}")" ]; then

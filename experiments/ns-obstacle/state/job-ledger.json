@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "fixed_channel_qualification_cache_and_retention_proof_pending",
+  "status": "native_primary_replay_submitted_reference_cache_pending",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -857,9 +857,37 @@
       "state": "COMPLETED",
       "exit_code": "0:0",
       "node": "pax008"
+    },
+    {
+      "job_id": 6620172,
+      "receipt_utc": "2026-10-29T00:12:27.200483+00:00",
+      "source_commit": "772a2b0a9a8705d6d0bdb3e8987bc38c3f50b455",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-primary06",
+      "gpu_requested": "h200",
+      "manifest_sha256": "29fb0889d0a1bf34a95964a5b679291a3584efc8f4d13c04917992cebbe020f6",
+      "checksums_sha256": "af935d84a0ba09330218af48f793bf4f9b1e2464e2e0022429d269b9bd41e53f",
+      "release_sha256": "a65ff483aad72a76ee432eed06c28031f4e1019b0c5aa8acb1f66158e8be2e42",
+      "runtime_hashes": 31,
+      "single_submission": true,
+      "local_collection_reservation_bytes": 3221225472,
+      "concurrent_reference_reservation_bytes": 3221225472,
+      "minimum_free_reserve_bytes": 10737418240,
+      "lane": "rom",
+      "attempt": "native-primary06",
+      "state_last_observed": "SUBMITTED",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6620172
+  ],
   "completed_gpu_hours": 1.4002777777777777,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
   "total_allocated_gpu_hours_completed": 1.4002777777777777,

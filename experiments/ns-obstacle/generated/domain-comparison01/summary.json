@@ -1,0 +1,66 @@
+{
+  "status": "retained_domain_diagnostic_not_reference_admission",
+  "scope_amendment": "FD1-2026-10-28",
+  "original_G2_status": "not_admitted_domain_sensitivity_failed",
+  "domain_independence_admitted": false,
+  "original_sensitivity_bars": {
+    "velocity_relative": 0.002,
+    "drag_relative": 0.002,
+    "lift_absolute": 0.0002
+  },
+  "rows": [
+    {
+      "case": "upstream",
+      "reference": "original",
+      "velocity_relative": 0.02153369647919925,
+      "drag_relative": 0.050910956796089646,
+      "lift_absolute": 0.0007288397289007785,
+      "passes_original_sensitivity_bars": false,
+      "pressure_drop_absolute_difference": 0.010478879765407678,
+      "point_count": 1036497,
+      "force_rule_offset": 4
+    },
+    {
+      "case": "downstream",
+      "reference": "original",
+      "velocity_relative": 4.502618715752785e-05,
+      "drag_relative": 2.1919100181309538e-07,
+      "lift_absolute": 6.375843399653372e-06,
+      "passes_original_sensitivity_bars": true,
+      "pressure_drop_absolute_difference": 9.015319102356756e-09,
+      "point_count": 1036497,
+      "force_rule_offset": 4
+    },
+    {
+      "case": "symmetric",
+      "reference": "original",
+      "velocity_relative": 4.5025997175030486e-05,
+      "drag_relative": 2.511582290649843e-07,
+      "lift_absolute": 7.184142124310941e-06,
+      "passes_original_sensitivity_bars": true,
+      "pressure_drop_absolute_difference": 1.4048273558331381e-08,
+      "point_count": 1036497,
+      "force_rule_offset": 4
+    },
+    {
+      "case": "symmetric",
+      "reference": "downstream",
+      "velocity_relative": 3.6548374716708264e-08,
+      "drag_relative": 3.196723425881901e-08,
+      "lift_absolute": 8.08298724657569e-07,
+      "passes_original_sensitivity_bars": true,
+      "pressure_drop_absolute_difference": 5.032954455974625e-09,
+      "point_count": 1036497,
+      "force_rule_offset": 4
+    }
+  ],
+  "input_hashes": {
+    "fields": "89f03401e75a5c84dade063524e98b2530828cf5710e5c4ad22e8a80137a56d0",
+    "scalars": "569ba61933cbb52390dbf834112b3619dd91e70b04b33d694027af63790cd30f",
+    "scope": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "design": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1"
+  },
+  "generator_sha256": "8403771f8c1cf88f3631843a814be87f41a0e2bef0a924b4d360060ac0a18695",
+  "interpretation": "Original inlet sensitivity remains failed. Finite-channel numerical qualification is separate under FD1. Unshifted cross-domain pressure levels are diagnostic, not an admission test.",
+  "meshing_disclosure": "Each extension was independently meshed with unchanged physical maxh/obstacle_h and FE/geometry orders; no assertion of an embedded identical inner mesh."
+}

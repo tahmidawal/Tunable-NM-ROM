@@ -1,0 +1,158 @@
+{
+  "counts": {
+    "parameters": 15,
+    "baseline_state_rows": 75,
+    "total_baseline_and_S_Q_states": 225,
+    "retained_states": 7,
+    "pending_PDE_states": 218,
+    "new_common_rule_evaluations_before_replay": 220,
+    "fresh_replay_upper_count": 75
+  },
+  "cost": {
+    "cross_job_speed_claim": false,
+    "purpose": "conservative allocation planning from actual phase evidence",
+    "contingency_multiplier": 1.25,
+    "solver_variant_extra_Newton_phase_fraction": 0.25,
+    "quad_compute_multiplier": 1.25,
+    "quad_readout_multiplier": 1.653061224489796,
+    "actual_fine_solver_result_sha256": "816056e2724843a67ffd3caeb3f4c997bfaf1793fffd4815e0e9895d3a2ca785",
+    "actual_fine_quad_result_sha256": "d628ea1266cc0bb4d854c71cedf7fc7f5f5133bcbd4081a4a7c0f931c492a7b3",
+    "pending_native_seconds_without_batch_speedup": 33863.4890993038,
+    "scalar_comparison_records": [
+      {
+        "path": "artifacts/g2-p4trend/results/p4_progress.json",
+        "sha256": "e5abebf9c0323fd1e37ee3ea3a352dc948ca822542695bb82b7a9a1721d512ba",
+        "stage": "comparison_dfg",
+        "seconds": 232.44676560349762,
+        "state_count": 3,
+        "seconds_per_state": 77.48225520116587
+      },
+      {
+        "path": "artifacts/g2-crossp02/results/crossp_progress.json",
+        "sha256": "84726a1d82da1c2b7316ab185c4e4010988de0b14d989c9dc7f115b8e78e2e02",
+        "stage": "comparison_p_geometry",
+        "seconds": 240.10180967766792,
+        "state_count": 3,
+        "seconds_per_state": 80.03393655922264
+      }
+    ],
+    "scalar_common_fields_and_replay_seconds": 29512.514106213348,
+    "existing_and_reserved_campaign_seconds": 5575.0,
+    "ledger_snapshot_sha256": "6d6654ab9230e551f67929432654aefc63d019dd224040c6a674915e17ee0c23",
+    "export_batch_proof_max_seconds": 1200,
+    "combined_unoptimized_seconds": 70151.00320551715,
+    "campaign_ceiling_seconds": 43200,
+    "fits_unoptimized_before_any_ROM_training": false,
+    "ROM_training_and_paired_timing_reserve": 14400,
+    "speedup_assumed": false,
+    "measured_cache_projection": {
+      "control_source": "artifacts/g2-cache-primary01/results/cache_primary_control/control.json",
+      "control_sha256": "8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6",
+      "job_id": 6620883,
+      "independent_collection_audit": "PASS; coordinator review 900a9f9cf",
+      "complete_fine_producer_seconds": 82.06275774911046,
+      "fine_non_native_overhead_seconds_charged_to_every_state": 13.069772692397237,
+      "quad_point_and_measured_cost_multiplier": 1.653061224489796,
+      "complete_field_or_replay_allowance_seconds": 8.766119163483381,
+      "pending_native_seconds_with_contingency": 13646.1885469569,
+      "common_fields_and_replay_seconds_with_contingency": 3232.506441534497,
+      "existing_and_reserved_campaign_seconds": 5575.0,
+      "combined_reference_seconds": 22453.6949884914,
+      "remaining_seconds_for_ROM_and_unplanned_controls": 20746.3050115086,
+      "per_state_estimates": {
+        "p4_g4_h1": {
+          "baseline": 17.816594739444554,
+          "solver_100x": 18.682628208771348,
+          "quadrature_plus4": 27.53866200950662
+        },
+        "p4_g4_h2": {
+          "baseline": 28.605251624248922,
+          "solver_100x": 31.561971000861377,
+          "quadrature_plus4": 41.02448311551208
+        },
+        "p4_g4_h3": {
+          "baseline": 81.80332818068564,
+          "solver_100x": 95.08400595188141,
+          "quadrature_plus4": 107.52207881105798
+        },
+        "p3_g3_h3": {
+          "baseline": 44.362882292829454,
+          "solver_100x": 50.00276847463101,
+          "quadrature_plus4": 60.72152145123775
+        },
+        "p3_g4_h3": {
+          "baseline": 43.16553913988173,
+          "solver_100x": 48.570810376433656,
+          "quadrature_plus4": 59.224842510053094
+        }
+      },
+      "planning_only_not_a_cross_job_speed_claim": true,
+      "future_parameter_variation": "25 percent contingency and hard campaign stop; no assertion all Re share identical iteration counts",
+      "combined_with_ROM_seconds": 36853.6949884914,
+      "remaining_reference_infrastructure_seconds": 6346.305011508601,
+      "fits_reference_subcap": true,
+      "fits_campaign_with_ROM": true,
+      "independent_review": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/CACHE-PRIMARY01-RESULT-REVIEW.json",
+        "sha256": "bbc8691e938a4fa9b3781f5d0fe150db212ec394ac1a99f3cf1013155b3e9997",
+        "commit": "900a9f9cf"
+      }
+    },
+    "ROM_reservation": {
+      "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/ROM-ALLOCATION-RESERVATION.json",
+      "sha256": "348178c463645749a5f78d019ca2969ae94cc17e769eaa7b8b67493451b7cd2c",
+      "coordinator_commit": "762d74044",
+      "record": {
+        "status": "planning_reservation_not_execution_release",
+        "design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+        "campaign_cap_seconds": 43200,
+        "reference_infrastructure_cap_seconds": 28800,
+        "conditional_ROM_POD_cap_seconds": 14400,
+        "ROM_reservations_seconds": {
+          "fine_preparation": 1800,
+          "bank_allocation": 2100,
+          "development_and_NNLS": 3600,
+          "development_FOM_calibration": 2400,
+          "validation_and_paired_timing": 3300,
+          "failed_attempt_reserve": 1200
+        },
+        "bank_fit_cap_seconds": 1800,
+        "bank_fit_max_steps": 3000,
+        "rules": [
+          "No fit budget reset or extra seed/architecture search",
+          "Measured source/data/retention review required before any release",
+          "Unused reference headroom does not enlarge the conditional ROM cap",
+          "A runtime cap hit requires review, not automatic retry",
+          "All prior native capacity/replay allocations are infrastructure; no trained ROM executed"
+        ],
+        "population_schedule_proposal": {
+          "status": "independent_arithmetic_review_pass_exact_source_release_pending",
+          "completed_infrastructure_seconds": 5575,
+          "Re20_allocation_max_seconds": 1000,
+          "remaining_parameter_groups": 14,
+          "per_group_allocation_max_seconds": 1500,
+          "per_group_runner_max_seconds": 1400,
+          "maximum_infrastructure_total_seconds": 27575,
+          "maximum_campaign_total_seconds": 41975,
+          "remaining_infrastructure_headroom_seconds": 1225,
+          "condition": "Setup/finalization must fit reserved overhead; reduce runner by actual elapsed setup if needed. No automatic retry over either cap."
+        }
+      }
+    },
+    "hard_allocation_reservations": {
+      "status": "independent_arithmetic_review_pass_exact_source_release_pending",
+      "completed_infrastructure_seconds": 5575,
+      "Re20_allocation_max_seconds": 1000,
+      "remaining_parameter_groups": 14,
+      "per_group_allocation_max_seconds": 1500,
+      "per_group_runner_max_seconds": 1400,
+      "maximum_infrastructure_total_seconds": 27575,
+      "maximum_campaign_total_seconds": 41975,
+      "remaining_infrastructure_headroom_seconds": 1225,
+      "condition": "Setup/finalization must fit reserved overhead; reduce runner by actual elapsed setup if needed. No automatic retry over either cap."
+    }
+  },
+  "disk_free_GiB": 13.630786895751953,
+  "duplicate_reclaim_GiB": 0.0,
+  "future_export_envelope_GiB": 25.577528166717716
+}

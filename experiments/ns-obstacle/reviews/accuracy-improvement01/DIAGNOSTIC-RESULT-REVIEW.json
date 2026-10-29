@@ -1,0 +1,98 @@
+{
+  "schema": "ns-obstacle-successor-neural-diagnostic-coordinator-review-v1",
+  "job_id": 6649088,
+  "elapsed_seconds": 534,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": false,
+  "validation_opened": false,
+  "independent_result_sha256": "4dca734ad9e241efacca107cb782a792c577566b09993eb78c05f4fdd9e440f9",
+  "reference_source_commit": "c880f43b3",
+  "reference_mirror_commit": "a43b2b4e3",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0068747619712315015,
+        "pressure_scaled": 0.005025591301625217,
+        "divergence": 0.05638050278818836,
+        "velocity_gradient_scaled": 0.0806260129025887,
+        "mass": 0.0025844995848382317,
+        "boundary_trace": 2.4862071399960404e-10,
+        "drag_relative": 0.01635148716976978,
+        "transverse_absolute": 0.007267385468139945
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": false,
+        "divergence": false,
+        "mass": false,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        6.218344303718569,
+        0.012916155507884903
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.3495678258764952e-15,
+      "finite_difference_errors": [
+        1.1093611732589978e-12,
+        6.895783002772677e-11,
+        1.0584579333208276e-10
+      ],
+      "stationarity_gradient": 6.802588017814169e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.028174564323426722,
+      "projection_floor": 0.005039219785772659,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.008509430373448677,
+        "pressure_scaled": 0.006505138280306239,
+        "divergence": 0.06515357841256576,
+        "velocity_gradient_scaled": 0.09886232450412803,
+        "mass": 0.0025251789417000074,
+        "boundary_trace": 3.0405417473034784e-10,
+        "drag_relative": 0.016948073790650484,
+        "transverse_absolute": 0.012494946212820504
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": false,
+        "divergence": false,
+        "mass": false,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        5.266412094042359,
+        -0.008064758299272154
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.4433552445293771e-15,
+      "finite_difference_errors": [
+        1.7723136425833422e-12,
+        3.558572615579738e-11,
+        2.551695300498977e-10
+      ],
+      "stationarity_gradient": 8.868940097133698e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.02969342684021039,
+      "projection_floor": 0.005796846205062898,
+      "floor_consistent": true
+    }
+  ],
+  "interpretation": "Actual zero/shared-lift-initialized reduced solves substantially improve velocity/pressure/drag relative to original bank. Lift, divergence and mass fail both cases. Better training objective does not guarantee improved physical metrics; next unchanged-objective warm refinement measures remaining optimization headroom.",
+  "retention_review_pending": true
+}

@@ -45,9 +45,13 @@ def main():
               ('POD_r2_mixed_Galerkin', 'Standard POD–Galerkin: solved flow',
                'Two POD velocity modes plus pressure-stability enrichment. Actual converged flow solve.')]
     if 'bank_r8_solve_velocity' in data.files:
-        models.insert(1, ('bank_r8_solve', 'Neural-bank ROM: flow-solve output',
+        models.insert(1, ('bank_r8_solve', 'Original neural-bank ROM: flow-solve output',
                          'User-authorized diagnostic with original solver; representation gate remains failed. See recorded convergence status.'))
     defaults = [m[0] for m in models]
+    if 'pod_guided_neural_r4_solve_velocity' in data.files:
+        models.append(('pod_guided_neural_r4_solve', 'Improved neural-bank ROM: flow-solve output',
+                       'Four POD-guided neural velocity modes plus FE pressure/stability spaces. Lift, divergence and mass targets still fail.'))
+        defaults.append('pod_guided_neural_r4_solve')
     for rank in (4, 8):
         for method, label in [('mixed_Galerkin', 'Galerkin solved flow'),
                               ('exact_tensor_weak_LS', 'weak least-squares solved flow'),

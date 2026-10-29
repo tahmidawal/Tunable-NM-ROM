@@ -7,7 +7,7 @@
     "Continue training-only warm L-BFGS refinement, guided by actual development flow and force errors",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 5.941388888888889,
+  "completed_allocated_gpu_hours": 6.089722222222222,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -23,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T22:43:26.197176+00:00",
+  "last_checkpoint_utc": "2026-10-29T22:53:43.373900+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -461,9 +461,12 @@
     "model_sha256": "faab6651618ae9d6afc79dbd91ad6e9c7a1a3101907d93d9e33ab37dfba2e4c6",
     "saved_model_and_retention_review_passed": true,
     "optimizer_converged": false,
-    "actual_PDE_diagnostic_pending": true,
+    "actual_PDE_diagnostic_pending": false,
     "diagnostic_release_sha256": "d280423f81e528ab71fb9b784ea5138a9590fededc3e76f4f1077768403887dd",
     "actual_PDE_diagnostic_job": 6649088,
-    "actual_PDE_diagnostic_state": "PENDING"
+    "actual_PDE_diagnostic_state": "COMPLETED",
+    "actual_PDE_diagnostic_seconds": 534,
+    "actual_PDE_scientific_review_pending": true,
+    "actual_PDE_accuracy_targets_passed": false
   }
 }

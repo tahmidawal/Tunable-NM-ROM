@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "successor_actual_PDE_diagnostic_submitted",
+  "status": "successor_diagnostic_complete_improved_velocity_physics_targets_fail",
   "allocated_gpu_hour_ceiling": null,
   "allocations": [
     {
@@ -1585,18 +1585,27 @@
       "source_commit": "7dbe6081205f88d361f414120bb4aaf2e3f1cf1b",
       "source_manifest_sha256": "ed7b3ab3afba5138375e8078c5c7688dc1153ba0da1b7c95ed08a4cc3eb41bdb",
       "release_sha256": "d280423f81e528ab71fb9b784ea5138a9590fededc3e76f4f1077768403887dd",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "COMPLETED",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic01",
       "wall_limit_seconds": 900,
       "actual_full_preflight_passed": true,
-      "validation_allowed": false
+      "validation_allowed": false,
+      "state": "COMPLETED",
+      "elapsed_seconds": 534,
+      "allocated_gpu_hours": 0.14833333333333334,
+      "exit_code": "0:0",
+      "node": "pax021",
+      "gpus": 1,
+      "budget_bucket": "ROM",
+      "physical_admission": false,
+      "scientific_review_pending": true
     }
   ],
   "live_job_ids": [],
-  "completed_gpu_hours": 5.941388888888889,
-  "note": "Original neural representation and actual diagnostic fail. POD recovery complete, new results pending independent audit. Training successor authorized; validation remains closed.",
-  "total_allocated_gpu_hours_completed": 5.941388888888889,
-  "last_accounting_utc": "2026-10-29T22:35:27.230489+00:00",
+  "completed_gpu_hours": 6.089722222222222,
+  "note": "POD4/POD8 development review passed. New neural actual diagnostic greatly improves velocity and drag but lift/divergence/mass fail; independent review pending. Longer unchanged-objective refinement in preparation. Validation closed.",
+  "total_allocated_gpu_hours_completed": 6.089722222222222,
+  "last_accounting_utc": "2026-10-29T22:53:43.372493+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "physical_admission": false,
+  "training_released": false,
+  "scope": "accepted native-batch03 basis/mesh field serialization and complete replay only; no fine-P4 extrapolation",
+  "counts": {
+    "elements": 415,
+    "mixed_dofs": 4889,
+    "points": 20335
+  },
+  "original_volume_seconds": 3.170257668942213,
+  "primary_capture_seconds": 13.260973025113344,
+  "restoration": {
+    "seconds": 3.2679193941876292,
+    "restored_files": 37,
+    "manifest_sha256": "f98b53379ac4510a3359f310f6e85eb112e4bb87caf97ff1aaa0ee92606e0b65",
+    "exact_archive_and_array_bytes": true,
+    "offline_cost_includes_regeneration_verification_and_writes": true
+  },
+  "replay_accounting": {
+    "setup_seconds": 0.29912774823606014,
+    "setup_guard": {
+      "prior_peak_rss_bytes": 253612032,
+      "reserved_bytes": 2160155840
+    },
+    "iterations": [
+      {
+        "iterator_elapsed_seconds_including_consumer": 3.1533887488767505,
+        "generation_and_verification_seconds": 0.4564378811046481,
+        "points_returned": 20335,
+        "workspace_guard": {
+          "prior_peak_rss_bytes": 253612032,
+          "reserved_bytes": 143400200
+        },
+        "completed": true,
+        "peak_rss_bytes": 288874496
+      }
+    ],
+    "physical_admission": false,
+    "cost_scope": "generation is included in enclosing offline phase, not added twice; iterator elapsed includes consumer work"
+  },
+  "all_array_comparisons_exact": 90,
+  "primary_directory_bytes": 3729538,
+  "original_directory_bytes": 66809270,
+  "elapsed_seconds": 21.740128736943007,
+  "peak_rss_bytes": 326934528,
+  "original_manifest_sha256": "f98b53379ac4510a3359f310f6e85eb112e4bb87caf97ff1aaa0ee92606e0b65",
+  "primary_manifest_sha256": "43ccd7a1ad18888175358046b13748987f86b12e2bbb268d196e23b1c75e3a8d",
+  "source_result_sha256": "c579e955a45fc93cb376fbfb2fd92ae8a8f92a862244a51e590524b8258fd881",
+  "generator_sha256": "23335b81f46f484911ae8c2215feef5d0c77bc9147a4ef4fd1f9b5d2f92176d2",
+  "fine_P4_extrapolation_authorized": false
+}

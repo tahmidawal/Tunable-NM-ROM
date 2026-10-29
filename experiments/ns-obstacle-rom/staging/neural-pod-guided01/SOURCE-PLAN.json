@@ -1,10 +1,10 @@
 {
   "status": "source/input candidate only; no execution release",
   "plan_sha256": "e75274e443f2f26c3efc02c80c86b3aa4ad7db8b9cb03b2a054520fde47db849",
-  "runtime_inventory_sha256": "b184176d7fe360df51d30ae31c3688325d9dbab46292fe557a3f8bd50e4e6489",
-  "launcher_sha256": "4b971b98e413c9498629ca92f643901eb49c3a28d9ecc597fce9500242fb3c07",
+  "runtime_inventory_sha256": "7ad08b3921297774b502c3ab29a41e496b8a122617f80d4829bb3c2681f3b66d",
+  "launcher_sha256": "441eef866189f2dbd3168606ff6ea5272c2d235fb832739ffb1e51baa93c8dee",
   "runtime_files": 48,
-  "staged_bytes": 381964,
+  "staged_bytes": 382066,
   "prepared_inputs_are_existing_immutable_remote_tree": true,
   "prepared_bytes": 5501770011,
   "allocation_seconds": 3600,
@@ -12,5 +12,8 @@
   "outer_kill_grace_seconds": 10,
   "raw_plus_archive_reservation_bytes": 1073741824,
   "resume_allowed": false,
-  "validation_allowed": false
+  "validation_allowed": false,
+  "estimated_peak_host_bytes": 17179869184,
+  "allocation_memory_bytes": 68719476736,
+  "memory_limit_semantics": "64 GiB Slurm allocation is enforced; conservative lifetime RSS rejection is checked between training operations, not a 16 GiB OS cap"
 }

@@ -1043,19 +1043,21 @@
       "source_candidate_sha256": "7a09dc167381997bcd540abd63fe75359f6b3dad53ace501a57971a61d14195e",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re18p75-01",
       "submitted_utc": "2026-10-29T05:57:01.548715+00:00",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "gpus": 1,
       "gpu_requested": "H200",
       "cpus_reserved": 16,
       "memory_GiB": 64,
       "wall_limit_seconds": 1500,
       "allocation_seconds_reserved": 1500,
-      "elapsed_seconds": null,
-      "allocated_gpu_hours": null,
+      "elapsed_seconds": 648,
+      "allocated_gpu_hours": 0.18,
       "reference_admitted": false,
       "training_released": false,
       "release": "5bd3e76e4",
-      "single_submission": true
+      "single_submission": true,
+      "state": "COMPLETED",
+      "exit_code": "0:0"
     },
     {
       "job_id": 6629092,
@@ -1066,7 +1068,32 @@
       "source_candidate_sha256": "983de5a4146dad151e5cc029e0d7d41a2417c5ea0fca507fe9d09f44571c27ec",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re21p25-01",
       "submitted_utc": "2026-10-29T06:03:30.634230+00:00",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "COMPLETED",
+      "gpus": 1,
+      "gpu_requested": "H200",
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1500,
+      "allocation_seconds_reserved": 1500,
+      "elapsed_seconds": 675,
+      "allocated_gpu_hours": 0.1875,
+      "reference_admitted": false,
+      "training_released": false,
+      "release": "5bd3e76e4",
+      "single_submission": true,
+      "state": "COMPLETED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": 6629378,
+      "attempt": "g2-population-re22p5-01",
+      "Re": 22.5,
+      "split": "train",
+      "source_commit": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+      "source_candidate_sha256": "e5e6f7edfca71bc4528613542cce98bc9f35cc02a1ee6af6929b8c55d447af44",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re22p5-01",
+      "submitted_utc": "2026-10-29T06:15:48.991177+00:00",
+      "state_last_observed": "SUBMITTED",
       "gpus": 1,
       "gpu_requested": "H200",
       "cpus_reserved": 16,
@@ -1078,16 +1105,16 @@
       "reference_admitted": false,
       "training_released": false,
       "release": "5bd3e76e4",
-      "single_submission": true
+      "single_submission": true,
+      "operational_staging_amendment": "c6bd1ca56"
     }
   ],
   "live_job_ids": [
-    6628161,
-    6629092
+    6629378
   ],
-  "completed_gpu_hours": 2.1694444444444443,
+  "completed_gpu_hours": 2.5369444444444444,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
-  "total_allocated_gpu_hours_completed": 2.1694444444444443,
-  "last_accounting_utc": "2026-10-29T06:05:42.343389+00:00",
+  "total_allocated_gpu_hours_completed": 2.5369444444444444,
+  "last_accounting_utc": "2026-10-29T06:16:29.363776+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

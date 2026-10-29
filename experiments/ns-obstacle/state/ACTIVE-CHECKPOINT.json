@@ -2,9 +2,9 @@
   "status": "2d_only_reference_qualification_and_ROM_integration",
   "numerical_jobs": [
     {
-      "job_id": 6627914,
-      "group": "re17p5",
-      "state_last_observed": "RUNNING"
+      "job_id": 6629378,
+      "group": "re22p5",
+      "state_last_observed": "SUBMITTED"
     }
   ],
   "active_external_consults": [],
@@ -13,7 +13,7 @@
     "Assemble genuine all15 candidate and independent full-population admission review",
     "Run actual ROM preparation/training/solves and held-out comparisons, then final reviews and reporting"
   ],
-  "completed_allocated_gpu_hours": 1.9925,
+  "completed_allocated_gpu_hours": 2.5369444444444444,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -29,7 +29,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T05:46:48.601765+00:00",
+  "last_checkpoint_utc": "2026-10-29T06:18:37.230264+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -150,22 +150,28 @@
   "remaining_population_first_jobs": "Re15 audited; Re16.25/Re17.5 completed pending collection; Re18.75/Re21.25 submitted",
   "pending_collections": [
     {
-      "job_id": 6627586,
-      "group": "re16p25",
-      "state": "COMPLETED",
-      "elapsed_seconds": 623
-    },
-    {
       "job_id": 6627914,
       "group": "re17p5",
       "state": "COMPLETED",
       "elapsed_seconds": 637
+    },
+    {
+      "job_id": 6628161,
+      "group": "re18p75",
+      "state": "COMPLETED",
+      "elapsed_seconds": 648
+    },
+    {
+      "job_id": 6629092,
+      "group": "re21p25",
+      "state": "COMPLETED",
+      "elapsed_seconds": 675
     }
   ],
   "ROM_first_prep_workflow": {
     "source": "14a155dde",
     "mirror": "e37644182",
-    "source_review": "92426d910 substantive workflow accepted; final accounting-only delta awaiting close",
+    "source_review": "Independent substantive92426d910 and final accounting14a155dde PASS",
     "materialization_allocation_seconds": 450,
     "fine_prepare_replay_allocation_seconds": 1350,
     "total_existing_prep_seconds": 1800,
@@ -173,8 +179,13 @@
   },
   "accepted_parameter_rows": {
     "re20": "reviews/FD1-RE20-ROW-REVIEW.json",
-    "re15": "reviews/FD1-RE15-ROW-REVIEW.json"
+    "re15": "reviews/FD1-RE15-ROW-REVIEW.json",
+    "re16p25": "reviews/FD1-RE16P25-ROW-REVIEW.json"
   },
   "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged",
-  "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use"
+  "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use",
+  "pending_row_audit": "None; Re16.25 numerical row accepted, durable backup separately required before cooling",
+  "ROM_storage_planning": "13.230GB remote workspace, not local RAM/staging; actual archive A collection needs2A+bounded scratch+10GiB under current verified cold-tier procedure.1.911GB post-review warm runtime projection; no collection released.",
+  "full_break_even": "Unresolved without valid common-platform offline cost basis; campaign resource ledger is accounting, online ratios remain paired within allocation.",
+  "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit"
 }

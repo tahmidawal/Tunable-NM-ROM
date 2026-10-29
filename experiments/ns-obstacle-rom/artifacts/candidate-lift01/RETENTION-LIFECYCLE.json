@@ -1,0 +1,50 @@
+{
+  "schema": "ns-obstacle-candidate-lift-retention-lifecycle-v1",
+  "job_id": 6631950,
+  "original_retention_unchanged": true,
+  "git_cold_proof_sha256": "9d5a0a4a7fca4dcfee402f36ffae39338d47fc9e63e53ca38e4ea8babbfe06d8",
+  "chunk_storage": "git_history_only",
+  "historical_source_commit": "65e243763a493722b05ce798924d9601c076c1ab",
+  "historical_mirror_commit": "2fce7ef77fd1aa9e53ee28e5360189c3f6038915",
+  "recovery_tool": "retention/git_archive_recovery.py",
+  "historical_mirror_required": true,
+  "canonical_scientific_outputs_preserved": true,
+  "independent_raw_audit_passed": true,
+  "reviewer_read_dependency_closed": true,
+  "retired_duplicate_paths": [
+    {
+      "path": "experiments/ns-obstacle-rom/collections/candidate-lift01.collection.tar.gz",
+      "logical_bytes": 193289845
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/collections/candidate-lift01",
+      "logical_bytes": 404987646
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/staging/candidate-lift01/payload",
+      "logical_bytes": 33395363
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/artifacts/candidate-lift01/collection.tar.gz.part-000",
+      "logical_bytes": 50331648
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/artifacts/candidate-lift01/collection.tar.gz.part-001",
+      "logical_bytes": 50331648
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/artifacts/candidate-lift01/collection.tar.gz.part-002",
+      "logical_bytes": 50331648
+    },
+    {
+      "path": "experiments/ns-obstacle-rom/artifacts/candidate-lift01/collection.tar.gz.part-003",
+      "logical_bytes": 42294901
+    }
+  ],
+  "logical_duplicate_bytes_removed": 824962699,
+  "free_before_bytes": 16581484544,
+  "free_after_bytes": 17408991232,
+  "remote_cleanup": "completed_exact_duplicate_only_after_audit_and_durable_mirror",
+  "unique_data_deleted": false,
+  "remote_cleanup_receipt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

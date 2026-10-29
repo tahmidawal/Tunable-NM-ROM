@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "first_accuracy_successor_trained_pending_PDE_diagnostic",
+  "status": "successor_actual_PDE_diagnostic_submitted",
   "allocated_gpu_hour_ceiling": null,
   "allocations": [
     {
@@ -1577,6 +1577,19 @@
       "validation_access_authorized": false,
       "model_sha256": "faab6651618ae9d6afc79dbd91ad6e9c7a1a3101907d93d9e33ab37dfba2e4c6",
       "physical_admission": false
+    },
+    {
+      "job_id": 6649088,
+      "lane": "rom",
+      "attempt": "neural-pod-guided-diagnostic01",
+      "source_commit": "7dbe6081205f88d361f414120bb4aaf2e3f1cf1b",
+      "source_manifest_sha256": "ed7b3ab3afba5138375e8078c5c7688dc1153ba0da1b7c95ed08a4cc3eb41bdb",
+      "release_sha256": "d280423f81e528ab71fb9b784ea5138a9590fededc3e76f4f1077768403887dd",
+      "state_last_observed": "PENDING",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic01",
+      "wall_limit_seconds": 900,
+      "actual_full_preflight_passed": true,
+      "validation_allowed": false
     }
   ],
   "live_job_ids": [],

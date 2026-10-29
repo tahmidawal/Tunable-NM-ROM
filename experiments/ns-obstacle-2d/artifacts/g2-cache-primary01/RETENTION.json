@@ -341,12 +341,24 @@
       "sha256": "0f4bc79c311b674d93b123405902f2036008591404702ab8f59206ac3eabd4a7"
     }
   ],
-  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-cache-primary01-collection.tar.gz",
+  "full_local_archive": null,
   "full_local_extraction": null,
   "canonical_expanded_artifacts": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01",
   "scientific_extraction_moved_without_copy": true,
   "residual_runtime_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-cache-primary01",
   "recovery": "Concatenate ordered chunks, verify archive SHA, extract, then enter job directory and sha256sum -c COLLECTION-SHA256SUMS. Full source, dependencies, inputs and scientific arrays retained.",
   "reference_data_admitted": false,
-  "remote_cleanup": "pending_durable_mirror"
+  "remote_cleanup": "checksum_verified_removed_after_durable_mirror",
+  "duplicate_extraction_retired": true,
+  "full_tar_duplicate_retired": true,
+  "cold_duplicate_receipt": "staging/COLD-DUPLICATE-CLEANUP-CACHEPROOF-20261029.json",
+  "chunk_storage": "git_history_only",
+  "chunk_recovery_manifest": "GIT-COLD-ARCHIVE.json",
+  "chunk_recovery_tool": "experiments/ns-obstacle-2d/g2/git_archive_recovery.py",
+  "chunk_recovery_requires": "Reachable historical mirror objects, not a shallow tip-only checkout; no history pruning or rewriting.",
+  "cold_working_copy_receipt": "staging/CACHE-PROOF-COLD-RETIREMENT.json",
+  "audit_only_working_files_retired": true,
+  "warm_file_inventory": "STORAGE-INVENTORY.json",
+  "warm_inventory_interpretation": "directly_tracked entries except historical archive chunks remain warm; archive_backed_only entries recover from exact full archive",
+  "remote_cleanup_receipt": "staging/g2-cache-primary01/REMOTE-CLEANUP.json"
 }

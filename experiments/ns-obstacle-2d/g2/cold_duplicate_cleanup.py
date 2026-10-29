@@ -3,13 +3,16 @@ from pathlib import Path
 import argparse,datetime,hashlib,json,shutil,subprocess
 B=Path(__file__).resolve().parents[1];REPO=B.parents[1];record_path=B/'staging/COLD-DUPLICATE-CLEANUP-20261028.json'
 mirrors={'g2-ladder01':'11be81669','g2-ladder02':'887a06bb1','g2-comparison01':'9957c5a67','g2-h3':'a193581c4','g2-p4trend':'fa940ed39','g2-p4controls':'fa940ed39','g2-crossp01':'609215032','g2-crossp02':'454e0a3ea'}
-parser=argparse.ArgumentParser();parser.add_argument('--group',choices=('initial','postp4','batch'),default='initial');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--group',choices=('initial','postp4','batch','cacheproof'),default='initial');args=parser.parse_args()
 if args.group=='postp4':
  record_path=B/'staging/COLD-DUPLICATE-CLEANUP-POSTP4-20261029.json'
  mirrors={'g2-solverquad01':'20b812ae3','g2-domain-upstream':'aef32dde0','g2-domain-downstream':'aef32dde0','g2-domain-symmetric':'aef32dde0'}
 if args.group=='batch':
  record_path=B/'staging/COLD-DUPLICATE-CLEANUP-BATCH-20261029.json'
  mirrors={'g2-export-batch01':'caee29610'}
+if args.group=='cacheproof':
+ record_path=B/'staging/COLD-DUPLICATE-CLEANUP-CACHEPROOF-20261029.json'
+ mirrors={'g2-cache-primary01':'ac49387dc','g2-domain-comparison01':'ac49387dc'}
 def sha(p):
  with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
 def git(*args):return subprocess.check_output(['git','-c','gc.auto=0','-C',str(REPO),*args],text=True).strip()

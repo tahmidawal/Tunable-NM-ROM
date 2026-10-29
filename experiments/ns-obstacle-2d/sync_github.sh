@@ -50,5 +50,19 @@ fi
 MSG="mirror of $(git rev-parse --short "$SOURCE_HEAD"): $(git log -1 --format=%s "$SOURCE_HEAD")"
 NEW=$(git commit-tree "$TREE" -p "$PARENT" -m "$MSG")
 /home/tahmid/Dev/.venv/bin/python experiments/ns-obstacle-2d/g2/seed_mirror_objects.py "$NEW" "$PARENT"
+SEED_REF="refs/heads/codeonly/seed/nsobs2d-${TREE:0:16}"
+SEED_PARENT=$(git ls-remote origin "$SEED_REF" | awk '{print $1}')
+if [ -n "$SEED_PARENT" ]; then
+  git merge-base --is-ancestor "$PARENT" "$SEED_PARENT"
+  NEW=$(git commit-tree "$TREE" -p "$SEED_PARENT" -m "$MSG")
+  /home/tahmid/Dev/.venv/bin/python - "$NEW" "$SEED_PARENT" <<'AUDIT'
+import subprocess,sys
+ids=[x.split()[0] for x in subprocess.check_output(['git','rev-list','--objects',sys.argv[1],'^'+sys.argv[2]],text=True).splitlines()]
+metadata=subprocess.check_output(['git','cat-file','--batch-check=%(objectsize)'],input=('\n'.join(ids)+'\n').encode()).decode()
+size=sum(int(x) for x in metadata.splitlines())
+print('final mirror proposed new bytes='+str(size),flush=True)
+if size>900*1024**2:raise SystemExit('final payload exceeds bounded push; inspect before upload')
+AUDIT
+fi
 git push -q origin "$NEW:refs/heads/$MIRROR"
 echo "pushed origin/$MIRROR -> ${NEW:0:9} ($MSG)"

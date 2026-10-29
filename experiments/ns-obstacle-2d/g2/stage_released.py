@@ -13,17 +13,15 @@ def main():
     raw=committed(a.candidate)
     if sha(raw)!=a.candidate_sha:raise ValueError('released candidate hash mismatch')
     candidate=json.loads(raw)
+    bounds=candidate.get('bounds',{});required_free=max(22*1024**3,int((bounds.get('minimum_local_reserve_GiB',10)+bounds.get('local_collection_planning_GiB',0))*1024**3)+int(bounds.get('other_local_reservations_bytes',0)))
     with SourceInputs(REPO,str(B.relative_to(REPO)),commit) as sources:
-        for row in candidate['files']:
-            data=sources.read(row);destination=P/row['destination']
-            if not destination.resolve().is_relative_to(P.resolve()) or sha(data)!=row['sha256']:raise ValueError('input path/hash mismatch')
-            destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes(data)
+        sources.materialize(candidate['files'],P)
     (P/'SOURCE_COMMIT.txt').write_text(commit+'\n');dump(P/'INPUT-MANIFEST.json',{'source_commit':commit,'candidate_sha256':a.candidate_sha,'files':candidate['files'],'release':a.release})
     files=sorted(x for x in P.rglob('*') if x.is_file());(P/'SOURCE-SHA256SUMS').write_text(''.join(sha(x.read_bytes())+'  '+str(x.relative_to(P))+'\n' for x in files))
     free=shutil.disk_usage(B).free
-    if free<=22*1024**3:raise MemoryError('local reserve plus working envelope not available')
+    if free<=required_free:raise MemoryError('local reserve plus working envelope not available')
     metadata=subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(P/'dependencies.py'),'--validate-metadata-only','--target',remote+'/deps'],capture_output=True,text=True,check=True);(S/'DEPENDENCY-METADATA-PREFLIGHT.json').write_text(metadata.stdout)
-    record={'attempt':a.attempt,'source_commit':commit,'remote_directory':remote,'manifest_sha256':sha((P/'INPUT-MANIFEST.json').read_bytes()),'source_checksums_sha256':sha((P/'SOURCE-SHA256SUMS').read_bytes()),'candidate_sha256':a.candidate_sha,'expected_regular_files':len(files)+1,'local_free_bytes':free,'dependency_metadata_preflight_passed':True,'submitted':False,'staging_helper_sha256':sha(Path(__file__).read_bytes())};dump(S/'STAGING.json',record)
+    record={'attempt':a.attempt,'source_commit':commit,'remote_directory':remote,'manifest_sha256':sha((P/'INPUT-MANIFEST.json').read_bytes()),'source_checksums_sha256':sha((P/'SOURCE-SHA256SUMS').read_bytes()),'candidate_sha256':a.candidate_sha,'expected_regular_files':len(files)+1,'local_free_bytes':free,'required_local_free_bytes':required_free,'dependency_metadata_preflight_passed':True,'submitted':False,'staging_helper_sha256':sha(Path(__file__).read_bytes())};dump(S/'STAGING.json',record)
     ssh=['ssh','-o','BatchMode=yes','-o','ConnectTimeout=15','-o','ServerAliveInterval=15','-o','ServerAliveCountMax=3','tufts-login']
     def remote_call(command):return subprocess.run(ssh+[command],capture_output=True,text=True)
     def queue(path):
@@ -38,7 +36,7 @@ def main():
     verified=remote_call('cd '+shlex.quote(remote)+' && sha256sum -c SOURCE-SHA256SUMS && find . -type f | wc -l');(S/'REMOTE-VERIFICATION.txt').write_text(verified.stdout+verified.stderr)
     if verified.returncode or int(verified.stdout.splitlines()[-1])!=record['expected_regular_files']:raise ValueError('remote source verification failed')
     record['pre_submit_local_free_bytes']=shutil.disk_usage(B).free;dump(S/'STAGING.json',record)
-    if record['pre_submit_local_free_bytes']<=22*1024**3:raise MemoryError('local reserve changed during staging; no submission')
+    if record['pre_submit_local_free_bytes']<=required_free:raise MemoryError('local reserve changed during staging; no submission')
     queue(S/'PRE-SUBMIT-QUEUE.txt')
     command='cd '+shlex.quote(remote)+' && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir='+shlex.quote(remote)+' '+shlex.quote(a.batch)
     result=remote_call(command);receipt={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':command,'returncode':result.returncode,'stdout':result.stdout,'stderr':result.stderr,'source_commit':commit,'remote_directory':remote,'single_submission':True,'release':a.release};dump(S/'SUBMISSION.json',receipt);print(json.dumps(receipt),flush=True)

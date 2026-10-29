@@ -10,7 +10,11 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def dump(p,x):p.write_text(json.dumps(x,indent=2)+'\n')
 rows=[]
 def add(src,dst=None):
-    p=B/src;rows.append({'source':src,'destination':dst or src,'sha256':sha(p),'bytes':p.stat().st_size})
+    p=B/src;row={'source':src,'destination':dst or src,'sha256':sha(p),'bytes':p.stat().st_size}
+    if p.stat().st_size>50*1024**2 and src.startswith('artifacts/g2-cache-primary01/'):
+        proof='artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json'
+        row['archive_source']={'manifest_source':proof,'manifest_sha256':sha(B/proof),'member':'g2-cache-primary01/'+str(Path(src).relative_to('artifacts/g2-cache-primary01'))}
+    rows.append(row)
 plan_path=B/'g2/population01/PLAN.json';plan=json.loads(plan_path.read_text());group=next(g for g in plan['groups'] if g['Re']==20)
 resource=json.loads((B/'g2/POPULATION-NOISE-RESOURCE-PLAN.json').read_text());templates={x['state']:x for x in resource['baseline_states']}
 proof='artifacts/g2-cache-primary01/results/cache_primary_control';caches=set()

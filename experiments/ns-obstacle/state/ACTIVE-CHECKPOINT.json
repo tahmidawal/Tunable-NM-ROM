@@ -1,6 +1,17 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6627505,
+      "group": "re15",
+      "state_last_observed": "RUNNING"
+    },
+    {
+      "job_id": 6627586,
+      "group": "re16p25",
+      "state_last_observed": "PENDING"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
     "Execute and independently audit frozen remaining14 reference groups under bounded rollout release",
@@ -140,5 +151,6 @@
     "training_executed": false
   },
   "remaining_population_release": "reviews/RELEASE-REMAINING-POPULATION.json; exact a7c58adca, max2 outstanding, serial staging/collection, no retry",
-  "shared_FD1_controls": "All six independently accepted; reviews/FD1-SHARED-CONTROLS-RESULT-REVIEW.json"
+  "shared_FD1_controls": "All six independently accepted; reviews/FD1-SHARED-CONTROLS-RESULT-REVIEW.json",
+  "remaining_population_first_jobs": "6627505 Re15 and6627586 Re16.25; both exacta7c58adca, max2 outstanding reached"
 }

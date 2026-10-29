@@ -1,0 +1,29 @@
+{
+  "status": "independent_raw_audit_PASS_diagnostic_scope_only",
+  "reviewer": "/root/numerical_resume",
+  "source_commit": "48519dc2918886c4f4bf5c90623a721c54e7af85",
+  "job_id": 6620883,
+  "archive_sha256": "1cc1cdd437e4a4c1fb0f9cf348e7817bd30e11abf6bd0cbad7b81ff109df3cab",
+  "verified_files": 1305,
+  "distinct_content_arrays": 208,
+  "cache_closures_verified": 25,
+  "comparison_count": 28,
+  "maximum_normalized_difference": 6.9005113365415095e-15,
+  "source_result_sha256": "8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6",
+  "checks": [
+    "All raw comparison metrics independently replayed",
+    "All five common caches retain every original P4 point/weight and strict barycentric record",
+    "Changed coefficients reproduce the retained deterministic delta",
+    "Both portable primary closures include source and relative cache dependencies",
+    "Same-invocation oracle retained; no old evidence deleted",
+    "GPU backend, float64, highest precision and empty stderr verified",
+    "Generated summary hashes, metrics and measured phases independently checked"
+  ],
+  "physical_admission": false,
+  "training_released": false,
+  "scope_limitations": [
+    "No parameterwise noise inheritance",
+    "No ROM speedup claim",
+    "Population source, complete numerical qualification, retention and resource release remain required"
+  ]
+}

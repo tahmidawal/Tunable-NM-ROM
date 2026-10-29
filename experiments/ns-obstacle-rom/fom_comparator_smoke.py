@@ -19,7 +19,10 @@ def fixture(root,change=None):
     write('cfg.json',cfg)
     for name in ('mesh','layout','boundary','geometry','development'):write(name,{})
     descriptor=lambda name:{'path':name,'sha256':sha_file(root/name)}
-    selection={'schema':'ns-obstacle-fom-development-selection-v1','fixture_only':True,
+    from fom_match2d import source_digest as matching_digest
+    target={'model':'bank_r2','prefix':2,'method':'fitted_convection_weak_LS',**{k:'b'*64 for k in ('fingerprint','frozen_models_sha256','development_summary_sha256','rom_review_sha256')}}
+    selection={'matching_source_sha256':matching_digest(),'bank_target':target,
+        'uncertainty_sha256':'c'*64,'uncertainty_review_sha256':'d'*64,'schema':'ns-obstacle-fom-development-selection-v1','fixture_only':True,
         'selection_frozen':True,'development_only':True,'validation_used':False,'matched_accuracy':True,
         'development_Re':list(DEV_RE),'reference_admission_sha256':truth,'reference_qualification':qualification,
         'native_source_sha256':native_digest(),'output_contract':'integrated_forces',
@@ -37,7 +40,7 @@ def fixture(root,change=None):
         'selection_sha256':selected,'selection_review_sha256':reviewed,'truth_reference_admission_sha256':truth}
     write('eligibility.json',eligibility)
     release={'schema':'ns-obstacle-frozen-fom-runtime-release-v1','authorized_stage':'paired_comparison',
-        'fixture_only':True,'consumer_source_sha256':source_digest(),'selection_sha256':selected,
+        'fixture_only':True,'bank_target':target,'consumer_source_sha256':source_digest(),'selection_sha256':selected,
         'selection_review_sha256':reviewed,'eligibility_sha256':sha_file(root/'eligibility.json'),
         'reference_admission_sha256':truth,'reference_qualification':qualification,
         'output_contract':'integrated_forces','population':'development','reynolds':list(DEV_RE),'cores':1,'max_common_points':2,
@@ -51,7 +54,8 @@ def main():
     with tempfile.TemporaryDirectory() as temporary:
         root=Path(temporary);verify_documents(*fixture(root))
         for change in (lambda x:x.update(validation_used=True),lambda x:x.update(development_only=False),
-                       lambda x:x.update(development_Re=[20.]),lambda x:x.update(matched_accuracy=False)):
+                       lambda x:x.update(development_Re=[20.]),lambda x:x.update(matched_accuracy=False),
+                       lambda x:x.update(matching_source_sha256='0'*64),lambda x:x['bank_target'].update(model='bank_r4')):
             try:verify_documents(*fixture(root,change))
             except ValueError:pass
             else:raise AssertionError('unfrozen or validation-influenced selector accepted')
@@ -61,7 +65,7 @@ def main():
     qualification={'gate':GATE,'passed':True,'qualification_scope':expected_scope()}
     release={k:'a'*64 for k in ('selection_sha256','selection_review_sha256','eligibility_sha256',
                                 'reference_admission_sha256','consumer_source_sha256','reference_population_sha256')}
-    release.update(output_contract='integrated_forces',population='development',reynolds=[20.])
+    release.update(bank_target={'fixture_only':True},output_contract='integrated_forces',population='development',reynolds=[20.])
     lift=SimpleNamespace(usage_role='frozen_fom_comparator',selection_frozen=True,
         selection_sha256='a'*64,selection_review_sha256='a'*64,eligibility_sha256='a'*64,
         truth_reference_admission_sha256='a'*64,configuration_sha256=config_hash)

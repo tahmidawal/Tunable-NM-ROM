@@ -44,7 +44,7 @@ def source_digest():
     root = Path(__file__).parent
     names = ('pilot2d.py', 'MODEL-CONTRACT.json', 'bank.py', 'geometry.py', 'interpolation.py', 'metrics.py',
              'quadrature.py', 'solver.py', 'spaces.py', 'weak.py', 'timing.py', 'train_bank.py',
-             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py', 'fom_bridge2d.py', 'frozen_rom2d.py', 'qualification.py', 'FD1-SCOPE-CONTRACT.json')
+             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py', 'fom_bridge2d.py', 'frozen_rom2d.py', 'qualification.py', 'FD1-SCOPE-CONTRACT.json', 'capacity_context2d.py')
     return hashlib.sha256(json.dumps({n: sha_file(root/n) for n in names}, sort_keys=True).encode()).hexdigest()
 
 
@@ -104,13 +104,15 @@ def load_preparation(directory, release_path):
     from fe_adapter import CAPS
     folder = Path(directory)
     meta, release = read_preparation_metadata(directory, release_path)
+    from capacity_context2d import consumer_caps
+    effective_caps=consumer_caps(meta,release_path,release,CAPS)
     arrays = {name: _read_arrays(folder/(name+'.npz'), CAPS['archive_bytes']) for name in ('boundary','training')}
     if meta.get('volume_storage') == 'point-block-v1':
         from point_store import PointVolumeStore
         arrays['volume'] = PointVolumeStore(folder/'volume', meta['coefficient_files']['volume/manifest.json'])
     else:
         arrays['volume'] = _read_arrays(folder/'volume.npz', CAPS['archive_bytes'])
-    if len(arrays['volume']['points_physical']) > CAPS['volume_points']:
+    if len(arrays['volume']['points_physical']) > effective_caps['volume_points']:
         raise MemoryError('prepared full-rule point cap')
     return arrays, meta, release
 
@@ -545,7 +547,7 @@ def model_fingerprint(model):
 
 
 def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_loader,
-                       output_directory, fit_quadrature=True, development_only=False):
+                       output_directory, fit_quadrature=True, development_only=False, development_identity=None):
     """Actual model construction/solves with development-only quadrature selection.
 
     validation_loader is called only after all choices are frozen. Construction and
@@ -639,7 +641,7 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
                                                     'validation_seen': False})
     from weak import WeakOperator
     from frozen_rom2d import input_identity
-    frozen = {'input_identity': input_identity(metadata, probes, bank), 'schema': 'ns-obstacle-frozen-rom-development-v1',
+    frozen = {'development_identity': development_identity, 'input_identity': input_identity(metadata, probes, bank), 'schema': 'ns-obstacle-frozen-rom-development-v1',
               'source_sha256': source_digest(), 'reference_qualification': metadata.get('reference_qualification'),
               'models': models, 'choices': choices, 'bank_gate': bank_gate, 'validation_seen': False,
               'fitted_operators': {name: None if operator is None else {

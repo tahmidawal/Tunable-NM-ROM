@@ -37,7 +37,8 @@ def native_digest():
 
 def source_digest():
     return hashlib.sha256(json.dumps({'consumer':sha_file(__file__),'native':native_digest(),
-        'pilot':pilot_digest()},sort_keys=True).encode()).hexdigest()
+        'pilot':pilot_digest(),'matching':sha_file(ROOT/'fom_match2d.py'),
+        'uncertainty':sha_file(ROOT/'uncertainty2d.py')},sort_keys=True).encode()).hexdigest()
 
 
 def checked_file(parent,descriptor):
@@ -71,6 +72,17 @@ def verify_documents(selection_path,review_path,eligibility_path,truth_path,rele
         raise ValueError('independent exact selection review required')
     if any(r.get('reference_admission_sha256')!=release['reference_admission_sha256'] for r in (selection,review)):
         raise ValueError('selection/review truth admission differs')
+    from fom_match2d import source_digest as matching_digest
+    if selection.get('matching_source_sha256')!=matching_digest():raise ValueError('exact bank-specific matching selector required')
+    target=selection.get('bank_target')
+    if (not isinstance(target,dict) or target.get('model') not in ('bank_r2','bank_r4','bank_r8') or
+        target.get('method') not in ('exact_tensor_weak_LS','fitted_convection_weak_LS') or
+        target.get('prefix') not in (2,4,8) or target['model']!='bank_r'+str(target['prefix']) or
+        release.get('bank_target')!=target):raise ValueError('runtime must bind exact frozen bank/prefix/target')
+    for key in ('fingerprint','frozen_models_sha256','development_summary_sha256','rom_review_sha256'):
+        if not isinstance(target.get(key),str) or len(target[key])!=64:raise ValueError('actual frozen target evidence required')
+    for key in ('uncertainty_sha256','uncertainty_review_sha256'):
+        if not isinstance(selection.get(key),str) or len(selection[key])!=64:raise ValueError('matched development uncertainty evidence required')
     if selection.get('native_source_sha256')!=native_digest():raise ValueError('selected FOM source differs')
     if selection.get('field_rule_mode') not in ('native_exact','certified_requested_points'):
         raise ValueError('frozen development field evaluation mode required')
@@ -215,7 +227,7 @@ class FrozenFOMComparator:
         invocation=dict(invocation)
         invocation['frozen_comparator']={k:self.release[k] for k in
             ('selection_sha256','selection_review_sha256','eligibility_sha256','reference_admission_sha256',
-             'consumer_source_sha256','reference_population_sha256','output_contract','population')}
+             'consumer_source_sha256','reference_population_sha256','output_contract','population','bank_target')}
         invocation['frozen_comparator'].update(reference_qualification=self.qualification,
             runtime_release_sha256=self.release_file_sha256,volume_rule_sha256=self.rule_hash)
         return invocation

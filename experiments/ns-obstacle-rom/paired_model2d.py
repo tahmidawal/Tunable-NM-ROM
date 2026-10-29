@@ -25,6 +25,9 @@ def verify_decisions(inputs):
     if require_qualification(review.get('reference_qualification'))!=result[2]:raise ValueError('ROM/FOM truth scopes differ')
     if review.get('reference_admission_sha256')!=result[0]['reference_admission_sha256']:
         raise ValueError('ROM/FOM truth identity differs')
+    target=result[1]['bank_target']
+    if target['frozen_models_sha256']!=review['frozen_models_sha256'] or target['rom_review_sha256']!=sha_file(inputs['rom_review']):
+        raise ValueError('FOM matching target differs from actual frozen bank evidence')
     return review,result[0]
 
 
@@ -61,6 +64,10 @@ def run(inputs,release,output):
     if (contract!=fom_release['output_contract'] or not reynolds or
         len(set(reynolds))!=len(reynolds) or reynolds!=fom_release['reynolds']):
         raise ValueError('outer and actual FOM output/population release differ')
+    target=fom_release['bank_target']
+    if name.startswith('bank_') and name!=target['model']:raise ValueError('FOM selected for a different bank target')
+    if name.startswith('POD_') and name!='POD_r'+str(target['prefix']):raise ValueError('POD comparison differs from declared bank target prefix')
+    from uncertainty2d import load as load_uncertainty
     arrays,metadata,inner=load_preparation(inputs['prepared'],inputs['preparation_release'])
     for key,field in [('bank','bank_sha256'),('probes','probes_sha256')]:
         if sha_file(inputs[key])!=inner[field]:raise ValueError('released '+key+' differs')
@@ -82,6 +89,9 @@ def run(inputs,release,output):
         raise ValueError('paired reference truth identity differs')
     references={row['Re']:row for row in load_reference_population(inputs['population'],expected,'validation',fom.rule_hash)}
     if not set(reynolds)<=set(references):raise ValueError('released validation state absent')
+    deltas=load_uncertainty(inputs['uncertainty'],fom_release['validation_uncertainty_sha256'],
+        inputs['uncertainty_review'],fom_release['validation_uncertainty_review_sha256'],metadata['reference_qualification'],
+        fom_release['reference_admission_sha256'],fom.rule_hash,'validation')
     receipts=[]
     ledger={'schema':'ns-obstacle-paired-allocation-footprint-v1','model':name,'contract':contract,
         'released_reynolds':reynolds,'completed_blocks':[],'status':'running',
@@ -89,7 +99,7 @@ def run(inputs,release,output):
     try:
         for index,re in enumerate(reynolds):
             block=out/f'block_{index:02d}';block.mkdir()
-            receipt=run_block(model,fitted,fom,arrays,metadata,review,fom_release,references[re],block)
+            receipt=run_block(model,fitted,fom,arrays,metadata,review,fom_release,references[re],block,deltas[re])
             receipts.append(receipt)
             footprint=json.loads((block/'BLOCK-FOOTPRINT.json').read_text())
             ledger['completed_blocks'].append(footprint)
@@ -104,7 +114,7 @@ def run(inputs,release,output):
     return receipts
 
 
-def run_block(model,fitted,fom,arrays,metadata,review,fom_release,reference,out):
+def run_block(model,fitted,fom,arrays,metadata,review,fom_release,reference,out,deltas=None):
     name=model.name;re=reference['Re'];contract=fom_release['output_contract']
     expected=fom_release['reference_population_sha256']
     variants={'exact_tensor_weak_LS':(model.operator,False)};construction={}
@@ -152,7 +162,19 @@ def run_block(model,fitted,fom,arrays,metadata,review,fom_release,reference,out)
                     value['quadrature_reached_state_check']=check;value['eligible_accuracy'] &= check['passed']
         except Exception as exc:value={'eligible_accuracy':False,'diagnostic_failed':True,'exception':repr(exc)}
         scored.append({'method':method,'repetition':row['repetition'],'score':value})
+    matches=[]
+    if deltas is not None:
+        from uncertainty2d import joint_match
+        fom_scores={row['repetition']:row['score'] for row in scored if row['method']=='FOM'}
+        for row in scored:
+            if row['method']=='FOM':continue
+            own=row['score'];baseline=fom_scores[row['repetition']]
+            match={'matched':False,'reason':'ineligible actual invocation'}
+            if own.get('eligible_accuracy') is True and baseline.get('eligible_accuracy') is True:
+                match=joint_match(own['scores'],baseline,deltas)
+            matches.append({'method':row['method'],'repetition':row['repetition'],**match})
     receipt=save_evidence(out,'paired_'+contract,{'timing_record':raw_receipt,'same_invocation_accuracy':scored,
+        'conditional_FOM_vs_current_ROM_invocation':matches,'frozen_bank_target':fom_release.get('bank_target'),
         'model':name,'Re':re,'frozen_models_sha256':review['frozen_models_sha256'],
         'reference_population_sha256':expected,'construction_failures':construction,
         'reference_qualification':metadata['reference_qualification'],'physical_admission':False,

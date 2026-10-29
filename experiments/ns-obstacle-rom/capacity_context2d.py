@@ -21,7 +21,7 @@ def member(base,descriptor):
     return path
 
 
-def validate(release_path,release,admission,expected_source,caps):
+def validate(release_path,release,admission,expected_source,caps,prepared_metadata=None):
     if 'capacity_amendment' not in release:return None
     base=Path(release_path).parent;amend_path=member(base,release['capacity_amendment']);review_path=member(base,release['capacity_review'])
     amend=json.loads(amend_path.read_text());review=json.loads(review_path.read_text())
@@ -43,11 +43,14 @@ def validate(release_path,release,admission,expected_source,caps):
     measurement=json.loads(evidence['measurement'].read_text());factor=json.loads(evidence['factor_reuse'].read_text())
     if measurement.get('passed') is not True or factor.get('passed') is not True or measurement.get('layout_sha256')!=LAYOUT_SHA:
         raise ValueError('native measurement/reuse scope mismatch')
+    if prepared_metadata is not None and prepared_metadata.get('layout_sha256')!=LAYOUT_SHA:
+        raise ValueError('prepared layout differs from measured target')
     for case in admission['cases']:
-        layout_path=Path(case['resolved_directory'])/'fe_layout.json'
-        layout=json.loads(layout_path.read_text())
-        if case['files']['mesh.vol.bin']!=MESH_SHA or sha(layout_path)!=case['files']['fe_layout.json'] or layout.get('sha256')!=LAYOUT_SHA:
-            raise ValueError('admitted mesh/layout differs from measured fine target')
+        if case['files']['mesh.vol.bin']!=MESH_SHA:raise ValueError('admitted mesh differs from measured fine target')
+        if prepared_metadata is None:
+            layout_path=Path(case['resolved_directory'])/'fe_layout.json';layout=json.loads(layout_path.read_text())
+            if sha(layout_path)!=case['files']['fe_layout.json'] or layout.get('sha256')!=LAYOUT_SHA:
+                raise ValueError('admitted layout differs from measured fine target')
     counts=measurement['counts'];proposed=dict(caps)
     proposed.update(mixed_dofs=counts['velocity_dofs']+counts['pressure_dofs'],elements=counts['elements'],
         volume_points=counts['volume_points'],matrix_nnz=max(row['native_nnz'] for row in measurement['metrics'].values()))
@@ -66,3 +69,32 @@ def approved_capacity(release_path,release,admission,expected_source,caps):
         if proof is not None:caps.update(proof['caps'])
         yield proof
     finally:caps.clear();caps.update(original)
+
+
+def consumer_caps(metadata,release_path,release,defaults):
+    """Revalidate count provenance in fresh consumers; never mutate global CAPS."""
+    if metadata.get('caps')==defaults and 'capacity_amendment' not in release:return dict(defaults)
+    if metadata.get('volume_storage')!='point-block-v1':raise ValueError('fine prepared input must remain point-blocked')
+    from prepare2d import preparation_digest
+    from fe_adapter import adapter_digest
+    qualification=require_qualification(metadata.get('reference_qualification'))
+    admission=dict(qualification,reference_admission_sha256=metadata['admission_evidence']['reference_admission_sha256'],
+                   cases=metadata['source_case_files'])
+    if len(admission['cases'])!=9 or metadata.get('adapter_source_sha256')!=adapter_digest():
+        raise ValueError('complete exact-source fine training preparation required')
+    proof=validate(release_path,release,admission,preparation_digest(),defaults,metadata)
+    if proof is None or metadata.get('caps')!=proof['caps']:raise ValueError('prepared count caps lack exact reviewed provenance')
+    base=Path(release_path).parent;result_path=member(base,release['native_preparation_result'])
+    review_path=member(base,release['native_preparation_review']);result=json.loads(result_path.read_text());review=json.loads(review_path.read_text())
+    if (result.get('schema')!='ns-obstacle-native-preparation-result-v1' or result.get('source_sha256')!=preparation_digest() or
+        result.get('status')!='execution_completed_pending_independent_review' or result.get('capacity_context')!=proof or
+        result.get('adapter_manifest_sha256')!=release['adapter_manifest_sha256'] or
+        result.get('reference_admission_sha256')!=admission['reference_admission_sha256'] or
+        review.get('schema')!='ns-obstacle-native-preparation-review-v1' or review.get('passed') is not True or
+        review.get('result_sha256')!=sha(result_path) or review.get('source_sha256')!=preparation_digest() or
+        review.get('adapter_manifest_sha256')!=release['adapter_manifest_sha256'] or
+        review.get('capacity_amendment_sha256')!=proof['amendment_sha256']):
+        raise ValueError('independently reviewed actual fine preparation/context required')
+    if require_qualification(result.get('reference_qualification'))!=qualification or require_qualification(review.get('reference_qualification'))!=qualification:
+        raise ValueError('fine preparation review scope differs')
+    return dict(proof['caps'])

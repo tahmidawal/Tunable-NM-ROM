@@ -13,7 +13,7 @@ INPUTS={'prepare':{'training_manifest','preparation_release'},
         'train':{'prepared','preparation_release'},
         'development':{'prepared','preparation_release','bank','training_evidence','probes','development'},
         'paired':{'prepared','preparation_release','bank','training_evidence','probes','frozen_models','rom_review',
-                  'fom_selection','fom_review','fom_eligibility','truth_admission','fom_release','population'}}
+                  'fom_selection','fom_review','fom_eligibility','truth_admission','fom_release','population','uncertainty','uncertainty_review'}}
 
 
 def source_digest():
@@ -97,9 +97,9 @@ def verify(candidate_path,release_path):
         raise ValueError('fixed stage budget/data-access policy changed')
     if set(c['inputs'])!=INPUTS[c['stage']]:raise ValueError('undeclared stage input')
     inputs={k:v['path'] for k,v in c['inputs'].items()}
-    ordered=sorted(c['inputs'],key=lambda key:key=='population')
+    ordered=sorted(c['inputs'],key=lambda key:key in ('population','uncertainty','uncertainty_review'))
     for name in ordered:
-        if c['stage']=='paired' and name=='population':
+        if c['stage']=='paired' and name in ('population','uncertainty','uncertainty_review'):
             from paired_model2d import verify_decisions
             verify_decisions(inputs)  # Exact decision inputs checked before validation metadata.
         item=c['inputs'][name]
@@ -153,9 +153,13 @@ def run(candidate_path,release_path,output):
                 raise ValueError('bank must come from these actual training arrays')
             probes=_read_arrays(inputs['probes'],2**30)
             rule=array_digest({k:arrays['volume'][k] for k in ('points_dimensionless','weights_dimensionless')})
+            development_meta=json.loads(Path(inputs['development']).read_text())
+            if development_meta.get('reference_admission_sha256')!=metadata['admission_evidence']['reference_admission_sha256']:
+                raise ValueError('development and prepared truth identities differ')
+            development_identity={'manifest_sha256':inner['development_manifest_sha256'],'reference_admission_sha256':development_meta['reference_admission_sha256'],'volume_rule_sha256':rule}
             development=load_reference_population(inputs['development'],inner['development_manifest_sha256'],'development',rule)
             def no_validation():raise AssertionError('development stage must not open validation')
-            run_accuracy_pilot(arrays,metadata,probes,bank,development,no_validation,out/'development',development_only=True)
+            run_accuracy_pilot(arrays,metadata,probes,bank,development,no_validation,out/'development',development_only=True,development_identity=development_identity)
         record['status']='execution_completed_pending_independent_review'
     except Exception as exc:record.update(status='failed',exception=repr(exc));raise
     finally:

@@ -1,0 +1,30 @@
+{
+  "schema": "ns-obstacle-guarded-duplicate-retirement-release-v1",
+  "authorized": true,
+  "action": "retire only exact local fine-preparation staging payload duplicates",
+  "directory": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/staging/fine-preparation01/payload",
+  "proposal_sha256": "f528aa95b19bdaefe48710a2ecc721f6d589f958a3218e9abfc328457c90fb59",
+  "proposal_source_commit": "779274af887bbbdcdd296fd625f442be71838e1b",
+  "proposal_mirror_commit": "e98fd80f3",
+  "fresh_advertised_descendant": "1a66d4be276e0f406b8828257193925c5e20486b",
+  "complete_regular_files": 159,
+  "logical_bytes": 1098144827,
+  "expected_single_link_allocated_bytes": 1098555392,
+  "coordinator_verified": {
+    "exact_complete_paths_sizes_hashes_single_links_no_symlinks": true,
+    "committed_source_and_mirror_files": 46,
+    "accepted_cold_archive_and_canonical_warm_bindings": 108,
+    "generated_extra_metadata_source_and_mirror_copies": 5
+  },
+  "required_guards": [
+    "Recheck proposal digest and exact confined path",
+    "Recheck all159 path/type/size/SHA/single-link bindings immediately before retirement",
+    "Require complete current membership; reject unexpected files or symlinks",
+    "Preserve canonical materialization arrays, cold archives, source/mirror histories, metadata copies and all remote originals",
+    "Retire only the declared payload files and empty payload directories; record observed before/after free bytes",
+    "Recompute final collection reserve using actual corrected archive size; this is not a collection release"
+  ],
+  "unique_bytes_deletion_authorized": false,
+  "remote_deletion_authorized": false,
+  "training_released": false
+}

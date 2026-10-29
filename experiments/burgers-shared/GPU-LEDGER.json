@@ -58,9 +58,12 @@
     {
       "attempt": "cheap01",
       "reserved_seconds": 900,
-      "status": "prepared",
+      "status": "completed_independent_audit_pass",
       "remote": "/cluster/tufts/paralab/tawal01/bshared-cheap-20261029/cheap01",
-      "reason": "User authorized genuine16 cheap-coarse feasibility screen on2026-10-29"
+      "reason": "User authorized genuine16 cheap-coarse feasibility screen on2026-10-29",
+      "job_id": "6647637",
+      "source_commit": "4678f23c9",
+      "actual_gpu_seconds": 128
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -71,9 +74,9 @@
     "remaining_conditional": 0
   },
   "budget_accounting": {
-    "charged_gpu_seconds": 2724,
-    "reserved_gpu_seconds": 900,
-    "unspent_gpu_seconds": 3576,
-    "stopped": "Bounded cheap-coarse screen authorized; no model training or repeated cycles"
+    "charged_gpu_seconds": 2852,
+    "reserved_gpu_seconds": 0,
+    "unspent_gpu_seconds": 4348,
+    "stopped": "Cheap-coarse screen complete; conservative reduced-quadrature eligibility gates failed; full-quadrature control cost gates failed. No further allocations."
   }
 }

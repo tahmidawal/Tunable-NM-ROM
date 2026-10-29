@@ -1,0 +1,23 @@
+{
+  "schema": "ns-obstacle-refined-diagnostic-prospective-review-v1",
+  "execution_authorized_by_this_record": false,
+  "source_only": true,
+  "job_directory": "neural-pod-guided-diagnostic02",
+  "launcher_source_commit": "fda403fc2",
+  "launcher_mirror_commit": "b9f003816",
+  "controller_source_commit": "8ce543523",
+  "controller_mirror_commit": "7d715576a",
+  "required_terminal_bindings": ["DIAGNOSTIC SHA", "latest status record SHA", "accepted model SHA", "release SHA", "results/runtime.json SHA"],
+  "runtime_contract": {"jax_backend":"gpu", "jax_x64":true, "matmul_precision":"highest"},
+  "evaluator": "accuracy_v2.fast_spatial_bank.FastSpatialBank",
+  "cases_Re": [16.875, 23.125],
+  "validation_allowed": false,
+  "new_solve_fit_or_neural_evaluation_in_audit": false,
+  "audit_external_timeout_seconds": 120,
+  "audit_address_space_limit_bytes": 4294967296,
+  "plot_base_sha256": "eec597a616aa145a753b29492c90e7c95f6efc1364a1e8000f1c6f0ac55b52a5",
+  "new_plot_keys": ["refined_neural_r4_solve_velocity", "refined_neural_r4_solve_pressure"],
+  "preserved_first_pass_keys": ["pod_guided_neural_r4_solve_velocity", "pod_guided_neural_r4_solve_pressure"],
+  "plot_rule": "Same original 18000 indices; append saved actual predictions, preserve all old scientific arrays. Full-rule metrics stay distinct from displayed subset.",
+  "plot_export_requires": "Completed independent scientific audit with exact result hash and separately permitted small collection headroom; no invocation now."
+}

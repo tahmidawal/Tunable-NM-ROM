@@ -48,9 +48,9 @@ def enabled(cfg):
     if type(flag) is not bool:raise TypeError('reference_export_controls must be boolean')
     lift=cfg.get('export_common_stokes_lift',False)
     if type(lift) is not bool or (lift and not flag):raise ValueError('common lift export requires explicit G2 controls')
-    if flag and cfg['release'] not in ('G2_steady_control_candidate','G2_steady_training_export','G2_fixed_finite_channel_training_export'):
+    if flag and cfg['release'] not in ('G2_steady_control_candidate','G2_steady_training_export','G2_fixed_finite_channel_training_export','G2_fixed_finite_channel_control_candidate'):
         raise ValueError('G2 export controls need an explicitly reviewed G2 configuration')
-    if cfg['release']=='G2_fixed_finite_channel_training_export':
+    if cfg['release'] in ('G2_fixed_finite_channel_training_export','G2_fixed_finite_channel_control_candidate'):
         from reference_scope import validate_geometry
         validate_geometry(cfg)
     if cfg.get('immutable_rule_cache') is not None and (not flag or not cfg.get('immutable_mesh')):raise ValueError('rule cache requires reviewed immutable mesh reuse')

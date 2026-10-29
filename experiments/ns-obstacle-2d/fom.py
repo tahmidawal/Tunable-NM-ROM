@@ -602,7 +602,13 @@ def run_case(cfg, out):
                  (('immutable_rule.py',) if cfg.get('immutable_rule_cache') else ())+
                  (('reference_primary.py','reference_scope.py') if storage_evidence['mode']=='coefficient_primary' else (('reference_scope.py',) if cfg['release']=='G2_fixed_finite_channel_training_export' else ())))},
              'files':{str(p.relative_to(out)):sha(p) for p in sorted(out.rglob('*') if storage_evidence['mode']=='coefficient_primary' else out.iterdir()) if p.is_file() and not (storage_evidence['mode']=='coefficient_primary' and p.name=='full_rule.npz')}})
-    if storage_evidence['mode']=='coefficient_primary':(out/'full_rule.npz').unlink()
+    if storage_evidence['mode']=='coefficient_primary':
+        from reference_primary import split_runtime_inventory
+        manifest=json.loads((out/'EXPORT-MANIFEST.json').read_text())
+        runtime,audit=split_runtime_inventory(manifest['files'])
+        manifest.update(runtime_files=runtime,audit_files=audit,runtime_validation_policy='explicit_primary_runtime_v1',audit_retention='All audit files remain mandatory raw evidence in the complete verified archive; runtime loading does not claim to re-audit them or admit the reference.')
+        dump(out/'EXPORT-MANIFEST.json',manifest)
+        (out/'full_rule.npz').unlink()
     return result
 
 

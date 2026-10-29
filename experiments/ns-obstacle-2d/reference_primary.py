@@ -12,6 +12,37 @@ from immutable_rule import array_digest
 from reference_scope import validate_geometry
 
 
+RUNTIME_NAMES={'config.json',rex.MESH_FILENAME,'fe_layout.json','PRIMARY-REFERENCE.json','primary_coefficients.npz','solution.sol','stokes.sol','result.json','reload_checks.json','mesh_identity.json','normal_orientation.json','reload_normal_orientation.json','boundary_rule.json'}
+
+
+def split_runtime_inventory(files):
+    if not RUNTIME_NAMES.issubset(files):raise ValueError('primary runtime closure is incomplete')
+    runtime={k:v for k,v in files.items() if k in RUNTIME_NAMES or k.startswith('geometry-cache/')}
+    audit={k:v for k,v in files.items() if k not in runtime}
+    return runtime,audit
+
+
+def verify_runtime_inventory(folder,export):
+    files=export['files'];runtime=files
+    if 'runtime_files' in export:
+        expected,audit=split_runtime_inventory(files)
+        if export['runtime_files']!=expected or export.get('audit_files')!=audit:raise ValueError('runtime/audit partition differs from complete inventory')
+        if export.get('runtime_validation_policy')!='explicit_primary_runtime_v1':raise ValueError('unknown primary runtime policy')
+        runtime=expected
+    for relative,digest in runtime.items():
+        path=(folder/relative).resolve()
+        if not path.is_relative_to(folder) or rex.sha_file(path)!=digest:raise ValueError('primary runtime closure mismatch')
+    primary=json.loads((folder/'PRIMARY-REFERENCE.json').read_text())
+    for descriptor in primary['immutable_geometry_rules'].values():
+        relative=descriptor['manifest_path'];path=(folder/relative).resolve()
+        if not path.is_relative_to(folder) or runtime.get(relative)!=descriptor['manifest_sha256']:raise ValueError('cache manifest is absent from runtime closure')
+        cache=json.loads(path.read_text())
+        for name,digest in {cache['arrays_file']:cache['arrays_sha256'],**cache.get('support_files',{})}.items():
+            member=str(Path(relative).parent/name)
+            if Path(name).name!=name or runtime.get(member)!=digest:raise ValueError('cache transitive member absent from runtime closure')
+    return 'runtime_files' not in export
+
+
 def prepare_primary(out,cfg,layout,solution,stokes,prescribed_trace,reload_evidence):
     validate_geometry(cfg)
     if not cfg.get('immutable_mesh') or not cfg.get('immutable_rule_cache') or reload_evidence.get('passed') is not True:
@@ -64,9 +95,7 @@ def prepare_primary(out,cfg,layout,solution,stokes,prescribed_trace,reload_evide
 def load_primary_case(folder):
     """Verify a self-contained relocated primary case; never follow old absolute paths."""
     folder=Path(folder).resolve();export=json.loads((folder/'EXPORT-MANIFEST.json').read_text())
-    for relative,digest in export['files'].items():
-        path=(folder/relative).resolve()
-        if not path.is_relative_to(folder) or rex.sha_file(path)!=digest:raise ValueError('primary export closure mismatch')
+    verify_runtime_inventory(folder,export)
     record=json.loads((folder/'PRIMARY-REFERENCE.json').read_text())
     if record!=export.get('storage_contract') or record.get('schema')!='ns-obstacle-coefficient-primary-v1':raise ValueError('explicit primary storage record required')
     required={'reference_primary.py','immutable_rule.py','reference_export.py','reference_scope.py'}
@@ -81,6 +110,8 @@ def load_primary_case(folder):
     if set(export['versions'])!=packages or any(importlib.metadata.version(name)!=version for name,version in export['versions'].items()):raise ValueError('current reconstruction runtime differs from retained versions')
     cfg=json.loads((folder/'config.json').read_text());validate_geometry(cfg)
     if rex.sha_file(folder/'config.json')!=record['config_sha256'] or rex.sha_file(folder/rex.MESH_FILENAME)!=record['mesh_sha256']:raise ValueError('primary configuration/mesh identity mismatch')
+    replay=folder/'reload_checks.json'
+    if rex.sha_file(replay)!=record['fresh_process_replay_sha256'] or json.loads(replay.read_text()).get('passed') is not True:raise ValueError('original independent replay certificate missing or changed')
     archive=folder/record['primary_file']
     if rex.sha_file(archive)!=record['primary_sha256'] or archive.stat().st_size>2**30:raise ValueError('primary archive hash/size mismatch')
     import zipfile
@@ -116,4 +147,4 @@ def reconstruct_primary(folder,ng):
     fields['volume'].update(vectors)
     distances,_=rex.obstacle_quadrature(fields['volume']['points'],fields['volume']['weights'],cfg)
     if distances is not None:fields['volume']['signed_obstacle_distance']=distances
-    return fields,{'layout_sha256':digest,'mesh_sha256':record['mesh_sha256'],'no_PDE_solve':True,'fresh_native_state_from_primary':True,'portable_closure_only':True,'rules':certificates}
+    return fields,{'layout_sha256':digest,'mesh_sha256':record['mesh_sha256'],'no_PDE_solve':True,'fresh_native_state_from_primary':True,'portable_closure_only':True,'runtime_integrity_verified':True,'audit_inventory_retained_but_not_reaudited_here':True,'rules':certificates}

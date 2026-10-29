@@ -1,0 +1,20 @@
+{
+  "schema": "ns-obstacle-development-collection-release-v1",
+  "job_id": 6635386,
+  "archive_sha256": "93ab53b83b5abd699f6e0f6c1e0acbc312759abac135cd4ee3b7f5d3fb95982d",
+  "archive_bytes": 504733195,
+  "logical_files": 894,
+  "logical_expansion_bytes": 749609848,
+  "mode": "Archive-only stream verification of all original files; bounded metadata extraction only, no scientific expansion",
+  "maximum_metadata_bytes": 67108864,
+  "minimum_free_before_collection_bytes": 12082428950,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "requirements": [
+    "Complete exact released fine-chunk cooling and freshly measure sufficient free space",
+    "Serialize bulk local collection and Git writes",
+    "Rehash all ordinary chunks before retiring redundant transport and writing Git objects",
+    "Independent durable review before population use/remote deletion"
+  ],
+  "remote_cleanup_authorized": false
+}

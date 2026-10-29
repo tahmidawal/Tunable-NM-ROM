@@ -1,0 +1,207 @@
+{
+  "record": {
+    "source": {
+      "source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+      "adapter_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+      "offline_build_seconds": 177.30700390040874,
+      "pressure_gauge_shift": false,
+      "native_data_admission": {
+        "adapter_review_sha256": "86e8bc4fd05d5a28e03ef44bf0f6473a956a8687639af3454f6a7c4e2984dfde",
+        "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+        "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+        "mesh_reload": "saved_curved_binary_verified_fresh_process_no_recurve"
+      },
+      "fixed_tests_storage": "original point blocks",
+      "bank_evaluation": "one point block at a time"
+    },
+    "stability": {
+      "beta": 0.10532142264912327,
+      "reference_beta": 0.1053214226492348,
+      "ratio": 0.999999999998941,
+      "singular_values": [
+        0.7716236935960001,
+        0.7405416607900757,
+        0.7219796065709948,
+        0.460332237761612,
+        0.40151175556929386,
+        0.31575981224378985,
+        0.2239953169250375,
+        0.10532142264912327
+      ],
+      "norms": "dimensionless velocity H1, pressure L2",
+      "passed": true
+    },
+    "fresh_fingerprint": "8ac64fc2bb4e9cfceede255ee036760077bfc5a857fa203f39bcb843d6b55a88",
+    "training_coefficients": {
+      "array": "a000000",
+      "shape": [
+        9,
+        24
+      ],
+      "dtype": "float64",
+      "content_sha256": "30f81fdab33a5697c9ee86a5b6f9614b91b349b4467c1047ca561005fc2e841d"
+    },
+    "operator": {
+      "convection": {
+        "array": "a000001",
+        "shape": [
+          64,
+          17,
+          17
+        ],
+        "dtype": "float64",
+        "content_sha256": "3b2304bf49deaa4d7737b45f81a082a28d4c40049730cbb21c73608f770bf0c0"
+      },
+      "viscous": {
+        "array": "a000002",
+        "shape": [
+          64,
+          17
+        ],
+        "dtype": "float64",
+        "content_sha256": "b71ea9ab3c561668433db4f5e2d5943a82468b4ce028f3483ae4e2cd4df70f69"
+      },
+      "pressure": {
+        "array": "a000003",
+        "shape": [
+          64,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "0679f7a883805d4dbe5123aa4dec66404004650500acc81c5a32cb6cd8a0f898"
+      },
+      "pressure_lift": {
+        "array": "a000004",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "c5cb084f32c4a8f2c34c244242b1a4aa96da41c3668f9e22e06756bb14d3a544"
+      },
+      "continuity": {
+        "array": "a000005",
+        "shape": [
+          16,
+          17
+        ],
+        "dtype": "float64",
+        "content_sha256": "3fa8fa44d68271aa6171b743c8e72f7ec07aa74511d4566b4477f4db5157063e"
+      },
+      "velocity_test_gram": {
+        "array": "a000006",
+        "shape": [
+          64,
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "64d0e21db05205c5efe89b56e88f9b9335c370b1f13e43f1aeb846c90efa7736"
+      },
+      "scalar_test_gram": {
+        "array": "a000007",
+        "shape": [
+          16,
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "907d651bc636937e0aac5d2f3f3325fcf031a96af473c692ec275fdf326ef2c6"
+      },
+      "velocity_unknown_gram": {
+        "array": "a000008",
+        "shape": [
+          16,
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "f09487134c9de1f83da8f8b638de6b93e3164a9f2a961be2d830996b66a6c186"
+      },
+      "pressure_unknown_gram": {
+        "array": "a000009",
+        "shape": [
+          8,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "b502595cf3c2b5050c72068994b06daaa2acae86ca34e679f4fb5f5ffdb22c6c"
+      },
+      "formulation": "weak_residual_least_squares",
+      "lv": {
+        "array": "a000010",
+        "shape": [
+          64,
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "44d19f124c7ef853bcddd46de19f5c33b823b5ece7cf6bb0c18de516bffdbf75"
+      },
+      "lq": {
+        "array": "a000011",
+        "shape": [
+          16,
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "e3bfbf816a2404a08005cbc3f58a2b6af09395f53eb7554ae93c42e9568beb32"
+      },
+      "unknown_cholesky": {
+        "array": "a000012",
+        "shape": [
+          24,
+          24
+        ],
+        "dtype": "float64",
+        "content_sha256": "92e2517a838dc983fa7d5b179acc062d1596b9b0facbddc8dc76ffa4de636418"
+      },
+      "unknown_map": {
+        "array": "a000013",
+        "shape": [
+          24,
+          24
+        ],
+        "dtype": "float64",
+        "content_sha256": "3fac9b66f8ae08fdca49b40d74ed8054d2a881911204c26e96e6b9f239bac41c"
+      },
+      "nv": 16,
+      "np": 8
+    },
+    "force": {
+      "velocity_per_nu": {
+        "array": "a000014",
+        "shape": [
+          2,
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "66de12dfb21c3cc2eff6f6c03e510a4a0b7f6c612c44be298cb84dfde74c4782"
+      },
+      "pressure": {
+        "array": "a000015",
+        "shape": [
+          2,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "35fa02054f0753003318754c555fa07ee2c722ea343d26fb3a8200420215fdf3"
+      },
+      "lifting_per_nu": {
+        "array": "a000016",
+        "shape": [
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "c09229282e1f3b99d71aa074dc4717f822c44f37e86407d7bf5149442d4de5e1"
+      }
+    }
+  },
+  "array_file": "bank_r8_diagnostic_model.npz",
+  "array_sha256": "71a0727db4625e6ab9e5a92c25450a1a1fbb474e8535aa320ff317d837711335",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 17,
+    "array_references": 17,
+    "unique_expanded_bytes": 246992,
+    "logical_expanded_reference_bytes": 246992,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 1371670
+  }
+}

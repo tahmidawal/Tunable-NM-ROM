@@ -1,0 +1,130 @@
+{
+  "record": {
+    "full": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "aecca10fa4477b32538af9104c852cb7e25b9cf0d08bf3e0754d25685f2f38ae"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "e13c0fb072e463980c98fa3d0cab3b50c7d0ce51ac074106c6c8e4c60f5010f3"
+      },
+      "velocity_gradient": {
+        "array": "a000002",
+        "shape": [
+          1036497,
+          2,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "333d2d467aebd5f469710c2cdd9849686c0a7ecba8ec7a40b8ebee52b0e1712d"
+      }
+    },
+    "boundary": {
+      "velocity": {
+        "array": "a000003",
+        "shape": [
+          4459,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "9a7cef65b1a72af1dc549b8a3d234b58ca5883bfc664ae89ee723c1c58782a6b"
+      },
+      "pressure": {
+        "array": "a000004",
+        "shape": [
+          4459
+        ],
+        "dtype": "float64",
+        "content_sha256": "aa81f9cb6bb337560afc0000c674b32402bd9ba418d2c0af80c0cdf9a967f010"
+      }
+    },
+    "direct": {
+      "array": "a000005",
+      "shape": [
+        80
+      ],
+      "dtype": "float64",
+      "content_sha256": "cdd39626a8ad1c95750bbfcbae0def42bcd410eb7e88aa6bde6d838a1c03ab2c"
+    },
+    "tensor": {
+      "array": "a000006",
+      "shape": [
+        80
+      ],
+      "dtype": "float64",
+      "content_sha256": "e944e672367fb4d708c696a54654f002acbc7b74715ae3827ba1795fa22ff825"
+    },
+    "terms": {
+      "advection": {
+        "array": "a000007",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "de1ee5bf864c16d1227117bce9b98aa1b11c1151e4713bb57e69d8db55cfe554"
+      },
+      "viscous": {
+        "array": "a000008",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "5266daf91c500e277bc9214eed1d5797a9bab5bc0ee20a7a883eaed0af015cba"
+      },
+      "pressure": {
+        "array": "a000009",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "42e9923bef745737e1c93154f3de7251eaff3e6de4a76880d4a3ae87b0666d44"
+      },
+      "pressure_lifting": {
+        "array": "a000010",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "3e1075be2acdee825e4e50b2c3d2ebaf1d90d8f20891e2e3b32a01b1e9083621"
+      },
+      "continuity": {
+        "array": "a000011",
+        "shape": [
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "a75509d585d22027b93b913fe4593ec054dae4cc673beb2bbe3b0885ccb9ae86"
+      }
+    },
+    "force_coefficient": {
+      "array": "a000012",
+      "shape": [
+        2
+      ],
+      "dtype": "float64",
+      "content_sha256": "f698e3c39977f964348cfcc514885fcd6e6942182ea70f5f3f52103eea83d510"
+    }
+  },
+  "array_file": "bank_r8_23.125_diagnostic_arrays.npz",
+  "array_sha256": "60a8b2146aa5bcc00df8b57c74eaffdad86bc4833b963945497c60f9eb2121d7",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 13,
+    "array_references": 13,
+    "unique_expanded_bytes": 58154320,
+    "logical_expanded_reference_bytes": 58154320,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 59788648
+  }
+}

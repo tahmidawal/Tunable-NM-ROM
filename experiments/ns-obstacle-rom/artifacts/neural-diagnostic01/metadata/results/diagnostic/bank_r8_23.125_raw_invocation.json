@@ -1,0 +1,164 @@
+{
+  "record": {
+    "output_contract": "full_velocity_pressure_fields",
+    "outputs": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "aecca10fa4477b32538af9104c852cb7e25b9cf0d08bf3e0754d25685f2f38ae"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "e13c0fb072e463980c98fa3d0cab3b50c7d0ce51ac074106c6c8e4c60f5010f3"
+      }
+    },
+    "evidence": {
+      "state": {
+        "array": "a000002",
+        "shape": [
+          24
+        ],
+        "dtype": "float64",
+        "content_sha256": "0c778156b145eddf7e807dcd33890984926837274fdfd91054b5f214f5db4d83"
+      },
+      "reynolds": 23.125,
+      "model": "bank_r8",
+      "operator_formulation": "weak_residual_least_squares",
+      "history": [
+        {
+          "iteration": 0,
+          "objective": 0.44326925907541626,
+          "gradient_norm": 0.9525905180697309,
+          "gradient_denominator": 1.0,
+          "condition": 33.356644490532894,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.94156174420525,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 1,
+          "objective": 0.019296257081577332,
+          "gradient_norm": 0.002793893963298191,
+          "gradient_denominator": 1.0,
+          "condition": 33.056506464395625,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.19644977516697407,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 2,
+          "objective": 0.01929213482421783,
+          "gradient_norm": 4.617873224785528e-05,
+          "gradient_denominator": 1.0,
+          "condition": 33.05982955294441,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.1964287902738182,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 3,
+          "objective": 0.019292115099515728,
+          "gradient_norm": 3.916341379230752e-06,
+          "gradient_denominator": 1.0,
+          "condition": 33.059273722409145,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.19642868985723916,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 4,
+          "objective": 0.019292114854054063,
+          "gradient_norm": 4.888360577255274e-07,
+          "gradient_denominator": 1.0,
+          "condition": 33.05932732627563,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.1964286886076169,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 5,
+          "objective": 0.019292114850934128,
+          "gradient_norm": 5.1085812616571156e-08,
+          "gradient_denominator": 1.0,
+          "condition": 33.05931955796084,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.1964286885917336,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 6,
+          "objective": 0.019292114850894465,
+          "gradient_norm": 6.17431040869853e-09,
+          "gradient_denominator": 1.0,
+          "condition": 33.059320244530106,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.19642868859153167,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 7,
+          "objective": 0.019292114850893965,
+          "gradient_norm": 6.522993983115212e-10,
+          "gradient_denominator": 1.0,
+          "condition": 33.059320145939026,
+          "rank": 24,
+          "damping": 1e-08,
+          "residual_norm": 0.19642868859152915
+        }
+      ]
+    },
+    "work": {
+      "status": "stationary",
+      "residual_evaluations": 15,
+      "jacobian_evaluations": 8
+    },
+    "component_seconds": {
+      "initialization": 5.768612027168274e-06,
+      "coefficient_solve": 0.004351637326180935,
+      "output_reconstruction": 0.05826813541352749,
+      "total_query": 0.06262554135173559
+    },
+    "physical_admission": false
+  },
+  "array_file": "bank_r8_23.125_raw_invocation.npz",
+  "array_sha256": "903db8da98fa6e717d12d08f157eece94843ee3495cb8fbc4419dc79923c848b",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 3,
+    "array_references": 3,
+    "unique_expanded_bytes": 24876120,
+    "logical_expanded_reference_bytes": 24876120,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 26179620
+  }
+}

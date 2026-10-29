@@ -1,0 +1,249 @@
+{
+  "schema": "ns-obstacle-reference-producer-v1",
+  "physical_admission": false,
+  "mesh_filename": "mesh.vol.bin",
+  "mesh_format": "netgen-binary-archive-v6.2.2608",
+  "reload_policy": "saved_curved_binary_verified_fresh_process_no_recurve",
+  "case": {
+    "kind": "dfg",
+    "Re": 20.000000000000004,
+    "split": "train",
+    "release": "G2_fixed_finite_channel_control_candidate"
+  },
+  "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+  "layout_sha256": "6b92d21972abaabb7c582de5a4a17c3e5bb752e3704e67d94a2bb36e79158299",
+  "storage_contract": {
+    "schema": "ns-obstacle-coefficient-primary-v1",
+    "physical_admission": false,
+    "mode": "coefficient_primary",
+    "primary_file": "primary_coefficients.npz",
+    "primary_sha256": "f040f7ad40a596685377826fbf99dd3f95208bc013d0c52d84fe1ddd2c58cc34",
+    "primary_arrays": {
+      "solution_coefficients": {
+        "dtype": "<f8",
+        "shape": [
+          113373
+        ],
+        "content_sha256": "3ec9145868bbc7bfeabc3a9b4e3a4ce7e9a8236345d5b03e9b644fd646cb8723"
+      },
+      "stokes_coefficients": {
+        "dtype": "<f8",
+        "shape": [
+          113373
+        ],
+        "content_sha256": "debfb44022f56b75b6d63e16dc2bcc27c98c11ffeb7e87dd889a3ab92304b88e"
+      },
+      "prescribed_FE_trace_coefficients": {
+        "dtype": "<f8",
+        "shape": [
+          88392
+        ],
+        "content_sha256": "17edd0fcb3474077c196b1c7c37b19927675449ecbbfdd6ecfede665e36b78bc"
+      }
+    },
+    "mesh_file": "mesh.vol.bin",
+    "mesh_sha256": "c15599ab35f5179b69f77a16a55f76699b42632c0dcff22bcd7026a122e7306c",
+    "layout_sha256": "6b92d21972abaabb7c582de5a4a17c3e5bb752e3704e67d94a2bb36e79158299",
+    "config_sha256": "3760c615ed8803ffa57f278b4d4317ce923ca5c46a9bb022245832e66b8a27e2",
+    "immutable_geometry_rules": {
+      "volume": {
+        "manifest_path": "geometry-cache/volume/cache.json",
+        "manifest_sha256": "e990e7685dd6db2634d618944c933d8e93365edf357e40f601a9683ddbb5f4cb"
+      },
+      "boundary": {
+        "manifest_path": "geometry-cache/boundary/cache.json",
+        "manifest_sha256": "e86b9b40b17d17a1177694f2654666129ca1615c1e49278233aef3c4b15046df"
+      }
+    },
+    "original_geometry_rule_descriptors": {
+      "volume": {
+        "manifest_path": "shared/caches/p4_g4_h2/12/volume/cache.json",
+        "manifest_sha256": "e990e7685dd6db2634d618944c933d8e93365edf357e40f601a9683ddbb5f4cb"
+      },
+      "boundary": {
+        "manifest_path": "shared/caches/p4_g4_h2/12/boundary/cache.json",
+        "manifest_sha256": "e86b9b40b17d17a1177694f2654666129ca1615c1e49278233aef3c4b15046df"
+      }
+    },
+    "portable_cache_resolution": "manifest_path is relative to the retained case directory; all declared members are included in the recursive export manifest",
+    "derived_full_rule_original_archive_sha256": "e13dea11e66a89797095b6581bd6d128c69d80331ffee541dfa6a47ef446f4e3",
+    "derived_full_rule_arrays": {
+      "points": {
+        "dtype": "<f8",
+        "shape": [
+          266756,
+          2
+        ],
+        "content_sha256": "fb60ff0e07ccacd6f98153427849a3ff13deddae59fb7375ca615448170e7e4d"
+      },
+      "weights": {
+        "dtype": "<f8",
+        "shape": [
+          266756
+        ],
+        "content_sha256": "c1e84340113fce66835268ad8b490eefd45810691c91500cacf7d3009cfbaefa"
+      },
+      "velocity": {
+        "dtype": "<f8",
+        "shape": [
+          266756,
+          2
+        ],
+        "content_sha256": "398b20bd7ffe1e12b307d0096fdbc36155e3918d438a08c368aee89cf767a750"
+      },
+      "velocity_gradient": {
+        "dtype": "<f8",
+        "shape": [
+          266756,
+          2,
+          2
+        ],
+        "content_sha256": "b7a1c130890b8e4eb90e67fd443cb803324c004d5f2ef15a8d25522f8ab71421"
+      },
+      "pressure": {
+        "dtype": "<f8",
+        "shape": [
+          266756
+        ],
+        "content_sha256": "f4781f65ea6446654f0dc107309c8393e19839e466418f0341ca6c157ebbe741"
+      },
+      "stokes_coefficients": {
+        "dtype": "<f8",
+        "shape": [
+          113373
+        ],
+        "content_sha256": "debfb44022f56b75b6d63e16dc2bcc27c98c11ffeb7e87dd889a3ab92304b88e"
+      },
+      "solution_coefficients": {
+        "dtype": "<f8",
+        "shape": [
+          113373
+        ],
+        "content_sha256": "3ec9145868bbc7bfeabc3a9b4e3a4ce7e9a8236345d5b03e9b644fd646cb8723"
+      },
+      "jacobians": {
+        "dtype": "<f8",
+        "shape": [
+          266756,
+          2,
+          2
+        ],
+        "content_sha256": "e6904d63aea2710ba5155b83c50e5d8d4148d6ce4bc24d4fc6ccf907fb0237b1"
+      },
+      "signed_obstacle_distance": {
+        "dtype": "<f8",
+        "shape": [
+          266756
+        ],
+        "content_sha256": "ec7ecfff28f745237e3a5e9742dc5fce8da27510cb9bcf274e9fc331158c1649"
+      },
+      "prescribed_FE_trace_coefficients": {
+        "dtype": "<f8",
+        "shape": [
+          88392
+        ],
+        "content_sha256": "17edd0fcb3474077c196b1c7c37b19927675449ecbbfdd6ecfede665e36b78bc"
+      }
+    },
+    "fresh_process_replay_sha256": "093d933604cd041b4905585ab3a53acefb90f6ca4bb28140beea20a54791b1be",
+    "fresh_process_replay_passed": true,
+    "primary_retention": "bitwise lossless f64 coefficient arrays and exact binary mesh/layout/config/immutable-rule identity",
+    "derived_retention": "full-rule fields are numerically reproducible from primary coefficients and exact rules; original ZIP bytes are not claimed recoverable",
+    "derived_numerical_replay_tolerance": 1e-10,
+    "derived_temporary_full_rule_retained": false,
+    "raw_Jacobian_force_constraint_and_failure_evidence": "retained unchanged; no scientific threshold or coverage reduction",
+    "source_sha256": {
+      "reference_primary.py": "d7925bff32da62ae433c1a8663e7fec0765534c0075acb82ce2a13a02f842f1c",
+      "immutable_rule.py": "65154a33506a5e71996ea4800a9422df76900062dffbd3f9fd70eea6d5c2b930",
+      "reference_export.py": "32c72e6a4f1fe4224f00c750e87ddf1792aceb4d9aaf0ca7d4e7f67814c28019",
+      "reference_scope.py": "3b6e6396e8d98a88d1000af20c430df82464fbb592f1a6cbbdb15b69d5bb0981"
+    },
+    "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76"
+  },
+  "versions": {
+    "ngsolve": "6.2.2608",
+    "netgen-mesher": "6.2.2608",
+    "netgen-occt": "7.8.1",
+    "ngsolve-openblas": "0.3.33",
+    "numpy": "2.5.0"
+  },
+  "producer_source_sha256": {
+    "fom.py": "3267a70a91c3e9620e2545af78edb20ce7f55566020d3b687cb65a25bbcfb121",
+    "reference_export.py": "32c72e6a4f1fe4224f00c750e87ddf1792aceb4d9aaf0ca7d4e7f67814c28019",
+    "shared_lift.py": "5d28c86cec7017ad5ac108ee3834fb45598a3d10963a4021a0a94afc9ef73b66",
+    "preflight.py": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+    "scalars.py": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+    "oriented_normals.py": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+    "immutable_rule.py": "65154a33506a5e71996ea4800a9422df76900062dffbd3f9fd70eea6d5c2b930",
+    "reference_primary.py": "d7925bff32da62ae433c1a8663e7fec0765534c0075acb82ce2a13a02f842f1c",
+    "reference_scope.py": "3b6e6396e8d98a88d1000af20c430df82464fbb592f1a6cbbdb15b69d5bb0981"
+  },
+  "files": {
+    "PRIMARY-REFERENCE.json": "bc914737b2ddf85bc0ab920dbcd3ad556d8801d1e2fd72c1f67d0a74ede23964",
+    "affine_gradient_orientation.json": "0c7801f6b5b896c016534d9a45e80f382f6ebdc57c9ed6f1c5817aee632c1af4",
+    "boundary_rule.json": "0241cbf2dffbacfb703ff7c355fe60f1d5f7443e01fdcf5bddb4f929a499504f",
+    "config.json": "3760c615ed8803ffa57f278b4d4317ce923ca5c46a9bb022245832e66b8a27e2",
+    "early_geometry_api_checks.json": "28a14e9d220f7cb1661568b9ce0a268caa3a3f287370097ffbc40f5910facf7c",
+    "essential_trace_certificate.json": "a7606527d63cebdf5d9801bd222f72b21d045c189241fee0977fb7a885234a38",
+    "fe_layout.json": "582f61549a330cc803fd0edf1c80b5b860be20b324dab4464e598ad501df1341",
+    "geometry-cache/boundary/arrays.npz": "fe6bce1c1322ff07f517c707e904136ee9b8b507fbe56f39b31fa76dd95c6205",
+    "geometry-cache/boundary/cache.json": "e86b9b40b17d17a1177694f2654666129ca1615c1e49278233aef3c4b15046df",
+    "geometry-cache/volume/arrays.npz": "cb255c9a54dcdb7b8add62e96c34debf2738a3541a6f806423adf03b78265a0f",
+    "geometry-cache/volume/cache.json": "e990e7685dd6db2634d618944c933d8e93365edf357e40f601a9683ddbb5f4cb",
+    "geometry_checks.json": "3e617a3c5466d0dad842f4434ed432ae8e1703aa21f57e806a33937e962c1267",
+    "jacobian_arrays.npz": "4088be6bd8cf81ebfc262b450817f9f102130678f7a7d39ef16f6c006dabba1e",
+    "jacobian_checks.json": "1cbaa5d93cde0769d21d0761cf91b86e03eb3dc488f0570192aacc1f55c7c56c",
+    "memory_checks.json": "b848fc65a2703cb8918efa9547136e1da519026be7ca8aa69455e907868f0e22",
+    "mesh.vol.bin": "c15599ab35f5179b69f77a16a55f76699b42632c0dcff22bcd7026a122e7306c",
+    "mesh_identity.json": "13fc727194fcf6007fb3317631e81b08839807c5884d9b06f90cff142077eed3",
+    "newton_history.json": "41fce0c5815f72f4473800c5727f7b28fa2ec5159d8f400d9170aeb730299285",
+    "normal_orientation.json": "fce75bb38480dca27a1b42df81314bc5b580a4a5de77ee5c1cdcef87b43f1e25",
+    "primary_coefficients.npz": "f040f7ad40a596685377826fbf99dd3f95208bc013d0c52d84fe1ddd2c58cc34",
+    "reload.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reload.stdout.log": "ecab519f53fd7706c424335ee1bc3368492edd344ffa0b942430fa7b4afa3918",
+    "reload_checks.json": "093d933604cd041b4905585ab3a53acefb90f6ca4bb28140beea20a54791b1be",
+    "reload_normal_orientation.json": "57d3b913f667f536c4b7e0435b6a041c581bfd79de167b73b4f5e9ceb5617712",
+    "reload_process.json": "cfc2b0a096b979c39d29cdbd28c52ed0509f95e2e361fadea2ab4d13fe292a82",
+    "reload_request.json": "db74dd8d44f65b1a74cfbe826beca3474a2962b879100d17786486f806c392ab",
+    "result.json": "09df0b7b3ee9908c1f15d376740c4fdfcab584ba0876989a547b3e8d5e78fef8",
+    "solution.sol": "75e4bf49cb069bd342d669b4c744c13fdd296381f89146d17ffe311358fa7c7c",
+    "stokes.sol": "5607722fb1599354dc81e43c38257b3122d55772e0dfc613d7d3a2f78fc533a4",
+    "wake_centerline.json": "f1f545bd0d881ffb733d3bfd0951ebb37eb80b7bf6256a79f0146c320cbe9bb0"
+  },
+  "runtime_files": {
+    "PRIMARY-REFERENCE.json": "bc914737b2ddf85bc0ab920dbcd3ad556d8801d1e2fd72c1f67d0a74ede23964",
+    "boundary_rule.json": "0241cbf2dffbacfb703ff7c355fe60f1d5f7443e01fdcf5bddb4f929a499504f",
+    "config.json": "3760c615ed8803ffa57f278b4d4317ce923ca5c46a9bb022245832e66b8a27e2",
+    "fe_layout.json": "582f61549a330cc803fd0edf1c80b5b860be20b324dab4464e598ad501df1341",
+    "geometry-cache/boundary/arrays.npz": "fe6bce1c1322ff07f517c707e904136ee9b8b507fbe56f39b31fa76dd95c6205",
+    "geometry-cache/boundary/cache.json": "e86b9b40b17d17a1177694f2654666129ca1615c1e49278233aef3c4b15046df",
+    "geometry-cache/volume/arrays.npz": "cb255c9a54dcdb7b8add62e96c34debf2738a3541a6f806423adf03b78265a0f",
+    "geometry-cache/volume/cache.json": "e990e7685dd6db2634d618944c933d8e93365edf357e40f601a9683ddbb5f4cb",
+    "mesh.vol.bin": "c15599ab35f5179b69f77a16a55f76699b42632c0dcff22bcd7026a122e7306c",
+    "mesh_identity.json": "13fc727194fcf6007fb3317631e81b08839807c5884d9b06f90cff142077eed3",
+    "normal_orientation.json": "fce75bb38480dca27a1b42df81314bc5b580a4a5de77ee5c1cdcef87b43f1e25",
+    "primary_coefficients.npz": "f040f7ad40a596685377826fbf99dd3f95208bc013d0c52d84fe1ddd2c58cc34",
+    "reload_checks.json": "093d933604cd041b4905585ab3a53acefb90f6ca4bb28140beea20a54791b1be",
+    "reload_normal_orientation.json": "57d3b913f667f536c4b7e0435b6a041c581bfd79de167b73b4f5e9ceb5617712",
+    "result.json": "09df0b7b3ee9908c1f15d376740c4fdfcab584ba0876989a547b3e8d5e78fef8",
+    "solution.sol": "75e4bf49cb069bd342d669b4c744c13fdd296381f89146d17ffe311358fa7c7c",
+    "stokes.sol": "5607722fb1599354dc81e43c38257b3122d55772e0dfc613d7d3a2f78fc533a4"
+  },
+  "audit_files": {
+    "affine_gradient_orientation.json": "0c7801f6b5b896c016534d9a45e80f382f6ebdc57c9ed6f1c5817aee632c1af4",
+    "early_geometry_api_checks.json": "28a14e9d220f7cb1661568b9ce0a268caa3a3f287370097ffbc40f5910facf7c",
+    "essential_trace_certificate.json": "a7606527d63cebdf5d9801bd222f72b21d045c189241fee0977fb7a885234a38",
+    "geometry_checks.json": "3e617a3c5466d0dad842f4434ed432ae8e1703aa21f57e806a33937e962c1267",
+    "jacobian_arrays.npz": "4088be6bd8cf81ebfc262b450817f9f102130678f7a7d39ef16f6c006dabba1e",
+    "jacobian_checks.json": "1cbaa5d93cde0769d21d0761cf91b86e03eb3dc488f0570192aacc1f55c7c56c",
+    "memory_checks.json": "b848fc65a2703cb8918efa9547136e1da519026be7ca8aa69455e907868f0e22",
+    "newton_history.json": "41fce0c5815f72f4473800c5727f7b28fa2ec5159d8f400d9170aeb730299285",
+    "reload.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reload.stdout.log": "ecab519f53fd7706c424335ee1bc3368492edd344ffa0b942430fa7b4afa3918",
+    "reload_process.json": "cfc2b0a096b979c39d29cdbd28c52ed0509f95e2e361fadea2ab4d13fe292a82",
+    "reload_request.json": "db74dd8d44f65b1a74cfbe826beca3474a2962b879100d17786486f806c392ab",
+    "wake_centerline.json": "f1f545bd0d881ffb733d3bfd0951ebb37eb80b7bf6256a79f0146c320cbe9bb0"
+  },
+  "runtime_validation_policy": "explicit_primary_runtime_v1",
+  "audit_retention": "All audit files remain mandatory raw evidence in the complete verified archive; runtime loading does not claim to re-audit them or admit the reference."
+}

@@ -1,0 +1,66 @@
+{
+  "volume": 0.8941460183660529,
+  "volume_error": {
+    "numerator": 2.731148640577885e-14,
+    "denominator": 0.8941460183660256,
+    "value": 3.054477215666433e-14,
+    "definition": "area error / exact fluid area"
+  },
+  "boundary_measures": {
+    "inlet": 0.40999999999999753,
+    "obstacle": 0.3141592653590623,
+    "outlet": 0.40999999999999753,
+    "wall_bottom": 2.1999999999999913,
+    "wall_top": 2.1999999999999917
+  },
+  "element_count": 21153,
+  "ndof": 235231,
+  "velocity_ndof": 192288,
+  "pressure_ndof": 42943,
+  "geometry_order": 4,
+  "coordinate_derivative_convention": "component,coordinate",
+  "obstacle_perimeter_error": {
+    "numerator": 8.298917109073045e-14,
+    "denominator": 0.3141592653589793,
+    "value": 2.641627360437754e-13,
+    "definition": "perimeter error / exact circumference"
+  },
+  "immutable_rule_cache": {
+    "descriptor": {
+      "manifest_path": "shared/caches/p3_g4_h3/16/volume/cache.json",
+      "manifest_sha256": "842d44dbfb8e13f2d261251957d1cf5b92f11ae744bd4dfe289f8e10c8b42144"
+    },
+    "certificate": {
+      "all_points_preserved": true,
+      "point_adjustments": 0,
+      "discarded_points": 0,
+      "point_count": 1713393,
+      "max_reconstruction_error": 0.0,
+      "physical_tolerance": 1.0000000000000001e-11,
+      "layout_sha256": "3515037c0d752a7ce3f9599eca26967647606ab42d31342bd490ea3a5eb7fc7d",
+      "mesh_sha256": "ded70bfcba414978641cd24ffa613208f8f4289668d1dde128dd7bc9b72f92ba"
+    },
+    "offline_seconds": 1.0317780263721943,
+    "state_fields_recomputed": true
+  },
+  "minimum_sampled_jacobian_determinant": 4.703049159342035e-06,
+  "max_sampled_obstacle_distance": 7.470760121641717e-12,
+  "mapped_weight_sum": 0.8941460183658136,
+  "analytic_obstacle_quadrature": {
+    "obstacle_present": true,
+    "sign": "radius from exact center minus exact radius; negative inside solid",
+    "minimum_signed_distance": 1.104801792634058e-06,
+    "minimum_signed_distance_over_D": 1.1048017926340581e-05,
+    "candidate_excluded_count": 0,
+    "candidate_excluded_weight": 0.0,
+    "candidate_excluded_weight_fraction": 0.0,
+    "actually_removed_count": 0,
+    "actually_removed_weight": 0.0,
+    "no_obstacle_quadrature": true,
+    "classification": "strict signed distance < 0; no clipping or tolerance offset"
+  },
+  "sampled_obstacle_normal_dot_radial_range": [
+    -1.0000000000000002,
+    -0.9999999999999983
+  ]
+}

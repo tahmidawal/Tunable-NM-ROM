@@ -1,7 +1,10 @@
 """Source-only bounded reservations. No runtime/compression/dedup predictions."""
 from pathlib import Path
-import hashlib,json,shutil
+import hashlib,json,shutil,subprocess
 ROOT=Path(__file__).parent
+coordinator_commit='762d74044'
+coordinator_raw=subprocess.check_output(['git','-c','gc.auto=0','show',coordinator_commit+':experiments/ns-obstacle/reviews/ROM-ALLOCATION-RESERVATION.json'])
+coordinator=json.loads(coordinator_raw);schedule=coordinator['population_schedule_proposal']
 p=ROOT/'checks/capacity/PRIMARY-RETENTION-PROJECTION.json';base=json.loads(p.read_text())
 m=ROOT/'artifacts/native-capacity04/results/interface/result.json';measurement=json.loads(m.read_text())
 from pilot2d import DEV_RE,VALIDATION_RE,PREFIXES,QUADRATURE_SUPPORTS
@@ -21,8 +24,10 @@ record={'status':'source_only_reservation_not_execution_release','source_sha256'
  'capacity_projection_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'measurement_sha256':hashlib.sha256(m.read_bytes()).hexdigest(),
  'allocation_seconds':seconds,'conditional_ROM_subcap_seconds':14400,'total_ROM_reservation_seconds':sum(seconds.values()),
  'fixed_bank_optimizer_seconds':1800,'bank_setup_retention_allowance_seconds':300,
- 'reference_plan_including_spent_seconds':22454,'total_plan_seconds':22454+sum(seconds.values()),
- 'remaining_reference_infrastructure_headroom_seconds':43200-22454-sum(seconds.values()),
+ 'coordinator_reservation_commit':coordinator_commit,'coordinator_reservation_sha256':hashlib.sha256(coordinator_raw).hexdigest(),
+ 'reference_plan_including_spent_seconds':schedule['maximum_infrastructure_total_seconds'],
+ 'total_plan_seconds':schedule['maximum_infrastructure_total_seconds']+sum(seconds.values()),
+ 'remaining_reference_infrastructure_headroom_seconds':coordinator['campaign_cap_seconds']-schedule['maximum_infrastructure_total_seconds']-sum(seconds.values()),
  'disk_bytes':{'prepared_primary_after_fine_replay':prepared,'development_audit_maximum':dev,
    'all_registered_paired_full_outputs':paired_fields,'paired_returned_states_upper_bound':paired_states,
    'training_checkpoint_allowance':checkpoint_allowance,'FOM_calibration_per_candidate':calibration_per_candidate,

@@ -1,6 +1,6 @@
 {
   "status": "source_only_reservation_not_execution_release",
-  "source_sha256": "0c037535055660d1aaa2160d25fade7ed39046fc5c82b23d57c556acf776101d",
+  "source_sha256": "3beb74847043fe5f375282785a3dd17033b8fa8e21c31afed3e9da2ab4ec70c7",
   "capacity_projection_sha256": "8e0a873de49240ee70e446d7603092dccf7b2728a179fd50def6ddec0cac4b57",
   "measurement_sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
   "allocation_seconds": {
@@ -15,9 +15,11 @@
   "total_ROM_reservation_seconds": 14400,
   "fixed_bank_optimizer_seconds": 1800,
   "bank_setup_retention_allowance_seconds": 300,
-  "reference_plan_including_spent_seconds": 22454,
-  "total_plan_seconds": 36854,
-  "remaining_reference_infrastructure_headroom_seconds": 6346,
+  "coordinator_reservation_commit": "762d74044",
+  "coordinator_reservation_sha256": "348178c463645749a5f78d019ca2969ae94cc17e769eaa7b8b67493451b7cd2c",
+  "reference_plan_including_spent_seconds": 27575,
+  "total_plan_seconds": 41975,
+  "remaining_reference_infrastructure_headroom_seconds": 1225,
   "disk_bytes": {
     "prepared_primary_after_fine_replay": 1910921079,
     "development_audit_maximum": 4623510240,
@@ -52,7 +54,7 @@
       "payload_plus_reserve_before_transport_bytes": 38906713527
     }
   ],
-  "local_free_bytes_at_generation": 17996443648,
+  "local_free_bytes_at_generation": 14625636352,
   "disk_flow": [
     "Keep actual FD1 input/cache hashes and paths warm; materialize derived full-rule/prepared fields only in fresh allocated jobs.",
     "Fine preparation must complete exact primary replay; originals remain until independent acceptance.",

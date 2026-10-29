@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-29T03:32:38.566482+00:00",
+  "command": "cd /cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-02 && sha256sum -c SOURCE-SHA256SUMS >/dev/null && sbatch --parsable --gres=gpu:h200:1 --chdir=/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-02 g2/population-re20-02/run.sh",
+  "returncode": 0,
+  "stdout": "6624571\n",
+  "stderr": "",
+  "source_commit": "51fdc8fa7add471953254b016b4860aa9ca6ec92",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-02",
+  "single_submission": true,
+  "release": "coordinator d931edeeb reviews/RELEASE-POPULATION-RE20-02.json"
+}

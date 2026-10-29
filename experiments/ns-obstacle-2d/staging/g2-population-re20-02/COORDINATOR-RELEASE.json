@@ -1,0 +1,52 @@
+{
+  "schema": "ns-obstacle-finite-channel-population-release-v1",
+  "source_commit": "51fdc8fa7add471953254b016b4860aa9ca6ec92",
+  "source_mirror_commit": "a67735acd97786cfa3e1def532dcc11dd680b8ae",
+  "source_candidate_sha256": "706c5ac35577dafa85c8088cab1e1439da14e0d2eaaef995509695ed5e9a179c",
+  "allowed_groups": [
+    "re20"
+  ],
+  "attempt": "g2-population-re20-02",
+  "input_count": 163,
+  "input_bytes": 473009032,
+  "new_PDE_solves": 8,
+  "retained_states": 7,
+  "allocation_seconds": 1000,
+  "runner_seconds": 900,
+  "producer_timeout_seconds": 300,
+  "allocation_GiB": 64,
+  "memory_stop_GiB": 48,
+  "cpus": 16,
+  "completed_campaign_seconds_before_release": 5607,
+  "reserved_this_release_seconds": 1000,
+  "infrastructure_cap_seconds": 28800,
+  "conditional_ROM_cap_seconds": 14400,
+  "campaign_cap_seconds": 43200,
+  "single_submission": true,
+  "no_automatic_retry": true,
+  "scope_amendment": "FD1-2026-10-28",
+  "physical_admission": false,
+  "training_released": false,
+  "later_parameter_groups_released": false,
+  "review": "Independent exact163-input review and actual production-reader metadata tests pass; prior runtime-closure approval explicitly retracted",
+  "bindings": {
+    "RUNTIME-BOUND.json": "42a76c4357530e337f32f40d7d1b9380b5b3e04881a61b27c6b6a87400a6be72",
+    "DISK-PLAN.json": "c7364e1f59745ba17dc291ad41aa9c2be02e3393850083ffb94dc923b2ddf33c",
+    "FAILED-ATTEMPT-MIRROR-VERIFICATION.json": "4f5335e25888f422896151c345c8f77767bbc042f544401cfa2da09c7f1f31a6"
+  },
+  "conditions": [
+    "One fresh exclusive02 directory; never reuse failed01",
+    "Verify all163 staged inputs and run actual producer-read metadata validator before submission",
+    "Check queue/disk immediately before and after submission; maximum two obstacle jobs",
+    "During pre-submission recovery/materialization retain10GiB plus actual concurrent reservations; remove temporary recovered archive before post-stage guard",
+    "After staging and temporary recovery cleanup, require24GiB free before allocating; collection reservation14GiB with10GiB untouched",
+    "Use actual archive/expanded/Git footprints before collection; preserve remote outputs until verified durable retention",
+    "Setup-aware900-second runner within1000-second allocation and20-second minimum finalization margin; preserve partial failures",
+    "No automatic retry; this is the separately reviewed single infrastructure repair for omitted mesh reload evidence",
+    "All original numerical/force/common-rule/noise checks unchanged; later groups and training remain unreleased"
+  ],
+  "reviewed_repair_commit": "74813457f8bd474e7a508946cba0443fdc3e6e9d",
+  "prior_failed_job": 6623674,
+  "prior_failed_seconds": 32,
+  "repair_scope": "Add all mesh reload certificates and actual producer-read staging validator; numerical sources and thresholds unchanged"
+}

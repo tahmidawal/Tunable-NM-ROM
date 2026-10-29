@@ -22,7 +22,7 @@ def main():
     if free<=required_free:raise MemoryError('local reserve plus working envelope not available')
     metadata=subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(P/'dependencies.py'),'--validate-metadata-only','--target',remote+'/deps'],capture_output=True,text=True,check=True);(S/'DEPENDENCY-METADATA-PREFLIGHT.json').write_text(metadata.stdout)
     if candidate.get('population_group'):
-        population_check=subprocess.run(['/home/tahmid/Dev/.venv/bin/python',str(P/'g2/validate_population_inputs.py'),'--root',str(P),'--plan',str(P/'g2/population01/PLAN.json'),'--group',candidate['population_group'],'--out',str(S/'IMMUTABLE-INPUT-METADATA-PREFLIGHT.json')],capture_output=True,text=True)
+        population_check=subprocess.run(['/home/tahmid/Dev/.venv/bin/python','-B',str(P/'g2/validate_population_inputs.py'),'--root',str(P),'--plan',str(P/'g2/population01/PLAN.json'),'--group',candidate['population_group'],'--out',str(S/'IMMUTABLE-INPUT-METADATA-PREFLIGHT.json')],capture_output=True,text=True)
         (S/'IMMUTABLE-INPUT-METADATA-PREFLIGHT.stdout').write_text(population_check.stdout);(S/'IMMUTABLE-INPUT-METADATA-PREFLIGHT.stderr').write_text(population_check.stderr)
         population_check.check_returncode()
     record={'attempt':a.attempt,'source_commit':commit,'remote_directory':remote,'manifest_sha256':sha((P/'INPUT-MANIFEST.json').read_bytes()),'source_checksums_sha256':sha((P/'SOURCE-SHA256SUMS').read_bytes()),'candidate_sha256':a.candidate_sha,'expected_regular_files':len(files)+1,'local_free_bytes':free,'required_local_free_bytes':required_free,'dependency_metadata_preflight_passed':True,'submitted':False,'staging_helper_sha256':sha(Path(__file__).read_bytes())};dump(S/'STAGING.json',record)

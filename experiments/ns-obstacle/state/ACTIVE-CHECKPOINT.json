@@ -150,12 +150,6 @@
   "remaining_population_first_jobs": "Historical initial groups now completed; current numerical_jobs and pending_collections are authoritative.",
   "pending_collections": [
     {
-      "job_id": 6628161,
-      "group": "re18p75",
-      "state": "COMPLETED",
-      "elapsed_seconds": 648
-    },
-    {
       "job_id": 6629092,
       "group": "re21p25",
       "state": "COMPLETED",
@@ -181,14 +175,16 @@
     "re20": "reviews/FD1-RE20-ROW-REVIEW.json",
     "re15": "reviews/FD1-RE15-ROW-REVIEW.json",
     "re16p25": "reviews/FD1-RE16P25-ROW-REVIEW.json",
-    "re17p5": "reviews/FD1-RE17P5-ROW-REVIEW.json"
+    "re17p5": "reviews/FD1-RE17P5-ROW-REVIEW.json",
+    "re18p75": "reviews/FD1-RE18P75-ROW-REVIEW.json"
   },
   "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged",
   "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use",
-  "pending_row_audit": "None; Re16.25/Re17.5 rows accepted, durable raw backup required before cooling",
+  "pending_row_audit": "None; Re18.75 accepted, durable raw backup required before cooling",
   "ROM_storage_planning": "13.230GB remote workspace, not local RAM/staging; actual archive A collection needs2A+bounded scratch+10GiB under current verified cold-tier procedure.1.911GB post-review warm runtime projection; no collection released.",
   "full_break_even": "Unresolved without valid common-platform offline cost basis; campaign resource ledger is accounting, online ratios remain paired within allocation.",
   "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit",
   "FOM_candidate_lift_control": "reviews/FOM-CANDIDATE-LIFT-SOURCE-REVIEW.json: sourceabc562ecb/mirrord6cd6b54b PASS; execution unreleased; proposed240s within2400s dev-FOM reservation.",
-  "reviewed_cooling_helper_sha256": "3a34b178aed8626844cd84e763e1e73a38d8855a00a2acd7e3ca7e76b1546953"
+  "reviewed_cooling_helper_sha256": "3a34b178aed8626844cd84e763e1e73a38d8855a00a2acd7e3ca7e76b1546953",
+  "re16p25_re17p5_retention": "Source4faff182f/mirrorba71307f2; Git-only recovery proofs pass;5,888,935,818bytes verified working duplicates cooled"
 }

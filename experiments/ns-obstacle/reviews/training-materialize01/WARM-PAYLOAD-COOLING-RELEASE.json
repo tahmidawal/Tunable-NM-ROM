@@ -1,0 +1,18 @@
+{
+  "schema": "ns-obstacle-exact-warm-payload-cooling-release-v1",
+  "passed": true,
+  "proposal_sha256": "e84db75a420dc799109087f14a0339b93e21aec9d08077d6f83ad990d850ebae",
+  "proposal_source": "0b27108c6",
+  "proposal_mirror": "e61195427",
+  "independent_reviewer": "reference_resume",
+  "authorized_files": 78,
+  "maximum_allocated_credit_bytes": 1151463424,
+  "archive_sha256": "490ade93edb5c65b3fd7f3000987bec7588fc4e693fd049a5f7e9166e994e30f",
+  "requirements": [
+    "Fresh verify all exact78 paths hashes/sizes/single links, both pinned archive histories and advertised mirror ancestry",
+    "Confirm no active localconsumer; clusterpreparedinputs are separate and must remain untouched",
+    "Only exact proposal-listed numerical payload duplicates; preserve metadata/code/RETENTION/coldproof/history and all otherpaths",
+    "Write explicit cold lifecycle and original-path recovery mapping before removal; record actual freed space",
+    "No other deletion or remote cleanup authorized"
+  ]
+}

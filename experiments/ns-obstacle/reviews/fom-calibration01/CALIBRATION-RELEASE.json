@@ -1,0 +1,58 @@
+{
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fom-calibration01",
+  "launcher_sha256": "d1bfa20671fae8a4d6b7ea43df4953105d118997489764d28c37d7408f60574f",
+  "source_sha256": "78add2703bab36c52d9ef80d016c3f9931dd61d7ce3bf7c2c36b61365db03d00",
+  "plan_sha256": "611f255f30e090f3c9db51e09e8e07e5bf900700b3e469235376c488a50001d7",
+  "runtime_inventory_sha256": "b0ddcca679b8c424ba4087f14c4378a1dd0338ebcd3e8f09cf48dea4084712f3",
+  "allocation_seconds": 2160,
+  "outer_timeout_seconds": 2145,
+  "outer_kill_grace_seconds": 10,
+  "finalization_reserve_seconds": 180,
+  "original_fom_reservation_seconds": 2400,
+  "prior_candidate_control_reservation_seconds": 240,
+  "model_development_future_envelope_bytes": 12884901888,
+  "calibration_output_archive_envelope_bytes": 10737418240,
+  "miscellaneous_reserved_bytes": 268435456,
+  "global_namespace_limit_bytes": 53687091200,
+  "schema": "ns-obstacle-fom-development-calibration-release-v1",
+  "authorized_stage": "development_fom_calibration",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "single_execution": true,
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fom-calibration01/results/calibration",
+  "launcher_hard_wall_seconds": 2160,
+  "source_commit": "d4e2d019f",
+  "mirror_commit": "cb2243807",
+  "independent_packet_review_sha256": "428186c0e946958d32f5b9f651b3b767de3e771e05cd864306868d3834e1f079",
+  "resource_proposal_sha256": "3c8f7b62436a0b1acbb358aa1033ffad3d6e62de65d064e0b25b2022849ef010",
+  "selected_subset": [
+    "p3g3h2",
+    "p4g4h1"
+  ],
+  "selection_frozen": false,
+  "matched_accuracy": false,
+  "validation_allowed": false,
+  "automatic_retry": false,
+  "local_floor_bytes": 10737418240,
+  "other_local_reserved_bytes": 268435456,
+  "required_guards": [
+    "Full actual release verification including both indirect field archives and candidate lift quartets before one submission",
+    "Fresh account queue before/after, at most two campaign jobs",
+    "Fresh all-three-namespace total plus full model12GiB envelope plus full calibration10GiB plus256MiB misc under50GiB",
+    "Retain original model timeout evidence and immutable shared inputs; collection and cleanup require separate actual measurements/release",
+    "Exact fresh never-executed namespace; all12 blocks and7 actual repetitions/readout attempts required; partial timeout is unaccepted calibration",
+    "All final method matching and validation decisions remain unreleased"
+  ],
+  "scope": "Prospectively frozen two-candidate common-target screening at fixed nonlinear tolerance1e-10, selected by bounded resource plan; untested candidates/stopping optimization remain explicit"
+}

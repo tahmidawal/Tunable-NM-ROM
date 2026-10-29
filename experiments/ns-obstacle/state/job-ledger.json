@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "bank_fit_terminal_model_audit_pending",
+  "status": "bank_gate_failed_POD_development_partial",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -1474,23 +1474,26 @@
       "release_sha256": "f69c8b42ef5dd0c2ddbfead1d9e7ae97dd5f63ef731345502f850c07097f66eb",
       "source_commit": "7616a27b5",
       "mirror_commit": "345939b6b",
-      "state": "PENDING",
-      "state_last_observed": "PENDING",
+      "state": "FAILED",
+      "state_last_observed": "FAILED",
       "gpus": 1,
       "allocation_seconds_reserved": 3360,
       "outer_process_ceiling_seconds": 3355,
       "single_submission": true,
       "training_authorized": false,
       "validation_access_authorized": false,
-      "submitted_utc": "2026-10-29T14:01:37.224406+00:00"
+      "submitted_utc": "2026-10-29T14:01:37.224406+00:00",
+      "elapsed_seconds": 3346,
+      "allocated_gpu_hours": 0.9294444444444444,
+      "exit_code": "124",
+      "node": "pax023",
+      "execution_report": "Whole-body allocation deadline; bank representation gate failed, partial POD_r2 results retained; final development incomplete."
     }
   ],
-  "live_job_ids": [
-    6636731
-  ],
-  "completed_gpu_hours": 4.527222222222222,
+  "live_job_ids": [],
+  "completed_gpu_hours": 5.456666666666667,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
-  "total_allocated_gpu_hours_completed": 4.527222222222222,
-  "last_accounting_utc": "2026-10-29T13:26:45.557032+00:00",
+  "total_allocated_gpu_hours_completed": 5.456666666666667,
+  "last_accounting_utc": "2026-10-29T15:09:52.617281+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

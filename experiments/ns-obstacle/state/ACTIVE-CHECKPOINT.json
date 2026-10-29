@@ -1,15 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    6636731
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Complete two-case development reconstruction and independent review",
-    "Execute actual bank/POD development accuracy and quadrature gates",
-    "Freeze feasible FOM calibration subset, then validation/paired timing, final reviews and generated reporting"
+    "Review retained model timeout and completed r2 failures",
+    "Recover missing mandatory POD controls within original1200s failure reserve",
+    "Execute restricted FOM screen, freeze choices, validation/paired timing and final reporting"
   ],
-  "completed_allocated_gpu_hours": 4.527222222222222,
+  "completed_allocated_gpu_hours": 5.456666666666667,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -189,7 +187,7 @@
   "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released",
   "legacy_duplicate_retirement_result": "Exact479-file owner retirement complete after fresh checks; lifecycle in reference staging/LEGACY-DUPLICATE-RETIREMENT/LIFECYCLE.json; observed free-space gain1,861,390,336bytes; protected inputs preserved.",
   "FOM_candidate_lift_execution": "Job6631950 completed25s exit0:0; independent raw and durable retention review passed. See reviews/FOM-CANDIDATE-LIFT-RESULT-REVIEW.json. No eligibility or training release.",
-  "ROM_actual_charged_seconds": 1251,
+  "ROM_actual_charged_seconds": 4597,
   "reference_infrastructure_actual_charged_seconds": 15047,
   "reference_admission": {
     "passed": true,
@@ -199,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": true
   },
-  "next_action": "Monitor actual model-development6636731; review final representation/physics/quadrature results, then freeze feasible FOM calibration and held-out validation.",
+  "next_action": "Audit retained partial POD_r2 results; launch exact restricted FOM screen after preflight; review recovery of missing mandatory POD controls within existing1200s failure reserve.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -214,9 +212,7 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [
-    6636731
-  ],
+  "live_job_ids": [],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -368,6 +364,30 @@
     "submitted": true,
     "validation_or_retraining_authorized": false,
     "job_id": 6636731,
-    "actual_remote_release_verification_passed": true
+    "actual_remote_release_verification_passed": true,
+    "state": "FAILED",
+    "elapsed_seconds": 3346,
+    "cause": "setup-inclusive timeout",
+    "partial_POD_r2_outputs_retained": true
+  },
+  "bank_development_gate": {
+    "passed": false,
+    "scope": "producer projection records; terminal independent audit pending",
+    "maximum_prefix_velocity_errors": [
+      0.1474010630072039,
+      0.16601847872577472
+    ],
+    "limit": 0.002,
+    "bank_online_or_quadrature_expansion_allowed": false
+  },
+  "fom_calibration_release": {
+    "sha256": "1b6eb106885818012c3157f3a8164abd85a6d13b4328791c42af77f666d3cef5",
+    "seconds": 2160,
+    "submitted": false,
+    "subset": [
+      "p3g3h2",
+      "p4g4h1"
+    ],
+    "common_target_only": true
   }
 }

@@ -1,0 +1,43 @@
+{
+  "cases": {
+    "original": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-domain-comparison01/inputs/original",
+      "export_manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b"
+    },
+    "upstream": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-domain-comparison01/inputs/upstream",
+      "export_manifest_sha256": "c32ed49cba769234a4392aae8c90720f6abf2f4f375c0f85ca59dbb1e0942f36"
+    },
+    "downstream": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-domain-comparison01/inputs/downstream",
+      "export_manifest_sha256": "b768b34c0c1192c95e23943709a4155e736f8a31493ac397104a155365dda10c"
+    },
+    "symmetric": {
+      "directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-domain-comparison01/inputs/symmetric",
+      "export_manifest_sha256": "96049e97251cee0ad96e40bd85c607fff7c0c7d65c227d07ef50d02f466e3cae"
+    }
+  },
+  "rule_case": "original",
+  "comparisons": [
+    {
+      "case": "upstream",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate"
+    },
+    {
+      "case": "downstream",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate"
+    },
+    {
+      "case": "symmetric",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate"
+    },
+    {
+      "case": "symmetric",
+      "reference": "downstream",
+      "purpose": "separate outlet-model sensitivity on extended outlet, evaluated on complete original domain; downstream reference denominator explicitly retained"
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "status": "common_rule_fields_evaluated_no_physical_admission",
+  "physical_admission": false,
+  "rule_case": "original",
+  "full_rule_preserved": true,
+  "comparisons": [
+    {
+      "case": "upstream",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate",
+      "velocity_relative": {
+        "numerator": 0.0045032348475102105,
+        "denominator": 0.209125026530404,
+        "value": 0.02153369647919925
+      },
+      "pressure_scaled": {
+        "numerator": 0.0006983371873869736,
+        "denominator": 0.037823717815487296,
+        "value": 0.018462944092212757
+      },
+      "volume": 0.8941460183660065,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": false,
+      "pressure_field_interpretation": "diagnostic only; domain comparison uses unshifted exact common-pole pressure differences",
+      "pressure_drop_absolute_difference": 0.010478879765407678
+    },
+    {
+      "case": "downstream",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate",
+      "velocity_relative": {
+        "numerator": 9.416102583880947e-06,
+        "denominator": 0.209125026530404,
+        "value": 4.502618715752785e-05
+      },
+      "pressure_scaled": {
+        "numerator": 0.029923502300034776,
+        "denominator": 0.037823717815487296,
+        "value": 0.791130645750067
+      },
+      "volume": 0.8941460183660065,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": false,
+      "pressure_field_interpretation": "diagnostic only; domain comparison uses unshifted exact common-pole pressure differences",
+      "pressure_drop_absolute_difference": 9.015319102356756e-09
+    },
+    {
+      "case": "symmetric",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate",
+      "velocity_relative": {
+        "numerator": 9.416062853786145e-06,
+        "denominator": 0.209125026530404,
+        "value": 4.5025997175030486e-05
+      },
+      "pressure_scaled": {
+        "numerator": 0.029743412427306763,
+        "denominator": 0.037823717815487296,
+        "value": 0.7863693509031
+      },
+      "volume": 0.8941460183660065,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": false,
+      "pressure_field_interpretation": "diagnostic only; domain comparison uses unshifted exact common-pole pressure differences",
+      "pressure_drop_absolute_difference": 1.4048273558331381e-08
+    },
+    {
+      "case": "symmetric",
+      "reference": "downstream",
+      "purpose": "separate outlet-model sensitivity on extended outlet, evaluated on complete original domain; downstream reference denominator explicitly retained",
+      "velocity_relative": {
+        "numerator": 7.643178179067743e-09,
+        "denominator": 0.20912498129701038,
+        "value": 3.6548374716708264e-08
+      },
+      "pressure_scaled": {
+        "numerator": 0.00018008987285956257,
+        "denominator": 0.037823717815487296,
+        "value": 0.00476129485044495
+      },
+      "volume": 0.8941460183660065,
+      "point_count": 1036497,
+      "pressure_shift_fitted": false,
+      "unshifted_pressure_field_eligible_for_same_domain_gate": false,
+      "pressure_field_interpretation": "diagnostic only; domain comparison uses unshifted exact common-pole pressure differences",
+      "pressure_drop_absolute_difference": 5.032954455974625e-09
+    }
+  ],
+  "peak_rss_bytes": 664801280,
+  "source_sha256": "3b7bdbe1e3f49e8f74a6deb43a64b0b9167764e339329b6eaa9023af90f67ef6",
+  "plan_sha256": "e4dc9cc5452b051974baaeedd85de649d5ad6ad5300a2217f6fb498ce0f35f24"
+}

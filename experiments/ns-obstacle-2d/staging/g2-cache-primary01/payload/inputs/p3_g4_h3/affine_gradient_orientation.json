@@ -1,0 +1,28 @@
+{
+  "velocity": "(y,0)",
+  "expected_gradient": [
+    [
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "axes": "component,coordinate",
+  "fixture_velocity_degree": 4,
+  "production_velocity_degree": 3,
+  "geometry_order": 4,
+  "maximum_Frobenius_errors": {
+    "volume": 1.6234272803672346e-11,
+    "boundary": 1.737914034902834e-11
+  },
+  "sample_counts": {
+    "volume": 63459,
+    "boundary": 1274
+  },
+  "threshold": 1e-10,
+  "passed": true,
+  "interpretation": "checks transpose orientation; no assertion that previous Grad was incorrect"
+}

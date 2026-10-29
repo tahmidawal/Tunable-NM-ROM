@@ -1,0 +1,369 @@
+{
+  "physical_admission": false,
+  "new_PDE_solves": 0,
+  "failed_bars_not_suppressed": true,
+  "comparisons": [
+    {
+      "case": "upstream",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate",
+      "physical_force_differences": [
+        {
+          "diagnostic_order_offset": 0,
+          "case_coefficients": [
+            5.295487621426808,
+            0.011344573019732147
+          ],
+          "reference_coefficients": [
+            5.579547735110752,
+            0.010615733290831403
+          ],
+          "drag_absolute_difference": 0.28406011368394335,
+          "reference_drag_denominator": 5.579547735110752,
+          "drag_relative_difference": 0.05091095679608965,
+          "original_drag_denominator": 5.579547735110752,
+          "drag_difference_over_original": 0.05091095679608965,
+          "transverse_absolute_difference": 0.0007288397289007438
+        },
+        {
+          "diagnostic_order_offset": 4,
+          "case_coefficients": [
+            5.295487621426809,
+            0.011344573019732134
+          ],
+          "reference_coefficients": [
+            5.5795477351107525,
+            0.010615733290831356
+          ],
+          "drag_absolute_difference": 0.28406011368394335,
+          "reference_drag_denominator": 5.5795477351107525,
+          "drag_relative_difference": 0.050910956796089646,
+          "original_drag_denominator": 5.5795477351107525,
+          "drag_difference_over_original": 0.050910956796089646,
+          "transverse_absolute_difference": 0.0007288397289007785
+        }
+      ],
+      "pressure_probes_case": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.12278209226003542,
+          0.015740846219388104
+        ],
+        "difference": 0.10704124604064731,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_probes_reference": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.13228025920756312,
+          0.014760133401508125
+        ],
+        "difference": 0.11752012580605499,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_drop_absolute_difference": 0.010478879765407678
+    },
+    {
+      "case": "downstream",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate",
+      "physical_force_differences": [
+        {
+          "diagnostic_order_offset": 0,
+          "case_coefficients": [
+            5.579546512124095,
+            0.010622109134230754
+          ],
+          "reference_coefficients": [
+            5.579547735110752,
+            0.010615733290831403
+          ],
+          "drag_absolute_difference": 1.2229866568347347e-06,
+          "reference_drag_denominator": 5.579547735110752,
+          "drag_relative_difference": 2.1919100165391076e-07,
+          "original_drag_denominator": 5.579547735110752,
+          "drag_difference_over_original": 2.1919100165391076e-07,
+          "transverse_absolute_difference": 6.37584339935153e-06
+        },
+        {
+          "diagnostic_order_offset": 4,
+          "case_coefficients": [
+            5.579546512124095,
+            0.01062210913423101
+          ],
+          "reference_coefficients": [
+            5.5795477351107525,
+            0.010615733290831356
+          ],
+          "drag_absolute_difference": 1.2229866577229132e-06,
+          "reference_drag_denominator": 5.5795477351107525,
+          "drag_relative_difference": 2.1919100181309538e-07,
+          "original_drag_denominator": 5.5795477351107525,
+          "drag_difference_over_original": 2.1919100181309538e-07,
+          "transverse_absolute_difference": 6.375843399653372e-06
+        }
+      ],
+      "pressure_probes_case": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.16392548144868074,
+          0.046405364657944856
+        ],
+        "difference": 0.11752011679073589,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_probes_reference": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.13228025920756312,
+          0.014760133401508125
+        ],
+        "difference": 0.11752012580605499,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_drop_absolute_difference": 9.015319102356756e-09
+    },
+    {
+      "case": "symmetric",
+      "reference": "original",
+      "purpose": "full original-domain field/force sensitivity; finite-inlet DFG and length independence remain separate",
+      "physical_force_differences": [
+        {
+          "diagnostic_order_offset": 0,
+          "case_coefficients": [
+            5.5795463337614235,
+            0.010622917432955589
+          ],
+          "reference_coefficients": [
+            5.579547735110752,
+            0.010615733290831403
+          ],
+          "drag_absolute_difference": 1.4013493281339606e-06,
+          "reference_drag_denominator": 5.579547735110752,
+          "drag_relative_difference": 2.5115822906498433e-07,
+          "original_drag_denominator": 5.579547735110752,
+          "drag_difference_over_original": 2.5115822906498433e-07,
+          "transverse_absolute_difference": 7.184142124186041e-06
+        },
+        {
+          "diagnostic_order_offset": 4,
+          "case_coefficients": [
+            5.579546333761424,
+            0.010622917432955667
+          ],
+          "reference_coefficients": [
+            5.5795477351107525,
+            0.010615733290831356
+          ],
+          "drag_absolute_difference": 1.4013493281339606e-06,
+          "reference_drag_denominator": 5.5795477351107525,
+          "drag_relative_difference": 2.511582290649843e-07,
+          "original_drag_denominator": 5.5795477351107525,
+          "drag_difference_over_original": 2.511582290649843e-07,
+          "transverse_absolute_difference": 7.184142124310941e-06
+        }
+      ],
+      "pressure_probes_case": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.16373502783300434,
+          0.0462149160752229
+        ],
+        "difference": 0.11752011175778143,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_probes_reference": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.13228025920756312,
+          0.014760133401508125
+        ],
+        "difference": 0.11752012580605499,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_drop_absolute_difference": 1.4048273558331381e-08
+    },
+    {
+      "case": "symmetric",
+      "reference": "downstream",
+      "purpose": "separate outlet-model sensitivity on extended outlet, evaluated on complete original domain; downstream reference denominator explicitly retained",
+      "physical_force_differences": [
+        {
+          "diagnostic_order_offset": 0,
+          "case_coefficients": [
+            5.5795463337614235,
+            0.010622917432955589
+          ],
+          "reference_coefficients": [
+            5.579546512124095,
+            0.010622109134230754
+          ],
+          "drag_absolute_difference": 1.783626712992259e-07,
+          "reference_drag_denominator": 5.579546512124095,
+          "drag_relative_difference": 3.1967234418003705e-08,
+          "original_drag_denominator": 5.579547735110752,
+          "drag_difference_over_original": 3.1967227411073573e-08,
+          "transverse_absolute_difference": 8.082987248345108e-07
+        },
+        {
+          "diagnostic_order_offset": 4,
+          "case_coefficients": [
+            5.579546333761424,
+            0.010622917432955667
+          ],
+          "reference_coefficients": [
+            5.579546512124095,
+            0.01062210913423101
+          ],
+          "drag_absolute_difference": 1.7836267041104747e-07,
+          "reference_drag_denominator": 5.579546512124095,
+          "drag_relative_difference": 3.196723425881901e-08,
+          "original_drag_denominator": 5.5795477351107525,
+          "drag_difference_over_original": 3.1967227251888905e-08,
+          "transverse_absolute_difference": 8.08298724657569e-07
+        }
+      ],
+      "pressure_probes_case": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.16373502783300434,
+          0.0462149160752229
+        ],
+        "difference": 0.11752011175778143,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_probes_reference": {
+        "points": [
+          [
+            0.15000000000000002,
+            0.2
+          ],
+          [
+            0.25,
+            0.2
+          ]
+        ],
+        "values": [
+          0.16392548144868074,
+          0.046405364657944856
+        ],
+        "difference": 0.11752011679073589,
+        "valid": true,
+        "errors": [
+          null,
+          null
+        ],
+        "G2_pressure_gate_eligible": true,
+        "evaluation": "exact coordinate FE interpolation; no nearest node, shift or nudge"
+      },
+      "pressure_drop_absolute_difference": 5.032954455974625e-09
+    }
+  ],
+  "meshing_disclosure": "Each extension was independently meshed with unchanged physical maxh/obstacle_h and FE/geometry orders; no assertion of an embedded identical inner mesh.",
+  "scope": "The canonical DFG result is distinct from any project-defined extended-domain family."
+}

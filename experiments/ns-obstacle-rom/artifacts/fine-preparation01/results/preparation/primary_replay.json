@@ -1,0 +1,37 @@
+{
+  "primary_manifest_sha256": "a47923c941b9fbe2a354cc96e94dfb27b06f419c2d327c65c4e7f5ffc60c9c40",
+  "capture_seconds": 20.58367097377777,
+  "restoration": {
+    "seconds": 198.6972569609061,
+    "restored_files": 1780,
+    "manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+    "exact_archive_and_array_bytes": true,
+    "offline_cost_includes_regeneration_verification_and_writes": true
+  },
+  "replay_accounting": {
+    "setup_seconds": 14.520289369858801,
+    "setup_guard": {
+      "prior_peak_rss_bytes": 3642560512,
+      "reserved_bytes": 3091949624
+    },
+    "iterations": [
+      {
+        "iterator_elapsed_seconds_including_consumer": 193.83036684896797,
+        "generation_and_verification_seconds": 25.547366096638143,
+        "points_returned": 1036497,
+        "workspace_guard": {
+          "prior_peak_rss_bytes": 3642560512,
+          "reserved_bytes": 380834464
+        },
+        "completed": true,
+        "peak_rss_bytes": 3642560512
+      }
+    ],
+    "physical_admission": false,
+    "cost_scope": "generation is included in enclosing offline phase, not added twice; iterator elapsed includes consumer work"
+  },
+  "original_fields_retained": true,
+  "restored_fields_retained": true,
+  "omission_authorized": false,
+  "status": "pending_independent_fine_replay_review"
+}

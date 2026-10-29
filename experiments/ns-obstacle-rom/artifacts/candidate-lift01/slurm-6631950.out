@@ -1,0 +1,122 @@
+CASES.json: OK
+CONTROL-RELEASE.json: OK
+DEPENDENCIES.json: OK
+INPUT-INVENTORY.json: OK
+REPAIR.json: OK
+SOURCE_COMMIT.txt: OK
+candidate_lift_control.py: OK
+cases/p3g3h1/EXPORT-MANIFEST.json: OK
+cases/p3g3h1/config.json: OK
+cases/p3g3h1/fe_layout.json: OK
+cases/p3g3h1/mesh.vol.bin: OK
+cases/p3g3h1/mesh_identity.json: OK
+cases/p3g3h1/reload_checks.json: OK
+cases/p3g3h1/result.json: OK
+cases/p3g3h1/stokes.sol: OK
+cases/p3g3h2/EXPORT-MANIFEST.json: OK
+cases/p3g3h2/config.json: OK
+cases/p3g3h2/fe_layout.json: OK
+cases/p3g3h2/mesh.vol.bin: OK
+cases/p3g3h2/mesh_identity.json: OK
+cases/p3g3h2/reload_checks.json: OK
+cases/p3g3h2/result.json: OK
+cases/p3g3h2/stokes.sol: OK
+cases/p3g3h3/EXPORT-MANIFEST.json: OK
+cases/p3g3h3/config.json: OK
+cases/p3g3h3/fe_layout.json: OK
+cases/p3g3h3/mesh.vol.bin: OK
+cases/p3g3h3/mesh_identity.json: OK
+cases/p3g3h3/reload_checks.json: OK
+cases/p3g3h3/result.json: OK
+cases/p3g3h3/stokes.sol: OK
+cases/p4g4h1/EXPORT-MANIFEST.json: OK
+cases/p4g4h1/config.json: OK
+cases/p4g4h1/fe_layout.json: OK
+cases/p4g4h1/mesh.vol.bin: OK
+cases/p4g4h1/mesh_identity.json: OK
+cases/p4g4h1/reload_checks.json: OK
+cases/p4g4h1/result.json: OK
+cases/p4g4h1/stokes.sol: OK
+cases/p4g4h2/EXPORT-MANIFEST.json: OK
+cases/p4g4h2/config.json: OK
+cases/p4g4h2/fe_layout.json: OK
+cases/p4g4h2/mesh.vol.bin: OK
+cases/p4g4h2/mesh_identity.json: OK
+cases/p4g4h2/reload_checks.json: OK
+cases/p4g4h2/result.json: OK
+cases/p4g4h2/stokes.sol: OK
+dependencies.py: OK
+fom_native/SOURCE.json: OK
+fom_native/candidate_lift.py: OK
+fom_native/fom_outputs.py: OK
+fom_native/fom_query.py: OK
+fom_native/g2/exact_lookup.py: OK
+fom_native/oriented_normals.py: OK
+fom_native/reference_export.py: OK
+fom_native/reference_scope.py: OK
+fom_native/scalars.py: OK
+fom_native/shared_lift.py: OK
+native.sh: OK
+abc562ecb983811da81bbaaee1b67d14d74a3a89
+jax_backend=gpu
+jax_devices=[CudaDevice(id=0)]
+jax_x64=True
+matmul_precision=highest
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           46 bits physical, 57 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  64
+On-line CPU(s) list:                     0-63
+Vendor ID:                               GenuineIntel
+Model name:                              Intel(R) Xeon(R) Gold 6448Y
+CPU family:                              6
+Model:                                   143
+Thread(s) per core:                      1
+Core(s) per socket:                      32
+Socket(s):                               2
+Stepping:                                8
+CPU(s) scaling MHz:                      95%
+CPU max MHz:                             4100.0000
+CPU min MHz:                             800.0000
+BogoMIPS:                                4200.00
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hfi vnmi avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr ibt amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities
+Virtualization:                          VT-x
+L1d cache:                               3 MiB (64 instances)
+L1i cache:                               2 MiB (64 instances)
+L2 cache:                                128 MiB (64 instances)
+L3 cache:                                120 MiB (2 instances)
+NUMA node(s):                            2
+NUMA node0 CPU(s):                       0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62
+NUMA node1 CPU(s):                       1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI BHI_DIS_S
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsx async abort:           Not affected
+name, uuid, memory.total [MiB]
+NVIDIA L40S, GPU-e5a26538-329d-f49a-7c67-6991f7fca4a6, 46068 MiB
+{"wheel": "ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl", "sha256": "4e02591fe98a1068b4f7ca094aec36844da1f6ddf826088b060e5a8e7780efff", "bytes": 30204991}
+{"wheel": "netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", "sha256": "d8118835e2aec5739ee5755d61e866505313d92e3d4c6b947be7835f9fbf5122", "bytes": 8506176}
+{"wheel": "netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", "sha256": "db71d77f56f79c0768489e76dde8febdeb25b95777986587a5d09575fa112f94", "bytes": 25610800}
+{"wheel": "ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl", "sha256": "8d3266615c7b099e78c5891a41971c6bffe5d6014d13d736cef0cc119d1ca141", "bytes": 15064649}
+Processing ./wheels/ngsolve-6.2.2608-cp313-cp313-manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_mesher-6.2.2608-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Processing ./wheels/netgen_occt-7.8.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+Processing ./wheels/ngsolve_openblas-0.3.33-py3-none-manylinux_2_17_x86_64.whl
+Installing collected packages: ngsolve-openblas, ngsolve, netgen-occt, netgen-mesher
+
+Successfully installed netgen-mesher-6.2.2608 netgen-occt-7.8.1 ngsolve-6.2.2608 ngsolve-openblas-0.3.33
+{"prefix_layout_verified": true, "occt_libraries": 47, "site_packages": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/candidate-lift01/deps/lib/python3.13/site-packages"}
+{"ngsolve": "6.2.2608", "netgen_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/candidate-lift01/deps/lib/python3.13/site-packages/netgen/__init__.py", "numpy": "2.5.0", "scipy": "1.18.0", "jax": "0.10.2", "jax_backend": "gpu", "jax_x64": true, "matmul_precision": "highest"}
+jax_backend=gpu

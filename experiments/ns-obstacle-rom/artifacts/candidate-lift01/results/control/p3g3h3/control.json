@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "physical_admission": false,
+  "mesh_origin": {
+    "mode": "immutable_byte_copy",
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "mesh_sha256": "0ef06a23785ab1ddc99532ac7d66cded77edce779a06dded53b53fc94dc46c62",
+    "source_identity_sha256": "6034295364e47a2beb1dfc00172fd360bffe1a8d60d20c14946ee9389a255dbc",
+    "source_layout_sha256": "3515037c0d752a7ce3f9599eca26967647606ab42d31342bd490ea3a5eb7fc7d"
+  },
+  "layout_sha256": "3515037c0d752a7ce3f9599eca26967647606ab42d31342bd490ea3a5eb7fc7d",
+  "source_case_manifest_sha256": "e5348c6ea9993e7ce06df83b52dc84fecec5329a95666bfbb0d838d0fbdc0285",
+  "source_sha256": "580a6bdeee1d92bc8c2339f10c1cbf1a2dea34daf8c0d186af20855434242ff2",
+  "records": [
+    {
+      "Re": 15.0,
+      "nu": 0.0013333333333333335,
+      "numerator": 4.479165755601605e-15,
+      "denominator": 0.7502458031846375,
+      "relative_residual": 5.97026432748904e-15
+    },
+    {
+      "Re": 20.0,
+      "nu": 0.0010000000000000002,
+      "numerator": 3.320932680215579e-15,
+      "denominator": 0.6520412984473203,
+      "relative_residual": 5.093132426003663e-15
+    },
+    {
+      "Re": 25.0,
+      "nu": 0.0008000000000000001,
+      "numerator": 2.6738224030057144e-15,
+      "denominator": 0.6011799866862452,
+      "relative_residual": 4.447623776939165e-15
+    }
+  ],
+  "no_new_nonlinear_solves": true,
+  "no_new_linear_solves": true,
+  "no_fabricated_admission": true,
+  "elapsed_seconds": 1.8579921098425984,
+  "peak_rss_bytes": 1065857024,
+  "assembly_workspace_bound_bytes": 1790223936
+}

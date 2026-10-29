@@ -7,7 +7,7 @@
     "Assemble genuine all15 candidate and independent full-population admission review",
     "Run actual ROM preparation/training/solves and held-out comparisons, then final reviews and reporting"
   ],
-  "completed_allocated_gpu_hours": 4.391666666666667,
+  "completed_allocated_gpu_hours": 4.505,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -187,7 +187,7 @@
   "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released",
   "legacy_duplicate_retirement_result": "Exact479-file owner retirement complete after fresh checks; lifecycle in reference staging/LEGACY-DUPLICATE-RETIREMENT/LIFECYCLE.json; observed free-space gain1,861,390,336bytes; protected inputs preserved.",
   "FOM_candidate_lift_execution": "Job6631950 completed25s exit0:0; independent raw and durable retention review passed. See reviews/FOM-CANDIDATE-LIFT-RESULT-REVIEW.json. No eligibility or training release.",
-  "ROM_actual_charged_seconds": 763,
+  "ROM_actual_charged_seconds": 1171,
   "reference_infrastructure_actual_charged_seconds": 15047,
   "reference_admission": {
     "passed": true,
@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": false
   },
-  "next_action": "Monitor actual bank6634647, collect checkpoints and fixed recipe outcome; independently review2-case development-materialization proposal within120s debit from3600.",
+  "next_action": "Collect/audit actual bank; single-submit development-materialize01 under120s release and prepare actual model development gate.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -212,9 +212,7 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [
-    6634647
-  ],
+  "live_job_ids": [],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -300,5 +298,21 @@
     "queue_after": "6634647|ctol_nsobsrom_bank|PENDING\n",
     "submitted_once": true,
     "local_free_bytes_after": 11648335872
+  },
+  "bank_fit_execution": {
+    "job_id": 6634647,
+    "state": "COMPLETED",
+    "elapsed_seconds": 408,
+    "steps": 3000,
+    "node": "pax023",
+    "gpu_type": "L40S",
+    "model_and_accuracy_review_pending": true
+  },
+  "development_materialization_release": {
+    "release_sha256": "997fa019b795ef8fd9aa5a823a5843903fede642a35578ac774f75d4353a7793",
+    "reserved_seconds": 120,
+    "debit_bucket": "existing development3600",
+    "remaining_development_cap": 3480,
+    "submitted": false
   }
 }

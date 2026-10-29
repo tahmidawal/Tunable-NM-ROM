@@ -150,12 +150,6 @@
   "remaining_population_first_jobs": "Historical initial groups now completed; current numerical_jobs and pending_collections are authoritative.",
   "pending_collections": [
     {
-      "job_id": 6630609,
-      "group": "re18",
-      "state": "COMPLETED",
-      "elapsed_seconds": 625
-    },
-    {
       "job_id": 6631131,
       "group": "re22",
       "state": "COMPLETED",
@@ -183,11 +177,12 @@
     "re25": "reviews/FD1-RE25-ROW-REVIEW.json",
     "re16p875": "reviews/FD1-RE16P875-ROW-REVIEW.json",
     "re23p125": "reviews/FD1-RE23P125-ROW-REVIEW.json",
-    "re16": "reviews/FD1-RE16-ROW-REVIEW.json"
+    "re16": "reviews/FD1-RE16-ROW-REVIEW.json",
+    "re18": "reviews/FD1-RE18-ROW-REVIEW.json"
   },
   "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged",
   "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use",
-  "pending_row_audit": "None;12 rows accepted. Validation18/22/24 remain; source backup/cooling remains separate.",
+  "pending_row_audit": "None;13 rows accepted; validation22/24 remain. Raw backup/cooling requirements separate.",
   "ROM_storage_planning": "13.230GB remote workspace, not local RAM/staging; actual archive A collection needs2A+bounded scratch+10GiB under current verified cold-tier procedure.1.911GB post-review warm runtime projection; no collection released.",
   "full_break_even": "Unresolved without valid common-platform offline cost basis; campaign resource ledger is accounting, online ratios remain paired within allocation.",
   "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit",
@@ -198,5 +193,7 @@
   "warm_input_release": "Rootfb33a99a2/mirrorc696ec263, reviews/AMENDMENT-VERIFIED-WARM-INPUTS.json; operational source0bd9b6cb0/mirror72c6bf049; exacta7 numerical payload unchanged",
   "re18p75_re21p25_retention": "Source70ebb5f52/mirror304c3b390; verified cooling5,888,806,866local and6,050,614,825remote bytes",
   "mirror_batching": "Independent source/integration and two exact temporary-index tree proofs PASS; synca9f75d79/helper3f7a2fa7; same oversize exclusions/history/seed/bounded-push policy",
-  "ROM_actual_training_input_precheck": "All9 adopted warm closures pass;632,194,895 input bytes,1,601,093,055 uncompressed derived-output projection. Three cold archives total4,994,418,310bytes; conservative staging plus recovery5,626,613,205bytes above10GiB. Existing reviewed warm helper may avoid recovery of6 unique archive-backed inputs totaling40,265,344bytes, without reducing reserved bound."
+  "ROM_actual_training_input_precheck": "All9 adopted warm closures pass;632,194,895 input bytes,1,601,093,055 uncompressed derived-output projection. Three cold archives total4,994,418,310bytes; conservative staging plus recovery5,626,613,205bytes above10GiB. Existing reviewed warm helper may avoid recovery of6 unique archive-backed inputs totaling40,265,344bytes, without reducing reserved bound.",
+  "legacy_duplicate_retirement_release": "reviews/RELEASE-LEGACY-DUPLICATE-HEADROOM.json; exact479 files,1,862,184,960B conservative credit; fresh owner checks/lifecycle required",
+  "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released"
 }

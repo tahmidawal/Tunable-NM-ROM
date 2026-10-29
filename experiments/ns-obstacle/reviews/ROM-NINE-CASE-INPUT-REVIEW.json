@@ -1,0 +1,29 @@
+{
+  "schema": "ns-obstacle-training-input-inventory-review-v1",
+  "passed": true,
+  "reviewer": "/root/numerical_resume",
+  "source_commit": "14ec1ae3d",
+  "mirror_commit": "3b078f190",
+  "receipt_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/training-materialization-input-precheck.json",
+  "receipt_sha256": "040a1c3629f01cb67c4ae2bb831f2a71d5a78416e369b2ebd1251f189dae681d",
+  "generator_sha256": "4b3549da2eb776d74974f6e4a4908117eca157aa5097b749bd9c16a48259c123",
+  "actual_files_verified": 156,
+  "primary_closures_verified": 8,
+  "legacy_Re20_mapping_files": 12,
+  "actual_input_bytes": 632194895,
+  "unique_cold_archive_bytes": 4994418310,
+  "staging_plus_recovery_bytes": 5626613205,
+  "staging_plus_recovery_plus_10GiB_bytes": 16364031445,
+  "uncompressed_derived_output_projection_bytes": 1601093055,
+  "findings": [
+    "Actual warm input/export/source/cache bindings replayed independently.",
+    "All three cold manifests have chunk blob IDs in pinned source and mirror histories.",
+    "Existing reviewed warm-reader reuse is optional; conservative cold-recovery reservation retained.",
+    "No missing runtime closure; exact full-admission/common-lift/executable packet bindings pending.",
+    "Fresh disk capacity plus environment and concurrent-write reservations required before staging."
+  ],
+  "execution_released": false,
+  "native_reconstruction_performed": false,
+  "reference_admission": false,
+  "training_released": false
+}

@@ -11,14 +11,17 @@ from fe_adapter import sha_file
 ROOT=Path(__file__).parent
 INPUTS={'prepare':{'training_manifest','preparation_release'},
         'train':{'prepared','preparation_release'},
-        'development':{'prepared','preparation_release','bank','training_evidence','probes','development'}}
+        'development':{'prepared','preparation_release','bank','training_evidence','probes','development'},
+        'paired':{'prepared','preparation_release','bank','training_evidence','probes','frozen_models','rom_review',
+                  'fom_selection','fom_review','fom_eligibility','truth_admission','fom_release','population'}}
 
 
 def source_digest():
     from prepare2d import preparation_digest
     from pilot2d import source_digest as pilot_digest
     return hashlib.sha256(json.dumps({'entry':sha_file(__file__),'preparation':preparation_digest(),
-        'pilot':pilot_digest(),'frozen_rebuild':sha_file(ROOT/'frozen_rom2d.py')},sort_keys=True).encode()).hexdigest()
+        'pilot':pilot_digest(),'frozen_rebuild':sha_file(ROOT/'frozen_rom2d.py'),
+        'paired_runner':sha_file(ROOT/'paired_model2d.py')},sort_keys=True).encode()).hexdigest()
 
 
 def inventory(path):
@@ -67,12 +70,15 @@ def training_provenance(inputs):
 def build_candidate(stage,inputs,output):
     if stage not in INPUTS or set(inputs)!=INPUTS[stage]:raise ValueError('exact stage-specific warm inputs required')
     q=qualification(stage,inputs)
+    if stage=='paired':
+        from paired_model2d import verify_decisions
+        verify_decisions(inputs)  # Before even hashing validation-population metadata.
     candidate={'schema':'ns-obstacle-rom-stage-candidate-v1','status':'candidate_not_released',
         'stage':stage,'source_sha256':source_digest(),'reference_qualification':q,
         'inputs':{k:inventory(v) for k,v in inputs.items()},'training_executed':False,
         'fixed_training_budget':{'steps':3000,'seconds':1800,'seed':27102027},
-        'validation_inputs_allowed':False,'automatic_retry':False}
-    if stage=='development':candidate['training_provenance']=training_provenance(inputs)
+        'validation_inputs_allowed':stage=='paired','automatic_retry':False}
+    if stage in ('development','paired'):candidate['training_provenance']=training_provenance(inputs)
     with Path(output).open('x') as stream:json.dump(candidate,stream,indent=2);stream.write('\n')
     return candidate
 
@@ -87,15 +93,23 @@ def verify(candidate_path,release_path):
     if require_qualification(r.get('reference_qualification'))!=require_qualification(c['reference_qualification']):
         raise ValueError('stage release scope differs')
     if (c.get('fixed_training_budget')!={'steps':3000,'seconds':1800,'seed':27102027} or
-        c.get('validation_inputs_allowed') is not False or c.get('automatic_retry') is not False):
+        c.get('validation_inputs_allowed') is not (c['stage']=='paired') or c.get('automatic_retry') is not False):
         raise ValueError('fixed stage budget/data-access policy changed')
     if set(c['inputs'])!=INPUTS[c['stage']]:raise ValueError('undeclared stage input')
-    for name,item in c['inputs'].items():
-        if inventory(item['path'])!=item:raise ValueError('warm input changed: '+name)
     inputs={k:v['path'] for k,v in c['inputs'].items()}
+    ordered=sorted(c['inputs'],key=lambda key:key=='population')
+    for name in ordered:
+        if c['stage']=='paired' and name=='population':
+            from paired_model2d import verify_decisions
+            verify_decisions(inputs)  # Exact decision inputs checked before validation metadata.
+        item=c['inputs'][name]
+        if inventory(item['path'])!=item:raise ValueError('warm input changed: '+name)
     if qualification(c['stage'],inputs)!=require_qualification(c['reference_qualification']):raise ValueError('actual input scope differs')
-    if c['stage']=='development' and training_provenance(inputs)!=c.get('training_provenance'):
+    if c['stage'] in ('development','paired') and training_provenance(inputs)!=c.get('training_provenance'):
         raise ValueError('original training/checkpoint binding changed')
+    if c['stage']=='paired':
+        from paired_model2d import verify_decisions
+        verify_decisions(inputs)
     return c,r,inputs
 
 
@@ -125,6 +139,9 @@ def run(candidate_path,release_path,output):
         elif c['stage']=='train':
             from pilot2d import train_from_preparation
             train_from_preparation(inputs['prepared'],inputs['preparation_release'],out/'bank.npz')
+        elif c['stage']=='paired':
+            from paired_model2d import run as run_pair
+            run_pair(inputs,r,out/'paired')
         else:
             from pilot2d import load_preparation,_read_arrays,FrozenBank,array_digest,load_reference_population,run_accuracy_pilot
             arrays,metadata,inner=load_preparation(inputs['prepared'],inputs['preparation_release'])

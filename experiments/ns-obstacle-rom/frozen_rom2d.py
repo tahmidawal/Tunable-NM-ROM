@@ -11,6 +11,7 @@ def input_identity(metadata,probes,bank):
     parameters={'transform':bank.transform}
     for i,(weight,bias) in enumerate(bank.layers):parameters.update({f'weight_{i}':weight,f'bias_{i}':bias})
     return {'prepared_files':metadata.get('coefficient_files'),
+            'reference_admission_sha256':metadata.get('admission_evidence',{}).get('reference_admission_sha256'),
             'training_array_sha256':metadata.get('training_array_sha256'),
             'probes_sha256':array_digest(probes),'bank_parameters_sha256':array_digest(parameters),
             'original_training_budget':{k:bank.metadata.get(k) for k in

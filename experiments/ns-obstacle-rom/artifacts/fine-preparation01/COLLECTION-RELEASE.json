@@ -1,0 +1,37 @@
+{
+  "schema": "ns-obstacle-measured-archive-collection-release-v1",
+  "authorized_action": "serial archive-only collection of exact corrected fine preparation compact R2",
+  "archive_sha256": "e00b31ce4ddbbf9f170f64f03f4fec60332baf266d3f9f206c5c90d15bc513b3",
+  "archive_bytes": 1112308651,
+  "composition_sha256": "4442959cc15761a82b0653a3191ddd749dce8c1cc188d04b08f5bc644e5aaee6",
+  "retention_map_sha256": "22b1ecaeb464067e93e82968f30b6c146451097dc82b895219371af81922a767",
+  "source_commit": "46450a420",
+  "mirror_commit": "161a7fc44",
+  "independent_reviewer": "/root/numerical_resume",
+  "corrected_metadata_and_source_review_passed": true,
+  "compact_regular_files": 992,
+  "retained_original_files": 987,
+  "explicit_exact_primary_derived_files": 3560,
+  "compact_scientific_files": 45,
+  "compact_scientific_bytes": 1313326813,
+  "required_free_bytes": 13297579862,
+  "coordinator_observed_free_bytes": 13949988864,
+  "reserve_components": {
+    "two_archive_copies": 2224617302,
+    "small_metadata_including_git_allowance": 67108864,
+    "other_writes": 268435456,
+    "untouched_floor": 10737418240
+  },
+  "required_guards": [
+    "Fresh free space at least required_free_bytes immediately before transfer and during collection",
+    "No full scientific or volume expansion under this reserve; small metadata only",
+    "Verify exact archive SHA/size and map SHA; stream all new members, check every reused/alias binding and both relative audit receipts",
+    "Use ordinary bounded chunks; verify complete reconstructed archive SHA before retiring only verified transport duplicate",
+    "Do not overlap large local writes; disable automatic Git GC and preserve all cold-base histories",
+    "Commit and mirror archive chunks, composition, reuse index, exact helpers, provenance and complete recovery descriptors before final acceptance",
+    "Preserve remote originals, both candidate archives and the staged bank inputs until separate retention/cleanup decisions"
+  ],
+  "final_retention_accepted": false,
+  "remote_deletion_authorized": false,
+  "training_released": false
+}

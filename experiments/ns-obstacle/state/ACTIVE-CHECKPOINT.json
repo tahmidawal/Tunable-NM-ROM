@@ -1,11 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    6635169
+  ],
   "active_external_consults": [],
   "pending": [
-    "Execute and independently audit frozen remaining14 reference groups under bounded rollout release",
-    "Assemble genuine all15 candidate and independent full-population admission review",
-    "Run actual ROM preparation/training/solves and held-out comparisons, then final reviews and reporting"
+    "Complete two-case development reconstruction and independent review",
+    "Execute actual bank/POD development accuracy and quadrature gates",
+    "Freeze feasible FOM calibration subset, then validation/paired timing, final reviews and generated reporting"
   ],
   "completed_allocated_gpu_hours": 4.505,
   "global_ceiling_gpu_hours": 12,
@@ -23,7 +25,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T11:03:51.141012+00:00",
+  "last_checkpoint_utc": "2026-10-29T13:03:14.428804+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -150,7 +152,7 @@
     "materialization_allocation_seconds": 450,
     "fine_prepare_replay_allocation_seconds": 1350,
     "total_existing_prep_seconds": 1800,
-    "executed": false
+    "executed": true
   },
   "accepted_parameter_rows": {
     "re20": "reviews/FD1-RE20-ROW-REVIEW.json",
@@ -195,9 +197,9 @@
     "path": "qualification/FD1-REFERENCE-ADMISSION.json",
     "sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
     "original_domain_gate": "failed",
-    "training_released": false
+    "training_released": true
   },
-  "next_action": "Collect/audit actual bank; single-submit development-materialize01 under120s release and prepare actual model development gate.",
+  "next_action": "Audit actual development reconstruction, then release exact actual-model development packet within3480s remaining development reservation.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -212,7 +214,9 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [],
+  "live_job_ids": [
+    6635169
+  ],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -229,7 +233,7 @@
     "batch_passed": true,
     "raw_review_pending": false,
     "semantic_review_pending": false,
-    "training_released": false,
+    "training_released": true,
     "durable_retention_verified": true,
     "semantic_arrays_verified": 90
   },
@@ -254,7 +258,7 @@
     "elapsed_seconds": 635,
     "node": "pax023",
     "independent_review_pending": false,
-    "training_released": false,
+    "training_released": true,
     "numerical_review_sha256": "c2c4b6d82138221f330442bbb420dd29873b17328e6c1402183181dfa7a8bfd6",
     "durable_retention_pending": false,
     "retention_review_sha256": "65937a38314b589b7b3763cd74a70506f6054e6257582ba701760a43572cd223",
@@ -273,7 +277,7 @@
     "verified_files": 1797,
     "verified_bytes": 5501770011,
     "manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
-    "training_executed": false
+    "training_executed": true
   },
   "bank_fit_release": {
     "candidate_sha256": "04f32d7e764ee2b98005a204a8338982f5b0a8dedbc86c64fad322df1f2f8ef2",
@@ -306,13 +310,30 @@
     "steps": 3000,
     "node": "pax023",
     "gpu_type": "L40S",
-    "model_and_accuracy_review_pending": true
+    "model_review_passed": true,
+    "accuracy_review_pending": true,
+    "model_review_sha256": "5010336542cdd8367105d5052cc71e54f9b024ff94ee1fe7522192733604bc0c"
   },
   "development_materialization_release": {
     "release_sha256": "997fa019b795ef8fd9aa5a823a5843903fede642a35578ac774f75d4353a7793",
     "reserved_seconds": 120,
     "debit_bucket": "existing development3600",
     "remaining_development_cap": 3480,
-    "submitted": false
+    "submitted": true
+  },
+  "development_materialization_submission": {
+    "release_sha256": "997fa019b795ef8fd9aa5a823a5843903fede642a35578ac774f75d4353a7793",
+    "source_manifest_sha256": "ca39fbf79ba653712e528afb8573cffc1f3b9f9cd1d73453436977451157b935",
+    "queue_before": "",
+    "namespace_bytes": {
+      "ns-obstacle-rom-20261027": 19572199325,
+      "ns-obstacle-2d-20261027": 4014258810,
+      "ns-obstacle-3d-20261027": 133799
+    },
+    "maximum_global_bytes": 30029042878,
+    "time_unix": 1793278792.3168185,
+    "job_id": 6635169,
+    "queue_after": "6635169|ctol_nsobsrom_devdata|PENDING\n",
+    "submitted_once": true
   }
 }

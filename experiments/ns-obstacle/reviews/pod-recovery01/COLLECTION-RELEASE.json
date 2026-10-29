@@ -1,0 +1,23 @@
+{
+  "schema": "ns-obstacle-pod-recovery-collection-release-v1",
+  "job_id": 6638632,
+  "archive_sha256": "185f639b849e536b3ed4be34f58b713963e9e8883c9df2220125131f464d200c",
+  "archive_bytes": 886246610,
+  "logical_files": 146,
+  "logical_expansion_bytes": 887827721,
+  "mode": "Archive-only full original-file and ledger verification; bounded metadata extraction, no scientific expansion",
+  "maximum_metadata_bytes": 16777216,
+  "minimum_free_before_collection_bytes": 12795124132,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "measurement_sha256": "3dafaeefc467dd187de2fe4d7871bc277fce675bf4b44b44a97fb069fc90515c",
+  "requirements": [
+    "Fresh sufficient free-space guard and serialized bulkcollection/Git writes",
+    "Verify whole archive and all146 originals against immutable ledger",
+    "Verify chunks before retiring transport; preserve exactretentionmetadata and bothsource/mirror backups",
+    "Independent full durable review before remote cleanup or final scientific acceptance"
+  ],
+  "remote_cleanup_authorized": false,
+  "measurement_source_commit": "c46e6abf9",
+  "measurement_mirror_commit": "0e5fb2cdd"
+}

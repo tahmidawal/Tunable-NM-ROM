@@ -8,7 +8,7 @@
     "Evaluate actual neural reduced solves and full physics metrics; pursue further reproducible improvements",
     "Freeze selected recipe before validation; complete final comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 5.820833333333334,
+  "completed_allocated_gpu_hours": 5.941388888888889,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -408,7 +408,8 @@
     "all_actual_inputs_preflight_passed": true,
     "no_training_or_refit": true,
     "elapsed_seconds": 909,
-    "independent_review_pending": true
+    "independent_review_pending": false,
+    "scientific_and_retention_review_passed": true
   },
   "FOM_ordinary_repair_resource_review": {
     "proposal_sha256": "1ae85b902012f8cdeb5f22efeba38cd8ae8c426b32bb2b60392aa00aa64ec869",
@@ -454,6 +455,13 @@
     "scope_amendment_mirror": "fb07bc35a",
     "new_training_release_pending": true,
     "no_accuracy_cutoff": true,
-    "validation_opened": false
+    "validation_opened": false,
+    "first_fit_job": 6648764,
+    "first_fit_state": "COMPLETED",
+    "first_fit_seconds": 434,
+    "model_sha256": "faab6651618ae9d6afc79dbd91ad6e9c7a1a3101907d93d9e33ab37dfba2e4c6",
+    "saved_model_and_retention_review_passed": true,
+    "optimizer_converged": false,
+    "actual_PDE_diagnostic_pending": true
   }
 }

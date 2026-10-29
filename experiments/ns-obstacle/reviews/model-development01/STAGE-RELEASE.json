@@ -1,0 +1,64 @@
+{
+  "schema": "ns-obstacle-rom-stage-release-v1",
+  "authorized_stage": "development",
+  "candidate_sha256": "3126fe7f00fd30cf2b5b836b6a91fa0e07f1b2134ef84fc43b8e8df46569a73a",
+  "source_sha256": "c06f0465730dd71b2ba34d227dce2667059cc79355e70a1a8b29780bc5ad876a",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "single_execution": true,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01",
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01/results/development-stage",
+  "launcher_sha256": "57327fa3d1ec7c6c5d951c1b19fc4c9c6e28f4ed379d8e343c316539346ed03b",
+  "runtime_inventory_sha256": "b60ff8157fd1146975910e9560e6001de21a3ad7f4b35ba4236dd25553fd2aa5",
+  "allocation_seconds": 3360,
+  "outer_timeout_seconds": 3345,
+  "outer_kill_grace_seconds": 10,
+  "original_development_reservation_seconds": 3600,
+  "prior_materialization_reservation_seconds": 240,
+  "source_commit": "7616a27b5",
+  "mirror_commit": "345939b6b",
+  "resource_plan_sha256": "dbabb95eb360ba6262eeb62d3255ed2430216dec19dff2ca1b12ed111be5bc84",
+  "independent_packet_review_sha256": "15198f50def5aa57b65414fefc4e8e2d030506ab8465d0e5ad58bb93ed8dbe24",
+  "consumer_release_sha256": "081ad11b1e5d6b10baea8f9797891b0859d59e0d951ebbe468d77c2767740793",
+  "review_bindings": {
+    "bank_model": {
+      "path": "inputs/reviews/MODEL-REVIEW.json",
+      "sha256": "5010336542cdd8367105d5052cc71e54f9b024ff94ee1fe7522192733604bc0c"
+    },
+    "development_population": {
+      "path": "inputs/reviews/POPULATION-REVIEW.json",
+      "sha256": "40f3e9189716c8144a97bc0c9df33d86bbaeddf0912cdf0a29df1abe5c4f3df4"
+    }
+  },
+  "additional_remote_reservation_bytes": 12884901888,
+  "other_active_disk_reservation_bytes": 268435456,
+  "global_remote_limit_bytes": 53687091200,
+  "local_floor_bytes": 10737418240,
+  "local_other_reserved_bytes": 268435456,
+  "required_submission_guards": [
+    "Full actual outer-release verify-only before submission, including all inner hashes/truth and exact review bindings",
+    "Fresh hashes of both manifest-bound development fields.npz files as well as accepted prepared/model/probes inputs",
+    "Fresh account queue before and after one submission; maximum two campaign jobs",
+    "Fresh all-three-namespace total plus12GiB complete new envelope and256MiB outstanding reserve below50GiB",
+    "Fresh local10GiB+256MiB floor; no blanket result collection authorization",
+    "Preserve all immutable referenced prepared, bank, checkpoints, probes and development trees while consumer runs",
+    "Unique STAGE-CLAIM; retain every failed arm and all original output; no automatic retry"
+  ],
+  "resume_authorized": false,
+  "training_authorized": false,
+  "validation_access_authorized": false,
+  "fom_calibration_authorized": false,
+  "bank_floor_failure_policy": "Stop bank online arms at original development gate; retain eligible POD controls with unchanged registered settings",
+  "collection_separately_measured_and_released": true
+}

@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": true
   },
-  "next_action": "Finalize exact actual-model development packet and release3360s model/POD/NNLS stage; both trained bank and two-case reference population are independently accepted.",
+  "next_action": "Full actual release preflight then single model-development01 submission; independently audit actual bank/POD representation, physics and quadrature results.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -356,5 +356,12 @@
     "scientific_review_passed": true,
     "durable_retention_verified": true,
     "population_review_sha256": "40f3e9189716c8144a97bc0c9df33d86bbaeddf0912cdf0a29df1abe5c4f3df4"
+  },
+  "model_development_release": {
+    "sha256": "f69c8b42ef5dd0c2ddbfead1d9e7ae97dd5f63ef731345502f850c07097f66eb",
+    "candidate_sha256": "3126fe7f00fd30cf2b5b836b6a91fa0e07f1b2134ef84fc43b8e8df46569a73a",
+    "allocation_seconds": 3360,
+    "submitted": false,
+    "validation_or_retraining_authorized": false
   }
 }

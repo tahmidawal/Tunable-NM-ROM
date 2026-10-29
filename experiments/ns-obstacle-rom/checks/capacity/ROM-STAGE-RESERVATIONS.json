@@ -1,6 +1,6 @@
 {
   "status": "source_only_reservation_not_execution_release",
-  "source_sha256": "3beb74847043fe5f375282785a3dd17033b8fa8e21c31afed3e9da2ab4ec70c7",
+  "source_sha256": "64b59f9dc6fb97dfc3ecb6d327b4d27e806b2d05e3fff0595d7cb836534965fa",
   "capacity_projection_sha256": "8e0a873de49240ee70e446d7603092dccf7b2728a179fd50def6ddec0cac4b57",
   "measurement_sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
   "allocation_seconds": {
@@ -26,7 +26,8 @@
     "all_registered_paired_full_outputs": 16716623616,
     "paired_returned_states_upper_bound": 1762838784,
     "training_checkpoint_allowance": 134217728,
-    "FOM_calibration_per_candidate": 503530640,
+    "FOM_calibration_per_candidate": 586450400,
+    "native_scalar_readout_per_candidate": 82919760,
     "base_new_archive_only_payload": 25148111447,
     "minimum_free_reserve": 10737418240,
     "fine_remote_original_primary_restored_workspace": 13230238999
@@ -40,21 +41,21 @@
   "calibration_ladder_scenarios": [
     {
       "candidate_count": 2,
-      "new_archive_only_payload_bytes": 26155172727,
-      "payload_plus_reserve_before_transport_bytes": 36892590967
+      "new_archive_only_payload_bytes": 26321012247,
+      "payload_plus_reserve_before_transport_bytes": 37058430487
     },
     {
       "candidate_count": 4,
-      "new_archive_only_payload_bytes": 27162234007,
-      "payload_plus_reserve_before_transport_bytes": 37899652247
+      "new_archive_only_payload_bytes": 27493913047,
+      "payload_plus_reserve_before_transport_bytes": 38231331287
     },
     {
       "candidate_count": 6,
-      "new_archive_only_payload_bytes": 28169295287,
-      "payload_plus_reserve_before_transport_bytes": 38906713527
+      "new_archive_only_payload_bytes": 28666813847,
+      "payload_plus_reserve_before_transport_bytes": 39404232087
     }
   ],
-  "local_free_bytes_at_generation": 14625636352,
+  "local_free_bytes_at_generation": 14625349632,
   "disk_flow": [
     "Keep actual FD1 input/cache hashes and paths warm; materialize derived full-rule/prepared fields only in fresh allocated jobs.",
     "Fine preparation must complete exact primary replay; originals remain until independent acceptance.",

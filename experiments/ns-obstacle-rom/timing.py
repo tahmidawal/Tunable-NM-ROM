@@ -22,12 +22,22 @@ def outputs_sha256(outputs):
 
 
 def paired_cpu(calls,contract,cores,repetitions=7,burn_seconds=.25):
+    return _timed_cpu(calls,contract,cores,repetitions,burn_seconds,2)
+
+
+def calibration_cpu(call,contract,cores,repetitions=7,burn_seconds=.25):
+    record=_timed_cpu({'candidate':call},contract,cores,repetitions,burn_seconds,1)
+    record['comparison_kind']='one candidate in the same calibration allocation; no cross-job comparison'
+    return record
+
+
+def _timed_cpu(calls,contract,cores,repetitions,burn_seconds,minimum_methods):
     if repetitions!=7 or not 1<=cores<=16 or contract not in ("full_velocity_pressure_fields","fixed_probes","integrated_forces"):
         raise ValueError("unregistered timing contract")
     if any(os.environ.get(key)!=str(cores) for key in ("OMP_NUM_THREADS","OPENBLAS_NUM_THREADS")):
         raise RuntimeError("launcher must freeze matching CPU thread limits before imports")
     names=list(calls)
-    if len(names)<2:
+    if len(names)<minimum_methods:
         raise ValueError("paired comparison needs multiple methods")
     warmup=[]
     for name in names:

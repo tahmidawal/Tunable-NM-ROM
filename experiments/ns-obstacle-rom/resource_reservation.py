@@ -16,7 +16,8 @@ candidates=methods*len(QUADRATURE_SUPPORTS)*len(DEV_RE)
 dev=(candidates+methods*len(DEV_RE))*field+base['accuracy_driver_maximum_logical_payload']['selected_fit_column_bytes']
 paired_fields=(models+methods)*len(VALIDATION_RE)*7*field
 paired_states=models*len(VALIDATION_RE)*7*3*dofs*8+methods*len(VALIDATION_RE)*7*3*24*8
-calibration_per_candidate=len(DEV_RE)*7*(field+3*dofs*8)+8*2**20
+readout_control_per_candidate=len(DEV_RE)*measurement['counts']['volume_points']*5*8
+calibration_per_candidate=len(DEV_RE)*7*(field+3*dofs*8)+readout_control_per_candidate+8*2**20
 prepared=base['prospective_primary_volume_option']['prepared_retained_after_successful_fine_replay_bytes']
 checkpoint_allowance=128*2**20
 unique_base=prepared+dev+paired_fields+paired_states+checkpoint_allowance
@@ -30,7 +31,7 @@ record={'status':'source_only_reservation_not_execution_release','source_sha256'
  'remaining_reference_infrastructure_headroom_seconds':coordinator['campaign_cap_seconds']-schedule['maximum_infrastructure_total_seconds']-sum(seconds.values()),
  'disk_bytes':{'prepared_primary_after_fine_replay':prepared,'development_audit_maximum':dev,
    'all_registered_paired_full_outputs':paired_fields,'paired_returned_states_upper_bound':paired_states,
-   'training_checkpoint_allowance':checkpoint_allowance,'FOM_calibration_per_candidate':calibration_per_candidate,
+   'training_checkpoint_allowance':checkpoint_allowance,'FOM_calibration_per_candidate':calibration_per_candidate,'native_scalar_readout_per_candidate':readout_control_per_candidate,
    'base_new_archive_only_payload':unique_base,'minimum_free_reserve':10*2**30,
    'fine_remote_original_primary_restored_workspace':base['prospective_primary_volume_option']['remote_original_primary_restored_workspace_bound_bytes']},
  'not_in_disk_payload':['JSON/ZIP headers and Git transport workspaces','native FOM lookup/certification arrays for each actual constructed candidate','candidate Stokes-control evidence not already retained by reference lane','reference populations and common immutable inputs already counted in the reference plan'],

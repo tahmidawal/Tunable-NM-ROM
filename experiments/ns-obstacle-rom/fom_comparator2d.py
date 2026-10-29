@@ -125,13 +125,18 @@ def load_native_modules():
 class FrozenFOMComparator:
     @classmethod
     def open(cls,selection_path,review_path,eligibility_path,truth_path,release_path,output_directory):
-        started=time.perf_counter()
         release,selection,qualification,files,cfg,layout=verify_documents(
             selection_path,review_path,eligibility_path,truth_path,release_path)
+        return cls._construct(release,selection,qualification,files,cfg,layout,eligibility_path,release_path,output_directory)
+
+    @classmethod
+    def _construct(cls,release,selection,qualification,files,cfg,layout,eligibility_path,release_path,output_directory):
+        # Each public caller has distinct fail-closed metadata/role gates.
+        started=time.perf_counter()
         out=Path(output_directory);out.mkdir(parents=True,exist_ok=False)
         report={'status':'constructing','physical_admission':False,'training_executed':False,
             'consumer_source_sha256':source_digest(),'release_sha256':sha_file(release_path),
-            'selection_sha256':release['selection_sha256'],'reference_qualification':qualification}
+            'selection_sha256':release.get('selection_sha256'),'reference_qualification':qualification}
         stage='runtime_policy'
         try:
             if (sys.executable!='/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python' or
@@ -167,7 +172,7 @@ class FrozenFOMComparator:
             lift=modules['candidate_lift'].CandidateStokesLift.from_eligibility(eligibility_path,
                 sha_file(files['mesh']),layout['sha256'],cfg['U'],cfg['D'],cfg,
                 expected_truth_admission_sha256=release['reference_admission_sha256'],
-                expected_selection_sha256=release['selection_sha256'])
+                expected_selection_sha256=release.get('selection_sha256'))
             stage='query_construction'
             factory=modules['fom_outputs'].make_output_factory(ng,
                 {'points':geometry['points_physical'],'weights':geometry['weights_dimensionless']*cfg['D']**2},

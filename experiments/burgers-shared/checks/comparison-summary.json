@@ -1,0 +1,165 @@
+{
+  "status": "independent numerical audit accepted; raw retention verification pending",
+  "lanes": {
+    "step": {
+      "source_result_sha256": "3cc732534cc3deca9b5e2229db0da028be04fdbcdb817b455575146d48845ad1",
+      "job_id": "6619857",
+      "gpu": [
+        "NVIDIA H200, GPU-d115e0d0-3aa6-50ba-f7e0-cd2c2b54a5ae, 143771 MiB"
+      ],
+      "settings": {
+        "L": 1024,
+        "nodes_per_axis": 1025,
+        "fine_K": 64,
+        "active_K": 16,
+        "fixed_tail": 48,
+        "bank_R": 512,
+        "M": 256,
+        "mode_policy": "frozen1024",
+        "rule": "gauss128",
+        "quadrature_points": 16384,
+        "scheme": "BE",
+        "dt": 0.005,
+        "steps": 50,
+        "gtol": 0.001,
+        "tolf": 1e-09,
+        "aux_budget": 600,
+        "aux_gtol": 0.001,
+        "aux_initial_damping": 1e-06,
+        "fine_budget": 600,
+        "initial_budget": 400,
+        "initial_gtol": 1e-06,
+        "repetitions": 7,
+        "order_seed": 20261028,
+        "guard_relative_decrease": 1e-08
+      },
+      "setup": {
+        "seconds": 23.262665409594774,
+        "heads": {
+          "16": "7f766458a747cf7aa3b33fd94aff230e6b4a71ebdb669d69a24d3d70a3c536fd",
+          "32": "450f927e14dd20578968fc379d3849b0aa573dab2aadcc8d12a06cd46b14731c",
+          "64": "fb002873b36b58d9f238311dbe23bc281cecce4414d5866f6199fa8c48abe18f"
+        },
+        "trust": {
+          "16": 0.07062453128571239,
+          "32": 0.07072740559991578,
+          "64": 0.07089815506979937
+        },
+        "memory": {
+          "in_use": 4657730304,
+          "peak": 17278585600,
+          "limit": 105077800960
+        }
+      },
+      "compile_warm_seconds": {
+        "direct_recorded": 7.822015507146716,
+        "direct_timed": 2.886900599114597,
+        "affine_recorded": 5.87426538951695,
+        "affine_timed": 3.977963055483997
+      },
+      "per_case_paired_median_ratios": [
+        1.349195808063545,
+        1.4784125508367245,
+        1.4193175461183425,
+        1.4551009284561456,
+        1.3967205653978374,
+        1.3705557712313454
+      ],
+      "median_ratio": 1.40801905575809,
+      "worst_case_ratio": 1.4784125508367245,
+      "slower_pairs": 42,
+      "pairs": 42,
+      "counts": {
+        "direct": {
+          "fine_corrections": 472,
+          "fine_jacobians": 772
+        },
+        "affine": {
+          "fine_corrections": 341,
+          "fine_jacobians": 641,
+          "coarse_corrections": 443,
+          "coarse_jacobians": 743,
+          "accepted_guesses": 300,
+          "guard_residual_calls": 600
+        }
+      },
+      "controls_passed": true,
+      "strong_accuracy_checks": "not run; cost pass requires a separately reviewed tight/tighter and quadrature stage"
+    },
+    "replay": {
+      "source_result_sha256": "7bd0e996199866c071a051c8f87afa2a4310647aa35fddc3db858ef855393a7a",
+      "job_id": "6619863",
+      "gpu": [
+        "NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB"
+      ],
+      "settings": {
+        "L": 1024,
+        "K_fine": 64,
+        "K_coarse": 16,
+        "R": 512,
+        "M": 256,
+        "rule": "gauss128",
+        "scheme": "BE",
+        "dt": 0.005,
+        "steps": 50,
+        "budget": 600,
+        "gtol": 0.001,
+        "tolf": 1e-09,
+        "repetitions": 7,
+        "order_seed": 20261028,
+        "coarse_preview_fields": 6,
+        "fine_fields": 6
+      },
+      "setup": {
+        "seconds": 22.46119608078152,
+        "memory": {
+          "in_use": 4708181248,
+          "peak": 17278585600,
+          "limit": 105077800960
+        },
+        "trust": {
+          "16": 0.07062453128571239,
+          "32": 0.07072740559991578,
+          "64": 0.07089815506979937
+        }
+      },
+      "compile_warm_seconds": {
+        "direct_recorded": 6.617710137739778,
+        "direct_timed": 2.9862278513610363,
+        "replay_recorded": 6.964584108442068,
+        "replay_timed": 5.183957040309906
+      },
+      "per_case_paired_median_ratios": [
+        1.820579059758797,
+        1.8815141443293932,
+        1.813988002296774,
+        1.8496945285492499,
+        1.8838318421737905,
+        1.9015789442903357
+      ],
+      "median_ratio": 1.8656043364393216,
+      "worst_case_ratio": 1.9015789442903357,
+      "slower_pairs": 42,
+      "pairs": 42,
+      "counts": {
+        "direct": {
+          "fine_corrections": 472,
+          "fine_jacobians": 772
+        },
+        "replay": {
+          "fine_corrections": 531,
+          "fine_jacobians": 831,
+          "coarse_corrections": 436,
+          "coarse_jacobians": 736,
+          "accepted_guesses": 22,
+          "guard_residual_calls": 600
+        }
+      },
+      "controls_passed": true,
+      "strong_accuracy_checks": "not run in phase1; cost pass requires separately reviewed tight/tighter and Gauss160/192 qualification"
+    }
+  },
+  "scope": "Six exposed development cases on one shared model; production stationarity only. Tight fine-baseline agreement, physical PDE accuracy and successor quadrature were not run after the cost stop.",
+  "gpu_seconds": 2595,
+  "gpu_cap_seconds": 7200
+}

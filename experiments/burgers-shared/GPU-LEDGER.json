@@ -29,8 +29,9 @@
       "source_commit": "42f8b4062cf08d2c8321386ff7967cc8c33e1ee3",
       "model_manifest_sha256": "e6be23e896289e1eee0ae8a14ec6104886114c60dbbdf2cdcea1780dbac2bacc",
       "timing_scope": "each lane compares its methods only within this allocation",
-      "status": "submitted",
-      "job_id": "6619857"
+      "status": "completed_cost_gate_failed",
+      "job_id": "6619857",
+      "actual_gpu_seconds": 143
     },
     {
       "lane": "replay",
@@ -40,8 +41,9 @@
       "source_commit": "3472549aaaf00f319b1cc2585e385ebdcd2d98a0",
       "model_manifest_sha256": "e6be23e896289e1eee0ae8a14ec6104886114c60dbbdf2cdcea1780dbac2bacc",
       "timing_scope": "each lane compares its methods only within this allocation",
-      "status": "submitted",
-      "job_id": "6619863"
+      "status": "completed_cost_gate_failed",
+      "job_id": "6619863",
+      "actual_gpu_seconds": 179
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -49,11 +51,12 @@
     "shared_preparation": 3600,
     "step_screen": 900,
     "replay_screen": 900,
-    "remaining_conditional": 3127
+    "remaining_conditional": 0
   },
   "budget_accounting": {
-    "charged_gpu_seconds": 2273,
-    "reserved_gpu_seconds": 1800,
-    "unreserved_seconds": 3127
+    "charged_gpu_seconds": 2595,
+    "reserved_gpu_seconds": 0,
+    "unspent_gpu_seconds": 4605,
+    "stopped": "Both predeclared cost gates failed; no further allocations"
   }
 }

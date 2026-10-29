@@ -1,0 +1,12 @@
+slurm_load_jobs error: Invalid job id specified
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/subprocess.py", line 474, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/subprocess.py", line 579, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['squeue', '-j', '6632930', '-h']' returned non-zero exit status 1.

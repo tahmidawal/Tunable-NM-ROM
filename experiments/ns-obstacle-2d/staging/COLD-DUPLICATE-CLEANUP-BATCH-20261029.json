@@ -1,0 +1,100 @@
+{
+  "started_utc": "2026-10-29T00:24:09.490743+00:00",
+  "source_head": "fa1d87196172fedf66e2a1a6320ec44260025450",
+  "free_bytes_before": 20544688128,
+  "canonical_arrays_and_archive_chunks_preserved": true,
+  "history_rewritten_or_pruned": false,
+  "cases": [
+    {
+      "name": "g2-export-batch01",
+      "archive_sha256": "540b53fd29872b4373011c2b1e1302fa237100a2d060afaceb50a4d5814086cf",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "af9bab093f52de728fe7b679a3530a94be91ee94088f0d81712ec25e56ab1f5f",
+          "git_blob": "21c77631f2e934b7ae6111514951b6364daaf637",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "5840689d84a1d9c06064bbf81b353d5c9333a1436b412d36af2ecf7e08653b8f",
+          "git_blob": "6f689bd671c6696f0da3fe2a58f88e24d31974b5",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "46ec28cd3ffc03c3a1bb997f1e6b52a9888a74db44ff8d60bae7dc81368efbb7",
+          "git_blob": "a14a21092d0fcc674dfa354a752a8696f225b5bb",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "cb334460b262c477a086e9a4a10a19116a523ad8fe2f8a63c29542e3816fc76b",
+          "git_blob": "36eea349b9a53f49b980724445faf86f9360cd2d",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "7631a03f958a2fe9b94008f317742e23bfd4ce033f0c6eb6383b4993c87000d4",
+          "git_blob": "7e6fd3287ccd9d77f457689a6f42daf3faa552a6",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "134b4194f041597d65541e324f652cd68809b8091106d541d17e500b891e4265",
+          "git_blob": "52be0f6a9a103b348238fdee0cbac4573329ef77",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "de41851cc3ee864d3ece4ec2befa0622a39235ff065af11ec3488452a3f52b32",
+          "git_blob": "cc5a9b563e3a230d48460499f71caa02130483be",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 50331648,
+          "sha256": "ff00db22d239273294a60de921f61e24001c5f81dfc481402d1ba37c942724b1",
+          "git_blob": "75a3e8677ff583d530a359fac01bcc2a42948cfd",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        },
+        {
+          "path": "collection.tar.gz.part-008",
+          "bytes": 29175729,
+          "sha256": "f46dded456ff0bf9bcdec87dd83ee54122f161967e4bc4b7501b68cb61654aff",
+          "git_blob": "2637f85a087ebb28d8018c4ef6adb241b4219db7",
+          "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-export-batch01",
+          "bytes": 649323076,
+          "removed": true
+        },
+        {
+          "path": "runs/g2-export-batch01-collection.tar.gz",
+          "bytes": 431828913,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-export-batch01/payload",
+          "bytes": 178499405,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    }
+  ],
+  "completed": true,
+  "free_bytes_after": 21806784512,
+  "reclaimed_logical_bytes": 1259651394,
+  "completed_utc": "2026-10-29T00:24:11.501746+00:00"
+}

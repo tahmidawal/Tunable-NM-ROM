@@ -59,5 +59,12 @@
   "canonical_expanded_artifacts": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-domain-downstream",
   "duplicate_extraction_retired": true,
   "full_tar_duplicate_retired": true,
-  "cold_duplicate_receipt": "staging/COLD-DUPLICATE-CLEANUP-POSTP4-20261029.json"
+  "cold_duplicate_receipt": "staging/COLD-DUPLICATE-CLEANUP-POSTP4-20261029.json",
+  "remote_cleaned": true,
+  "remote_cleanup_receipt": "staging/g2-domain-downstream/REMOTE-CLEANUP.json",
+  "chunk_storage": "git_history_only",
+  "chunk_recovery_manifest": "GIT-COLD-ARCHIVE.json",
+  "chunk_recovery_tool": "experiments/ns-obstacle-2d/g2/git_archive_recovery.py",
+  "chunk_recovery_requires": "Reachable historical mirror objects, not a shallow tip-only checkout. Use recover with exact proof; do not prune or rewrite either history.",
+  "chunk_retirement_receipt": "staging/GIT-COLD-CHUNK-RETIREMENT-20261029.json"
 }

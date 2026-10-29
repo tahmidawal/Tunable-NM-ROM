@@ -32,5 +32,10 @@
   "reference_data_admitted": false,
   "remote_cleanup": "completed_exact_duplicate_only_after_verification_and_durable_mirror",
   "retention_commit": "fb83802ca",
-  "retention_mirror": "d926f37b5"
+  "retention_mirror": "d926f37b5",
+  "chunk_storage": "git_history_only",
+  "chunk_recovery_manifest": "GIT-COLD-ARCHIVE.json",
+  "chunk_recovery_tool": "experiments/ns-obstacle-2d/g2/git_archive_recovery.py",
+  "chunk_recovery_requires": "Reachable historical mirror objects, not a shallow tip-only checkout. Use recover with exact proof; do not prune or rewrite either history.",
+  "chunk_retirement_receipt": "staging/GIT-COLD-CHUNK-RETIREMENT-20261029.json"
 }

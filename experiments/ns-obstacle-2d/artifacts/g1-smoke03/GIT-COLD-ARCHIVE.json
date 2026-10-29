@@ -1,0 +1,41 @@
+{
+  "schema": "ns-obstacle-git-cold-archive-v1",
+  "source_commit": "fa1d87196172fedf66e2a1a6320ec44260025450",
+  "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e",
+  "mirror_ref": "refs/heads/codeonly/exp/2026-10-27-ns-obstacle-2d",
+  "verified_advertised_remote_tip": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e",
+  "source_retention_path": "experiments/ns-obstacle-2d/artifacts/g1-smoke03/RETENTION.json",
+  "source_retention_sha256": "a1b6540c610030e32a4c1827407528dfec06257a5b0c664ea7eb761fe2a658bb",
+  "archive_bytes": 132488874,
+  "archive_sha256": "02a97de2b7ede7b66554152dd654c0c251515500271a65d1d8066342b9e1082e",
+  "chunks": [
+    {
+      "repository_path": "experiments/ns-obstacle-2d/artifacts/g1-smoke03/collection.tar.gz.part-000",
+      "git_blob": "e23f85440635a84b3912eb852b260888208669d9",
+      "bytes": 50331648,
+      "sha256": "7aa41cc72e096aa34af75f6ff73563fea45f801bf877c9eb61383a7058753b0a"
+    },
+    {
+      "repository_path": "experiments/ns-obstacle-2d/artifacts/g1-smoke03/collection.tar.gz.part-001",
+      "git_blob": "3c921ff01f63ecbf57836ef7899150622ad6daba",
+      "bytes": 50331648,
+      "sha256": "c04605d33634deeda51e998778902d21a7364c8d3aa20c5f1996fe9188956783"
+    },
+    {
+      "repository_path": "experiments/ns-obstacle-2d/artifacts/g1-smoke03/collection.tar.gz.part-002",
+      "git_blob": "589d2021128ab663376ce046d2f74f04bae93b67",
+      "bytes": 31825578,
+      "sha256": "93662597ef89b720dc40ea0cba9d488edafb4f4739a5e632e755337907cae060"
+    }
+  ],
+  "working_duplicates_verified": true,
+  "unique_bytes_deleted": false,
+  "recovery_needs_only_mirror_history": true,
+  "verification_tool_sha256": "da6d150859f688ad7fba8767d249d9c7fd8f4f237af8c20e80e93351777365f2",
+  "policy": "Only working chunk duplicates may later be retired by their lane owner. Preserve both reachable histories; no pruning or history rewrite. Canonical result arrays remain unchanged.",
+  "git_only_stream_verification": {
+    "archive_bytes": 132488874,
+    "archive_sha256": "02a97de2b7ede7b66554152dd654c0c251515500271a65d1d8066342b9e1082e",
+    "chunks": 3
+  }
+}

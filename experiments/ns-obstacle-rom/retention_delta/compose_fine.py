@@ -55,6 +55,15 @@ def compose(source, destination, audit_path, numerical_path, index, archive):
         path.symlink_to(target)
     shutil.copyfile(audit_path, destination / 'PRIMARY-REVIEW.json')
     shutil.copyfile(numerical_path, destination / 'NUMERICAL-REVIEW.json')
+    numerical = json.loads(Path(numerical_path).read_text())
+    for descriptor in numerical['independent_saved_array_reviews'].values():
+        name = descriptor['path']
+        if Path(name).name != name:
+            raise ValueError('unsafe sibling review path')
+        path = Path(audit_path) if name == 'INDEPENDENT-RESULT.json' else Path(numerical_path).with_name(name)
+        if sha(path) != descriptor['sha256']:
+            raise ValueError('sibling independent review differs')
+        shutil.copyfile(path, destination / name)
     record = {
         'schema': 'ns-obstacle-fine-primary-composition-v1', 'candidate_only': True,
         'original_root': str(source), 'view_root': str(destination),

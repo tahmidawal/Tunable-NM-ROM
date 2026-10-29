@@ -1,0 +1,67 @@
+{
+  "groups": {
+    "re20": {
+      "frozen_candidate": "g2/population01/frozen/re20/QUALIFICATION-CANDIDATE.json",
+      "candidate_sha256": "e34f81d41072b4755500e270834e5a33ee1e3ddcbcbfcfc9545283fff4f577f7",
+      "independent_row_review": "g2/population01/frozen/re20/INDEPENDENT-ROW-REVIEW.json",
+      "review_sha256": "301203f96663146e07a4ba29e4d3d7a76e38f7f86446a92dcb722cc422c09f28"
+    }
+  },
+  "shared_controls": {
+    "analytic_channel_controls": {
+      "value": true,
+      "evidence_sha256": {
+        "artifacts/g1-smoke07/results/channel/result.json": "30e07b4555fc59539a5b7a1869fa2a7e5a52563ec18764ce96904c470df26dd3",
+        "artifacts/g1-smoke07/results/channel/full_rule.npz": "fdf3c8b0e89368de7e8332608971093b1143b54c2b3c62ea0c79ceb4e9e07d96",
+        "artifacts/g1-smoke07/results/channel/boundary_rule.json": "56300ca68a5add4cd169080fa19d65501be244b6f8cc6137cdc8b88d328bdb29",
+        "g2/population01/frozen/SHARED-INDEPENDENT-REVIEW.json": "7b5449a904f06417b3e90fdd6b3a8ef913f52a7f5257de6a8739ea2aaa935109"
+      }
+    },
+    "manufactured_obstacle_force_and_flux_controls": {
+      "value": true,
+      "evidence_sha256": {
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/result.json": "dcf633241e3b905e8abaab2f23fa80dd5556e3c1d0d4b3757e0a4e2912baa406",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/full_rule.npz": "a7f67f5c20fe61988739cb7fbb9fa1309cee32c579d91df9984b31671e7c45df",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/boundary_rule.json": "c8b1cc2a67ea24201014bcf059eed659b3b5695a768c63decc737f883ce280b1",
+        "artifacts/g2-p4controls/manufactured_witness.json": "1b55be8cea8261ce84c7f06e56f0ee3a4cb0a78578a0bc56568e591618b1b1c4",
+        "g2/population01/frozen/SHARED-INDEPENDENT-REVIEW.json": "7b5449a904f06417b3e90fdd6b3a8ef913f52a7f5257de6a8739ea2aaa935109"
+      }
+    },
+    "wall_shear_sign_control": {
+      "value": true,
+      "evidence_sha256": {
+        "artifacts/g1-smoke07/results/channel/result.json": "30e07b4555fc59539a5b7a1869fa2a7e5a52563ec18764ce96904c470df26dd3",
+        "artifacts/g1-smoke07/results/channel/boundary_rule.json": "56300ca68a5add4cd169080fa19d65501be244b6f8cc6137cdc8b88d328bdb29",
+        "g2/population01/frozen/SHARED-INDEPENDENT-REVIEW.json": "7b5449a904f06417b3e90fdd6b3a8ef913f52a7f5257de6a8739ea2aaa935109"
+      }
+    },
+    "derivative_orientation_and_native_batch_controls": {
+      "value": true,
+      "evidence_sha256": {
+        "artifacts/g2-native01/results/preflight.json": "10234fc3d7ebd7bc3b393fc4abf4a6c2cc8db75ccc034831efa2265aabba540e",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/affine_gradient_orientation.json": "18c191ec38ad67946c37da8252fbe3ae100fdcedaa08fc5bb4695fcf8d2ca876",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/manufactured_derivative_checks.json": "8f3a6fe37582e8baff3b7a8236a76d7c432571fa5e255e7cccae3fb842704fbc",
+        "artifacts/g2-export-batch01/results/export_batch_control/control.json": "e758ada4b22106aac4761e4a008208c82b43827ba36effc9337f952945205a18",
+        "g2/population01/frozen/SHARED-INDEPENDENT-REVIEW.json": "7b5449a904f06417b3e90fdd6b3a8ef913f52a7f5257de6a8739ea2aaa935109"
+      }
+    },
+    "portable_coefficient_primary_reconstruction_controls": {
+      "value": true,
+      "evidence_sha256": {
+        "artifacts/g2-cache-primary01/results/cache_primary_control/control.json": "8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6",
+        "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+        "g2/population01/frozen/SHARED-INDEPENDENT-REVIEW.json": "7b5449a904f06417b3e90fdd6b3a8ef913f52a7f5257de6a8739ea2aaa935109"
+      }
+    },
+    "common_immutable_mesh_layout_and_Stokes_scaling": {
+      "value": true,
+      "evidence_sha256": {
+        "artifacts/g2-crossp02/results/immutable_lift/control.json": "586270e7e5fc7a368c5f43c58c23858f3d098dd3c394041f8b16f86c6c9cd2a3",
+        "artifacts/g2-crossp02/results/immutable_lift/lift_scaling_arrays.npz": "bf8e46edbdc689240343c785eabb04d35f2b85f03743b54921143fa6dcf94be2",
+        "artifacts/g2-crossp02/results/immutable_lift/common_stokes_lift.json": "2c30951e960e26cd18dc205b938d760dbb12d8901c6a6616901c120e2bb07f1f",
+        "artifacts/g2-crossp02/results/immutable_lift/common_stokes_lift.npz": "47c1a9954361079cb94d438be8ee3237299e71c07d8c90d00f8a2f813efc95cb",
+        "g2/population01/frozen/SHARED-INDEPENDENT-REVIEW.json": "7b5449a904f06417b3e90fdd6b3a8ef913f52a7f5257de6a8739ea2aaa935109"
+      }
+    }
+  }
+}

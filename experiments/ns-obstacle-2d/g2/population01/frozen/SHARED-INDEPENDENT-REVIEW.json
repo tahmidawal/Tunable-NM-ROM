@@ -1,0 +1,76 @@
+{
+  "schema": "ns-obstacle-FD1-shared-independent-review-v1",
+  "reviewer": "/root/numerical_resume",
+  "passed": true,
+  "scope": "shared operator and interface controls only",
+  "check_contract_sha256": "4bbc8468fab530efe79b3cd9f91fbc8391a580d1f7a9efbedc56787fb6ee6541",
+  "checks": [
+    {
+      "name": "analytic_channel_controls",
+      "passed": true,
+      "criterion_source": "DESIGN.md \u00a74 analytic control",
+      "evidence_sha256": {
+        "artifacts/g1-smoke07/results/channel/result.json": "30e07b4555fc59539a5b7a1869fa2a7e5a52563ec18764ce96904c470df26dd3",
+        "artifacts/g1-smoke07/results/channel/full_rule.npz": "fdf3c8b0e89368de7e8332608971093b1143b54c2b3c62ea0c79ceb4e9e07d96",
+        "artifacts/g1-smoke07/results/channel/boundary_rule.json": "56300ca68a5add4cd169080fa19d65501be244b6f8cc6137cdc8b88d328bdb29"
+      }
+    },
+    {
+      "name": "manufactured_obstacle_force_and_flux_controls",
+      "passed": true,
+      "criterion_source": "DESIGN.md A3",
+      "evidence_sha256": {
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/result.json": "dcf633241e3b905e8abaab2f23fa80dd5556e3c1d0d4b3757e0a4e2912baa406",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/full_rule.npz": "a7f67f5c20fe61988739cb7fbb9fa1309cee32c579d91df9984b31671e7c45df",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/boundary_rule.json": "c8b1cc2a67ea24201014bcf059eed659b3b5695a768c63decc737f883ce280b1",
+        "artifacts/g2-p4controls/manufactured_witness.json": "1b55be8cea8261ce84c7f06e56f0ee3a4cb0a78578a0bc56568e591618b1b1c4"
+      }
+    },
+    {
+      "name": "wall_shear_sign_control",
+      "passed": true,
+      "criterion_source": "DESIGN.md A3",
+      "evidence_sha256": {
+        "artifacts/g1-smoke07/results/channel/result.json": "30e07b4555fc59539a5b7a1869fa2a7e5a52563ec18764ce96904c470df26dd3",
+        "artifacts/g1-smoke07/results/channel/boundary_rule.json": "56300ca68a5add4cd169080fa19d65501be244b6f8cc6137cdc8b88d328bdb29"
+      }
+    },
+    {
+      "name": "derivative_orientation_and_native_batch_controls",
+      "passed": true,
+      "criterion_source": "DESIGN.md A6; CACHE-PRIMARY01-RESULT-REVIEW.json",
+      "evidence_sha256": {
+        "artifacts/g2-native01/results/preflight.json": "10234fc3d7ebd7bc3b393fc4abf4a6c2cc8db75ccc034831efa2265aabba540e",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/affine_gradient_orientation.json": "18c191ec38ad67946c37da8252fbe3ae100fdcedaa08fc5bb4695fcf8d2ca876",
+        "artifacts/g2-p4controls/results/manufactured_p4_g4_h3/manufactured_derivative_checks.json": "8f3a6fe37582e8baff3b7a8236a76d7c432571fa5e255e7cccae3fb842704fbc",
+        "artifacts/g2-export-batch01/results/export_batch_control/control.json": "e758ada4b22106aac4761e4a008208c82b43827ba36effc9337f952945205a18"
+      }
+    },
+    {
+      "name": "portable_coefficient_primary_reconstruction_controls",
+      "passed": true,
+      "criterion_source": "CACHE-PRIMARY01-RESULT-REVIEW.json",
+      "evidence_sha256": {
+        "artifacts/g2-cache-primary01/results/cache_primary_control/control.json": "8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6",
+        "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c"
+      }
+    },
+    {
+      "name": "common_immutable_mesh_layout_and_Stokes_scaling",
+      "passed": true,
+      "criterion_source": "DESIGN.md A6; retained g2-crossp02 immutable_lift",
+      "evidence_sha256": {
+        "artifacts/g2-crossp02/results/immutable_lift/control.json": "586270e7e5fc7a368c5f43c58c23858f3d098dd3c394041f8b16f86c6c9cd2a3",
+        "artifacts/g2-crossp02/results/immutable_lift/lift_scaling_arrays.npz": "bf8e46edbdc689240343c785eabb04d35f2b85f03743b54921143fa6dcf94be2",
+        "artifacts/g2-crossp02/results/immutable_lift/common_stokes_lift.json": "2c30951e960e26cd18dc205b938d760dbb12d8901c6a6616901c120e2bb07f1f",
+        "artifacts/g2-crossp02/results/immutable_lift/common_stokes_lift.npz": "47c1a9954361079cb94d438be8ee3237299e71c07d8c90d00f8a2f813efc95cb"
+      }
+    }
+  ],
+  "independent_replay": "Channel fields and positive wall drag; fine manufactured fields, analytic force/witness and global boundary flux; Stokes scaling/residual arrays. Derivative/native batch and portable coefficient reconstruction reuse prior complete raw audits with exact current control identities.",
+  "MMS_interpretation": "Use global all-boundary flux. The inlet/outlet-only ratio is nongating for this manufactured nonzero-boundary flow. Analytic force was replayed and reviewed against the witness; no new analytic-force numeric threshold is introduced. Existing frozen criteria remain unchanged.",
+  "source_compatibility": "Independent smoke07-to-current comparison confirms unchanged weak, Stokes and Newton equations. Later mesh/layout/export changes are covered by retained native proofs.",
+  "population_admitted": false,
+  "training_released": false,
+  "limitation": "Does not replace parameter-specific physics, noise, uncertainty, provenance or retention review."
+}

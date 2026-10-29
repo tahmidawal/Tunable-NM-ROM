@@ -100,12 +100,31 @@ def assemble_row(group,artifact,noise_path,contract,retention_index,raw_index):
  export=fine['export'];folder=fine['folder'];adopted={'directory':str(folder.relative_to(B)),'export_manifest_sha256':sha(folder/'EXPORT-MANIFEST.json'),'config_sha256':export['files']['config.json'],'mesh_sha256':export['files']['mesh.vol.bin'],'layout_sha256':f['fe_layout.json']['sha256'],'layout_file_sha256':export['files']['fe_layout.json'],'solution_sha256':export['files']['solution.sol'],'storage_mode':'coefficient_primary'if'PRIMARY-REFERENCE.json'in export['files']else'expanded_full_fields'}
  return {'Re':group['Re'],'split':group['split'],'adopted_reference':adopted,'states':states,'checks':checks,'noise_ledger':{'path':str(noise_path.relative_to(B)),'sha256':sha(noise_path)},'conditional_uncertainty':noise['metrics'],'missing_or_unresolved':[x['name']for x in checks if x['status']in('missing','unresolved')],'diagnostics':{'all_states':diagnostics,'divergence_h_sequence':divs,'outlet_backflow':backflow,'force_orders':forces,'conditional_noise':noise}}
 
+def frozen_row(group,entry,contract,retention_index,raw_index):
+ candidate=confined(entry['frozen_candidate']);review=confined(entry['independent_row_review'])
+ if sha(candidate)!=entry['candidate_sha256']or sha(review)!=entry['review_sha256']:raise ValueError('frozen row/review changed')
+ data=read(candidate);audit=read(review)
+ if audit.get('schema')!='ns-obstacle-FD1-row-review-v1'or audit.get('passed')is not True or audit.get('candidate_sha256')!=sha(candidate):raise ValueError('independent row review binding absent')
+ if data['check_contract_sha256']!=sha(B/'g2/FD1-CHECK-CONTRACT.json')or data['provenance']['population_plan_sha256']!=sha(B/'g2/population01/PLAN.json')or data['qualification_scope']!=FD1_SCOPE or data['qualification_gate']!=FD1_GATE or data['admission']is not False:raise ValueError('frozen candidate contract differs')
+ rows=[r for r in data['rows']if r['Re']==group['Re']and r['split']==group['split']]
+ if len(data['rows'])!=1 or len(rows)!=1:raise ValueError('independent per-parameter review requires a single matching frozen row')
+ for name,key,target in [('RETENTION-INDEX.json','retention_index_sha256',retention_index),('RAW-EVIDENCE-INDEX.json','raw_evidence_index_sha256',raw_index)]:
+  path=candidate.with_name(name)
+  if sha(path)!=data['provenance'][key]:raise ValueError('frozen evidence index changed')
+  for source,digest in read(path).items():
+   if source in target and target[source]!=digest:raise ValueError('conflicting frozen evidence identities')
+   target[source]=digest
+ raw_index[str(candidate.relative_to(B))]=sha(candidate);raw_index[str(review.relative_to(B))]=sha(review)
+ noise=rows[0]['noise_ledger']
+ if sha(confined(noise['path']))!=noise['sha256']:raise ValueError('retained uncertainty ledger changed')
+ return rows[0]
+
 def main():
  p=argparse.ArgumentParser();p.add_argument('--index',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();a.out=a.out.resolve();index=read(a.index);plan=read(B/'g2/population01/PLAN.json');contract=read(B/'g2/FD1-CHECK-CONTRACT.json');retention_index={};raw_index={};rows=[]
  for group in plan['groups']:
   entry=index['groups'].get(group['id'])
   if entry is None:continue
-  rows.append(assemble_row(group,confined(entry['artifact_directory']),confined(entry['noise_ledger']),contract,retention_index,raw_index))
+  rows.append(frozen_row(group,entry,contract,retention_index,raw_index)if 'frozen_candidate'in entry else assemble_row(group,confined(entry['artifact_directory']),confined(entry['noise_ledger']),contract,retention_index,raw_index))
  a.out.parent.mkdir(parents=True,exist_ok=True)
  shared=[]
  for rule in contract['shared']:
@@ -114,7 +133,9 @@ def main():
    for path,digest in item['evidence_sha256'].items():
     if sha(confined(path))!=digest:raise ValueError('shared control evidence changed')
     evidence[path]=digest;raw_index[path]=digest
-  evidence_path=a.out.with_name('SHARED-'+rule['name']+'-EVIDENCE.json');evidence_path.write_text(json.dumps(evidence,indent=2)+'\n');raw_index[str(evidence_path.relative_to(B))]=sha(evidence_path)
+  evidence_path=a.out.with_name('SHARED-'+rule['name']+'-EVIDENCE.json');encoded=(json.dumps(evidence,indent=2)+'\n').encode();relative=str(evidence_path.relative_to(B))
+  if relative in raw_index and raw_index[relative]!=hashlib.sha256(encoded).hexdigest():raise ValueError('use a fresh aggregation namespace; frozen shared evidence cannot be overwritten')
+  evidence_path.write_bytes(encoded);raw_index[relative]=sha(evidence_path)
   shared.append(checked(rule,None if item is None else item['value'],sha(evidence_path)))
  a.out.parent.mkdir(parents=True,exist_ok=True);retention_path=a.out.with_name('RETENTION-INDEX.json');raw_path=a.out.with_name('RAW-EVIDENCE-INDEX.json')
  for path,data in ((retention_path,retention_index),(raw_path,raw_index)):path.write_text(json.dumps(data,indent=2,allow_nan=False)+'\n')

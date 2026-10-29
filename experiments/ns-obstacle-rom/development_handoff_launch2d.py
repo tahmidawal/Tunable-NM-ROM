@@ -5,15 +5,33 @@ import handoff2d
 from fe_adapter import sha_file
 
 
+
+def validate_release_contract(release):
+    """Every population-consumer release field is checked before GPU/setup."""
+    job='/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize02'
+    if (release.get('authorized_stage')!='development_population_materialization' or
+        release.get('job_directory')!=job or release.get('output_directory')!=job+'/results/population'):
+        raise ValueError('exact fresh development job/output paths required')
+    reserve=release.get('other_active_disk_reservation_bytes')
+    if type(reserve) is not int or reserve!=2415919104:
+        raise ValueError('explicit reviewed remote concurrent disk reservation required')
+    fixed={'allocation_seconds':120,'outer_timeout_seconds':110,'outer_kill_grace_seconds':5,
+           'debit_from_existing_development_reservation_seconds':120,
+           'remaining_development_reservation_seconds':3360,'fom_reservation_unchanged_seconds':2160}
+    if any(type(release.get(k)) is not int or release[k]!=v for k,v in fixed.items()):
+        raise ValueError('failed first reservation remains charged; exact second-stage budget required')
+
+
 def verify(plan_path, release_path, inventory_path):
     release = json.loads(Path(release_path).read_text())
+    validate_release_contract(release)
     inventory = json.loads(Path(inventory_path).read_text())
     if (release.get('launcher_sha256') != sha_file(__file__) or
         release.get('input_inventory_sha256') != sha_file(inventory_path) or
         release.get('allocation_seconds') != 120 or
         release.get('outer_timeout_seconds') != 110 or
         release.get('outer_kill_grace_seconds') != 5 or
-        release.get('remaining_development_reservation_seconds') != 3480 or
+        release.get('remaining_development_reservation_seconds') != 3360 or
         release.get('split') != 'development'):
         raise ValueError('exact bounded development-only release required')
     root = Path.cwd().resolve()

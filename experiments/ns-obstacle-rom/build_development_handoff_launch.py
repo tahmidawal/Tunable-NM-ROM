@@ -4,7 +4,7 @@ import argparse,json,shutil
 import handoff2d
 from fe_adapter import sha_file
 from build_preparation_launch import source_closure,ROOT
-JOB='/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01'
+JOB='/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize02'
 
 
 def build(reference,out):
@@ -40,9 +40,9 @@ def build(reference,out):
         p=ROOT/name;rows.append({'owner':'rom','source':name,'destination':name,'sha256':sha_file(p),'bytes':p.stat().st_size})
     template=ROOT/'staging/training-materialize01'
     for name in ('dependencies.py','DEPENDENCIES.json'):shutil.copyfile(template/name,out/name)
-    (out/'REPAIR.json').write_text(json.dumps({'fresh_attempt':'development-materialize01','purpose':'Two admitted development primary reconstructions only; no fitting, calibration or validation'})+'\n')
+    (out/'REPAIR.json').write_text(json.dumps({'fresh_attempt':'development-materialize02','purpose':'Two admitted development primary reconstructions only; no fitting, calibration or validation'})+'\n')
     outer=(template/'native.sh').read_text().replace('ctol_nsobsrom_materialize','ctol_nsobsrom_devdata').replace('00:07:30','00:02:00').replace('435s','110s').replace('--kill-after=10s','--kill-after=5s')
-    body=(template/'native-body.sh').read_text().replace('training-materialize01','development-materialize01')
+    body=(template/'native-body.sh').read_text().replace('training-materialize01','development-materialize02')
     body=body.replace('results/BATCH-RESULT.json','results/population/HANDOFF.json').replace("'materialization_completed':r.get('passed',False)","'materialization_completed':r.get('status')=='completed_pending_independent_handoff_review'")
     body=body.replace('18*2**30','14*2**30').replace('eight-GiB workspace/archive envelope','four-GiB workspace/archive envelope')
     body=body.replace('JOB_PHASE=gpu_preflight','"$PY" development_handoff_launch2d.py --plan HANDOFF-PLAN.json --release HANDOFF-RELEASE.json --inventory INPUT-INVENTORY.json --verify-only\nJOB_PHASE=gpu_preflight')
@@ -55,8 +55,8 @@ def build(reference,out):
     (out/'INPUT-INVENTORY.json').write_text(json.dumps(inventory,indent=2)+'\n')
     proposal={'schema':'ns-obstacle-two-case-development-materialization-proposal-v1','execution_released':False,
        'job_directory':JOB,'output_directory':JOB+'/results/population','allocation_seconds':120,'outer_timeout_seconds':110,'outer_kill_grace_seconds':5,
-       'debit_from_existing_development_reservation_seconds':120,'remaining_development_reservation_seconds':3480,
-       'fom_reservation_unchanged_seconds':2160,'input_bytes':sum(r['bytes'] for r in rows),'input_inventory_sha256':sha_file(out/'INPUT-INVENTORY.json'),
+       'debit_from_existing_development_reservation_seconds':120,'remaining_development_reservation_seconds':3360,
+       'fom_reservation_unchanged_seconds':2160,'other_active_disk_reservation_bytes':2415919104,'prior_failed_job_id':6635169,'prior_reserved_seconds_retained':120,'input_bytes':sum(r['bytes'] for r in rows),'input_inventory_sha256':sha_file(out/'INPUT-INVENTORY.json'),
        'handoff_plan_sha256':sha_file(out/'HANDOFF-PLAN.json'),'handoff_source_sha256':handoff2d.source_digest(),'launcher_sha256':sha_file(ROOT/'development_handoff_launch2d.py'),
        'remote_workspace_archive_envelope_bytes':4*2**30,'local_floor_bytes':10*2**30,'other_local_reserved_bytes':256*2**20,
        'staging_proposal':'Direct upload from every already verified canonical warm file; no duplicate bulk local staging tree. Missing/changed input stops before submission. No automatic cold fallback or unreserved cold extraction.',

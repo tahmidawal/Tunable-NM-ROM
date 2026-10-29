@@ -1,0 +1,360 @@
+{
+  "source_sha256": "f5510257b3f08a6d87f43fb1f9fa0edc439290f56513d972d54dd6e269db98f6",
+  "supports": [
+    {
+      "support_cap": 320,
+      "fit_scalars": {
+        "max_support": 320,
+        "relative_tolerance": 1e-08,
+        "kkt_tolerance": 1e-08,
+        "training_scope": "decoder output/gradient moments only",
+        "moment_manifest_sha256": "f0a6c0622f483e9fc689d80383d152a67064dfbfcf1723eb87d12496138d0f8d",
+        "all_points_searched": 1036497,
+        "elapsed_seconds": 237.78521295730025,
+        "summation_policy": "increasing contiguous point blocks; floating-point sums may differ from dense order",
+        "passed": false,
+        "reason": "support_cap",
+        "relative_moment_residual": 4.6727192882343237e-08,
+        "kkt": 2.1036863506078963e-16,
+        "kkt_scope": "restricted selected-support NNLS; no full-dictionary optimality claim"
+      },
+      "checks": []
+    },
+    {
+      "support_cap": 640,
+      "fit_scalars": {
+        "max_support": 640,
+        "relative_tolerance": 1e-08,
+        "kkt_tolerance": 1e-08,
+        "training_scope": "decoder output/gradient moments only",
+        "moment_manifest_sha256": "f0a6c0622f483e9fc689d80383d152a67064dfbfcf1723eb87d12496138d0f8d",
+        "all_points_searched": 1036497,
+        "elapsed_seconds": 262.6071568960324,
+        "summation_policy": "increasing contiguous point blocks; floating-point sums may differ from dense order",
+        "passed": true,
+        "reason": "fit_tolerance",
+        "relative_moment_residual": 9.896305627319881e-09,
+        "kkt": 1.7430195300504994e-16,
+        "kkt_scope": "restricted selected-support NNLS; no full-dictionary optimality claim"
+      },
+      "checks": [
+        {
+          "Re": 16.875,
+          "quadrature_reached_state_check": {
+            "passed": false,
+            "solver_statuses": {
+              "full": "stationary",
+              "fitted": "stationary"
+            },
+            "both_solves_converged": true,
+            "operator_at_both_reached_states": [
+              {
+                "operator_numerator": 3.79523563092582e-05,
+                "operator_denominator": 2.6001063607612926,
+                "operator_relative": 1.4596463007054072e-05,
+                "jacobian_numerator": 0.010641626168732177,
+                "jacobian_denominator": 4.1761910566018425,
+                "jacobian_relative": 0.0025481655471460266
+              },
+              {
+                "operator_numerator": 3.79173261706743e-05,
+                "operator_denominator": 2.6001006224119214,
+                "operator_relative": 1.4583022612217675e-05,
+                "jacobian_numerator": 0.01064163127454441,
+                "jacobian_denominator": 4.176192163496202,
+                "jacobian_relative": 0.002548166094357954
+              }
+            ],
+            "reached_field_change": {
+              "velocity_numerator": 4.606483754663742e-06,
+              "velocity_denominator": 10.460122349245182,
+              "velocity_relative": 4.4038526518728075e-07,
+              "pressure_numerator": 5.211731691215549e-06,
+              "pressure_denominator": 9.455929453871821,
+              "pressure_scaled": 5.511601706251685e-07,
+              "volume": 89.41460183660062,
+              "U": 1.0,
+              "pressure_shift_applied": false
+            },
+            "drag_relative_change": 1.2185070114319198e-08,
+            "lift_absolute_change": 1.1107120091724543e-08,
+            "PDE_solution_admission": false,
+            "numerical_checks_passed": false
+          },
+          "eligible_accuracy": false,
+          "failure": null
+        },
+        {
+          "Re": 23.125,
+          "quadrature_reached_state_check": {
+            "passed": false,
+            "solver_statuses": {
+              "full": "stationary",
+              "fitted": "stationary"
+            },
+            "both_solves_converged": true,
+            "operator_at_both_reached_states": [
+              {
+                "operator_numerator": 5.573204135180334e-05,
+                "operator_denominator": 2.3321831664002346,
+                "operator_relative": 2.3896940066601507e-05,
+                "jacobian_numerator": 0.010790802739485423,
+                "jacobian_denominator": 4.122382271218756,
+                "jacobian_relative": 0.0026176133190809574
+              },
+              {
+                "operator_numerator": 5.5671939490264863e-05,
+                "operator_denominator": 2.3321898566791344,
+                "operator_relative": 2.387110094438777e-05,
+                "jacobian_numerator": 0.010790751394172623,
+                "jacobian_denominator": 4.1223822220724795,
+                "jacobian_relative": 0.002617600895034837
+              }
+            ],
+            "reached_field_change": {
+              "velocity_numerator": 1.805029522281733e-05,
+              "velocity_denominator": 10.450753233855345,
+              "velocity_relative": 1.7271764837335529e-06,
+              "pressure_numerator": 1.7991273585625977e-05,
+              "pressure_denominator": 9.455929453871821,
+              "pressure_scaled": 1.9026446499407075e-06,
+              "volume": 89.41460183660062,
+              "U": 1.0,
+              "pressure_shift_applied": false
+            },
+            "drag_relative_change": 3.2261683462399334e-06,
+            "lift_absolute_change": 5.4692004907569425e-08,
+            "PDE_solution_admission": false,
+            "numerical_checks_passed": false
+          },
+          "eligible_accuracy": false,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "support_cap": 1280,
+      "fit_scalars": {
+        "max_support": 1280,
+        "relative_tolerance": 1e-08,
+        "kkt_tolerance": 1e-08,
+        "training_scope": "decoder output/gradient moments only",
+        "moment_manifest_sha256": "f0a6c0622f483e9fc689d80383d152a67064dfbfcf1723eb87d12496138d0f8d",
+        "all_points_searched": 1036497,
+        "elapsed_seconds": 262.41887334454805,
+        "summation_policy": "increasing contiguous point blocks; floating-point sums may differ from dense order",
+        "passed": true,
+        "reason": "fit_tolerance",
+        "relative_moment_residual": 9.896305627319881e-09,
+        "kkt": 1.7430195300504994e-16,
+        "kkt_scope": "restricted selected-support NNLS; no full-dictionary optimality claim"
+      },
+      "checks": [
+        {
+          "Re": 16.875,
+          "quadrature_reached_state_check": {
+            "passed": false,
+            "solver_statuses": {
+              "full": "stationary",
+              "fitted": "stationary"
+            },
+            "both_solves_converged": true,
+            "operator_at_both_reached_states": [
+              {
+                "operator_numerator": 3.79523563092582e-05,
+                "operator_denominator": 2.6001063607612926,
+                "operator_relative": 1.4596463007054072e-05,
+                "jacobian_numerator": 0.010641626168732177,
+                "jacobian_denominator": 4.1761910566018425,
+                "jacobian_relative": 0.0025481655471460266
+              },
+              {
+                "operator_numerator": 3.79173261706743e-05,
+                "operator_denominator": 2.6001006224119214,
+                "operator_relative": 1.4583022612217675e-05,
+                "jacobian_numerator": 0.01064163127454441,
+                "jacobian_denominator": 4.176192163496202,
+                "jacobian_relative": 0.002548166094357954
+              }
+            ],
+            "reached_field_change": {
+              "velocity_numerator": 4.606483754663742e-06,
+              "velocity_denominator": 10.460122349245182,
+              "velocity_relative": 4.4038526518728075e-07,
+              "pressure_numerator": 5.211731691215549e-06,
+              "pressure_denominator": 9.455929453871821,
+              "pressure_scaled": 5.511601706251685e-07,
+              "volume": 89.41460183660062,
+              "U": 1.0,
+              "pressure_shift_applied": false
+            },
+            "drag_relative_change": 1.2185070114319198e-08,
+            "lift_absolute_change": 1.1107120091724543e-08,
+            "PDE_solution_admission": false,
+            "numerical_checks_passed": false
+          },
+          "eligible_accuracy": false,
+          "failure": null
+        },
+        {
+          "Re": 23.125,
+          "quadrature_reached_state_check": {
+            "passed": false,
+            "solver_statuses": {
+              "full": "stationary",
+              "fitted": "stationary"
+            },
+            "both_solves_converged": true,
+            "operator_at_both_reached_states": [
+              {
+                "operator_numerator": 5.573204135180334e-05,
+                "operator_denominator": 2.3321831664002346,
+                "operator_relative": 2.3896940066601507e-05,
+                "jacobian_numerator": 0.010790802739485423,
+                "jacobian_denominator": 4.122382271218756,
+                "jacobian_relative": 0.0026176133190809574
+              },
+              {
+                "operator_numerator": 5.5671939490264863e-05,
+                "operator_denominator": 2.3321898566791344,
+                "operator_relative": 2.387110094438777e-05,
+                "jacobian_numerator": 0.010790751394172623,
+                "jacobian_denominator": 4.1223822220724795,
+                "jacobian_relative": 0.002617600895034837
+              }
+            ],
+            "reached_field_change": {
+              "velocity_numerator": 1.805029522281733e-05,
+              "velocity_denominator": 10.450753233855345,
+              "velocity_relative": 1.7271764837335529e-06,
+              "pressure_numerator": 1.7991273585625977e-05,
+              "pressure_denominator": 9.455929453871821,
+              "pressure_scaled": 1.9026446499407075e-06,
+              "volume": 89.41460183660062,
+              "U": 1.0,
+              "pressure_shift_applied": false
+            },
+            "drag_relative_change": 3.2261683462399334e-06,
+            "lift_absolute_change": 5.4692004907569425e-08,
+            "PDE_solution_admission": false,
+            "numerical_checks_passed": false
+          },
+          "eligible_accuracy": false,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "support_cap": 2560,
+      "fit_scalars": {
+        "max_support": 2560,
+        "relative_tolerance": 1e-08,
+        "kkt_tolerance": 1e-08,
+        "training_scope": "decoder output/gradient moments only",
+        "moment_manifest_sha256": "f0a6c0622f483e9fc689d80383d152a67064dfbfcf1723eb87d12496138d0f8d",
+        "all_points_searched": 1036497,
+        "elapsed_seconds": 262.2295929566026,
+        "summation_policy": "increasing contiguous point blocks; floating-point sums may differ from dense order",
+        "passed": true,
+        "reason": "fit_tolerance",
+        "relative_moment_residual": 9.896305627319881e-09,
+        "kkt": 1.7430195300504994e-16,
+        "kkt_scope": "restricted selected-support NNLS; no full-dictionary optimality claim"
+      },
+      "checks": [
+        {
+          "Re": 16.875,
+          "quadrature_reached_state_check": {
+            "passed": false,
+            "solver_statuses": {
+              "full": "stationary",
+              "fitted": "stationary"
+            },
+            "both_solves_converged": true,
+            "operator_at_both_reached_states": [
+              {
+                "operator_numerator": 3.79523563092582e-05,
+                "operator_denominator": 2.6001063607612926,
+                "operator_relative": 1.4596463007054072e-05,
+                "jacobian_numerator": 0.010641626168732177,
+                "jacobian_denominator": 4.1761910566018425,
+                "jacobian_relative": 0.0025481655471460266
+              },
+              {
+                "operator_numerator": 3.79173261706743e-05,
+                "operator_denominator": 2.6001006224119214,
+                "operator_relative": 1.4583022612217675e-05,
+                "jacobian_numerator": 0.01064163127454441,
+                "jacobian_denominator": 4.176192163496202,
+                "jacobian_relative": 0.002548166094357954
+              }
+            ],
+            "reached_field_change": {
+              "velocity_numerator": 4.606483754663742e-06,
+              "velocity_denominator": 10.460122349245182,
+              "velocity_relative": 4.4038526518728075e-07,
+              "pressure_numerator": 5.211731691215549e-06,
+              "pressure_denominator": 9.455929453871821,
+              "pressure_scaled": 5.511601706251685e-07,
+              "volume": 89.41460183660062,
+              "U": 1.0,
+              "pressure_shift_applied": false
+            },
+            "drag_relative_change": 1.2185070114319198e-08,
+            "lift_absolute_change": 1.1107120091724543e-08,
+            "PDE_solution_admission": false,
+            "numerical_checks_passed": false
+          },
+          "eligible_accuracy": false,
+          "failure": null
+        },
+        {
+          "Re": 23.125,
+          "quadrature_reached_state_check": {
+            "passed": false,
+            "solver_statuses": {
+              "full": "stationary",
+              "fitted": "stationary"
+            },
+            "both_solves_converged": true,
+            "operator_at_both_reached_states": [
+              {
+                "operator_numerator": 5.573204135180334e-05,
+                "operator_denominator": 2.3321831664002346,
+                "operator_relative": 2.3896940066601507e-05,
+                "jacobian_numerator": 0.010790802739485423,
+                "jacobian_denominator": 4.122382271218756,
+                "jacobian_relative": 0.0026176133190809574
+              },
+              {
+                "operator_numerator": 5.5671939490264863e-05,
+                "operator_denominator": 2.3321898566791344,
+                "operator_relative": 2.387110094438777e-05,
+                "jacobian_numerator": 0.010790751394172623,
+                "jacobian_denominator": 4.1223822220724795,
+                "jacobian_relative": 0.002617600895034837
+              }
+            ],
+            "reached_field_change": {
+              "velocity_numerator": 1.805029522281733e-05,
+              "velocity_denominator": 10.450753233855345,
+              "velocity_relative": 1.7271764837335529e-06,
+              "pressure_numerator": 1.7991273585625977e-05,
+              "pressure_denominator": 9.455929453871821,
+              "pressure_scaled": 1.9026446499407075e-06,
+              "volume": 89.41460183660062,
+              "U": 1.0,
+              "pressure_shift_applied": false
+            },
+            "drag_relative_change": 3.2261683462399334e-06,
+            "lift_absolute_change": 5.4692004907569425e-08,
+            "PDE_solution_admission": false,
+            "numerical_checks_passed": false
+          },
+          "eligible_accuracy": false,
+          "failure": null
+        }
+      ]
+    }
+  ]
+}

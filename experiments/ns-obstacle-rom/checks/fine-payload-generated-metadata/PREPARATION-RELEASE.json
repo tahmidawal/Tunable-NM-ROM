@@ -1,0 +1,64 @@
+{
+  "schema": "ns-obstacle-native-preparation-release-v1",
+  "authorized_stage": "G3-2d-steady-preparation",
+  "source_sha256": "6c38b93a1dc63ab781db02cbdbdd74610750e81eaab82221f500096c08037b16",
+  "training_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "adapter_review_sha256": "86e8bc4fd05d5a28e03ef44bf0f6473a956a8687639af3454f6a7c4e2984dfde",
+  "capacity_amendment": {
+    "path": "capacity/CAPACITY-AMENDMENT-CANDIDATE.json",
+    "sha256": "263ca735e3e19eaa14e9e9dd2deb13254fa53e45acd0630a66ea8e777fff2e07"
+  },
+  "capacity_review": {
+    "path": "CAPACITY-REVIEW.json",
+    "sha256": "daa5602b71f22c62e8d9f7f70ce68e0d9e7a9d7cde61c9edce809396ab0f8017"
+  },
+  "launcher_sha256": "162c66d23e2a558dd9446e5aa2f328e07dcf144ee35a5a09309c7f02beab367c",
+  "input_inventory_sha256": "b87e2544ace453e112ad6aa5b96c47615fbf10d4512ad682261367129e8521fe",
+  "single_execution": true,
+  "allocation_seconds": 1350,
+  "outer_timeout_seconds": 1335,
+  "outer_kill_grace_seconds": 10,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01",
+  "source_commit": "355b3dbd1c30c6337a0970e8a31b5bd49cc02ed5",
+  "source_mirror_commit": "28de1f6a8b692b1760b31bfcafd670850d311db6",
+  "staging_source_sha256": "1cff72c840722b3d009f5690ec11824971b5306ef21346f8d30b03531372aafd",
+  "source_inputs_sha256": "bdde5ce4f17448235fa2e37d8d34c19f399d72b0294b0458127b196799e842cc",
+  "archive_recovery_sha256": "da6d150859f688ad7fba8767d249d9c7fd8f4f237af8c20e80e93351777365f2",
+  "verify_warm_archives": true,
+  "conservative_recovery_reservations_unchanged": true,
+  "local_other_reserved_bytes": 268435456,
+  "point_block_volume": true,
+  "verify_primary_volume": true,
+  "independent_packet_review_sha256": "581cc1c9d56cab4284d8bdbb776077c7bb3d691067bc75018c617931b6af710e",
+  "gpus": 1,
+  "cpus": 16,
+  "batch_memory_GiB": 64,
+  "maximum_campaign_remote_bytes": 53687091200,
+  "remote_workspace_and_archive_envelope_bytes": 34359738368,
+  "observed_campaign_remote_bytes": 7413078518,
+  "observed_plus_full_envelope_bytes": 41772816886,
+  "local_full_collection_authorized": false,
+  "collection_requires_measured_output_and_independent_replay_review": true,
+  "bank_training_released": false,
+  "conditions": [
+    "Fresh local staging/cold-recovery/concurrent guard must pass.",
+    "Before submission remeasure all three campaign namespaces plus full32GiB envelope below50GiB.",
+    "One submission and fresh job-specific directory; queue checks before and after.",
+    "No automatic retry; preserve and charge all partial work.",
+    "Retain full original and restored fields until independent replay and retention review."
+  ]
+}

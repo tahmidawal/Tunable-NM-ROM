@@ -1,0 +1,2400 @@
+{
+  "schema": "ns-obstacle-exact-duplicate-retirement-proposal-v1",
+  "directory": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/staging/fine-preparation01/payload",
+  "complete_regular_file_count": 159,
+  "files": [
+    {
+      "relative_path": "CAPACITY-REVIEW.json",
+      "sha256": "daa5602b71f22c62e8d9f7f70ce68e0d9e7a9d7cde61c9edce809396ab0f8017",
+      "bytes": 814,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "byte_identical_metadata_copy_to_commit",
+        "path": "experiments/ns-obstacle-rom/checks/fine-payload-generated-metadata/CAPACITY-REVIEW.json"
+      }
+    },
+    {
+      "relative_path": "DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/DEPENDENCIES.json"
+      }
+    },
+    {
+      "relative_path": "FD1-SCOPE-CONTRACT.json",
+      "sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "bytes": 1116,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/FD1-SCOPE-CONTRACT.json"
+      }
+    },
+    {
+      "relative_path": "INPUT-INVENTORY.json",
+      "sha256": "b87e2544ace453e112ad6aa5b96c47615fbf10d4512ad682261367129e8521fe",
+      "bytes": 78659,
+      "allocated_bytes": 81920,
+      "nlink": 1,
+      "recovery": {
+        "kind": "byte_identical_metadata_copy_to_commit",
+        "path": "experiments/ns-obstacle-rom/checks/fine-payload-generated-metadata/INPUT-INVENTORY.json"
+      }
+    },
+    {
+      "relative_path": "MODEL-CONTRACT.json",
+      "sha256": "e049b9db7d53eb04a823e9a13b17d30b8ea106c42df3fe57caa6ce368ee841dd",
+      "bytes": 9739,
+      "allocated_bytes": 12288,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/MODEL-CONTRACT.json"
+      }
+    },
+    {
+      "relative_path": "PREPARATION-RELEASE.json",
+      "sha256": "f4a1ed7aab4bfd77c8d35313aa13287e12bb54557911d8e60d2334d1dde3b3dc",
+      "bytes": 3387,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "byte_identical_metadata_copy_to_commit",
+        "path": "experiments/ns-obstacle-rom/checks/fine-payload-generated-metadata/PREPARATION-RELEASE.json"
+      }
+    },
+    {
+      "relative_path": "REPAIR.json",
+      "sha256": "f7a819b61ca2ef11698aaa139ee2604c50002f0fbfa7ba4404bf4a45303af9bf",
+      "bytes": 140,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/REPAIR.json"
+      }
+    },
+    {
+      "relative_path": "SOURCE-SHA256SUMS",
+      "sha256": "019d88894369a534b9ac65769bf0923f558706f50b680eb28f05af920249a6c0",
+      "bytes": 18557,
+      "allocated_bytes": 20480,
+      "nlink": 1,
+      "recovery": {
+        "kind": "byte_identical_metadata_copy_to_commit",
+        "path": "experiments/ns-obstacle-rom/checks/fine-payload-generated-metadata/SOURCE-SHA256SUMS"
+      }
+    },
+    {
+      "relative_path": "SOURCE_COMMIT.txt",
+      "sha256": "db431b7de532cc05265b35f547b9249e90d7d0fd565284a78229e825885876f9",
+      "bytes": 41,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "byte_identical_metadata_copy_to_commit",
+        "path": "experiments/ns-obstacle-rom/checks/fine-payload-generated-metadata/SOURCE_COMMIT.txt"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/EXPORT-MANIFEST.json",
+      "sha256": "6972ca39aabf09e1433221ed54dfbdb65ea0f35921b65e95290fbc3d8fe20e8c",
+      "bytes": 1740,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/boundary_rule.json",
+      "sha256": "1fa4a3a606bbc673978854c0bb369ea3ed01e54e971c1a56b51110e51fec5acc",
+      "bytes": 2318151,
+      "allocated_bytes": 2318336,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/config.json",
+      "sha256": "fb07c30f2f313b3262b824d312566ea873dbe861fe811de768424d0af87e985b",
+      "bytes": 2294,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/full_rule.npz",
+      "sha256": "e72bc9cb44a16d99478906acb0d1540b849c349f7127299bbce81de18f3bfde2",
+      "bytes": 85226496,
+      "allocated_bytes": 85233664,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/mesh_identity.json",
+      "sha256": "53caf2653bddce8c5b3b08ba2ed3418c4c1c4e74ee74a6ae44cc98e804fa117e",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/normal_orientation.json",
+      "sha256": "f272a9f1648531f67feaaf3902d9477300dbcdbf5ec959e0853f0da1ab5c3001",
+      "bytes": 3543343,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/reload_checks.json",
+      "sha256": "5065ff586c40c86da3f67234ed1fbd7ad984b03cea3cafeb985b62b1dcc07dc9",
+      "bytes": 5798,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/reload_normal_orientation.json",
+      "sha256": "796b6c7a393fe9881edd157a52e1c8b8bf80bf5fcb247e209df19d059da849c0",
+      "bytes": 3543362,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/result.json",
+      "sha256": "ef7d722bbe69b2bdeaacb7f2c56a6b3a777f06cddecea8ac2b6eee23bb34ec75",
+      "bytes": 435684,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re15/solution.sol",
+      "sha256": "94057cd29eb4a31051b3a7717ea37bb5afb36feb03a724d69d63b82a514b4606",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re15/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re15/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/EXPORT-MANIFEST.json",
+      "sha256": "829af8172a1838671af1b7c77c4e13d29715945d6bc9dbf6e3be2b343681eb82",
+      "bytes": 1743,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/boundary_rule.json",
+      "sha256": "ab69377eafebf2b542ec5db68d89d3897fb899833597f519cf34d72345265dfa",
+      "bytes": 2318321,
+      "allocated_bytes": 2318336,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/config.json",
+      "sha256": "2fba80ea72af72b35bc2ba2ba6ac1df81cd222aa5d35a556ced7f9f91f4d6383",
+      "bytes": 2293,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/full_rule.npz",
+      "sha256": "22a4ee1b8bcf7ca752b6d96df2cb1510f07937c57bf9efd42eae7652ff0069c2",
+      "bytes": 85218567,
+      "allocated_bytes": 85225472,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/mesh_identity.json",
+      "sha256": "041562667c1d1e036efaaa66df3448458ba4f6518fb515056d3453fdd335bce8",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/normal_orientation.json",
+      "sha256": "b24a0c966a2449d387e87e5587e7638576ef6f635f754fb66e8cc9541d4b5ef5",
+      "bytes": 3543362,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/reload_checks.json",
+      "sha256": "bce30a3e0b8ee975a0573fd299b9fed53420ebca1f42408514fdd303d8a98f70",
+      "bytes": 5799,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/reload_normal_orientation.json",
+      "sha256": "c7a153700570d9f9323825aef358b919bb61dc351b512006db2d71d6575b40c5",
+      "bytes": 3543361,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/result.json",
+      "sha256": "facd010ac0b33dbe332ce0f7a871fa819ddb8edd96657e7a25af31cd33540fd4",
+      "bytes": 435671,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re16p25/solution.sol",
+      "sha256": "f90ee83b27516e5e76660b98e63cf878259850e9b59d56904c3e5580f5fc7295",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re16p25/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re16p25/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/EXPORT-MANIFEST.json",
+      "sha256": "46b73c6d65f455cfea0a5ab40b6c24de5eaa68a2cad232ac2fc4a68815b6e82c",
+      "bytes": 1742,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/boundary_rule.json",
+      "sha256": "100271ed5fc99351acfe7f86e82532e781d93cadbfcb0460326fe114e768256e",
+      "bytes": 2318487,
+      "allocated_bytes": 2322432,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/config.json",
+      "sha256": "3ee5131be27ba730578a62fbc0b9fe8b7b5bcf26eb17398db8e2a4216649bf59",
+      "bytes": 2294,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/full_rule.npz",
+      "sha256": "26e3e005b8cf4329ef4d7f70ffeda74ec7d894440f4b0b4cd3f0b2a192cd07e2",
+      "bytes": 85214927,
+      "allocated_bytes": 85221376,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/mesh_identity.json",
+      "sha256": "c5c0a8e48644e98fe57924b565b233a1e4c57117dc9e2aeb84dabfefd6337844",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/normal_orientation.json",
+      "sha256": "b12972a8a5e9556ac25289329f90c33fceef8d64eeceebcbc5a2bb712463d561",
+      "bytes": 3543361,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/reload_checks.json",
+      "sha256": "4ae5e5318c135bef18f14c314c2ad55ce876be34456fbb243f8264a211730839",
+      "bytes": 5801,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/reload_normal_orientation.json",
+      "sha256": "0c6c578b815130f6e37abaf36878c544427d27bce8101e048e443fcaa7c0070c",
+      "bytes": 3543359,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/result.json",
+      "sha256": "5b8c6c8da06d814512b38624c08dfc8496383fd7954404fea2999e16bcc22617",
+      "bytes": 435672,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re17p5/solution.sol",
+      "sha256": "ce047aa86925584aff0ac60aca9b6c99bfa967361784efa9813e685e48071e61",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re17p5/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re17p5/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/EXPORT-MANIFEST.json",
+      "sha256": "ef3d02cdc3fccbd9c8196ff8f4c0ff023ad7eff197ea35925fcbadd7e9b42691",
+      "bytes": 1743,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/boundary_rule.json",
+      "sha256": "9e0aebf7f26ef9f8ad6ac264ad2f3bee2a645ca9310518c5231f0356acd83fde",
+      "bytes": 2318544,
+      "allocated_bytes": 2322432,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/config.json",
+      "sha256": "1d7239c4dff255673b7a50089309728f7b680e82a9e61de4cb98a5b79d0c806c",
+      "bytes": 2293,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/full_rule.npz",
+      "sha256": "b07f7ca5e66c475d9417e528b9c9b65fa66fa7efc09aa9eb2c756b22f262b350",
+      "bytes": 85213022,
+      "allocated_bytes": 85217280,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/mesh_identity.json",
+      "sha256": "3cc9f1e95b45c070c589bf6e0bdbf196757f79c9180a1e7177d9ae1ce3862033",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/normal_orientation.json",
+      "sha256": "db8ff588b869c5a22da7daf0cb6d6b693378edfeed66322c818b19731ded09ef",
+      "bytes": 3543359,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/reload_checks.json",
+      "sha256": "09f91bb1fac331e9bfa34337a97ea4387a296e37286a342a7796c0aeb78157e4",
+      "bytes": 5801,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/reload_normal_orientation.json",
+      "sha256": "1dd97a8e95ececae7bbc9f11c1563496f27451e2da01ea61e8b4e4408563c696",
+      "bytes": 3543337,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/result.json",
+      "sha256": "1914fd2e414522d81b1fb944b87d037efdf370196079c7b146b4653453c01315",
+      "bytes": 435690,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re18p75/solution.sol",
+      "sha256": "cf0df9911be3b27c06263922311e4f422cf4d65b63bacb034da57bca07ab63c8",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re18p75/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re18p75/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/EXPORT-MANIFEST.json",
+      "sha256": "e1428a7cb606fea73f295418db1d23271c5b4a1d424ea4fb53e2c7cd0252312a",
+      "bytes": 1740,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/boundary_rule.json",
+      "sha256": "5e4dc61e443e48b911675a31fb1de8d4663eccd15ad3ace530cc79b578493c59",
+      "bytes": 2318717,
+      "allocated_bytes": 2322432,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/config.json",
+      "sha256": "56303dbf78ca9c667e9d293d370a941ae2ec52d9f26ee5db635386a75cbbc161",
+      "bytes": 1481,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/full_rule.npz",
+      "sha256": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+      "bytes": 85208296,
+      "allocated_bytes": 85213184,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/mesh_identity.json",
+      "sha256": "8c019b9f4b34c45d9b8e6560e8a99019a724657e890fca256b73e53a993ec470",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/normal_orientation.json",
+      "sha256": "253f2a2ce6c534bfb528cee234303303d2e0bb5d4b5113deb3a81455ac04a46a",
+      "bytes": 3543360,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/reload_checks.json",
+      "sha256": "73f56c0491febee2c1501e3a485bf51ec5e5c8991cb256d892aea32ea4e851dc",
+      "bytes": 4146,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/reload_normal_orientation.json",
+      "sha256": "c9ff524394f1c06d0f243480e105d32117447b8f860624a62264f8204c53ec96",
+      "bytes": 3543361,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/result.json",
+      "sha256": "4204e15635d7ac8249e73a8f94bc9879d244d8db90afe0e2e42d66489f4a9c1f",
+      "bytes": 426561,
+      "allocated_bytes": 430080,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re20/solution.sol",
+      "sha256": "0ef0ec18499d25d2409180b07b8684d21a018f0eedc7724a6567a5f84d8830eb",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re20/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re20/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/EXPORT-MANIFEST.json",
+      "sha256": "99d7af4b92845948ce558f31e98cea112c9875db0857c48343a048b35e1f5273",
+      "bytes": 1743,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/boundary_rule.json",
+      "sha256": "44ad52c2aa0dad0f0e1d6e303fd8e69bb0ea3bcf2a45e5f98e4c8047f552f89f",
+      "bytes": 2318531,
+      "allocated_bytes": 2322432,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/config.json",
+      "sha256": "892e1292f60dcea6b9c277e8a6df8ad172f1103861ee1ec392b20bd9d2c0f83a",
+      "bytes": 2294,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/full_rule.npz",
+      "sha256": "9c20694456b26df4a81e2faba68b675f87a0828b428e76f7c2e4669544a0a29b",
+      "bytes": 85203916,
+      "allocated_bytes": 85209088,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/mesh_identity.json",
+      "sha256": "13548cde470bf7754728b5c836450c27fa84a70e216d902cebaada4d6f002230",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/normal_orientation.json",
+      "sha256": "f816473809c5f38b136bab1738649e7df58fec470d3da16981d3fd9c34111b1e",
+      "bytes": 3543362,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/reload_checks.json",
+      "sha256": "c62cbbf5859f9c0ebf75ed7c48941aa8e2b3f5d0929f02d5745e4e4cc66b3212",
+      "bytes": 5798,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/reload_normal_orientation.json",
+      "sha256": "3bdbaa4bbb8542e15377e701fdaac564c35e07d364c6dff36577eeb86bc5639b",
+      "bytes": 3543359,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/result.json",
+      "sha256": "009df06a3731fc2282ca08438d8ec4bdc6fdac3638486dbd988c04fab12d0b7e",
+      "bytes": 435684,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re21p25/solution.sol",
+      "sha256": "7f75e9640b9ceef7421070ee9d6ef24d1de4bacfe8a5f268604bdc2be572968d",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re21p25/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re21p25/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/EXPORT-MANIFEST.json",
+      "sha256": "a3d6a1b813dccd4191285cbb6650f483cd165e5a1accb7fc222eb43efbf12c84",
+      "bytes": 1742,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/boundary_rule.json",
+      "sha256": "20c7544edd4840ee5dc59ac72d67359f660d210b5c6f999524bf3763b2efb5a3",
+      "bytes": 2318574,
+      "allocated_bytes": 2322432,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/config.json",
+      "sha256": "1bc56e572f7ac6903b87c870c1d796d57a88046d9983b41c20544ee5f9d740c1",
+      "bytes": 2293,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/full_rule.npz",
+      "sha256": "58897d32747e213556540cdad1024d5b1a53bc4785982cba777add4d743de0f0",
+      "bytes": 85204602,
+      "allocated_bytes": 85209088,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/mesh_identity.json",
+      "sha256": "d5998fa838af838afdc1d65cf465f6f1cb9756756602ea2124279bb9916209e8",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/normal_orientation.json",
+      "sha256": "4458fb7f34b8d0af00a1fff815e4b34856a91627dd63b7424fc5afefd962f5ec",
+      "bytes": 3543362,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/reload_checks.json",
+      "sha256": "e648a5d419cf5c449b44dcda3aee882625ff5c350bb06b42b650d397ebfcbe86",
+      "bytes": 5801,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/reload_normal_orientation.json",
+      "sha256": "9efb8d61a9e23c07ab9b152b4653b049c956ec28f2b5215c56902138c57eea35",
+      "bytes": 3543359,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/result.json",
+      "sha256": "d6d988661cb40b338e0f4104da735c9f2b880d2cfcb18e3fdb672ffb022abae7",
+      "bytes": 435691,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re22p5/solution.sol",
+      "sha256": "4efc1c0f780c27475b1e0146565a73c4f53d6829236f8d804ad394482d25c6c2",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re22p5/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re22p5/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/EXPORT-MANIFEST.json",
+      "sha256": "04b6b256ce07dd9d3e648ecdb65e0bdea8832c97d7e22cf733e7ee21f0beae84",
+      "bytes": 1743,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/boundary_rule.json",
+      "sha256": "2d6dab7c8f8bfa3f24643eade2416caf48eed886289c1d7ad9beed86a9d7bd5e",
+      "bytes": 2318728,
+      "allocated_bytes": 2322432,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/config.json",
+      "sha256": "4bacc4fe5e1c16e396738fe679ab49729c7e60767cb765f190e859b5e77665da",
+      "bytes": 2294,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/full_rule.npz",
+      "sha256": "4b7975f1a82a114ee9161a9e3af5d6a8bc7c4c17d8942876a7cdf4c4e7e651ab",
+      "bytes": 85203630,
+      "allocated_bytes": 85209088,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/mesh_identity.json",
+      "sha256": "c010e63e15d838c4bc7382161014d4593cc60588de1e30d57e97a9a588d1894c",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/normal_orientation.json",
+      "sha256": "c9ce33485b6b23d144b85df304845a9e8e32b140fde92c7cd8e13712e151fbcf",
+      "bytes": 3543344,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/reload_checks.json",
+      "sha256": "f55c0d02c6ff1cb77115e92dc4123f2693679013c2bdfc4836e7d8d2aa813389",
+      "bytes": 5800,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/reload_normal_orientation.json",
+      "sha256": "6c035b230f56148901e8223411cdbfa6180f35d202c3c95263c80145ec870902",
+      "bytes": 3543364,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/result.json",
+      "sha256": "794e09b4ab6182a0d0b95faaff221de7ce2443294bd8db3daf3002ddce294947",
+      "bytes": 435716,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re23p75/solution.sol",
+      "sha256": "89998cb5ac1fb5aff5d28d9abe5795f2ad2a0d56b26f500b7d859aad64690c62",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re23p75/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re23p75/solution.sol"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/EXPORT-MANIFEST.json",
+      "sha256": "40bc50398494a3f70cabf0752701044c1a6ee8a9cf16bbf490d5c88f99c40862",
+      "bytes": 1740,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/EXPORT-MANIFEST.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/EXPORT-MANIFEST.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/boundary_rule.json",
+      "sha256": "08fc891d5dad26ba75d77fafdd8fedd3ae797096be5b4d514a67677c040fff03",
+      "bytes": 2318797,
+      "allocated_bytes": 2322432,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/boundary_rule.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/boundary_rule.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/config.json",
+      "sha256": "0e8d9a4b48218d7552385078f9ef56fce03cfc413e06187d76c2fed6a7b80e6b",
+      "bytes": 2294,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/config.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/config.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "allocated_bytes": 21581824,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/fe_layout.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/fe_layout.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/full_rule.npz",
+      "sha256": "53a2a8fe753eef1ca737b560df2f13fc576edea8016d2dcf0df0ae327c468563",
+      "bytes": 85204269,
+      "allocated_bytes": 85209088,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/full_rule.npz"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/full_rule.npz"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "allocated_bytes": 1417216,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/mesh.vol.bin"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/mesh.vol.bin"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/mesh_identity.json",
+      "sha256": "9d50bc0413b2028e1bbc8662bc7b5df0a27152a383c10dd1e51568e166a83472",
+      "bytes": 803,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/mesh_identity.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/mesh_identity.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/normal_orientation.json",
+      "sha256": "0668d2862373f6b3e1989b574068d8847936a4cfac8becd4eca286ecf32fc1df",
+      "bytes": 3543343,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/reload_checks.json",
+      "sha256": "6b3217825c311da1cec0fb24f05f74b81525618b43f94500d2559d57f2397101",
+      "bytes": 5795,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/reload_checks.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/reload_checks.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/reload_normal_orientation.json",
+      "sha256": "a5b1731f4a1d0d3e37af20ac6a6fd91d7511f83b57fbd1f60844cc1f8b5242e3",
+      "bytes": 3543337,
+      "allocated_bytes": 3547136,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/reload_normal_orientation.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/reload_normal_orientation.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/result.json",
+      "sha256": "aeaeff5cce00cc352ed15223a6a4d59d6b5914a5e54e6c4860e94b7e2755ff04",
+      "bytes": 435691,
+      "allocated_bytes": 438272,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/result.json"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/result.json"
+      }
+    },
+    {
+      "relative_path": "artifacts/training-materialize01/results/re25/solution.sol",
+      "sha256": "ce067bf32932aee8bdd51f0e45a31d44ba9574953245a6fa761310416893c1ee",
+      "bytes": 3497120,
+      "allocated_bytes": 3497984,
+      "nlink": 1,
+      "recovery": {
+        "kind": "accepted_full_cold_archive",
+        "descriptor": {
+          "manifest_source": "artifacts/training-materialize01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "5a6d2902659fc406feda01ca5f2d01c74c23e9411946c0ba6f46d4fb785fd6b5",
+          "member": "training-materialize01/results/re25/solution.sol"
+        },
+        "canonical_warm": "experiments/ns-obstacle-rom/artifacts/training-materialize01/results/re25/solution.sol"
+      }
+    },
+    {
+      "relative_path": "bank.py",
+      "sha256": "1c1e959e45740bbe3f6e860723730869e3c15b5d96e7d2536124a360d62207aa",
+      "bytes": 5194,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/bank.py"
+      }
+    },
+    {
+      "relative_path": "capacity/CAPACITY-AMENDMENT-CANDIDATE.json",
+      "sha256": "263ca735e3e19eaa14e9e9dd2deb13254fa53e45acd0630a66ea8e777fff2e07",
+      "bytes": 2258,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/capacity/CAPACITY-AMENDMENT-CANDIDATE.json"
+      }
+    },
+    {
+      "relative_path": "capacity/PREPARATION-PACKET.json",
+      "sha256": "acb0785699419729b9c4c57a9a5e1cd1270996c9d5082c1c9085b7ec0c612761",
+      "bytes": 3918,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/capacity/PREPARATION-PACKET.json"
+      }
+    },
+    {
+      "relative_path": "capacity/evidence/factor_reuse.json",
+      "sha256": "85734edc5497d3bde956d4b71179875819e80e777f41dd8fe421a0b3f0e706cd",
+      "bytes": 358442,
+      "allocated_bytes": 360448,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/capacity/evidence/factor_reuse.json"
+      }
+    },
+    {
+      "relative_path": "capacity/evidence/measurement.json",
+      "sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
+      "bytes": 9984,
+      "allocated_bytes": 12288,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/capacity/evidence/measurement.json"
+      }
+    },
+    {
+      "relative_path": "capacity/evidence/native_control_review.md",
+      "sha256": "8198c000885a5cd153c9317ec70d771e35357a5c5f5d1d9a526f4f9acc0992e3",
+      "bytes": 1829,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/capacity/evidence/native_control_review.md"
+      }
+    },
+    {
+      "relative_path": "capacity_context2d.py",
+      "sha256": "49191a21ebe5cfd4a6ff386d93a2fb32034b53f5989491c752bbacc8f791effe",
+      "bytes": 7275,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/capacity_context2d.py"
+      }
+    },
+    {
+      "relative_path": "component_factor.py",
+      "sha256": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+      "bytes": 2100,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/component_factor.py"
+      }
+    },
+    {
+      "relative_path": "datasets/fd1-training01-handoff/training.json",
+      "sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+      "bytes": 15088,
+      "allocated_bytes": 16384,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/datasets/fd1-training01-handoff/training.json"
+      }
+    },
+    {
+      "relative_path": "datasets/fd1-training01/FD1-COMMON-LIFT-ADMISSION.json",
+      "sha256": "a0176274fb5534efc23cbab5924e30a62b8495070fad1ced7ad5844edf89a2ca",
+      "bytes": 1323,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/datasets/fd1-training01/FD1-COMMON-LIFT-ADMISSION.json"
+      }
+    },
+    {
+      "relative_path": "datasets/fd1-training01/common-lift/common_stokes_lift.json",
+      "sha256": "2c30951e960e26cd18dc205b938d760dbb12d8901c6a6616901c120e2bb07f1f",
+      "bytes": 1189,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/datasets/fd1-training01/common-lift/common_stokes_lift.json"
+      }
+    },
+    {
+      "relative_path": "datasets/fd1-training01/common-lift/common_stokes_lift.npz",
+      "sha256": "47c1a9954361079cb94d438be8ee3237299e71c07d8c90d00f8a2f813efc95cb",
+      "bytes": 3354857,
+      "allocated_bytes": 3358720,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/datasets/fd1-training01/common-lift/common_stokes_lift.npz"
+      }
+    },
+    {
+      "relative_path": "dependencies.py",
+      "sha256": "34a32358b9179b7146745dddbdcf53df4de103157161badf651b376a9f0ce3ec",
+      "bytes": 6383,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/dependencies.py"
+      }
+    },
+    {
+      "relative_path": "fe_adapter.py",
+      "sha256": "62342db041444632d6dd95b8208a2751f7b218c4f64ac7db13ac69733b8dbf5f",
+      "bytes": 56285,
+      "allocated_bytes": 57344,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/fe_adapter.py"
+      }
+    },
+    {
+      "relative_path": "fe_algebra.py",
+      "sha256": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb",
+      "bytes": 6202,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/fe_algebra.py"
+      }
+    },
+    {
+      "relative_path": "fe_blocks.py",
+      "sha256": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+      "bytes": 8587,
+      "allocated_bytes": 12288,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/fe_blocks.py"
+      }
+    },
+    {
+      "relative_path": "fe_controls_a6.py",
+      "sha256": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32",
+      "bytes": 3531,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/fe_controls_a6.py"
+      }
+    },
+    {
+      "relative_path": "fe_pod_a6.py",
+      "sha256": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252",
+      "bytes": 16160,
+      "allocated_bytes": 16384,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/fe_pod_a6.py"
+      }
+    },
+    {
+      "relative_path": "fom_bridge2d.py",
+      "sha256": "04444d84d9bbb5a26a4f0a8f6f5e8b3e3b37ac4a427b65c81dedc5f18cfddeb3",
+      "bytes": 2737,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/fom_bridge2d.py"
+      }
+    },
+    {
+      "relative_path": "frozen_rom2d.py",
+      "sha256": "198f2209f1f814376ae222fbd3072d679b16a02eb5efef89403be638e635187b",
+      "bytes": 3847,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/frozen_rom2d.py"
+      }
+    },
+    {
+      "relative_path": "geometry.py",
+      "sha256": "fb329e874f8c9a82750d28afb18f541f6b02769b20bb1da6a7db519f0fda0252",
+      "bytes": 4007,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/geometry.py"
+      }
+    },
+    {
+      "relative_path": "interpolation.py",
+      "sha256": "ebaccf2fe6fda285a2255c25632e8000fd482ec621aa3fbb0c6c512be354d505",
+      "bytes": 1477,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/interpolation.py"
+      }
+    },
+    {
+      "relative_path": "metrics.py",
+      "sha256": "29998831737dfc21fcf1c0d8fee3ddbcf57f4a46cddd524ba4c243d45bc7aa87",
+      "bytes": 1638,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/metrics.py"
+      }
+    },
+    {
+      "relative_path": "native-body.sh",
+      "sha256": "c23d8a7138ec8d219606ecd8c8980bce62e712fb618483e960bf78a52c0f3ea0",
+      "bytes": 3435,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/native-body.sh"
+      }
+    },
+    {
+      "relative_path": "native.sh",
+      "sha256": "a26a80ccd2e8fa7620469a6dfa089cc97a1c0c473384664ba1e5121bef5d6973",
+      "bytes": 342,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/staging/fine-preparation01/native.sh"
+      }
+    },
+    {
+      "relative_path": "oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "bytes": 15221,
+      "allocated_bytes": 16384,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/oriented_normals.py"
+      }
+    },
+    {
+      "relative_path": "pilot2d.py",
+      "sha256": "f407d65b41b84b1b330240080df7bb817b89f1df6b836907059c9894406fa87d",
+      "bytes": 46814,
+      "allocated_bytes": 49152,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/pilot2d.py"
+      }
+    },
+    {
+      "relative_path": "pilot2d_blocked.py",
+      "sha256": "e624055f84c4495a199b648ac393ad435b0d477c9d104568b07d4a46f6c89dbd",
+      "bytes": 7027,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/pilot2d_blocked.py"
+      }
+    },
+    {
+      "relative_path": "point_store.py",
+      "sha256": "adfcf7f62f91518f364f33c1622361185e0f7b39ad1648aac4a8ec8fdbacd84e",
+      "bytes": 8788,
+      "allocated_bytes": 12288,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/point_store.py"
+      }
+    },
+    {
+      "relative_path": "preparation_launch2d.py",
+      "sha256": "162c66d23e2a558dd9446e5aa2f328e07dcf144ee35a5a09309c7f02beab367c",
+      "bytes": 2989,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/preparation_launch2d.py"
+      }
+    },
+    {
+      "relative_path": "prepare2d.py",
+      "sha256": "a10d42e1e728dda57ea15d826d39f1f97b35f6352ed205f510b6fded6137056f",
+      "bytes": 7867,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/prepare2d.py"
+      }
+    },
+    {
+      "relative_path": "primary_volume.py",
+      "sha256": "b182ac101028332df36b8dd377a983bee89ff0e967b999fd7df187c9cd3eb97f",
+      "bytes": 17143,
+      "allocated_bytes": 20480,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/primary_volume.py"
+      }
+    },
+    {
+      "relative_path": "quadrature.py",
+      "sha256": "154d2d6e6f13e244d7e8ce7a823f7f9ac503b1c433ad0113c44bc61e8f6ecacf",
+      "bytes": 5286,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/quadrature.py"
+      }
+    },
+    {
+      "relative_path": "quadrature_blocked.py",
+      "sha256": "42cffd917f077a4e77860353b5cf1fb896ed0e40e691b6b462679172df196311",
+      "bytes": 11731,
+      "allocated_bytes": 12288,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/quadrature_blocked.py"
+      }
+    },
+    {
+      "relative_path": "qualification.py",
+      "sha256": "b87390af1df8bc5a526af5386e1779e2080f7d12f86e2a1de00a66ff6af648a6",
+      "bytes": 1875,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/qualification.py"
+      }
+    },
+    {
+      "relative_path": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687,
+      "allocated_bytes": 4096,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/scalars.py"
+      }
+    },
+    {
+      "relative_path": "solver.py",
+      "sha256": "8d9681d4691a2f06187d1d19dcc36b7bbfbb967d921dc40c5586d5a09b6cdc43",
+      "bytes": 4450,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/solver.py"
+      }
+    },
+    {
+      "relative_path": "spaces.py",
+      "sha256": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee",
+      "bytes": 10737,
+      "allocated_bytes": 12288,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/spaces.py"
+      }
+    },
+    {
+      "relative_path": "timing.py",
+      "sha256": "233118be63a0a8095212fdf9a0b7348051d5a664c53fa1bf6582b7608a5f6375",
+      "bytes": 5236,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/timing.py"
+      }
+    },
+    {
+      "relative_path": "train_bank.py",
+      "sha256": "a9e0ad22e5e76882499caecb8c30d8ad97f653f06f8f2c317166aff4f16987a1",
+      "bytes": 6704,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/train_bank.py"
+      }
+    },
+    {
+      "relative_path": "training_evidence.py",
+      "sha256": "18c39aea669f06ce079d7d98acff2c17ecb42ee371aba1ab8dea9626180e6bbf",
+      "bytes": 4569,
+      "allocated_bytes": 8192,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/training_evidence.py"
+      }
+    },
+    {
+      "relative_path": "weak.py",
+      "sha256": "dcf73d9d0dbc7c4e1d7860cfd0ccdae0edbf6521421e6bf761af23d28fa72335",
+      "bytes": 11934,
+      "allocated_bytes": 12288,
+      "nlink": 1,
+      "recovery": {
+        "kind": "committed_source",
+        "source_commit": "b01d3d4a5",
+        "mirror_commit": "df7a5b9c7",
+        "path": "experiments/ns-obstacle-rom/weak.py"
+      }
+    }
+  ],
+  "logical_bytes": 1098144827,
+  "single_link_allocated_bytes": 1098555392,
+  "declared_input_count": 154,
+  "generated_extra_count": 5,
+  "source_and_recovery_verified": true,
+  "deletion_authorized": false,
+  "fresh_free_bytes": 12858163200,
+  "archive_measurement": {
+    "bytes": 1112224591,
+    "sha256": "beed71a7bb266d37b02670c49382e5b9716ce055dca68cd04da4c313f3ca7912"
+  },
+  "collection_two_archive_plus_64MiB_plus_other256MiB_plus_10GiB": 13297411742
+}

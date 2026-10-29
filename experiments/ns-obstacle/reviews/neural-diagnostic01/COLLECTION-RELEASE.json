@@ -1,0 +1,21 @@
+{
+  "schema": "ns-obstacle-neural-diagnostic-collection-release-v1",
+  "job_id": 6640846,
+  "archive_sha256": "eece7b3395ff06c12e149de618f9a6b798265b867389aea351dd5cbbd338ff5c",
+  "archive_bytes": 156598633,
+  "logical_files": 107,
+  "logical_expansion_bytes": 157198529,
+  "mode": "Archive-only full original-file and ledger verification; bounded metadata extraction, no scientific expansion",
+  "maximum_metadata_bytes": 16777216,
+  "minimum_free_before_collection_bytes": 11335828178,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "measurement_sha256": "51e8dbbd108dbe6745ddb8be9b82e2af94504910f4372fe3098905086ab82320",
+  "requirements": [
+    "Fresh sufficient free-space guard and serialized bulkcollection/Git writes",
+    "Verify whole archive and all107 originals against immutable ledger",
+    "Verify chunks before retiring transport; preserve exactretentionmetadata and bothsource/mirror backups",
+    "Independent full durable review before remote cleanup or final scientific acceptance"
+  ],
+  "remote_cleanup_authorized": false
+}

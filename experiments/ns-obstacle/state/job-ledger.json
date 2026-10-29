@@ -1534,8 +1534,8 @@
       "source_commit": "424fab54de041643b15842e81811a4b8b2963c24",
       "release_sha256": "16cd1ab87e8d0dd6e7174a0b51444db13635bbd43d544260eeda8e0438833b3c",
       "source_manifest_sha256": "68e0ba42fe6e750e0c6b962754fa1b662892b22505d7bbe202d7e8ab9e947af3",
-      "state": "PENDING",
-      "state_last_observed": "PENDING",
+      "state": "COMPLETED",
+      "state_last_observed": "COMPLETED",
       "gpus": 1,
       "allocation_seconds_reserved": 900,
       "single_submission": true,
@@ -1543,16 +1543,20 @@
       "training_authorized": false,
       "original_representation_gate_passed": false,
       "diagnostic_exception_user_authorized": true,
-      "submitted_utc": "2026-10-29T17:11:35.782903+00:00"
+      "submitted_utc": "2026-10-29T17:11:35.782903+00:00",
+      "elapsed_seconds": 303,
+      "allocated_gpu_hours": 0.08416666666666667,
+      "exit_code": "0:0",
+      "node": "pax063",
+      "execution_report": "Both actual neural ROM solves reachedstationarity but failed accuracy/physics; independentrawreview anddurability pending."
     }
   ],
   "live_job_ids": [
-    6638632,
-    6640846
+    6638632
   ],
-  "completed_gpu_hours": 5.484166666666667,
+  "completed_gpu_hours": 5.568333333333333,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
-  "total_allocated_gpu_hours_completed": 5.484166666666667,
+  "total_allocated_gpu_hours_completed": 5.568333333333333,
   "last_accounting_utc": "2026-10-29T15:09:52.617281+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

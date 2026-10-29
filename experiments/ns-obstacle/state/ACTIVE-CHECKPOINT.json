@@ -1,8 +1,7 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
   "numerical_jobs": [
-    6638632,
-    6640846
+    6638632
   ],
   "active_external_consults": [],
   "pending": [
@@ -10,7 +9,7 @@
     "Recover missing mandatory POD controls within original1200s failure reserve",
     "Execute restricted FOM screen, freeze choices, validation/paired timing and final reporting"
   ],
-  "completed_allocated_gpu_hours": 5.484166666666667,
+  "completed_allocated_gpu_hours": 5.568333333333333,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -190,7 +189,7 @@
   "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released",
   "legacy_duplicate_retirement_result": "Exact479-file owner retirement complete after fresh checks; lifecycle in reference staging/LEGACY-DUPLICATE-RETIREMENT/LIFECYCLE.json; observed free-space gain1,861,390,336bytes; protected inputs preserved.",
   "FOM_candidate_lift_execution": "Job6631950 completed25s exit0:0; independent raw and durable retention review passed. See reviews/FOM-CANDIDATE-LIFT-RESULT-REVIEW.json. No eligibility or training release.",
-  "ROM_actual_charged_seconds": 4696,
+  "ROM_actual_charged_seconds": 4999,
   "reference_infrastructure_actual_charged_seconds": 15047,
   "reference_admission": {
     "passed": true,
@@ -200,7 +199,7 @@
     "original_domain_gate": "failed",
     "training_released": true
   },
-  "next_action": "Monitor actual neural diagnostic6640846; audit predictions and produce reference comparisons; pending POD6638632 remains separate.",
+  "next_action": "Finish actual neural result/retention review and prediction plots; POD recovery6638632 remains queued.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -216,8 +215,7 @@
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
   "live_job_ids": [
-    6638632,
-    6640846
+    6638632
   ],
   "materialization_submission": {
     "job_id": 6632930,
@@ -425,7 +423,14 @@
     "original_bank_gate_passed": false,
     "validation_allowed": false,
     "job_id": 6640846,
-    "state": "PENDING",
-    "actual_full_preflight_passed": true
+    "state": "COMPLETED",
+    "actual_full_preflight_passed": true,
+    "elapsed_seconds": 303,
+    "actual_cases": 2,
+    "solver_statuses": [
+      "stationary",
+      "stationary"
+    ],
+    "accuracy_targets_passed": false
   }
 }

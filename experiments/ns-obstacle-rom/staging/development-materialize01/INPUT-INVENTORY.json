@@ -1,0 +1,724 @@
+{
+  "schema": "ns-obstacle-development-materialization-input-inventory-v1",
+  "files": [
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+      "destination": "inputs/reference/re16p875/PRIMARY-REFERENCE.json",
+      "sha256": "c6a4e6adfa73ad1df8f020fd981f112892beddd06b3b8554b9e3ddf209d96763",
+      "bytes": 5351,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+      "destination": "inputs/reference/re16p875/boundary_rule.json",
+      "sha256": "e4296bdc3942d04571171948c2aa015a778ff40cf94b4e03bb49597f4da9ce5b",
+      "bytes": 2318242,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/config.json",
+      "destination": "inputs/reference/re16p875/config.json",
+      "sha256": "5cdf48563a61b891f97fab5fd3902433ecd7bf95485e10c6200f1290e3e78edd",
+      "bytes": 2299,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+      "destination": "inputs/reference/re16p875/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+      "destination": "inputs/reference/re16p875/geometry-cache/boundary/arrays.npz",
+      "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+      "bytes": 64608,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+      "destination": "inputs/reference/re16p875/geometry-cache/boundary/cache.json",
+      "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+      "bytes": 32961,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+        "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+      "destination": "inputs/reference/re16p875/geometry-cache/volume/arrays.npz",
+      "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+      "bytes": 16082501,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+      "destination": "inputs/reference/re16p875/geometry-cache/volume/cache.json",
+      "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+      "bytes": 1090228,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+        "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+      "destination": "inputs/reference/re16p875/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+      "destination": "inputs/reference/re16p875/mesh_identity.json",
+      "sha256": "77792244db587e0e62320f571f1a92a7c9d45f9aa72b871f23f039818da6943e",
+      "bytes": 803,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+      "destination": "inputs/reference/re16p875/normal_orientation.json",
+      "sha256": "2e3c07f7f425320ae75568d589fe17d7c47c50d1682f8d5afa57c7ee34d0ad36",
+      "bytes": 3543341,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+      "destination": "inputs/reference/re16p875/primary_coefficients.npz",
+      "sha256": "7b9d250f7a16386d544935fc77ebf7adebb24f5456ddd8fa308eafad1dd9434e",
+      "bytes": 6703342,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+      "destination": "inputs/reference/re16p875/reload_checks.json",
+      "sha256": "16f9fa1504df67891f4f5948e4b53ad0194fea5a17d62227538e88edd7af668f",
+      "bytes": 5799,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+      "destination": "inputs/reference/re16p875/reload_normal_orientation.json",
+      "sha256": "e8ef6fd955e3ad3774393147bdbb69a414aa8ed3fe11b7c9e2e48a5fe34c92b2",
+      "bytes": 3543362,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/result.json",
+      "destination": "inputs/reference/re16p875/result.json",
+      "sha256": "c296f4fe4d88a5744c70da53b26e84e0666df5e0194fbc6ad31b387b0ed8d661",
+      "bytes": 435680,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/solution.sol",
+      "destination": "inputs/reference/re16p875/solution.sol",
+      "sha256": "a95b5c61145b5a7e172e399153756c2d3c9c90cd83c4b3dea6de0fd918abed27",
+      "bytes": 3497120,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/stokes.sol",
+      "destination": "inputs/reference/re16p875/stokes.sol",
+      "sha256": "4207e8ce258f057f882a89a8673da9681a0620aac57f76750d9930d3c00d5710",
+      "bytes": 3497120,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+      "destination": "inputs/reference/re16p875/EXPORT-MANIFEST.json",
+      "sha256": "438caf6c6910a9a006bf5ef8ccde8f3ff16ffc9dbc76cfdf96f45963c85af91e",
+      "bytes": 13385,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+      "destination": "inputs/reference/re23p125/PRIMARY-REFERENCE.json",
+      "sha256": "00930f93b6855b62019a111ee4f6952c3d9c1fbb98c41d5c671b7d5ecfd4eb96",
+      "bytes": 5351,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+      "destination": "inputs/reference/re23p125/boundary_rule.json",
+      "sha256": "237679aafc1364bd2450861308347f0e2a8ee3c0e417c4e7e02027327ae62684",
+      "bytes": 2318589,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/config.json",
+      "destination": "inputs/reference/re23p125/config.json",
+      "sha256": "01d847ceb6cb3073954c3bb53f0d849c83c41cc8e33c90dcd44d77e680130692",
+      "bytes": 2299,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+      "destination": "inputs/reference/re23p125/fe_layout.json",
+      "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+      "bytes": 21581066,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+      "destination": "inputs/reference/re23p125/geometry-cache/boundary/arrays.npz",
+      "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+      "bytes": 64608,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+      "destination": "inputs/reference/re23p125/geometry-cache/boundary/cache.json",
+      "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+      "bytes": 32961,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+        "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+      "destination": "inputs/reference/re23p125/geometry-cache/volume/arrays.npz",
+      "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+      "bytes": 16082501,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+      "destination": "inputs/reference/re23p125/geometry-cache/volume/cache.json",
+      "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+      "bytes": 1090228,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+        "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+      "destination": "inputs/reference/re23p125/mesh.vol.bin",
+      "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "bytes": 1413980,
+      "archive_source": {
+        "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+        "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+        "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+      },
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+      "destination": "inputs/reference/re23p125/mesh_identity.json",
+      "sha256": "d347ec9e0260ebb7cd1899af0641edc31f1f0c737dc66a724bc4ac0de850a757",
+      "bytes": 803,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+      "destination": "inputs/reference/re23p125/normal_orientation.json",
+      "sha256": "604795eb3d5bc8563b766a6f36de817f9a69c3d60f336b1ee349cc911ec84ead",
+      "bytes": 3543361,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+      "destination": "inputs/reference/re23p125/primary_coefficients.npz",
+      "sha256": "52c11cc2c48413c52007e3739e38da6fbcfc6f7845a3e60d27638577ec77e277",
+      "bytes": 6703470,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+      "destination": "inputs/reference/re23p125/reload_checks.json",
+      "sha256": "2903529ba5b0717cb3fdd2e760133b3b8e99051d35fdf6a95d0393218ece46b6",
+      "bytes": 5800,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+      "destination": "inputs/reference/re23p125/reload_normal_orientation.json",
+      "sha256": "caff165dedf9c0c46b8f9cc0a006c064bb45267771820d6ff1db78ba43a9c200",
+      "bytes": 3543342,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/result.json",
+      "destination": "inputs/reference/re23p125/result.json",
+      "sha256": "c2ecaebbaeb6dd23386ea9f74121fac77b07696881eb6a54cf4ea1dd05ad85dc",
+      "bytes": 435689,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/solution.sol",
+      "destination": "inputs/reference/re23p125/solution.sol",
+      "sha256": "041907b359e7b3c2ca5208782112b075aa4713423981465af4bae360fa68477e",
+      "bytes": 3497120,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/stokes.sol",
+      "destination": "inputs/reference/re23p125/stokes.sol",
+      "sha256": "7917b3aa19586349b95771ffe9e73f0007947620cdb8603057c4bea2396e55cd",
+      "bytes": 3497120,
+      "owner": "reference"
+    },
+    {
+      "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+      "destination": "inputs/reference/re23p125/EXPORT-MANIFEST.json",
+      "sha256": "2533c0d6713237beb7844969ced4eb179fc6c06bcd4f3f5713eb4ffce2fcd354",
+      "bytes": 13385,
+      "owner": "reference"
+    },
+    {
+      "owner": "rom",
+      "source": "datasets/fd1-training01/FD1-REFERENCE-ADMISSION.json",
+      "destination": "inputs/FD1-REFERENCE-ADMISSION.json",
+      "sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+      "bytes": 9983
+    },
+    {
+      "owner": "rom",
+      "source": "FD1-SCOPE-CONTRACT.json",
+      "destination": "FD1-SCOPE-CONTRACT.json",
+      "sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "bytes": 1116
+    },
+    {
+      "owner": "rom",
+      "source": "MODEL-CONTRACT.json",
+      "destination": "MODEL-CONTRACT.json",
+      "sha256": "e049b9db7d53eb04a823e9a13b17d30b8ea106c42df3fe57caa6ce368ee841dd",
+      "bytes": 9739
+    },
+    {
+      "owner": "rom",
+      "source": "bank.py",
+      "destination": "bank.py",
+      "sha256": "1c1e959e45740bbe3f6e860723730869e3c15b5d96e7d2536124a360d62207aa",
+      "bytes": 5194
+    },
+    {
+      "owner": "rom",
+      "source": "capacity_context2d.py",
+      "destination": "capacity_context2d.py",
+      "sha256": "49191a21ebe5cfd4a6ff386d93a2fb32034b53f5989491c752bbacc8f791effe",
+      "bytes": 7275
+    },
+    {
+      "owner": "rom",
+      "source": "component_factor.py",
+      "destination": "component_factor.py",
+      "sha256": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+      "bytes": 2100
+    },
+    {
+      "owner": "rom",
+      "source": "development_handoff_launch2d.py",
+      "destination": "development_handoff_launch2d.py",
+      "sha256": "42a33b526ee8e9c93f7d8d9426a48a46875e8af4eb9b441d0ebb4a06da8b0cdf",
+      "bytes": 2584
+    },
+    {
+      "owner": "rom",
+      "source": "fe_adapter.py",
+      "destination": "fe_adapter.py",
+      "sha256": "62342db041444632d6dd95b8208a2751f7b218c4f64ac7db13ac69733b8dbf5f",
+      "bytes": 56285
+    },
+    {
+      "owner": "rom",
+      "source": "fe_algebra.py",
+      "destination": "fe_algebra.py",
+      "sha256": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb",
+      "bytes": 6202
+    },
+    {
+      "owner": "rom",
+      "source": "fe_blocks.py",
+      "destination": "fe_blocks.py",
+      "sha256": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+      "bytes": 8587
+    },
+    {
+      "owner": "rom",
+      "source": "fe_controls_a6.py",
+      "destination": "fe_controls_a6.py",
+      "sha256": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32",
+      "bytes": 3531
+    },
+    {
+      "owner": "rom",
+      "source": "fe_pod_a6.py",
+      "destination": "fe_pod_a6.py",
+      "sha256": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252",
+      "bytes": 16160
+    },
+    {
+      "owner": "rom",
+      "source": "fom_bridge2d.py",
+      "destination": "fom_bridge2d.py",
+      "sha256": "04444d84d9bbb5a26a4f0a8f6f5e8b3e3b37ac4a427b65c81dedc5f18cfddeb3",
+      "bytes": 2737
+    },
+    {
+      "owner": "rom",
+      "source": "frozen_rom2d.py",
+      "destination": "frozen_rom2d.py",
+      "sha256": "198f2209f1f814376ae222fbd3072d679b16a02eb5efef89403be638e635187b",
+      "bytes": 3847
+    },
+    {
+      "owner": "rom",
+      "source": "geometry.py",
+      "destination": "geometry.py",
+      "sha256": "fb329e874f8c9a82750d28afb18f541f6b02769b20bb1da6a7db519f0fda0252",
+      "bytes": 4007
+    },
+    {
+      "owner": "rom",
+      "source": "handoff2d.py",
+      "destination": "handoff2d.py",
+      "sha256": "05e0d802050b25f513cd9880aee4697cf6262946cb217ac1b8650c9f3e8ad6e2",
+      "bytes": 13294
+    },
+    {
+      "owner": "rom",
+      "source": "handoff_primary_worker.py",
+      "destination": "handoff_primary_worker.py",
+      "sha256": "1bcce56ada4e367064e723a8e205c4177016a302e50f24a475502d0f2b536bf2",
+      "bytes": 2780
+    },
+    {
+      "owner": "rom",
+      "source": "interpolation.py",
+      "destination": "interpolation.py",
+      "sha256": "ebaccf2fe6fda285a2255c25632e8000fd482ec621aa3fbb0c6c512be354d505",
+      "bytes": 1477
+    },
+    {
+      "owner": "rom",
+      "source": "materialize_reference2d.py",
+      "destination": "materialize_reference2d.py",
+      "sha256": "5acc40d2521ee254782e526cf9db1ae1e5daee9bd3850604f9e82653e5f3c164",
+      "bytes": 13582
+    },
+    {
+      "owner": "rom",
+      "source": "metrics.py",
+      "destination": "metrics.py",
+      "sha256": "29998831737dfc21fcf1c0d8fee3ddbcf57f4a46cddd524ba4c243d45bc7aa87",
+      "bytes": 1638
+    },
+    {
+      "owner": "rom",
+      "source": "oriented_normals.py",
+      "destination": "oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "bytes": 15221
+    },
+    {
+      "owner": "rom",
+      "source": "pilot2d.py",
+      "destination": "pilot2d.py",
+      "sha256": "f407d65b41b84b1b330240080df7bb817b89f1df6b836907059c9894406fa87d",
+      "bytes": 46814
+    },
+    {
+      "owner": "rom",
+      "source": "pilot2d_blocked.py",
+      "destination": "pilot2d_blocked.py",
+      "sha256": "e624055f84c4495a199b648ac393ad435b0d477c9d104568b07d4a46f6c89dbd",
+      "bytes": 7027
+    },
+    {
+      "owner": "rom",
+      "source": "point_store.py",
+      "destination": "point_store.py",
+      "sha256": "adfcf7f62f91518f364f33c1622361185e0f7b39ad1648aac4a8ec8fdbacd84e",
+      "bytes": 8788
+    },
+    {
+      "owner": "rom",
+      "source": "preparation_launch2d.py",
+      "destination": "preparation_launch2d.py",
+      "sha256": "162c66d23e2a558dd9446e5aa2f328e07dcf144ee35a5a09309c7f02beab367c",
+      "bytes": 2989
+    },
+    {
+      "owner": "rom",
+      "source": "prepare2d.py",
+      "destination": "prepare2d.py",
+      "sha256": "a10d42e1e728dda57ea15d826d39f1f97b35f6352ed205f510b6fded6137056f",
+      "bytes": 7867
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/SOURCE.json",
+      "destination": "primary_native/SOURCE.json",
+      "sha256": "279c6782dd1e1007fb2978c472b9feb56221eeb13435117b2c537ff7bfb665a2",
+      "bytes": 1007
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/fom.py",
+      "destination": "primary_native/fom.py",
+      "sha256": "3267a70a91c3e9620e2545af78edb20ce7f55566020d3b687cb65a25bbcfb121",
+      "bytes": 41678
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/immutable_rule.py",
+      "destination": "primary_native/immutable_rule.py",
+      "sha256": "65154a33506a5e71996ea4800a9422df76900062dffbd3f9fd70eea6d5c2b930",
+      "bytes": 10979
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/oriented_normals.py",
+      "destination": "primary_native/oriented_normals.py",
+      "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+      "bytes": 15221
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/preflight.py",
+      "destination": "primary_native/preflight.py",
+      "sha256": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+      "bytes": 10414
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/reference_export.py",
+      "destination": "primary_native/reference_export.py",
+      "sha256": "32c72e6a4f1fe4224f00c750e87ddf1792aceb4d9aaf0ca7d4e7f67814c28019",
+      "bytes": 31265
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/reference_primary.py",
+      "destination": "primary_native/reference_primary.py",
+      "sha256": "d7925bff32da62ae433c1a8663e7fec0765534c0075acb82ce2a13a02f842f1c",
+      "bytes": 12978
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/reference_scope.py",
+      "destination": "primary_native/reference_scope.py",
+      "sha256": "3b6e6396e8d98a88d1000af20c430df82464fbb592f1a6cbbdb15b69d5bb0981",
+      "bytes": 1201
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/scalars.py",
+      "destination": "primary_native/scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
+      "owner": "rom",
+      "source": "primary_native/shared_lift.py",
+      "destination": "primary_native/shared_lift.py",
+      "sha256": "5d28c86cec7017ad5ac108ee3834fb45598a3d10963a4021a0a94afc9ef73b66",
+      "bytes": 6948
+    },
+    {
+      "owner": "rom",
+      "source": "primary_volume.py",
+      "destination": "primary_volume.py",
+      "sha256": "b182ac101028332df36b8dd377a983bee89ff0e967b999fd7df187c9cd3eb97f",
+      "bytes": 17143
+    },
+    {
+      "owner": "rom",
+      "source": "quadrature.py",
+      "destination": "quadrature.py",
+      "sha256": "154d2d6e6f13e244d7e8ce7a823f7f9ac503b1c433ad0113c44bc61e8f6ecacf",
+      "bytes": 5286
+    },
+    {
+      "owner": "rom",
+      "source": "quadrature_blocked.py",
+      "destination": "quadrature_blocked.py",
+      "sha256": "42cffd917f077a4e77860353b5cf1fb896ed0e40e691b6b462679172df196311",
+      "bytes": 11731
+    },
+    {
+      "owner": "rom",
+      "source": "qualification.py",
+      "destination": "qualification.py",
+      "sha256": "b87390af1df8bc5a526af5386e1779e2080f7d12f86e2a1de00a66ff6af648a6",
+      "bytes": 1875
+    },
+    {
+      "owner": "rom",
+      "source": "scalars.py",
+      "destination": "scalars.py",
+      "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+      "bytes": 1687
+    },
+    {
+      "owner": "rom",
+      "source": "solver.py",
+      "destination": "solver.py",
+      "sha256": "8d9681d4691a2f06187d1d19dcc36b7bbfbb967d921dc40c5586d5a09b6cdc43",
+      "bytes": 4450
+    },
+    {
+      "owner": "rom",
+      "source": "spaces.py",
+      "destination": "spaces.py",
+      "sha256": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee",
+      "bytes": 10737
+    },
+    {
+      "owner": "rom",
+      "source": "timing.py",
+      "destination": "timing.py",
+      "sha256": "233118be63a0a8095212fdf9a0b7348051d5a664c53fa1bf6582b7608a5f6375",
+      "bytes": 5236
+    },
+    {
+      "owner": "rom",
+      "source": "train_bank.py",
+      "destination": "train_bank.py",
+      "sha256": "a9e0ad22e5e76882499caecb8c30d8ad97f653f06f8f2c317166aff4f16987a1",
+      "bytes": 6704
+    },
+    {
+      "owner": "rom",
+      "source": "training_evidence.py",
+      "destination": "training_evidence.py",
+      "sha256": "18c39aea669f06ce079d7d98acff2c17ecb42ee371aba1ab8dea9626180e6bbf",
+      "bytes": 4569
+    },
+    {
+      "owner": "rom",
+      "source": "validation2d.py",
+      "destination": "validation2d.py",
+      "sha256": "b527074bae16fe13ba91cf4d7dc77f9829291b7b614230f8df9aba48f2636069",
+      "bytes": 5182
+    },
+    {
+      "owner": "rom",
+      "source": "weak.py",
+      "destination": "weak.py",
+      "sha256": "dcf73d9d0dbc7c4e1d7860cfd0ccdae0edbf6521421e6bf761af23d28fa72335",
+      "bytes": 11934
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/DEPENDENCIES.json",
+      "destination": "DEPENDENCIES.json",
+      "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb",
+      "bytes": 4432
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/HANDOFF-PLAN.json",
+      "destination": "HANDOFF-PLAN.json",
+      "sha256": "f7c88ddaab9dacfca0ae373bbbaf86f019a0b12ff7b4a0cf19d4032cf1f9903a",
+      "bytes": 755
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/REFERENCE-CLOSURE-re16p875.json",
+      "destination": "REFERENCE-CLOSURE-re16p875.json",
+      "sha256": "266319962fc7b9bae8788b8fb7f2275363dd17f8f31517d287ecc985e402953b",
+      "bytes": 8513
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/REFERENCE-CLOSURE-re23p125.json",
+      "destination": "REFERENCE-CLOSURE-re23p125.json",
+      "sha256": "044df5fd5ca24480b10b82f3c0b35b92ea38953025d8a8b177e16375c8b7f9f8",
+      "bytes": 8513
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/REPAIR.json",
+      "destination": "REPAIR.json",
+      "sha256": "341fffc8c5b24cfcb6a9da8e93d4a65325368ac18e9b5898e5aca658b5ed8e95",
+      "bytes": 154
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/dependencies.py",
+      "destination": "dependencies.py",
+      "sha256": "34a32358b9179b7146745dddbdcf53df4de103157161badf651b376a9f0ce3ec",
+      "bytes": 6383
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/native-body.sh",
+      "destination": "native-body.sh",
+      "sha256": "605f085314ecba16abce657febe2f90aedd95e53e108ad1d1db5e503776595f9",
+      "bytes": 3504
+    },
+    {
+      "owner": "rom",
+      "source": "staging/development-materialize01/native.sh",
+      "destination": "native.sh",
+      "sha256": "5fda41a61b26876fcedebe4227bd8fe0989fb0b0c46fdc334c49747a773fe5ae",
+      "bytes": 340
+    }
+  ],
+  "handoff_source_sha256": "ef0fb7638f05a7aea40a16a1267f18d06f9bad3336451bd9f88cd4adaa5c8353",
+  "launcher_sha256": "42a33b526ee8e9c93f7d8d9426a48a46875e8af4eb9b441d0ebb4a06da8b0cdf",
+  "builder_sha256": "dcae576974ebfa245cb32c572a6d291564aa382eea9842e988c13f9fcb2fae4f",
+  "input_closures": [
+    {
+      "Re": 16.875,
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re16p875/ADOPTED-RUNTIME-CLOSURE.json",
+      "sha256": "266319962fc7b9bae8788b8fb7f2275363dd17f8f31517d287ecc985e402953b"
+    },
+    {
+      "Re": 23.125,
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re23p125/ADOPTED-RUNTIME-CLOSURE.json",
+      "sha256": "044df5fd5ca24480b10b82f3c0b35b92ea38953025d8a8b177e16375c8b7f9f8"
+    }
+  ]
+}

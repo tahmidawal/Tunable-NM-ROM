@@ -1,0 +1,32 @@
+{
+  "schema": "ns-obstacle-two-case-development-materialization-proposal-v1",
+  "execution_released": false,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01",
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01/results/population",
+  "allocation_seconds": 120,
+  "outer_timeout_seconds": 110,
+  "outer_kill_grace_seconds": 5,
+  "debit_from_existing_development_reservation_seconds": 120,
+  "remaining_development_reservation_seconds": 3480,
+  "fom_reservation_unchanged_seconds": 2160,
+  "input_bytes": 128176191,
+  "input_inventory_sha256": "cec6c210d366c834d40624a9e81426042981b5d7ba7f6d593c980f714a9f788f",
+  "handoff_plan_sha256": "f7c88ddaab9dacfca0ae373bbbaf86f019a0b12ff7b4a0cf19d4032cf1f9903a",
+  "handoff_source_sha256": "ef0fb7638f05a7aea40a16a1267f18d06f9bad3336451bd9f88cd4adaa5c8353",
+  "launcher_sha256": "42a33b526ee8e9c93f7d8d9426a48a46875e8af4eb9b441d0ebb4a06da8b0cdf",
+  "remote_workspace_archive_envelope_bytes": 4294967296,
+  "local_floor_bytes": 10737418240,
+  "other_local_reserved_bytes": 268435456,
+  "staging_proposal": "Direct upload from every already verified canonical warm file; no duplicate bulk local staging tree. Missing/changed input stops before submission. No automatic cold fallback or unreserved cold extraction.",
+  "cold_recovery_bindings_preserved": true,
+  "bulk_copied_or_reconstructed": false,
+  "new_native_or_training_work_executed": false,
+  "projection_basis": "Actual nine-case materialization103s including setup; two fresh children use the unchanged worker and the same full rule.120s is a hard bound, not a completion guarantee.",
+  "output_review_required_before_ROM_or_FOM_use": true,
+  "collection_requires_actual_measurement": true,
+  "common_geometry_later_source": {
+    "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/bank-fit01/inputs/prepared/volume/geometry.npz",
+    "sha256": "45bfc1aef3f47975dc3116da9429feb3eb0a7d4232d42fa8da33ab267beb6bcc"
+  },
+  "fom_scope": "Later independently reviewed feasible subset of six existing mesh/order configs at fixed nonlinear tolerance1e-10; no stopping-tolerance optimization or unrestricted tuned-FOM claim."
+}

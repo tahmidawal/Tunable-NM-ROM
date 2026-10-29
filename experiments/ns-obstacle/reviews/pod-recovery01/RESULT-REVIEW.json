@@ -1,0 +1,434 @@
+{
+  "job_id": 6638632,
+  "allocated_seconds": 909,
+  "development_scientific_audit_passed": true,
+  "development_accuracy_checks_passed": true,
+  "validation_performed": false,
+  "neural_success": false,
+  "scope": "Recovered POD4/POD8 development outputs; interpolation controls explicitly separate from PDE solves.",
+  "audit_source_commit": "1915b59aa",
+  "audit_mirror_commit": "c72de71bd",
+  "audit_result_sha256": "99d978c33da28da67b8e0c7b480667369f79b2a4a4a3973e2702486311c710c9",
+  "cases": [
+    {
+      "key": "POD_r4_16.875_exact_tensor_weak_LS_raw_invocation",
+      "Re": 16.875,
+      "rank": 4,
+      "method": "exact_tensor_weak_LS",
+      "metrics": {
+        "velocity_relative": 0.00010252754890692716,
+        "pressure_scaled": 0.00017523408022424066,
+        "drag_relative": 3.140997495387738e-05,
+        "transverse_absolute": 7.688737319586428e-05,
+        "mass": 3.791971203162234e-08,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 1.521135088075748e-05,
+        "velocity_gradient_scaled": 0.0003592056619280775
+      },
+      "force": [
+        6.118108808002427,
+        0.020260428349220712
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 8.7234159681491e-09,
+      "full_weak_LS_gradient_norm": 1.2071484547918928e-13,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r4_16.875_coefficient_PCHIP_raw_invocation",
+      "Re": 16.875,
+      "rank": 4,
+      "method": "coefficient_PCHIP",
+      "metrics": {
+        "velocity_relative": 6.0861581097529765e-06,
+        "pressure_scaled": 8.500108682251078e-05,
+        "drag_relative": 5.690033309038737e-05,
+        "transverse_absolute": 0.00010353895073056049,
+        "mass": 0.0,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 1.5073348181171047e-05,
+        "velocity_gradient_scaled": 2.137016897675196e-05
+      },
+      "force": [
+        6.117952850319166,
+        0.020287079926755408
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 8.191244806319432e-08,
+      "full_weak_LS_gradient_norm": 0.00029483890001689647,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r4_16.875_mixed_Galerkin_raw_invocation",
+      "Re": 16.875,
+      "rank": 4,
+      "method": "mixed_Galerkin",
+      "metrics": {
+        "velocity_relative": 4.622389462123437e-06,
+        "pressure_scaled": 0.00016731917273464194,
+        "drag_relative": 2.995556220102933e-05,
+        "transverse_absolute": 7.303139962213517e-05,
+        "mass": 1.2997732971221431e-15,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 1.5074283169106981e-05,
+        "velocity_gradient_scaled": 1.747575336060602e-05
+      },
+      "force": [
+        6.1181177065374035,
+        0.020256572375646983
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 3.475143875136825e-08,
+      "full_weak_LS_gradient_norm": 9.621272980959879e-05,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r4_23.125_exact_tensor_weak_LS_raw_invocation",
+      "Re": 23.125,
+      "rank": 4,
+      "method": "exact_tensor_weak_LS",
+      "metrics": {
+        "velocity_relative": 7.560652780011552e-05,
+        "pressure_scaled": 0.00011621378411185537,
+        "drag_relative": 1.740087405929901e-05,
+        "transverse_absolute": 3.306833993777392e-05,
+        "mass": 3.799685015407019e-07,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 2.1387393528506996e-05,
+        "velocity_gradient_scaled": 0.00027574545451816576
+      },
+      "force": [
+        5.178734165437946,
+        0.004397119573610577
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 2.9806960494864663e-09,
+      "full_weak_LS_gradient_norm": 6.58762709918899e-13,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r4_23.125_coefficient_PCHIP_raw_invocation",
+      "Re": 23.125,
+      "rank": 4,
+      "method": "coefficient_PCHIP",
+      "metrics": {
+        "velocity_relative": 3.685900933579689e-06,
+        "pressure_scaled": 5.523194358550177e-05,
+        "drag_relative": 4.179563068698303e-05,
+        "transverse_absolute": 4.7759065208960276e-05,
+        "mass": 0.0,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 2.134161448075203e-05,
+        "velocity_gradient_scaled": 1.5113179979558989e-05
+      },
+      "force": [
+        5.178860497199269,
+        0.004382428848339391
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 3.705567424400154e-08,
+      "full_weak_LS_gradient_norm": 0.00018748155306648346,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r4_23.125_mixed_Galerkin_raw_invocation",
+      "Re": 23.125,
+      "rank": 4,
+      "method": "mixed_Galerkin",
+      "metrics": {
+        "velocity_relative": 5.374948524742785e-06,
+        "pressure_scaled": 0.00010264331289392105,
+        "drag_relative": 3.665688429495071e-05,
+        "transverse_absolute": 3.229214375869826e-05,
+        "mass": 1.4297506268343574e-14,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 2.134170085477293e-05,
+        "velocity_gradient_scaled": 2.0092490576704812e-05
+      },
+      "force": [
+        5.178833885460828,
+        0.004397895769789653
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 1.4733723360025828e-08,
+      "full_weak_LS_gradient_norm": 5.0629332186459315e-05,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r8_16.875_exact_tensor_weak_LS_raw_invocation",
+      "Re": 16.875,
+      "rank": 8,
+      "method": "exact_tensor_weak_LS",
+      "metrics": {
+        "velocity_relative": 1.5992270878872218e-09,
+        "pressure_scaled": 2.2509889655799336e-09,
+        "drag_relative": 1.8756656362647874e-09,
+        "transverse_absolute": 6.871182362672146e-09,
+        "mass": 8.671654180633231e-13,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 1.5073794238513212e-05,
+        "velocity_gradient_scaled": 7.857248735546999e-09
+      },
+      "force": [
+        6.118300995158972,
+        0.020183534104842485
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 1.6866924783047582e-18,
+      "full_weak_LS_gradient_norm": 1.3508455811430333e-15,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r8_16.875_coefficient_PCHIP_raw_invocation",
+      "Re": 16.875,
+      "rank": 8,
+      "method": "coefficient_PCHIP",
+      "metrics": {
+        "velocity_relative": 5.163224879821845e-06,
+        "pressure_scaled": 8.27186679118412e-06,
+        "drag_relative": 6.9950396115042164e-06,
+        "transverse_absolute": 8.21635073852689e-06,
+        "mass": 0.0,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 1.5072706834007371e-05,
+        "velocity_gradient_scaled": 2.0956714644389155e-05
+      },
+      "force": [
+        6.118258185925349,
+        0.020191757326763374
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 5.031224409598522e-10,
+      "full_weak_LS_gradient_norm": 3.226875257336626e-05,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r8_16.875_mixed_Galerkin_raw_invocation",
+      "Re": 16.875,
+      "rank": 8,
+      "method": "mixed_Galerkin",
+      "metrics": {
+        "velocity_relative": 1.0043730203125159e-10,
+        "pressure_scaled": 2.9854412647573087e-09,
+        "drag_relative": 3.147097710018438e-10,
+        "transverse_absolute": 3.835173376792733e-09,
+        "mass": 2.2096146051076432e-14,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 1.5073794581616418e-05,
+        "velocity_gradient_scaled": 3.919010976454796e-10
+      },
+      "force": [
+        6.118300985608574,
+        0.02018353714085147
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 1.0514149584805898e-17,
+      "full_weak_LS_gradient_norm": 2.6535997297880886e-09,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r8_23.125_exact_tensor_weak_LS_raw_invocation",
+      "Re": 23.125,
+      "rank": 8,
+      "method": "exact_tensor_weak_LS",
+      "metrics": {
+        "velocity_relative": 9.035078893498323e-10,
+        "pressure_scaled": 1.1257328509808824e-09,
+        "drag_relative": 1.1321199428022753e-09,
+        "transverse_absolute": 3.6690707477457507e-09,
+        "mass": 1.444871322857545e-11,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 2.1341084989523036e-05,
+        "velocity_gradient_scaled": 4.5630736673455725e-09
+      },
+      "force": [
+        5.178644046642145,
+        0.004430191582619099
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 5.165772631765553e-19,
+      "full_weak_LS_gradient_norm": 8.008022653895103e-15,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r8_23.125_coefficient_PCHIP_raw_invocation",
+      "Re": 23.125,
+      "rank": 8,
+      "method": "coefficient_PCHIP",
+      "metrics": {
+        "velocity_relative": 1.2760921538998177e-06,
+        "pressure_scaled": 2.9845019805554757e-06,
+        "drag_relative": 2.534113164550058e-06,
+        "transverse_absolute": 1.9453366062642877e-06,
+        "mass": 0.0,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 2.134082834287701e-05,
+        "velocity_gradient_scaled": 4.42030876000028e-06
+      },
+      "force": [
+        5.178657175775059,
+        0.004432133250154615
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 4.041235916699208e-11,
+      "full_weak_LS_gradient_norm": 7.932674548207421e-06,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    },
+    {
+      "key": "POD_r8_23.125_mixed_Galerkin_raw_invocation",
+      "Re": 23.125,
+      "rank": 8,
+      "method": "mixed_Galerkin",
+      "metrics": {
+        "velocity_relative": 5.857810306750227e-11,
+        "pressure_scaled": 1.6296394148379253e-09,
+        "drag_relative": 3.3906719400692047e-10,
+        "transverse_absolute": 1.4276877553440204e-09,
+        "mass": 2.556220817673548e-14,
+        "boundary_trace": 4.6629367034256575e-15,
+        "divergence": 2.134108463792923e-05,
+        "velocity_gradient_scaled": 2.2662537368633544e-10
+      },
+      "force": [
+        5.1786440507490825,
+        0.004430189341236106
+      ],
+      "eligible_accuracy_recorded": true,
+      "physical_admission": false,
+      "full_weak_LS_objective": 3.093651573573958e-18,
+      "full_weak_LS_gradient_norm": 1.380609318036559e-09,
+      "saved_velocity_reconstruction_maxgap": 0.0,
+      "replayed_target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      }
+    }
+  ],
+  "limitations": [
+    "No native FE assembly, model evaluation, solve, optimization or validation access.",
+    "Mixed Galerkin operator itself not separately retained; its returned fields independently scored.",
+    "Original full-operator fingerprints unavailable; only available original source/stability/training coefficient bindings compared.",
+    "Original r2 failures and failed quadrature remain unchanged.",
+    "Force replay uses saved contractions, not fresh traction assembly.",
+    "Direct/tensor/Jacobian diagnostic arrays were not retained; recorded gap scalars are not independently replayed."
+  ],
+  "interpretation": "Errors measure agreement with admitted discrete FE reference, not equal accuracy against continuum truth.",
+  "durable_retention_passed": true,
+  "retention_source_commit": "4aeae9697",
+  "retention_mirror_commit": "a6b3647b3"
+}

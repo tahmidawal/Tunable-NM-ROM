@@ -1,0 +1,376 @@
+Review this proposed accuracy-first 2D neural-ROM training implementation for substantive numerical correctness, optimizer/checkpoint errors and provenance risks. Advisory only; no tools or files available beyond these excerpts. Return concrete blockers with function names, then nonblocking improvements. Do not request permissions or impose an arbitrary accuracy target.
+User asks to push accuracy as far as realistically achievable. Existing fixed DFG channel [0,2.2]x[0,.41], cylinder center(.2,.2),radius.05, D=.1,U=.2. Admitted training-only prepared POD velocity modes and DIMENSIONLESS gradients are used as teachers. Original 2x64/rank8 velocity-only QR-projection fit ended loss.639 after3000Adam and yielded14.74/16.60% dev projection error, actual18.28/21.28%. Actual POD4/8 classical ROMs now pass DEV checks; no validation opened. New candidate:rank4,3x128 neural bank with local/Fourier features and bounded boundary envelope, supervised values+gradients with declared sqrtσ importance (NOT snapshot-equivalent). σ=[6.2624,.350814,.0246963,.00181668]. Online velocity basis must be actual neural evaluations, plus disclosed shared FE lift/supremizers; pressure remains FE POD. POD is offline teacher, no hidden velocity fallback. Full/exact weak reduced PDE solves follow training, with all field/force/mass checks; best-fit distinct. New quadrature must not reuse old fitted weights.
+Mandatory controls: f64/highest GPU, finite separately reviewed jobs with continuation/cumulative accounting, no validation leakage, source/inputs hashed, all raw evidence retained, no cross-job timing claims. Launcher is still being implemented and must verify complete admitted prepared closure, not merely config labels. Source below is a review snapshot, not a released job. Independently evaluated analytic spatial derivatives are tested against AD/FD; full-rule normalized objectives and checkpoint selection must be correct. Flag resume claims that exceed actual loader behavior. Under-read existing complete store is not an option: PointVolumeStore iterates all fields and closure stays intact.
+
+
+FILE spatial_bank.py
+"""Accuracy-first POD-guided neural spatial bank; no FE fallback at evaluation.
+
+The original bank v1 is unchanged. Values are u/U; derivatives are physical.
+"""
+from pathlib import Path
+import hashlib,json
+import numpy as np
+from geometry import CHANNEL
+
+FEATURES={'fourier_frequencies':[1.,2.,4.,8.],'radial_widths':[.1,.2,.4]}
+
+def inputs(x,xp=np):
+    offset=xp.asarray([1.1,.205]);scale=xp.asarray([1.1,.205])
+    z=(x-offset)/scale;eye=xp.broadcast_to(xp.diag(1/scale),(len(x),2,2))
+    vals=[z];ders=[eye]
+    for f in FEATURES['fourier_frequencies']:
+        t=xp.pi*f*z
+        vals += [xp.sin(t),xp.cos(t)]
+        ders += [xp.cos(t)[:,:,None]*xp.pi*f*eye,-xp.sin(t)[:,:,None]*xp.pi*f*eye]
+    d=x-xp.asarray(CHANNEL.center)
+    for width in FEATURES['radial_widths']:
+        g=xp.exp(-xp.sum(d*d,axis=1)/(2*width**2))
+        vals.append(g[:,None]);ders.append((-g[:,None]*d/width**2)[:,None,:])
+    return xp.concatenate(vals,axis=1),xp.concatenate(ders,axis=1)
+
+def envelope(x,xp=np):
+    """Bounded smooth distance factors; products avoid division at boundary zeros."""
+    D=.1;d=x-xp.asarray(CHANNEL.center);rad=xp.sqrt(xp.sum(d*d,axis=1))
+    distances=xp.stack([x[:,0],x[:,1],CHANNEL.height-x[:,1],rad-CHANNEL.obstacle_radius],axis=1)
+    ones=xp.ones(len(x));zeros=xp.zeros(len(x))
+    dr=d/xp.maximum(rad[:,None],1e-300)
+    dd=xp.stack([xp.stack([ones,zeros],1),xp.stack([zeros,ones],1),xp.stack([zeros,-ones],1),dr],1)
+    e=xp.exp(-distances/D);f=-xp.expm1(-distances/D);df=e[:,:,None]*dd/D
+    b=xp.prod(f,axis=1);db=xp.zeros_like(x)
+    for j in range(4):
+        other=xp.ones(len(x))
+        for k in range(4):
+            if k!=j:other=other*f[:,k]
+        db=db+other[:,None]*df[:,j]
+    return b,db
+
+def evaluate_layers(layers,x,xp=np):
+    h,dh=inputs(x,xp)
+    for i,(w,b) in enumerate(layers):
+        h=h@w+b;dh=xp.einsum('nhd,hk->nkd',dh,w)
+        if i<len(layers)-1:
+            h=xp.tanh(h);dh=dh*(1-h*h)[:,:,None]
+    rank=h.shape[1]//2;v=h.reshape(len(x),2,rank)
+    g=dh.reshape(len(x),2,rank,2).transpose(0,1,3,2)
+    b,db=envelope(x,xp)
+    return b[:,None,None]*v,b[:,None,None,None]*g+db[:,None,:,None]*v[:,:,None,:]
+
+class SpatialBank:
+    geometry=CHANNEL
+    def __init__(self,layers,transform,metadata):
+        self.layers=[(np.asarray(w,dtype=np.float64),np.asarray(b,dtype=np.float64)) for w,b in layers]
+        self.transform=np.asarray(transform,dtype=np.float64);self.metadata=dict(metadata)
+        prior=21
+        for w,b in self.layers:
+            if w.ndim!=2 or w.shape[0]!=prior or b.shape!=(w.shape[1],) or not np.isfinite(w).all() or not np.isfinite(b).all():raise ValueError('invalid neural layer')
+            prior=w.shape[1]
+        if prior%2 or self.transform.ndim!=2 or self.transform.shape[0]!=prior//2 or not np.isfinite(self.transform).all():raise ValueError('invalid transform')
+    @property
+    def rank(self):return self.transform.shape[1]
+    def evaluate(self,points,prefix=None):
+        x=np.asarray(points,dtype=np.float64);r=self.rank if prefix is None else int(prefix)
+        if x.ndim!=2 or x.shape[1]!=2 or not np.isfinite(x).all() or not 1<=r<=self.rank:raise ValueError('invalid evaluation')
+        v,g=evaluate_layers(self.layers,x);return v@self.transform[:,:r],g@self.transform[:,:r]
+    def values_blocked(self,points,block_points=4096):
+        out=np.empty((len(points),2,self.rank),dtype=np.float64)
+        if out.nbytes>2**30:raise MemoryError('array cap')
+        for i in range(0,len(points),block_points):out[i:i+block_points]=self.evaluate(points[i:i+block_points])[0]
+        return out
+    def save(self,path):
+        m=dict(self.metadata,schema='ns-obstacle-pod-guided-neural-v2',features=FEATURES,envelope='bounded-exponential-distances-D0.1',geometry=CHANNEL.as_dict(),layers=len(self.layers),value_units='u/U',gradient_coordinates='physical',FE_fallback=False)
+        a={'metadata_json':np.array(json.dumps(m,sort_keys=True)),'transform':self.transform}
+        for i,(w,b) in enumerate(self.layers):a['W'+str(i)]=w;a['b'+str(i)]=b
+        np.savez_compressed(path,**a);return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    @classmethod
+    def load(cls,path):
+        with np.load(path,allow_pickle=False) as a:
+            m=json.loads(str(a['metadata_json']))
+            if m.get('schema')!='ns-obstacle-pod-guided-neural-v2' or m['features']!=FEATURES or m['geometry']!=json.loads(json.dumps(CHANNEL.as_dict())) or m['FE_fallback'] or m['envelope']!='bounded-exponential-distances-D0.1' or m['value_units']!='u/U' or m['gradient_coordinates']!='physical':raise ValueError('unknown spatial bank')
+            return cls([(a['W'+str(i)],a['b'+str(i)]) for i in range(m['layers'])],a['transform'],m)
+
+def initialize(rank=4,width=128,depth=3,seed=29102026):
+    rng=np.random.default_rng(seed);sizes=[21]+[width]*depth+[2*rank]
+    return SpatialBank([(rng.normal(size=(a,b))/np.sqrt(a),np.zeros(b)) for a,b in zip(sizes[:-1],sizes[1:])],np.eye(rank),{'seed':seed,'variant':'POD-guided supervised spatial bank v2','trained':False})
+
+
+FILE teacher.py
+"""Read actual training POD teachers through the existing complete point-store closure."""
+from pathlib import Path
+import numpy as np
+from point_store import PointVolumeStore
+from pilot2d import read_preparation_metadata
+from capacity_context2d import consumer_caps
+
+def load(prepared,release,rank=4):
+    metadata,r=read_preparation_metadata(prepared,release)
+    from fe_adapter import CAPS
+    caps=consumer_caps(metadata,release,r,CAPS)
+    if rank!=4:raise ValueError('first reviewed candidate has four teachers')
+    store=PointVolumeStore(Path(prepared)/'volume',metadata['coefficient_files']['volume/manifest.json'])
+    n=store.point_count
+    if n>caps['volume_points']:raise MemoryError('point count exceeds approved capacity')
+    v=np.empty((n,2,rank));g=np.empty((n,2,2,rank))
+    for start,end,block in store.iter_blocks():
+        v[start:end]=block['pod_velocity'][...,:rank]
+        g[start:end]=block['pod_velocity_gradient_dimensionless'][...,:rank]
+    return store['points_physical'],store['weights_dimensionless'],v,g,metadata
+
+
+FILE train.py
+"""Training-only supervised modal values+gradients; deterministic full-rule L-BFGS.
+
+Checkpoint selection uses only the lowest measured post-update full-training objective.
+Every full measurement is immutable. L-BFGS curvature is reconstructed from retained
+accepted states; no duplicate history arrays or automatic restart/budget reset.
+"""
+from pathlib import Path
+import hashlib,json,time
+import numpy as np
+from qualification import require_qualification
+from accuracy_v2.spatial_bank import initialize,evaluate_layers,SpatialBank
+
+def digest(a):
+    a=np.ascontiguousarray(a);h=hashlib.sha256(str((a.shape,a.dtype.str)).encode());h.update(a.tobytes());return h.hexdigest()
+
+def _train(x,w,target,gradient,singular_values,qualification,config,directory,deadline,resume=None):
+    require_qualification(qualification)
+    if config['split']!='training' or config['rank']!=4 or config['teacher_definition']!='prepared_training_POD':raise ValueError('training-only rank4 teacher required')
+    x,w,target,gradient=map(lambda a:np.asarray(a,dtype=np.float64),(x,w,target,gradient))
+    n=len(x)
+    if x.shape!=(n,2) or w.shape!=(n,) or target.shape!=(n,2,4) or gradient.shape!=(n,2,2,4) or np.min(w)<=0:raise ValueError('teacher layout')
+    if any(not np.isfinite(a).all() for a in (x,w,target,gradient)):raise ValueError('finite teachers required')
+    sigma=np.asarray(singular_values,dtype=np.float64)[:4]
+    if sigma.shape!=(4,) or np.min(sigma)<=0 or np.any(np.diff(sigma)>0):raise ValueError('ordered positive actual singular values required')
+    norms_v=np.einsum('n,ncr,ncr->r',w,target,target);norms_g=np.einsum('n,ncdr,ncdr->r',w,gradient,gradient)
+    if min(norms_v.min(),norms_g.min())<=0:raise ValueError('null teacher norm')
+    importance=np.sqrt(sigma/sigma[0]);importance/=importance.sum()
+    out=Path(directory);out.mkdir(exist_ok=False)
+    bindings={'source_files':{name:hashlib.sha256((Path(__file__).parent/name).read_bytes()).hexdigest() for name in ('train.py','spatial_bank.py','continuation.py')},'points':digest(x),'weights':digest(w),'values':digest(target),'gradients':digest(gradient),'qualification':qualification,'config':config,'singular_values':sigma.tolist(),'mode_weights':importance.tolist(),'value_norms_squared':norms_v.tolist(),'gradient_norms_squared':norms_g.tolist(),'selection':'minimum measured post-update full-training value+gradient objective; no development/validation selection'}
+    (out/'CONFIG.json').write_text(json.dumps(bindings,indent=2)+'\n')
+    import jax
+    jax.config.update('jax_enable_x64',True);jax.config.update('jax_default_matmul_precision','highest')
+    import jax.numpy as jnp
+    if jax.default_backend()!='gpu':raise RuntimeError('GPU required')
+    model=initialize(rank=4,width=config['width'],depth=config['depth'],seed=config['seed']);shapes=[a.shape for layer in model.layers for a in layer];sizes=[int(np.prod(s)) for s in shapes];offsets=np.cumsum([0]+sizes)
+    theta=np.concatenate([a.ravel() for layer in model.layers for a in layer]);m=np.zeros_like(theta);v=np.zeros_like(theta)
+    def unpack(t):
+        values=[t[offsets[i]:offsets[i+1]].reshape(s) for i,s in enumerate(shapes)];return list(zip(values[::2],values[1::2]))
+    def objective(t,xx,ww,yy,gg,nv,ng,importance_arg):
+        val,grad=evaluate_layers(unpack(t),xx,jnp);grad=.1*grad
+        ev=jnp.einsum('n,ncr,ncr->r',ww,val-yy,val-yy)/nv
+        eg=jnp.einsum('n,ncdr,ncdr->r',ww,grad-gg,grad-gg)/ng
+        return jnp.sum(importance_arg*(ev+eg)),(ev,eg)
+    calc=jax.jit(jax.value_and_grad(objective,has_aux=True))
+    started=time.monotonic();prior_elapsed=0.;completed_lbfgs=0;retention_errors=[];evaluations=0;serial=0;best=None;history=[];state_ids=[];curvature=[];rng=np.random.default_rng(config['seed']);adam_step=0;phase='initial';last_checkpoint=None
+    def guard():
+        if time.time()>=deadline-60:raise TimeoutError('setup-inclusive job deadline; finalization reserved')
+    def full(t):
+        nonlocal evaluations
+        value=0.;derivative=np.zeros_like(t);ev=np.zeros(4);eg=np.zeros(4);tick=time.monotonic()
+        for i in range(0,n,config['block_points']):
+            guard();j=min(n,i+config['block_points'])
+            (loss,parts),grad=calc(jnp.asarray(t),x[i:j],w[i:j],target[i:j],gradient[i:j],norms_v,norms_g,importance)
+            value+=float(loss);derivative+=np.asarray(grad);ev+=np.asarray(parts[0]);eg+=np.asarray(parts[1])
+        evaluations+=1
+        if not np.isfinite(value) or not np.isfinite(derivative).all():raise FloatingPointError('nonfinite full objective')
+        return value,derivative,{'value_relative_squared_by_mode':ev.tolist(),'gradient_relative_squared_by_mode':eg.tolist(),'seconds':time.monotonic()-tick}
+    def save(t,f,g,details,label):
+        nonlocal serial,best,last_checkpoint
+        serial+=1;stem=f'checkpoint-{serial:05d}';arrays={'theta':t,'gradient':g}
+        if phase in ('initial','adam'):arrays.update(adam_m=m,adam_v=v)
+        np.savez_compressed(out/(stem+'.npz'),**arrays)
+        record={'phase':phase,'label':label,'full_post_update_objective':f,'gradient_inf':float(np.max(np.abs(g))),'metrics':details,'adam_step':adam_step,'rng_state':rng.bit_generator.state,'curvature_state_pairs':list(curvature),'elapsed_seconds':prior_elapsed+time.monotonic()-started,'full_evaluations':evaluations,'theta_sha256':digest(t),'array_file':stem+'.npz','array_sha256':hashlib.sha256((out/(stem+'.npz')).read_bytes()).hexdigest()}
+        (out/(stem+'.json')).write_text(json.dumps(record,indent=2)+'\n');last_checkpoint=stem
+        if best is None or f<best['objective']:best={'objective':f,'checkpoint':stem}
+        (out/'LATEST.json').write_text(json.dumps({'last':stem,'best':best,'elapsed_seconds':prior_elapsed+time.monotonic()-started})+'\n')
+        return stem
+    status='started';f=None;g=np.zeros_like(theta);iteration=-1;pairs=[];current=None
+    if resume is not None:
+        from accuracy_v2.continuation import load
+        restored,a,pairs=load(resume['directory'],bindings,resume['receipt_sha256'])
+        theta=a['theta'];g=a['gradient'];m=a['adam_m'];v=a['adam_v']
+        phase=restored['phase'];adam_step=restored['adam_step'];completed_lbfgs=restored['completed_lbfgs_iterations']
+        prior_elapsed=restored['elapsed_seconds'];evaluations=restored['full_evaluations'];serial=restored['serial'];best=restored['best'];curvature=restored['curvature_state_pairs'];current=restored['last_measured_checkpoint'];last_checkpoint=current
+        rng.bit_generator.state=restored['rng_state']
+        if phase not in ('initial','adam','lbfgs') or adam_step>config['adam_steps'] or completed_lbfgs>config['lbfgs_steps']:raise ValueError('restart phase/count differs')
+    try:
+        f,g,details=full(theta);current=save(theta,f,g,details,'initial or exact restart')
+        if phase!='lbfgs':phase='adam'
+        for next_adam_step in range(adam_step+1,config['adam_steps']+1) if phase=='adam' else []:
+            guard();idx=rng.integers(0,n,size=config['batch_points'])
+            (_, _),grad=calc(jnp.asarray(theta),x[idx],w[idx]*n/len(idx),target[idx],gradient[idx],norms_v,norms_g,importance);grad=np.asarray(grad)
+            if not np.isfinite(grad).all():raise FloatingPointError('nonfinite Adam gradient')
+            m=.9*m+.1*grad;v=.999*v+.001*grad*grad
+            rate=config['adam_learning_rate']*(.1+.9*.5*(1+np.cos(np.pi*next_adam_step/config['adam_steps'])))
+            theta=theta-rate*(m/(1-.9**next_adam_step))/(np.sqrt(v/(1-.999**next_adam_step))+1e-8)
+            adam_step=next_adam_step
+            if adam_step%config['full_check_every']==0 or adam_step==config['adam_steps']:
+                f,g,details=full(theta);current=save(theta,f,g,details,'Adam post-update')
+        # Deterministic full-rule optimization starts at the best measured Adam iterate.
+        if phase!='lbfgs':
+            with np.load(out/(best['checkpoint']+'.npz')) as a:theta=a['theta'].copy()
+            phase='lbfgs';f,g,details=full(theta);current=save(theta,f,g,details,'L-BFGS initial');pairs=[];curvature=[]
+        for iteration in range(completed_lbfgs,config['lbfgs_steps']):
+            guard()
+            if np.max(np.abs(g))<=config['gradient_tolerance']:status='gradient_stationary';break
+            q=g.copy();alphas=[]
+            for s,y,rho in reversed(pairs):
+                alpha=rho*np.dot(s,q);alphas.append(alpha);q-=alpha*y
+            if pairs:q*=np.dot(pairs[-1][0],pairs[-1][1])/np.dot(pairs[-1][1],pairs[-1][1])
+            for (s,y,rho),alpha in zip(pairs,reversed(alphas)):q+=s*(alpha-rho*np.dot(y,q))
+            direction=-q;slope=np.dot(g,direction)
+            if not np.isfinite(slope) or slope>=0:direction=-g;slope=-np.dot(g,g);pairs=[];curvature=[]
+            accepted=False
+            for attempt in range(config['line_search_steps']):
+                step=2.**(-attempt);trial=theta+step*direction;nf,ng,nd=full(trial)
+                row={'iteration':iteration,'attempt':attempt,'step':step,'objective':nf,'gradient_inf':float(np.max(np.abs(ng))),'accepted':bool(nf<=f+1e-4*step*slope),'seconds':nd['seconds'],'theta_sha256':digest(trial)}
+                with (out/'LINE-SEARCH.jsonl').open('a') as stream:stream.write(json.dumps(row)+'\n')
+                if row['accepted']:accepted=True;break
+            if not accepted:status='line_search_stopped';break
+            s=trial-theta;y=ng-g;sy=float(np.dot(s,y));previous=current
+            theta,f,g=trial,nf,ng
+            if sy>1e-12*np.linalg.norm(s)*np.linalg.norm(y):
+                pairs.append((s,y,1/sy));curvature.append([previous,f'checkpoint-{serial+1:05d}']);pairs=pairs[-config['history_size']:];curvature=curvature[-config['history_size']:]
+            current=save(theta,f,g,nd,'L-BFGS accepted');completed_lbfgs=iteration+1
+        else:status='iteration_limit'
+    except TimeoutError:status='job_deadline'
+    except BaseException as exc:
+        status='failed';(out/'FAILURE.json').write_text(json.dumps({'exception':repr(exc),'last_checkpoint':last_checkpoint})+'\n');raise
+    finally:
+        try:
+            from accuracy_v2.continuation import freeze
+            continuation={'phase':phase,'adam_step':adam_step,'completed_lbfgs_iterations':completed_lbfgs,'curvature_state_pairs':curvature,'rng_state':rng.bit_generator.state,'last_measured_checkpoint':last_checkpoint,'best':best,'full_evaluations':evaluations,'serial':serial,'elapsed_seconds':prior_elapsed+time.monotonic()-started}
+            freeze(out,continuation,{'theta':theta,'gradient':g,'adam_m':m,'adam_v':v})
+        except Exception as retention_error:retention_errors.append(repr(retention_error))
+        try:(out/'FINAL.json').write_text(json.dumps({'status':status,'last_checkpoint':last_checkpoint,'best':best,'elapsed_seconds':prior_elapsed+time.monotonic()-started,'full_evaluations':evaluations,'retention_errors':retention_errors,'automatic_resume':False,'validation_seen':False},indent=2)+'\n')
+        except Exception as retention_error:
+            retention_errors.append(repr(retention_error));print('FINAL retention failure:',repr(retention_error),flush=True)
+        if retention_errors and status!='failed':raise RuntimeError('optimizer retention incomplete: '+repr(retention_errors))
+    if best is None:raise RuntimeError('no full-rule measurement completed')
+    with np.load(out/(best['checkpoint']+'.npz')) as a:chosen=a['theta'].copy()
+    layers=[(np.asarray(a),np.asarray(b)) for a,b in unpack(chosen)]
+    bank=SpatialBank(layers,np.eye(4),dict(bindings,trained=True,selected_checkpoint=best,status=status))
+    bank.save(out/'spatial-bank-raw.npz')
+    return bank
+
+
+def train(x,w,target,gradient,singular_values,qualification,config,directory,deadline,resume=None):
+    """Outer failure guard includes native/GPU initialization and checkpoint errors."""
+    out=Path(directory)
+    if out.exists():raise FileExistsError('fresh training output required')
+    try:return _train(x,w,target,gradient,singular_values,qualification,config,directory,deadline,resume)
+    except BaseException as exc:
+        if out.exists() and not (out/'FINAL.json').exists():
+            try:(out/'FINAL.json').write_text(json.dumps({'status':'failed','original_exception':repr(exc),'validation_seen':False,'automatic_resume':False})+'\n')
+            except Exception as error:print('Could not retain FINAL:',repr(error),flush=True)
+        raise
+
+
+FILE continuation.py
+"""Exact immutable optimizer restart closure; no automatic job or budget authorization."""
+from pathlib import Path
+import hashlib,json
+import numpy as np
+
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def freeze(directory,state,arrays):
+    out=Path(directory).resolve();state=dict(state);references=set()
+    def absolute(stem):return str((out/stem).resolve())
+    if state.get('best'):
+        state['best']=dict(state['best'],checkpoint=absolute(state['best']['checkpoint']));references.add(state['best']['checkpoint'])
+    state['curvature_state_pairs']=[[absolute(a),absolute(b)] for a,b in state['curvature_state_pairs']]
+    for pair in state['curvature_state_pairs']:references.update(pair)
+    if state.get('last_measured_checkpoint'):
+        state['last_measured_checkpoint']=absolute(state['last_measured_checkpoint']);references.add(state['last_measured_checkpoint'])
+    closure={}
+    for stem in sorted(references):
+        record=Path(stem+'.json');payload=Path(stem+'.npz');r=json.loads(record.read_text())
+        if sha(payload)!=r['array_sha256']:raise ValueError('checkpoint payload differs')
+        closure[stem]={'record_sha256':sha(record),'array_sha256':sha(payload)}
+    np.savez_compressed(out/'CONTINUATION.npz',**arrays)
+    state.update(schema='ns-obstacle-optimizer-continuation-v2',checkpoint_closure=closure,array_sha256=sha(out/'CONTINUATION.npz'),config_sha256=sha(out/'CONFIG.json'),resume_requires_separate_exact_release=True,resume_loader_implemented=True)
+    (out/'CONTINUATION.json').write_text(json.dumps(state,indent=2)+'\n')
+    return state
+
+def load(directory,expected_bindings,expected_receipt_sha256):
+    out=Path(directory).resolve();p=out/'CONTINUATION.json'
+    if sha(p)!=expected_receipt_sha256:raise ValueError('released continuation differs')
+    state=json.loads(p.read_text())
+    if state['schema']!='ns-obstacle-optimizer-continuation-v2' or sha(out/'CONFIG.json')!=state['config_sha256'] or json.loads((out/'CONFIG.json').read_text())!=expected_bindings:raise ValueError('restart source/data/recipe differs')
+    if sha(out/'CONTINUATION.npz')!=state['array_sha256']:raise ValueError('restart array differs')
+    for stem,row in state['checkpoint_closure'].items():
+        if sha(stem+'.json')!=row['record_sha256'] or sha(stem+'.npz')!=row['array_sha256']:raise ValueError('restart history differs')
+    with np.load(out/'CONTINUATION.npz',allow_pickle=False) as a:arrays={k:a[k].copy() for k in a.files}
+    if set(arrays)!={'theta','gradient','adam_m','adam_v'} or any(a.dtype!=np.dtype('float64') or not np.isfinite(a).all() for a in arrays.values()):raise ValueError('invalid optimizer arrays')
+    shape=arrays['theta'].shape
+    if len(shape)!=1 or any(a.shape!=shape for a in arrays.values()):raise ValueError('optimizer layout differs')
+    pairs=[]
+    for before,after in state['curvature_state_pairs']:
+        if before not in state['checkpoint_closure'] or after not in state['checkpoint_closure']:raise ValueError('unbound curvature')
+        with np.load(before+'.npz') as a,np.load(after+'.npz') as b:s=b['theta']-a['theta'];y=b['gradient']-a['gradient']
+        sy=float(np.dot(s,y))
+        if not np.isfinite(sy) or sy<=0:raise ValueError('invalid curvature pair')
+        pairs.append((s,y,1/sy))
+    if state['best'] and state['best']['checkpoint'] not in state['checkpoint_closure']:raise ValueError('unbound best checkpoint')
+    return state,arrays,pairs
+
+
+FILE smoke.py
+from pathlib import Path
+import tempfile,json
+import numpy as np
+import jax
+jax.config.update('jax_enable_x64',True);jax.config.update('jax_default_matmul_precision','highest')
+import jax.numpy as jnp
+from accuracy_v2.spatial_bank import initialize,SpatialBank,evaluate_layers,envelope
+x=np.array([[.3,.1],[.6,.31],[1.8,.2],[0.,.1],[.1,0.],[.1,.41],[.25,.2],[0.,0.],[0.,.41],[.2,.15],[.2,.25]])
+b=initialize(width=12,depth=2);v,g=b.evaluate(x)
+def f(q):return evaluate_layers([(jnp.asarray(w),jnp.asarray(z)) for w,z in b.layers],q[None,:],jnp)[0][0]
+jg=np.asarray(jax.vmap(jax.jacfwd(f))(jnp.asarray(x))).transpose(0,1,3,2)
+assert np.max(np.abs(jg-g))<1e-11
+fd=[]
+for d in range(2):
+ h=np.zeros_like(x);h[:,d]=1e-6;fd.append((b.evaluate(x+h)[0]-b.evaluate(x-h)[0])/2e-6)
+fd=np.stack(fd,axis=2);assert np.max(np.abs(fd-g))<2e-7
+assert np.max(np.abs(v[3:]))<1e-14
+with tempfile.TemporaryDirectory() as folder:
+ p=Path(folder)/'bank.npz';b.save(p);restored=SpatialBank.load(p)
+ for a,c in zip(b.evaluate(x),restored.evaluate(x)):assert np.array_equal(a,c)
+# Analytic first derivatives remain differentiable with respect to network weights.
+layers=[(jnp.asarray(w),jnp.asarray(z)) for w,z in b.layers]
+def loss(t):
+ ls=[(layers[0][0].at[0,0].set(t),layers[0][1])]+layers[1:];vv,gg=evaluate_layers(ls,jnp.asarray(x),jnp)
+ return jnp.sum(vv*vv)+.01*jnp.sum(gg*gg)
+t=float(layers[0][0][0,0]);ad=float(jax.grad(loss)(t));ff=float((loss(t+1e-5)-loss(t-1e-5))/2e-5)
+assert abs(ad-ff)<1e-6
+print(json.dumps({'passed':True,'jax_backend':jax.default_backend(),'gradient_vs_jax_max':float(np.max(np.abs(jg-g))),'gradient_vs_FD_max':float(np.max(np.abs(fd-g))),'boundary_max':float(np.max(np.abs(v[3:]))),'parameter_gradient_gap':abs(ad-ff),'genuine_data_opened':False}))
+
+
+FILE continuation_smoke.py
+"""Pure-array optimizer-state round trip, no training/admission/native work."""
+from pathlib import Path
+import tempfile,json,hashlib
+import numpy as np
+from accuracy_v2.continuation import freeze,load,sha
+with tempfile.TemporaryDirectory() as directory:
+ p=Path(directory);bindings={'unit_test':'optimizer state only'};(p/'CONFIG.json').write_text(json.dumps(bindings))
+ rng=np.random.default_rng(123);rng.normal(size=12);rstate=rng.bit_generator.state
+ for i in range(2):
+  x=np.array([1.,2.])+i;y=2*x;np.savez_compressed(p/f'c{i}.npz',theta=x,gradient=y)
+  (p/f'c{i}.json').write_text(json.dumps({'array_sha256':sha(p/f'c{i}.npz')}))
+ a={'theta':x,'gradient':y,'adam_m':np.array([.1,.2]),'adam_v':np.array([.3,.4])}
+ state={'phase':'lbfgs','curvature_state_pairs':[['c0','c1']],'best':{'objective':1.,'checkpoint':'c1'},'last_measured_checkpoint':'c1','rng_state':rstate,'adam_step':9,'completed_lbfgs_iterations':1,'elapsed_seconds':123.5,'serial':2}
+ freeze(p,state,a);restored,arrays,pairs=load(p,bindings,sha(p/'CONTINUATION.json'))
+ assert restored['adam_step']==9 and restored['completed_lbfgs_iterations']==1 and restored['elapsed_seconds']==123.5
+ for k in a:assert np.array_equal(a[k],arrays[k])
+ assert np.array_equal(pairs[0][0],np.ones(2)) and np.array_equal(pairs[0][1],2*np.ones(2)) and pairs[0][2]==.25
+ r=np.random.default_rng();r.bit_generator.state=restored['rng_state'];assert np.array_equal(r.integers(0,100,50),rng.integers(0,100,50))
+ try:load(p,{'changed':True},sha(p/'CONTINUATION.json'))
+ except ValueError:pass
+ else:raise AssertionError('changed recipe accepted')
+ (p/'c0.npz').write_bytes(b'corrupt')
+ try:load(p,bindings,sha(p/'CONTINUATION.json'))
+ except ValueError:pass
+ else:raise AssertionError('changed history accepted')
+ print(json.dumps({'passed':True,'restored_fields':['theta','gradient','Adam_m','Adam_v','RNG','phase','cumulative_time','step_counts','curvature_history','best_state'],'changed_recipe_and_history_rejected':True,'genuine_data_opened':False}))

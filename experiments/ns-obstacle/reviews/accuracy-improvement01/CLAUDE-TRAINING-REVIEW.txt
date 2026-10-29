@@ -1,0 +1,58 @@
+# Review: accuracy-first neural spatial bank v2 (training snapshot)
+
+**Verified correct, no action needed:**
+- **Derivatives.** The analytic spatial derivatives in `inputs`, `envelope` and `evaluate_layers` are right. That covers the feature Jacobians, the tanh chain rule using the post-activation `h`, the product-rule envelope, and the `(n, component, ∂x_j, rank)` layout.
+- **Objectives.** Blockwise full-rule objectives sum exactly, because `nv`/`ng` are full-rule norms. The Adam minibatch estimator `w[idx]*n/len(idx)` is unbiased.
+- **Optimizer.** The L-BFGS two-loop recursion, the γ scaling and the Armijo test are correct. The predicted curvature stem `checkpoint-{serial+1}` matches what `save` produces.
+
+## Blockers
+
+**1. `teacher.load`: teacher arrays can be uninitialized, and σ is unbound.**
+- **Uninitialized memory.** `v` and `g` are `np.empty`, and nothing checks that `store.iter_blocks()` tiles `[0, n)` exactly. A skipped or short block leaves leftover memory that is often finite, so it passes `_train`'s finiteness check. Fix: use `np.full(..., np.nan)` plus a coverage count that must equal `n`.
+- **Point ordering.** `points_physical` and `weights_dimensionless` come from separate whole-array reads, not the same block iteration. Take them from the blocks, or assert the orderings match.
+- **Unsourced σ.** `load` does not return the singular values. `_train` accepts whatever `singular_values` the caller passes, which invites hard-coding `[6.2624, …]`. Read σ from the admitted preparation metadata, and bind its source hash in `bindings`.
+- **Layout and scale unverified.** Nothing checks that `pod_velocity_gradient_dimensionless` is indexed `[n, component, derivative, mode]`, rather than transposed. Nothing checks it equals `D·∂(u-mode)/∂x`, which is what `grad=.1*grad` in `objective` assumes. Trace and divergence checks cannot catch a transpose. Add an independent check, e.g. teacher gradient vs. an FD/FE-interpolant derivative of the teacher values at a few interior points, in both index orders.
+- **Inlet trace.** The envelope forces zero at x=0, the walls and the cylinder. Confirm the teacher modes are homogeneous there, i.e. the lift was subtracted before POD. Otherwise mode 1 (σ₁ ≫ σ₂ suggests a mean-like mode) is unrepresentable.
+
+**2. `_train` bindings: incomplete source and input provenance.**
+- **Missing source hashes.** `source_files` covers only `train.py`, `spatial_bank.py` and `continuation.py`. It omits `geometry.py`, whose `CHANNEL` defines the envelope and feature map, plus `teacher.py`, `qualification.py`, `point_store.py`, `pilot2d.py` and `capacity_context2d.py`.
+- **No prepared-closure hash.** Only array digests are bound, not the prepared closure itself (manifest SHA, release, coefficient-file hashes). `config['split']=='training'` and `teacher_definition` are label checks only. Until the launcher exists, nothing ties `digest(x/w/values/gradients)` to the admitted training closure. The launcher must verify that link, and `CONFIG.json` must record it.
+- **Precision and environment unrecorded.** `CONFIG.json` is written before JAX is imported. As a result, the backend, device name, jax/jaxlib/CUDA/numpy versions and the effective x64/precision flags are never recorded. Also assert that `calc`'s loss and gradient dtype is `float64`; the f64/highest mandate is currently set but never verified.
+
+**3. Resume: lineage and "exact restart" claims exceed loader behavior** (`_train` resume path, `continuation.freeze/load`).
+- **Lineage lost.** The new job's `CONFIG.json` and `FINAL.json` do not record `resume['directory']` or `resume['receipt_sha256']`. The continuation chain cannot be reconstructed from the new job's evidence.
+- **"Exact" is unverified.** The docstring says "Exact immutable optimizer restart", and checkpoints are labelled `'initial or exact restart'`. But the restart re-measures `f, g` and never compares them to the stored `gradient` or the last checkpoint's objective. GPU reductions are also not bitwise-deterministic unless `--xla_gpu_deterministic_ops=true` is set. Either compare (record the gap, and fail beyond a tolerance) or drop "exact".
+- **Theta/curvature consistency unchecked.** In `lbfgs` phase, `load` does not check that `CONTINUATION.npz['theta']` equals the `theta` of the last `after` curvature checkpoint.
+- **Failed jobs freeze silently.** `freeze` runs in `finally` even when `status=='failed'`, e.g. a nonfinite `full()` right after an Adam update. That freezes the bad `theta`, and `CONTINUATION.json` carries no status. A failed state is therefore indistinguishable from a releasable one, so record the status.
+- **Stale gradient.** After an Adam-phase deadline, the frozen `gradient` belongs to an earlier `theta`. Record the digest of the theta that gradient was measured at.
+- **Cross-job timing.** `elapsed_seconds = prior_elapsed + …` is a summed cross-job wall time, which conflicts with the "no cross-job timing claims" control. Store per-job segments, e.g. `[{job, seconds}]`, and label any total as budget accounting only. Separately, `started` excludes setup while the deadline is setup-inclusive.
+- **Smoke test gap.** `continuation_smoke.py` only exercises `freeze`/`load` on toy arrays. It never runs `_train`'s resume path, where old-directory absolute stems mix with new-directory relative stems in `best`, `curvature` and `np.load(out/(best['checkpoint']+'.npz'))`. That mixing works only through pathlib's absolute-path join, and nothing tests it.
+
+**4. `_train` finalization: the released bank is not bound.**
+- **Hash discarded.** The return value of `bank.save(out/'spatial-bank-raw.npz')` is thrown away. The bank is written after `FINAL.json`, so no receipt contains its hash or the selected `theta` digest.
+- **Selected checkpoint not re-verified.** The `best['checkpoint']` `.npz` is loaded twice, at the L-BFGS start and at final selection, without checking it against the record's `array_sha256`. On resume it may live in a different directory.
+- **Unit label likely wrong.** `save` and the module docstring assert `value_units='u/U'`. POD modes are normally orthonormal in the weighted inner product, so their values are mode-normalized, not u/U. Verify this from the preparation metadata, or relabel. Otherwise every downstream artifact inherits a false unit claim.
+
+## Nonblocking improvements
+
+- **Bind the gradient scale to geometry.** Replace the hard-coded `.1` in `objective`, and `D=.1` in `envelope`, with a `CHANNEL` attribute. Record the factor in `bindings`.
+- **Keep data on device.** In `full()`, transfer `x`, `w`, `target` and `gradient` to the device once; currently each block is re-uploaded on every evaluation.
+- **Line search.**
+  - On failure with nonempty `pairs`, retry once with steepest descent before `line_search_stopped`.
+  - Scale the first steepest-descent step, e.g. `1/‖g‖`.
+  - Consider a Wolfe curvature condition so `sy>0` is guaranteed rather than filtered.
+- **Selection semantics.** Rejected line-search trials with `nf < f` are measured but never checkpoint candidates. That matches "post-update", but say so explicitly in `selection`.
+- **Evidence manifest.** At finalization, hash all checkpoints, `LINE-SEARCH.jsonl`, `LATEST.json` and `FAILURE.json`. Currently only the closure-referenced checkpoints are bound.
+- **Tests worth adding:**
+  - `smoke.py` at production width and depth (128×3).
+  - Blocked `full()` vs. a single-shot objective.
+  - Value and gradient agreement between the numpy and JAX paths.
+  - A float64 dtype assertion.
+  - A full `_train` resume round trip on synthetic teachers.
+- **Diagnostics before the reduced PDE solves:**
+  - Per-mode weak divergence of the neural modes. POD modes are discretely divergence-free and the neural ones are not, which interacts with the supremizer/pressure-POD pairing.
+  - Gram-matrix conditioning on the solve quadrature.
+  - Fit error at points off the training quadrature, so inter-point behavior is visible if the solve quadrature differs.
+- **Reported metrics.** `ev`/`eg` are relative *squared* errors. Report `sqrt` alongside them so they are comparable to the earlier 14.74/16.60% projection figures.
+- **Spurious resume rejection.** `load`'s `json.loads(CONFIG)==expected_bindings` will falsely reject if `qualification` or `config` contain tuples. Normalize through a JSON round trip before comparing.
+- **Feature anisotropy.** On `z∈[-1,1]`, Fourier frequencies up to 8 give wavelengths of about 0.275 m in x but about 0.05 m in y. This is fine if intended, but worth documenting in `FEATURES`, since the x-direction wake resolution comes mostly from the network.

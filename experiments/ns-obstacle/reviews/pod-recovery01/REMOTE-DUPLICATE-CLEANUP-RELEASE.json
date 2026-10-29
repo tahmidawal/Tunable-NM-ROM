@@ -1,0 +1,18 @@
+{
+  "authorized": true,
+  "job_id": 6638632,
+  "exact_remote_paths": [
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/pod-recovery01",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/pod-recovery01.tar.gz"
+  ],
+  "retention_review_sha256": "dcad2cf9cb4ea8e213b98ee077598307ceafb37a1dbfee5667ecd82dadf96d66",
+  "archive_sha256": "185f639b849e536b3ed4be34f58b713963e9e8883c9df2220125131f464d200c",
+  "source_commit": "4aeae9697972697a078a98e3b851a37f1692b2f0",
+  "mirror_commit": "a6b3647b3feee29821fba647ae95c64e7d361783",
+  "conditions": [
+    "Fresh terminal and no active consumer checks; preserve any active candidate or future staged-input dependency.",
+    "Verify exact remote archive and full original ledger identity before removing duplicates.",
+    "Only listed paths; preserve shared preparation, training, development data and all other jobs.",
+    "Record absence and back up lifecycle; preserve immutable original RETENTION and all local archive histories."
+  ]
+}

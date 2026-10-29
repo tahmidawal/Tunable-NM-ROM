@@ -5,9 +5,9 @@
   ],
   "active_external_consults": [],
   "pending": [
-    "Review retained model timeout and completed r2 failures",
-    "Recover missing mandatory POD controls within original1200s failure reserve",
-    "Execute restricted FOM screen, freeze choices, validation/paired timing and final reporting"
+    "Complete queued POD recovery and review actual r4/r8 controls",
+    "Release reviewed FOM repair only after fresh resource checks",
+    "Freeze eligible models before validation; complete reporting and final reviews; no valid bank speedup target exists"
   ],
   "completed_allocated_gpu_hours": 5.568333333333333,
   "global_ceiling_gpu_hours": 12,
@@ -25,7 +25,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T13:03:14.428804+00:00",
+  "last_checkpoint_utc": "2026-10-29T17:48:04.815176+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -376,7 +376,7 @@
   },
   "bank_development_gate": {
     "passed": false,
-    "scope": "producer projection records; terminal independent audit pending",
+    "scope": "Original failed representation gate retained; partial-data and actual diagnostic audits completed.",
     "maximum_prefix_velocity_errors": [
       0.1474010630072039,
       0.16601847872577472
@@ -431,6 +431,19 @@
       "stationary",
       "stationary"
     ],
-    "accuracy_targets_passed": false
+    "accuracy_targets_passed": false,
+    "scientific_audit_passed": true,
+    "durable_retention_independently_verified": true,
+    "archive_source_commit": "5d690f704",
+    "archive_mirror_commit": "07ad5df12",
+    "coordinator_result_and_plots_commit": "2ecd268bd",
+    "coordinator_result_and_plots_mirror": "7394fbe29",
+    "physical_admission": false,
+    "remote_duplicate_cleanup": {
+      "completed": true,
+      "source_commit": "259dddd5b",
+      "mirror_commit": "8d8533492",
+      "logical_duplicate_bytes_retired": 313797162
+    }
   }
 }

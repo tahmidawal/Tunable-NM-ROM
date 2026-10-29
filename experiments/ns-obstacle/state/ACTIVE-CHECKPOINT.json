@@ -1,6 +1,8 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    6636731
+  ],
   "active_external_consults": [],
   "pending": [
     "Complete two-case development reconstruction and independent review",
@@ -197,7 +199,7 @@
     "original_domain_gate": "failed",
     "training_released": true
   },
-  "next_action": "Full actual release preflight then single model-development01 submission; independently audit actual bank/POD representation, physics and quadrature results.",
+  "next_action": "Monitor actual model-development6636731; review final representation/physics/quadrature results, then freeze feasible FOM calibration and held-out validation.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -212,7 +214,9 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [],
+  "live_job_ids": [
+    6636731
+  ],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -361,7 +365,9 @@
     "sha256": "f69c8b42ef5dd0c2ddbfead1d9e7ae97dd5f63ef731345502f850c07097f66eb",
     "candidate_sha256": "3126fe7f00fd30cf2b5b836b6a91fa0e07f1b2134ef84fc43b8e8df46569a73a",
     "allocation_seconds": 3360,
-    "submitted": false,
-    "validation_or_retraining_authorized": false
+    "submitted": true,
+    "validation_or_retraining_authorized": false,
+    "job_id": 6636731,
+    "actual_remote_release_verification_passed": true
   }
 }

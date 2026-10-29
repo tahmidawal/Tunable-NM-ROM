@@ -1465,9 +1465,29 @@
       "node": "pax023",
       "exit_code": "0:0",
       "execution_report": "Both development references reconstructed; independent scientific and durable retention review pending."
+    },
+    {
+      "job_id": 6636731,
+      "attempt": "model-development01",
+      "phase": "actual_bank_POD_development_and_quadrature",
+      "budget_bucket": "ROM",
+      "release_sha256": "f69c8b42ef5dd0c2ddbfead1d9e7ae97dd5f63ef731345502f850c07097f66eb",
+      "source_commit": "7616a27b5",
+      "mirror_commit": "345939b6b",
+      "state": "PENDING",
+      "state_last_observed": "PENDING",
+      "gpus": 1,
+      "allocation_seconds_reserved": 3360,
+      "outer_process_ceiling_seconds": 3355,
+      "single_submission": true,
+      "training_authorized": false,
+      "validation_access_authorized": false,
+      "submitted_utc": "2026-10-29T14:01:37.224406+00:00"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6636731
+  ],
   "completed_gpu_hours": 4.527222222222222,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
   "total_allocated_gpu_hours_completed": 4.527222222222222,

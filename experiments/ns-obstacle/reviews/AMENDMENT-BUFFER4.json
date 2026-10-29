@@ -1,0 +1,34 @@
+{
+  "schema": "ns-obstacle-operational-buffer-amendment-v1",
+  "amendment_id": "BUFFER4-2026-10-29",
+  "authorized_utc": "2026-10-29T05:55:10.521272+00:00",
+  "parent_release_sha256": "fa35dd905a17e76f6808cecb69659548fb2a2feadecf946c43a58c64c126f5ab",
+  "frozen_numerical_source": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+  "frozen_schedule_sha256": "e32352be9e4bf6c4a5229522da10b69a8b067a67d723fff9f0844c5b29708e96",
+  "override": {
+    "maximum_total_running_or_uncollected": 4
+  },
+  "maximum_live_jobs": 2,
+  "completed_groups_may_fill_total_buffer_as_live_jobs_finish": true,
+  "remote_limit_bytes": 53687091200,
+  "per_outstanding_or_proposed_group_full_future_reservation_bytes": 7755516093,
+  "mandatory_before_start_or_pack": "Current measured complete namespace PLUS full future envelope for EVERY outstanding group (including completed-but-unpacked) PLUS proposed new group if any must fit50GiB. Count each group once in reservation sum. Current bytes are deliberately overcounted; older and collected-awaiting-backup originals and all partial/scratch files remain in measured namespace.",
+  "current_namespace_snapshot_bytes": 10421806659,
+  "four_envelope_snapshot_projection_bytes": 41443871031,
+  "unchanged": [
+    "Exactly the original14 groups/210 solves; no new numerical candidates or retries",
+    "At most two live jobs; queue checks and unique directories",
+    "22GiB actual poststage guard;10GiB untouched through staging/recovery/collection",
+    "Serial staging/collection including actual Git writes; account any overlapping read-only upload reservations",
+    "Separate measured local collection peaks and durable retention before cooling/deleting duplicates",
+    "All scientific thresholds, scope, original domain failure and compute subcaps",
+    "Stop new submissions on detected scientific/execution/provenance failure or invalid capacity projection"
+  ],
+  "independent_review": {
+    "reviewer": "/root/numerical_resume",
+    "policy_and_arithmetic_passed": true,
+    "required_correction_incorporated": "Pending archive writes for completed-but-unpacked groups are reserved; the full-envelope rule conservatively includes them."
+  },
+  "population_admitted": false,
+  "training_released": false
+}

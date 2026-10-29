@@ -54,6 +54,13 @@
       "job_id": "6640980",
       "source_commit": "401b17701",
       "actual_gpu_seconds": 129
+    },
+    {
+      "attempt": "cheap01",
+      "reserved_seconds": 900,
+      "status": "prepared",
+      "remote": "/cluster/tufts/paralab/tawal01/bshared-cheap-20261029/cheap01",
+      "reason": "User authorized genuine16 cheap-coarse feasibility screen on2026-10-29"
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -65,8 +72,8 @@
   },
   "budget_accounting": {
     "charged_gpu_seconds": 2724,
-    "reserved_gpu_seconds": 0,
-    "unspent_gpu_seconds": 4476,
-    "stopped": "Profiling complete; no further allocations"
+    "reserved_gpu_seconds": 900,
+    "unspent_gpu_seconds": 3576,
+    "stopped": "Bounded cheap-coarse screen authorized; no model training or repeated cycles"
   }
 }

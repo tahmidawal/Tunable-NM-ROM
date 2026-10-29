@@ -1,0 +1,36 @@
+{
+  "status": "preregistered before execution",
+  "question": "Can genuine16 proposals using fewer quadrature points be cheap enough to save fine64 work?",
+  "fine_target": "Existing shared64 R512/L1024 M256 Gauss128x128 BE dt.005 50steps, original temporal predictor/IC/damping/tolerances",
+  "coarse": [
+    {
+      "name": "full",
+      "K": 16,
+      "M": 256,
+      "points": 16384
+    },
+    {
+      "name": "q64",
+      "K": 16,
+      "M": 256,
+      "points": 4096
+    },
+    {
+      "name": "q32m64",
+      "K": 16,
+      "M": 64,
+      "points": 1024
+    }
+  ],
+  "quadrature": "Classical tensor Gauss regenerated for each setting. No fitted EQ, no claimed physical mesh refinement; inherited analytic-advection/discrete-diffusion fine target unchanged.",
+  "proposals": "One or two LM updates with genuine zero-tail D16, initialized by first16 coordinates of original fine predictor. History uses same fine accepted states and exact prefix test modes. Upward transfer is zero-padding. No learned P or field-fit restriction.",
+  "acceptance": "Allow finite unfinished reason0 coarse proposal. Guard on original fine objective strict relative improvement1e-8; otherwise use original predictor. Fine damping remains original. Truncation loss recorded outside production timings.",
+  "quadrature_eligibility": "On fixed six exposed cases at indices0,1,10,25,49 compare total r/J and nonlinear N/NJ versus G128 with SAME M. Each maxrelative<=1e-3, denominatorfloor1e-12. Development eligibility only.",
+  "validation": "Exact original baseline counts and close states; field-preserving upward identity; disabled/forcedfail parity; fresh returned fine stationarity; timed/recorded witnesses",
+  "timing": "7 randomized paired full fused queries percase, burn before each; countall candidate/guard costs. Isolated component calls are separate diagnostics, not additive production attribution.",
+  "cost_gate": "Median of per-case pairedmedianratios<=.85 and worstcase<=1.10; no exclusions or tuning. If none pass stop. Any cost win requires tightfine baseline agreement before speedupclaim.",
+  "scope": "No training, sealed cohorts, 3D, repeated correction cycles, mesh changes or baseline changes",
+  "reservation_gpu_seconds": 900,
+  "previous_charged_gpu_seconds": 2724,
+  "total_cap_gpu_seconds": 7200
+}

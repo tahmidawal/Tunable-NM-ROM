@@ -1,6 +1,6 @@
 {
   "status": "source_only_reservation_not_execution_release",
-  "source_sha256": "6ac07484315178ec239792ffc940ea143bcd54f2479444f5b67077778a1c8780",
+  "source_sha256": "efce7eb8410ac5fe972749a0f6b4f42e342d5fdb4ac4ae491b5d8432e36de621",
   "capacity_projection_sha256": "8e0a873de49240ee70e446d7603092dccf7b2728a179fd50def6ddec0cac4b57",
   "measurement_sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
   "allocation_seconds": {
@@ -24,11 +24,12 @@
     "prepared_primary_after_fine_replay": 1910921079,
     "development_audit_maximum": 4623510240,
     "all_registered_paired_full_outputs": 16716623616,
+    "accuracy_only_validation_fallback_maximum": 1791066816,
     "paired_returned_states_upper_bound": 1762838784,
     "training_checkpoint_allowance": 134217728,
     "FOM_calibration_per_candidate": 719122016,
     "native_scalar_readout_per_candidate": 215591376,
-    "base_new_archive_only_payload": 25148111447,
+    "base_new_archive_only_payload": 26939178263,
     "minimum_free_reserve": 10737418240,
     "fine_remote_original_primary_restored_workspace": 13230238999
   },
@@ -41,21 +42,21 @@
   "calibration_ladder_scenarios": [
     {
       "candidate_count": 2,
-      "new_archive_only_payload_bytes": 26586355479,
-      "payload_plus_reserve_before_transport_bytes": 37323773719
+      "new_archive_only_payload_bytes": 28377422295,
+      "payload_plus_reserve_before_transport_bytes": 39114840535
     },
     {
       "candidate_count": 4,
-      "new_archive_only_payload_bytes": 28024599511,
-      "payload_plus_reserve_before_transport_bytes": 38762017751
+      "new_archive_only_payload_bytes": 29815666327,
+      "payload_plus_reserve_before_transport_bytes": 40553084567
     },
     {
       "candidate_count": 6,
-      "new_archive_only_payload_bytes": 29462843543,
-      "payload_plus_reserve_before_transport_bytes": 40200261783
+      "new_archive_only_payload_bytes": 31253910359,
+      "payload_plus_reserve_before_transport_bytes": 41991328599
     }
   ],
-  "local_free_bytes_at_generation": 29968109568,
+  "local_free_bytes_at_generation": 29489258496,
   "disk_flow": [
     "Keep actual FD1 input/cache hashes and paths warm; materialize derived full-rule/prepared fields only in fresh allocated jobs.",
     "Fine preparation must complete exact primary replay; originals remain until independent acceptance.",

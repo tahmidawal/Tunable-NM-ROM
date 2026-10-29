@@ -487,9 +487,42 @@ class TrainingFEAdapter:
         # Evaluate while each element transformation remains alive. Do not retain
         # mapped C++ points after their transformation leaves scope.
         if points is not None:
+            if not hasattr(self, '_probe_map_cache'):
+                self._probe_map_cache = {}; self.probe_lookup_evidence = []
+            coordinate = self.ng.CF((self.ng.x, self.ng.y))
             for point in points:
-                mip = self.mesh(*point)
-                if mip.nr < 0: raise ValueError('probe outside saved FE geometry; no nudge')
+                key = tuple(float(x) for x in point)
+                if key in self._probe_map_cache:
+                    yield self._probe_map_cache[key]; continue
+                entry = {'point': list(key), 'status': 'checking', 'point_nudged': False,
+                         'reference_membership_tolerance': 64*np.finfo(float).eps,
+                         'coordinate_tolerance': 1e-10*self.D}
+                self.probe_lookup_evidence.append(entry)
+                def finite_list(value):
+                    return [float(x) if np.isfinite(x) else {'nonfinite': str(x)} for x in np.asarray(value).reshape(-1)]
+                try:
+                    mip = self.mesh(*point, tol=1e-12); entry['element_number'] = int(mip.nr)
+                    if mip.nr < 0: raise ValueError('probe outside saved FE geometry; no nudge')
+                    ref = np.asarray(mip.pnt, dtype=np.float64); entry['reference_coordinates'] = finite_list(ref)
+                    if ref.shape != (3,) or not np.isfinite(ref).all(): raise ValueError('invalid native probe reference coordinates')
+                    bary = np.array([ref[0], ref[1], 1-ref[0]-ref[1]])
+                    entry['barycentric_coordinates'] = finite_list(bary)
+                    if np.min(bary) < -64*np.finfo(float).eps or abs(ref[2]) > 64*np.finfo(float).eps:
+                        raise ValueError('probe not certified inside saved FE element; no nudge')
+                    mapped = np.asarray(coordinate(mip), dtype=np.float64); entry['reconstructed_point'] = finite_list(mapped)
+                    if mapped.shape != (2,) or not np.isfinite(mapped).all(): raise ValueError('invalid native probe reconstruction')
+                    error = float(np.linalg.norm(mapped-point)); entry['reconstruction_error'] = error
+                    if error > 1e-10*self.D: raise ValueError('probe physical reconstruction differs; no nudge')
+                    entry['status'] = 'passed'; self._probe_map_cache[key] = mip
+                except Exception as exc:
+                    entry.update(status='failed', exception=repr(exc)); raise
+                finally:
+                    try:
+                        (self.evidence_directory/'probe_lookup.json').write_text(json.dumps({
+                            'schema': 'ns-obstacle-exact-probe-lookup-v1', 'records': self.probe_lookup_evidence,
+                            'point_nudging_allowed': False}, indent=2, allow_nan=False)+'\n')
+                    except Exception:
+                        if entry['status'] != 'failed': raise
                 yield mip
             return
         ng = self.ng

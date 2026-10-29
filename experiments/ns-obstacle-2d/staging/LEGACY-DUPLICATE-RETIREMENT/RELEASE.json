@@ -1,0 +1,32 @@
+{
+  "schema": "ns-obstacle-exact-legacy-duplicate-retirement-release-v1",
+  "authorized": true,
+  "authorized_utc": "2026-10-29T08:08:56.722945+00:00",
+  "proposal_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/headroom-duplicate-proposal.json",
+  "proposal_sha256": "01d60b1dc8d9b9aad53d286fda99686c268639f3b35e1dc284771915ccdd7a36",
+  "proposal_source_commit": "31b07083661488738249ba8a81aa96eefdc591ba",
+  "proposal_mirror": "abffd053e",
+  "authorized_file_count": 479,
+  "logical_bytes": 1968142254,
+  "conservative_single_link_allocated_bytes": 1862184960,
+  "hardlinked_logical_bytes_not_credited": 107106716,
+  "independent_review": {
+    "reviewer": "/root/numerical_resume",
+    "passed": true,
+    "all_current_files_rehashed": true,
+    "cold_certificates_checked_against_source_and_mirror": 7,
+    "protected_training_paths": 156,
+    "protected_shared_evidence_paths": 18,
+    "protected_coarse_FOM_lift_directories": 7,
+    "remaining_reviewer_dependency_on_target_files": false
+  },
+  "conditions": [
+    "Release must be backed before execution.",
+    "Only the479 explicitly eligible per-file paths in the exact proposal are authorized; no whole-directory deletion or extra inferred paths.",
+    "Reference owner executes in its owned worktree after fresh path/ownership/hash/size/link/protection/source+mirror reachability and free-space checks.",
+    "Preserve all cold proofs, source/mirror histories and protected training/FOM/shared inputs; recheck current protections if aggregate metadata has advanced.",
+    "If any prerequisite fails, stop before deleting that proposed set and retain the discrepancy.",
+    "Serialize with other local staging/collection/Git writes; preserve a per-file lifecycle receipt and actual reclaimed-byte observation."
+  ],
+  "scientific_or_admission_change": false
+}

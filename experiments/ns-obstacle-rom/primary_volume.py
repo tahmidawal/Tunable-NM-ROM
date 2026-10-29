@@ -32,7 +32,7 @@ def runtime_identity():
  """Hash executable package code/data; omit install paths/cache-only metadata."""
  import importlib.metadata
  packages={}
- for name in ('ngsolve','netgen-mesher','ngsolve-openblas','numpy','scipy'):
+ for name in ('ngsolve','netgen-mesher','netgen-occt','ngsolve-openblas','numpy','scipy'):
   distribution=importlib.metadata.distribution(name);files={}
   for relative in distribution.files or ():
    label=str(relative)

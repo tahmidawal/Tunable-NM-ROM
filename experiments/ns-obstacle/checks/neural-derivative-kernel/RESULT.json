@@ -1,0 +1,41 @@
+{
+  "scope": "CPU-only algebra smoke check; not ROM timing or a GPU performance result.",
+  "seed": 29102026,
+  "dtype": "float64",
+  "shape": [
+    4096,
+    128,
+    2
+  ],
+  "numpy_version": "2.4.4",
+  "methods": {
+    "original_einsum": {
+      "seconds": [
+        0.249942010268569,
+        0.2501129233278334,
+        0.24959622975438833
+      ],
+      "median_seconds": 0.249942010268569,
+      "max_absolute_gap": 0.0
+    },
+    "optimized_einsum": {
+      "seconds": [
+        0.007302587851881981,
+        0.007778545375913382,
+        0.006873048841953278
+      ],
+      "median_seconds": 0.007302587851881981,
+      "max_absolute_gap": 0.0
+    },
+    "batched_matmul": {
+      "seconds": [
+        0.011038636323064566,
+        0.010952395386993885,
+        0.010969610884785652
+      ],
+      "median_seconds": 0.010969610884785652,
+      "max_absolute_gap": 0.0
+    }
+  },
+  "interpretation": "Equivalent contraction smoke only. Actual model and full-rule equivalence remain required before changing production evaluation."
+}

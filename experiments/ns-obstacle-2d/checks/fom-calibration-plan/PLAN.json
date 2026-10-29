@@ -1,0 +1,247 @@
+{
+  "schema": "ns-obstacle-prospective-fixed-tolerance-FOM-subset-plan-v1",
+  "planning_only": true,
+  "submission_authorized": false,
+  "selection_frozen": false,
+  "allocation_cap_seconds": 2160,
+  "nonlinear_relative_tolerance": 1e-10,
+  "comparison_scope": "Finite declared mesh/order subset with fixed stopping; no optimized-stopping or unrestricted tuned-FOM claim. Actual eligibility/matching requires both development cases, all three contracts, seven repetitions and scalar controls. No validation access.",
+  "source_sha256": {
+    "fom_calibrate2d.py": "a840a5853602683d9b839cd0c274e649834eb4e3fe3a1e8fdadb4dc9f9cc8a1f",
+    "fom_readout2d.py": "31d7be6fbfc14a395c1fa02d1592970f8e38a934171cfba5663da185d1ea7922",
+    "fom_comparator2d.py": "456982d1d5f9bfe6e0049e100ee8eba9b5c762ac9fd81f9269e29e5443aac863",
+    "fom_native/fom_outputs.py": "5accec5a45a207c04bede291521e9cb50d7202eec2e4a2f07d4aeab512328f3c",
+    "fom_bridge2d.py": "04444d84d9bbb5a26a4f0a8f6f5e8b3e3b37ac4a427b65c81dedc5f18cfddeb3",
+    "pilot2d.py": "f407d65b41b84b1b330240080df7bb817b89f1df6b836907059c9894406fa87d",
+    "timing.py": "233118be63a0a8095212fdf9a0b7348051d5a664c53fa1bf6582b7608a5f6375"
+  },
+  "evidence_sha256": {
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/calibration-resource-observation.json": "94df31eff6cd5d5ca8ff9d09bbf8abfeb94fea171edfead61bef0fff41292ab7",
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/control.json": "8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6"
+  },
+  "invocation_accounting": {
+    "development_cases": 2,
+    "contracts": 3,
+    "warmup_solves": 6,
+    "timed_solves": 42,
+    "total_solves": 48,
+    "same_invocation_diagnostic_scores": 42,
+    "scalar_controls": 6,
+    "full_rule_scalar_controls": 2,
+    "common_points": 1036497
+  },
+  "retained_rows": [
+    {
+      "candidate": "p3g3h1",
+      "source_result": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-ladder02/results/dfg_h1/result.json",
+      "source_result_sha256": "3c84ee7f9ecf8b4c8702e2d80778a1db2e036a690178b4f43cbaed18ca1c27f5",
+      "config_sha256": "56bce24fb1e0242ae85de96161802e6a33b65946dc9d6b1a515fd6f83588673b",
+      "history_sha256": "217fc8d5df60cc9feab36f55d7e72f918f08ea29ff7fa2119601966769a3536b",
+      "newton_seconds_Re20": 2.38531157374382,
+      "Newton_updates_Re20": 5,
+      "final_relative_residual_Re20": 1.5368287307512772e-15,
+      "all_updates_full_step": true,
+      "mixed_dofs": 16912,
+      "observed_peak_rss_bytes": 369512448,
+      "native_Re20_divergence_diagnostic": 0.006043541205424657,
+      "native_Re20_under_comparator_005_diagnostic_only": false,
+      "solver_projection_48_calls_seconds": 114.49495553970337
+    },
+    {
+      "candidate": "p3g3h2",
+      "source_result": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-ladder02/results/dfg_h2/result.json",
+      "source_result_sha256": "1e88098ab20c30be6241726fdfbcae5f07c73a97b5190fa3ca38bb902381e193",
+      "config_sha256": "0ea76fa742283e87acb34c347d9665086f76db43e58dc39d5a4df2077be1b48b",
+      "history_sha256": "d9b1223d40f28c913690da9b549be12eca6b4bf0fa28b7e6dcdcf8005cd2f43e",
+      "newton_seconds_Re20": 5.397232147864997,
+      "Newton_updates_Re20": 5,
+      "final_relative_residual_Re20": 1.7724598932661076e-15,
+      "all_updates_full_step": true,
+      "mixed_dofs": 61172,
+      "observed_peak_rss_bytes": 681713664,
+      "native_Re20_divergence_diagnostic": 0.0014024773357450802,
+      "native_Re20_under_comparator_005_diagnostic_only": true,
+      "solver_projection_48_calls_seconds": 259.0671430975199
+    },
+    {
+      "candidate": "p3g3h3",
+      "source_result": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-h3/results/dfg_h3/result.json",
+      "source_result_sha256": "f8de091ebfe6f8abfbc4b2e010cb494e6af55d3a21b6af7c06bbb77ab18e59be",
+      "config_sha256": "c744eda035064c3055ae5d8190ff2fe7e643f73f4e65decbbd643740c35923b3",
+      "history_sha256": "5fb157efb769819108ad6a95faf4701655d56d79c9686b0e28629341c222f137",
+      "newton_seconds_Re20": 22.55954472720623,
+      "Newton_updates_Re20": 5,
+      "final_relative_residual_Re20": 2.052157474190273e-15,
+      "all_updates_full_step": true,
+      "mixed_dofs": 235231,
+      "observed_peak_rss_bytes": 2157096960,
+      "native_Re20_divergence_diagnostic": 0.00042797544226594574,
+      "native_Re20_under_comparator_005_diagnostic_only": true,
+      "solver_projection_48_calls_seconds": 1082.858146905899
+    },
+    {
+      "candidate": "p4g4h1",
+      "source_result": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h1/result.json",
+      "source_result_sha256": "08be335f55c33812e07180c6fae737f303bca8e9de626ab3fefc2a4a26eb7b0d",
+      "config_sha256": "72433d8c77a20dff38ba8197347423ed82c18b29b2f611923d313a23dc12c973",
+      "history_sha256": "0b6fe9bc1ffd3368f80736027924eefd52780851ad160632a425d56048fda47f",
+      "newton_seconds_Re20": 3.4641338773071766,
+      "Newton_updates_Re20": 5,
+      "final_relative_residual_Re20": 1.802105540173663e-15,
+      "all_updates_full_step": true,
+      "mixed_dofs": 31209,
+      "observed_peak_rss_bytes": 488869888,
+      "native_Re20_divergence_diagnostic": 0.0005785451644649537,
+      "native_Re20_under_comparator_005_diagnostic_only": true,
+      "solver_projection_48_calls_seconds": 166.27842611074448
+    },
+    {
+      "candidate": "p4g4h2",
+      "source_result": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h2/result.json",
+      "source_result_sha256": "703019fdddc413b846a15aa9a944c5df69fee5417190f19519e70cf74c8253d1",
+      "config_sha256": "c2be9cc34f4084f44ffe5261865044eb266bac44bf44f51b4855c16083985ff4",
+      "history_sha256": "16f3e14e3122164bda8162f0f04099e1c79e22da436e8aef14a73b0dcd1e27f5",
+      "newton_seconds_Re20": 11.826877506449819,
+      "Newton_updates_Re20": 5,
+      "final_relative_residual_Re20": 1.799673118433218e-15,
+      "all_updates_full_step": true,
+      "mixed_dofs": 113373,
+      "observed_peak_rss_bytes": 1323147264,
+      "native_Re20_divergence_diagnostic": 9.337694570473143e-05,
+      "native_Re20_under_comparator_005_diagnostic_only": true,
+      "solver_projection_48_calls_seconds": 567.6901203095913
+    },
+    {
+      "candidate": "p4g4h3",
+      "source_result": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/results/dfg_h3/result.json",
+      "source_result_sha256": "4204e15635d7ac8249e73a8f94bc9879d244d8db90afe0e2e42d66489f4a9c1f",
+      "config_sha256": "2fbe6cd93419aea1dcae08180ada7e7e07b6dc7d4ceee8226bfdafc488d2ed00",
+      "history_sha256": "7b616486ecdccd60da7d5e94a0072ffe2e6365dc92988eb46a1258b923cfb080",
+      "newton_seconds_Re20": 53.12271108478308,
+      "Newton_updates_Re20": 5,
+      "final_relative_residual_Re20": 2.0891091105752404e-15,
+      "all_updates_full_step": true,
+      "mixed_dofs": 437140,
+      "observed_peak_rss_bytes": 5217640448,
+      "native_Re20_divergence_diagnostic": 1.8028870212164495e-05,
+      "native_Re20_under_comparator_005_diagnostic_only": true,
+      "solver_projection_48_calls_seconds": 2549.8901320695877
+    }
+  ],
+  "other_phase_reservations_seconds_per_candidate": {
+    "fresh_common_mapping_force_forms_and_lift_setup": 180.0,
+    "42_diagnostic_scores_at_1_second": 42.0,
+    "14_full_field_outputs_at_1_second": 14.0,
+    "2_full_scalar_readouts_at_retained_maximum": 190.11886151507497,
+    "4_probe_or_force_scalar_controls": 20.0,
+    "raw_evidence_serialization_and_checksums": 90.0,
+    "42_clock_burns_at_025_second": 10.5
+  },
+  "global_phase_reservations_seconds": {
+    "allocation_startup_dependency_and_input_checks": 60.0,
+    "protected_finalization": 180.0
+  },
+  "options": [
+    {
+      "option": "preferred_two_candidate_ladder",
+      "candidates": [
+        "p3g3h2",
+        "p4g4h1"
+      ],
+      "solver_only_seconds": 425.34556920826435,
+      "solver_with_50percent_planning_contingency": 638.0183538123965,
+      "per_candidate_other_phase_seconds": 546.618861515075,
+      "global_phase_seconds": 240.0,
+      "total_planning_seconds": 1971.2560768425465,
+      "remaining_under_2160_seconds": 188.74392315745354,
+      "fits_planning_envelope": true,
+      "interpretation": "Both remain plausible under actual comparator .005 divergence contract; compare within this allocation only."
+    },
+    {
+      "option": "single_P4_h1_fallback",
+      "candidates": [
+        "p4g4h1"
+      ],
+      "solver_only_seconds": 166.27842611074448,
+      "solver_with_50percent_planning_contingency": 249.41763916611671,
+      "per_candidate_other_phase_seconds": 546.618861515075,
+      "global_phase_seconds": 240.0,
+      "total_planning_seconds": 1036.0365006811917,
+      "remaining_under_2160_seconds": 1123.9634993188083,
+      "fits_planning_envelope": true,
+      "interpretation": "More headroom if unknown mapping/retention work makes two candidates unattractive."
+    },
+    {
+      "option": "finer_single_alternative",
+      "candidates": [
+        "p4g4h2"
+      ],
+      "solver_only_seconds": 567.6901203095913,
+      "solver_with_50percent_planning_contingency": 851.5351804643869,
+      "per_candidate_other_phase_seconds": 546.618861515075,
+      "global_phase_seconds": 240.0,
+      "total_planning_seconds": 1638.154041979462,
+      "remaining_under_2160_seconds": 521.8459580205381,
+      "fits_planning_envelope": true,
+      "interpretation": "Consider only if actual development matching requires tighter spatial accuracy."
+    },
+    {
+      "option": "coarse_negative_control_alternative",
+      "candidates": [
+        "p3g3h1",
+        "p4g4h1"
+      ],
+      "solver_only_seconds": 280.77338165044785,
+      "solver_with_50percent_planning_contingency": 421.16007247567177,
+      "per_candidate_other_phase_seconds": 546.618861515075,
+      "global_phase_seconds": 240.0,
+      "total_planning_seconds": 1754.3977955058217,
+      "remaining_under_2160_seconds": 405.6022044941783,
+      "fits_planning_envelope": true,
+      "interpretation": "P3h1 Re20 exceeds .005, but do not transfer that result as a dev rejection; retain actual failures."
+    },
+    {
+      "option": "two_P4_candidates_not_supported_by_this_envelope",
+      "candidates": [
+        "p4g4h1",
+        "p4g4h2"
+      ],
+      "solver_only_seconds": 733.9685464203358,
+      "solver_with_50percent_planning_contingency": 1100.9528196305037,
+      "per_candidate_other_phase_seconds": 546.618861515075,
+      "global_phase_seconds": 240.0,
+      "total_planning_seconds": 2434.1905426606536,
+      "remaining_under_2160_seconds": -274.1905426606536,
+      "fits_planning_envelope": false,
+      "interpretation": "Fails this conservative phase envelope."
+    },
+    {
+      "option": "P3_fine_not_supported_by_this_envelope",
+      "candidates": [
+        "p3g3h3"
+      ],
+      "solver_only_seconds": 1082.858146905899,
+      "solver_with_50percent_planning_contingency": 1624.2872203588486,
+      "per_candidate_other_phase_seconds": 546.618861515075,
+      "global_phase_seconds": 240.0,
+      "total_planning_seconds": 2410.9060818739235,
+      "remaining_under_2160_seconds": -250.90608187392354,
+      "fits_planning_envelope": false,
+      "interpretation": "Fails this conservative phase envelope."
+    }
+  ],
+  "explicit_uncertainties": [
+    "Historical phases occurred in different allocations and are resource estimates only, never performance ratios.",
+    "Fresh requested-point mapping on each candidate has not been timed at the full common rule by this driver;180s is a proposed reserve, not a measured upper bound.",
+    "Scoring/output/serialization reservations are prospective; repeated point-field export totals are not substituted as equivalent timings.",
+    "1.5 solver multiplier is a prospective contingency, not a guarantee of Re16.875/23.125 iteration counts or host speed.",
+    "Keep2160s hard wall, protected180s finalization, cooperative checks and all failures. No automatic retry or unplanned candidate expansion.",
+    "Disk/memory closure requires separate measured release checks; this time plan does not authorize collection or relax16GiB limits."
+  ],
+  "correction": {
+    "retracted_statement": "P3h2 is excluded because native Re20 divergence exceeds1e-3.",
+    "correct_statement": "1e-3 belongs to reference truth qualification. Current shared ROM/FOM scorer uses .005 and calibration has no stricter native divergence rejection. P3h2 remains eligible for prospective testing.",
+    "source": "pilot2d.py score_field_arrays lines322-337; fom_bridge2d.py uses its accuracy_targets_passed; fom_query has no divergence gate.",
+    "normalization": "Native D||div u||/(U sqrt(physical volume)) equals common-rule RMS trace(d(u/U)/d(x/D)) algebraically; own versus requested quadrature and parameter still differ."
+  }
+}

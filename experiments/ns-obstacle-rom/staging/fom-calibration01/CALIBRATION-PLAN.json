@@ -1,0 +1,111 @@
+{
+  "schema": "ns-obstacle-fom-development-calibration-plan-v1",
+  "development_Re": [
+    16.875,
+    23.125
+  ],
+  "validation_allowed": false,
+  "selection_frozen": false,
+  "matched_accuracy": false,
+  "output_contracts": [
+    "full_velocity_pressure_fields",
+    "fixed_probes",
+    "integrated_forces"
+  ],
+  "native_source_sha256": "b62e04f73fd3ada872c8ba471e0bc797bc1a536c4f6ce1cf3614c72045605ccd",
+  "selection_policy": "minimum_pooled_development_median_all_invocations_eligible_ties_ladder_order",
+  "cores": 16,
+  "max_common_points": 1300000,
+  "common_rule_points": 1036497,
+  "repetitions": 7,
+  "runtime_versions": {
+    "python": "3.13.2",
+    "ngsolve": "6.2.2608",
+    "numpy": "2.5.0",
+    "scipy": "1.18.0",
+    "jax": "0.10.2"
+  },
+  "volume_rule_sha256": "1b8cb44f65c64b3e2cbfeefc5848bc3f3dc06c2b30b8123797bb6fe5c74b4590",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "truth_admission": {
+    "path": "inputs/FD1-REFERENCE-ADMISSION.json",
+    "sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f"
+  },
+  "development_population": {
+    "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize02/results/population/development.json",
+    "sha256": "7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070"
+  },
+  "common_geometry": {
+    "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/bank-fit01/inputs/prepared/volume/geometry.npz",
+    "sha256": "45bfc1aef3f47975dc3116da9429feb3eb0a7d4232d42fa8da33ab267beb6bcc"
+  },
+  "candidates": [
+    {
+      "id": "p3g3h2",
+      "field_rule_mode": "certified_requested_points",
+      "runtime_workspace_reserve_bytes": 4294967296,
+      "config": {
+        "path": "inputs/candidates/p3g3h2/config.json",
+        "sha256": "0ea76fa742283e87acb34c347d9665086f76db43e58dc39d5a4df2077be1b48b"
+      },
+      "mesh": {
+        "path": "inputs/candidates/p3g3h2/mesh.vol.bin",
+        "sha256": "2fab6a1859d225b8449eeefded18356ab4e544aad119b99b4d3125f9294147ba"
+      },
+      "layout": {
+        "path": "inputs/candidates/p3g3h2/fe_layout.json",
+        "sha256": "7c5a2e60b478439f4dc1808338e65f127d41b80b5082666ad239e699b40db58f"
+      },
+      "boundary": {
+        "path": "inputs/candidates/p3g3h2/boundary_rule.json",
+        "sha256": "3b5650dd79edff34c18cfdeb55449ebe370f733d0069a9882b35c039195bbc68"
+      },
+      "eligibility": {
+        "path": "inputs/eligibility/p3g3h2.json",
+        "sha256": "fa53d778915c969f6bac24fda6e8bad93f21dc46596716ad5b8618e242347505"
+      }
+    },
+    {
+      "id": "p4g4h1",
+      "field_rule_mode": "certified_requested_points",
+      "runtime_workspace_reserve_bytes": 4294967296,
+      "config": {
+        "path": "inputs/candidates/p4g4h1/config.json",
+        "sha256": "72433d8c77a20dff38ba8197347423ed82c18b29b2f611923d313a23dc12c973"
+      },
+      "mesh": {
+        "path": "inputs/candidates/p4g4h1/mesh.vol.bin",
+        "sha256": "bcc562d338a206b4a8d9de73be5ef1afd0f4d448f78d8a8ae1f823b41cbe229e"
+      },
+      "layout": {
+        "path": "inputs/candidates/p4g4h1/fe_layout.json",
+        "sha256": "5f884d96b5082219aec966e6595ea6d2c2632ebf00fca25c7dcf8c0e18ddacfa"
+      },
+      "boundary": {
+        "path": "inputs/candidates/p4g4h1/boundary_rule.json",
+        "sha256": "edf79565a01e3e38813f94fd96c25ba316de7f0f73d1ffa67b40563f19254a1f"
+      },
+      "eligibility": {
+        "path": "inputs/eligibility/p4g4h1.json",
+        "sha256": "c55f4dab9a7e242f33a1462d7ef5a421cab4947e5bc544da5777cccd07e20e42"
+      }
+    }
+  ],
+  "scope": "Two tested mesh/order configurations at fixed nonlinear tolerance 1e-10; no stopping-tolerance optimization or matched-accuracy claim.",
+  "prospective_runtime_planning": {
+    "path": "inputs/PROSPECTIVE-RUNTIME-PLAN.json",
+    "sha256": "c34e046a1c7f80829ce3382e93b2b9bb5be061ee89522631304f6ca6f5a3ef64"
+  }
+}

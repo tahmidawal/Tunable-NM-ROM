@@ -1,0 +1,41 @@
+{
+  "execution_released": false,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fom-calibration01",
+  "allocation_seconds": 2160,
+  "outer_timeout_seconds": 2145,
+  "outer_kill_grace_seconds": 10,
+  "finalization_reserve_seconds": 180,
+  "original_fom_reservation_seconds": 2400,
+  "prior_candidate_control_reservation_seconds": 240,
+  "launcher_sha256": "d1bfa20671fae8a4d6b7ea43df4953105d118997489764d28c37d7408f60574f",
+  "source_sha256": "78add2703bab36c52d9ef80d016c3f9931dd61d7ce3bf7c2c36b61365db03d00",
+  "plan_sha256": "611f255f30e090f3c9db51e09e8e07e5bf900700b3e469235376c488a50001d7",
+  "runtime_inventory_sha256": "b0ddcca679b8c424ba4087f14c4378a1dd0338ebcd3e8f09cf48dea4084712f3",
+  "input_bytes": 92918077,
+  "model_development_future_envelope_bytes": 12884901888,
+  "calibration_output_archive_envelope_bytes": 10737418240,
+  "miscellaneous_reserved_bytes": 268435456,
+  "global_namespace_limit_bytes": 53687091200,
+  "local_collection_requires_separate_actual_measurement": true,
+  "automatic_retry": false,
+  "validation_allowed": false,
+  "matched_accuracy": false,
+  "storage_projection": {
+    "components": {
+      "full_field_timed_arrays": 696525984,
+      "coefficient_state_allowance_four_copies_all_96_calls": 187920384,
+      "four_full_scalar_controls": 431182752,
+      "two_mapping_array_sets": 182423472,
+      "boundary_controls_and_small_outputs": 33554432,
+      "mapping_failure_and_solver_metadata_allowance": 2147483648,
+      "isolated_dependencies_allowance": 1073741824,
+      "copied_input_bytes": 92918077
+    },
+    "raw_bytes": 4845750573,
+    "archive_bytes_without_compression_credit": 5009774448,
+    "combined_bytes": 9855525021,
+    "no_array_deduplication_credit": true,
+    "metadata_allowance_is_a_reservation_not_measured_mapping_evidence": true,
+    "existing_shared_geometry_and_population_already_in_namespace_total": true
+  }
+}

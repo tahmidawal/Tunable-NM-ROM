@@ -1,0 +1,21 @@
+NVIDIA H200, GPU-d115e0d0-3aa6-50ba-f7e0-cd2c2b54a5ae, 143771 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.31:/projects/paralab  4.6T  1.4T  3.3T  30% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+SETUP_PASS 57.315
+RECORDED 0 [('direct', 80, True), ('affine', 61, True)]
+RECORDED 1 [('direct', 80, True), ('affine', 69, True)]
+RECORDED 2 [('direct', 94, True), ('affine', 64, True)]
+RECORDED 3 [('direct', 85, True), ('affine', 70, True)]
+RECORDED 4 [('direct', 60, True), ('affine', 34, True)]
+RECORDED 5 [('direct', 73, True), ('affine', 43, True)]
+TIMING_BLOCK 0
+TIMING_BLOCK 1
+TIMING_BLOCK 2
+TIMING_BLOCK 3
+TIMING_BLOCK 4
+TIMING_BLOCK 5
+TIMING_BLOCK 6
+FINAL {"per_case_paired_median_ratios": [1.349195808063545, 1.4784125508367245, 1.4193175461183425, 1.4551009284561456, 1.3967205653978374, 1.3705557712313454], "median_ratio": 1.40801905575809, "maximum_case_ratio": 1.4784125508367245, "all_numerically_valid": true, "all_timing_identities": true, "all_controls": true, "passed": false}
+ALL-DONE

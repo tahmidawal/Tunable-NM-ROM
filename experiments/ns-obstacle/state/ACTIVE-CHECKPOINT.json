@@ -136,7 +136,7 @@
   "remaining_population_policy": {
     "policy": "reviews/REMAINING-POPULATION-POLICY.json",
     "review": "reviews/REMAINING-POPULATION-POLICY-REVIEW.json",
-    "status": "source/resource/retention bindings pending; not released"
+    "status": "Released at5bd3e76e4, with BUFFER4 and optional compute-only staging amendments"
   },
   "ROM_real_Re20_handoff": {
     "source": "388809d0c",
@@ -145,15 +145,21 @@
     "production_changes": false,
     "training_executed": false
   },
-  "remaining_population_release": "reviews/RELEASE-REMAINING-POPULATION.json; exact a7c58adca, max2 outstanding, serial staging/collection, no retry",
+  "remaining_population_release": "reviews/RELEASE-REMAINING-POPULATION.json; exacta7; BUFFER4 max2 live/max4 outstanding, serial local writes, no retry",
   "shared_FD1_controls": "All six independently accepted; reviews/FD1-SHARED-CONTROLS-RESULT-REVIEW.json",
-  "remaining_population_first_jobs": "6627505 Re15 and6627586 Re16.25; both exacta7c58adca, max2 outstanding reached",
+  "remaining_population_first_jobs": "Re15 audited; Re16.25/Re17.5 completed pending collection; Re18.75/Re21.25 submitted",
   "pending_collections": [
     {
       "job_id": 6627586,
       "group": "re16p25",
       "state": "COMPLETED",
       "elapsed_seconds": 623
+    },
+    {
+      "job_id": 6627914,
+      "group": "re17p5",
+      "state": "COMPLETED",
+      "elapsed_seconds": 637
     }
   ],
   "ROM_first_prep_workflow": {
@@ -169,5 +175,6 @@
     "re20": "reviews/FD1-RE20-ROW-REVIEW.json",
     "re15": "reviews/FD1-RE15-ROW-REVIEW.json"
   },
-  "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged"
+  "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged",
+  "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use"
 }

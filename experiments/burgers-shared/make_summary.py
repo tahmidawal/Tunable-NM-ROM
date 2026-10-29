@@ -8,7 +8,7 @@ HERE = Path(__file__).resolve().parent
 
 
 def main():
-    result = dict(status='independent numerical audit accepted; raw retention verification pending', lanes={}, scope=(
+    result = dict(status='complete: independent numerical and retention audits accepted; owned remote duplicates removed', lanes={}, scope=(
         'Six exposed development cases on one shared model; production stationarity only. '
         'Tight fine-baseline agreement, physical PDE accuracy and successor quadrature were not run after the cost stop.'))
     ledger = json.loads((HERE/'GPU-LEDGER.json').read_text())

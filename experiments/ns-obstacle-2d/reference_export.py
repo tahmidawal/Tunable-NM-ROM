@@ -48,9 +48,27 @@ def enabled(cfg):
     if type(flag) is not bool:raise TypeError('reference_export_controls must be boolean')
     lift=cfg.get('export_common_stokes_lift',False)
     if type(lift) is not bool or (lift and not flag):raise ValueError('common lift export requires explicit G2 controls')
-    if flag and cfg['release'] not in ('G2_steady_control_candidate','G2_steady_training_export'):
+    if flag and cfg['release'] not in ('G2_steady_control_candidate','G2_steady_training_export','G2_fixed_finite_channel_training_export'):
         raise ValueError('G2 export controls need an explicitly reviewed G2 configuration')
+    if cfg['release']=='G2_fixed_finite_channel_training_export':
+        from reference_scope import validate_geometry
+        validate_geometry(cfg)
+    if cfg.get('immutable_rule_cache') is not None and (not flag or not cfg.get('immutable_mesh')):raise ValueError('rule cache requires reviewed immutable mesh reuse')
+    mode=cfg.get('reference_storage_mode','expanded_full_fields')
+    if mode not in ('expanded_full_fields','coefficient_primary'):raise ValueError('unknown reference storage mode')
+    if mode=='coefficient_primary':
+        from reference_scope import validate_geometry
+        validate_geometry(cfg)
+        if not flag or not cfg.get('immutable_rule_cache'):raise ValueError('coefficient-primary reference requires reviewed cache controls')
     return flag
+
+
+def native_rule_cache(cfg,region,mesh,mesh_path,layout_sha256,ng,space,normal=None,normal_factors=None):
+    descriptors=cfg.get('immutable_rule_cache')
+    if descriptors is None:return None
+    if set(descriptors)!={'volume','boundary'}:raise ValueError('both native geometry rule caches must be explicit')
+    from immutable_rule import NativeRuleCache
+    return NativeRuleCache(ng,mesh,mesh_path,layout_sha256,cfg,descriptors[region],space=space,normal=normal,normal_factors=normal_factors)
 
 
 def layout_record(mesh, velocity_space, pressure_space, ng):
@@ -267,7 +285,16 @@ def field_values_batched(velocity,pressure,derivative,transformation,rule):
     return tuple(outputs)
 
 
-def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None,volume_point_limit=None,batched=False):
+def _mapped_state(mesh,velocity,pressure,order,boundary,ng,normal=None,volume_point_limit=None,batched=False,geometry_cache=None,state=None):
+    if geometry_cache is not None:
+        region='boundary' if boundary else 'volume'
+        if geometry_cache.mesh is not mesh or geometry_cache.metadata['region']!=region or geometry_cache.metadata['order']!=order or state is None:raise ValueError('live cached rule binding mismatch')
+        fields,_=geometry_cache.evaluate(state)
+        result={k:geometry_cache.arrays[k] for k in ('points','weights')}
+        result.update(fields)
+        if boundary:result.update(normals=geometry_cache.arrays['normals'],raw_normals=geometry_cache.arrays['raw_normals'],labels=geometry_cache.arrays['labels'].tolist())
+        else:result['jacobians']=geometry_cache.arrays['jacobians']
+        return result
     points=[];weights=[];values=[];gradients=[];pressures=[];jacobians=[];normals=[];labels=[]
     derivative=ng.Grad(velocity)
     if boundary:derivative=ng.BoundaryFromVolumeCF(derivative)
@@ -354,7 +381,9 @@ def _reload_certificate(out,cfg,original_curve_order,original_layout,ng,request)
         for name,g in [('solution',solution),('stokes',stokes)]:
             report['checks'][name+'_coefficients']=relative_max_record(g.vec.FV().NumPy().copy(),data[name+'_coefficients'])
         uh,ph=solution.components
-        volume=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],False,ng,volume_point_limit=volume_point_cap(cfg),batched=batched_export_enabled(cfg))
+        volume_cache=native_rule_cache(cfg,'volume',mesh,out/MESH_FILENAME,digest,ng,X)
+        volume=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],False,ng,volume_point_limit=volume_point_cap(cfg),batched=batched_export_enabled(cfg),geometry_cache=volume_cache,state=solution)
+        if volume_cache is not None:report['immutable_volume_rule_replay']={'certificate':volume_cache.certificate,'descriptor':cfg['immutable_rule_cache']['volume'],'geometry_arrays':'reused only under exact mesh/layout/rule identity; actual state fields recomputed on fresh native mesh'}
         scales={'points':cfg['D'],'weights':1.,'jacobians':1.,'velocity':cfg['U'],'velocity_gradient':cfg['U']/cfg['D'],'pressure':cfg['U']**2}
         for key,scale in scales.items():report['checks']['volume_'+key]=relative_max_record(volume[key],data[key],scale)
         from oriented_normals import fluid_outward_normal
@@ -364,7 +393,9 @@ def _reload_certificate(out,cfg,original_curve_order,original_layout,ng,request)
         if normal_certificate['factors']!=original_normals['factors']:raise ArithmeticError('reloaded boundary orientation factors changed')
         report['normal_orientation']={'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
                                       'certificate_sha256':sha_file(out/'reload_normal_orientation.json')}
-        boundary=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],True,ng,normal=normal,batched=batched_export_enabled(cfg))
+        boundary_cache=native_rule_cache(cfg,'boundary',mesh,out/MESH_FILENAME,digest,ng,X,normal,normal_certificate['factors'])
+        boundary=_mapped_state(mesh,uh,ph,cfg['diagnostic_order'],True,ng,normal=normal,batched=batched_export_enabled(cfg),geometry_cache=boundary_cache,state=solution)
+        if boundary_cache is not None:report['immutable_boundary_rule_replay']={'certificate':boundary_cache.certificate,'descriptor':cfg['immutable_rule_cache']['boundary'],'normal_orientation_factors':normal_certificate['factors']}
         report['analytic_normal_checks']=analytic_normal_certificate(boundary,cfg)
         if not report['analytic_normal_checks']['passed']:raise ArithmeticError('reloaded analytic normal orientation/closure failed')
         saved=json.loads((out/'boundary_rule.json').read_text())

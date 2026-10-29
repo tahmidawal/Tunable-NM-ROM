@@ -1,0 +1,47 @@
+{
+  "started_utc": "2026-10-28T23:28:18.198812+00:00",
+  "source_head": "f3b84165796c7a1ad45d8b35f09f5d2a2c05c59d",
+  "free_bytes_before": 25625899008,
+  "canonical_arrays_and_archive_chunks_preserved": true,
+  "history_rewritten_or_pruned": false,
+  "cases": [
+    {
+      "name": "g2-ladder01",
+      "archive_sha256": "6f9fa30a7b6383824dd475264236443dd52b1a795911cdccb42d319a7abe1479",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "a804bf73654167ee35de87d7f3227b068eecdb5138d35c2340d1554efb80d2d1",
+          "git_blob": "37c684f6e9cd93fd188bbf940721650764485434",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "777781a68f7204e5bfae739d5d4ebce33668b84efb8ee2bd6e236ae3b7db4348",
+          "git_blob": "e96ed28adaaaebc1d410701c3e931cb154c04596",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "c5388d7d001fa9fa832342e5ab0328d769581fe1c76499935c201d2cc0810e75",
+          "git_blob": "a4698f07a20b990e8ff45ccb22a6c7e489f3d65c",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 18382023,
+          "sha256": "1f7b0be5849b7f44a00d997f0cc199624b01b04ce16395a6f280f77972a899ea",
+          "git_blob": "1c2d76223a59b6349419581e0f12c166acae3413",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        }
+      ],
+      "retired": [],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    }
+  ],
+  "completed": false,
+  "stopped_reason": "Additional local checksum receipt found; no copies removed. Subsequently verified identical canonical and mirrored blob c52e637690b1aa3d7156cb72c0eeb570beed558f."
+}

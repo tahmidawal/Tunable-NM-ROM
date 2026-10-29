@@ -332,29 +332,36 @@ def run_case(cfg, out):
         geometry['obstacle_perimeter_error']=metric(abs(boundary_measures['obstacle']-circumference),circumference,'perimeter error / exact circumference')
     # Full positive mapped rule exporter; checks mapped Jacobians and FE traces.
     points=[]; weights=[]; vals=[]; grads=[]; pressures=[]; boundaries=[];jacobians=[]
-    min_det=float('inf')
-    for el in mesh.Elements(ng.VOL):
-        ir=ng.IntegrationRule(el.type,qo)
-        tr=mesh.GetTrafo(el)
-        if reference_controls and len(points)+len(ir)>volume_point_limit:raise MemoryError('reference export exceeds reviewed producer volume-point cap')
-        batch=rex.field_values_batched(uh,ph,grad(uh),tr,ir) if batched_reference_export else None
-        for index,ip in enumerate(ir):
-            if reference_controls and len(points)>=volume_point_limit:
-                raise MemoryError('reference export exceeds reviewed producer volume-point cap')
-            mip=tr(ip)
-            jac=np.array(mip.jacobi,dtype=float,copy=True)
-            determinant=float(np.linalg.det(jac))
-            min_det=min(min_det,determinant)
-            w=float(ip.weight*mip.measure)
-            if not math.isfinite(w) or not math.isfinite(determinant) or w<=0 or determinant<=0:
-                raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
-            points.append(list(mip.point));weights.append(w)
-            jacobians.append(jac.copy())
-            # Persist an owning gradient array, never a possible native view.
-            if batch is None:
-                vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(scalar_value(ph(mip),'volume_pressure_point'))
-            else:
-                vals.append(batch[0][index].tolist());grads.append(batch[1][index].copy());pressures.append(scalar_value(float(batch[2][index]),'volume_pressure_point'))
+    volume_cache=rex.native_rule_cache(cfg,'volume',mesh,out/rex.MESH_FILENAME,layout_evidence['sha256'],ng,X) if reference_controls else None
+    if volume_cache is not None:
+        cached_fields=rex._mapped_state(mesh,uh,ph,qo,False,ng,geometry_cache=volume_cache,state=g)
+        points,weights,jacobians,vals,grads,pressures=[cached_fields[k] for k in ('points','weights','jacobians','velocity','velocity_gradient','pressure')]
+        min_det=float(np.linalg.det(jacobians).min())
+        geometry['immutable_rule_cache']={'descriptor':cfg['immutable_rule_cache']['volume'],'certificate':volume_cache.certificate,'offline_seconds':volume_cache.offline_seconds,'state_fields_recomputed':True}
+    else:
+        min_det=float('inf')
+        for el in mesh.Elements(ng.VOL):
+            ir=ng.IntegrationRule(el.type,qo)
+            tr=mesh.GetTrafo(el)
+            if reference_controls and len(points)+len(ir)>volume_point_limit:raise MemoryError('reference export exceeds reviewed producer volume-point cap')
+            batch=rex.field_values_batched(uh,ph,grad(uh),tr,ir) if batched_reference_export else None
+            for index,ip in enumerate(ir):
+                if reference_controls and len(points)>=volume_point_limit:
+                    raise MemoryError('reference export exceeds reviewed producer volume-point cap')
+                mip=tr(ip)
+                jac=np.array(mip.jacobi,dtype=float,copy=True)
+                determinant=float(np.linalg.det(jac))
+                min_det=min(min_det,determinant)
+                w=float(ip.weight*mip.measure)
+                if not math.isfinite(w) or not math.isfinite(determinant) or w<=0 or determinant<=0:
+                    raise ArithmeticError('nonpositive volume Jacobian or mapped quadrature weight')
+                points.append(list(mip.point));weights.append(w)
+                jacobians.append(jac.copy())
+                # Persist an owning gradient array, never a possible native view.
+                if batch is None:
+                    vals.append(list(uh(mip)));grads.append(np.array(grad(uh)(mip),dtype=float,copy=True).reshape(2,2));pressures.append(scalar_value(ph(mip),'volume_pressure_point'))
+                else:
+                    vals.append(batch[0][index].tolist());grads.append(batch[1][index].copy());pressures.append(scalar_value(float(batch[2][index]),'volume_pressure_point'))
     # A VectorH1 volume derivative is not a BND differential operator.
     # Trace only the field derivative; retain normals on the boundary transform.
     gradient_on_boundary=ng.BoundaryFromVolumeCF(grad(uh))
@@ -559,13 +566,17 @@ def run_case(cfg, out):
             from shared_lift import export_common_lift
             export_common_lift(out,cfg,sha(out/rex.MESH_FILENAME),layout_evidence,stokes_state,stokes_linear_metric,
                                stokes_completed-stokes_started)
+    storage_evidence={'mode':'expanded_full_fields'}
+    if cfg.get('reference_storage_mode')=='coefficient_primary':
+        from reference_primary import prepare_primary
+        storage_evidence=prepare_primary(out,cfg,layout_evidence,reference,stokes_state,prescribed_FE_trace.vec.FV().NumPy().copy(),reload_evidence)
     completed=time.perf_counter();elapsed=completed-started
     result={'status':'completed_control_not_reference_admission','configuration':cfg,
             'scalar_return_contract':scalar_observations(),
             'geometry':geometry,'metrics':metrics,'elapsed_seconds':elapsed,
             'normal_orientation':{'passed':normal_certificate['passed'],'factors':normal_certificate['factors'],
                                   'certificate_sha256':sha(out/'normal_orientation.json')},
-            'mesh_origin':mesh_origin,'reload_checks':reload_evidence,
+            'mesh_origin':mesh_origin,'reload_checks':reload_evidence,'storage_contract':storage_evidence,
             'timing_use':'reference generation and diagnostics only; not a tuned paired FOM query benchmark',
             'reference_phase_seconds':{'geometry_spaces_fields_forms':stokes_started-started,
                 'stokes_lift':stokes_completed-stokes_started,'stokes_checkpoint':nonlinear_started-stokes_completed,
@@ -585,10 +596,13 @@ def run_case(cfg, out):
         dump(out/'EXPORT-MANIFEST.json',{'schema':'ns-obstacle-reference-producer-v1','physical_admission':False,
              'mesh_filename':rex.MESH_FILENAME,'mesh_format':rex.MESH_FORMAT,'reload_policy':rex.RELOAD_POLICY,
              'case':{'kind':kind,'Re':U*D/nu,'split':cfg.get('split','control'),'release':cfg['release']},
-             'campaign_sha256':cfg['campaign_sha256'],'layout_sha256':layout_evidence['sha256'],
+             'campaign_sha256':cfg['campaign_sha256'],'layout_sha256':layout_evidence['sha256'],'storage_contract':storage_evidence,
              'versions':{name:importlib.metadata.version(name) for name in ('ngsolve','netgen-mesher','netgen-occt','ngsolve-openblas','numpy')},
-             'producer_source_sha256':{name:sha(Path(__file__).with_name(name)) for name in ('fom.py','reference_export.py','shared_lift.py','preflight.py','scalars.py','oriented_normals.py')},
-             'files':{p.name:sha(p) for p in sorted(out.iterdir()) if p.is_file()}})
+             'producer_source_sha256':{name:sha(Path(__file__).with_name(name)) for name in (('fom.py','reference_export.py','shared_lift.py','preflight.py','scalars.py','oriented_normals.py')+
+                 (('immutable_rule.py',) if cfg.get('immutable_rule_cache') else ())+
+                 (('reference_primary.py','reference_scope.py') if storage_evidence['mode']=='coefficient_primary' else (('reference_scope.py',) if cfg['release']=='G2_fixed_finite_channel_training_export' else ())))},
+             'files':{str(p.relative_to(out)):sha(p) for p in sorted(out.rglob('*') if storage_evidence['mode']=='coefficient_primary' else out.iterdir()) if p.is_file() and not (storage_evidence['mode']=='coefficient_primary' and p.name=='full_rule.npz')}})
+    if storage_evidence['mode']=='coefficient_primary':(out/'full_rule.npz').unlink()
     return result
 
 

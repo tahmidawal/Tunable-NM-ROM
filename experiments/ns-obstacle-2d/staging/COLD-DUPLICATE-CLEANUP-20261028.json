@@ -1,0 +1,794 @@
+{
+  "started_utc": "2026-10-28T23:29:02.532746+00:00",
+  "source_head": "f3b84165796c7a1ad45d8b35f09f5d2a2c05c59d",
+  "free_bytes_before": 25629081600,
+  "canonical_arrays_and_archive_chunks_preserved": true,
+  "history_rewritten_or_pruned": false,
+  "cases": [
+    {
+      "name": "g2-ladder01",
+      "archive_sha256": "6f9fa30a7b6383824dd475264236443dd52b1a795911cdccb42d319a7abe1479",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "a804bf73654167ee35de87d7f3227b068eecdb5138d35c2340d1554efb80d2d1",
+          "git_blob": "37c684f6e9cd93fd188bbf940721650764485434",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "777781a68f7204e5bfae739d5d4ebce33668b84efb8ee2bd6e236ae3b7db4348",
+          "git_blob": "e96ed28adaaaebc1d410701c3e931cb154c04596",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "c5388d7d001fa9fa832342e5ab0328d769581fe1c76499935c201d2cc0810e75",
+          "git_blob": "a4698f07a20b990e8ff45ccb22a6c7e489f3d65c",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 18382023,
+          "sha256": "1f7b0be5849b7f44a00d997f0cc199624b01b04ce16395a6f280f77972a899ea",
+          "git_blob": "1c2d76223a59b6349419581e0f12c166acae3413",
+          "mirror_commit": "11be816699de36b9f7fa6ff0b3c666a9101d4b91"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-ladder01",
+          "bytes": 361147778,
+          "removed": true
+        },
+        {
+          "path": "runs/g2-ladder01-collection.tar.gz",
+          "bytes": 169376967,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-ladder01/payload",
+          "bytes": 200024,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs.",
+      "additional_mirrored_metadata": [
+        {
+          "path": "CHECKSUM-VERIFICATION.txt",
+          "sha256": "dac8c1b1cb957cf4a120ef31763945e98ba1816432b1deb7869e53c7efa18c57",
+          "mirror_blob": "c52e637690b1aa3d7156cb72c0eeb570beed558f"
+        }
+      ]
+    },
+    {
+      "name": "g2-ladder02",
+      "archive_sha256": "825f469c36a66d61cbd0aea0329b00b58a2c2167f6d3a3e62125297ba956d7af",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "725a5123efb5bba5293be8b268832c825e95a908e583cd3aaef1f93dc373350e",
+          "git_blob": "aaaec3b853f74a0d333ba71763904e81835f1bae",
+          "mirror_commit": "887a06bb1ff1446b0b36ee0980e50c497bdcc86b"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "86677305ea3695f038351ceb9548dea32ce9c6c4c756824ff4f52887515d983c",
+          "git_blob": "f467d32a73e2c47765f9faebfaca9c21680cf338",
+          "mirror_commit": "887a06bb1ff1446b0b36ee0980e50c497bdcc86b"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "268edd5150a9e331a0aca78be25a2bda33381810901624586e762960cb38bb5d",
+          "git_blob": "46b544e93e5bd1c6924aad9c8e26742f161c1ab9",
+          "mirror_commit": "887a06bb1ff1446b0b36ee0980e50c497bdcc86b"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "0de12c615a809524d7353daed54a2c96fad5586daaa0f755b5b3144dadd8241b",
+          "git_blob": "cc3b4396dbc5ffb051570abaded70e7f4125c6bd",
+          "mirror_commit": "887a06bb1ff1446b0b36ee0980e50c497bdcc86b"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "d22b34828c573ca8808ba1a9ac18916fcbfe4091add83bc6dcc43ab4fe87b821",
+          "git_blob": "852e92ad9e60fce5af71ba286ad4f9277f4d721b",
+          "mirror_commit": "887a06bb1ff1446b0b36ee0980e50c497bdcc86b"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 19335182,
+          "sha256": "424d1f2c0b1f3a557dd1632bfbd0824441f1dbd31226a602ae09843021d9a9b3",
+          "git_blob": "27b3ef75328db5c2d3655156d615b8a630921aad",
+          "mirror_commit": "887a06bb1ff1446b0b36ee0980e50c497bdcc86b"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-ladder02",
+          "bytes": 482160214,
+          "removed": true
+        },
+        {
+          "path": "runs/g2-ladder02-collection.tar.gz",
+          "bytes": 270993422,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-ladder02/payload",
+          "bytes": 200841,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs.",
+      "additional_mirrored_metadata": [
+        {
+          "path": "CHECKSUM-VERIFICATION.txt",
+          "sha256": "63be7f9b57a68886d90ef1c6533863b00e11a69a91299951f78f73afbee7f128",
+          "mirror_blob": "dd43af848e84b6742a791c9e514c2523e7f5a1a2"
+        }
+      ]
+    },
+    {
+      "name": "g2-comparison01",
+      "archive_sha256": "ea7e2256b306847052b50c0b102d91b3abdf839f30458fee2ce3272075d9bc21",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "72d4507d8697f27db33e0564c6b0567e73bae4d12294b9ee6417ac2ed87a78a0",
+          "git_blob": "149589bbeef84b5928edbda576fba265fb947a2b",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "fa304b13a9360989e64b4344718806961a3dd38226c8768ce1595e2a2d61ba13",
+          "git_blob": "ad09dbdf1e45f10cc0ac87202839aefaad014795",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "4e847eb072b469af7d0b92dea265085db109e970dd87f3287b6ff2e529fc2cc2",
+          "git_blob": "b49301dce7a3720c53823d51ea953b4701e720cd",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "70fc3d0a4847348ab595b71bd479c84a0e6aae21d984b3e323d521f8a7f678b2",
+          "git_blob": "ff3060ced403d2cede3c845f2626a94ff5ae5736",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "1970d74bc9ad86d6a5f0da65cc026f35d2d6342c97c5626f3072d7383a3ad9dc",
+          "git_blob": "5d81503d0cdd4dd91054d998af5b7cf1d3b1597d",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "ab0cd61c306daaa8da995ae6d765b40756e14f643922224018c80440dd62c8f1",
+          "git_blob": "3ea3d82596c1e2e0ffba15326b158aaf5fd9fa54",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "035da80d1ea512b2b5575c8e78c44f6a2c64c8bb2e2471e5504e6e4843b7774e",
+          "git_blob": "68a7f43976d2a02bd90a6dc3bf590a9c6b8f59ef",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 26029467,
+          "sha256": "aae82b0c166e52ff600c5d6c5855a9349628f95f0b6f0c39b5957a315689dafa",
+          "git_blob": "106eb980f1fe1e27605fc1806728ebb2baff857d",
+          "mirror_commit": "9957c5a67141c7c0be54984592183555c2dcef69"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-comparison01-collection.tar.gz",
+          "bytes": 378351003,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-comparison01/payload",
+          "bytes": 111808107,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    },
+    {
+      "name": "g2-h3",
+      "archive_sha256": "aeb4b731eafe8f4826b9b40f1806321f8fdf3fa81629db203fc502b8df757288",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "eb4bff4e15aafde6d95ec8579ad68e2990deaa9b98c1b096e2c93fb8fd6c0790",
+          "git_blob": "c834049eb7c2105f40de48c75012720ac0d636d4",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "fe3a92656a06ad83878f337271147e994292bbdc0c1f9e4b860894bac1670bf6",
+          "git_blob": "e4a1d2691f9a58cd6aae5c577785e2e0351f4603",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "1a9bcead3d13c41f2748a70193f4ec89cd6c057151dd814f4decba3530d4b258",
+          "git_blob": "253da1e3f39e3207b11a9b8cfd0ab15110d3a276",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "2e99cfe29ef8bf3ddb26928a8bd9e6d34b0ae927ff1ddfa8b4b609e6571f735d",
+          "git_blob": "f2d1499fa496fc5fdcd5f3b0c652462cf85581e4",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "6e0e7db1e7813a0709f7537fb265e869a3d0f0f92e9419cbc718bf237778c8eb",
+          "git_blob": "24384f41ce06fa70975035b2df392eec49a310fb",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "c78c19f1d1728ded89cb34b0f03fa8a452d6ea174892c8a7cbb71f20490ccc9d",
+          "git_blob": "6a27e023f66fd9f47701bb8b3c8e29032f2ee4ed",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "d4e6b678ed5d0e17bcf98e69d3c772e6730f43735b2d2a3f0f3a0add9c57ff87",
+          "git_blob": "213b27689cbb0b5eb3288ee0a0d8e8f685ae8df0",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 50331648,
+          "sha256": "3ae7ca3f71e7e0a0aa69006709a9e44e4ee8d81048539d5e75394dd7b9e133c9",
+          "git_blob": "95cfa78d18bee4d7d092466c27c56590d84dfeb6",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-008",
+          "bytes": 50331648,
+          "sha256": "e1220f46e61087e5d6ddb7131c29e3d9d9db555b0380f3efd08fe52c6ba996c5",
+          "git_blob": "c907f103ec3148c8f879dce6f3357cee00651ef3",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-009",
+          "bytes": 50331648,
+          "sha256": "033ada1552bc1480bbdfab93354c60d72ca441bc8ce141ff2f9110caad77ad82",
+          "git_blob": "35e40fae43700c8a2bf33f021fc1127bfb03398d",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-010",
+          "bytes": 50331648,
+          "sha256": "80108e7d3c1db72a8f70b1808340ecb7212d8ee6bf19c9cbe0642ae9d7e70fd9",
+          "git_blob": "8fb48939822c3a593a3aa404a63c11999258a839",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-011",
+          "bytes": 50331648,
+          "sha256": "725858ee2127fa435159d5073beb6b0c25d9be35d5c2d3e9f6ea596ac436282b",
+          "git_blob": "64bddb31c3687d89e042379aa5fd8d93297633da",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-012",
+          "bytes": 50331648,
+          "sha256": "101bf6e68db56a997b05d4092f957e2e5fc690c651dbd29a66dc4e6d3509a301",
+          "git_blob": "b5c30e5d9f82b7e9ebfda0a64b680708d38a9e22",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-013",
+          "bytes": 50331648,
+          "sha256": "5ae9793c7a9c0153a5d2dd3f3b51d46fda6728ca3171b547c9984570691430fe",
+          "git_blob": "f70778dbe7ea0862fa1c80924e406238f5f6b997",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-014",
+          "bytes": 50331648,
+          "sha256": "919ebb38d59c9baa9aba9ac931cc3b9b73e1e08eb993421bdb8dba860cdc7b8e",
+          "git_blob": "e8b03e0e3b18981c8a293d55867485c92bcdd293",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-015",
+          "bytes": 50331648,
+          "sha256": "060d3473d6d4bb76d2191385aae77a317f7318ef1d0a63a4b22f31f9239fd84c",
+          "git_blob": "7865a0af9a6729dd71d2d73a8d2cf644d64def6b",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-016",
+          "bytes": 50331648,
+          "sha256": "d8c43d7fd4d17d1bc183d362dd26e75daa7c66ad3d9d220c4c5a8ae1adab5ba2",
+          "git_blob": "b533159dba425e517956ba2458766aeb231b616f",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-017",
+          "bytes": 50331648,
+          "sha256": "076a3f1476684460a951bdd23f45f198360f3c213bca823cecb10d14600dd46a",
+          "git_blob": "548abac18e5f0b58e34cad11317d9433310e92ea",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-018",
+          "bytes": 50331648,
+          "sha256": "203bd45317d328a34f5a3589a3766197d2f720817287e8fe70d7670ee2275f18",
+          "git_blob": "ef3000e6865080118be1dcce82910a53b4c222d1",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        },
+        {
+          "path": "collection.tar.gz.part-019",
+          "bytes": 1885250,
+          "sha256": "310f6566e0046c950a55fd48d230525e2fe07549f3f116ab92e94685cf13aa5b",
+          "git_blob": "c42af1b33a3f242b1d73fe2892a438be829238e6",
+          "mirror_commit": "a193581c4f41ae33841fb6621ce39f96aac6478a"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-h3-collection.tar.gz",
+          "bytes": 958186562,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-h3/payload",
+          "bytes": 103647276,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    },
+    {
+      "name": "g2-p4trend",
+      "archive_sha256": "15c93107bcd92c8765e862b7ceb63c0f95f176291463e12041dc33711193bbec",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "3e599e111a555f1de93bcb5b321179e283b525af0ed1177e1dd567e1f1117254",
+          "git_blob": "36aaa53cd36e0de89c60ea7be5352f64d7d5f650",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "601864ddb083c9c68d0ff91357c39af08bade0e45a8e4d44103e5f443906e67c",
+          "git_blob": "9c583a3565f27b4f581c58f2cf2990c36a7015aa",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "31cd7657613665ed72f4941cbf1d9fe7a946e652e401838c83260118b6076891",
+          "git_blob": "f3850266746bad4e3ce4e64a2bf2b447df9bb56e",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "46691f5dd3324cbe5c9ef138efafb6055c0bc97406a383330f1e7cfa94da27fb",
+          "git_blob": "0981106e81935daee285e887d697e48979eb33e0",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "4fa6332c2606b4d60efb0b2a89899d3953bb5f2bdb9920399055fac869e05857",
+          "git_blob": "5d626c855a34482776de6f73ab7ac05f0ea41e98",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "e053d8e2215655ec131bcd96a69b8b8ebf2922b7d849e7879477b1525ca7f380",
+          "git_blob": "02a40454129b4707d7fd48541a53e161b6c43e1b",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "4b5da44809acb3453e5b51d37fb1b23c59d9e393d6c8a59a0628b83a01bc9894",
+          "git_blob": "89695eacaa0202c7c3968c335d62e0ac2988e1f4",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 50331648,
+          "sha256": "3acdd106a5775b346d2167d4b5a96c451b16e5c9fd00cc81ee11bb82d60ea28e",
+          "git_blob": "ba3fc1a2336f7366951e30a69318bdd7e3cd4f76",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-008",
+          "bytes": 50331648,
+          "sha256": "286b954511ae7ac95f829e85428348e61830c80d499451b4c1958aec0c44b550",
+          "git_blob": "6405b6920d6367a65839f7ae9fe9e1b20ab36590",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-009",
+          "bytes": 50331648,
+          "sha256": "4152c3668ee4b78f3c5a65b0186a2a73265ede1f7296eabf4ab05f1155d0d968",
+          "git_blob": "6e4b90824c6aadf98639c12c586f65ce8a19e990",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-010",
+          "bytes": 50331648,
+          "sha256": "2891b4965419827a932aeb572a74ad36a2d7d9d98918eedf62ad9258ee60e2f8",
+          "git_blob": "74efbaa6cce1040ab30d50b5c0457a6eecce6fe3",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-011",
+          "bytes": 46708453,
+          "sha256": "35a1178941bda410acf3cfa697fe5df01db08e78488b61b602df5d80208a7931",
+          "git_blob": "fd36a979dc9f8d43c403b0bcc699c01911fe0e09",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-p4trend-collection.tar.gz",
+          "bytes": 600356581,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-p4trend/payload",
+          "bytes": 197041,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    },
+    {
+      "name": "g2-p4controls",
+      "archive_sha256": "416a2e6eb4ad18a11778a4f07bce93b623b487691c24738f62062d082aa925ef",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "6570361f1327754bc97884d559494186f4362634df9691cd06882b0d6d28d511",
+          "git_blob": "f97624a7c97632f59c7805dd294d9e4840f75940",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "3cb112c2550184c8d15e23d107e5a5caaeecaa864773c9e2a2af1f97be0e0ec5",
+          "git_blob": "e0def0ddc160be2e1505c2f0bb2a3ecdff9cc98a",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "02907b6ce875f2acc620ec999992256d1010d1f8e78486f10bd4e3f3632fb4a4",
+          "git_blob": "317c25b9107253a7a44cb69c63b9945edfb18d9d",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "ce20e453f3f7183007371c56ca1e3080211e90f92fa638e164caa84c006f1569",
+          "git_blob": "b2e044169469756b2ddc123fef5b4e05a7bb9948",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "0710ca2eb37dde66ac7f8a0a1edddcb807f55044e7f3c74b44711e2657f72f47",
+          "git_blob": "6d30e7cad2bd5f964ccad83d50cd2be73f5f9fbd",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "8c9269656806dd0a27a93cd97f05b5af7e03917c4253eb202cf4806267848b2b",
+          "git_blob": "884399d07313d59b5d8f56a5e1840e4ef9f962e8",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "f035646ee68d5c965d2adf0b958c370298fc2bfec001e19227b16483645b7d99",
+          "git_blob": "46bf4d31c2689a1c5bc00ddf495359aa5d7d6742",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 50331648,
+          "sha256": "b4bdab1decfdca42e48ad2dea57d52495e2fc4247d22c1567d1cdfe532d4ed54",
+          "git_blob": "2d67c2ebae9de2630abe076e115539e4b2ec96a1",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        },
+        {
+          "path": "collection.tar.gz.part-008",
+          "bytes": 16724454,
+          "sha256": "7d2531b5ff1fb1d51057fb1ae7000e72741d51236f0127414760bc171adc4f5e",
+          "git_blob": "907b81328d8611007446bd5ecab8fc7abdf63128",
+          "mirror_commit": "fa940ed39e8d786857312f4329d35ae4f67b17bd"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-p4controls-collection.tar.gz",
+          "bytes": 419377638,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-p4controls/payload",
+          "bytes": 194901,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    },
+    {
+      "name": "g2-crossp01",
+      "archive_sha256": "4f856761cfbc85b93c176be26ac7e9500cbfd8d93c5352ff61258867ea7bcaaf",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "60dd8fd6811315f666077156be7e273dd5e27d620bcd367b663321eb3b73c221",
+          "git_blob": "e7849cebb302b44a17996bba2620b9a25916900a",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "03e8ae46f070a8e3e07299c184ee156eda92df93b88a8e9c17855d308c2c1a2a",
+          "git_blob": "62343dffcffef96059c4fe4b7f7cc8db9b437592",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "80ca4773f6dc3c82cfbaf2fbef1cf844e0f2c1cd50df1221a32f1d43a7d721c7",
+          "git_blob": "bee2ee714f017383eeba53fc9074987a7da86b76",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "18109cdad7af21d9a2aef20b5f552f3b6ab81c54f39cc7046142de9c8a7652c0",
+          "git_blob": "28b957b3f84a40baac6f41309c7f17e485c54bfe",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "2dc225cbad009554cf082fdb9cd5f35b60da442f0e492498c93b5657fcf38d6c",
+          "git_blob": "c83040aee1475f4eab4b1450ca144d7948526d76",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "c7feb06ffe63fce2b60149e1effbdccabe8e1e450c70db93514ab68980ad8aa7",
+          "git_blob": "e1e66c65a02015161f413c5355c37ff350ca3033",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "eb6a3021435efd8f4a33aa33c6d6985414f277efb0f68317c6afa08cd9a2b349",
+          "git_blob": "a25ea33570da2a5223c6b3b0a57f8bbd70141ea8",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 50331648,
+          "sha256": "b8b3262906ee09e00b47ea4de64111260d8f43fc7516c164fb7767ac6a384e02",
+          "git_blob": "467f35246043fdc3d83fba358debd991b4ca83bd",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-008",
+          "bytes": 50331648,
+          "sha256": "2c8c8cabeca411f13f654a0148c9129e79a39cb8b673734ce18c199d05fc5b59",
+          "git_blob": "33fe61d2c439f0e9566f46a7362e6a69984526d2",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        },
+        {
+          "path": "collection.tar.gz.part-009",
+          "bytes": 14507351,
+          "sha256": "5dcccf24d4132089892856e3cfe062a5ac13164aa755b5ec009deb2f0d69327c",
+          "git_blob": "b638f104545f08f4c5803596949114ab85ea9331",
+          "mirror_commit": "609215032b5be2532f82b06853a76885797cdadc"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-crossp01",
+          "bytes": 551082557,
+          "removed": true
+        },
+        {
+          "path": "runs/g2-crossp01-collection.tar.gz",
+          "bytes": 467492183,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-crossp01/payload",
+          "bytes": 471674588,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    },
+    {
+      "name": "g2-crossp02",
+      "archive_sha256": "ffdc2abad6e268882e18ed00aa44ab6409c64ce7130f1f26ab1db54a12e41a0a",
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "93d2dca0f1b893933f682a58b50f9c7db310f9ea4478e078f65af12c430b0b6a",
+          "git_blob": "ac246d9b31342e15f5f344e712dac2c574f3cf91",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "f98e9ac460d609571538cb51cec9514c47f8a2ac3ff03eb5cdc06aae57d3c002",
+          "git_blob": "33844a18796198cee37211a1aa3a4130363abb44",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "6cc73b8b342145c705359f0fb2bebcde33d85fddc769cfb17f05f0e57bee9660",
+          "git_blob": "2b6adfd1dff21015a53a348e62b51aad8db3fba0",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "1b3ccd5e195dd55244ae15b4f065ca2d47ec020598a7cf53c6ab4aead6b83ca2",
+          "git_blob": "71cfbd56f9bcfac5caca82d09b1e28d379024b4e",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "75281b582168cfb790a4e868b391afe4e84c04a932ce039388e7431205d61304",
+          "git_blob": "6ddf15ff4bf0632773152795ee98f9d204c13b91",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "38e51be997767fd20820129f838c9f9a7db430635fc4209c5d65ff77e81108ae",
+          "git_blob": "ff1d3a2c8d2617dddd7869fd98ebc1a5c927a5f2",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "c456c382011943e4712eedc2eab58657cb52873f496aca08cb2496ec1591fc24",
+          "git_blob": "7bb64364d3b9d656d9ce13c0bfb9912bb1c452fc",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 50331648,
+          "sha256": "4aba83335d85b75df14e139ce2e139da32301ca1f4a5960177b195a664cdeb90",
+          "git_blob": "614274d9ea862fd090cc45b4e6d1eab575755986",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-008",
+          "bytes": 50331648,
+          "sha256": "42604b37bf6abc8a0441723370ef42f3c688e8e13afcfb9bd6ce8472847e41f3",
+          "git_blob": "b56eda9570355765624ecd6542b993cd017e94ba",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-009",
+          "bytes": 50331648,
+          "sha256": "8d003d5d3ce1fdc1287806ad6158ed159e9471dbb7d6379fb440cf0e9dc17f92",
+          "git_blob": "71b213c3c9b069610eb233904f61bf52c016f0e3",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-010",
+          "bytes": 50331648,
+          "sha256": "db263d16adf0a4afe6de1f32a8aef35cf327d36fcf229ff7c671d2e4bc677038",
+          "git_blob": "9b5e841e7b4459ba823ef5a78b01f45bc6648e7f",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-011",
+          "bytes": 50331648,
+          "sha256": "22f6712dd06663bbcb642e50a338ea285c6bee181ddd0ce0c1fcea22ca7394c5",
+          "git_blob": "17f845df2d1fc4d86d0266e79d8b2bf80e5571f4",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-012",
+          "bytes": 50331648,
+          "sha256": "734486213ab6985fdd87ece42cfedad2cdf5e002e1931df38b86694bed5b22e5",
+          "git_blob": "9dd6f8d42dbfbba0253241fb0c7c536272a15356",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-013",
+          "bytes": 50331648,
+          "sha256": "1591a6fde114be64ea48c180f80fea521e8395fcbeb0633cd6283315c191b6cd",
+          "git_blob": "f1ff36623682657e89568f54d4fd2d3fb299ed88",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-014",
+          "bytes": 50331648,
+          "sha256": "b98c51c492bddd86f072165cee5bdcad0952b1994af4616818da9e018c08f51e",
+          "git_blob": "5be3c5cc3732410800f8abb40a5f9855c04324ef",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        },
+        {
+          "path": "collection.tar.gz.part-015",
+          "bytes": 25691105,
+          "sha256": "7401ae0e202a1483265d224cba9c37b05dedcc4a89f10dcbf971c09e1e0a0fb8",
+          "git_blob": "d5bd777d614951e3ce0998498686d78ad7164371",
+          "mirror_commit": "454e0a3ea674a34879d590fb582e58d4d3b5858a"
+        }
+      ],
+      "retired": [
+        {
+          "path": "runs/g2-crossp02",
+          "bytes": 1052965809,
+          "removed": true
+        },
+        {
+          "path": "runs/g2-crossp02-collection.tar.gz",
+          "bytes": 780665825,
+          "removed": true
+        },
+        {
+          "path": "staging/g2-crossp02/payload",
+          "bytes": 471677129,
+          "removed": true
+        }
+      ],
+      "recovery": "Concatenate canonical chunks in recorded order; verify archive SHA; extract; verify COLLECTION-SHA256SUMS. Staged payload members are in the original job root. Local and mirrored Git also retain exact historical blobs."
+    }
+  ],
+  "completed": true,
+  "free_bytes_after": 33290641408,
+  "reclaimed_logical_bytes": 7651756446,
+  "completed_utc": "2026-10-28T23:29:29.207976+00:00"
+}

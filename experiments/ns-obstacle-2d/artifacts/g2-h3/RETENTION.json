@@ -106,11 +106,13 @@
       "sha256": "310f6566e0046c950a55fd48d230525e2fe07549f3f116ab92e94685cf13aa5b"
     }
   ],
-  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-h3-collection.tar.gz",
+  "full_local_archive": null,
   "full_local_extraction": null,
   "recovery": "Concatenate ordered chunks, verify archive SHA, extract, then cd g2-h3 and sha256sum -c COLLECTION-SHA256SUMS. Full source, dependencies, immutable inputs, both native solves and every full comparison array retained.",
   "reference_data_admitted": false,
   "remote_cleanup": "complete_see_CLEANUP.json",
   "canonical_expanded_artifacts": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-h3",
-  "duplicate_extraction_retired": true
+  "duplicate_extraction_retired": true,
+  "full_tar_duplicate_retired": true,
+  "cold_duplicate_receipt": "staging/COLD-DUPLICATE-CLEANUP-20261028.json"
 }

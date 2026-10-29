@@ -19772,3 +19772,14 @@ Completed the user-requested historical synthesis in `reports/2026-10-28-decoder
 Preserved 70 source/evidence snapshots: 61 byte-verified against pinned Git objects and 9 external/local snapshots with SHA-256. Recomputed head-screen means, medians, maxima and outlier counts from retained fit arrays; coordinate and continuation tables are generated from saved JSONs. Deterministic rebuild, local-link checks and AST parsing of preserved Python pass. Copies are for reading and are explicitly not standalone runnable experiment packages. The report states chronology/recovery gaps and does not claim an independent re-audit of every experiment.
 
 No scientific result reinstated or newly retracted. Existing retractions, changed targets, historical timing limitations and untested proposals remain explicit. Old source comments overstating unconditional Jacobian-rank guarantees from additive linear skips are identified as unsupported, without editing the archived code. No training, GPU/cluster run, new experimental worktree, merge or archive deletion. Scientific current-state block unchanged. Report published on main; unrelated concurrent lab-log edits and external-watch files preserved.
+
+
+## 2026-10-29
+
+### Collaborator PDF of decoder history (Codex)
+
+Created `reports/2026-10-28-decoder-history/Decoder-History-Collaborators.pdf` at the user's request: plain-language opening, detailed historical account, rendered mathematical notation, PDF bookmarks and direct GitHub code/evidence links. Companion portable Markdown and `CODE-INDEX.github.md`, editable introduction/update, CPU-only `export_pdf.py`, equation assets and `PDF-VALIDATION.json` retained. Original historical report and numerical tables are unchanged.
+
+The 20-page PDF contains 88 clickable GitHub links. Historical source links use backed-up revision dd6c6c0931dbbb21f3da39a940d2df90781e1a49; every target was checked as a Git object. New companion links target main. PDF annotations contain no local-file links; no unresolved math placeholders or empty pages. Contact-sheet review of all pages and enlarged final numerical-table inspection found no clipping/overlap. Added an explicitly dated qualitative update from the current lab log about the shared-decoder cost stops and obstacle neural-bank failure, preserving the earlier historical cutoff and existing qualification limits; no numerical results were newly generated or retracted.
+
+Installed reportlab and pypdf with --no-deps for export; verified JAX remains 0.10.1 on CudaDevice. No experiment, training, cluster job or worktree merge. Concurrent log edits and external-watch artifacts preserved. PDF and generator backed up on main.

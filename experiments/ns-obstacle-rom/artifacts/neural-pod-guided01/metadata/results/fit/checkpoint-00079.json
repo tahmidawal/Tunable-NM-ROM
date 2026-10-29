@@ -1,0 +1,78 @@
+{
+  "phase": "lbfgs",
+  "label": "L-BFGS accepted",
+  "full_post_update_objective": 0.061966715077903176,
+  "gradient_inf": 0.023270520505291943,
+  "metrics": {
+    "value_relative_squared_by_mode": [
+      0.002265866091864414,
+      0.006821111135766271,
+      0.02203339680369613,
+      0.06498907055645366
+    ],
+    "gradient_relative_squared_by_mode": [
+      0.04047713600598728,
+      0.07403344241083669,
+      0.19059495932880494,
+      0.3076866028596333
+    ],
+    "seconds": 0.8765199473127723
+  },
+  "adam_step": 4000,
+  "rng_state": {
+    "bit_generator": "PCG64",
+    "state": {
+      "state": 186957975672219555057770835654786406805,
+      "inc": 312289981302512253455601460894920341173
+    },
+    "has_uint32": 1,
+    "uinteger": 4214614256
+  },
+  "curvature_state_pairs": [
+    [
+      "checkpoint-00069",
+      "checkpoint-00070"
+    ],
+    [
+      "checkpoint-00070",
+      "checkpoint-00071"
+    ],
+    [
+      "checkpoint-00071",
+      "checkpoint-00072"
+    ],
+    [
+      "checkpoint-00072",
+      "checkpoint-00073"
+    ],
+    [
+      "checkpoint-00073",
+      "checkpoint-00074"
+    ],
+    [
+      "checkpoint-00074",
+      "checkpoint-00075"
+    ],
+    [
+      "checkpoint-00075",
+      "checkpoint-00076"
+    ],
+    [
+      "checkpoint-00076",
+      "checkpoint-00077"
+    ],
+    [
+      "checkpoint-00077",
+      "checkpoint-00078"
+    ],
+    [
+      "checkpoint-00078",
+      "checkpoint-00079"
+    ]
+  ],
+  "elapsed_seconds": 110.81300138775259,
+  "full_evaluations": 89,
+  "theta_sha256": "ce73fa54643404c6166550d8c2401406889fea199aae1c4fd1a1689a91d2dec5",
+  "array_file": "checkpoint-00079.npz",
+  "array_sha256": "07d5636cf680e350ce61d7209162c19b6388924f9f8a9155cd06c3b44ef1f82d"
+}

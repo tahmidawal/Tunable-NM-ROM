@@ -1,0 +1,23 @@
+{
+  "schema": "ns-obstacle-pod-guided-training-collection-release-v1",
+  "job_id": 6648764,
+  "archive_sha256": "f0a4f4fcf354fcc9825e5edffe431d743c81517348ed0a1006040cfd5757dfcb",
+  "archive_bytes": 195516009,
+  "logical_files": 740,
+  "logical_expansion_bytes": 196496664,
+  "mode": "Archive-only full original-file and ledger verification; bounded metadata extraction, no scientific expansion",
+  "maximum_metadata_bytes": 16777216,
+  "minimum_free_before_collection_bytes": 11413662930,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "measurement_sha256": "4dc3ab08fe29b08827cc28f334253a3ce0e6e31e83f19995869a0a8ad0583460",
+  "requirements": [
+    "Fresh sufficient free-space guard and serialized bulkcollection/Git writes",
+    "Verify whole archive and all740 originals against immutable ledger",
+    "Verify chunks before retiring transport; preserve exactretentionmetadata and bothsource/mirror backups",
+    "Independent full durable review before remote cleanup or final scientific acceptance"
+  ],
+  "remote_cleanup_authorized": false,
+  "measurement_source_commit": "54e418e28",
+  "measurement_mirror_commit": "d03645470"
+}

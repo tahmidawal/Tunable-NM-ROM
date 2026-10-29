@@ -1,0 +1,37 @@
+{
+  "phase": "adam",
+  "label": "Adam post-update",
+  "full_post_update_objective": 0.5165391732553042,
+  "gradient_inf": 0.11304162738876307,
+  "metrics": {
+    "value_relative_squared_by_mode": [
+      0.0755824614516949,
+      0.17390662440666865,
+      0.40328443419208443,
+      0.7244873895132294
+    ],
+    "gradient_relative_squared_by_mode": [
+      0.3461660171538576,
+      0.49141937311051803,
+      0.7432587126842266,
+      0.967029726012117
+    ],
+    "seconds": 0.8682267451658845
+  },
+  "adam_step": 400,
+  "rng_state": {
+    "bit_generator": "PCG64",
+    "state": {
+      "state": 14833536141848415695610021123594993516,
+      "inc": 312289981302512253455601460894920341173
+    },
+    "has_uint32": 1,
+    "uinteger": 2153179376
+  },
+  "curvature_state_pairs": [],
+  "elapsed_seconds": 17.296937209554017,
+  "full_evaluations": 3,
+  "theta_sha256": "948184e410325125e70b19bd7bf2ab882a5ec1afb50e89ac6d382da5a1263825",
+  "array_file": "checkpoint-00003.npz",
+  "array_sha256": "1e720e4795436375479d3fcea0e686867200d79f5684c005ae1ccc6472bec8a0"
+}

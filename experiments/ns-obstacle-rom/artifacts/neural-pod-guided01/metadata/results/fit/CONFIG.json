@@ -1,0 +1,111 @@
+{
+  "teacher_identity": {
+    "split": "training",
+    "Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "reference_qualification": {
+      "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+      "passed": true,
+      "qualification_scope": {
+        "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+        "amendment_id": "FD1-2026-10-28",
+        "original_G2_status": "not_admitted_domain_sensitivity_failed",
+        "domain_sensitivity_status": "failed",
+        "domain_independence_admitted": false,
+        "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+        "geometry_population_and_numerical_thresholds_unchanged": true
+      }
+    },
+    "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+    "volume_manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+    "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+    "singular_values": [
+      6.262405845690011,
+      0.35081375209372717,
+      0.02469633315548602,
+      0.0018166794857509315
+    ],
+    "arrays": {
+      "points": "2173f1395f76b26604163c4192f0098c1566a0eff30dce25f45c3cbe87a66aa9",
+      "weights": "f23fbca65af3cb31ecb9f1987c42a1b608111ffe0aad5f55034eecad0c4c3fb0",
+      "values": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+      "gradients": "88350f192dccb0c12203967816042f1a16e0234ad3520c9e853ca7f2c33e4b33"
+    }
+  },
+  "inherited_loader_source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+  "source_files": {
+    "train.py": "129d7deef7c5e19f042ef9119091664c340de2c2b1443a4d11f33564f04c9e1d",
+    "spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277",
+    "continuation.py": "28a80834c68f67c6314bd61d8fe587c8f7cf1efa83ec6a7d7fe4de287160bf20",
+    "teacher.py": "482540046604ec2ba96e753d4a9cc7fa6531d50e25efe3d413e72d3b2d3c97db"
+  },
+  "points": "2173f1395f76b26604163c4192f0098c1566a0eff30dce25f45c3cbe87a66aa9",
+  "weights": "f23fbca65af3cb31ecb9f1987c42a1b608111ffe0aad5f55034eecad0c4c3fb0",
+  "values": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+  "gradients": "88350f192dccb0c12203967816042f1a16e0234ad3520c9e853ca7f2c33e4b33",
+  "qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "config": {
+    "split": "training",
+    "teacher_definition": "prepared_training_POD",
+    "rank": 4,
+    "width": 128,
+    "depth": 3,
+    "seed": 29102026,
+    "block_points": 4096,
+    "batch_points": 4096,
+    "adam_steps": 4000,
+    "adam_learning_rate": 0.001,
+    "full_check_every": 200,
+    "lbfgs_steps": 300,
+    "line_search_steps": 20,
+    "history_size": 10,
+    "gradient_tolerance": 1e-10
+  },
+  "singular_values": [
+    6.262405845690011,
+    0.35081375209372717,
+    0.02469633315548602,
+    0.0018166794857509315
+  ],
+  "mode_weights": [
+    0.7595820705915158,
+    0.17978042596136115,
+    0.047700215145151006,
+    0.012937288301971998
+  ],
+  "value_norms_squared": [
+    0.9999999999999832,
+    0.9999999999999963,
+    0.9999999999999942,
+    0.9999999999999962
+  ],
+  "gradient_norms_squared": [
+    8.525975464144286,
+    10.565670636888962,
+    11.374500091056886,
+    11.417477866105903
+  ],
+  "selection": "minimum measured post-update full-training value+gradient objective; no development/validation selection"
+}

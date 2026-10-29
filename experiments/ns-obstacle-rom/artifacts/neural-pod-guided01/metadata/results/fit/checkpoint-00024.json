@@ -1,0 +1,46 @@
+{
+  "phase": "lbfgs",
+  "label": "L-BFGS accepted",
+  "full_post_update_objective": 0.06955897981044054,
+  "gradient_inf": 0.00672052604646325,
+  "metrics": {
+    "value_relative_squared_by_mode": [
+      0.0021433307760860866,
+      0.00576514072679588,
+      0.021836673270675757,
+      0.06290980192041841
+    ],
+    "gradient_relative_squared_by_mode": [
+      0.049018163364955056,
+      0.079752728386689,
+      0.19841346652200592,
+      0.3094408834320737
+    ],
+    "seconds": 0.8745665149763227
+  },
+  "adam_step": 4000,
+  "rng_state": {
+    "bit_generator": "PCG64",
+    "state": {
+      "state": 186957975672219555057770835654786406805,
+      "inc": 312289981302512253455601460894920341173
+    },
+    "has_uint32": 1,
+    "uinteger": 4214614256
+  },
+  "curvature_state_pairs": [
+    [
+      "checkpoint-00022",
+      "checkpoint-00023"
+    ],
+    [
+      "checkpoint-00023",
+      "checkpoint-00024"
+    ]
+  ],
+  "elapsed_seconds": 59.586775925941765,
+  "full_evaluations": 33,
+  "theta_sha256": "bbb42dcaf8a7330e9802eee05fd087e8ed13955ff31ddfe7fb778fb52e456dac",
+  "array_file": "checkpoint-00024.npz",
+  "array_sha256": "6a732c9b34faa79396b21c53fd5c1a56447b280abd9ab1a48eefc501d5b8a26c"
+}

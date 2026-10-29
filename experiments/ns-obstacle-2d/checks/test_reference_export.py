@@ -7,6 +7,8 @@ import json
 import subprocess
 import sys
 import types
+import tempfile
+import copy
 import unittest
 import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
@@ -51,6 +53,22 @@ class ExportControls(unittest.TestCase):
         self.assertEqual(record,{'numerator':1.,'denominator':4.,'value':.25})
     def test_g1_cannot_enable_g2_controls(self):
         with self.assertRaises(ValueError):rex.enabled({'reference_export_controls':True,'release':'G1_smoke_only_not_reference_admission'})
+    def test_scoped_lift_cannot_be_loaded_as_original_g2(self):
+        from reference_scope import FD1_GATE,FD1_SCOPE
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);arrays=root/'common_stokes_lift.npz'
+            np.savez_compressed(arrays,velocity_coefficients=np.array([.2,.3]),pressure_coefficients_per_nu=np.array([.1]))
+            meta={'schema':'ns-obstacle-common-stokes-v1','mesh_sha256':'a'*64,'layout_sha256':'b'*64,'coefficient_sha256':shared_lift.sha(arrays),'U':.2,'D':.1,'outlet':'gradient','pressure_gauge':'natural outlet, unshifted','base_nu':.001,'linear_control':{'value':1e-15},'linear_tolerance':1e-10,'velocity_ndof':2,'pressure_ndof':1}
+            manifest=root/'common_stokes_lift.json';manifest.write_text(json.dumps(meta))
+            fixture={'schema':'ns-obstacle-common-stokes-admission-v1','gate':FD1_GATE,'passed':True,'qualification_scope':copy.deepcopy(FD1_SCOPE),'directory':'.','manifest_sha256':shared_lift.sha(manifest),'coefficient_sha256':shared_lift.sha(arrays),'reference_admission_sha256':'c'*64,'review_sha256':'d'*64}
+            path=root/'TEST-ONLY-admission.json';path.write_text(json.dumps(fixture));arguments=(path,'a'*64,'b'*64,.2,.1)
+            loaded=shared_lift.CommonStokesLift.from_finite_channel_admission(*arguments)
+            self.assertEqual(loaded.usage_role,'FD1_fixed_finite_channel_truth_admitted');self.assertEqual(loaded.reference_qualification['qualification_scope'],FD1_SCOPE)
+            with self.assertRaises(RuntimeError):shared_lift.CommonStokesLift.from_admission(*arguments)
+            for replacement in ({'passed':False},{'gate':'G2-steady'},{'qualification_scope':dict(FD1_SCOPE,domain_independence_admitted=True)}):
+                path.write_text(json.dumps({**fixture,**replacement}))
+                with self.assertRaises((ValueError,RuntimeError)):shared_lift.CommonStokesLift.from_finite_channel_admission(*arguments)
+
     def test_common_stokes_split_and_query_scaling(self):
         c=np.array([2.,3.,.02,.03]);u,p=shared_lift.split_common_lift(c,2,.01)
         np.testing.assert_array_equal(u,[2.,3.]);np.testing.assert_allclose(p,[2.,3.])

@@ -27,6 +27,8 @@ class SteadyFOMQuery:
             raise ValueError('registered unforced DFG gradient-outlet family only')
         if not isinstance(common_lift,CommonStokesLift):
             raise TypeError('reviewed cached common lift required')
+        if getattr(common_lift,'usage_role',None) not in ('G2_truth_admitted','FD1_fixed_finite_channel_truth_admitted','native_equivalence_control','development_calibration_only','frozen_fom_comparator'):
+            raise ValueError('explicit validated common-lift role required')
         if hasattr(common_lift,'configuration_sha256'):
             from candidate_lift import configuration_sha256
             if common_lift.configuration_sha256!=configuration_sha256(cfg):raise ValueError('candidate lift configuration binding changed')
@@ -89,7 +91,7 @@ class SteadyFOMQuery:
             evidence={'Re':Re,'nu':context.get('nu'),'converged':context['converged'],
                       'history':context['history'],'memory_checks':context['memory_checks'],
                       'state_available':context['state_available'],'initialization':'cached_common_Stokes_lift',
-                      'lift_role':getattr(self.lift,'usage_role','G2_truth_admitted'),'pressure_gauge':'natural outlet, unshifted'}
+                      'lift_role':self.lift.usage_role,'reference_qualification':getattr(self.lift,'reference_qualification',None),'reference_admission_sha256':getattr(self.lift,'reference_admission_sha256',getattr(self.lift,'truth_reference_admission_sha256',None)),'pressure_gauge':'natural outlet, unshifted'}
             if context['state_available']:evidence['state']=self._array(self.g.vec).copy()
             work=context['work'];work['status']='query_failed_after_root_convergence' if context['converged'] else 'query_failed'
             invocation={'output_contract':output_contract,'outputs':context.get('outputs'),'outputs_available':context['outputs_available'],
@@ -172,5 +174,5 @@ class SteadyFOMQuery:
                 'peak_host_rss_bytes':peak_rss,'peak_host_rss_scope':'process lifetime high-water at invocation end; includes offline setup and prior invocations',
                 'evidence':{'state':retained_state,'Re':float(Re),'nu':nu,
                     'converged':converged,'history':histories,'memory_checks':memory,
-                    'initialization':'cached_common_Stokes_lift','lift_role':getattr(self.lift,'usage_role','G2_truth_admitted'),'pressure_gauge':'natural outlet, unshifted'},
+                    'initialization':'cached_common_Stokes_lift','lift_role':self.lift.usage_role,'reference_qualification':getattr(self.lift,'reference_qualification',None),'reference_admission_sha256':getattr(self.lift,'reference_admission_sha256',getattr(self.lift,'truth_reference_admission_sha256',None)),'pressure_gauge':'natural outlet, unshifted'},
                 'physical_admission':False,'scope':'native equivalence and paired runtime validation pending'}

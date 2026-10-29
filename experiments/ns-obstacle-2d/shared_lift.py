@@ -44,9 +44,22 @@ class CommonStokesLift:
     """Cached initialization only, not a FOM query solver or a timing result."""
     @classmethod
     def from_admission(cls,path,expected_mesh_sha256,expected_layout_sha256,expected_U,expected_D):
+        return cls._from_scoped_admission(path,expected_mesh_sha256,expected_layout_sha256,expected_U,expected_D,finite_channel=False)
+
+    @classmethod
+    def from_finite_channel_admission(cls,path,expected_mesh_sha256,expected_layout_sha256,expected_U,expected_D):
+        return cls._from_scoped_admission(path,expected_mesh_sha256,expected_layout_sha256,expected_U,expected_D,finite_channel=True)
+
+    @classmethod
+    def _from_scoped_admission(cls,path,expected_mesh_sha256,expected_layout_sha256,expected_U,expected_D,*,finite_channel):
         started=time.perf_counter();path=Path(path);admission=json.loads(path.read_text())
-        if (admission.get('schema')!='ns-obstacle-common-stokes-admission-v1' or admission.get('gate')!='G2-steady'
-            or admission.get('passed') is not True):raise RuntimeError('genuine independently reviewed G2 common-lift admission required')
+        qualification=None;required_gate='G2-steady';role='G2_truth_admitted'
+        if finite_channel:
+            from reference_scope import FD1_GATE,validate_scope
+            required_gate=FD1_GATE;role='FD1_fixed_finite_channel_truth_admitted'
+            qualification={'gate':FD1_GATE,'passed':True,'qualification_scope':validate_scope(admission.get('qualification_scope'))}
+        if (admission.get('schema')!='ns-obstacle-common-stokes-admission-v1' or admission.get('gate')!=required_gate
+            or admission.get('passed') is not True):raise RuntimeError('genuine independently reviewed common-lift admission for the explicit scope required')
         for key in ('reference_admission_sha256','review_sha256'):
             value=admission.get(key,'')
             if len(value)!=64 or any(c not in '0123456789abcdef' for c in value):raise ValueError('missing admission evidence digest')
@@ -57,7 +70,11 @@ class CommonStokesLift:
         if (meta['schema']!='ns-obstacle-common-stokes-v1' or meta['mesh_sha256']!=expected_mesh_sha256
             or meta['layout_sha256']!=expected_layout_sha256 or meta['coefficient_sha256']!=sha(archive)
             or meta['U']!=expected_U or meta['D']!=expected_D or meta['outlet']!='gradient'
-            or meta['pressure_gauge']!='natural outlet, unshifted'):
+            or meta['pressure_gauge']!='natural outlet, unshifted'
+            or not math.isfinite(meta['base_nu']) or meta['base_nu']<=0
+            or not math.isfinite(meta['linear_control']['value']) or meta['linear_control']['value']<0
+            or not math.isfinite(meta['linear_tolerance']) or meta['linear_tolerance']<=0
+            or meta['linear_control']['value']>meta['linear_tolerance']):
             raise ValueError('common lift geometry/space identity mismatch')
         if archive.stat().st_size>2**30:raise MemoryError('common lift archive exceeds fixed cap')
         import zipfile
@@ -71,7 +88,7 @@ class CommonStokesLift:
             raise ValueError('invalid common lift arrays')
         self=cls();self.velocity=u.copy();self.pressure_per_nu=p.copy()
         self.velocity.setflags(write=False);self.pressure_per_nu.setflags(write=False)
-        self.metadata=meta;self.admission_sha256=sha(path);self.offline_load_seconds=time.perf_counter()-started
+        self.metadata=meta;self.usage_role=role;self.reference_qualification=qualification;self.reference_admission_sha256=admission['reference_admission_sha256'];self.admission_sha256=sha(path);self.offline_load_seconds=time.perf_counter()-started
         return self
 
     def state_for_nu(self,nu):

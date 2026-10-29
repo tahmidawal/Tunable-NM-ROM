@@ -2,8 +2,8 @@
   "status": "2d_only_reference_qualification_and_ROM_integration",
   "numerical_jobs": [
     {
-      "job_id": 6627586,
-      "group": "re16p25",
+      "job_id": 6627914,
+      "group": "re17p5",
       "state_last_observed": "RUNNING"
     }
   ],
@@ -13,7 +13,7 @@
     "Assemble genuine all15 candidate and independent full-population admission review",
     "Run actual ROM preparation/training/solves and held-out comparisons, then final reviews and reporting"
   ],
-  "completed_allocated_gpu_hours": 1.8194444444444444,
+  "completed_allocated_gpu_hours": 1.9925,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -29,7 +29,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T05:27:49.762887+00:00",
+  "last_checkpoint_utc": "2026-10-29T05:46:48.601765+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -150,11 +150,10 @@
   "remaining_population_first_jobs": "6627505 Re15 and6627586 Re16.25; both exacta7c58adca, max2 outstanding reached",
   "pending_collections": [
     {
-      "job_id": 6627505,
-      "group": "re15",
+      "job_id": 6627586,
+      "group": "re16p25",
       "state": "COMPLETED",
-      "elapsed_seconds": 633,
-      "raw_review": "pending"
+      "elapsed_seconds": 623
     }
   ],
   "ROM_first_prep_workflow": {
@@ -165,5 +164,9 @@
     "fine_prepare_replay_allocation_seconds": 1350,
     "total_existing_prep_seconds": 1800,
     "executed": false
+  },
+  "accepted_parameter_rows": {
+    "re20": "reviews/FD1-RE20-ROW-REVIEW.json",
+    "re15": "reviews/FD1-RE15-ROW-REVIEW.json"
   }
 }

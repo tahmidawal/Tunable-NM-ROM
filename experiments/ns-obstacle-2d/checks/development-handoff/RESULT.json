@@ -1,0 +1,447 @@
+{
+  "schema": "ns-obstacle-development-input-identity-review-v1",
+  "passed": true,
+  "scope": "two development references only; no native replay and no validation fields accessed",
+  "source_commit": "fb948ad668ddb47fb602f011f4e666ee42878641",
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "cases": [
+    {
+      "Re": 16.875,
+      "split": "development",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "438caf6c6910a9a006bf5ef8ccde8f3ff16ffc9dbc76cfdf96f45963c85af91e",
+        "config_sha256": "5cdf48563a61b891f97fab5fd3902433ecd7bf95485e10c6200f1290e3e78edd",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "a95b5c61145b5a7e172e399153756c2d3c9c90cd83c4b3dea6de0fd918abed27",
+        "storage_mode": "coefficient_primary"
+      },
+      "closure_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re16p875/ADOPTED-RUNTIME-CLOSURE.json",
+      "closure_sha256": "266319962fc7b9bae8788b8fb7f2275363dd17f8f31517d287ecc985e402953b",
+      "row_review_sha256": "a9c4a525d6060387c340682b345d96f673f4013551228831a7223f4f8bf21e8b",
+      "original_config_role": {
+        "release": "G2_fixed_finite_channel_control_candidate",
+        "split": "development",
+        "population_split": null
+      },
+      "primary_record_sha256": "c6a4e6adfa73ad1df8f020fd981f112892beddd06b3b8554b9e3ddf209d96763",
+      "producer_source_sha256": {
+        "fom.py": "3267a70a91c3e9620e2545af78edb20ce7f55566020d3b687cb65a25bbcfb121",
+        "reference_export.py": "32c72e6a4f1fe4224f00c750e87ddf1792aceb4d9aaf0ca7d4e7f67814c28019",
+        "shared_lift.py": "5d28c86cec7017ad5ac108ee3834fb45598a3d10963a4021a0a94afc9ef73b66",
+        "preflight.py": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+        "scalars.py": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+        "oriented_normals.py": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+        "immutable_rule.py": "65154a33506a5e71996ea4800a9422df76900062dffbd3f9fd70eea6d5c2b930",
+        "reference_primary.py": "d7925bff32da62ae433c1a8663e7fec0765534c0075acb82ce2a13a02f842f1c",
+        "reference_scope.py": "3b6e6396e8d98a88d1000af20c430df82464fbb592f1a6cbbdb15b69d5bb0981"
+      },
+      "versions": {
+        "ngsolve": "6.2.2608",
+        "netgen-mesher": "6.2.2608",
+        "netgen-occt": "7.8.1",
+        "ngsolve-openblas": "0.3.33",
+        "numpy": "2.5.0"
+      },
+      "files": [
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "destination": "PRIMARY-REFERENCE.json",
+          "sha256": "c6a4e6adfa73ad1df8f020fd981f112892beddd06b3b8554b9e3ddf209d96763",
+          "bytes": 5351,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "destination": "boundary_rule.json",
+          "sha256": "e4296bdc3942d04571171948c2aa015a778ff40cf94b4e03bb49597f4da9ce5b",
+          "bytes": 2318242,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/config.json",
+          "destination": "config.json",
+          "sha256": "5cdf48563a61b891f97fab5fd3902433ecd7bf95485e10c6200f1290e3e78edd",
+          "bytes": 2299,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "destination": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "destination": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "destination": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "destination": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "destination": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "destination": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "destination": "mesh_identity.json",
+          "sha256": "77792244db587e0e62320f571f1a92a7c9d45f9aa72b871f23f039818da6943e",
+          "bytes": 803,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "destination": "normal_orientation.json",
+          "sha256": "2e3c07f7f425320ae75568d589fe17d7c47c50d1682f8d5afa57c7ee34d0ad36",
+          "bytes": 3543341,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "destination": "primary_coefficients.npz",
+          "sha256": "7b9d250f7a16386d544935fc77ebf7adebb24f5456ddd8fa308eafad1dd9434e",
+          "bytes": 6703342,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "destination": "reload_checks.json",
+          "sha256": "16f9fa1504df67891f4f5948e4b53ad0194fea5a17d62227538e88edd7af668f",
+          "bytes": 5799,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "destination": "reload_normal_orientation.json",
+          "sha256": "e8ef6fd955e3ad3774393147bdbb69a414aa8ed3fe11b7c9e2e48a5fe34c92b2",
+          "bytes": 3543362,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/result.json",
+          "destination": "result.json",
+          "sha256": "c296f4fe4d88a5744c70da53b26e84e0666df5e0194fbc6ad31b387b0ed8d661",
+          "bytes": 435680,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "destination": "solution.sol",
+          "sha256": "a95b5c61145b5a7e172e399153756c2d3c9c90cd83c4b3dea6de0fd918abed27",
+          "bytes": 3497120,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "destination": "stokes.sol",
+          "sha256": "4207e8ce258f057f882a89a8673da9681a0620aac57f76750d9930d3c00d5710",
+          "bytes": 3497120,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "destination": "EXPORT-MANIFEST.json",
+          "sha256": "438caf6c6910a9a006bf5ef8ccde8f3ff16ffc9dbc76cfdf96f45963c85af91e",
+          "bytes": 13385,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        }
+      ],
+      "input_bytes": 63831188
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "2533c0d6713237beb7844969ced4eb179fc6c06bcd4f3f5713eb4ffce2fcd354",
+        "config_sha256": "01d847ceb6cb3073954c3bb53f0d849c83c41cc8e33c90dcd44d77e680130692",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "041907b359e7b3c2ca5208782112b075aa4713423981465af4bae360fa68477e",
+        "storage_mode": "coefficient_primary"
+      },
+      "closure_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re23p125/ADOPTED-RUNTIME-CLOSURE.json",
+      "closure_sha256": "044df5fd5ca24480b10b82f3c0b35b92ea38953025d8a8b177e16375c8b7f9f8",
+      "row_review_sha256": "b13e3eacc1f2a68c1981e9247f4147cf30bd702f62c7e4b915b6b4bb55895ff2",
+      "original_config_role": {
+        "release": "G2_fixed_finite_channel_control_candidate",
+        "split": "development",
+        "population_split": null
+      },
+      "primary_record_sha256": "00930f93b6855b62019a111ee4f6952c3d9c1fbb98c41d5c671b7d5ecfd4eb96",
+      "producer_source_sha256": {
+        "fom.py": "3267a70a91c3e9620e2545af78edb20ce7f55566020d3b687cb65a25bbcfb121",
+        "reference_export.py": "32c72e6a4f1fe4224f00c750e87ddf1792aceb4d9aaf0ca7d4e7f67814c28019",
+        "shared_lift.py": "5d28c86cec7017ad5ac108ee3834fb45598a3d10963a4021a0a94afc9ef73b66",
+        "preflight.py": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+        "scalars.py": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+        "oriented_normals.py": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+        "immutable_rule.py": "65154a33506a5e71996ea4800a9422df76900062dffbd3f9fd70eea6d5c2b930",
+        "reference_primary.py": "d7925bff32da62ae433c1a8663e7fec0765534c0075acb82ce2a13a02f842f1c",
+        "reference_scope.py": "3b6e6396e8d98a88d1000af20c430df82464fbb592f1a6cbbdb15b69d5bb0981"
+      },
+      "versions": {
+        "ngsolve": "6.2.2608",
+        "netgen-mesher": "6.2.2608",
+        "netgen-occt": "7.8.1",
+        "ngsolve-openblas": "0.3.33",
+        "numpy": "2.5.0"
+      },
+      "files": [
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "destination": "PRIMARY-REFERENCE.json",
+          "sha256": "00930f93b6855b62019a111ee4f6952c3d9c1fbb98c41d5c671b7d5ecfd4eb96",
+          "bytes": 5351,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "destination": "boundary_rule.json",
+          "sha256": "237679aafc1364bd2450861308347f0e2a8ee3c0e417c4e7e02027327ae62684",
+          "bytes": 2318589,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/config.json",
+          "destination": "config.json",
+          "sha256": "01d847ceb6cb3073954c3bb53f0d849c83c41cc8e33c90dcd44d77e680130692",
+          "bytes": 2299,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "destination": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "destination": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "destination": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "destination": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "destination": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "destination": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+          },
+          "warm_verified": true,
+          "archive_manifest_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "destination": "mesh_identity.json",
+          "sha256": "d347ec9e0260ebb7cd1899af0641edc31f1f0c737dc66a724bc4ac0de850a757",
+          "bytes": 803,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "destination": "normal_orientation.json",
+          "sha256": "604795eb3d5bc8563b766a6f36de817f9a69c3d60f336b1ee349cc911ec84ead",
+          "bytes": 3543361,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "destination": "primary_coefficients.npz",
+          "sha256": "52c11cc2c48413c52007e3739e38da6fbcfc6f7845a3e60d27638577ec77e277",
+          "bytes": 6703470,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "destination": "reload_checks.json",
+          "sha256": "2903529ba5b0717cb3fdd2e760133b3b8e99051d35fdf6a95d0393218ece46b6",
+          "bytes": 5800,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "destination": "reload_normal_orientation.json",
+          "sha256": "caff165dedf9c0c46b8f9cc0a006c064bb45267771820d6ff1db78ba43a9c200",
+          "bytes": 3543342,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/result.json",
+          "destination": "result.json",
+          "sha256": "c2ecaebbaeb6dd23386ea9f74121fac77b07696881eb6a54cf4ea1dd05ad85dc",
+          "bytes": 435689,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "destination": "solution.sol",
+          "sha256": "041907b359e7b3c2ca5208782112b075aa4713423981465af4bae360fa68477e",
+          "bytes": 3497120,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "destination": "stokes.sol",
+          "sha256": "7917b3aa19586349b95771ffe9e73f0007947620cdb8603057c4bea2396e55cd",
+          "bytes": 3497120,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        },
+        {
+          "source": "artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "destination": "EXPORT-MANIFEST.json",
+          "sha256": "2533c0d6713237beb7844969ced4eb179fc6c06bcd4f3f5713eb4ffce2fcd354",
+          "bytes": 13385,
+          "warm_verified": true,
+          "committed_bytes_verified": true
+        }
+      ],
+      "input_bytes": 63831673
+    }
+  ],
+  "input_bytes": 127662861,
+  "role_handling": "Use existing handoff2d.population / handoff_primary_worker development route. Never call the training-only materialization entry or relabel development as training. Keep original producer exports unchanged; write fresh derived population descriptors with actual content hashes."
+}

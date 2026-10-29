@@ -150,12 +150,6 @@
   "remaining_population_first_jobs": "Historical initial groups now completed; current numerical_jobs and pending_collections are authoritative.",
   "pending_collections": [
     {
-      "job_id": 6629873,
-      "group": "re25",
-      "state": "COMPLETED",
-      "elapsed_seconds": 670
-    },
-    {
       "job_id": 6630005,
       "group": "re16p875",
       "state": "COMPLETED",
@@ -185,11 +179,12 @@
     "re18p75": "reviews/FD1-RE18P75-ROW-REVIEW.json",
     "re21p25": "reviews/FD1-RE21P25-ROW-REVIEW.json",
     "re22p5": "reviews/FD1-RE22P5-ROW-REVIEW.json",
-    "re23p75": "reviews/FD1-RE23P75-ROW-REVIEW.json"
+    "re23p75": "reviews/FD1-RE23P75-ROW-REVIEW.json",
+    "re25": "reviews/FD1-RE25-ROW-REVIEW.json"
   },
   "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged",
   "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use",
-  "pending_row_audit": "None; Re22.5/Re23.75 accepted, durable raw backups separately required before cooling",
+  "pending_row_audit": "None; all9 training rows accepted. Development/validation and durable raw backups remain pending.",
   "ROM_storage_planning": "13.230GB remote workspace, not local RAM/staging; actual archive A collection needs2A+bounded scratch+10GiB under current verified cold-tier procedure.1.911GB post-review warm runtime projection; no collection released.",
   "full_break_even": "Unresolved without valid common-platform offline cost basis; campaign resource ledger is accounting, online ratios remain paired within allocation.",
   "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit",

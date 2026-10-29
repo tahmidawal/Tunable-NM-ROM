@@ -1,0 +1,25 @@
+{
+  "schema": "ns-obstacle-bounded-remote-buffer-review-v1",
+  "reviewer": "/root/numerical_resume",
+  "passed": true,
+  "parent_policy_sha256": "7f3785a5d866ec0e926a707223bbf24925c62469ae1af77c75bfb85b9c59bade",
+  "maximum_live_jobs": 2,
+  "maximum_completed_uncollected_groups": 2,
+  "remote_byte_ceiling": 53687091200,
+  "remote_accounting": [
+    "Every live job: full worst-case raw plus temporary output reservation",
+    "Every completed job: raw tree plus delta and partial archives",
+    "All older retained jobs and collected-but-not-yet-backed-up remote originals",
+    "Any active staging, packing or transfer scratch"
+  ],
+  "local_accounting": [
+    "Staging/recovery requires its own measured peak plus all concurrent reservations and10GiB untouched",
+    "Serial collection requires actual measured expanded, archive, Git/backup and recovery peaks plus all concurrent reservations and10GiB untouched"
+  ],
+  "compute_and_collection_gates_are_separate": true,
+  "compression_credit_before_measurement": false,
+  "stop_on_detected_scientific_execution_or_provenance_failure": true,
+  "already_live_jobs_remain_bounded": true,
+  "submission_released": false,
+  "remaining": "Exact source packages and measured remote/staging/recovery bindings must pass final review before submission."
+}

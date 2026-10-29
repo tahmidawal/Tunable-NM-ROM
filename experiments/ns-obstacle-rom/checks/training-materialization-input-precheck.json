@@ -1,0 +1,1358 @@
+{
+  "schema": "ns-obstacle-nine-training-materialization-input-precheck-v1",
+  "source_sha256": "4b3549da2eb776d74974f6e4a4908117eca157aa5097b749bd9c16a48259c123",
+  "physical_admission_created": false,
+  "full_reference_admission_consumed": false,
+  "executable_packet_frozen": false,
+  "staging_performed": false,
+  "native_reconstruction_performed": false,
+  "rows": [
+    {
+      "Re": 15,
+      "split": "train",
+      "candidate_sha256": "d8c6dd6fe50543d9655390ef98bc396110fe58478dbde7b691705ac83ce2191c",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "b0ecbef77cc7a4feacd98a7d7567c06173c937f06daf0cea68f36af678d41be3",
+        "config_sha256": "4295b507a023d0c20c5d024c5228a21a424d4afd700b43e5b70aa86655acd380",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "94057cd29eb4a31051b3a7717ea37bb5afb36feb03a724d69d63b82a514b4606",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "675f992a4c3d6bf752178b9ca0ae7ba960cbf51901c19fe578456e171ca30475",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "1fa4a3a606bbc673978854c0bb369ea3ed01e54e971c1a56b51110e51fec5acc",
+          "bytes": 2318151
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "4295b507a023d0c20c5d024c5228a21a424d4afd700b43e5b70aa86655acd380",
+          "bytes": 2293
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "53caf2653bddce8c5b3b08ba2ed3418c4c1c4e74ee74a6ae44cc98e804fa117e",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "f272a9f1648531f67feaaf3902d9477300dbcdbf5ec959e0853f0da1ab5c3001",
+          "bytes": 3543343
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "1c3e52cf064d2043ca581022b681cb3943ea194c17e7f873ad59715f2ad71745",
+          "bytes": 6704156
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "5065ff586c40c86da3f67234ed1fbd7ad984b03cea3cafeb985b62b1dcc07dc9",
+          "bytes": 5798
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "796b6c7a393fe9881edd157a52e1c8b8bf80bf5fcb247e209df19d059da849c0",
+          "bytes": 3543362
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "ef7d722bbe69b2bdeaacb7f2c56a6b3a777f06cddecea8ac2b6eee23bb34ec75",
+          "bytes": 435684
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "94057cd29eb4a31051b3a7717ea37bb5afb36feb03a724d69d63b82a514b4606",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "aa600ee20680de78fddc9795dd8480e264c98a21fcd67cca9665eaa6f692e67b",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re15-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "b0ecbef77cc7a4feacd98a7d7567c06173c937f06daf0cea68f36af678d41be3",
+          "bytes": 13391
+        }
+      ],
+      "warm_runtime_bytes": 63831916,
+      "derived_array_and_copied_input_projection_bytes": 170443448,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re15/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "ed524426e1cce2e25739ee907998a45acc849e77d1e7b812baf246731885fff0"
+      }
+    },
+    {
+      "Re": 16.25,
+      "split": "train",
+      "candidate_sha256": "9f88eb07d3470877ea335fcb7db9dd606fa15e782b85c5609bc288378000920c",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "dc1e02eb88f9088eb15f772c8076aae5ef1c42b5c0033daca7a3f87c34dbd511",
+        "config_sha256": "36873c679924833c7647ca5e804ca43091f737842ceb3041c19d03b6846c3aae",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "f90ee83b27516e5e76660b98e63cf878259850e9b59d56904c3e5580f5fc7295",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "4f8a14d207454eaec45a3925dbb6ebeec83d4650a347b0e692c40e81f74002a7",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "ab69377eafebf2b542ec5db68d89d3897fb899833597f519cf34d72345265dfa",
+          "bytes": 2318321
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "36873c679924833c7647ca5e804ca43091f737842ceb3041c19d03b6846c3aae",
+          "bytes": 2292
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "041562667c1d1e036efaaa66df3448458ba4f6518fb515056d3453fdd335bce8",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "b24a0c966a2449d387e87e5587e7638576ef6f635f754fb66e8cc9541d4b5ef5",
+          "bytes": 3543362
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "d250645bb62885470ca913c27aeb751f53d449ac78ef0787604ae2ea5493aaf7",
+          "bytes": 6703544
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "bce30a3e0b8ee975a0573fd299b9fed53420ebca1f42408514fdd303d8a98f70",
+          "bytes": 5799
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "c7a153700570d9f9323825aef358b919bb61dc351b512006db2d71d6575b40c5",
+          "bytes": 3543361
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "facd010ac0b33dbe332ce0f7a871fa819ddb8edd96657e7a25af31cd33540fd4",
+          "bytes": 435671
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "f90ee83b27516e5e76660b98e63cf878259850e9b59d56904c3e5580f5fc7295",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "d6ab383a85a276872a271c8926863397896de2f4731d2683ecb93f06fc8ab7d8",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re16p25-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "dc1e02eb88f9088eb15f772c8076aae5ef1c42b5c0033daca7a3f87c34dbd511",
+          "bytes": 13378
+        }
+      ],
+      "warm_runtime_bytes": 63831466,
+      "derived_array_and_copied_input_projection_bytes": 170443623,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re16p25/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "4717ab0fb212cc7c98b9ff7c628f49ed405e30f7405ce13bb757dfea93f35b47"
+      }
+    },
+    {
+      "Re": 17.5,
+      "split": "train",
+      "candidate_sha256": "0d3d7a31e6c92247e867f1d9f00874d094106992c61ea01a2bd9bf0b0f9fb30b",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "cbf9cbc3ee756c220c2b48d6baec7d18365795eaaba62ab12a712f84d07ece3b",
+        "config_sha256": "a7fe5ca15c5d615f9f9ccc0745bd48c0886143e76403bb25fe127d1b9386dedb",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "ce047aa86925584aff0ac60aca9b6c99bfa967361784efa9813e685e48071e61",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "7f570cc9c827d343652f1746220b22ecc9deb03d0dbf427a495915abc9f2e775",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "100271ed5fc99351acfe7f86e82532e781d93cadbfcb0460326fe114e768256e",
+          "bytes": 2318487
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "a7fe5ca15c5d615f9f9ccc0745bd48c0886143e76403bb25fe127d1b9386dedb",
+          "bytes": 2293
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "c5c0a8e48644e98fe57924b565b233a1e4c57117dc9e2aeb84dabfefd6337844",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "b12972a8a5e9556ac25289329f90c33fceef8d64eeceebcbc5a2bb712463d561",
+          "bytes": 3543361
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "4d8ceff4c25e3e7edc04f867373d8e0bc3da99fa7f2f0b5e69cd659ae97a560e",
+          "bytes": 6703075
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "4ae5e5318c135bef18f14c314c2ad55ce876be34456fbb243f8264a211730839",
+          "bytes": 5801
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "0c6c578b815130f6e37abaf36878c544427d27bce8101e048e443fcaa7c0070c",
+          "bytes": 3543359
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "5b8c6c8da06d814512b38624c08dfc8496383fd7954404fea2999e16bcc22617",
+          "bytes": 435672
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "ce047aa86925584aff0ac60aca9b6c99bfa967361784efa9813e685e48071e61",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "cacbe91492216ba03ddc85dceb298681c2bfb178f28524368042ae95558f8cbd",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re17p5-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "cbf9cbc3ee756c220c2b48d6baec7d18365795eaaba62ab12a712f84d07ece3b",
+          "bytes": 13377
+        }
+      ],
+      "warm_runtime_bytes": 63831163,
+      "derived_array_and_copied_input_projection_bytes": 170443790,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re17p5/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "f65ff3296fb48dc5f7ad48734a0627a67bd9406bf43979ac7b40953843569cd9"
+      }
+    },
+    {
+      "Re": 18.75,
+      "split": "train",
+      "candidate_sha256": "09f42c025ec00dff9b0af464c6cfe1bcf44af29e7dea2e55ca1527ced4efcccb",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "8f2299c2a74717d34ae1414f909b44ce2772f2f098342c6d9b7270b1836a4127",
+        "config_sha256": "80d13cdd7923bd4d44152f18c13664f1fec2c7b0fc7d00c7f5892897981981bb",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "cf0df9911be3b27c06263922311e4f422cf4d65b63bacb034da57bca07ab63c8",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "b769dcf59d3f1881d350475d3a72dd0109bd1c5d3842812382ba3c4667cc376d",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "9e0aebf7f26ef9f8ad6ac264ad2f3bee2a645ca9310518c5231f0356acd83fde",
+          "bytes": 2318544
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "80d13cdd7923bd4d44152f18c13664f1fec2c7b0fc7d00c7f5892897981981bb",
+          "bytes": 2292
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "3cc9f1e95b45c070c589bf6e0bdbf196757f79c9180a1e7177d9ae1ce3862033",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "db8ff588b869c5a22da7daf0cb6d6b693378edfeed66322c818b19731ded09ef",
+          "bytes": 3543359
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "20bbceda9fed888cb3e9b8dd05924c8dcb0ef86ec2806f23d909f28575e84506",
+          "bytes": 6703364
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "09f91bb1fac331e9bfa34337a97ea4387a296e37286a342a7796c0aeb78157e4",
+          "bytes": 5801
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "1dd97a8e95ececae7bbc9f11c1563496f27451e2da01ea61e8b4e4408563c696",
+          "bytes": 3543337
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "1914fd2e414522d81b1fb944b87d037efdf370196079c7b146b4653453c01315",
+          "bytes": 435690
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "cf0df9911be3b27c06263922311e4f422cf4d65b63bacb034da57bca07ab63c8",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "0beff41bdca8da9c19fd349a149b9d7a02fbc400cd67f9804c917ce5353d42fd",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re18p75-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "8f2299c2a74717d34ae1414f909b44ce2772f2f098342c6d9b7270b1836a4127",
+          "bytes": 13378
+        }
+      ],
+      "warm_runtime_bytes": 63831503,
+      "derived_array_and_copied_input_projection_bytes": 170443840,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re18p75/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "3e6ab0ecfdc8a239606a4d242bca20946f3f7b2d6e9113274cc7f075b5a280e5"
+      }
+    },
+    {
+      "Re": 20,
+      "split": "train",
+      "candidate_sha256": "e34f81d41072b4755500e270834e5a33ee1e3ddcbcbfcfc9545283fff4f577f7",
+      "adopted_reference": {
+        "directory": "artifacts/g2-p4trend/results/dfg_h3",
+        "export_manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b",
+        "config_sha256": "2fbe6cd93419aea1dcae08180ada7e7e07b6dc7d4ceee8226bfdafc488d2ed00",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "0ef0ec18499d25d2409180b07b8684d21a018f0eedc7724a6567a5f84d8830eb",
+        "storage_mode": "expanded_full_fields"
+      },
+      "materialization_route": "legacy_expanded_Re20",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/config.json",
+          "name": "config.json",
+          "sha256": "2fbe6cd93419aea1dcae08180ada7e7e07b6dc7d4ceee8226bfdafc488d2ed00",
+          "bytes": 1373,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/config.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/mesh.vol.bin"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/full_rule.npz",
+          "name": "full_rule.npz",
+          "sha256": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+          "bytes": 85208296,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/full_rule.npz"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "5e4dc61e443e48b911675a31fb1de8d4663eccd15ad3ace530cc79b578493c59",
+          "bytes": 2318717,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/boundary_rule.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/solution.sol",
+          "name": "solution.sol",
+          "sha256": "0ef0ec18499d25d2409180b07b8684d21a018f0eedc7724a6567a5f84d8830eb",
+          "bytes": 3497120,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/solution.sol"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/result.json",
+          "name": "result.json",
+          "sha256": "4204e15635d7ac8249e73a8f94bc9879d244d8db90afe0e2e42d66489f4a9c1f",
+          "bytes": 426561,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/result.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/fe_layout.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "73f56c0491febee2c1501e3a485bf51ec5e5c8991cb256d892aea32ea4e851dc",
+          "bytes": 4146,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/reload_checks.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "8c019b9f4b34c45d9b8e6560e8a99019a724657e890fca256b73e53a993ec470",
+          "bytes": 803,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/mesh_identity.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "253f2a2ce6c534bfb528cee234303303d2e0bb5d4b5113deb3a81455ac04a46a",
+          "bytes": 3543360,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/normal_orientation.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "c9ff524394f1c06d0f243480e105d32117447b8f860624a62264f8204c53ec96",
+          "bytes": 3543361,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/reload_normal_orientation.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        },
+        {
+          "source": "artifacts/g2-p4trend/results/dfg_h3/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b",
+          "bytes": 3680,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "ad32f002169f19e954766ebadb790d5ec5140fd7da390e5a3d79a5c5e57dcd8a",
+            "member": "g2-p4trend/results/dfg_h3/EXPORT-MANIFEST.json"
+          },
+          "original_collection_checksums_sha256": "b9dcab43f07ef41b661a3fbf48d4a5e18ac0fb9d688c9cee5c050d0127842fe9"
+        }
+      ],
+      "warm_runtime_bytes": 121542463,
+      "derived_array_and_copied_input_projection_bytes": 170433615,
+      "primary_source_vendor_matches": "not applicable: legacy lossless-copy route; original producer source preserved",
+      "closure": null
+    },
+    {
+      "Re": 21.25,
+      "split": "train",
+      "candidate_sha256": "18085c7086ca712481e661767d70af8e5e880666db4e643d325be43faaa95715",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "01eb63d311a79e3687db30787b9dbcc7717bc30a5c1558a930ae6ed734b42f8e",
+        "config_sha256": "bce28baaeafd89e3e3d0af1a7fac6804a240f85acbef2fd3e08d9310c31c69a7",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "7f75e9640b9ceef7421070ee9d6ef24d1de4bacfe8a5f268604bdc2be572968d",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "9949470dd8523e599cd459358f1afc3382bb4236146a1632fa07b14b2a29cf21",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "44ad52c2aa0dad0f0e1d6e303fd8e69bb0ea3bcf2a45e5f98e4c8047f552f89f",
+          "bytes": 2318531
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "bce28baaeafd89e3e3d0af1a7fac6804a240f85acbef2fd3e08d9310c31c69a7",
+          "bytes": 2293
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "13548cde470bf7754728b5c836450c27fa84a70e216d902cebaada4d6f002230",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "f816473809c5f38b136bab1738649e7df58fec470d3da16981d3fd9c34111b1e",
+          "bytes": 3543362
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "00e6b04f68d9627bac75f3947b1db5951124f264537b2c1a564e8359f34d8560",
+          "bytes": 6703205
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "c62cbbf5859f9c0ebf75ed7c48941aa8e2b3f5d0929f02d5745e4e4cc66b3212",
+          "bytes": 5798
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "3bdbaa4bbb8542e15377e701fdaac564c35e07d364c6dff36577eeb86bc5639b",
+          "bytes": 3543359
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "009df06a3731fc2282ca08438d8ec4bdc6fdac3638486dbd988c04fab12d0b7e",
+          "bytes": 435684
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "7f75e9640b9ceef7421070ee9d6ef24d1de4bacfe8a5f268604bdc2be572968d",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "5b0dc28397f07cc09e7b2d2564f565888c69e29ff63d6ac300261c3831c7f50f",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re21p25-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "01eb63d311a79e3687db30787b9dbcc7717bc30a5c1558a930ae6ed734b42f8e",
+          "bytes": 13378
+        }
+      ],
+      "warm_runtime_bytes": 63831348,
+      "derived_array_and_copied_input_projection_bytes": 170443844,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re21p25/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "81241fa06989a454539184aba4156643a45c981e74309a50c78731c5e386e4dc"
+      }
+    },
+    {
+      "Re": 22.5,
+      "split": "train",
+      "candidate_sha256": "8a40186c7fdb03a3370674e0652b0c50979c1222867828f6627ea8f1f2e3949f",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "6ef26a2a9a8131612de326f670c287ec88c0bf6344f3c4452608667f921a8fba",
+        "config_sha256": "8a2ebaa2ade7a6cae5349e8146abca110dda9812e1eae4b20073ebfa9cbc40cc",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "4efc1c0f780c27475b1e0146565a73c4f53d6829236f8d804ad394482d25c6c2",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "c4b84d625d23b591f13e3c7d809a11d6b0104a875851c6cf453153391fa0ddc0",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "20c7544edd4840ee5dc59ac72d67359f660d210b5c6f999524bf3763b2efb5a3",
+          "bytes": 2318574
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "8a2ebaa2ade7a6cae5349e8146abca110dda9812e1eae4b20073ebfa9cbc40cc",
+          "bytes": 2292
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "d5998fa838af838afdc1d65cf465f6f1cb9756756602ea2124279bb9916209e8",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "4458fb7f34b8d0af00a1fff815e4b34856a91627dd63b7424fc5afefd962f5ec",
+          "bytes": 3543362
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "8aba64758e8de9a7001630a7b50f46acfb7dd7683310a5f1ddc7878624320f4e",
+          "bytes": 6703063
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "e648a5d419cf5c449b44dcda3aee882625ff5c350bb06b42b650d397ebfcbe86",
+          "bytes": 5801
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "9efb8d61a9e23c07ab9b152b4653b049c956ec28f2b5215c56902138c57eea35",
+          "bytes": 3543359
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "d6d988661cb40b338e0f4104da735c9f2b880d2cfcb18e3fdb672ffb022abae7",
+          "bytes": 435691
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "4efc1c0f780c27475b1e0146565a73c4f53d6829236f8d804ad394482d25c6c2",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "68b25eb2dc4ce753421d0d9fc068aa16ac1f7d033633c122e79ead6d930becc8",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re22p5-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "6ef26a2a9a8131612de326f670c287ec88c0bf6344f3c4452608667f921a8fba",
+          "bytes": 13377
+        }
+      ],
+      "warm_runtime_bytes": 63831257,
+      "derived_array_and_copied_input_projection_bytes": 170443896,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re22p5/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "0f2cb8e25f06aef784d33213f8f9315561b79ffbaa84613b1206a3406651904c"
+      }
+    },
+    {
+      "Re": 23.75,
+      "split": "train",
+      "candidate_sha256": "66c750b20daff489620c6181f8395776f75505708cfac19336e790bc6a285f5c",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "b9806e1a6cf3ef9db889f58dc88b0f4e3bbe5fb2818cec8f44e8613360058dcd",
+        "config_sha256": "a2b4935c5f7b26948676e4462881d0dfb635ac36966afdc2319f5cbc37ac38fb",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "89998cb5ac1fb5aff5d28d9abe5795f2ad2a0d56b26f500b7d859aad64690c62",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "621fa87ce2e8737e4093d230ee348cc39b4b2304d3324def06ee8a723fb9e642",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "2d6dab7c8f8bfa3f24643eade2416caf48eed886289c1d7ad9beed86a9d7bd5e",
+          "bytes": 2318728
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "a2b4935c5f7b26948676e4462881d0dfb635ac36966afdc2319f5cbc37ac38fb",
+          "bytes": 2293
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "c010e63e15d838c4bc7382161014d4593cc60588de1e30d57e97a9a588d1894c",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "c9ce33485b6b23d144b85df304845a9e8e32b140fde92c7cd8e13712e151fbcf",
+          "bytes": 3543344
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "4cff6e0e457a0c313f9893ed9085bc44a4ba640763c5e0717d5301e1caf964cc",
+          "bytes": 6703412
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "f55c0d02c6ff1cb77115e92dc4123f2693679013c2bdfc4836e7d8d2aa813389",
+          "bytes": 5800
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "6c035b230f56148901e8223411cdbfa6180f35d202c3c95263c80145ec870902",
+          "bytes": 3543364
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "794e09b4ab6182a0d0b95faaff221de7ce2443294bd8db3daf3002ddce294947",
+          "bytes": 435716
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "89998cb5ac1fb5aff5d28d9abe5795f2ad2a0d56b26f500b7d859aad64690c62",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "4fb5766db8273f9d3077bc68d25d2402ab79dec769b845dc2fe5d7de4fb546cc",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re23p75-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "b9806e1a6cf3ef9db889f58dc88b0f4e3bbe5fb2818cec8f44e8613360058dcd",
+          "bytes": 13378
+        }
+      ],
+      "warm_runtime_bytes": 63831773,
+      "derived_array_and_copied_input_projection_bytes": 170444062,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re23p75/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "b9f9e10bdfbeb56864b0d4d90432596eebb253e3204c2794bdd7ac9567b40e74"
+      }
+    },
+    {
+      "Re": 25,
+      "split": "train",
+      "candidate_sha256": "d059bd6fe2f4033c26090403c989c3336e4561ce1565e6b7200021d05837b3ae",
+      "adopted_reference": {
+        "directory": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline",
+        "export_manifest_sha256": "7528c5fa28f488b907c1bd851485b2a77e100ac4d023bec4492c22d3446d6160",
+        "config_sha256": "6e0e92363be5cad1fefb2e61da96f8079d18669e33a6bdadcbb1519afae4527b",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "layout_file_sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+        "solution_sha256": "ce067bf32932aee8bdd51f0e45a31d44ba9574953245a6fa761310416893c1ee",
+        "storage_mode": "coefficient_primary"
+      },
+      "materialization_route": "coefficient_primary",
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "name": "PRIMARY-REFERENCE.json",
+          "sha256": "e03deb83f8755b00201b5b68df2bebad4048a33cd7d1ced300892f3ca0f69083",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "name": "boundary_rule.json",
+          "sha256": "08fc891d5dad26ba75d77fafdd8fedd3ae797096be5b4d514a67677c040fff03",
+          "bytes": 2318797
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/config.json",
+          "name": "config.json",
+          "sha256": "6e0e92363be5cad1fefb2e61da96f8079d18669e33a6bdadcbb1519afae4527b",
+          "bytes": 2293
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "name": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "name": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "name": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "name": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "name": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "name": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "name": "mesh_identity.json",
+          "sha256": "9d50bc0413b2028e1bbc8662bc7b5df0a27152a383c10dd1e51568e166a83472",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "name": "normal_orientation.json",
+          "sha256": "0668d2862373f6b3e1989b574068d8847936a4cfac8becd4eca286ecf32fc1df",
+          "bytes": 3543343
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "name": "primary_coefficients.npz",
+          "sha256": "344e8e4e920e46af7b1da62342ae32affb0fd89f090c2bcc25e853c0912d5136",
+          "bytes": 6703635
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "name": "reload_checks.json",
+          "sha256": "6b3217825c311da1cec0fb24f05f74b81525618b43f94500d2559d57f2397101",
+          "bytes": 5795
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "name": "reload_normal_orientation.json",
+          "sha256": "a5b1731f4a1d0d3e37af20ac6a6fd91d7511f83b57fbd1f60844cc1f8b5242e3",
+          "bytes": 3543337
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/result.json",
+          "name": "result.json",
+          "sha256": "aeaeff5cce00cc352ed15223a6a4d59d6b5914a5e54e6c4860e94b7e2755ff04",
+          "bytes": 435691
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "name": "solution.sol",
+          "sha256": "ce067bf32932aee8bdd51f0e45a31d44ba9574953245a6fa761310416893c1ee",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "name": "stokes.sol",
+          "sha256": "374654c7235dc1341630f387161d60dd1c2e95b7db6912492331ceb6e9d99f38",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "name": "EXPORT-MANIFEST.json",
+          "sha256": "7528c5fa28f488b907c1bd851485b2a77e100ac4d023bec4492c22d3446d6160",
+          "bytes": 13377
+        }
+      ],
+      "warm_runtime_bytes": 63832006,
+      "derived_array_and_copied_input_projection_bytes": 170444073,
+      "primary_source_vendor_matches": true,
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re25/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "3a8cb9f5120f0f8eb7e4f61d801d217f9dd28e3490021d7285791b9034aec97d"
+      }
+    }
+  ],
+  "recorded_runtime_versions": {
+    "ngsolve": "6.2.2608",
+    "netgen-mesher": "6.2.2608",
+    "netgen-occt": "7.8.1",
+    "ngsolve-openblas": "0.3.33",
+    "numpy": "2.5.0"
+  },
+  "all_consumed_warm_bytes_checksum_verified": true,
+  "missing_runtime_bytes": [],
+  "pending_closure_declarations": [],
+  "unique_full_recovery_archives": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+      "archive_sha256": "33c56e3dedaef0ce896ab9022bd4e7a27952f440aa3639f403403d96d0df44bc",
+      "archive_bytes": 1037042165
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+      "archive_sha256": "1cc1cdd437e4a4c1fb0f9cf348e7817bd30e11abf6bd0cbad7b81ff109df3cab",
+      "archive_bytes": 3357019564
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-p4trend/GIT-COLD-ARCHIVE.json",
+      "archive_sha256": "15c93107bcd92c8765e862b7ceb63c0f95f176291463e12041dc33711193bbec",
+      "archive_bytes": 600356581
+    }
+  ],
+  "verified_warm_option": {
+    "existing_helper_commit": "0bd9b6cb0",
+    "existing_helper_mirror": "72c6bf049",
+    "source_inputs_sha256": "bdde5ce4f17448235fa2e37d8d34c19f399d72b0294b0458127b196799e842cc",
+    "opt_in_required": true,
+    "existing_working_files_only": true,
+    "conservative_reservations_unchanged": true,
+    "checks": "committed cold manifest SHA; confined non-symlink working path; exact length and SHA; verified hit receipt; original cold fallback",
+    "unique_archive_backed_primary_runtime_files": [
+      {
+        "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+        "bytes": 21581066,
+        "archive_source": {
+          "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+          "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+        }
+      },
+      {
+        "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+        "bytes": 64608,
+        "archive_source": {
+          "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+          "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+        }
+      },
+      {
+        "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+        "bytes": 32961,
+        "archive_source": {
+          "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+          "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+        }
+      },
+      {
+        "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+        "bytes": 16082501,
+        "archive_source": {
+          "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+          "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+        }
+      },
+      {
+        "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+        "bytes": 1090228,
+        "archive_source": {
+          "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+          "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+        }
+      },
+      {
+        "source": "artifacts/g2-population-re25-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+        "bytes": 1413980,
+        "archive_source": {
+          "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+          "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+          "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+        }
+      }
+    ],
+    "unique_archive_backed_primary_runtime_bytes": 40265344,
+    "no_duplicate_nine_case_cache_created": true
+  },
+  "resources": {
+    "actual_warm_input_bytes": 632194895,
+    "additional_fresh_staging_copy_bytes": 632194895,
+    "all_unique_SourceInputs_recovery_temporaries_bytes": 4994418310,
+    "staging_plus_recovery_before_other_reservations_bytes": 5626613205,
+    "derived_outputs_no_compression_projection_bytes": 1601093055,
+    "projection_overhead_allowance_bytes": 67108864,
+    "remote_inputs_plus_derived_outputs_before_native_environment_bytes": 2233287950,
+    "minimum_disk_reserve_bytes": 10737418240,
+    "current_local_free_bytes": 15975145472,
+    "allocation_seconds_reserved": 450,
+    "remaining_fine_preparation_seconds_reserved": 1350,
+    "total_preparation_seconds": 1800,
+    "native_environment_and_git_transport_not_in_totals": true
+  },
+  "pending_bindings": [
+    "genuine full15 FD1 admission and independent review",
+    "dataset-local common-lift admission after genuine full truth",
+    "final source/mirror commit freeze for runtime closures",
+    "exact materialization release for each actual Re and single450s job",
+    "measured staging/Git/other-active reservation and pinned native environment packet"
+  ],
+  "retention_requirement": "Keep every declared source member directly recoverable from pinned Git or explicit full-archive SourceInputs mapping; do not rely on delta fallback."
+}

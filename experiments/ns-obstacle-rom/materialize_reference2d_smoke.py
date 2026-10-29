@@ -1,6 +1,6 @@
 """Pure array/container derivation regression, never a qualification or native replay."""
 from pathlib import Path
-import hashlib,json,tempfile
+import hashlib,json,tempfile,shutil
 import numpy as np
 import materialize_reference2d as m
 
@@ -35,7 +35,21 @@ def main():
         assert (bad/'full_rule.npz').is_file() and (bad/'MATERIALIZATION.json').is_file()
         assert not (bad/'EXPORT-MANIFEST.json').exists()
         assert before=={p.name:m.sha(p) for p in original.iterdir()}
-    print('PASS exact derived fields/new containers; original immutable; altered bits retained and rejected; synthetic only')
+        legacy=root/'legacy';legacy.mkdir()
+        for source in original.iterdir():
+            if source.name!='PRIMARY-REFERENCE.json':shutil.copyfile(source,legacy/source.name)
+        np.savez_compressed(legacy/'full_rule.npz',velocity=a)
+        before_legacy={p.name:m.sha(p) for p in legacy.iterdir()}
+        target=root/'legacy-derived';target.mkdir()
+        legacy_release=dict(release,source_storage_mode='legacy_expanded_Re20')
+        result=m.derive(legacy,target,config,{'derived_full_rule_arrays':primary['derived_full_rule_arrays']},
+            {'volume':{'velocity':a}},{'no_PDE_solve':True,'new_native_replay_performed':False},legacy_release,{'synthetic':True},digest)
+        assert result['source_storage_mode']=='legacy_expanded_Re20' and 'primary_manifest_sha256' not in result
+        assert result['original_full_rule_archive_sha256']==m.sha(legacy/'full_rule.npz')
+        assert json.loads((target/'config.json').read_text())['scope_contract_sha256']==m.SCOPE_SHA256
+        assert before_legacy=={p.name:m.sha(p) for p in legacy.iterdir()}
+
+    print('PASS primary and expanded legacy derivation/new containers; original immutable; altered bits retained and rejected; synthetic only')
 
 
 if __name__=='__main__':main()

@@ -43,9 +43,12 @@ def verify(original,truth_path,release_path):
     qualification=require_qualification(json.loads(Path(truth_path).read_text()))
     if qualification!=require_qualification(release.get('reference_qualification')):raise ValueError('truth scope differs')
     if sha(original/'EXPORT-MANIFEST.json')!=release['original_export_sha256']:raise ValueError('released primary case differs')
-    config=json.loads((original/'config.json').read_text());re=release['Re']
+    config=json.loads((original/'config.json').read_text());re=release['Re'];mode=release.get('source_storage_mode')
+    if mode not in ('coefficient_primary','legacy_expanded_Re20'):raise ValueError('explicit source storage mode required')
+    if mode=='legacy_expanded_Re20' and (re!=20. or config.get('release')!='G2_steady_control_candidate' or (original/'PRIMARY-REFERENCE.json').exists()):
+        raise ValueError('only the separately released legacy expanded Re20 baseline is supported')
     if (re not in [15+1.25*j for j in range(9)] or abs(config['nu']-.02/re)>1e-15 or
-        config.get('scope_contract_sha256')!=SCOPE_SHA256):raise ValueError('exact scoped training state required')
+        (config.get('scope_contract_sha256')!=SCOPE_SHA256 if mode=='coefficient_primary' else config.get('scope_contract_sha256') not in (None,SCOPE_SHA256))):raise ValueError('exact scoped training state required')
     return original,release,qualification
 
 
@@ -61,13 +64,17 @@ def derive(original,out,config,primary,fields,replay,release,qualification,diges
         'reference_admission_sha256':release['reference_admission_sha256'],
         'source_sha256':source_digest(),'original_directory':str(original),
         'original_export_sha256':sha(original/'EXPORT-MANIFEST.json'),
-        'original_config_sha256':sha(original/'config.json'),'primary_manifest_sha256':sha(original/'PRIMARY-REFERENCE.json'),
-        'primary_coefficients_sha256':primary['primary_sha256'],'immutable_geometry_rules':primary['immutable_geometry_rules'],
+        'original_config_sha256':sha(original/'config.json'),'source_storage_mode':release.get('source_storage_mode','coefficient_primary'),
         'original_derived_array_descriptors':descriptors,'actual_derived_array_descriptors':actual,
         'new_full_rule_archive_sha256':sha(archive),'historical_ZIP_identity_claimed':False,
         'original_files_mutated':False,'reconstruction':replay,'Re':release['Re'],
         'role_only_configuration_changes':{'release':{'before':config.get('release'),'after':EXPORT_RELEASE},
                                            'split':{'before':config.get('split'),'after':'training'}}}
+    if release.get('source_storage_mode','coefficient_primary')=='coefficient_primary':
+        record.update(primary_manifest_sha256=sha(original/'PRIMARY-REFERENCE.json'),primary_coefficients_sha256=primary['primary_sha256'],immutable_geometry_rules=primary['immutable_geometry_rules'])
+    else:
+        record['original_full_rule_archive_sha256']=sha(original/'full_rule.npz')
+        record['role_only_configuration_changes']['scope_contract_sha256']={'before':config.get('scope_contract_sha256'),'after':SCOPE_SHA256}
     path=out/'MATERIALIZATION.json'
     path.write_text(json.dumps(record,indent=2)+'\n')
     if actual!=descriptors:raise ArithmeticError('regenerated field bits differ; retain actual arrays for scoped review')
@@ -77,7 +84,7 @@ def derive(original,out,config,primary,fields,replay,release,qualification,diges
     for name in COPIED:
         shutil.copyfile(original/name,out/name)
         if sha(out/name)!=sha(original/name):raise ArithmeticError('immutable producer certificate copy differs')
-    derived=dict(config,release=EXPORT_RELEASE,split='training')
+    derived=dict(config,release=EXPORT_RELEASE,split='training',scope_contract_sha256=SCOPE_SHA256)
     (out/'config.json').write_text(json.dumps(derived,indent=2)+'\n')
     record.update(status='exact_content_replay_passed_pending_independent_admission',
                   derived_config_sha256=sha(out/'config.json'),original_config_preserved=True)
@@ -111,14 +118,35 @@ def materialize(original,truth_path,release_path,out):
         sys.path.insert(0,str(NATIVE))
         from reference_primary import load_primary_case,reconstruct_primary
         from immutable_rule import array_digest
-        config,primary,_,_=load_primary_case(original)
-        expanded=sum(np.prod(d['shape'],dtype=np.int64)*np.dtype(d['dtype']).itemsize for d in primary['derived_full_rule_arrays'].values())
+        if release['source_storage_mode']=='coefficient_primary':
+            config,primary,_,_=load_primary_case(original)
+            expanded=sum(np.prod(d['shape'],dtype=np.int64)*np.dtype(d['dtype']).itemsize for d in primary['derived_full_rule_arrays'].values())
+        else:
+            import zipfile
+            export=json.loads((original/'EXPORT-MANIFEST.json').read_text())
+            for name in (*COPIED,'config.json','full_rule.npz'):
+                if sha(original/name)!=export['files'].get(name):raise ValueError('legacy runtime input differs: '+name)
+            config=json.loads((original/'config.json').read_text())
+            fixed={'kind':'dfg','outlet':'gradient','xmin':0.,'xmax':2.2,'H':.41,'center':[.2,.2],'radius':.05,'U':.2,'D':.1,'precision':'float64'}
+            if any(config.get(k)!=v for k,v in fixed.items()):raise ValueError('legacy fixed geometry/scales differ')
+            reload=json.loads((original/'reload_checks.json').read_text())
+            execution=reload.get('execution',{})
+            if reload.get('passed') is not True or execution.get('fresh_interpreter') is not True or execution.get('pid')==execution.get('producer_pid'):
+                raise ValueError('legacy fresh-process replay certificate required')
+            with zipfile.ZipFile(original/'full_rule.npz') as z:expanded=sum(x.file_size for x in z.infolist())
         if expanded>2**30 or shutil.disk_usage(out).free<10*2**30+2*expanded+64*2**20:
             raise MemoryError('materialization and durable-copy disk reserve or case archive cap exceeded')
         if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024+4*expanded+2*2**30>16*2**30:
             raise MemoryError('prospective reconstruction working reserve exceeds16GiB')
-        import ngsolve as ng
-        fields,replay=reconstruct_primary(original,ng)
+        if release['source_storage_mode']=='coefficient_primary':
+            import ngsolve as ng
+            fields,replay=reconstruct_primary(original,ng)
+        else:
+            with np.load(original/'full_rule.npz',allow_pickle=False) as archive:volume={k:archive[k] for k in archive.files}
+            if any(a.dtype.kind not in 'fiu' or not np.isfinite(a).all() for a in volume.values()):raise ValueError('finite numeric legacy arrays required')
+            primary={'derived_full_rule_arrays':{k:{'dtype':a.dtype.str,'shape':list(a.shape),'content_sha256':array_digest(a)} for k,a in volume.items()}}
+            fields={'volume':volume};replay={'no_PDE_solve':True,'new_native_replay_performed':False,
+                'method':'lossless original expanded arrays; original independent native replay certificate retained unchanged'}
         derive(original,out,config,primary,fields,replay,release,qualification,array_digest)
         final['status']='exact_reconstruction_completed_pending_independent_review'
     except Exception as exc:final.update(status='failed',exception=repr(exc));raise

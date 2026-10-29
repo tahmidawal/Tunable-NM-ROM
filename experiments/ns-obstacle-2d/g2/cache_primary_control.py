@@ -1,6 +1,6 @@
 """Prospective complete-rule cache and portable primary retention proof."""
 from pathlib import Path
-import argparse,copy,json,resource,shutil,subprocess,sys,time
+import argparse,copy,json,resource,shutil,subprocess,sys,time,traceback
 import numpy as np
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from compare_fields import load_candidate
@@ -9,11 +9,14 @@ from immutable_rule import NativeRuleCache,CommonPointCache,write_cache,array_di
 from oriented_normals import fluid_outward_normal
 import reference_export as rex
 from reference_scope import FD1_CONTRACT_SHA256
+ACTIVE=None
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--plan',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();a.out=a.out.resolve();a.out.mkdir(parents=True,exist_ok=False);arrays=a.out/'arrays';arrays.mkdir()
     plan=json.loads(a.plan.read_text());records=[];report={'passed':False,'physical_admission':False,'records':records,'one_new_producer_invocation':True,'timings':'complete phase resource measurements, no cross-job speedup claim'}
+    global ACTIVE
+    ACTIVE=(a.out,report)
     import ngsolve as ng
     import jax,jax.numpy as jnp
     if jax.default_backend()!='gpu' or not jax.config.x64_enabled or jax.config.jax_default_matmul_precision!='highest':raise RuntimeError('GPU/f64/highest required')
@@ -26,7 +29,7 @@ def main():
         checks={};refs={}
         for key,original in expected.items():
             value=np.asarray(actual[key]);original=np.asarray(original);refs[key]={'actual':retain_array(arrays,value),'expected':retain_array(arrays,original)}
-            if original.dtype.kind in 'USbiu':checks[key]={'value':0. if np.array_equal(value,original) else float('inf')}
+            if original.dtype.kind in 'USbiu':checks[key]={'value':0. if np.array_equal(value,original) else 1.}
             else:checks[key]=rex.relative_max_record(value,original,{'points':cfg['D'],'velocity':cfg['U'],'velocity_gradient':cfg['U']/cfg['D'],'pressure':cfg['U']**2}.get(key,1.))
         passed=all(x['value']<=rex.RELOAD_TOL for x in checks.values());records.append({'tag':tag,'passed':passed,'checks':checks,'arrays':refs,**extra});save()
         if not passed:raise ArithmeticError('cache proof differs: '+tag)
@@ -87,4 +90,9 @@ def main():
     with np.load(folder/'full_rule.npz',allow_pickle=False) as original,np.load(a.out/'portable-replay/volume.npz',allow_pickle=False) as reconstructed:compare('complete_producer_portable_replay',{k:reconstructed[k] for k in original.files},{k:original[k] for k in original.files},cfg,{'independent_new_producer_vs_retained_original':True})
     report.update(passed=True,peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024);save()
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    try:main()
+    except Exception as exc:
+        if ACTIVE is not None:
+            output,record=ACTIVE;record.update(passed=False,failure={'exception':repr(exc),'traceback':traceback.format_exc(),'raw_arrays_preserved':True});rex.dump(output/'control.json',record)
+        raise

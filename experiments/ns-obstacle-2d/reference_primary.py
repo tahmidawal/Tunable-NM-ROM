@@ -5,7 +5,7 @@ export may be removed, after its successful independent fresh-process replay and
 all primary/state/result/manifest evidence is written. Producer exceptions before finalization keep it; later physical assessment may still fail.
 """
 from pathlib import Path
-import json,os,shutil
+import json,os,shutil,importlib.metadata
 import numpy as np
 import reference_export as rex
 from immutable_rule import array_digest
@@ -69,6 +69,16 @@ def load_primary_case(folder):
         if not path.is_relative_to(folder) or rex.sha_file(path)!=digest:raise ValueError('primary export closure mismatch')
     record=json.loads((folder/'PRIMARY-REFERENCE.json').read_text())
     if record!=export.get('storage_contract') or record.get('schema')!='ns-obstacle-coefficient-primary-v1':raise ValueError('explicit primary storage record required')
+    required={'reference_primary.py','immutable_rule.py','reference_export.py','reference_scope.py'}
+    if set(record['source_sha256'])!=required:raise ValueError('primary reconstruction source closure changed')
+    sources=dict(export['producer_source_sha256'])
+    for name,digest in record['source_sha256'].items():
+        if name in sources and sources[name]!=digest:raise ValueError('conflicting retained source provenance')
+        sources[name]=digest
+    for name,digest in sources.items():
+        if Path(name).name!=name or rex.sha_file(Path(__file__).with_name(name))!=digest:raise ValueError('current reconstruction/producer source differs from retained provenance: '+name)
+    packages={'ngsolve','netgen-mesher','netgen-occt','ngsolve-openblas','numpy'}
+    if set(export['versions'])!=packages or any(importlib.metadata.version(name)!=version for name,version in export['versions'].items()):raise ValueError('current reconstruction runtime differs from retained versions')
     cfg=json.loads((folder/'config.json').read_text());validate_geometry(cfg)
     if rex.sha_file(folder/'config.json')!=record['config_sha256'] or rex.sha_file(folder/rex.MESH_FILENAME)!=record['mesh_sha256']:raise ValueError('primary configuration/mesh identity mismatch')
     archive=folder/record['primary_file']

@@ -69,6 +69,15 @@ class ExportControls(unittest.TestCase):
                 path.write_text(json.dumps({**fixture,**replacement}))
                 with self.assertRaises((ValueError,RuntimeError)):shared_lift.CommonStokesLift.from_finite_channel_admission(*arguments)
 
+    def test_finite_channel_fom_rejects_changed_geometry_before_native_work(self):
+        from fom_query import SteadyFOMQuery
+        from reference_scope import FD1_CONTRACT_SHA256
+        lift=shared_lift.CommonStokesLift();lift.usage_role='FD1_fixed_finite_channel_truth_admitted'
+        cfg={'kind':'dfg','outlet':'gradient','xmin':0.,'xmax':2.2,'H':.41,'center':[.2,.2],'radius':.05,'U':.2,'D':.1,'scope_contract_sha256':FD1_CONTRACT_SHA256}
+        for key,value in [('xmin',-.2),('xmax',4.4),('H',.5),('center',[.3,.2]),('radius',.06),('scope_contract_sha256','a'*64)]:
+            with self.assertRaisesRegex(ValueError,'FD1 is restricted'):
+                SteadyFOMQuery(None,'not-opened',{**cfg,key:value},lift,None)
+
     def test_common_stokes_split_and_query_scaling(self):
         c=np.array([2.,3.,.02,.03]);u,p=shared_lift.split_common_lift(c,2,.01)
         np.testing.assert_array_equal(u,[2.,3.]);np.testing.assert_allclose(p,[2.,3.])

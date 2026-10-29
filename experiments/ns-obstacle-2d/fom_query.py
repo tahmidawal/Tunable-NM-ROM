@@ -29,6 +29,9 @@ class SteadyFOMQuery:
             raise TypeError('reviewed cached common lift required')
         if getattr(common_lift,'usage_role',None) not in ('G2_truth_admitted','FD1_fixed_finite_channel_truth_admitted','native_equivalence_control','development_calibration_only','frozen_fom_comparator'):
             raise ValueError('explicit validated common-lift role required')
+        if common_lift.usage_role=='FD1_fixed_finite_channel_truth_admitted':
+            from reference_scope import validate_geometry
+            validate_geometry(cfg)
         if hasattr(common_lift,'configuration_sha256'):
             from candidate_lift import configuration_sha256
             if common_lift.configuration_sha256!=configuration_sha256(cfg):raise ValueError('candidate lift configuration binding changed')

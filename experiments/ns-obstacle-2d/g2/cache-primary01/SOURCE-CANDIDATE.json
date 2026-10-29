@@ -1042,8 +1042,8 @@
     {
       "source": "reference_primary.py",
       "destination": "reference_primary.py",
-      "sha256": "ea0c7e095f0eb92ce2cd7d62db10edf17365ebffb69c9f3b2090acc89a63ce62",
-      "bytes": 9731
+      "sha256": "66889317435f7e65fb2e406330fd7c84710e410a070c6501d2bd9e484d36343c",
+      "bytes": 10741
     },
     {
       "source": "reference_scope.py",
@@ -1060,8 +1060,8 @@
     {
       "source": "shared_lift.py",
       "destination": "shared_lift.py",
-      "sha256": "26c30cf4b6f9ae570c01d5e7ac6cbfa33598a28bb6651a8ca8466028d8ef7b2d",
-      "bytes": 5524
+      "sha256": "5d28c86cec7017ad5ac108ee3834fb45598a3d10963a4021a0a94afc9ef73b66",
+      "bytes": 6948
     },
     {
       "source": "oriented_normals.py",
@@ -1132,8 +1132,8 @@
     {
       "source": "g2/cache_primary_control.py",
       "destination": "g2/cache_primary_control.py",
-      "sha256": "2545a8a7aef25493f39478eb255148cfe597070c215179682eb3494cb5a7c191",
-      "bytes": 10675
+      "sha256": "91e39f8180d1d42bca449e5df2b1e6d0ce20c9936e4380cda09b98b27040ef2d",
+      "bytes": 11009
     },
     {
       "source": "g2/primary_replay.py",
@@ -1194,7 +1194,7 @@
     "other_lane_collection_reservation_GiB": 3,
     "local_collection_policy": "Measure actual remote archive/expanded bytes before collection; retain remote originals if local reservation is insufficient. Full local archive+expanded+Git copies would require18GiB beyond existing data; do not allocate these blindly. Canonical directory move avoids a fourth copy; no unmeasured compression/dedup credit."
   },
-  "input_bytes": 1186941527,
+  "input_bytes": 1186944295,
   "resource_planning": "Scalar order16 readouts on four saved spaces, deterministic changed fine state oracle, all native/cache/common readouts, one original P4h3 producer with unchanged factor guards, and fresh relocated primary replay. No credited speedup; hard process/allocation stops. Canonical input bytes remain; content deduplication is prospective until measured.",
   "scientific_scope": "All five baseline spaces, native rules12/16, full original P4 common mappings, actual changed coefficients, complete producer and portable fresh-process reconstruction. Same coordinates/weights/order, no dropped points, no threshold or parameter coverage change."
 }

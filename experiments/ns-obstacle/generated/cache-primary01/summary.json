@@ -1,0 +1,1040 @@
+{
+  "scope": "geometry-cache and primary-state replay diagnostic only",
+  "physical_admission": false,
+  "training_released": false,
+  "independent_audit": "See separately retained independent review; this extraction does not audit raw arrays",
+  "source_result_sha256": "8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6",
+  "generator_sha256": "5954e039d86831f816017e90d8136c8d3cc0bc78652f128bd7410700c3686ee9",
+  "comparison_count": 28,
+  "maximum_normalized_difference": 6.9005113365415095e-15,
+  "comparisons": [
+    {
+      "tag": "p4_g4_h1/12/volume",
+      "maximum_normalized_difference": 4.696448333962944e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.1999582265317117,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39859256685484096,
+          "value": 2.7853580747517465e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13218921223985228,
+          "value": 2.0996853786576382e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.258726817954024,
+          "value": 4.696448333962944e-16
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h1/12/boundary",
+      "maximum_normalized_difference": 3.477541406407812e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.29999222998624153,
+          "value": 1.8504196336619692e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13220568530007212,
+          "value": 0.0
+        },
+        "velocity_gradient": {
+          "numerator": 1.0658141036401503e-14,
+          "denominator": 30.648494987759236,
+          "value": 3.477541406407812e-16
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h1/16/volume",
+      "maximum_normalized_difference": 4.674875711081551e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199983157670083,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39860035440310404,
+          "value": 2.7853036565601983e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.398358359594262,
+          "value": 4.674875711081551e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13220052907572596,
+          "value": 2.0995056381151248e-16
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h1/16/boundary",
+      "maximum_normalized_difference": 3.47756090266796e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.29999695868895515,
+          "value": 1.8503904664184703e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.0658141036401503e-14,
+          "denominator": 30.648323163009607,
+          "value": 3.47756090266796e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13220525396307764,
+          "value": 0.0
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h1/common",
+      "maximum_normalized_difference": 2.785186568464236e-16,
+      "checks": {
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.3986171113977971,
+          "value": 2.785186568464236e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13219514741644056,
+          "value": 2.0995911089076078e-16
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h2/12/volume",
+      "maximum_normalized_difference": 4.656294339944777e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199979309113544,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.3984206157512347,
+          "value": 2.7865601847228606e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13226799557635474,
+          "value": 2.0984347343198657e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.519665806544655,
+          "value": 4.656294339944777e-16
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h2/12/boundary",
+      "maximum_normalized_difference": 3.4745966005463423e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.3000000000000007,
+          "value": 1.85037170770859e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13227872801552745,
+          "value": 0.0
+        },
+        "velocity_gradient": {
+          "numerator": 1.0658141036401503e-14,
+          "denominator": 30.6744703391629,
+          "value": 3.4745966005463423e-16
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h2/16/volume",
+      "maximum_normalized_difference": 4.647608931732315e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199991657797395,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39858581569330614,
+          "value": 2.7854052525527484e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.57670067327536,
+          "value": 4.647608931732315e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227472122579842,
+          "value": 2.0983280371650905e-16
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h2/16/boundary",
+      "maximum_normalized_difference": 3.4741023027126537e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.3000000000000007,
+          "value": 1.85037170770859e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.0658141036401503e-14,
+          "denominator": 30.678834725389052,
+          "value": 3.4741023027126537e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13227838423046767,
+          "value": 0.0
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h2/common",
+      "maximum_normalized_difference": 2.7851976188071326e-16,
+      "checks": {
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39861552987419685,
+          "value": 2.7851976188071326e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227377971612692,
+          "value": 2.0983429728246385e-16
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h3/12/volume",
+      "maximum_normalized_difference": 4.632916082230859e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199989662818987,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39861287741214524,
+          "value": 2.7852161521546704e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227794696223633,
+          "value": 2.0982768672356836e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.67367175008087,
+          "value": 4.632916082230859e-16
+        }
+      }
+    },
+    {
+      "tag": "deterministic_changed_state",
+      "maximum_normalized_difference": 4.922974945363972e-16,
+      "checks": {
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.3986075683621612,
+          "value": 2.7852532484191214e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227975999487562,
+          "value": 2.0982481081538199e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.509903313490213e-14,
+          "denominator": 30.670546371805287,
+          "value": 4.922974945363972e-16
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h3/12/boundary",
+      "maximum_normalized_difference": 3.4736365105828897e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.3000000000000004,
+          "value": 1.8503717077085919e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13228234593845534,
+          "value": 0.0
+        },
+        "velocity_gradient": {
+          "numerator": 1.0658141036401503e-14,
+          "denominator": 30.682948558175493,
+          "value": 3.4736365105828897e-16
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h3/common",
+      "maximum_normalized_difference": 2.78521615215467e-16,
+      "checks": {
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.3986128774121453,
+          "value": 2.78521615215467e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227794696223627,
+          "value": 2.0982768672356843e-16
+        }
+      }
+    },
+    {
+      "tag": "p3_g3_h3/12/volume",
+      "maximum_normalized_difference": 4.633094241951967e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199989662818987,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39862056549160774,
+          "value": 2.785162434496949e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227256417801503,
+          "value": 2.098362255854881e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.67249223321396,
+          "value": 4.633094241951967e-16
+        }
+      }
+    },
+    {
+      "tag": "p3_g3_h3/12/boundary",
+      "maximum_normalized_difference": 4.631804170903998e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.29999999999999977,
+          "value": 1.8503717077085958e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13227712514708634,
+          "value": 0.0
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.681035274486664,
+          "value": 4.631804170903998e-16
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p3_g3_h3/16/volume",
+      "maximum_normalized_difference": 4.632490135041462e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199995832229878,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39861127183580247,
+          "value": 2.785227370796689e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.676492126139866,
+          "value": 4.632490135041462e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227490558991373,
+          "value": 2.0983251125257535e-16
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p3_g3_h3/16/boundary",
+      "maximum_normalized_difference": 4.631845124111728e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.29999999999999977,
+          "value": 1.8503717077085958e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.680764003151527,
+          "value": 4.631845124111728e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13227820542380608,
+          "value": 0.0
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p3_g3_h3/common",
+      "maximum_normalized_difference": 2.785162434496949e-16,
+      "checks": {
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39862056549160774,
+          "value": 2.785162434496949e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227256453414754,
+          "value": 2.0983622502052208e-16
+        }
+      }
+    },
+    {
+      "tag": "p3_g4_h3/12/volume",
+      "maximum_normalized_difference": 5.212241290302455e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199989662818987,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39862056528906425,
+          "value": 2.7851624359121204e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.1322725649265815,
+          "value": 2.0983622439796777e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.5987211554602254e-14,
+          "denominator": 30.67243180845634,
+          "value": 5.212241290302455e-16
+        }
+      }
+    },
+    {
+      "tag": "p3_g4_h3/12/boundary",
+      "maximum_normalized_difference": 4.631806901486917e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.29999999999999977,
+          "value": 1.8503717077085958e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13227712541232317,
+          "value": 0.0
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.68101718713703,
+          "value": 4.631806901486917e-16
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p3_g4_h3/16/volume",
+      "maximum_normalized_difference": 5.211564010963017e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199995832229878,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.3986112716407209,
+          "value": 2.785227372159788e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.5987211554602254e-14,
+          "denominator": 30.676417906355262,
+          "value": 5.211564010963017e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227490648035398,
+          "value": 2.098325098400375e-16
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p3_g4_h3/16/boundary",
+      "maximum_normalized_difference": 3.473888756392143e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.29999999999999977,
+          "value": 1.8503717077085958e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.0658141036401503e-14,
+          "denominator": 30.68072060969122,
+          "value": 3.473888756392143e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13227820598783355,
+          "value": 0.0
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "p3_g4_h3/common",
+      "maximum_normalized_difference": 2.7851624359121204e-16,
+      "checks": {
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39862056528906425,
+          "value": 2.7851624359121204e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13227256492658143,
+          "value": 2.0983622439796785e-16
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h3_q16/16/volume",
+      "maximum_normalized_difference": 4.632339465790822e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199995832229878,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 1.1102230246251565e-16,
+          "denominator": 0.39860400640181726,
+          "value": 2.7852781376863123e-16
+        },
+        "pressure": {
+          "numerator": 2.7755575615628914e-17,
+          "denominator": 0.13228041245111194,
+          "value": 2.0982377588130661e-16
+        },
+        "velocity_gradient": {
+          "numerator": 1.4210854715202004e-14,
+          "denominator": 30.677489895002676,
+          "value": 4.632339465790822e-16
+        }
+      }
+    },
+    {
+      "tag": "p4_g4_h3_q16/16/boundary",
+      "maximum_normalized_difference": 3.473697695125204e-16,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.2,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 5.551115123125783e-17,
+          "denominator": 0.3000000000000004,
+          "value": 1.8503717077085919e-16
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13228355349205165,
+          "value": 0.0
+        },
+        "velocity_gradient": {
+          "numerator": 1.0658141036401503e-14,
+          "denominator": 30.6824081190443,
+          "value": 3.473697695125204e-16
+        },
+        "normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "raw_normals": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "labels": {
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "same_invocation_portable_replay",
+      "maximum_normalized_difference": 0.0,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199989662818987,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 0.0,
+          "denominator": 0.39861287741214524,
+          "value": 0.0
+        },
+        "velocity_gradient": {
+          "numerator": 0.0,
+          "denominator": 30.67367175008087,
+          "value": 0.0
+        },
+        "pressure": {
+          "numerator": 0.0,
+          "denominator": 0.13227794696223638,
+          "value": 0.0
+        },
+        "stokes_coefficients": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "solution_coefficients": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "signed_obstacle_distance": {
+          "numerator": 0.0,
+          "denominator": 1.9609233562422188,
+          "value": 0.0
+        },
+        "prescribed_FE_trace_coefficients": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "tag": "complete_producer_portable_replay",
+      "maximum_normalized_difference": 6.9005113365415095e-15,
+      "checks": {
+        "points": {
+          "numerator": 0.0,
+          "denominator": 2.199989662818987,
+          "value": 0.0
+        },
+        "weights": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "velocity": {
+          "numerator": 3.3306690738754696e-16,
+          "denominator": 0.39861287741214524,
+          "value": 8.355648456464011e-16
+        },
+        "velocity_gradient": {
+          "numerator": 2.116640196447861e-13,
+          "denominator": 30.67367175008087,
+          "value": 6.9005113365415095e-15
+        },
+        "pressure": {
+          "numerator": 1.6653345369377348e-16,
+          "denominator": 0.13227794696223633,
+          "value": 1.25896612034141e-15
+        },
+        "stokes_coefficients": {
+          "numerator": 6.062220519811445e-15,
+          "denominator": 1.0,
+          "value": 6.062220519811445e-15
+        },
+        "solution_coefficients": {
+          "numerator": 2.8561137829785643e-15,
+          "denominator": 1.0,
+          "value": 2.8561137829785643e-15
+        },
+        "jacobians": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        },
+        "signed_obstacle_distance": {
+          "numerator": 0.0,
+          "denominator": 1.9609233562422188,
+          "value": 0.0
+        },
+        "prescribed_FE_trace_coefficients": {
+          "numerator": 0.0,
+          "denominator": 1.0,
+          "value": 0.0
+        }
+      }
+    }
+  ],
+  "complete_producer_seconds": 82.06275774911046,
+  "producer_phases_seconds": {
+    "geometry_spaces_fields_forms": 2.934930820018053,
+    "stokes_lift": 10.093709315173328,
+    "stokes_checkpoint": 0.04019404202699661,
+    "newton_query": 53.542851669713855,
+    "independent_residual_and_Jacobian": 2.381299209780991,
+    "reference_diagnostics_and_export": 4.161573655903339,
+    "trace_certificate_and_reload": 7.895461441017687,
+    "total": 81.05002015363425
+  },
+  "portable_fresh_process_seconds": 6.876741833053529,
+  "peak_rss_bytes": 3189149696,
+  "timing_scope": "complete phase resource measurements, no cross-job speedup claim",
+  "ROM_speedup_claim": false
+}

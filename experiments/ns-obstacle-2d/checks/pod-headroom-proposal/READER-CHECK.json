@@ -1,0 +1,28 @@
+{
+  "schema": "ns-obstacle-proposed-archive-reader-verification-v1",
+  "helper_sha256": "da6d150859f688ad7fba8767d249d9c7fd8f4f237af8c20e80e93351777365f2",
+  "records": [
+    {
+      "manifest": "g2-ladder01-RECOVERY-PROPOSED.json",
+      "manifest_sha256": "f597ee2f52718eef76a1c8ada97448a09ad72af2369ea235d9e3bd45dd84d019",
+      "result": {
+        "archive_bytes": 169376967,
+        "archive_sha256": "6f9fa30a7b6383824dd475264236443dd52b1a795911cdccb42d319a7abe1479",
+        "chunks": 4
+      }
+    },
+    {
+      "manifest": "g2-ladder02-RECOVERY-PROPOSED.json",
+      "manifest_sha256": "6c9a44957ec19419fc737a06e7c422beb2ea5e3ecf20de18ea3cba8014576b9f",
+      "result": {
+        "archive_bytes": 270993422,
+        "archive_sha256": "825f469c36a66d61cbd0aea0329b00b58a2c2167f6d3a3e62125297ba956d7af",
+        "chunks": 6
+      }
+    }
+  ],
+  "output_materialized": false,
+  "prepare_status_gate_called_or_changed": false,
+  "passed": true,
+  "elapsed_seconds": 0.8936792751774192
+}

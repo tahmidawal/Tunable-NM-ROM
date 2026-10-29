@@ -1,0 +1,19 @@
+{
+  "schema": "ns-obstacle-compact-warm-refinement-prospective-audit-v1",
+  "execution_authorized_by_this_file": false,
+  "job_id": 6649439,
+  "job_root": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-refine01",
+  "result_relative": "results/fit",
+  "release_file": "TRAINING-RELEASE.json",
+  "release_sha256": "d335357e3b076797ead159cd560749f7cd8d108b1b43052db775f60b656090cb",
+  "trainer_source_commit": "6c4ee9bcd",
+  "trainer_mirror_commit": "0c1dad4b6",
+  "trainer_sha256": "261a532ec8c6aa33549484993558e9e22917c6d360e47bfe1319b6a9083b079f",
+  "required_before_execution": ["terminal owner receipt", "original complete checksum ledger hash", "actual CONFIG/FINAL/MODEL-RECEIPT hashes", "exact parent paths", "independent source review"],
+  "external_timeout_seconds": 120,
+  "address_space_limit_bytes": 4294967296,
+  "blas_threads": 1,
+  "no_running_output_arrays_accessed": true,
+  "selection_interpretation": "Minimum among initial and accepted Armijo states; not an assertion of selection over rejected trials.",
+  "deadline_limitation": "A deadline inside full() can interrupt an unrecorded partial evaluation; its objective is unmeasured, not a completed trial."
+}

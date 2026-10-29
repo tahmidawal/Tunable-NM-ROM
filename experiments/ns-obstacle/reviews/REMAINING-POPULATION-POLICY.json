@@ -1,0 +1,102 @@
+{
+  "schema": "ns-obstacle-remaining-population-policy-v1",
+  "status": "policy_frozen_pending_exact_package_resource_and_retention_review",
+  "submission_released": false,
+  "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+  "groups": [
+    {
+      "Re": 15,
+      "split": "train"
+    },
+    {
+      "Re": 16.25,
+      "split": "train"
+    },
+    {
+      "Re": 17.5,
+      "split": "train"
+    },
+    {
+      "Re": 18.75,
+      "split": "train"
+    },
+    {
+      "Re": 21.25,
+      "split": "train"
+    },
+    {
+      "Re": 22.5,
+      "split": "train"
+    },
+    {
+      "Re": 23.75,
+      "split": "train"
+    },
+    {
+      "Re": 25,
+      "split": "train"
+    },
+    {
+      "Re": 16.875,
+      "split": "development"
+    },
+    {
+      "Re": 23.125,
+      "split": "development"
+    },
+    {
+      "Re": 16,
+      "split": "validation"
+    },
+    {
+      "Re": 18,
+      "split": "validation"
+    },
+    {
+      "Re": 22,
+      "split": "validation"
+    },
+    {
+      "Re": 24,
+      "split": "validation"
+    }
+  ],
+  "states_per_group": 15,
+  "new_states": 210,
+  "budget_seconds": {
+    "total_ceiling": 43200,
+    "reference_infrastructure_ceiling": 28800,
+    "actual_charged": 5917,
+    "remaining_reference_allocations_reserved": 21000,
+    "conditional_ROM_reserved_untouched": 14400,
+    "worst_total_committed": 41317,
+    "unreserved_reference_headroom": 1883
+  },
+  "accounting_source_sha256": "fb0daa7e0779101a3002466df14b10be4c01d14a3f95f314ad1bb17a48b06354",
+  "allocation": {
+    "gpu_count": 1,
+    "partition": "gpu",
+    "maximum_cpu_count": 16,
+    "wall_seconds": 1500,
+    "setup_aware_runner_seconds": 1400,
+    "maximum_concurrent_obstacle_compute_jobs": 2,
+    "unique_directory_per_attempt": true,
+    "queue_check_before_and_after_every_submission": true
+  },
+  "collection": {
+    "maximum_concurrent_collections": 1,
+    "maximum_remote_bytes": 53687091200,
+    "minimum_untouched_local_bytes": 10737418240,
+    "retain_remote_original_until_verified_collection_and_durable_backup": true,
+    "reuse_only_measured_identical_hash_and_length": true,
+    "complete_original_logical_inventory_and_recoverable_file_locations_required": true,
+    "exact_local_and_remote_reservations": "Bind measured shared-closure, delta/archive, reconstruction, staging and Git footprints in final release; not yet admitted by this policy."
+  },
+  "stop_rules": [
+    "No automatic retry or duplicate submission.",
+    "Stop new submissions on scientific failure, unexpected execution failure, incomplete provenance, or any event invalidating compute/storage projections. Preserve all completed and partial evidence.",
+    "Before every submission, update actual charges plus remaining hard allocations; preserve both the reference/infrastructure subcap and untouched conditional ROM reservation.",
+    "Before every staging/collection, reserve actual active work and worst-case next operation while maintaining the untouched local reserve and remote ceiling.",
+    "No admission or training release follows from this rollout policy. Full-population numerical and independent retention gates remain required."
+  ]
+}

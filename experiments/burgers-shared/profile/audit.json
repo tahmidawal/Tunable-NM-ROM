@@ -1,0 +1,34 @@
+{
+  "reviewer": "Independent Codex timing_review (read-only NumPy audit)",
+  "status": "numerical_and_retention_pass",
+  "job_id": "6640980",
+  "checks": [
+    "168 unique timing entries",
+    "84 split witnesses",
+    "97 output checksums",
+    "51 states and six returned codes per trajectory",
+    "exact fine iterations/reasons and aggregate rejections",
+    "exact IC decisions",
+    "exact affine acceptance/iterations/reasons/rejections",
+    "phase and event sums match totals",
+    "median-total selection direct block6 and affine block1",
+    "all84 fused W/field hashes match references"
+  ],
+  "max_state_gap": 1.5393242236427795e-13,
+  "excluded_repetitions": 0,
+  "interpretation": "Synchronized diagnostic times only; not decomposition of fused execution. Split omits alternation-monitor bookkeeping.",
+  "retention": {
+    "files": 145,
+    "chunks": 19,
+    "archive_sha256": "dacd95cbf323344eceba64407d3b173c9f90ddcd23b509fa9f19feecb653c795",
+    "checks": "every source file, chunk and streamed archive member independently verified"
+  },
+  "durability": {
+    "source_commit": "cf91d39fe",
+    "mirror_commit": "ffe594ed686c173c5cd928a067082c908ccf6e0b",
+    "identical_archive_git_blob_ids": true,
+    "actual_remote_ref_verified": true,
+    "remote_duplicate_removed": true,
+    "cleanup_utc": "2026-10-29T17:26:26.743905+00:00"
+  }
+}

@@ -82,11 +82,11 @@ def make_output_factory(ng,expected_volume,expected_boundary,normal_evidence_pat
             mapping_evidence.update(point_count=count,fallbacks=fallbacks,invalid=invalid,weights_unchanged=True,source_mesh_cells=int(mesh.ne))
             evidence_path.with_suffix('.json').write_text(json.dumps(mapping_evidence,indent=2)+'\n')
             if invalid:raise ValueError('requested full output rule has invalid source-mesh points; original diagnostics retained')
-            batches=[];order=[];elements={int(el.nr):el for el in mesh.Elements(ng.VOL)}
+            batches=[];native_order=[];elements={int(el.nr):el for el in mesh.Elements(ng.VOL)}
             for nr,indices in sorted(groups.items()):
                 ir=ng.IntegrationRule([tuple(x) for x in references[indices,:2]],[1.]*len(indices));tr=mesh.GetTrafo(elements[nr]);batch=tr(ir)
-                owners.append((tr,ir,batch));batches.append(batch);order.extend(indices)
-            volume=np.concatenate(batches);native_to_requested=np.asarray(order,dtype=np.int64);requested_order=np.argsort(native_to_requested);owners.append(volume)
+                owners.append((tr,ir,batch));batches.append(batch);native_order.extend(indices)
+            volume=np.concatenate(batches);native_to_requested=np.asarray(native_order,dtype=np.int64);requested_order=np.argsort(native_to_requested);owners.append(volume)
             batched_coordinates=_f64(coordinate(volume),(count,2),'requested mapped batch')
             errors=np.linalg.norm(batched_coordinates-vpoints[native_to_requested],axis=1)
             if float(errors.max())>1e-10*D:raise ValueError('requested native batch reconstruction failed')

@@ -1,0 +1,17 @@
+{
+  "schema": "ns-obstacle-output-quadrature-order-scope-regression-v1",
+  "passed": true,
+  "before_commit": "e887cfab0",
+  "before_sha256": "5accec5a45a207c04bede291521e9cb50d7202eec2e4a2f07d4aeab512328f3c",
+  "after_sha256": "fb1975e91876bac61d00d4cf90f2d1627f3e1bd98e81f41aa1b3d3f16bfd3a46",
+  "before": {
+    "boundary_rule_order_type": "list",
+    "value_or_list_length": 0
+  },
+  "after": {
+    "boundary_rule_order_type": "int",
+    "value_or_list_length": 12
+  },
+  "only_changes": "three mapping-local identifier replacements; physics/coordinates/rules/thresholds unchanged",
+  "scope": "actual Python closure and assignments; fake boundary sentinel, no native evaluation or submission"
+}

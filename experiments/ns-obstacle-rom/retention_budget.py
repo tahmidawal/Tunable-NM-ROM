@@ -4,7 +4,7 @@ import hashlib,json,shutil
 from capacity2d import estimate
 from pilot2d import PREFIXES,DEV_RE,VALIDATION_RE,QUADRATURE_SUPPORTS
 
-def budget(measurement,boundary_path):
+def budget(measurement,boundary_path,primary_proof=None,geometry_case=None):
  r=json.loads(measurement.read_text());c=r['counts'];n=c['volume_points'];v=c['velocity_dofs'];q=c['pressure_dofs']
  b=json.loads(boundary_path.read_text());base=estimate(n)
  volume=base['volume_expanded_archive_bytes'];training=base['training_expanded_archive_bytes']
@@ -23,7 +23,7 @@ def budget(measurement,boundary_path):
  # Expanded files plus Git objects; archive copies and transient push workspaces
  # are deliberately NOT silently absorbed into this subtotal.
  subtotal=2*(prepared+accuracy)+10*2**30
- return {'status':'prospective lower bound on conservative release envelope; not authorization',
+ out={'status':'prospective lower bound on conservative release envelope; not authorization',
   'measurement_sha256':hashlib.sha256(measurement.read_bytes()).hexdigest(),
   'boundary_sha256':hashlib.sha256(boundary_path.read_bytes()).hexdigest(),
   'points':n,'boundary_points':len(b),'per_full_field_output_bytes':fields,
@@ -35,9 +35,36 @@ def budget(measurement,boundary_path):
   'not_in_subtotal':['qualified family/common-lift inputs','training checkpoints and history','timing outputs and returned FOM coefficients','JSON/ZIP/file-system overhead','extra chunks for files exceeding mirror size limit','transient Git transport workspace'],
   'retention_policy':['no assumed byte-identical outputs or compression savings','one immutable preparation; no whole duplicate collection archive','exact file checksums and only lossless duplicate elimination','mirror large results in bounded incremental batches; final manifest only after complete verification','preserve ten-GiB reserve throughout'],
   'physical_admission':False,'execution_released':False}
+ if primary_proof is not None:
+  proof=json.loads(primary_proof.read_text());geometry=n*9*8
+  case_bytes=sum((geometry_case/name).stat().st_size for name in ('mesh.vol.bin','fe_layout.json','config.json'))
+  # No compression or identical coefficient-file savings assumed. Geometry is
+  # counted twice to dominate write_primary's expanded+copied-file guard.
+  primary_bound=coefficients+2*geometry+case_bytes+32*2**20
+  retained=prepared-volume+primary_bound
+  block_files=((n+4095)//4096)*7+2
+  out['prospective_primary_volume_option']={
+   'status':'not authorized; fine complete replay and independent audit required',
+   'coarse_proof_sha256':hashlib.sha256(primary_proof.read_bytes()).hexdigest(),
+   'coarse_proof_scope':proof['scope'],'coarse_measured_peak_rss_bytes':proof['peak_rss_bytes'],
+   'coarse_measured_original_bytes':proof['original_directory_bytes'],
+   'coarse_measured_primary_bytes':proof['primary_directory_bytes'],
+   'coarse_measured_restoration_seconds':proof['restoration']['seconds'],
+   'fine_geometry_expanded_bytes':geometry,'fine_mesh_layout_config_bytes':case_bytes,
+   'fine_primary_conservative_bytes':primary_bound,
+   'prepared_retained_after_successful_fine_replay_bytes':retained,
+   'two_copy_preparation_and_accuracy_plus_reserve_bytes':2*(retained+accuracy)+10*2**30,
+   'remote_original_primary_restored_workspace_bound_bytes':prepared+primary_bound+volume+block_files*2**20,
+   'fine_runtime_or_memory_extrapolation':False,
+   'conditions':['all original and restored fine fields remain until complete exact replay and independent acceptance',
+    'primary must retain coefficients, immutable mesh/layout/config, complete physical rule and source/runtime closure',
+    'training inputs, fitting evidence and actual query outputs/states remain unchanged mandatory artifacts',
+    'no compression, coefficient-file equality or timing-output dedup savings assumed',
+    'remaining exclusions in not_in_subtotal still require measured release accounting']}
+ return out
 
 if __name__=='__main__':
  root=Path(__file__).parent
  source=json.loads((root/'native04/SOURCE-CANDIDATE.json').read_text())
  folder=Path(source['producer_inputs'][0]['source']).parent
- print(json.dumps(budget(root/'artifacts/native-capacity04/results/interface/result.json',folder/'boundary_rule.json'),indent=2))
+ print(json.dumps(budget(root/'artifacts/native-capacity04/results/interface/result.json',folder/'boundary_rule.json',root/'artifacts/native-primary06/results/interface/result.json',root/'artifacts/native-capacity04/inputcase'),indent=2))

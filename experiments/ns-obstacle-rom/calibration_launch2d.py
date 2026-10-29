@@ -4,15 +4,15 @@ import argparse, json, os
 from fe_adapter import sha_file
 import fom_calibrate2d as calibration
 
-JOB = '/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fom-calibration01'
+JOB = '/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fom-calibration02'
 IDS = ['p3g3h2', 'p4g4h1']
 
 
 def verify(plan_path, release_path, inventory_path):
     plan_path, release_path, inventory_path = map(Path, (plan_path, release_path, inventory_path))
     p, r, qualification, truth, population, resolved = calibration.verify(plan_path, release_path)
-    expected = {'allocation_seconds':2160, 'launcher_hard_wall_seconds':2160,
-                'outer_timeout_seconds':2145, 'outer_kill_grace_seconds':10,
+    expected = {'allocation_seconds':2061, 'launcher_hard_wall_seconds':2061,
+                'outer_timeout_seconds':2046, 'outer_kill_grace_seconds':10,
                 'finalization_reserve_seconds':180, 'job_directory':JOB,
                 'output_directory':JOB+'/results/calibration',
                 'launcher_sha256':sha_file(__file__),

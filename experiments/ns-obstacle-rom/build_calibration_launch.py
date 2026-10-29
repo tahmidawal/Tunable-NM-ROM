@@ -30,7 +30,7 @@ def sources():
 
 
 def build():
-    out=ROOT/'staging/fom-calibration01';out.mkdir(exist_ok=False)
+    out=ROOT/'staging/fom-calibration02';out.mkdir(exist_ok=False)
     rows=[]
     def add(path,destination):
         path=Path(path).resolve()
@@ -74,24 +74,27 @@ def build():
     add(COORDINATOR/'reviews/development-materialize02/POPULATION-REVIEW.json','inputs/reviews/POPULATION-REVIEW.json')
     planning=REFERENCE/'checks/fom-calibration-plan/PLAN.json'
     p['prospective_runtime_planning']=add(planning,'inputs/PROSPECTIVE-RUNTIME-PLAN.json')
+    p['ordinary_error_repair']={'failed_job_id':6638028,'failed_allocated_seconds':99,'unchanged_workload':True,'new_failure_stops_branch':True,
+        'failure_archive_measurement':add(ROOT/'checks/fom-calibration01-failure-archive-measurement.json','inputs/FAILED-CALIBRATION01-ARCHIVE.json'),
+        'resource_amendment':add(COORDINATOR/'reviews/fom-calibration02/RESOURCE-AMENDMENT-PROPOSAL.json','inputs/RESOURCE-AMENDMENT-PROPOSAL.json')}
     (out/'CALIBRATION-PLAN.json').write_text(json.dumps(p,indent=2)+'\n')
-    outer=(previous/'native.sh').read_text().replace('ctol_nsobsrom_devdata','ctol_nsobsrom_fomcal').replace('00:02:00','00:36:00').replace('kill-after=5s 110s','kill-after=10s 2145s')
+    outer=(previous/'native.sh').read_text().replace('ctol_nsobsrom_devdata','ctol_nsobsrom_fomcal').replace('00:02:00','00:34:21').replace('kill-after=5s 110s','kill-after=10s 2046s')
     (out/'native.sh').write_text(outer)
-    body=(previous/'native-body.sh').read_text().replace('development-materialize02','fom-calibration01')
+    body=(previous/'native-body.sh').read_text().replace('development-materialize02','fom-calibration02')
     body=body.replace('development_handoff_launch2d.py','calibration_launch2d.py').replace('HANDOFF-PLAN.json','CALIBRATION-PLAN.json').replace('HANDOFF-RELEASE.json','CALIBRATION-RELEASE.json').replace('INPUT-INVENTORY.json','RUNTIME-INVENTORY.json')
     body=body.replace('results/population/HANDOFF.json','results/calibration/WORKLOAD-COMPLETENESS.json').replace("r.get('status')=='completed_pending_independent_handoff_review'","r.get('complete_planned_workload') is True").replace('materialization_completed','calibration_completed').replace('14*2**30','20*2**30').replace('four-GiB','ten-GiB').replace('JOB_PHASE=native_interface','JOB_PHASE=common_target_screening')
     (out/'native-body.sh').write_text(body)
-    (out/'REPAIR.json').write_text(json.dumps({'fresh_attempt':'fom-calibration01','purpose':'Fixed two-candidate development common-target screening only'})+'\n')
+    (out/'REPAIR.json').write_text(json.dumps({'fresh_attempt':'fom-calibration02','purpose':'Fixed two-candidate development common-target screening only'})+'\n')
     for name in ('native.sh','native-body.sh','REPAIR.json'):add(out/name,name)
     assert len({r['destination'] for r in rows})==len(rows)
     inventory={'schema':'ns-obstacle-fom-screen-runtime-inventory-v1','files':rows,'builder_sha256':sha_file(__file__)}
     (out/'RUNTIME-INVENTORY.json').write_text(json.dumps(inventory,indent=2)+'\n')
-    proposal={'execution_released':False,'job_directory':JOB,'allocation_seconds':2160,
-       'outer_timeout_seconds':2145,'outer_kill_grace_seconds':10,'finalization_reserve_seconds':180,
+    proposal={'execution_released':False,'job_directory':JOB,'allocation_seconds':2061,
+       'outer_timeout_seconds':2046,'outer_kill_grace_seconds':10,'finalization_reserve_seconds':180,
        'original_fom_reservation_seconds':2400,'prior_candidate_control_reservation_seconds':240,
        'launcher_sha256':sha_file(ROOT/'calibration_launch2d.py'),'source_sha256':calibration.source_digest(),
        'plan_sha256':sha_file(out/'CALIBRATION-PLAN.json'),'runtime_inventory_sha256':sha_file(out/'RUNTIME-INVENTORY.json'),
-       'input_bytes':sum(r['bytes'] for r in rows),'model_development_future_envelope_bytes':12*2**30,
+       'input_bytes':sum(r['bytes'] for r in rows),'model_development_future_envelope_bytes':0, 'pod_recovery_future_envelope_bytes':3*2**30, 'prior_failed_screen_allocated_seconds':99, 'prior_screen_future_envelope_bytes':0,
        'calibration_output_archive_envelope_bytes':10*2**30,'miscellaneous_reserved_bytes':256*2**20,
        'global_namespace_limit_bytes':50*2**30,'local_collection_requires_separate_actual_measurement':True,
        'automatic_retry':False,'validation_allowed':False,'matched_accuracy':False}

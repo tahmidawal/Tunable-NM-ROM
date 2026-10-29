@@ -58,6 +58,10 @@ def main():
         out=root/'failed';out.mkdir();invocation['outputs']['pressure']=np.array([1.,2.])
         assert not readout_control(candidate,invocation,root,out)['passed']
         assert (out/'scalar_readout.npz').is_file()
+        out=root/'nonfinite-gap';out.mkdir();invocation['outputs']['pressure']=np.array([1e308,1e308])
+        with np.errstate(over='ignore',invalid='ignore'):
+            assert not readout_control(candidate,invocation,root,out)['passed']
+        assert (out/'scalar_readout.json').is_file()
     print('PASS dev-only selection rejects partial/failure; seven actual calibration records; scalar readout/permutation/force/failure retention; synthetic only')
 
 

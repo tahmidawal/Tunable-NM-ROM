@@ -143,7 +143,7 @@ def run(plan_path,release_path,output):
                         if time.perf_counter()>=deadline:raise TimeoutError('science budget exhausted; preserve finalization reserve')
                         blockdir=directory/f"Re{reference['Re']}_{contract}";blockdir.mkdir()
                         values={'full_velocity_pressure_fields':len(query.points)*3,'fixed_probes':6,'integrated_forces':2}[contract]
-                        payload=7*8*(values+query.native.X.ndof)+len(query.points)*9*8+2**20
+                        payload=7*8*(values+query.native.X.ndof)+len(query.points)*13*8+2**20
                         if shutil.disk_usage(out).free<10*2**30+2*(payload+payload//50+16*2**20):raise OSError('next actual block/durable copy exceeds disk reserve')
                         if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024+3*payload+candidate['runtime_workspace_reserve_bytes']>16*2**30:
                             raise MemoryError('native workspace plus actual output retention exceeds16GiB')

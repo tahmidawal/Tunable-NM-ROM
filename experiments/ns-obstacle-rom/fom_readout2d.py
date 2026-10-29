@@ -25,7 +25,8 @@ def readout_control(candidate,invocation,construction,output,deadline=None):
     try:
         if contract=='full_velocity_pressure_fields':
             n=len(candidate.points);gradient=np.full((n,2,2),np.nan);grad=ng.Grad(u);diagnostics=query.diagnostics_from_evidence(invocation['evidence']);velocity=np.full((n,2),np.nan);pressure=np.full(n,np.nan);points=np.full((n,2),np.nan)
-            raw.update(velocity=velocity,pressure=pressure,points=points,velocity_gradient=gradient)
+            raw.update(velocity=velocity,pressure=pressure,points=points,velocity_gradient=gradient,
+                actual_batched_velocity_gradient=diagnostics['velocity_gradient'],actual_batched_boundary_velocity=diagnostics['boundary_velocity'])
             if candidate.release['field_rule_mode']=='certified_requested_points':
                 with np.load(Path(construction)/'normal_orientation.mapping.batch.npz',allow_pickle=False) as saved:order=saved['native_to_requested'].copy()
                 if order.shape!=(n,) or not np.array_equal(np.sort(order),np.arange(n)):raise ValueError('complete requested/native permutation required')
@@ -52,7 +53,8 @@ def readout_control(candidate,invocation,construction,output,deadline=None):
             raw.update(expected)
         elif contract=='integrated_forces':
             diagnostics=query.diagnostics_from_evidence(invocation['evidence']);n=len(boundary)
-            gradient=np.full((n,2,2),np.nan);pressure=np.full(n,np.nan);raw.update(boundary_velocity_gradient=gradient,boundary_pressure=pressure)
+            gradient=np.full((n,2,2),np.nan);pressure=np.full(n,np.nan);raw.update(boundary_velocity_gradient=gradient,boundary_pressure=pressure,
+                actual_batched_boundary_gradient=diagnostics['boundary_velocity_gradient'],actual_batched_boundary_pressure=diagnostics['boundary_pressure'])
             grad=ng.BoundaryFromVolumeCF(ng.Grad(u));count=0
             for index,mip in enumerate(mapped(1)):
                 guard(index);gradient[index]=np.asarray(grad(mip)).reshape(2,2)*(D/U)

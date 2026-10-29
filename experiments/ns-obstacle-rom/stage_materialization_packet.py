@@ -1,8 +1,15 @@
 """Stage a released packet with exact reviewed warm reads and unchanged cold fallback."""
 from pathlib import Path
-import argparse,hashlib,json,os,shutil,sys
+import argparse,hashlib,json,os,shutil,sys,tempfile
 import materialize_batch2d as batch
 ROOT=Path(__file__).parent
+
+def owned_inputs(source_inputs,reference_repo,inventory):
+ class OwnedScratchInputs(source_inputs.SourceInputs):
+  def __enter__(self):
+   self.temporary=tempfile.TemporaryDirectory(prefix='source-recovery-',dir=ROOT)
+   return self
+ return OwnedScratchInputs(reference_repo,inventory['producer_prefix'],inventory['producer_git_commit'],verify_warm_archives=True)
 
 def stage(packet,release_path,reference_repo):
  packet=Path(packet).resolve();plan=json.loads((packet/'BATCH-PLAN.json').read_text());release=json.loads(Path(release_path).read_text());inventory=json.loads((packet/'INPUT-INVENTORY.json').read_text())
@@ -26,7 +33,7 @@ def stage(packet,release_path,reference_repo):
   if 'source_inputs' in sys.modules or 'git_archive_recovery' in sys.modules:raise RuntimeError('fresh staging helper namespace required')
   sys.path.insert(0,str(ROOT/'reference_inputs'));import source_inputs
   os.environ.update(GIT_CONFIG_COUNT='1',GIT_CONFIG_KEY_0='gc.auto',GIT_CONFIG_VALUE_0='0')
-  with source_inputs.SourceInputs(reference_repo,inventory['producer_prefix'],inventory['producer_git_commit'],verify_warm_archives=True) as sources:
+  with owned_inputs(source_inputs,reference_repo,inventory) as sources:
    sources.materialize(inventory['producer'],out);record['verified_warm_inputs']=sources.verified_warm_inputs;record['cold_archives_materialized']=list(sources.archives)
   shutil.copyfile(packet/'INPUT-INVENTORY.json',out/'INPUT-INVENTORY.json');shutil.copyfile(release_path,out/'BATCH-RELEASE.json')
   (out/'SOURCE_COMMIT.txt').write_text(release['source_commit']+'\n')

@@ -1,0 +1,36 @@
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Actual saved-model provenance, optimizer arithmetic, checkpoint selection and serialization; separately released development PDE diagnostic permitted.",
+  "job_id": 6648764,
+  "allocated_seconds": 434,
+  "model_sha256": "faab6651618ae9d6afc79dbd91ad6e9c7a1a3101907d93d9e33ab37dfba2e4c6",
+  "model_receipt_sha256": "470ba0ef5fa43bb59980cd1affcf51474d97f427d3e4f6a944411265db868285",
+  "selected_theta_sha256": "a1f8d0a50e8847dcbc6ef90d1d21e24db8490351eafcdd51af9a2dc514e498f1",
+  "selected": {
+    "objective": 0.03605766047875704,
+    "checkpoint": "checkpoint-00322"
+  },
+  "audit_result_sha256": "a090dbf05e103df1fb2043b9d35d9d8c18b690f6ffe1e9fd9a9929572fecca8e",
+  "audit_source_commit": "99d06d77d",
+  "audit_mirror_commit": "eba7d826f",
+  "checkpoint_count": 322,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 300,
+  "optimizer_status": "iteration_limit",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "6e07b27b3",
+  "durable_archive_mirror_commit": "48e7aee3d",
+  "independent_retention_passed": true,
+  "limitations": [
+    "No neural/JAX/native execution, optimization, new solve or validation access.",
+    "Saved objective and gradients not recomputed against teacher arrays; saved modal metric aggregation only.",
+    "Adam inter-step updates and sampled minibatch gradients not replayed.",
+    "Rejected trial parameter arrays not retained; their Armijo decisions replayed from recorded objective and independently derived direction.",
+    "Accepted rederived vectors allow floating-point BLAS roundoff; actual checkpoint/accepted-row hashes remain exact.",
+    "Training objective is not full-field flow accuracy or physical admission."
+  ]
+}

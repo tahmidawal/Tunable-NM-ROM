@@ -27,7 +27,6 @@ def build(output,model_descriptors):
             elif isinstance(node,ast.ImportFrom) and node.module:names=[node.module.replace('.','/')+'.py']
             elif isinstance(node,ast.Constant) and isinstance(node.value,str) and node.value.endswith('.py'):names=[node.value]
             pending.extend(x for x in names if not Path(x).is_absolute() and '..' not in Path(x).parts and (ROOT/x).is_file())
-    found.add('accuracy_v2/__init__.py')
     rows=[{'source':str(ROOT/n),'destination':n,'bytes':(ROOT/n).stat().st_size,'sha256':sha_file(ROOT/n)} for n in sorted(found)]
     for n in ('native.sh','native-body.sh'):
         rows.append({'source':str(out/n),'destination':n,'bytes':(out/n).stat().st_size,'sha256':sha_file(out/n)})

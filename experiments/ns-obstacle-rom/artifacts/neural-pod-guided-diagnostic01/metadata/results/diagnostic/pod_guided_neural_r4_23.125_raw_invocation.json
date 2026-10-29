@@ -1,0 +1,177 @@
+{
+  "record": {
+    "output_contract": "full_velocity_pressure_fields",
+    "outputs": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "de9f767aa35c8fc57f5462dead63b263574ab51f7421a061befbf045ebe6a985"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "d7fbeb7196d3bdb67187bb6faf6b005467ca049c9ac50ead194464e41d74910a"
+      }
+    },
+    "evidence": {
+      "state": {
+        "array": "a000002",
+        "shape": [
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "8b1cd1d2af20ebc913d521ca76d21832adf8b0e5b167ae1265fc583a8555a2a8"
+      },
+      "reynolds": 23.125,
+      "model": "bank_r4",
+      "operator_formulation": "weak_residual_least_squares",
+      "history": [
+        {
+          "iteration": 0,
+          "objective": 0.44326925907541626,
+          "gradient_norm": 0.7517347895833435,
+          "gradient_denominator": 1.0,
+          "condition": 34.13445824056641,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.94156174420525,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 1,
+          "objective": 0.014754910148951368,
+          "gradient_norm": 0.09370106341736098,
+          "gradient_denominator": 1.0,
+          "condition": 34.23613542408996,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.1717842259868546,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 2,
+          "objective": 0.0013102780543233867,
+          "gradient_norm": 0.025817192198067686,
+          "gradient_denominator": 1.0,
+          "condition": 38.22214507556202,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.051191367520772225,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 3,
+          "objective": 0.0004409396982050807,
+          "gradient_norm": 0.00018005649722407094,
+          "gradient_denominator": 1.0,
+          "condition": 38.37490264046446,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.029696454273366736,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 4,
+          "objective": 0.0004408501208934427,
+          "gradient_norm": 3.2798607460769723e-06,
+          "gradient_denominator": 1.0,
+          "condition": 38.36220382161118,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.029693437688938704,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 5,
+          "objective": 0.00044084980032211435,
+          "gradient_norm": 2.655473189450872e-07,
+          "gradient_denominator": 1.0,
+          "condition": 38.363340064313135,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.029693426892903902,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 6,
+          "objective": 0.0004408497987650928,
+          "gradient_norm": 1.8122082948765775e-08,
+          "gradient_denominator": 1.0,
+          "condition": 38.36326605184058,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.02969342684046733,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 7,
+          "objective": 0.0004408497987575007,
+          "gradient_norm": 1.2711490998881563e-09,
+          "gradient_denominator": 1.0,
+          "condition": 38.363271306989134,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.029693426840211645,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 8,
+          "objective": 0.00044084979875746343,
+          "gradient_norm": 8.868940197467604e-11,
+          "gradient_denominator": 1.0,
+          "condition": 38.363270941352496,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.029693426840210393
+        }
+      ]
+    },
+    "work": {
+      "status": "stationary",
+      "residual_evaluations": 17,
+      "jacobian_evaluations": 9
+    },
+    "component_seconds": {
+      "initialization": 4.325062036514282e-06,
+      "coefficient_solve": 0.0035633593797683716,
+      "output_reconstruction": 0.04682979453355074,
+      "total_query": 0.050397478975355625
+    },
+    "physical_admission": false
+  },
+  "array_file": "pod_guided_neural_r4_23.125_raw_invocation.npz",
+  "array_sha256": "6c6f07e83948fe547f944a8227da131f5786e129e8377348a7a2deebe6a22728",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 3,
+    "array_references": 3,
+    "unique_expanded_bytes": 24876024,
+    "logical_expanded_reference_bytes": 24876024,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 26180105
+  }
+}

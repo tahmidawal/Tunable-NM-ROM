@@ -35,6 +35,15 @@ def verify(candidate_path, release_path, inventory_path):
         raise ValueError('development-only inputs required')
     # The existing stage verifies every prepared file and the existing consumer
     # revalidates the fine-count amendment/native result review before loading.
+    from pilot2d import read_preparation_metadata
+    metadata, inner = read_preparation_metadata(inputs['prepared'], inputs['preparation_release'])
+    for key, field in [('bank','bank_sha256'), ('probes','probes_sha256'),
+                       ('development','development_manifest_sha256')]:
+        if inner.get(field) != sha_file(inputs[key]):
+            raise ValueError('development inner-release binding missing or changed: '+field)
+    population=json.loads(Path(inputs['development']).read_text())
+    if population.get('reference_admission_sha256') != metadata['admission_evidence']['reference_admission_sha256']:
+        raise ValueError('development and preparation truth identities differ')
     expected = {'bank_model': ('bank_sha256', 'bank'),
                 'development_population': ('manifest_sha256', 'development')}
     if set(release.get('review_bindings', {})) != set(expected):

@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": false
   },
-  "next_action": "Review actual fine-preparation6633574 outputs and measured exact primary retention, then release bounded bank fitting if accepted.",
+  "next_action": "Review compact delta composition and measured collection, complete durable fine retention, then release prepared bank-fit01 within2100 seconds.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -253,14 +253,24 @@
     "exit_code": "0:0",
     "elapsed_seconds": 635,
     "node": "pax023",
-    "independent_review_pending": true,
-    "training_released": false
+    "independent_review_pending": false,
+    "training_released": false,
+    "numerical_review_sha256": "c2c4b6d82138221f330442bbb420dd29873b17328e6c1402183181dfa7a8bfd6",
+    "durable_retention_pending": true
   },
   "FOM_development_eligibility": {
     "publication_sha256": "85aed94d83d3547467e81967c2242da3133f2b80302680aac46d68f373083499",
     "directory": "qualification/fom-development01",
     "candidates": 6,
     "existing_consumer_passed": true,
-    "calibration_execution_released": false
+    "calibration_execution_released": false,
+    "comparison_scope": "Six tested mesh/order configurations at fixed nonlinear tolerance1e-10; stopping-tolerance optimization untested; no unrestricted tuned-FOM advantage claim."
+  },
+  "bank_prepared_staging": {
+    "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/bank-fit01/inputs/prepared",
+    "verified_files": 1797,
+    "verified_bytes": 5501770011,
+    "manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "training_executed": false
   }
 }

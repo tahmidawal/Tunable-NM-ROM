@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "all15_fixed_channel_references_admitted_ROM_materialization_pending",
+  "status": "nine_case_materialization_running",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -1343,9 +1343,32 @@
       "single_submission": true,
       "training_released": false,
       "reference_admitted": false
+    },
+    {
+      "job_id": 6632930,
+      "attempt": "training-materialize01",
+      "phase": "training_reference_materialization",
+      "budget_bucket": "ROM",
+      "source_commit": "7e2808d430ea5ded1f5b3c995ae4baa86b525d2c",
+      "release_commit": "c6e51542a",
+      "release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/training-materialize01",
+      "submitted_utc": "2026-10-29T09:47:06.022909+00:00",
+      "state": "RUNNING",
+      "state_last_observed": "RUNNING",
+      "node": "pax023",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "allocation_seconds_reserved": 450,
+      "outer_process_ceiling_seconds": 445,
+      "single_submission": true,
+      "training_released": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6632930
+  ],
   "completed_gpu_hours": 4.1866666666666665,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
   "total_allocated_gpu_hours_completed": 4.1866666666666665,

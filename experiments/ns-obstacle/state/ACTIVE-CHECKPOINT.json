@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": false
   },
-  "next_action": "Stage and submit exact reviewed450-second nine-case materialization under RELEASE-TRAINING-MATERIALIZATION-R2.json; old release unused/superseded, no training release.",
+  "next_action": "Collect and independently review actual nine-case reconstruction from job6632930; then create training manifest and actual fine-preparation packet.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -211,5 +211,17 @@
     "scientific_raw_data_unchanged": true
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
-  "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185"
+  "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
+  "live_job_ids": [
+    6632930
+  ],
+  "materialization_submission": {
+    "job_id": 6632930,
+    "receipt_source_commit": "2c28d8412",
+    "stage_source_commit": "18a7e5c00",
+    "stage_mirror_commit": "8a2a1f667",
+    "source_commit": "7e2808d430ea5ded1f5b3c995ae4baa86b525d2c",
+    "campaign_current_bytes": 4647095535,
+    "projection_with_full_envelope_bytes": 13237030127
+  }
 }

@@ -49,5 +49,6 @@ if [ "$TREE" = "$(git rev-parse "$PARENT^{tree}")" ]; then
 fi
 MSG="mirror of $(git rev-parse --short "$SOURCE_HEAD"): $(git log -1 --format=%s "$SOURCE_HEAD")"
 NEW=$(git commit-tree "$TREE" -p "$PARENT" -m "$MSG")
+/home/tahmid/Dev/.venv/bin/python experiments/ns-obstacle-2d/g2/seed_mirror_objects.py "$NEW" "$PARENT"
 git push -q origin "$NEW:refs/heads/$MIRROR"
 echo "pushed origin/$MIRROR -> ${NEW:0:9} ($MSG)"

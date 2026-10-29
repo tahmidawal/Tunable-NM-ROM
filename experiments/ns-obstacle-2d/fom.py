@@ -600,7 +600,7 @@ def run_case(cfg, out):
              'versions':{name:importlib.metadata.version(name) for name in ('ngsolve','netgen-mesher','netgen-occt','ngsolve-openblas','numpy')},
              'producer_source_sha256':{name:sha(Path(__file__).with_name(name)) for name in (('fom.py','reference_export.py','shared_lift.py','preflight.py','scalars.py','oriented_normals.py')+
                  (('immutable_rule.py',) if cfg.get('immutable_rule_cache') else ())+
-                 (('reference_primary.py','reference_scope.py') if storage_evidence['mode']=='coefficient_primary' else (('reference_scope.py',) if cfg['release']=='G2_fixed_finite_channel_training_export' else ())))},
+                 (('reference_primary.py','reference_scope.py') if storage_evidence['mode']=='coefficient_primary' else (('reference_scope.py',) if cfg['release'] in ('G2_fixed_finite_channel_training_export','G2_fixed_finite_channel_control_candidate') else ())))},
              'files':{str(p.relative_to(out)):sha(p) for p in sorted(out.rglob('*') if storage_evidence['mode']=='coefficient_primary' else out.iterdir()) if p.is_file() and not (storage_evidence['mode']=='coefficient_primary' and p.name=='full_rule.npz')}})
     if storage_evidence['mode']=='coefficient_primary':
         from reference_primary import split_runtime_inventory

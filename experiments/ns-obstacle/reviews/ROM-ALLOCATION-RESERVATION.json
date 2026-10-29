@@ -1,0 +1,24 @@
+{
+  "status": "planning_reservation_not_execution_release",
+  "design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+  "campaign_cap_seconds": 43200,
+  "reference_infrastructure_cap_seconds": 28800,
+  "conditional_ROM_POD_cap_seconds": 14400,
+  "ROM_reservations_seconds": {
+    "fine_preparation": 1800,
+    "bank_allocation": 2100,
+    "development_and_NNLS": 3600,
+    "development_FOM_calibration": 2400,
+    "validation_and_paired_timing": 3300,
+    "failed_attempt_reserve": 1200
+  },
+  "bank_fit_cap_seconds": 1800,
+  "bank_fit_max_steps": 3000,
+  "rules": [
+    "No fit budget reset or extra seed/architecture search",
+    "Measured source/data/retention review required before any release",
+    "Unused reference headroom does not enlarge the conditional ROM cap",
+    "A runtime cap hit requires review, not automatic retry",
+    "All prior native capacity/replay allocations are infrastructure; no trained ROM executed"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "extension.npz": {
+    "sha256": "523943d1189066bfeaff3ecda23785a44bcbdc714e823d88e3e6ff3bd490d516",
+    "bytes": 4931185
+  },
+  "plots-with-pod-recovery.npz": {
+    "sha256": "30b0aec06accd61fe4554269fb92737c820bfa23d53e47b73614a6ad15978c6a",
+    "bytes": 10299935
+  },
+  "METADATA.json": {
+    "sha256": "4087abfd023b2515cb62bb16e69a823444e5febfa18d861fc707acea79a6bb1f",
+    "bytes": 172423
+  },
+  "original_archive_preserved": "5beb29aa03d330e67c232677d17a9c3fc7dafad0a1c055b10c3b4df6041a65d7",
+  "completed_status_sha256": "fae1405eaeebe284d9e6bcc716fa1266f2a9718cfd20b1819786b773e331d785",
+  "new_scientific_computation": false,
+  "source_sha256": {
+    "collect.py": "55bb105f405d63ac117a96cff2b559c1d319f89792e1573c3a98376554d2b320",
+    "export_remote.py": "4c6bf6ac21a5f03bdb6f7642639c041a91ec60016ecbf3f2249e105b610bce34"
+  },
+  "retained_pre_export_failure": {
+    "stderr": "EXPORT-path-error.stderr",
+    "sha256": "453f3dcb277b004839270ce47dc9872c01ca9a69dc3ff1b541c237c34ddf479c",
+    "cause": "Adapted path retained neural-diagnostic01 namespace with recovery subdirectory; failed opening RECOVERY.json before saved scientific data access. Corrected to actual pod-recovery01 namespace; no new solve or native computation."
+  }
+}

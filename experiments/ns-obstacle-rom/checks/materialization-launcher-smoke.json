@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "native_sh_sha256": "c4917f4ad143afb220be8cac9e7224419376b49df62eb1b6d6e5f50cc647951e",
+  "native_body_sha256": "70432e0d58d093f8b5279880399ee753b212cedcfbb3ca72805f8778e28203e9",
+  "source_plan_sha256": "b680267aca11fd2dd0b9d786e505db0b43594bbbe95072c1f271f49402ed1e52",
+  "real_outer_term_seconds": 435,
+  "real_kill_grace_seconds": 10,
+  "real_ceiling_seconds": 445,
+  "allocation_reservation_seconds": 450,
+  "test_duration_substitutions_only": true,
+  "numerical_or_native_work": false,
+  "records": [
+    {
+      "case": "term",
+      "returncode": 124,
+      "elapsed_seconds": 0.21501319110393524,
+      "descendant_state": "absent",
+      "partial_stdout_retained": true,
+      "finalization_marker": true
+    },
+    {
+      "case": "kill",
+      "returncode": -9,
+      "elapsed_seconds": 0.4150326559320092,
+      "descendant_state": "absent",
+      "partial_stdout_retained": true,
+      "finalization_marker": false
+    }
+  ]
+}

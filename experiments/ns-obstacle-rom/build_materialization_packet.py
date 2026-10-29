@@ -15,7 +15,12 @@ def build(args):
      or truth.get('independent_review_sha256')!=sha(args.review) or truth.get('candidate_sha256')!=review.get('candidate_sha256')):raise ValueError('actual published and independently reviewed full admission required')
  pre=json.loads(args.precheck.read_text());assert pre['schema']=='ns-obstacle-nine-training-materialization-input-precheck-v1' and not pre['missing_runtime_bytes'] and not pre['pending_closure_declarations']
  assert sha(ROOT/'reference_inputs/source_inputs.py')=='bdde5ce4f17448235fa2e37d8d34c19f399d72b0294b0458127b196799e842cc'
- rows=[];cases=[];out=args.out.resolve();out.mkdir(exist_ok=False)
+ rows=[];cases=[];out=args.out.resolve()
+ if out.exists():
+  allowed={'BATCH-PLAN.json','FD1-REFERENCE-ADMISSION.json','FD1-REFERENCE-REVIEW.json','native.sh','native-body.sh','dependencies.py','DEPENDENCIES.json','REPAIR.json','INPUT-INVENTORY.json'}
+  for p in out.iterdir():
+   if not p.is_file() or p.name not in allowed or p.read_bytes()!=git('HEAD',str(p.relative_to(ROOT.parent.parent))):raise ValueError('only unchanged committed unreleased packet may be regenerated')
+ else:out.mkdir()
  for item in pre['rows']:
   re=item['Re'];identifier='re'+str(re).removesuffix('.0').replace('.','p');adopted=next(r for r in truth['admitted_references'] if r['Re']==re)
   for key in ('Re','split','export_manifest_sha256','config_sha256','mesh_sha256','layout_sha256','solution_sha256','storage_mode'):
@@ -42,7 +47,7 @@ def build(args):
   conservative_recovery_reservations_unchanged=True,local_runtime_and_metadata_allowance_bytes=64*2**20)
  plan={'schema':'ns-obstacle-nine-training-materialization-plan-v1','source_sha256':batch.source_digest(),'builder_sha256':sha(__file__),
   'reference_admission_path':'FD1-REFERENCE-ADMISSION.json','reference_admission_sha256':sha(args.truth),'independent_reference_review_sha256':sha(args.review),
-  'reference_qualification':qualification,'allocation_seconds':450,'finalization_reserve_seconds':30,'fine_preparation_remaining_seconds':1350,'job_directory':JOB,
+  'reference_qualification':qualification,'allocation_seconds':450,'finalization_reserve_seconds':30,'outer_timeout_seconds':435,'outer_kill_grace_seconds':10,'outer_total_ceiling_seconds':445,'slurm_rounded_limit_seconds':480,'fine_preparation_remaining_seconds':1350,'job_directory':JOB,
   'cases':cases,'resources':resources,'execution_released':False,'source_precheck_sha256':sha(args.precheck)}
  (out/'BATCH-PLAN.json').write_text(json.dumps(plan,indent=2)+'\n');shutil.copyfile(args.truth,out/'FD1-REFERENCE-ADMISSION.json');shutil.copyfile(args.review,out/'FD1-REFERENCE-REVIEW.json')
  old=ROOT/'staging/candidate-lift01'
@@ -52,11 +57,20 @@ def build(args):
  script=script.replace('12*2**30','18*2**30').replace('ten-GiB reserve plus two-GiB exact control staging envelope','ten-GiB reserve plus eight-GiB workspace/archive envelope')
  script=script.replace('results/control/RESULT.json','results/BATCH-RESULT.json').replace("'interface_passed'","'materialization_completed'")
  script=script.replace('"$PY" candidate_lift_control.py --plan CASES.json --release CONTROL-RELEASE.json --out results/control','"$PY" materialize_batch2d.py --plan BATCH-PLAN.json --release BATCH-RELEASE.json --out results')
- (out/'native.sh').write_text(script)
+ # GNU timeout owns a distinct process group and includes every setup command.
+ # Slurm rounds07:30 to08:00;435s TERM +10s KILL grace stays below450s.
+ header='\n'.join(line for line in script.splitlines() if line.startswith('#SBATCH'))
+ outer='#!/usr/bin/env bash\n'+header+'\nset -euo pipefail\nexec /usr/bin/timeout --signal=TERM --kill-after=10s 435s /usr/bin/bash ./native-body.sh\n'
+ body='\n'.join(line for line in script.splitlines() if not line.startswith('#SBATCH'))+'\n'
+ clock_line=next(line for line in body.splitlines() if line.startswith('export ROM_ALLOCATION_START_UNIX_SECONDS='))
+ disk_line=next(line for line in body.splitlines() if 'shutil.disk_usage' in line)
+ body=body.replace(clock_line+'\n','').replace(disk_line+'\n','')
+ body=body.replace('trap finish EXIT', "trap finish EXIT\ntrap 'JOB_PHASE=allocation_deadline; exit 143' TERM\n"+clock_line+'\n'+disk_line)
+ (out/'native.sh').write_text(outer);(out/'native-body.sh').write_text(body)
  sources=['materialize_batch2d.py','materialize_reference2d.py','qualification.py','FD1-SCOPE-CONTRACT.json','MODEL-CONTRACT.json','fe_adapter.py','primary_native/SOURCE.json']
  sources+=['primary_native/'+name for name in json.loads((ROOT/'primary_native/SOURCE.json').read_text())['files']]
  runtime=[{'source':name,'destination':name,'sha256':sha(ROOT/name),'bytes':(ROOT/name).stat().st_size} for name in sources]
- for name in ('BATCH-PLAN.json','FD1-REFERENCE-ADMISSION.json','FD1-REFERENCE-REVIEW.json','native.sh','dependencies.py','DEPENDENCIES.json','REPAIR.json'):
+ for name in ('BATCH-PLAN.json','FD1-REFERENCE-ADMISSION.json','FD1-REFERENCE-REVIEW.json','native.sh','native-body.sh','dependencies.py','DEPENDENCIES.json','REPAIR.json'):
   p=out/name;runtime.append({'source':str(p.relative_to(ROOT)),'destination':name,'sha256':sha(p),'bytes':p.stat().st_size})
  inventory={'schema':'ns-obstacle-nine-training-materialization-inventory-v1','runtime':runtime,'producer':rows,'producer_git_commit':args.reference_source,'producer_mirror_commit':args.reference_mirror,
   'producer_prefix':'experiments/ns-obstacle-2d','source_inputs_sha256':sha(ROOT/'reference_inputs/source_inputs.py'),'archive_recovery_sha256':sha(ROOT/'reference_inputs/git_archive_recovery.py'),

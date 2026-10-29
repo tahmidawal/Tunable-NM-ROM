@@ -1,0 +1,48 @@
+{
+  "schema": "ns-obstacle-rom-preparation-release-v1",
+  "authorized_stage": "G3-2d-steady",
+  "source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+  "adapter_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "point_block_volume": true,
+  "verify_primary_volume": true,
+  "native_preparation_result": {
+    "path": "ACTUAL-RESULT.json",
+    "sha256": "ae77a4635b9cdca6ffbbbbf4a6ec47c902480e742eb2260969315ecf03348707"
+  },
+  "native_preparation_review": {
+    "path": "NUMERICAL-REVIEW.json",
+    "sha256": "c2c4b6d82138221f330442bbb420dd29873b17328e6c1402183181dfa7a8bfd6"
+  },
+  "capacity_amendment": {
+    "path": "capacity/CAPACITY-AMENDMENT-CANDIDATE.json",
+    "sha256": "263ca735e3e19eaa14e9e9dd2deb13254fa53e45acd0630a66ea8e777fff2e07"
+  },
+  "capacity_review": {
+    "path": "CAPACITY-REVIEW.json",
+    "sha256": "daa5602b71f22c62e8d9f7f70ce68e0d9e7a9d7cde61c9edce809396ab0f8017"
+  },
+  "fine_retention_review": {
+    "path": "RETENTION-REVIEW.json",
+    "sha256": "65937a38314b589b7b3763cd74a70506f6054e6257582ba701760a43572cd223"
+  },
+  "scope": "Accepted prepared input and fixed actual bank/probes/development identities. Actual development execution still requires separately reviewed stage release and durable population review; no validation access.",
+  "bank_stage_execution_released": false,
+  "bank_sha256": "da32607494d7ddf8c1d7c231be7289488ff8cfb3a071a2ec58b369a9d936eacd",
+  "probes_sha256": "f8de76569517ddb8ebb4fbf59bfe92ce5d8c906dcdd67bed131ff9efbb8b852c",
+  "development_manifest_sha256": "7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070",
+  "development_stage_execution_released": false
+}

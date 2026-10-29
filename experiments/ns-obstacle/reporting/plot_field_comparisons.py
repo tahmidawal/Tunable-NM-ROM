@@ -1,0 +1,103 @@
+"""Plot existing development states on a shared deterministic display subset."""
+from pathlib import Path
+import argparse, hashlib, json
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.tri import Triangulation
+from matplotlib.patches import Circle
+from matplotlib.ticker import ScalarFormatter, MaxNLocator
+
+
+def sha(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def main():
+    a = argparse.ArgumentParser(description=__doc__)
+    a.add_argument('--data', type=Path, required=True)
+    a.add_argument('--metadata', type=Path, required=True)
+    a.add_argument('--sha256', required=True)
+    a.add_argument('--output', type=Path, required=True)
+    args = a.parse_args()
+    if sha(args.data) != args.sha256:
+        raise ValueError('Plot dataset identity differs')
+    data = np.load(args.data, allow_pickle=False)
+    meta = json.loads(args.metadata.read_text())
+    xy = data['points_physical']; g = meta['geometry']
+    center = np.array(g['center']); radius = g['radius']
+    tri = Triangulation(xy[:, 0], xy[:, 1])
+    vertices = xy[tri.triangles]
+    mask = np.linalg.norm(vertices.mean(axis=1)-center, axis=1) < radius
+    # Remove edges crossing the solid so display interpolation cannot span it.
+    for j in range(3):
+        p = vertices[:, j]; v = vertices[:, (j+1)%3]-p
+        t = np.clip(np.sum((center-p)*v, axis=1)/np.sum(v*v, axis=1), 0, 1)
+        mask |= np.linalg.norm(p+t[:, None]*v-center, axis=1) < radius
+    tri.set_mask(mask)
+    args.output.mkdir(parents=True, exist_ok=True)
+    plt.rcParams.update({'font.size': 10, 'axes.spines.top': False,
+                         'axes.spines.right': False, 'pdf.fonttype': 42})
+    models = [('bank_r8_projection', 'Neural bank: best-fit reconstruction',
+               'Eight neural velocity modes plus shared pressure/stability spaces. Not an online flow solve.'),
+              ('POD_r2_mixed_Galerkin', 'Standard POD–Galerkin: solved flow',
+               'Two POD velocity modes plus pressure-stability enrichment. Actual converged flow solve.')]
+    speed_max = max(float(np.linalg.norm(data[key+'_velocity'], axis=-1).max())
+                    for key in ['reference']+[m[0] for m in models])
+    pmin = min(float(data[key+'_pressure'].min()) for key in ['reference']+[m[0] for m in models])
+    pmax = max(float(data[key+'_pressure'].max()) for key in ['reference']+[m[0] for m in models])
+    outputs = []
+    def decorate(ax, zoom=True):
+        ax.add_patch(Circle(center, radius, facecolor='white', edgecolor='#222', linewidth=.7, zorder=5))
+        ax.set(xlim=(g['xmin'], .8 if zoom else g['xmax']), ylim=(0, g['H']),
+               xlabel='x [m]', ylabel='y [m]', aspect='equal')
+    for i, reynolds in enumerate(data['Re']):
+        tag = str(float(reynolds)).replace('.', 'p')
+        for key, title, note in models:
+            uref = data['reference_velocity'][i]; u = data[key+'_velocity'][i]
+            pref = data['reference_pressure'][i]; p = data[key+'_pressure'][i]
+            values = [[np.linalg.norm(uref, axis=-1), np.linalg.norm(u, axis=-1), np.linalg.norm(u-uref, axis=-1)],
+                      [pref, p, np.abs(p-pref)]]
+            fig, axes = plt.subplots(2, 3, figsize=(13, 6.4), layout='constrained')
+            for row in range(2):
+                for col in range(3):
+                    ax = axes[row, col]; z = values[row][col]
+                    low, high = ((0, speed_max) if row == 0 else (pmin, pmax)) if col < 2 else (0, max(float(z.max()), 1e-16))
+                    artist = ax.tripcolor(tri, z, shading='gouraud', cmap='viridis' if col < 2 else 'magma', vmin=low, vmax=high)
+                    decorate(ax)
+                    ax.set_title(['Qualified fine reference', 'ROM reconstruction', 'Pointwise error'][col])
+                    label = (r'$|u|/U$' if row == 0 else r'$p/U^2$') if col < 2 else (r'$|u_{ROM}-u_{ref}|/U$' if row == 0 else r'$|p_{ROM}-p_{ref}|/U^2$')
+                    bar = fig.colorbar(artist, ax=ax, orientation='horizontal', fraction=.08, pad=.07, label=label)
+                    formatter = ScalarFormatter(useMathText=True)
+                    formatter.set_powerlimits((-2, 2))
+                    bar.formatter = formatter
+                    bar.locator = MaxNLocator(nbins=4)
+                    bar.update_ticks()
+            fig.suptitle(f'{title} — Re = {float(reynolds):g}\nVelocity (top) and pressure (bottom); near-cylinder view', fontsize=14)
+            fig.supxlabel(note+'\nDisplay interpolation of saved samples; error scales differ between figures. Development cases, not validation.', fontsize=9)
+            stem = f'{key}_Re{tag}'
+            fig.savefig(args.output/(stem+'.png'), dpi=155)
+            fig.savefig(args.output/(stem+'.pdf'))
+            plt.close(fig); outputs.append(stem+'.png')
+        fig, axes = plt.subplots(3, 1, figsize=(13, 8), layout='constrained')
+        for ax, key, title in zip(axes, ['reference']+[m[0] for m in models],
+                                  ['Qualified fine reference']+[m[1] for m in models]):
+            z = np.linalg.norm(data[key+'_velocity'][i], axis=-1)
+            artist = ax.tripcolor(tri, z, shading='gouraud', cmap='viridis', vmin=0, vmax=speed_max)
+            decorate(ax, False); ax.set_title(title, loc='left')
+        fig.colorbar(artist, ax=list(axes), shrink=.65, label=r'Speed $|u|/U$')
+        fig.suptitle(f'Full-channel velocity comparison — Re = {float(reynolds):g}', fontsize=15)
+        fig.supxlabel('Same speed scale throughout. Neural result is best-fit projection; POD result is an actual Galerkin solve.', fontsize=10)
+        stem = f'full_channel_Re{tag}'
+        fig.savefig(args.output/(stem+'.png'), dpi=155)
+        fig.savefig(args.output/(stem+'.pdf')); plt.close(fig); outputs.append(stem+'.png')
+    manifest = {'data_sha256':sha(args.data), 'metadata_sha256':sha(args.metadata),
+                'generator_sha256':sha(Path(__file__)), 'outputs':outputs,
+                'global_metrics_source':'Original full-rule records in input metadata; no global error inferred from plotting subset',
+                'display':'Linear triangulation of deterministic saved quadrature samples, masked at obstacle; no PDE solve or fit'}
+    (args.output/'PLOT-MANIFEST.json').write_text(json.dumps(manifest, indent=2)+'\n')
+
+
+if __name__ == '__main__':
+    main()

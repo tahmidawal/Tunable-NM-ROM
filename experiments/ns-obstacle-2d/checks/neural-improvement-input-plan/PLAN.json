@@ -1,0 +1,265 @@
+{
+  "schema": "ns-obstacle-training-only-neural-improvement-input-plan-v1",
+  "execution_authorized": false,
+  "validation_accessed": false,
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "remote_prepared_root": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/bank-fit01/inputs/prepared",
+  "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+  "volume_manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+  "training_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+  "training_Re": [
+    15.0,
+    16.25,
+    17.5,
+    18.75,
+    20.0,
+    21.25,
+    22.5,
+    23.75,
+    25.0
+  ],
+  "metadata_availability_check": {
+    "required_files_present": 1274,
+    "missing": [],
+    "bytes_stat": 1803698087,
+    "payload_hashes_rechecked": false,
+    "note": "Remote metadata SHA and file existence/size checked; prior complete fine replay remains the raw acceptance evidence. Recheck payload hashes in released reader."
+  },
+  "nonvolume_files": {
+    "training.npz": "222acff57eb387c949a960b43f58b472bbd1d047fa7c7efd4d6ed367dbf2bc0d",
+    "coefficients.npz": "94e38679fd0bc5798765483ba35a18d6f261aaffe11a54f3f44768c16bd15c8b",
+    "boundary.npz": "7965a23c84dcd515322efb779aec7c4da3462206a211781a3d1f7d9ae51e619f"
+  },
+  "volume_fields": {
+    "pod_velocity": {
+      "columns": 8,
+      "blocks": 254,
+      "block_payload_keys": [
+        "values",
+        "gradients"
+      ],
+      "block_identities_bound_by": "volume_manifest_sha256"
+    },
+    "pressure": {
+      "columns": 8,
+      "blocks": 254,
+      "block_payload_keys": [
+        "values",
+        "gradients"
+      ],
+      "block_identities_bound_by": "volume_manifest_sha256"
+    },
+    "lift_u": {
+      "columns": 1,
+      "blocks": 254,
+      "block_payload_keys": [
+        "values",
+        "gradients"
+      ],
+      "block_identities_bound_by": "volume_manifest_sha256"
+    },
+    "lift_p_per_nu": {
+      "columns": 1,
+      "blocks": 254,
+      "block_payload_keys": [
+        "values",
+        "gradients"
+      ],
+      "block_identities_bound_by": "volume_manifest_sha256"
+    },
+    "supremizers": {
+      "columns": 8,
+      "blocks": 254,
+      "block_payload_keys": [
+        "values",
+        "gradients"
+      ],
+      "block_identities_bound_by": "volume_manifest_sha256"
+    }
+  },
+  "interface": {
+    "reader": "PointVolumeStore.iter_blocks",
+    "points": 1036497,
+    "block_points": 4096,
+    "values": "dimensionless",
+    "gradients": "d/d(x/D)",
+    "velocity_shape": [
+      "point",
+      2,
+      "mode"
+    ],
+    "velocity_gradient_shape": [
+      "point",
+      2,
+      2,
+      "mode"
+    ],
+    "pressure_shape": [
+      "point",
+      "mode"
+    ],
+    "physical_coordinates": "network geometry API only; chain-rule gradient scaling must match d/d(x/D)",
+    "extra_scaling_for_prepared_fields": false,
+    "training_snapshot_keys": [
+      "velocity_corrections",
+      "velocity_correction_gradients_dimensionless",
+      "pressure_corrections",
+      "Re"
+    ],
+    "reuse": "Stream original immutable field blocks, no bulk target export or new native materialization."
+  },
+  "reader_closure_caution": "Existing PointVolumeStore validates and iterates ALL fields, including momentum/continuity tests. Preserve the whole accepted prepared volume tree; the 1274-file stat check above covers requested targets/support only, not a reduced standalone reader closure. Any selective-field reader would need separate source review.",
+  "prospective_training": {
+    "first_prefix": 4,
+    "accuracy_ceiling": null,
+    "scope": "First controlled architecture trial, not a cap on attainable accuracy or later justified rank.",
+    "targets": "Actual first four stored POD velocity modes and their gradients, same signs/order.",
+    "weights": "ROM owner proposes sqrt(sigma_i/sigma_0), fixed training-only per-mode value/gradient normalization; freeze exact loss before execution.",
+    "pressure_lift_supremizers": "Reuse exact accepted FE fields initially, so their approximation does not confound the velocity-network test."
+  },
+  "velocity_singular_values": [
+    6.262405845690012,
+    0.3508137520937275,
+    0.02469633315548597,
+    0.0018166794857508248,
+    8.453953119789608e-05,
+    4.620619004168317e-06,
+    2.528789411586399e-07,
+    1.1381395997777615e-08,
+    4.3215248136449877e-10
+  ],
+  "training_uncertainty": [
+    {
+      "Re": 15.0,
+      "noise_sha256": "821d98ff3326720740c9900c559baa7c7de8b4eabe820be1769a2439d88d17ec",
+      "conditional_delta": {
+        "velocity_relative": 6.511659479437405e-06,
+        "pressure_scaled": 4.6459167110342e-05,
+        "drag_relative": 3.638374131708104e-05,
+        "transverse_absolute": 0.00010412338171458813
+      }
+    },
+    {
+      "Re": 16.25,
+      "noise_sha256": "d4b48da1e0d97372707e0eaabd0340a7fbecbaf48e47052530d112809130164c",
+      "conditional_delta": {
+        "velocity_relative": 7.0338882943450175e-06,
+        "pressure_scaled": 4.678505951331992e-05,
+        "drag_relative": 3.940861342224269e-05,
+        "transverse_absolute": 0.00010091732849351262
+      }
+    },
+    {
+      "Re": 17.5,
+      "noise_sha256": "e8795eb1dea9789e32092296b3eca727c44ba1afa4797c04ffadfb9afce1a196",
+      "conditional_delta": {
+        "velocity_relative": 7.5651233932739095e-06,
+        "pressure_scaled": 4.714747191382107e-05,
+        "drag_relative": 4.2559218247093836e-05,
+        "transverse_absolute": 9.795145785056192e-05
+      }
+    },
+    {
+      "Re": 18.75,
+      "noise_sha256": "8ab608fe164d93209efea2a0bfebe5be8e03929f62a1625c7fd46c686937afd1",
+      "conditional_delta": {
+        "velocity_relative": 8.104326290395399e-06,
+        "pressure_scaled": 4.7533809149550335e-05,
+        "drag_relative": 4.582504248584695e-05,
+        "transverse_absolute": 9.517858666865421e-05
+      }
+    },
+    {
+      "Re": 20.0,
+      "noise_sha256": "53ef9d40df6604d4d0eb0c4c262e05648940341f3ed2b921cf2e44804ee94cf9",
+      "conditional_delta": {
+        "velocity_relative": 8.650371681253778e-06,
+        "pressure_scaled": 4.7935087227328877e-05,
+        "drag_relative": 4.919628932241944e-05,
+        "transverse_absolute": 9.256657284755984e-05
+      }
+    },
+    {
+      "Re": 21.25,
+      "noise_sha256": "acfd778b79c48a09fb0f718b805e61841f8e80764e908fc92fd9e1fdeddb1517",
+      "conditional_delta": {
+        "velocity_relative": 9.202311300177987e-06,
+        "pressure_scaled": 4.834505207113127e-05,
+        "drag_relative": 5.266390136225838e-05,
+        "transverse_absolute": 9.00966035064562e-05
+      }
+    },
+    {
+      "Re": 22.5,
+      "noise_sha256": "4d1a9f3d9b4b9013740763e8ee6a4dc0970aed55fdf7c60d28d6dc74cb9709e6",
+      "conditional_delta": {
+        "velocity_relative": 9.759112353973868e-06,
+        "pressure_scaled": 4.875911703251233e-05,
+        "drag_relative": 5.621934837208795e-05,
+        "transverse_absolute": 8.775750785038148e-05
+      }
+    },
+    {
+      "Re": 23.75,
+      "noise_sha256": "cfe4827ffc082164ed17a142052a3fce9e6e26a80db1cc4dbb54e03e289492c3",
+      "conditional_delta": {
+        "velocity_relative": 1.0319823928072278e-05,
+        "pressure_scaled": 4.917401086312216e-05,
+        "drag_relative": 5.9854654725416684e-05,
+        "transverse_absolute": 8.554492116871846e-05
+      }
+    },
+    {
+      "Re": 25.0,
+      "noise_sha256": "1c3dcff2758e6af26668e686bac49339dd8287975a5d31a57ebcbbd2825f46ad",
+      "conditional_delta": {
+        "velocity_relative": 1.0883551183589014e-05,
+        "pressure_scaled": 4.958738241408711e-05,
+        "drag_relative": 6.356234620613044e-05,
+        "transverse_absolute": 8.345903631726704e-05
+      }
+    }
+  ],
+  "conditional_delta_ranges": {
+    "velocity_relative": {
+      "min": 6.511659479437405e-06,
+      "max": 1.0883551183589014e-05
+    },
+    "pressure_scaled": {
+      "min": 4.6459167110342e-05,
+      "max": 4.958738241408711e-05
+    },
+    "drag_relative": {
+      "min": 3.638374131708104e-05,
+      "max": 6.356234620613044e-05
+    },
+    "transverse_absolute": {
+      "min": 8.345903631726704e-05,
+      "max": 0.00010412338171458813
+    }
+  },
+  "uncertainty_interpretation": "Conditional empirical h/p/solver/quadrature estimates, not rigorous truth-error bounds or an imposed accuracy stopping cap. Gradient/pointwise/individual normalized-mode error floors are not certified by these four aggregate metrics.",
+  "diagnostics": [
+    "Record each mode weighted full-rule value and gradient errors and Grams, and training-snapshot reconstruction using saved actual coefficients; retain raw unweighted and weighted errors.",
+    "Check analytic network gradient with a bounded independent derivative control, geometry envelope and exact essential trace; preserve pressure/lift/supremizer identities.",
+    "Separate native POD truncation, neural-to-POD target error, best-fit enriched-space representation error, and actual returned weak-solver error. A fit or projection is not a PDE solve.",
+    "For actual solve retain coefficients, residual, full Jacobian, objective/gradient histories and original stopping criterion; stationary least squares can have nonzero residual and poor physical accuracy.",
+    "Retain physical symmetric traction velocity-gradient and pressure contributions separately on the exact obstacle boundary, plus drag/transverse errors, direct-vs-tensor residual, mass/divergence and trace.",
+    "Use existing full-rule accuracy/uncertainty metrics alongside training curves; no extrapolated validation claim. Preserve original failed bank and all previous diagnostic receipts."
+  ],
+  "storage": "Small plan only locally; no GPU submission, data copy, payload cooling, or native evaluation. Released job must account for exact streamed working set and actual output retention.",
+  "source_sha256": "307708984d41972f2f7aa47babf1fc17d624b9fadeebbdd0feb343cf4f14eff6"
+}

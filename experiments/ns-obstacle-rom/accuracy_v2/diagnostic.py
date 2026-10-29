@@ -36,7 +36,7 @@ def diagnose(model,re,reference,boundary,out,guard):
     return row
 
 
-def run_verified(inputs, output, expected_model_sha256, guard):
+def run_verified(inputs, output, expected_model_sha256, guard, bank_loader=SpatialBank.load):
     """Consume independently accepted model and genuine DEV inputs after outer preflight.
 
     The outer launcher must bind its complete source, input and review closure and
@@ -60,7 +60,7 @@ def run_verified(inputs, output, expected_model_sha256, guard):
             'physical_admission':False,'eligible_accuracy':False},indent=2)+'\n')
     persist()
     try:
-        guard();bank=SpatialBank.load(inputs['bank'])
+        guard();bank=bank_loader(inputs['bank']);result['bank_evaluator_class']=type(bank).__module__+'.'+type(bank).__name__
         if bank.rank!=4:raise ValueError('first successor rank differs')
         arrays,metadata,_=pilot.load_preparation(inputs['prepared'],inputs['preparation_release'])
         probes=pilot._read_arrays(inputs['probes'],2**30);guard()

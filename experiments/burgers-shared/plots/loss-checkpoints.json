@@ -1,0 +1,113 @@
+{
+  "source_job": 6619857,
+  "loss": "squared norm of existing weighted weak residual; not physical solution error",
+  "scope": "First time step only for loss comparisons: identical IC/history/objective. Saved endpoints, not per-iteration traces.",
+  "coarse_stage": "First16 coordinates optimized; last48 held at original predictor, not standalone zero-tail D16.",
+  "rows": [
+    {
+      "case": 1,
+      "direct_iterations": 9,
+      "coarse_iterations": 11,
+      "refine_iterations": 5,
+      "initial_loss": 67.57262056969589,
+      "coarse_loss": 1.43866578748043,
+      "direct_final_loss": 0.451377393078841,
+      "refine_final_loss": 0.45137741103671564,
+      "direct_total": 80,
+      "coarse_total": 79,
+      "refine_total": 61,
+      "coarse_reduction_fraction_median": 0.010013294264012707
+    },
+    {
+      "case": 2,
+      "direct_iterations": 7,
+      "coarse_iterations": 6,
+      "refine_iterations": 5,
+      "initial_loss": 564.8365339438946,
+      "coarse_loss": 2.026001935742219,
+      "direct_final_loss": 0.5578522890341038,
+      "refine_final_loss": 0.5578598837856792,
+      "direct_total": 80,
+      "coarse_total": 77,
+      "refine_total": 69,
+      "coarse_reduction_fraction_median": 0.07694086820880602
+    },
+    {
+      "case": 3,
+      "direct_iterations": 5,
+      "coarse_iterations": 5,
+      "refine_iterations": 4,
+      "initial_loss": 112.24752339022999,
+      "coarse_loss": 0.9082028367314784,
+      "direct_final_loss": 0.2722562346858505,
+      "refine_final_loss": 0.27225551621338695,
+      "direct_total": 94,
+      "coarse_total": 90,
+      "refine_total": 64,
+      "coarse_reduction_fraction_median": 0.12947705476850624
+    },
+    {
+      "case": 4,
+      "direct_iterations": 11,
+      "coarse_iterations": 8,
+      "refine_iterations": 7,
+      "initial_loss": 104.46208175865392,
+      "coarse_loss": 6.300706672783732,
+      "direct_final_loss": 2.270750504302451,
+      "refine_final_loss": 2.2707164358387875,
+      "direct_total": 85,
+      "coarse_total": 71,
+      "refine_total": 70,
+      "coarse_reduction_fraction_median": 0.013587643539469563
+    },
+    {
+      "case": 5,
+      "direct_iterations": 5,
+      "coarse_iterations": 4,
+      "refine_iterations": 3,
+      "initial_loss": 38.70862343928734,
+      "coarse_loss": 0.43693327324124337,
+      "direct_final_loss": 0.12747096959383986,
+      "refine_final_loss": 0.12747097141726127,
+      "direct_total": 60,
+      "coarse_total": 59,
+      "refine_total": 34,
+      "coarse_reduction_fraction_median": 0.04314241988771034
+    },
+    {
+      "case": 6,
+      "direct_iterations": 9,
+      "coarse_iterations": 7,
+      "refine_iterations": 6,
+      "initial_loss": 110.61337445764445,
+      "coarse_loss": 1.775488136567717,
+      "direct_final_loss": 0.6116359741212153,
+      "refine_final_loss": 0.6116313751365533,
+      "direct_total": 73,
+      "coarse_total": 67,
+      "refine_total": 43,
+      "coarse_reduction_fraction_median": 0.03379612557351258
+    }
+  ],
+  "totals": {
+    "direct_total": 472,
+    "coarse_total": 443,
+    "refine_total": 341
+  },
+  "median_paired_runtime_ratio": 1.40801905575809,
+  "cost_exclusions": "Update/J bars exclude initial fitting and guards. Full-query timings include them; 600 extra guard residuals.",
+  "hashes": {
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/direct_case0.npz": "37afdd39fa5d36db4676c5e9c1aabf4f0a3649a0494a408dc0904e4607b1e5fd",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/affine_case0.npz": "8d8db01d9b025a42d9042327e589ebc3721ad491f25ed812a6e93722a31d1172",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/direct_case1.npz": "9960a378f9a742f8e46ad4dd3defff14ad67a2c93f9be079e382e82b3721824f",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/affine_case1.npz": "0a3a62f5bee041913b63ca223848e83dc4677e9ed0150d4b86f0736dd1989a43",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/direct_case2.npz": "2aa47d26f2f1c640a340a58da9b8bc69cee71c978f321900bac34b3951498420",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/affine_case2.npz": "25345db87d16646a115c8a5c4496bbef3acbeeb8639f90592f81d44ddfac71e3",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/direct_case3.npz": "28b9c489cbe84fa6c697d8614d4e82b8fa2a51b26ee24f16901de354bca156f7",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/affine_case3.npz": "82bed3b885b5775c22d6738414113bb83eb50acc5140ab5aa39a8dfab1640dca",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/direct_case4.npz": "d365097ceb3288e06d3f0193627ce7a352abe998c9c0053c7393dbc10896826a",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/affine_case4.npz": "1f06bdc3dc87889777c705d581ab84f7d2670f595a88ddc21c57357abca8e54f",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/direct_case5.npz": "f2a8d25a9bc35237c96a2e1f944c5f31d0f32e6bc79235609a1731e2bb7d5656",
+    "2026-10-28-burgers-shared-step/experiments/burgers-shared-step/artifacts/screen01/output/dev6/affine_case5.npz": "28889812fa4406e690575867cff48f81ec24d940d082456341456198f85835cf"
+  }
+}

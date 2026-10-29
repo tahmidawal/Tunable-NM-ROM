@@ -1,0 +1,46 @@
+{
+  "schema": "ns-obstacle-finite-channel-population-release-v1",
+  "source_commit": "48afdd2d026ff0c5487cf8a9565a08e0b264fdd9",
+  "source_mirror_commit": "618dc267ea9ebfcc7fed80719bd4f73bc76122b7",
+  "source_candidate_sha256": "0018b69bb470aa1d53028e3c71dbd7f8f6269dd05d0bfef74af82ab9fbe9cd2e",
+  "allowed_groups": [
+    "re20"
+  ],
+  "attempt": "g2-population-re20-01",
+  "input_count": 157,
+  "input_bytes": 472983066,
+  "new_PDE_solves": 8,
+  "retained_states": 7,
+  "allocation_seconds": 1000,
+  "runner_seconds": 900,
+  "producer_timeout_seconds": 300,
+  "allocation_GiB": 64,
+  "memory_stop_GiB": 48,
+  "cpus": 16,
+  "completed_campaign_seconds_before_release": 5575,
+  "reserved_this_release_seconds": 1000,
+  "infrastructure_cap_seconds": 28800,
+  "conditional_ROM_cap_seconds": 14400,
+  "campaign_cap_seconds": 43200,
+  "single_submission": true,
+  "no_automatic_retry": true,
+  "scope_amendment": "FD1-2026-10-28",
+  "physical_admission": false,
+  "training_released": false,
+  "later_parameter_groups_released": false,
+  "review": "Independent exact source/input review plus final archive/disk delta accepted by /root/numerical_resume",
+  "bindings": {
+    "RUNTIME-BOUND.json": "dfb0ecf15ec6a75bc6685b2fb57c0d33b472d354d3c8f327e21c55da5446271e",
+    "DISK-PLAN.json": "70c195f7b74cfa67de8003924a8a232197927a60ce6ea13be8f68b68490a4f41",
+    "FINAL-RESERVATION-CHECK.json": "4a0e583f0e1109ed287300da9d5d541cbfca0fe9af9938e93212184e8749fa26",
+    "ARCHIVE-INPUT-RECOVERY-VALIDATION.json": "6573ce7edc4d08715ace5d86af39a06240a9cdf23058e47b2a7241ab62d9692a"
+  },
+  "conditions": [
+    "One fresh exclusive directory, exact staged-input hashes and verified dependency metadata",
+    "Check queue/disk immediately before and after submission; maximum two obstacle jobs",
+    "Enforce24GiB free after staging and active recovery reservations; preserve10GiB untouched throughout",
+    "Collection reservation14GiB; use actual archive/expanded/Git footprints and retain remote originals until verified durable collection",
+    "Setup-aware runner deadline and20-second minimum finalization margin; preserve partial failures",
+    "All original numerical/force/common-rule/noise checks unchanged; no reference/training admission from execution alone"
+  ]
+}

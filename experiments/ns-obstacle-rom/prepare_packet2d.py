@@ -6,15 +6,20 @@ from qualification import require_qualification
 from prepare2d import preparation_digest
 import capacity_context2d as capacity
 ROOT=Path(__file__).parent
+RECONSTRUCTION_CONTROL_SHA='8dd5c0335fd9a103cd09a4553b05e34fb9145a80f1fd7dc16750328d4a9766f6'
 
 
-def build(training_manifest,measurement,factor_reuse,native_review,out,other_active_reservation_bytes):
+def build(training_manifest,measurement,factor_reuse,native_review,reconstruction_control,out,other_active_reservation_bytes):
     if type(other_active_reservation_bytes) is not int or other_active_reservation_bytes<0:raise ValueError('explicit concurrent disk reservation required')
     training_manifest=Path(training_manifest).resolve();admission=read_training_manifest(training_manifest);q=require_qualification(admission)
     paths={'measurement':Path(measurement).resolve(),'factor_reuse':Path(factor_reuse).resolve(),'native_control_review':Path(native_review).resolve()}
     for key,digest in [('measurement',capacity.MEASUREMENT_SHA),('factor_reuse',capacity.FACTOR_SHA),('native_control_review',capacity.CONTROL_REVIEW_SHA)]:
         if sha_file(paths[key])!=digest:raise ValueError('exact measured/reviewed capacity evidence required')
     measured=json.loads(paths['measurement'].read_text());counts=measured['counts']
+    reconstruction_control=Path(reconstruction_control).resolve()
+    if sha_file(reconstruction_control)!=RECONSTRUCTION_CONTROL_SHA:raise ValueError('accepted actual fine reconstruction control required')
+    replay_control=json.loads(reconstruction_control.read_text())
+    observed=replay_control['portable_fresh_process_seconds']
     for case in admission['cases']:
         folder=Path(case['resolved_directory'])
         if case['files']['mesh.vol.bin']!=capacity.MESH_SHA or json.loads((folder/'fe_layout.json').read_text())['sha256']!=capacity.LAYOUT_SHA:
@@ -43,6 +48,11 @@ def build(training_manifest,measurement,factor_reuse,native_review,out,other_act
         'capacity_amendment_sha256':sha_file(out/'CAPACITY-AMENDMENT-CANDIDATE.json'),
         'mandatory_preparation_options':{'point_block_volume':True,'verify_primary_volume':True},
         'original_ROM_subcap_seconds':14400,'original_preparation_reservation_seconds':1800,
+        'prospective_subreservations_seconds':{'nine_case_materialization_including_setup_finalization':450,'fine_preparation_and_replay_including_setup_finalization':1350},
+        'runtime_assessment':{'control_sha256':RECONSTRUCTION_CONTROL_SHA,'observed_single_state_fresh_replay_seconds':observed,
+            'eight_primary_reconstructions_component_projection_seconds':8*observed,'inference_not_measurement':True,
+            'unmeasured':['NPZ writes and hashes','legacy derivation','fine basis/eigensolve/export/replay'],
+            'hard_bounds_are_not_completion_guarantees':True},
         'materialization_and_previous_preparation_seconds_must_be_deducted':True,
         'disk':{'actual_warm_scientific_input_file_bytes':warm_bytes,'actual_full_rule_expanded_bytes_by_case':expanded_case_bytes,
             'prospective_original_primary_restored_workspace_bytes':workspace,'projection_sha256':sha_file(projection_path),
@@ -63,6 +73,6 @@ def build(training_manifest,measurement,factor_reuse,native_review,out,other_act
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();
-    for name in ('training-manifest','measurement','factor-reuse','native-review','out'):p.add_argument('--'+name,type=Path,required=True)
+    for name in ('training-manifest','measurement','factor-reuse','native-review','reconstruction-control','out'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--other-active-reservation-bytes',type=int,required=True);a=p.parse_args()
-    print(json.dumps(build(a.training_manifest,a.measurement,a.factor_reuse,a.native_review,a.out,a.other_active_reservation_bytes),indent=2))
+    print(json.dumps(build(a.training_manifest,a.measurement,a.factor_reuse,a.native_review,a.reconstruction_control,a.out,a.other_active_reservation_bytes),indent=2))

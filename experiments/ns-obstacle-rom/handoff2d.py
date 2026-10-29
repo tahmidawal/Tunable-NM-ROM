@@ -5,7 +5,7 @@ validation reconstruct only their own admitted primary cases, in a fresh GPU pro
 Validation source arrays stay unopened until the exact frozen-method review/release.
 """
 from pathlib import Path
-import argparse,hashlib,json,os,resource,shutil,sys,time
+import argparse,hashlib,json,os,resource,shutil,subprocess,sys,time
 import numpy as np
 import fe_adapter as fe
 import materialize_reference2d as materializer
@@ -18,7 +18,7 @@ POPULATIONS={'training':fe.REYNOLDS,'development':list(DEV_RE),'validation':list
 
 def source_digest():
     return hashlib.sha256(json.dumps({'entry':fe.sha_file(__file__),'materializer':materializer.source_digest(),
-        'adapter':fe.adapter_digest(),'validation_guard':fe.sha_file(ROOT/'validation2d.py')},sort_keys=True).encode()).hexdigest()
+        'adapter':fe.adapter_digest(),'pilot':fe.sha_file(ROOT/'pilot2d.py'),'native_worker':fe.sha_file(ROOT/'handoff_primary_worker.py'),'validation_guard':fe.sha_file(ROOT/'validation2d.py')},sort_keys=True).encode()).hexdigest()
 
 
 def read_bound(item):
@@ -96,35 +96,32 @@ def training(plan,truth,q,out):
 
 def population(plan,truth,q,out,release):
     # Exact validation freeze is checked by verify() before this function or native import.
-    if any(name[:-3] in sys.modules for name in json.loads((materializer.NATIVE/'SOURCE.json').read_text())['files']):
-        raise RuntimeError('fresh native reconstruction interpreter required')
     if (sys.executable!='/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python' or not os.environ.get('SLURM_JOB_ID') or
         os.environ.get('JAX_ENABLE_X64')!='true' or os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')!='highest' or
         Path(release['job_directory']).resolve()!=Path.cwd().resolve()):raise RuntimeError('fresh released cluster GPU process required')
     import jax
     if jax.default_backend()!='gpu' or not jax.config.x64_enabled or jax.config.jax_default_matmul_precision!='highest':raise RuntimeError('GPU/f64/highest required')
     print('jax_backend=gpu',flush=True)
-    sys.path.insert(0,str(materializer.NATIVE))
-    from reference_primary import load_primary_case,reconstruct_primary
-    from immutable_rule import array_digest as physical_digest
-    import ngsolve as ng
     cases=[];rule=None
     for item in plan['cases']:
         folder=Path(item['directory']).resolve();adopted=adopted_case(truth,item['Re'],folder)
         if adopted['storage_mode']!='coefficient_primary':raise ValueError('held-out adopted primary storage required')
-        cfg,primary,_,_=load_primary_case(folder)
+        cfg=json.loads((folder/'config.json').read_text());primary=json.loads((folder/'PRIMARY-REFERENCE.json').read_text())
         if cfg['U']!=.2 or cfg['D']!=.1 or abs(cfg['nu']-.02/item['Re'])>1e-15:raise ValueError('fixed scales/parameter differ')
         descriptors=primary['derived_full_rule_arrays'];expanded=sum(int(np.prod(d['shape']))*np.dtype(d['dtype']).itemsize for d in descriptors.values())
         reserve=release['other_active_disk_reservation_bytes']
         if type(reserve) is not int or reserve<0:raise ValueError('explicit concurrent disk reservation required')
         if expanded>2**30 or shutil.disk_usage(out).free<10*2**30+reserve+4*expanded+64*2**20:raise MemoryError('raw/reconstructed/durable output disk reserve')
         if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024+4*expanded+2*2**30>16*2**30:raise MemoryError('reconstruction process cap')
-        case=out/str(item['Re']);case.mkdir();fields,replay=reconstruct_primary(folder,ng);volume=fields['volume']
-        raw={key:volume[key] for key in descriptors};np.savez_compressed(case/'raw-full-rule.npz',**raw)
-        actual={key:{'dtype':a.dtype.str,'shape':list(a.shape),'content_sha256':physical_digest(a)} for key,a in raw.items()}
-        (case/'REPLAY.json').write_text(json.dumps({'reconstruction':replay,'actual':actual,'expected':descriptors,
-            'original_export_sha256':adopted['export_manifest_sha256'],'raw_archive_sha256':fe.sha_file(case/'raw-full-rule.npz')},indent=2)+'\n')
-        if actual!=descriptors:raise ValueError('actual primary replay differs; raw counterexample retained')
+        case=out/str(item['Re']);case.mkdir()
+        with (case/'worker.stdout').open('w') as stdout,(case/'worker.stderr').open('w') as stderr:
+            subprocess.run([sys.executable,str(ROOT/'handoff_primary_worker.py'),'--original',str(folder),'--out',str(case),
+                '--expected-export',adopted['export_manifest_sha256']],stdout=stdout,stderr=stderr,check=True)
+        replay=json.loads((case/'REPLAY.json').read_text())
+        if (replay['actual']!=descriptors or replay['expected']!=descriptors or
+            replay['raw_archive_sha256']!=fe.sha_file(case/'raw-full-rule.npz') or
+            replay['worker_sha256']!=fe.sha_file(ROOT/'handoff_primary_worker.py')):raise ValueError('native worker replay differs')
+        with np.load(case/'raw-full-rule.npz',allow_pickle=False) as archive:volume={key:archive[key] for key in archive.files}
         current=array_digest({'points_dimensionless':volume['points']/.1,'weights_dimensionless':volume['weights']/.1**2})
         if current!=plan['volume_rule_sha256'] or (rule is not None and current!=rule):raise ValueError('exact prepared common rule differs')
         rule=current
@@ -136,7 +133,7 @@ def population(plan,truth,q,out,release):
         cases.append({'Re':item['Re'],'split':plan['split'],'reference_admitted':True,'force_definition':'physical_symmetric',
             'force_coefficient':force,'array_file':str(arrays.relative_to(out)),'array_sha256':fe.sha_file(arrays),
             'original_export_sha256':adopted['export_manifest_sha256'],'replay_sha256':fe.sha_file(case/'REPLAY.json')})
-        del fields,volume,raw,scaled
+        del volume,scaled
     target=out/(plan['split']+'.json')
     target.write_text(json.dumps(dict(q,schema='ns-obstacle-pilot-reference-population-v1',split=plan['split'],
         reference_admission_sha256=plan['reference_admission']['sha256'],volume_rule_sha256=rule,
@@ -155,7 +152,8 @@ def run(plan_path,release_path,out):
         record.update(status='completed_pending_independent_handoff_review',manifest_sha256=fe.sha_file(target))
     except Exception as exc:record.update(status='failed',exception=repr(exc));raise
     finally:
-        record.update(elapsed_seconds=time.perf_counter()-started,peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+        record.update(elapsed_seconds=time.perf_counter()-started,peak_parent_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+            peak_child_rss_bytes=resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss*1024,
             retained_bytes=sum(p.stat().st_size for p in out.rglob('*') if p.is_file()))
         (out/'HANDOFF.json').write_text(json.dumps(record,indent=2)+'\n')
     return record

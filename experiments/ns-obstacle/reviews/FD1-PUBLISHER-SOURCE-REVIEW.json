@@ -1,0 +1,27 @@
+{
+  "status": "source_review_PASS_no_admission_issued",
+  "reviewer": "/root/numerical_resume",
+  "publisher_commit": "532bd1e9d",
+  "publisher_sha256": "dd24b0a76ed12e66b84e5806e81526bf6cb906eea639ed2cda61d6b93bf862e7",
+  "check_contract_commit": "fbcc0814d",
+  "check_contract_sha256": "4bbc8468fab530efe79b3cd9f91fbc8391a580d1f7a9efbedc56787fb6ee6541",
+  "review_scope": [
+    "Fixed requiredness and numerical comparisons",
+    "Complete fifteen-parameter/fifteen-state-per-parameter coverage",
+    "Adopted P4 baseline and immutable fine mesh/layout identities",
+    "Original domain failure and strict FD1 scope retained",
+    "Optional unresolved diagnostics retained without waiving required gates",
+    "Independent full-candidate/raw-evidence/retention review required before publication"
+  ],
+  "validation": [
+    "Seven gate-mechanics tests passed",
+    "Independent complete synthetic validate() and missing-state rejection passed; no admission file written"
+  ],
+  "remaining": [
+    "Real complete candidate from actual raw evidence",
+    "Independent numerical and retention review bound to that candidate and publisher",
+    "Separate actual materialization/preparation/training releases"
+  ],
+  "physical_admission": false,
+  "training_released": false
+}

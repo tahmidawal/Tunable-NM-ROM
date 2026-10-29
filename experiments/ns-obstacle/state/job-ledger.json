@@ -1444,12 +1444,33 @@
       "allocated_gpu_hours": 0.008055555555555555,
       "node": "pax020",
       "execution_report": "Required release field missing before native reconstruction; raw failure review pending. No automatic retry."
+    },
+    {
+      "job_id": 6635386,
+      "attempt": "development-materialize02",
+      "phase": "two_case_development_reference_reconstruction",
+      "budget_bucket": "ROM",
+      "release_sha256": "e64ebe7b17b194d1e00df6185d19c359510e41fc2b7a60bf838dd033b423aebe",
+      "source_manifest_sha256": "655b758e4847dd60c459504d435ed365aa6a69925f3225c4137a634a539903dd",
+      "state": "COMPLETED",
+      "state_last_observed": "COMPLETED",
+      "gpus": 1,
+      "allocation_seconds_reserved": 120,
+      "outer_process_ceiling_seconds": 115,
+      "single_submission": true,
+      "validation_access_authorized": false,
+      "submitted_utc": "2026-10-29T13:18:34.521287+00:00",
+      "elapsed_seconds": 51,
+      "allocated_gpu_hours": 0.014166666666666666,
+      "node": "pax023",
+      "exit_code": "0:0",
+      "execution_report": "Both development references reconstructed; independent scientific and durable retention review pending."
     }
   ],
   "live_job_ids": [],
-  "completed_gpu_hours": 4.513055555555556,
+  "completed_gpu_hours": 4.527222222222222,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
-  "total_allocated_gpu_hours_completed": 4.513055555555556,
-  "last_accounting_utc": "2026-10-29T13:12:11.569405+00:00",
+  "total_allocated_gpu_hours_completed": 4.527222222222222,
+  "last_accounting_utc": "2026-10-29T13:26:45.557032+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

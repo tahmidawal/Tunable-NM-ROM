@@ -7,7 +7,7 @@
     "Execute actual bank/POD development accuracy and quadrature gates",
     "Freeze feasible FOM calibration subset, then validation/paired timing, final reviews and generated reporting"
   ],
-  "completed_allocated_gpu_hours": 4.513055555555556,
+  "completed_allocated_gpu_hours": 4.527222222222222,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -187,7 +187,7 @@
   "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released",
   "legacy_duplicate_retirement_result": "Exact479-file owner retirement complete after fresh checks; lifecycle in reference staging/LEGACY-DUPLICATE-RETIREMENT/LIFECYCLE.json; observed free-space gain1,861,390,336bytes; protected inputs preserved.",
   "FOM_candidate_lift_execution": "Job6631950 completed25s exit0:0; independent raw and durable retention review passed. See reviews/FOM-CANDIDATE-LIFT-RESULT-REVIEW.json. No eligibility or training release.",
-  "ROM_actual_charged_seconds": 1200,
+  "ROM_actual_charged_seconds": 1251,
   "reference_infrastructure_actual_charged_seconds": 15047,
   "reference_admission": {
     "passed": true,
@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": true
   },
-  "next_action": "After mirrored corrected release and complete remote contract preflight, single-submit fresh development-materialize02; then actual model development gate.",
+  "next_action": "Collect and audit actual two-case development handoff, then finalize actual model development release within3360s remaining reservation.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -337,14 +337,22 @@
     "seconds": 29,
     "cause": "Missing other_active_disk_reservation_bytes in coordinator release",
     "scientific_output_created": false,
-    "raw_audit_pending": true
+    "raw_audit_pending": false,
+    "durable_retention_verified": true
   },
   "development_materialization_attempt02": {
     "release_sha256": "e64ebe7b17b194d1e00df6185d19c359510e41fc2b7a60bf838dd033b423aebe",
     "reserved_seconds": 120,
     "remaining_development_seconds": 3360,
-    "submitted": false,
+    "submitted": true,
     "actual_local_contract_validation_passed": true,
-    "remote_full_verify_required": true
+    "remote_full_verify_required": true,
+    "job_id": 6635386,
+    "remote_full_verify_passed": true,
+    "state": "COMPLETED",
+    "seconds": 51,
+    "development_manifest_sha256": "7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070",
+    "scientific_and_retention_review_pending": true,
+    "scientific_review_passed": true
   }
 }

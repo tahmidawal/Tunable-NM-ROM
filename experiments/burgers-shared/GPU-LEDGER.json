@@ -44,6 +44,13 @@
       "status": "completed_cost_gate_failed",
       "job_id": "6619863",
       "actual_gpu_seconds": 179
+    },
+    {
+      "attempt": "profile01",
+      "reserved_seconds": 600,
+      "status": "prepared",
+      "remote": "/cluster/tufts/paralab/tawal01/bshared-profile-20261029/profile01",
+      "reason": "User requested rerun for measured phase timing on 2026-10-29; no new model or solver method"
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -55,8 +62,8 @@
   },
   "budget_accounting": {
     "charged_gpu_seconds": 2595,
-    "reserved_gpu_seconds": 0,
-    "unspent_gpu_seconds": 4605,
-    "stopped": "Both predeclared cost gates failed; no further allocations"
+    "reserved_gpu_seconds": 600,
+    "unspent_gpu_seconds": 4005,
+    "stopped": "Method expansion remains stopped; user-authorized timing diagnostic only"
   }
 }

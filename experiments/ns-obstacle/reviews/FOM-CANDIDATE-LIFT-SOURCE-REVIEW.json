@@ -1,0 +1,30 @@
+{
+  "schema": "ns-obstacle-candidate-lift-source-review-v1",
+  "passed": true,
+  "reviewer": "/root/numerical_resume",
+  "source_commit": "abc562ecb",
+  "mirror_commit": "d6cd6b54b",
+  "plan_sha256": "5a66bbe34c16b50d21d36e7a544c29b07e3a463573abb9985850ae65b7c422b5",
+  "input_inventory_sha256": "e464688e6c3e3b62dae37c4b1fd8708523b2782cc1b267db76bd318c8cd4c69b",
+  "entry_sha256": "7eeaf705b52feb53fcb201bffad0990f2a6e9aac766fc2ff0a125e48dd64855c",
+  "batch_sha256": "a41bd2dd46718f5e9cb2a75bcc446f7b72e5264b2a78d9477cc6207ff3baa7c9",
+  "runtime_files_verified": 16,
+  "producer_files_verified": 40,
+  "producer_input_bytes": 33248132,
+  "scientific_output_bound_bytes": 84060321,
+  "proposed_allocation_seconds": 240,
+  "existing_dev_FOM_reservation_seconds": 2400,
+  "remaining_calibration_reservation_seconds_if_released": 2160,
+  "findings": [
+    "All input bytes independently match pinned source and mirror.",
+    "Actual pre-native reader paths pass for all five retained cases; no native math in review.",
+    "Original Stokes weak form and required15/20/25 scaling; no linear or nonlinear solves.",
+    "Save raw coefficient/residual/forcing/free-mask arrays before unchanged tolerance gate.",
+    "Exact reviewed native05 isolated dependency installation with hash/RECORD/OCCT checks; no shared environment installation.",
+    "16GiB process guard;2GiB additional remote envelope plus10GiB free reserve; actual collection size still required."
+  ],
+  "execution_released": false,
+  "candidate_eligibility_created": false,
+  "reference_admission": false,
+  "training_released": false
+}

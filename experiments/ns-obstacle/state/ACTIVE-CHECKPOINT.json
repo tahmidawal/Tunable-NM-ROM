@@ -2,9 +2,9 @@
   "status": "2d_only_reference_qualification_and_ROM_integration",
   "numerical_jobs": [
     {
-      "job_id": 6629378,
-      "group": "re22p5",
-      "state_last_observed": "SUBMITTED"
+      "job_id": 6629506,
+      "group": "re23p75",
+      "state_last_observed": "RUNNING"
     }
   ],
   "active_external_consults": [],
@@ -13,7 +13,7 @@
     "Assemble genuine all15 candidate and independent full-population admission review",
     "Run actual ROM preparation/training/solves and held-out comparisons, then final reviews and reporting"
   ],
-  "completed_allocated_gpu_hours": 2.5369444444444444,
+  "completed_allocated_gpu_hours": 2.723611111111111,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -29,7 +29,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T06:18:37.230264+00:00",
+  "last_checkpoint_utc": "2026-10-29T06:40:11.796254+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -147,7 +147,7 @@
   },
   "remaining_population_release": "reviews/RELEASE-REMAINING-POPULATION.json; exacta7; BUFFER4 max2 live/max4 outstanding, serial local writes, no retry",
   "shared_FD1_controls": "All six independently accepted; reviews/FD1-SHARED-CONTROLS-RESULT-REVIEW.json",
-  "remaining_population_first_jobs": "Re15 audited; Re16.25/Re17.5 completed pending collection; Re18.75/Re21.25 submitted",
+  "remaining_population_first_jobs": "Historical initial groups now completed; current numerical_jobs and pending_collections are authoritative.",
   "pending_collections": [
     {
       "job_id": 6628161,
@@ -160,6 +160,12 @@
       "group": "re21p25",
       "state": "COMPLETED",
       "elapsed_seconds": 675
+    },
+    {
+      "job_id": 6629378,
+      "group": "re22p5",
+      "state": "COMPLETED",
+      "elapsed_seconds": 672
     }
   ],
   "ROM_first_prep_workflow": {
@@ -182,5 +188,7 @@
   "pending_row_audit": "None; Re16.25/Re17.5 rows accepted, durable raw backup required before cooling",
   "ROM_storage_planning": "13.230GB remote workspace, not local RAM/staging; actual archive A collection needs2A+bounded scratch+10GiB under current verified cold-tier procedure.1.911GB post-review warm runtime projection; no collection released.",
   "full_break_even": "Unresolved without valid common-platform offline cost basis; campaign resource ledger is accounting, online ratios remain paired within allocation.",
-  "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit"
+  "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit",
+  "FOM_candidate_lift_control": "reviews/FOM-CANDIDATE-LIFT-SOURCE-REVIEW.json: sourceabc562ecb/mirrord6cd6b54b PASS; execution unreleased; proposed240s within2400s dev-FOM reservation.",
+  "reviewed_cooling_helper_sha256": "3a34b178aed8626844cd84e763e1e73a38d8855a00a2acd7e3ca7e76b1546953"
 }

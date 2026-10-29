@@ -1093,7 +1093,33 @@
       "source_candidate_sha256": "e5e6f7edfca71bc4528613542cce98bc9f35cc02a1ee6af6929b8c55d447af44",
       "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re22p5-01",
       "submitted_utc": "2026-10-29T06:15:48.991177+00:00",
-      "state_last_observed": "SUBMITTED",
+      "state_last_observed": "COMPLETED",
+      "gpus": 1,
+      "gpu_requested": "H200",
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "wall_limit_seconds": 1500,
+      "allocation_seconds_reserved": 1500,
+      "elapsed_seconds": 672,
+      "allocated_gpu_hours": 0.18666666666666668,
+      "reference_admitted": false,
+      "training_released": false,
+      "release": "5bd3e76e4",
+      "single_submission": true,
+      "operational_staging_amendment": "c6bd1ca56",
+      "state": "COMPLETED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": 6629506,
+      "attempt": "g2-population-re23p75-01",
+      "Re": 23.75,
+      "split": "train",
+      "source_commit": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+      "source_candidate_sha256": "0c7d452e7fdb52797d25ab5609a0aeaa347bebb428e271c69f3ba7e3da8b5845",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re23p75-01",
+      "submitted_utc": "2026-10-29T06:25:19.280620+00:00",
+      "state_last_observed": "RUNNING",
       "gpus": 1,
       "gpu_requested": "H200",
       "cpus_reserved": 16,
@@ -1110,11 +1136,11 @@
     }
   ],
   "live_job_ids": [
-    6629378
+    6629506
   ],
-  "completed_gpu_hours": 2.5369444444444444,
+  "completed_gpu_hours": 2.723611111111111,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
-  "total_allocated_gpu_hours_completed": 2.5369444444444444,
-  "last_accounting_utc": "2026-10-29T06:16:29.363776+00:00",
+  "total_allocated_gpu_hours_completed": 2.723611111111111,
+  "last_accounting_utc": "2026-10-29T06:40:11.796254+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

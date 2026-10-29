@@ -1,0 +1,38 @@
+{
+  "schema": "ns-obstacle-candidate-lift-control-release-v1",
+  "source_sha256": "580a6bdeee1d92bc8c2339f10c1cbf1a2dea34daf8c0d186af20855434242ff2",
+  "plan_sha256": "5a66bbe34c16b50d21d36e7a544c29b07e3a463573abb9985850ae65b7c422b5",
+  "input_inventory_sha256": "e464688e6c3e3b62dae37c4b1fd8708523b2782cc1b267db76bd318c8cd4c69b",
+  "allocation_seconds": 240,
+  "dev_FOM_remaining_seconds": 2160,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/candidate-lift01",
+  "source_commit": "abc562ecb",
+  "source_mirror": "d6cd6b54b",
+  "independent_source_review": "reviews/FOM-CANDIDATE-LIFT-SOURCE-REVIEW.json",
+  "authorized_utc": "2026-10-29T08:24:49.561539+00:00",
+  "gpus": 1,
+  "cpus": 16,
+  "memory_GiB": 64,
+  "native_process_guard_GiB": 16,
+  "debit": "Within existing14400s ROM reservation, taking240s from2400s FOM-development slice; no budget increase.",
+  "scope": "Five existing retained Re20 coarse Stokes coefficient controls at15/20/25; reuse accepted fine control. No new linear/nonlinear solve, training or model validation.",
+  "local_staging_window": {
+    "source_owner_confirmed_mass_writes_finished": true,
+    "snapshot_free_bytes": 12743155712,
+    "reserved_staging_and_receipt_bytes": 268435456,
+    "input_bytes": 33248132,
+    "minimum_untouched_bytes": 10737418240,
+    "read_only_upload_may_continue": true
+  },
+  "mandatory_execution_conditions": [
+    "This release and exact source must be backed before one submission; no automatic retries.",
+    "Fresh staged source/inventory/producer/native-dependency checks, fresh queue before and after submit, and unique directory.",
+    "At most2 live campaign allocations; current entire campaign remote storage plus remaining reference future reservations and this2GiB envelope must fit50GiB; real remote free must preserve10GiB.",
+    "Fresh local free must preserve10GiB plus the256MiB staging reservation and any other active writes; coordinate staging window with reference owner.",
+    "Preserve GPU/f64/highest preflight and all raw arrays/logs even on failure; charge whole terminal allocation.",
+    "Collection remains serial and requires actual measured archive/retention/disk checks."
+  ],
+  "physical_admission": false,
+  "candidate_eligibility_created": false,
+  "training_released": false
+}

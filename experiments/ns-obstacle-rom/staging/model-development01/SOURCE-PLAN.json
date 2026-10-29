@@ -1,0 +1,30 @@
+{
+  "schema": "ns-obstacle-development-source-plan-v1",
+  "execution_released": false,
+  "actual_stage_candidate_pending": true,
+  "actual_preparation_and_replay_review_pending": false,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01",
+  "allocation_seconds": 3360,
+  "outer_timeout_seconds": 3345,
+  "outer_kill_grace_seconds": 10,
+  "original_development_reservation_seconds": 3600,
+  "prior_materialization_reservation_seconds": 240,
+  "training_executed_by_this_job": false,
+  "bank_recipe_unchanged": true,
+  "runtime_inventory_sha256": "a4a2cacb2bf0769d6274549d7b7ce66726255654127b1e49c3351e6bea196f27",
+  "launcher_sha256": "821e02f46dc5c0d7a7cbc83ccc60aae150c0f4df95c290660b2b770c0fcd5795",
+  "stage_source_sha256": "c06f0465730dd71b2ba34d227dce2667059cc79355e70a1a8b29780bc5ad876a",
+  "input_contract": "Existing stage2d candidate binds every file in actual accepted prepared tree and separately reviewed consumer release.",
+  "prepared_storage": "A hash-bound immutable warm PointVolumeStore is required; compact primary alone is not a consumer input.",
+  "reconstruction_if_needed": "Use existing primary_volume.materialize with exact source/runtime; charge all reconstruction and setup within released resources.",
+  "validation_data_access": false,
+  "automatic_retry": false,
+  "resume_authorized": false,
+  "pending_before_execution": [
+    "actual model review and complete two-case development reconstruction review",
+    "actual consumer release including measured-capacity and native-result review bindings",
+    "actual development stage candidate from existing stage2d builder; all data paths must exist on execution host",
+    "fresh stage-specific memory/disk/global quota and unique job-directory checks",
+    "exact separate development release plus launch/runtime/candidate bindings and SOURCE-SHA256SUMS"
+  ]
+}

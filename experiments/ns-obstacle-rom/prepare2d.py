@@ -17,10 +17,12 @@ from qualification import require_qualification
 
 
 def preparation_digest():
+    from primary_volume import source_digest as primary_source_digest
     return hashlib.sha256(json.dumps({
         'entry_sha256': sha_file(Path(__file__)),
         'adapter_sha256': adapter_digest(),
-        'pilot_sha256': source_digest()}, sort_keys=True).encode()).hexdigest()
+        'pilot_sha256': source_digest(),
+        'primary_volume_sha256': primary_source_digest()}, sort_keys=True).encode()).hexdigest()
 
 
 def verify_release(manifest_path, release_path):
@@ -41,11 +43,15 @@ def verify_release(manifest_path, release_path):
     return release, admission
 
 
-def prepare(manifest_path, release_path, output, point_block_volume=False):
+def prepare(manifest_path, release_path, output, point_block_volume=False, verify_primary_volume=False):
     started = time.perf_counter()
     release, admission = verify_release(manifest_path, release_path)
     if release.get('point_block_volume', False) is not point_block_volume:
         raise ValueError('volume layout differs from exact preparation release')
+    if release.get('verify_primary_volume', False) is not verify_primary_volume:
+        raise ValueError('primary replay differs from exact preparation release')
+    if verify_primary_volume and not point_block_volume:
+        raise ValueError('primary replay requires complete point-block volume')
     output = Path(output)
     if output.exists(): raise FileExistsError('fresh preparation directory required')
     output.mkdir(parents=True, exist_ok=False)
@@ -55,6 +61,25 @@ def prepare(manifest_path, release_path, output, point_block_volume=False):
         adapter = TrainingFEAdapter.open(manifest_path, output/'native_evidence')
         stage = 'basis_build'; adapter.build()
         stage = 'array_export'; metadata = adapter.export(output/'prepared', point_block_volume=point_block_volume)
+        primary_replay = None
+        if verify_primary_volume:
+            from primary_volume import write_primary, PrimaryVolumeStore, materialize
+            stage = 'primary_volume_capture'
+            primary = write_primary(adapter, output/'primary_volume', adapter.cases[0]['folder'],
+                                    output/'prepared/volume')
+            stage = 'primary_volume_exact_replay'
+            primary_sha = sha_file(output/'primary_volume/manifest.json')
+            store = PrimaryVolumeStore(output/'primary_volume', primary_sha, adapter.ng)
+            restored = materialize(store, output/'restored_volume')
+            if restored['manifest_sha256'] != sha_file(output/'prepared/volume/manifest.json'):
+                raise ValueError('complete fine preparation replay manifest differs')
+            primary_replay = {'primary_manifest_sha256': primary_sha,
+                'capture_seconds': primary['creation_seconds'], 'restoration': restored,
+                'replay_accounting': store.replay_accounting,
+                'original_fields_retained': True, 'restored_fields_retained': True,
+                'omission_authorized': False, 'status': 'pending_independent_fine_replay_review'}
+            (output/'primary_replay.json').write_text(json.dumps(primary_replay, indent=2, allow_nan=False)+'\n')
+            del store
         stage = 'exact_pressure_probes'; probes = prepare_probe_arrays(adapter)
         for name, array in probes.items():
             if array.dtype != np.dtype('float64') or not np.isfinite(array).all():
@@ -70,6 +95,7 @@ def prepare(manifest_path, release_path, output, point_block_volume=False):
             'adapter_manifest_sha256': sha_file(output/'prepared/manifest.json'),
             'probes_sha256': sha_file(probe_file), 'probe_points_physical': probes['points_physical'].tolist(),
             'shared_stokes_lift': metadata['shared_stokes_lift'],
+            'primary_volume_replay': primary_replay,
             'elapsed_seconds': time.perf_counter()-started,
             'peak_rss_bytes': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
             'status': 'execution_completed_pending_independent_review',
@@ -90,8 +116,9 @@ def main():
     parser.add_argument('--release', required=True, type=Path)
     parser.add_argument('--out', required=True, type=Path)
     parser.add_argument('--point-block-volume', action='store_true')
+    parser.add_argument('--verify-primary-volume', action='store_true')
     args = parser.parse_args()
-    print(json.dumps(prepare(args.training_manifest, args.release, args.out, args.point_block_volume), indent=2))
+    print(json.dumps(prepare(args.training_manifest, args.release, args.out, args.point_block_volume, args.verify_primary_volume), indent=2))
 
 
 if __name__ == '__main__': main()

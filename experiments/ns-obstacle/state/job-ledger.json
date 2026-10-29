@@ -1488,9 +1488,27 @@
       "exit_code": "124",
       "node": "pax023",
       "execution_report": "Whole-body allocation deadline; bank representation gate failed, partial POD_r2 results retained; final development incomplete."
+    },
+    {
+      "job_id": 6638028,
+      "attempt": "fom-calibration01",
+      "phase": "restricted_FOM_common_target_development",
+      "budget_bucket": "ROM",
+      "source_commit": "d4e2d019fb832c65d7fe267c4e255fb2cfbd9277",
+      "source_manifest_sha256": "4149b0bf43e165add3a5bbf8d83252ee18f281044186795df5233c088a723ce2",
+      "release_sha256": "1b6eb106885818012c3157f3a8164abd85a6d13b4328791c42af77f666d3cef5",
+      "state": "PENDING",
+      "state_last_observed": "PENDING",
+      "gpus": 1,
+      "allocation_seconds_reserved": 2160,
+      "single_submission": true,
+      "validation_access_authorized": false,
+      "submitted_utc": "2026-10-29T15:14:31.860393+00:00"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6638028
+  ],
   "completed_gpu_hours": 5.456666666666667,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
   "total_allocated_gpu_hours_completed": 5.456666666666667,

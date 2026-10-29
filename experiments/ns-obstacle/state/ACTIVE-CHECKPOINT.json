@@ -1,6 +1,8 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    6638028
+  ],
   "active_external_consults": [],
   "pending": [
     "Review retained model timeout and completed r2 failures",
@@ -212,7 +214,9 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [],
+  "live_job_ids": [
+    6638028
+  ],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -383,11 +387,13 @@
   "fom_calibration_release": {
     "sha256": "1b6eb106885818012c3157f3a8164abd85a6d13b4328791c42af77f666d3cef5",
     "seconds": 2160,
-    "submitted": false,
+    "submitted": true,
     "subset": [
       "p3g3h2",
       "p4g4h1"
     ],
-    "common_target_only": true
+    "common_target_only": true,
+    "job_id": 6638028,
+    "actual_full_preflight_passed": true
   }
 }

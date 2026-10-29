@@ -1,0 +1,24 @@
+{
+  "schema": "ns-obstacle-model-development-collection-release-v1",
+  "job_id": 6636731,
+  "measurement_sha256": "d048393748fee7630cdb2fabc1c5cf5f0817e295e6fd9845148f143d090cfae6",
+  "archive_sha256": "258616d8eb978f9f3a24ff41b9da9a6b0492e7a27438b6ab397c42c0384b016c",
+  "archive_bytes": 329063309,
+  "logical_files": 114,
+  "logical_expansion_bytes": 331292893,
+  "mode": "Archive-only full original-file stream verification; bounded metadata extraction, no scientific expansion",
+  "maximum_metadata_bytes": 8388608,
+  "minimum_free_before_collection_bytes": 11680757530,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "terminal_model_future_write_reservation_bytes": 0,
+  "terminal_future_reservation_retirement_basis": "All job steps terminal and exact final raw/archive measured; existing bytes remain in each fresh namespace count",
+  "requirements": [
+    "Complete released successful-development02 working chunk cooling and fresh free-space guard",
+    "Serialize bulk collection/Git writes, no auto GC",
+    "Rehash all chunks before retiring redundant transport/writing Git objects",
+    "Independent full durable/raw review required before scientific acceptance",
+    "Original model remote namespace remains required by pending recovery; preserve it and original archive"
+  ],
+  "remote_cleanup_authorized": false
+}

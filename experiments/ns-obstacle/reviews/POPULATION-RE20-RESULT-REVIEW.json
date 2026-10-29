@@ -1,0 +1,42 @@
+{
+  "schema": "ns-obstacle-Re20-independent-scientific-review-v1",
+  "reviewer": "/root/numerical_resume",
+  "scientific_review_passed": true,
+  "scope": "Re20 only; fixed finite channel FD1",
+  "job_id": 6624571,
+  "executed_source": "51fdc8fa7add471953254b016b4860aa9ca6ec92",
+  "archive_sha256": "33c56e3dedaef0ce896ab9022bd4e7a27952f440aa3639f403403d96d0df44bc",
+  "archive_bytes": 1037042165,
+  "verified_regular_files": 1218,
+  "noise_ledger_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/evidence/re20-noise.json",
+  "noise_ledger_sha256": "53ef9d40df6604d4d0eb0c4c262e05648940341f3ed2b921cf2e44804ee94cf9",
+  "required_parameter_checks_passed": 50,
+  "states_reviewed": 15,
+  "new_states_reviewed": 8,
+  "conditional_delta": {
+    "velocity_relative": 8.650371681253778e-06,
+    "pressure_scaled": 4.7935087227328877e-05,
+    "drag_relative": 4.919628932241944e-05,
+    "transverse_absolute": 9.256657284755984e-05
+  },
+  "independent_checks": [
+    "all original-rule fields and state identities",
+    "weighted S/Q/R and h/p/geometry contrasts",
+    "four resolved decreasing h trends",
+    "all eight new primary coefficient states, trace bounds and boundary-force integrals",
+    "24 raw Jacobian central differences",
+    "adopted divergence recomputation",
+    "GPU, float64, highest precision, execution provenance, stage return codes and empty stderr",
+    "full original archive inventory after accounting snapshot restoration"
+  ],
+  "retention_correction": "Original SACCT.txt restored from verified archive; later snapshot preserved separately. No numerical rerun.",
+  "remaining": [
+    "durable mirror verification",
+    "qualification candidate schema repairs",
+    "fourteen other parameter groups",
+    "shared-control certificates"
+  ],
+  "original_domain_gate": "failed",
+  "population_admitted": false,
+  "training_released": false
+}

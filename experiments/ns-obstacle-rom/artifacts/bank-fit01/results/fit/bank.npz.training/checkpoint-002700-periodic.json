@@ -1,0 +1,41 @@
+{
+  "schema": "ns-obstacle-training-checkpoint-v1",
+  "arrays": "checkpoint-002700-periodic.npz",
+  "arrays_sha256": "2c67ac8d8810dfd6e592059b5f50ec83a4e4483d0bb8a8f6fec20c2ee3c76874",
+  "cumulative_completed_steps": 2700,
+  "cumulative_training_seconds": 270.2008102759719,
+  "checkpoint_start_training_seconds": 270.18614209163934,
+  "time_boundary": "after synchronized archive/parameter hashing and memory capture; before small checkpoint JSON write",
+  "future_resume_requires_full_attempt_budget_accounting_not_only_checkpoint_time": true,
+  "step_cap": 3000,
+  "time_cap_seconds": 1800.0,
+  "optimizer_tree_structure": "PyTreeDef((CustomNode(namedtuple[ScaleByAdamState], [*, [(*, *), (*, *), (*, *)], [(*, *), (*, *), (*, *)]]), CustomNode(namedtuple[EmptyState], [])))",
+  "optimizer_leaf_count": 13,
+  "configuration_sha256": "065ba6f0d4c8bdccb88bfbb3e96a41e89261e8a458a401774599f70541d05755",
+  "precision": "float64",
+  "matmul_precision": "highest",
+  "reason": "periodic",
+  "memory": {
+    "host_peak_rss_bytes": 2408009728,
+    "device": "cuda:0",
+    "device_memory_stats": {
+      "num_allocs": 70679,
+      "bytes_in_use": 310830848,
+      "peak_bytes_in_use": 3114421760,
+      "largest_alloc_size": 2670490624,
+      "bytes_limit": 35750150144,
+      "bytes_reserved": 0,
+      "peak_bytes_reserved": 0,
+      "largest_free_block_bytes": 0,
+      "pool_bytes": 7046430720,
+      "peak_pool_bytes": 7046430720
+    }
+  },
+  "parameter_sha256": "1544a160a8505decaa3eb6bbe593dd3b636bc8645f727b6a743dd554ac92eb17",
+  "runtime": {
+    "jax": "0.10.2",
+    "numpy": "2.5.0"
+  },
+  "resume_authorized": false,
+  "state_semantics": "parameters and Adam state after completed updates; history losses precede their updates"
+}

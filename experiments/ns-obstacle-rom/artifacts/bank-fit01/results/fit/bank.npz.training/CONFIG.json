@@ -1,0 +1,51 @@
+{
+  "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+  "admission": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    },
+    "split": "training",
+    "Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "review_record": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+    "reference_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+    "array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+    "source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+    "adapter_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6"
+  },
+  "step_cap": 3000,
+  "time_cap_seconds": 1800.0,
+  "architecture": {
+    "rank": 8,
+    "width": 64,
+    "depth": 2
+  },
+  "optimizer": "Adam constant learning rate 0.001",
+  "precision": "float64",
+  "matmul_precision": "highest",
+  "resume_implemented": false,
+  "resume_authorized": false,
+  "budget_policy": "Any future resume must consume the remaining cumulative original step/time budget; retention authorizes no retry.",
+  "stochastic_state": {
+    "initialization_seed": 27102027,
+    "random_operations_after_initialization": false,
+    "order": "all original points and nine training snapshots in immutable input order"
+  }
+}

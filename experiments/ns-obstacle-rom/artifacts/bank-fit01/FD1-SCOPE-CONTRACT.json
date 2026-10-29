@@ -1,0 +1,23 @@
+{
+  "schema": "ns-obstacle-reference-scope-amendment-v1",
+  "amendment_id": "FD1-2026-10-28",
+  "status": "user_approved_not_reference_admission",
+  "user_choice": "Original fixed channel — explicit finite-domain scope (recommended)",
+  "qualification_gate": "G2_FIXED_FINITE_CHANNEL_V1",
+  "base_campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+  "base_design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+  "amendment_document_sha256": "a9a06f09d45b710e4ba3e5b6057ae0b1e7a27c6660bf52c05f45dfdf6fbce7c6",
+  "original_G2_status": "not_admitted_domain_sensitivity_failed",
+  "domain_sensitivity_status": "failed",
+  "domain_independence_admitted": false,
+  "geometry_population_and_numerical_thresholds_unchanged": true,
+  "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+  "training_released": false,
+  "excluded_claims": [
+    "inlet-length independence",
+    "outlet-condition independence",
+    "isolated or unconfined cylinder",
+    "geometry generalization"
+  ],
+  "resource_ceiling_gpu_hours": 12
+}

@@ -7,6 +7,19 @@ from build_preparation_launch import source_closure,ROOT
 JOB='/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/validation-materialize01'
 
 
+def render_scripts(template):
+    outer=(template/'native.sh').read_text().replace('ctol_nsobsrom_materialize','ctol_nsobsrom_valdata').replace('00:07:30','00:03:00').replace('435s','165s').replace('--kill-after=10s','--kill-after=5s')
+    body=(template/'native-body.sh').read_text().replace('training-materialize01','validation-materialize01')
+    body=body.replace('results/BATCH-RESULT.json','results/population/HANDOFF.json').replace("'materialization_completed':r.get('passed',False)","'materialization_completed':r.get('status')=='completed_pending_independent_handoff_review'")
+    body=body.replace('18*2**30','14*2**30').replace('eight-GiB workspace/archive envelope','four-GiB workspace/archive envelope')
+    body=body.replace('JOB_PHASE=gpu_preflight','"$PY" validation_handoff_launch2d.py --plan HANDOFF-PLAN.json --release HANDOFF-RELEASE.json --inventory INPUT-INVENTORY.json --verify-only\nJOB_PHASE=gpu_preflight')
+    body=body.replace('"$PY" materialize_batch2d.py --plan BATCH-PLAN.json --release BATCH-RELEASE.json --out results','"$PY" validation_handoff_launch2d.py --plan HANDOFF-PLAN.json --release HANDOFF-RELEASE.json --inventory INPUT-INVENTORY.json')
+    guard='"$PY" validation_handoff_launch2d.py --plan HANDOFF-PLAN.json --release HANDOFF-RELEASE.json --inventory INPUT-INVENTORY.json --verify-only\n'
+    if body.count(guard)!=1 or body.count('sha256sum -c SOURCE-SHA256SUMS')!=1:raise ValueError('unexpected inherited launcher structure')
+    body=body.replace(guard,'').replace('sha256sum -c SOURCE-SHA256SUMS',guard+'sha256sum -c SOURCE-SHA256SUMS')
+    return outer,body
+
+
 def build(reference,out,frozen_models,rom_review,other_active_disk_reservation_bytes):
     from validation2d import verify_review
     frozen_models=Path(frozen_models).resolve();rom_review=Path(rom_review).resolve()
@@ -50,12 +63,7 @@ def build(reference,out,frozen_models,rom_review,other_active_disk_reservation_b
     template=ROOT/'staging/training-materialize01'
     for name in ('dependencies.py','DEPENDENCIES.json'):shutil.copyfile(template/name,out/name)
     (out/'REPAIR.json').write_text(json.dumps({'fresh_attempt':'validation-materialize01','purpose':'Four admitted validation primary reconstructions after reviewed method freezing; no fitting, calibration or selection'})+'\n')
-    outer=(template/'native.sh').read_text().replace('ctol_nsobsrom_materialize','ctol_nsobsrom_valdata').replace('00:07:30','00:03:00').replace('435s','165s').replace('--kill-after=10s','--kill-after=5s')
-    body=(template/'native-body.sh').read_text().replace('training-materialize01','validation-materialize01')
-    body=body.replace('results/BATCH-RESULT.json','results/population/HANDOFF.json').replace("'materialization_completed':r.get('passed',False)","'materialization_completed':r.get('status')=='completed_pending_independent_handoff_review'")
-    body=body.replace('18*2**30','14*2**30').replace('eight-GiB workspace/archive envelope','four-GiB workspace/archive envelope')
-    body=body.replace('JOB_PHASE=gpu_preflight','"$PY" validation_handoff_launch2d.py --plan HANDOFF-PLAN.json --release HANDOFF-RELEASE.json --inventory INPUT-INVENTORY.json --verify-only\nJOB_PHASE=gpu_preflight')
-    body=body.replace('"$PY" materialize_batch2d.py --plan BATCH-PLAN.json --release BATCH-RELEASE.json --out results','"$PY" validation_handoff_launch2d.py --plan HANDOFF-PLAN.json --release HANDOFF-RELEASE.json --inventory INPUT-INVENTORY.json')
+    outer,body=render_scripts(template)
     (out/'native.sh').write_text(outer);(out/'native-body.sh').write_text(body)
     for p in sorted(out.iterdir()):
         if p.is_file() and p.name!='.gitignore':rows.append({'owner':'rom','source':str(p.relative_to(ROOT)),'destination':p.name,'sha256':sha_file(p),'bytes':p.stat().st_size})

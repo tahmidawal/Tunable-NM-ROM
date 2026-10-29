@@ -1,11 +1,17 @@
 """Metadata-only guard checks; no validation payload or native solver is read."""
 from pathlib import Path
-import json,tempfile
+import json,tempfile,subprocess
 import validation_handoff_launch2d as launch
-from build_validation_handoff_launch import build
+from build_validation_handoff_launch import build,render_scripts,ROOT
 
 
 def main():
+    outer,body=render_scripts(ROOT/"staging/training-materialize01")
+    guard=body.index("--verify-only")
+    assert guard<body.index("sha256sum -c SOURCE-SHA256SUMS")<body.index("JOB_PHASE=gpu_preflight")
+    assert "training-materialize01" not in body and "development-materialize02" not in body
+    assert "165s" in outer and "kill-after=5s" in outer
+    for script in (outer,body):subprocess.run(["bash","-n"],input=script,text=True,check=True)
     with tempfile.TemporaryDirectory() as folder:
         root=Path(folder);inventory=root/'inventory.json';inventory.write_text(json.dumps({'files':[{'destination':'DO-NOT-READ.npy','bytes':1,'sha256':'0'*64}]}))
         release={'authorized_stage':'validation_population_materialization','split':'validation',

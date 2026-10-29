@@ -1,0 +1,97 @@
+{
+  "schema": "ns-obstacle-FOM-candidate-lift-result-review-v1",
+  "passed": true,
+  "reviewer": "/root/numerical_resume",
+  "job_id": 6631950,
+  "scope": "Five retained-mesh Stokes scaling controls only",
+  "result_sha256": "d0863a75da073e02e8ff04d9275416c4639ce7616d10ba3a34b3993e2b9413dc",
+  "retention_sha256": "fe46dff226390ae2f9b889ee52bb5a5da8436174442d612804c0607dfe05a4de",
+  "retention_binding": "Original immutable bytes at source_commit, not subsequent lifecycle metadata",
+  "source_commit": "bbbb2d38e56154f84f290d26bdcc8a4ec603d035",
+  "mirror_commit": "a4920eb4ecbb069e2af73231d1b45a2079006922",
+  "archive_sha256": "f73eb8ba26dbd3a09ce980151599b7d31e8cecf7cbce39138b579f8bcd375a76",
+  "archive_bytes": 193289845,
+  "verified_regular_files": 847,
+  "verified_chunks": 4,
+  "raw_evidence_reviewed": true,
+  "retention_reviewed": true,
+  "fresh_advertised_mirror_verified": true,
+  "source_sha256": "580a6bdeee1d92bc8c2339f10c1cbf1a2dea34daf8c0d186af20855434242ff2",
+  "release_sha256": "691b5fe616e7743029e4017e4b31aec5598963161e1994dbbb3fbbfb5273da9a",
+  "records": [
+    {
+      "id": "p3g3h1",
+      "mesh_sha256": "fed6f71aab57eac2f9df7d27b10cfccf8514a99180c2446644f10b4fe7b9c409",
+      "layout_sha256": "013ad4c230eca2c69cdc505571301bcb164bd2f33911b20b91f695126170f76f",
+      "scaling_Re": [
+        15.0,
+        20.0,
+        25.0
+      ],
+      "maximum_relative_residual": 1.433472731986378e-15
+    },
+    {
+      "id": "p3g3h2",
+      "mesh_sha256": "2fab6a1859d225b8449eeefded18356ab4e544aad119b99b4d3125f9294147ba",
+      "layout_sha256": "c8f468d9a832a6dae1e50ba661212f8220a5d948f2bc9a443bbd40160f20b975",
+      "scaling_Re": [
+        15.0,
+        20.0,
+        25.0
+      ],
+      "maximum_relative_residual": 3.1103675548430358e-15
+    },
+    {
+      "id": "p3g3h3",
+      "mesh_sha256": "0ef06a23785ab1ddc99532ac7d66cded77edce779a06dded53b53fc94dc46c62",
+      "layout_sha256": "3515037c0d752a7ce3f9599eca26967647606ab42d31342bd490ea3a5eb7fc7d",
+      "scaling_Re": [
+        15.0,
+        20.0,
+        25.0
+      ],
+      "maximum_relative_residual": 5.97026432748904e-15
+    },
+    {
+      "id": "p4g4h1",
+      "mesh_sha256": "bcc562d338a206b4a8d9de73be5ef1afd0f4d448f78d8a8ae1f823b41cbe229e",
+      "layout_sha256": "4a49bc7ac173fbfeed30f87e414aeb0dfe1c1c71ea05f4ca523fe3477e3cd04f",
+      "scaling_Re": [
+        15.0,
+        20.0,
+        25.0
+      ],
+      "maximum_relative_residual": 1.4540996424182748e-15
+    },
+    {
+      "id": "p4g4h2",
+      "mesh_sha256": "c15599ab35f5179b69f77a16a55f76699b42632c0dcff22bcd7026a122e7306c",
+      "layout_sha256": "6b92d21972abaabb7c582de5a4a17c3e5bb752e3704e67d94a2bb36e79158299",
+      "scaling_Re": [
+        15.0,
+        20.0,
+        25.0
+      ],
+      "maximum_relative_residual": 3.1000027743573945e-15
+    }
+  ],
+  "unchanged_residual_limit": 1e-10,
+  "native_arrays_replayed": true,
+  "reviewer_fresh_native_reassembly": false,
+  "gpu_f64_highest_preflight_verified": true,
+  "new_solves": false,
+  "eligibility_created": false,
+  "physical_reference_admitted": false,
+  "training_released": false,
+  "subsequent_metadata_only_delta": {
+    "source_commit": "65e243763",
+    "mirror_commit": "2fce7ef77",
+    "retention_sha256": "fa879360e2605049c0ce5e6d2b63ca8d7047cf59da4cb48859592b7367571009",
+    "changed_fields": [
+      "independent_raw_audit",
+      "independent_result_sha256",
+      "status"
+    ],
+    "raw_data_unchanged": true
+  }
+}

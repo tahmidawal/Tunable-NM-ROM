@@ -1,0 +1,23 @@
+{
+  "schema": "ns-obstacle-guided-neural-diagnostic-collection-release-v1",
+  "authorized": true,
+  "job_id": 6649088,
+  "archive_sha256": "94999e6d5c95843693a9150131beb6d130b975ac55d7778ebb121352431ba867",
+  "archive_bytes": 156965268,
+  "logical_files": 100,
+  "logical_expansion_bytes": 157692037,
+  "measurement_sha256": "8a5c94c06449cb5f491f3e4e1f9d1f58d7822963e70631ae2536b5d3fd4a1a2a",
+  "collector_sha256": "78c4def65215792e93fb29c843878597b84bc04de0aa7d8549b0cc68195815c9",
+  "collector_source_commit": "0779368f970b6ae734bcc30104e3f4a0bcc000d2",
+  "mode": "Archive-only whole original file and ledger streaming verification; metadata only extraction",
+  "maximum_metadata_bytes": 16777216,
+  "minimum_free_before_collection_bytes": 11336561448,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Wait collector source mirror; fresh sufficient free guard, serialized bulk collection/Git writes.",
+    "Verify complete archive, all members and original ledger before chunks/retiring transport.",
+    "Preserve immutable raw retention and independent source/mirror review before remote cleanup."
+  ]
+}

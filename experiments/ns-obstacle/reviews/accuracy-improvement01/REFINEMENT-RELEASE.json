@@ -1,0 +1,61 @@
+{
+  "pilot_source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "allocation_seconds": 3600,
+  "outer_timeout_seconds": 3585,
+  "outer_kill_grace_seconds": 10,
+  "resume_allowed": false,
+  "validation_allowed": false,
+  "new_reference_solves_allowed": false,
+  "automatic_retry": false,
+  "estimated_peak_host_bytes": 17179869184,
+  "allocation_memory_bytes": 68719476736,
+  "schema": "ns-obstacle-pod-guided-refinement-release-v2",
+  "authorized": true,
+  "single_execution": true,
+  "source_commit": "6c4ee9bcd267cd70983dc0dd06c2e140df65b424",
+  "source_mirror_commit": "0c1dad4b6",
+  "working_directory": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom",
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-refine01",
+  "raw_plus_archive_reservation_bytes": 2147483648,
+  "new_adam_steps": 0,
+  "warm_restart": true,
+  "exact_optimizer_continuation_claim": false,
+  "refinement_protocol": {
+    "max_iterations": 10000,
+    "checkpoint_every": 250,
+    "history_size": 10,
+    "line_search_steps": 20,
+    "gradient_tolerance": 1e-10,
+    "warm_restart": true,
+    "new_adam_steps": 0
+  },
+  "physical_admission": false,
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-refine01/results/fit",
+  "plan_sha256": "990596bd0469b906ef232e95626a4885ce1c6215e27b1a71927d5a9642628641",
+  "runtime_inventory_sha256": "48be7da221ce4da70fc05f228c5f97443b7ca894f3a2201a58513f5d5410a25e",
+  "resource_check_sha256": "b935144f482d13960430ea59d54caaf84bcfb84da06ef50b3e41e5a2f4418483",
+  "launcher_sha256": "0d23fc28c4bf83a23254a2caab145631c0830eb6934a2d91c2976fd06a7c8f70",
+  "stager_sha256": "ebe97c82dd62660623066649959016b933936858a938a808233b6aedbcbc78d6",
+  "review": "Independent numerical source, exact parent/teacher packet, conservative resources and single-submit controller PASS. First actual PDE diagnostic independently confirms improved fields but failed lift/divergence/mass; this is a further optimization experiment, not physical qualification.",
+  "requirements": [
+    "Fresh actual full input/source/resource/queue checks before exactly one submission.",
+    "No Adam, teacher/objective/weight changes or development/validation checkpoint selection.",
+    "Retain all scalar history and periodic/final vectors; explicitly no complete intermediate vector replay claim.",
+    "Recompute selected serialized-model objective/gradient and preserve partial/deadline state.",
+    "Charge actual allocated time and independently audit/save results; no arbitrary accuracy stopping cutoff."
+  ]
+}

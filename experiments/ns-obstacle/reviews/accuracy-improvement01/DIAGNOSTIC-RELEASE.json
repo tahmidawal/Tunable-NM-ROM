@@ -1,0 +1,42 @@
+{
+  "pilot_source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "schema": "ns-obstacle-pod-guided-diagnostic-release-v2",
+  "authorized": true,
+  "single_execution": true,
+  "source_commit": "7dbe6081205f88d361f414120bb4aaf2e3f1cf1b",
+  "source_mirror_commit": "ff91d0258",
+  "working_directory": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom",
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic01",
+  "allocation_seconds": 900,
+  "outer_timeout_seconds": 885,
+  "outer_kill_grace_seconds": 10,
+  "finalization_reserve_seconds": 60,
+  "training_allowed": false,
+  "quadrature_fit_allowed": false,
+  "validation_allowed": false,
+  "automatic_retry": false,
+  "physical_admission": false,
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic01/results/diagnostic",
+  "plan_sha256": "d6fa625f2d1376cf1f11471951503b180228ff72103f42f50fd1c5cc4afd7c4e",
+  "runtime_inventory_sha256": "0243aedab19d633c161ded2f09f8403dd2e76443e93af19aed3144c9f7c94fc2",
+  "resource_check_sha256": "0c29fc0d522c7909f622291857a82541bbff414f7ecd6ae5ffb687b8c9ed63b9",
+  "launcher_sha256": "9fec44f24493078d4ca60649f806cb2c9118008e8e416ee4e94f67fb3af9e6b6",
+  "stager_sha256": "2feeb0ac5242cb6392ee63854ea9c6091bc93dee3cb3636f4440f70498cf14e8",
+  "development_manifest_sha256": "7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070",
+  "probes_sha256": "f8de76569517ddb8ebb4fbf59bfe92ce5d8c906dcdd67bed131ff9efbb8b852c",
+  "review": "Independent numerical reviewer PASS for exact packet and controller; actual model provenance and complete raw retention passed. Fresh resource/full input checks required before one submission. No physical accuracy admission."
+}

@@ -15,9 +15,10 @@ def relative(value):
     return str(path)
 
 class SourceInputs:
-    def __init__(self, repo, prefix, commit, reserve_bytes=10*1024**3):
+    def __init__(self, repo, prefix, commit, reserve_bytes=10*1024**3, verify_warm_archives=False):
         self.repo=Path(repo);self.prefix=relative(prefix);self.commit=commit
         self.reserve_bytes=reserve_bytes;self.temporary=None;self.archives={};self.handles={}
+        self.verify_warm_archives=verify_warm_archives;self.verified_warm_inputs=[]
     def __enter__(self):
         self.temporary=tempfile.TemporaryDirectory(prefix='source-recovery-',dir=self.repo)
         return self
@@ -26,6 +27,17 @@ class SourceInputs:
         self.temporary.cleanup()
     def committed(self,path):
         return subprocess.check_output(['git','-C',str(self.repo),'show',self.commit+':'+self.prefix+'/'+relative(path)])
+    def warm_archive(self,row):
+        if not self.verify_warm_archives or 'archive_source' not in row:return None
+        declaration=row['archive_source'];raw=self.committed(declaration['manifest_source'])
+        if hashlib.sha256(raw).hexdigest()!=declaration['manifest_sha256']:raise ValueError('archive recovery manifest changed')
+        relative(declaration['member'])
+        base=(self.repo/self.prefix).resolve();path=base/relative(row['source'])
+        if path.is_symlink() or not path.resolve().is_relative_to(base) or not path.is_file() or path.stat().st_size!=row['bytes']:return None
+        with path.open('rb') as stream:data=stream.read(row['bytes']+1)
+        if len(data)!=row['bytes'] or hashlib.sha256(data).hexdigest()!=row['sha256']:return None
+        self.verified_warm_inputs.append({'source':row['source'],'sha256':row['sha256'],'bytes':row['bytes'],'archive_manifest_sha256':declaration['manifest_sha256'],'source_kind':'exact_verified_working_duplicate'})
+        return data
     def archive(self,declaration):
         raw=self.committed(declaration['manifest_source']);digest=hashlib.sha256(raw).hexdigest()
         if digest!=declaration['manifest_sha256']:raise ValueError('archive recovery manifest changed')
@@ -58,6 +70,8 @@ class SourceInputs:
             path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
         for row in rows:
             if 'archive_source' not in row:write(row,self.committed(row['source']));continue
+            warm=self.warm_archive(row)
+            if warm is not None:write(row,warm);continue
             digest,archive=self.archive(row['archive_source']);member=self.member(archive,row['archive_source']['member'])
             if member.size!=row['bytes']:raise ValueError('archived member length differs')
             groups.setdefault(digest,{}).setdefault(member.name,(member,[]))[1].append(row)
@@ -70,6 +84,8 @@ class SourceInputs:
         if 'archive_source' not in row:
             data=self.committed(row['source'])
         else:
+            warm=self.warm_archive(row)
+            if warm is not None:return self.verify(row,warm)
             _,archive=self.archive(row['archive_source']);member=self.member(archive,row['archive_source']['member'])
             data=archive.extractfile(member).read(int(row['bytes'])+1)
         return self.verify(row,data)

@@ -1,6 +1,7 @@
 """Stage one explicitly released immutable package and submit once; never retry."""
 from pathlib import Path
 import argparse,datetime,hashlib,json,re,shlex,shutil,subprocess
+import source_inputs
 from source_inputs import SourceInputs
 B=Path(__file__).resolve().parents[1];REPO=B.parents[1];PREFIX='/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/'
 def sha(data):return hashlib.sha256(data).hexdigest()
@@ -24,7 +25,7 @@ def compute_only_bounds(candidate,commit,candidate_sha,release,committed,helper_
     return {'cold_source_archive_bytes':sum(archives.values()),'staged_input_bytes':inputs,'other_active_reservations_bytes':other,'metadata_margin_bytes':margin,'minimum_local_reserve_bytes':reserve,'required_before_staging_bytes':reserve+other+sum(archives.values())+inputs+margin,'required_after_staging_bytes':reserve+other+margin}
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--commit',required=True);p.add_argument('--candidate',required=True);p.add_argument('--candidate-sha',required=True);p.add_argument('--attempt',required=True);p.add_argument('--release',required=True);p.add_argument('--batch',required=True);p.add_argument('--compute-only-release',type=Path);p.add_argument('--other-reservations-bytes',type=int,default=0);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--commit',required=True);p.add_argument('--candidate',required=True);p.add_argument('--candidate-sha',required=True);p.add_argument('--attempt',required=True);p.add_argument('--release',required=True);p.add_argument('--batch',required=True);p.add_argument('--compute-only-release',type=Path);p.add_argument('--other-reservations-bytes',type=int,default=0);p.add_argument('--use-verified-warm-inputs',action='store_true');a=p.parse_args()
     if a.other_reservations_bytes<0:raise ValueError('reservations cannot be negative')
     if not re.fullmatch(r'g2-[a-z0-9-]+',a.attempt):raise ValueError('explicit lane attempt required')
     git=['git','-C',str(REPO)];commit=subprocess.check_output(git+['rev-parse',a.commit],text=True).strip();S=B/'staging'/a.attempt;P=S/'payload';remote=PREFIX+a.attempt
@@ -41,9 +42,14 @@ def main():
         required_free=operational['required_after_staging_bytes']
     elif a.other_reservations_bytes:
         required_free+=a.other_reservations_bytes
+    source_inputs_sha=sha(Path(source_inputs.__file__).read_bytes())
+    if a.use_verified_warm_inputs:
+        settings=json.loads(raw_release).get('verified_warm_inputs',{}) if a.compute_only_release else {}
+        if settings.get('enabled')is not True or settings.get('source_inputs_sha256')!=source_inputs_sha or settings.get('existing_working_files_only')is not True or settings.get('conservative_reservations_unchanged')is not True:raise ValueError('explicit hash-bound warm-input release required')
     P.mkdir(parents=True,exist_ok=False)
-    with SourceInputs(REPO,str(B.relative_to(REPO)),commit) as sources:
+    with SourceInputs(REPO,str(B.relative_to(REPO)),commit,verify_warm_archives=a.use_verified_warm_inputs) as sources:
         sources.materialize(candidate['files'],P)
+        warm_inputs=sources.verified_warm_inputs
     (P/'SOURCE_COMMIT.txt').write_text(commit+'\n');dump(P/'INPUT-MANIFEST.json',{'source_commit':commit,'candidate_sha256':a.candidate_sha,'files':candidate['files'],'release':a.release})
     files=sorted(x for x in P.rglob('*') if x.is_file());(P/'SOURCE-SHA256SUMS').write_text(''.join(sha(x.read_bytes())+'  '+str(x.relative_to(P))+'\n' for x in files))
     free=shutil.disk_usage(B).free
@@ -53,7 +59,7 @@ def main():
         population_check=subprocess.run(['/home/tahmid/Dev/.venv/bin/python','-B',str(P/'g2/validate_population_inputs.py'),'--root',str(P),'--plan',str(P/'g2/population01/PLAN.json'),'--group',candidate['population_group'],'--out',str(S/'IMMUTABLE-INPUT-METADATA-PREFLIGHT.json')],capture_output=True,text=True)
         (S/'IMMUTABLE-INPUT-METADATA-PREFLIGHT.stdout').write_text(population_check.stdout);(S/'IMMUTABLE-INPUT-METADATA-PREFLIGHT.stderr').write_text(population_check.stderr)
         population_check.check_returncode()
-    record={'attempt':a.attempt,'source_commit':commit,'remote_directory':remote,'manifest_sha256':sha((P/'INPUT-MANIFEST.json').read_bytes()),'source_checksums_sha256':sha((P/'SOURCE-SHA256SUMS').read_bytes()),'candidate_sha256':a.candidate_sha,'expected_regular_files':len(files)+1,'local_free_bytes':free,'required_local_free_bytes':required_free,'dependency_metadata_preflight_passed':True,'submitted':False,'staging_helper_sha256':sha(Path(__file__).read_bytes()),'operational_compute_only_reservation':operational};dump(S/'STAGING.json',record)
+    record={'attempt':a.attempt,'source_commit':commit,'remote_directory':remote,'manifest_sha256':sha((P/'INPUT-MANIFEST.json').read_bytes()),'source_checksums_sha256':sha((P/'SOURCE-SHA256SUMS').read_bytes()),'candidate_sha256':a.candidate_sha,'expected_regular_files':len(files)+1,'local_free_bytes':free,'required_local_free_bytes':required_free,'dependency_metadata_preflight_passed':True,'submitted':False,'staging_helper_sha256':sha(Path(__file__).read_bytes()),'operational_compute_only_reservation':operational,'source_inputs_helper_sha256':source_inputs_sha,'verified_warm_inputs':warm_inputs};dump(S/'STAGING.json',record)
     ssh=['ssh','-o','BatchMode=yes','-o','ConnectTimeout=15','-o','ServerAliveInterval=15','-o','ServerAliveCountMax=3','tufts-login']
     def remote_call(command):return subprocess.run(ssh+[command],capture_output=True,text=True)
     def queue(path):

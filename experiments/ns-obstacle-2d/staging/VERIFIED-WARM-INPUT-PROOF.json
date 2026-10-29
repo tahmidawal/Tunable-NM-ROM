@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-verified-warm-input-proof-v1",
+  "actual_frozen_input_sha256": "136d021162d03d16a51d417d37689e370513d14f7612d432cb4c5ce060abc7b4",
+  "actual_bytes": 54899594,
+  "actual_materialization_seconds": 0.14010071055963635,
+  "actual_cold_recovery_calls": 0,
+  "actual_receipt": [
+    {
+      "source": "artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/common/arrays.npz",
+      "sha256": "136d021162d03d16a51d417d37689e370513d14f7612d432cb4c5ce060abc7b4",
+      "bytes": 54899594,
+      "archive_manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+      "source_kind": "exact_verified_working_duplicate"
+    }
+  ],
+  "negative_and_default_checks": [
+    "default_cold",
+    "warm",
+    "corrupt",
+    "missing",
+    "wrong_manifest_rejected"
+  ],
+  "source_inputs_sha256": "bdde5ce4f17448235fa2e37d8d34c19f399d72b0294b0458127b196799e842cc",
+  "stage_helper_sha256": "c47928c550b5d57016db40fc08c80fcba6a4543189cc0e041f35378dfd2ce093",
+  "conservative_reservations_unchanged": true,
+  "numerical_package_unchanged": true
+}

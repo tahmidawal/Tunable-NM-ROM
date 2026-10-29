@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01/development_handoff_launch2d.py", line 49, in <module>
+    handoff2d.run(a.plan,a.release,Path(release['output_directory']))
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01/handoff2d.py", line 151, in run
+    target=training(plan,truth,q,out) if plan['split']=='training' else population(plan,truth,q,out,release)
+                                                                        ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/development-materialize01/handoff2d.py", line 112, in population
+    reserve=release['other_active_disk_reservation_bytes']
+            ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'other_active_disk_reservation_bytes'

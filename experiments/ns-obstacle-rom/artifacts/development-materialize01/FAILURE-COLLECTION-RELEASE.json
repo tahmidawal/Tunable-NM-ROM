@@ -1,0 +1,22 @@
+{
+  "schema": "ns-obstacle-failure-collection-release-v1",
+  "job_id": 6635169,
+  "archive_sha256": "40e99366e9dfd7d86783d363d80c97cf477b1a4878a471037cd08a15c3b9d5ca",
+  "archive_bytes": 225132247,
+  "logical_files": 877,
+  "logical_expansion_bytes": 469606867,
+  "collection_mode": "archive-only; stream verify all original hashes; extract only bounded failure receipts",
+  "maximum_receipt_metadata_bytes": 67108864,
+  "minimum_free_before_collection_bytes": 11523227054,
+  "observed_free_bytes": 11616747520,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "transport_and_chunks_or_git_budget_bytes": 450264494,
+  "requirements": [
+    "Fresh same free-space guard before transfer",
+    "Serialize local bulk collection/Git writes",
+    "Retire only redundant transport after complete chunk rehash, before Git writes",
+    "No full archive expansion or scientific copies",
+    "Preserve original remote directory until independent durable review; no deletion authorized"
+  ]
+}

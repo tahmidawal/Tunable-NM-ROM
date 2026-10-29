@@ -1,0 +1,16 @@
+{
+  "group": "re20",
+  "complete": false,
+  "admission": false,
+  "completed": [
+    {
+      "name": "solve-p4_g4_h1_solver_100x",
+      "seconds": 0.520009845495224,
+      "returncode": 1
+    }
+  ],
+  "failure": "CalledProcessError(1, ['/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python', '/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/fom.py', '--config', '/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/g2/population01/configs/re20/p4_g4_h1_solver_100x.json', '--out', 'results/states/p4_g4_h1_solver_100x'], None, None)",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/g2/population_run.py\", line 31, in main\n    run('solve-'+state['id'],[sys.executable,str(ROOT/'fom.py'),'--config',str(cfg),'--out',str(root/'states'/state['id'])])\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/g2/population_run.py\", line 25, in run\n    completed.check_returncode()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/subprocess.py\", line 510, in check_returncode\n    raise CalledProcessError(self.returncode, self.args, self.stdout,\n                             self.stderr)\nsubprocess.CalledProcessError: Command '['/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python', '/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/fom.py', '--config', '/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/g2/population01/configs/re20/p4_g4_h1_solver_100x.json', '--out', 'results/states/p4_g4_h1_solver_100x']' returned non-zero exit status 1.\n",
+  "total_seconds": 0.5390921691432595,
+  "partial_results_retained": true
+}

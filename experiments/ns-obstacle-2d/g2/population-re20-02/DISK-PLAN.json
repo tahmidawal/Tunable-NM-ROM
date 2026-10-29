@@ -1,0 +1,63 @@
+{
+  "status": "prospective_first_block_only_not_execution_release",
+  "candidate_sha256": "706c5ac35577dafa85c8088cab1e1439da14e0d2eaaef995509695ed5e9a179c",
+  "cases": [
+    {
+      "state": "p4_g4_h1_solver_100x",
+      "baseline_manifest_sha256": "1a57a54934eb650cde0599ef8dc81ed5421293be89e4c03d98b522a3c628ca22",
+      "prospective_logical_case_bytes": 46652416
+    },
+    {
+      "state": "p4_g4_h1_quadrature_plus4",
+      "baseline_manifest_sha256": "1a57a54934eb650cde0599ef8dc81ed5421293be89e4c03d98b522a3c628ca22",
+      "prospective_logical_case_bytes": 47581328
+    },
+    {
+      "state": "p4_g4_h2_solver_100x",
+      "baseline_manifest_sha256": "fd234202b6f2784514d3718652798f83c518b78dfb5ab5a7041a882c5cfce4a5",
+      "prospective_logical_case_bytes": 89949825
+    },
+    {
+      "state": "p4_g4_h2_quadrature_plus4",
+      "baseline_manifest_sha256": "fd234202b6f2784514d3718652798f83c518b78dfb5ab5a7041a882c5cfce4a5",
+      "prospective_logical_case_bytes": 92992939
+    },
+    {
+      "state": "p3_g3_h3_solver_100x",
+      "baseline_manifest_sha256": "e5348c6ea9993e7ce06df83b52dc84fecec5329a95666bfbb0d838d0fbdc0285",
+      "prospective_logical_case_bytes": 173376125
+    },
+    {
+      "state": "p3_g3_h3_quadrature_plus4",
+      "baseline_manifest_sha256": "e5348c6ea9993e7ce06df83b52dc84fecec5329a95666bfbb0d838d0fbdc0285",
+      "prospective_logical_case_bytes": 183621831
+    },
+    {
+      "state": "p3_g4_h3_solver_100x",
+      "baseline_manifest_sha256": "2f84a89dd4e787503f652003d399b019de84a6b20b32251daed88f75042422bf",
+      "prospective_logical_case_bytes": 173389842
+    },
+    {
+      "state": "p3_g4_h3_quadrature_plus4",
+      "baseline_manifest_sha256": "2f84a89dd4e787503f652003d399b019de84a6b20b32251daed88f75042422bf",
+      "prospective_logical_case_bytes": 183635508
+    }
+  ],
+  "case_policy": "Same immutable spaces and fixed Jacobian array schema: charge uncompressed NPZ bytes plus1percent and per-entry headers; variable JSON8times measured bytes plus1MiB each; new primary vectors and each geometry closure counted separately. No compression/dedup credit.",
+  "common_fields_bytes": 373323240,
+  "common_rule_bytes": 24888216,
+  "dependency_measurement_sha256": "27facfeb4b254ef4603bca819fd76f6805416d6847107c7def60700fd7527d2b",
+  "measured_dependency_tree_bytes": 340908644,
+  "input_bytes": 473009032,
+  "auxiliary_allowance_bytes": 268435456,
+  "expanded_logical_bound_bytes": 2471764402,
+  "archive_bound_bytes": 2513259262,
+  "complete_collection_bound_bytes": 11271177458,
+  "collection_components": "expanded plus local archive plus chunk working copies plus new Git objects plus all new case warm blobs plus256MiB transient producer allowance",
+  "declared_collection_reservation_bytes": 15032385536,
+  "fits_declared_reservation": true,
+  "untouched_local_reserve_bytes": 10737418240,
+  "effective_post_staging_submission_guard_bytes": 25769803776,
+  "free_bytes_at_generation": 27718303744,
+  "condition": "Measure actual remote archive/expanded closure before collection. If it exceeds this envelope or other reservations consume headroom, retain remote originals and stop collection for review. Never delete unique evidence to fit."
+}

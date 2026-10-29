@@ -1,0 +1,71 @@
+{
+  "status": "complete_all_regular_files_verified_failed_before_first_PDE_solve",
+  "job_id": 6623674,
+  "archive_sha256": "f7f86bc4da12b2bb4ddc77a65ba3f24436a653862b7e6841d0cd5b262cc87bbd",
+  "archive_bytes": 474990492,
+  "verified_regular_files": 927,
+  "chunks": [
+    {
+      "path": "collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "b1d93f9c6e7b1b2ab9012803449b219e11e5558c2ca24107d06ea7cdbd9a8a00"
+    },
+    {
+      "path": "collection.tar.gz.part-001",
+      "bytes": 50331648,
+      "sha256": "a1ff7ec2f8fff93062df53cf47521161fd90a68ae19b5284d82e62fdfc6e52fb"
+    },
+    {
+      "path": "collection.tar.gz.part-002",
+      "bytes": 50331648,
+      "sha256": "189b3c299e147d49007934d46b49a7a1c0457a59795e61985e37504b0d0f22a7"
+    },
+    {
+      "path": "collection.tar.gz.part-003",
+      "bytes": 50331648,
+      "sha256": "47d49a42a341a7f52afb026c9397d2a2ce7355428364f250b64d10ecb88ad615"
+    },
+    {
+      "path": "collection.tar.gz.part-004",
+      "bytes": 50331648,
+      "sha256": "2b53ac51dc5fdcfd02c6419aa951a2cc400e4541bdd8971bc33ba9ea4ebc9b4e"
+    },
+    {
+      "path": "collection.tar.gz.part-005",
+      "bytes": 50331648,
+      "sha256": "1a25f9e2573e72fd06ff8de6e0bdd010d92386e448957dafd14685f48f7a4e4a"
+    },
+    {
+      "path": "collection.tar.gz.part-006",
+      "bytes": 50331648,
+      "sha256": "b6de2f6f88679fc9f799b3bb9df98a3207203fa1e4483af6834aa660a2fc54c3"
+    },
+    {
+      "path": "collection.tar.gz.part-007",
+      "bytes": 50331648,
+      "sha256": "20c654f097a88c7db745b9553d32ebd8be313e4103019074f18637c5b23f02ce"
+    },
+    {
+      "path": "collection.tar.gz.part-008",
+      "bytes": 50331648,
+      "sha256": "704b3160f79d1c13a5f9cb37b01497d5f75009047f3a60af5d48a84c447cdbef"
+    },
+    {
+      "path": "collection.tar.gz.part-009",
+      "bytes": 22005660,
+      "sha256": "c35619d9dc785d247a3789e723a9229215c50337247b47c7028d9c8f302da401"
+    }
+  ],
+  "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-population-re20-01-collection.tar.gz",
+  "full_local_extraction": null,
+  "canonical_expanded_artifacts": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re20-01",
+  "scientific_extraction_moved_without_copy": true,
+  "residual_runtime_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/runs/g2-population-re20-01",
+  "recovery": "Concatenate ordered chunks, verify archive SHA, extract, then enter job directory and sha256sum -c COLLECTION-SHA256SUMS. Full source, dependencies, inputs and scientific arrays retained.",
+  "reference_data_admitted": false,
+  "remote_cleanup": "pending_durable_mirror",
+  "execution_status": "FAILED",
+  "elapsed_seconds": 32,
+  "completed_PDE_states": 0,
+  "failure": "Required immutable mesh reload_checks.json missing from first staged input closure"
+}

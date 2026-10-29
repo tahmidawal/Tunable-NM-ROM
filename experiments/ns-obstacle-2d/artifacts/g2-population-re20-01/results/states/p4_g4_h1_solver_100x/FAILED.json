@@ -1,0 +1,8 @@
+{
+  "error": "FileNotFoundError(2, 'No such file or directory')",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/fom.py\", line 630, in main\n    result=run_case(cfg,target)\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/fom.py\", line 78, in run_case\n    mesh,mesh_origin=rex.make_or_reuse_mesh(cfg,out,geo,ng)\n                     ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/reference_export.py\", line 110, in make_or_reuse_mesh\n    if sha_file(reload_path)!=identity.get('reload_checks_sha256'):raise ValueError('immutable source reload-evidence hash mismatch')\n       ~~~~~~~~^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/reference_export.py\", line 43, in sha_file\n    with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()\n         ~~~~~~~~~~~~~~~^^^^^^\n  File \"/cluster/tufts/apps/spack/9/x86_64/apps/linux-broadwell/python-3.13.2-7ww5fk2fsx6reaigszsyxuwtuckjz7j5/lib/python3.13/pathlib/_local.py\", line 537, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re20-01/shared/meshes/p4_g4_h1/reload_checks.json'\n",
+  "source_sha256": "3267a70a91c3e9620e2545af78edb20ce7f55566020d3b687cb65a25bbcfb121",
+  "peak_rss_bytes": 125829120,
+  "job_id": "6623674",
+  "scalar_return_contract": []
+}

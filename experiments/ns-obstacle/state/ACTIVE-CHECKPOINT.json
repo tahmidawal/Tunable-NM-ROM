@@ -197,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": false
   },
-  "next_action": "Build/review actual single bank-fit01 stage candidate over accepted immutable prepared inputs;2100s allocation,1800s/3000-step optimizer unchanged.",
+  "next_action": "ROM owner single-submit bank-fit01 under fresh guards; monitor actual fit and preserve checkpoints. Prepare separate120s development materialization proposal debited from3600s development phase.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -274,5 +274,13 @@
     "verified_bytes": 5501770011,
     "manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
     "training_executed": false
+  },
+  "bank_fit_release": {
+    "candidate_sha256": "04f32d7e764ee2b98005a204a8338982f5b0a8dedbc86c64fad322df1f2f8ef2",
+    "release_sha256": "9e821d59f825a5591225a773e7bea9c6778edd2582eee9e8f4f376592fe24a49",
+    "allocation_seconds": 2100,
+    "optimizer_seconds": 1800,
+    "steps": 3000,
+    "submitted": false
   }
 }

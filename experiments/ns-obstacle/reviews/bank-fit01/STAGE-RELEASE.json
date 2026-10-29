@@ -1,0 +1,48 @@
+{
+  "schema": "ns-obstacle-rom-stage-release-v1",
+  "authorized_stage": "train",
+  "candidate_sha256": "04f32d7e764ee2b98005a204a8338982f5b0a8dedbc86c64fad322df1f2f8ef2",
+  "source_sha256": "c06f0465730dd71b2ba34d227dce2667059cc79355e70a1a8b29780bc5ad876a",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "single_execution": true,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/bank-fit01",
+  "launcher_sha256": "5f69f1d2472a540204dd7596bd97e046a16d546404bcad4a3aa7ab1af0a704ae",
+  "runtime_inventory_sha256": "bb2feb7111488223243ccbfce45dcffc435d08e753d664a6450b869a63762fcf",
+  "allocation_seconds": 2100,
+  "outer_timeout_seconds": 2085,
+  "outer_kill_grace_seconds": 10,
+  "optimizer_time_cap_seconds": 1800,
+  "optimizer_step_cap": 3000,
+  "seed": 27102027,
+  "source_commit": "b95841034a2435c43e59a17210a8e4320dc703da",
+  "mirror_commit": "a358caa633ce380d7652b76afee905cee87829ea",
+  "resource_plan_sha256": "20be04d2efc4b55d90f7432c28bdbc3e9bb08d24e7988aa582bc6e64b2de24b9",
+  "independent_packet_review_sha256": "7c85ac7a82739875447ccc5440f5f2324690f23a52a482897bbdf4b21508cb35",
+  "consumer_release_sha256": "cb5e26c08a59a5f7ae81770e3e379b0cab0be3931964cdba4424fffe806d09f2",
+  "additional_remote_reservation_bytes": 2147483648,
+  "global_remote_limit_bytes": 53687091200,
+  "local_floor_bytes": 10737418240,
+  "local_other_reserved_bytes": 268435456,
+  "required_submission_guards": [
+    "Fresh account queue before and after one submission; maximum two campaign jobs",
+    "Fresh all-three-namespace measurement plus complete new2GiB envelope below50GiB",
+    "Fresh local10GiB+256MiB floor; no blanket result collection authorization",
+    "Require exact source/input/runtime/consumer hashes and absent existing STAGE-CLAIM",
+    "Record job ID, source and exact release; preserve all failure/checkpoint evidence; no automatic retry"
+  ],
+  "resume_authorized": false,
+  "validation_access_authorized": false,
+  "development_or_calibration_execution_authorized": false
+}

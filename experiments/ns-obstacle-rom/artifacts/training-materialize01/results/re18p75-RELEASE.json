@@ -1,0 +1,27 @@
+{
+  "source_sha256": "af327fec5243710ad80f17879da6a569ec9a2c666a3c25ca25d746f6d3dded58",
+  "split": "training",
+  "single_execution": true,
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "original_export_sha256": "8f2299c2a74717d34ae1414f909b44ce2772f2f098342c6d9b7270b1836a4127",
+  "Re": 18.75,
+  "source_storage_mode": "coefficient_primary",
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/training-materialize01",
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/training-materialize01/results/re18p75",
+  "schema": "ns-obstacle-fd1-primary-materialization-release-v1",
+  "authorized_stage": "training_primary_materialization",
+  "parent_batch_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da"
+}

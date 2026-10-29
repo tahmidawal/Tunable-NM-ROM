@@ -1,0 +1,265 @@
+{
+  "schema": "ns-obstacle-fd1-primary-materialization-v1",
+  "physical_admission": false,
+  "status": "exact_content_replay_passed_pending_independent_admission",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "source_sha256": "af327fec5243710ad80f17879da6a569ec9a2c666a3c25ca25d746f6d3dded58",
+  "original_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/training-materialize01/original/re25",
+  "original_export_sha256": "7528c5fa28f488b907c1bd851485b2a77e100ac4d023bec4492c22d3446d6160",
+  "original_config_sha256": "6e0e92363be5cad1fefb2e61da96f8079d18669e33a6bdadcbb1519afae4527b",
+  "source_storage_mode": "coefficient_primary",
+  "original_derived_array_descriptors": {
+    "points": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "5dd52d05ffb8911cdc0429971500b8fa61d57f61c471f05e0ef3303c43899e03"
+    },
+    "weights": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "d6d56c033882a78aeb2ff2d64e545e85ee699d4ade1ed8fcef6b0efea36cbb78"
+    },
+    "velocity": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "71a3f238af21cd9fbae8c68cba6257d77d3b84b62ec57270c5daa1fe7e68634f"
+    },
+    "velocity_gradient": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "3b27c00d25cad51b1e164520d57028b4133a9918497b0791638f8d00d22c24f6"
+    },
+    "pressure": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "7e5d0da3d547fef68b10f71444a903672194e1175da248dd18df56c899aa4b81"
+    },
+    "stokes_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "c5c5fbb60fc792d1595afc5144f9c8efaad7a6cc06fa510ccace791c50303fa4"
+    },
+    "solution_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "5fae0622797dc6106bd55adca07223897d90f5547c27b53eba8975abc79a12bb"
+    },
+    "jacobians": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "5123872b1bfb4fcd107eab726d40e7ecb1d402e22c5cbb481bbec47390372d69"
+    },
+    "signed_obstacle_distance": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "75db20920de436bfdf08c2b2505c3eff499cf6ce3fc95faa54864e74ec3e1fc7"
+    },
+    "prescribed_FE_trace_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        340996
+      ],
+      "content_sha256": "741d0822bc4a68e8e5d3387660cf592cb7090e4d953b4c2a895fdd5198e8eb58"
+    }
+  },
+  "actual_derived_array_descriptors": {
+    "points": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "5dd52d05ffb8911cdc0429971500b8fa61d57f61c471f05e0ef3303c43899e03"
+    },
+    "weights": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "d6d56c033882a78aeb2ff2d64e545e85ee699d4ade1ed8fcef6b0efea36cbb78"
+    },
+    "velocity": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2
+      ],
+      "content_sha256": "71a3f238af21cd9fbae8c68cba6257d77d3b84b62ec57270c5daa1fe7e68634f"
+    },
+    "velocity_gradient": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "3b27c00d25cad51b1e164520d57028b4133a9918497b0791638f8d00d22c24f6"
+    },
+    "pressure": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "7e5d0da3d547fef68b10f71444a903672194e1175da248dd18df56c899aa4b81"
+    },
+    "stokes_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "c5c5fbb60fc792d1595afc5144f9c8efaad7a6cc06fa510ccace791c50303fa4"
+    },
+    "solution_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        437140
+      ],
+      "content_sha256": "5fae0622797dc6106bd55adca07223897d90f5547c27b53eba8975abc79a12bb"
+    },
+    "jacobians": {
+      "dtype": "<f8",
+      "shape": [
+        1036497,
+        2,
+        2
+      ],
+      "content_sha256": "5123872b1bfb4fcd107eab726d40e7ecb1d402e22c5cbb481bbec47390372d69"
+    },
+    "signed_obstacle_distance": {
+      "dtype": "<f8",
+      "shape": [
+        1036497
+      ],
+      "content_sha256": "75db20920de436bfdf08c2b2505c3eff499cf6ce3fc95faa54864e74ec3e1fc7"
+    },
+    "prescribed_FE_trace_coefficients": {
+      "dtype": "<f8",
+      "shape": [
+        340996
+      ],
+      "content_sha256": "741d0822bc4a68e8e5d3387660cf592cb7090e4d953b4c2a895fdd5198e8eb58"
+    }
+  },
+  "new_full_rule_archive_sha256": "53a2a8fe753eef1ca737b560df2f13fc576edea8016d2dcf0df0ae327c468563",
+  "historical_ZIP_identity_claimed": false,
+  "original_files_mutated": false,
+  "reconstruction": {
+    "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+    "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+    "no_PDE_solve": true,
+    "fresh_native_state_from_primary": true,
+    "portable_closure_only": true,
+    "runtime_integrity_verified": true,
+    "audit_inventory_retained_but_not_reaudited_here": true,
+    "rules": {
+      "volume": {
+        "mapping": {
+          "all_points_preserved": true,
+          "point_adjustments": 0,
+          "discarded_points": 0,
+          "point_count": 1036497,
+          "max_reconstruction_error": 0.0,
+          "physical_tolerance": 1.0000000000000001e-11,
+          "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+          "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092"
+        },
+        "offline_seconds": 0.7578812018036842,
+        "evaluation": {
+          "evaluation_seconds": 0.20509782806038857,
+          "point_count": 1036497,
+          "all_points_evaluated": true,
+          "field_content_sha256": {
+            "velocity": "71a3f238af21cd9fbae8c68cba6257d77d3b84b62ec57270c5daa1fe7e68634f",
+            "pressure": "7e5d0da3d547fef68b10f71444a903672194e1175da248dd18df56c899aa4b81",
+            "velocity_gradient": "3b27c00d25cad51b1e164520d57028b4133a9918497b0791638f8d00d22c24f6"
+          }
+        }
+      },
+      "boundary": {
+        "mapping": {
+          "all_points_preserved": true,
+          "point_adjustments": 0,
+          "discarded_points": 0,
+          "point_count": 4459,
+          "max_reconstruction_error": 0.0,
+          "physical_tolerance": 1.0000000000000001e-11,
+          "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+          "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092"
+        },
+        "offline_seconds": 0.01880622375756502,
+        "evaluation": {
+          "evaluation_seconds": 0.0013691922649741173,
+          "point_count": 4459,
+          "all_points_evaluated": true,
+          "field_content_sha256": {
+            "velocity": "f7acc78fbee71d50128ee808a3948ea40ce78af58bbb112369d4037edb91c443",
+            "pressure": "e356b597130e5bfe2f44111bc86257ec2e69ab7cda5694a1cb42b4c9d2cc1003",
+            "velocity_gradient": "7e04870a2fd6ccc1291abe1b97159c03d123892217c411f4611000e9973fd49d"
+          }
+        }
+      }
+    }
+  },
+  "Re": 25,
+  "role_only_configuration_changes": {
+    "release": {
+      "before": "G2_fixed_finite_channel_control_candidate",
+      "after": "G2_fixed_finite_channel_training_export"
+    },
+    "split": {
+      "before": "train",
+      "after": "training"
+    }
+  },
+  "primary_manifest_sha256": "e03deb83f8755b00201b5b68df2bebad4048a33cd7d1ced300892f3ca0f69083",
+  "primary_coefficients_sha256": "344e8e4e920e46af7b1da62342ae32affb0fd89f090c2bcc25e853c0912d5136",
+  "immutable_geometry_rules": {
+    "volume": {
+      "manifest_path": "geometry-cache/volume/cache.json",
+      "manifest_sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede"
+    },
+    "boundary": {
+      "manifest_path": "geometry-cache/boundary/cache.json",
+      "manifest_sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2"
+    }
+  },
+  "derived_config_sha256": "0e8d9a4b48218d7552385078f9ef56fce03cfc413e06187d76c2fed6a7b80e6b",
+  "original_config_preserved": true
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "ns-obstacle-materialization-collection-phases-v1",
+  "job_id": 6632930,
+  "archive_sha256": "490ade93edb5c65b3fd7f3000987bec7588fc4e693fd049a5f7e9166e994e30f",
+  "archive_bytes": 1330363646,
+  "expanded_regular_bytes": 2067710253,
+  "free_bytes": 16755462144,
+  "required_free_bytes": 15801400105,
+  "reserve_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "metadata_overhead_bytes": 67108864,
+  "phases": [
+    "transfer full immutable archive",
+    "verify archive SHA and fully expand once",
+    "verify every original inventory entry",
+    "split exact archive into 48MiB chunks and verify ordered SHA",
+    "retire redundant transport before Git add",
+    "track chunks and small metadata only; warm arrays explicitly archive-backed"
+  ],
+  "bulk_warm_outputs_added_to_git": false,
+  "remote_original_retained_until_durable_audit": true,
+  "time_unix": 1793268596.2183368
+}

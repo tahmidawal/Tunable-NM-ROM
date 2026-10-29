@@ -1,0 +1,194 @@
+{
+  "passed": true,
+  "policy": "saved_curved_binary_verified_fresh_process_no_recurve",
+  "threshold": 1e-10,
+  "checks": {
+    "solution_coefficients": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "stokes_coefficients": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_points": {
+      "numerator": 0.0,
+      "denominator": 2.199989662818987,
+      "value": 0.0
+    },
+    "volume_weights": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_jacobians": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "volume_velocity": {
+      "numerator": 0.0,
+      "denominator": 0.39651782135895547,
+      "value": 0.0
+    },
+    "volume_velocity_gradient": {
+      "numerator": 0.0,
+      "denominator": 28.344788171046574,
+      "value": 0.0
+    },
+    "volume_pressure": {
+      "numerator": 0.0,
+      "denominator": 0.1465763458952967,
+      "value": 0.0
+    },
+    "boundary_points": {
+      "numerator": 0.0,
+      "denominator": 2.2,
+      "value": 0.0
+    },
+    "boundary_weights": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_normals": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_raw_normals": {
+      "numerator": 0.0,
+      "denominator": 1.0,
+      "value": 0.0
+    },
+    "boundary_velocity": {
+      "numerator": 5.551115123125783e-17,
+      "denominator": 0.3000000000000004,
+      "value": 1.8503717077085919e-16
+    },
+    "boundary_velocity_gradient": {
+      "numerator": 1.1597927479511938e-14,
+      "denominator": 28.361757274294337,
+      "value": 4.0892838082440374e-16
+    },
+    "boundary_pressure": {
+      "numerator": 0.0,
+      "denominator": 0.14658137470085,
+      "value": 0.0
+    }
+  },
+  "curve_orders": {
+    "configured": 4,
+    "original": 4,
+    "reloaded": 4
+  },
+  "source_files": {
+    "mesh.vol.bin": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+    "solution.sol": "f90ee83b27516e5e76660b98e63cf878259850e9b59d56904c3e5580f5fc7295",
+    "stokes.sol": "d6ab383a85a276872a271c8926863397896de2f4731d2683ecb93f06fc8ab7d8",
+    "full_rule.npz": "22a4ee1b8bcf7ca752b6d96df2cb1510f07937c57bf9efd42eae7652ff0069c2",
+    "boundary_rule.json": "ab69377eafebf2b542ec5db68d89d3897fb899833597f519cf34d72345265dfa",
+    "fe_layout.json": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249"
+  },
+  "mesh_filename": "mesh.vol.bin",
+  "mesh_format": "netgen-binary-archive-v6.2.2608",
+  "execution": {
+    "pid": 2438635,
+    "parent_pid": 2437982,
+    "producer_pid": 2437982,
+    "executable": "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+    "fresh_interpreter": true
+  },
+  "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+  "immutable_volume_rule_replay": {
+    "certificate": {
+      "all_points_preserved": true,
+      "point_adjustments": 0,
+      "discarded_points": 0,
+      "point_count": 1036497,
+      "max_reconstruction_error": 0.0,
+      "physical_tolerance": 1.0000000000000001e-11,
+      "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+      "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092"
+    },
+    "descriptor": {
+      "manifest_path": "shared/caches/p4_g4_h3/12/volume/cache.json",
+      "manifest_sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede"
+    },
+    "geometry_arrays": "reused only under exact mesh/layout/rule identity; actual state fields recomputed on fresh native mesh"
+  },
+  "normal_orientation": {
+    "passed": true,
+    "factors": {
+      "wall_bottom": 1,
+      "outlet": 1,
+      "wall_top": 1,
+      "inlet": 1,
+      "obstacle": -1
+    },
+    "certificate_sha256": "c7a153700570d9f9323825aef358b919bb61dc351b512006db2d71d6575b40c5"
+  },
+  "immutable_boundary_rule_replay": {
+    "certificate": {
+      "all_points_preserved": true,
+      "point_adjustments": 0,
+      "discarded_points": 0,
+      "point_count": 4459,
+      "max_reconstruction_error": 0.0,
+      "physical_tolerance": 1.0000000000000001e-11,
+      "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+      "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092"
+    },
+    "descriptor": {
+      "manifest_path": "shared/caches/p4_g4_h3/12/boundary/cache.json",
+      "manifest_sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2"
+    },
+    "normal_orientation_factors": {
+      "wall_bottom": 1,
+      "outlet": 1,
+      "wall_top": 1,
+      "inlet": 1,
+      "obstacle": -1
+    }
+  },
+  "analytic_normal_checks": {
+    "passed": true,
+    "unit_normal_max_error": 2.220446049250313e-16,
+    "side_max_errors": {
+      "inlet": 0.0,
+      "outlet": 0.0,
+      "wall_top": 0.0,
+      "wall_bottom": 0.0
+    },
+    "closed_components": {
+      "outer_union": {
+        "normal_integral": [
+          1.0213184464813452e-16,
+          2.0165076206057897e-15
+        ],
+        "numerator": 2.0190923450036787e-15,
+        "boundary_measure_denominator": 5.219999999999965,
+        "value": 3.867992998091364e-16
+      },
+      "obstacle": {
+        "normal_integral": [
+          1.3082085057163767e-16,
+          -5.757113535898029e-17
+        ],
+        "numerator": 1.4292841064955835e-16,
+        "boundary_measure_denominator": 0.31415926535906225,
+        "value": 4.549552612627901e-16
+      }
+    },
+    "tolerance": 1e-10,
+    "obstacle_orientation_max_dot_limit": -0.99,
+    "obstacle_normal_dot_radial_range": [
+      -1.0000000000000004,
+      -0.999999999999999
+    ]
+  },
+  "seconds": 3.9454838586971164,
+  "peak_rss_bytes": 5236928512
+}

@@ -1,16 +1,15 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    6638632
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Complete queued POD recovery and review actual r4/r8 controls",
-    "Release reviewed FOM repair only after fresh resource checks",
-    "Freeze eligible models before validation; complete reporting and final reviews; no valid bank speedup target exists"
+    "Audit and retain completed POD recovery results",
+    "Implement and review accuracy-first neural training successor; run finite checkpointed batches",
+    "Evaluate actual neural reduced solves and full physics metrics; pursue further reproducible improvements",
+    "Freeze selected recipe before validation; complete final comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 5.568333333333333,
-  "global_ceiling_gpu_hours": 12,
+  "completed_allocated_gpu_hours": 5.820833333333334,
+  "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
   "rom_retention_fix": {
@@ -25,7 +24,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T17:48:04.815176+00:00",
+  "last_checkpoint_utc": "2026-10-29T21:40:57.163249+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -405,9 +404,11 @@
     "job_id": 6638632,
     "allocation_seconds": 1200,
     "release_sha256": "8eeefceedb6c7ea9fd110eab8029517f76a8bbcedadeb167bf454adb136ca07d",
-    "state": "PENDING",
+    "state": "COMPLETED",
     "all_actual_inputs_preflight_passed": true,
-    "no_training_or_refit": true
+    "no_training_or_refit": true,
+    "elapsed_seconds": 909,
+    "independent_review_pending": true
   },
   "FOM_ordinary_repair_resource_review": {
     "proposal_sha256": "1ae85b902012f8cdeb5f22efeba38cd8ae8c426b32bb2b60392aa00aa64ec869",
@@ -445,5 +446,14 @@
       "mirror_commit": "8d8533492",
       "logical_duplicate_bytes_retired": 313797162
     }
+  },
+  "initial_pilot_ceiling_gpu_hours": 12,
+  "accuracy_improvement": {
+    "user_authorized": true,
+    "scope_amendment_commit": "19150f0ec",
+    "scope_amendment_mirror": "fb07bc35a",
+    "new_training_release_pending": true,
+    "no_accuracy_cutoff": true,
+    "validation_opened": false
   }
 }

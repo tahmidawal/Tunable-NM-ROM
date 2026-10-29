@@ -1,7 +1,7 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "bank_gate_failed_POD_development_partial",
-  "allocated_gpu_hour_ceiling": 12,
+  "status": "accuracy_first_successor_preparation_POD_recovery_audit",
+  "allocated_gpu_hour_ceiling": null,
   "allocations": [
     {
       "job_id": 6566869,
@@ -1517,14 +1517,18 @@
       "release_sha256": "8eeefceedb6c7ea9fd110eab8029517f76a8bbcedadeb167bf454adb136ca07d",
       "source_commit": "da018066e0039d2841456105a98abd3dcba35f8a",
       "source_manifest_sha256": "28d76892679cbd4e12a5a2083fc5f633245985d2b9f3015863a1d4cdefd0a927",
-      "state": "PENDING",
-      "state_last_observed": "PENDING",
+      "state": "COMPLETED",
+      "state_last_observed": "COMPLETED",
       "gpus": 1,
       "allocation_seconds_reserved": 1200,
       "single_submission": true,
       "validation_access_authorized": false,
       "training_authorized": false,
-      "quadrature_refit_authorized": false
+      "quadrature_refit_authorized": false,
+      "elapsed_seconds": 909,
+      "allocated_gpu_hours": 0.2525,
+      "exit_code": "0:0",
+      "independent_result_review_pending": true
     },
     {
       "job_id": 6640846,
@@ -1551,12 +1555,12 @@
       "execution_report": "Both actual neural ROM solves reachedstationarity but failed accuracy/physics; independentrawreview anddurability pending."
     }
   ],
-  "live_job_ids": [
-    6638632
-  ],
-  "completed_gpu_hours": 5.568333333333333,
-  "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
-  "total_allocated_gpu_hours_completed": 5.568333333333333,
-  "last_accounting_utc": "2026-10-29T15:09:52.617281+00:00",
-  "scope_amendment": "FD1-2026-10-28"
+  "live_job_ids": [],
+  "completed_gpu_hours": 5.820833333333334,
+  "note": "Original neural representation and actual diagnostic fail. POD recovery complete, new results pending independent audit. Training successor authorized; validation remains closed.",
+  "total_allocated_gpu_hours_completed": 5.820833333333334,
+  "last_accounting_utc": "2026-10-29T21:40:57.152386+00:00",
+  "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
+  "initial_pilot_allocated_gpu_hour_ceiling": 12,
+  "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."
 }

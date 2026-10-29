@@ -1604,7 +1604,7 @@
       "job_id": 6649439,
       "attempt": "neural-pod-guided-refine01",
       "budget_bucket": "ROM",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "RUNNING",
       "source_commit": "6c4ee9bcd267cd70983dc0dd06c2e140df65b424",
       "source_manifest_sha256": "154da733dd8b78eb9b5b6c1fb7813fb8bc94af7de78bc72cf906cef85386c331",
       "release_sha256": "d335357e3b076797ead159cd560749f7cd8d108b1b43052db775f60b656090cb",
@@ -1614,7 +1614,8 @@
       "same_training_objective": true,
       "new_adam_steps": 0,
       "warm_restart": true,
-      "validation_allowed": false
+      "validation_allowed": false,
+      "node": "pax020"
     }
   ],
   "live_job_ids": [

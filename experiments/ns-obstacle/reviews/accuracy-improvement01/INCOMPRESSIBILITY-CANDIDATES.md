@@ -8,11 +8,11 @@ Keep the existing vector-valued neural bank, rank, features, teacher, mode weigh
 
 $$
 \lambda\sum_r \omega_r
-\frac{\|\operatorname{tr}(G_r)\|_w^2}
+\frac{\|\operatorname{tr}(G_r-G_{\mathrm{teacher},r})\|_w^2}
 {\|G_{\mathrm{teacher},r}\|_w^2},
 $$
 
-where $G_r$ is the predicted mode gradient with respect to dimensionless coordinates. A single candidate $\lambda=1$ has comparable normalization; it is not established as optimal. Select checkpoints only by the frozen training objective, preserve the previous objective separately, and evaluate actual flow/force/conservation errors afterward. This derivative penalty is not a pointwise momentum-residual solver or a new collocation rule. The online weak least-squares formulation remains unchanged.
+where $G_r$ is the predicted mode gradient with respect to dimensionless coordinates. This version weights one component of the existing supervised gradient error and preserves the FE teacher target. Record predicted absolute divergence and teacher divergence separately. An absolute-divergence penalty was initially considered, but would impose a different target because the teacher modes need not be pointwise solenoidal; neither variant has been released. A single candidate $\lambda=1$ has comparable normalization; it is not established as optimal. Freeze the actual weight before a future run. Select checkpoints only by the frozen training objective, preserve the previous objective separately, and evaluate actual flow/force/conservation errors afterward. This derivative-fitting term is not a pointwise PDE-residual solver or a new collocation rule. The online weak least-squares formulation remains unchanged.
 
 ## Structural candidate: streamfunction bank
 

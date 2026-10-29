@@ -1,0 +1,251 @@
+{
+  "scope": "dev6 standalone D16 trajectory and guarded D64 replay",
+  "job_id": "6619863",
+  "commit": "3472549aaaf00f319b1cc2585e385ebdcd2d98a0",
+  "gpu": [
+    "NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB"
+  ],
+  "settings": {
+    "L": 1024,
+    "K_fine": 64,
+    "K_coarse": 16,
+    "R": 512,
+    "M": 256,
+    "rule": "gauss128",
+    "scheme": "BE",
+    "dt": 0.005,
+    "steps": 50,
+    "budget": 600,
+    "gtol": 0.001,
+    "tolf": 1e-09,
+    "repetitions": 7,
+    "order_seed": 20261028,
+    "coarse_preview_fields": 6,
+    "fine_fields": 6
+  },
+  "source_result_sha256": "7bd0e996199866c071a051c8f87afa2a4310647aa35fddc3db858ef855393a7a",
+  "model_manifest_sha256": "e6be23e896289e1eee0ae8a14ec6104886114c60dbbdf2cdcea1780dbac2bacc",
+  "arms": {
+    "direct": {
+      "median_query_ms": 58.81189275532961,
+      "per_case_paired_median_ratios": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "median_paired_ratio": 1.0,
+      "slower_pairs": 0,
+      "pairs": 42,
+      "production_stationarity": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "fine_corrections": [
+        80,
+        80,
+        94,
+        85,
+        60,
+        73
+      ],
+      "fine_physics_J": 772,
+      "fine_ic_iterations": [
+        102,
+        30,
+        7,
+        7,
+        7,
+        10
+      ],
+      "predictor_residual_calls": 900,
+      "initial_fit_J_count": "not exposed by unchanged initializer; both initial-fit costs included in timing"
+    },
+    "replay": {
+      "median_query_ms": 108.57308935374022,
+      "per_case_paired_median_ratios": [
+        1.820579059758797,
+        1.8815141443293932,
+        1.813988002296774,
+        1.8496945285492499,
+        1.8838318421737905,
+        1.9015789442903357
+      ],
+      "median_paired_ratio": 1.8656043364393216,
+      "slower_pairs": 42,
+      "pairs": 42,
+      "production_stationarity": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "fine_corrections": [
+        95,
+        98,
+        99,
+        94,
+        62,
+        83
+      ],
+      "fine_physics_J": 831,
+      "fine_ic_iterations": [
+        102,
+        30,
+        7,
+        7,
+        7,
+        10
+      ],
+      "predictor_residual_calls": 900,
+      "initial_fit_J_count": "not exposed by unchanged initializer; both initial-fit costs included in timing",
+      "coarse_corrections": [
+        88,
+        72,
+        80,
+        72,
+        57,
+        67
+      ],
+      "coarse_physics_J": 736,
+      "coarse_ic_iterations": [
+        68,
+        18,
+        12,
+        6,
+        6,
+        12
+      ],
+      "guard_residual_calls": 600,
+      "coarse_predictor_residual_calls": 900,
+      "accepted_candidates": 22,
+      "coarse_valid_steps": [
+        50,
+        50,
+        50,
+        50,
+        50,
+        50
+      ],
+      "unavailable_guesses": 0
+    }
+  },
+  "checks": {
+    "upward_16_64": {
+      "coeff_max_abs": 0.0,
+      "field_and_derivative_identity": true
+    },
+    "upward_32_64": {
+      "coeff_max_abs": 7.105427357601002e-15,
+      "field_and_derivative_identity": true
+    },
+    "expansion": {
+      "min_new_column_norm": 0.6710574784395081,
+      "max_new_column_norm": 2.104909754128796
+    },
+    "fine_jacobian": {
+      "columns": 64,
+      "relative_gap": 1.0231204219657914e-15
+    },
+    "coarse_jacobian": {
+      "columns": 16,
+      "relative_gap": 9.87696866145134e-16
+    },
+    "forced_failure_controls_completed": true
+  },
+  "parity": [
+    {
+      "case": 0,
+      "check": "disabled",
+      "state_max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "case": 0,
+      "check": "forced_coarse_failure",
+      "step": 0,
+      "passed": true
+    },
+    {
+      "case": 0,
+      "check": "forced_coarse_failure",
+      "step": 19,
+      "passed": true
+    },
+    {
+      "case": 1,
+      "check": "disabled",
+      "state_max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "case": 2,
+      "check": "disabled",
+      "state_max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "case": 3,
+      "check": "disabled",
+      "state_max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "case": 4,
+      "check": "disabled",
+      "state_max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "case": 5,
+      "check": "disabled",
+      "state_max_abs": 0.0,
+      "passed": true
+    }
+  ],
+  "setup": {
+    "seconds": 22.46119608078152,
+    "memory": {
+      "in_use": 4708181248,
+      "peak": 17278585600,
+      "limit": 105077800960
+    },
+    "trust": {
+      "16": 0.07062453128571239,
+      "32": 0.07072740559991578,
+      "64": 0.07089815506979937
+    }
+  },
+  "compile_warm_seconds": {
+    "direct_recorded": 6.617710137739778,
+    "direct_timed": 2.9862278513610363,
+    "replay_recorded": 6.964584108442068,
+    "replay_timed": 5.183957040309906
+  },
+  "elapsed_program_seconds": 167.53501544799656,
+  "strong_accuracy_checks": "not run in phase1; cost pass requires separately reviewed tight/tighter and Gauss160/192 qualification",
+  "gate": {
+    "per_case_paired_median_ratios": [
+      1.820579059758797,
+      1.8815141443293932,
+      1.813988002296774,
+      1.8496945285492499,
+      1.8838318421737905,
+      1.9015789442903357
+    ],
+    "median_ratio": 1.8656043364393216,
+    "maximum_case_ratio": 1.9015789442903357,
+    "all_numerically_valid": true,
+    "all_timing_identities": true,
+    "passed": false
+  },
+  "continue_accuracy": false
+}

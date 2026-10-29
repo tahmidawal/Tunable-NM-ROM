@@ -1,0 +1,125 @@
+{
+  "disposition": "ACCEPT cost failure and stop",
+  "source_result_sha256": "7bd0e996199866c071a051c8f87afa2a4310647aa35fddc3db858ef855393a7a",
+  "manifests": {
+    "MANIFEST.sha256": {
+      "entries": 32,
+      "sha256": "6f3feefbef0a52b4ee7981c4c9a7da2a74a0d7ef3c2902954cf58a238dab2c5d"
+    },
+    "OUTPUTS.sha256": {
+      "entries": 47,
+      "sha256": "a9fe6a32c51d8047cf497b1823f32ee30e76b6ddee7366852802347e75414f63"
+    }
+  },
+  "job_id": "6619863",
+  "allocated_gpu_seconds": 179,
+  "gpu": [
+    "NVIDIA H200, GPU-fd4f0a46-c358-45d3-3aa1-bffac2aeb85e, 143771 MiB"
+  ],
+  "paired_timing_cases": [
+    {
+      "case": 0,
+      "direct_median_ms": 75.62914676964283,
+      "replay_median_ms": 137.58679665625095,
+      "paired_median_ratio": 1.820579059758797,
+      "paired_ratio_min": 1.7776067650844178,
+      "paired_ratio_max": 1.82865575818628,
+      "slower_pairs": 7,
+      "pairs": 7,
+      "accepted_candidates": 5
+    },
+    {
+      "case": 1,
+      "direct_median_ms": 60.08703634142876,
+      "replay_median_ms": 113.4844645857811,
+      "paired_median_ratio": 1.8815141443293932,
+      "paired_ratio_min": 1.77713786513113,
+      "paired_ratio_max": 1.8905054903070944,
+      "slower_pairs": 7,
+      "pairs": 7,
+      "accepted_candidates": 4
+    },
+    {
+      "case": 2,
+      "direct_median_ms": 61.0547186806798,
+      "replay_median_ms": 111.28210928291082,
+      "paired_median_ratio": 1.813988002296774,
+      "paired_ratio_min": 1.7915519623446476,
+      "paired_ratio_max": 1.8568269632142815,
+      "slower_pairs": 7,
+      "pairs": 7,
+      "accepted_candidates": 2
+    },
+    {
+      "case": 3,
+      "direct_median_ms": 57.53674916923046,
+      "replay_median_ms": 105.8640694245696,
+      "paired_median_ratio": 1.8496945285492499,
+      "paired_ratio_min": 1.8399383168693801,
+      "paired_ratio_max": 1.8609568965637504,
+      "slower_pairs": 7,
+      "pairs": 7,
+      "accepted_candidates": 3
+    },
+    {
+      "case": 4,
+      "direct_median_ms": 48.41488692909479,
+      "replay_median_ms": 91.19320847094059,
+      "paired_median_ratio": 1.8838318421737905,
+      "paired_ratio_min": 1.8711088166791383,
+      "paired_ratio_max": 1.9387445800696443,
+      "slower_pairs": 7,
+      "pairs": 7,
+      "accepted_candidates": 2
+    },
+    {
+      "case": 5,
+      "direct_median_ms": 53.79901826381683,
+      "replay_median_ms": 102.08285506814718,
+      "paired_median_ratio": 1.9015789442903357,
+      "paired_ratio_min": 1.8825775224545447,
+      "paired_ratio_max": 1.9253790382185045,
+      "slower_pairs": 7,
+      "pairs": 7,
+      "accepted_candidates": 6
+    }
+  ],
+  "totals": {
+    "direct": {
+      "fine_corrections": 472,
+      "fine_physics_jacobians": 772,
+      "fine_ic_iterations": 163
+    },
+    "replay": {
+      "fine_corrections": 531,
+      "fine_physics_jacobians": 831,
+      "fine_ic_iterations": 163,
+      "coarse_corrections": 436,
+      "coarse_physics_jacobians": 736,
+      "coarse_ic_iterations": 122,
+      "candidate_offers": 300,
+      "accepted_candidates": 22,
+      "rejected_candidates": 278
+    }
+  },
+  "all_fresh_certificates": 900,
+  "max_fresh_gamma": 0.0009892552527533045,
+  "forced_failure_controls": [
+    {
+      "case": 0,
+      "failed_step": 0,
+      "accepted_coarse_steps": 0,
+      "later_guesses_disabled": true
+    },
+    {
+      "case": 0,
+      "failed_step": 19,
+      "accepted_coarse_steps": 19,
+      "later_guesses_disabled": true
+    }
+  ],
+  "case_medians_above_1p10": 6,
+  "warnings": "none; stderr empty; complete log",
+  "limitations": "not run in phase1; cost pass requires separately reviewed tight/tighter and Gauss160/192 qualification",
+  "interpretation": "Complete coarse trajectory plus replay was slower. Valid production stationarity is not tight-baseline or physical-accuracy agreement."
+}

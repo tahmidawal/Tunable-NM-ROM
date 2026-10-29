@@ -1,6 +1,6 @@
 # Shared-decoder standalone trajectory and fine replay
 
-This is Test B of the approved shared-decoder protocol in `DESIGN.md`. It is an implementation with no numerical result yet. Root coordinates training, the combined budget and all submissions.
+This is Test B of the approved shared-decoder protocol in `DESIGN.md`. The completed development cost screen failed its predeclared cost gate. Generated results and the saved-array audit are in `checks/screen01-summary.md` and `checks/screen01-audit.json`; the complete run and exact inputs are retained under `runs/screen01`. Conditional accuracy work stopped at that gate. Root coordinates the combined budget and merge decision.
 
 `replay.py` first computes a complete standalone K16 trajectory. It then runs the unchanged fine initial fit and every K64 step in order. A padded K16 state is only a guarded initial guess; accepted fine states supply every fine residual history. Both initial fits and both sets of six output fields are charged inside the fused query. There is no K32 online stage.
 

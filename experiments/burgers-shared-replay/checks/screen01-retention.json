@@ -1,0 +1,669 @@
+{
+  "verified": true,
+  "local_evidence_commit": "fb37d15092ea54c99188983235b5dc690c4c030e",
+  "actual_remote_ref": "refs/heads/codeonly/exp/2026-10-28-burgers-shared-replay",
+  "actual_remote_commit": "4c9c80c1d393186b0222f00cf6cf4633e242c16c",
+  "manifest_counts": {
+    "MANIFEST.sha256": 32,
+    "LANE-MANIFEST.sha256": 29,
+    "OUTPUTS.sha256": 47
+  },
+  "files": [
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/ACCOUNTING.txt",
+      "bytes": 249,
+      "sha256": "066ffee69ecc8ff75ee5f91fea03d1b6ab993d51f43e22a1ffe610005cc423c5",
+      "local_blob": "c9aad4b94dad93c89065ff3c4926f7480fb1d190",
+      "remote_blob": "c9aad4b94dad93c89065ff3c4926f7480fb1d190"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/COMMIT.txt",
+      "bytes": 41,
+      "sha256": "9c4e9e630b7e1daf77eb6a2f1b2770f8fb996cb0f75f2c2ce1d2a6f6379ad948",
+      "local_blob": "04fbfdbd748fce2b25f9f2c80a62f2a01d0e216e",
+      "remote_blob": "04fbfdbd748fce2b25f9f2c80a62f2a01d0e216e"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/LANE-MANIFEST.sha256",
+      "bytes": 3053,
+      "sha256": "9ecf1bfcc4f88402842ec32c5c5e00d8b7d444974d3f3ca7bd30d2e724765f79",
+      "local_blob": "7b7215f2d0d2ee6b4d5de07d3a52dccc48751181",
+      "remote_blob": "7b7215f2d0d2ee6b4d5de07d3a52dccc48751181"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/MANIFEST.sha256",
+      "bytes": 3300,
+      "sha256": "6f3feefbef0a52b4ee7981c4c9a7da2a74a0d7ef3c2902954cf58a238dab2c5d",
+      "local_blob": "ef978fd730d0971215118b7d1dcc9f4101b1e202",
+      "remote_blob": "ef978fd730d0971215118b7d1dcc9f4101b1e202"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/OUTPUTS.sha256",
+      "bytes": 4978,
+      "sha256": "a9fe6a32c51d8047cf497b1823f32ee30e76b6ddee7366852802347e75414f63",
+      "local_blob": "e6969b034b205b23eb9e3efd161c8dd4e9282902",
+      "remote_blob": "e6969b034b205b23eb9e3efd161c8dd4e9282902"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/PROVENANCE.json",
+      "bytes": 5989,
+      "sha256": "808425f3dbf325bf2cb99609e8bcb4b15758f4981f24e4ad40a76e74cafbb980",
+      "local_blob": "23ad0d65659b6e541c2a301de4a318045131026b",
+      "remote_blob": "23ad0d65659b6e541c2a301de4a318045131026b"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/RESERVATION.json",
+      "bytes": 392,
+      "sha256": "1a5855b405f302d452bd957af3d92a525b7235a54991d4035dde5297de627454",
+      "local_blob": "79e18d7294c252c723adf344180831b9e4b8ea6c",
+      "remote_blob": "79e18d7294c252c723adf344180831b9e4b8ea6c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/SUBMISSION.txt",
+      "bytes": 8,
+      "sha256": "608c4e02b30d97d04fbd64c57a1d2961e87e2ac240f74f28c49d92896cc724fe",
+      "local_blob": "6078b72d4d00ca13509263b39d0761b692aaa8d9",
+      "remote_blob": "6078b72d4d00ca13509263b39d0761b692aaa8d9"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/burgers-shared-replay/DESIGN.md",
+      "bytes": 14441,
+      "sha256": "72937e7bffcecb3fa7e48304937fa024164607b13a14633b84474422a085a493",
+      "local_blob": "b13ea7bf579d4e3a0b21dbbe2a4e7b6623bd6e5d",
+      "remote_blob": "b13ea7bf579d4e3a0b21dbbe2a4e7b6623bd6e5d"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/burgers-shared-replay/README.md",
+      "bytes": 1742,
+      "sha256": "d29dbed5b2af5abf3e914f47d26c5c7f7db3298982c40677080be426c1d28dd5",
+      "local_blob": "9790fd3830d3a8c648b1eb2e5fd46c85db3cff68",
+      "remote_blob": "9790fd3830d3a8c648b1eb2e5fd46c85db3cff68"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/burgers-shared-replay/analyze.py",
+      "bytes": 7684,
+      "sha256": "7cd026cccafc258d7277e3942638363d5c6f18278bf9ed9d4ec97f36dfc33d0a",
+      "local_blob": "aa82b87c08e2f276cd6e6c726b7164041d018180",
+      "remote_blob": "aa82b87c08e2f276cd6e6c726b7164041d018180"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/burgers-shared-replay/pilot.py",
+      "bytes": 19335,
+      "sha256": "470ab0ba1a07a0e204d49ae11f9bfe610a51f5ad6583d3f8929baa24ab9b961f",
+      "local_blob": "abd3b4bd5c4244540429c8bd905902460098290a",
+      "remote_blob": "abd3b4bd5c4244540429c8bd905902460098290a"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/burgers-shared-replay/replay.py",
+      "bytes": 2933,
+      "sha256": "87df14546208c12660c0972f179f8d294a932118c179945e097a5b585e56af63",
+      "local_blob": "e033ee702d569b6fc408bd0ea05796c5d0650e08",
+      "remote_blob": "e033ee702d569b6fc408bd0ea05796c5d0650e08"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/burgers-shared-replay/replaycore.py",
+      "bytes": 14143,
+      "sha256": "e5cdefca2a32f91a2960a49c473a095a65e0396dc878867a1882d6a0a03a6f0d",
+      "local_blob": "eb18c9ce81c3f9f461d0c81e1a3b7f65ed5acb6c",
+      "remote_blob": "eb18c9ce81c3f9f461d0c81e1a3b7f65ed5acb6c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/harm.py",
+      "bytes": 7837,
+      "sha256": "008127c3b7cb100016b622d1c2f0088c818de7d61d622e41ab8a37093248d4a6",
+      "local_blob": "719ce27d3bf5a1c9e7a1a56a0241419ce4c8bd7c",
+      "remote_blob": "719ce27d3bf5a1c9e7a1a56a0241419ce4c8bd7c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/hcommon.py",
+      "bytes": 8324,
+      "sha256": "247bece856b67bd2bd56c4169a84ea9f839043dca608b16e953eba8dad1ec9d7",
+      "local_blob": "1e3bd01a117b3dba3d1323a4dfa5ec6f0b4ae2dd",
+      "remote_blob": "1e3bd01a117b3dba3d1323a4dfa5ec6f0b4ae2dd"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/hcore.py",
+      "bytes": 11768,
+      "sha256": "e64fe3f92fa0545bb1241dc260849af8737b614744042aa063733ad91546aac5",
+      "local_blob": "5dc57a0956e9de0d7cff4ca34832a256c2df61dd",
+      "remote_blob": "5dc57a0956e9de0d7cff4ca34832a256c2df61dd"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/p1common.py",
+      "bytes": 15019,
+      "sha256": "b5b7d2d88e45e59aac0bc0663a829a7ecbdec411d6b81bb7382f0f20e671e86d",
+      "local_blob": "3f27dc3d3710e404bd169d13fa001c066d27681f",
+      "remote_blob": "3f27dc3d3710e404bd169d13fa001c066d27681f"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/p1core.py",
+      "bytes": 18327,
+      "sha256": "eb4712f2e6db5573f7cae735041d892d98b55098bda9905e101ace6d1041ba0d",
+      "local_blob": "65c780ea154f60e80875575700eed0d95c60595a",
+      "remote_blob": "65c780ea154f60e80875575700eed0d95c60595a"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/inputs/rotation_R512.npz",
+      "bytes": 6296542,
+      "sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+      "local_blob": "f5d181085807726eb15d424f975de38b12d8e0fa",
+      "remote_blob": "f5d181085807726eb15d424f975de38b12d8e0fa"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/qcore.py",
+      "bytes": 19073,
+      "sha256": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b",
+      "local_blob": "73b4c3f59a7af2a5b3e50c1d45da9524cca522f3",
+      "remote_blob": "73b4c3f59a7af2a5b3e50c1d45da9524cca522f3"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/qstudy.py",
+      "bytes": 27180,
+      "sha256": "58ec24ea916c062b96d1cae1adb1420e5c87f5b3408d3073d9c6bb9b5f3d35fe",
+      "local_blob": "58894e9ecde1ee8270c714252c61b84a7a187dbd",
+      "remote_blob": "58894e9ecde1ee8270c714252c61b84a7a187dbd"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/vendor/arms.py",
+      "bytes": 15874,
+      "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+      "local_blob": "c4d363c7e4bf2608540563e16a66a77ab0e4d5d3",
+      "remote_blob": "c4d363c7e4bf2608540563e16a66a77ab0e4d5d3"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/vendor/bkfast.py",
+      "bytes": 9055,
+      "sha256": "ccb6887006a93365e84030bfe835a5e2b9d7f65f4312beef006cbeb1bef12c82",
+      "local_blob": "43b1143fe2e0e98bd923a735e46eed86000ced9c",
+      "remote_blob": "43b1143fe2e0e98bd923a735e46eed86000ced9c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/vendor/hari_quadrature.py",
+      "bytes": 5780,
+      "sha256": "c6403d05e25a4ea5e4f4cc8879e94ac23f582d81b018571cf1abdb8da5d99fb6",
+      "local_blob": "94de3653eb30c3550231ad2e833150fa218b2ce0",
+      "remote_blob": "94de3653eb30c3550231ad2e833150fa218b2ce0"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/vendor/hfast.py",
+      "bytes": 12953,
+      "sha256": "693b947c92ea4d65708eea4d1f6a17214901ce4712bc5e3dd8c4a91f3d339286",
+      "local_blob": "1ff83839197b175b9aad21053e4f0e00474fcaf5",
+      "remote_blob": "1ff83839197b175b9aad21053e4f0e00474fcaf5"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/jcp-heads/vendor/quad2d/vendor/hops.py",
+      "bytes": 9171,
+      "sha256": "99a331f8ea549ec307fdf3235d7f11b57c059305136f264c3f2f74ad3e505820",
+      "local_blob": "1ae6fd856216030bb59f7c4e05bb955e8ece3150",
+      "remote_blob": "1ae6fd856216030bb59f7c4e05bb955e8ece3150"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/mr-burgers2d/engines.py",
+      "bytes": 16058,
+      "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "local_blob": "0782da6744e3005358b84197d7bba4c1394c1aa8",
+      "remote_blob": "0782da6744e3005358b84197d7bba4c1394c1aa8"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/mr-burgers2d/iterative_paths.py",
+      "bytes": 4514,
+      "sha256": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+      "local_blob": "7036d461c5070483e035c4fed40d0f36c11d97d0",
+      "remote_blob": "7036d461c5070483e035c4fed40d0f36c11d97d0"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+      "bytes": 36402230,
+      "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+      "local_blob": "c9366862bbabe5cf89befb719a9d998266679a1a",
+      "remote_blob": "c9366862bbabe5cf89befb719a9d998266679a1a"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/experiments/separable-decoder/sep_common.py",
+      "bytes": 14780,
+      "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+      "local_blob": "f4be4d2c011b180dab047cf91f886a4ddf47b65d",
+      "remote_blob": "f4be4d2c011b180dab047cf91f886a4ddf47b65d"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/logs/6619863.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "local_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "remote_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/logs/6619863.out",
+      "bytes": 988,
+      "sha256": "250f28aa003f0c4312ceb17b03645334fd3c0d8b832b2692d011c06876673cab",
+      "local_blob": "d6d8e251c0a616657578d2f6c849364a99a0a478",
+      "remote_blob": "d6d8e251c0a616657578d2f6c849364a99a0a478"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/model/MODEL.json",
+      "bytes": 2910,
+      "sha256": "e6be23e896289e1eee0ae8a14ec6104886114c60dbbdf2cdcea1780dbac2bacc",
+      "local_blob": "a244287faedc9e98142ad97af62ef61c6c3155e8",
+      "remote_blob": "a244287faedc9e98142ad97af62ef61c6c3155e8"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/model/h16.npz",
+      "bytes": 5392026,
+      "sha256": "7f766458a747cf7aa3b33fd94aff230e6b4a71ebdb669d69a24d3d70a3c536fd",
+      "local_blob": "db90c9b4cb6a4b49fcee534ea0ea33ad73592bdd",
+      "remote_blob": "db90c9b4cb6a4b49fcee534ea0ea33ad73592bdd"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/model/h32.npz",
+      "bytes": 6571674,
+      "sha256": "450f927e14dd20578968fc379d3849b0aa573dab2aadcc8d12a06cd46b14731c",
+      "local_blob": "5d2d6ccb022bd7992db1da3a34810779c4e15819",
+      "remote_blob": "5d2d6ccb022bd7992db1da3a34810779c4e15819"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/model/h64.npz",
+      "bytes": 8930970,
+      "sha256": "fb002873b36b58d9f238311dbe23bc281cecce4414d5866f6199fa8c48abe18f",
+      "local_blob": "bd14932ad32de186f2c295627ca25098e6824a03",
+      "remote_blob": "bd14932ad32de186f2c295627ca25098e6824a03"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/direct_case0.npz",
+      "bytes": 47369873,
+      "sha256": "34659b9c2a0d2e58de3a837ab77d1c16b5fde0d13ad174fd6b285c93b5a34681",
+      "local_blob": "0fed325b3f987bf28e275969d2b318f5b189afb3",
+      "remote_blob": "0fed325b3f987bf28e275969d2b318f5b189afb3"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/direct_case1.npz",
+      "bytes": 47533735,
+      "sha256": "8830dbd6c2e3988b71b979c597a0fad5bc850a7021e210ad434e3907b42cc00f",
+      "local_blob": "7b93d1d609750722a4d104ce27bfeddcf79dbcb0",
+      "remote_blob": "7b93d1d609750722a4d104ce27bfeddcf79dbcb0"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/direct_case2.npz",
+      "bytes": 47933487,
+      "sha256": "689a1201a17ff0b0c9f4b475d609c73c6f170412d734992648af87bb5e198e71",
+      "local_blob": "6eec64aab366e334cf24d055d6e70a8864287e64",
+      "remote_blob": "6eec64aab366e334cf24d055d6e70a8864287e64"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/direct_case3.npz",
+      "bytes": 47801975,
+      "sha256": "8cad166ee4472b32e7052df22dfd3ca0543c9cbd753e94dad8d5828dce30bd49",
+      "local_blob": "ed657d2cf3ec359a2bb8c527508175746674a313",
+      "remote_blob": "ed657d2cf3ec359a2bb8c527508175746674a313"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/direct_case4.npz",
+      "bytes": 48100734,
+      "sha256": "0713fe98e9b558391340bb03ab7920f817ba6056d74f977791aa4a1aa6c4b3a3",
+      "local_blob": "2a53cfb68aa786e8579a340d7ed7f1d3d82e019d",
+      "remote_blob": "2a53cfb68aa786e8579a340d7ed7f1d3d82e019d"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/direct_case5.npz",
+      "bytes": 48048663,
+      "sha256": "8245ea0e8eaca00cf0a2aea6d45fd8ee982576a54e018e3f7269aadce36708d2",
+      "local_blob": "77068c20473c7b8b4390b16a5fcbaa27c6ad2b6b",
+      "remote_blob": "77068c20473c7b8b4390b16a5fcbaa27c6ad2b6b"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/forced_failure_case0_step0.npz",
+      "bytes": 47378484,
+      "sha256": "c9a2d3dac8a3ac35efb172637efcc887f8164cc4cd0b8533e87a842fb5eb13e6",
+      "local_blob": "ac7fe5b65ffdcf91d394187e0e442e71c3d63646",
+      "remote_blob": "ac7fe5b65ffdcf91d394187e0e442e71c3d63646"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/forced_failure_case0_step0_coarse_fields.npz",
+      "bytes": 7993526,
+      "sha256": "d3528f1f971714e2dd23e449af2ee547b518b2cdc4da4e8d7ce123d8c2c10fb5",
+      "local_blob": "65fc6022e76243e27928c83a48498f536957cbd8",
+      "remote_blob": "65fc6022e76243e27928c83a48498f536957cbd8"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/forced_failure_case0_step19.npz",
+      "bytes": 47381371,
+      "sha256": "10cce11dabf9d339e13873996d124978c5f79f76a13399f0319c450eb6ac1477",
+      "local_blob": "ba62102432c83aea57bcc61a07bbfa1d3c3c096e",
+      "remote_blob": "ba62102432c83aea57bcc61a07bbfa1d3c3c096e"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/forced_failure_case0_step19_coarse_fields.npz",
+      "bytes": 15876622,
+      "sha256": "030e3baeedba4de90fc57b9fced96a2fbfa49a66575767a728f547556ad20041",
+      "local_blob": "5dc283de83b3fafaa9ae3800d38498965bbb8353",
+      "remote_blob": "5dc283de83b3fafaa9ae3800d38498965bbb8353"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/guard_case0.npz",
+      "bytes": 26216,
+      "sha256": "646af1bce426b3c0fb5f95d6709346cfeed99534a2b2e0f45fe58c6b769223fe",
+      "local_blob": "fa654c50a79c6344eb7177434c6c128e69c03981",
+      "remote_blob": "fa654c50a79c6344eb7177434c6c128e69c03981"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/guard_case1.npz",
+      "bytes": 26220,
+      "sha256": "e23d76502714f49cb34fdccb49c432b6f14177a84266df29eae9696711206e29",
+      "local_blob": "c4a468c29342203a716cd2f3f6dd1e20ac5bd8ff",
+      "remote_blob": "c4a468c29342203a716cd2f3f6dd1e20ac5bd8ff"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/guard_case2.npz",
+      "bytes": 26224,
+      "sha256": "49e1e0c527b2a0c3256a1410a28e846ec32751c41ed497fa14be14b289b83f77",
+      "local_blob": "defbd0ea3a3c1297a46fd89f4a482a67979120f6",
+      "remote_blob": "defbd0ea3a3c1297a46fd89f4a482a67979120f6"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/guard_case3.npz",
+      "bytes": 26227,
+      "sha256": "22ed4d1f1e6410180500b80d0734b8f29d4f62b2386410a1bd87c2f67c278057",
+      "local_blob": "b140f0111ea83e90e710e4ce4f71c3cc0f3df61b",
+      "remote_blob": "b140f0111ea83e90e710e4ce4f71c3cc0f3df61b"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/guard_case4.npz",
+      "bytes": 26227,
+      "sha256": "a78c9da7065d836d6a0209154ad7d2a73367c52e17f984594543937cd8055736",
+      "local_blob": "c323a2ec90c198a05c48b7c7cec6b053e007c76c",
+      "remote_blob": "c323a2ec90c198a05c48b7c7cec6b053e007c76c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/guard_case5.npz",
+      "bytes": 26215,
+      "sha256": "f6f44e142dbf74df9d69932c3ebb51f698f12378e1115baf3ee7e2734cb3fe10",
+      "local_blob": "05ac996dd9bbe342c5979b0354fb9dbc07842467",
+      "remote_blob": "05ac996dd9bbe342c5979b0354fb9dbc07842467"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case0.npz",
+      "bytes": 47387683,
+      "sha256": "46c4294b9438f0dfe800e5899e5143d53e0394bed5cdf25e1a545c9021919e42",
+      "local_blob": "649a099acc226cbea2cefeeb2f21abfaa611e3b4",
+      "remote_blob": "649a099acc226cbea2cefeeb2f21abfaa611e3b4"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case0_coarse_fields.npz",
+      "bytes": 47351108,
+      "sha256": "c0a4d2ddb74bc85237ba972ba67937a7ecca009179037d768022f49d7dbf5c5b",
+      "local_blob": "0b824cf13274d84aeee39cbea548e2ef661904ed",
+      "remote_blob": "0b824cf13274d84aeee39cbea548e2ef661904ed"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case1.npz",
+      "bytes": 47550982,
+      "sha256": "d451169c41d41c7b0e52396e6e06821ed7c8ace80d483bd9aecc26391c22b3af",
+      "local_blob": "6602945cd9dc94187ece2b1e7787940bd597966b",
+      "remote_blob": "6602945cd9dc94187ece2b1e7787940bd597966b"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case1_coarse_fields.npz",
+      "bytes": 47525990,
+      "sha256": "ab79123edf18c7b79d8ede819ba701f9d661b2b08e24059659d3432c24e13bac",
+      "local_blob": "db2654476c9e0b2a37bd2e030697fe0310dd3353",
+      "remote_blob": "db2654476c9e0b2a37bd2e030697fe0310dd3353"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case2.npz",
+      "bytes": 47950753,
+      "sha256": "fcf11800f9083ba715deb40452d72943266d0f2447e2f1adae6fe8d78f5bbf69",
+      "local_blob": "01c4c7ddde3eec4820f0bdac64ec11d2ac547b76",
+      "remote_blob": "01c4c7ddde3eec4820f0bdac64ec11d2ac547b76"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case2_coarse_fields.npz",
+      "bytes": 47864911,
+      "sha256": "b56a69b1fc57bed0ca5c5901f1a9d9438a79b182013c623019b9572edd16d2a3",
+      "local_blob": "e402ca8e50b33a983c468b0ed11594cdcf218c2d",
+      "remote_blob": "e402ca8e50b33a983c468b0ed11594cdcf218c2d"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case3.npz",
+      "bytes": 47819971,
+      "sha256": "6bf5634eceb1405eed5c5601aeb17347a0038bcd3f6425a50d0af22a27ee9c6c",
+      "local_blob": "5ff10e97fa121c23bb396f07e7fac3bb0f942e50",
+      "remote_blob": "5ff10e97fa121c23bb396f07e7fac3bb0f942e50"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case3_coarse_fields.npz",
+      "bytes": 47778022,
+      "sha256": "73af5c8928433e8388ae32ae2ab1aea8765eb83e2e6c07d89c47a7a13e4c3e30",
+      "local_blob": "0c90481090db541d40a350c92cd6eb4cbc886d0c",
+      "remote_blob": "0c90481090db541d40a350c92cd6eb4cbc886d0c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case4.npz",
+      "bytes": 48117783,
+      "sha256": "4ebed5e1e9e2173ea778097a35d938d9d7982b51fdec26aa767b8492247ea30e",
+      "local_blob": "2694b0bb2cd4e0b8f44f818f766d6a6006417bab",
+      "remote_blob": "2694b0bb2cd4e0b8f44f818f766d6a6006417bab"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case4_coarse_fields.npz",
+      "bytes": 48014145,
+      "sha256": "a60636809d1e3850c5d806b0a0e03e3a728b49fd4ef381d9e6a1776136eec7ea",
+      "local_blob": "9b0bdfb5ebeb2e307595de83fa35dceb02fa8944",
+      "remote_blob": "9b0bdfb5ebeb2e307595de83fa35dceb02fa8944"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case5.npz",
+      "bytes": 48067134,
+      "sha256": "d3cae9dde5016cba099a9197763f202d510631037938efebdca12cef48147379",
+      "local_blob": "4b1792fc6109c18826f274c3556e4d5da2c77bad",
+      "remote_blob": "4b1792fc6109c18826f274c3556e4d5da2c77bad"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/replay_case5_coarse_fields.npz",
+      "bytes": 47983479,
+      "sha256": "50d2ce7ae1ae43866ff175629917a5adc1d9ce6f88ed6563fcbb311f575c949c",
+      "local_blob": "cd348133e892d8c8efacf8fb95b6faac9d9eed7b",
+      "remote_blob": "cd348133e892d8c8efacf8fb95b6faac9d9eed7b"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/result.json",
+      "bytes": 61408,
+      "sha256": "7bd0e996199866c071a051c8f87afa2a4310647aa35fddc3db858ef855393a7a",
+      "local_blob": "f478035573c102803a8634a5010b35f44c4e854f",
+      "remote_blob": "f478035573c102803a8634a5010b35f44c4e854f"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_direct_case0.npz",
+      "bytes": 47343204,
+      "sha256": "dd0a8896d1ce8952e68b4e682507f4dfe448018c022b87c4e796a9d90548b303",
+      "local_blob": "e9a9d9d59895f50eecb687ab393ba1f33df4833b",
+      "remote_blob": "e9a9d9d59895f50eecb687ab393ba1f33df4833b"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_direct_case1.npz",
+      "bytes": 47507070,
+      "sha256": "580147648a6c8272a98f3a6082807f06c17cacd2f2a7f8a3218af8735e1d0152",
+      "local_blob": "32baf6856fe9607a76e202117485d3001de15057",
+      "remote_blob": "32baf6856fe9607a76e202117485d3001de15057"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_direct_case2.npz",
+      "bytes": 47906827,
+      "sha256": "aef6c2765b9181a509c854dc71ec3d6a780b4527d771f133e9228cbf096276c8",
+      "local_blob": "2920d918c32b5147e26dd40a9064927a9c2b3c29",
+      "remote_blob": "2920d918c32b5147e26dd40a9064927a9c2b3c29"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_direct_case3.npz",
+      "bytes": 47775304,
+      "sha256": "4a7d7845d8ce027ce3ec08201bc0bf3135fbec4fc14731b821551e102c2db895",
+      "local_blob": "cd5fa5edffeb2714b0e93ae4d498fb1d384e51f7",
+      "remote_blob": "cd5fa5edffeb2714b0e93ae4d498fb1d384e51f7"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_direct_case4.npz",
+      "bytes": 48074053,
+      "sha256": "5c4deaa5510fcaf4225e3c88e79101fbf05eb4d20d4be184f4fffcc152cb1760",
+      "local_blob": "f9aa2da79cd8b622e88d66be50db8d300723c972",
+      "remote_blob": "f9aa2da79cd8b622e88d66be50db8d300723c972"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_direct_case5.npz",
+      "bytes": 48021994,
+      "sha256": "aa522ca88a84c12ec34a6bc95bf298e85df18e253a3f2cf8c0ebe60c0397e5c0",
+      "local_blob": "292046c34a4a5ee0947e747c374895fe7c0c843c",
+      "remote_blob": "292046c34a4a5ee0947e747c374895fe7c0c843c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case0.npz",
+      "bytes": 47359512,
+      "sha256": "6fa8f7191ef6c1dab57ac5d03dc84c669501ac94c288c0aeaae552a66cf9d29f",
+      "local_blob": "afc65ea2ba8ac2bbb5aec64faa9d8460449d1d0d",
+      "remote_blob": "afc65ea2ba8ac2bbb5aec64faa9d8460449d1d0d"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case0_coarse_fields.npz",
+      "bytes": 47351108,
+      "sha256": "c0a4d2ddb74bc85237ba972ba67937a7ecca009179037d768022f49d7dbf5c5b",
+      "local_blob": "0b824cf13274d84aeee39cbea548e2ef661904ed",
+      "remote_blob": "0b824cf13274d84aeee39cbea548e2ef661904ed"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case1.npz",
+      "bytes": 47522804,
+      "sha256": "b353bc3c3fba941d1a3da4ebfa4e70b1ce8fa76b690f7bfcffa6425f92c577eb",
+      "local_blob": "b002badff948563fe0e02409ae91ec5722defc18",
+      "remote_blob": "b002badff948563fe0e02409ae91ec5722defc18"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case1_coarse_fields.npz",
+      "bytes": 47525990,
+      "sha256": "ab79123edf18c7b79d8ede819ba701f9d661b2b08e24059659d3432c24e13bac",
+      "local_blob": "db2654476c9e0b2a37bd2e030697fe0310dd3353",
+      "remote_blob": "db2654476c9e0b2a37bd2e030697fe0310dd3353"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case2.npz",
+      "bytes": 47922591,
+      "sha256": "d0d578b9213fd8ba6ec721cbc3f673c6e277c1290e55aefbee9e7dff648ed57f",
+      "local_blob": "4a0ac34c223213596500748898318d7bd794b01f",
+      "remote_blob": "4a0ac34c223213596500748898318d7bd794b01f"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case2_coarse_fields.npz",
+      "bytes": 47864911,
+      "sha256": "b56a69b1fc57bed0ca5c5901f1a9d9438a79b182013c623019b9572edd16d2a3",
+      "local_blob": "e402ca8e50b33a983c468b0ed11594cdcf218c2d",
+      "remote_blob": "e402ca8e50b33a983c468b0ed11594cdcf218c2d"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case3.npz",
+      "bytes": 47791816,
+      "sha256": "36aa252375bf9bd6549b3fd81832d347277d42e8b6d363e3acd3595e591782b8",
+      "local_blob": "8c5a7a06f194f0ab0004a6f2da9fb26eb6f81fb7",
+      "remote_blob": "8c5a7a06f194f0ab0004a6f2da9fb26eb6f81fb7"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case3_coarse_fields.npz",
+      "bytes": 47778022,
+      "sha256": "73af5c8928433e8388ae32ae2ab1aea8765eb83e2e6c07d89c47a7a13e4c3e30",
+      "local_blob": "0c90481090db541d40a350c92cd6eb4cbc886d0c",
+      "remote_blob": "0c90481090db541d40a350c92cd6eb4cbc886d0c"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case4.npz",
+      "bytes": 48089613,
+      "sha256": "c961e39018349d2ff88c1c8aa0c8dd95fb0fc1741436cf578f1070f5bb31f848",
+      "local_blob": "305ed3eb8a66cc0185630851563a8485318d1b80",
+      "remote_blob": "305ed3eb8a66cc0185630851563a8485318d1b80"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case4_coarse_fields.npz",
+      "bytes": 48014145,
+      "sha256": "a60636809d1e3850c5d806b0a0e03e3a728b49fd4ef381d9e6a1776136eec7ea",
+      "local_blob": "9b0bdfb5ebeb2e307595de83fa35dceb02fa8944",
+      "remote_blob": "9b0bdfb5ebeb2e307595de83fa35dceb02fa8944"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case5.npz",
+      "bytes": 48038956,
+      "sha256": "e5c01b2f90036cefb00f57d592afb3498ed7b933247ff68dc71031b6b4f771c3",
+      "local_blob": "ad3f211932c5c1fb533e07563349b1d7d028194f",
+      "remote_blob": "ad3f211932c5c1fb533e07563349b1d7d028194f"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/output/dev6/timed_identity_replay_case5_coarse_fields.npz",
+      "bytes": 47983479,
+      "sha256": "50d2ce7ae1ae43866ff175629917a5adc1d9ce6f88ed6563fcbb311f575c949c",
+      "local_blob": "cd348133e892d8c8efacf8fb95b6faac9d9eed7b",
+      "remote_blob": "cd348133e892d8c8efacf8fb95b6faac9d9eed7b"
+    },
+    {
+      "path": "experiments/burgers-shared-replay/runs/screen01/run.sbatch",
+      "bytes": 1406,
+      "sha256": "4803109c127a6691043b0f7dd1a862f3ab6d53ec9fd25586b88c231500f7a8df",
+      "local_blob": "b0084efdf4133bbc8b90899f66d13b9857395a34",
+      "remote_blob": "b0084efdf4133bbc8b90899f66d13b9857395a34"
+    }
+  ],
+  "witness_companions": [
+    {
+      "archive": "timed_identity_replay_case3.npz",
+      "companion": "timed_identity_replay_case3_coarse_fields.npz"
+    },
+    {
+      "archive": "timed_identity_replay_case1.npz",
+      "companion": "timed_identity_replay_case1_coarse_fields.npz"
+    },
+    {
+      "archive": "replay_case0.npz",
+      "companion": "replay_case0_coarse_fields.npz"
+    },
+    {
+      "archive": "forced_failure_case0_step19.npz",
+      "companion": "forced_failure_case0_step19_coarse_fields.npz"
+    },
+    {
+      "archive": "replay_case5.npz",
+      "companion": "replay_case5_coarse_fields.npz"
+    },
+    {
+      "archive": "replay_case3.npz",
+      "companion": "replay_case3_coarse_fields.npz"
+    },
+    {
+      "archive": "timed_identity_replay_case2.npz",
+      "companion": "timed_identity_replay_case2_coarse_fields.npz"
+    },
+    {
+      "archive": "forced_failure_case0_step0.npz",
+      "companion": "forced_failure_case0_step0_coarse_fields.npz"
+    },
+    {
+      "archive": "timed_identity_replay_case4.npz",
+      "companion": "timed_identity_replay_case4_coarse_fields.npz"
+    },
+    {
+      "archive": "replay_case4.npz",
+      "companion": "replay_case4_coarse_fields.npz"
+    },
+    {
+      "archive": "replay_case2.npz",
+      "companion": "replay_case2_coarse_fields.npz"
+    },
+    {
+      "archive": "timed_identity_replay_case5.npz",
+      "companion": "timed_identity_replay_case5_coarse_fields.npz"
+    },
+    {
+      "archive": "replay_case1.npz",
+      "companion": "replay_case1_coarse_fields.npz"
+    },
+    {
+      "archive": "timed_identity_replay_case0.npz",
+      "companion": "timed_identity_replay_case0_coarse_fields.npz"
+    }
+  ],
+  "total_files": 85,
+  "total_bytes": 1902793314,
+  "note": "Filesystem SHA256 and both Git blob identities checked; remote head read with git ls-remote. No cluster operations."
+}

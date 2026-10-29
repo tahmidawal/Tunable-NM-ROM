@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "complete": true,
+  "source_ckpt_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "training": {
+    "seed": 20261028,
+    "steps": 200000,
+    "prefixes": [
+      16,
+      32,
+      64
+    ],
+    "prefix_weights": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    "batch": 4096,
+    "lr": 0.001,
+    "optimizer": "dense optax.adam on shared parameters and all latent codes",
+    "weight_decay": 0.0,
+    "code_regularization": 0.0,
+    "warmup": 500,
+    "learning_rate_end": 1e-05,
+    "initialization": "incumbent16 with zero extra codes and .01-RMS new input/skip rows"
+  },
+  "heads": {
+    "16": {
+      "file": "h16.npz",
+      "sha256": "7f766458a747cf7aa3b33fd94aff230e6b4a71ebdb669d69a24d3d70a3c536fd",
+      "k": 16,
+      "trust": 0.07062453128571239
+    },
+    "32": {
+      "file": "h32.npz",
+      "sha256": "450f927e14dd20578968fc379d3849b0aa573dab2aadcc8d12a06cd46b14731c",
+      "k": 32,
+      "trust": 0.07072740559991578
+    },
+    "64": {
+      "file": "h64.npz",
+      "sha256": "fb002873b36b58d9f238311dbe23bc281cecce4414d5866f6199fa8c48abe18f",
+      "k": 64,
+      "trust": 0.07089815506979937
+    }
+  },
+  "prefix_checks": {
+    "16": {
+      "coefficient_identity": 0.0,
+      "latent_jacobian_identity": 1.3533418781309231e-15,
+      "jacobian_condition": 14.220237459615833
+    },
+    "32": {
+      "coefficient_identity": 0.0,
+      "latent_jacobian_identity": 0.0,
+      "jacobian_condition": 20.749790961701013
+    },
+    "64": {
+      "coefficient_identity": 0.0,
+      "latent_jacobian_identity": 0.0,
+      "jacobian_condition": 38.41186504446231
+    }
+  },
+  "data_sha256": "1760059f42e80573101ae3a5b32127465335c43f35962179c9baa161f87938b5",
+  "training_source_commit": "4514fafed2c607829aeaaec5bcf62de5bfd47c11",
+  "full_checkpoint_sha256": "7163895477355baadcadf11b13f84880719a8a089861aa8ce5017a38b7678e6d",
+  "scope": "shared N256-trained bank head; new L1024 solver admission required",
+  "reconstruction": [
+    {
+      "k": 16,
+      "mean": 0.005874115421077786,
+      "max": 0.060695752215424906
+    },
+    {
+      "k": 32,
+      "mean": 0.004643707450752026,
+      "max": 0.05753163163008493
+    },
+    {
+      "k": 64,
+      "mean": 0.003792352397091699,
+      "max": 0.056418550317965964
+    }
+  ],
+  "pipeline_diagnostic": [
+    {
+      "k": 16,
+      "mean": 0.004283910191074074,
+      "max": 0.022550162588417667,
+      "note": "best found from one field-selected training seed; diagnostic only"
+    },
+    {
+      "k": 32,
+      "mean": 0.003286600378546191,
+      "max": 0.017637247192347986,
+      "note": "best found from one field-selected training seed; diagnostic only"
+    },
+    {
+      "k": 64,
+      "mean": 0.002544397980611136,
+      "max": 0.014391692871150658,
+      "note": "best found from one field-selected training seed; diagnostic only"
+    }
+  ]
+}

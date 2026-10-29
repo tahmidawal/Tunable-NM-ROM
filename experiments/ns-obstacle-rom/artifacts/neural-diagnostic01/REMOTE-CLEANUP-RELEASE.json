@@ -1,0 +1,18 @@
+{
+  "authorized": true,
+  "job_id": 6640846,
+  "exact_remote_paths": [
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-diagnostic01.tar.gz"
+  ],
+  "retention_review_sha256": "06f17aab1315eb9289ef4cb003f62a88a6bbd20e81a9920782b9b6108306863b",
+  "archive_sha256": "eece7b3395ff06c12e149de618f9a6b798265b867389aea351dd5cbbd338ff5c",
+  "source_commit": "5d690f70470e79a6510a820b21a118730e0a5ead",
+  "mirror_commit": "07ad5df129b8b049be64d6304cb530608af4fe42",
+  "conditions": [
+    "Check job remains terminal and no active consumer uses these exact paths.",
+    "Verify remote archive SHA and original ledger identity before removal.",
+    "Delete only these verified duplicates; preserve shared prepared inputs and all other job directories.",
+    "Record cleanup result and back it up; retain all local archived evidence."
+  ]
+}

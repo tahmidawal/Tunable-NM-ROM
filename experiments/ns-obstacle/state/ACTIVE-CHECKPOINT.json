@@ -1,15 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    6635169
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
     "Complete two-case development reconstruction and independent review",
     "Execute actual bank/POD development accuracy and quadrature gates",
     "Freeze feasible FOM calibration subset, then validation/paired timing, final reviews and generated reporting"
   ],
-  "completed_allocated_gpu_hours": 4.505,
+  "completed_allocated_gpu_hours": 4.513055555555556,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -189,7 +187,7 @@
   "ROM_actual_input_independent_review": "reviews/ROM-NINE-CASE-INPUT-REVIEW.json; source14ec1ae3d/mirror3b078f190 PASS; execution not released",
   "legacy_duplicate_retirement_result": "Exact479-file owner retirement complete after fresh checks; lifecycle in reference staging/LEGACY-DUPLICATE-RETIREMENT/LIFECYCLE.json; observed free-space gain1,861,390,336bytes; protected inputs preserved.",
   "FOM_candidate_lift_execution": "Job6631950 completed25s exit0:0; independent raw and durable retention review passed. See reviews/FOM-CANDIDATE-LIFT-RESULT-REVIEW.json. No eligibility or training release.",
-  "ROM_actual_charged_seconds": 1171,
+  "ROM_actual_charged_seconds": 1200,
   "reference_infrastructure_actual_charged_seconds": 15047,
   "reference_admission": {
     "passed": true,
@@ -199,7 +197,7 @@
     "original_domain_gate": "failed",
     "training_released": true
   },
-  "next_action": "Audit actual development reconstruction, then release exact actual-model development packet within3480s remaining development reservation.",
+  "next_action": "After mirrored corrected release and complete remote contract preflight, single-submit fresh development-materialize02; then actual model development gate.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -214,9 +212,7 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [
-    6635169
-  ],
+  "live_job_ids": [],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -335,5 +331,20 @@
     "job_id": 6635169,
     "queue_after": "6635169|ctol_nsobsrom_devdata|PENDING\n",
     "submitted_once": true
+  },
+  "development_materialization_failure": {
+    "job_id": 6635169,
+    "seconds": 29,
+    "cause": "Missing other_active_disk_reservation_bytes in coordinator release",
+    "scientific_output_created": false,
+    "raw_audit_pending": true
+  },
+  "development_materialization_attempt02": {
+    "release_sha256": "e64ebe7b17b194d1e00df6185d19c359510e41fc2b7a60bf838dd033b423aebe",
+    "reserved_seconds": 120,
+    "remaining_development_seconds": 3360,
+    "submitted": false,
+    "actual_local_contract_validation_passed": true,
+    "remote_full_verify_required": true
   }
 }

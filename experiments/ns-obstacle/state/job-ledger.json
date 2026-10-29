@@ -1432,22 +1432,24 @@
       "budget_bucket": "ROM",
       "release_sha256": "997fa019b795ef8fd9aa5a823a5843903fede642a35578ac774f75d4353a7793",
       "source_manifest_sha256": "ca39fbf79ba653712e528afb8573cffc1f3b9f9cd1d73453436977451157b935",
-      "state": "PENDING",
-      "state_last_observed": "PENDING",
+      "state": "FAILED",
+      "state_last_observed": "FAILED",
       "gpus": 1,
       "allocation_seconds_reserved": 120,
       "outer_process_ceiling_seconds": 115,
       "single_submission": true,
       "validation_access_authorized": false,
-      "submitted_utc": "2026-10-29T12:59:52.316818+00:00"
+      "submitted_utc": "2026-10-29T12:59:52.316818+00:00",
+      "elapsed_seconds": 29,
+      "allocated_gpu_hours": 0.008055555555555555,
+      "node": "pax020",
+      "execution_report": "Required release field missing before native reconstruction; raw failure review pending. No automatic retry."
     }
   ],
-  "live_job_ids": [
-    6635169
-  ],
-  "completed_gpu_hours": 4.505,
+  "live_job_ids": [],
+  "completed_gpu_hours": 4.513055555555556,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
-  "total_allocated_gpu_hours_completed": 4.505,
-  "last_accounting_utc": "2026-10-29T13:03:14.428804+00:00",
+  "total_allocated_gpu_hours_completed": 4.513055555555556,
+  "last_accounting_utc": "2026-10-29T13:12:11.569405+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

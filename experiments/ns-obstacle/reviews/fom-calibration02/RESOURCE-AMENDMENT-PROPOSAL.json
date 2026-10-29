@@ -1,0 +1,47 @@
+{
+  "schema": "ns-obstacle-one-ordinary-error-repair-proposal-v1",
+  "execution_authorized": false,
+  "timestamp_utc": "2026-10-29T15:43:48.330145+00:00",
+  "reason": "First common-target FOM screen failed before any timed block because requested-point permutation shadowed integer boundary quadrature order; exact three-identifier repair is independently reviewed.",
+  "original_failed_job": 6638028,
+  "original_elapsed_seconds": 99,
+  "original_allocation_cap_seconds": 2160,
+  "original_failure_and_release_preserved": true,
+  "repair_maximum_allocation_seconds": 2061,
+  "same_two_candidates": [
+    "p3g3h2",
+    "p4g4h1"
+  ],
+  "same_development_Re": [
+    16.875,
+    23.125
+  ],
+  "same_fixed_nonlinear_tolerance": 1e-10,
+  "same_required_blocks": 12,
+  "same_repetitions_per_block": 7,
+  "ordinary_error_repair_attempts_allowed": 1,
+  "conditional_ROM_cap_seconds": 14400,
+  "ROM_actual_charged_before_recovery": 4696,
+  "remaining_POD_recovery_reservation_seconds": 1200,
+  "preserved_validation_and_paired_reservation_seconds": 3300,
+  "maximum_ROM_total_including_repair_and_all_remaining_reservations_seconds": 11257,
+  "campaign_cap_seconds": 43200,
+  "campaign_actual_charged_before_recovery": 19743,
+  "maximum_campaign_total_including_repair_and_all_remaining_reservations_seconds": 26304,
+  "resource_change": "Prospective explicit reallocation of unspent conditional-ROM headroom for one ordinary implementation repair; not an automatic repeat of the original2160s release, not unused reference headroom, and not a fit-budget reset.",
+  "scientific_changes": false,
+  "training_retries_allowed": false,
+  "new_architecture_seed_quadrature_or_tolerance_search_allowed": false,
+  "validation_allowed": false,
+  "matched_bank_claim_allowed": false,
+  "requirements_before_release": [
+    "Independent review of this bounded resource amendment within original4h ROM and12h campaign ceilings",
+    "Exact repaired source and all input/runtime bindings independently reviewed",
+    "Fresh unique job directory, original failures retained, original releases immutable",
+    "Setup-inclusive timeout and complete12-block guard retained; another failure stops this repair branch",
+    "Fresh remote actual bytes plus all active output/archive reservations under50GiB; local collection separately released"
+  ],
+  "source_repair_commit": "2ae028ef7",
+  "source_repair_mirror": "31ab0f357",
+  "fixed_fom_outputs_sha256": "fb1975e91876bac61d00d4cf90f2d1627f3e1bd98e81f41aa1b3d3f16bfd3a46"
+}

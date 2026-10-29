@@ -1508,9 +1508,28 @@
       "allocated_gpu_hours": 0.0275,
       "node": "pax021",
       "execution_report": "Requested-point permutation variable shadows integer boundary quadrature order; zero timed blocks; complete-workload guard rejected result. Narrow fix reviewed, no retry yet."
+    },
+    {
+      "job_id": 6638632,
+      "attempt": "pod-recovery01",
+      "phase": "missing_unsampled_POD_development_controls",
+      "budget_bucket": "ROM",
+      "release_sha256": "8eeefceedb6c7ea9fd110eab8029517f76a8bbcedadeb167bf454adb136ca07d",
+      "source_commit": "da018066e0039d2841456105a98abd3dcba35f8a",
+      "source_manifest_sha256": "28d76892679cbd4e12a5a2083fc5f633245985d2b9f3015863a1d4cdefd0a927",
+      "state": "PENDING",
+      "state_last_observed": "PENDING",
+      "gpus": 1,
+      "allocation_seconds_reserved": 1200,
+      "single_submission": true,
+      "validation_access_authorized": false,
+      "training_authorized": false,
+      "quadrature_refit_authorized": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6638632
+  ],
   "completed_gpu_hours": 5.484166666666667,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",
   "total_allocated_gpu_hours_completed": 5.484166666666667,

@@ -1,6 +1,8 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    6638632
+  ],
   "active_external_consults": [],
   "pending": [
     "Review retained model timeout and completed r2 failures",
@@ -212,7 +214,9 @@
   },
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
-  "live_job_ids": [],
+  "live_job_ids": [
+    6638632
+  ],
   "materialization_submission": {
     "job_id": 6632930,
     "receipt_source_commit": "2c28d8412",
@@ -396,5 +400,19 @@
     "accepted_timed_blocks": 0,
     "ordinary_source_repair_reviewed": true,
     "retry_released": false
+  },
+  "pod_recovery": {
+    "job_id": 6638632,
+    "allocation_seconds": 1200,
+    "release_sha256": "8eeefceedb6c7ea9fd110eab8029517f76a8bbcedadeb167bf454adb136ca07d",
+    "state": "PENDING",
+    "all_actual_inputs_preflight_passed": true,
+    "no_training_or_refit": true
+  },
+  "FOM_ordinary_repair_resource_review": {
+    "proposal_sha256": "1ae85b902012f8cdeb5f22efeba38cd8ae8c426b32bb2b60392aa00aa64ec869",
+    "max_seconds": 2061,
+    "original_validation_reserve_seconds": 3300,
+    "execution_released": false
   }
 }

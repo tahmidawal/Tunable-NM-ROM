@@ -1,7 +1,7 @@
 {
   "schema": "ns-obstacle-training-review-adjudication-v1",
   "review": "CLAUDE-TRAINING-REVIEW.txt",
-  "status": "fresh_run_packet_review_pending",
+  "status": "fresh_run_source_packet_and_stager_review_passed",
   "scientific_assessment": "Independent reviews agree on analytic spatial derivatives, full-rule objective, unbiased supervised Adam estimator and L-BFGS algebra. No accuracy claim before actual fitting and PDE evaluation.",
   "findings": [
     {
@@ -43,5 +43,8 @@
     "No POD velocity fallback in neural evaluation",
     "Full/exact PDE evaluation before any new fitted quadrature",
     "No accuracy ceiling or one-percent stopping rule"
-  ]
+  ],
+  "released_source_commit": "15a3f678ceb3ddddd14cb61b8b8546856e760374",
+  "released_mirror_commit": "a660edfe8",
+  "resume_allowed": false
 }

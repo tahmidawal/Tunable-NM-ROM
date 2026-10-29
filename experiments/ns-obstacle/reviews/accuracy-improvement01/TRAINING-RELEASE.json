@@ -1,0 +1,47 @@
+{
+  "schema": "ns-obstacle-pod-guided-training-release-v2",
+  "authorized": true,
+  "single_execution": true,
+  "source_commit": "15a3f678ceb3ddddd14cb61b8b8546856e760374",
+  "source_mirror_commit": "a660edfe8",
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided01",
+  "output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided01/results/fit",
+  "plan_sha256": "e75274e443f2f26c3efc02c80c86b3aa4ad7db8b9cb03b2a054520fde47db849",
+  "runtime_inventory_sha256": "7ad08b3921297774b502c3ab29a41e496b8a122617f80d4829bb3c2681f3b66d",
+  "launcher_sha256": "441eef866189f2dbd3168606ff6ea5272c2d235fb832739ffb1e51baa93c8dee",
+  "stager_sha256": "8b5e121d001b2e6b07dc4babe4a4028832977e1e905c80c247af441551d6556a",
+  "resource_check_sha256": "1edf2676f61c67881d1ee5ee75abe2c3777bfcf0415751c542ced4db2e25cb7d",
+  "pilot_source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+  "allocation_seconds": 3600,
+  "outer_timeout_seconds": 3585,
+  "outer_kill_grace_seconds": 10,
+  "resume_allowed": false,
+  "validation_allowed": false,
+  "new_reference_solves_allowed": false,
+  "automatic_retry": false,
+  "raw_plus_archive_reservation_bytes": 1073741824,
+  "estimated_peak_host_bytes": 17179869184,
+  "allocation_memory_bytes": 68719476736,
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "review_scope": "Fresh first accuracy-first neural fit only; Codex source/runtime/stager review PASS and Claude findings adjudicated. No physical admission or completed-iteration claim before results.",
+  "requirements": [
+    "Fresh actual full preflight and resource/queue checks before single submission",
+    "Preserve every measured checkpoint, rejected-line-search scalar history, final selected model and failures",
+    "Charge actual setup-inclusive allocated time; optimizer elapsed is separate accounting",
+    "Retain output before independent scientific and durability review; separate actual PDE evaluation follows",
+    "This operational job limit is not an accuracy ceiling or completion of the continued accuracy goal"
+  ]
+}

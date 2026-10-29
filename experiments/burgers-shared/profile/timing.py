@@ -31,7 +31,18 @@ assert [B.sha(u) for u in u0]==old['initial_hashes']
 assert HC.sha_file(model/'MODEL.json')==old['model_manifest_sha256']
 assert {k:B.sha(d[k]) for k in old['table_hashes']}==old['table_hashes']
 _,res,ev=C.make_head_evolve(hf,nl,nlJ,64,f.trust)
-fine_lm=jax.jit(T2.make_lm(ev,600,f.trust,1e-10,'lu',True))
+fine_raw=T2.make_lm(ev,600,f.trust,1e-10,'lu',True)
+
+@jax.jit
+def fine_lm(zi,args,tol,gtol,lam):
+    result=fine_raw(zi,args,tol,gtol,lam)
+    zn,rn,it,reason,gn,rej,lamn=result
+    return result,jnp.array([it,reason,gn,rej,rn])
+
+@jax.jit
+def initialize(u,cold):
+    z,scale,ic=qr['direct']['init'](u,cold)
+    return z,scale,ic,jnp.asarray(1e-6,jnp.float64),jnp.zeros(9)
 _,active_ev=make_active_residual(hf,nl,nlJ)
 aux_lm=T2.make_lm(active_ev,600,c.trust,1e-10,'lu',True)
 
@@ -74,20 +85,20 @@ def split(ci,arm):
         t=time.perf_counter();v=fn();jax.block_until_ready(v);elapsed=time.perf_counter()-t
         ticks[name]+=elapsed;events.append((name,elapsed));return v
     start=time.perf_counter()
-    z,scale,ic=run('initial_fit',lambda:qr[arm]['init'](u0[ci],cold))
-    zp=zp2=z;lam=jnp.asarray(1e-6,jnp.float64);states=[z];outputs=[];infos=[];auxes=[]
+    z,scale,ic,lam,zero_info=run('initial_fit',lambda:initialize(u0[ci],cold))
+    zp=zp2=z;states=[z];outputs=[];infos=[];auxes=[]
     nu=float(cases[ci,4])
     for k in range(50):
-        warm,hist,co,tol=run('predictor_history',lambda:prep(z,zp,zp2,jnp.int32(k),nu,d,sch,scale))
+        warm,hist,co,tol=run('predictor_history',lambda:prep(z,zp,zp2,k,nu,d,sch,scale))
         args=(hist,nu,d,co,sch['dt'])
         if arm=='affine':
             aux=run('coarse16',lambda:coarse(warm,args,tol))
             zi,info=run('guard_transfer',lambda:guard(warm,args,tol,aux))
-        else:zi=warm;info=jnp.zeros(9)
-        result=run('fine64',lambda:fine_lm(zi,args,tol,sch['gtol'],lam))
+        else:zi=warm;info=zero_info
+        result,step=run('fine64',lambda:fine_lm(zi,args,tol,sch['gtol'],lam))
         zn,rn,it,reason,gn,rej,lam=result
         zp2,zp,z=zp,z,zn;states.append(z);infos.append(info)
-        auxes.append(jnp.array([it,reason,gn,rej,rn]))
+        auxes.append(step)
         if (k+1)%10==0:outputs.append(z)
     def finish():
         ss,ww,ii,aa=bundle(states,[states[0]]+outputs,infos,auxes)
@@ -101,7 +112,7 @@ def split(ci,arm):
 rep=dict(complete=False,job_id=os.environ.get('SLURM_JOB_ID'),commit=os.environ.get('SOURCE_COMMIT'),
     backend=jax.default_backend(),x64=bool(jax.config.jax_enable_x64),precision=os.environ.get('JAX_DEFAULT_MATMUL_PRECISION'),gpu=P.gpu_info(),
     scope='Synchronized split-stage diagnostic; no attribution of fused kernel durations.',
-    caveats=['Each phase includes dispatch and synchronization. host_other contains Python/bookkeeping and untimed small device operations.',
+    caveats=['Each phase includes dispatch and synchronization. host_other contains residual Python/bookkeeping time. Packing operations occur inside synchronized stages.',
     'Split path omits original alternation-monitor bookkeeping. Solver paths/decisions are checked; split times do not replace fused production times.'],
     model_sha256=HC.sha_file(model/'MODEL.json'),settings=old['settings'],cases=np.asarray(cases).tolist(),
     initial_hashes=old['initial_hashes'],table_hashes=old['table_hashes'],parity=[],timings=[],phase_names=PHASES)
@@ -135,7 +146,7 @@ for ci in range(6):
         rep['parity'].append(dict(case=ci,arm=arm,max_state_gap=gap))
         # Save one complete reference field array; repetitions carry states/decision witnesses.
         np.savez_compressed(OUT/f'reference_{arm}_{ci}.npz',states=ref['stats']['states'],W=ref['W'],fields=ref['fields'],
-            step_it=ref['stats']['step_it'],step_reason=ref['stats']['step_reason'],step_gn=ref['stats']['step_gn'])
+            **{key:val for key,val in ref['stats'].items() if key!='states'})
         w=qt[arm]['fused'](u0[ci],float(cases[ci,4]),d,cold,sch);jax.block_until_ready(w)
         np.testing.assert_array_equal(w['W'],ref['W'])
         signatures[ci,arm]=(B.sha(w['W']),B.sha(w['fields']))

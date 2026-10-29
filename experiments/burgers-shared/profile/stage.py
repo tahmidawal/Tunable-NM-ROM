@@ -17,6 +17,10 @@ for line in (original/'MANIFEST.sha256').read_text().splitlines():
 for name in ['timing.py']:
     source=ROOT/'experiments/burgers-shared/profile'/name
     target=dest/'experiments/burgers-shared/profile'/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
+for line in (original/'OUTPUTS.sha256').read_text().splitlines():
+    digest,name=line.split('  ',1)
+    if name.endswith('result.json') or any(name.endswith(f'{arm}_case{c}.npz') for arm in ['direct','affine'] for c in range(6)):
+        assert hashlib.sha256((original/name).read_bytes()).hexdigest()==digest
 (dest/'expected').mkdir()
 shutil.copyfile(original/'output/dev6/result.json',dest/'expected/result.json')
 for arm in ['direct','affine']:

@@ -1,0 +1,38 @@
+{
+  "schema": "ns-obstacle-cache-primary-control-release-v1",
+  "source_commit": "48519dc2918886c4f4bf5c90623a721c54e7af85",
+  "source_candidate_sha256": "fc79203221addb0c6ee4a57c10b11b6ad61c6cd353b6f3ba94bbd3d08f6e305d",
+  "input_count": 196,
+  "input_bytes": 1186944295,
+  "bounds": {
+    "allocation_seconds": 1200,
+    "process_seconds": 900,
+    "producer_seconds": 300,
+    "portable_replay_seconds": 180,
+    "allocation_GiB": 64,
+    "memory_stop_GiB": 48,
+    "volume_points_hard_cap": 2000000,
+    "cpus": 16,
+    "proof_output_planning_GiB": 4,
+    "complete_collection_planning_GiB": 6,
+    "other_lane_collection_reservation_GiB": 3,
+    "local_collection_policy": "Measure actual remote archive/expanded bytes before collection; retain remote originals if local reservation is insufficient. Full local archive+expanded+Git copies would require18GiB beyond existing data; do not allocate these blindly. Canonical directory move avoids a fourth copy; no unmeasured compression/dedup credit."
+  },
+  "physical_admission": false,
+  "training_released": false,
+  "new_PDE_solves": 1,
+  "solve_scope": "one measured producer on the unchanged original P4/g4/h3 channel; no new domain or parameter population",
+  "single_submission": true,
+  "no_automatic_retry": true,
+  "scope_amendment": "FD1-2026-10-28",
+  "conditions": [
+    "Exact source durably mirrored before stage; verify every staged input and dependency metadata",
+    "Fresh queue/local/remote disk checks before and after submit; max two obstacle jobs",
+    "Before staging retain minimum10GiB free plus staging and all actual concurrent reservations",
+    "Keep remote original outputs until complete independently audited durable retention",
+    "Measure actual archive, expanded, canonical and Git/chunk-copy footprint before each local materialization; require minimum10GiB reserve plus active reservations",
+    "Do not promise18GiB simultaneous local copies without that capacity; use reviewed directory move and verified cold working-duplicate recovery as needed",
+    "No unmeasured compression, deduplication, speedup or population admission credit",
+    "Complete original/changed-state, common-rule and relocated fresh-process evidence required; retain failures"
+  ]
+}

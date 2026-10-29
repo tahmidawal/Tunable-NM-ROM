@@ -1,7 +1,8 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
   "numerical_jobs": [
-    6638632
+    6638632,
+    6640846
   ],
   "active_external_consults": [],
   "pending": [
@@ -199,7 +200,7 @@
     "original_domain_gate": "failed",
     "training_released": true
   },
-  "next_action": "Audit retained partial POD_r2 results; launch exact restricted FOM screen after preflight; review recovery of missing mandatory POD controls within existing1200s failure reserve.",
+  "next_action": "Monitor actual neural diagnostic6640846; audit predictions and produce reference comparisons; pending POD6638632 remains separate.",
   "reference_final_metadata_backup": {
     "source": "7dac762ae444d67b46adf94bb83f239830590f1e",
     "mirror": "e50b08384",
@@ -215,7 +216,8 @@
   "materialization_release_sha256": "a8a70b77a379f7d54a6f70535e6a34806cf7c5487f3c3b5f18038731d8dd45da",
   "materialization_superseded_unused_release_sha256": "cff1289ad6ab51b6326b9633e217c51910eb1921b9c49fb34cd7e8ee94ffd185",
   "live_job_ids": [
-    6638632
+    6638632,
+    6640846
   ],
   "materialization_submission": {
     "job_id": 6632930,
@@ -419,8 +421,11 @@
     "user_authorized": true,
     "release_sha256": "16cd1ab87e8d0dd6e7174a0b51444db13635bbd43d544260eeda8e0438833b3c",
     "allocation_seconds": 900,
-    "submitted": false,
+    "submitted": true,
     "original_bank_gate_passed": false,
-    "validation_allowed": false
+    "validation_allowed": false,
+    "job_id": 6640846,
+    "state": "PENDING",
+    "actual_full_preflight_passed": true
   }
 }

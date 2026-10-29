@@ -43,6 +43,9 @@ def main():
                'Eight neural velocity modes plus shared pressure/stability spaces. Not an online flow solve.'),
               ('POD_r2_mixed_Galerkin', 'Standard POD–Galerkin: solved flow',
                'Two POD velocity modes plus pressure-stability enrichment. Actual converged flow solve.')]
+    if 'bank_r8_solve_velocity' in data.files:
+        models.insert(1, ('bank_r8_solve', 'Neural-bank ROM: flow-solve output',
+                         'User-authorized diagnostic with original solver; representation gate remains failed. See recorded convergence status.'))
     speed_max = max(float(np.linalg.norm(data[key+'_velocity'], axis=-1).max())
                     for key in ['reference']+[m[0] for m in models])
     pmin = min(float(data[key+'_pressure'].min()) for key in ['reference']+[m[0] for m in models])
@@ -66,7 +69,7 @@ def main():
                     low, high = ((0, speed_max) if row == 0 else (pmin, pmax)) if col < 2 else (0, max(float(z.max()), 1e-16))
                     artist = ax.tripcolor(tri, z, shading='gouraud', cmap='viridis' if col < 2 else 'magma', vmin=low, vmax=high)
                     decorate(ax)
-                    ax.set_title(['Qualified fine reference', 'ROM reconstruction', 'Pointwise error'][col])
+                    ax.set_title(['Qualified fine reference', 'Best-fit field' if key.endswith('_projection') else 'Predicted flow', 'Pointwise error'][col])
                     label = (r'$|u|/U$' if row == 0 else r'$p/U^2$') if col < 2 else (r'$|u_{ROM}-u_{ref}|/U$' if row == 0 else r'$|p_{ROM}-p_{ref}|/U^2$')
                     bar = fig.colorbar(artist, ax=ax, orientation='horizontal', fraction=.08, pad=.07, label=label)
                     formatter = ScalarFormatter(useMathText=True)
@@ -80,7 +83,7 @@ def main():
             fig.savefig(args.output/(stem+'.png'), dpi=155)
             fig.savefig(args.output/(stem+'.pdf'))
             plt.close(fig); outputs.append(stem+'.png')
-        fig, axes = plt.subplots(3, 1, figsize=(13, 8), layout='constrained')
+        fig, axes = plt.subplots(len(models)+1, 1, figsize=(13, 2*(len(models)+1)+2), layout='constrained')
         for ax, key, title in zip(axes, ['reference']+[m[0] for m in models],
                                   ['Qualified fine reference']+[m[1] for m in models]):
             z = np.linalg.norm(data[key+'_velocity'][i], axis=-1)
@@ -88,7 +91,7 @@ def main():
             decorate(ax, False); ax.set_title(title, loc='left')
         fig.colorbar(artist, ax=list(axes), shrink=.65, label=r'Speed $|u|/U$')
         fig.suptitle(f'Full-channel velocity comparison — Re = {float(reynolds):g}', fontsize=15)
-        fig.supxlabel('Same speed scale throughout. Neural result is best-fit projection; POD result is an actual Galerkin solve.', fontsize=10)
+        fig.supxlabel('Same speed scale throughout. Best-fit projection and actual flow-solve outputs are labeled separately.', fontsize=10)
         stem = f'full_channel_Re{tag}'
         fig.savefig(args.output/(stem+'.png'), dpi=155)
         fig.savefig(args.output/(stem+'.pdf')); plt.close(fig); outputs.append(stem+'.png')

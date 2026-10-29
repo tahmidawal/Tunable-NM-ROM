@@ -1525,10 +1525,30 @@
       "validation_access_authorized": false,
       "training_authorized": false,
       "quadrature_refit_authorized": false
+    },
+    {
+      "job_id": 6640846,
+      "attempt": "neural-diagnostic01",
+      "phase": "user_authorized_actual_neural_ROM_diagnostic",
+      "budget_bucket": "ROM",
+      "source_commit": "424fab54de041643b15842e81811a4b8b2963c24",
+      "release_sha256": "16cd1ab87e8d0dd6e7174a0b51444db13635bbd43d544260eeda8e0438833b3c",
+      "source_manifest_sha256": "68e0ba42fe6e750e0c6b962754fa1b662892b22505d7bbe202d7e8ab9e947af3",
+      "state": "PENDING",
+      "state_last_observed": "PENDING",
+      "gpus": 1,
+      "allocation_seconds_reserved": 900,
+      "single_submission": true,
+      "validation_access_authorized": false,
+      "training_authorized": false,
+      "original_representation_gate_passed": false,
+      "diagnostic_exception_user_authorized": true,
+      "submitted_utc": "2026-10-29T17:11:35.782903+00:00"
     }
   ],
   "live_job_ids": [
-    6638632
+    6638632,
+    6640846
   ],
   "completed_gpu_hours": 5.484166666666667,
   "note": "All elapsed allocation charged, including failed controls. Fixed finite-channel references admitted; original domain gate remains failed; no trained ROM or comparative result yet.",

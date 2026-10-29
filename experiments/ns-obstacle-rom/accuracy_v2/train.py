@@ -5,7 +5,7 @@ Every full measurement is immutable. L-BFGS curvature is reconstructed from reta
 accepted states; no duplicate history arrays or automatic restart/budget reset.
 """
 from pathlib import Path
-import hashlib,json,time
+import hashlib,json,time,sys,resource
 import numpy as np
 from qualification import require_qualification
 from accuracy_v2.spatial_bank import initialize,evaluate_layers,SpatialBank
@@ -25,6 +25,7 @@ def _train(x,w,target,gradient,singular_values,qualification,config,directory,de
     if x.shape!=(n,2) or w.shape!=(n,) or target.shape!=(n,2,4) or gradient.shape!=(n,2,2,4) or np.min(w)<=0:raise ValueError('teacher layout')
     if any(not np.isfinite(a).all() for a in (x,w,target,gradient)):raise ValueError('finite teachers required')
     sigma=np.asarray(singular_values,dtype=np.float64)[:4]
+    if not np.array_equal(sigma,np.asarray(teacher_identity['singular_values'],dtype=np.float64)):raise ValueError('actual teacher singular values differ')
     if sigma.shape!=(4,) or np.min(sigma)<=0 or np.any(np.diff(sigma)>0):raise ValueError('ordered positive actual singular values required')
     norms_v=np.einsum('n,ncr,ncr->r',w,target,target);norms_g=np.einsum('n,ncdr,ncdr->r',w,gradient,gradient)
     if min(norms_v.min(),norms_g.min())<=0:raise ValueError('null teacher norm')
@@ -39,6 +40,10 @@ def _train(x,w,target,gradient,singular_values,qualification,config,directory,de
     jax.config.update('jax_enable_x64',True);jax.config.update('jax_default_matmul_precision','highest')
     import jax.numpy as jnp
     if jax.default_backend()!='gpu':raise RuntimeError('GPU required')
+    import jaxlib,scipy
+    runtime={'python':sys.version,'jax':jax.__version__,'jaxlib':jaxlib.__version__,'numpy':np.__version__,'scipy':scipy.__version__,'backend':jax.default_backend(),'devices':[{'platform':d.platform,'device_kind':d.device_kind,'id':d.id} for d in jax.devices()],'x64':bool(jax.config.x64_enabled),'matmul_precision':str(jax.config.jax_default_matmul_precision),'device_float_dtype':str(jnp.asarray(1.,dtype=jnp.float64).dtype),'input_dtypes':[str(a.dtype) for a in (x,w,target,gradient)]}
+    (out/'RUNTIME.json').write_text(json.dumps(runtime,indent=2)+'\n')
+    if runtime['device_float_dtype']!='float64' or not runtime['x64'] or runtime['matmul_precision']!='highest':raise RuntimeError('f64/highest runtime required')
     model=initialize(rank=4,width=config['width'],depth=config['depth'],seed=config['seed']);shapes=[a.shape for layer in model.layers for a in layer];sizes=[int(np.prod(s)) for s in shapes];offsets=np.cumsum([0]+sizes)
     theta=np.concatenate([a.ravel() for layer in model.layers for a in layer]);m=np.zeros_like(theta);v=np.zeros_like(theta)
     def unpack(t):
@@ -51,6 +56,7 @@ def _train(x,w,target,gradient,singular_values,qualification,config,directory,de
     calc=jax.jit(jax.value_and_grad(objective,has_aux=True))
     started=time.monotonic();prior_elapsed=0.;completed_lbfgs=0;retention_errors=[];evaluations=0;serial=0;best=None;history=[];state_ids=[];curvature=[];rng=np.random.default_rng(config['seed']);adam_step=0;phase='initial';last_checkpoint=None
     def guard():
+        if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024>16*2**30:raise MemoryError('unchanged16GiB process guard')
         if time.time()>=deadline-60:raise TimeoutError('setup-inclusive job deadline; finalization reserved')
     def full(t):
         nonlocal evaluations
@@ -72,6 +78,12 @@ def _train(x,w,target,gradient,singular_values,qualification,config,directory,de
         if best is None or f<best['objective']:best={'objective':f,'checkpoint':stem}
         (out/'LATEST.json').write_text(json.dumps({'last':stem,'best':best,'elapsed_seconds':prior_elapsed+time.monotonic()-started})+'\n')
         return stem
+    def selected_arrays(stem):
+        path=out/(stem+'.npz');record=json.loads((out/(stem+'.json')).read_text())
+        if hashlib.sha256(path.read_bytes()).hexdigest()!=record['array_sha256']:raise ValueError('selected checkpoint SHA differs')
+        with np.load(path,allow_pickle=False) as arrays:chosen=arrays['theta'].copy()
+        if digest(chosen)!=record['theta_sha256']:raise ValueError('selected parameter identity differs')
+        return chosen
     status='started';f=None;g=np.zeros_like(theta);iteration=-1;pairs=[];current=None
     if resume is not None:
         from accuracy_v2.continuation import load
@@ -96,7 +108,7 @@ def _train(x,w,target,gradient,singular_values,qualification,config,directory,de
                 f,g,details=full(theta);current=save(theta,f,g,details,'Adam post-update')
         # Deterministic full-rule optimization starts at the best measured Adam iterate.
         if phase!='lbfgs':
-            with np.load(out/(best['checkpoint']+'.npz')) as a:theta=a['theta'].copy()
+            theta=selected_arrays(best['checkpoint'])
             phase='lbfgs';f,g,details=full(theta);current=save(theta,f,g,details,'L-BFGS initial');pairs=[];curvature=[]
         for iteration in range(completed_lbfgs,config['lbfgs_steps']):
             guard()
@@ -123,11 +135,15 @@ def _train(x,w,target,gradient,singular_values,qualification,config,directory,de
         else:status='iteration_limit'
     except TimeoutError:status='job_deadline'
     except BaseException as exc:
-        status='failed';(out/'FAILURE.json').write_text(json.dumps({'exception':repr(exc),'last_checkpoint':last_checkpoint})+'\n');raise
+        status='failed'
+        try:(out/'FAILURE.json').write_text(json.dumps({'exception':repr(exc),'last_checkpoint':last_checkpoint})+'\n')
+        except Exception as retention_error:retention_errors.append(repr(retention_error))
+        raise
     finally:
         try:
             from accuracy_v2.continuation import freeze
-            continuation={'phase':phase,'adam_step':adam_step,'completed_lbfgs_iterations':completed_lbfgs,'curvature_state_pairs':curvature,'rng_state':rng.bit_generator.state,'last_measured_checkpoint':last_checkpoint,'best':best,'full_evaluations':evaluations,'serial':serial,'elapsed_seconds':prior_elapsed+time.monotonic()-started}
+            gradient_identity=None if last_checkpoint is None else json.loads((out/(last_checkpoint+'.json')).read_text())['theta_sha256']
+            continuation={'theta_sha256':digest(theta),'gradient_theta_sha256':gradient_identity,'gradient_matches_theta':gradient_identity==digest(theta),'phase':phase,'adam_step':adam_step,'completed_lbfgs_iterations':completed_lbfgs,'curvature_state_pairs':curvature,'rng_state':rng.bit_generator.state,'last_measured_checkpoint':last_checkpoint,'best':best,'full_evaluations':evaluations,'serial':serial,'elapsed_seconds':prior_elapsed+time.monotonic()-started}
             freeze(out,continuation,{'theta':theta,'gradient':g,'adam_m':m,'adam_v':v})
         except Exception as retention_error:retention_errors.append(repr(retention_error))
         try:(out/'FINAL.json').write_text(json.dumps({'status':status,'last_checkpoint':last_checkpoint,'best':best,'elapsed_seconds':prior_elapsed+time.monotonic()-started,'full_evaluations':evaluations,'retention_errors':retention_errors,'automatic_resume':False,'validation_seen':False},indent=2)+'\n')
@@ -135,10 +151,11 @@ def _train(x,w,target,gradient,singular_values,qualification,config,directory,de
             retention_errors.append(repr(retention_error));print('FINAL retention failure:',repr(retention_error),flush=True)
         if retention_errors and status!='failed':raise RuntimeError('optimizer retention incomplete: '+repr(retention_errors))
     if best is None:raise RuntimeError('no full-rule measurement completed')
-    with np.load(out/(best['checkpoint']+'.npz')) as a:chosen=a['theta'].copy()
+    chosen=selected_arrays(best['checkpoint'])
     layers=[(np.asarray(a),np.asarray(b)) for a,b in unpack(chosen)]
     bank=SpatialBank(layers,np.eye(4),dict(bindings,trained=bool(adam_step or completed_lbfgs),actual_applied_adam_steps=adam_step,accepted_lbfgs_steps=completed_lbfgs,selected_checkpoint=best,status=status))
-    bank.save(out/'spatial-bank-raw.npz')
+    bank_sha=bank.save(out/'spatial-bank-raw.npz')
+    (out/'MODEL-RECEIPT.json').write_text(json.dumps({'schema':'ns-obstacle-supervised-neural-model-v2','bank_file':'spatial-bank-raw.npz','bank_sha256':bank_sha,'selected_checkpoint':best,'selected_theta_sha256':digest(chosen),'config_sha256':hashlib.sha256((out/'CONFIG.json').read_bytes()).hexdigest(),'runtime_sha256':hashlib.sha256((out/'RUNTIME.json').read_bytes()).hexdigest(),'optimizer_status':status,'basis_role':'dimensionless normalized velocity basis; coefficients reconstruct u/U','ordering_applied':False,'physical_admission':False},indent=2)+'\n')
     return bank
 
 

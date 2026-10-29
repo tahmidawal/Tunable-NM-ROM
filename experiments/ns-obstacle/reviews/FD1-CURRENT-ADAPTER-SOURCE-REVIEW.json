@@ -1,0 +1,38 @@
+{
+  "schema": "ns-obstacle-fe-adapter-source-review-v1",
+  "passed": true,
+  "reviewer": "/root/numerical_resume",
+  "adapter_source_sha256": "5c32e07e02dc46b4708634c1c17f6a8b8a3d2d37f6cc1ec958e1ea2d80f836a7",
+  "source_files": {
+    "fe_adapter.py": "62342db041444632d6dd95b8208a2751f7b218c4f64ac7db13ac69733b8dbf5f",
+    "fe_blocks.py": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+    "component_factor.py": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+    "qualification.py": "b87390af1df8bc5a526af5386e1779e2080f7d12f86e2a1de00a66ff6af648a6",
+    "FD1-SCOPE-CONTRACT.json": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "point_store.py": "adfcf7f62f91518f364f33c1622361185e0f7b39ad1648aac4a8ec8fdbacd84e",
+    "fe_algebra.py": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb",
+    "fe_pod_a6.py": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252",
+    "fe_controls_a6.py": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32",
+    "spaces.py": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee",
+    "weak.py": "dcf73d9d0dbc7c4e1d7860cfd0ccdae0edbf6521421e6bf761af23d28fa72335",
+    "train_bank.py": "a9e0ad22e5e76882499caecb8c30d8ad97f653f06f8f2c317166aff4f16987a1",
+    "oriented_normals.py": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+    "scalars.py": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+    "MODEL-CONTRACT.json": "e049b9db7d53eb04a823e9a13b17d30b8ea106c42df3fe57caa6ce368ee841dd"
+  },
+  "identical_previously_accepted_source_commit": "e54719ec45a37d52e6d98191b33318b1b4681a97",
+  "intervening_functional_delta": false,
+  "scope": "Current source and training-manifest eligibility only",
+  "coverage": [
+    "scalar factor",
+    "native batch",
+    "FD1 scope",
+    "coefficient primary",
+    "count and capacity checks",
+    "training source",
+    "exact probes"
+  ],
+  "fresh_fine_grid_execution_claimed": false,
+  "fine_preparation_result_review_still_required": true,
+  "training_released": false
+}

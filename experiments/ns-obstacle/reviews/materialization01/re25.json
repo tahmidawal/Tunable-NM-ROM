@@ -1,0 +1,44 @@
+{
+  "schema": "ns-obstacle-fd1-materialization-review-v1",
+  "passed": true,
+  "Re": 25,
+  "split": "training",
+  "materialization_sha256": "453d764133e403efca75fb719fe77307c4528fa180995064378f556d2269fc81",
+  "export_manifest_sha256": "40bc50398494a3f70cabf0752701044c1a6ee8a9cf16bbf490d5c88f99c40862",
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "source_sha256": "af327fec5243710ad80f17879da6a569ec9a2c666a3c25ca25d746f6d3dded58",
+  "semantic_arrays_verified": 10,
+  "source_storage_mode": "coefficient_primary",
+  "original_adopted_identities_verified": true,
+  "role_only_config_verified": true,
+  "unchanged_certificates_verified": [
+    "mesh.vol.bin",
+    "boundary_rule.json",
+    "solution.sol",
+    "result.json",
+    "fe_layout.json",
+    "reload_checks.json",
+    "mesh_identity.json",
+    "normal_orientation.json",
+    "reload_normal_orientation.json"
+  ],
+  "new_native_or_PDE_execution_by_reviewer": false,
+  "reviewer": "/root/reference_resume",
+  "independent_report_sha256": "4b01d2d62f941d5431c0411942ef6afb69d6ae342b8a6e8ed24a0c5d00bc7826",
+  "raw_archive_sha256": "490ade93edb5c65b3fd7f3000987bec7588fc4e693fd049a5f7e9166e994e30f",
+  "raw_source_commit": "859cf77af1b56e7e2af46dcfd86b53c16da2e59f",
+  "raw_mirror_commit": "6967aa98f5887862c73be706e745cd4c0ada3c8c"
+}

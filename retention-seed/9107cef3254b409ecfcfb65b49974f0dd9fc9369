@@ -1,0 +1,1983 @@
+{
+  "schema": "FD1-complete-population-source-plan-v1",
+  "execution_released": false,
+  "qualification_scope": {
+    "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "amendment_id": "FD1-2026-10-28",
+    "original_G2_status": "not_admitted_domain_sensitivity_failed",
+    "domain_sensitivity_status": "failed",
+    "domain_independence_admitted": false,
+    "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+    "geometry_population_and_numerical_thresholds_unchanged": true
+  },
+  "resource_plan_sha256": "e35745aaa47a76d162c8f378472c4e94391ec24b2def31a2a66db6acc1185caa",
+  "groups": [
+    {
+      "id": "re15",
+      "Re": 15,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h1_baseline.json",
+          "config_sha256": "91c39e45fc057e233b6963ad9c54ba3a78ca4842650ee4d6d9c0e996cf1d0371"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h1_solver_100x.json",
+          "config_sha256": "b55f82207abf5ff020f5b79fd9d59b2795bbaad0d01a9bc029e55b0761128fff"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "f18954a5e69fdcb09e19603080dc491e5cbcb25ffbfb6ec5aaca5f8aa23b36e7"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h2_baseline.json",
+          "config_sha256": "065a3e91d5caf3977dc5912fabb937433c0240734ec1e659b3b50c28a1745e13"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h2_solver_100x.json",
+          "config_sha256": "a0cb56227b879f03a2e0cdb1a81c55d4a6355e13ffe063e163c94e4320746516"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "1c8e5962102719a7d1ed916f8550a00c1bb3d0fdca81999354ec23f31b50e851"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h3_baseline.json",
+          "config_sha256": "4295b507a023d0c20c5d024c5228a21a424d4afd700b43e5b70aa86655acd380"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h3_solver_100x.json",
+          "config_sha256": "f20fe9e537fb59f4cf30345eb1db3e5512e0da77f893a3bb9575252b26c8937d"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "00af5d71b9b4e26bbd26dd71ffa2ffef62e3df910600de1991cf01308ee9080d"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p3_g3_h3_baseline.json",
+          "config_sha256": "b04666a2972aa36b3f12bfa073e998487d1351fe1811ece9a732a635f8394c95"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p3_g3_h3_solver_100x.json",
+          "config_sha256": "addca72bb2ade4d541f5a73fe558c5e3c53eb5c0d4435ed219e246da5664faf7"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "edad5dd9f48adfdc8446ab03a49063155f6d8a2c190be53f488f99bdcf25390a"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p3_g4_h3_baseline.json",
+          "config_sha256": "a9752f6fc3dc4a0e73d11e2b5eb598e13bf1292810f9c7d65bc76a4740a1c856"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p3_g4_h3_solver_100x.json",
+          "config_sha256": "49754b3a20cb22909fc54fa08d0670490f534f86ecc503fc85e192a46eb3e70f"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re15/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "f79a924d29cae7057982400c85d9a84d3697a7a9315b20f22a84b306c9ca21dc"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re16p25",
+      "Re": 16.25,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h1_baseline.json",
+          "config_sha256": "59af612bb9cda72f4a76e16dced6149d1d6610c2e7ed0b6610163125549898b6"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h1_solver_100x.json",
+          "config_sha256": "c7978c098f87af27941e26549d72a18bbbd7703ac5e2523e2580828a7a59544c"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "399baf0e12a1df43f4599d06389b3eaaf7ecc3d0009e02135c5dbfbfc62a33ee"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h2_baseline.json",
+          "config_sha256": "60e4f6c8d93f434b43cca967437f1dd7d5a03c4695db5155ea96f97e17634a37"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h2_solver_100x.json",
+          "config_sha256": "3ed97e067c0c384169a9e277b115b0d2b05ebe2113908129e86a7c08d7d96fa6"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "c4f4dde15a6019e3e0f6417325fe6b4a87d972118e984a9fea40127a87505f03"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h3_baseline.json",
+          "config_sha256": "36873c679924833c7647ca5e804ca43091f737842ceb3041c19d03b6846c3aae"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h3_solver_100x.json",
+          "config_sha256": "5f50c6cbd865a6f1cfbd6eccfd045ab6337740648c9a7e8a3a04c17ac156000e"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "3974faeaf27c331f985bcc5b8900b8d27a6866888ff157b91e409147fe77a046"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p3_g3_h3_baseline.json",
+          "config_sha256": "4e6d19c88d6c8a7f99a8862eebab5d6e65e0cebbbac1e0981b95c54689779153"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p3_g3_h3_solver_100x.json",
+          "config_sha256": "c4692899a5139a6b552557b299b49878303c77443af4820c0a2467cfe3f2ae58"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "65f5a692e7318d709c80ae33cbbd9573a02ea691e7882057bb78dacb1fe8e521"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p3_g4_h3_baseline.json",
+          "config_sha256": "fceeb278cd3234bc68f3d1cc46b7e9486d5a7e78982d7ba2b31bb4d19b75eec2"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p3_g4_h3_solver_100x.json",
+          "config_sha256": "90f64a94396f5b103c7d6ad656314cacc8f2c65ed8ffa51082e68f4a7d78f479"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p25/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "391d7fea74a750336999ced7e526e667322e7ff3ab54feb014beb5d8e161068e"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re17p5",
+      "Re": 17.5,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h1_baseline.json",
+          "config_sha256": "e6ef510a79a9741524cd308e56b0d0d6a6b7d0beed6142e9daf5c52dc56c2b95"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h1_solver_100x.json",
+          "config_sha256": "e7283e6d165640718c2bc1039ff07d63844318e82a1d2840b7ddc2d692ad0fe1"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "045ff1d548c23840355ed7fe98793b9cda776a1b2e9fd697a5fcb48ccc158f98"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h2_baseline.json",
+          "config_sha256": "0b1f080dbe662b84f76f709cc85b0e57e50088f3d1b19559c50866e8024e5afa"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h2_solver_100x.json",
+          "config_sha256": "e5ac39aac8c04f601efab9776dc8f30c9ac941e6a16e29be5deffc7605af2463"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "9162e6ca4a74c2d932e891fb1e133a0de53f6aaa90648d0d7d46f2bcb919bf9d"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h3_baseline.json",
+          "config_sha256": "a7fe5ca15c5d615f9f9ccc0745bd48c0886143e76403bb25fe127d1b9386dedb"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h3_solver_100x.json",
+          "config_sha256": "2a3dab2edddc606d860fc61fa690ec9cc44d75238090e8ab51e3dd5eb8b8478d"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "eade16d4bbe1dc553d74ed14d5c150e68ebb22c70b82e4eb4374a63ed7924dfd"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p3_g3_h3_baseline.json",
+          "config_sha256": "966e87d498153d884fcf4abc9bab3a8a6d0ca9a907af7a89926e1782845749ab"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p3_g3_h3_solver_100x.json",
+          "config_sha256": "8b6354bd4ccaa03113b24173605ca824365f5dc607a1b67871602c83e9679959"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "edc1cc301852e885bd03434e89e40cfaf69e9f668884bdb460a8266112a277f1"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p3_g4_h3_baseline.json",
+          "config_sha256": "39fb941b8b0fc60f5c405588a32fa0bb047891d6fd18b77ec6d32a491368d7fd"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p3_g4_h3_solver_100x.json",
+          "config_sha256": "736d22337f34dbdbe2ffee85340ae72a08010e66c49fa049ebb48459bfd11514"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re17p5/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "85319d0b3ed6483d518896b9dcb484d33e6c428e0f2f2ddf40ed6327777567c0"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re18p75",
+      "Re": 18.75,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h1_baseline.json",
+          "config_sha256": "8f2c6dd39ea98a73d85ea32673721aba763ab6fee4c059cd301afc887dd7b3a6"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h1_solver_100x.json",
+          "config_sha256": "627fefa428103e5448c60ed5700cc6d79bf427a99df7dbe8336dc0c1bcb98ff3"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "ce8f90f7193214fb92d440f7155c83f78671c8b4da69064cc4babb5b41d10482"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h2_baseline.json",
+          "config_sha256": "830f31b282c4b193aac67ea97bd0e74b63f20c03b656b8a400cb698704e486ef"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h2_solver_100x.json",
+          "config_sha256": "016ebd134e26d8bd486dd9e0b6e3750cfaba734f600b3ff5f90f19de6b21da21"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "b52c7f82d6acdd717fec2cc702040711a3021c8dab16856a1e313bba244fc20d"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h3_baseline.json",
+          "config_sha256": "80d13cdd7923bd4d44152f18c13664f1fec2c7b0fc7d00c7f5892897981981bb"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h3_solver_100x.json",
+          "config_sha256": "062e26a07b44c6e70644833d876e4ccfe5b178f40ece2a304c0709b0d6072ac8"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "dfe97428222e597602630e3c738b2cd97866f43fc6fdfb82e02eeeb6f52c0bd5"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p3_g3_h3_baseline.json",
+          "config_sha256": "26c5a027ac77a2230691aedbb1e5d05b7351abd17f61cc7dff516114a1d0ecfd"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p3_g3_h3_solver_100x.json",
+          "config_sha256": "6fdec87230f11fa02c1a19d519d9a32d58a798117c91121e03a61d2c3301f023"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "347ae88337ec7f1be507281c3f3f129ddfd515b13602f79899b5dc32bde54050"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p3_g4_h3_baseline.json",
+          "config_sha256": "21efcf071e6b4c1aa49ab2823807b70a2212a7fa7ee2003563be80b8e6aa3c17"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p3_g4_h3_solver_100x.json",
+          "config_sha256": "a80912ff2f21401afd4a7ef5deb4f8f4f1ce9181ebcab450cd1696f0ba8be27a"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18p75/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "01b978013be712f0d7e88e4f18f9fa85ca0a803410465dfec87feb3572f583a5"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re20",
+      "Re": 20,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": true,
+          "source_directory": "artifacts/g2-p4trend/results/dfg_h1",
+          "export_manifest_sha256": "1a57a54934eb650cde0599ef8dc81ed5421293be89e4c03d98b522a3c628ca22"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p4_g4_h1_solver_100x.json",
+          "config_sha256": "ff4c97b4182cca77fdfc60c48212387769a3a414c4b8054527eabbb70cfaacba"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "5dad12cbb96b04298373e17b7bd7fb1fe8c4db369ada7cc3f9a36d308533d4b4"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": true,
+          "source_directory": "artifacts/g2-p4trend/results/dfg_h2",
+          "export_manifest_sha256": "fd234202b6f2784514d3718652798f83c518b78dfb5ab5a7041a882c5cfce4a5"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p4_g4_h2_solver_100x.json",
+          "config_sha256": "3760c615ed8803ffa57f278b4d4317ce923ca5c46a9bb022245832e66b8a27e2"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "36d657ebd867dea35f142820a2e1f91e5e635cda6a3cdc62172fc0d22ce1ce18"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": true,
+          "source_directory": "artifacts/g2-p4trend/results/dfg_h3",
+          "export_manifest_sha256": "b1aa0ab53881c064935858901a90a3937fc4abf4d49690f93a69d29271a4f25b"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": true,
+          "source_directory": "artifacts/g2-solverquad01/results/solver_100x",
+          "export_manifest_sha256": "8a3f1c12ca3506ff91a8cfc05cdff73d8806bd06d9278043d53c22fc17f98223"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": true,
+          "source_directory": "artifacts/g2-solverquad01/results/quadrature_plus4",
+          "export_manifest_sha256": "6a67d1a3afc3a6346da08c3b9768941a6cbdd255364ed85f336eb8f281696ac2"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": true,
+          "source_directory": "artifacts/g2-h3/results/dfg_h3",
+          "export_manifest_sha256": "e5348c6ea9993e7ce06df83b52dc84fecec5329a95666bfbb0d838d0fbdc0285"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p3_g3_h3_solver_100x.json",
+          "config_sha256": "6b0f5b7786445d8c5cf363cfcafa35447dc498aa761a078a9d503db6a8681f7d"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "ad5c9c671b3e4ec306d6ffbe33001665845640d867228509644afedcb109fdf5"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": true,
+          "source_directory": "artifacts/g2-p4controls/results/dfg_p3_g4_h3",
+          "export_manifest_sha256": "2f84a89dd4e787503f652003d399b019de84a6b20b32251daed88f75042422bf"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p3_g4_h3_solver_100x.json",
+          "config_sha256": "8afae1088fb402b51b6314f5f3b272c09636db64ae6b5b457ec7721b4625d5de"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re20/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "41c517243676f5e1e9fc91051ac41bf1b8dcf54fbe53eb6038797357ef7df608"
+        }
+      ],
+      "runner_seconds": 900,
+      "allocation_seconds": 1000
+    },
+    {
+      "id": "re21p25",
+      "Re": 21.25,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h1_baseline.json",
+          "config_sha256": "d93243fdfbb9cd7395e380ed8d74c535ef928d45d476ad23a6fe31e1396b36c9"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h1_solver_100x.json",
+          "config_sha256": "7d49eee07e6a649c07ff739ff9542fd90b3eb62b920f157282a9f5cace1a82be"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "aae08371f03da364789e0cbb3f5c4368a252927ae3c8c5295e206097b7ee4062"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h2_baseline.json",
+          "config_sha256": "86eedad2a6b2c534258be3b5440ffa7c73c594fafe7c61729c67d60f1802bcf1"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h2_solver_100x.json",
+          "config_sha256": "bf919d376484204636105af87d98e81ef45c168a84ed65d3d58f529c54bb5c2e"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "81eb20b3a2cea84a0e36ba9f164abede8f48e289969faf9d08d157ce1e79189a"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h3_baseline.json",
+          "config_sha256": "bce28baaeafd89e3e3d0af1a7fac6804a240f85acbef2fd3e08d9310c31c69a7"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h3_solver_100x.json",
+          "config_sha256": "db16a333b825c6b5387f079bc5e5ef15e21100b9b83a967ebbd6af0432381086"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "14dfd80a07b9d9bde6be171e2b8cef48d5f44397742ce99ad84bc4bb09bc6123"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p3_g3_h3_baseline.json",
+          "config_sha256": "227d1c34b88c4f7f33630955d9f81b82d4232c80daa3081a3ec76a1dcb25c209"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p3_g3_h3_solver_100x.json",
+          "config_sha256": "b93e3425528c6712822b5fbe2ac6076b2007e35048aa4e46abd5eda06bf219f5"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "ce66527b71045d8afa3bd44b85711d43efdcd9c14ccf6c66b5e67c345654d233"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p3_g4_h3_baseline.json",
+          "config_sha256": "3fb28f96027ef2613a0e96108b8f96e2c697620acae207a98129eddd2299dff1"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p3_g4_h3_solver_100x.json",
+          "config_sha256": "91b033a2cfbfbc5dd449368ccf27ba21f880c0389d1f9cb95604a5605be9d5e5"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re21p25/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "f6dc4bc997f627c26fda3b0bd84e8bb1900ca337347a15443fd46ca2f0c8d09a"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re22p5",
+      "Re": 22.5,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h1_baseline.json",
+          "config_sha256": "5e1840d8106046e9d04bf3c519c8def3552dfaac9c911d7c31a24f0ee23ab9a2"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h1_solver_100x.json",
+          "config_sha256": "ccee309bf4d437a475974f30db17aeb6b20b0f6a5857ce9a64ab189f2f591416"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "526793468924556ee20b533d2ded3d98e1f47faba3973e386c616f1c4be02750"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h2_baseline.json",
+          "config_sha256": "874b3db9a87541a21c5b6eaa92bc9129e411c6fb410ddbc8be8c5fdfea223d86"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h2_solver_100x.json",
+          "config_sha256": "5053554e6d22e1057967921da5fe135ebc0cd7c53ea9dfd306a47fcf904de16a"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "9d350c78732b64b4e07b3b08bcd54dd1c84e37b3f5532fb0d4c6969848cb499f"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h3_baseline.json",
+          "config_sha256": "8a2ebaa2ade7a6cae5349e8146abca110dda9812e1eae4b20073ebfa9cbc40cc"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h3_solver_100x.json",
+          "config_sha256": "6ce24fa8aebb33b19b3537069174369783d24614409e6bf5e28ea55ddb920692"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "8edc22714827554845fcf8fadc3e2b15cc47a5b28ff264296c47b406b56fc062"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p3_g3_h3_baseline.json",
+          "config_sha256": "87af12bbc66f27b88bad8dc3a5300c58c867d27b010242ad98dae24f7d1231c4"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p3_g3_h3_solver_100x.json",
+          "config_sha256": "284bcec90009398459ff0c45e35ebb03f6e62be319d3d26343609f712b8061f4"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "66b2164415462e6df1873b3d705505c3a86679bdd6e0d4933149ed497e24ba8d"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p3_g4_h3_baseline.json",
+          "config_sha256": "a08dc02ced7f0bfe7b77718d1996349c4fb654190aba5cdbbd716704db498feb"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p3_g4_h3_solver_100x.json",
+          "config_sha256": "d4c1106b332adaea8f5f1dfc6478d68bc34d2281130caa61259c62c334f687c5"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22p5/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "0cb836a5f88918cde35848d938036794dbe2c97aa8dfc99468ab798aa39a3e8b"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re23p75",
+      "Re": 23.75,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h1_baseline.json",
+          "config_sha256": "cba721abed46dba2f6b615095879c3a54a552e9036dfab0a67cd7b0728f3c95b"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h1_solver_100x.json",
+          "config_sha256": "9cc98c9bf2376a0500bf75e9ff1ddf56e479d8e59b33bd0f46d3743ab3cdc751"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "782f419d2f20aa2c5ac281629dccf75e87eaa33c5fcdbb02741567f44164434a"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h2_baseline.json",
+          "config_sha256": "aabbc6d55d913db58da41be59c9d533beb41645fe56b334c6959bce3bfe1d90e"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h2_solver_100x.json",
+          "config_sha256": "c9c9292ba976058bae0a17b07f9e0ee5f7c5e16ed1500e6c015356d8d586b74b"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "232d9b979915d72aefd42ac2739cc83e7d82862dfa2931a463d190068e272ff5"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h3_baseline.json",
+          "config_sha256": "a2b4935c5f7b26948676e4462881d0dfb635ac36966afdc2319f5cbc37ac38fb"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h3_solver_100x.json",
+          "config_sha256": "e7fcef1daf49dbcb31cb091bd0168ced8149b72917fd258f91600b005b2fcbc0"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "cf4095ce802a0d43dc24878e75afcf86c91afd26347aaa8d6ecbc3c2c4be23fa"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p3_g3_h3_baseline.json",
+          "config_sha256": "fd52f5779b8cb9bb02adb292403eb10925c88ed313074e5e6da47a33e73556c1"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p3_g3_h3_solver_100x.json",
+          "config_sha256": "ebdf1d961c0a4d642bddc94d6c8107b21eed545c149d23ed17e3fea12cf3954d"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "39ef6860b7228f81a96619f26c672ad8c94c38a31d974a2e228407d169378984"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p3_g4_h3_baseline.json",
+          "config_sha256": "97dfb432d1040a61a2b1fc43a08456458902c7ae941f168cf75b5843a6d1f876"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p3_g4_h3_solver_100x.json",
+          "config_sha256": "939924f4f2fe6dac00cedd3f435153f7b3a036aa82a3d1102378b9570662c2a0"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p75/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "2db447639b32df8411836b4dd45260f31b6d233d1c10268a77b461536cefad02"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re25",
+      "Re": 25,
+      "split": "train",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h1_baseline.json",
+          "config_sha256": "e19fde48a73d7403211f10b4026091ce9694f035c87d1599d3f989e11146a022"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h1_solver_100x.json",
+          "config_sha256": "5cbdd5cddc7381d904f52846f1f8e3437f0e0e3f88ad65eab9874af161fbf65d"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "e04fb0ad9add19a9e5c42facd90cc5dc53f13a8a52b426db853cb26de6227c8f"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h2_baseline.json",
+          "config_sha256": "f8ca3771cb9c40908e6ae8f261d789b677f4de365287fcbfc693f891662fc886"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h2_solver_100x.json",
+          "config_sha256": "39da141c239aceccd0bce14eba1a5045a4f4dba8582981059f3f0db1b868a5e8"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "f11cce9760e094b56ed58452037175471f64cd036cf648221f5d4b31a63fb059"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h3_baseline.json",
+          "config_sha256": "6e0e92363be5cad1fefb2e61da96f8079d18669e33a6bdadcbb1519afae4527b"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h3_solver_100x.json",
+          "config_sha256": "315cf2a71908f79ceb7a27e423591dd0b3b7b52e2697107d06ac99ec3bb86a1a"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "349dd80f7730e23694d44ab37786a44e0705a53ed32bd817172c5fe80cf26f5f"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p3_g3_h3_baseline.json",
+          "config_sha256": "b2694e3b70045623359bfc2c653b3fcff79b4c34eaea6ba5fb56b20c465c08cb"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p3_g3_h3_solver_100x.json",
+          "config_sha256": "3d0f3c8bb145f15d04506f1492a76025e758db3f52814f831c88408391e3e92f"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "940188c08e221ec64d1db13bdd3d248c16b5c57f225f077b80cdab75fac2cbf8"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p3_g4_h3_baseline.json",
+          "config_sha256": "fcdc72143e21050871677f374e9af504d4ac480d6da04ed1abacdfcd7e9dd773"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p3_g4_h3_solver_100x.json",
+          "config_sha256": "3b7bcee1e4c6bc84b1d7257b33110ebba815b915f68857bb5404cd8d726721d8"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re25/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "7e73dfbda092b3a35a3b351dcf65d81d0c2dd3308cf3211a6ed2ce773a0a3758"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re16p875",
+      "Re": 16.875,
+      "split": "development",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h1_baseline.json",
+          "config_sha256": "ea9c9ec7059024a3c7b32c953483245cddff494a0ee3dc5d743c80ad985278c1"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h1_solver_100x.json",
+          "config_sha256": "0b04b00412dcb5fcf17c2dbe987af1fd4ddbec52c2d2fd9be1de0105746095fe"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "adbd955879064a31b0b2834c3c0895d7780037a762f6c0d93002967b45e6f005"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h2_baseline.json",
+          "config_sha256": "357b6454066d4b7f2edf0488f147a984adf78336e933b2f04c0b88eaec5b21ac"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h2_solver_100x.json",
+          "config_sha256": "678b76b49b3c67edd29d0b903346432a41d08b6b65691986f84bc62ded8c66f8"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "222d5f03e06b7609544f43c636592e4858db68907cb23b92c2e5bac2e47b1454"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h3_baseline.json",
+          "config_sha256": "5cdf48563a61b891f97fab5fd3902433ecd7bf95485e10c6200f1290e3e78edd"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h3_solver_100x.json",
+          "config_sha256": "dbf31ae893d403b6400ab1f15e415934954afc8b2ee4d85d00e540a67139977d"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "75f1a24d77721dae18e291a08a736c426753c50fa66a5e90007027c699230d97"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p3_g3_h3_baseline.json",
+          "config_sha256": "6196b23dcd8facbd707ba8ab28f427bf5a4bc6b452d9f88a347ab4120b36760d"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p3_g3_h3_solver_100x.json",
+          "config_sha256": "971ebe3398cdad1d1189317e6d64638545884b5e6ac3d28ec3b1ed65d9f115f4"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "415ae65588dcfdf5a3592c2b4226894ea6ebf3f6f48a3278e6af0b0445976f4e"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p3_g4_h3_baseline.json",
+          "config_sha256": "ee94dd11df8ea68807459be6c781852a669846abd9c4c1582548632faffde2a6"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p3_g4_h3_solver_100x.json",
+          "config_sha256": "3b1055d55a92ff796380e37cae649cb87fba8b918dfedfc97ea11d679e1d1dc4"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16p875/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "575b261901283aed5290fe796070952d5a601335a5e2a5cd3b59176bc04c5965"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re23p125",
+      "Re": 23.125,
+      "split": "development",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h1_baseline.json",
+          "config_sha256": "03908c14e1baa1ef3e1dd2a549c3ea935b64d843f148a88d33002e721b57e755"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h1_solver_100x.json",
+          "config_sha256": "0865afcd48e373ba755d25a690c190307a51da5b14717786f2615831cfeb6156"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "a060be1e7b51dbf18265c6a64f62eacd27e9aa048c7989e1d8b752dca91b28d6"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h2_baseline.json",
+          "config_sha256": "f52d02744c3699b756395e428b23e2521a8a938cff1e4ebd3d3738bbdd6e6f45"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h2_solver_100x.json",
+          "config_sha256": "3d2a170c1f23396a883de8d874b62ac96100dcf35d9e83bfebc0fa3d9bfe4bdc"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "ccaba419201c12dfc8366058f0ed4e6500c02f207ef2e0d51797e30cd7368ff6"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h3_baseline.json",
+          "config_sha256": "01d847ceb6cb3073954c3bb53f0d849c83c41cc8e33c90dcd44d77e680130692"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h3_solver_100x.json",
+          "config_sha256": "29117ac14eb07daaf063509f47151fc5092c2d151274cf8284bd8b8a98f3ec02"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "3387a3c5d79766481088726519902da0bc9c7ceb53f20a4ddb0396e89b63aedb"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p3_g3_h3_baseline.json",
+          "config_sha256": "12f24f2c4742ad030c42772e73ec26be723a63447640bc324010a45300a22d29"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p3_g3_h3_solver_100x.json",
+          "config_sha256": "e6e9a47b6d23dec4ed5d5a69f8ed481187afcf5073c50ed6676c3d748f383f8a"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "83c30a554b4af7217afd7744e6fd69434fb6d94d6ffb9f6dba25e5bc8d928287"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p3_g4_h3_baseline.json",
+          "config_sha256": "99fd7ae7d0b80da2247a1c8db0f0f366fb93055e1784dfa8c6ea8cd71f41edf2"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p3_g4_h3_solver_100x.json",
+          "config_sha256": "f1155ea2380c3a3b9102b815f0bb5d0c94280702cb04e695247f42cff83009c0"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re23p125/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "c5188d359543ccf6ba050c56ec3341980cf79321a21688350daffeedca9f0518"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re16",
+      "Re": 16,
+      "split": "validation",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h1_baseline.json",
+          "config_sha256": "25d85813374fd59a90a67956a3283b00dc10f162e79a07e44f5b6446cce5a691"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h1_solver_100x.json",
+          "config_sha256": "cb62c0dd77f55b0dbfd8a9e42ae1d1b49a677d3ab2a454dca433b8ee9bec069c"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "8de07830303380713c2be78fef0fe9bf6b92f53083a3bd593e46f68cfadab013"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h2_baseline.json",
+          "config_sha256": "a3e3b264d33ff2d3f7c7944385faa85cc4a7b3cd314a92bf46b1391b3543ba62"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h2_solver_100x.json",
+          "config_sha256": "a6044d12d3464d78929761c3d0d3971b26552d46894f795e8db0abb228c0b3d5"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "c4e9f383b30032f5c8ddfd8d7123842b927cd98822b94ceca30e96995abed132"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h3_baseline.json",
+          "config_sha256": "b3071426d2088a8ccc843528c1522b21c89c29b4868d45091bf5b5b223500d7d"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h3_solver_100x.json",
+          "config_sha256": "11322b12c23fd18240875e97e06cbeb19cd7c4cd00ec26f1a8da44859341e274"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "e324b8464ab26538d1bcd15ef72e50efbd8c0e924042a10595d6c52e8adb4896"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p3_g3_h3_baseline.json",
+          "config_sha256": "98bf09f8ca1a94aff8ff3f8f28ef78e19bc3949b1018decee5897c6011fb4608"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p3_g3_h3_solver_100x.json",
+          "config_sha256": "7b3ce7930e26475a86a6ee584e39f97c5466cf9f998191cdeca18d4447e9df8d"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "0fd7bc82602ae68c2b76bf9aca38b9d8175aa229348c7d8efe88618a33deaa88"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p3_g4_h3_baseline.json",
+          "config_sha256": "7c18a99ba142e978e03252f503f3a123f2a0a47267bed8489e706c28afbe0206"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p3_g4_h3_solver_100x.json",
+          "config_sha256": "90abde11299e77010763a35da7bd140d262781c67cf75b4179db325ff515cdab"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re16/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "f13bec5fa81fe974a204ce94d4cc89302ee572816363610a317c5147e82856d2"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re18",
+      "Re": 18,
+      "split": "validation",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h1_baseline.json",
+          "config_sha256": "b3114d24162304f74a11b465358b62dac712a1cd1caab1e098a5c733aaf37a53"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h1_solver_100x.json",
+          "config_sha256": "cb36326346d14429af1e41e6b21cee494550de6e8f90e78f51a7ae0248c59c78"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "08c44fc9a74f8b87c0dc905787edbbcc1e4d89d3ccf0063003bac5b2f867c492"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h2_baseline.json",
+          "config_sha256": "520d4737ba448e2fd724fcf264b3adee0b29aebe37ce35cdb04b9229babca1df"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h2_solver_100x.json",
+          "config_sha256": "f47cfad29d0478ebe3092a3a9d42e1d8822b617e0d299f94a71407c19d6a05de"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "8ae77176c09539a0f96ddab63d21e8e3b209e6f0cc007c10d4f71659587eea85"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h3_baseline.json",
+          "config_sha256": "21d5a68f22ffbe2508779ea8b14173b78990731600a9e9faa09741b5061f4e1c"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h3_solver_100x.json",
+          "config_sha256": "c9ad43734c447a79d94c80fe154c01d28d7dede29c82dd6e2abe29134e65599b"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "739c641eeb781496b8aed171c38aa2e7f5e29c598fb72ec813f6b40601efac61"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p3_g3_h3_baseline.json",
+          "config_sha256": "2844d160205788042d3b0821cd5fb04d1dd2f08d8b67b5feeb489397e691c3bc"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p3_g3_h3_solver_100x.json",
+          "config_sha256": "9e8ba71f960fa7fe5d70925304922921a2a56a554864a2cf529202615010223c"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "0aa434f8bfc22b36d64e79029beeab6880a8949db6bcd908f83193e4ac74819e"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p3_g4_h3_baseline.json",
+          "config_sha256": "96db3ff920571057171a9cea15c08c2e3338bbbb3008097f6e869393e8e18295"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p3_g4_h3_solver_100x.json",
+          "config_sha256": "e1b3981bdf8eb449a658024f0240d9fd47043711f7202cf3b137347088db838a"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re18/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "f9d4c8ed140eb6fd253057b2b68b514a62b3950f19eb8549c34058458a0f0f55"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re22",
+      "Re": 22,
+      "split": "validation",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h1_baseline.json",
+          "config_sha256": "73bd3d82a5c38dd5dda9a5f8e29b7fff7d6a51a073433534889c8a9c1a913ff3"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h1_solver_100x.json",
+          "config_sha256": "15ba866e934f7b8b5f8a1828c998a6318694f5bd6cd3bb34aafcd627e84560ba"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "d0b2605c11b42965f64c0aca29b6535e87d24aa34f5d9de512a3ab3ca6f5d32f"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h2_baseline.json",
+          "config_sha256": "30e455a86dda706b0c9a9ec11c6aa641e011e1ec90b6ff892bf911545a138f0b"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h2_solver_100x.json",
+          "config_sha256": "393f34b3fa2fc4de58f125ffef1436426150095b57c395e060a662c6b1ab1b39"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "cb5554f33d278f6c0eea505bf73247cc868ab828ea05ea493d26d609229b570c"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h3_baseline.json",
+          "config_sha256": "d065f618106d4a32cbb9287f71991bd3e46ab63299a75c13c1fb37a864ef3771"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h3_solver_100x.json",
+          "config_sha256": "12316ded27932db141ea4e1125bc1b439d328fc7583fda558344a2ad1dee4d81"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "6d8af722c2b5ef3d139adb62e86d21bc76d4febd26db2e58e7860c61a2267fa3"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p3_g3_h3_baseline.json",
+          "config_sha256": "abc813e7580b493723e0334837d315f643f266cf44b155b8226c1eeb67201ff7"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p3_g3_h3_solver_100x.json",
+          "config_sha256": "5a58e808ebe792a1d1fa24e2f61059f6e8a21d6f6ef1f5de14595bff6e916410"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "b601a700c4fd0e2f070c0dc36e4560cc20a14ff733e0e46ea75a60f6af4b015e"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p3_g4_h3_baseline.json",
+          "config_sha256": "c6dfecf8a5294e3cd47490234c473484064211a4636bdd06b2db300d062f215d"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p3_g4_h3_solver_100x.json",
+          "config_sha256": "c8ecf791fc377dfb26d828afca1a97015b3e3a5118b1f014a71bdcf919aee368"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re22/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "94bbfeac44b26c8380a297eb1797e3ba94bbd9249df62a6fc9d4ea4b4347596b"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    },
+    {
+      "id": "re24",
+      "Re": 24,
+      "split": "validation",
+      "states": [
+        {
+          "id": "p4_g4_h1_baseline",
+          "space": "p4_g4_h1",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h1_baseline.json",
+          "config_sha256": "b9d60d7080b88fc06fcae7bdfa16b7ad9579c3db8af65e8b50fbf7e5fdba65b9"
+        },
+        {
+          "id": "p4_g4_h1_solver_100x",
+          "space": "p4_g4_h1",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h1_solver_100x.json",
+          "config_sha256": "c09a715316fd0207a1c61e1ec9d1d4108f7ebd777b011693b8a55e3ff7f41852"
+        },
+        {
+          "id": "p4_g4_h1_quadrature_plus4",
+          "space": "p4_g4_h1",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h1_quadrature_plus4.json",
+          "config_sha256": "e80bdf1fdd0b4e4389c0494c5d55f74ad2e3511938119166fc5a6334c334608e"
+        },
+        {
+          "id": "p4_g4_h2_baseline",
+          "space": "p4_g4_h2",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h2_baseline.json",
+          "config_sha256": "ffd83e5f0907717870784ed3b5896d1fb51504913c538a2c0d503a990c17c396"
+        },
+        {
+          "id": "p4_g4_h2_solver_100x",
+          "space": "p4_g4_h2",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h2_solver_100x.json",
+          "config_sha256": "04df4e5493b94d7ae88b2241c9450089aa636c81aebfb95845ac03b989bbe6a7"
+        },
+        {
+          "id": "p4_g4_h2_quadrature_plus4",
+          "space": "p4_g4_h2",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h2_quadrature_plus4.json",
+          "config_sha256": "84c63d678e77e9b85c245bd9d7beb7d22684e669d313cc9220107df17f11e2df"
+        },
+        {
+          "id": "p4_g4_h3_baseline",
+          "space": "p4_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h3_baseline.json",
+          "config_sha256": "2493e134717bfbd1e5b158e3e7f4246ff1378d1a908c0f9278ce32f103b95c63"
+        },
+        {
+          "id": "p4_g4_h3_solver_100x",
+          "space": "p4_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h3_solver_100x.json",
+          "config_sha256": "2abb541996b014ba1770c94d45317a64a8bec8ba4cadabf9ce607fa41d31a5c5"
+        },
+        {
+          "id": "p4_g4_h3_quadrature_plus4",
+          "space": "p4_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p4_g4_h3_quadrature_plus4.json",
+          "config_sha256": "612b3d3841eff3c1e0a8107964188673360ccc27f7f3363998a7becd63989741"
+        },
+        {
+          "id": "p3_g3_h3_baseline",
+          "space": "p3_g3_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p3_g3_h3_baseline.json",
+          "config_sha256": "3dc60cdde872f0054f1cf1897884587e296331579e514282bd1a2b96e7559c22"
+        },
+        {
+          "id": "p3_g3_h3_solver_100x",
+          "space": "p3_g3_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p3_g3_h3_solver_100x.json",
+          "config_sha256": "c362154af2a3db4be13e253be1afb2377516c2d728c601fa2248bca0ab139604"
+        },
+        {
+          "id": "p3_g3_h3_quadrature_plus4",
+          "space": "p3_g3_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p3_g3_h3_quadrature_plus4.json",
+          "config_sha256": "ccbc6b235af3e6e205872aeb2fbdcce9b14f3c8c726105759faad7c8bfa5a3aa"
+        },
+        {
+          "id": "p3_g4_h3_baseline",
+          "space": "p3_g4_h3",
+          "variant": "baseline",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p3_g4_h3_baseline.json",
+          "config_sha256": "24842cde8318f2219893d4a99ba51688b5909304c2cc583969aa5a6232337c7b"
+        },
+        {
+          "id": "p3_g4_h3_solver_100x",
+          "space": "p3_g4_h3",
+          "variant": "solver_100x",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p3_g4_h3_solver_100x.json",
+          "config_sha256": "08a70cbe14c3b683cec3c8f4c081be8cffb65b59b49c460bc6650cc4a859dbfa"
+        },
+        {
+          "id": "p3_g4_h3_quadrature_plus4",
+          "space": "p3_g4_h3",
+          "variant": "quadrature_plus4",
+          "retained": false,
+          "config": "g2/population01/configs/re24/p3_g4_h3_quadrature_plus4.json",
+          "config_sha256": "86047191543f0025c0de7390f545bbb4e7cfc4e4ad8258c6434a6f8620f51e6e"
+        }
+      ],
+      "runner_seconds": 1400,
+      "allocation_seconds": 1500
+    }
+  ],
+  "shared_training_geometry": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+  "common_rule": {
+    "source": "artifacts/g2-p4trend/results/dfg_h3/full_rule.npz",
+    "sha256": "b34bba1de0bccc9c68a08bec89ce58d65121861ebb20d489787cad91481e36b5",
+    "point_count": 1036497,
+    "policy": "Use every original P4 h3 point/weight, adopted-P4 denominator per parameter. Re-evaluate higher-quadrature coefficient states on this rule; preserve existing higher-rule comparison separately. No masking, pressure shifting or remeshing the shared training mesh."
+  },
+  "common_cache_manifests": {
+    "p4_g4_h1": "301a12e798a2762de02933e3f765963c125d0fc71379478710aeca802792f2df",
+    "p4_g4_h2": "227e90929d06a962f163e0e51dfa5da6abc44974adc3892411dea2e16cae067c",
+    "p4_g4_h3": "06fd6094fe59235a11f55c64bc55d4e75b6ffa99842d4284bda3e32c74bcd7ef",
+    "p3_g3_h3": "f9e7a61af29f7efd6f599d2e6cf82cbb05db4f8956f871347f91a7e8e7b117f3",
+    "p3_g4_h3": "c4fbf56e21bcc4f5d3017e34033a5fdab56e15ca95166cd6472c65c4709adc24"
+  },
+  "force_noise_rule": {
+    "canonical": "physical_symmetric_order16",
+    "normalization": "same adopted P4 drag denominator; absolute transverse coefficient",
+    "additional_retained_diagnostics": [
+      "baseline16 to Qstate20 combined assembly/output quadrature contrast",
+      "Qstate16 to Qstate20 output integration sensitivity"
+    ],
+    "no_extra_PDE_solve": true
+  },
+  "numerical_coverage": "all five baseline states and both S/Q controls at every parameter; no endpoint inheritance",
+  "execution_bounds": {
+    "max_live_jobs": 2,
+    "allocation_seconds_by_group": "1000 for retained Re20 completion; 1500 for each new parameter",
+    "runner_seconds_by_group": "900 for Re20; 1400 otherwise",
+    "reference_infrastructure_total_seconds": 28800,
+    "campaign_total_seconds": 43200,
+    "automatic_retry": false
+  }
+}

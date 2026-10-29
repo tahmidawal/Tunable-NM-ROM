@@ -1,0 +1,78 @@
+{
+  "U": 0.2,
+  "D": 0.1,
+  "nu": 0.0013333333333333335,
+  "H": 0.41,
+  "xmin": 0.0,
+  "xmax": 2.2,
+  "center": [
+    0.2,
+    0.2
+  ],
+  "radius": 0.05,
+  "outlet": "gradient",
+  "velocity_order": 4,
+  "pressure_order": 3,
+  "geometry_order": 4,
+  "maxh": 0.02,
+  "obstacle_h": 0.005,
+  "assembly_bonus_order": 10,
+  "diagnostic_order": 16,
+  "threads": 16,
+  "seed": 27102026,
+  "newton_max": 30,
+  "nonlinear_relative_tolerance": 1e-10,
+  "linear_relative_tolerance": 1e-10,
+  "residual_floor": 1.0,
+  "damping_sequence": [
+    1,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+  ],
+  "armijo": 0.0001,
+  "inverse_backend": "umfpack",
+  "max_elements": 30000,
+  "max_dofs": 500000,
+  "max_nnz": 30000000,
+  "factor_fill_estimate": 100,
+  "memory_stop_gib": 48,
+  "jacobian_steps": [
+    0.01,
+    0.001,
+    0.0001
+  ],
+  "jacobian_state_perturbation": 0.1,
+  "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+  "design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+  "release": "G2_fixed_finite_channel_control_candidate",
+  "precision": "float64",
+  "kind": "dfg",
+  "reference_export_controls": true,
+  "export_common_stokes_lift": false,
+  "campaign_file": "g2/campaign-A6.json",
+  "split": "train",
+  "purpose": "direct FD1 parameter numerical qualification; not reference admission",
+  "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+  "reference_storage_mode": "coefficient_primary",
+  "max_volume_points": 2000000,
+  "immutable_mesh": {
+    "mesh_path": "shared/meshes/p4_g4_h2/mesh.vol.bin",
+    "mesh_sha256": "c15599ab35f5179b69f77a16a55f76699b42632c0dcff22bcd7026a122e7306c",
+    "identity_path": "shared/meshes/p4_g4_h2/mesh_identity.json",
+    "identity_sha256": "513a0a6644a940cb97d25575996715c674f8571b56cf466881335b3f92e8190d"
+  },
+  "immutable_rule_cache": {
+    "volume": {
+      "manifest_path": "shared/caches/p4_g4_h2/16/volume/cache.json",
+      "manifest_sha256": "6c694bf77b5706dcf44b7b8fab76ab1edad71d40468dab224d959a8801131ead"
+    },
+    "boundary": {
+      "manifest_path": "shared/caches/p4_g4_h2/16/boundary/cache.json",
+      "manifest_sha256": "126978a6f102950ac1946bf270b398064194fb7373be3c74fe94ea69621c017b"
+    }
+  }
+}

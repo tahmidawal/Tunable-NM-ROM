@@ -1,5 +1,5 @@
 {
-  "status": "source_and_input_review_PASS_execution_not_yet_released",
+  "status": "complete_runtime_closure_approval_retracted",
   "source_commit": "b6c8babcf",
   "inventory_sha256": "b8c4a281778beb76f6429b8f728f74ecb35228e75500dbc910d501073fd79943",
   "reviewer": "/root/numerical_resume",
@@ -29,5 +29,12 @@
     "Remaining-allocation clock bounds every child process",
     "Both frozen resource subcaps preserved",
     "No reference-admission writer"
-  ]
+  ],
+  "retraction": {
+    "job_id": 6623674,
+    "reason": "Declared file hashes passed, but producer make_or_reuse_mesh reads adjacent reload_checks.json omitted from shared mesh staging",
+    "declared_input_hash_review_still_valid": true,
+    "complete_runtime_closure_claim_valid": false,
+    "required_action": "Audit actual producer transitive reads and validate all mesh/identity/reload triples before new release"
+  }
 }

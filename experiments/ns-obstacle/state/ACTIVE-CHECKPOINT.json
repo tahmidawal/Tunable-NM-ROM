@@ -1,19 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    {
-      "job_id": 6623674,
-      "attempt": "g2-population-re20-01",
-      "release": "4bc2c3f9b"
-    }
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Audit actual first Re20 population completion, then exact remaining14-group release; original domain sensitivity remains failed",
+    "Retain failed Re20 batch and independently review complete transitive mesh-input repair before fresh single-submit release",
     "Complete finite-channel numerical qualification/all15 noise evidence and measured runtime/disk plan",
     "Complete scoped admission and actual ROM preparation/training/solves/held-out comparisons"
   ],
-  "completed_allocated_gpu_hours": 1.5486111111111112,
+  "completed_allocated_gpu_hours": 1.5575,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -131,5 +125,6 @@
   "native_primary06_result": "Independent896file/exact coarse restoration audit PASS; generated/native-primary06/summary.json; no fine omission",
   "cold_archive_recovery": "Independently accepted Git-only archive recovery; source89da05782, README in retention; canonical numerical arrays remain warm",
   "cache_primary01_result": "Independent1305-file/208-array/28-comparison/25-closure raw audit PASS; reviews/CACHE-PRIMARY01-RESULT-REVIEW.json; no physical admission",
-  "population_re20_release": "reviews/RELEASE-POPULATION-RE20-01.json; single submission authorized, eight controls, no admission"
+  "population_re20_release": "reviews/RELEASE-POPULATION-RE20-01.json; single submission authorized, eight controls, no admission",
+  "population_re20_result": "Job6623674 FAILED32s before first solve: missing adjacent mesh reload_checks.json; runtime-closure approval retracted; fresh reviewed package required"
 }

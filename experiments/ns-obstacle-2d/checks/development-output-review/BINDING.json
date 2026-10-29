@@ -1,0 +1,13 @@
+{
+  "schema": "ns-obstacle-development-handoff-audit-binding-v1",
+  "files": {
+    "audit_remote.py": "b4d10c88ddd07111b3ded51adf35de2c59c6071753d67afe3b956fb467cfead2",
+    "EXPECTED.json": "7ba34a2552422a9b202dca106ddbcca33e2c92f616dbf7b2f14c41343f4173e1",
+    "RESULT.json": "0717326d1a0c490bfa9829fea8c3b3b30dc9d76c06efd25e600a90bd6f2d935f",
+    "AUDIT.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "execution": "EXPECTED=json.loads(EXPECTED.json); EXPECTED_SHA=sha256(EXPECTED.json); append audit_remote.py and send to absolute cluster Python stdin with development-materialize02 directory argument",
+  "remote_mutations": false,
+  "native_reconstruction_performed": false,
+  "validation_fields_accessed": false
+}

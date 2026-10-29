@@ -1,0 +1,55 @@
+{
+  "schema": "ns-obstacle-independent-development-handoff-review-v1",
+  "passed": true,
+  "job_id": "6635386",
+  "scope": "saved development-only arrays; no native reconstruction or validation access",
+  "manifest_sha256": "7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070",
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "cases": [
+    {
+      "Re": 16.875,
+      "split": "development",
+      "original_export_sha256": "438caf6c6910a9a006bf5ef8ccde8f3ff16ffc9dbc76cfdf96f45963c85af91e",
+      "primary_record_sha256": "c6a4e6adfa73ad1df8f020fd981f112892beddd06b3b8554b9e3ddf209d96763",
+      "replay_sha256": "33cb4b90de906b851030f58e03ce054b8e829f11e3571265543ea675b1b8bd8a",
+      "raw_archive_sha256": "a969b57ceb8c0c0a9d7be0b6e2dd79494085dc83c65b045cf639e9e64618cfbc",
+      "fields_archive_sha256": "a18b2110f55bcfb652f0f7506332d7ea4c17d24b383b59d60454b43af72d7608",
+      "field_content_sha256": {
+        "velocity": "9e8c689e627b1e85c97f74e7bb85ba0b9f70c6b051c6d106d0a9446d0fbfd23d",
+        "pressure": "7bdb66d192602bd2fb2d6bccf3683f68f45c97ae02757018f2c362f7051a0bd3",
+        "velocity_gradient": "be18746dc7de1f9bb856d2cc09944be5d2214906e016056be172cc3c5d9fc0ad"
+      },
+      "raw_arrays_verified": 10,
+      "dimensionless_fields_exact": true,
+      "force_coefficient": [
+        6.118300983683085,
+        0.020183540976024848
+      ],
+      "common_rule_sha256": "1b8cb44f65c64b3e2cbfeefc5848bc3f3dc06c2b30b8123797bb6fe5c74b4590"
+    },
+    {
+      "Re": 23.125,
+      "split": "development",
+      "original_export_sha256": "2533c0d6713237beb7844969ced4eb179fc6c06bcd4f3f5713eb4ffce2fcd354",
+      "primary_record_sha256": "00930f93b6855b62019a111ee4f6952c3d9c1fbb98c41d5c671b7d5ecfd4eb96",
+      "replay_sha256": "b9519dadf41969677aeb12625d0bff373a0a4bc220ce7532267b2c77a81d40d0",
+      "raw_archive_sha256": "a147d72fd07853bb6d26e8b8cfad78a38d9da0a328e28f3228651532d9b6d0e1",
+      "fields_archive_sha256": "3f46c7530afb54520d96e444024aacfdf6eeb08f1d34606dbc7c6cfd67be9263",
+      "field_content_sha256": {
+        "velocity": "f3ac00902de06074562cdeeeacf18fdefe7b44e59e804df2eddcef21dab6c4dd",
+        "pressure": "f5c4775c6e41089c77f74565dc87ec44ec58ac857d91a7135463b49925045f48",
+        "velocity_gradient": "65d019e725d65307a2f2fc354fdfaa9dfee199fb47671b2b23c1a2e71a388db8"
+      },
+      "raw_arrays_verified": 10,
+      "dimensionless_fields_exact": true,
+      "force_coefficient": [
+        5.178644052504991,
+        0.004430187913548351
+      ],
+      "common_rule_sha256": "1b8cb44f65c64b3e2cbfeefc5848bc3f3dc06c2b30b8123797bb6fe5c74b4590"
+    }
+  ],
+  "elapsed_seconds": 2.4707898349734023,
+  "peak_rss_bytes": 321933312,
+  "expected_packet_sha256": "7ba34a2552422a9b202dca106ddbcca33e2c92f616dbf7b2f14c41343f4173e1"
+}

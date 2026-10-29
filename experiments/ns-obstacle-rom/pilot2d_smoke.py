@@ -137,7 +137,29 @@ def main():
         assert summary['model_memory_policy']=='one full field model at a time'
         assert summary['physical_admission'] is False
         assert len(summary['offline_rebuilds'])>=6
+    with tempfile.TemporaryDirectory() as root:
+        out=Path(root)/'development'
+        def forbidden_validation():raise AssertionError('development opened validation')
+        with patch('pilot2d.check_population',return_value=None):
+            summary=run_accuracy_pilot(arrays,metadata,probes,bank,
+                synthetic_refs(DEV_RE,'development'),forbidden_validation,out,
+                fit_quadrature=False,development_only=True)
+        assert summary['validation_seen'] is False
+        from frozen_rom2d import read_evidence,rebuild,load_frozen
+        from pilot2d import sha_file
+        frozen_path=out/'frozen_models.json';digest=sha_file(frozen_path)
+        frozen=read_evidence(frozen_path,digest)
+        restored,selected=rebuild(frozen,'POD_r2',arrays,metadata,probes,bank)
+        assert selected is None
+        changed=copy.deepcopy(probes);changed['points_physical'][0,0]+=.001
+        try:rebuild(frozen,'POD_r2',arrays,metadata,changed,bank)
+        except ValueError:pass
+        else:raise AssertionError('changed frozen inputs accepted')
+        try:load_frozen(frozen_path,digest,None)
+        except (RuntimeError,ValueError):pass
+        else:raise AssertionError('unadmitted smoke promoted to production')
     # Mutation regression: actual coefficient evidence survives later reuse of buffers.
+
     buffer=np.zeros(1); counter=[0]
     def call():
         counter[0]+=1;buffer[0]=counter[0]

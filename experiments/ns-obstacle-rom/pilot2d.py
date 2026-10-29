@@ -44,7 +44,7 @@ def source_digest():
     root = Path(__file__).parent
     names = ('pilot2d.py', 'MODEL-CONTRACT.json', 'bank.py', 'geometry.py', 'interpolation.py', 'metrics.py',
              'quadrature.py', 'solver.py', 'spaces.py', 'weak.py', 'timing.py', 'train_bank.py',
-             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py', 'fom_bridge2d.py', 'qualification.py', 'FD1-SCOPE-CONTRACT.json')
+             'pilot2d_blocked.py', 'point_store.py', 'quadrature_blocked.py', 'training_evidence.py', 'fom_bridge2d.py', 'frozen_rom2d.py', 'qualification.py', 'FD1-SCOPE-CONTRACT.json')
     return hashlib.sha256(json.dumps({n: sha_file(root/n) for n in names}, sort_keys=True).encode()).hexdigest()
 
 
@@ -74,7 +74,7 @@ def _read_arrays(path, max_bytes):
     return result
 
 
-def load_preparation(directory, release_path):
+def read_preparation_metadata(directory, release_path):
     """Read production arrays only after an explicit exact-source preparation release."""
     from fe_adapter import CAPS
     folder = Path(directory); release = json.loads(Path(release_path).read_text())
@@ -97,6 +97,13 @@ def load_preparation(directory, release_path):
         raise ValueError('reference admission differs from released preparation')
     for name, digest in meta['coefficient_files'].items():
         if sha_file(folder/name) != digest: raise ValueError(f'prepared artifact hash mismatch: {name}')
+    return meta, release
+
+
+def load_preparation(directory, release_path):
+    from fe_adapter import CAPS
+    folder = Path(directory)
+    meta, release = read_preparation_metadata(directory, release_path)
     arrays = {name: _read_arrays(folder/(name+'.npz'), CAPS['archive_bytes']) for name in ('boundary','training')}
     if meta.get('volume_storage') == 'point-block-v1':
         from point_store import PointVolumeStore
@@ -538,7 +545,7 @@ def model_fingerprint(model):
 
 
 def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_loader,
-                       output_directory, fit_quadrature=True):
+                       output_directory, fit_quadrature=True, development_only=False):
     """Actual model construction/solves with development-only quadrature selection.
 
     validation_loader is called only after all choices are frozen. Construction and
@@ -630,6 +637,23 @@ def run_accuracy_pilot(arrays, metadata, probes, bank, development, validation_l
         gc.collect()
     save_evidence(out, 'frozen_development_choices', {'choices': choices, 'bank_gate': bank_gate,
                                                     'validation_seen': False})
+    from weak import WeakOperator
+    from frozen_rom2d import input_identity
+    frozen = {'input_identity': input_identity(metadata, probes, bank), 'schema': 'ns-obstacle-frozen-rom-development-v1',
+              'source_sha256': source_digest(), 'reference_qualification': metadata.get('reference_qualification'),
+              'models': models, 'choices': choices, 'bank_gate': bank_gate, 'validation_seen': False,
+              'fitted_operators': {name: None if operator is None else {
+                  key: getattr(operator, key) for key in WeakOperator.__dataclass_fields__}
+                  for name, operator in fitted.items()}}
+    frozen_receipt = save_evidence(out, 'frozen_models', frozen)
+    if development_only:
+        summary = {'source_sha256': source_digest(), 'reference_qualification': metadata.get('reference_qualification'),
+                   'records': records, 'construction_failures': failures, 'bank_development_gate': bank_gate,
+                   'frozen_choices': choices, 'frozen_models': frozen_receipt, 'model_fingerprints': models,
+                   'validation_seen': False, 'timing_comparison_performed': False, 'physical_admission': False,
+                   'offline_rebuilds': rebuilds, 'development_elapsed_seconds': time.perf_counter()-pilot_started}
+        save_evidence(out, 'development_summary', summary)
+        return summary
     validation = validation_loader()
     check_population(validation, 'validation')
     scores = []

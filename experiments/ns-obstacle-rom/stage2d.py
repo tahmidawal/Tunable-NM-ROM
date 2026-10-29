@@ -1,0 +1,138 @@
+"""Prepare hash inventories from existing FD1 inputs; execute only a separate release.
+
+Candidate building never creates admission, data, a release or a training result.
+Paths point at warm inputs; audit-only cold archives are not duplicated here.
+"""
+from pathlib import Path
+import argparse,hashlib,json,os,resource,shutil,sys,time
+from qualification import require_qualification
+from fe_adapter import sha_file
+
+ROOT=Path(__file__).parent
+INPUTS={'prepare':{'training_manifest','preparation_release'},
+        'train':{'prepared','preparation_release'},
+        'development':{'prepared','preparation_release','bank','probes','development'}}
+
+
+def source_digest():
+    from prepare2d import preparation_digest
+    from pilot2d import source_digest as pilot_digest
+    return hashlib.sha256(json.dumps({'entry':sha_file(__file__),'preparation':preparation_digest(),
+        'pilot':pilot_digest(),'frozen_rebuild':sha_file(ROOT/'frozen_rom2d.py')},sort_keys=True).encode()).hexdigest()
+
+
+def inventory(path):
+    path=Path(path).resolve()
+    if path.is_file():return {'path':str(path),'kind':'file','sha256':sha_file(path),'bytes':path.stat().st_size}
+    if not path.is_dir():raise FileNotFoundError(path)
+    files={str(p.relative_to(path)):{'sha256':sha_file(p),'bytes':p.stat().st_size}
+           for p in sorted(path.rglob('*')) if p.is_file()}
+    if not files:raise ValueError('nonempty warm input directory required')
+    return {'path':str(path),'kind':'directory','files':files}
+
+
+def qualification(stage,inputs):
+    if stage=='prepare':
+        from fe_adapter import read_training_manifest
+        return require_qualification(read_training_manifest(inputs['training_manifest']))
+    from pilot2d import read_preparation_metadata
+    metadata,_=read_preparation_metadata(inputs['prepared'],inputs['preparation_release'])
+    return require_qualification(metadata['reference_qualification'])
+
+
+def build_candidate(stage,inputs,output):
+    if stage not in INPUTS or set(inputs)!=INPUTS[stage]:raise ValueError('exact stage-specific warm inputs required')
+    q=qualification(stage,inputs)
+    candidate={'schema':'ns-obstacle-rom-stage-candidate-v1','status':'candidate_not_released',
+        'stage':stage,'source_sha256':source_digest(),'reference_qualification':q,
+        'inputs':{k:inventory(v) for k,v in inputs.items()},'training_executed':False,
+        'fixed_training_budget':{'steps':3000,'seconds':1800,'seed':27102027},
+        'validation_inputs_allowed':False,'automatic_retry':False}
+    with Path(output).open('x') as stream:json.dump(candidate,stream,indent=2);stream.write('\n')
+    return candidate
+
+
+def verify(candidate_path,release_path):
+    c=json.loads(Path(candidate_path).read_text());r=json.loads(Path(release_path).read_text())
+    if (c.get('schema')!='ns-obstacle-rom-stage-candidate-v1' or c.get('status')!='candidate_not_released' or
+        c.get('stage') not in INPUTS or c.get('source_sha256')!=source_digest() or
+        r.get('schema')!='ns-obstacle-rom-stage-release-v1' or r.get('authorized_stage')!=c['stage'] or
+        r.get('candidate_sha256')!=sha_file(candidate_path) or r.get('source_sha256')!=source_digest() or
+        r.get('single_execution') is not True):raise RuntimeError('exact separately reviewed stage release required')
+    if require_qualification(r.get('reference_qualification'))!=require_qualification(c['reference_qualification']):
+        raise ValueError('stage release scope differs')
+    if (c.get('fixed_training_budget')!={'steps':3000,'seconds':1800,'seed':27102027} or
+        c.get('validation_inputs_allowed') is not False or c.get('automatic_retry') is not False):
+        raise ValueError('fixed stage budget/data-access policy changed')
+    if set(c['inputs'])!=INPUTS[c['stage']]:raise ValueError('undeclared stage input')
+    for name,item in c['inputs'].items():
+        if inventory(item['path'])!=item:raise ValueError('warm input changed: '+name)
+    inputs={k:v['path'] for k,v in c['inputs'].items()}
+    if qualification(c['stage'],inputs)!=require_qualification(c['reference_qualification']):raise ValueError('actual input scope differs')
+    return c,r,inputs
+
+
+def run(candidate_path,release_path,output):
+    started=time.perf_counter();c,r,inputs=verify(candidate_path,release_path)
+    if (sys.executable!='/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python' or
+        not os.environ.get('SLURM_JOB_ID') or os.environ.get('JAX_ENABLE_X64')!='true' or
+        os.environ.get('JAX_DEFAULT_MATMUL_PRECISION')!='highest'):raise RuntimeError('released native GPU allocation required')
+    out=Path(output)
+    if shutil.disk_usage(out.parent).free<10*2**30:raise OSError('ten-GiB disk reserve required')
+    if Path(r['job_directory']).resolve()!=Path.cwd().resolve():raise ValueError('released job directory differs')
+    with (Path.cwd()/'STAGE-CLAIM.json').open('x') as claim:
+        json.dump({'release_sha256':sha_file(release_path),'candidate_sha256':sha_file(candidate_path),
+                   'job_id':os.environ['SLURM_JOB_ID']},claim)
+    out.mkdir(exist_ok=False)
+    record={'stage':c['stage'],'candidate_sha256':sha_file(candidate_path),'release_sha256':sha_file(release_path),
+            'reference_qualification':c['reference_qualification'],'physical_admission':False,'status':'started'}
+    try:
+        import jax
+        if jax.default_backend()!='gpu' or not jax.config.x64_enabled or str(jax.config.jax_default_matmul_precision)!='highest':
+            raise RuntimeError('actual GPU/f64/highest preflight failed')
+        if c['stage']=='prepare':
+            from prepare2d import prepare
+            inner=json.loads(Path(inputs['preparation_release']).read_text())
+            prepare(inputs['training_manifest'],inputs['preparation_release'],out/'preparation',
+                    inner.get('point_block_volume',False),inner.get('verify_primary_volume',False))
+        elif c['stage']=='train':
+            from pilot2d import train_from_preparation
+            train_from_preparation(inputs['prepared'],inputs['preparation_release'],out/'bank.npz')
+        else:
+            from pilot2d import load_preparation,_read_arrays,FrozenBank,array_digest,load_reference_population,run_accuracy_pilot
+            arrays,metadata,inner=load_preparation(inputs['prepared'],inputs['preparation_release'])
+            for key in ('bank','probes','development'):
+                expected={'bank':'bank_sha256','probes':'probes_sha256','development':'development_manifest_sha256'}[key]
+                if sha_file(inputs[key])!=inner[expected]:raise ValueError('inner preparation release differs from '+key)
+            bank=FrozenBank.load(inputs['bank'])
+            if bank.metadata.get('trained') is not True or bank.metadata.get('training_array_sha256')!=metadata['training_array_sha256']:
+                raise ValueError('bank must come from these actual training arrays')
+            probes=_read_arrays(inputs['probes'],2**30)
+            rule=array_digest({k:arrays['volume'][k] for k in ('points_dimensionless','weights_dimensionless')})
+            development=load_reference_population(inputs['development'],inner['development_manifest_sha256'],'development',rule)
+            def no_validation():raise AssertionError('development stage must not open validation')
+            run_accuracy_pilot(arrays,metadata,probes,bank,development,no_validation,out/'development',development_only=True)
+        record['status']='execution_completed_pending_independent_review'
+    except Exception as exc:record.update(status='failed',exception=repr(exc));raise
+    finally:
+        record.update(elapsed_seconds=time.perf_counter()-started,peak_host_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)
+        try:(out/'STAGE-RESULT.json').write_text(json.dumps(record,indent=2,allow_nan=False)+'\n')
+        except Exception:
+            if record['status']!='failed':raise
+    return record
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest='action',required=True)
+    build=sub.add_parser('candidate');build.add_argument('--stage',choices=INPUTS,required=True)
+    build.add_argument('--input',action='append',required=True);build.add_argument('--out',type=Path,required=True)
+    execute=sub.add_parser('run');execute.add_argument('--candidate',type=Path,required=True)
+    execute.add_argument('--release',type=Path,required=True);execute.add_argument('--out',type=Path,required=True)
+    args=parser.parse_args()
+    if args.action=='candidate':
+        pairs=[item.split('=',1) for item in args.input]
+        if len({p[0] for p in pairs})!=len(pairs):raise ValueError('duplicate input name')
+        build_candidate(args.stage,dict(pairs),args.out)
+    else:run(args.candidate,args.release,args.out)
+
+if __name__=='__main__':main()

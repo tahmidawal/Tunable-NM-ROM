@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-reference-conditional-uncertainty-review-v1",
+  "passed": true,
+  "reviewer": "/root/numerical_resume",
+  "uncertainty_sha256": "6f69b47de825bdf2369c6528296972297d2746bad62380efa05a0a49a26efa7f",
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "split": "development",
+  "scope": "Empirical conditional reference uncertainty only; no model evaluation or release",
+  "actual_ROM_consumer_replay": true,
+  "dimensionless_rule_sha256": "1b8cb44f65c64b3e2cbfeefc5848bc3f3dc06c2b30b8123797bb6fe5c74b4590",
+  "raw_reference_evidence_durable": true,
+  "generated_output_backup": "pending owner metadata backup",
+  "training_released": false
+}

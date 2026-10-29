@@ -1,6 +1,12 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    {
+      "job_id": 6620883,
+      "attempt": "g2-cache-primary01",
+      "release": "81374762d"
+    }
+  ],
   "active_external_consults": [],
   "pending": [
     "Audit batch export6618469 and finish domain diagnostics; original sensitivity gate remains failed",
@@ -23,7 +29,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-28T23:18:32.446161+00:00",
+  "last_checkpoint_utc": "2026-10-29T00:42:49.223527+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -122,5 +128,6 @@
   "export_batch01_result": "Independent retained-array audit PASS; generated/export-batch01/summary.json; only diagnostic readout timing",
   "domain_comparison01_result": "Independent899file/all4states/fullrule audit PASS as diagnostic; inlet sensitivity remains failed; generated/domain-comparison01/summary.json",
   "fixed_channel_display_review": "Independent hashes/raw ranges/source/visual review PASS; provisional FE display only",
-  "native_primary06_result": "COMPLETED41s; collection and independent audit pending"
+  "native_primary06_result": "Independent896file/exact coarse restoration audit PASS; generated/native-primary06/summary.json; no fine omission",
+  "cold_archive_recovery": "Independently accepted Git-only archive recovery; source89da05782, README in retention; canonical numerical arrays remain warm"
 }

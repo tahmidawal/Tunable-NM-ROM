@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "native_primary_replay_completed_pending_audit_reference_cache_pending",
+  "status": "full_cache_primary_proof_running",
   "allocated_gpu_hour_ceiling": 12,
   "allocations": [
     {
@@ -885,12 +885,34 @@
       "training_released": false,
       "state": "COMPLETED",
       "exit_code": "0:0"
+    },
+    {
+      "job_id": 6620883,
+      "lane": "2d",
+      "attempt": "g2-cache-primary01",
+      "source_commit": "48519dc2918886c4f4bf5c90623a721c54e7af85",
+      "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-cache-primary01",
+      "submitted_utc": "2026-10-29T00:40:55.596269+00:00",
+      "state_last_observed": "RUNNING",
+      "gpus": 1,
+      "cpus_reserved": 16,
+      "memory_GiB": 64,
+      "working_guard_GiB": 48,
+      "wall_limit_seconds": 1200,
+      "elapsed_seconds": null,
+      "allocated_gpu_hours": null,
+      "reference_admitted": false,
+      "training_released": false,
+      "release": "81374762d",
+      "single_submission": true
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6620883
+  ],
   "completed_gpu_hours": 1.4116666666666666,
   "note": "All elapsed allocation charged, including failed controls. No obstacle reference or comparative result admitted.",
   "total_allocated_gpu_hours_completed": 1.4116666666666666,
-  "last_accounting_utc": "2026-10-28T23:18:32.446161+00:00",
+  "last_accounting_utc": "2026-10-29T00:42:49.223038+00:00",
   "scope_amendment": "FD1-2026-10-28"
 }

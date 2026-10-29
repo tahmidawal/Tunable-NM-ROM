@@ -2,8 +2,8 @@
   "status": "2d_only_reference_qualification_and_ROM_integration",
   "numerical_jobs": [
     {
-      "job_id": 6630005,
-      "group": "re16p875",
+      "job_id": 6630495,
+      "group": "re16",
       "state_last_observed": "RUNNING"
     }
   ],
@@ -13,7 +13,7 @@
     "Assemble genuine all15 candidate and independent full-population admission review",
     "Run actual ROM preparation/training/solves and held-out comparisons, then final reviews and reporting"
   ],
-  "completed_allocated_gpu_hours": 3.0980555555555553,
+  "completed_allocated_gpu_hours": 3.4558333333333335,
   "global_ceiling_gpu_hours": 12,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -29,7 +29,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-29T07:06:35.378460+00:00",
+  "last_checkpoint_utc": "2026-10-29T07:23:50.310869+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -150,16 +150,22 @@
   "remaining_population_first_jobs": "Historical initial groups now completed; current numerical_jobs and pending_collections are authoritative.",
   "pending_collections": [
     {
-      "job_id": 6629506,
-      "group": "re23p75",
-      "state": "COMPLETED",
-      "elapsed_seconds": 678
-    },
-    {
       "job_id": 6629873,
       "group": "re25",
       "state": "COMPLETED",
       "elapsed_seconds": 670
+    },
+    {
+      "job_id": 6630005,
+      "group": "re16p875",
+      "state": "COMPLETED",
+      "elapsed_seconds": 622
+    },
+    {
+      "job_id": 6630116,
+      "group": "re23p125",
+      "state": "COMPLETED",
+      "elapsed_seconds": 666
     }
   ],
   "ROM_first_prep_workflow": {
@@ -178,11 +184,12 @@
     "re17p5": "reviews/FD1-RE17P5-ROW-REVIEW.json",
     "re18p75": "reviews/FD1-RE18P75-ROW-REVIEW.json",
     "re21p25": "reviews/FD1-RE21P25-ROW-REVIEW.json",
-    "re22p5": "reviews/FD1-RE22P5-ROW-REVIEW.json"
+    "re22p5": "reviews/FD1-RE22P5-ROW-REVIEW.json",
+    "re23p75": "reviews/FD1-RE23P75-ROW-REVIEW.json"
   },
   "buffer_amendment": "reviews/AMENDMENT-BUFFER4.json: max2 live/max4 total outstanding; every outstanding/proposed future envelope reserved;22GiB staging guard unchanged",
   "compute_only_staging_amendment": "reviews/AMENDMENT-COMPUTE-ONLY-STAGING.json atc6bd1ca56/mirror15c88d6bf; optional helper must be durably backed before use",
-  "pending_row_audit": "None; Re18.75/Re21.25/Re22.5 accepted, durable raw backups separately required before cooling",
+  "pending_row_audit": "None; Re22.5/Re23.75 accepted, durable raw backups separately required before cooling",
   "ROM_storage_planning": "13.230GB remote workspace, not local RAM/staging; actual archive A collection needs2A+bounded scratch+10GiB under current verified cold-tier procedure.1.911GB post-review warm runtime projection; no collection released.",
   "full_break_even": "Unresolved without valid common-platform offline cost basis; campaign resource ledger is accounting, online ratios remain paired within allocation.",
   "ROM_operational_audit": "ROMb4fed6c55/mirrorb4b8891c2; source-only disk phase/cost audit",
@@ -190,5 +197,7 @@
   "reviewed_cooling_helper_sha256": "3a34b178aed8626844cd84e763e1e73a38d8855a00a2acd7e3ca7e76b1546953",
   "re16p25_re17p5_retention": "Source4faff182f/mirrorba71307f2; Git-only recovery proofs pass;5,888,935,818bytes verified working duplicates cooled",
   "remote_retirement": "Re15/Re16.25/Re17.5 verified duplicate cleanup reclaimed9,076,207,881bytes using reviewed helper56328054",
-  "warm_input_release": "Rootfb33a99a2/mirrorc696ec263, reviews/AMENDMENT-VERIFIED-WARM-INPUTS.json; operational source0bd9b6cb0/mirror72c6bf049; exacta7 numerical payload unchanged"
+  "warm_input_release": "Rootfb33a99a2/mirrorc696ec263, reviews/AMENDMENT-VERIFIED-WARM-INPUTS.json; operational source0bd9b6cb0/mirror72c6bf049; exacta7 numerical payload unchanged",
+  "re18p75_re21p25_retention": "Source70ebb5f52/mirror304c3b390; verified cooling5,888,806,866local and6,050,614,825remote bytes",
+  "mirror_batching": "Independent source/integration and two exact temporary-index tree proofs PASS; synca9f75d79/helper3f7a2fa7; same oversize exclusions/history/seed/bounded-push policy"
 }

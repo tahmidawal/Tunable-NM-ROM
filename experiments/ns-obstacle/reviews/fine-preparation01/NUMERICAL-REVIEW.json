@@ -1,0 +1,60 @@
+{
+  "schema": "ns-obstacle-native-preparation-review-v1",
+  "passed": true,
+  "scope": "Actual fine-preparation numerical, source and count-capacity review; durable retention is a separate pending gate",
+  "reviewers": [
+    "/root/numerical_resume",
+    "/root/reference_resume"
+  ],
+  "job_id": 6633574,
+  "result_sha256": "ae77a4635b9cdca6ffbbbbf4a6ec47c902480e742eb2260969315ecf03348707",
+  "source_sha256": "6c38b93a1dc63ab781db02cbdbdd74610750e81eaab82221f500096c08037b16",
+  "adapter_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+  "capacity_amendment_sha256": "263ca735e3e19eaa14e9e9dd2deb13254fa53e45acd0630a66ea8e777fff2e07",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "training_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+  "release_sha256": "f4a1ed7aab4bfd77c8d35313aa13287e12bb54557911d8e60d2334d1dde3b3dc",
+  "independent_saved_array_reviews": {
+    "RESULT.json": {
+      "path": "INDEPENDENT-RESULT.json",
+      "sha256": "7643e5ca4235f7d756b3a265c86198f6e9cef45d7dc89d57cc317d0570c0c214"
+    },
+    "SPECTRAL-RESULT.json": {
+      "path": "INDEPENDENT-SPECTRAL-RESULT.json",
+      "sha256": "c3e47464a40f77e2151ba23d29d551ac25d05edf3db26e0e98eb465dc3763648"
+    }
+  },
+  "independent_audit_source_commit": "fb948ad66",
+  "independent_audit_mirror_commit": "d59bbe12e",
+  "gpu_f64_highest_verified": true,
+  "empty_stderr_verified": true,
+  "normal_orientation_witnesses_replayed": 4459,
+  "exact_unnudged_probes_replayed": 2,
+  "original_restored_payload_files_byte_identical": 1779,
+  "field_block_semantic_hashes_verified": 1778,
+  "volume_points": 1036497,
+  "raw_sparse_metrics_and_eigen_supremizer_gram_replayed": true,
+  "primary_volume_source_sha256": "49e91261bfbb17ca112c34318db51eaad71caad99a07b21d1834b4987a6583d8",
+  "primary_replay_sha256": "953104b89c0f18d337bdcf58925cc6bedbbea72c76fe9b1abfc5e38d6ea973d8",
+  "peak_rss_bytes": 3642560512,
+  "process_cap_bytes": 17179869184,
+  "reviewer_new_native_assembly_or_solve": false,
+  "scalar_spectral_count_verified": false,
+  "spectral_scope": "Retained eigenpair residual and gap-based controls; no rigorous global eigenvalue-count certificate",
+  "durable_retention_gate": "pending compact composition/recovery manifest and checked archive backup",
+  "volume_omission_authorized": false,
+  "training_released": false
+}

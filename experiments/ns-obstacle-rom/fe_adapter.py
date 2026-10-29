@@ -733,7 +733,7 @@ class TrainingFEAdapter:
         self.metadata = {'schema': 'ns-obstacle-fe-adapter-A6', 'physical_admission': False,
             'reference_qualification': require_qualification(self.admission),
             'split': 'training', 'Re': REYNOLDS, 'manifest_sha256': self.admission['manifest_sha256'],
-            'adapter_source_sha256': adapter_digest(), 'caps': CAPS, 'roundtrip': self.roundtrip,
+            'adapter_source_sha256': adapter_digest(), 'caps': dict(CAPS), 'roundtrip': self.roundtrip,
             'admission_evidence': {k: self.admission[k] for k in ('adapter_review_sha256',
                 'reference_admission_sha256', 'campaign_sha256', 'mesh_reload')},
             'source_case_files': [c['case'] for c in self.cases],

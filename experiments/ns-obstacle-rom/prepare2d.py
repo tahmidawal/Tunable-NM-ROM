@@ -20,6 +20,7 @@ def preparation_digest():
     from primary_volume import source_digest as primary_source_digest
     return hashlib.sha256(json.dumps({
         'entry_sha256': sha_file(Path(__file__)),
+        'capacity_context_sha256': sha_file(Path(__file__).with_name('capacity2d.py')),
         'adapter_sha256': adapter_digest(),
         'pilot_sha256': source_digest(),
         'primary_volume_sha256': primary_source_digest()}, sort_keys=True).encode()).hexdigest()
@@ -44,8 +45,14 @@ def verify_release(manifest_path, release_path):
 
 
 def prepare(manifest_path, release_path, output, point_block_volume=False, verify_primary_volume=False):
-    started = time.perf_counter()
     release, admission = verify_release(manifest_path, release_path)
+    from capacity2d import approved_capacity
+    with approved_capacity(release_path, release, admission, preparation_digest(), CAPS) as capacity:
+        return _prepare_released(release, admission, manifest_path, release_path, output, point_block_volume, verify_primary_volume, capacity)
+
+
+def _prepare_released(release, admission, manifest_path, release_path, output, point_block_volume, verify_primary_volume, capacity):
+    started = time.perf_counter()
     if release.get('point_block_volume', False) is not point_block_volume:
         raise ValueError('volume layout differs from exact preparation release')
     if release.get('verify_primary_volume', False) is not verify_primary_volume:
@@ -95,7 +102,7 @@ def prepare(manifest_path, release_path, output, point_block_volume=False, verif
             'adapter_manifest_sha256': sha_file(output/'prepared/manifest.json'),
             'probes_sha256': sha_file(probe_file), 'probe_points_physical': probes['points_physical'].tolist(),
             'shared_stokes_lift': metadata['shared_stokes_lift'],
-            'primary_volume_replay': primary_replay,
+            'primary_volume_replay': primary_replay, 'capacity_context': capacity,
             'elapsed_seconds': time.perf_counter()-started,
             'peak_rss_bytes': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
             'status': 'execution_completed_pending_independent_review',

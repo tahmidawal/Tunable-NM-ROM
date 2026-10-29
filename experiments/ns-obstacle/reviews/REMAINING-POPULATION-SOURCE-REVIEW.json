@@ -1,0 +1,24 @@
+{
+  "schema": "ns-obstacle-remaining-population-source-review-v1",
+  "reviewer": "/root/numerical_resume",
+  "passed": true,
+  "source_commit": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+  "schedule_sha256": "e32352be9e4bf6c4a5229522da10b69a8b067a67d723fff9f0844c5b29708e96",
+  "resource_bound_sha256": "5aabe5f2100ffd3244a802e4e50393385bad1c9982da4530cc81ab3b5fc55630",
+  "runtime_input_rows_verified": 1540,
+  "actual_staged_reader": {
+    "mesh_metadata_and_copy_reads": 20,
+    "cache_reads": 35,
+    "native_constructors": 0
+  },
+  "findings": [
+    "All fourteen package hashes and inputs verified; fifteen solves and five fresh baseline readouts per group",
+    "Fixed physics, numerical thresholds and1500/1400/300-second limits unchanged",
+    "Compute accounting preserves conditional ROM reservation",
+    "Remote accounting includes existing live future writes, old originals and partial archives",
+    "Serial stage/collection phase peaks include adopted warm Git objects",
+    "Lossless shared/delta reconstruction and direct adopted runtime closure accepted"
+  ],
+  "no_population_admission": true,
+  "no_training_release": true
+}

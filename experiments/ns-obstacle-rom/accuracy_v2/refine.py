@@ -21,7 +21,9 @@ def _refine(x,w,target,gradient,teacher_identity,parent_bank_path,parent_receipt
     nv=np.einsum('n,ncr,ncr->r',w,target,target);ng=np.einsum('n,ncdr,ncdr->r',w,gradient,gradient)
     sigma=np.asarray(teacher_identity['singular_values']);importance=np.sqrt(sigma/sigma[0]);importance/=importance.sum()
     for observed,key in ((nv,'value_norms_squared'),(ng,'gradient_norms_squared'),(importance,'mode_weights')):
-        if not np.array_equal(observed,np.asarray(parent.metadata[key])):raise ValueError('objective normalization changed')
+        if not np.allclose(observed,np.asarray(parent.metadata[key]),rtol=1e-12,atol=0.):raise ValueError('objective normalization replay failed')
+    # Reuse the exact frozen norms/weights; reconstruction above only checks them.
+    nv=np.asarray(parent.metadata['value_norms_squared'],dtype=np.float64);ng=np.asarray(parent.metadata['gradient_norms_squared'],dtype=np.float64);importance=np.asarray(parent.metadata['mode_weights'],dtype=np.float64)
     config=parent.metadata['config'];prior_adam=int(parent.metadata['actual_applied_adam_steps']);prior_lb=int(parent.metadata['accepted_lbfgs_steps'])
     if review.get('adam_steps_recorded')!=prior_adam or review.get('accepted_lbfgs_steps')!=prior_lb or review.get('selected_theta_sha256')!=receipt['selected_theta_sha256'] or type(review.get('allocated_seconds')) is not int:raise ValueError('reviewed cumulative parent training provenance required')
     bindings={'schema':'ns-obstacle-compact-warm-LBFGS-v1','parent_bank_sha256':sha(parent_bank_path),'parent_receipt_sha256':sha(parent_receipt_path),'parent_review_sha256':sha(parent_review_path),'parent_selected_theta_sha256':receipt['selected_theta_sha256'],'teacher_identity':teacher_identity,'config':config,'protocol':protocol,'prior_adam_steps':prior_adam,'prior_lbfgs_steps':prior_lb,'prior_allocation_seconds':review['allocated_seconds'],'warm_restart':True,'curvature_reset':True,'exact_optimizer_continuation_claim':False,'all_intermediate_vectors_retained':False,'retained_vector_audit_scope':'periodic and final checkpoints only; all accepted/trial scalar records and hashes retained','selection':'minimum measured full-training objective, no development/validation selection','source_sha256':sha(__file__),'parent_full_training_objective':receipt['selected_checkpoint']['objective']}
@@ -75,7 +77,7 @@ def _refine(x,w,target,gradient,teacher_identity,parent_bank_path,parent_receipt
             found=False;old_f=f;old_theta=digest(theta);old_gradient=digest(g)
             for attempt in range(protocol['line_search_steps']):
                 step=2.**(-attempt);trial=theta+step*direction;nf,dg,nd=full(trial);found=bool(nf<=f+1e-4*step*slope)
-                append('LINE-SEARCH.jsonl',{'iteration':iteration,'attempt':attempt,'step':step,'objective':nf,'prior_objective':f,'slope':slope,'accepted':found,'theta_sha256':digest(trial),'gradient_sha256':digest(dg),'direction_sha256':digest(direction),'direction_norm':float(np.linalg.norm(direction)),'gradient_inf':float(np.max(np.abs(dg))),'metrics':nd})
+                append('LINE-SEARCH.jsonl',{'iteration':iteration,'attempt':attempt,'step':step,'objective':nf,'prior_objective':f,'slope':slope,'accepted':found,'theta_sha256':digest(trial),'gradient_sha256':digest(dg),'direction_sha256':digest(direction),'direction_norm':float(np.linalg.norm(direction)),'gradient_inf':float(np.max(np.abs(dg))),'full_evaluations':evaluations,'cumulative_accepted_lbfgs_steps':prior_lb+accepted,'elapsed_seconds':time.monotonic()-started,'metrics':nd})
                 if found:break
             if not found:status='line_search_stopped';break
             s=trial-theta;y=dg-g;sy=float(np.dot(s,y));ss=float(np.dot(s,s));yy=float(np.dot(y,y));keep=bool(sy>1e-12*np.linalg.norm(s)*np.linalg.norm(y))
@@ -86,7 +88,10 @@ def _refine(x,w,target,gradient,teacher_identity,parent_bank_path,parent_receipt
         else:status='iteration_limit'
     except TimeoutError:status='job_deadline'
     except BaseException as exc:
-        status='failed';(out/'FAILURE.json').write_text(json.dumps({'exception':repr(exc),'accepted_steps':accepted})+'\n');raise
+        status='failed'
+        try:(out/'FAILURE.json').write_text(json.dumps({'exception':repr(exc),'accepted_steps':accepted})+'\n')
+        except Exception as error:print('Failure detail retention failed:',repr(error),flush=True)
+        raise
     finally:
         retention_errors=[]
         try:
@@ -96,7 +101,7 @@ def _refine(x,w,target,gradient,teacher_identity,parent_bank_path,parent_receipt
         except Exception as error:retention_errors.append(repr(error));print('FINAL retention failed:',repr(error),flush=True)
         if retention_errors and status!='failed':raise RuntimeError('optimizer retention incomplete: '+repr(retention_errors))
     if f is None or g is None:raise RuntimeError('no full-rule checkpoint')
-    bank=SpatialBank([(np.asarray(a),np.asarray(b)) for a,b in unpack(theta)],np.eye(4),dict(parent.metadata,refinement=bindings,trained=True,actual_applied_adam_steps=prior_adam,accepted_lbfgs_steps=prior_lb+accepted,selected_checkpoint={'objective':f,'checkpoint':final_checkpoint['array_file']},status=status))
+    bank=SpatialBank([(np.asarray(a),np.asarray(b)) for a,b in unpack(theta)],np.eye(4),dict(parent.metadata,refinement=bindings,trained=True,new_adam_steps=0,new_lbfgs_steps=accepted,actual_applied_adam_steps=prior_adam,accepted_lbfgs_steps=prior_lb+accepted,selected_checkpoint={'objective':f,'checkpoint':final_checkpoint['array_file']},status=status))
     bank_sha=bank.save(out/'spatial-bank-raw.npz');loaded=SpatialBank.load(out/'spatial-bank-raw.npz');selected=np.concatenate([a.ravel() for layer in loaded.layers for a in layer]);assert digest(selected)==digest(theta)
     replay_f,replay_g,replay_details=full(selected,final=True)
     replay={'selected_model_sha256':bank_sha,'selected_theta_sha256':digest(selected),'objective':replay_f,'objective_gap':abs(replay_f-f),'gradient_max_gap':float(np.max(np.abs(replay_g-g))),'metrics':replay_details,'passed':bool(abs(replay_f-f)<=1e-10*max(1.,abs(f)) and np.max(np.abs(replay_g-g))<=1e-10)}

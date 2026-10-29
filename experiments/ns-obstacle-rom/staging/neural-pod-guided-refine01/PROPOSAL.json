@@ -1,0 +1,43 @@
+{
+  "execution_released": false,
+  "allocation_seconds": 3600,
+  "outer_timeout_seconds": 3585,
+  "outer_kill_grace_seconds": 10,
+  "science_deadline_seconds": 3480,
+  "final_replay_retention_margin_seconds": 120,
+  "protocol": {
+    "max_iterations": 10000,
+    "checkpoint_every": 250,
+    "history_size": 10,
+    "line_search_steps": 20,
+    "gradient_tolerance": 1e-10,
+    "warm_restart": true,
+    "new_adam_steps": 0
+  },
+  "allocation_memory_bytes": 68719476736,
+  "estimated_peak_host_bytes": 17179869184,
+  "raw_plus_archive_reservation_bytes": 2147483648,
+  "storage_bound": {
+    "max_state_saves": 42,
+    "vectors_per_full_state": 22,
+    "parameters": 36872,
+    "state_arrays_plus_container_bytes": 275310336,
+    "fixed_schema_scalar_record_bound_bytes": 2048,
+    "max_trial_rows": 200000,
+    "max_accepted_rows": 10000,
+    "scalar_jsonl_bound_bytes": 430080000,
+    "raw_upper_bytes": 772499200,
+    "archive_without_compression_credit": 855058048,
+    "combined_upper_bytes": 1627557248
+  },
+  "all_intermediate_vector_replay_available": false,
+  "actual_serialized_selected_full_objective_replay_required": true,
+  "same_objective_no_new_Adam": true,
+  "parent_allocation_seconds": 434,
+  "no_cross_job_speedup_claim": true,
+  "collection_separate_measured_release_required": true,
+  "plan_sha256": "990596bd0469b906ef232e95626a4885ce1c6215e27b1a71927d5a9642628641",
+  "runtime_inventory_sha256": "48be7da221ce4da70fc05f228c5f97443b7ca894f3a2201a58513f5d5410a25e",
+  "launcher_sha256": "0d23fc28c4bf83a23254a2caab145631c0830eb6934a2d91c2976fd06a7c8f70",
+  "pilot_source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db"
+}

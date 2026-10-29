@@ -1,6 +1,7 @@
 """Stage one explicitly released immutable package and submit once; never retry."""
 from pathlib import Path
 import argparse,datetime,hashlib,json,re,shlex,shutil,subprocess
+from source_inputs import SourceInputs
 B=Path(__file__).resolve().parents[1];REPO=B.parents[1];PREFIX='/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/'
 def sha(data):return hashlib.sha256(data).hexdigest()
 def dump(path,data):path.write_text(json.dumps(data,indent=2)+'\n')
@@ -12,10 +13,11 @@ def main():
     raw=committed(a.candidate)
     if sha(raw)!=a.candidate_sha:raise ValueError('released candidate hash mismatch')
     candidate=json.loads(raw)
-    for row in candidate['files']:
-        data=committed(row['source']);destination=P/row['destination']
-        if not destination.resolve().is_relative_to(P.resolve()) or sha(data)!=row['sha256']:raise ValueError('input path/hash mismatch')
-        destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes(data)
+    with SourceInputs(REPO,str(B.relative_to(REPO)),commit) as sources:
+        for row in candidate['files']:
+            data=sources.read(row);destination=P/row['destination']
+            if not destination.resolve().is_relative_to(P.resolve()) or sha(data)!=row['sha256']:raise ValueError('input path/hash mismatch')
+            destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes(data)
     (P/'SOURCE_COMMIT.txt').write_text(commit+'\n');dump(P/'INPUT-MANIFEST.json',{'source_commit':commit,'candidate_sha256':a.candidate_sha,'files':candidate['files'],'release':a.release})
     files=sorted(x for x in P.rglob('*') if x.is_file());(P/'SOURCE-SHA256SUMS').write_text(''.join(sha(x.read_bytes())+'  '+str(x.relative_to(P))+'\n' for x in files))
     free=shutil.disk_usage(B).free

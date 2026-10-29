@@ -31,7 +31,9 @@ def build(training_manifest,measurement,factor_reuse,native_review,reconstructio
         'original_caps':dict(CAPS),'proposed_caps':proposed,
         **{key:{'path':str(path),'sha256':sha_file(path)} for key,path in paths.items()}}
     input_paths={Path(case['resolved_directory'])/name for case in admission['cases'] for name in case['files']}
-    lift=admission['resolved_common_stokes_lift'];input_paths.add(Path(lift['archive']))
+    lift=admission['resolved_common_stokes_lift'];lift_archive=Path(lift['archive'])
+    input_paths.update([lift_archive,lift_archive.with_name('common_stokes_lift.json'),training_manifest,
+        (training_manifest.parent/admission['common_stokes_lift']['admission_path']).resolve(),*paths.values()])
     warm_bytes=sum(path.stat().st_size for path in input_paths)
     expanded_case_bytes=[]
     for case in admission['cases']:

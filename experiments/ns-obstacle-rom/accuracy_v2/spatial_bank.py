@@ -67,8 +67,10 @@ class SpatialBank:
         if x.ndim!=2 or x.shape[1]!=2 or not np.isfinite(x).all() or not 1<=r<=self.rank:raise ValueError('invalid evaluation')
         v,g=evaluate_layers(self.layers,x);return v@self.transform[:,:r],g@self.transform[:,:r]
     def values_blocked(self,points,block_points=4096):
-        out=np.empty((len(points),2,self.rank),dtype=np.float64)
-        if out.nbytes>2**30:raise MemoryError('array cap')
+        shape=(len(points),2,self.rank)
+        if type(block_points) is not int or not 1<=block_points<=16384:raise ValueError('bounded block_points required')
+        if int(np.prod(shape,dtype=np.int64))*8>2**30:raise MemoryError('array cap')
+        out=np.empty(shape,dtype=np.float64)
         for i in range(0,len(points),block_points):
             x=np.asarray(points[i:i+block_points]);h=inputs(x)[0]
             for j,(w,bias) in enumerate(self.layers):

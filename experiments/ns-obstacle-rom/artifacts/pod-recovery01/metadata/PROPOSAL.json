@@ -1,0 +1,32 @@
+{
+  "execution_released": false,
+  "job_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/pod-recovery01",
+  "allocation_seconds": 1200,
+  "outer_timeout_seconds": 1185,
+  "outer_kill_grace_seconds": 10,
+  "finalization_reserve_seconds": 60,
+  "failure_reserve_debit_seconds": 1200,
+  "launcher_sha256": "c97cb0ea97080bb95e7af96b317c6bcbb740119dd42ada0e852fa79935431770",
+  "pilot_source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+  "stage_source_sha256": "c06f0465730dd71b2ba34d227dce2667059cc79355e70a1a8b29780bc5ad876a",
+  "plan_sha256": "6cd3fec19d668a7aec5adfeeba2a2e8abe5bb466601c3fec17ad4f8e4b81dd7d",
+  "runtime_inventory_sha256": "fbd158333a11d4a74b4c3507db107d90f4f81474c45fa81c4327c970f20047a4",
+  "measured_previous_three_POD_build_seconds": 385.0881870435551,
+  "non_build_budget_including_setup_controls_retention_and_finalization_seconds": 814.9118129564449,
+  "new_query_calls": 12,
+  "reused_r2_queries_not_rerun": 6,
+  "original_allocation_charge_seconds": 3346,
+  "storage": {
+    "actual_reused_original_bytes": 329264740,
+    "new_query_fields_bytes": 298511136,
+    "duplicate_query_first_and_case_retention_bytes": 597022272,
+    "metadata_operator_runtime_allowance": 134217728,
+    "raw_bytes": 1060504740,
+    "archive_without_compression_credit": 1148823698,
+    "combined_bytes": 2209328438,
+    "envelope_bytes": 3221225472,
+    "no_unmeasured_deduplication_credit": true,
+    "local_collection_separately_released": true
+  },
+  "scope": "Complete only missing unsampled POD controls; original failed bank and rejected/incomplete quadrature remain explicit; no matching, validation, retraining, or refit."
+}

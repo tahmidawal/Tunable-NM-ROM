@@ -1,0 +1,125 @@
+{
+  "record": {
+    "output_contract": "full_velocity_pressure_fields",
+    "outputs": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "896147ed7c8d964422b511b9e0931cde7fe44d25b414d8fa1d52ff137b6b8d34"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "eae39fe7198a640a6f19d97fa9b89b116c81b74096e32b8c67cf326cf18b0e19"
+      }
+    },
+    "evidence": {
+      "state": {
+        "array": "a000002",
+        "shape": [
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "4dbee6033252c247fa8aa90fe1e22aa22d54eba18c212c8deadc949261edb2bd"
+      },
+      "reynolds": 16.875,
+      "model": "POD_r4",
+      "operator_formulation": "mixed_Galerkin",
+      "history": [
+        {
+          "iteration": 0,
+          "objective": 0.5001913340264917,
+          "gradient_norm": 0.7506643838626252,
+          "gradient_denominator": 1.0,
+          "condition": 37.1073746690812,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 1.0001913157256384,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 1,
+          "objective": 0.024866831698409697,
+          "gradient_norm": 0.1372251767079033,
+          "gradient_denominator": 1.0,
+          "condition": 35.6647655577788,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.22301045580155965,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 2,
+          "objective": 6.97462097712465e-07,
+          "gradient_norm": 0.0008418428894163372,
+          "gradient_denominator": 1.0,
+          "condition": 35.63635203499233,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.00118106909003027,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 3,
+          "objective": 2.635107590655742e-17,
+          "gradient_norm": 5.854590672650278e-09,
+          "gradient_denominator": 1.0,
+          "condition": 35.636373443621274,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 7.2596247708207925e-09,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 4,
+          "objective": 7.568402118917489e-31,
+          "gradient_norm": 2.7970743386023545e-16,
+          "gradient_denominator": 1.0,
+          "condition": 35.636373430993046,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 1.2303172045385278e-15
+        }
+      ]
+    },
+    "work": {
+      "status": "root_converged",
+      "residual_evaluations": 9,
+      "jacobian_evaluations": 5
+    },
+    "component_seconds": {
+      "initialization": 3.255903720855713e-06,
+      "coefficient_solve": 0.0014562690630555153,
+      "output_reconstruction": 0.049124978482723236,
+      "total_query": 0.05058450344949961
+    },
+    "physical_admission": false
+  },
+  "array_file": "POD_r4_16.875_mixed_Galerkin_raw_invocation.npz",
+  "array_sha256": "1ebacbe1960e5f50a73b6fd4364da279a7d726c44af505a26777072e97724693",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 3,
+    "array_references": 3,
+    "unique_expanded_bytes": 24876024,
+    "logical_expanded_reference_bytes": 24876024,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 26177893
+  }
+}

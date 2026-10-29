@@ -1,0 +1,199 @@
+{
+  "record": {
+    "fresh_fingerprint": "f5cf6bdc7fe88f73f1d0b56ee589f582ebe503116200203dc229406a9d44e5a8",
+    "fingerprint_arrays": {
+      "training_coefficients": {
+        "array": "a000000",
+        "shape": [
+          9,
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "7be802e76379cd762720971b55d9d2a36223b1a1d403b2d677f9426bf7593827"
+      },
+      "operator_convection": {
+        "array": "a000001",
+        "shape": [
+          64,
+          9,
+          9
+        ],
+        "dtype": "float64",
+        "content_sha256": "c01b8c696fa0341af4ae9419ab8095b4c14f4bd32f1ee8a4ee2fd09f687930ad"
+      },
+      "operator_viscous": {
+        "array": "a000002",
+        "shape": [
+          64,
+          9
+        ],
+        "dtype": "float64",
+        "content_sha256": "5e13169884a8acf67a2b98549dfb33953da743ce1dbae49ba2db74770db5789c"
+      },
+      "operator_pressure": {
+        "array": "a000003",
+        "shape": [
+          64,
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "241dcb7f441376e884cfe75a7bbc7b76cd9bc552c8a92742a3473deda0c7252b"
+      },
+      "operator_pressure_lift": {
+        "array": "a000004",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "c5cb084f32c4a8f2c34c244242b1a4aa96da41c3668f9e22e06756bb14d3a544"
+      },
+      "operator_continuity": {
+        "array": "a000005",
+        "shape": [
+          16,
+          9
+        ],
+        "dtype": "float64",
+        "content_sha256": "89b2acb9620688ea1ed0f975afcc2007659d46d97a40d8e607352faea12b7d34"
+      },
+      "operator_velocity_test_gram": {
+        "array": "a000006",
+        "shape": [
+          64,
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "64d0e21db05205c5efe89b56e88f9b9335c370b1f13e43f1aeb846c90efa7736"
+      },
+      "operator_scalar_test_gram": {
+        "array": "a000007",
+        "shape": [
+          16,
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "907d651bc636937e0aac5d2f3f3325fcf031a96af473c692ec275fdf326ef2c6"
+      },
+      "operator_velocity_unknown_gram": {
+        "array": "a000008",
+        "shape": [
+          8,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "1137b39907be3014625a4368caef9f898a51900b54888f53341153e9d05188ac"
+      },
+      "operator_pressure_unknown_gram": {
+        "array": "a000009",
+        "shape": [
+          4,
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "e01e758a7a4a13435b197de2ed2874873f872933e80c8f10d37623cd8faa69b7"
+      },
+      "operator_lv": {
+        "array": "a000010",
+        "shape": [
+          64,
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "44d19f124c7ef853bcddd46de19f5c33b823b5ece7cf6bb0c18de516bffdbf75"
+      },
+      "operator_lq": {
+        "array": "a000011",
+        "shape": [
+          16,
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "e3bfbf816a2404a08005cbc3f58a2b6af09395f53eb7554ae93c42e9568beb32"
+      },
+      "operator_unknown_cholesky": {
+        "array": "a000012",
+        "shape": [
+          12,
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "9d9e41ac65dff43729910426a898be12e1f06ba09e85ea9a6024b3a1fa2a3bd3"
+      },
+      "operator_unknown_map": {
+        "array": "a000013",
+        "shape": [
+          12,
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "e99d0bc170bd4944d8c1fb1be612a988c317f9662238cc4843e59ad4720f93ef"
+      },
+      "force_velocity_per_nu": {
+        "array": "a000014",
+        "shape": [
+          2,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "8d34e21f3518879088eab2b0eeb2269582c19a095654cb55f9cd53b8b2a586d4"
+      },
+      "force_pressure": {
+        "array": "a000015",
+        "shape": [
+          2,
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "6b0767ce8405c0cf132e919390f5859efbcb74a55cf1de342748589c3d4368c0"
+      },
+      "force_lifting_per_nu": {
+        "array": "a000016",
+        "shape": [
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "c09229282e1f3b99d71aa074dc4717f822c44f37e86407d7bf5149442d4de5e1"
+      }
+    },
+    "original_full_operator_comparison_available": false,
+    "source": {
+      "source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+      "adapter_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+      "offline_build_seconds": 120.54463332891464,
+      "pressure_gauge_shift": false,
+      "native_data_admission": {
+        "adapter_review_sha256": "86e8bc4fd05d5a28e03ef44bf0f6473a956a8687639af3454f6a7c4e2984dfde",
+        "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+        "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+        "mesh_reload": "saved_curved_binary_verified_fresh_process_no_recurve"
+      },
+      "fixed_tests_storage": "original point blocks",
+      "bank_evaluation": "one point block at a time"
+    },
+    "stability": {
+      "beta": 0.13815390938549496,
+      "reference_beta": 0.1381539093855881,
+      "ratio": 0.9999999999993258,
+      "singular_values": [
+        0.6270941229554602,
+        0.4485779958573541,
+        0.28609055575929,
+        0.13815390938549496
+      ],
+      "norms": "dimensionless velocity H1, pressure L2",
+      "passed": true
+    }
+  },
+  "array_file": "POD_r4_recovery_operator.npz",
+  "array_sha256": "056d2877f53476f33045f7594741de6e6d68a3d9eb302f75c30bf1b86de44537",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 17,
+    "array_references": 17,
+    "unique_expanded_bytes": 123440,
+    "logical_expanded_reference_bytes": 123440,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 1246951
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "schema": "ns-obstacle-pod-control-recovery-plan-v1",
+  "build_prefixes": [
+    2,
+    4,
+    8
+  ],
+  "new_query_prefixes": [
+    4,
+    8
+  ],
+  "development_Re": [
+    16.875,
+    23.125
+  ],
+  "methods": [
+    "coefficient_PCHIP",
+    "exact_tensor_weak_LS",
+    "mixed_Galerkin"
+  ],
+  "original_candidate": {
+    "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01/STAGE-CANDIDATE.json",
+    "sha256": "3126fe7f00fd30cf2b5b836b6a91fa0e07f1b2134ef84fc43b8e8df46569a73a"
+  },
+  "original_release": {
+    "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01/STAGE-RELEASE.json",
+    "sha256": "f69c8b42ef5dd0c2ddbfead1d9e7ae97dd5f63ef731345502f850c07097f66eb"
+  },
+  "original_output_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01/results/development-stage/development",
+  "original_outputs": [
+    {
+      "name": "POD_r2_development_16.875.json",
+      "sha256": "ca8b823b9990e85eb3d01f4fca67991f2208856acc91da2e5149c738f47a447a",
+      "bytes": 20207
+    },
+    {
+      "name": "POD_r2_development_16.875.npz",
+      "sha256": "3d216ace0cd330338ea9a7268f84d2ced58e197f0a9844bad65d6ef8f063f673",
+      "bytes": 69631679
+    },
+    {
+      "name": "POD_r2_development_23.125.json",
+      "sha256": "7cfff0664d3cc41748af569ffb6d333c515dc4c6ef56144b31972fc799cb3630",
+      "bytes": 19726
+    },
+    {
+      "name": "POD_r2_development_23.125.npz",
+      "sha256": "e10861cc01b74c8907bb6a30a113377dabe2a8c464bf0d494c39fba3ae0bdf2e",
+      "bytes": 69606494
+    },
+    {
+      "name": "POD_r2_model.json",
+      "sha256": "2b9917892d1da057cdc80a7c263a673b18e07e2a049b34b895f4a92f98fd6fe4",
+      "bytes": 7519
+    },
+    {
+      "name": "POD_r2_model.npz",
+      "sha256": "47568c8098cbceb3a24bab301160dea14113a5b1ef8b19070f70c5a2a0150216",
+      "bytes": 669
+    },
+    {
+      "name": "POD_r2_quadrature_candidates.json",
+      "sha256": "f5510257b3f08a6d87f43fb1f9fa0edc439290f56513d972d54dd6e269db98f6",
+      "bytes": 939051
+    },
+    {
+      "name": "POD_r2_quadrature_candidates.npz",
+      "sha256": "965bf1d0e090dcef502d4fbe5bd216afd628dfa6a1f6f1c593e0dd1bc3feebaa",
+      "bytes": 188937743
+    },
+    {
+      "name": "POD_r4_model.json",
+      "sha256": "e437729a07d1b0cce1c180bda8d73d164295eae253da11c659a9151b44295894",
+      "bytes": 8377
+    },
+    {
+      "name": "POD_r4_model.npz",
+      "sha256": "71b2e57422ed62f0c2819eb1ab0e745816666f2ee54de3458bafb30026e4c3b4",
+      "bytes": 1111
+    },
+    {
+      "name": "POD_r8_model.json",
+      "sha256": "06711bda36b479eab7c7ec417812f17cc4f395981dfe8452a87812baabca3dd9",
+      "bytes": 10039
+    },
+    {
+      "name": "POD_r8_model.npz",
+      "sha256": "68add28f209865a38df76a535759432d6bde9aaa8d9e16a364345d3f471c7a8e",
+      "bytes": 1960
+    },
+    {
+      "name": "bank_r2_model.json",
+      "sha256": "45fe424e0558d44db5b4ff6c6528290b108c98e64c6507fcfd4850f4ef4b3f5f",
+      "bytes": 7467
+    },
+    {
+      "name": "bank_r2_model.npz",
+      "sha256": "42f10465c893f5d82272353c77629586aee13dc196d8d48bd503d3d24ad3cee7",
+      "bytes": 673
+    },
+    {
+      "name": "bank_r4_model.json",
+      "sha256": "8596eec5613df539f607ed106cd8eadbc1bf9fc9657e376135eafcf670ed5d85",
+      "bytes": 8275
+    },
+    {
+      "name": "bank_r4_model.npz",
+      "sha256": "0fbfca7c96ac7e5f4cb8b9000e110ff1f71bd1a8250a055a688c1f53b324f563",
+      "bytes": 1102
+    },
+    {
+      "name": "bank_r8_model.json",
+      "sha256": "200ed924cbfbee71eed409eac1a25bdbf11610c33f3f92b7e108e686b67720d0",
+      "bytes": 9922
+    },
+    {
+      "name": "bank_r8_model.npz",
+      "sha256": "a86788dc07261bfa6daae8f000fff954c816de308b83158320399f8dc061ef2f",
+      "bytes": 1937
+    },
+    {
+      "name": "development_floors.json",
+      "sha256": "f2f06a6090899ad579a7327a4ea5ba5e51486c3fd04233b60472ecfaf00a91e2",
+      "bytes": 50767
+    },
+    {
+      "name": "development_floors.npz",
+      "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "bytes": 22
+    }
+  ],
+  "original_archive": {
+    "job_id": 6636731,
+    "terminal_status": "6636731|FAILED|3346|124:0\n6636731.batch|FAILED|3346|124:0\n6636731.extern|COMPLETED|3346|0:0\n",
+    "archive_path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/model-development01.tar.gz",
+    "archive_sha256": "258616d8eb978f9f3a24ff41b9da9a6b0492e7a27438b6ab397c42c0384b016c",
+    "archive_bytes": 329063309,
+    "regular_files": 114,
+    "expanded_bytes": 331292893,
+    "ledger_sha256": "083edc25798bc8234368254e299d6c590cf99c8e8284850377a152e476b6bd2c",
+    "all_originals_preserved": true,
+    "result_admitted": false
+  },
+  "original_full_operator_fingerprints_available": false,
+  "original_bank_gate_must_stay_closed": true,
+  "quadrature_refit_allowed": false,
+  "validation_allowed": false,
+  "reuse_r2_without_new_solver_invocations": true,
+  "source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+  "fresh_fingerprints_only_after_exact_available_original_bindings": true
+}

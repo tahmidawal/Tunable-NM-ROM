@@ -1,0 +1,62 @@
+{
+  "record": {
+    "output_contract": "full_velocity_pressure_fields",
+    "outputs": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "f9a10ee413c21f88feebb6dc977bc084f7f8819cdf78febb6eba5f2ccc352069"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "c085bc1b21793c6231be4dced197610663965bab49162715a3c54925423de934"
+      }
+    },
+    "evidence": {
+      "state": {
+        "array": "a000002",
+        "shape": [
+          24
+        ],
+        "dtype": "float64",
+        "content_sha256": "c66b92d775819a825ea64b584c6d644ee89de64b36dda89128489f9e10d2f3af"
+      },
+      "reynolds": 16.875,
+      "model": "POD_r8",
+      "operator_formulation": "weak_residual_least_squares",
+      "history": []
+    },
+    "work": {
+      "status": "training_coefficient_interpolation",
+      "residual_evaluations": 0,
+      "jacobian_evaluations": 0
+    },
+    "component_seconds": {
+      "initialization": 0.00013573374599218369,
+      "coefficient_solve": 0.0,
+      "output_reconstruction": 0.05454279016703367,
+      "total_query": 0.054678523913025856
+    },
+    "physical_admission": false
+  },
+  "array_file": "POD_r8_16.875_coefficient_PCHIP_raw_invocation.npz",
+  "array_sha256": "8493e12bf040b7df3eb6c28f1a29f792d136bf829ad237968012027490c41cbe",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 3,
+    "array_references": 3,
+    "unique_expanded_bytes": 24876120,
+    "logical_expanded_reference_bytes": 24876120,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 26175414
+  }
+}

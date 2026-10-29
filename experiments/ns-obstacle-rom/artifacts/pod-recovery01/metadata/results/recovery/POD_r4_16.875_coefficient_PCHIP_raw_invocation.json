@@ -1,0 +1,62 @@
+{
+  "record": {
+    "output_contract": "full_velocity_pressure_fields",
+    "outputs": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "4bc19d6c9b1539eb6409a8aad92c2f95b93b118c9bf315a9f8bec4805ca07669"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "f04f7a45d4aa95202f8b9dfc3fe7d620cb5e79a37f78269314c2c27acb328167"
+      }
+    },
+    "evidence": {
+      "state": {
+        "array": "a000002",
+        "shape": [
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "31635edaeaeed70409f6262dbccaa4c2933fbde28ac1ca6219e2497fb0d06a1b"
+      },
+      "reynolds": 16.875,
+      "model": "POD_r4",
+      "operator_formulation": "weak_residual_least_squares",
+      "history": []
+    },
+    "work": {
+      "status": "training_coefficient_interpolation",
+      "residual_evaluations": 0,
+      "jacobian_evaluations": 0
+    },
+    "component_seconds": {
+      "initialization": 0.00017856713384389877,
+      "coefficient_solve": 0.0,
+      "output_reconstruction": 0.04635203443467617,
+      "total_query": 0.04653060156852007
+    },
+    "physical_admission": false
+  },
+  "array_file": "POD_r4_16.875_coefficient_PCHIP_raw_invocation.npz",
+  "array_sha256": "62acb7b8c624f447f0270d482e4c53494dd9f4c4f6a22d9f793b195e1e17bb38",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 3,
+    "array_references": 3,
+    "unique_expanded_bytes": 24876024,
+    "logical_expanded_reference_bytes": 24876024,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 26175315
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "attempt": "g2-population-re22-01",
+  "source_commit": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+  "remote_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027/g2-population-re22-01",
+  "manifest_sha256": "f606134b21fd05889c3c1576b84b0d7ba665f6501bcb298287ce500e008b2471",
+  "source_checksums_sha256": "a1bb0a9e728ab5c4ba132a3ac67ee06d725ee57e2688340cff3649b35aa89eb6",
+  "candidate_sha256": "08aef1ad393cb32651086450ae92ee63c13201fb5d63bfbe978425f9132c61d4",
+  "expected_regular_files": 113,
+  "local_free_bytes": 15975370752,
+  "required_local_free_bytes": 11005853696,
+  "dependency_metadata_preflight_passed": true,
+  "submitted": true,
+  "staging_helper_sha256": "c47928c550b5d57016db40fc08c80fcba6a4543189cc0e041f35378dfd2ce093",
+  "operational_compute_only_reservation": {
+    "cold_source_archive_bytes": 3357019564,
+    "staged_input_bytes": 349241440,
+    "other_active_reservations_bytes": 0,
+    "metadata_margin_bytes": 268435456,
+    "minimum_local_reserve_bytes": 10737418240,
+    "required_before_staging_bytes": 14712114700,
+    "required_after_staging_bytes": 11005853696,
+    "release_sha256": "789af15e5e31c38834ea0eb0cbc55c0615d6f92ee72b962ff17e0b92e47ce7ac"
+  },
+  "source_inputs_helper_sha256": "bdde5ce4f17448235fa2e37d8d34c19f399d72b0294b0458127b196799e842cc",
+  "verified_warm_inputs": [
+    {
+      "source": "artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/common/arrays.npz",
+      "sha256": "136d021162d03d16a51d417d37689e370513d14f7612d432cb4c5ce060abc7b4",
+      "bytes": 54899594,
+      "archive_manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+      "source_kind": "exact_verified_working_duplicate"
+    }
+  ],
+  "pre_submit_local_free_bytes": 15975305216,
+  "job_id": 6631131,
+  "submitted_utc": "2026-10-29T07:38:03.409231+00:00",
+  "chosen_GPU_type": "h200",
+  "all_runtime_hashes_verified": true
+}

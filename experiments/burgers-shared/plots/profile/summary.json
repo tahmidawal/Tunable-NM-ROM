@@ -1,0 +1,89 @@
+{
+  "job_id": "6640980",
+  "source_sha256": "909b42239dd270013b1280a25890f31cc2d2e90edfd130a14a04829499f3c758",
+  "method": "Sum six query times within each repetition; select median-total repetition separately for each arm. All components in each stack come from that repetition.",
+  "selected_block": {
+    "direct": 6,
+    "affine": 1
+  },
+  "stage_ms": {
+    "direct": {
+      "initial_fit": 42.823624797165394,
+      "predictor_history": 102.12553665041924,
+      "coarse16": 0.0,
+      "guard_transfer": 0.0,
+      "fine64": 287.2592620551586,
+      "output_decode": 9.375276044011116,
+      "host_other": 7.8133391216397285
+    },
+    "affine": {
+      "initial_fit": 42.43190959095955,
+      "predictor_history": 103.88138145208359,
+      "coarse16": 218.9359087496996,
+      "guard_transfer": 73.41015432029963,
+      "fine64": 240.97855389118195,
+      "output_decode": 9.00152325630188,
+      "host_other": 13.829465955495834
+    }
+  },
+  "totals_ms": {
+    "direct_fused": [
+      355.9426087886095,
+      357.42817260324955,
+      361.07686907052994,
+      357.0979507640004,
+      355.74807971715927,
+      356.8123718723655,
+      359.4158785417676
+    ],
+    "direct_split": [
+      448.3181228861213,
+      449.447862803936,
+      445.63200790435076,
+      448.93449544906616,
+      450.22273529320955,
+      454.18894197791815,
+      449.3970386683941
+    ],
+    "affine_fused": [
+      504.77935187518597,
+      503.10852751135826,
+      503.7285229191184,
+      503.9542568847537,
+      504.56287804991007,
+      506.5128793939948,
+      508.35239328444004
+    ],
+    "affine_split": [
+      701.4605272561312,
+      702.468897216022,
+      698.0543937534094,
+      703.0285503715277,
+      701.9171034917235,
+      703.0474850907922,
+      705.1470149308443
+    ]
+  },
+  "median_ms": {
+    "direct_fused": 357.0979507640004,
+    "direct_split": 449.3970386683941,
+    "affine_fused": 504.56287804991007,
+    "affine_split": 702.468897216022
+  },
+  "overhead_ratio": {
+    "direct": 1.257449460490149,
+    "affine": 1.3896379173401243
+  },
+  "max_state_gap": 1.5393242236427795e-13,
+  "caveats": [
+    "Each phase includes dispatch and synchronization. host_other contains residual Python/bookkeeping time. Packing operations occur inside synchronized stages.",
+    "Split path omits original alternation-monitor bookkeeping. Solver paths/decisions are checked; split times do not replace fused production times."
+  ],
+  "outlier_counts_tukey": {
+    "direct_fused": 0,
+    "direct_split": 2,
+    "affine_fused": 0,
+    "affine_split": 2
+  },
+  "excluded_repetitions": 0
+}

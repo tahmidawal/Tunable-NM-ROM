@@ -1,0 +1,82 @@
+{
+  "schema": "ns-obstacle-neural-diagnostic-result-review-v1",
+  "job_id": 6640846,
+  "allocated_gpu_seconds": 303,
+  "execution": "completed",
+  "case_type": "steady development, original fixed finite channel",
+  "prediction_method": "Original neural bank r8 weak least-squares solve from zero correction/shared Stokes initialization; reference scored afterward.",
+  "saved_array_audit_passed": true,
+  "physical_accuracy_admitted": false,
+  "solver_termination": "Both cases reached least-squares stationarity, not residual roots.",
+  "original_representation_gate_passed": false,
+  "audit_source_commit": "a1136d971",
+  "audit_mirror_commit": "9b4c310f1",
+  "audit_result_sha256": "2d91c2efc7c423cc849e09c59ab161142732434f0cf5cc5a8d0568b3fdba8f4c",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.18279756160245342,
+        "pressure_scaled": 0.14961815959011154,
+        "divergence": 0.005450791922862584,
+        "velocity_gradient_scaled": 0.5890657941251615,
+        "mass": 0.008070393590047784,
+        "boundary_trace": 3.542728165553694e-14,
+        "drag_relative": 0.36476080181705245,
+        "transverse_absolute": 0.4286564970168632
+      },
+      "force": [
+        3.886584611116782,
+        0.4488400379928881
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.3101467498345634e-15,
+      "finite_difference_errors": [
+        1.1709909310466545e-12,
+        1.62092997679285e-11,
+        4.98360506708919e-10
+      ],
+      "stationarity_gradient": 8.8041164081391e-11,
+      "residual_norm": 0.19667371770998035,
+      "projection_floor": 0.1474010630072039,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.2127763330679679,
+        "pressure_scaled": 0.15938912260154262,
+        "divergence": 0.006499892073272859,
+        "velocity_gradient_scaled": 0.6915102130277347,
+        "mass": 0.007587415681473368,
+        "boundary_trace": 1.0906526003779649e-13,
+        "drag_relative": 0.44262263721962825,
+        "transverse_absolute": 0.4339868288299714
+      },
+      "force": [
+        2.886458964763489,
+        0.4384170167435198
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.2030736829514734e-15,
+      "finite_difference_errors": [
+        2.0356644470527445e-12,
+        2.0669434904824465e-11,
+        8.422119806125314e-11
+      ],
+      "stationarity_gradient": 6.522993945981574e-10,
+      "residual_norm": 0.19642868859152915,
+      "projection_floor": 0.16601847872577472,
+      "floor_consistent": true
+    }
+  ],
+  "limitations": [
+    "No native FE assembly or new solve.",
+    "Saved direct arrays compared with independently replayed saved tensor.",
+    "Force contraction replay, not fresh boundary traction assembly.",
+    "No original full-operator fingerprint equality claim.",
+    "No retraining, validation access or cost advantage claim."
+  ],
+  "pressure_metric": "scaled RMS error divided by U^2; not pressure-relative error",
+  "retention_status": "All107 original regular files independently verified from four archived chunks; source5d690f704 and advertised mirror07ad5df12 bind exact chunk blobs."
+}

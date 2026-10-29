@@ -1,0 +1,542 @@
+{
+  "schema": "ns-obstacle-FD1-check-contract-v1",
+  "status": "prospective_requires_independent_review",
+  "qualification_gate": "G2_FIXED_FINITE_CHANNEL_V1",
+  "per_parameter": [
+    {
+      "name": "exact_population_state_coverage",
+      "role": "input_and_control_integrity",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74; RESOLVED-NOISE-PROTOCOL.md; FD1-SCOPE-CONTRACT.json"
+    },
+    {
+      "name": "source_and_retention_closure",
+      "role": "input_and_control_integrity",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74; RESOLVED-NOISE-PROTOCOL.md; FD1-SCOPE-CONTRACT.json"
+    },
+    {
+      "name": "fixed_FD1_geometry_and_units",
+      "role": "input_and_control_integrity",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74; RESOLVED-NOISE-PROTOCOL.md; FD1-SCOPE-CONTRACT.json"
+    },
+    {
+      "name": "complete_common_rule_no_dropped_points",
+      "role": "input_and_control_integrity",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74; RESOLVED-NOISE-PROTOCOL.md; FD1-SCOPE-CONTRACT.json"
+    },
+    {
+      "name": "all_states_native_algebra_and_reload_valid",
+      "role": "input_and_control_integrity",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74; RESOLVED-NOISE-PROTOCOL.md; FD1-SCOPE-CONTRACT.json"
+    },
+    {
+      "name": "direct_five_state_S_Q_R_coverage",
+      "role": "input_and_control_integrity",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74; RESOLVED-NOISE-PROTOCOL.md; FD1-SCOPE-CONTRACT.json"
+    },
+    {
+      "name": "geometry_volume_relative",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-05,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/geometry_relative; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "geometry_perimeter_relative",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-05,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/geometry_relative; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "independent_free_residual",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-09,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/free_dof_residual; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "mass_relative",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-07,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/mass_2d; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "divergence_scaled",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.001,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/divergence_scaled; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "essential_trace_over_U",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-10,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/essential_trace_over_U; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "physical_energy_balance",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.005,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/balance_scaled; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "physical_momentum_balance_max",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.005,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/balance_scaled; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "physical_gradient_drag_relative",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.0002,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/physical_gradient_drag_gap_relative; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "physical_gradient_transverse_absolute",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-05,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/physical_gradient_transverse_gap_absolute; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "reaction_gradient_drag_relative",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.002,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/h_drag_relative; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "reaction_gradient_transverse_absolute",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.0001,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/h_transverse_absolute_2d; DESIGN.md \u00a74/A3"
+    },
+    {
+      "name": "positive_mapped_jacobian",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "gt",
+      "threshold": 0.0,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74"
+    },
+    {
+      "name": "no_obstacle_quadrature",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74"
+    },
+    {
+      "name": "correct_boundary_labels_and_normal_orientation",
+      "role": "adopted_truth",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74"
+    },
+    {
+      "name": "divergence_decreases_under_h_refinement",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 divergence row"
+    },
+    {
+      "name": "h_finest_velocity_relative",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.001,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/h_velocity_relative"
+    },
+    {
+      "name": "resolved_decreasing_h_velocity_relative",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "RESOLVED-NOISE-PROTOCOL.md"
+    },
+    {
+      "name": "conditional_delta_velocity_relative",
+      "role": "conditional_uncertainty",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.002,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74/A1; campaign-A6.json uncertainty_max_fraction_target=0.2 times pilot target"
+    },
+    {
+      "name": "p_geometry_evidence_velocity_relative",
+      "role": "p_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "PROSPECTIVE-P4-REFERENCE-ROLE.md; RESOLVED-NOISE-PROTOCOL.md: both contrasts, direct noise and P3 geometry triangle retained; unresolved sensitivity upper interval must fit existing adequacy budget, no automatic nonzero/p5/g5 requirement"
+    },
+    {
+      "name": "solver_change_velocity_relative",
+      "role": "adopted_tolerance",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-05,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 tolerance adequacy"
+    },
+    {
+      "name": "h_finest_pressure_scaled",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.002,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/h_pressure_scaled"
+    },
+    {
+      "name": "resolved_decreasing_h_pressure_scaled",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "RESOLVED-NOISE-PROTOCOL.md"
+    },
+    {
+      "name": "conditional_delta_pressure_scaled",
+      "role": "conditional_uncertainty",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.004,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74/A1; campaign-A6.json uncertainty_max_fraction_target=0.2 times pilot target"
+    },
+    {
+      "name": "p_geometry_evidence_pressure_scaled",
+      "role": "p_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "PROSPECTIVE-P4-REFERENCE-ROLE.md; RESOLVED-NOISE-PROTOCOL.md: both contrasts, direct noise and P3 geometry triangle retained; unresolved sensitivity upper interval must fit existing adequacy budget, no automatic nonzero/p5/g5 requirement"
+    },
+    {
+      "name": "solver_change_pressure_scaled",
+      "role": "adopted_tolerance",
+      "required": true,
+      "operator": "le",
+      "threshold": 2e-05,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 tolerance adequacy"
+    },
+    {
+      "name": "h_finest_drag_relative",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.002,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/h_drag_relative"
+    },
+    {
+      "name": "resolved_decreasing_h_drag_relative",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "RESOLVED-NOISE-PROTOCOL.md"
+    },
+    {
+      "name": "conditional_delta_drag_relative",
+      "role": "conditional_uncertainty",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.004,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74/A1; campaign-A6.json uncertainty_max_fraction_target=0.2 times pilot target"
+    },
+    {
+      "name": "p_geometry_evidence_drag_relative",
+      "role": "p_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "PROSPECTIVE-P4-REFERENCE-ROLE.md; RESOLVED-NOISE-PROTOCOL.md: both contrasts, direct noise and P3 geometry triangle retained; unresolved sensitivity upper interval must fit existing adequacy budget, no automatic nonzero/p5/g5 requirement"
+    },
+    {
+      "name": "h_finest_transverse_absolute",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.0001,
+      "applies_to_re": "all",
+      "criterion_source": "campaign-A6.json/reference_gates/h_transverse_absolute_2d"
+    },
+    {
+      "name": "resolved_decreasing_h_transverse_absolute",
+      "role": "adopted_h_trend",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "RESOLVED-NOISE-PROTOCOL.md"
+    },
+    {
+      "name": "conditional_delta_transverse_absolute",
+      "role": "conditional_uncertainty",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.0004,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74/A1; campaign-A6.json uncertainty_max_fraction_target=0.2 times pilot target"
+    },
+    {
+      "name": "p_geometry_evidence_transverse_absolute",
+      "role": "p_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "PROSPECTIVE-P4-REFERENCE-ROLE.md; RESOLVED-NOISE-PROTOCOL.md: both contrasts, direct noise and P3 geometry triangle retained; unresolved sensitivity upper interval must fit existing adequacy budget, no automatic nonzero/p5/g5 requirement"
+    },
+    {
+      "name": "solver_change_drag_absolute",
+      "role": "adopted_tolerance",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-05,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 tolerance adequacy: each force coefficient absolute"
+    },
+    {
+      "name": "solver_change_transverse_absolute",
+      "role": "adopted_tolerance",
+      "required": true,
+      "operator": "le",
+      "threshold": 1e-05,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 tolerance adequacy: each force coefficient absolute"
+    },
+    {
+      "name": "higher_surface_quadrature_retained",
+      "role": "adopted_force_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 force integration: repeat surface rule at higher order; retain12/16 and Q16/20, no invented additional scalar threshold"
+    },
+    {
+      "name": "outlet_flux_backflow_and_stress_audited",
+      "role": "adopted_boundary_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 domain/outlet audit retained under FD1; no invented backflow cutoff"
+    },
+    {
+      "name": "dfg_drag_relative",
+      "role": "benchmark_anchor",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.002,
+      "applies_to_re": [
+        20
+      ],
+      "criterion_source": "campaign-A6.json/reference_gates/dfg_drag_relative; canonical DFG Re20 only"
+    },
+    {
+      "name": "dfg_pressure_drop_relative",
+      "role": "benchmark_anchor",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.002,
+      "applies_to_re": [
+        20
+      ],
+      "criterion_source": "campaign-A6.json/reference_gates/dfg_pressure_drop_relative; canonical DFG Re20 only"
+    },
+    {
+      "name": "dfg_lift_absolute",
+      "role": "benchmark_anchor",
+      "required": true,
+      "operator": "le",
+      "threshold": 0.0001,
+      "applies_to_re": [
+        20
+      ],
+      "criterion_source": "campaign-A6.json/reference_gates/dfg_lift_absolute; canonical DFG Re20 only"
+    },
+    {
+      "name": "refinement_and_P3_physical_diagnostics_retained",
+      "role": "diagnostic_disclosure",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "PROSPECTIVE-P4-REFERENCE-ROLE.md; no P3 physical gate imported into P4 admission"
+    },
+    {
+      "name": "P3_fixed_order_geometry_diagnostic_retained",
+      "role": "diagnostic_disclosure",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "PROSPECTIVE-P4-REFERENCE-ROLE.md; no P3 physical gate imported into P4 admission"
+    },
+    {
+      "name": "P4_g5_interaction_unmeasured_disclosed",
+      "role": "diagnostic_disclosure",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "PROSPECTIVE-P4-REFERENCE-ROLE.md; no P3 physical gate imported into P4 admission"
+    },
+    {
+      "name": "original_domain_sensitivity_pass",
+      "role": "original_broader_G2",
+      "required": false,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "AMENDMENT-FD1-USER-APPROVED-SCOPE.md: original failed gate retained, not waived or relabeled"
+    }
+  ],
+  "shared": [
+    {
+      "name": "analytic_channel_controls",
+      "role": "shared_operator_or_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md \u00a74 analytic control"
+    },
+    {
+      "name": "manufactured_obstacle_force_and_flux_controls",
+      "role": "shared_operator_or_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md A3"
+    },
+    {
+      "name": "wall_shear_sign_control",
+      "role": "shared_operator_or_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md A3"
+    },
+    {
+      "name": "derivative_orientation_and_native_batch_controls",
+      "role": "shared_operator_or_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md A6; CACHE-PRIMARY01-RESULT-REVIEW.json"
+    },
+    {
+      "name": "portable_coefficient_primary_reconstruction_controls",
+      "role": "shared_operator_or_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "CACHE-PRIMARY01-RESULT-REVIEW.json"
+    },
+    {
+      "name": "common_immutable_mesh_layout_and_Stokes_scaling",
+      "role": "shared_operator_or_geometry_control",
+      "required": true,
+      "operator": "true",
+      "threshold": true,
+      "applies_to_re": "all",
+      "criterion_source": "DESIGN.md A6; retained g2-crossp02 immutable_lift"
+    }
+  ],
+  "role_policy": "Only p4_g4_h3 baseline supplies admitted physical truth; h1/h2 and P3 states supply declared convergence/order/noise diagnostics. All15 states require actual native algebra/reload and source integrity. Diagnostic physical failures remain visible. No parameter inherits another parameter physics/noise.",
+  "source_sha256": {
+    "campaign-A6.json": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+    "DESIGN.md": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+    "reviews/RESOLVED-NOISE-PROTOCOL.md": "8c3df2b53a3ab87d257ac9c583fa41efaf8dc78cabdf6bd8aa17a63045ffacce",
+    "reviews/PROSPECTIVE-P4-REFERENCE-ROLE.md": "419780cb900dc9a52c3dc889c083f65a0c0c7ac61753af0b85bc5351f3c91685",
+    "reviews/FD1-SCOPE-CONTRACT.json": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76"
+  },
+  "scientific_contracts": {
+    "design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+    "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+    "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "noise_protocol_sha256": "8c3df2b53a3ab87d257ac9c583fa41efaf8dc78cabdf6bd8aa17a63045ffacce"
+  }
+}

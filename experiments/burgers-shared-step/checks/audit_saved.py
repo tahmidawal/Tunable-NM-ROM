@@ -48,6 +48,8 @@ def main():
         for arm in ('direct', 'affine'):
             z = load(data/f'{arm}_case{c}.npz'); witness = load(data/f'timed_identity_{arm}_case{c}.npz')
             arrays[arm] = z; r = records[(arm, c)]
+            assert all(z[k].dtype == np.float64 for k in ('states', 'W', 'fields', 'gamma_fresh', 'residual_norm_fresh'))
+            assert witness['W'].dtype == witness['fields'].dtype == np.float64
             assert np.isfinite(z['states']).all() and np.isfinite(z['fields']).all()
             np.testing.assert_array_equal(z['W'], z['states'][::10])
             assert int(z['it_sum']) == int(z['step_it'].sum()) == r['fine_corrections']
@@ -106,7 +108,7 @@ def main():
         result_sha256=sha(data/'result.json'), model_manifest_sha256=sha(root/'model/MODEL.json'),
         source_commit=x['commit'], job=job, gpu=x['gpu'], settings=x['settings'],
         input_manifest_files=len(inputs), output_manifest_files=len(outputs),
-        all_recorded_timed_agreements=True, all_count_and_guard_checks=True,
+        all_saved_numerical_fields_f64=True, all_recorded_timed_agreements=True, all_count_and_guard_checks=True,
         all_cases_production_stationary=True, all_timings_retained=True, excluded_timings=0,
         outlier_definition='Descriptive Tukey fences per arm/case (1.5 times IQR); no exclusion or gate change.',
         per_case=per_case, median_paired_ratio=float(np.median(ratios)), worst_case_ratio=max(ratios),

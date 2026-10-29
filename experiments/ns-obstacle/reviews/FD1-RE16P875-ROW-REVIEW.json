@@ -1,0 +1,36 @@
+{
+  "schema": "ns-obstacle-FD1-row-review-v1",
+  "passed": true,
+  "reviewer": "/root/numerical_resume",
+  "candidate_sha256": "33f9abeb3c23209f4922b7dd7c582fe7eb6ba705703c5a9aa58577e6973a9180",
+  "candidate_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re16p875/QUALIFICATION-CANDIDATE.json",
+  "Re": 16.875,
+  "split": "development",
+  "scope": "Re16.875 development parameter row only",
+  "source_commit": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+  "noise_ledger_sha256": "641de547d244f2db0d7886adac7c35e1c08d00846e6c805329406bd971f663b8",
+  "archive_sha256": "457a92000eaae506e1d625a7b70551c86b19864a544a94424f6c933049f12663",
+  "verified_original_files": 1406,
+  "verified_archive_chunks": 17,
+  "applicable_required_checks_passed": 47,
+  "anchor_checks_not_applicable": 3,
+  "conditional_delta": {
+    "velocity_relative": 7.298444659241976e-06,
+    "pressure_scaled": 4.6962591519865664e-05,
+    "drag_relative": 4.0968875338810365e-05,
+    "transverse_absolute": 9.940774620165876e-05
+  },
+  "independent_verification": [
+    "All original files and recombined archive",
+    "All15 export, primary, source and runtime closures; actual configured residual tolerances",
+    "Raw Jacobian arrays, physical boundary-force replay and trace evidence",
+    "Five fresh baselines and complete original physical rule",
+    "Weighted S/Q/R, mesh/order/geometry intervals and four resolved decreasing h trends",
+    "Frozen row, source and index identities"
+  ],
+  "volume_gradient_scope": "Dense volume gradients remain primary-reconstructible and bound to audited producer/replay evidence; reviewer did not claim a new native gradient reconstruction.",
+  "durable_backup": "Separate durable mirror receipt remains required before cooling.",
+  "original_domain_gate": "failed",
+  "admission": false,
+  "training_released": false
+}

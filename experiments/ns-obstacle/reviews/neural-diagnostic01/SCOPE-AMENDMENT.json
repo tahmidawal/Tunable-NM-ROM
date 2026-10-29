@@ -1,0 +1,37 @@
+{
+  "schema": "ns-obstacle-user-authorized-neural-diagnostic-amendment-v1",
+  "date": "2026-10-29",
+  "user_authorization": "Run it",
+  "authorization_context": "User explicitly requested an actual neural-bank ROM flow solve despite the failed representation gate, after explanation of the diagnostic exception.",
+  "scope": "Existing trained maximum-prefix bank r8 on the two existing development cases; diagnostic exact-tensor weak least-squares flow solves",
+  "Re": [
+    16.875,
+    23.125
+  ],
+  "bank_sha256": "da32607494d7ddf8c1d7c231be7289488ff8cfb3a071a2ec58b369a9d936eacd",
+  "original_representation_gate_passed": false,
+  "original_gate_and_failure_preserved": true,
+  "diagnostic_gate_exception_authorized": true,
+  "physical_admission": false,
+  "validation_allowed": false,
+  "training_or_architecture_changes_allowed": false,
+  "quadrature_fit_allowed": false,
+  "solver_policy_changes_allowed": false,
+  "reference_fit_initialization_allowed": false,
+  "proposed_allocation_ceiling_seconds": 900,
+  "proposed_output_archive_envelope_bytes": 1073741824,
+  "conditional_ROM_cap_seconds": 14400,
+  "previous_worst_case_ROM_total_seconds": 11257,
+  "worst_case_ROM_total_with_diagnostic_seconds": 12157,
+  "campaign_cap_seconds": 43200,
+  "worst_case_campaign_total_with_diagnostic_seconds": 27204,
+  "execution_release_pending_exact_source_review": true,
+  "requirements": [
+    "Do not change original gate to passed or modify production admission logic",
+    "Use original query initializer and PDE residual/Jacobian; reference data used only for scoring afterward",
+    "Retain each raw invocation/failure before subsequent diagnostics",
+    "Report actual solver status, field/force errors, incompressibility/boundaries, Jacobian and direct-vs-tensor controls",
+    "No new validation access, matched-speedup claim, training or quadrature fitting",
+    "Fresh runtime/input verification, GPU/f64/highest, bounded isolated directory, max2campaignjobs, fresh storage guards"
+  ]
+}

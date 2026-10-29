@@ -2,7 +2,7 @@
 from pathlib import Path
 from unittest.mock import patch
 import json,tempfile
-import capacity2d as c
+import capacity_context2d as c
 from fe_adapter import CAPS
 
 

@@ -20,6 +20,7 @@ def main():
     a.add_argument('--metadata', type=Path, required=True)
     a.add_argument('--sha256', required=True)
     a.add_argument('--output', type=Path, required=True)
+    a.add_argument('--models', nargs='+', help='Explicit saved model keys to display')
     args = a.parse_args()
     if sha(args.data) != args.sha256:
         raise ValueError('Plot dataset identity differs')
@@ -46,6 +47,25 @@ def main():
     if 'bank_r8_solve_velocity' in data.files:
         models.insert(1, ('bank_r8_solve', 'Neural-bank ROM: flow-solve output',
                          'User-authorized diagnostic with original solver; representation gate remains failed. See recorded convergence status.'))
+    defaults = [m[0] for m in models]
+    for rank in (4, 8):
+        for method, label in [('mixed_Galerkin', 'Galerkin solved flow'),
+                              ('exact_tensor_weak_LS', 'weak least-squares solved flow'),
+                              ('coefficient_PCHIP', 'coefficient interpolation')]:
+            key = f'POD_r{rank}_{method}'
+            if key+'_velocity' not in data.files:
+                continue
+            note = (f'{rank} POD velocity modes plus shared pressure/stability spaces. '
+                    + ('Interpolation control; no PDE solve.' if method == 'coefficient_PCHIP'
+                       else 'Actual reduced flow-solve output.'))
+            models.append((key, f'Standard POD r{rank}: {label}', note))
+            if method == 'mixed_Galerkin':
+                defaults.append(key)
+    registry = {m[0]: m for m in models}
+    requested = args.models or defaults
+    if len(set(requested)) != len(requested) or any(k not in registry for k in requested):
+        raise ValueError('Requested model is duplicated or unavailable in this saved dataset')
+    models = [registry[k] for k in requested]
     speed_max = max(float(np.linalg.norm(data[key+'_velocity'], axis=-1).max())
                     for key in ['reference']+[m[0] for m in models])
     pmin = min(float(data[key+'_pressure'].min()) for key in ['reference']+[m[0] for m in models])
@@ -69,7 +89,9 @@ def main():
                     low, high = ((0, speed_max) if row == 0 else (pmin, pmax)) if col < 2 else (0, max(float(z.max()), 1e-16))
                     artist = ax.tripcolor(tri, z, shading='gouraud', cmap='viridis' if col < 2 else 'magma', vmin=low, vmax=high)
                     decorate(ax)
-                    ax.set_title(['Qualified fine reference', 'Best-fit field' if key.endswith('_projection') else 'Predicted flow', 'Pointwise error'][col])
+                    field_label = ('Best-fit field' if key.endswith('_projection') else
+                                   'Interpolated field' if key.endswith('_PCHIP') else 'Predicted flow')
+                    ax.set_title(['Qualified fine reference', field_label, 'Pointwise error'][col])
                     label = (r'$|u|/U$' if row == 0 else r'$p/U^2$') if col < 2 else (r'$|u_{ROM}-u_{ref}|/U$' if row == 0 else r'$|p_{ROM}-p_{ref}|/U^2$')
                     bar = fig.colorbar(artist, ax=ax, orientation='horizontal', fraction=.08, pad=.07, label=label)
                     formatter = ScalarFormatter(useMathText=True)
@@ -78,7 +100,7 @@ def main():
                     bar.locator = MaxNLocator(nbins=4)
                     bar.update_ticks()
             fig.suptitle(f'{title} — Re = {float(reynolds):g}\nVelocity (top) and pressure (bottom); near-cylinder view', fontsize=14)
-            fig.supxlabel(note+'\nDisplay interpolation of saved samples; error scales differ between figures. Development cases, not validation.', fontsize=9)
+            fig.supxlabel(note+'\nDisplay interpolation; error scales differ. Errors against stored reference do not certify equal continuum accuracy. Development cases.', fontsize=9)
             stem = f'{key}_Re{tag}'
             fig.savefig(args.output/(stem+'.png'), dpi=155)
             fig.savefig(args.output/(stem+'.pdf'))
@@ -97,6 +119,7 @@ def main():
         fig.savefig(args.output/(stem+'.pdf')); plt.close(fig); outputs.append(stem+'.png')
     manifest = {'data_sha256':sha(args.data), 'metadata_sha256':sha(args.metadata),
                 'generator_sha256':sha(Path(__file__)), 'outputs':outputs,
+                'selected_models':requested,
                 'global_metrics_source':'Original full-rule records in input metadata; no global error inferred from plotting subset',
                 'display':'Linear triangulation of deterministic saved quadrature samples, masked at obstacle; no PDE solve or fit'}
     (args.output/'PLOT-MANIFEST.json').write_text(json.dumps(manifest, indent=2)+'\n')

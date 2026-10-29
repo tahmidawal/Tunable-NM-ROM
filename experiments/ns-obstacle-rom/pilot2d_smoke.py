@@ -151,6 +151,15 @@ def main():
         frozen=read_evidence(frozen_path,digest)
         restored,selected=rebuild(frozen,'POD_r2',arrays,metadata,probes,bank)
         assert selected is None
+        from weak import WeakOperator
+        frozen['fitted_operators']['POD_r2']={k:getattr(restored.operator,k) for k in WeakOperator.__dataclass_fields__}
+        frozen['choices']['POD_r2']['selected_support']=320
+        receipt=save_evidence(out,'synthetic_operator_roundtrip',frozen)
+        replay=read_evidence(out/receipt['record_file'],receipt['record_sha256'])
+        rebuilt,operator=rebuild(replay,'POD_r2',arrays,metadata,probes,bank)
+        state=np.full(operator.nv+operator.np,.01)
+        np.testing.assert_array_equal(operator.convection,restored.operator.convection)
+        np.testing.assert_array_equal(operator.residual(state,.05),restored.operator.residual(state,.05))
         changed=copy.deepcopy(probes);changed['points_physical'][0,0]+=.001
         try:rebuild(frozen,'POD_r2',arrays,metadata,changed,bank)
         except ValueError:pass

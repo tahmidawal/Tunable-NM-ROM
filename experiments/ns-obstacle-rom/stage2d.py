@@ -11,7 +11,7 @@ from fe_adapter import sha_file
 ROOT=Path(__file__).parent
 INPUTS={'prepare':{'training_manifest','preparation_release'},
         'train':{'prepared','preparation_release'},
-        'development':{'prepared','preparation_release','bank','probes','development'}}
+        'development':{'prepared','preparation_release','bank','training_evidence','probes','development'}}
 
 
 def source_digest():
@@ -40,6 +40,30 @@ def qualification(stage,inputs):
     return require_qualification(metadata['reference_qualification'])
 
 
+def training_provenance(inputs):
+    from bank import FrozenBank
+    bank=FrozenBank.load(inputs['bank']);m=bank.metadata;folder=Path(inputs['training_evidence'])
+    config=json.loads((folder/'CONFIG.json').read_text());final=json.loads((folder/'FINAL.json').read_text())
+    checkpoint=m.get('last_checkpoint')
+    if (m.get('trained') is not True or m.get('seed')!=27102027 or m.get('steps_cap')!=3000 or
+        m.get('time_cap_seconds')!=1800 or not isinstance(checkpoint,dict) or final.get('status')!='completed' or
+        final.get('last_checkpoint')!=checkpoint or final.get('cumulative_completed_steps')!=m['steps_executed'] or
+        not 0<=m['steps_executed']<=3000 or config.get('step_cap')!=3000 or config.get('time_cap_seconds')!=1800 or
+        config.get('resume_authorized') is not False or checkpoint.get('resume_authorized') is not False):
+        raise ValueError('original fixed training/checkpoint budget required; no resume/reset')
+    if sha_file(folder/'CONFIG.json')!=checkpoint['configuration_sha256']:
+        raise ValueError('original checkpoint configuration changed')
+    archive=folder/checkpoint['arrays']
+    if Path(checkpoint['arrays']).name!=checkpoint['arrays'] or sha_file(archive)!=checkpoint['arrays_sha256']:
+        raise ValueError('original checkpoint arrays changed')
+    if config['training_array_sha256']!=m['training_array_sha256']:
+        raise ValueError('bank/checkpoint training population differs')
+    return {'bank_sha256':sha_file(inputs['bank']),'configuration_sha256':sha_file(folder/'CONFIG.json'),
+        'final_sha256':sha_file(folder/'FINAL.json'),'checkpoint':checkpoint,
+        'steps_executed':m['steps_executed'],'original_steps_cap':3000,'original_time_cap_seconds':1800,
+        'resume_authorized':False}
+
+
 def build_candidate(stage,inputs,output):
     if stage not in INPUTS or set(inputs)!=INPUTS[stage]:raise ValueError('exact stage-specific warm inputs required')
     q=qualification(stage,inputs)
@@ -48,6 +72,7 @@ def build_candidate(stage,inputs,output):
         'inputs':{k:inventory(v) for k,v in inputs.items()},'training_executed':False,
         'fixed_training_budget':{'steps':3000,'seconds':1800,'seed':27102027},
         'validation_inputs_allowed':False,'automatic_retry':False}
+    if stage=='development':candidate['training_provenance']=training_provenance(inputs)
     with Path(output).open('x') as stream:json.dump(candidate,stream,indent=2);stream.write('\n')
     return candidate
 
@@ -69,6 +94,8 @@ def verify(candidate_path,release_path):
         if inventory(item['path'])!=item:raise ValueError('warm input changed: '+name)
     inputs={k:v['path'] for k,v in c['inputs'].items()}
     if qualification(c['stage'],inputs)!=require_qualification(c['reference_qualification']):raise ValueError('actual input scope differs')
+    if c['stage']=='development' and training_provenance(inputs)!=c.get('training_provenance'):
+        raise ValueError('original training/checkpoint binding changed')
     return c,r,inputs
 
 

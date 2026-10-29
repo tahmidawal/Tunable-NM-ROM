@@ -2,7 +2,7 @@
 from pathlib import Path
 import json,hashlib
 import numpy as np
-from pilot2d import sha_file,_read_arrays,source_digest,build_model,model_fingerprint,array_digest
+from pilot2d import sha_file,_read_arrays,source_digest,model_fingerprint,array_digest
 from qualification import require_qualification
 from weak import WeakOperator
 
@@ -12,7 +12,9 @@ def input_identity(metadata,probes,bank):
     for i,(weight,bias) in enumerate(bank.layers):parameters.update({f'weight_{i}':weight,f'bias_{i}':bias})
     return {'prepared_files':metadata.get('coefficient_files'),
             'training_array_sha256':metadata.get('training_array_sha256'),
-            'probes_sha256':array_digest(probes),'bank_parameters_sha256':array_digest(parameters)}
+            'probes_sha256':array_digest(probes),'bank_parameters_sha256':array_digest(parameters),
+            'original_training_budget':{k:bank.metadata.get(k) for k in
+                ('seed','steps_executed','steps_cap','time_cap_seconds','seconds','last_checkpoint')}}
 
 
 def read_evidence(path,expected_sha256):
@@ -45,6 +47,7 @@ def load_frozen(path,expected_sha256,qualification):
 
 
 def rebuild(record,name,arrays,metadata,probes,bank):
+    from pilot2d import build_model
     if input_identity(metadata,probes,bank)!=record['input_identity']:raise ValueError('frozen model inputs changed')
     specification=record['models'][name]
     if specification['kind']=='bank' and record['bank_gate'].get('passed') is not True:

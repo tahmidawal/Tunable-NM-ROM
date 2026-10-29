@@ -33,7 +33,7 @@
   ],
   "full_local_archive": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/collections/native-block02.collection.tar.gz",
   "full_local_extraction": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/collections/native-block02",
-  "recovery": "Concatenate ordered chunks, verify archive SHA256, extract and verify COLLECTION-SHA256SUMS. Full input/source/dependency/output evidence retained.",
+  "recovery": "Use the pinned GIT-COLD-PROOF.json with retention/git_archive_recovery.py recover, from a repository containing the full code-only mirror history. It streams exact historical chunk blobs into a fresh archive and verifies every chunk and the ordered archive SHA256. Then extract and verify COLLECTION-SHA256SUMS. A shallow tip-only clone is insufficient. Canonical scientific arrays remain expanded.",
   "physical_admission": false,
   "remote_cleanup": "completed_exact_duplicate_only_after_verification_and_durable_mirror",
   "retention_commit": "f0e3580b1",
@@ -47,5 +47,11 @@
     "recovery": "Scientific outputs remain expanded here. Concatenate ordered chunks, verify archive_sha256, extract original paths and verify COLLECTION-SHA256SUMS.",
     "unique_evidence_removed": false,
     "preflight_record": "checks/native-collection-cleanup-preflight.json"
-  }
+  },
+  "chunk_storage": "git_history_only",
+  "working_chunk_files_present": false,
+  "cold_recovery_proof": "GIT-COLD-PROOF.json",
+  "cold_recovery_proof_sha256": "f2c9d6e81cf0a1495256841d90033808f55d948c3ad4ad73a74c405e8d30cbe4",
+  "historical_mirror_required": true,
+  "cold_recovery_tool": "experiments/ns-obstacle-rom/retention/git_archive_recovery.py"
 }

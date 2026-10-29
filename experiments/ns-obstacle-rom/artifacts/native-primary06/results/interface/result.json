@@ -1,0 +1,92 @@
+{
+  "passed": true,
+  "physical_admission": false,
+  "training_released": false,
+  "PDE_solves": 0,
+  "factorizations": 0,
+  "eigenproblems": 0,
+  "scope": "accepted native-batch03 basis/mesh field serialization and complete replay only; no fine-P4 extrapolation",
+  "field_aliases": "seven production storage shapes; retained eigen/test columns are not claimed as Stokes/POD/supremizer constructions",
+  "source_sha256": "db3c50388a5fd627b94582cf51e7430b7d5a288d0abbdfc53a51240404e1a699",
+  "fixture_sha256": "31a69f17d7c9fdf9bcfa30254c8ceca271f205d5edc72c9b6d7c1765cf2e4774",
+  "phases": [
+    {
+      "stage": "native_setup",
+      "elapsed_seconds": 0.5582258058711886,
+      "peak_rss_bytes": 207958016,
+      "result_bytes": 0
+    },
+    {
+      "stage": "original_volume",
+      "elapsed_seconds": 3.7378292037174106,
+      "peak_rss_bytes": 253612032,
+      "result_bytes": 66809270
+    },
+    {
+      "stage": "primary_capture",
+      "elapsed_seconds": 17.043848210014403,
+      "peak_rss_bytes": 253612032,
+      "result_bytes": 70538808
+    },
+    {
+      "stage": "exact_restoration",
+      "elapsed_seconds": 20.623255374841392,
+      "peak_rss_bytes": 288874496,
+      "result_bytes": 137348078
+    },
+    {
+      "stage": "independent_array_comparison",
+      "elapsed_seconds": 21.740125603042543,
+      "peak_rss_bytes": 326934528,
+      "result_bytes": 137348078
+    }
+  ],
+  "counts": {
+    "elements": 415,
+    "mixed_dofs": 4889,
+    "points": 20335
+  },
+  "producer_rule_max_abs_gaps": {
+    "points": 0.0,
+    "weights": 0.0,
+    "jacobians": 0.0
+  },
+  "original_volume_seconds": 3.170257668942213,
+  "primary_capture_seconds": 13.260973025113344,
+  "restoration": {
+    "seconds": 3.2679193941876292,
+    "restored_files": 37,
+    "manifest_sha256": "f98b53379ac4510a3359f310f6e85eb112e4bb87caf97ff1aaa0ee92606e0b65",
+    "exact_archive_and_array_bytes": true,
+    "offline_cost_includes_regeneration_verification_and_writes": true
+  },
+  "replay_accounting": {
+    "setup_seconds": 0.29912774823606014,
+    "setup_guard": {
+      "prior_peak_rss_bytes": 253612032,
+      "reserved_bytes": 2160155840
+    },
+    "iterations": [
+      {
+        "iterator_elapsed_seconds_including_consumer": 3.1533887488767505,
+        "generation_and_verification_seconds": 0.4564378811046481,
+        "points_returned": 20335,
+        "workspace_guard": {
+          "prior_peak_rss_bytes": 253612032,
+          "reserved_bytes": 143400200
+        },
+        "completed": true,
+        "peak_rss_bytes": 288874496
+      }
+    ],
+    "physical_admission": false,
+    "cost_scope": "generation is included in enclosing offline phase, not added twice; iterator elapsed includes consumer work"
+  },
+  "all_array_comparisons_exact": 90,
+  "original_manifest_sha256": "f98b53379ac4510a3359f310f6e85eb112e4bb87caf97ff1aaa0ee92606e0b65",
+  "primary_manifest_sha256": "43ccd7a1ad18888175358046b13748987f86b12e2bbb268d196e23b1c75e3a8d",
+  "primary_directory_bytes": 3729538,
+  "original_directory_bytes": 66809270,
+  "elapsed_seconds": 21.740128736943007,
+  "peak_rss_bytes": 326934528
+}

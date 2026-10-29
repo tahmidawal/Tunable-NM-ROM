@@ -1,0 +1,33 @@
+{
+  "primary_source_sha256": "db3c50388a5fd627b94582cf51e7430b7d5a288d0abbdfc53a51240404e1a699",
+  "fixture_source_sha256": "31a69f17d7c9fdf9bcfa30254c8ceca271f205d5edc72c9b6d7c1765cf2e4774",
+  "producer_manifest_sha256": "f4a6504b19706a351fd9e6cf672bf4c8170f85a7251a4248b0b56bd66e5516b4",
+  "basis_manifest_sha256": "2c47bf9740478378e9336fcadd3f9900c5201a57a8e7d32b33649ecb6f07ede8",
+  "physical_admission": false,
+  "training_released": false,
+  "caps": {
+    "gpu": 1,
+    "CPUs": 16,
+    "memory_GiB": 64,
+    "wall_seconds": 1200,
+    "unchanged_internal_process_GiB": 16,
+    "result_bytes": 1073741824,
+    "local_collection_reservation_bytes": 3221225472,
+    "minimum_local_reserve_bytes": 10737418240
+  },
+  "fresh_directory": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/native-primary06",
+  "schema": "ns-obstacle-primary-volume-replay-control-v1",
+  "source_commit": "772a2b0a9a8705d6d0bdb3e8987bc38c3f50b455",
+  "source_candidate_sha256": "29fb0889d0a1bf34a95964a5b679291a3584efc8f4d13c04917992cebbe020f6",
+  "independent_source_review": "PASS scoped native06 retained-basis replay",
+  "single_submission": true,
+  "no_automatic_retry": true,
+  "fine_P4_omission_authorized": false,
+  "conditions": [
+    "Source mirror complete before staging",
+    "Fresh queue/disk checks before and after submit",
+    "Reserve3GiB collection plus10GiB free and concurrent reservations",
+    "Complete original/restored arrays and failure evidence retained",
+    "No PDE solve, factorization, eigensolve, training or data admission"
+  ]
+}

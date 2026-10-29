@@ -1,0 +1,829 @@
+{
+  "schema": "ns-obstacle-validation-reconstruction-prospective-plan-v1",
+  "authorized_execution": false,
+  "validation_numerical_arrays_accessed": false,
+  "reference_admission": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/complete15/REFERENCE-ADMISSION.json",
+    "sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f"
+  },
+  "ordered_parameters": [
+    16,
+    18,
+    22,
+    24
+  ],
+  "cases": [
+    {
+      "Re": 16,
+      "split": "validation",
+      "admitted_reference": {
+        "Re": 16,
+        "split": "validation",
+        "storage_mode": "coefficient_primary",
+        "export_manifest_sha256": "34b2df209413d2cc92e114b17c4689d1851b7216e9fe01849c8696243ad9f9f7",
+        "config_sha256": "b3071426d2088a8ccc843528c1522b21c89c29b4868d45091bf5b5b223500d7d",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "solution_sha256": "e7330aea7aa82e73234396d40f1bca3bb6f7e1cf1be7c38c04f6dadfeb573e22"
+      },
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re16/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "bd5e3f73d40e845d404554d32af47a32ccc34286434b9047a1336d33a5d749cc"
+      },
+      "primary_metadata": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+        "sha256": "9fb1780531ed4f8313cfba5eae8f70407463a69c71ddd99d37bc84c60f9db075"
+      },
+      "config": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/config.json",
+        "sha256": "b3071426d2088a8ccc843528c1522b21c89c29b4868d45091bf5b5b223500d7d"
+      },
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "destination": "PRIMARY-REFERENCE.json",
+          "sha256": "9fb1780531ed4f8313cfba5eae8f70407463a69c71ddd99d37bc84c60f9db075",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "destination": "boundary_rule.json",
+          "sha256": "436282a7143bf55e20ac45cddaed1216c3203d51ededdbff35521b8592aadafe",
+          "bytes": 2318277
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/config.json",
+          "destination": "config.json",
+          "sha256": "b3071426d2088a8ccc843528c1522b21c89c29b4868d45091bf5b5b223500d7d",
+          "bytes": 2298
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "destination": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "destination": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "destination": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "destination": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "destination": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "destination": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "destination": "mesh_identity.json",
+          "sha256": "85523f90f661e2017463cc75b036d3a569cdb38b360ed7b033263e002df0d3cd",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "destination": "normal_orientation.json",
+          "sha256": "33ba5c8d7a9e0f2d0799d8387c578c46813c5e5d5f14e7e7a6ea18de0e1a4c5e",
+          "bytes": 3543360
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "destination": "primary_coefficients.npz",
+          "sha256": "a9c2a63dab3dcc39446870954940a92496ba93cba1688a8071d33883de3937fa",
+          "bytes": 6703784
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "destination": "reload_checks.json",
+          "sha256": "2178ce24aa5b7d1987ed73ed7637d61a0c9d7a3583d3c7f1d6614c190a4f4c69",
+          "bytes": 5799
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "destination": "reload_normal_orientation.json",
+          "sha256": "1239f32443966e2914e495871ed0f7feb7ca0a0d5fb46e4972f97bdb14d79e52",
+          "bytes": 3543341
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/result.json",
+          "destination": "result.json",
+          "sha256": "ebd4d00e879ef411217710537c5c6320f7dc2dcd45c275e07d8c4fc597ec5a44",
+          "bytes": 435679
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "destination": "solution.sol",
+          "sha256": "e7330aea7aa82e73234396d40f1bca3bb6f7e1cf1be7c38c04f6dadfeb573e22",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "destination": "stokes.sol",
+          "sha256": "fd36ba8a83dc4f3141f7862709719791ee46c80761e3a6080b36b6a1b09377ff",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re16-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "destination": "EXPORT-MANIFEST.json",
+          "sha256": "34b2df209413d2cc92e114b17c4689d1851b7216e9fe01849c8696243ad9f9f7",
+          "bytes": 13382
+        }
+      ],
+      "runtime_bytes": 63831658,
+      "warm_paths_and_sizes_present": true,
+      "numerical_payloads_opened_or_hashed": false,
+      "raw_reconstructed_array_bytes": 134101848,
+      "scaled_output_array_bytes": 58043832,
+      "common_rule_points": 1036497
+    },
+    {
+      "Re": 18,
+      "split": "validation",
+      "admitted_reference": {
+        "Re": 18,
+        "split": "validation",
+        "storage_mode": "coefficient_primary",
+        "export_manifest_sha256": "9b9d7c543681f149731dd573296fc67fc47431a9447a375aec920f2e44a77beb",
+        "config_sha256": "21d5a68f22ffbe2508779ea8b14173b78990731600a9e9faa09741b5061f4e1c",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "solution_sha256": "cffc2980439c1adf5cfe1047d2b7cca14ae8dad52e8bc91b014ee19ba13a362d"
+      },
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re18/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "7466fde30f8ffd3256561a537d20f9c61a1c9959b510a525ca34b63a17e1d3fe"
+      },
+      "primary_metadata": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+        "sha256": "e077a232e3d889bbcafc60eb872e54adbd9dcf837ffa578a4d1736bf99d21020"
+      },
+      "config": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/config.json",
+        "sha256": "21d5a68f22ffbe2508779ea8b14173b78990731600a9e9faa09741b5061f4e1c"
+      },
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "destination": "PRIMARY-REFERENCE.json",
+          "sha256": "e077a232e3d889bbcafc60eb872e54adbd9dcf837ffa578a4d1736bf99d21020",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "destination": "boundary_rule.json",
+          "sha256": "c14ae7ffc9ab3e1a39c2944633add9122ef68fb124f098516cdbb2526e84525a",
+          "bytes": 2318369
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/config.json",
+          "destination": "config.json",
+          "sha256": "21d5a68f22ffbe2508779ea8b14173b78990731600a9e9faa09741b5061f4e1c",
+          "bytes": 2298
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "destination": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "destination": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "destination": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "destination": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "destination": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "destination": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "destination": "mesh_identity.json",
+          "sha256": "9cc635af635dc8776061a4fb09efb9edf14be46284cd32f81078113b584089e1",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "destination": "normal_orientation.json",
+          "sha256": "0de8382af693a2b40b85cbf9c4ccf463408b11ede4a490ebd70b2ae9865efba0",
+          "bytes": 3543341
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "destination": "primary_coefficients.npz",
+          "sha256": "b0be307c76f7a6b6e6f39d1742381bf0b11ef7e11ffdbc29ce186f23404d7c2c",
+          "bytes": 6703547
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "destination": "reload_checks.json",
+          "sha256": "119525f2a0fba10d7e7e87959e5d0b0b991a9a711122c90b3a11b2dfd1452b4c",
+          "bytes": 5799
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "destination": "reload_normal_orientation.json",
+          "sha256": "b1d6889da9e6fc9e5f2e2974fd15f24a0d51495b76b25e46a7133b9b504fd015",
+          "bytes": 3543357
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/result.json",
+          "destination": "result.json",
+          "sha256": "e22d66b65a73eef302c3d3a56d780acca7bfce7e9a60a48745d063ea32dbceef",
+          "bytes": 435683
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "destination": "solution.sol",
+          "sha256": "cffc2980439c1adf5cfe1047d2b7cca14ae8dad52e8bc91b014ee19ba13a362d",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "destination": "stokes.sol",
+          "sha256": "88ddcf40435fa1ab482b161061f63c0e173af99e27367ef4613f2f3117fc0984",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re18-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "destination": "EXPORT-MANIFEST.json",
+          "sha256": "9b9d7c543681f149731dd573296fc67fc47431a9447a375aec920f2e44a77beb",
+          "bytes": 13382
+        }
+      ],
+      "runtime_bytes": 63831514,
+      "warm_paths_and_sizes_present": true,
+      "numerical_payloads_opened_or_hashed": false,
+      "raw_reconstructed_array_bytes": 134101848,
+      "scaled_output_array_bytes": 58043832,
+      "common_rule_points": 1036497
+    },
+    {
+      "Re": 22,
+      "split": "validation",
+      "admitted_reference": {
+        "Re": 22,
+        "split": "validation",
+        "storage_mode": "coefficient_primary",
+        "export_manifest_sha256": "759f03dc8631634398466460c7f87869b0a132a0c238279925f880ae989b41df",
+        "config_sha256": "d065f618106d4a32cbb9287f71991bd3e46ab63299a75c13c1fb37a864ef3771",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "solution_sha256": "99e8645c9871446d95d6d1ab9efd02f1d759031f417352e80d0ed5fca91481b9"
+      },
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re22/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "3aa42a3fd9a76ac4c724f4cd54f78a636dce56e236d59d9c09397380ad19fa4c"
+      },
+      "primary_metadata": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+        "sha256": "8d375f394d0e4e3e2e58da2c6955644876ccb64f3d2262d6671041b8843a1263"
+      },
+      "config": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/config.json",
+        "sha256": "d065f618106d4a32cbb9287f71991bd3e46ab63299a75c13c1fb37a864ef3771"
+      },
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "destination": "PRIMARY-REFERENCE.json",
+          "sha256": "8d375f394d0e4e3e2e58da2c6955644876ccb64f3d2262d6671041b8843a1263",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "destination": "boundary_rule.json",
+          "sha256": "671bf67c34f5bd64644e6ece43f1715a21a45e8ec5eba6c5d402f2ab028eb917",
+          "bytes": 2318642
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/config.json",
+          "destination": "config.json",
+          "sha256": "d065f618106d4a32cbb9287f71991bd3e46ab63299a75c13c1fb37a864ef3771",
+          "bytes": 2298
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "destination": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "destination": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "destination": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "destination": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "destination": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "destination": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "destination": "mesh_identity.json",
+          "sha256": "3a48a8002b15fc3f1cb5e79d1056510b003688240cab4d15b2a85509bcfc4331",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "destination": "normal_orientation.json",
+          "sha256": "c2b167bfa93024112fd15f2f32a57f2c32c977dbe415daaa216e9da083a9aa46",
+          "bytes": 3543361
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "destination": "primary_coefficients.npz",
+          "sha256": "2b23139acdc093e25213e91ef7138bc0962783aa183b7bb29b9cb85558cea794",
+          "bytes": 6703272
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "destination": "reload_checks.json",
+          "sha256": "b6bdd806c0a4e7364c2b19f45a5700956aa4a6dd2dbcd84465670cdad2d3ac11",
+          "bytes": 5798
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "destination": "reload_normal_orientation.json",
+          "sha256": "becb97100b17a69a01fefbcaef4074e698db31a8f918c80153504e76ee1fdfef",
+          "bytes": 3543363
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/result.json",
+          "destination": "result.json",
+          "sha256": "3ce6ababf3bd3936ef2db2daf8dd291c50b0fbb9d8883290768990f08ff799b0",
+          "bytes": 435706
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "destination": "solution.sol",
+          "sha256": "99e8645c9871446d95d6d1ab9efd02f1d759031f417352e80d0ed5fca91481b9",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "destination": "stokes.sol",
+          "sha256": "1f1b43b024f5f10bb678c1779e1390b42cb28d720f44fc0f9d98ce34a8773dc9",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re22-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "destination": "EXPORT-MANIFEST.json",
+          "sha256": "759f03dc8631634398466460c7f87869b0a132a0c238279925f880ae989b41df",
+          "bytes": 13382
+        }
+      ],
+      "runtime_bytes": 63831560,
+      "warm_paths_and_sizes_present": true,
+      "numerical_payloads_opened_or_hashed": false,
+      "raw_reconstructed_array_bytes": 134101848,
+      "scaled_output_array_bytes": 58043832,
+      "common_rule_points": 1036497
+    },
+    {
+      "Re": 24,
+      "split": "validation",
+      "admitted_reference": {
+        "Re": 24,
+        "split": "validation",
+        "storage_mode": "coefficient_primary",
+        "export_manifest_sha256": "02f0793b0ce541d1585781837b49f26f3534d06b030b56698e09aa53aa900ab2",
+        "config_sha256": "2493e134717bfbd1e5b158e3e7f4246ff1378d1a908c0f9278ce32f103b95c63",
+        "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+        "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+        "solution_sha256": "ea07d17d5144c569656e2c4166da862cc0ceb039184839508ef92cf5e96c26a6"
+      },
+      "closure": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/frozen/re24/ADOPTED-RUNTIME-CLOSURE.json",
+        "sha256": "40b2bcdf506f5da257cc297a5caddacfbaffd1717186390c4224b68c098d566b"
+      },
+      "primary_metadata": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+        "sha256": "5446042a7a28359363b12098df67edfeb43a4d4ef95449652a808971a23d8b0b"
+      },
+      "config": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/config.json",
+        "sha256": "2493e134717bfbd1e5b158e3e7f4246ff1378d1a908c0f9278ce32f103b95c63"
+      },
+      "runtime_files": [
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/PRIMARY-REFERENCE.json",
+          "destination": "PRIMARY-REFERENCE.json",
+          "sha256": "5446042a7a28359363b12098df67edfeb43a4d4ef95449652a808971a23d8b0b",
+          "bytes": 5351
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/boundary_rule.json",
+          "destination": "boundary_rule.json",
+          "sha256": "0d7fef36b3816c6d2e85038f8e00ba2a67a6513518a044357443515ab08425bd",
+          "bytes": 2318667
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/config.json",
+          "destination": "config.json",
+          "sha256": "2493e134717bfbd1e5b158e3e7f4246ff1378d1a908c0f9278ce32f103b95c63",
+          "bytes": 2298
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/fe_layout.json",
+          "destination": "fe_layout.json",
+          "sha256": "ea8c51f2e29fac8bb1b98e8d6fd2e8d4b975e605d3e6c356e8861074e4d1b249",
+          "bytes": 21581066,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/fe_layout.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/arrays.npz",
+          "destination": "geometry-cache/boundary/arrays.npz",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/boundary/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/geometry-cache/boundary/cache.json",
+          "destination": "geometry-cache/boundary/cache.json",
+          "sha256": "b3be44c788120bb7e1406b58f7a39892db4dfa6b17a65452cc232ff92128bff2",
+          "bytes": 32961,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/arrays.npz",
+          "destination": "geometry-cache/volume/arrays.npz",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/results/states/p3_g4_h3_solver_100x/geometry-cache/volume/arrays.npz"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/geometry-cache/volume/cache.json",
+          "destination": "geometry-cache/volume/cache.json",
+          "sha256": "8b3b1847d421153ba2b894ba42281dad145267f8535d945942798ff5b58a6ede",
+          "bytes": 1090228,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+            "member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/mesh.vol.bin",
+          "destination": "mesh.vol.bin",
+          "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+          "bytes": 1413980,
+          "archive_source": {
+            "manifest_source": "artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+            "manifest_sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb",
+            "member": "g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin"
+          }
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/mesh_identity.json",
+          "destination": "mesh_identity.json",
+          "sha256": "59ad1bd929c967fd7df063cda894663e2ca0fdbbf744835685b943b0d5a0fbc9",
+          "bytes": 803
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/normal_orientation.json",
+          "destination": "normal_orientation.json",
+          "sha256": "6f59f436472d809da3859587efd3520fb93e31ab6ef948724c2c1ccadd569f8c",
+          "bytes": 3543337
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/primary_coefficients.npz",
+          "destination": "primary_coefficients.npz",
+          "sha256": "0d37ca9a81261f85f4ed79c9e417a16c44fbee9092c53731ed766d9cce80219b",
+          "bytes": 6703473
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/reload_checks.json",
+          "destination": "reload_checks.json",
+          "sha256": "90b6029e84a683d50c01b1bae754a416ca9854724f618e576fdafe37b9f32060",
+          "bytes": 5801
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/reload_normal_orientation.json",
+          "destination": "reload_normal_orientation.json",
+          "sha256": "44e8d744151a482ce2932ab8306a18a44492240dc5aa5e9af99925bab141c8c9",
+          "bytes": 3543361
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/result.json",
+          "destination": "result.json",
+          "sha256": "72b045a3aa7ed85fe2a98bbab1e63167931656df73542209a03a980d40bb5501",
+          "bytes": 435688
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/solution.sol",
+          "destination": "solution.sol",
+          "sha256": "ea07d17d5144c569656e2c4166da862cc0ceb039184839508ef92cf5e96c26a6",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/stokes.sol",
+          "destination": "stokes.sol",
+          "sha256": "dd0a5db6c528c450f6c0c2ed8bd6c11cf6f8c891619af2f096e614c5b261b9a3",
+          "bytes": 3497120
+        },
+        {
+          "source": "artifacts/g2-population-re24-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json",
+          "destination": "EXPORT-MANIFEST.json",
+          "sha256": "02f0793b0ce541d1585781837b49f26f3534d06b030b56698e09aa53aa900ab2",
+          "bytes": 13382
+        }
+      ],
+      "runtime_bytes": 63831745,
+      "warm_paths_and_sizes_present": true,
+      "numerical_payloads_opened_or_hashed": false,
+      "raw_reconstructed_array_bytes": 134101848,
+      "scaled_output_array_bytes": 58043832,
+      "common_rule_points": 1036497
+    }
+  ],
+  "rom_source_commit": "dc117d54e0cb42e733790e587f139cae44ffb38b",
+  "unchanged_source_files_sha256": {
+    "handoff2d.py": "05e0d802050b25f513cd9880aee4697cf6262946cb217ac1b8650c9f3e8ad6e2",
+    "handoff_primary_worker.py": "1bcce56ada4e367064e723a8e205c4177016a302e50f24a475502d0f2b536bf2",
+    "materialize_reference2d.py": "5acc40d2521ee254782e526cf9db1ae1e5daee9bd3850604f9e82653e5f3c164",
+    "validation2d.py": "b527074bae16fe13ba91cf4d7dc77f9829291b7b614230f8df9aba48f2636069",
+    "qualification.py": "b87390af1df8bc5a526af5386e1779e2080f7d12f86e2a1de00a66ff6af648a6",
+    "fe_adapter.py": "62342db041444632d6dd95b8208a2751f7b218c4f64ac7db13ac69733b8dbf5f",
+    "fe_blocks.py": "49fdddf32a7d0840cb91f4f76a973261758fd040dcdbdfef638c37d5f9fdf125",
+    "component_factor.py": "621f8e830da618b378dac0c968c35ab7323475cf057326cb4dabb514708e3b0a",
+    "FD1-SCOPE-CONTRACT.json": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "point_store.py": "adfcf7f62f91518f364f33c1622361185e0f7b39ad1648aac4a8ec8fdbacd84e",
+    "fe_algebra.py": "a5e5eeeddcc22d36c011ef02d4c92b0e1f5609adef37d4948c1d8d71af394dfb",
+    "fe_pod_a6.py": "6923dff3c384d1be643f8fea541dc44f76d2af99890654026f71a0cec9bd0252",
+    "fe_controls_a6.py": "0e27ecbad69431d3307c877e74957299d852acb087ce013a4bb69a5c2a19ae32",
+    "spaces.py": "6a6c51f5a212c7c05d057535223058edfb9742c1e78e43bb5e8b55182cbd2cee",
+    "weak.py": "dcf73d9d0dbc7c4e1d7860cfd0ccdae0edbf6521421e6bf761af23d28fa72335",
+    "train_bank.py": "a9e0ad22e5e76882499caecb8c30d8ad97f653f06f8f2c317166aff4f16987a1",
+    "oriented_normals.py": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+    "scalars.py": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+    "MODEL-CONTRACT.json": "e049b9db7d53eb04a823e9a13b17d30b8ea106c42df3fe57caa6ce368ee841dd",
+    "pilot2d.py": "f407d65b41b84b1b330240080df7bb817b89f1df6b836907059c9894406fa87d",
+    "primary_native/SOURCE.json": "279c6782dd1e1007fb2978c472b9feb56221eeb13435117b2c537ff7bfb665a2",
+    "primary_native/fom.py": "3267a70a91c3e9620e2545af78edb20ce7f55566020d3b687cb65a25bbcfb121",
+    "primary_native/reference_export.py": "32c72e6a4f1fe4224f00c750e87ddf1792aceb4d9aaf0ca7d4e7f67814c28019",
+    "primary_native/shared_lift.py": "5d28c86cec7017ad5ac108ee3834fb45598a3d10963a4021a0a94afc9ef73b66",
+    "primary_native/preflight.py": "6bd7a26fd9849dd021138471d04a01c52b520382a60e060e73b0e3a30f0e87d3",
+    "primary_native/scalars.py": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de",
+    "primary_native/oriented_normals.py": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+    "primary_native/immutable_rule.py": "65154a33506a5e71996ea4800a9422df76900062dffbd3f9fd70eea6d5c2b930",
+    "primary_native/reference_primary.py": "d7925bff32da62ae433c1a8663e7fec0765534c0075acb82ce2a13a02f842f1c",
+    "primary_native/reference_scope.py": "3b6e6396e8d98a88d1000af20c430df82464fbb592f1a6cbbdb15b69d5bb0981"
+  },
+  "existing_entry": "handoff2d.run -> verify frozen_models/rom_review -> population -> fresh handoff_primary_worker",
+  "shared_lift": "existing admitted primary Stokes coefficients; no extra lift solve or new common-lift materialization",
+  "wrapper_owner": "ROM lane",
+  "minimum_wrapper": [
+    "exact validation split and four ordered admitted primary cases",
+    "fresh unique namespace/output and single-use claim",
+    "hash-bound source, plan, runtime inventory and actual FD1 admission",
+    "require actual frozen_models plus independent rom_review before native imports/field access; enforce both frozen-decision flags already checked by handoff2d.verify",
+    "exact 180-second debit from existing 3300-second validation/paired reservation; prospective remaining3120, no added budget",
+    "setup-aware timeout min(165, allocation time remaining minus10), kill grace5; fail rather than extend",
+    "existing GPU/f64/highest, disk/RSS and per-child original descriptor hash gates unchanged"
+  ],
+  "time_plan": {
+    "historical_two_case_allocated_seconds": 51,
+    "historical_body_seconds_rounded": 22,
+    "four_case_body_linear_projection_seconds": 44,
+    "planning_body_with_100_percent_contingency_seconds": 88,
+    "historical_nonbody_seconds": 29,
+    "remaining_setup_finalization_margin_seconds": 63,
+    "allocation_cap_seconds": 180,
+    "existing_validation_and_pairing_cap_seconds": 3300,
+    "remaining_after_reservation_seconds": 3120,
+    "claim": "feasible prospective reconstruction reservation, not measured four-case runtime or timing comparison"
+  },
+  "storage": {
+    "runtime_input_bytes_without_dedup_credit": 255326477,
+    "metadata_measured_historical_nonreference_nonresults_bytes": 342059315,
+    "historical_inventory": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/development-materialize02/ORIGINAL-FILE-INVENTORY.json",
+      "sha256": "1af853aa026830f86655c0eb1f16e769a68f730b75b6a0c11aaf58708d596d3d"
+    },
+    "raw_array_bytes": 536407392,
+    "scaled_array_bytes": 232175328,
+    "npz_bound_bytes": 784657156,
+    "npz_bound_rule": "101% of uncompressed payload plus1MiB per8 outputcontainers; no compression saving",
+    "metadata_margin_bytes": 67108864,
+    "expanded_job_bound_bytes": 1449151812,
+    "full_archive_bound_bytes": 1530752195,
+    "archive_bound_rule": "101% of expanded bound plus64MiB headers/metadata margin; enforce measured archive before transfer",
+    "remote_job_and_archive_peak_bytes": 2979904007,
+    "local_serial_collection_peak_bytes": 4577765066,
+    "local_minimum_free_before_collection_bytes": 15315183306,
+    "local_sequence": "one expanded tree; archive transport retired after chunk byte verification before Git objects; chunks and small metadata tracked, bulk arrays archive-backed only; no second warm tree or large warm Git blobs",
+    "cold_recovery_archives": [
+      {
+        "manifest": {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re20-02/GIT-COLD-ARCHIVE.json",
+          "sha256": "25cea0d56974155f5ef7d746aa7c862b1accca99b51ff7cfaaf589b5ff74e4eb"
+        },
+        "archive_bytes": 1037042165,
+        "archive_sha256": "33c56e3dedaef0ce896ab9022bd4e7a27952f440aa3639f403403d96d0df44bc"
+      },
+      {
+        "manifest": {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/GIT-COLD-ARCHIVE.json",
+          "sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c"
+        },
+        "archive_bytes": 3357019564,
+        "archive_sha256": "1cc1cdd437e4a4c1fb0f9cf348e7817bd30e11abf6bd0cbad7b81ff109df3cab"
+      }
+    ],
+    "cold_recovery_sum_bytes": 4394061729,
+    "staging": "retain conservative sum of all recovery archives plus inputs/source/setup and10GiB, even when reviewed warm-first helper avoids recovery; fresh concurrent reservations added",
+    "compute_collection_separation": "remote hold permitted only with current entire namespace+reserved writes below50GiB; local collection separately requires actual full measured peak+10GiB and concurrent reservations"
+  },
+  "pending_release_bindings": [
+    "actual POD development freeze artifact and independent review",
+    "final ROM wrapper hash and exact full input/runtime inventory",
+    "fresh staging/remote namespace/local collection reservations",
+    "current remaining validation/paired budget from root ledger"
+  ],
+  "limitations": [
+    "metadata descriptors and stat sizes only: no validation numerical payload loaded, hashed, exported or reconstructed",
+    "not a complete executable release; dependency/source closure and measured archive caps must be frozen by ROM owner",
+    "no assumed compression, deduplication, or deletion credit",
+    "no model validation/accuracy result or scientific admission created"
+  ],
+  "existing_related_provenance": {
+    "validation_uncertainty": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/uncertainty/validation.json",
+      "sha256": "ef373769646748c3eb5a3ca80b87b79b023eff74eb00640b957024ebebce7f7b"
+    },
+    "validation_uncertainty_review": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/g2/population01/uncertainty/validation-review.json",
+      "sha256": "5b92cdc3f42191cc7056d720838c66e4b05076ebadc2f1990a84e7d566717199"
+    },
+    "shared_lift_admission_provenance_only": {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/datasets/fd1-training01/FD1-COMMON-LIFT-ADMISSION.json",
+      "sha256": "a0176274fb5534efc23cbab5924e30a62b8495070fad1ced7ad5844edf89a2ca"
+    }
+  }
+}

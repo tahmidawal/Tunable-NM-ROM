@@ -40,7 +40,7 @@ def verify(original,truth_path,release_path):
         release.get('source_sha256')!=source_digest() or release.get('split')!='training' or
         release.get('single_execution') is not True):raise ValueError('exact reviewed training materialization release required')
     if sha(truth_path)!=release['reference_admission_sha256']:raise ValueError('actual truth admission differs')
-    qualification=require_qualification(json.loads(Path(truth_path).read_text()))
+    truth=json.loads(Path(truth_path).read_text());qualification=require_qualification(truth)
     if qualification!=require_qualification(release.get('reference_qualification')):raise ValueError('truth scope differs')
     if sha(original/'EXPORT-MANIFEST.json')!=release['original_export_sha256']:raise ValueError('released primary case differs')
     config=json.loads((original/'config.json').read_text());re=release['Re'];mode=release.get('source_storage_mode')
@@ -49,6 +49,17 @@ def verify(original,truth_path,release_path):
         raise ValueError('only the separately released legacy expanded Re20 baseline is supported')
     if (re not in [15+1.25*j for j in range(9)] or abs(config['nu']-.02/re)>1e-15 or
         (config.get('scope_contract_sha256')!=SCOPE_SHA256 if mode=='coefficient_primary' else config.get('scope_contract_sha256') not in (None,SCOPE_SHA256))):raise ValueError('exact scoped training state required')
+    rows=truth.get('admitted_references',[])
+    training=[15+1.25*j for j in range(9)];development=[16.875,23.125];validation=[16.,18.,22.,24.]
+    expected={value:split for split,values in [('train',training),('development',development),('validation',validation)] for value in values}
+    if len(rows)!=15 or len({row.get('Re') for row in rows})!=15 or {row.get('Re'):row.get('split') for row in rows}!=expected:
+        raise ValueError('actual complete fifteen-parameter admitted reference membership required')
+    adopted=next(row for row in rows if row['Re']==re)
+    identities={'export_manifest_sha256':sha(original/'EXPORT-MANIFEST.json'),'config_sha256':sha(original/'config.json'),
+        'mesh_sha256':sha(original/'mesh.vol.bin'),'layout_sha256':json.loads((original/'fe_layout.json').read_text())['sha256'],
+        'solution_sha256':sha(original/'solution.sol'),'storage_mode':'coefficient_primary' if mode=='coefficient_primary' else 'expanded_full_fields'}
+    if adopted.get('split')!='train' or any(adopted.get(k)!=v for k,v in identities.items()):
+        raise ValueError('released case is not the actual adopted training reference')
     return original,release,qualification
 
 

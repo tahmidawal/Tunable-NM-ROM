@@ -14,11 +14,32 @@
     {
       "attempt": "prep02",
       "reserved_seconds": 3600,
-      "status": "submitted",
+      "status": "completed",
       "source_commit": "4514fafed2c607829aeaaec5bcf62de5bfd47c11",
       "remote": "/cluster/tufts/paralab/tawal01/bshared-20261028/prep02",
       "reason": "One reviewed repair restoring exact historical generator",
-      "job_id": "6619156"
+      "job_id": "6619156",
+      "actual_gpu_seconds": 844
+    },
+    {
+      "lane": "step",
+      "attempt": "step-screen01",
+      "remote": "/cluster/tufts/paralab/tawal01/bshared-step-20261028/screen01",
+      "reserved_seconds": 900,
+      "source_commit": "42f8b4062cf08d2c8321386ff7967cc8c33e1ee3",
+      "model_manifest_sha256": "e6be23e896289e1eee0ae8a14ec6104886114c60dbbdf2cdcea1780dbac2bacc",
+      "timing_scope": "each lane compares its methods only within this allocation",
+      "status": "reviewed_ready"
+    },
+    {
+      "lane": "replay",
+      "attempt": "replay-screen01",
+      "remote": "/cluster/tufts/paralab/tawal01/bshared-replay-20261028/screen01",
+      "reserved_seconds": 900,
+      "source_commit": "3472549aaaf00f319b1cc2585e385ebdcd2d98a0",
+      "model_manifest_sha256": "e6be23e896289e1eee0ae8a14ec6104886114c60dbbdf2cdcea1780dbac2bacc",
+      "timing_scope": "each lane compares its methods only within this allocation",
+      "status": "reviewed_ready"
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -26,13 +47,11 @@
     "shared_preparation": 3600,
     "step_screen": 900,
     "replay_screen": 900,
-    "remaining_conditional": 371
+    "remaining_conditional": 3127
   },
   "budget_accounting": {
-    "charged_gpu_seconds": 1429,
-    "preparation_reservation": 3600,
-    "planned_screen_reservations": 1800,
-    "unreserved_seconds": 371,
-    "rule": "Replace terminal reservations by actual allocated seconds; no cap increase"
+    "charged_gpu_seconds": 2273,
+    "reserved_gpu_seconds": 1800,
+    "unreserved_seconds": 3127
   }
 }

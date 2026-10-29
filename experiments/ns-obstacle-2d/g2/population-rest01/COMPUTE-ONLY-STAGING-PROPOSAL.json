@@ -1,0 +1,47 @@
+{
+  "schema": "ns-obstacle-compute-only-staging-proposal-v1",
+  "execution_authorized": false,
+  "science_source_commit": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+  "schedule_sha256": "e32352be9e4bf6c4a5229522da10b69a8b067a67d723fff9f0844c5b29708e96",
+  "stage_helper_sha256": "b40e9063a4dbceea730b42691e815fafa419c5c6f705a020a6efd104d1ec519b",
+  "candidate_sha256s": [
+    "6d00cb089b54f26e74e5c3dc54a56ca5f9efc2d44872c18dc8793300f6f1fec1",
+    "7b1a4b2b639246e41383a33bf4e2863dcf8c696a82cf5dd506caf5614d5a96b0",
+    "cb0b6ea7701a49368da1f79e9b64a925e0878fdb5508ff955fdd09d7d8478de8",
+    "7a09dc167381997bcd540abd63fe75359f6b3dad53ace501a57971a61d14195e",
+    "983de5a4146dad151e5cc029e0d7d41a2417c5ea0fca507fe9d09f44571c27ec",
+    "e5e6f7edfca71bc4528613542cce98bc9f35cc02a1ee6af6929b8c55d447af44",
+    "0c7d452e7fdb52797d25ab5609a0aeaa347bebb428e271c69f3ba7e3da8b5845",
+    "c5848c81effb8f58147999c71b05fcda5f89ba06575cc8b6b609567f7dbb2621",
+    "6e89c0b80fbcd870d8b7600ea8355b2cdef22eeccddc6a6f61c92646198ad0fc",
+    "a2fc9987bf0be1bf26a9d8999ebd2137b6354de3f704a0ddf9cdbcd0bdfbdaea",
+    "3c3b01388a7e6b9bd0fbeadb5d84dad5d88b846f738ccfca5d67fa987c653e8a",
+    "90069f453b6d75bed0a1df27b44d1cc9457246d546662704f5bbb04db2665221",
+    "08aef1ad393cb32651086450ae92ee63c13201fb5d63bfbe978425f9132c61d4",
+    "dbe6487b1be832bd6f9c34eb3d07b6a92185f8c4d6c39c5541e36cc35423690a"
+  ],
+  "representative_actual_bounds": {
+    "cold_source_archive_bytes": 3357019564,
+    "staged_input_bytes": 349241365,
+    "other_active_reservations_bytes": 0,
+    "metadata_margin_bytes": 268435456,
+    "minimum_local_reserve_bytes": 10737418240,
+    "required_before_staging_bytes": 14712114625,
+    "required_after_staging_bytes": 11005853696
+  },
+  "maximum_staged_input_bytes": 349241483,
+  "existing_default_poststage_floor_bytes": 23622320128,
+  "change": "Only explicit source/candidate/helper-bound compute-only release may use measured staging/cold-source/concurrent reservation instead of a prospective collection envelope. Collection remains separately gated.",
+  "required_release_fields": {
+    "schema": "ns-obstacle-compute-only-stage-release-v1",
+    "compute_only": true,
+    "source_commit": "a7c58adca376dd9beaa5e7de2c8a62072de6caa4",
+    "stage_helper_sha256": "b40e9063a4dbceea730b42691e815fafa419c5c6f705a020a6efd104d1ec519b",
+    "candidate_sha256s": "the exact list above",
+    "minimum_local_reserve_bytes": 10737418240
+  },
+  "no_new_solve_or_retry_or_budget_reset": true,
+  "serial_local_staging_collection_and_Git_writes": true,
+  "read_only_upload_may_overlap_only_with_its_remaining_disk_writes_reserved": true,
+  "existing_BUFFER4_and_all_numerical_guards_unchanged": true
+}

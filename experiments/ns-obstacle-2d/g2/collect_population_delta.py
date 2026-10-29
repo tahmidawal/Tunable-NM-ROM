@@ -11,9 +11,11 @@ def sha(p):
  with Path(p).open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
 def read(p):return json.loads(Path(p).read_text())
 def dump(p,x):Path(p).write_text(json.dumps(x,indent=2)+'\n')
-def remote(code):return subprocess.run(SSH+[shlex.quote(CPY)+" - <<'PYREMOTE'\n"+code+"\nPYREMOTE"],check=True,capture_output=True,text=True)
+def remote(code):return subprocess.run(SSH+[shlex.quote(CPY)+" - <<'PYREMOTE'\n"+code+"\nPYREMOTE"],capture_output=True,text=True)
 def main():
- p=argparse.ArgumentParser();p.add_argument('--group',required=True);p.add_argument('--phase',choices=('pack','collect'),required=True);p.add_argument('--other-reservations-bytes',type=int,default=0);a=p.parse_args();schedule=read(B/'g2/population-rest01/SCHEDULE.json');row=next(x for x in schedule['groups']if x['group']==a.group);attempt=row['attempt'];stage=B/'staging'/attempt;submitted=read(stage/'STAGING.json');assert submitted['submitted']and submitted['candidate_sha256']==row['candidate_sha256'];job=submitted['job_id'];root=PREFIX+attempt;archive=root+'.delta.tar.gz';receipt=root+'.DELTA-WRITE.json';state=stage/'DELTA-COLLECTION';state.mkdir(exist_ok=True)
+ p=argparse.ArgumentParser();p.add_argument('--group',required=True);p.add_argument('--phase',choices=('pack','collect'),required=True);p.add_argument('--other-reservations-bytes',type=int,default=0);a=p.parse_args();
+ if a.other_reservations_bytes<0:raise ValueError('reservations cannot be negative')
+ schedule=read(B/'g2/population-rest01/SCHEDULE.json');row=next(x for x in schedule['groups']if x['group']==a.group);attempt=row['attempt'];stage=B/'staging'/attempt;submitted=read(stage/'STAGING.json');assert submitted['submitted']and submitted['candidate_sha256']==row['candidate_sha256'];job=submitted['job_id'];root=PREFIX+attempt;archive=root+'.delta.tar.gz';receipt=root+'.DELTA-WRITE.json';state=stage/'DELTA-COLLECTION';state.mkdir(exist_ok=True)
  if a.phase=='pack':
   code=f'''from pathlib import Path
 import subprocess,hashlib,json
@@ -33,8 +35,8 @@ for p in sorted(root.rglob('*')):
 subprocess.run([{CPY!r},str(root/'g2/delta_retention.py'),'write','--root',str(root),'--index',str(root/'g2/population-rest01/SHARED-REUSE-INDEX.json'),'--output',str(archive),'--receipt',str(receipt)],check=True)
 print(receipt.read_text())
 '''
-  result=remote(code);(state/'PACK.stdout').write_text(result.stdout);(state/'PACK.stderr').write_text(result.stderr);print(result.stdout,flush=True);return
- result=remote(f'from pathlib import Path\nprint(Path({receipt!r}).read_text())');written=json.loads(result.stdout);dump(state/'REMOTE-WRITE.json',written);bound=read(B/'g2/population-rest01/RESOURCE-BOUND.json');logical=written['logical_regular_bytes'];size=written['archive_bytes'];largest=bound['largest_cold_base_archive_bytes'];warm=bound['per_group_new_warm_Git_bound_bytes'];peak=max(logical+size+largest,logical+2*size+warm)+256*1024**2+a.other_reservations_bytes
+  result=remote(code);(state/'PACK.stdout').write_text(result.stdout);(state/'PACK.stderr').write_text(result.stderr);result.check_returncode();print(result.stdout,flush=True);return
+ result=remote(f'from pathlib import Path\nprint(Path({receipt!r}).read_text())');(state/'REMOTE-RECEIPT.stdout').write_text(result.stdout);(state/'REMOTE-RECEIPT.stderr').write_text(result.stderr);result.check_returncode();written=json.loads(result.stdout);dump(state/'REMOTE-WRITE.json',written);bound=read(B/'g2/population-rest01/RESOURCE-BOUND.json');logical=written['logical_regular_bytes'];size=written['archive_bytes'];largest=bound['largest_cold_base_archive_bytes'];warm=bound['per_group_new_warm_Git_bound_bytes'];peak=max(logical+size+largest,logical+2*size+warm)+256*1024**2+a.other_reservations_bytes
  if logical>bound['per_group_expanded_regular_bound_bytes']or size>bound['per_group_delta_archive_bound_bytes']:raise MemoryError('measured output invalidates frozen envelope; retain remote originals')
  free=shutil.disk_usage(B).free
  if free<peak+10*1024**3:raise MemoryError('actual serial collection peak plus all reservations does not fit')

@@ -1,0 +1,143 @@
+{
+  "schema": "ns-obstacle-native-preparation-result-v1",
+  "source_sha256": "6c38b93a1dc63ab781db02cbdbdd74610750e81eaab82221f500096c08037b16",
+  "release_sha256": "f4a1ed7aab4bfd77c8d35313aa13287e12bb54557911d8e60d2334d1dde3b3dc",
+  "reference_qualification": {
+    "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "passed": true,
+    "qualification_scope": {
+      "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+      "amendment_id": "FD1-2026-10-28",
+      "original_G2_status": "not_admitted_domain_sensitivity_failed",
+      "domain_sensitivity_status": "failed",
+      "domain_independence_admitted": false,
+      "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+      "geometry_population_and_numerical_thresholds_unchanged": true
+    }
+  },
+  "training_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+  "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+  "adapter_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+  "probes_sha256": "f8de76569517ddb8ebb4fbf59bfe92ce5d8c906dcdd67bed131ff9efbb8b852c",
+  "probe_points_physical": [
+    [
+      0.15,
+      0.2
+    ],
+    [
+      0.25,
+      0.2
+    ]
+  ],
+  "shared_stokes_lift": {
+    "metadata": {
+      "schema": "ns-obstacle-common-stokes-v1",
+      "physical_admission": false,
+      "coordinator_admission_required": true,
+      "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+      "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+      "U": 0.2,
+      "D": 0.1,
+      "base_nu": 0.001,
+      "velocity_ndof": 340996,
+      "pressure_ndof": 96144,
+      "outlet": "gradient",
+      "pressure_gauge": "natural outlet, unshifted",
+      "linear_control": {
+        "numerator": 2.021679912901411e-15,
+        "denominator": 0.6520937405567593,
+        "value": 3.1002903220253204e-15,
+        "definition": "scaled linear residual / scaled RHS"
+      },
+      "linear_tolerance": 1e-10,
+      "reference_stokes_phase_seconds": 9.926481517031789,
+      "timing_scope": "reference linear assembly/factor/solve/check only; preceding mesh/space/form setup recorded separately; no tuned offline timing claim",
+      "coefficient_file": "common_stokes_lift.npz",
+      "coefficient_sha256": "47c1a9954361079cb94d438be8ee3237299e71c07d8c90d00f8a2f813efc95cb",
+      "query_contract": "cache these arrays offline; each query copies velocity and scales pressure by its viscosity; no repeated Stokes factorization"
+    },
+    "archive": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01/datasets/fd1-training01/common-lift/common_stokes_lift.npz",
+    "admission_sha256": "a0176274fb5534efc23cbab5924e30a62b8495070fad1ced7ad5844edf89a2ca",
+    "reference_qualification": {
+      "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+      "passed": true,
+      "qualification_scope": {
+        "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+        "amendment_id": "FD1-2026-10-28",
+        "original_G2_status": "not_admitted_domain_sensitivity_failed",
+        "domain_sensitivity_status": "failed",
+        "domain_independence_admitted": false,
+        "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+        "geometry_population_and_numerical_thresholds_unchanged": true
+      }
+    },
+    "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f"
+  },
+  "primary_volume_replay": {
+    "primary_manifest_sha256": "a47923c941b9fbe2a354cc96e94dfb27b06f419c2d327c65c4e7f5ffc60c9c40",
+    "capture_seconds": 20.58367097377777,
+    "restoration": {
+      "seconds": 198.6972569609061,
+      "restored_files": 1780,
+      "manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+      "exact_archive_and_array_bytes": true,
+      "offline_cost_includes_regeneration_verification_and_writes": true
+    },
+    "replay_accounting": {
+      "setup_seconds": 14.520289369858801,
+      "setup_guard": {
+        "prior_peak_rss_bytes": 3642560512,
+        "reserved_bytes": 3091949624
+      },
+      "iterations": [
+        {
+          "iterator_elapsed_seconds_including_consumer": 193.83036684896797,
+          "generation_and_verification_seconds": 25.547366096638143,
+          "points_returned": 1036497,
+          "workspace_guard": {
+            "prior_peak_rss_bytes": 3642560512,
+            "reserved_bytes": 380834464
+          },
+          "completed": true,
+          "peak_rss_bytes": 3642560512
+        }
+      ],
+      "physical_admission": false,
+      "cost_scope": "generation is included in enclosing offline phase, not added twice; iterator elapsed includes consumer work"
+    },
+    "original_fields_retained": true,
+    "restored_fields_retained": true,
+    "omission_authorized": false,
+    "status": "pending_independent_fine_replay_review"
+  },
+  "capacity_context": {
+    "caps": {
+      "mixed_dofs": 437140,
+      "elements": 21153,
+      "volume_points": 1036497,
+      "boundary_points": 30000,
+      "matrix_nnz": 15937632,
+      "single_array_bytes": 1073741824,
+      "archive_bytes": 1073741824,
+      "factor_estimate_bytes": 8589934592,
+      "process_rss_bytes": 17179869184,
+      "vector_eigen_candidates": 96,
+      "velocity_scalar_eigen_candidates": 48,
+      "scalar_eigen_candidates": 32,
+      "eigensolver_iterations": 2000
+    },
+    "amendment_sha256": "263ca735e3e19eaa14e9e9dd2deb13254fa53e45acd0630a66ea8e777fff2e07",
+    "review_sha256": "daa5602b71f22c62e8d9f7f70ce68e0d9e7a9d7cde61c9edce809396ab0f8017",
+    "measurement_sha256": "d0bee2f082f344dd4bc01f14b0ea985e245261333ea2537caf386c17ab1e5d2d",
+    "factor_reuse_sha256": "85734edc5497d3bde956d4b71179875819e80e777f41dd8fe421a0b3f0e706cd",
+    "native_control_review_sha256": "8198c000885a5cd153c9317ec70d771e35357a5c5f5d1d9a526f4f9acc0992e3",
+    "layout_sha256": "54d8cb2354693862d69c265c4aa0e3a9eac16a62518484ae8fef26f0a82f3f44",
+    "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+    "scientific_changes": false
+  },
+  "elapsed_seconds": 599.3319650450721,
+  "peak_rss_bytes": 3642560512,
+  "status": "execution_completed_pending_independent_review",
+  "physical_admission": false,
+  "training_executed": false
+}

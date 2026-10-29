@@ -1,0 +1,17 @@
+{
+  "schema": "ns-obstacle-exact-working-chunk-cooling-release-v1",
+  "proposal_sha256": "4e011bd8b59315f56e3cf4e03abef768c974b55efece50df177aab6a08256981",
+  "proposal_source": "e64fcb4d1",
+  "proposal_mirror": "e6c108ed6",
+  "independent_reviewer": "reference_resume",
+  "passed": true,
+  "authorized_files": 11,
+  "maximum_allocated_credit_bytes": 504754176,
+  "archive_sha256": "93ab53b83b5abd699f6e0f6c1e0acbc312759abac135cd4ee3b7f5d3fb95982d",
+  "requirements": [
+    "Recheck fresh advertised mirror ancestry, exact chunk hashes/sizes/blob IDs and single-link status before action",
+    "Remove only proposal-listed11 successful development02 working chunk duplicates; preserve all reachable Git histories and metadata",
+    "Preserve original RETENTION unchanged; add explicit pinned Git cold-recovery record",
+    "Record exact lifecycle and actual freed space; no other cleanup authorized"
+  ]
+}

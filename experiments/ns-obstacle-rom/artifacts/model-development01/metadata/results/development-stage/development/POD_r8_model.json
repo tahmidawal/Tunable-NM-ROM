@@ -1,0 +1,292 @@
+{
+  "record": {
+    "source": {
+      "source_sha256": "867c4e2c41e6e3eb6181bf7cf163c93db7f8062717fbc838f4a57142749c79db",
+      "adapter_manifest_sha256": "6284a9fbe32f49afa7543331d30f34124cec851376b64edb630c31b73bb8217f",
+      "offline_build_seconds": 166.50345444865525,
+      "pressure_gauge_shift": false,
+      "native_data_admission": {
+        "adapter_review_sha256": "86e8bc4fd05d5a28e03ef44bf0f6473a956a8687639af3454f6a7c4e2984dfde",
+        "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+        "campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+        "mesh_reload": "saved_curved_binary_verified_fresh_process_no_recurve"
+      },
+      "fixed_tests_storage": "original point blocks",
+      "bank_evaluation": "one point block at a time"
+    },
+    "stability": {
+      "beta": 0.10532142264912334,
+      "reference_beta": 0.1053214226492348,
+      "ratio": 0.9999999999989416,
+      "singular_values": [
+        0.771623693596,
+        0.7405416607900756,
+        0.7219796065709947,
+        0.46033223776161186,
+        0.4015117555692937,
+        0.3157598122437898,
+        0.22399531692503755,
+        0.10532142264912334
+      ],
+      "norms": "dimensionless velocity H1, pressure L2",
+      "passed": true
+    },
+    "unknown_counts": {
+      "velocity": 16,
+      "pressure": 8
+    },
+    "training_coefficients": {
+      "array": "a000000",
+      "shape": [
+        9,
+        24
+      ],
+      "dtype": "float64",
+      "content_sha256": "6f0c74c7cccf3497452d5c6cc2e3ebae8bb672cec9c1f7b7c2c672524ffe8a92"
+    },
+    "development_projection": [
+      {
+        "velocity_numerator": 6.895425655915345e-10,
+        "velocity_denominator": 10.459943368488194,
+        "velocity_relative": 6.59222083045748e-11,
+        "pressure_numerator": 1.1176303743606716e-08,
+        "pressure_denominator": 9.455929453871821,
+        "pressure_scaled": 1.1819360326372222e-09,
+        "volume": 89.41460183660062,
+        "U": 1.0,
+        "pressure_shift_applied": false,
+        "Re": 16.875,
+        "model": "POD_r8",
+        "force_coefficient": [
+          6.11830098794829,
+          0.020183536489548577
+        ],
+        "drag_relative": 6.971224673954928e-10,
+        "transverse_absolute": 4.486476270354478e-09,
+        "divergence": 1.5073794589744651e-05,
+        "inlet_flux": 4.099999999999973,
+        "outlet_flux": 4.100000000101638,
+        "mass": 2.4796425075847685e-11,
+        "boundary_trace": 4.6629367034256575e-15,
+        "velocity_gradient_L2_error": 3.083718647829803e-09,
+        "velocity_gradient_reference_L2_norm": 11.888700496624104,
+        "velocity_gradient_relative_denominator": 11.888700496624104,
+        "velocity_gradient_relative": 2.593823142155403e-10,
+        "velocity_gradient_scaled": 3.26114811121729e-10,
+        "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+        "reference_force_definition": "physical_symmetric",
+        "target_checks": {
+          "velocity": true,
+          "pressure": true,
+          "drag": true,
+          "transverse": true,
+          "divergence": true,
+          "mass": true,
+          "boundary_trace": true
+        },
+        "accuracy_targets_passed": true,
+        "physical_admission": false,
+        "kind": "representation_only_not_PDE_solution",
+        "projection_velocity": {
+          "squared_errors": [
+            4.754689489379752e-19
+          ],
+          "squared_reference_norms": [
+            3.6716427220952395
+          ],
+          "numerical_rank": 16,
+          "singular_values": [
+            1.0031071769704707,
+            1.0016065536706542,
+            1.0010241750407287,
+            1.0006606502836872,
+            1.000104908732139,
+            1.0000253343098215,
+            1.0000145252879775,
+            1.0000001359953083,
+            0.3871649666734927,
+            0.3300575425299339,
+            0.277355898305382,
+            0.2329652845398674,
+            0.20650587862985662,
+            0.15717125964283016,
+            0.13862390528183388,
+            0.05737434953554304
+          ]
+        },
+        "projection_pressure": {
+          "squared_errors": [
+            1.2490976536278859e-16
+          ],
+          "squared_reference_norms": [
+            2.577148793559053
+          ],
+          "numerical_rank": 8,
+          "singular_values": [
+            1.0000000000000004,
+            1.0000000000000002,
+            1.0000000000000002,
+            1.0,
+            0.9999999999999999,
+            0.9999999999999999,
+            0.9999999999999999,
+            0.9999999999999998
+          ]
+        },
+        "achieved_state": [
+          -1.9121688834310377,
+          0.12349324845951305,
+          0.0013179973023289364,
+          -0.0007500869571331981,
+          -3.37154720111861e-05,
+          1.6635369253121928e-07,
+          9.981342686754653e-08,
+          -8.866917646986618e-09,
+          3.85967146450019e-10,
+          -2.269970088174905e-11,
+          -4.641585057024164e-11,
+          6.652376027912912e-11,
+          1.5028226739374306e-10,
+          1.3831624566785751e-11,
+          -6.464016518084878e-11,
+          -2.9869731929185214e-10,
+          0.5494860259025725,
+          1.503600956278348,
+          0.1199676412781626,
+          0.002277164991554293,
+          0.0008022032245275231,
+          -3.480542948185141e-05,
+          -5.309377175474548e-09,
+          -9.466157041564735e-08
+        ]
+      },
+      {
+        "velocity_numerator": 3.670031358186304e-10,
+        "velocity_denominator": 10.454741788525928,
+        "velocity_relative": 3.5103988529053497e-11,
+        "pressure_numerator": 5.825949519705439e-09,
+        "pressure_denominator": 9.455929453871821,
+        "pressure_scaled": 6.161160093384525e-10,
+        "volume": 89.41460183660062,
+        "U": 1.0,
+        "pressure_shift_applied": false,
+        "Re": 23.125,
+        "model": "POD_r8",
+        "force_coefficient": [
+          5.178644050466301,
+          0.004430189828822286
+        ],
+        "drag_relative": 3.9367256852402376e-10,
+        "transverse_absolute": 1.9152739351088743e-09,
+        "divergence": 2.134108464581099e-05,
+        "inlet_flux": 4.099999999999973,
+        "outlet_flux": 4.100000000047609,
+        "mass": 1.1618456874091983e-11,
+        "boundary_trace": 4.6629367034256575e-15,
+        "velocity_gradient_L2_error": 1.6956549350582345e-09,
+        "velocity_gradient_reference_L2_norm": 12.39578866486992,
+        "velocity_gradient_relative_denominator": 12.39578866486992,
+        "velocity_gradient_relative": 1.367928238292556e-10,
+        "velocity_gradient_scaled": 1.793218681812323e-10,
+        "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+        "reference_force_definition": "physical_symmetric",
+        "target_checks": {
+          "velocity": true,
+          "pressure": true,
+          "drag": true,
+          "transverse": true,
+          "divergence": true,
+          "mass": true,
+          "boundary_trace": true
+        },
+        "accuracy_targets_passed": true,
+        "physical_admission": false,
+        "kind": "representation_only_not_PDE_solution",
+        "projection_velocity": {
+          "squared_errors": [
+            1.3469130190391998e-19
+          ],
+          "squared_reference_norms": [
+            5.073240666132258
+          ],
+          "numerical_rank": 16,
+          "singular_values": [
+            1.0031071769704707,
+            1.0016065536706542,
+            1.0010241750407287,
+            1.0006606502836872,
+            1.000104908732139,
+            1.0000253343098215,
+            1.0000145252879775,
+            1.0000001359953083,
+            0.3871649666734927,
+            0.3300575425299339,
+            0.277355898305382,
+            0.2329652845398674,
+            0.20650587862985662,
+            0.15717125964283016,
+            0.13862390528183388,
+            0.05737434953554304
+          ]
+        },
+        "projection_pressure": {
+          "squared_errors": [
+            3.394168780310911e-17
+          ],
+          "squared_reference_norms": [
+            2.5930107080078453
+          ],
+          "numerical_rank": 8,
+          "singular_values": [
+            1.0000000000000004,
+            1.0000000000000002,
+            1.0000000000000002,
+            1.0,
+            0.9999999999999999,
+            0.9999999999999999,
+            0.9999999999999999,
+            0.9999999999999998
+          ]
+        },
+        "achieved_state": [
+          -2.249995790164747,
+          -0.10372663483017132,
+          -0.00026957965559965203,
+          0.0005670819285741781,
+          -3.6402288675813324e-05,
+          -1.2798659426941282e-06,
+          1.4527682287912224e-08,
+          5.017726311271168e-09,
+          1.712391262673742e-10,
+          -2.39442549346343e-12,
+          -2.4916724299248896e-11,
+          2.6235523791724186e-11,
+          8.47942497732787e-11,
+          9.660786571240537e-12,
+          -4.2305354439062235e-11,
+          -1.6683677780004225e-10,
+          0.5431933065858978,
+          1.5111776409770727,
+          -0.11955335675078001,
+          -0.0007745214697998536,
+          -0.0005200393915850838,
+          -4.0761699061853995e-05,
+          -1.6518336907633817e-06,
+          -7.423616112955247e-09
+        ]
+      }
+    ]
+  },
+  "array_file": "POD_r8_model.npz",
+  "array_sha256": "68add28f209865a38df76a535759432d6bde9aaa8d9e16a364345d3f471c7a8e",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 1,
+    "array_references": 1,
+    "unique_expanded_bytes": 1728,
+    "logical_expanded_reference_bytes": 1728,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 1064212
+  }
+}

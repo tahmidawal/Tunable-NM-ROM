@@ -1,0 +1,235 @@
+{
+  "job_id": 6648764,
+  "sacct": "6648764|COMPLETED|434|0:0|pax021\n6648764.batch|COMPLETED|434|0:0|pax021\n6648764.extern|COMPLETED|434|0:0|pax021\n",
+  "files": {
+    "results/TRAINING-RESULT.json": {
+      "bytes": 374,
+      "sha256": "8e88a854d90e54365a7db23e0b917ba9670ce57e30aed62707b398c726e3e256",
+      "content": {
+        "status": "training_checkpoint_exported_pending_independent_review",
+        "training_only": true,
+        "validation_seen": false,
+        "physical_admission": false,
+        "automatic_resume": false,
+        "model_receipt_sha256": "470ba0ef5fa43bb59980cd1affcf51474d97f427d3e4f6a944411265db868285",
+        "optimizer_status": "iteration_limit",
+        "allocation_elapsed_seconds": 433.88691091537476
+      }
+    },
+    "results/batch_summary.json": {
+      "bytes": 147,
+      "sha256": "efd7ee8adc9c32aa68966256a4fdd4be0d555d0fc28b3a8662ef130c75347b91",
+      "content": {
+        "exit_code": 0,
+        "last_stage": "completed",
+        "training_completed": true,
+        "physical_admission_created": false,
+        "automatic_retry": false
+      }
+    },
+    "results/runtime.json": {
+      "bytes": 301,
+      "sha256": "1b6c0b096fde319ee69d4cb35bbcf5da59cccbae7158f5c1ac749e66c7debbf5",
+      "content": {
+        "python": "3.13.2",
+        "jax": "0.10.2",
+        "jaxlib": "0.10.2",
+        "optax": "0.2.8",
+        "numpy": "2.5.0",
+        "scipy": "1.18.0",
+        "jax_backend": "gpu",
+        "jax_x64": true,
+        "matmul_precision": "highest",
+        "python_executable_sha256": "19aabe03e346a7ed57979d4a429c0eb22088e1e7e51397401640d52c166808f9"
+      }
+    },
+    "results/fit/FINAL.json": {
+      "bytes": 318,
+      "sha256": "51d4fa434fe169ccf82ddde415cb6d8fb8b1b3604b87549b59d71eae26587b90",
+      "content": {
+        "status": "iteration_limit",
+        "last_checkpoint": "checkpoint-00322",
+        "best": {
+          "objective": 0.03605766047875704,
+          "checkpoint": "checkpoint-00322"
+        },
+        "elapsed_seconds": 341.78309042192996,
+        "full_evaluations": 338,
+        "retention_errors": [],
+        "automatic_resume": false,
+        "validation_seen": false
+      }
+    },
+    "results/fit/MODEL-RECEIPT.json": {
+      "bytes": 748,
+      "sha256": "470ba0ef5fa43bb59980cd1affcf51474d97f427d3e4f6a944411265db868285",
+      "content": {
+        "schema": "ns-obstacle-supervised-neural-model-v2",
+        "bank_file": "spatial-bank-raw.npz",
+        "bank_sha256": "faab6651618ae9d6afc79dbd91ad6e9c7a1a3101907d93d9e33ab37dfba2e4c6",
+        "selected_checkpoint": {
+          "objective": 0.03605766047875704,
+          "checkpoint": "checkpoint-00322"
+        },
+        "selected_theta_sha256": "a1f8d0a50e8847dcbc6ef90d1d21e24db8490351eafcdd51af9a2dc514e498f1",
+        "config_sha256": "120fb11cafdd3ce2700e2c263f1737a0d3200b22db0a5741076fccbcff8289a0",
+        "runtime_sha256": "159aacaeb68d7bcddf600239c906ab2a741f85ef63638749a0fc1196ea14da06",
+        "optimizer_status": "iteration_limit",
+        "basis_role": "dimensionless normalized velocity basis; coefficients reconstruct u/U",
+        "ordering_applied": false,
+        "physical_admission": false
+      }
+    },
+    "results/fit/checkpoint-00001.json": {
+      "bytes": 1053,
+      "sha256": "1007072e10e07e334a66233a6029fba64a231c8d94eaeeffe1e13a212dfbc6be",
+      "content": {
+        "phase": "initial",
+        "label": "initial or exact restart",
+        "full_post_update_objective": 19.07980382383072,
+        "gradient_inf": 12.974683416116639,
+        "metrics": {
+          "value_relative_squared_by_mode": [
+            7.77624960257149,
+            6.579617072744868,
+            5.577498809954861,
+            10.803119381980808
+          ],
+          "gradient_relative_squared_by_mode": [
+            10.655239137340791,
+            15.358647120112847,
+            12.707957885236869,
+            9.547725146310865
+          ],
+          "seconds": 13.753706383518875
+        },
+        "adam_step": 0,
+        "rng_state": {
+          "bit_generator": "PCG64",
+          "state": {
+            "state": 95357292731887422390470474686867768728,
+            "inc": 312289981302512253455601460894920341173
+          },
+          "has_uint32": 0,
+          "uinteger": 0
+        },
+        "curvature_state_pairs": [],
+        "elapsed_seconds": 13.778443861752748,
+        "full_evaluations": 1,
+        "theta_sha256": "7882c255b6a91f0f901487dd92a9d2b1ede4ac25d5868dab9448c86ffff2f3a4",
+        "array_file": "checkpoint-00001.npz",
+        "array_sha256": "f26a6fe7ba56a8871582efad5c993aad73b3d4397b6a12c6b5af252d00ec6b02"
+      }
+    },
+    "results/fit/checkpoint-00322.json": {
+      "bytes": 1718,
+      "sha256": "b2d43498c83bb14b1f185ab3bd0f5c500c16aacbb8cf8bb7d7c00e122d51487c",
+      "content": {
+        "phase": "lbfgs",
+        "label": "L-BFGS accepted",
+        "full_post_update_objective": 0.03605766047875704,
+        "gradient_inf": 0.011441967412173073,
+        "metrics": {
+          "value_relative_squared_by_mode": [
+            0.0007399502071852569,
+            0.004195919951157734,
+            0.01704256168787298,
+            0.052364455729071314
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.01896318797048439,
+            0.04626848210523964,
+            0.14898642568312037,
+            0.2645010089197026
+          ],
+          "seconds": 0.8764073709025979
+        },
+        "adam_step": 4000,
+        "rng_state": {
+          "bit_generator": "PCG64",
+          "state": {
+            "state": 186957975672219555057770835654786406805,
+            "inc": 312289981302512253455601460894920341173
+          },
+          "has_uint32": 1,
+          "uinteger": 4214614256
+        },
+        "curvature_state_pairs": [
+          [
+            "checkpoint-00312",
+            "checkpoint-00313"
+          ],
+          [
+            "checkpoint-00313",
+            "checkpoint-00314"
+          ],
+          [
+            "checkpoint-00314",
+            "checkpoint-00315"
+          ],
+          [
+            "checkpoint-00315",
+            "checkpoint-00316"
+          ],
+          [
+            "checkpoint-00316",
+            "checkpoint-00317"
+          ],
+          [
+            "checkpoint-00317",
+            "checkpoint-00318"
+          ],
+          [
+            "checkpoint-00318",
+            "checkpoint-00319"
+          ],
+          [
+            "checkpoint-00319",
+            "checkpoint-00320"
+          ],
+          [
+            "checkpoint-00320",
+            "checkpoint-00321"
+          ],
+          [
+            "checkpoint-00321",
+            "checkpoint-00322"
+          ]
+        ],
+        "elapsed_seconds": 341.6488775173202,
+        "full_evaluations": 338,
+        "theta_sha256": "a1f8d0a50e8847dcbc6ef90d1d21e24db8490351eafcdd51af9a2dc514e498f1",
+        "array_file": "checkpoint-00322.npz",
+        "array_sha256": "c9a90bd796ada5cf217c44f0463554528e97f0ac7d138fefb89234401d8428ec"
+      }
+    },
+    "results/fit/RUNTIME.json": {
+      "bytes": 444,
+      "sha256": "159aacaeb68d7bcddf600239c906ab2a741f85ef63638749a0fc1196ea14da06",
+      "content": {
+        "python": "3.13.2 (main, Jun 27 2025, 16:52:43) [GCC 12.4.0]",
+        "jax": "0.10.2",
+        "jaxlib": "0.10.2",
+        "numpy": "2.5.0",
+        "scipy": "1.18.0",
+        "backend": "gpu",
+        "devices": [
+          {
+            "platform": "gpu",
+            "device_kind": "NVIDIA L40S",
+            "id": 0
+          }
+        ],
+        "x64": true,
+        "matmul_precision": "highest",
+        "device_float_dtype": "float64",
+        "input_dtypes": [
+          "float64",
+          "float64",
+          "float64",
+          "float64"
+        ]
+      }
+    }
+  }
+}

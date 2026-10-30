@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-fixed-hidden-output-polish-collection-release-v1",
+  "authorized": true,
+  "job_id": 6659904,
+  "archive_sha256": "e57ce5b2fb132da05fc74275d19b0b56b0f6ae12c36385a415db31a1d8b3b993",
+  "archive_bytes": 6594191,
+  "logical_files": 205,
+  "logical_expansion_bytes": 10735435,
+  "measurement_sha256": "5cf626ae424ec1f1fb857474124fe03cf27fb49ee6f1a14a69bd628c82f9d839",
+  "collector_sha256": "6639d2eea2b78b2b83683b4239528385545170a055ccb26b78dfb05ef04a7aca",
+  "collector_source_commit": "82b3b58f6",
+  "collector_source_mirror": "e041b3fe8",
+  "measurement_source_commit": "bf5baf822",
+  "measurement_source_mirror": "7408d16e9",
+  "mode": "Archive-only every original member and unique ledger; bounded metadata; no scientific array expansion",
+  "metadata_limit_bytes": 8388608,
+  "required_local_free_bytes": 11035819294,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Fresh exact terminal/job/measurement/source/release and local resource guard checks; serialize bulk collection/Git.",
+    "Verify all205 originals and unique ledger;8MiB metadata limit; verify chunks before retiring transport.",
+    "Preserve remote outputs until complete independent raw retention and reader closure.",
+    "TRAIN only, zero new Adam/LB, warm_restart False; no physical accuracy or final validation claim."
+  ]
+}

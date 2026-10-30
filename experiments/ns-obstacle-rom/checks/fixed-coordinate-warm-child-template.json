@@ -1,0 +1,27 @@
+{
+  "status": "source-only; not executable packet",
+  "warm_child_model_sha256": null,
+  "warm_child_receipt_sha256": null,
+  "warm_child_review_sha256": null,
+  "hidden_coordinate_scale": null,
+  "output_coordinate_scale": null,
+  "unset_values_rejected": true,
+  "frozen_traction_parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "objective_changed": false,
+  "capacity_changed": false,
+  "curvature_reset": true,
+  "new_adam_steps": 0,
+  "physical_gradient_stopping": 1e-10,
+  "checkpoint_every": 1000,
+  "max_iterations_safety_bound": 10000,
+  "selection": "minimum accepted unchanged physical objective",
+  "initial_replay": "reviewed warm child complete streamed objective; full streamed/cache objective and child gradient equality before update",
+  "final_replay": "uncached serialized complete volume/boundary objective and child gradient",
+  "needs_before_execution": [
+    "actual terminal child model and independent PDE evidence",
+    "explicit diagonal choice and rationale",
+    "exact launcher/packet/release",
+    "fresh resource/output bounds",
+    "independent source/input review"
+  ]
+}

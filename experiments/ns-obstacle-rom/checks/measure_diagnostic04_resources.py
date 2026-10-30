@@ -1,0 +1,8 @@
+from pathlib import Path
+import subprocess,json,shutil
+p=Path('experiments/ns-obstacle-rom/staging/neural-pod-guided-diagnostic04')
+script='''from pathlib import Path
+import subprocess,json,shutil,time
+base=Path('/cluster/tufts/paralab/tawal01');names=['ns-obstacle-rom-20261027','ns-obstacle-2d-20261027','ns-obstacle-3d-20261027'];u={n:int(subprocess.check_output(['du','-sb',str(base/n)]).split()[0]) for n in names};print(json.dumps({'time_unix':time.time(),'namespace_bytes':u,'global_after_reserved_bytes':sum(u.values())+11*2**30+256*2**20,'global_limit_bytes':50*2**30,'new_diagnostic_reserved_bytes':2**30,'active_energy_refinement_reserved_bytes':0,'prospective_FOM_reserved_bytes':10*2**30,'misc_reserved_bytes':256*2**20,'physical_free_bytes':shutil.disk_usage(base).free,'queue':subprocess.check_output(['squeue','-u','tawal01','-h','-o','%i|%j|%T'],text=True),'fresh_namespace_absent':not (base/names[0]/'neural-pod-guided-diagnostic04').exists()}))
+'''
+r=json.loads(subprocess.check_output(['ssh','tufts-login','/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python','-'],input=script.encode()));r.update(local_free_bytes=shutil.disk_usage(p).free,local_required_bytes=10*2**30+256*2**20+64*2**20+sum(x['bytes'] for x in json.loads((p/'RUNTIME-INVENTORY.json').read_text())['files']),collection_requires_separate_measured_release=True,prepared_inputs_copied=False,physical_free_required_bytes=12*2**30);r['local_guard_passed']=r['local_free_bytes']>=r['local_required_bytes'];assert r['local_guard_passed'] and r['global_after_reserved_bytes']<r['global_limit_bytes'] and r['physical_free_bytes']>r['physical_free_required_bytes'];(p/'RESOURCE-CHECK.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r,indent=2))

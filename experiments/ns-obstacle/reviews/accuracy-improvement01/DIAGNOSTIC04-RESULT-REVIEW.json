@@ -1,0 +1,102 @@
+{
+  "schema": "ns-obstacle-energy-neural-diagnostic-coordinator-review-v1",
+  "job_id": 6652915,
+  "elapsed_seconds": 269,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": false,
+  "failed_targets": [
+    "divergence",
+    "transverse"
+  ],
+  "validation_opened": false,
+  "independent_result_sha256": "92a0fb031343338790b1e5f6ca895572f5035a129ea7fba6221d43642b6379fb",
+  "reference_source_commit": "2a34ac01f",
+  "reference_mirror_commit": "c71607b69",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0009235670211989991,
+        "pressure_scaled": 0.0007594822352305229,
+        "divergence": 0.006524685356478159,
+        "velocity_gradient_scaled": 0.011210585013630954,
+        "mass": 5.473404675531345e-05,
+        "boundary_trace": 2.9693463152349864e-10,
+        "drag_relative": 0.001199473324843737,
+        "transverse_absolute": 0.0013790799519044147
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        6.125639722506378,
+        0.021562620927929262
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.2652414454692399e-15,
+      "finite_difference_errors": [
+        4.150112681048934e-12,
+        1.0294446525180892e-11,
+        2.669402773804747e-10
+      ],
+      "stationarity_gradient": 4.259640020842871e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0029448147694070615,
+      "projection_floor": 0.0006397813870234466,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.0009916934909317303,
+        "pressure_scaled": 0.0006667773228506089,
+        "divergence": 0.007455877395200394,
+        "velocity_gradient_scaled": 0.01291137858637703,
+        "mass": 0.00012215662707560696,
+        "boundary_trace": 3.721314989482112e-10,
+        "drag_relative": 0.002434193670223834,
+        "transverse_absolute": 0.0021443054827266937
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": false,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        5.191249875077941,
+        0.006574493396275045
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.2239998127761575e-15,
+      "finite_difference_errors": [
+        1.3378552706971402e-12,
+        1.818660152078939e-11,
+        1.4015538863954884e-10
+      ],
+      "stationarity_gradient": 1.7832774211247394e-10,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.002066934441555056,
+      "projection_floor": 0.0006637274403184781,
+      "floor_consistent": true
+    }
+  ],
+  "retention_review_pending": true,
+  "interpretation": "Energy weighting improves lift and divergence versus trace03, but worsens velocity and pressure; no uniform improvement or physical admission."
+}

@@ -82,6 +82,22 @@ $$
 
 This is a limitation of matching those teacher gradients, not evidence of an implementation bug. An exactly divergence-free full velocity would additionally require a compatible lift and a separately reviewed pressure/stability formulation.
 
+## Next candidate: local cylinder traction supervision
+
+The accepted saved-force decomposition locates the trace-trained bank's lift discrepancy primarily in viscous traction. This motivates an additional supervised derivative target from the existing TRAIN FE-mode boundary arrays, without modifying the weak online PDE objective or using development truth in training. The trace-trained parent retains the best measured velocity accuracy; energy reweighting improved force and divergence but worsened velocity and pressure. Neither passes all physical checks.
+
+For dimensionless mode gradient $G_r$, define $\tau_r=(G_r+G_r^T)n_{\mathrm{body}}$, with body normal opposite the stored fluid normal. A candidate normalized loss is
+
+$$
+L_\tau=\frac{\sum_r\sigma_r^2\int_{\Gamma_c}\|\tau_r-\tau_{T,r}\|^2\,d\hat s}{\sum_r\sigma_r^2\int_{\Gamma_c}\|\tau_{T,r}\|^2\,d\hat s}.
+$$
+
+Require a positive total denominator; individual zero-energy modes need no artificial floor. The boundary measure is scaled by cylinder diameter. The coefficient for physical viscous force is applied later by the existing force evaluator. Local traction supervision controls a stronger quantity than two integrated force moments, which can hide cancellation; it does not guarantee full pressure-plus-viscous force accuracy. Parent, weight, replay and resource settings require an exact reviewed execution packet. No fit is released by this design note.
+
+## Separate capacity option: independent residual heads
+
+Independent correction heads can remove a shared trainable hidden representation, but shared optimizer steps and tiny loss weights still create competition. Energy-model tail-mode regression alone does not establish a capacity bottleneck. Preserve the same online coefficients and boundary envelope; retain original teacher normalization. If frozen-parent values and gradients are cached at TRAIN volume and cylinder points, record exact order, units and hashes, then require a final uncached serialized full-rule objective and gradient replay. Parameter counts alone do not establish runtime or memory cost. This is a separate change from traction supervision.
+
 ## Evaluation and terminology
 
 All candidates retain actual reduced solves, separate best-fit diagnostics, full-rule force/conservation checks, and closed final validation until the recipe is frozen. A **mode** is one learned spatial velocity pattern; the online solver chooses its coefficient. A **supremizer** is an additional FE velocity pattern used to stabilize pressure coupling. The **lift** imposes the prescribed nonhomogeneous boundary data. A **streamfunction** is a scalar whose rotated gradient gives a two-dimensional divergence-free velocity. **Inf-sup** denotes the pressure–velocity stability check. **Full rule** means the original complete numerical integration rule rather than fitted reduced quadrature. These candidate designs were independently assessed from the local implementation and mathematical identities; no new training or scientific data evaluation was used for this note.

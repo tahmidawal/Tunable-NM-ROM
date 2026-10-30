@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Release actual energy-model PDE diagnostic04, then choose justified boundary-traction training candidate from measured flow/force tradeoffs",
+    "Retain diagnostic04 raw evidence and prepare reviewed trace-parent TRAIN boundary-traction refinement",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 9.131666666666668,
+  "completed_allocated_gpu_hours": 9.206388888888888,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -23,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-30T01:41:49.475640+00:00",
+  "last_checkpoint_utc": "2026-10-30T02:27:15.081953+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -495,7 +495,7 @@
     "supervised_trace_job": 6651600,
     "supervised_trace_state": "COMPLETED",
     "refined_PDE_scientific_and_retention_passed": true,
-    "energy_weighted_candidate": "Audited completed model; actual PDE diagnostic04 packet pending",
+    "energy_weighted_candidate": "Actual PDE audit passed consistency; mixed accuracy tradeoff, physical gates fail",
     "refined_PDE_remote_duplicates_retired": {
       "source_commit": "c84118b66",
       "mirror_commit": "616377526",
@@ -521,6 +521,11 @@
     "boundary_traction_candidate": "source-only investigation, actual signed viscous force error dominates trace-model lift regression",
     "energy_weighted_seconds": 3482,
     "energy_model_review_sha256": "42d1a3aa87e8db2de716b50cd534be6c7608cc029edc4164cd85d1b377a77670",
-    "energy_scientific_and_retention_passed": true
+    "energy_scientific_and_retention_passed": true,
+    "energy_PDE_diagnostic_job": 6652915,
+    "energy_PDE_diagnostic_state": "COMPLETED",
+    "energy_PDE_diagnostic_seconds": 269,
+    "energy_PDE_scientific_review_passed": true,
+    "energy_PDE_retention_pending": true
   }
 }

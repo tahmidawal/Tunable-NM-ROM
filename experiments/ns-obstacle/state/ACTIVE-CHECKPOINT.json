@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Complete energy fit6651919 audit/retention and actual PDE diagnostic04; assess TRAIN-only boundary-traction candidate from actual force decomposition",
+    "Release actual energy-model PDE diagnostic04, then choose justified boundary-traction training candidate from measured flow/force tradeoffs",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 8.164444444444445,
+  "completed_allocated_gpu_hours": 9.131666666666668,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -495,14 +495,14 @@
     "supervised_trace_job": 6651600,
     "supervised_trace_state": "COMPLETED",
     "refined_PDE_scientific_and_retention_passed": true,
-    "energy_weighted_candidate": "single released execution running; actual training certificate pending",
+    "energy_weighted_candidate": "Audited completed model; actual PDE diagnostic04 packet pending",
     "refined_PDE_remote_duplicates_retired": {
       "source_commit": "c84118b66",
       "mirror_commit": "616377526",
       "logical_bytes": 314267303
     },
     "energy_weighted_job": 6651919,
-    "energy_weighted_state": "RUNNING",
+    "energy_weighted_state": "COMPLETED",
     "supervised_trace_seconds": 3482,
     "supervised_trace_accepted_steps": 2822,
     "supervised_trace_model_sha256": "aad67694e5a2c11b7a736e8e013723e811f6093c2b553c097a13f2e4bc48d2d8",
@@ -518,6 +518,9 @@
       "divergence",
       "transverse"
     ],
-    "boundary_traction_candidate": "source-only investigation, actual signed viscous force error dominates trace-model lift regression"
+    "boundary_traction_candidate": "source-only investigation, actual signed viscous force error dominates trace-model lift regression",
+    "energy_weighted_seconds": 3482,
+    "energy_model_review_sha256": "42d1a3aa87e8db2de716b50cd534be6c7608cc029edc4164cd85d1b377a77670",
+    "energy_scientific_and_retention_passed": true
   }
 }

@@ -1676,7 +1676,7 @@
       "job_id": 6651919,
       "attempt": "neural-pod-guided-energy01",
       "budget_bucket": "ROM",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "source_commit": "b460ad107940dd80cd53da6236f79b10cd311c29",
       "source_manifest_sha256": "3bb2a75c42f282f10454b1f9b3c9292ef5938978b9ef3e0a8ccb2106f38b4589",
       "release_sha256": "ec695991d6f8fa951fd5b81a39e4d4762896b0174cf6acf3f036af460bb75185",
@@ -1688,7 +1688,14 @@
       "warm_restart": true,
       "validation_allowed": false,
       "objective_changed": true,
-      "weighting": "separate_sigma_squared_times_value_and_gradient_norms"
+      "weighting": "separate_sigma_squared_times_value_and_gradient_norms",
+      "state": "COMPLETED",
+      "elapsed_seconds": 3482,
+      "allocated_gpu_hours": 0.9672222222222222,
+      "exit_code": "0:0",
+      "node": "pax025",
+      "scientific_review_pending": false,
+      "retention_review_passed": true
     },
     {
       "job_id": 6652443,
@@ -1712,13 +1719,11 @@
       "retention_review_passed": true
     }
   ],
-  "live_job_ids": [
-    6651919
-  ],
-  "completed_gpu_hours": 8.164444444444445,
+  "live_job_ids": [],
+  "completed_gpu_hours": 9.131666666666668,
   "note": "POD4/POD8 development review passed. New neural actual diagnostic greatly improves velocity and drag but lift/divergence/mass fail; independent review pending. Longer unchanged-objective refinement in preparation. Validation closed.",
-  "total_allocated_gpu_hours_completed": 8.164444444444445,
-  "last_accounting_utc": "2026-10-30T01:57:30.689140+00:00",
+  "total_allocated_gpu_hours_completed": 9.131666666666668,
+  "last_accounting_utc": "2026-10-30T02:11:38.075609+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

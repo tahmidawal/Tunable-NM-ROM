@@ -1,15 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    6657242
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
     "Collect and audit actual residual-bank PDE06, compare prior traction bank, then decide next fixed-coordinate training release",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 11.209722222222222,
+  "completed_allocated_gpu_hours": 11.286111111111111,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -593,7 +591,13 @@
     "residual_PDE_staging_failed_before_submission": true,
     "residual_PDE_staging_missing_file": "accuracy_v2/independent_residual_heads.py",
     "residual_PDE_diagnostic_job": 6657242,
-    "residual_PDE_diagnostic_state": "PENDING",
-    "residual_PDE_R2_actual_full_preflight_passed": true
+    "residual_PDE_diagnostic_state": "COMPLETED",
+    "residual_PDE_R2_actual_full_preflight_passed": true,
+    "residual_PDE_diagnostic_seconds": 275,
+    "residual_PDE_scientific_review_passed": true,
+    "residual_PDE_failed_targets": [
+      "divergence"
+    ],
+    "residual_PDE_retention_pending": true
   }
 }

@@ -1,0 +1,51 @@
+{
+  "source_file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-diagnostic02/metadata/results/diagnostic/status_007.json",
+  "source_sha256": "c090cd9cc6af571983750e56fa38171b80476e492e38d206f61836dbe79a0542",
+  "model_sha256": "011374bfb8251b6f5b8e78f8e10d8be67d2cf3975072dcb40da65391ba85af07",
+  "cases": [
+    {
+      "Re": 16.875,
+      "solve_velocity_relative": 0.0010198047500471056,
+      "fixed_span_projection_velocity_relative": 0.0008642881717555207,
+      "projection_to_solve_velocity_error_ratio": 0.8475035752830122,
+      "solve_divergence": 0.013017050980088277,
+      "L2_projection_divergence": 0.013001795091751206,
+      "projection_rank": 8,
+      "projection_singular_values": [
+        1.0016539321987776,
+        1.0007738813253302,
+        1.0002955038098922,
+        0.9969005604148035,
+        0.2533640957575387,
+        0.21291887978022364,
+        0.16162461506365558,
+        0.07801210687202993
+      ]
+    },
+    {
+      "Re": 23.125,
+      "solve_velocity_relative": 0.0010743752793202677,
+      "fixed_span_projection_velocity_relative": 0.000974441870504905,
+      "projection_to_solve_velocity_error_ratio": 0.9069846349419094,
+      "solve_divergence": 0.015324963888213097,
+      "L2_projection_divergence": 0.015304020742417285,
+      "projection_rank": 8,
+      "projection_singular_values": [
+        1.0016539321987776,
+        1.0007738813253302,
+        1.0002955038098922,
+        0.9969005604148035,
+        0.2533640957575387,
+        0.21291887978022364,
+        0.16162461506365558,
+        0.07801210687202993
+      ]
+    }
+  ],
+  "interpretation": "Unconstrained full-rule weighted L2 velocity projection in fixed four-neural plus four-supremizer span, with the same lift. Actual rank8 with rcond1e-12. Conditional velocity representation floor for this span/reference/rule; tighter solve cannot cross it.",
+  "limitations": [
+    "No causal or additive error attribution.",
+    "Divergence of the L2 projection is not a minimum-divergence bound.",
+    "No new scientific solve, training or validation access."
+  ]
+}

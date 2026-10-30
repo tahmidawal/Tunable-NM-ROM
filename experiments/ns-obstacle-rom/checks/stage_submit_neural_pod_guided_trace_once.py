@@ -1,7 +1,7 @@
 from pathlib import Path
 import subprocess,json,hashlib,shutil,shlex,argparse
 a=argparse.ArgumentParser();a.add_argument('--release',type=Path,required=True);a.add_argument('--release-sha256',required=True);a.add_argument('--source-commit',required=True);a=a.parse_args()
-B=Path(__file__).resolve().parents[1];P=B/'staging/neural-pod-guided-trace01';R=a.release.resolve().parent;job='/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-trace01';py='/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python'
+B=Path(__file__).resolve().parents[1];P=B/'staging/neural-pod-guided-trace01-r2';R=a.release.resolve().parent;job='/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-trace01';py='/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python'
 def sha(p):
  with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
 release=a.release.resolve();assert sha(release)==a.release_sha256

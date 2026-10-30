@@ -1,0 +1,42 @@
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Actual compact warm-training scalar history, periodic/final states, selected serialization and durable raw retention. Permits separately released actual development PDE diagnostic; no physical qualification.",
+  "job_id": 6649439,
+  "allocated_seconds": 3483,
+  "model_sha256": "011374bfb8251b6f5b8e78f8e10d8be67d2cf3975072dcb40da65391ba85af07",
+  "model_receipt_sha256": "4cdb93a83bdd4c44001ddb7f678989e439645c6213c39f8f7d46ad919479bf4c",
+  "selected_theta_sha256": "f12f0190766742823e91d7d814d346da1667646771fb4d6c17003e8fa649e66b",
+  "selected": {
+    "objective": 0.0028777550345297376,
+    "checkpoint": "state-03592-final.npz"
+  },
+  "audit_result_sha256": "ca8860590fd5a2ec01b2e16d34e582d37b929efe1961efb991c3564b9cb26735",
+  "audit_source_commit": "504abae4f",
+  "audit_mirror_commit": "12f25059e",
+  "checkpoint_count": 16,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 3892,
+  "new_accepted_lbfgs_steps": 3592,
+  "completed_trial_evaluations": 3766,
+  "full_evaluations_including_replay": 3768,
+  "optimizer_status": "job_deadline",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "465437b3b",
+  "durable_archive_mirror_commit": "80fdbfc51",
+  "independent_retention_passed": true,
+  "selection_semantics": "last accepted state, minimum among initial and accepted states",
+  "completed_rejected_trials_better_than_final": [],
+  "terminal_curvature_reset_unresolved": false,
+  "limitations": [
+    "No neural evaluation, training, native solve or validation access.",
+    "Intermediate vectors are absent: scalar hash/Armijo chains checked, not independent intermediate vector or two-loop replay.",
+    "Saved full teacher objective/gradient replay receipt checked, not independently recomputed.",
+    "Deadline may interrupt an unrecorded partial full evaluation; only completed counted evaluations are audited.",
+    "A terminal unaccepted or interrupted first trial may reset curvature without a retained reset scalar; final empty history is allowed but its cause remains unresolved.",
+    "Periodic/final curvature arrays checked internally; correspondence to missing intermediate vectors cannot be independently reconstructed."
+  ]
+}

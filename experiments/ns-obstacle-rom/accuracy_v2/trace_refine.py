@@ -66,7 +66,10 @@ def _refine(x,w,target,gradient,teacher_identity,parent_bank_path,parent_receipt
             return value,derivative,metrics
         except BaseException as exc:
             # A partial block sum is not a measured full-rule objective.
-            try:append('EVALUATIONS.jsonl',dict(identity,status='incomplete',completed_blocks=completed_blocks,exception=repr(exc),full_objective_available=False,seconds=time.monotonic()-tick))
+            try:
+                failure_file=out/f'evaluation-{eid:06d}-failure.json'
+                failure_file.write_text(json.dumps({'exception':repr(exc),'evaluation_identity':identity},indent=2)+'\n')
+                append('EVALUATIONS.jsonl',dict(identity,status='incomplete',completed_blocks=completed_blocks,exception_record_file=failure_file.name,exception_record_sha256=sha(failure_file),full_objective_available=False,seconds=time.monotonic()-tick))
             except Exception as retention_error:print('Evaluation failure receipt failed:',repr(retention_error),flush=True)
             raise
     def append(name,row):

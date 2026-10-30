@@ -1,0 +1,58 @@
+{
+  "schema": "ns-obstacle-residual-conditioning-source-assessment-v1",
+  "source_commit": "06d7360dcb1686fb440324c5baef6b6243ac7e7d",
+  "source_sha256": {
+    "experiments/ns-obstacle-rom/accuracy_v2/independent_residual_heads.py": "4ba8540b892f224d5ab9f139410c67a53f4ed38929c06354bd4cade1f956cea0",
+    "experiments/ns-obstacle-rom/accuracy_v2/residual_heads_refine.py": "420bb6e35ddbe79b9f8c139a1170dfe233cd8153fc9ddc4d23c3b45dc30ae63d",
+    "experiments/ns-obstacle-rom/accuracy_v2/residual_head_bank.py": "e6c2289aa13d013cc373f899115c246014fcedebdf18b5759657f70936064bc0",
+    "experiments/ns-obstacle-rom/accuracy_v2/spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277"
+  },
+  "source_only": true,
+  "running_output_accessed": false,
+  "new_evaluation_performed": false,
+  "fit_intervention": false,
+  "observations_from_source": {
+    "architecture": [
+      21,
+      64,
+      64,
+      2
+    ],
+    "head_count": 4,
+    "total_child_parameters": 22792,
+    "output_parameters": 520,
+    "hidden_parameters": 22272,
+    "initial_exact_parent": true,
+    "initial_hidden_gradient_exactly_zero": "Last affine weights and biases are zero; derivative with respect to either hidden layer is multiplied by the zero last-layer weight. This also holds for spatial-gradient losses.",
+    "initial_output_gradient": "Potentially nonzero through frozen random hidden features/envelope; nonzero is not guaranteed for every coordinate.",
+    "later_hidden_gradient": "May become small with small output weights; actual norms/conditioning are not established by source alone.",
+    "optimizer": "Child-only limited-memory BFGS, identity/scalar initial metric, Armijo line search and curvature threshold; not affine-invariant in this implementation."
+  },
+  "same_family_option": {
+    "parameterization": "theta = D z, fixed invertible diagonal D; initialize z=D^-1 theta0 and reconstruct theta before every model/objective evaluation",
+    "gradient": "g_z = D^T g_theta; initial steepest-descent theta step is proportional to -D D^T g_theta",
+    "family_and_objective": "Exactly same represented functions and scalar objective when reconstruction is used consistently; only optimizer coordinates/trajectory change.",
+    "zero_start_limit": "No finite nonzero diagonal scaling makes initially zero hidden gradients nonzero. Scaling may alter subsequent relative updates once output weights become nonzero.",
+    "output_multiplier_limit": "A fixed nonzero multiplier on each head can be absorbed into its output weights; it primarily rescales output coordinates and does not by itself establish better hidden-layer conditioning.",
+    "risks": "Large hidden scaling can create large physical parameter moves/saturation; line search/curvature screening and finite arithmetic are coordinate-dependent. No scale chosen before evidence."
+  },
+  "anchored_option": {
+    "parameterization": "parent(x) + f(theta,x) - f(theta0,x), with frozen nonzero-output theta0",
+    "initial_function": "Exactly parent at theta=theta0 while hidden-coordinate derivatives can be nonzero.",
+    "family_distinction": "For a fixed-width nonlinear head family, subtracting a fixed nonzero network translates the correction family; equality to the original unanchored family is not established. It also adds frozen-network evaluation/cache and serialization obligations.",
+    "not_equivalent_to_scaling": true
+  },
+  "post_terminal_saved_only_diagnostics": [
+    "For each retained initial/periodic/final child state, split the exact flatten order into hidden/output blocks and report per-head parameter norms, gradient L2/Linf, relative gradient scale and successive retained-state displacement norms.",
+    "Verify initial hidden gradient zeros from actual saved gradient; preserve floating-point gaps and do not infer failure solely from zeros.",
+    "Report retained curvature-pair block norms/cross terms where available; do not infer missing intermediate directions or full Hessian condition numbers.",
+    "Parameter output norms are not field amplitudes. With original parent and final per-mode normalized value-error norms e0,e1, report only triangle bounds abs(e1-e0)<=normalized correction norm<=e1+e0 unless actual component fields are retained.",
+    "A future bounded composite fixture may retain already-computed parent and child values/gradients separately, enabling sample-amplitude diagnostics without additional model evaluation; this is not a full-rule amplitude."
+  ],
+  "limitations": [
+    "No empirical claim that current fit is stalled, poorly conditioned or asymptotically limited.",
+    "No running loss/gradient records were read for this assessment.",
+    "Neither scaling nor anchored parameterization has been executed or selected; no automatic successor fit or scope change.",
+    "No validation access, PDE solve, native computation or new GPU work."
+  ]
+}

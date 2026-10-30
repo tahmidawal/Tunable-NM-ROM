@@ -1,0 +1,30 @@
+{
+  "schema": "ns-obstacle-composite-evaluator-fixture-source-review-v1",
+  "source_commit": "86643ea3b20f0efc53e83c7f64d725d48f3c8e36",
+  "source_sha256": {
+    "experiments/ns-obstacle-rom/accuracy_v2/residual_composite_fixture.py": "1892b91684c486607b95817fec7bedd791b5d325610a0825ced5f19a823a1a2a",
+    "experiments/ns-obstacle-rom/accuracy_v2/diagnostic06_launch.py": "24a982f046d9cef1a89d401a21e78e9ec11a99f7fa969a7bd0c7e3ff368b13e5",
+    "experiments/ns-obstacle-rom/accuracy_v2/residual_head_bank.py": "e6c2289aa13d013cc373f899115c246014fcedebdf18b5759657f70936064bc0",
+    "experiments/ns-obstacle-rom/accuracy_v2/independent_residual_heads.py": "4ba8540b892f224d5ab9f139410c67a53f4ed38929c06354bd4cade1f956cea0",
+    "experiments/ns-obstacle-rom/accuracy_v2/spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277",
+    "experiments/ns-obstacle-rom/accuracy_v2/fast_spatial_bank.py": "722383c2223a15a504ebe69cdc17cb99dc3b572b571255589cbb7e329982a087"
+  },
+  "source_review_passed": true,
+  "execution_performed": false,
+  "actual_model_evaluated": false,
+  "checks": [
+    "Exact actual model and frozen339point fixture hashes required before evaluation.",
+    "GPU/f64/highest required. JAX composite evaluates actual embedded parent and child networks; NumPy evaluator independently uses loaded composite.",
+    "Unrotated rank4 parent contract makes omission of identity transform in JAX sum mathematically consistent. Both paths return physical gradients; no dimensionless scaling inside fixture.",
+    "Full finitef64 arrays retained for prefixes1,2,4 before numerical pass/fail gate.",
+    "Already-computed JAX parent/child values and gradients now retained separately without an extra network call; sampled RMS labels explicitly exclude full-rule/solved-state accuracy.",
+    "Diagnostic06 loader explicitly accepts ResidualHeadBank and verifies both embeddedparent and childtheta identities against actual receipt/review.",
+    "Diagnostic06 requires genuine independent exact fixture review plus matching evaluator source hashes before solve."
+  ],
+  "limitations": [
+    "Source readiness only; no actual residual model exists in this review.",
+    "NumPy-versus-JAX formula comparison is not fresh finite-element validation or a universal derivative proof.",
+    "Fixture point amplitudes are not full-rule correction amplitudes.",
+    "Execution still requires exact selected model/fixture pins and separate bounded authorization."
+  ]
+}

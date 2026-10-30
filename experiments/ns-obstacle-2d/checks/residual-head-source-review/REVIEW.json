@@ -1,0 +1,47 @@
+{
+  "schema": "ns-obstacle-independent-residual-head-source-review-v1",
+  "source_commit": "06d7360dcb1686fb440324c5baef6b6243ac7e7d",
+  "source_sha256": {
+    "experiments/ns-obstacle-rom/accuracy_v2/residual_head_bank.py": "e6c2289aa13d013cc373f899115c246014fcedebdf18b5759657f70936064bc0",
+    "experiments/ns-obstacle-rom/accuracy_v2/residual_heads_refine.py": "420bb6e35ddbe79b9f8c139a1170dfe233cd8153fc9ddc4d23c3b45dc30ae63d",
+    "experiments/ns-obstacle-rom/accuracy_v2/independent_residual_heads.py": "4ba8540b892f224d5ab9f139410c67a53f4ed38929c06354bd4cade1f956cea0",
+    "experiments/ns-obstacle-rom/accuracy_v2/device_blocks.py": "9facb4948139f0cc7dd53a80dc30d07a672f8de162780165ab7d50dcdc4b5cfe",
+    "experiments/ns-obstacle-rom/accuracy_v2/spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277",
+    "experiments/ns-obstacle-rom/accuracy_v2/fast_spatial_bank.py": "722383c2223a15a504ebe69cdc17cb99dc3b572b571255589cbb7e329982a087",
+    "experiments/ns-obstacle-rom/accuracy_v2/divergence_objective.py": "8738675dca724d3733108fc3cd09a16d72103816dcb0e61aa3792715f4d89692",
+    "experiments/ns-obstacle-rom/accuracy_v2/boundary_traction_objective.py": "4431f5f6a150f1f691bbab8aaa9b36af47d4d251c62e07af75ada89e2ca1816b"
+  },
+  "source_review_passed": true,
+  "execution_performed": false,
+  "actual_training_or_validation_access": false,
+  "scope": "Read-only source review of frozen-parent serialization, units/normalizers and dynamic cache/replay closure; not a trained-model or numerical-result admission.",
+  "checks": {
+    "parent_npz_bytes_embedded_and_sha_bound": true,
+    "parent_layers_readonly_and_outside_child_theta": true,
+    "four_separate_21_64_64_2_heads_22792_trainable_parameters": true,
+    "zero_last_layers_preserve_initial_parent_function": true,
+    "same_physical_feature_and_envelope_contract": true,
+    "live_numpy_evaluator_uses_networks_not_training_cache": true,
+    "physical_derivatives_scaled_by_D_once_in_objective": true,
+    "same_actual_training_teacher_identity_and_nine_Re": true,
+    "original_parent_norms_sqrt_sigma_and_global_boundary_denominator_reused": true,
+    "dynamic_device_teacher_and_parent_arguments_no_closed_large_arrays": true,
+    "combined_logical_cache_payload_capped_1GiB_distinct_from_peak": true,
+    "initial_complete_streamed_cached_objective_and_child_gradient_arrays_retained": true,
+    "cache_equivalence_required_before_updates": true,
+    "selected_serialized_parent_bytes_and_child_theta_exact": true,
+    "final_uncached_JAX_full_objective_and_child_gradient_replay_required": true,
+    "child_optimizer_hash_scope_and_historical_count_lineage_explicit": true,
+    "checkpoint1000_all_accepted_trial_scalar_history_retained": true,
+    "incomplete_evaluation_events_and_deadline_preserved": true
+  },
+  "limitations": [
+    "No actual TRAIN objective, gradient, runtime, memory or speed measured by this review.",
+    "No claim that inherited parent config/layers describes the new child architecture; deployment must explicitly load ResidualHeadBank.",
+    "Final uncached replay checks reloaded arrays through JAX training evaluator. Independently bound actual NumPy live-evaluator fixture remains required before PDE deployment.",
+    "Periodic/final vectors only; no exact intermediate optimizer-vector replay possible.",
+    "Lineage counts span different parent/child parameter spaces, not optimizer continuation.",
+    "No physical accuracy, convergence, validation or matched-cost claim."
+  ],
+  "owner_synthetic_scope": "Owner retained initial overly-strict cross-block bitwise assertion failure and separate tolerance-based synthetic CPU roundtrip fixture. This source review did not rerun it."
+}

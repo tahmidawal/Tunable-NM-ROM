@@ -1,0 +1,36 @@
+{
+  "record": {
+    "schema": "ns-obstacle-pod-guided-neural-diagnostic-v2",
+    "status": "started",
+    "model_sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60",
+    "original_bank_gate_passed": false,
+    "new_model_gate_not_yet_admitted": true,
+    "physical_admission": false,
+    "eligible_accuracy": false,
+    "validation_seen": false,
+    "reference_fit_initialization_used": false,
+    "training_or_quadrature_fit_performed": false,
+    "matched_accuracy_or_speedup_claim": false,
+    "cases": [],
+    "elapsed_seconds": 130.0112771326676,
+    "bank_evaluator_class": "accuracy_v2.residual_head_bank.ResidualHeadBank",
+    "model": {
+      "record_file": "pod_guided_neural_r4_model.json",
+      "record_sha256": "6f3d939737c37aa44152cd7b850b2124e4ec707dfbeff5623c217516bc561aec",
+      "array_file": "pod_guided_neural_r4_model.npz",
+      "array_sha256": "c876b0c6995e48d4e239aed3b85a555908d2df8ce464c8b096b0271e3325c089"
+    }
+  },
+  "array_file": "status_002.npz",
+  "array_sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 0,
+    "array_references": 0,
+    "unique_expanded_bytes": 0,
+    "logical_expanded_reference_bytes": 0,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 1050298
+  }
+}

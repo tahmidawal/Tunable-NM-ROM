@@ -8,7 +8,8 @@ a.add_argument('--attempt', choices=['neural-pod-guided-trace01', 'neural-pod-gu
                                     'neural-pod-guided-residual01', 'neural-pod-guided-diagnostic06',
                                     'neural-pod-guided-coordinate01', 'neural-pod-guided-diagnostic07',
                                     'neural-pod-guided-galerkin01', 'neural-pod-guided-output-polish01',
-                                    'neural-pod-guided-diagnostic08'], required=True)
+                                    'neural-pod-guided-diagnostic08', 'neural-pod-guided-scanned-coordinate01',
+                                    'neural-pod-guided-diagnostic09'], required=True)
 args=a.parse_args()
 B=pathlib.Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom')
 A=B/'experiments/ns-obstacle-rom/artifacts'/args.attempt

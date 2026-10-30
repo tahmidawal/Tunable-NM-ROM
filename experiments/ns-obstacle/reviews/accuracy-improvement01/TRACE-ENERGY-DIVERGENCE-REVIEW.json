@@ -1,0 +1,150 @@
+{
+  "schema": "ns-obstacle-neural-divergence-component-audit-v1",
+  "passed": true,
+  "physical_admission": false,
+  "limitations": [
+    "Neural component inferred by subtraction of saved FE lift and supremizers; no new neural evaluation.",
+    "Dimensionless gradients d(u/U)/d(x/D), dimensionless volume and boundary weights.",
+    "Signed cross terms retained; component norms are not additive.",
+    "Volume-boundary mismatch is a quadrature diagnostic, not assumed exact for neural fields.",
+    "No new PDE solve, fitting, native assembly, validation, or counterfactual solver claim."
+  ],
+  "result_sha256": "d1e9e7288bbb0506a4805aa9b6150b8a4941f9d4c1dee24915b45a6a783a2015",
+  "source_commit": "360891524",
+  "mirror_commit": "73b933b42",
+  "interpretation": "In these actual solved states the inferred neural component dominates divergence RMS. Signed cross terms retained; net flux attribution differs. No counterfactual solve or permission to remove supremizers.",
+  "cases": [
+    {
+      "variant": "trace",
+      "model_sha256": "aad67694e5a2c11b7a736e8e013723e811f6093c2b553c097a13f2e4bc48d2d8",
+      "Re": 16.875,
+      "component_order": [
+        "FE_lift",
+        "inferred_neural",
+        "FE_supremizers"
+      ],
+      "component_divergence_rms": [
+        4.116005385153169e-06,
+        0.007526285499048287,
+        0.00018464346160400558
+      ],
+      "signed_cross_contributions_to_squared_rms": [
+        [
+          0.0,
+          1.8191269794253877e-11,
+          -1.1740670220069263e-15
+        ],
+        [
+          0.0,
+          0.0,
+          -3.1747741330677686e-08
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reconstructed_total_divergence_rms": 0.0075264436496504114
+    },
+    {
+      "variant": "trace",
+      "model_sha256": "aad67694e5a2c11b7a736e8e013723e811f6093c2b553c097a13f2e4bc48d2d8",
+      "Re": 23.125,
+      "component_order": [
+        "FE_lift",
+        "inferred_neural",
+        "FE_supremizers"
+      ],
+      "component_divergence_rms": [
+        4.116005385153169e-06,
+        0.008912933698851948,
+        0.0002280776083742644
+      ],
+      "signed_cross_contributions_to_squared_rms": [
+        [
+          0.0,
+          2.523206791404887e-11,
+          1.6704464449309676e-15
+        ],
+        [
+          0.0,
+          0.0,
+          -4.8864803196333914e-08
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reconstructed_total_divergence_rms": 0.008913113030115502
+    },
+    {
+      "variant": "energy",
+      "model_sha256": "a7af9656c3043233005ba3509e647b57c6e6b32e103f070a1708d12bc3d43ea3",
+      "Re": 16.875,
+      "component_order": [
+        "FE_lift",
+        "inferred_neural",
+        "FE_supremizers"
+      ],
+      "component_divergence_rms": [
+        4.116005385153169e-06,
+        0.006527717702136748,
+        0.0002962191361089487
+      ],
+      "signed_cross_contributions_to_squared_rms": [
+        [
+          0.0,
+          8.634011970359708e-12,
+          -9.894785450043696e-15
+        ],
+        [
+          0.0,
+          0.0,
+          -1.2735073996357946e-07
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reconstructed_total_divergence_rms": 0.00652468535647816
+    },
+    {
+      "variant": "energy",
+      "model_sha256": "a7af9656c3043233005ba3509e647b57c6e6b32e103f070a1708d12bc3d43ea3",
+      "Re": 23.125,
+      "component_order": [
+        "FE_lift",
+        "inferred_neural",
+        "FE_supremizers"
+      ],
+      "component_divergence_rms": [
+        4.116005385153169e-06,
+        0.007462222559976677,
+        0.0003935075443958532
+      ],
+      "signed_cross_contributions_to_squared_rms": [
+        [
+          0.0,
+          1.3266503172675584e-11,
+          7.848134185913853e-15
+        ],
+        [
+          0.0,
+          0.0,
+          -2.4953620571269203e-07
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "reconstructed_total_divergence_rms": 0.007455877395200398
+    }
+  ]
+}

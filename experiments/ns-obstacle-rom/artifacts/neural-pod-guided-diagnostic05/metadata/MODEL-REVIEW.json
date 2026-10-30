@@ -1,0 +1,383 @@
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Actual TRAIN trace-plus-cylinder-traction refinement; complete scalar/checkpoint/boundary/coefficient/serialization and durable raw audits. Allows separately released DEV PDE test; no physical admission.",
+  "job_id": 6653241,
+  "allocated_seconds": 3482,
+  "model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "model_receipt_sha256": "856d2ab6d1075d97acda768a10b30ef718daded1a7cedb9f8a5f21cfc71a49ee",
+  "selected_theta_sha256": "9996ba76504cb66e8f7fcce4f9fea91067da930225db14ba57ed60e544f06956",
+  "selected": {
+    "objective": 0.000967626610713034,
+    "checkpoint": "state-05624-final.npz"
+  },
+  "audit_result_sha256": "4e99eb000605b1ff4e4a5a68329c6d0b62fc7138da7ecf80746726b30d6bf71c",
+  "audit_source_commit": "70c036b96",
+  "audit_mirror_commit": "78c3bcb84",
+  "checkpoint_count": 24,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 12338,
+  "new_accepted_lbfgs_steps": 5624,
+  "completed_trial_evaluations": 5916,
+  "full_evaluations_including_replay": 5918,
+  "optimizer_status": "job_deadline",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "2e87983f9eb1f962300bae78228013d6c2485c73",
+  "durable_archive_mirror_commit": "16577e3fa852c286e05292b34ae408865429574f",
+  "independent_retention_passed": true,
+  "selection_semantics": "last accepted state, minimum among initial and accepted COMBINED objective states",
+  "completed_rejected_trials_better_than_final": [],
+  "terminal_curvature_reset_unresolved": false,
+  "limitations": [
+    "No neural evaluation, training, native solve or validation access.",
+    "Intermediate vectors are absent: scalar hash/Armijo chains checked, not independent intermediate vector or two-loop replay.",
+    "Saved full teacher objective/gradient replay receipt checked, not independently recomputed.",
+    "Pending/incomplete evaluation events are retained and checked; interrupted partial sums are not full measured objectives.",
+    "A terminal unaccepted or interrupted first trial may reset curvature without a retained reset scalar; final empty history is allowed but its cause remains unresolved.",
+    "Periodic/final curvature arrays checked internally; correspondence to missing intermediate vectors cannot be independently reconstructed."
+  ],
+  "objective_variant": "supervised_trace_and_boundary_traction_lambda_1",
+  "initial_components": {
+    "base": 0.0014573624827192992,
+    "added_trace": 0.0003435454363952969,
+    "parent_trace_combined": 0.001800907919114596,
+    "added_traction": 0.010958776538932307,
+    "traction_error_norm_squared": [
+      0.44955415455874004,
+      1.2600490297525182,
+      3.685356187499631,
+      9.330931458933392
+    ],
+    "traction_predicted_norm_squared": [
+      37.19374952143916,
+      8.731267746097172,
+      12.898086180520533,
+      4.540550316280392
+    ],
+    "traction_teacher_norm_squared": [
+      41.35019831057948,
+      12.068817166575087,
+      22.368825446190275,
+      8.369209556417307
+    ],
+    "integrated_traction_error": [
+      [
+        -0.06952860179663961,
+        -0.17006286584211344,
+        -0.39028108244701887,
+        0.22749927056122368
+      ],
+      [
+        -0.024634507938661038,
+        0.09828835589009124,
+        0.06779989704185457,
+        -0.17806864658830812
+      ]
+    ],
+    "combined": 0.012759684458046903,
+    "predicted_trace_norm_squared": [
+      0.0013770905075292687,
+      0.005530347211449773,
+      0.01627273495424136,
+      0.051639475484273424
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.0013770975786754711,
+      0.005530401736999522,
+      0.01627298448886931,
+      0.05164015301990861
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      -4.751202142220384e-10,
+      -3.905557094310147e-09,
+      -1.0615313524031667e-09,
+      -3.187408778235201e-08
+    ]
+  },
+  "selected_components": {
+    "base": 0.0007512229730896394,
+    "added_trace": 0.0001656782627775998,
+    "parent_trace_combined": 0.0009169012358672393,
+    "added_traction": 5.0725374845794886e-05,
+    "traction_error_norm_squared": [
+      0.00032842398828075335,
+      0.5538706948781722,
+      2.0810108342232745,
+      6.390963791044367
+    ],
+    "traction_predicted_norm_squared": [
+      41.24321972735015,
+      9.635316677845527,
+      15.498799806218578,
+      4.061458804993629
+    ],
+    "traction_teacher_norm_squared": [
+      41.35019831057948,
+      12.068817166575087,
+      22.368825446190275,
+      8.369209556417307
+    ],
+    "integrated_traction_error": [
+      [
+        0.0023678126265443784,
+        0.03169118088023102,
+        -0.38282805714510654,
+        0.02019638568755204
+      ],
+      [
+        -0.0012176231019650112,
+        0.06600242270444633,
+        0.0335848674024009,
+        -0.04100411388648825
+      ]
+    ],
+    "combined": 0.0009676266107130341,
+    "predicted_trace_norm_squared": [
+      0.0006278822180942152,
+      0.0024872227873009205,
+      0.008303038457966346,
+      0.02876680495647403
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.0006278878042311369,
+      0.0024872661473681313,
+      0.008303260406091537,
+      0.028767441881357717
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      2.67384426069512e-10,
+      1.6771841749620153e-09,
+      1.2731720027206461e-08,
+      -1.1568712035212037e-08
+    ]
+  },
+  "evaluation_events": {
+    "initiated": 5919,
+    "completed": 5918,
+    "incomplete": [
+      {
+        "evaluation_id": 5918,
+        "phase": "line_search",
+        "theta_sha256": "8ff1d8d61c00da8cd1ed2de5d991d042254c8936d54d4a9c2ebb1f1ce43739e7",
+        "accepted_steps_before": 5624,
+        "completed_full_evaluations_before": 5917,
+        "elapsed_seconds": 3382.7630537189543,
+        "status": "incomplete",
+        "completed_blocks": 89,
+        "completed_boundary_blocks": 0,
+        "exception_record_file": "evaluation-005918-failure.json",
+        "exception_record_sha256": "ec80d92d4445698c99a18298e2558c8cdad49681956623c723ded1e350341308",
+        "full_objective_available": false,
+        "seconds": 0.22223268076777458
+      }
+    ],
+    "pending_unclosed": 0
+  },
+  "coefficient_replay": {
+    "raw_coefficient_max_gap": 0.0,
+    "raw_gram_spectral_error": 2.3775523834289205e-15,
+    "raw_whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "raw_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "saved_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "raw_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "saved_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "raw_gram_max_gap": 0.0,
+    "raw_rhs_max_gap": 0.0,
+    "gram_spectral_error": 2.3775523834289205e-15,
+    "whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "covariance_max_error_over_sigma0_squared": 3.3880260999458173e-16,
+    "training_points": 1036497,
+    "semantic_teacher_values_sha256": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+    "scope": "Original retained-four TRAIN coefficients only; excludes omitted modes and online coefficients."
+  },
+  "boundary_replay": {
+    "points": 805,
+    "measure_dimensionless": 3.1415926535906222,
+    "teacher_mode_norms_squared": [
+      41.35019831057955,
+      12.068817166575096,
+      22.368825446190275,
+      8.369209556417308
+    ],
+    "global_teacher_energy": 1623.1597711318796,
+    "normalized_mode_energy_weights": [
+      0.9990765028771053,
+      0.0009150749290787452,
+      8.405176941563508e-06,
+      1.7016874502181372e-08
+    ],
+    "exact_original_subset": true
+  },
+  "component_gradient_replay": {
+    "array_hashes": {
+      "base": "a2a77aea3f292cf5b4a57c84386b846a12422eca90a533027efc096e53a8fc95",
+      "trace": "84463771e159382d62c74f4ac19032dbd83dc5ce065b3a71cfab7e29f389027f",
+      "traction_unweighted": "f918af89e3acfc6028b3f6a2786fdfc5b31165a7cf9f238097f25ea901425f1f"
+    },
+    "norms": {
+      "base_gradient_l2": 0.02955042822894756,
+      "trace_gradient_l2": 0.007622065119804604,
+      "traction_gradient_l2_unweighted": 0.37723513547673015,
+      "traction_gradient_l2_weighted": 0.37723513547673015,
+      "parent_combined_gradient_l2": 0.03383553676019068,
+      "new_combined_gradient_l2": 0.377283527263217
+    },
+    "initial_sum_max_gap": 8.673617379884035e-19,
+    "scope": "Initial saved component vectors only; no fresh autodiff or intermediate component-vector reconstruction."
+  }
+}

@@ -14,7 +14,7 @@ with tarfile.open(archive,'r|gz') as tf:
   p=PurePosixPath(member.name);assert not p.is_absolute() and '..' not in p.parts and p.parts[0]=='neural-pod-guided-refine01'
   if member.isdir():continue
   assert member.isfile();name=str(PurePosixPath(*p.parts[1:]));assert name and name not in rows
-  keep=p.suffix in {'.json','.py','.sh','.txt','.out','.err','.stdout','.stderr'} or p.name in {'COLLECTION-SHA256SUMS','SOURCE-SHA256SUMS'}
+  keep=p.suffix in {'.json','.jsonl','.py','.sh','.txt','.out','.err','.stdout','.stderr'} or p.name in {'COLLECTION-SHA256SUMS','SOURCE-SHA256SUMS'}
   if keep:assert metadata+member.size<=16*2**20
   stream=tf.extractfile(member);h=hashlib.sha256();n=0;pieces=[]
   for block in iter(lambda:stream.read(2**20),b''):

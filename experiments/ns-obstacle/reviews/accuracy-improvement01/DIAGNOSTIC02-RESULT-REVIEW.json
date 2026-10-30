@@ -1,0 +1,101 @@
+{
+  "schema": "ns-obstacle-refined-neural-diagnostic-coordinator-review-v1",
+  "job_id": 6651042,
+  "elapsed_seconds": 248,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": false,
+  "failed_targets": [
+    "divergence"
+  ],
+  "validation_opened": false,
+  "independent_result_sha256": "63b9439cba2b48268ef82be1ff93599a547ab52d50393a3a7aa40a51b801b7e5",
+  "reference_source_commit": "b4254eb90",
+  "reference_mirror_commit": "bbcdc56ce",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0010198047500471054,
+        "pressure_scaled": 0.0009076873467470363,
+        "divergence": 0.013017050980088285,
+        "velocity_gradient_scaled": 0.0184985668479648,
+        "mass": 3.530143301883489e-05,
+        "boundary_trace": 2.854545561396703e-10,
+        "drag_relative": 0.005067157719521657,
+        "transverse_absolute": 0.0008850784440353164
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        6.1493033797429115,
+        0.021068619420060164
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.6938798073945725e-15,
+      "finite_difference_errors": [
+        8.861338040879526e-13,
+        3.71628232525865e-11,
+        1.577437838073977e-10
+      ],
+      "stationarity_gradient": 4.657439177260695e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.002850019401091888,
+      "projection_floor": 0.0008642881717555207,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.0010743752793202681,
+        "pressure_scaled": 0.0005889391276575125,
+        "divergence": 0.015324963888213111,
+        "velocity_gradient_scaled": 0.02175052970549792,
+        "mass": 5.906243537519425e-05,
+        "boundary_trace": 3.5913050448025353e-10,
+        "drag_relative": 0.00742702015701244,
+        "transverse_absolute": 0.0008216056481288999
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        5.217105946268938,
+        0.003608582265419451
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.3808045916158374e-15,
+      "finite_difference_errors": [
+        2.17452574981961e-12,
+        1.965243863448462e-11,
+        1.6755524269660526e-10
+      ],
+      "stationarity_gradient": 1.434248036667276e-10,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0017602652676979905,
+      "projection_floor": 0.000974441870504905,
+      "floor_consistent": true
+    }
+  ],
+  "interpretation": "Actual reduced solves improve field/force/mass accuracy; only divergence fails frozen diagnostic targets. Further supervised derivative matching is an accuracy candidate, not a guaranteed or causally isolated improvement.",
+  "retention_review_pending": true
+}

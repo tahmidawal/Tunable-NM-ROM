@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor actual refined PDE6651042; independently audit and preserve resulting comparisons",
-    "Use actual flow/force/conservation errors to guide further accuracy improvements",
+    "Audit/preserve refined actual PDE6651042 and its comparisons",
+    "Implement/review training-only supervised trace-error warm refinement \u03bb=1; evaluate actual next flow results",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 7.057222222222222,
+  "completed_allocated_gpu_hours": 7.126111111111111,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -485,6 +485,12 @@
     "warm_refinement_scientific_and_retention_passed": true,
     "warm_refinement_model_review_sha256": "4fed9d15fe6dda98fbb27587a3563c7c4763627c385f7da806e78531dcb7a911",
     "refined_PDE_diagnostic_job": 6651042,
-    "refined_PDE_diagnostic_state": "PENDING"
+    "refined_PDE_diagnostic_state": "COMPLETED",
+    "refined_PDE_diagnostic_seconds": 248,
+    "refined_PDE_diagnostic_failed_targets": [
+      "divergence"
+    ],
+    "supervised_trace_weight_candidate": 1.0,
+    "supervised_trace_candidate_execution_released": false
   }
 }

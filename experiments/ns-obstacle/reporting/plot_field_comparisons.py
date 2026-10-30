@@ -49,9 +49,13 @@ def main():
                          'User-authorized diagnostic with original solver; representation gate remains failed. See recorded convergence status.'))
     defaults = [m[0] for m in models]
     if 'pod_guided_neural_r4_solve_velocity' in data.files:
-        models.append(('pod_guided_neural_r4_solve', 'Improved neural-bank ROM: flow-solve output',
+        models.append(('pod_guided_neural_r4_solve', 'First improved neural-bank ROM: flow-solve output',
                        'Four POD-guided neural velocity modes plus FE pressure/stability spaces. Lift, divergence and mass targets still fail.'))
         defaults.append('pod_guided_neural_r4_solve')
+    if 'refined_neural_r4_solve_velocity' in data.files:
+        models.append(('refined_neural_r4_solve', 'Refined neural-bank ROM: flow-solve output',
+                       'Longer-trained neural velocity bank plus FE pressure/stability spaces. Divergence remains above target.'))
+        defaults.append('refined_neural_r4_solve')
     for rank in (4, 8):
         for method, label in [('mixed_Galerkin', 'Galerkin solved flow'),
                               ('exact_tensor_weak_LS', 'weak least-squares solved flow'),
@@ -92,6 +96,7 @@ def main():
                     ax = axes[row, col]; z = values[row][col]
                     low, high = ((0, speed_max) if row == 0 else (pmin, pmax)) if col < 2 else (0, max(float(z.max()), 1e-16))
                     artist = ax.tripcolor(tri, z, shading='gouraud', cmap='viridis' if col < 2 else 'magma', vmin=low, vmax=high)
+                    artist.set_rasterized(True)
                     decorate(ax)
                     field_label = ('Best-fit field' if key.endswith('_projection') else
                                    'Interpolated field' if key.endswith('_PCHIP') else 'Predicted flow')
@@ -107,20 +112,21 @@ def main():
             fig.supxlabel(note+'\nDisplay interpolation; error scales differ. Errors against stored reference do not certify equal continuum accuracy. Development cases.', fontsize=9)
             stem = f'{key}_Re{tag}'
             fig.savefig(args.output/(stem+'.png'), dpi=155)
-            fig.savefig(args.output/(stem+'.pdf'))
+            fig.savefig(args.output/(stem+'.pdf'), dpi=155)
             plt.close(fig); outputs.append(stem+'.png')
         fig, axes = plt.subplots(len(models)+1, 1, figsize=(13, 2*(len(models)+1)+2), layout='constrained')
         for ax, key, title in zip(axes, ['reference']+[m[0] for m in models],
                                   ['Qualified fine reference']+[m[1] for m in models]):
             z = np.linalg.norm(data[key+'_velocity'][i], axis=-1)
             artist = ax.tripcolor(tri, z, shading='gouraud', cmap='viridis', vmin=0, vmax=speed_max)
+            artist.set_rasterized(True)
             decorate(ax, False); ax.set_title(title, loc='left')
         fig.colorbar(artist, ax=list(axes), shrink=.65, label=r'Speed $|u|/U$')
         fig.suptitle(f'Full-channel velocity comparison — Re = {float(reynolds):g}', fontsize=15)
         fig.supxlabel('Same speed scale throughout. Best-fit projection and actual flow-solve outputs are labeled separately.', fontsize=10)
         stem = f'full_channel_Re{tag}'
         fig.savefig(args.output/(stem+'.png'), dpi=155)
-        fig.savefig(args.output/(stem+'.pdf')); plt.close(fig); outputs.append(stem+'.png')
+        fig.savefig(args.output/(stem+'.pdf'), dpi=155); plt.close(fig); outputs.append(stem+'.png')
     manifest = {'data_sha256':sha(args.data), 'metadata_sha256':sha(args.metadata),
                 'generator_sha256':sha(Path(__file__)), 'outputs':outputs,
                 'selected_models':requested,

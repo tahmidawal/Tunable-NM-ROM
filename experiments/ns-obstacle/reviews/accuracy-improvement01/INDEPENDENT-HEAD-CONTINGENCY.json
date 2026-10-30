@@ -1,0 +1,90 @@
+{
+  "schema": "ns-obstacle-independent-head-optimization-contingency-v1",
+  "status": "source_and_saved_evidence_assessment_only_no_execution_release",
+  "basis_audit_sha256": "786a507a18dff6d1c62faae980907e6f5db4768a8a64f77f4a6d798aa13f71f7",
+  "current_joint_scan_job": 6660421,
+  "condition": "Consider only after current joint continuation terminal and actual flow evaluation; no arbitrary gain cutoff.",
+  "source_reasoning": "With frozen embedded parent, fixed teacher-only norms/weights and identity output transform, the objective is a sum of four disjoint head objectives. Trace and traction couple two components within each head, not different heads. Joint limited-memory curvature and line search can still couple updates algorithmically; no causal attribution established.",
+  "accepted_polish_factor_replay": [
+    {
+      "head": 0,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 2.2929684067507973e-08,
+      "condition_retained": 98.49102397107568,
+      "delta_norm": 0.00030586806373230296,
+      "initial_factor_objective": 0.00012767921195294056,
+      "candidate_factor_objective": 0.0001276697974203392,
+      "singular_replay_max_gap": 2.6645352591003757e-14,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "53773785628361fa882fd04eb08bfd54d279a125232d8fab704119a9ac6c785d"
+    },
+    {
+      "head": 1,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 9.039855096962143e-09,
+      "condition_retained": 136.17438523909266,
+      "delta_norm": 0.015631736211713404,
+      "initial_factor_objective": 0.00011096584454015106,
+      "candidate_factor_objective": 0.00011043386872385513,
+      "singular_replay_max_gap": 5.329070518200751e-15,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "37f0cd077a1e41bc5df796df77998b8f936c11861dcabdd280c376dbeed086a4"
+    },
+    {
+      "head": 2,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 4.892785382384652e-09,
+      "condition_retained": 66.73757223130006,
+      "delta_norm": 0.00857151278630824,
+      "initial_factor_objective": 9.45634442055318e-05,
+      "candidate_factor_objective": 9.437966397129335e-05,
+      "singular_replay_max_gap": 3.1086244689504383e-15,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "76d14676a2279f0de4bd34f2b7c4c7fdda62819364eb79c228166c65ecd10dd1"
+    },
+    {
+      "head": 3,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 2.8034025318797054e-09,
+      "condition_retained": 41.46928432493337,
+      "delta_norm": 0.010704391013289634,
+      "initial_factor_objective": 0.0001484265786801981,
+      "candidate_factor_objective": 0.00014817964681610092,
+      "singular_replay_max_gap": 3.1086244689504383e-15,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "d5ddf3ae7a71dd396277f2ce67a7df000c099a15d74496f3ad25f19fa6e9a586"
+    }
+  ],
+  "initial_objective": 0.00048163507937882145,
+  "selected_objective": 0.0004806629769315888,
+  "candidate_algorithm": [
+    "Same four heads and original weighted head objectives; no loss reweighting.",
+    "Independent curvature histories, scalar initial scaling, Armijo steps and reset per head; fixed round-robin scheduling, no DEV-based allocation.",
+    "All child parameters remain optimizable, including output weights.",
+    "Same initial709 for an optimizer comparison; a later warm state must be described as sequential continuation."
+  ],
+  "required_evidence": [
+    "Before updates, summed per-head full-rule objectives and concatenated gradients must reproduce original joint objective/all gradients.",
+    "Perturbing one head must leave other head outputs, losses and gradients unchanged, including trace and traction.",
+    "Record all per-head trials, accepted/rejected steps, histories and interruption evidence.",
+    "Final full-model serialized uncached objective/gradient replay; original physical infinity-norm stopping must pass for every head to claim stationarity.",
+    "Compare summed point-head evaluations and acceptance counts; a head sweep is not one joint iteration and cross-job wall-clock speedup is invalid.",
+    "Actual subsequent PDE comparison remains required; TRAIN modal errors do not give solved-error attribution."
+  ],
+  "limitations": [
+    "No hidden-network capacity saturation established.",
+    "No new training, feature change or execution authorized by this record."
+  ]
+}

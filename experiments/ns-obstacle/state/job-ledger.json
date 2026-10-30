@@ -2075,13 +2075,47 @@
       "gpu_type": "H200",
       "gpu_f64_highest_confirmed": true,
       "retention_review_passed": true
+    },
+    {
+      "source_commit": "0df3ce110e21684c84417cf99a5db1688e271eb0",
+      "release_sha256": "75b163a638680d27dd57492a999c0ba9149b9480ed2bfa313f04c918c99554a7",
+      "source_manifest_sha256": "61308c66130a294da9d93e442761df0ec52b9aa09aa343432895fe5fe1c83948",
+      "actual_full_preflight_passed": true,
+      "actual_parent_teacher_and_supervised_trace_protocol_verified": true,
+      "no_JAX_or_native_import": true,
+      "namespace_bytes": {
+        "ns-obstacle-rom-20261027": 27576862102,
+        "ns-obstacle-2d-20261027": 4014258810,
+        "ns-obstacle-3d-20261027": 133799
+      },
+      "maximum_global_bytes": 47965817527,
+      "queue_before": "",
+      "time_unix": 1793351598.019323,
+      "job_id": 6660421,
+      "submitted_once": true,
+      "queue_after": "6660421|ctol_nsobsrom_scan|PENDING\n",
+      "attempt": "neural-pod-guided-scanned-coordinate01",
+      "budget_bucket": "ROM",
+      "state_last_observed": "RUNNING",
+      "allocation_seconds_reserved": 3600,
+      "gpus": 1,
+      "validation_allowed": false,
+      "physical_admission": false,
+      "parent_frozen": true,
+      "hidden_parameters_frozen": false,
+      "joint_child_optimization": true,
+      "child_parameter_count": 22792,
+      "new_adam_steps": 0,
+      "warm_restart": true
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6660421
+  ],
   "completed_gpu_hours": 12.509722222222223,
-  "note": "PDE08 scientific and complete113raw audits pass;07 retained asbettervelocitybaseline. Conditionaljointchildscan nextafterexactduplicatecooling/freshguards;validationclosed.",
+  "note": "Jointchildscan6660421 running; actualinitialequivalence mandatory beforeupdates. Prior07bettervelocitybaseline preserved, finalvalidationclosed.",
   "total_allocated_gpu_hours_completed": 12.509722222222223,
-  "last_accounting_utc": "2026-10-30T09:01:47.066277+00:00",
+  "last_accounting_utc": "2026-10-30T09:14:52.683121+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

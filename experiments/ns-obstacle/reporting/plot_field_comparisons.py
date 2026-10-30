@@ -56,6 +56,13 @@ def main():
         models.append(('refined_neural_r4_solve', 'Refined neural-bank ROM: flow-solve output',
                        'Longer-trained neural velocity bank plus FE pressure/stability spaces. Divergence remains above target.'))
         defaults.append('refined_neural_r4_solve')
+    for key, label in [('trace_neural_r4_solve', 'Trace-trained neural-bank ROM'),
+                       ('energy_neural_r4_solve', 'Energy-weighted neural-bank ROM')]:
+        if key + '_velocity' in data.files:
+            models.append((key, label + ': flow-solve output',
+                           'Four neural velocity modes plus FE pressure/stability spaces. '
+                           'Actual reduced solve; consult full-rule metrics for accuracy and conservation.'))
+            defaults.append(key)
     for rank in (4, 8):
         for method, label in [('mixed_Galerkin', 'Galerkin solved flow'),
                               ('exact_tensor_weak_LS', 'weak least-squares solved flow'),

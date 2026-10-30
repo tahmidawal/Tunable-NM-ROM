@@ -6,6 +6,8 @@ def sha(p):
  with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
 assert sha(root)==a.release_sha256
 m=json.loads((B/'checks/neural-pod-guided-trace01-archive-measurement.json').read_text());required=10*2**30+256*2**20+64*2**20+2*m['archive_bytes'];free=shutil.disk_usage(B).free;assert free>=required;release=json.loads(root.read_text());assert release['archive_sha256']==m['archive_sha256'] and release['archive_bytes']==m['archive_bytes'] and release['required_local_free_bytes']==required and release['metadata_limit_bytes']==32*2**20
+assert m['job_id']==6651600 and release['job_id']==6651600
+terminal=[x.split('|') for x in m['terminal_status'].splitlines() if x.split('|')[0]==str(6651600)];assert len(terminal)==1 and terminal[0][1]=='COMPLETED' and terminal[0][3]=='0:0'
 out.mkdir(exist_ok=False);shutil.copyfile(root,out/'COLLECTION-RELEASE.json');shutil.copyfile(B/'checks/neural-pod-guided-trace01-archive-measurement.json',out/'ARCHIVE-MEASUREMENT.json');archive=out/'transport.tar.gz'
 subprocess.run(['scp','-q','tufts-login:'+m['archive_path'],str(archive)],check=True);assert archive.stat().st_size==m['archive_bytes'] and sha(archive)==m['archive_sha256']
 rows={};ledger=None;metadata=0
@@ -25,7 +27,7 @@ with tarfile.open(archive,'r|gz') as tf:
    target=out/'metadata'/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(b''.join(pieces));assert sha(target)==h.hexdigest();metadata+=n
   if name=='COLLECTION-SHA256SUMS':ledger=b''.join(pieces)
 assert ledger is not None and len(rows)==m['regular_files'] and sum(r['bytes'] for r in rows.values())==m['expanded_bytes']
-assert hashlib.sha256(ledger).hexdigest()==m['ledger_sha256'];expected={name:digest for digest,name in (line.split('  ',1) for line in ledger.decode().splitlines())};assert set(expected)==set(rows)-{'COLLECTION-SHA256SUMS'} and all(rows[n]['sha256']==d for n,d in expected.items())
+assert hashlib.sha256(ledger).hexdigest()==m['ledger_sha256'];ledger_rows=[line.split('  ',1) for line in ledger.decode().splitlines()];assert len({name for digest,name in ledger_rows})==len(ledger_rows);expected={name:digest for digest,name in ledger_rows};assert set(expected)==set(rows)-{'COLLECTION-SHA256SUMS'} and all(rows[n]['sha256']==d for n,d in expected.items())
 (out/'COLLECTION-SHA256SUMS').write_bytes(ledger);(out/'ORIGINAL-FILE-INVENTORY.json').write_text(json.dumps(rows,indent=2)+'\n')
 chunks=out/'archive-chunks';chunks.mkdir();parts=[]
 with archive.open('rb') as f:

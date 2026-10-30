@@ -1998,13 +1998,46 @@
       "gpu_type": "H200",
       "gpu_f64_highest_confirmed": true,
       "retention_review_passed": true
+    },
+    {
+      "source_commit": "8d3ed83a95948a59411d9559aeec3011c00e968e",
+      "release_sha256": "bfac6f93b6e2226199e2085fdca3a937b8d39142e0ecbdb910189e97d8e3d4a3",
+      "source_manifest_sha256": "10b531df2d3181a96683fe5db1805afca4a244d3bebef66519128df594cfeb8a",
+      "actual_full_preflight_passed": true,
+      "actual_parent_teacher_and_supervised_trace_protocol_verified": true,
+      "no_JAX_or_native_import": true,
+      "namespace_bytes": {
+        "ns-obstacle-rom-20261027": 27245223865,
+        "ns-obstacle-2d-20261027": 4014258810,
+        "ns-obstacle-3d-20261027": 133799
+      },
+      "maximum_global_bytes": 47634179290,
+      "queue_before": "",
+      "time_unix": 1793349448.895606,
+      "job_id": 6659904,
+      "submitted_once": true,
+      "queue_after": "6659904|ctol_nsobsrom_outpolish|RUNNING\n",
+      "attempt": "neural-pod-guided-output-polish01",
+      "budget_bucket": "ROM",
+      "state_last_observed": "RUNNING",
+      "allocation_seconds_reserved": 3600,
+      "gpus": 1,
+      "validation_allowed": false,
+      "physical_admission": false,
+      "parent_frozen": true,
+      "hidden_parameters_frozen": true,
+      "new_adam_steps": 0,
+      "new_lbfgs_steps": 0,
+      "warm_restart": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6659904
+  ],
   "completed_gpu_hours": 12.388055555555555,
-  "note": "Galerkin scientific and all119 raw originals audited. Mixed accuracy vs samebankLS; controlled output polish next, validation closed.",
+  "note": "Outputpolish6659904 running; allGalerkin119raw retained/reviewed, exactworkingchunks cooled with recovery. Validation closed.",
   "total_allocated_gpu_hours_completed": 12.388055555555555,
-  "last_accounting_utc": "2026-10-30T08:23:43.191467+00:00",
+  "last_accounting_utc": "2026-10-30T08:38:15.748537+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

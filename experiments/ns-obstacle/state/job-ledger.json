@@ -2146,11 +2146,42 @@
       "physical_admission": false,
       "scientific_review_passed": true,
       "retention_review_passed": true
+    },
+    {
+      "source_commit": "39bb5a0b05610c9c293a167060367b8fb61ea444",
+      "release_sha256": "c36da4d4bfb00e06749b320f00e7b7aba2fc444b50bed50d57b25590f8a7c7dc",
+      "source_manifest_sha256": "db54f17e6dd71a4468b0d9e6fa65f69c51d1fd2f39b6e81a89789a844061c63a",
+      "actual_full_preflight_passed": true,
+      "actual_accepted_model_and_development_verified": true,
+      "no_JAX_or_native_import": true,
+      "namespace_bytes": {
+        "ns-obstacle-rom-20261027": 27764536628,
+        "ns-obstacle-2d-20261027": 4014258810,
+        "ns-obstacle-3d-20261027": 133799
+      },
+      "maximum_global_bytes": 48153492053,
+      "queue_before": "",
+      "time_unix": 1793356124.8414106,
+      "job_id": 6661438,
+      "submitted_once": true,
+      "queue_after": "6661438|ctol_nsobsrom_teacherdiag|PENDING\n",
+      "attempt": "neural-pod-guided-diagnostic09",
+      "budget_bucket": "ROM",
+      "state": "PENDING",
+      "state_last_observed": "PENDING",
+      "allocation_seconds_reserved": 900,
+      "gpus": 1,
+      "validation_allowed": false,
+      "physical_admission": false,
+      "scientific_review_pending": true,
+      "retention_review_pending": true
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6661438
+  ],
   "completed_gpu_hours": 13.201666666666666,
-  "note": "Scan model and separate21s clusterfixture fully audited/retained; actualPDE09 packet pending. Local CUDAinitfailure preserved.",
+  "note": "Actualscannedbank PDE09 submittedonce6661438;900s finiteallocation, awaiting actualmetrics/audits.",
   "total_allocated_gpu_hours_completed": 13.201666666666666,
   "last_accounting_utc": "2026-10-30T10:22:31.200130+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",

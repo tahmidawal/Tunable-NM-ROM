@@ -1,0 +1,96 @@
+{
+  "schema": "ns-obstacle-ROM-guided-working-archive-working-chunk-cold-proposal-v1",
+  "proof_passed": true,
+  "deletion_authorized": false,
+  "deletions_performed": false,
+  "source_commit": "465437b3b1e820b5339ce31d127ea9379529aba9",
+  "mirror_commit": "80fdbfc5119a5652dc677106d022e127e055fa0f",
+  "current_source_head": "07e7c8ee70368c42561e495a9bf8cbe4bd940659",
+  "advertised_mirror_tip": "fed4d66c3c15d04e37019212f210c04355c4da6d",
+  "mirror_ref": "refs/heads/codeonly/exp/2026-10-27-ns-obstacle-rom",
+  "archive_sha256": "53761e48ae47889e615f259f50ec1e6c20cd3b8cf54f89bc5b61da2118b83f0f",
+  "archive_bytes": 91296328,
+  "original_regular_files_verified": 136,
+  "extra_ledger_members": {
+    "COLLECTION-SHA256SUMS": {
+      "sha256": "b7b1cf19ef4d8755e1de381c4bb785a052759a4c77aa14113de091c1fa5886d8",
+      "bytes": 12613
+    }
+  },
+  "archive_links": [],
+  "original_ledger_sha256": "b7b1cf19ef4d8755e1de381c4bb785a052759a4c77aa14113de091c1fa5886d8",
+  "retention_sha256": "6a5b8396d2b49d1c2d6b5cff4ff990fdf439799f712180d2bc685574fa782684",
+  "historical_status_preserved": "checksum_verified_pending_independent_review_and_mirror",
+  "original_job_state_preserved": "COMPLETED",
+  "chunks": [
+    {
+      "path": "archive-chunks/collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "049a893f996c40170f444514ae19158cf81b6fe70f9ffb2f99a0cf6d466b93ba",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-refine01/archive-chunks/collection.tar.gz.part-000",
+      "git_blob": "0b8aef3b686b9abb244b1fb0ec5c3d07f13d37ca",
+      "git_blobs": {
+        "465437b3b1e820b5339ce31d127ea9379529aba9": "0b8aef3b686b9abb244b1fb0ec5c3d07f13d37ca",
+        "80fdbfc5119a5652dc677106d022e127e055fa0f": "0b8aef3b686b9abb244b1fb0ec5c3d07f13d37ca"
+      }
+    },
+    {
+      "path": "archive-chunks/collection.tar.gz.part-001",
+      "bytes": 40964680,
+      "sha256": "63364da0521060807537169c74d9e7fd1e576e5310b5caef0f4b514b883381ad",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-refine01/archive-chunks/collection.tar.gz.part-001",
+      "git_blob": "d62ecbe8fa83d2aad646b0186587c0582ef93acb",
+      "git_blobs": {
+        "465437b3b1e820b5339ce31d127ea9379529aba9": "d62ecbe8fa83d2aad646b0186587c0582ef93acb",
+        "80fdbfc5119a5652dc677106d022e127e055fa0f": "d62ecbe8fa83d2aad646b0186587c0582ef93acb"
+      }
+    }
+  ],
+  "exact_paths": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-refine01/archive-chunks/collection.tar.gz.part-000",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-refine01/archive-chunks/collection.tar.gz.part-000",
+      "git_blob": "0b8aef3b686b9abb244b1fb0ec5c3d07f13d37ca",
+      "sha256": "049a893f996c40170f444514ae19158cf81b6fe70f9ffb2f99a0cf6d466b93ba",
+      "bytes": 50331648,
+      "allocated_bytes": 50331648,
+      "link_count": 1,
+      "inode": 27696972,
+      "device": 66306
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-refine01/archive-chunks/collection.tar.gz.part-001",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-refine01/archive-chunks/collection.tar.gz.part-001",
+      "git_blob": "d62ecbe8fa83d2aad646b0186587c0582ef93acb",
+      "sha256": "63364da0521060807537169c74d9e7fd1e576e5310b5caef0f4b514b883381ad",
+      "bytes": 40964680,
+      "allocated_bytes": 40972288,
+      "link_count": 1,
+      "inode": 27696973,
+      "device": 66306
+    }
+  ],
+  "logical_bytes": 91296328,
+  "conservative_allocated_reclaim_bytes": 91303936,
+  "proposed_cold_descriptor_sha256": "3efcdbc4828b89557d29e34072314d91ae9f734a022241e35eef6d32a5d1c28b",
+  "independent_reviews": {
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/accuracy-improvement01/REFINEMENT-RETENTION-REVIEW.json": {
+      "sha256": "22fa0e63acde3e1054711cabf9e9d0d584e9eaf923275437a4c237bbb5b8ec60",
+      "record": {
+        "passed": true,
+        "source_commit": "465437b3b1e820b5339ce31d127ea9379529aba9",
+        "mirror_commit": "80fdbfc5119a5652dc677106d022e127e055fa0f",
+        "archive_sha256": "53761e48ae47889e615f259f50ec1e6c20cd3b8cf54f89bc5b61da2118b83f0f",
+        "verified_regular_files": 136,
+        "chunk_count": 2,
+        "retention_sha256": "6a5b8396d2b49d1c2d6b5cff4ff990fdf439799f712180d2bc685574fa782684",
+        "bulk_scientific_extraction": false,
+        "remote_deletion_performed": false
+      }
+    }
+  },
+  "dependency_clearance": "ROM owner confirms no active local consumer needs working chunks; all future fit inputs independent remote prepared trees. Fresh owner check required before unlink.",
+  "preserve": "All ROM metadata/source/arrays/Git objects/history and original pending RETENTION; only2 exact working chunk duplicates may be proposed for later owner/root-authorized unlink.",
+  "recovery": "Use unchanged git_archive_recovery.verify with this exact descriptor, stream historical mirrored blobs, verify full archive and original136-file ledger in reserved fresh workspace; no shallow tip-only history.",
+  "elapsed_seconds": 0.6289533632807434
+}

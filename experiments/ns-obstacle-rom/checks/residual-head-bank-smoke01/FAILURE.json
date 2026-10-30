@@ -1,0 +1,7 @@
+{
+  "status": "failed_bitwise_block_size_assertion",
+  "same_block_roundtrip_value_exact": true,
+  "same_block_roundtrip_gradient_exact": true,
+  "different_block_max_abs_gap": 3.697785493223493e-32,
+  "explanation": "Different BLAS block shapes can change rounding; require numerical equivalence, not universal bitwise block-size invariance."
+}

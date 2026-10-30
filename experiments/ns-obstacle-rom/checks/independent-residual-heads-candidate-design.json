@@ -1,9 +1,9 @@
 {
   "schema": "ns-obstacle-prospective-independent-residual-heads-v2",
-  "status": "concrete_source_design_not_execution_or_parent_admission",
+  "status": "concrete_training_serialization_source_pending_execution_packet",
   "parent": {
     "tentative_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
-    "condition": "actual diagnostic05 independent review; parent selection not yet released"
+    "condition": "coordinator selected after actual05 consistency review; no new fit release"
   },
   "head_widths": [
     64,
@@ -11,7 +11,7 @@
   ],
   "head_depths": 2,
   "feature_policy": "unchanged 21 spatial features and bounded exponential envelope",
-  "trainer_implemented": false,
+  "trainer_implemented": true,
   "online_columns": 4,
   "formula": "for each original mode r, phi_new_r(x)=phi_frozen_parent_r(x)+E(x)*head_r(features(x)); four independent two-component output heads, no concatenated online columns",
   "initialization": "separate reproducible nonzero hidden weights with exactly zero final output weights and biases; initial values and physical derivatives equal frozen parent",
@@ -33,7 +33,7 @@
   "trainable_parameters": 22792,
   "full_optimizer_checkpoint_vector_payload_bytes": 4011392,
   "optimizer": "proposed one flattened reset L-BFGS, zero Adam; exact optimizer and walltime require future packet release",
-  "implementation": "independent_residual_heads.py formula helper only; trainer, serialized composite model and launcher not yet implemented",
+  "implementation": "residual_heads_refine.py and separate ResidualHeadBank schema/loader; launcher and exact execution packet pending",
   "component_metrics": "base, supervised trace, old combined, traction, new combined; gradients and absolute teacher/predicted divergence retained separately",
   "device_cache_contract": {
     "parent": "Compute actual frozen parent over every TRAIN volume and obstacle point before updates; bind model/source and exact point/order/value/physical-gradient hashes; parent parameters excluded from optimization tree. Cache only training evaluation inputs, never arbitrary-query fallback.",
@@ -42,7 +42,7 @@
     "selected_replay": "Reload serialized frozen parent plus all four heads; recompute parent, full volume and entire obstacle uncached at selected theta; require complete replay including component objectives and parameter gradient.",
     "failure": "Retain pending/completed/incomplete evaluation receipts and last accepted checkpoint; do not proceed after an equivalence failure."
   },
-  "resources": "Propose finite3600s GPU batch, max10000 accepted safety bound, periodic250 fullstate; exact output JSON/checkpoint bound and device peak must be reviewed before release. Prefer available A100/H100/H200 with exact features/GresUsed checks.",
+  "resources": "Proposed3600s max10000 accepted, checkpoint_every1000: at most12 fullstates,48136704B raw22-vector payload; all scalar records retained. Full metadata/output/device bound pending final packet review.",
   "limitations": [
     "No new online coefficient: remains four neural columns plus unchanged FE pressure/supremizer/lift machinery.",
     "Not exact incompressibility or a physical admission.",

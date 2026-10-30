@@ -1651,7 +1651,7 @@
       "job_id": 6651600,
       "attempt": "neural-pod-guided-trace01",
       "budget_bucket": "ROM",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "source_commit": "9891ee0b8dfe98c773bb6a7ed00f84bc57784199",
       "source_manifest_sha256": "5d5c18b35e4b0fcf383e2001f975ac2ca30de2d9ecc92ca3b857493c63fee0de",
       "release_sha256": "286746c3fe3f9b0be81ff33d0494bcc1561dbf3be5050f3182a72fd1a768ade9",
@@ -1662,7 +1662,15 @@
       "new_adam_steps": 0,
       "warm_restart": true,
       "validation_allowed": false,
-      "objective_changed": true
+      "objective_changed": true,
+      "state": "COMPLETED",
+      "elapsed_seconds": 3482,
+      "allocated_gpu_hours": 0.9672222222222222,
+      "exit_code": "0:0",
+      "node": "pax023",
+      "scientific_review_pending": false,
+      "retention_review_pending": false,
+      "retention_review_passed": true
     },
     {
       "job_id": 6651919,
@@ -1684,13 +1692,12 @@
     }
   ],
   "live_job_ids": [
-    6651600,
     6651919
   ],
-  "completed_gpu_hours": 7.126111111111111,
+  "completed_gpu_hours": 8.093333333333334,
   "note": "POD4/POD8 development review passed. New neural actual diagnostic greatly improves velocity and drag but lift/divergence/mass fail; independent review pending. Longer unchanged-objective refinement in preparation. Validation closed.",
-  "total_allocated_gpu_hours_completed": 7.126111111111111,
-  "last_accounting_utc": "2026-10-30T00:20:37.862241+00:00",
+  "total_allocated_gpu_hours_completed": 8.093333333333334,
+  "last_accounting_utc": "2026-10-30T01:34:49.438745+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

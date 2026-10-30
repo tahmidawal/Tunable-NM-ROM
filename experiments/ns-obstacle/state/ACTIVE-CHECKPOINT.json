@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor supervised trace-error refinement6651600, audit selected model and run actual PDE comparison",
+    "Complete trace model raw retention, release actual PDE diagnostic03, monitor energy fit6651919",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 7.126111111111111,
+  "completed_allocated_gpu_hours": 8.093333333333334,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -493,7 +493,7 @@
     "supervised_trace_weight_candidate": 1.0,
     "supervised_trace_candidate_execution_released": true,
     "supervised_trace_job": 6651600,
-    "supervised_trace_state": "RUNNING",
+    "supervised_trace_state": "COMPLETED",
     "refined_PDE_scientific_and_retention_passed": true,
     "energy_weighted_candidate": "single released execution running; actual training certificate pending",
     "refined_PDE_remote_duplicates_retired": {
@@ -502,6 +502,13 @@
       "logical_bytes": 314267303
     },
     "energy_weighted_job": 6651919,
-    "energy_weighted_state": "RUNNING"
+    "energy_weighted_state": "RUNNING",
+    "supervised_trace_seconds": 3482,
+    "supervised_trace_accepted_steps": 2822,
+    "supervised_trace_model_sha256": "aad67694e5a2c11b7a736e8e013723e811f6093c2b553c097a13f2e4bc48d2d8",
+    "supervised_trace_audit_passed": true,
+    "supervised_trace_retention_pending": false,
+    "supervised_trace_retention_passed": true,
+    "supervised_trace_model_review_sha256": "b0f3282305f723784a8aea36ca07c9784831aa7c78bafb6b7261d1c9a423851d"
   }
 }

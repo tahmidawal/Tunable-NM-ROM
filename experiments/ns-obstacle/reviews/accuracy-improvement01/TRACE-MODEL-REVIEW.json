@@ -1,0 +1,122 @@
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Actual supervised trace-error training, all evaluation events, periodic/final states, selected serialization and complete durable raw archive. Permits separately released development PDE diagnostic; no physical qualification.",
+  "job_id": 6651600,
+  "allocated_seconds": 3482,
+  "model_sha256": "aad67694e5a2c11b7a736e8e013723e811f6093c2b553c097a13f2e4bc48d2d8",
+  "model_receipt_sha256": "3cf1125b8d44d0fc6d272f2cae59716f09be4cbb347ad8cdfa31eb57b947c27d",
+  "selected_theta_sha256": "63edb1a551689b4293eecd3ba80e84de4fc9fb48692749011c96168c8d3abbcc",
+  "selected": {
+    "objective": 0.001800907919114597,
+    "checkpoint": "state-02822-final.npz"
+  },
+  "audit_result_sha256": "df5171be92a3fef41bb56af3262273e393267639974f4fb84a9bb6fe7105c2cc",
+  "audit_source_commit": "e40172786",
+  "audit_mirror_commit": "4a240c9a4",
+  "checkpoint_count": 13,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 6714,
+  "new_accepted_lbfgs_steps": 2822,
+  "completed_trial_evaluations": 2986,
+  "full_evaluations_including_replay": 2988,
+  "optimizer_status": "job_deadline",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "f135254218711099fbe1c5e977433ce7a17d5a47",
+  "durable_archive_mirror_commit": "303cb2b4839bfaf7fc90991c1a9bdd29be380496",
+  "independent_retention_passed": true,
+  "selection_semantics": "last accepted state, minimum among initial and accepted COMBINED objective states",
+  "completed_rejected_trials_better_than_final": [],
+  "terminal_curvature_reset_unresolved": false,
+  "limitations": [
+    "No neural evaluation, training, native solve or validation access.",
+    "Intermediate vectors are absent: scalar hash/Armijo chains checked, not independent intermediate vector or two-loop replay.",
+    "Saved full teacher objective/gradient replay receipt checked, not independently recomputed.",
+    "Pending/incomplete evaluation events are retained and checked; interrupted partial sums are not full measured objectives.",
+    "A terminal unaccepted or interrupted first trial may reset curvature without a retained reset scalar; final empty history is allowed but its cause remains unresolved.",
+    "Periodic/final curvature arrays checked internally; correspondence to missing intermediate vectors cannot be independently reconstructed."
+  ],
+  "objective_variant": "supervised_trace_error_lambda_1",
+  "initial_components": {
+    "base": 0.002877755034529737,
+    "added_trace": 0.0009273505706201409,
+    "combined": 0.003805105605149878,
+    "predicted_trace_norm_squared": [
+      0.004093857366003623,
+      0.014975280657818175,
+      0.04038833600937543,
+      0.12217518015850311
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.004093866997065323,
+      0.014975346753141303,
+      0.040388617699949156,
+      0.12217592139208402
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      -1.7550779636034408e-09,
+      -9.690443783343106e-09,
+      -1.7139504242952297e-08,
+      -6.372306064761357e-08
+    ]
+  },
+  "selected_components": {
+    "base": 0.0014573624827192992,
+    "added_trace": 0.0003435454363952969,
+    "combined": 0.001800907919114596,
+    "predicted_trace_norm_squared": [
+      0.0013770905075292687,
+      0.005530347211449773,
+      0.01627273495424136,
+      0.051639475484273424
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.0013770975786754711,
+      0.005530401736999522,
+      0.01627298448886931,
+      0.05164015301990861
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      -4.751202142220384e-10,
+      -3.905557094310147e-09,
+      -1.0615313524031667e-09,
+      -3.187408778235201e-08
+    ]
+  },
+  "evaluation_events": {
+    "initiated": 2989,
+    "completed": 2988,
+    "incomplete": [
+      {
+        "evaluation_id": 2988,
+        "phase": "line_search",
+        "theta_sha256": "e174de59aab779a8d3db2d328c6e686347ad510ac67773feb39d8dbc75fdb25a",
+        "accepted_steps_before": 2822,
+        "completed_full_evaluations_before": 2987,
+        "elapsed_seconds": 3393.9147619949654,
+        "status": "incomplete",
+        "completed_blocks": 70,
+        "exception_record_file": "evaluation-002988-failure.json",
+        "exception_record_sha256": "3aac855b3ef5f679ce006bca6e30495417ac04ec185d4460f13957ae9be63f80",
+        "full_objective_available": false,
+        "seconds": 0.3066324517130852
+      }
+    ],
+    "pending_unclosed": 0
+  }
+}

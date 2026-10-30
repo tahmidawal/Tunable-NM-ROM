@@ -1,9 +1,11 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    6653241
+  ],
   "active_external_consults": [],
   "pending": [
-    "Complete reviewed trace-parent TRAIN boundary-traction refinement packet and execute next accuracy test",
+    "Monitor traction training6653241, audit saved model and retention, then actual PDE test before next accuracy choice",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
@@ -23,7 +25,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-30T02:27:15.081953+00:00",
+  "last_checkpoint_utc": "2026-10-30T02:41:47.745613+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -527,6 +529,10 @@
     "energy_PDE_diagnostic_seconds": 269,
     "energy_PDE_scientific_review_passed": true,
     "energy_PDE_retention_pending": false,
-    "energy_PDE_retention_passed": true
+    "energy_PDE_retention_passed": true,
+    "traction_job": 6653241,
+    "traction_state": "PENDING",
+    "traction_release_sha256": "9e4fc288799865266b718a3521b53cd7cbd8d3e7220aa904860cb1796a80061b",
+    "traction_actual_full_preflight_passed": true
   }
 }

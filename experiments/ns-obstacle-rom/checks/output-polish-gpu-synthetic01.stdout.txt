@@ -1,0 +1,47 @@
+{
+  "backend": "gpu",
+  "x64": true,
+  "matmul_precision": "highest",
+  "devices": [
+    "NVIDIA GB10"
+  ],
+  "jax": "0.10.1",
+  "jaxlib": "0.10.1",
+  "elapsed_seconds": 0.6012363438494503,
+  "row_blocks": [
+    1792,
+    1792,
+    83
+  ],
+  "columns": 130,
+  "relative_cutoff": 8.142375662600898e-13,
+  "rank": 130,
+  "dense_rank": 130,
+  "delta_gap": 3.1246116805050406e-12,
+  "objective_gap": 1.8189894035458565e-12,
+  "gradient_gap": 4.335979217207084e-13,
+  "raw_sha256": "12358684d19b8c24eb550e5f9a4b515001cf0e9a20cfaa3cf126669bb47e4b49",
+  "checks_sha256": "9fc4820b55825111eaa1cacbc1e20c1f708249bd7ad8197bda4df3a976e5d1de",
+  "source_files": {
+    "output_polish_gpu_smoke.py": "c5bf327f1daf1aea9c7d810322c4b5e1b5c0952b395baecb36ebf4fc68bba6e1",
+    "fixed_hidden_output_polish.py": "5b9dbaacf99a387486d9babff1fd0e1a826def7bccb61e9ea6b3b55efc10fc89",
+    "spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277"
+  },
+  "actual_TRAIN_access": false,
+  "timing_speedup_claim": false,
+  "device_memory": [
+    {
+      "num_allocs": 60,
+      "bytes_in_use": 290048,
+      "peak_bytes_in_use": 39845888,
+      "largest_alloc_size": 33554432,
+      "bytes_limit": 130663825408,
+      "bytes_reserved": 0,
+      "peak_bytes_reserved": 0,
+      "largest_free_block_bytes": 0,
+      "pool_bytes": 39845888,
+      "peak_pool_bytes": 39845888
+    }
+  ],
+  "passed": true
+}

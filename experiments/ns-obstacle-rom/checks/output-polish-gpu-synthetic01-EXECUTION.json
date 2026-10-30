@@ -1,0 +1,42 @@
+{
+  "scope": "synthetic random matrices only; no TRAIN/DEV/VAL/model/solve",
+  "source_commit": "107411ea7de91c2b49e8f939a3abbaae3cfecf57",
+  "source_files": {
+    "accuracy_v2/output_polish_gpu_smoke.py": "c5bf327f1daf1aea9c7d810322c4b5e1b5c0952b395baecb36ebf4fc68bba6e1",
+    "accuracy_v2/fixed_hidden_output_polish.py": "5b9dbaacf99a387486d9babff1fd0e1a826def7bccb61e9ea6b3b55efc10fc89",
+    "accuracy_v2/spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277",
+    "geometry.py": "fb329e874f8c9a82750d28afb18f541f6b02769b20bb1da6a7db519f0fda0252"
+  },
+  "wrapper_sha256": "c859552f6b3e3fbc7ebb7522a63bee3e91b12cdb88a21d318810372371f8e742",
+  "python_sha256": "6242e0e8650d7dbdebbc25e08bf4c9359ddaf65f54fcae0e57fa99395fa5357a",
+  "jaxrun_sha256": "071c350951a73c297264c69cada36bc9472a600939b8aefbe1d37e52acbb5a94",
+  "existing_default_36GiB_scopes": [
+    "run-u43715.scope",
+    "run-u43734.scope"
+  ],
+  "local_free_before_bytes": 11567579136,
+  "required_local_free_bytes": 11072962560,
+  "start_epoch": 1793343583.2571127,
+  "automatic_retry": false,
+  "single_execution": true,
+  "command": [
+    "/usr/bin/timeout",
+    "--signal=TERM",
+    "--kill-after=1s",
+    "58s",
+    "/home/tahmid/.local/bin/jaxrun",
+    "/usr/bin/timeout",
+    "--signal=TERM",
+    "--kill-after=3s",
+    "50s",
+    "/home/tahmid/Dev/.venv/bin/python",
+    "-m",
+    "accuracy_v2.output_polish_gpu_smoke",
+    "--out",
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/output-polish-gpu-synthetic01"
+  ],
+  "returncode": 0,
+  "finish_epoch": 1793343584.909719,
+  "stdout_sha256": "fe12d0015521c2f3729291557971a84d1c58283b8ee8ea482b251e422d3e6d01",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

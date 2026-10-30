@@ -1,0 +1,111 @@
+{
+  "schema": "ns-obstacle-original-training-coefficient-energy-binding-v1",
+  "passed": true,
+  "split": "training",
+  "Re": [
+    15.0,
+    16.25,
+    17.5,
+    18.75,
+    20.0,
+    21.25,
+    22.5,
+    23.75,
+    25.0
+  ],
+  "mode_order": "first four accepted prepared velocity POD columns, unchanged orientations",
+  "training_file_sha256": "222acff57eb387c949a960b43f58b472bbd1d047fa7c7efd4d6ed367dbf2bc0d",
+  "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+  "teacher_identity": {
+    "split": "training",
+    "Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "reference_qualification": {
+      "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+      "passed": true,
+      "qualification_scope": {
+        "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+        "amendment_id": "FD1-2026-10-28",
+        "original_G2_status": "not_admitted_domain_sensitivity_failed",
+        "domain_sensitivity_status": "failed",
+        "domain_independence_admitted": false,
+        "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+        "geometry_population_and_numerical_thresholds_unchanged": true
+      }
+    },
+    "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+    "volume_manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+    "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+    "singular_values": [
+      6.262405845690011,
+      0.35081375209372717,
+      0.02469633315548602,
+      0.0018166794857509315
+    ],
+    "arrays": {
+      "points": "2173f1395f76b26604163c4192f0098c1566a0eff30dce25f45c3cbe87a66aa9",
+      "weights": "f23fbca65af3cb31ecb9f1987c42a1b608111ffe0aad5f55034eecad0c4c3fb0",
+      "values": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+      "gradients": "88350f192dccb0c12203967816042f1a16e0234ad3520c9e853ca7f2c33e4b33"
+    }
+  },
+  "arrays_file": "coefficients-and-covariance.npz",
+  "arrays_sha256": "9f2bd1e03ed89886de52dd9277bf9bb96ea45758472f28f5b41f1ba8814f8e39",
+  "coefficients_sha256": "8e39d5fd77793f303d118c3ef1a4af05a74e6e025f5cac61bde709dc42aa8976",
+  "gram_spectral_error": 2.3775523834289205e-15,
+  "covariance_max_error_over_sigma0_squared": 3.3880260999458173e-16,
+  "whitened_covariance_spectral_error": 1.437517288462995e-12,
+  "whitened_covariance_file": "whitened-covariance-error.npz",
+  "whitened_covariance_sha256": "6ee8dd22cfb120be904468d49cb47fe2ee6f400c61d9279e9f6becd86b8410d3",
+  "diagonal_relative_errors": [
+    1.811789694472937e-16,
+    2.1424989834958456e-15,
+    1.7598697136930113e-14,
+    2.7205051013105114e-13
+  ],
+  "covariance_errors_over_sigma_products": [
+    [
+      1.811789694472937e-16,
+      -3.9126030818945204e-15,
+      -4.227259973936809e-15,
+      -1.1679107195334903e-12
+    ],
+    [
+      -3.9126030818945204e-15,
+      2.1424989834958456e-15,
+      1.6964472630756548e-14,
+      -4.965307431996978e-13
+    ],
+    [
+      -4.227259973936809e-15,
+      1.6964472630756548e-14,
+      1.7598697136930113e-14,
+      -2.5334463275253724e-13
+    ],
+    [
+      -1.1679107195334903e-12,
+      -4.965307431996978e-13,
+      -2.5334463275253724e-13,
+      -2.7205051013105114e-13
+    ]
+  ],
+  "tolerances": {
+    "gram": 1e-10,
+    "whitened_covariance_spectral": 1e-10
+  },
+  "source_sha256": "d24867953faed6064caa6ac232a5b7e8697147efa33603499d209e9daf5fb806",
+  "coefficient_semantics": "full-rule L2 projection of actual nine TRAIN homogeneous corrections onto original retained FE POD columns; not online solved coefficients",
+  "equivalence_scope": "retained-four-mode training reconstruction with measured covariance approximation; excludes omitted modes and online solve errors",
+  "certificate_interpretation": "coefficient-covariance algebra compatibility: relative quadratic-form discrepancy bounded by recorded whitened spectral error; not a physics gate",
+  "development_or_validation_read": false
+}

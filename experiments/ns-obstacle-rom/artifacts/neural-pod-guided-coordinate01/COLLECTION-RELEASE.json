@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-fixed-coordinate-fit-collection-release-v1",
+  "authorized": true,
+  "job_id": 6657815,
+  "archive_sha256": "38b63036d84f1ddac324fd63855f3c47712a618767190343d7c6790f88dcdbc2",
+  "archive_bytes": 35408501,
+  "logical_files": 191,
+  "logical_expansion_bytes": 72736151,
+  "measurement_sha256": "6e24ca09decfb7c363066b5aedb7b45f460455546b362dd7466867c847b4ee18",
+  "collector_sha256": "a97358a225cbc93df8c99eb0fb2f1a602d5762e72202544b63afcb8cc34f470a",
+  "collector_source_commit": "6cb33495e",
+  "collector_source_mirror": "fc35502ec",
+  "measurement_source_commit": "6093384dc",
+  "measurement_source_mirror": "57f517f9b",
+  "mode": "Archive-only complete originals and ledger; all scalar histories and measured metadata, no scientific array expansion",
+  "metadata_limit_bytes": 50331648,
+  "required_local_free_bytes": 11177333994,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Fresh exact terminal/job/measurement/release/source and local resource guard checks; serialize bulk collection and Git.",
+    "Retain all191 original members and complete scalar histories;48MiB metadata allowance, no truncation. Verify all chunks and ledger before retiring transport.",
+    "Preserve remote originals until full independent retention and dependency clearance.",
+    "Selected-model extraction and bounded composite fixture require subsequent exact release; no physical admission."
+  ]
+}

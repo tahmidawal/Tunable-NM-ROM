@@ -1811,14 +1811,47 @@
       "exit_code": "0:0",
       "node": "pax186",
       "scientific_review_pending": false,
-      "retention_review_pending": true
+      "retention_review_pending": false,
+      "retention_review_passed": true
+    },
+    {
+      "source_commit": "e4642eb2892c0a8482bda78113200b2cc99a475b",
+      "release_sha256": "aebab1184abfc0cf1678c59ca3bfac99f85cbd28677d1a284b0d97e78cd6a30d",
+      "source_manifest_sha256": "f3d428365eb3e69cd39f0ffcd6e833f9eebfcf197225b280cb221ad6cd94c6f9",
+      "actual_full_preflight_passed": true,
+      "actual_parent_teacher_and_supervised_trace_protocol_verified": true,
+      "no_JAX_or_native_import": true,
+      "namespace_bytes": {
+        "ns-obstacle-rom-20261027": 26097811410,
+        "ns-obstacle-2d-20261027": 4014258810,
+        "ns-obstacle-3d-20261027": 133799
+      },
+      "maximum_global_bytes": 45413025011,
+      "queue_before": "",
+      "time_unix": 1793334340.846237,
+      "job_id": 6655193,
+      "submitted_once": true,
+      "queue_after": "6655193|ctol_nsobsrom_residual|PENDING\n",
+      "attempt": "neural-pod-guided-residual01",
+      "budget_bucket": "ROM",
+      "state_last_observed": "RUNNING",
+      "allocation_seconds_reserved": 3600,
+      "gpus": 1,
+      "validation_allowed": false,
+      "physical_admission": false,
+      "parent_frozen": true,
+      "new_adam_steps": 0,
+      "warm_restart": false,
+      "node": "pax106"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6655193
+  ],
   "completed_gpu_hours": 10.242222222222223,
-  "note": "Energy diagnostic04 audited; divergence fails both cases and lift fails second. Trace bank retains better velocity. Boundary-traction candidate in preparation; validation closed.",
+  "note": "Actual traction05 scientifically and durably audited; only divergence fails. Frozen-parent residual-head training6655193 running; validation closed.",
   "total_allocated_gpu_hours_completed": 10.242222222222223,
-  "last_accounting_utc": "2026-10-30T04:06:52.981782+00:00",
+  "last_accounting_utc": "2026-10-30T04:26:14.983742+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

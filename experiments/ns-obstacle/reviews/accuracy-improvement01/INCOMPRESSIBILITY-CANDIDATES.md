@@ -1,6 +1,6 @@
 # Possible incompressibility improvements
 
-This note separates completed derivative-supervision experiments from prospective structural designs. Actual trace and energy-model PDE solves still fail divergence checks; their saved-gradient decomposition identifies the neural contribution as dominant, with signed cross terms retained. Cylinder-traction refinement is now running as job6653241; its physical accuracy remains untested. The streamfunction and additive-capacity designs below are not released for training.
+This note separates completed derivative-supervision experiments from prospective structural designs. Actual trace and energy-model PDE solves still fail divergence checks; their saved-gradient decomposition identifies the neural contribution as dominant, with signed cross terms retained. Cylinder-traction refinement and its actual PDE diagnostic are now audited: field and force errors improve, while divergence remains failed (see `DIAGNOSTIC05-RESULT-REVIEW.json`). The frozen-parent independent correction-head candidate is now running under `RESIDUAL-REFINEMENT-RELEASE.json`; it has no result yet. The streamfunction design remains prospective.
 
 ## First controlled candidate: divergence regularization
 
@@ -82,9 +82,9 @@ $$
 
 This is a limitation of matching those teacher gradients, not evidence of an implementation bug. An exactly divergence-free full velocity would additionally require a compatible lift and a separately reviewed pressure/stability formulation.
 
-## Next candidate: local cylinder traction supervision
+## Completed candidate: local cylinder traction supervision
 
-The accepted saved-force decomposition locates the trace-trained bank's lift discrepancy primarily in viscous traction. This motivates an additional supervised derivative target from the existing TRAIN FE-mode boundary arrays, without modifying the weak online PDE objective or using development truth in training. The trace-trained parent retains the best measured velocity accuracy; energy reweighting improved force and divergence but worsened velocity and pressure. Neither passes all physical checks.
+The accepted saved-force decomposition locates the trace-trained bank's lift discrepancy primarily in viscous traction. This motivates an additional supervised derivative target from the existing TRAIN FE-mode boundary arrays, without modifying the weak online PDE objective or using development truth in training. At the time of this design, the trace-trained parent retained the best measured velocity accuracy; energy reweighting improved force and divergence but worsened velocity and pressure. The later traction result supersedes that ranking; none yet passes all physical checks.
 
 For dimensionless mode gradient $G_r$, define $\tau_r=(G_r+G_r^T)n_{\mathrm{body}}$, with body normal opposite the stored fluid normal. A candidate normalized loss is
 

@@ -1,6 +1,8 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    6655193
+  ],
   "active_external_consults": [],
   "pending": [
     "Train and test independently reviewed residual-head candidate; actual05 scientific/raw audits and plots complete",
@@ -23,7 +25,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-30T02:41:47.745613+00:00",
+  "last_checkpoint_utc": "2026-10-30T04:26:14.985423+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -562,6 +564,10 @@
       "divergence"
     ],
     "traction_PDE_retention_pending": false,
-    "traction_PDE_retention_passed": true
+    "traction_PDE_retention_passed": true,
+    "residual_head_job": 6655193,
+    "residual_head_state": "RUNNING",
+    "residual_head_release_sha256": "aebab1184abfc0cf1678c59ca3bfac99f85cbd28677d1a284b0d97e78cd6a30d",
+    "residual_head_actual_full_preflight_passed": true
   }
 }

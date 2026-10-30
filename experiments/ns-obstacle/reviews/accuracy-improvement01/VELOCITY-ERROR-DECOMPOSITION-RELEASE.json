@@ -1,0 +1,20 @@
+{
+  "schema": "ns-obstacle-coordinate-polish-velocity-decomposition-release-v1",
+  "authorized": true,
+  "single_execution": true,
+  "audit_source_sha256": "1bba066f24683aec0b0ce2d096c25a21a8b276c03e3a7b01805b016ef592c364",
+  "timeout_seconds": 120,
+  "remote_alarm_seconds": 115,
+  "address_space_bytes": 4294967296,
+  "BLAS_threads": 1,
+  "diagnostic07_audit_sha256": "3c9f4db61954e09de1d3357a5f146e0d9140b1356509035d7d0c65f0a1ecee19",
+  "diagnostic08_audit_sha256": "73de91920c80b51b15a8c714204aec2e9288604cb6582c24ede6c4f48f690e48",
+  "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+  "projection": "weighted_L2_first_four_teacher_only",
+  "new_neural_FE_PDE_evaluation_allowed": false,
+  "validation_allowed": false,
+  "collector_sha256": "2c0652dbae922767f166cb3b0861f83cfce91cfefc533453948b893fc96f9696",
+  "source_commit": "babb28c34",
+  "source_mirror_commit": "50fb44e0b",
+  "scope": "One bounded read-only saved-array aggregate error decomposition of already-exposed07/08 DEV fields. Exact T-only projection convention, all cross terms, no causal or per-mode attribution. No new neural/FE/PDE evaluation, no training or final validation; preserve raw failure output and do not retry automatically."
+}

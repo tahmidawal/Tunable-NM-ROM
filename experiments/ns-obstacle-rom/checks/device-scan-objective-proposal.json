@@ -1,0 +1,21 @@
+{
+  "status": "source-only generic proposal; no execution or integration",
+  "source_sha256": "b0ed5b5bb45f0691a9e4c80bff3a1b2f21809d27dbea21b3c767921274b0eda7",
+  "objective_contract": "block value_and_grad inside scan; explicit theta and stacked device arrays; sequential scalar/gradient/metric addition; single final host transfer",
+  "padding_contract": "caller must retain original real-point coverage/order, finite dummy arrays, strictly zero padded weights for every affected volume and boundary measure",
+  "production_prerequisites": [
+    "independent source review",
+    "bounded synthetic GPU/f64/highest fixture retaining streamed and scan values/gradients/metrics for multiple theta and partial last block",
+    "explicit actual TRAIN full streamed-vs-scan objective/child-gradient/component equivalence before first update",
+    "actual memory and no captured-large-constant witnesses",
+    "uncached serialized final complete volume/boundary replay",
+    "retain deadline semantics: scan is one device operation; timeout may leave incomplete evaluation without per-block completion count"
+  ],
+  "known_tradeoffs": [
+    "loss of per-block host interruption/progress",
+    "padding weights must be consumed by every objective term",
+    "compilation and device temporary memory unmeasured",
+    "no timing or bitwise-equivalence claim"
+  ],
+  "current_fit_changed": false
+}

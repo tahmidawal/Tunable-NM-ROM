@@ -1,7 +1,7 @@
 """Single bounded read-only execution; preserve failure output without retry."""
 from pathlib import Path
 import hashlib,json,subprocess,time
-p=Path(__file__).resolve().parent;s=p/'audit_saved_arrays.py';digest=hashlib.sha256(s.read_bytes()).hexdigest();assert digest=='0e8a3786f1191207ec50fa27b86eff756a35278265d894e7469f666bfd93c14f'
+p=Path(__file__).resolve().parent;s=p/'audit_saved_arrays.py';digest=hashlib.sha256(s.read_bytes()).hexdigest();assert digest=='d3ca536a2a97badfb4a229b153a7ff44f84944f138756ff561ae7bfd802921ad'
 binding=json.loads((p/'BINDING.json').read_text());input_source=('BINDING='+repr(binding)+'\n').encode()+s.read_bytes()
 for n in ('RESULT.json','STDERR.txt','EXECUTION.json'):assert not (p/n).exists(),n
 cmd=['ssh','-o','BatchMode=yes','-o','ConnectTimeout=15','-o','ServerAliveInterval=15','-o','ServerAliveCountMax=3','tufts-login','OPENBLAS_NUM_THREADS=1 /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python -B -'];t=time.monotonic();timedout=False

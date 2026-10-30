@@ -1,5 +1,5 @@
 {
-  "status": "source_only_awaiting_independent_review",
+  "status": "independently_reviewed_source_ready_only",
   "same_model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
   "actual_query_operator": "mixed_Galerkin: enriched velocity8, pressure4",
   "acceptance": "root residual norm <=1e-9 plus original physics/force/Jacobian checks",
@@ -10,5 +10,7 @@
   "future_plot_keys": [
     "galerkin_r4_solve_velocity",
     "galerkin_r4_solve_pressure"
-  ]
+  ],
+  "audit_source_sha256": "d3ca536a2a97badfb4a229b153a7ff44f84944f138756ff561ae7bfd802921ad",
+  "independent_source_review": "Numerical reviewer final PASS for d3ca536a; no execution or actual result"
 }

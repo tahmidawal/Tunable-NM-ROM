@@ -86,6 +86,7 @@ assert o['lv'].shape==(8,8) and o['lq'].shape==(4,4) and o['unknown_map'].shape=
 scaled_coupling=np.linalg.solve(o['lq'],o['continuity'][:,1:])@np.linalg.inv(o['lv'].T);infsup_singular=np.linalg.svd(scaled_coupling,compute_uv=False);beta=float(infsup_singular[-1]);stability=m['stability']
 assert stability['norms']=='dimensionless velocity H1, pressure L2' and np.allclose(infsup_singular,stability['singular_values'],rtol=1e-10,atol=1e-12)
 assert np.isclose(beta,stability['beta'],rtol=1e-10,atol=1e-12) and np.isclose(beta/stability['reference_beta'],stability['ratio'],rtol=1e-10) and (beta>=1e-3 and beta/stability['reference_beta']>=.5)==stability['passed']
+unknown_gram=np.zeros((12,12));unknown_gram[:8,:8]=o['velocity_unknown_gram'];unknown_gram[8:,8:]=o['pressure_unknown_gram'];assert np.allclose(o['unknown_cholesky']@o['unknown_cholesky'].T,unknown_gram,rtol=1e-12,atol=1e-13)
 assert np.allclose(o['unknown_cholesky'].T@o['unknown_map'],np.eye(12),rtol=1e-12,atol=1e-13)
 assert release['formulation']=='mixed_Galerkin' and release['root_tolerance']==1e-9 and release['momentum_rows']==8 and release['continuity_rows']==4 and release['same_bank_LS_job_id']==6658937
 assert s['model_sha256']=='26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80'
@@ -95,9 +96,13 @@ assert plan['inputs']['same_bank_LS_status']['sha256']=='f7ed6926b036597454ac510
 ls_status=json.loads(pathlib.Path(plan['inputs']['same_bank_LS_status']['path']).read_text())['record'];ls_review=json.loads(pathlib.Path(plan['inputs']['same_bank_LS_review']['path']).read_text())
 assert ls_status['model_sha256']==s['model_sha256'] and ls_status['validation_seen'] is False and [r['Re'] for r in ls_status['cases']]==[16.875,23.125]
 assert ls_review['job_id']==6658937 and ls_review['scientific_consistency_passed'] is True and ls_review['validation_opened'] is False
+desc=plan['inputs']['same_bank_LS_independent_result'];checked(pathlib.Path(desc['path']),desc['sha256']);independent=json.loads(pathlib.Path(desc['path']).read_text())
+assert ls_review['independent_result_sha256']==desc['sha256']=='3c9f4db61954e09de1d3357a5f146e0d9140b1356509035d7d0c65f0a1ecee19'
+assert independent['passed'] is True and independent['model_sha256']==s['model_sha256'] and independent['selected_child_theta_sha256']==child_sha and independent['parent_model_sha256']==parent_sha
+assert independent['provenance'][plan['inputs']['same_bank_LS_status']['path']]==plan['inputs']['same_bank_LS_status']['sha256']
 checked(Q/'manifest.json','7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6'); ma=json.loads((Q/'manifest.json').read_text())
 for n in ['training.npz','boundary.npz']: checked(Q/n,ma['coefficient_files'][n])
-w=np.load(Q/'training.npz')['weights_dimensionless']; bd=np.load(Q/'boundary.npz'); checked(D/'development.json','7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070'); pop=json.loads((D/'development.json').read_text()); rows=[]
+w=np.load(Q/'training.npz')['weights_dimensionless'];assert array_digest({'weights':w})==ge['weights_sha256']; bd=np.load(Q/'boundary.npz'); checked(D/'development.json','7b206ba1ed7ce10a4a76ab17a035d13fe3da2fc4f5f5334966b4faa7e7934070'); pop=json.loads((D/'development.json').read_text()); rows=[]
 assert s['physical_admission'] is False and len(s['cases'])==len(pop['cases'])==2
 assert [c['Re'] for c in s['cases']]==[16.875,23.125]
 for c,ref in zip(s['cases'],pop['cases']):
@@ -131,10 +136,10 @@ for c,ref in zip(s['cases'],pop['cases']):
  root_norm=float(np.linalg.norm(rr));root_passed=bool(root_norm<=1e-9)
  assert np.isclose(root_norm,c['root_residual_norm'],rtol=1e-12,atol=1e-14) and c['root_tolerance']==1e-9
  if v['work']['status']=='root_converged':assert root_passed
- jac=J@o['unknown_map'];sv=np.linalg.svd(jac,compute_uv=False);rank=int(np.sum(sv>1e-12*sv[0]));condition=float(sv[0]/sv[-1]);grad=float(np.linalg.norm(jac.T@rr))
+ jac=J@o['unknown_map'];sv=np.linalg.svd(jac,compute_uv=False);rank=int(np.sum(sv>1e-12*sv[0]));condition=float(sv[0]/sv[-1]) if rank==len(z) else float('inf');grad=float(np.linalg.norm(jac.T@rr))
  last=v['evidence']['history'][-1]
  assert np.isclose(.5*rr@rr,last['objective'],rtol=1e-12,atol=1e-24) and np.isclose(root_norm,last['residual_norm'],rtol=1e-12,atol=1e-14)
- assert np.isclose(grad,last['gradient_norm'],rtol=1e-5,atol=1e-14) and rank==last['rank'] and np.isclose(condition,last['condition'],rtol=1e-10)
+ assert np.isclose(grad,last['gradient_norm'],rtol=1e-5,atol=1e-14) and rank==last['rank'] and ((np.isinf(condition) and np.isposinf(last['condition'])) or (np.isfinite(condition) and np.isfinite(last['condition']) and np.isclose(condition,last['condition'],rtol=1e-10)))
  if v['work']['status']=='root_converged':assert rank==12 and condition<=1e10
  # Initial history must match zero coefficients/shared lift, never projected truth.
  initial_rr=res(np.zeros(12));assert np.isclose(.5*initial_rr@initial_rr,v['evidence']['history'][0]['objective'],rtol=1e-12,atol=1e-14)

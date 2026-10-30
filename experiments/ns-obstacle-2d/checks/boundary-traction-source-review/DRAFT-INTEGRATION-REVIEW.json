@@ -1,0 +1,28 @@
+{
+  "schema": "ns-obstacle-traction-integration-draft-review-v1",
+  "source_only": true,
+  "final_packet_review_pending": true,
+  "source_hashes": {
+    "boundary_teacher.py": "c67f06f57958df41ce1bfe83e3614c5bbf045f016ef66c125b5765ec310cc8c8",
+    "traction_refine.py": "564bbf7fb47f27a70277b8520c8655b306664dbff32cd27664614b2bfc7819b6",
+    "boundary_traction_objective.py": "4431f5f6a150f1f691bbab8aaa9b36af47d4d251c62e07af75ada89e2ca1816b"
+  },
+  "actual_prepared_metadata_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+  "metadata_schema_compatible": true,
+  "findings": [
+    "Actual retained manifest has exact training nine-Re split, gradient_axes, ds/D boundary weights, d/d(x/D) gradients, D=.1 and padded small-R singular values used by loader.",
+    "fe_adapter export stores points_physical=mapped points and points_dimensionless=mapped points/D, making exact x/.1 comparison source-consistent; no actual boundary arrays decoded by this source review.",
+    "Original increasing obstacle subset preserves ordering; normals_body=-normals_fluid; teacher POD gradients already dimensionless, while network physical derivatives acquire D=.1 exactly once.",
+    "Zero individual traction-energy mode is supported by global denominator; total denominator must be finite positive.",
+    "Trainer validates trace-objective parent, same teacher/selected theta, frozen norms/sqrt-sigma weights, no new Adam and reset curvature; initial original trace-combined replay is distinct from new combined objective.",
+    "Initial full parameter gradients retain BASE, trace and traction vectors; every completed evaluation retains parent/traction/combined norms plus signed dot for cancellation.",
+    "Prospective lambdaTrace=lambdaTraction=1 is not a demonstrated optimal or balanced weighting; actual measured initial component norms are needed."
+  ],
+  "remaining": [
+    "Frozen packet closure and exact parent/review/manifest/source bindings",
+    "Any final source deltas and synthetic chain-rule test receipt reviewed by owner/numerical reviewer",
+    "No actual fit or diagnostic acceptance implied"
+  ],
+  "native_or_neural_evaluation": false,
+  "validation_accessed": false
+}

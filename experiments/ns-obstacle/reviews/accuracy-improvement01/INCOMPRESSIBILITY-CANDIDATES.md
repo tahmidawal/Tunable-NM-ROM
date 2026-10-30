@@ -1,6 +1,6 @@
 # Possible incompressibility improvements
 
-This note distinguishes an active supervised trace-error experiment from prospective structural designs. The preceding warm refinement improved actual PDE accuracy but still failed the divergence target. Trace-error training is now running as job6651600; its actual PDE accuracy has not yet been evaluated.
+This note separates completed derivative-supervision experiments from prospective structural designs. Actual trace and energy-model PDE solves still fail divergence checks; their saved-gradient decomposition identifies the neural contribution as dominant, with signed cross terms retained. Cylinder-traction refinement is now running as job6653241; its physical accuracy remains untested. The streamfunction and additive-capacity designs below are not released for training.
 
 ## First controlled candidate: divergence regularization
 

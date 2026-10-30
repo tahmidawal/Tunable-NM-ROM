@@ -1,15 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    6653241
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor traction training6653241, audit saved model and retention, then actual PDE test before next accuracy choice",
+    "Audit and retain completed traction model6653241, then release actual PDE diagnostic05",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 9.206388888888888,
+  "completed_allocated_gpu_hours": 10.17361111111111,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -531,7 +529,7 @@
     "energy_PDE_retention_pending": false,
     "energy_PDE_retention_passed": true,
     "traction_job": 6653241,
-    "traction_state": "RUNNING",
+    "traction_state": "COMPLETED",
     "traction_release_sha256": "9e4fc288799865266b718a3521b53cd7cbd8d3e7220aa904860cb1796a80061b",
     "traction_actual_full_preflight_passed": true,
     "traction_node": "pax106",
@@ -549,6 +547,9 @@
       "traction_objective": 0.000125734324,
       "source": "owner live monitor; provisional training values, not final model or physical accuracy",
       "observed_utc": "2026-10-30T03:05:45.274882+00:00"
-    }
+    },
+    "traction_seconds": 3482,
+    "traction_new_accepted_steps": 5624,
+    "traction_audit_pending": true
   }
 }

@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "traction_refinement_submitted",
+  "status": "traction_model_audit_and_collection",
   "allocated_gpu_hour_ceiling": null,
   "allocations": [
     {
@@ -1760,7 +1760,7 @@
       "queue_after": "6653241|ctol_nsobsrom_traction|PENDING\n",
       "attempt": "neural-pod-guided-traction01",
       "budget_bucket": "ROM",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "allocation_seconds_reserved": 3600,
       "gpus": 1,
       "validation_allowed": false,
@@ -1771,16 +1771,20 @@
       "warm_restart": true,
       "node": "pax106",
       "gpu_type": "A100 80GB",
-      "gpu_f64_highest_confirmed": true
+      "gpu_f64_highest_confirmed": true,
+      "state": "COMPLETED",
+      "elapsed_seconds": 3482,
+      "allocated_gpu_hours": 0.9672222222222222,
+      "exit_code": "0:0",
+      "scientific_review_pending": true,
+      "retention_review_pending": true
     }
   ],
-  "live_job_ids": [
-    6653241
-  ],
-  "completed_gpu_hours": 9.206388888888888,
+  "live_job_ids": [],
+  "completed_gpu_hours": 10.17361111111111,
   "note": "Energy diagnostic04 audited; divergence fails both cases and lift fails second. Trace bank retains better velocity. Boundary-traction candidate in preparation; validation closed.",
-  "total_allocated_gpu_hours_completed": 9.206388888888888,
-  "last_accounting_utc": "2026-10-30T02:41:47.745613+00:00",
+  "total_allocated_gpu_hours_completed": 10.17361111111111,
+  "last_accounting_utc": "2026-10-30T03:41:47.200433+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

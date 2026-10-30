@@ -1,0 +1,34 @@
+{
+  "schema": "prospective-git-object-first-retention-v1",
+  "status": "design_only_no_git_plumbing_or_collection_authorized",
+  "preserved_contract": [
+    "Every original archive byte, member, unique ledger entry, JSONL and scientific array is verified; no filtering of the archive.",
+    "Original remote outputs remain until independently verified source plus advertised mirror recovery and separate cleanup release.",
+    "Existing2A collectors remain immutable; this is a distinct future protocol."
+  ],
+  "pipeline": [
+    "Freeze exact archive SHA/size, member ledger, metadata cap, source HEAD, current branch and advertised mirror head under an exclusive lane/Git write window.",
+    "Stream remote archive into a bounded48MiB RAM chunk buffer (below50MiB blob limit); compute per-chunk and whole SHA256, enforce total-size ceiling.",
+    "Write each chunk directly through git hash-object -w --stdin; retain returned Git object ID and verify cat-file size/content SHA. Never create a working archive/chunk file. Partial/failing objects and attempt receipt remain preserved without retry.",
+    "Read concatenated Git blobs through a bounded reader into streaming tar verification; reject symlinks/traversal/duplicates, verify exact all-original ledger and released metadata selection. Expand only bounded metadata.",
+    "Use a temporary isolated index initialized from frozen sourceHEAD; add archive blob OIDs at exact prospective artifact paths via update-index --cacheinfo plus metadata, write tree and source commit. Do not change caller index until branch CAS update succeeds; no reset or destructive overwrite.",
+    "Create and push codeonly mirror with same blob objects. Require advertised previous mirror identity matches frozen expected head; no unbounded fetch/repack/GC. Verify remote advertisement and local source/mirror trees contain exactly the same chunk blobs and metadata.",
+    "Perform independent complete recovery stream from both source and mirror histories; only then record cold descriptor and lifecycle for never-materialized working chunk paths. Integrate working index/branch in explicitly reviewed sequence so no misleading tracked deletions or skip-worktree state is hidden."
+  ],
+  "peak_disk_bound": {
+    "archive_git_objects": "For each chunk of n bytes, header plus payload N=n+len(blob-header); zlib compressBound(N)=N+(N>>12)+(N>>14)+(N>>25)+13, rounded up to filesystem block allocation. Sum across chunks. No compression credit.",
+    "temporary_objects": "Reserve one additional maximum compressed chunk for hash-object temporary destination/rename conservatively, even where rename should share an inode.",
+    "metadata": "Reserve twice declared expanded metadata cap for warm files and incompressible Git objects, plus bounded index/tree/commit and receipt allowance.",
+    "mirror": "Same source/mirror content reuses Git blob OIDs; no second archive object allocation. Push must stream pack to remote, no local packfile; prohibit GC/repack and audit helper paths. Unexpected external remote changes abort before fetch.",
+    "fixed_floor": "10GiB free plus256MiB miscellaneous unchanged. Additional64MiB index/tree/helper overhead proposed; must be justified against exact lane path count before release.",
+    "formula": "10GiB +256MiB +sum(rounded compressBound(chunk+header)) +max(rounded compressBound(chunk+header)) +2*metadata_cap +64MiB.",
+    "limits": "This is a conservative proposed bound, not yet source-verified. Disk peak witness and failure receipts required. Mirror/index helper behavior and external writers remain explicit prerequisites."
+  },
+  "unresolved_before_implementation": [
+    "Review failure recovery around commit-tree/update-ref CAS and caller-index synchronization. Prefer two explicit commits: immutable full archive tree then cold lifecycle, with both mirrored, without ever materializing chunks.",
+    "Prove no local pack files or automatic maintenance are created by exact mirror command path; otherwise include their worst-case allocation.",
+    "Choose bounded archive/member verification reader and retain full-stream proof before cold receipt.",
+    "Independent source review and exact measured release required before any Git-object writing or collection."
+  ],
+  "numerical_effect": "None; transport and retention only."
+}

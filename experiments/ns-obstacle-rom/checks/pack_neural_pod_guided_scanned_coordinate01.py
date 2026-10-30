@@ -1,5 +1,5 @@
 # Prospective template: actual terminal job must be bound and reviewed.
-EXPECTED_JOB_ID=None
+EXPECTED_JOB_ID=6660421
 assert type(EXPECTED_JOB_ID) is int and EXPECTED_JOB_ID>0
 from pathlib import Path
 import subprocess,json

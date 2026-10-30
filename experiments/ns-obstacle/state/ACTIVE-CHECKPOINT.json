@@ -3,8 +3,8 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Audit/preserve refined actual PDE6651042 and its comparisons",
-    "Implement/review training-only supervised trace-error warm refinement \u03bb=1; evaluate actual next flow results",
+    "Monitor supervised trace-error refinement6651600, audit selected model and run actual PDE comparison",
+    "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
   "completed_allocated_gpu_hours": 7.126111111111111,
@@ -491,6 +491,9 @@
       "divergence"
     ],
     "supervised_trace_weight_candidate": 1.0,
-    "supervised_trace_candidate_execution_released": false
+    "supervised_trace_candidate_execution_released": true,
+    "supervised_trace_job": 6651600,
+    "supervised_trace_state": "PENDING",
+    "refined_PDE_scientific_and_retention_passed": true
   }
 }

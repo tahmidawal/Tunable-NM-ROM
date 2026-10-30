@@ -1,0 +1,26 @@
+{
+  "schema": "ns-obstacle-bounded-saved-array-audit-execution-v1",
+  "source_sha256": "713c94831e446b8456802a30af817272c0f19289d1b2b60cf23ef71f0244661d",
+  "binding_sha256": "43e9bc73ee19187d5561a99ba4029249350ba203740420888240cd98763cbb9f",
+  "executed_input_sha256": "4faa1111fb9b5580fde0d3fed919594de2a293f9d974d729c409ea741ac067d7",
+  "command": [
+    "ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=15",
+    "-o",
+    "ServerAliveInterval=15",
+    "-o",
+    "ServerAliveCountMax=3",
+    "tufts-login",
+    "OPENBLAS_NUM_THREADS=1 /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python -B -"
+  ],
+  "timeout_seconds": 120,
+  "timed_out": false,
+  "exit_code": 0,
+  "stdout_sha256": "8de1d724bd5744efb7d8f9b0e128611d84beb96c4c3aed89e6a8dab26fe4e1c2",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "elapsed_seconds": 8.790351615753025,
+  "no_retry": true
+}

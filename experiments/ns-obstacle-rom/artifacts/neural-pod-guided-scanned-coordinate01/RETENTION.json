@@ -1,0 +1,41 @@
+{
+  "schema": "ns-obstacle-supervised-neural-retention-v2",
+  "status": "checksum_verified_pending_independent_review_and_mirror",
+  "job_id": 6660421,
+  "state": "COMPLETED",
+  "allocated_seconds": 2470,
+  "archive_sha256": "ee9c70e8922755b5d55836e70c9a0a87368690b5d1cd073c0f65a658f2c1c8aa",
+  "archive_bytes": 60351616,
+  "chunks": [
+    {
+      "path": "archive-chunks/collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "d1124eaf32d8d12141fd8085863b33b5ef20fa75099eb90b7a509da954b54e9f"
+    },
+    {
+      "path": "archive-chunks/collection.tar.gz.part-001",
+      "bytes": 10019968,
+      "sha256": "b590ad82f6cfcd6b2189cca085f28037dac306872c1aa1b3699fd23edc5851c8"
+    }
+  ],
+  "verified_original_files": 217,
+  "original_file_inventory_sha256": "42aa356284984879a8550f1b2f177033f1eb09c4942f7ea01e7a559c29788f85",
+  "collection_ledger_sha256": "238eb0709515e33bd5e52164070af6b42819e08966f0a81e02044904fc4bb3eb",
+  "collection_release_sha256": "569b24c41d418b93f7c817226e6f8dd596eb46ee679ea152e710360d2a8ea23a",
+  "local_free_before_bytes": 11220652032,
+  "required_local_free_before_bytes": 11130751232,
+  "metadata_extracted_bytes": 1535401,
+  "metadata_policy": "JSONL retained only in complete archive; JSON/source/log metadata expanded",
+  "archive_only_jsonl_files": 3,
+  "archive_only_jsonl_bytes": 82175282,
+  "all_jsonl_original_bytes_verified_in_archive": true,
+  "bulk_scientific_extraction": false,
+  "remote_originals_preserved": true,
+  "transport_retired_after_exact_chunk_verification": true,
+  "optimizer_status": "iteration_limit",
+  "warm_restart": true,
+  "selected_theta_scope": "child parameters only; frozen parent separately embedded",
+  "optimizer_converged": false,
+  "production_eligible": false,
+  "automatic_retry": false
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "ns-obstacle-scanned-coordinate-collection-release-v1",
+  "authorized": true,
+  "job_id": 6660421,
+  "archive_sha256": "ee9c70e8922755b5d55836e70c9a0a87368690b5d1cd073c0f65a658f2c1c8aa",
+  "archive_bytes": 60351616,
+  "logical_files": 217,
+  "logical_expansion_bytes": 126456401,
+  "measurement_sha256": "03d733a79f1f713cdf25dcc006f016195ab1eb9308090996563d81528d9ddaf8",
+  "collector_sha256": "d6cc81dc37a040b08a302bce70d6f02dad5d03d8edeaadc7a3905d333e63e61a",
+  "collector_source_commit": "049da69c8",
+  "collector_source_mirror": "9617f13a8",
+  "measurement_source_commit": "088e24f7d",
+  "measurement_source_mirror": "61785aa9c",
+  "mode": "Archive-only every original member and unique ledger; bounded metadata; no scientific array expansion",
+  "metadata_limit_bytes": 2097152,
+  "required_local_free_bytes": 11130751232,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Fresh exact terminal/job/measurement/source/release and unchanged local resource guard; serialize bulk collection/Git.",
+    "Verify all217 originals and unique ledger;2MiB expandedmetadata cap; all3 completeJSONL files remain inside lossless archive and their counts/bytes are verified.",
+    "Verify every chunk before retiring transport; preserve remote outputs until independent raw retention and reader closure.",
+    "TRAIN-only; iteration_limit not convergence; warm_restart True and original lineage preserved; no physical accuracy or final validation claim."
+  ],
+  "metadata_policy": "JSONL retained only in complete archive; JSON/source/log metadata expanded",
+  "archive_only_jsonl_files": 3,
+  "archive_only_jsonl_bytes": 82175282
+}

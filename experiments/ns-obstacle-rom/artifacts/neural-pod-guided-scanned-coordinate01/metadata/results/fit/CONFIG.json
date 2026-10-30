@@ -1,0 +1,328 @@
+{
+  "schema": "ns-obstacle-fixed-coordinate-residual-head-training-v1",
+  "parent_bank_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "parent_receipt_sha256": "856d2ab6d1075d97acda768a10b30ef718daded1a7cedb9f8a5f21cfc71a49ee",
+  "parent_review_sha256": "3287f25bc64d3bd3c918c39850c91629d75ed4fda91cc33dee3d9c2deb82f260",
+  "parent_selected_theta_sha256": "9996ba76504cb66e8f7fcce4f9fea91067da930225db14ba57ed60e544f06956",
+  "teacher_identity": {
+    "split": "training",
+    "Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "reference_qualification": {
+      "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+      "passed": true,
+      "qualification_scope": {
+        "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+        "amendment_id": "FD1-2026-10-28",
+        "original_G2_status": "not_admitted_domain_sensitivity_failed",
+        "domain_sensitivity_status": "failed",
+        "domain_independence_admitted": false,
+        "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+        "geometry_population_and_numerical_thresholds_unchanged": true
+      }
+    },
+    "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+    "volume_manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+    "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+    "singular_values": [
+      6.262405845690011,
+      0.35081375209372717,
+      0.02469633315548602,
+      0.0018166794857509315
+    ],
+    "arrays": {
+      "points": "2173f1395f76b26604163c4192f0098c1566a0eff30dce25f45c3cbe87a66aa9",
+      "weights": "f23fbca65af3cb31ecb9f1987c42a1b608111ffe0aad5f55034eecad0c4c3fb0",
+      "values": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+      "gradients": "88350f192dccb0c12203967816042f1a16e0234ad3520c9e853ca7f2c33e4b33"
+    }
+  },
+  "config": {
+    "adam_learning_rate": 0.001,
+    "adam_steps": 4000,
+    "batch_points": 4096,
+    "block_points": 4096,
+    "depth": 3,
+    "full_check_every": 200,
+    "gradient_tolerance": 1e-10,
+    "history_size": 10,
+    "lbfgs_steps": 300,
+    "line_search_steps": 20,
+    "rank": 4,
+    "seed": 29102026,
+    "split": "training",
+    "teacher_definition": "prepared_training_POD",
+    "width": 128
+  },
+  "protocol": {
+    "max_iterations": 10000,
+    "checkpoint_every": 1000,
+    "history_size": 10,
+    "line_search_steps": 20,
+    "gradient_tolerance": 1e-10,
+    "warm_restart": true,
+    "new_adam_steps": 0,
+    "supervised_divergence_weight": 1.0,
+    "traction_weight": 1.0,
+    "head_seed": 30102026,
+    "hidden_coordinate_scale": 100.0,
+    "output_coordinate_scale": 1.0
+  },
+  "prior_adam_steps": 4000,
+  "prior_lbfgs_steps": 23160,
+  "prior_allocation_seconds": 197,
+  "warm_restart": true,
+  "curvature_reset": true,
+  "exact_optimizer_continuation_claim": false,
+  "all_intermediate_vectors_retained": false,
+  "retained_vector_audit_scope": "periodic and final checkpoints only; all accepted/trial scalar records and hashes retained",
+  "selection": "minimum accepted/initial combined full-training objective; no development/validation selection",
+  "objective_changed_from_parent": false,
+  "base_definition": "unchanged mode-weighted normalized value plus gradient error",
+  "added_term_definition": "none; same composite family and unchanged objective; fixed-coordinate L-BFGS warm child restart",
+  "absolute_incompressibility_enforced": false,
+  "causal_comparison_to_equal_additional_base_training": false,
+  "source_sha256": "d2301e7272476db1032dc8dc8b7878bcb8d37cb38643a3b71253415453c3a563",
+  "parent_full_training_objective": 0.0004806629769315888,
+  "boundary_teacher": {
+    "schema": "ns-obstacle-training-cylinder-traction-teacher-v1",
+    "split": "training",
+    "Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "boundary_file_sha256": "7965a23c84dcd515322efb779aec7c4da3462206a211781a3d1f7d9ae51e619f",
+    "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "volume_teacher_identity": {
+      "split": "training",
+      "Re": [
+        15.0,
+        16.25,
+        17.5,
+        18.75,
+        20.0,
+        21.25,
+        22.5,
+        23.75,
+        25.0
+      ],
+      "reference_qualification": {
+        "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+        "passed": true,
+        "qualification_scope": {
+          "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+          "amendment_id": "FD1-2026-10-28",
+          "original_G2_status": "not_admitted_domain_sensitivity_failed",
+          "domain_sensitivity_status": "failed",
+          "domain_independence_admitted": false,
+          "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+          "geometry_population_and_numerical_thresholds_unchanged": true
+        }
+      },
+      "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+      "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+      "volume_manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+      "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+      "singular_values": [
+        6.262405845690011,
+        0.35081375209372717,
+        0.02469633315548602,
+        0.0018166794857509315
+      ],
+      "arrays": {
+        "points": "2173f1395f76b26604163c4192f0098c1566a0eff30dce25f45c3cbe87a66aa9",
+        "weights": "f23fbca65af3cb31ecb9f1987c42a1b608111ffe0aad5f55034eecad0c4c3fb0",
+        "values": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+        "gradients": "88350f192dccb0c12203967816042f1a16e0234ad3520c9e853ca7f2c33e4b33"
+      }
+    },
+    "mask_definition": "labels == 'obstacle'; original increasing indices",
+    "normal_definition": "negative accepted outward-fluid normal",
+    "gradient_units": "d(u/U)/d(x/D)",
+    "weight_units": "ds/D",
+    "Re_in_target": false,
+    "pressure_in_target": false,
+    "source_sha256": "c67f06f57958df41ce1bfe83e3614c5bbf045f016ef66c125b5765ec310cc8c8",
+    "selected_arrays_sha256": "d3f81dc99b1ad07800a829cb737a608ab30733cc30a75a6ef8c7239d2ac23556",
+    "arrays": {
+      "indices": "813773c3ddcefbe44cb5125d90c31432de5d316cb2c74e457d8917fad9cef1bd",
+      "points_physical": "e1748e3e1753dd3b30b854d47a403b8a8540a73d5942f573c79438e8dc0c8ce5",
+      "points_dimensionless": "6645d6ad99b3684db4eb9924926a7611d95a473f58c82fa34283f2bf66f51cc6",
+      "weights_dimensionless": "0673b803719025a13e9f333de75133703234557ff237900188f98dc6b3b0396b",
+      "normals_body": "7edbe43bd0ed65045c4913b5257df763efc92aca3dfc81fff00a789bc84159b7",
+      "teacher_gradient_dimensionless": "11653bcf41447b8a8d71867df983ae987b6ab475ecbc98e02fe15cbbcbbf4f35",
+      "singular_values": "17078fa89fd4698bc80e62244c9464eb66be0c24e492181274500fddba100faf"
+    },
+    "normalization": {
+      "mode_traction_norms_squared": [
+        41.35019831057955,
+        12.068817166575096,
+        22.368825446190275,
+        8.369209556417308
+      ],
+      "global_training_traction_energy": 1623.1597711318796,
+      "normalized_mode_energy_weights": [
+        0.9990765028771053,
+        0.0009150749290787452,
+        8.405176941563508e-06,
+        1.7016874502181372e-08
+      ]
+    }
+  },
+  "coefficient_covariance": {
+    "schema": "ns-obstacle-original-training-coefficient-energy-binding-v1",
+    "passed": true,
+    "split": "training",
+    "Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "mode_order": "first four accepted prepared velocity POD columns, unchanged orientations",
+    "training_file_sha256": "222acff57eb387c949a960b43f58b472bbd1d047fa7c7efd4d6ed367dbf2bc0d",
+    "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+    "teacher_identity": {
+      "split": "training",
+      "Re": [
+        15.0,
+        16.25,
+        17.5,
+        18.75,
+        20.0,
+        21.25,
+        22.5,
+        23.75,
+        25.0
+      ],
+      "reference_qualification": {
+        "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+        "passed": true,
+        "qualification_scope": {
+          "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+          "amendment_id": "FD1-2026-10-28",
+          "original_G2_status": "not_admitted_domain_sensitivity_failed",
+          "domain_sensitivity_status": "failed",
+          "domain_independence_admitted": false,
+          "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+          "geometry_population_and_numerical_thresholds_unchanged": true
+        }
+      },
+      "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+      "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+      "volume_manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+      "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+      "singular_values": [
+        6.262405845690011,
+        0.35081375209372717,
+        0.02469633315548602,
+        0.0018166794857509315
+      ],
+      "arrays": {
+        "points": "2173f1395f76b26604163c4192f0098c1566a0eff30dce25f45c3cbe87a66aa9",
+        "weights": "f23fbca65af3cb31ecb9f1987c42a1b608111ffe0aad5f55034eecad0c4c3fb0",
+        "values": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+        "gradients": "88350f192dccb0c12203967816042f1a16e0234ad3520c9e853ca7f2c33e4b33"
+      }
+    },
+    "arrays_file": "coefficients-and-covariance.npz",
+    "arrays_sha256": "9f2bd1e03ed89886de52dd9277bf9bb96ea45758472f28f5b41f1ba8814f8e39",
+    "coefficients_sha256": "8e39d5fd77793f303d118c3ef1a4af05a74e6e025f5cac61bde709dc42aa8976",
+    "gram_spectral_error": 2.3775523834289205e-15,
+    "covariance_max_error_over_sigma0_squared": 3.3880260999458173e-16,
+    "whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "whitened_covariance_file": "whitened-covariance-error.npz",
+    "whitened_covariance_sha256": "6ee8dd22cfb120be904468d49cb47fe2ee6f400c61d9279e9f6becd86b8410d3",
+    "diagonal_relative_errors": [
+      1.811789694472937e-16,
+      2.1424989834958456e-15,
+      1.7598697136930113e-14,
+      2.7205051013105114e-13
+    ],
+    "covariance_errors_over_sigma_products": [
+      [
+        1.811789694472937e-16,
+        -3.9126030818945204e-15,
+        -4.227259973936809e-15,
+        -1.1679107195334903e-12
+      ],
+      [
+        -3.9126030818945204e-15,
+        2.1424989834958456e-15,
+        1.6964472630756548e-14,
+        -4.965307431996978e-13
+      ],
+      [
+        -4.227259973936809e-15,
+        1.6964472630756548e-14,
+        1.7598697136930113e-14,
+        -2.5334463275253724e-13
+      ],
+      [
+        -1.1679107195334903e-12,
+        -4.965307431996978e-13,
+        -2.5334463275253724e-13,
+        -2.7205051013105114e-13
+      ]
+    ],
+    "tolerances": {
+      "gram": 1e-10,
+      "whitened_covariance_spectral": 1e-10
+    },
+    "source_sha256": "d24867953faed6064caa6ac232a5b7e8697147efa33603499d209e9daf5fb806",
+    "coefficient_semantics": "full-rule L2 projection of actual nine TRAIN homogeneous corrections onto original retained FE POD columns; not online solved coefficients",
+    "equivalence_scope": "retained-four-mode training reconstruction with measured covariance approximation; excludes omitted modes and online solve errors",
+    "certificate_interpretation": "coefficient-covariance algebra compatibility: relative quadratic-form discrepancy bounded by recorded whitened spectral error; not a physics gate",
+    "development_or_validation_read": false
+  },
+  "traction_definition": "sigma squared weighted local symmetric dimensionless gradient traction error / fixed global TRAIN teacher traction energy",
+  "traction_weight": 1.0,
+  "selected_theta_scope": "child parameters only; embedded parent hash is separate",
+  "optimizer_counts_scope": "child warm restart plus historical lineage; curvature reset, no exact optimizer continuation",
+  "serialized_replay_scope": "uncached JAX objective and child gradient from reloaded arrays; independent NumPy live evaluator fixture required before PDE deployment",
+  "architecture": {
+    "head_count": 4,
+    "layer_widths": [
+      21,
+      64,
+      64,
+      2
+    ],
+    "trainable_parameters": 22792,
+    "parent_frozen": true
+  },
+  "scan_source_sha256": "c8ea231421fde3706f60b1df6bc2508cf3407b6d6ae0078c2414c362a2d33e0a",
+  "scan_progress_contract": "unknown block progress while device scan is outstanding; no partial sum admitted",
+  "cache_contract": "explicit dynamic teacher/parent arguments; initial full streamed/cached child-gradient equivalence and final uncached serialized replay; no arbitrary-query cache",
+  "warm_child_model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+  "warm_child_receipt_sha256": "543e65a270228b224c4cb26772fd9acb7d951fdade5199a9e76cf38c93411697",
+  "warm_child_review_sha256": "ff36ae5aca38dd24c8a52ebf9b9070ba0f644e1c18e784b321bfcf669f885b35",
+  "warm_child_selected_theta_sha256": "a28248ec3233fb7bf9290293adac3701cc63c00ba63a136bbed398716c1d65ed",
+  "coordinate_diagonal_sha256": "a67a2aa07d8d7fa75767303e71c947a96564eb7f3215aa0a4d8c39d241991d7b",
+  "coordinate_anchor_sha256": "a28248ec3233fb7bf9290293adac3701cc63c00ba63a136bbed398716c1d65ed",
+  "coordinate_definition": "theta=initial_child_theta+D*z; fixed positive diagonal; physical gradient stopping; same physical history safeguards",
+  "coordinate_helper_sha256": "bd5942f023282e4dee03dcf96d5e02cb97f700cf21131b0a3c0aa3f3a0787c89",
+  "coordinate_map_arrays_sha256": "4515fd7eb2a50006b56420fcc992c784838a32c1aedb8ecd08e5712f6c54cb1e"
+}

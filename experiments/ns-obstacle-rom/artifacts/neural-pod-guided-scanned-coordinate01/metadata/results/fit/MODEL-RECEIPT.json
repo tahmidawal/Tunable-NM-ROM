@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-supervised-neural-model-v2",
+  "bank_file": "spatial-bank-raw.npz",
+  "bank_sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60",
+  "selected_checkpoint": {
+    "objective": 0.0003101860008152071,
+    "checkpoint": "state-10000-final.npz"
+  },
+  "selected_theta_sha256": "1065ea01f1d4a77174c6638043cbab4602f1f703057e0282de9da6f100a9e352",
+  "config_sha256": "9ff47ecbfe40008bd0523163adf21ff82ff8ad2e8fe23eec52e45c9a84f6d767",
+  "runtime_sha256": "697561797aad062e220ba248331db1e3158a4e5574c017663b1221e19953f2e4",
+  "optimizer_status": "iteration_limit",
+  "warm_restart": true,
+  "objective_variant": "scanned_fixed_coordinate_residual_heads_same_trace_and_traction",
+  "selection": "minimum accepted combined objective",
+  "selected_theta_scope": "child parameters only",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "warm_child_model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+  "optimizer_counts_scope": "warm child restart with reset curvature; historical lineage retained",
+  "selected_base_objective": 0.00023687081288538395,
+  "cumulative_adam_steps": 4000,
+  "cumulative_lbfgs_steps": 33160,
+  "selected_full_replay_sha256": "63dac2aec8b3abf002b9c9d055a6d27a59742f92b7e6aed98d18f9244234b813",
+  "total_full_evaluations_including_serialized_replay": 10440,
+  "total_training_replay_retention_seconds": 2368.369311887771,
+  "physical_admission": false
+}

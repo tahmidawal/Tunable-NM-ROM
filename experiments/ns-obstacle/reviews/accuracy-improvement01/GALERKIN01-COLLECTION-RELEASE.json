@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-actual-neural-diagnostic-collection-release-v1",
+  "authorized": true,
+  "job_id": 6659611,
+  "archive_sha256": "6611727a85fe0340dc6f836e86baf5f4686d6e19a0430efbd0b8c888deb36fd0",
+  "archive_bytes": 156698732,
+  "logical_files": 119,
+  "logical_expansion_bytes": 157536915,
+  "measurement_sha256": "93855b95894719dbfcf1afb69a8706d50c2245c7b69d0e6062839d61d4d4548a",
+  "collector_sha256": "4a1a2751d7b2ab87cbe2b87619dd6c16f610c3eb50bfd09bcdc4dabe971a8b02",
+  "collector_source_commit": "5edc609dd",
+  "collector_source_mirror": "b3d667a15",
+  "measurement_source_commit": "a620568a6",
+  "measurement_source_mirror": "e74c30a7b",
+  "mode": "Archive-only every original member and unique ledger; bounded metadata; no scientific array expansion",
+  "metadata_limit_bytes": 16777216,
+  "required_local_free_bytes": 11352805592,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Fresh exact terminal/job/measurement/source/release and local resource guard checks; serialize bulk collection/Git.",
+    "Verify all119 originals and unique ledger;16MiB metadata limit; verify chunks before retiring transport.",
+    "Retain remote outputs until complete independent raw retention and reader closure.",
+    "Both cases pass frozen targets, mixed accuracy against same-bank LS; no final validation or automatic admission."
+  ]
+}

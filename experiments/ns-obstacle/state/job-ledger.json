@@ -1983,22 +1983,27 @@
       "queue_after": "6659611|ctol_nsobsrom_galerkin|PENDING\n",
       "attempt": "neural-pod-guided-galerkin01",
       "budget_bucket": "ROM",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "COMPLETED",
       "allocation_seconds_reserved": 900,
       "gpus": 1,
       "validation_allowed": false,
       "physical_admission": false,
       "scientific_review_pending": true,
-      "retention_review_pending": true
+      "retention_review_pending": true,
+      "state": "COMPLETED",
+      "elapsed_seconds": 219,
+      "allocated_gpu_hours": 0.060833333333333336,
+      "exit_code": "0:0",
+      "node": "pax009",
+      "gpu_type": "H200",
+      "gpu_f64_highest_confirmed": true
     }
   ],
-  "live_job_ids": [
-    6659611
-  ],
-  "completed_gpu_hours": 12.327222222222222,
-  "note": "Same26e99-bank Galerkin6659611 submitted once; coordinate07 remains accepted target-passing baseline; final validation closed.",
-  "total_allocated_gpu_hours_completed": 12.327222222222222,
-  "last_accounting_utc": "2026-10-30T08:18:39.819544+00:00",
+  "live_job_ids": [],
+  "completed_gpu_hours": 12.388055555555555,
+  "note": "Same-bank Galerkin6659611 completed219s; independent scientific/fullretention review pending. Outputpolish next after review; validation closed.",
+  "total_allocated_gpu_hours_completed": 12.388055555555555,
+  "last_accounting_utc": "2026-10-30T08:23:43.191467+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

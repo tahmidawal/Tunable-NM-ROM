@@ -1,0 +1,132 @@
+{
+  "schema": "ns-obstacle-same-bank-Galerkin-coordinator-review-v1",
+  "job_id": 6659611,
+  "elapsed_seconds": 219,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": true,
+  "validation_opened": false,
+  "independent_result_sha256": "78d86a74434132ed55d595cd6e6e2de4c3ebf4cf88383d39da75445cb97d0bf4",
+  "model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.00035420727994723834,
+        "pressure_scaled": 0.0002304410258848874,
+        "divergence": 0.003996778738634062,
+        "velocity_gradient_scaled": 0.006154571414898006,
+        "mass": 3.7823402946254363e-13,
+        "boundary_trace": 3.09178123346382e-10,
+        "drag_relative": 0.00020828754409111025,
+        "transverse_absolute": 0.0013384018808541773
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": true,
+      "force": [
+        6.117026617797183,
+        0.021521942856879025
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 5.303806646874664e-16,
+      "finite_difference_errors": [
+        4.130877264804013e-12,
+        7.098010513853395e-11,
+        3.184635090368949e-10
+      ],
+      "auxiliary_objective_gradient": 9.643371027942608e-16,
+      "root_passed": true,
+      "query_jacobian_rank": 12,
+      "query_jacobian_condition": 35.63307196114018,
+      "original_LS_auxiliary_residual_norm": 0.0012612768333244155,
+      "solver_status": "root_converged",
+      "residual_norm": 1.7599104637532161e-15,
+      "projection_floor": 0.00025444039523489563,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.00041171413313026775,
+        "pressure_scaled": 0.00021472936260903442,
+        "divergence": 0.004717251854104544,
+        "velocity_gradient_scaled": 0.007237434594395629,
+        "mass": 6.11759965178822e-13,
+        "boundary_trace": 3.861720041142405e-10,
+        "drag_relative": 0.0002134367587910662,
+        "transverse_absolute": 0.00021863296517006785
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": true,
+      "force": [
+        5.1775387395034915,
+        0.004211554948378283
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.0474915262975404e-15,
+      "finite_difference_errors": [
+        2.7460999892168523e-12,
+        1.6707038882810647e-11,
+        3.284258633727143e-10
+      ],
+      "auxiliary_objective_gradient": 1.205261035667414e-15,
+      "root_passed": true,
+      "query_jacobian_rank": 12,
+      "query_jacobian_condition": 34.602938078403085,
+      "original_LS_auxiliary_residual_norm": 0.0014286857617903529,
+      "solver_status": "root_converged",
+      "residual_norm": 1.0363184679446373e-14,
+      "projection_floor": 0.0003024111024110141,
+      "floor_consistent": true
+    }
+  ],
+  "retention_review_pending": true,
+  "interpretation": "Same-bank mixed Galerkin converges and all development targets pass, but velocity/pressure/force accuracy changes are mixed versus original weak LS. Preserve both; no uniform superiority, continuum precision or speedup claim. Continue fixed-hidden output training test.",
+  "vs_same_bank_LS_metric_percent_change": [
+    {
+      "Re": 16.875,
+      "percent_change": {
+        "velocity_relative": -5.503439451469239,
+        "pressure_scaled": -13.599595579129996,
+        "divergence": -0.17425245083516616,
+        "velocity_gradient_scaled": -2.047723920767963,
+        "mass": -99.99999940475857,
+        "boundary_trace": -0.15347610942665346,
+        "drag_relative": 134.80950783263452,
+        "transverse_absolute": 3.5412307355416006
+      }
+    },
+    {
+      "Re": 23.125,
+      "percent_change": {
+        "velocity_relative": 12.597724580682979,
+        "pressure_scaled": 28.9147127006077,
+        "divergence": -0.13304317559096335,
+        "velocity_gradient_scaled": -1.1044235202346764,
+        "mass": -99.99999919312992,
+        "boundary_trace": -0.14017189952553188,
+        "drag_relative": 54.8202305055665,
+        "transverse_absolute": -21.76254160322275
+      }
+    }
+  ],
+  "reference_source_commit": "ee9d94a74",
+  "reference_mirror_commit": "16a90fb9c",
+  "plot_dataset_sha256": "1b938ca027cb8cc20952278820517048ce45205c58284f8f7ff08a9eddba4951"
+}

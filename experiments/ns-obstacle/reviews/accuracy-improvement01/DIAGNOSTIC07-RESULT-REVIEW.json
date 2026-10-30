@@ -1,0 +1,128 @@
+{
+  "schema": "ns-obstacle-coordinate-neural-diagnostic-coordinator-review-v1",
+  "job_id": 6658937,
+  "elapsed_seconds": 267,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": true,
+  "failed_targets": [],
+  "validation_opened": false,
+  "independent_result_sha256": "3c9f4db61954e09de1d3357a5f146e0d9140b1356509035d7d0c65f0a1ecee19",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0003748361611164964,
+        "pressure_scaled": 0.0002667129019007513,
+        "divergence": 0.004003755380510046,
+        "velocity_gradient_scaled": 0.006283234715158299,
+        "mass": 6.354296049641226e-05,
+        "boundary_trace": 3.09653367287203e-10,
+        "drag_relative": 8.870490211987993e-05,
+        "transverse_absolute": 0.0012926269770470837
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": true,
+      "force": [
+        6.118843706972982,
+        0.02147616795307193
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.4301618277440594e-15,
+      "finite_difference_errors": [
+        3.153939980235417e-12,
+        5.059654717639309e-11,
+        1.2640608766403958e-10
+      ],
+      "stationarity_gradient": 8.976208630808799e-12,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0011027324625568298,
+      "projection_floor": 0.00025444039523489563,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.000365650491307442,
+        "pressure_scaled": 0.00016656699465151286,
+        "divergence": 0.00472353619666077,
+        "velocity_gradient_scaled": 0.00731825916994018,
+        "mass": 7.581889379762705e-05,
+        "boundary_trace": 3.8671406856988737e-10,
+        "drag_relative": 0.00013786102636205037,
+        "transverse_absolute": 0.0002794479391972091
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": true,
+      "force": [
+        5.179357985689233,
+        0.004150739974351142
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.4628851276520114e-15,
+      "finite_difference_errors": [
+        1.9255152401583248e-12,
+        2.6896551048762186e-11,
+        1.2279509105663822e-10
+      ],
+      "stationarity_gradient": 8.842626651859697e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0013096880645792743,
+      "projection_floor": 0.0003024111024110141,
+      "floor_consistent": true
+    }
+  ],
+  "retention_review_pending": true,
+  "interpretation": "First neural-bank development solve passing all frozen targets on both cases. Velocity/divergence improve, some pressure/force/mass metrics worsen; no uniform dominance, optimality, continuum precision, validation or speedup claim. User accuracy goal continues.",
+  "vs_residual_metric_percent_change": [
+    {
+      "Re": 16.875,
+      "percent_change": {
+        "velocity_relative": -26.364101867805477,
+        "pressure_scaled": 19.057573265821226,
+        "divergence": -20.88270163047673,
+        "velocity_gradient_scaled": -22.18333388182858,
+        "mass": 92.88966718732652,
+        "boundary_trace": 0.13505863629779125,
+        "drag_relative": 88.62372340209852,
+        "transverse_absolute": 6.023392492798907
+      }
+    },
+    {
+      "Re": 23.125,
+      "percent_change": {
+        "velocity_relative": -32.494851943557,
+        "pressure_scaled": -10.298358720616896,
+        "divergence": -21.238373312970936,
+        "velocity_gradient_scaled": -23.36283188679017,
+        "mass": 535.6087200455986,
+        "boundary_trace": -0.0808819663353777,
+        "drag_relative": 5.977322761822501,
+        "transverse_absolute": -44.36390646788085
+      }
+    }
+  ],
+  "reference_source_commit": "6db1d3255",
+  "reference_mirror_commit": "e30287954",
+  "plot_dataset_sha256": "312fd3da9c9cf4c91756319bc1f3253fa463db6d71239c580c331e576b3fee5a"
+}

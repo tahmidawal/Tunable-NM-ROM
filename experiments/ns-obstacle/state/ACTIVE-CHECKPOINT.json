@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Audit completed coordinate6657815 and retain full raw outputs, then run actual PDE07",
+    "Complete actual coordinate PDE07 scientific/raw audits and plot comparisons, then controlled output-weight refinement",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 12.253055555555555,
+  "completed_allocated_gpu_hours": 12.327222222222222,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -611,6 +611,13 @@
     "coordinate_scientific_review_pending": false,
     "coordinate_retention_pending": false,
     "coordinate_scientific_and_retention_passed": true,
-    "coordinate_model_review_sha256": "4bf8a81a8407592a6db7465a030a4a8d43ea938f89696174660ddeb541a76e56"
+    "coordinate_model_review_sha256": "4bf8a81a8407592a6db7465a030a4a8d43ea938f89696174660ddeb541a76e56",
+    "coordinate_PDE_diagnostic_job": 6658937,
+    "coordinate_PDE_diagnostic_state": "COMPLETED",
+    "coordinate_PDE_diagnostic_seconds": 267,
+    "coordinate_PDE_scientific_review_pending": false,
+    "coordinate_PDE_retention_pending": true,
+    "coordinate_PDE_scientific_review_passed": true,
+    "coordinate_PDE_failed_targets": []
   }
 }

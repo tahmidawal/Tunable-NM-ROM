@@ -1,5 +1,5 @@
 # Prospective namespace template; bind/review actual terminal job before use.
-EXPECTED_JOB_ID=None
+EXPECTED_JOB_ID=6660183
 assert type(EXPECTED_JOB_ID) is int and EXPECTED_JOB_ID>0, 'actual reviewed diagnostic08 job is not bound'
 from pathlib import Path
 import subprocess,json

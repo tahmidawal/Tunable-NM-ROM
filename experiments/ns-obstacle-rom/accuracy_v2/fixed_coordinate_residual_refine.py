@@ -46,6 +46,7 @@ def _refine(x,w,target,gradient,teacher_identity,boundary,boundary_record,coeffi
     warm_receipt=json.loads(Path(warm_receipt_path).read_text());warm_review=json.loads(Path(warm_review_path).read_text())
     if warm.parent_sha256!=sha(parent_bank_path) or warm.parent_bytes!=Path(parent_bank_path).read_bytes():raise ValueError('warm child must embed the exact immutable traction parent')
     if warm_receipt['bank_sha256']!=sha(warm_model_path) or warm_review.get('passed') is not True or warm_review.get('model_sha256')!=sha(warm_model_path) or warm_review.get('model_receipt_sha256')!=sha(warm_receipt_path):raise ValueError('genuine reviewed warm child required')
+    if warm_receipt.get('selected_theta_scope')!='child parameters only' or warm_receipt.get('parent_model_sha256')!=sha(parent_bank_path) or warm_review.get('parent_model_sha256')!=sha(parent_bank_path):raise ValueError('explicit reviewed composite child/embedded-parent scope required')
     if warm.metadata['objective_variant'] not in {'independent_residual_heads_same_trace_and_traction','fixed_coordinate_residual_heads_same_trace_and_traction'}:raise ValueError('same child family and objective required')
     if warm.metadata['teacher_identity']!=teacher_identity:raise ValueError('warm teacher identity differs')
     for key in ('value_norms_squared','gradient_norms_squared','mode_weights'):
@@ -192,7 +193,7 @@ def _refine(x,w,target,gradient,teacher_identity,boundary,boundary_record,coeffi
             found=False;old_f=f;old_theta=digest(theta);old_gradient=digest(g)
             for attempt in range(protocol['line_search_steps']):
                 step=2.**(-attempt);trial=theta+step*direction;nf,dg,nd=full(trial);found=bool(nf<=f+1e-4*step*slope)
-                append('LINE-SEARCH.jsonl',{'iteration':iteration,'attempt':attempt,'step':step,'objective':nf,'prior_objective':f,'slope':slope,'accepted':found,'theta_sha256':digest(trial),'gradient_sha256':digest(dg),'direction_sha256':digest(direction),'direction_norm':float(np.linalg.norm(direction)),'gradient_inf':float(np.max(np.abs(dg))),'full_evaluations':evaluations,'cumulative_accepted_lbfgs_steps':prior_lb+accepted,'elapsed_seconds':time.monotonic()-started,'metrics':nd})
+                append('LINE-SEARCH.jsonl',{'iteration':iteration,'attempt':attempt,'step':step,'objective':nf,'prior_objective':f,'slope':slope,'coordinate_metrics':coordinate_metrics,'accepted':found,'theta_sha256':digest(trial),'gradient_sha256':digest(dg),'direction_sha256':digest(direction),'direction_norm':float(np.linalg.norm(direction)),'gradient_inf':float(np.max(np.abs(dg))),'full_evaluations':evaluations,'cumulative_accepted_lbfgs_steps':prior_lb+accepted,'elapsed_seconds':time.monotonic()-started,'metrics':nd})
                 if found:break
             if not found:status='line_search_stopped';break
             s=trial-theta;y=dg-g;sy=float(np.dot(s,y));ss=float(np.dot(s,s));yy=float(np.dot(y,y));keep=bool(sy>1e-12*np.linalg.norm(s)*np.linalg.norm(y))

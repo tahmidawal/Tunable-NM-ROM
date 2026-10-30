@@ -1,0 +1,220 @@
+{
+  "schema": "ns-obstacle-saved-velocity-decomposition-coordinator-review-v1",
+  "passed": true,
+  "physical_admission": false,
+  "independent_result_sha256": "ee69d5a26987e402f765f4c15b5cda95cfbb0618eb6fd8f955de659b16e8f398",
+  "source_commit": "a165534b7",
+  "source_mirror_commit": "e119ab0c7",
+  "convention": "h=truth-lift; c solves T-only weighted L2 projection using first four retained prepared POD velocity modes. eA=u-lift-Sb-Ta; eC=T(a-c); eS=Sb; eT=Tc-h.",
+  "limitations": [
+    "Convention-dependent aggregate identity, not causal attribution or per-mode error allocation.",
+    "No enriched projection coefficients used; c is a new small saved-array T-only projection diagnostic, not a PDE solve or model fit.",
+    "Actual neural contribution inferred from saved solved velocity minus retained FE lift and supremizers; no network evaluation.",
+    "Component norms are not additive; all signed cross terms retained.",
+    "Existing TRAIN-derived teacher/lift/sup arrays only; no new TRAIN population/evaluation or final validation access.",
+    "No native assembly, neural differentiation, running fit reads, or parameter changes."
+  ],
+  "interpretation": "Teacher-only four-mode truncation is small on these two DEV cases relative to aggregate neural-vs-teacher, coefficient and supremizer terms. Signed cross terms are material. This supports retaining rank4 while testing approximation/optimization, but is not causal attribution, a guaranteed achievable ROM error or per-mode effort allocation.",
+  "cases": [
+    {
+      "variant": "coordinate",
+      "Re": 16.875,
+      "model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+      "recorded_velocity_relative": 0.00037483616111649664,
+      "pointwise_closure_maxgap": 1.3877787807814457e-16,
+      "teacher_rank": 4,
+      "teacher_gram_condition": 1.0000000000000033,
+      "component_order": [
+        "eA_actual_neural_minus_teacher_same_coefficients",
+        "eC_teacher_coefficient_difference",
+        "eS_supremizer",
+        "eT_teacher_only_projection_error"
+      ],
+      "relative_squared_gram": [
+        [
+          6.614506487583286e-08,
+          1.0614973265655088e-10,
+          -4.0825926612526475e-09,
+          -5.414309178286757e-12
+        ],
+        [
+          1.0614973265654327e-10,
+          7.384094253783819e-08,
+          -7.595348962189313e-09,
+          -2.9497281334658964e-17
+        ],
+        [
+          -4.0825926612526475e-09,
+          -7.595348962191296e-09,
+          2.3608760951341957e-08,
+          2.5700891837333482e-11
+        ],
+        [
+          -5.414309177783661e-12,
+          -2.9487511757807845e-17,
+          2.5700891836342442e-11,
+          1.0390036522235307e-11
+        ]
+      ],
+      "total_squared_from_gram": 1.537239832933906e-05,
+      "direct_error_norm_squared": 1.53723983243343e-05,
+      "component_relative_norms": [
+        0.0002571868287370736,
+        0.00027173689947785555,
+        0.00015365142677938905,
+        3.2233579575088006e-06
+      ],
+      "signed_cross_sum_relative_squared": -2.3103010675247285e-08
+    },
+    {
+      "variant": "coordinate",
+      "Re": 23.125,
+      "model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+      "recorded_velocity_relative": 0.00036565049130744175,
+      "pointwise_closure_maxgap": 1.5265566588595902e-16,
+      "teacher_rank": 4,
+      "teacher_gram_condition": 1.0000000000000033,
+      "component_order": [
+        "eA_actual_neural_minus_teacher_same_coefficients",
+        "eC_teacher_coefficient_difference",
+        "eS_supremizer",
+        "eT_teacher_only_projection_error"
+      ],
+      "relative_squared_gram": [
+        [
+          9.354925273162083e-08,
+          1.484255452611291e-10,
+          -6.265348395519757e-09,
+          -5.4391562770335414e-12
+        ],
+        [
+          1.4842554526174908e-10,
+          2.5441830860105054e-08,
+          -4.740783618658138e-09,
+          1.7920598730326614e-17
+        ],
+        [
+          -6.265348395519758e-09,
+          -4.7407836186571974e-09,
+          3.6354196054601456e-08,
+          3.457741682021344e-11
+        ],
+        [
+          -5.4391562781494695e-12,
+          1.7859450244065434e-17,
+          3.45774168181781e-11,
+          1.2138535112186712e-11
+        ]
+      ],
+      "total_squared_from_gram": 1.4613658179366747e-05,
+      "direct_error_norm_squared": 1.4613658178591004e-05,
+      "component_relative_norms": [
+        0.000305858223253227,
+        0.00015950495559732638,
+        0.000190667763543294,
+        3.484040056053706e-06
+      ],
+      "signed_cross_sum_relative_squared": -2.165713638090598e-08
+    },
+    {
+      "variant": "output_polish",
+      "Re": 16.875,
+      "model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+      "recorded_velocity_relative": 0.00037565050679430975,
+      "pointwise_closure_maxgap": 1.1102230246251565e-16,
+      "teacher_rank": 4,
+      "teacher_gram_condition": 1.0000000000000033,
+      "component_order": [
+        "eA_actual_neural_minus_teacher_same_coefficients",
+        "eC_teacher_coefficient_difference",
+        "eS_supremizer",
+        "eT_teacher_only_projection_error"
+      ],
+      "relative_squared_gram": [
+        [
+          6.616948347829857e-08,
+          1.9072025398129863e-10,
+          -3.984178463229401e-09,
+          -8.317933053519882e-12
+        ],
+        [
+          1.9072025398131383e-10,
+          7.400360174558662e-08,
+          -7.4250705318974315e-09,
+          -1.603719842934585e-17
+        ],
+        [
+          -3.984178463229401e-09,
+          -7.425070531897556e-09,
+          2.3332334129887143e-08,
+          2.5593646865834928e-11
+        ],
+        [
+          -8.317933054030566e-12,
+          -1.6105551666694192e-17,
+          2.559364686571215e-11,
+          1.0390036522235307e-11
+        ]
+      ],
+      "total_squared_from_gram": 1.543926511483514e-05,
+      "direct_error_norm_squared": 1.5439265109510915e-05,
+      "component_relative_norms": [
+        0.0002572342968546351,
+        0.0002720360302342074,
+        0.00015274925246915987,
+        3.2233579575088006e-06
+      ],
+      "signed_cross_sum_relative_squared": -2.2402506086740836e-08
+    },
+    {
+      "variant": "output_polish",
+      "Re": 23.125,
+      "model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+      "recorded_velocity_relative": 0.000367729020722009,
+      "pointwise_closure_maxgap": 1.6653345369377348e-16,
+      "teacher_rank": 4,
+      "teacher_gram_condition": 1.0000000000000033,
+      "component_order": [
+        "eA_actual_neural_minus_teacher_same_coefficients",
+        "eC_teacher_coefficient_difference",
+        "eS_supremizer",
+        "eT_teacher_only_projection_error"
+      ],
+      "relative_squared_gram": [
+        [
+          9.349661236601964e-08,
+          1.8158558609353527e-10,
+          -6.126289545139131e-09,
+          -8.128611832994913e-12
+        ],
+        [
+          1.8158558609401842e-10,
+          2.675822910749791e-08,
+          -4.566555758485538e-09,
+          7.499122166463688e-17
+        ],
+        [
+          -6.12628954513913e-09,
+          -4.56655575848777e-09,
+          3.5927857898836887e-08,
+          3.428565378537469e-11
+        ],
+        [
+          -8.128611830998146e-12,
+          7.508698373362932e-17,
+          3.428565378314283e-11,
+          1.2138535112186712e-11
+        ]
+      ],
+      "total_squared_from_gram": 1.478027221177161e-05,
+      "direct_error_norm_squared": 1.478027220901528e-05,
+      "component_relative_norms": [
+        0.0003057721576043503,
+        0.00016357942751916548,
+        0.0001895464531423284,
+        3.484040056053706e-06
+      ],
+      "signed_cross_sum_relative_squared": -2.0970205201175064e-08
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "authorized": true,
+  "proposal_source_commit": "fcdb3b7ac",
+  "proposal_mirror_commit": "3237dce08",
+  "proposal_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/reference-jacobian-cold-proposal/PROPOSAL.json",
+  "proposal_sha256": "fd5db9ee61435b67a8c2dfb441c60324cf2e891e45b18be7804edcdcaeae33c8",
+  "exact_paths": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-solverquad01/results/quadrature_plus4/jacobian_arrays.npz",
+      "kind": "archived_numerical_npz_cache",
+      "sha256": "693c3cb4fb1580be369a8ce34853bb2564b8bf32e5b2bdbfe6fca9b18ef7f0df",
+      "bytes": 53066595,
+      "archive_member": "g2-solverquad01/results/quadrature_plus4/jacobian_arrays.npz",
+      "allocated_bytes": 53067776,
+      "link_count": 1,
+      "device": 66306,
+      "inode": 27685529
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-solverquad01/results/solver_100x/jacobian_arrays.npz",
+      "kind": "archived_numerical_npz_cache",
+      "sha256": "f60b59eeb0d768f645f5de8f5286209891b168c6815a2823af93d2bd08596ba1",
+      "bytes": 52926220,
+      "archive_member": "g2-solverquad01/results/solver_100x/jacobian_arrays.npz",
+      "allocated_bytes": 52928512,
+      "link_count": 1,
+      "device": 66306,
+      "inode": 27685559
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-h3/results/manufactured_h3/jacobian_arrays.npz",
+      "kind": "archived_numerical_npz_cache",
+      "sha256": "7988c6b129cfb78f61e00f1eeb109d039b624ef48b7e27485bd9d840db4849a3",
+      "bytes": 28738798,
+      "archive_member": "g2-h3/results/manufactured_h3/jacobian_arrays.npz",
+      "allocated_bytes": 28741632,
+      "link_count": 1,
+      "device": 66306,
+      "inode": 27683916
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-h3/results/dfg_h3/jacobian_arrays.npz",
+      "kind": "archived_numerical_npz_cache",
+      "sha256": "42016738641955ce3ba1a0a3b8ee3b7ea08aa4bc4f38ff698f0f4f82a63103fb",
+      "bytes": 28481367,
+      "archive_member": "g2-h3/results/dfg_h3/jacobian_arrays.npz",
+      "allocated_bytes": 28483584,
+      "link_count": 1,
+      "device": 66306,
+      "inode": 27683959
+    }
+  ],
+  "groups": [
+    {
+      "group": "g2-solverquad01",
+      "source_commit": "fa1d87196172fedf66e2a1a6320ec44260025450",
+      "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e",
+      "archive_sha256": "ab6b6a411200b2978d36ada2544cbe51222804ec76dc3d17a93fde6992c09319",
+      "cold_manifest_sha256": "e248d1024ca1304f4aeb02d31030cfbf7f9f057d805b6292e941ca3e9094e446"
+    },
+    {
+      "group": "g2-h3",
+      "source_commit": "fa1d87196172fedf66e2a1a6320ec44260025450",
+      "mirror_commit": "caee2961096714869b4c0c5a0f9f43aa7cb20e4e",
+      "archive_sha256": "aeb4b731eafe8f4826b9b40f1806321f8fdf3fa81629db203fc502b8df757288",
+      "cold_manifest_sha256": "9feb21ea2bac0e2fe44bb194cb7e5d4daef04900475bc14749093aa4f640915e"
+    }
+  ],
+  "allocated_bytes": 163221504,
+  "conditions": [
+    "Reference owner rechecks exact four current file identities/hashes/source and mirror recovery and no-reader clearance before unlink.",
+    "Only listed archived Jacobian witnesses working duplicates; retain every native/full-rule/config/metadata/reference file, every Git object/history and all recovery descriptors. No closed validation read.",
+    "Record actual gain and separate lifecycle; no unrelated cleanup."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "ns-obstacle-energy-trace-refinement-prospective-audit-v1",
+  "source_only": true,
+  "execution_authorized_by_this_record": false,
+  "reviewed_trainer_source_commit": "3b3ea3746",
+  "reviewed_trainer_mirror_commit": "84e26c268",
+  "lambda": 1.0,
+  "weights": "value proportional to sigma^2 times frozen value norm squared; gradient and trace proportional to sigma^2 times frozen gradient norm squared; each separately normalized",
+  "parent_replay": "Original sqrt(sigma) weighted BASE only; never compare that objective directly to energy-weighted COMBINED",
+  "raw_saved_training_replay": "Hash ordered nine TRAIN snapshot fields and original first4 POD values, independently accumulate Gram/rhs, solve coefficients, compare covariance and whitened spectral discrepancy to unchanged1e-10 algebra criterion",
+  "scope": "Retained four training modes at original coefficients; not omitted modes, online coefficients, or physics admission",
+  "required_before_execution": ["actual terminal ledger/model/config/final/release pins", "independent final source review", "owner-authorized bounded one execution"],
+  "external_timeout_seconds": 120,
+  "address_space_limit_bytes": 4294967296,
+  "blas_threads": 1,
+  "no_running_output_arrays_accessed": true,
+  "validation_accessed": false,
+  "limits": ["No fresh teacher objective or neural gradient evaluation", "No reconstruction of missing intermediate parameter or curvature vectors", "Saved TRAIN fields used only for linear algebra replay", "No causal equal-compute comparison to continued base training"]
+}

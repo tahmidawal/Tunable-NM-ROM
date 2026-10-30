@@ -1,0 +1,32 @@
+{
+  "schema": "ns-obstacle-fixed-coordinate-lbfgs-prospective-v1",
+  "status": "source_math_only_not_integrated_or_released",
+  "parent_model": null,
+  "selection_dependency": "eventual independently accepted residual selected model and actual06 PDE evidence",
+  "hidden_scale": null,
+  "output_scale": null,
+  "scale_selection_authorized": false,
+  "family_and_objective": "same22792child parameters/fourheads and frozen embedded tractionparent; same TRAIN value+gradient+trace+traction losses/norms/weights; no capacity or reference changes",
+  "coordinate_map": "$\\theta=\\theta_0+D z$, $z=D^{-1}(\\theta-\\theta_0)$; positive fixed diagonal D and immutable warm anchor; initialization z=0 preserves actual selected physical parameters. Floating-point inverse round trips are not claimed bitwise.",
+  "gradient_and_secants": "$g_z=Dg_\\theta$, $s_z=D^{-1}s_\\theta$, $y_z=Dy_\\theta$; $s_z^T y_z=s_\\theta^T y_\\theta$ and $g_z^T d_z=g_\\theta^T d_\\theta$.",
+  "implementation": "retain physical theta/g/s/y and use two-loop midpoint H0_theta=gamma_z D^2; no dense matrix, new trainable variables or duplicate full vectors required",
+  "gamma": "$\\gamma_z=(s_\\theta^Ty_\\theta)/(y_\\theta^TD^2y_\\theta)$ with history; one without history. This is the z-space usual scalar H0 mapped to physical coordinates.",
+  "pair_acceptance": "Keep existing physical safeguard sy>1e-12 norm(s_theta)norm(y_theta). Coordinate-equivalence statement is conditional on identical retained history / z implementation applying this same physical test; not an assertion that unmodified z-norm safeguarding selects identical pairs.",
+  "reset_direction": "$d_\\theta=-D^2g_\\theta$ if quasi-Newton direction is not descent; record physical slope.",
+  "stopping": "unchanged physical maxabs(g_theta)<=1e-10, never scaled g_z for acceptance; report g_z only diagnostic",
+  "selection": "minimum accepted/initial actual complete TRAIN physical objective, unchanged Armijo objective/slope convention; no DEV or validation selection",
+  "proposed_protocol": "warm selected child theta, zero new Adam, reset curvature, same20-trial Armijo/history10 and checkpoint1000; finite job/resource bounds chosen only in later actual packet",
+  "scale_groups": {
+    "hidden_coordinates": 22272,
+    "output_coordinates": 520,
+    "ordering": "perhead W0,b0,W1,b1 use hidden multiplier; W2,b2 output multiplier; fourheads in unchanged originalmodeorder"
+  },
+  "evidence_contract": "freeze/hash full diagonal and selected physical anchor; verify initial complete objective replay; retain each trial/accepted physical theta/g/direction hash, actual physical slope, gamma_z, diagonal hash, physical and scaled gradient norms, existing curvature test/counts; periodic/final physical vectors and final serialized uncached fullobjective/gradient replay",
+  "limitations": [
+    "No chosen scale or actual parent here.",
+    "All initial hidden gradients are zero with zero-output fresh heads, and invertible scaling cannot change exact zeros; this successor is proposed from eventual nonzero selected heads.",
+    "Current1000readout allgrads nonzero does not prove badconditioning or a cure.",
+    "Same functionfamily/objective does not mean bitwise optimizer continuation or equalcompute causal comparison.",
+    "No current fit integration/intervention or GPU execution."
+  ]
+}

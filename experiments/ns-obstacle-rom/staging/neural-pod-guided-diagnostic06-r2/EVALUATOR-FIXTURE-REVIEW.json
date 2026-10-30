@@ -1,0 +1,53 @@
+{
+  "schema": "ns-obstacle-residual-composite-fixture-review-v1",
+  "passed": true,
+  "model_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "selected_child_theta_sha256": "63bdd5f8bf850389b901e2b291cadddbd306b0f2f320e8e6a22238e49d4a74a5",
+  "fixture_sha256": "888811fccb9370ec702ee3949274bd6e66776142bd60cca168460c98cc7b8db1",
+  "arrays_sha256": "8a46aa21b687eccb2a7fda13d62e12db51d1985478bd0b16755de07c51e334eb",
+  "execution_sha256": "c2ffc904460bd9baf67275018c4eb8946067925e66e4faf878b7a8095dddbbc9",
+  "source_commit": "495628a08",
+  "mirror_commit": "2d258bd25",
+  "prefixes": [
+    {
+      "prefix": 1,
+      "value_max_abs_gap": 2.6680047060523293e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    },
+    {
+      "prefix": 2,
+      "value_max_abs_gap": 2.6680047060523293e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    },
+    {
+      "prefix": 4,
+      "value_max_abs_gap": 2.6680047060523293e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    }
+  ],
+  "runtime": {
+    "python": "3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0]",
+    "jax": "0.10.1",
+    "backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest",
+    "device_kind": [
+      "NVIDIA GB10"
+    ]
+  },
+  "sampled_correction_amplitude": {
+    "scope": "same339fixturepoints only; not fullrule or solved-state accuracy",
+    "parent_value_rms": 0.068508484097318,
+    "child_value_rms": 0.0002692984912311492,
+    "parent_physical_gradient_rms": 3.9950518018091783,
+    "child_physical_gradient_rms": 0.01837900242689553,
+    "parent_child_sum_value_max_abs_gap": 0.0,
+    "parent_child_sum_gradient_max_abs_gap": 0.0
+  },
+  "scope": "Independent saved-array/source/model/runtime review of one actual339point composite evaluator fixture; no rerun, fullrule/PDE accuracy or universal bitwise claim.",
+  "physical_admission": false
+}

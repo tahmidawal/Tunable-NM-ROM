@@ -17,6 +17,14 @@ def main():
     args = parser.parse_args()
     read = lambda name: json.loads((args.metadata / name).read_text())
     review = json.loads(args.review.read_text())
+    sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+    names = ['state-00000-initial.json', 'ACCEPTED.jsonl', 'CONFIG.json',
+             'FINAL.json', 'MODEL-RECEIPT.json', 'SELECTED-FULL-REPLAY.json']
+    assert review['schema'] == 'ns-obstacle-supervised-trace-refinement-saved-audit-v1'
+    for name in names:
+        audited = [value for path, value in review['provenance'].items()
+                   if path.endswith('/results/fit/' + name)]
+        assert len(audited) == 1 and audited[0] == sha(args.metadata / name), name
     receipt = read('MODEL-RECEIPT.json')
     initial = read('state-00000-initial.json')
     accepted = [json.loads(line) for line in
@@ -61,9 +69,6 @@ def main():
     for extension in ('png', 'pdf'):
         fig.savefig(args.output / ('training-progress.' + extension), dpi=150)
     plt.close(fig)
-    sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
-    names = ['state-00000-initial.json', 'ACCEPTED.jsonl', 'CONFIG.json',
-             'FINAL.json', 'MODEL-RECEIPT.json', 'SELECTED-FULL-REPLAY.json']
     (args.output / 'PLOT-MANIFEST.json').write_text(json.dumps({
         'generator_sha256': sha(Path(__file__)), 'review_sha256': sha(args.review),
         'inputs': {name: sha(args.metadata / name) for name in names},

@@ -3,7 +3,7 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Complete trace model raw retention, release actual PDE diagnostic03, monitor energy fit6651919",
+    "Audit actual trace-trained PDE diagnostic6652443 and complete energy fit6651919 plus actual PDE test",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
@@ -23,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-30T01:00:57.852338+00:00",
+  "last_checkpoint_utc": "2026-10-30T01:41:49.475640+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -509,6 +509,8 @@
     "supervised_trace_audit_passed": true,
     "supervised_trace_retention_pending": false,
     "supervised_trace_retention_passed": true,
-    "supervised_trace_model_review_sha256": "b0f3282305f723784a8aea36ca07c9784831aa7c78bafb6b7261d1c9a423851d"
+    "supervised_trace_model_review_sha256": "b0f3282305f723784a8aea36ca07c9784831aa7c78bafb6b7261d1c9a423851d",
+    "trace_PDE_diagnostic_job": 6652443,
+    "trace_PDE_diagnostic_state": "RUNNING"
   }
 }

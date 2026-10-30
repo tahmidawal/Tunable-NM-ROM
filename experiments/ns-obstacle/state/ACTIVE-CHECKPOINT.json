@@ -3,7 +3,7 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Audit selected scan645d03 model/raw, exactfixture thenactualPDE09; iterationlimitnotconvergence",
+    "Scanned645d03 model and all217 raw files independently accepted; exact composite fixture then actual PDE09 pending",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
@@ -23,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-30T09:56:39.031567+00:00",
+  "last_checkpoint_utc": "2026-10-30T10:10:55.172173+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -617,6 +617,12 @@
     "coordinate_PDE_retention_pending": false,
     "coordinate_PDE_scientific_review_passed": true,
     "coordinate_PDE_failed_targets": [],
-    "coordinate_PDE_retention_passed": true
+    "coordinate_PDE_retention_passed": true,
+    "scanned_coordinate_job": 6660421,
+    "scanned_coordinate_state": "COMPLETED",
+    "scanned_coordinate_seconds": 2470,
+    "scanned_coordinate_scientific_and_retention_passed": true,
+    "scanned_coordinate_model_review_sha256": "117dcc4042171bee1aa92f82ecb45fbfb8a1a7072f8bdb0191177c7ee39b71dd",
+    "scanned_coordinate_optimizer_converged": false
   }
 }

@@ -48,7 +48,11 @@ def _refine(x,w,target,gradient,teacher_identity,boundary,boundary_record,coeffi
     if warm.parent_sha256!=sha(parent_bank_path) or warm.parent_bytes!=Path(parent_bank_path).read_bytes():raise ValueError('warm child must embed the exact immutable traction parent')
     if warm_receipt['bank_sha256']!=sha(warm_model_path) or warm_review.get('passed') is not True or warm_review.get('model_sha256')!=sha(warm_model_path) or warm_review.get('model_receipt_sha256')!=sha(warm_receipt_path):raise ValueError('genuine reviewed warm child required')
     if warm_receipt.get('selected_theta_scope')!='child parameters only' or warm_receipt.get('parent_model_sha256')!=sha(parent_bank_path) or warm_review.get('parent_model_sha256')!=sha(parent_bank_path):raise ValueError('explicit reviewed composite child/embedded-parent scope required')
-    if warm.metadata['objective_variant'] not in {'independent_residual_heads_same_trace_and_traction','fixed_coordinate_residual_heads_same_trace_and_traction'}:raise ValueError('same child family and objective required')
+    if warm.metadata['objective_variant'] not in {'independent_residual_heads_same_trace_and_traction','fixed_coordinate_residual_heads_same_trace_and_traction','fixed_hidden_output_polish_same_trace_and_traction'}:raise ValueError('same child family and objective required')
+    if warm.metadata['objective_variant']=='fixed_hidden_output_polish_same_trace_and_traction':
+        if warm_receipt.get('objective_variant')!=warm.metadata['objective_variant'] or warm_receipt.get('optimizer_status')!='output_polish_complete_not_physical_admission' or warm_receipt.get('warm_restart') is not False:raise ValueError('successful same-objective output polish required')
+        if warm_receipt.get('cumulative_adam_steps')!=warm.metadata['actual_applied_adam_steps'] or warm_receipt.get('cumulative_lbfgs_steps')!=warm.metadata['accepted_lbfgs_steps']:raise ValueError('output polish historical optimizer lineage differs')
+        if warm.metadata.get('new_adam_steps')!=0 or warm.metadata.get('new_lbfgs_steps')!=0:raise ValueError('output polish must add zero Adam/LB steps')
     if warm.metadata['teacher_identity']!=teacher_identity:raise ValueError('warm teacher identity differs')
     for key in ('value_norms_squared','gradient_norms_squared','mode_weights'):
         if not np.array_equal(np.asarray(warm.metadata[key]),np.asarray(parent.metadata[key])):raise ValueError('warm frozen normalization differs')

@@ -3,7 +3,7 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Audit and retain completed traction model6653241, then release actual PDE diagnostic05",
+    "Freeze and release actual traction-model PDE diagnostic05, then choose next accuracy improvement from physical errors",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
@@ -550,6 +550,8 @@
     },
     "traction_seconds": 3482,
     "traction_new_accepted_steps": 5624,
-    "traction_audit_pending": true
+    "traction_audit_pending": false,
+    "traction_scientific_and_retention_passed": true,
+    "traction_model_review_sha256": "3287f25bc64d3bd3c918c39850c91629d75ed4fda91cc33dee3d9c2deb82f260"
   }
 }

@@ -1,0 +1,45 @@
+{
+  "schema": "ns-obstacle-prospective-composite-mixed-galerkin-v1",
+  "status": "source_only_no_execution",
+  "source_sha256": "1c088d90e0715a027f6fea8f9ed3bf68aa41890fc32f1092b6c67bce441eccc6",
+  "actual_model": null,
+  "actual_root_release": null,
+  "original_LS_diagnostic_source_modified": false,
+  "initialization": "unchanged zero coefficients/shared Stokes lift; no reference coefficients",
+  "unknowns": {
+    "neural": 4,
+    "FE_supremizer": 4,
+    "FE_pressure": 4
+  },
+  "tests": {
+    "momentum": "exact same enriched8 velocity fields and dimensionless gradients",
+    "continuity": "exact same pressure4 fields"
+  },
+  "formulation": "mixed_Galerkin",
+  "solver": "unchanged solve_steady, true whitened root norm<=1e-9; not LS stationarity",
+  "algebra_evidence": "actual12row operator tensors, Grams, Cholesky/unknown map and fingerprints; blocked direct residual on same Galerkin tests; finite-difference Jacobian on actual Galerkin operator",
+  "physics": "unchanged full-rule velocity/pressure/gradient/divergence/mass/boundary/force scores from same raw invocation saved first",
+  "original_LS_evidence": "no repeat LS solve; future packet must bind existing same-bank LS result independently; original LS operator retained as context and its residual at Galerkin state explicitly auxiliary",
+  "construction": {
+    "retained_trial_fields_reused": true,
+    "point_block": 4096,
+    "convection_inner_chunk": 1024,
+    "additional_extended_value_gradient_payload_bytes": 1769472,
+    "proposed_additional_host_headroom_bytes": 67108864,
+    "peak_RSS_measured": false,
+    "runtime_measured": false
+  },
+  "prospective_allocation_seconds": 900,
+  "prospective_raw_plus_archive_reservation_bytes": 1073741824,
+  "resource_limitations": "Exact complete packet bound and fresh summed namespace/outstanding allocation check required; runtime feasibility is not measured. No selected model or submission authorized.",
+  "future_prerequisites": [
+    "Independent source review",
+    "Actual same-bank model/fixture/review and original LS result bindings",
+    "Separate dedicated launcher schema/namespace",
+    "Bounded complete input/runtime inventory and output resource envelope",
+    "Exact root execution release"
+  ],
+  "validation": false,
+  "physical_admission": false,
+  "speedup_claim": false
+}

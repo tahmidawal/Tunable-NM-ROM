@@ -1,0 +1,25 @@
+{
+  "schema": "ns-obstacle-trace-fit-collection-release-v1",
+  "authorized": true,
+  "job_id": 6651600,
+  "archive_sha256": "8673f91a073ea606d62c8597a7dc5ea3e516015e9167f443c1f85aad07228751",
+  "archive_bytes": 74069173,
+  "logical_files": 143,
+  "logical_expansion_bytes": 86416508,
+  "measurement_sha256": "e035e0fa06e5d3fd50a92b3a68b5af1739185d7ad7a35dc82c9f990c9e5a660a",
+  "collector_sha256": "e66f23c6a16faa6f1e56a9d058ae21640b1de603cebacda3c19138f1540e6c0e",
+  "collector_source_commit": "6e73ae38d",
+  "collector_source_mirror": "239f4bbd3",
+  "mode": "Archive-only complete original files and ledger; all scalar histories and bounded metadata preserved, no scientific array expansion",
+  "metadata_limit_bytes": 33554432,
+  "required_local_free_bytes": 11221100906,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Fresh exact terminal/job/measurement/release and local guard check; serialize bulk collection and Git backup.",
+    "Stream every143 original member and unique ledger entry; verify chunk sum before transport retirement.",
+    "Preserve failures and incomplete evaluation events; independent raw retention review before actual model admission.",
+    "Keep remote selected trace model and all parent/prepared dependencies for upcoming PDE diagnostic and current energy fit."
+  ]
+}

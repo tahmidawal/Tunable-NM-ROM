@@ -1,0 +1,1032 @@
+{
+  "status": "job_deadline",
+  "accepted_steps": 2822,
+  "cumulative_adam_steps": 4000,
+  "cumulative_lbfgs_steps": 6714,
+  "full_evaluations": 2987,
+  "initiated_evaluations": 2988,
+  "optimizer_elapsed_seconds": 3394.454580737278,
+  "checkpoints": [
+    {
+      "iteration": 0,
+      "label": "initial",
+      "objective": 0.003805105605149878,
+      "gradient_inf": 0.00640051884025225,
+      "theta_sha256": "f12f0190766742823e91d7d814d346da1667646771fb4d6c17003e8fa649e66b",
+      "gradient_sha256": "74e25253aa32731c635d33678c83763436f69aa81d75a574ffe6fee05b18918c",
+      "pair_rho": [],
+      "array_file": "state-00000-initial.npz",
+      "array_sha256": "d5cf5d70aa9a33d94e67b471caf4edafc308e815908a238a451152b60db4272e",
+      "full_evaluations": 1,
+      "metrics": {
+        "base_objective": 0.0028777550345297376,
+        "combined_objective": 0.003805105605149878,
+        "divergence_error_norm_squared_by_mode": [
+          0.004093866997065323,
+          0.014975346753141303,
+          0.040388617699949156,
+          0.12217592139208402
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.0004801640603215375,
+          0.001417358847138054,
+          0.0035508037607476406,
+          0.010700780227021697
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.000960102987291327,
+          0.0037389037354673923,
+          0.01277933172161349,
+          0.05594277310734482
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.004093857366003623,
+          0.014975280657818175,
+          0.04038833600937543,
+          0.12217518015850311
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.0004801629307074839,
+          0.001417352591470487,
+          0.00355077899565278,
+          0.010700715306065462
+        ],
+        "supervised_divergence_objective_unweighted": 0.0009273505706201417,
+        "supervised_divergence_objective_weighted": 0.0009273505706201417,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          2.0792579833524433e-05,
+          0.00019248463776918104,
+          0.000776305195331326,
+          0.004293256012635824
+        ],
+        "seconds": 13.37029021140188
+      },
+      "elapsed_seconds": 13.400177635252476
+    },
+    {
+      "iteration": 250,
+      "label": "periodic",
+      "objective": 0.0036763931673210485,
+      "gradient_inf": 0.001407941575164568,
+      "theta_sha256": "33a6b0f8664393eb45103fdf52e48247c9b61d3ddb9ff0c7ceee789986fff926",
+      "gradient_sha256": "df37450c835579bb6c4f47d3932ba3931f24947a25a2bfa64a70ac16bb7f448f",
+      "pair_rho": [
+        3253411.892249832,
+        380882.5631741888,
+        963569.1543498117,
+        4701899.673081489,
+        3840871.6323517314,
+        3259345.028977096,
+        229489.3972656788,
+        451162.8159092739,
+        4226978.4728551125,
+        2089983.2709730924
+      ],
+      "array_file": "state-00250-periodic.npz",
+      "array_sha256": "7714e88a903f631c1b6ae0d14f37cdbc811c4723518987339dfa3b432c3eb659",
+      "full_evaluations": 271,
+      "metrics": {
+        "base_objective": 0.0028357989531995705,
+        "combined_objective": 0.0036763931673210485,
+        "divergence_error_norm_squared_by_mode": [
+          0.003610240824217324,
+          0.013642861194235915,
+          0.03749112553714315,
+          0.11436906873068987
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.00042344020803250856,
+          0.0012912442251042028,
+          0.0032960679798684314,
+          0.01001701689917066
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0009282605698634308,
+          0.0036895923661858965,
+          0.012786019306005333,
+          0.05558959583256974
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.003610231255084739,
+          0.013642795017475664,
+          0.03749084160757669,
+          0.11436832980793402
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00042343908568203727,
+          0.0012912379617289267,
+          0.003296043017930397,
+          0.01001695218060809
+        ],
+        "supervised_divergence_objective_unweighted": 0.0008405942141214805,
+        "supervised_divergence_objective_weighted": 0.0008405942141214805,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.912299961430954e-05,
+          0.00018568221813944672,
+          0.0007422952136956397,
+          0.004251487797376603
+        ],
+        "seconds": 1.130670894868672
+      },
+      "elapsed_seconds": 317.5489628901705
+    },
+    {
+      "iteration": 500,
+      "label": "periodic",
+      "objective": 0.0035366234286241913,
+      "gradient_inf": 0.0015395414270537886,
+      "theta_sha256": "82131edfa027f7055a270a1c9a78dec9ada474f5574202a10e215c06a6e2651f",
+      "gradient_sha256": "c9cda2a067abce37eec069881e46c527ff0b5dad9e69713e351370393f97681d",
+      "pair_rho": [
+        3167385.3288524654,
+        515270.67665182106,
+        737677.6164395736,
+        6894553.623112555,
+        3044469.898750867,
+        2941175.3623377183,
+        558239.322320392,
+        1327688.471812002,
+        3255606.0481345835,
+        2511933.7110086195
+      ],
+      "array_file": "state-00500-periodic.npz",
+      "array_sha256": "d46c96c097cf3d76c46701466f392c2a151ab4767c89312232b0541791a9f5cb",
+      "full_evaluations": 534,
+      "metrics": {
+        "base_objective": 0.002772734236057642,
+        "combined_objective": 0.0035366234286241913,
+        "divergence_error_norm_squared_by_mode": [
+          0.0032549957694474755,
+          0.012387304428621135,
+          0.034622667706346276,
+          0.10407620970340031
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.00038177400147774976,
+          0.0011724106168303338,
+          0.003043884779918208,
+          0.00911551665997641
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0008930583760818564,
+          0.003616206336949905,
+          0.012580816996679137,
+          0.05493451021087747
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0032549863804573653,
+          0.012387238633908395,
+          0.034622384608061885,
+          0.10407547602834483
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.0003817729002559424,
+          0.001172404389614382,
+          0.0030438598910631238,
+          0.009115452401033758
+        ],
+        "supervised_divergence_objective_unweighted": 0.0007638891925665503,
+        "supervised_divergence_objective_weighted": 0.0007638891925665503,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.790343959334694e-05,
+          0.00017829215101270373,
+          0.0007089964315724215,
+          0.004172192970385936
+        ],
+        "seconds": 1.1102187680080533
+      },
+      "elapsed_seconds": 616.1157512711361
+    },
+    {
+      "iteration": 750,
+      "label": "periodic",
+      "objective": 0.0033545381317709668,
+      "gradient_inf": 0.0016946494661211375,
+      "theta_sha256": "dc834e6e03bcc630e01a15db41c7452213b693b1c048a83918b84fb4cd784e84",
+      "gradient_sha256": "9db0ad4769e70a653dd9a46c7f2e94b065352acaf9042c8091bb35950894e329",
+      "pair_rho": [
+        503272.4641551234,
+        2067536.3644397422,
+        901564.8935563678,
+        380948.34858068527,
+        1554076.8813271332,
+        1265945.9641231839,
+        2682829.1545111495,
+        827958.6468396522,
+        935808.41294608,
+        1159111.655812918
+      ],
+      "array_file": "state-00750-periodic.npz",
+      "array_sha256": "0cee577824f2bdb5c4a96c09e4fe4e97af620e583242a51c15e7d12a8a2ff218",
+      "full_evaluations": 799,
+      "metrics": {
+        "base_objective": 0.002681787443766082,
+        "combined_objective": 0.0033545381317709668,
+        "divergence_error_norm_squared_by_mode": [
+          0.0028594389692068864,
+          0.010937597978590952,
+          0.030624824108486805,
+          0.09131022148988083
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.00033537968543683545,
+          0.0010352014892839297,
+          0.0026924105554814964,
+          0.007997407357446758
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0008543161749050102,
+          0.0034927464360997693,
+          0.012202740487459039,
+          0.053528869852595036
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.002859429650967062,
+          0.01093753264853148,
+          0.03062454256327671,
+          0.09130950000474596
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00033537859251323184,
+          0.0010351953060456188,
+          0.002692385803166423,
+          0.007997344166158512
+        ],
+        "supervised_divergence_objective_unweighted": 0.0006727506880048868,
+        "supervised_divergence_objective_weighted": 0.0006727506880048868,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.8546324739451626e-05,
+          0.00017281198083996587,
+          0.0006938046599458139,
+          0.004026708242306871
+        ],
+        "seconds": 1.1879344712942839
+      },
+      "elapsed_seconds": 916.2599132405594
+    },
+    {
+      "iteration": 1000,
+      "label": "periodic",
+      "objective": 0.0031027194202762486,
+      "gradient_inf": 0.0017062455294635682,
+      "theta_sha256": "a2021af00c441e01ca1ceff57c0b503639c27176a3dac685b562a353e0abd3fb",
+      "gradient_sha256": "5e39e2df9de63ced7f0768f3a25f34cc1ce82c4bb76cb2d7ddebc475f37ca517",
+      "pair_rho": [
+        745358.3943441841,
+        807828.6244063705,
+        1879655.1124278847,
+        375576.14515689085,
+        1111284.9122769658,
+        3429714.1085213055,
+        271954.32838238234,
+        433701.88144924876,
+        4122724.784946931,
+        487612.80150461104
+      ],
+      "array_file": "state-01000-periodic.npz",
+      "array_sha256": "f0f7d75ba75969b9f7b7062f41406c612c30b1f3dc986a7d90427a397806d77a",
+      "full_evaluations": 1064,
+      "metrics": {
+        "base_objective": 0.0025425799578324515,
+        "combined_objective": 0.0031027194202762486,
+        "divergence_error_norm_squared_by_mode": [
+          0.0023891662468782616,
+          0.009086904080390314,
+          0.025439871000078208,
+          0.07588344907431781
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.0002802220410938107,
+          0.0008600404453896476,
+          0.002236570468717138,
+          0.006646253223716472
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0008013414371765515,
+          0.0033259035052145007,
+          0.0115413331144177,
+          0.05121200402935744
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0023891574403637076,
+          0.009086840859216745,
+          0.025439592873608623,
+          0.07588274269586481
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.0002802210081897646,
+          0.0008600344617492575,
+          0.0022365460169638833,
+          0.006646191355547226
+        ],
+        "supervised_divergence_objective_unweighted": 0.0005601394624437968,
+        "supervised_divergence_objective_weighted": 0.0005601394624437968,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.764894539270716e-05,
+          0.0001658159950715903,
+          0.0006374904077531599,
+          0.0038083533523402724
+        ],
+        "seconds": 1.1025589872151613
+      },
+      "elapsed_seconds": 1218.4056759569794
+    },
+    {
+      "iteration": 1250,
+      "label": "periodic",
+      "objective": 0.0028637637475721197,
+      "gradient_inf": 0.002459773177832095,
+      "theta_sha256": "33fdb51c11da126172373c4072d57e40fc12b047e0031aca2e8dcb258565471a",
+      "gradient_sha256": "a035e42a1cc23922e83e123c2c2d0296830fb4e006801400bf0031c4a67f6add",
+      "pair_rho": [
+        1952721.254583057,
+        715482.1888888407,
+        844468.1454456658,
+        320393.1467091049,
+        738738.7383705338,
+        7477991.973728728,
+        1817069.8105333184,
+        1605935.1105818653,
+        568703.3671135926,
+        708812.1960762447
+      ],
+      "array_file": "state-01250-periodic.npz",
+      "array_sha256": "055c53e43d9484adf7bb9900de75bde894daaf00abab50169452a548a35249bb",
+      "full_evaluations": 1331,
+      "metrics": {
+        "base_objective": 0.002383384198068197,
+        "combined_objective": 0.0028637637475721197,
+        "divergence_error_norm_squared_by_mode": [
+          0.0020482690116686835,
+          0.00774810712527796,
+          0.021950651424784244,
+          0.0653138871671335
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.0002402386706697214,
+          0.0007333284740323279,
+          0.0019298124092541667,
+          0.005720517957913032
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0007431885878263472,
+          0.003142958397317802,
+          0.010797810342428608,
+          0.048137690234068296
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.002048260710284462,
+          0.0077480459784800785,
+          0.021950378218983248,
+          0.06531319186257253
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00024023769701172102,
+          0.0007333226867236013,
+          0.0019297883901061815,
+          0.005720457059650822
+        ],
+        "supervised_divergence_objective_unweighted": 0.0004803795495039219,
+        "supervised_divergence_objective_weighted": 0.0004803795495039219,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.7142393155964032e-05,
+          0.0001584133982474451,
+          0.0006072197149344105,
+          0.00351965761681276
+        ],
+        "seconds": 1.1620551692321897
+      },
+      "elapsed_seconds": 1521.0321037275717
+    },
+    {
+      "iteration": 1500,
+      "label": "periodic",
+      "objective": 0.002646184768532904,
+      "gradient_inf": 0.0021981633555533263,
+      "theta_sha256": "fa833ccf7d2717021d456e0789a1d4ae3933b38292a3546d3b0573ac83088fe3",
+      "gradient_sha256": "6e6ef3d9dc234149a4ae079ea259a4ca704617cba607704c1ac39267384d8bd7",
+      "pair_rho": [
+        513476.7140857251,
+        2094264.9888918684,
+        2176504.670949321,
+        2820902.6367756305,
+        1285046.7245455657,
+        418350.6473463392,
+        837029.2440416411,
+        2374998.1672959947,
+        2691605.457566057,
+        1367041.9146947553
+      ],
+      "array_file": "state-01500-periodic.npz",
+      "array_sha256": "c9d81dff0477f2d00899cb6e666b51087b5caf65e77b5fc30c8e42d69f61afb5",
+      "full_evaluations": 1589,
+      "metrics": {
+        "base_objective": 0.002212126892176655,
+        "combined_objective": 0.002646184768532904,
+        "divergence_error_norm_squared_by_mode": [
+          0.0018316053192456625,
+          0.006986329072511249,
+          0.019921036870756973,
+          0.06041978745049801
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.00021482648254717831,
+          0.0006612291176405966,
+          0.0017513769142627846,
+          0.005291868148031282
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0006826629122058085,
+          0.0029419842067992764,
+          0.009980706303271698,
+          0.04524592600993978
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.001831597400974381,
+          0.006986268938634884,
+          0.019920766497681385,
+          0.06041909690979844
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00021482555382397052,
+          0.0006612234262009874,
+          0.0017513531441565439,
+          0.005291807667011944
+        ],
+        "supervised_divergence_objective_unweighted": 0.00043405787635624843,
+        "supervised_divergence_objective_weighted": 0.00043405787635624843,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.4882359416788589e-05,
+          0.00013932824962787797,
+          0.0005433319460618714,
+          0.00316649560280612
+        ],
+        "seconds": 1.1104858610779047
+      },
+      "elapsed_seconds": 1814.5327746160328
+    },
+    {
+      "iteration": 1750,
+      "label": "periodic",
+      "objective": 0.0024698420652824755,
+      "gradient_inf": 0.003108736188378874,
+      "theta_sha256": "460fb2bca6866de49964d21d95f52353acd75087eed49ea1c6d135beed4bf5f6",
+      "gradient_sha256": "41ffd788a08607723ebddb287b5300ea90105a7112e76e0569fe15b2ddea3ed7",
+      "pair_rho": [
+        1448027.5132625194,
+        584726.128103805,
+        1259995.6916485655,
+        2412063.9725165525,
+        1839247.0500832815,
+        311330.9306086832,
+        964079.9202491696,
+        1848044.54976156,
+        2413607.075448428,
+        972242.773213155
+      ],
+      "array_file": "state-01750-periodic.npz",
+      "array_sha256": "728f0d92cac7ebafa8cee59e1a753899e42b838e6fde23c48cef2c7f85e29325",
+      "full_evaluations": 1854,
+      "metrics": {
+        "base_objective": 0.002057482235500637,
+        "combined_objective": 0.0024698420652824755,
+        "divergence_error_norm_squared_by_mode": [
+          0.001724004916629938,
+          0.0066705437482982985,
+          0.018904695108460087,
+          0.058234218080740204
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.00020220617850475692,
+          0.0006313412539104503,
+          0.001662024261033129,
+          0.005100445016286405
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0006263006078396348,
+          0.0027668310918091805,
+          0.009237966785968901,
+          0.042563864450404526
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0017239970994940455,
+          0.006670483989957212,
+          0.018904426825037315,
+          0.058233529333906714
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00020220526164358089,
+          0.0006313355980138071,
+          0.0016620006746407064,
+          0.005100384692382859
+        ],
+        "supervised_divergence_objective_unweighted": 0.0004123598297818359,
+        "supervised_divergence_objective_weighted": 0.0004123598297818359,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.3562832701794248e-05,
+          0.00012582216911550067,
+          0.0004881151359559308,
+          0.002845559002428444
+        ],
+        "seconds": 1.1229754919186234
+      },
+      "elapsed_seconds": 2113.530125260353
+    },
+    {
+      "iteration": 2000,
+      "label": "periodic",
+      "objective": 0.0022968170847568544,
+      "gradient_inf": 0.0017835107871979798,
+      "theta_sha256": "3b5d34e7ec4ece5a856a9fddbfa95938272740b7a41478cd5812fc823be52f73",
+      "gradient_sha256": "4fc1a55f10cb4dfefbafb37e4b5942748da9448c94cbbff56231f4fdc205de5e",
+      "pair_rho": [
+        1111926.4957495625,
+        1034903.9425682216,
+        2288839.4171284167,
+        1356510.276532059,
+        1202790.132881827,
+        1309790.4974885003,
+        1218937.5945259435,
+        1709513.3145871416,
+        2555064.153757969,
+        773748.8310565639
+      ],
+      "array_file": "state-02000-periodic.npz",
+      "array_sha256": "2e1e0f437095c06258a22a0978b8001354fc31d0a57f0e5348b97120eb2ddd16",
+      "full_evaluations": 2120,
+      "metrics": {
+        "base_objective": 0.001901547104930713,
+        "combined_objective": 0.0022968170847568544,
+        "divergence_error_norm_squared_by_mode": [
+          0.0016454501035044024,
+          0.006371880650338552,
+          0.018082501098709916,
+          0.0568561514420984
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.00019299259192385546,
+          0.0006030739428968931,
+          0.0015897402922285032,
+          0.004979747025468947
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0005757117804288128,
+          0.002583113907630811,
+          0.008440010828435615,
+          0.039652070588816514
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0016454424146000615,
+          0.0063718216336472976,
+          0.0180822360010195,
+          0.05685546187522469
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00019299169010278264,
+          0.0006030683571945479,
+          0.0015897169859127717,
+          0.004979686629742165
+        ],
+        "supervised_divergence_objective_unweighted": 0.0003952699798261405,
+        "supervised_divergence_objective_weighted": 0.0003952699798261405,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.2439113694320743e-05,
+          0.0001149989237197249,
+          0.0004525279551831287,
+          0.002517071115479193
+        ],
+        "seconds": 1.1571120228618383
+      },
+      "elapsed_seconds": 2413.5682969158515
+    },
+    {
+      "iteration": 2250,
+      "label": "periodic",
+      "objective": 0.002127129442231102,
+      "gradient_inf": 0.0017718991838209998,
+      "theta_sha256": "9a44f35d0b50d178ab4d8a5526386532ece495220c31ee891ece687e591e2e6e",
+      "gradient_sha256": "246962a7acc99c432d49e29fbd63fd3fc53f436964abbffb46e03366909186fd",
+      "pair_rho": [
+        2252385.769281777,
+        572346.8786649451,
+        796717.4236723789,
+        3439560.1592263076,
+        1163728.062879368,
+        400535.23835259303,
+        1233597.5599866954,
+        3125515.234261013,
+        3389460.5391265512,
+        2650055.798289392
+      ],
+      "array_file": "state-02250-periodic.npz",
+      "array_sha256": "e0bccce6c9a274849c69c87ac4947b50c7490253bc6a80aa81b203f91f719c7a",
+      "full_evaluations": 2382,
+      "metrics": {
+        "base_objective": 0.001739605872683926,
+        "combined_objective": 0.002127129442231102,
+        "divergence_error_norm_squared_by_mode": [
+          0.001591766611746839,
+          0.006269340762161453,
+          0.017758412528003507,
+          0.05697982964934702
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.0001866961286061592,
+          0.0005933689377248516,
+          0.0015612477371173348,
+          0.004990579383429167
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0005269993159327675,
+          0.0024010728311468,
+          0.007564808838773343,
+          0.03617999545887994
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0015917590638926582,
+          0.006269282876735038,
+          0.01775815269052887,
+          0.056979141676120816
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00018669524332866647,
+          0.0005933634590923624,
+          0.0015612248932584808,
+          0.004990519127282043
+        ],
+        "supervised_divergence_objective_unweighted": 0.00038752356954717865,
+        "supervised_divergence_objective_weighted": 0.00038752356954717865,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.1748984101946265e-05,
+          0.00011005203045695858,
+          0.00042022679072585437,
+          0.002316735622693589
+        ],
+        "seconds": 1.1584000261500478
+      },
+      "elapsed_seconds": 2710.8786253137514
+    },
+    {
+      "iteration": 2500,
+      "label": "periodic",
+      "objective": 0.0019962809448053048,
+      "gradient_inf": 0.0012805822528993481,
+      "theta_sha256": "8a4eb8e4c69b6a85f1b908f39f32516cb42e9e9ae9902df420df0015946457bb",
+      "gradient_sha256": "1bc4727c301ef0c6505703a9af4350566664d460668767665ce31881c3d554b2",
+      "pair_rho": [
+        3752477.512615604,
+        3981262.6081879702,
+        584651.9661034285,
+        1072899.0561182224,
+        4340947.274432203,
+        2471107.5769246095,
+        524545.7651941155,
+        1372150.566763256,
+        4320831.975623202,
+        3026506.4679021924
+      ],
+      "array_file": "state-02500-periodic.npz",
+      "array_sha256": "ea22ae932c6cadf8f81d9e2d2fe6c2413ab00325c5a31cbd6085806ec8194753",
+      "full_evaluations": 2649,
+      "metrics": {
+        "base_objective": 0.0016226339144786227,
+        "combined_objective": 0.0019962809448053048,
+        "divergence_error_norm_squared_by_mode": [
+          0.0015198311238926708,
+          0.006019367225741827,
+          0.017281438869907247,
+          0.05590834763671273
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.00017825891363214364,
+          0.0005697099060352894,
+          0.0015193141440558472,
+          0.004896733612480483
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0004890412361915805,
+          0.002261946709787659,
+          0.007002868607907931,
+          0.03383303483059535
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0015198237136377912,
+          0.006019310091458696,
+          0.017281182086370278,
+          0.05590766299368152
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.0001782580444934847,
+          0.0005697044984956169,
+          0.0015192915686868269,
+          0.004896673648008539
+        ],
+        "supervised_divergence_objective_unweighted": 0.00037364703032668047,
+        "supervised_divergence_objective_weighted": 0.00037364703032668047,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.0564582444075984e-05,
+          9.926046042618896e-05,
+          0.0003958342799649114,
+          0.0021655246061717836
+        ],
+        "seconds": 1.1136993309482932
+      },
+      "elapsed_seconds": 3011.948663896881
+    },
+    {
+      "iteration": 2750,
+      "label": "periodic",
+      "objective": 0.0018438696060659415,
+      "gradient_inf": 0.0025821822249752686,
+      "theta_sha256": "39f4b3b225a1d9dbe4ca997aa73ff6d1e1c7b2cdcee9bd6ad2665a6eaef1fb7b",
+      "gradient_sha256": "a45cc3531ddbf8c3abfaed5db45fe5463073a07452ba1852fe26985d4555a1eb",
+      "pair_rho": [
+        2257892.2406628625,
+        2450365.677684627,
+        1613982.4411954049,
+        843971.5304891312,
+        2511032.6088679614,
+        1161467.4441344477,
+        1395353.9283258067,
+        2317005.283695274,
+        1553655.9143566482,
+        856365.4596851998
+      ],
+      "array_file": "state-02750-periodic.npz",
+      "array_sha256": "2e95af07bd00e79343763c2767a3cef18801b94003fc2bae517397c30479b3ae",
+      "full_evaluations": 2914,
+      "metrics": {
+        "base_objective": 0.0014925707367998433,
+        "combined_objective": 0.0018438696060659415,
+        "divergence_error_norm_squared_by_mode": [
+          0.0014147196137584853,
+          0.00566602054113214,
+          0.016523205126603997,
+          0.05256214443514329
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.0001659305283844697,
+          0.0005362670043252919,
+          0.001452653302943419,
+          0.004603656346134029
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.00044872727435443295,
+          0.002106901704034669,
+          0.006346293102878752,
+          0.031042341904912313
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0014147124806693418,
+          0.005665965475166946,
+          0.016522954005343527,
+          0.052561465502754104
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00016592969175420092,
+          0.0005362617925439402,
+          0.0014526312253788241,
+          0.004603596881828765
+        ],
+        "supervised_divergence_objective_unweighted": 0.00035129886926609774,
+        "supervised_divergence_objective_weighted": 0.00035129886926609774,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.080324398359016e-05,
+          9.514990385208559e-05,
+          0.00037792360813412716,
+          0.0019543127543852424
+        ],
+        "seconds": 1.1124770920723677
+      },
+      "elapsed_seconds": 3311.764583949931
+    },
+    {
+      "iteration": 2822,
+      "label": "final",
+      "objective": 0.001800907919114597,
+      "gradient_inf": 0.0016220498742266763,
+      "theta_sha256": "63edb1a551689b4293eecd3ba80e84de4fc9fb48692749011c96168c8d3abbcc",
+      "gradient_sha256": "32213247966bfc6ea4f6891e7c79dabb9f61e9317e06487829b183a7bd3296f6",
+      "pair_rho": [
+        5161868.56020145,
+        2297718.3855548245,
+        2639312.085261973,
+        1710285.3568606516,
+        580800.6995171555,
+        567650.4216993621,
+        4355046.69726041,
+        2888163.3775828048,
+        1428746.215479625,
+        932495.8757899676
+      ],
+      "array_file": "state-02822-final.npz",
+      "array_sha256": "be970e375fba81f73de6e940fdea34561d447825a6cf46b719add6e32ebfff6b",
+      "full_evaluations": 2987,
+      "metrics": {
+        "base_objective": 0.0014573624827192988,
+        "combined_objective": 0.001800907919114597,
+        "divergence_error_norm_squared_by_mode": [
+          0.0013770975786754711,
+          0.005530401736999522,
+          0.01627298448886931,
+          0.05164015301990861
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          0.0001615178913505921,
+          0.0005234312072620069,
+          0.001430654917455565,
+          0.004522903711791577
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.0004348746124015819,
+          0.0020630037513481186,
+          0.0062079027351981024,
+          0.0304558680592839
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.0013770905075292687,
+          0.005530347211449773,
+          0.01627273495424136,
+          0.051639475484273424
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          0.00016151706198552605,
+          0.0005234260466288934,
+          0.00143063297938128,
+          0.00452284436982104
+        ],
+        "supervised_divergence_objective_unweighted": 0.0003435454363952967,
+        "supervised_divergence_objective_weighted": 0.0003435454363952967,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          9.905425008317735e-06,
+          9.117385826098084e-05,
+          0.0003636806930006889,
+          0.001913405899041802
+        ],
+        "seconds": 1.1048473939299583
+      },
+      "elapsed_seconds": 3394.44815181382
+    }
+  ],
+  "retention_errors": [],
+  "all_intermediate_vectors_retained": false,
+  "warm_restart": true,
+  "exact_optimizer_continuation_claim": false,
+  "validation_seen": false
+}

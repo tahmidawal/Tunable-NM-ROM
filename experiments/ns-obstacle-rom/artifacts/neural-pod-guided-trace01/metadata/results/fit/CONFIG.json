@@ -1,0 +1,93 @@
+{
+  "schema": "ns-obstacle-supervised-trace-warm-LBFGS-v1",
+  "parent_bank_sha256": "011374bfb8251b6f5b8e78f8e10d8be67d2cf3975072dcb40da65391ba85af07",
+  "parent_receipt_sha256": "4cdb93a83bdd4c44001ddb7f678989e439645c6213c39f8f7d46ad919479bf4c",
+  "parent_review_sha256": "4fed9d15fe6dda98fbb27587a3563c7c4763627c385f7da806e78531dcb7a911",
+  "parent_selected_theta_sha256": "f12f0190766742823e91d7d814d346da1667646771fb4d6c17003e8fa649e66b",
+  "teacher_identity": {
+    "split": "training",
+    "Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "reference_qualification": {
+      "gate": "G2_FIXED_FINITE_CHANNEL_V1",
+      "passed": true,
+      "qualification_scope": {
+        "scope_contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+        "amendment_id": "FD1-2026-10-28",
+        "original_G2_status": "not_admitted_domain_sensitivity_failed",
+        "domain_sensitivity_status": "failed",
+        "domain_independence_admitted": false,
+        "required_scope": "prescribed original fixed finite DFG channel and boundary conditions",
+        "geometry_population_and_numerical_thresholds_unchanged": true
+      }
+    },
+    "prepared_manifest_sha256": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f",
+    "volume_manifest_sha256": "21563bc7a114147716d300e8f1981e664da5ae728db6b1aa21ee3aa8bd947866",
+    "training_array_sha256": "6a65cbcd387c32b9ab70fc3956335a975e40b62646370fdf3413c7df4bfd8f30",
+    "singular_values": [
+      6.262405845690011,
+      0.35081375209372717,
+      0.02469633315548602,
+      0.0018166794857509315
+    ],
+    "arrays": {
+      "points": "2173f1395f76b26604163c4192f0098c1566a0eff30dce25f45c3cbe87a66aa9",
+      "weights": "f23fbca65af3cb31ecb9f1987c42a1b608111ffe0aad5f55034eecad0c4c3fb0",
+      "values": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+      "gradients": "88350f192dccb0c12203967816042f1a16e0234ad3520c9e853ca7f2c33e4b33"
+    }
+  },
+  "config": {
+    "adam_learning_rate": 0.001,
+    "adam_steps": 4000,
+    "batch_points": 4096,
+    "block_points": 4096,
+    "depth": 3,
+    "full_check_every": 200,
+    "gradient_tolerance": 1e-10,
+    "history_size": 10,
+    "lbfgs_steps": 300,
+    "line_search_steps": 20,
+    "rank": 4,
+    "seed": 29102026,
+    "split": "training",
+    "teacher_definition": "prepared_training_POD",
+    "width": 128
+  },
+  "protocol": {
+    "max_iterations": 10000,
+    "checkpoint_every": 250,
+    "history_size": 10,
+    "line_search_steps": 20,
+    "gradient_tolerance": 1e-10,
+    "warm_restart": true,
+    "new_adam_steps": 0,
+    "supervised_divergence_weight": 1.0
+  },
+  "prior_adam_steps": 4000,
+  "prior_lbfgs_steps": 3892,
+  "prior_allocation_seconds": 3483,
+  "warm_restart": true,
+  "curvature_reset": true,
+  "exact_optimizer_continuation_claim": false,
+  "all_intermediate_vectors_retained": false,
+  "retained_vector_audit_scope": "periodic and final checkpoints only; all accepted/trial scalar records and hashes retained",
+  "selection": "minimum accepted/initial combined full-training objective; no development/validation selection",
+  "objective_changed_from_parent": true,
+  "base_definition": "unchanged mode-weighted normalized value plus gradient error",
+  "added_term_definition": "lambda times mode-weighted squared trace(predicted dimensionless gradient minus actual FE teacher gradient), divided by frozen teacher gradient norm squared",
+  "absolute_incompressibility_enforced": false,
+  "causal_comparison_to_equal_additional_base_training": false,
+  "source_sha256": "bea06fdc3bd4ad9dd5a44d0fc2c83c0de5a9ab6e996b07f5690ccb75ecc6bb7e",
+  "parent_full_training_objective": 0.0028777550345297376
+}

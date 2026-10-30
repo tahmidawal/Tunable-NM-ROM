@@ -2039,13 +2039,43 @@
       "scientific_review_pending": false,
       "retention_review_pending": false,
       "retention_review_passed": true
+    },
+    {
+      "source_commit": "63d7c84215c6bf48ac6a2a6ea7d24ae80857b3d7",
+      "release_sha256": "b918c6b408bccae2f2959f6c0ff5550fd71a79b8f27274f93a3db8dc77fed8b4",
+      "source_manifest_sha256": "3d5b0da8510e2570cd835bc6a4df4a3f24fba4c55b61276038240ddaf16f1675",
+      "actual_full_preflight_passed": true,
+      "actual_accepted_model_and_development_verified": true,
+      "no_JAX_or_native_import": true,
+      "namespace_bytes": {
+        "ns-obstacle-rom-20261027": 27261997306,
+        "ns-obstacle-2d-20261027": 4014258810,
+        "ns-obstacle-3d-20261027": 133799
+      },
+      "maximum_global_bytes": 47650952731,
+      "queue_before": "",
+      "time_unix": 1793350575.9880083,
+      "job_id": 6660183,
+      "submitted_once": true,
+      "queue_after": "6660183|ctol_nsobsrom_teacherdiag|PENDING\n",
+      "attempt": "neural-pod-guided-diagnostic08",
+      "budget_bucket": "ROM",
+      "state_last_observed": "PENDING",
+      "allocation_seconds_reserved": 900,
+      "gpus": 1,
+      "validation_allowed": false,
+      "physical_admission": false,
+      "scientific_review_pending": true,
+      "retention_review_pending": true
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6660183
+  ],
   "completed_gpu_hours": 12.442777777777778,
-  "note": "Outputpolish savedmodel/factor/all205raw audits pass; same339point actualfixture then PDE08 pending. No physicalclaim.",
+  "note": "Output-polished709 bank PDE08 job6660183 submitted once, alltraining/model/fixture audits accepted; validation closed.",
   "total_allocated_gpu_hours_completed": 12.442777777777778,
-  "last_accounting_utc": "2026-10-30T08:44:29.070729+00:00",
+  "last_accounting_utc": "2026-10-30T08:57:19.676227+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

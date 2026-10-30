@@ -1,4 +1,4 @@
-"""Supervised trace-error warm refinement; no Adam, validation or exact continuation."""
+"""Supervised trace plus boundary-traction warm refinement; no Adam, validation or exact continuation."""
 from pathlib import Path
 import argparse,hashlib,json,os,sys,time
 from fe_adapter import sha_file,CAPS
@@ -10,7 +10,7 @@ JOB='/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-t
 
 def verify(plan_path,release_path,inventory_path):
     plan=json.loads(Path(plan_path).read_text());r=json.loads(Path(release_path).read_text());root=Path(plan_path).parent
-    expected={'schema':'ns-obstacle-supervised-traction-refinement-release-v1','authorized':True,'single_execution':True,'job_directory':JOB,'output_directory':JOB+'/results/fit','plan_sha256':sha_file(plan_path),'runtime_inventory_sha256':sha_file(inventory_path),'launcher_sha256':sha_file(__file__),'pilot_source_sha256':pilot_digest(),'allocation_seconds':3600,'outer_timeout_seconds':3585,'outer_kill_grace_seconds':10,'resume_allowed':False,'validation_allowed':False,'new_reference_solves_allowed':False,'automatic_retry':False,'raw_plus_archive_reservation_bytes':4*2**30,'supervised_divergence_weight':1.0,'traction_weight':1.0,'parent_base_objective_replay_required':True,'new_adam_steps':0,'warm_restart':True,'exact_optimizer_continuation_claim':False,'estimated_peak_host_bytes':16*2**30,'allocation_memory_bytes':64*2**30,'resource_check_sha256':sha_file(root/'RESOURCE-CHECK.json')}
+    expected={'schema':'ns-obstacle-supervised-traction-refinement-release-v1','authorized':True,'single_execution':True,'job_directory':JOB,'output_directory':JOB+'/results/fit','plan_sha256':sha_file(plan_path),'runtime_inventory_sha256':sha_file(inventory_path),'launcher_sha256':sha_file(__file__),'pilot_source_sha256':pilot_digest(),'allocation_seconds':3600,'outer_timeout_seconds':3585,'outer_kill_grace_seconds':10,'resume_allowed':False,'validation_allowed':False,'new_reference_solves_allowed':False,'automatic_retry':False,'raw_plus_archive_reservation_bytes':6*2**30,'supervised_divergence_weight':1.0,'traction_weight':1.0,'parent_base_objective_replay_required':True,'new_adam_steps':0,'warm_restart':True,'exact_optimizer_continuation_claim':False,'estimated_peak_host_bytes':16*2**30,'allocation_memory_bytes':64*2**30,'resource_check_sha256':sha_file(root/'RESOURCE-CHECK.json')}
     if any(type(r.get(k)) is not type(v) or r[k]!=v for k,v in expected.items()):raise ValueError('exact separate successor execution release required')
     if plan['schema']!='ns-obstacle-supervised-traction-refinement-plan-v1' or set(plan['inputs'])!={'prepared','preparation_release','parent_bank','parent_receipt','parent_review','training_coefficients_source'}:raise ValueError('training-only input schema')
     if sha_file(root/'CONFIG.json')!=plan['config_sha256'] or sha_file(root/'SCOPE-AMENDMENT.json')!=plan['scope_amendment_sha256']:raise ValueError('recipe or user scope changed')

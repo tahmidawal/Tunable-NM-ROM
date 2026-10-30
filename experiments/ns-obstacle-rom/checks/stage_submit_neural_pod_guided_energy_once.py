@@ -14,7 +14,7 @@ for row in rows:
  raw=subprocess.check_output(['git','-c','gc.auto=0','show',a.source_commit+':'+str(Path(row['source']).resolve().relative_to(B.parents[1]))]);assert len(raw)==row['bytes'] and hashlib.sha256(raw).hexdigest()==row['sha256']
 initial=f'''from pathlib import Path
 import subprocess,json,shutil
-p=Path({job!r});base=p.parent.parent;names=['ns-obstacle-rom-20261027','ns-obstacle-2d-20261027','ns-obstacle-3d-20261027'];u={{n:int(subprocess.check_output(['du','-sb',str(base/n)]).split()[0]) for n in names}};total=sum(u.values())+18*2**30+256*2**20+{sum(x['bytes'] for x in rows)};assert total<50*2**30 and shutil.disk_usage(base).free>16*2**30
+p=Path({job!r});base=p.parent.parent;names=['ns-obstacle-rom-20261027','ns-obstacle-2d-20261027','ns-obstacle-3d-20261027'];u={{n:int(subprocess.check_output(['du','-sb',str(base/n)]).split()[0]) for n in names}};total=sum(u.values())+18*2**30+256*2**20+{sum(x['bytes'] for x in rows)};assert total<50*2**30 and shutil.disk_usage(base).free>20*2**30
 q=subprocess.check_output(['squeue','-u','tawal01','-h','-o','%i|%j|%T'],text=True);assert sum('ctol_nsobs' in x for x in q.splitlines())<2;p.mkdir(exist_ok=False);print(json.dumps({{'namespace_bytes':u,'maximum_global_bytes':total,'queue':q}}))
 '''
 pre=json.loads(subprocess.check_output(['ssh','tufts-login',py,'-'],input=initial.encode()));(P/'STAGING-PREFLIGHT.json').write_text(json.dumps(pre,indent=2)+'\n')
@@ -32,7 +32,7 @@ def sha(x):
 assert sha('TRAINING-RELEASE.json')=={a.release_sha256!r}
 from accuracy_v2.energy_refine_launch import verify
 plan,r,inputs,config=verify('PLAN.json','TRAINING-RELEASE.json','RUNTIME-INVENTORY.json');assert 'jax' not in sys.modules and 'ngsolve' not in sys.modules
-base=p.parent.parent;names=['ns-obstacle-rom-20261027','ns-obstacle-2d-20261027','ns-obstacle-3d-20261027'];u={{n:int(subprocess.check_output(['du','-sb',str(base/n)]).split()[0]) for n in names}};total=sum(u.values())+18*2**30+256*2**20;assert total<50*2**30 and shutil.disk_usage(base).free>16*2**30
+base=p.parent.parent;names=['ns-obstacle-rom-20261027','ns-obstacle-2d-20261027','ns-obstacle-3d-20261027'];u={{n:int(subprocess.check_output(['du','-sb',str(base/n)]).split()[0]) for n in names}};total=sum(u.values())+18*2**30+256*2**20;assert total<50*2**30 and shutil.disk_usage(base).free>20*2**30
 q=subprocess.check_output(['squeue','-u','tawal01','-h','-o','%i|%j|%T'],text=True);assert sum('ctol_nsobs' in x for x in q.splitlines())<2
 assert not Path('TRAINING-CLAIM.json').exists() and not Path('SUBMISSION-CLAIM.json').exists()
 Path('SOURCE_COMMIT.txt').write_text({source!r}+'\\n');files=sorted(x for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts);Path('SOURCE-SHA256SUMS').write_text(''.join(sha(x)+'  '+str(x.relative_to(p))+'\\n' for x in files));subprocess.run(['sha256sum','--status','-c','SOURCE-SHA256SUMS'],check=True)

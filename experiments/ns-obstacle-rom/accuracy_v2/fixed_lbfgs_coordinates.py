@@ -42,12 +42,19 @@ def direction(gradient_theta,pairs,scale):
     for s,y in pairs:
         s,_=validate(s,d);y,_=validate(y,d);sy=float(np.dot(s,y))
         if not np.isfinite(sy) or sy<=0:raise ValueError('retained positive curvature pairs required')
-        history.append((s,y,1/sy))
+        rho=1/sy
+        if not np.isfinite(rho) or rho<=0:raise FloatingPointError("invalid reciprocal curvature")
+        history.append((s,y,rho))
     for s,y,rho in reversed(history):
         a=rho*np.dot(s,q);alpha.append(a);q-=a*y
     gamma=1.
     if history:
-        s,y,_=history[-1];scaled_y=d*y;gamma=float(np.dot(s,y)/np.dot(scaled_y,scaled_y))
+        s,y,_=history[-1]
+        with np.errstate(over="ignore",under="ignore",invalid="ignore"):
+            scaled_y=d*y;denominator=float(np.dot(scaled_y,scaled_y))
+        if not np.isfinite(denominator) or denominator<=0:raise FloatingPointError("invalid scaled curvature denominator")
+        gamma=float(np.dot(s,y)/denominator)
+        if not np.isfinite(gamma) or gamma<=0:raise FloatingPointError("invalid coordinate midpoint scale")
     q=gamma*d*(d*q)
     for (s,y,rho),a in zip(history,reversed(alpha)):q+=s*(a-rho*np.dot(y,q))
     out=-q;slope=float(np.dot(g,out));reset=not np.isfinite(slope) or slope>=0

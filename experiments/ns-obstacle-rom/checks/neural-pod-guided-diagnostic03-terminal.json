@@ -1,0 +1,420 @@
+{
+  "job_id": 6652443,
+  "terminal": "6652443|COMPLETED|256|0:0|pax049|\n6652443.batch|COMPLETED|256|0:0|pax049|8264024K\n6652443.extern|COMPLETED|256|0:0|pax049|\n",
+  "files": {
+    "results/diagnostic/DIAGNOSTIC.json": {
+      "sha256": "276ea528b10e3e542a23b57f3e05599e70fe99bfa52e1f618c6f903ac85d9295",
+      "bytes": 495
+    },
+    "results/runtime.json": {
+      "sha256": "1b6c0b096fde319ee69d4cb35bbcf5da59cccbae7158f5c1ac749e66c7debbf5",
+      "bytes": 301
+    },
+    "results/diagnostic/status_007.json": {
+      "sha256": "b4682e61b36b3cf9ac3fbd0519868483573ef946b7f3319631741e7a4b88ab7e",
+      "bytes": 15982
+    }
+  },
+  "diagnostic": {
+    "schema": "ns-obstacle-pod-guided-neural-diagnostic-v2",
+    "status": "completed_diagnostic_pending_independent_review",
+    "model_sha256": "aad67694e5a2c11b7a736e8e013723e811f6093c2b553c097a13f2e4bc48d2d8",
+    "original_bank_gate_passed": false,
+    "new_model_gate_not_yet_admitted": true,
+    "physical_admission": false,
+    "eligible_accuracy": false,
+    "validation_seen": false,
+    "reference_fit_initialization_used": false,
+    "training_or_quadrature_fit_performed": false,
+    "matched_accuracy_or_speedup_claim": false,
+    "cases": [
+      {
+        "Re": 16.875,
+        "eligible_accuracy": false,
+        "physical_admission": false,
+        "diagnostic_only": true,
+        "raw_invocation": {
+          "record_file": "pod_guided_neural_r4_16.875_raw_invocation.json",
+          "record_sha256": "a5368437e4dde3c9ac812fbba879746a696ee63bfbdaedd5109c2bb360a5c732",
+          "array_file": "pod_guided_neural_r4_16.875_raw_invocation.npz",
+          "array_sha256": "29d947ac0fa6c3022beb4748a3e2e39cded5c119293b6d8de944da340592e968"
+        },
+        "diagnostic_arrays": {
+          "record_file": "pod_guided_neural_r4_16.875_diagnostic_arrays.json",
+          "record_sha256": "59d7f45ffa6c08469950dedd888aeb7af3e5cdc5f2746f3ec0aa7ec9c4768917",
+          "array_file": "pod_guided_neural_r4_16.875_diagnostic_arrays.npz",
+          "array_sha256": "a22b882cdd9181e9e61b2a6d5a0b9a10c7fd29d7a0e7944bdc124e1b0c6b28e8"
+        },
+        "scores": {
+          "velocity_numerator": 0.006521755938081389,
+          "velocity_denominator": 10.459943368488194,
+          "velocity_relative": 0.0006234982072397203,
+          "pressure_numerator": 0.0032572028601693696,
+          "pressure_denominator": 9.455929453871821,
+          "pressure_scaled": 0.0003444614171519307,
+          "volume": 89.41460183660062,
+          "U": 1.0,
+          "pressure_shift_applied": false,
+          "Re": 16.875,
+          "model": "bank_r4",
+          "force_coefficient": [
+            6.1316413354048995,
+            0.027352450909486858
+          ],
+          "drag_relative": 0.0021804013495563745,
+          "transverse_absolute": 0.00716890993346201,
+          "divergence": 0.00752644364965041,
+          "inlet_flux": 4.099999999999973,
+          "outlet_flux": 4.100219692346462,
+          "mass": 5.358349914365833e-05,
+          "boundary_trace": 2.865050668169768e-10,
+          "velocity_gradient_L2_error": 0.11696254907911294,
+          "velocity_gradient_reference_L2_norm": 11.888700496624104,
+          "velocity_gradient_relative_denominator": 11.888700496624104,
+          "velocity_gradient_relative": 0.009838127313605506,
+          "velocity_gradient_scaled": 0.012369228181077588,
+          "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+          "reference_force_definition": "physical_symmetric",
+          "target_checks": {
+            "velocity": true,
+            "pressure": true,
+            "drag": true,
+            "transverse": false,
+            "divergence": false,
+            "mass": true,
+            "boundary_trace": true
+          },
+          "accuracy_targets_passed": false,
+          "physical_admission": false
+        },
+        "solver_status": "stationary",
+        "full_direct_tensor_relative_gap": 1.254952179723955e-15,
+        "full_direct_tensor_denominator": 2.6021790840288412,
+        "jacobian_check": {
+          "samples": [
+            {
+              "step": 0.0001,
+              "relative_error": 6.983185867482975e-13,
+              "signal": 0.0001698870451594307,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            },
+            {
+              "step": 1e-05,
+              "relative_error": 5.692445825162557e-11,
+              "signal": 1.6988704516036798e-05,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            },
+            {
+              "step": 1e-06,
+              "relative_error": 3.268886137117279e-10,
+              "signal": 1.698870451508884e-06,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            }
+          ],
+          "passed": true,
+          "interpretation": "quadratic centered difference; roundoff plateau"
+        },
+        "diagnostic_numerical_targets_passed": false,
+        "representation_diagnostic": {
+          "velocity_numerator": 0.006185894396654883,
+          "velocity_denominator": 10.459943368488194,
+          "velocity_relative": 0.0005913888994170481,
+          "pressure_numerator": 0.0008029579319475439,
+          "pressure_denominator": 9.455929453871821,
+          "pressure_scaled": 8.491581243965023e-05,
+          "volume": 89.41460183660062,
+          "U": 1.0,
+          "pressure_shift_applied": false,
+          "Re": 16.875,
+          "model": "bank_r4",
+          "force_coefficient": [
+            6.131161602821356,
+            0.02734134006866833
+          ],
+          "drag_relative": 0.0021019919047083843,
+          "transverse_absolute": 0.007157799092643483,
+          "divergence": 0.007520029490885023,
+          "inlet_flux": 4.099999999999973,
+          "outlet_flux": 4.100553506593213,
+          "mass": 0.0001350016081073842,
+          "boundary_trace": 2.8620691270873586e-10,
+          "velocity_gradient_L2_error": 0.11690383292236259,
+          "velocity_gradient_reference_L2_norm": 11.888700496624104,
+          "velocity_gradient_relative_denominator": 11.888700496624104,
+          "velocity_gradient_relative": 0.009833188493187999,
+          "velocity_gradient_scaled": 0.012363018727312436,
+          "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+          "reference_force_definition": "physical_symmetric",
+          "target_checks": {
+            "velocity": true,
+            "pressure": true,
+            "drag": true,
+            "transverse": false,
+            "divergence": false,
+            "mass": true,
+            "boundary_trace": true
+          },
+          "accuracy_targets_passed": false,
+          "physical_admission": false,
+          "kind": "representation_only_not_PDE_solution",
+          "projection_velocity": {
+            "squared_errors": [
+              3.826528948656629e-05
+            ],
+            "squared_reference_norms": [
+              3.6716427220952395
+            ],
+            "numerical_rank": 8,
+            "singular_values": [
+              1.0018248473009794,
+              1.0002660789777313,
+              0.9998973020173705,
+              0.9986327043548487,
+              0.2533753154890661,
+              0.21289576114242917,
+              0.16169176055464052,
+              0.07801053546714971
+            ]
+          },
+          "projection_pressure": {
+            "squared_errors": [
+              6.447414404774752e-07
+            ],
+            "squared_reference_norms": [
+              2.577148793559053
+            ],
+            "numerical_rank": 4,
+            "singular_values": [
+              0.9999999999999999,
+              0.9999999999999998,
+              0.9999999999999997,
+              0.9999999999999996
+            ]
+          },
+          "achieved_state": [
+            -1.9124287764306436,
+            0.12360852123974818,
+            0.0013847993864963522,
+            -0.0005386625645015868,
+            0.0032185180268948844,
+            0.0008752867773240085,
+            -6.25156606619397e-05,
+            0.0010489307365545645,
+            0.5494860259025725,
+            1.503600956278348,
+            0.11996764127816283,
+            0.002277164991553991
+          ]
+        }
+      },
+      {
+        "Re": 23.125,
+        "eligible_accuracy": false,
+        "physical_admission": false,
+        "diagnostic_only": true,
+        "raw_invocation": {
+          "record_file": "pod_guided_neural_r4_23.125_raw_invocation.json",
+          "record_sha256": "c74a708e53484521565861c38fee6b4129b63627d189a3e7e2327214fb567818",
+          "array_file": "pod_guided_neural_r4_23.125_raw_invocation.npz",
+          "array_sha256": "f3f01a5be62fa598c034049d2f1ee83ba9c74279c4752dbc6c02df732f14bb94"
+        },
+        "diagnostic_arrays": {
+          "record_file": "pod_guided_neural_r4_23.125_diagnostic_arrays.json",
+          "record_sha256": "a4bfad757e5914ecee5dfa27edbb57794e7a283276a8f402350b83c33317e6ba",
+          "array_file": "pod_guided_neural_r4_23.125_diagnostic_arrays.npz",
+          "array_sha256": "864eb5165ef1ea2592e9a50109843f61e18ddea9a3d9c2525ea43197bd19bc89"
+        },
+        "scores": {
+          "velocity_numerator": 0.007430208122491897,
+          "velocity_denominator": 10.454741788525928,
+          "velocity_relative": 0.0007107022127171563,
+          "pressure_numerator": 0.002330212441088267,
+          "pressure_denominator": 9.455929453871821,
+          "pressure_scaled": 0.00024642870406929053,
+          "volume": 89.41460183660062,
+          "U": 1.0,
+          "pressure_shift_applied": false,
+          "Re": 23.125,
+          "model": "bank_r4",
+          "force_coefficient": [
+            5.194645720380329,
+            0.0083566073452979
+          ],
+          "drag_relative": 0.003089933911869854,
+          "transverse_absolute": 0.003926419431749549,
+          "divergence": 0.008913113030115499,
+          "inlet_flux": 4.099999999999973,
+          "outlet_flux": 4.100359946831219,
+          "mass": 8.779191005996395e-05,
+          "boundary_trace": 3.601122016173553e-10,
+          "velocity_gradient_L2_error": 0.1387012167565993,
+          "velocity_gradient_reference_L2_norm": 12.39578866486992,
+          "velocity_gradient_relative_denominator": 12.39578866486992,
+          "velocity_gradient_relative": 0.011189382177003646,
+          "velocity_gradient_scaled": 0.014668173809165502,
+          "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+          "reference_force_definition": "physical_symmetric",
+          "target_checks": {
+            "velocity": true,
+            "pressure": true,
+            "drag": true,
+            "transverse": false,
+            "divergence": false,
+            "mass": true,
+            "boundary_trace": true
+          },
+          "accuracy_targets_passed": false,
+          "physical_admission": false
+        },
+        "solver_status": "stationary",
+        "full_direct_tensor_relative_gap": 1.249822438195107e-15,
+        "full_direct_tensor_denominator": 2.3337778792019757,
+        "jacobian_check": {
+          "samples": [
+            {
+              "step": 0.0001,
+              "relative_error": 9.716734293629732e-13,
+              "signal": 0.00016901152225578297,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            },
+            {
+              "step": 1e-05,
+              "relative_error": 1.3001882300858655e-11,
+              "signal": 1.690115222561197e-05,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            },
+            {
+              "step": 1e-06,
+              "relative_error": 1.0774377915239389e-10,
+              "signal": 1.6901152225431659e-06,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            }
+          ],
+          "passed": true,
+          "interpretation": "quadratic centered difference; roundoff plateau"
+        },
+        "diagnostic_numerical_targets_passed": false,
+        "representation_diagnostic": {
+          "velocity_numerator": 0.007068405786783856,
+          "velocity_denominator": 10.454741788525928,
+          "velocity_relative": 0.0006760956826826108,
+          "pressure_numerator": 0.0005216370515546168,
+          "pressure_denominator": 9.455929453871821,
+          "pressure_scaled": 5.516507436939766e-05,
+          "volume": 89.41460183660062,
+          "U": 1.0,
+          "pressure_shift_applied": false,
+          "Re": 23.125,
+          "model": "bank_r4",
+          "force_coefficient": [
+            5.193954267342244,
+            0.008288557060036296
+          ],
+          "drag_relative": 0.0029564138183715226,
+          "transverse_absolute": 0.0038583691464879446,
+          "divergence": 0.008906581608285608,
+          "inlet_flux": 4.099999999999973,
+          "outlet_flux": 4.100662982181318,
+          "mass": 0.00016170297105983186,
+          "boundary_trace": 3.5992330313015184e-10,
+          "velocity_gradient_L2_error": 0.13861291033231468,
+          "velocity_gradient_reference_L2_norm": 12.39578866486992,
+          "velocity_gradient_relative_denominator": 12.39578866486992,
+          "velocity_gradient_relative": 0.011182258271726454,
+          "velocity_gradient_scaled": 0.014658835073643479,
+          "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+          "reference_force_definition": "physical_symmetric",
+          "target_checks": {
+            "velocity": true,
+            "pressure": true,
+            "drag": true,
+            "transverse": false,
+            "divergence": false,
+            "mass": true,
+            "boundary_trace": true
+          },
+          "accuracy_targets_passed": false,
+          "physical_admission": false,
+          "kind": "representation_only_not_PDE_solution",
+          "projection_velocity": {
+            "squared_errors": [
+              4.9962360366639504e-05
+            ],
+            "squared_reference_norms": [
+              5.073240666132258
+            ],
+            "numerical_rank": 8,
+            "singular_values": [
+              1.0018248473009794,
+              1.0002660789777313,
+              0.9998973020173705,
+              0.9986327043548487,
+              0.2533753154890661,
+              0.21289576114242917,
+              0.16169176055464052,
+              0.07801053546714971
+            ]
+          },
+          "projection_pressure": {
+            "squared_errors": [
+              2.7210521355459426e-07
+            ],
+            "squared_reference_norms": [
+              2.5930107080078453
+            ],
+            "numerical_rank": 4,
+            "singular_values": [
+              0.9999999999999999,
+              0.9999999999999998,
+              0.9999999999999997,
+              0.9999999999999996
+            ]
+          },
+          "achieved_state": [
+            -2.2501771833605435,
+            -0.10366343497481227,
+            -0.00022798574800522882,
+            0.0007149640672663134,
+            0.0037353994159867844,
+            0.001379436973106997,
+            -0.0002202223455269706,
+            0.000897913797449858,
+            0.5431933065858978,
+            1.511177640977073,
+            -0.11955335675077972,
+            -0.0007745214698004247
+          ]
+        }
+      }
+    ],
+    "elapsed_seconds": 202.9404564849101,
+    "bank_evaluator_class": "accuracy_v2.fast_spatial_bank.FastSpatialBank",
+    "model": {
+      "record_file": "pod_guided_neural_r4_model.json",
+      "record_sha256": "0dd6c64c4989bd8f6f3986ab2ff0d8723c1806e402703c938fddca16ee1b84ce",
+      "array_file": "pod_guided_neural_r4_model.npz",
+      "array_sha256": "00775a1b3ed4feb92b550e138087d06e2b3610c3721775a40db1344e500dbe31"
+    }
+  },
+  "runtime": {
+    "python": "3.13.2",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "optax": "0.2.8",
+    "numpy": "2.5.0",
+    "scipy": "1.18.0",
+    "jax_backend": "gpu",
+    "jax_x64": true,
+    "matmul_precision": "highest",
+    "python_executable_sha256": "19aabe03e346a7ed57979d4a429c0eb22088e1e7e51397401640d52c166808f9"
+  },
+  "stderr": {
+    "slurm-6652443.err": ""
+  }
+}

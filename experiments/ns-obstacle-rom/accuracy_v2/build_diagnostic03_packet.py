@@ -19,7 +19,7 @@ def build(output,model_descriptors,model_review):
     shell=(ROOT/'staging/neural-pod-guided01/native.sh').read_text().replace('ctol_nsobsrom_teacher','ctol_nsobsrom_teacherdiag').replace('01:00:00','00:15:00').replace('3585s','885s')
     body=(ROOT/'staging/neural-pod-guided01/native-body.sh').read_text().replace('/neural-pod-guided01','/neural-pod-guided-diagnostic03').replace('-m accuracy_v2.launch','-m accuracy_v2.diagnostic03_launch').replace('TRAINING-RELEASE.json','DIAGNOSTIC-RELEASE.json').replace('results/TRAINING-RESULT.json','results/diagnostic/DIAGNOSTIC.json').replace('training_checkpoint_exported_pending_independent_review','completed_diagnostic_pending_independent_review').replace('training_completed','diagnostic_completed').replace('supervised_neural_teacher','successor_neural_weak_LS')
     (out/'native.sh').write_text(shell);(out/'native-body.sh').write_text(body)
-    pending=['accuracy_v2/diagnostic02_launch.py'];found={'MODEL-CONTRACT.json','FD1-SCOPE-CONTRACT.json'}
+    pending=['accuracy_v2/diagnostic03_launch.py'];found={'MODEL-CONTRACT.json','FD1-SCOPE-CONTRACT.json'}
     while pending:
         name=pending.pop()
         if name in found:continue

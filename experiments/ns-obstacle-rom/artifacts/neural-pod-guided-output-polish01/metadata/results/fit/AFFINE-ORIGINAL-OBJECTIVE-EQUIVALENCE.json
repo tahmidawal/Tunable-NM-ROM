@@ -1,0 +1,47 @@
+{
+  "arrays_sha256": "c08009de45a6a92c5e7f79f866b5921901405e387df227dea8b1d4a0917319ab",
+  "initial_objective_gap": 1.0842021724855044e-19,
+  "candidate_objective_gap": 2.168404344971009e-19,
+  "output_gradient_max_gap": 2.4605711123000644e-16,
+  "initial_allowance": 4.6077275328570977e-10,
+  "candidate_allowance": 1.3644432069924867e-11,
+  "gradient_allowance": 1.4314496191587127e-09,
+  "objective_cap": 1e-08,
+  "gradient_cap": 1e-08,
+  "roundoff_scales": [
+    {
+      "factor_matrix_frobenius": 48.187104217987105,
+      "factor_rhs_norm": 0.011299522642702238,
+      "delta_norm": 0.00030586806373230296,
+      "blocks": 4053,
+      "candidate_objective_allowance": 7.810089634244522e-14,
+      "gradient_allowance": 2.8906947422984057e-10
+    },
+    {
+      "factor_matrix_frobenius": 19.602729699525497,
+      "factor_rhs_norm": 0.010534032681748764,
+      "delta_norm": 0.015631736211713404,
+      "blocks": 4053,
+      "candidate_objective_allowance": 1.157263462029813e-11,
+      "gradient_allowance": 1.4314496191587127e-09
+    },
+    {
+      "factor_matrix_frobenius": 11.28949400557872,
+      "factor_rhs_norm": 0.009724373717907586,
+      "delta_norm": 0.00857151278630824,
+      "blocks": 4053,
+      "candidate_objective_allowance": 1.306363863180328e-12,
+      "gradient_allowance": 2.7698098259147914e-10
+    },
+    {
+      "factor_matrix_frobenius": 6.078057679529319,
+      "factor_rhs_norm": 0.012183044721259055,
+      "delta_norm": 0.010704391013289634,
+      "blocks": 4053,
+      "candidate_objective_allowance": 6.873326901039647e-13,
+      "gradient_allowance": 1.081662347197386e-10
+    }
+  ],
+  "tolerance_policy": "conservative dimension/accumulation and cancellation-scale arithmetic allowances with fixed caps; not a proved backward-error guarantee; reject ill-conditioned uncertainty rather than relax cap",
+  "passed": true
+}

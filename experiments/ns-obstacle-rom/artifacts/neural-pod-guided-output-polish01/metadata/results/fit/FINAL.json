@@ -1,0 +1,234 @@
+{
+  "status": "output_polish_complete_not_physical_admission",
+  "accepted_steps": 0,
+  "cumulative_adam_steps": 4000,
+  "cumulative_lbfgs_steps": 23160,
+  "full_evaluations": 3,
+  "initiated_evaluations": 3,
+  "optimizer_elapsed_seconds": 110.97192613501102,
+  "checkpoints": [
+    {
+      "iteration": 0,
+      "label": "initial",
+      "objective": 0.00048163507937882145,
+      "gradient_inf": 0.0001531308605702236,
+      "theta_sha256": "af85cd963c17d2f5d2da926fc9f5666244767ea1132c247d15ea0ad036e913a2",
+      "gradient_sha256": "c3f4a063242ec404e3e24376579e578137561c664bf99d024ac3e35b4f5383bb",
+      "pair_rho": [],
+      "array_file": "state-00000-initial.npz",
+      "array_sha256": "0c50f320763f59e85e20804586387defdd0ddcf474dada9e4a89e226fa78adbb",
+      "full_evaluations": 2,
+      "metrics": {
+        "base_objective": 0.00037868282395206964,
+        "combined_objective": 0.00048163507937882145,
+        "divergence_error_norm_squared_by_mode": [
+          0.00039030047241279774,
+          0.0007251216076153099,
+          0.0030055335964674045,
+          0.00756265693031667
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          4.577780853981971e-05,
+          6.862996515182124e-05,
+          0.00026423434633672256,
+          0.000662375440443576
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.00010993444667788116,
+          0.0003976354195000825,
+          0.0016791394488316462,
+          0.010639315889434849
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.00039029490225786663,
+          0.0007250768636337625,
+          0.003005308296614133,
+          0.007562082020921032
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          4.5777155223966926e-05,
+          6.86257303064352e-05,
+          0.0002642145388857164,
+          0.000662325086994032
+        ],
+        "supervised_divergence_objective_unweighted": 6.828370417269023e-05,
+        "supervised_divergence_objective_weighted": 6.828370417269023e-05,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.982128296574626e-06,
+          5.950706683916895e-06,
+          2.4638842178172012e-05,
+          0.0001701768123614264
+        ],
+        "parent_trace_combined_objective": 0.0004469665281247597,
+        "traction_objective_unweighted": 3.466855125406171e-05,
+        "traction_objective_weighted": 3.466855125406171e-05,
+        "parent_trace_gradient_l2": 0.0011770235617524342,
+        "traction_gradient_l2_unweighted": 0.0007407098681875299,
+        "combined_gradient_l2": 0.0007730985732286601,
+        "parent_traction_gradient_dot_unweighted": -6.681770849112917e-07,
+        "traction_error_norm_squared_by_mode": [
+          0.00032686031535995825,
+          0.34384257630281573,
+          1.8331618260610887,
+          5.76074683604708
+        ],
+        "traction_integrated_traction_error_by_component_mode": [
+          [
+            0.002652061135244879,
+            0.03545383345847392,
+            -0.34078103270151777,
+            0.041470225814526876
+          ],
+          [
+            -0.001645601329727469,
+            0.058518258472457896,
+            0.049817649875942435,
+            0.03612005089269424
+          ]
+        ],
+        "traction_predicted_norm_squared_by_mode": [
+          41.24158746843813,
+          9.661994923294142,
+          15.51678920940404,
+          4.019696825931344
+        ],
+        "traction_teacher_norm_squared_by_mode": [
+          41.35019831057947,
+          12.068817166575087,
+          22.36882544619028,
+          8.369209556417307
+        ],
+        "traction_weighted_numerator": 0.056272597719016645,
+        "seconds": 0.585875908844173
+      },
+      "elapsed_seconds": 22.52878420613706
+    },
+    {
+      "iteration": 0,
+      "label": "final",
+      "objective": 0.0004806629769315888,
+      "gradient_inf": 2.0877043157819566e-05,
+      "theta_sha256": "a28248ec3233fb7bf9290293adac3701cc63c00ba63a136bbed398716c1d65ed",
+      "gradient_sha256": "8170e551f78c536d0a96d6f644d001ef0b9eff3eab54a4924d4de673bec3c01a",
+      "pair_rho": [],
+      "array_file": "state-00000-final.npz",
+      "array_sha256": "3b06de5eac7f57b70d695b4be4d09a9c6565f79e98865a2003ed2e0153c8fa85",
+      "full_evaluations": 3,
+      "metrics": {
+        "base_objective": 0.00037809623925569937,
+        "combined_objective": 0.0004806629769315888,
+        "divergence_error_norm_squared_by_mode": [
+          0.00039026541570137615,
+          0.0007333166683725955,
+          0.003017919839511521,
+          0.007634083644089042
+        ],
+        "divergence_error_relative_squared_by_mode": [
+          4.5773696786089185e-05,
+          6.940559606432331e-05,
+          0.00026532329468126125,
+          0.0006686313504273738
+        ],
+        "gradient_relative_squared_by_mode": [
+          0.00010992385319739836,
+          0.0003973013430268826,
+          0.0016740062447126735,
+          0.010612860748187701
+        ],
+        "predicted_divergence_norm_squared_by_mode": [
+          0.00039025984549664183,
+          0.0007332718074118939,
+          0.0030176944074125165,
+          0.007633510961361217
+        ],
+        "predicted_divergence_relative_squared_by_mode": [
+          4.577304346439502e-05,
+          6.940135014731106e-05,
+          0.0002653034756037457,
+          0.0006685811920005705
+        ],
+        "supervised_divergence_objective_unweighted": 6.855290179548433e-05,
+        "supervised_divergence_objective_weighted": 6.855290179548433e-05,
+        "teacher_divergence_norm_squared_by_mode": [
+          6.120905773888217e-09,
+          4.6714435560555374e-08,
+          2.4741156524500733e-07,
+          6.137874596192836e-07
+        ],
+        "teacher_divergence_relative_squared_by_mode": [
+          7.179126657858074e-10,
+          4.421341263228173e-09,
+          2.1751423206680754e-08,
+          5.375858546145132e-08
+        ],
+        "value_relative_squared_by_mode": [
+          1.980968708680528e-06,
+          6.188785382513144e-06,
+          2.4896276651612538e-05,
+          0.00017129252491182798
+        ],
+        "parent_trace_combined_objective": 0.00044664914105118356,
+        "traction_objective_unweighted": 3.401383588040525e-05,
+        "traction_objective_weighted": 3.401383588040525e-05,
+        "parent_trace_gradient_l2": 0.000748552499053292,
+        "traction_gradient_l2_unweighted": 0.0007383874805869692,
+        "combined_gradient_l2": 0.00011657960523349704,
+        "parent_traction_gradient_dot_unweighted": -5.459780554850514e-07,
+        "traction_error_norm_squared_by_mode": [
+          0.000326969419450488,
+          0.3352149286199393,
+          1.8247838900283249,
+          5.739657329062269
+        ],
+        "traction_integrated_traction_error_by_component_mode": [
+          [
+            0.0026195142999420546,
+            0.036032238481621195,
+            -0.3398564726223816,
+            0.042669655803968864
+          ],
+          [
+            -0.0016300410125057983,
+            0.05787383442890992,
+            0.050164806180191354,
+            0.039186953795191326
+          ]
+        ],
+        "traction_predicted_norm_squared_by_mode": [
+          41.24161493492757,
+          9.667370417467275,
+          15.520837933095544,
+          4.022240313450988
+        ],
+        "traction_teacher_norm_squared_by_mode": [
+          41.35019831057947,
+          12.068817166575087,
+          22.36882544619028,
+          8.369209556417307
+        ],
+        "traction_weighted_numerator": 0.0552098900629559,
+        "seconds": 0.7249374473467469
+      },
+      "elapsed_seconds": 110.96688660793006
+    }
+  ],
+  "retention_errors": [],
+  "all_intermediate_vectors_retained": false,
+  "warm_restart": false,
+  "exact_optimizer_continuation_claim": false,
+  "validation_seen": false,
+  "polished_heads": 4,
+  "polish_complete": true
+}

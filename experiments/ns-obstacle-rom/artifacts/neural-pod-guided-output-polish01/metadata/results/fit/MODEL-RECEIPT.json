@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-supervised-neural-model-v2",
+  "bank_file": "spatial-bank-raw.npz",
+  "bank_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+  "selected_checkpoint": {
+    "objective": 0.0004806629769315888,
+    "checkpoint": "state-00000-final.npz"
+  },
+  "selected_theta_sha256": "a28248ec3233fb7bf9290293adac3701cc63c00ba63a136bbed398716c1d65ed",
+  "config_sha256": "aa13fc7b8dd444a49e129b88efc18b0b944c07ad5ca6981a59676d31029249cb",
+  "runtime_sha256": "f725facfbadd8ce689ca088de3d257f63de0ceff5abec02659a7a4243d97c264",
+  "optimizer_status": "output_polish_complete_not_physical_admission",
+  "warm_restart": false,
+  "objective_variant": "fixed_hidden_output_polish_same_trace_and_traction",
+  "selection": "minimum initial or complete polished candidate original objective",
+  "selected_theta_scope": "child parameters only",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "warm_child_model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+  "optimizer_counts_scope": "four output affine solves; zero new Adam/LBFGS; prior lineage retained",
+  "selected_base_objective": 0.00037809623925569937,
+  "cumulative_adam_steps": 4000,
+  "cumulative_lbfgs_steps": 23160,
+  "selected_full_replay_sha256": "ccd51de6d73947cf69b2e45f210e037a8eaf6314c88f12e65c3e47f27a9f8344",
+  "total_full_evaluations_including_serialized_replay": 4,
+  "total_training_replay_retention_seconds": 111.76569020748138,
+  "physical_admission": false
+}

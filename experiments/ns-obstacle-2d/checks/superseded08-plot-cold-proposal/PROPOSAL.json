@@ -1,0 +1,479 @@
+{
+  "schema": "ns-obstacle-superseded-plot-input-direct-history-cold-proposal-v1",
+  "proof_passed": true,
+  "deletion_authorized": false,
+  "deletions_performed": false,
+  "source_commit": "cccfedd076eb1bd03de56c5c72d29e960577ef65",
+  "mirror_commit": "f199b3651c2fe6ef7ef0e229a5f65235f117e011",
+  "advertised_mirror_ref": "refs/heads/codeonly/exp/2026-10-27-ns-obstacle-2d",
+  "advertised_mirror_tip": "f199b3651c2fe6ef7ef0e229a5f65235f117e011",
+  "latest_preserved_dataset": {
+    "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/neural-scanned-coordinate-diagnostic-plot-data/plots-with-scanned_coordinate-neural.npz",
+    "sha256": "c23b561ff624b5188c55b387608948657f9697914ef76a1b7a8abce34723fe1c",
+    "bytes": 18535669,
+    "inode": 27687627,
+    "device": 66306
+  },
+  "exact_paths": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/neural-output-polish-diagnostic-plot-data/plots-with-output_polish-neural.npz",
+      "repository_path": "experiments/ns-obstacle-2d/checks/neural-output-polish-diagnostic-plot-data/plots-with-output_polish-neural.npz",
+      "sha256": "11177510f5295886c2f9a477e405c7c9b528406c29541efc34ec43ffaec4d8ad",
+      "bytes": 17712278,
+      "allocated_bytes": 17715200,
+      "inode": 27687123,
+      "device": 66306,
+      "link_count": 1,
+      "git_blob": "ebf4ed20de7fd8be48f720ec92aede94cee49389",
+      "source_mirror_blobs": {
+        "cccfedd076eb1bd03de56c5c72d29e960577ef65": "ebf4ed20de7fd8be48f720ec92aede94cee49389",
+        "f199b3651c2fe6ef7ef0e229a5f65235f117e011": "ebf4ed20de7fd8be48f720ec92aede94cee49389"
+      },
+      "retained_metadata": {
+        "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/neural-output-polish-diagnostic-plot-data/METADATA.json",
+        "sha256": "c5f84bb14589d55cb336c9716b14815c42109c684239f461b033dc3672488585",
+        "decoded_exact_match": true
+      },
+      "scientific_arrays_byte_identical_in_latest": [
+        {
+          "key": "points_physical",
+          "shape": [
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "1c38496ba7f4be25a8b5dac7b6e1d2df8e7db0054d4769bf972496830f045454"
+        },
+        {
+          "key": "indices",
+          "shape": [
+            18000
+          ],
+          "dtype": "int64",
+          "buffer_sha256": "f1a9de8dd9bfb6c32400bb2d9b99f1b54a13185807fbd64aeba29f011df13715"
+        },
+        {
+          "key": "Re",
+          "shape": [
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "eba009836b5c74f18505f1e5bbb978fdb7699ac70e530072887e08f3dd2436ab"
+        },
+        {
+          "key": "weights_dimensionless_subset_not_for_global_metrics",
+          "shape": [
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "e4b2d5682b44e8840e2ffdfe96c86cc003e26eca129d76ecdaab16b3559b1edb"
+        },
+        {
+          "key": "reference_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "093e2e769653ef2ad5d1daeb771ba561b031a20dea3b57c243ea4545e9aa7cbf"
+        },
+        {
+          "key": "reference_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "86f159724bdcfe4f8896abe65d7b099057cec2ab5a4c8db04ce8a71721ee3dc8"
+        },
+        {
+          "key": "POD_r2_mixed_Galerkin_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "d4e048773fbe619925282a0b5b007f1df88b8d7a6fbb8d6ac5a0758a090bd2fe"
+        },
+        {
+          "key": "POD_r2_mixed_Galerkin_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "246dad2e7401347656d119a905c4aeb80976e78e179c6c0345d2077ff6fce419"
+        },
+        {
+          "key": "POD_r2_exact_tensor_weak_LS_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "ff6bb3a148ea0c82e5fc90c36368a919906d32e585871e86e32d4930f5789b30"
+        },
+        {
+          "key": "POD_r2_exact_tensor_weak_LS_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "3bdd7408b3c30b6dffa3d1f4e65af2c0024e154db1e11db357b27f833ef41b46"
+        },
+        {
+          "key": "POD_r2_coefficient_PCHIP_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "4fcd3344ffe74ff734e348fba11f75898960407857072fbaac4d6ac23d7dedc2"
+        },
+        {
+          "key": "POD_r2_coefficient_PCHIP_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "d97c38bcb72f883df34c67ada03b84cc773862621992fedf39cd2b20b6a2de19"
+        },
+        {
+          "key": "bank_r8_projection_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "a6b3ae62a116e36443b287053f4ace36d978c26172555880a5f29e600fe44ced"
+        },
+        {
+          "key": "bank_r8_projection_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "f662cbf8a67dbf3e3ab068e1528330da3b8b808aa43930cc529cc2b289eec1a1"
+        },
+        {
+          "key": "bank_r8_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "7112b9599def722e7c9e68c8c4660a57319190f0524db87b233b0087a2fca2e9"
+        },
+        {
+          "key": "bank_r8_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "9c27f398dde07276132fe12050621dc6b7715f56edfa29ae47b6da536a1b7cc0"
+        },
+        {
+          "key": "POD_r4_exact_tensor_weak_LS_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "ee8131d5442accea9d835f1c578de724cb2f525f3203ec623106295c30fb9beb"
+        },
+        {
+          "key": "POD_r4_exact_tensor_weak_LS_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "89f6caa4a2de96587df0a9b68bd267546c2f8786448c644d1a444097ead826cb"
+        },
+        {
+          "key": "POD_r4_coefficient_PCHIP_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "d75b6ab9542f11ce25946a057864ba9549d320bbea64c689dd2098cd2ff15de9"
+        },
+        {
+          "key": "POD_r4_coefficient_PCHIP_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "841c6088481c65c3a3cc7da63412156f727a665a9ff3659b0567c46063c2f9f7"
+        },
+        {
+          "key": "POD_r4_mixed_Galerkin_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "6ba506559777287789ae1e6b861d8b17c995d2535e7aab5d403b7bf2e743651e"
+        },
+        {
+          "key": "POD_r4_mixed_Galerkin_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "dfa4575ae8c1e3086611575b49147fa8f120bafc2380ae088d1651090f423be3"
+        },
+        {
+          "key": "POD_r8_exact_tensor_weak_LS_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "453b78cd8a18b830a28e8f17f411c68af52fc0975666ada03c30a543fd09fd3d"
+        },
+        {
+          "key": "POD_r8_exact_tensor_weak_LS_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "af8e9f5f93a3dec408ecf2b2e642fe8ae1c8a036da3f3f1f73a8669059f5d603"
+        },
+        {
+          "key": "POD_r8_coefficient_PCHIP_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "31306356df72592808b8be37a723778a5180ff28fed9e374bb8e2457997a2325"
+        },
+        {
+          "key": "POD_r8_coefficient_PCHIP_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "4ef3f825c1e1c1d20052ed61b04193bf3f55dcc124e7a08dd85e1bdab4e7fc26"
+        },
+        {
+          "key": "POD_r8_mixed_Galerkin_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "2ef524c77c08dc711fead193c00c757447231caf4aff036688f4d3c96c272aa2"
+        },
+        {
+          "key": "POD_r8_mixed_Galerkin_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "21346ac2d98eab9a6bf6261bad4577bee69ced3dbb8ace57960b34722b09052b"
+        },
+        {
+          "key": "pod_guided_neural_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "4fa3b2c0d2103d6e4ddb9b117897c7cd43e44bf717bd3599786873b7cd02fb9b"
+        },
+        {
+          "key": "pod_guided_neural_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "9844453944f840c5314534cbcd9a2e0bf2993fbb52618b39521a907ec9cfb93e"
+        },
+        {
+          "key": "refined_neural_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "207562a9bb5e1fc6652702eec5d6a03d59ba492315bc8800e1f76a8cc88abaea"
+        },
+        {
+          "key": "refined_neural_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "ee79434917fdc9a051781f694408b505bf432ec86e6ecabb398ec3c2609df0c1"
+        },
+        {
+          "key": "trace_neural_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "4b7313004849f76e3d62525e2bbfffd6d792a995c6557664617d7093ebeb1bbd"
+        },
+        {
+          "key": "trace_neural_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "16e8060fe633dbfcd28612f11ae878ea15e2b8ca90e2c9f15a46cc2a5c793b8a"
+        },
+        {
+          "key": "energy_neural_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "f7d83a2b726dc14f22dda708dcece18715918d192e0b4ae2a625d454b5abea3f"
+        },
+        {
+          "key": "energy_neural_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "4e8a7ebd510844ee38a2f240570df8a21319bc13ae2a344b16ea91f1f78e5675"
+        },
+        {
+          "key": "traction_neural_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "80f694423aece0343efb73c6b495a0c5a8c0b5ecb1eb75abcfd9dd2dac4a4be1"
+        },
+        {
+          "key": "traction_neural_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "e0b67733ada7299f0135f93c2044c6ef95f155d6a0863b6a92fa0fa30db1c11e"
+        },
+        {
+          "key": "residual_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "75773c0b79c89da1e3bd479f360da77e21343a4716aa341367e28932ebb4a271"
+        },
+        {
+          "key": "residual_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "543197947abec7bcbfe2cc4b1c0cd388cee2760d981be30d620f29a758286e75"
+        },
+        {
+          "key": "coordinate_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "97d16e8cb1703972ce34c646daddeeb00de1fc8ae1397f67f6356f4cd84c7213"
+        },
+        {
+          "key": "coordinate_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "6bfe7a522c373a7e9e0d9ce4d0c6df840be18a21cf5c20253b8fb8ef4586b5ad"
+        },
+        {
+          "key": "galerkin_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "6cd4a7567355e8214ad8054ec9fae2df14aeb3f8bd11d6eec31ae4f2db9878c5"
+        },
+        {
+          "key": "galerkin_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "1a3d72b3042caf287a1f707af782a1861a7c4aed3103733ff0bce70d61ad7787"
+        },
+        {
+          "key": "output_polish_r4_solve_velocity",
+          "shape": [
+            2,
+            18000,
+            2
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "aaed3f0d09839fc512794d2a521ca26f5d00b0ef79824e5f214b6bd7100037ee"
+        },
+        {
+          "key": "output_polish_r4_solve_pressure",
+          "shape": [
+            2,
+            18000
+          ],
+          "dtype": "float64",
+          "buffer_sha256": "9f03dd0aa9fbf7f789a413614abb220addd09c7e3d2166a20919ea4603d7df9c"
+        }
+      ]
+    }
+  ],
+  "logical_bytes": 17712278,
+  "conservative_allocated_reclaim_bytes": 17715200,
+  "recovery": "Read exact pinned source or mirror Git blob, require original length and SHA before restoring exact original path. Every original NPZ container is retained in both histories, all scientific buffers also in latest dataset, decoded original metadata separately retained. No current-tip-only recovery or Git pruning.",
+  "dependencies": "Root explicitly authorized proof for superseded plot inputs; final no-reader/root exact release required. Latest09c23b561f preserves all prior actual predictions and supports future scanned-coordinate comparison. Old containers retain exact original metadata_json via pinned complete blobs, plus decoded matching separate METADATA.json.",
+  "preserve": "Latest NPZ and every JSON/PNG/PDF/model/figure/history/source; no other deletion.",
+  "elapsed_seconds": 0.4609038778580725
+}

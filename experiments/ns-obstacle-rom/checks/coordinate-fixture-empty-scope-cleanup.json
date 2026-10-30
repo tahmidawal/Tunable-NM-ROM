@@ -1,0 +1,40 @@
+{
+  "authorization": "Root message: clear only own completed empty default36G scopes after fresh TasksCurrent0 and empty cgroup.procs; preserve commands and before/after",
+  "epoch": 1793344779.1582124,
+  "entries": [
+    {
+      "unit": "run-u43715.scope",
+      "execution_receipt": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/residual-composite-fixture01-EXECUTION.json",
+      "execution_sha256": "c2ffc904460bd9baf67275018c4eb8946067925e66e4faf878b7a8095dddbbc9",
+      "before": {
+        "ControlGroup": "/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43715.scope",
+        "TasksCurrent": "0",
+        "MemoryMax": "38654705664",
+        "Description": "/usr/bin/timeout --signal=TERM --kill-after=3s 50s /home/tahmid/Dev/.venv/bin/python -m accuracy_v2.residual_composite_fixture --model /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/residual-composite-fixture-input/spatial-bank-raw.npz --model-sha256 1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4 --points-fixture /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/fast-traction-bank-kernel/arrays.npz --points-sha256 d29ac3b9181ec6bbffee296328b135bb0ec687edbae4dd89589a73f252403e46 --output /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/residual-composite-fixture01",
+        "ActiveState": "active",
+        "cgroup_procs": ""
+      },
+      "stop_completed": true,
+      "after_stdout": "TasksCurrent=[not set]\nActiveState=inactive\n",
+      "after_stderr": "",
+      "after_returncode": 0
+    },
+    {
+      "unit": "run-u43770.scope",
+      "execution_receipt": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/output-polish-gpu-synthetic01-EXECUTION.json",
+      "execution_sha256": "b9ced278f5ec7c886ed5df350f0c399a470e26fb620e36a547c4c80a5d256361",
+      "before": {
+        "ControlGroup": "/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43770.scope",
+        "TasksCurrent": "0",
+        "MemoryMax": "38654705664",
+        "Description": "/usr/bin/timeout --signal=TERM --kill-after=3s 50s /home/tahmid/Dev/.venv/bin/python -m accuracy_v2.output_polish_gpu_smoke --out /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/output-polish-gpu-synthetic01",
+        "ActiveState": "active",
+        "cgroup_procs": ""
+      },
+      "stop_completed": true,
+      "after_stdout": "TasksCurrent=[not set]\nActiveState=inactive\n",
+      "after_stderr": "",
+      "after_returncode": 0
+    }
+  ]
+}

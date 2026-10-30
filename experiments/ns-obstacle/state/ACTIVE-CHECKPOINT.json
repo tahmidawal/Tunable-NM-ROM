@@ -1,9 +1,11 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [],
+  "numerical_jobs": [
+    6654710
+  ],
   "active_external_consults": [],
   "pending": [
-    "Freeze and release actual traction-model PDE diagnostic05, then choose next accuracy improvement from physical errors",
+    "Audit actual traction-model PDE diagnostic6654710, retain raw results/plots, then select next accuracy improvement",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
@@ -552,6 +554,9 @@
     "traction_new_accepted_steps": 5624,
     "traction_audit_pending": false,
     "traction_scientific_and_retention_passed": true,
-    "traction_model_review_sha256": "3287f25bc64d3bd3c918c39850c91629d75ed4fda91cc33dee3d9c2deb82f260"
+    "traction_model_review_sha256": "3287f25bc64d3bd3c918c39850c91629d75ed4fda91cc33dee3d9c2deb82f260",
+    "traction_PDE_diagnostic_job": 6654710,
+    "traction_PDE_diagnostic_state": "PENDING",
+    "traction_PDE_release_sha256": "2a337b1a6052184d48eab04b32606656d134b195ace86b06f7471046af5e2398"
   }
 }

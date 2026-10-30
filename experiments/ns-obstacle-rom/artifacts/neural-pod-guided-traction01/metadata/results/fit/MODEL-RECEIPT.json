@@ -1,0 +1,23 @@
+{
+  "schema": "ns-obstacle-supervised-neural-model-v2",
+  "bank_file": "spatial-bank-raw.npz",
+  "bank_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "selected_checkpoint": {
+    "objective": 0.000967626610713034,
+    "checkpoint": "state-05624-final.npz"
+  },
+  "selected_theta_sha256": "9996ba76504cb66e8f7fcce4f9fea91067da930225db14ba57ed60e544f06956",
+  "config_sha256": "10e75a25d70062c085c8b3278cea9c76497e17ab3688d7cbd636fbf736d0419c",
+  "runtime_sha256": "697561797aad062e220ba248331db1e3158a4e5574c017663b1221e19953f2e4",
+  "optimizer_status": "job_deadline",
+  "warm_restart": true,
+  "objective_variant": "supervised_trace_and_boundary_traction_lambda_1",
+  "selection": "minimum accepted combined objective",
+  "selected_base_objective": 0.0007512229730896383,
+  "cumulative_adam_steps": 4000,
+  "cumulative_lbfgs_steps": 12338,
+  "selected_full_replay_sha256": "524cced9b0e1786df5b908f4f1851409f6b03e296332b4e1e584181fdf58521b",
+  "total_full_evaluations_including_serialized_replay": 5918,
+  "total_training_replay_retention_seconds": 3383.8062470965087,
+  "physical_admission": false
+}

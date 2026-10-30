@@ -1,0 +1,300 @@
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Actual energy-weighted trace training, independently reconstructed original TRAIN coefficient covariance, complete scalar event history, periodic/final states, selected serialization and durable raw archive. Permits separately released development PDE diagnostic; no physical qualification.",
+  "job_id": 6651919,
+  "allocated_seconds": 3482,
+  "model_sha256": "a7af9656c3043233005ba3509e647b57c6e6b32e103f070a1708d12bc3d43ea3",
+  "model_receipt_sha256": "c2cb441b3c522cc53793df8b48ef736d5a99703f13d4370cdbcea3a6cac006ce",
+  "selected_theta_sha256": "86a0628534fb2e47328892e10f99c02602b7fa6eb183d862c65db1fe63bf5ce5",
+  "selected": {
+    "objective": 0.00046685124601389015,
+    "checkpoint": "state-02662-final.npz"
+  },
+  "audit_result_sha256": "8de1d724bd5744efb7d8f9b0e128611d84beb96c4c3aed89e6a8dab26fe4e1c2",
+  "audit_source_commit": "2aa2ed2f6",
+  "audit_mirror_commit": "15230c048",
+  "checkpoint_count": 12,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 6554,
+  "new_accepted_lbfgs_steps": 2662,
+  "completed_trial_evaluations": 2804,
+  "full_evaluations_including_replay": 2806,
+  "optimizer_status": "job_deadline",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "98f3cbbc9009d21e17b6bc10ed3d4771e7e3b452",
+  "durable_archive_mirror_commit": "0e7f1f572c61178fc8940171cdacb5517ae0f1ac",
+  "independent_retention_passed": true,
+  "selection_semantics": "last accepted state, minimum among initial and accepted COMBINED objective states",
+  "completed_rejected_trials_better_than_final": [],
+  "terminal_curvature_reset_unresolved": false,
+  "limitations": [
+    "No neural evaluation, optimization, native solve or validation access; saved TRAIN fields used only for Gram/rhs replay.",
+    "Intermediate vectors are absent: scalar hash/Armijo chains checked, not independent intermediate vector or two-loop replay.",
+    "Saved full teacher objective/gradient replay receipt checked, not independently recomputed.",
+    "Pending/incomplete evaluation events are retained and checked; interrupted partial sums are not full measured objectives.",
+    "A terminal unaccepted or interrupted first trial may reset curvature without a retained reset scalar; final empty history is allowed but its cause remains unresolved.",
+    "Periodic/final curvature arrays checked internally; correspondence to missing intermediate vectors cannot be independently reconstructed."
+  ],
+  "objective_variant": "energy_supervised_trace_error_lambda_1",
+  "initial_components": {
+    "legacy_sqrt_sigma_base": 0.002877755034529737,
+    "value_energy": 2.1341748895636156e-05,
+    "gradient_energy": 0.000971117744945739,
+    "base": 0.0009924594938413751,
+    "added_trace": 0.0004838591060600826,
+    "combined": 0.0014763185999014578,
+    "predicted_trace_norm_squared": [
+      0.004093857366003623,
+      0.014975280657818175,
+      0.04038833600937543,
+      0.12217518015850311
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.004093866997065323,
+      0.014975346753141303,
+      0.040388617699949156,
+      0.12217592139208402
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      -1.7550779636034408e-09,
+      -9.690443783343106e-09,
+      -1.7139504242952297e-08,
+      -6.372306064761357e-08
+    ]
+  },
+  "selected_components": {
+    "legacy_sqrt_sigma_base": 0.012172397590054578,
+    "value_energy": 1.1678492254844583e-05,
+    "gradient_energy": 0.00033534070521662403,
+    "base": 0.0003470191974714686,
+    "added_trace": 0.00011983204854242153,
+    "combined": 0.00046685124601389015,
+    "predicted_trace_norm_squared": [
+      0.0009137721569830434,
+      0.03434707780744782,
+      0.26261920814797707,
+      0.371283274936097
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.0009137784264292125,
+      0.034347130323562416,
+      0.26261947882037373,
+      0.37128400272597856
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      -7.427019763084353e-11,
+      -2.9008395165119882e-09,
+      -1.1630415713836939e-08,
+      -5.70012109735174e-08
+    ]
+  },
+  "evaluation_events": {
+    "initiated": 2807,
+    "completed": 2806,
+    "incomplete": [
+      {
+        "evaluation_id": 2806,
+        "phase": "line_search",
+        "theta_sha256": "3727a1de0d531a088363c65719620492b528f6c82c5a8ae34abb0383c8f650c8",
+        "accepted_steps_before": 2662,
+        "completed_full_evaluations_before": 2805,
+        "elapsed_seconds": 3386.4312410075217,
+        "status": "incomplete",
+        "completed_blocks": 169,
+        "exception_record_file": "evaluation-002806-failure.json",
+        "exception_record_sha256": "2a1e3ec75942ec15b3fa42ed7d2f09feb5d88e5501e4bcd9697ef13849e539cc",
+        "full_objective_available": false,
+        "seconds": 0.8058488853275776
+      }
+    ],
+    "pending_unclosed": 0
+  },
+  "coefficient_replay": {
+    "raw_coefficient_max_gap": 0.0,
+    "raw_gram_spectral_error": 2.3775523834289205e-15,
+    "raw_whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "raw_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "saved_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "raw_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "saved_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "raw_gram_max_gap": 0.0,
+    "raw_rhs_max_gap": 0.0,
+    "gram_spectral_error": 2.3775523834289205e-15,
+    "whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "covariance_max_error_over_sigma0_squared": 3.3880260999458173e-16,
+    "training_points": 1036497,
+    "semantic_teacher_values_sha256": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+    "scope": "Original retained-four TRAIN coefficients only; excludes omitted modes and online coefficients."
+  },
+  "energy_weights": {
+    "value": [
+      0.996856149884724,
+      0.0031282632517575537,
+      1.550297419382194e-05,
+      8.388932461205451e-08
+    ],
+    "gradient_and_trace": [
+      0.9961054927867212,
+      0.003873728021723474,
+      2.066693656922484e-05,
+      1.1225498604017018e-07
+    ]
+  },
+  "interpretation": "Energy objective improves while legacy sqrt-sigma base worsens; not evidence of improved PDE accuracy until separately measured."
+}

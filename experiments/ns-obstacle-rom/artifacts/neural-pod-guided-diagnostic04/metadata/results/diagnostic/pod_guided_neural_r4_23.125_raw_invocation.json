@@ -1,0 +1,138 @@
+{
+  "record": {
+    "output_contract": "full_velocity_pressure_fields",
+    "outputs": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "620e45965f044ef14d9236f93dc888f8396cd757c81c23971b51afa1e0c2e6ce"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "a1d2c1665e9000b42ad81de73d7b33541787a30d96682eb389e2b7b489d93e2e"
+      }
+    },
+    "evidence": {
+      "state": {
+        "array": "a000002",
+        "shape": [
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "26db160cb7cf6738d5e03ce1cb5ce5c3ca214d7ab7e8949f8dd607b85909bf04"
+      },
+      "reynolds": 23.125,
+      "model": "bank_r4",
+      "operator_formulation": "weak_residual_least_squares",
+      "history": [
+        {
+          "iteration": 0,
+          "objective": 0.44326925907541626,
+          "gradient_norm": 0.7529870097768084,
+          "gradient_denominator": 1.0,
+          "condition": 32.90740722496182,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.94156174420525,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 1,
+          "objective": 0.014650530416247932,
+          "gradient_norm": 0.09126380405096018,
+          "gradient_denominator": 1.0,
+          "condition": 31.84293996909036,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.1711755263829963,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 2,
+          "objective": 0.0008233863884480072,
+          "gradient_norm": 0.024570124265770096,
+          "gradient_denominator": 1.0,
+          "condition": 35.893153293985925,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.04058044820964912,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 3,
+          "objective": 2.2765689935151375e-06,
+          "gradient_norm": 0.00035919169088272096,
+          "gradient_denominator": 1.0,
+          "condition": 35.944620017660796,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.002133808329496882,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 4,
+          "objective": 2.1361091306015137e-06,
+          "gradient_norm": 2.016457728903062e-07,
+          "gradient_denominator": 1.0,
+          "condition": 35.92965107805772,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.002066934508203641,
+          "accepted": true,
+          "alpha": 1.0,
+          "backtracks": 0
+        },
+        {
+          "iteration": 5,
+          "objective": 2.1361089928432672e-06,
+          "gradient_norm": 1.7832773932100363e-10,
+          "gradient_denominator": 1.0,
+          "condition": 35.92961648032307,
+          "rank": 12,
+          "damping": 1e-08,
+          "residual_norm": 0.0020669344415550615
+        }
+      ]
+    },
+    "work": {
+      "status": "stationary",
+      "residual_evaluations": 11,
+      "jacobian_evaluations": 6
+    },
+    "component_seconds": {
+      "initialization": 3.925524652004242e-06,
+      "coefficient_solve": 0.0024840999394655228,
+      "output_reconstruction": 0.045411814004182816,
+      "total_query": 0.04789983946830034
+    },
+    "physical_admission": false
+  },
+  "array_file": "pod_guided_neural_r4_23.125_raw_invocation.npz",
+  "array_sha256": "f33613e35e27730e121dc9868dd5feedf04884caf681c864459baf708eb90f00",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 3,
+    "array_references": 3,
+    "unique_expanded_bytes": 24876024,
+    "logical_expanded_reference_bytes": 24876024,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 26178465
+  }
+}

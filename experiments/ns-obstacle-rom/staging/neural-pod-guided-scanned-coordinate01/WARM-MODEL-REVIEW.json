@@ -1,0 +1,363 @@
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Saved fixed-hidden output-polished composite model and complete raw retention; no PDE admission",
+  "job_id": 6659904,
+  "allocated_seconds": 197,
+  "model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+  "model_receipt_sha256": "543e65a270228b224c4cb26772fd9acb7d951fdade5199a9e76cf38c93411697",
+  "selected_theta_sha256": "a28248ec3233fb7bf9290293adac3701cc63c00ba63a136bbed398716c1d65ed",
+  "selected": {
+    "objective": 0.0004806629769315888,
+    "checkpoint": "state-00000-final.npz"
+  },
+  "audit_result_sha256": "786a507a18dff6d1c62faae980907e6f5db4768a8a64f77f4a6d798aa13f71f7",
+  "audit_source_commit": "28aa44928",
+  "audit_mirror_commit": "624101ec2",
+  "checkpoint_count": 2,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 23160,
+  "new_accepted_lbfgs_steps": 0,
+  "new_adam_steps": 0,
+  "warm_restart": false,
+  "optimizer_status": "output_polish_complete_not_physical_admission",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "53ef2504c2c67ca64f515b287770d3511bd5f85a",
+  "durable_archive_mirror_commit": "0d080927e1e1614b7d9c4a66f5c71f3c184517ff",
+  "independent_retention_passed": true,
+  "objective_variant": "fixed_hidden_output_polish_same_trace_and_traction",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "warm_child_model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+  "selected_theta_scope": "child parameters only",
+  "trainable_parameters": 520,
+  "frozen_hidden_parameters": 22272,
+  "child_parameter_count": 22792,
+  "factor_replay": [
+    {
+      "head": 0,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 2.2929684067507973e-08,
+      "condition_retained": 98.49102397107568,
+      "delta_norm": 0.00030586806373230296,
+      "initial_factor_objective": 0.00012767921195294056,
+      "candidate_factor_objective": 0.0001276697974203392,
+      "singular_replay_max_gap": 2.6645352591003757e-14,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "53773785628361fa882fd04eb08bfd54d279a125232d8fab704119a9ac6c785d"
+    },
+    {
+      "head": 1,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 9.039855096962143e-09,
+      "condition_retained": 136.17438523909266,
+      "delta_norm": 0.015631736211713404,
+      "initial_factor_objective": 0.00011096584454015106,
+      "candidate_factor_objective": 0.00011043386872385513,
+      "singular_replay_max_gap": 5.329070518200751e-15,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "37f0cd077a1e41bc5df796df77998b8f936c11861dcabdd280c376dbeed086a4"
+    },
+    {
+      "head": 2,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 4.892785382384652e-09,
+      "condition_retained": 66.73757223130006,
+      "delta_norm": 0.00857151278630824,
+      "initial_factor_objective": 9.45634442055318e-05,
+      "candidate_factor_objective": 9.437966397129335e-05,
+      "singular_replay_max_gap": 3.1086244689504383e-15,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "76d14676a2279f0de4bd34f2b7c4c7fdda62819364eb79c228166c65ecd10dd1"
+    },
+    {
+      "head": 3,
+      "rank": 130,
+      "discarded": 0,
+      "relative_cutoff": 1.6113974599107905e-09,
+      "absolute_cutoff": 2.8034025318797054e-09,
+      "condition_retained": 41.46928432493337,
+      "delta_norm": 0.010704391013289634,
+      "initial_factor_objective": 0.0001484265786801981,
+      "candidate_factor_objective": 0.00014817964681610092,
+      "singular_replay_max_gap": 3.1086244689504383e-15,
+      "rows": 7257089,
+      "blocks": 4053,
+      "arrays_sha256": "d5ddf3ae7a71dd396277f2ce67a7df000c099a15d74496f3ad25f19fa6e9a586"
+    }
+  ],
+  "affine_assembly_replay": {
+    "arrays_sha256": "c08009de45a6a92c5e7f79f866b5921901405e387df227dea8b1d4a0917319ab",
+    "initial_objective_gap": 1.0842021724855044e-19,
+    "candidate_objective_gap": 2.168404344971009e-19,
+    "output_gradient_max_gap": 2.4605711123000644e-16,
+    "initial_allowance": 4.6077275328570977e-10,
+    "candidate_allowance": 1.3644432069924867e-11,
+    "gradient_allowance": 1.4314496191587127e-09,
+    "objective_cap": 1e-08,
+    "gradient_cap": 1e-08,
+    "roundoff_scales": [
+      {
+        "factor_matrix_frobenius": 48.187104217987105,
+        "factor_rhs_norm": 0.011299522642702238,
+        "delta_norm": 0.00030586806373230296,
+        "blocks": 4053,
+        "candidate_objective_allowance": 7.810089634244522e-14,
+        "gradient_allowance": 2.8906947422984057e-10
+      },
+      {
+        "factor_matrix_frobenius": 19.602729699525497,
+        "factor_rhs_norm": 0.010534032681748764,
+        "delta_norm": 0.015631736211713404,
+        "blocks": 4053,
+        "candidate_objective_allowance": 1.157263462029813e-11,
+        "gradient_allowance": 1.4314496191587127e-09
+      },
+      {
+        "factor_matrix_frobenius": 11.28949400557872,
+        "factor_rhs_norm": 0.009724373717907586,
+        "delta_norm": 0.00857151278630824,
+        "blocks": 4053,
+        "candidate_objective_allowance": 1.306363863180328e-12,
+        "gradient_allowance": 2.7698098259147914e-10
+      },
+      {
+        "factor_matrix_frobenius": 6.078057679529319,
+        "factor_rhs_norm": 0.012183044721259055,
+        "delta_norm": 0.010704391013289634,
+        "blocks": 4053,
+        "candidate_objective_allowance": 6.873326901039647e-13,
+        "gradient_allowance": 1.081662347197386e-10
+      }
+    ],
+    "tolerance_policy": "conservative dimension/accumulation and cancellation-scale arithmetic allowances with fixed caps; not a proved backward-error guarantee; reject ill-conditioned uncertainty rather than relax cap",
+    "passed": true
+  },
+  "cache_replay": {
+    "initial_objective_gap": 0.0,
+    "initial_child_gradient_max_gap": 0.0,
+    "logical_payload_bytes": 423129056,
+    "parent_cache_hashes": {
+      "parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+      "parent_theta_sha256": "9996ba76504cb66e8f7fcce4f9fea91067da930225db14ba57ed60e544f06956",
+      "parent_volume_values_sha256": "e083f5c64cf82a85b52c5b39ae039adc836268f402fab5e3c71d7dfb1892faa9",
+      "parent_volume_physical_gradient_sha256": "00ac24afb21dae8fca4a9af354dfc7e9c6279727f6f7ddb3742dddfaf705bc09",
+      "parent_boundary_physical_gradient_sha256": "775b1c41ae211f7dedc13cb24041a5e5158fab8e7694ce00e0066cdd627e2137"
+    },
+    "scope": "Saved equivalence arrays and cache manifest checked; parent cache fields not independently evaluated.",
+    "final_uncached_objective_gap": 0.0,
+    "final_uncached_child_gradient_max_gap": 0.0
+  },
+  "coefficient_replay": {
+    "raw_coefficient_max_gap": 0.0,
+    "raw_gram_spectral_error": 2.3775523834289205e-15,
+    "raw_whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "raw_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "saved_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "raw_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "saved_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "raw_gram_max_gap": 0.0,
+    "raw_rhs_max_gap": 0.0,
+    "gram_spectral_error": 2.3775523834289205e-15,
+    "whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "covariance_max_error_over_sigma0_squared": 3.3880260999458173e-16,
+    "training_points": 1036497,
+    "semantic_teacher_values_sha256": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+    "scope": "Original retained-four TRAIN coefficients only; excludes omitted modes and online coefficients."
+  },
+  "boundary_replay": {
+    "points": 805,
+    "measure_dimensionless": 3.1415926535906222,
+    "teacher_mode_norms_squared": [
+      41.35019831057955,
+      12.068817166575096,
+      22.368825446190275,
+      8.369209556417308
+    ],
+    "global_teacher_energy": 1623.1597711318796,
+    "normalized_mode_energy_weights": [
+      0.9990765028771053,
+      0.0009150749290787452,
+      8.405176941563508e-06,
+      1.7016874502181372e-08
+    ],
+    "exact_original_subset": true
+  },
+  "component_gradient_replay": {
+    "array_hashes": {
+      "base": "02f89f74dc6d6eec639cc32d97f8ac27fd3161f2c1efc8d69ef950a08adc9352",
+      "trace": "b793ea02bb9e1534aca3bea1583b89258c3a26ab747dc91999fd6829eebd2591",
+      "traction_unweighted": "c121850f87175155c183b1e17df74884112fc0b9ebe57b4f5d1d1017b01941c1"
+    },
+    "norms": {
+      "base_gradient_l2": 0.0009451767764804,
+      "trace_gradient_l2": 0.0005586444873254837,
+      "traction_gradient_l2_unweighted": 0.0007407098681875299,
+      "traction_gradient_l2_weighted": 0.0007407098681875299,
+      "parent_combined_gradient_l2": 0.0011770235617524342,
+      "new_combined_gradient_l2": 0.0007730985732286601
+    },
+    "initial_sum_max_gap": 1.3552527156068805e-20,
+    "scope": "Initial saved component vectors only; no fresh autodiff or intermediate component-vector reconstruction."
+  },
+  "limitations": [
+    "No neural evaluation, native solve, fitting or validation access.",
+    "Independent small retained-factor SVD/algebra replay only; original full TRAIN design rows and intermediate QR factors are not retained or independently reconstructed.",
+    "Block order/count/hash witnesses are producer evidence, not fresh TRAIN network/gradient evaluation.",
+    "Saved full objective, 520-output-gradient assembly witness and uncached serialized replay checked; no independent fresh autodiff.",
+    "Rank cutoff defines the minimum-norm retained-span delta; discarded directions are not solved and physical accuracy is not inferred.",
+    "Frozen original parent bytes and all child hidden parameters remain exact; historical optimizer counts are lineage, zero new Adam/L-BFGS."
+  ],
+  "training_objective_relative_reduction": 0.0020183381336890465
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "ns-obstacle-fixed-coordinate-training-candidate-v1",
+  "execution_released": false,
+  "actual_PDE08_result_pending": true,
+  "model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+  "frozen_parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "hidden_coordinate_scale": 100.0,
+  "output_coordinate_scale": 1.0,
+  "coordinate_definition": "theta=initial_polished_child_theta+D*z; fixed diagonal throughout a new joint-child fit",
+  "rationale": "Keep the previously reviewed TRAIN-only fixed coordinate scale unchanged; continue all22792 child parameters after fixed-hidden output polish. No scale tuning from DEV or VAL.",
+  "prior_coordinate_candidate_sha256": "1b58297ddb4ff23ee0da74e28a957944231d08015f485aeeb25832003410f38a",
+  "new_parameter_space": "all22792 child parameters jointly; frozen embedded traction parent",
+  "objective_changed": false,
+  "curvature_reset": true,
+  "new_Adam_steps": 0,
+  "historical_Adam_steps": 4000,
+  "historical_LBFGS_steps": 23160,
+  "GPU_scan_status": "prospective production scan; initial actual full uncached objective/all-gradient/modal-component equivalence required before any update",
+  "requirements": [
+    "Actual PDE08 independent review and exact execution release before launch.",
+    "Same features/rank/teacher/norms/traction denominator; complete TRAIN only.",
+    "Same physical stopping/Armijo/curvature safeguards and fixedD100/1.",
+    "Complete final serialized uncached objective/all-child-gradient/component replay.",
+    "No cross-job timing or conditioning-cure claim."
+  ]
+}

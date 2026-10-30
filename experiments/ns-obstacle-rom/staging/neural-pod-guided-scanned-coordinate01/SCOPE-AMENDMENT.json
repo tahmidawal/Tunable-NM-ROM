@@ -1,0 +1,33 @@
+{
+  "schema": "ns-obstacle-accuracy-first-successor-amendment-v1",
+  "date": "2026-10-29",
+  "user_authorization": "The goal is to get as accurate as we can realistically get. No need to put a cap here. CAn you please push this as much as possible.",
+  "scope": "Improve actual steady 2D neural-bank ROM accuracy on the original fixed finite channel through evidence-guided representation training and reduced-solver improvements.",
+  "no_accuracy_target_ceiling": true,
+  "one_percent_is_not_a_stopping_rule": true,
+  "successor_training_and_architecture_changes_authorized": true,
+  "original_failed_results_and_protocol_preserved": true,
+  "superseded_for_successor_experiments": [
+    "The single3000-step constant-Adam recipe and prohibition on retraining after its failed representation gate.",
+    "The old pilot's stop-expansion rule as a prohibition on separately versioned accuracy-improvement experiments.",
+    "A fixed total pilot compute allowance as a scientific stopping criterion for this user-authorized continued accuracy campaign. Historical usage remains charged and reported."
+  ],
+  "unchanged_controls": [
+    "Original finite-channel scope; no 3D or unsteady expansion.",
+    "No admission of the failed original bank and no lowering accuracy or physics requirements.",
+    "Training targets from admitted training cases only; development cases may guide documented model selection; final validation remains closed until selection is frozen.",
+    "Actual online coefficients must be obtained from the reduced PDE solve without truth initialization. Report best-fit reconstruction separately.",
+    "Weak-form residual; full/exact operator controls before fitted quadrature; matched POD controls.",
+    "GPU partition, f64/highest, isolated job directories and mandatory GPU preflight.",
+    "At most two simultaneous campaign jobs and16 CPU cores per job; finite per-job walltime and checkpoint/restart controls.",
+    "Existing storage ceilings and untouched local reserve; no unique-data deletion, history pruning or unrequested merge.",
+    "Every new executable candidate gets source/input/config provenance, resource estimates, independent review and explicit coordinator release before execution."
+  ],
+  "first_experiment_questions": [
+    "How much of the original representation failure is optimization difficulty versus spatial approximation capacity?",
+    "Can a neural bank reproduce useful training-only POD modes and their gradients accurately enough for forces and weak PDE solves?",
+    "Once representation improves, how much remaining error is introduced by the reduced coefficient solve, pressure coupling and mass conservation?"
+  ],
+  "practical_accuracy_assessment": "Continue while repeatable gains remain on the complete development metrics; report reference uncertainty, optimization stagnation, representation capacity, and numerical conditioning separately. Do not claim precision below the qualified reference uncertainty.",
+  "next_execution_released": false
+}

@@ -60,7 +60,8 @@ def main():
                        ('energy_neural_r4_solve', 'Energy-weighted neural-bank ROM'),
                        ('traction_neural_r4_solve', 'Surface-traction-trained neural-bank ROM'),
                        ('residual_r4_solve', 'Neural-bank ROM with correction heads'),
-                       ('coordinate_r4_solve', 'Neural-bank ROM with scaled-coordinate training')]:
+                       ('coordinate_r4_solve', 'Neural-bank ROM with scaled-coordinate training'),
+                       ('galerkin_r4_solve', 'Neural-bank ROM with mixed Galerkin solve')]:
         if key + '_velocity' in data.files:
             models.append((key, label + ': flow-solve output',
                            'Four neural velocity modes plus FE pressure/stability spaces. '

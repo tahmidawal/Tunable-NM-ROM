@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/usr/bin/timeout",
+    "--signal=TERM",
+    "--kill-after=3s",
+    "50s",
+    "/home/tahmid/Dev/.venv/bin/python",
+    "-m",
+    "accuracy_v2.output_polish_smoke",
+    "--out",
+    "experiments/ns-obstacle-rom/checks/output-polish-synthetic01"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 0.09919270779937506,
+  "single_attempt": true,
+  "single_thread_BLAS": true,
+  "actual_TRAIN_access": false,
+  "GPU_execution": false,
+  "source_files": {
+    "fixed_hidden_output_polish.py": "5b9dbaacf99a387486d9babff1fd0e1a826def7bccb61e9ea6b3b55efc10fc89",
+    "output_polish_smoke.py": "1cc231da0a1c4ae6cba3abe253f1d80c6ac7e281bfd11db7c4f8f94c1973bce6",
+    "spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277"
+  }
+}

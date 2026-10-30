@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Audit actual trace-trained PDE diagnostic6652443 and complete energy fit6651919 plus actual PDE test",
+    "Complete energy fit6651919 audit/retention and actual PDE diagnostic04; assess TRAIN-only boundary-traction candidate from actual force decomposition",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 8.093333333333334,
+  "completed_allocated_gpu_hours": 8.164444444444445,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -511,6 +511,13 @@
     "supervised_trace_retention_passed": true,
     "supervised_trace_model_review_sha256": "b0f3282305f723784a8aea36ca07c9784831aa7c78bafb6b7261d1c9a423851d",
     "trace_PDE_diagnostic_job": 6652443,
-    "trace_PDE_diagnostic_state": "RUNNING"
+    "trace_PDE_diagnostic_state": "COMPLETED",
+    "trace_PDE_diagnostic_seconds": 256,
+    "trace_PDE_scientific_and_retention_passed": true,
+    "trace_PDE_failed_targets": [
+      "divergence",
+      "transverse"
+    ],
+    "boundary_traction_candidate": "source-only investigation, actual signed viscous force error dominates trace-model lift regression"
   }
 }

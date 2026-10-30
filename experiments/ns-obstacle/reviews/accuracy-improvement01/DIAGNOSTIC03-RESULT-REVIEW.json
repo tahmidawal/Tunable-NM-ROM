@@ -1,0 +1,108 @@
+{
+  "schema": "ns-obstacle-trace-neural-diagnostic-coordinator-review-v1",
+  "job_id": 6652443,
+  "elapsed_seconds": 256,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": false,
+  "failed_targets": [
+    "divergence",
+    "transverse"
+  ],
+  "validation_opened": false,
+  "independent_result_sha256": "1d94ff32ae18d4ec5552363993ab8f15e58b842d3e87d36067a5946523ac8122",
+  "reference_source_commit": "6cbf45616",
+  "reference_mirror_commit": "feb987652",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0006234982072397203,
+        "pressure_scaled": 0.00034446141715193084,
+        "divergence": 0.007526443649650416,
+        "velocity_gradient_scaled": 0.012369228181077583,
+        "mass": 5.358349914365833e-05,
+        "boundary_trace": 2.865050668169768e-10,
+        "drag_relative": 0.0021804013495563745,
+        "transverse_absolute": 0.00716890993346201
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": false,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        6.1316413354048995,
+        0.027352450909486858
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.254952179723955e-15,
+      "finite_difference_errors": [
+        1.087142490764912e-12,
+        6.914184505613456e-12,
+        3.433711965976932e-10
+      ],
+      "stationarity_gradient": 7.39452592737306e-12,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0015426617605045947,
+      "projection_floor": 0.0005913888994170481,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.0007107022127171566,
+        "pressure_scaled": 0.00024642870406929053,
+        "divergence": 0.0089131130301155,
+        "velocity_gradient_scaled": 0.014668173809165509,
+        "mass": 8.779191005996395e-05,
+        "boundary_trace": 3.601122016173553e-10,
+        "drag_relative": 0.003089933911869854,
+        "transverse_absolute": 0.003926419431749549
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": false,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        5.194645720380329,
+        0.0083566073452979
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.249822438195107e-15,
+      "finite_difference_errors": [
+        4.069854633175384e-12,
+        2.2989137260972254e-11,
+        4.680849495770621e-10
+      ],
+      "stationarity_gradient": 3.4827975547452555e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0010925325675611103,
+      "projection_floor": 0.0006760956826826108,
+      "floor_consistent": true
+    }
+  ],
+  "interpretation": "Actual trace-trained solves improve velocity, pressure, drag and divergence over preceding warm bank; transverse-force error regresses and divergence still fails. No overall physical admission or causally isolated training-loss benefit.",
+  "retention_review_pending": false,
+  "retention_review_passed": true,
+  "archive_source_commit": "c9b7d8edc3e8250e0ff31dcd5a391312a3417e0e",
+  "archive_mirror_commit": "7bc344d43bad2480a906df7865fd4adf0f134843",
+  "signed_force_decomposition_result_sha256": "6524266c784841fd887bd32a1c059f7f21cbb9ee3cc9eac6f8d59512dac7ddab",
+  "signed_force_decomposition_source": "d15597483",
+  "signed_force_decomposition_mirror": "d5e1b696f"
+}

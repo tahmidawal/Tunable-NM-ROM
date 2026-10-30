@@ -1,0 +1,25 @@
+{
+  "schema": "ns-obstacle-energy-fit-collection-release-v1",
+  "authorized": true,
+  "job_id": 6651919,
+  "archive_sha256": "673be5a43dba9d61089f6d4b0b7a6b99b4e1a3453efb0ef5b726d63ddb2f07b7",
+  "archive_bytes": 67882460,
+  "logical_files": 155,
+  "logical_expansion_bytes": 80229166,
+  "measurement_sha256": "8d7c0831a901d2dc8634a528bc3748dad04caf2ef5ba63416f43e006060bf514",
+  "collector_sha256": "d002e1e47b73d3c9002ef00b152aad0b14305927a94af66fa44289a05e9bf9b3",
+  "collector_source_commit": "4d2093e98",
+  "collector_source_mirror": "e66422f04",
+  "mode": "Archive-only complete original files and ledger; all scalar histories and bounded metadata preserved, no scientific array expansion",
+  "metadata_limit_bytes": 33554432,
+  "required_local_free_bytes": 11208727480,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Fresh exact terminal/job/measurement/release and local guard check; serialize bulk collection and Git backup.",
+    "Stream every155 original member and unique ledger entry; verify chunk sum before transport retirement.",
+    "Preserve actual TRAIN coefficient certificate, all old/new objective metrics, failures and incomplete events; independent raw audit before model acceptance.",
+    "Keep remote selected energy bank, parent and prepared inputs for actual diagnostic04 and any subsequently reviewed training."
+  ]
+}

@@ -2096,7 +2096,7 @@
       "queue_after": "6660421|ctol_nsobsrom_scan|PENDING\n",
       "attempt": "neural-pod-guided-scanned-coordinate01",
       "budget_bucket": "ROM",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "allocation_seconds_reserved": 3600,
       "gpus": 1,
       "validation_allowed": false,
@@ -2106,16 +2106,23 @@
       "joint_child_optimization": true,
       "child_parameter_count": 22792,
       "new_adam_steps": 0,
-      "warm_restart": true
+      "warm_restart": true,
+      "state": "COMPLETED",
+      "elapsed_seconds": 2470,
+      "allocated_gpu_hours": 0.6861111111111111,
+      "exit_code": "0:0",
+      "node": "pax105",
+      "gpu_type": "A100 80GB PCIe",
+      "gpu_f64_highest_confirmed": true,
+      "scientific_review_pending": true,
+      "retention_review_pending": true
     }
   ],
-  "live_job_ids": [
-    6660421
-  ],
-  "completed_gpu_hours": 12.509722222222223,
-  "note": "Jointchildscan6660421 running; actualinitialequivalence mandatory beforeupdates. Prior07bettervelocitybaseline preserved, finalvalidationclosed.",
-  "total_allocated_gpu_hours_completed": 12.509722222222223,
-  "last_accounting_utc": "2026-10-30T09:14:52.683121+00:00",
+  "live_job_ids": [],
+  "completed_gpu_hours": 13.195833333333333,
+  "note": "Scan6660421 terminal2470s; iteration_limit10000notconvergence, selectedTRAINloss lower35.47%; model/rawaudits thenactualPDE09pending.",
+  "total_allocated_gpu_hours_completed": 13.195833333333333,
+  "last_accounting_utc": "2026-10-30T09:56:39.031567+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

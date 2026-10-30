@@ -1,8 +1,8 @@
 {
   "status": "source-only generic proposal; no execution or integration",
-  "source_sha256": "b0ed5b5bb45f0691a9e4c80bff3a1b2f21809d27dbea21b3c767921274b0eda7",
+  "source_sha256": "c8ea231421fde3706f60b1df6bc2508cf3407b6d6ae0078c2414c362a2d33e0a",
   "objective_contract": "block value_and_grad inside scan; explicit theta and stacked device arrays; sequential scalar/gradient/metric addition; single final host transfer",
-  "padding_contract": "caller must retain original real-point coverage/order, finite dummy arrays, strictly zero padded weights for every affected volume and boundary measure",
+  "padding_contract": "caller must retain original real-point coverage/order, finite dummy arrays, strictly zero padded weights for every affected volume and boundary measure; every intermediate feature/envelope/derivative must also remain finite because zero weights do not suppress NaNs",
   "production_prerequisites": [
     "independent source review",
     "bounded synthetic GPU/f64/highest fixture retaining streamed and scan values/gradients/metrics for multiple theta and partial last block",
@@ -17,5 +17,7 @@
     "compilation and device temporary memory unmeasured",
     "no timing or bitwise-equivalence claim"
   ],
-  "current_fit_changed": false
+  "current_fit_changed": false,
+  "gradient_contract": "one flat array",
+  "metric_contract": "additive block statistics only; compute global norms/RMS/ratios after sums"
 }

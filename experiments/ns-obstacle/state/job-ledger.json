@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "successor_diagnostic_complete_improved_velocity_physics_targets_fail",
+  "status": "warm_refinement_complete_pending_audit_and_actual_PDE",
   "allocated_gpu_hour_ceiling": null,
   "allocations": [
     {
@@ -1604,7 +1604,7 @@
       "job_id": 6649439,
       "attempt": "neural-pod-guided-refine01",
       "budget_bucket": "ROM",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "source_commit": "6c4ee9bcd267cd70983dc0dd06c2e140df65b424",
       "source_manifest_sha256": "154da733dd8b78eb9b5b6c1fb7813fb8bc94af7de78bc72cf906cef85386c331",
       "release_sha256": "d335357e3b076797ead159cd560749f7cd8d108b1b43052db775f60b656090cb",
@@ -1615,16 +1615,23 @@
       "new_adam_steps": 0,
       "warm_restart": true,
       "validation_allowed": false,
-      "node": "pax020"
+      "node": "pax020",
+      "state": "COMPLETED",
+      "elapsed_seconds": 3483,
+      "allocated_gpu_hours": 0.9675,
+      "exit_code": "0:0",
+      "optimizer_status": "job_deadline",
+      "optimizer_converged": false,
+      "new_accepted_lbfgs_steps": 3592,
+      "cumulative_lbfgs_steps": 3892,
+      "model_sha256": "011374bfb8251b6f5b8e78f8e10d8be67d2cf3975072dcb40da65391ba85af07"
     }
   ],
-  "live_job_ids": [
-    6649439
-  ],
-  "completed_gpu_hours": 6.089722222222222,
+  "live_job_ids": [],
+  "completed_gpu_hours": 7.057222222222222,
   "note": "POD4/POD8 development review passed. New neural actual diagnostic greatly improves velocity and drag but lift/divergence/mass fail; independent review pending. Longer unchanged-objective refinement in preparation. Validation closed.",
-  "total_allocated_gpu_hours_completed": 6.089722222222222,
-  "last_accounting_utc": "2026-10-29T22:53:43.372493+00:00",
+  "total_allocated_gpu_hours_completed": 7.057222222222222,
+  "last_accounting_utc": "2026-10-30T00:03:42.835463+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor unchanged-objective warm neural refinement6649439; audit selected model and repeat actual PDE solve",
-    "Use flow/force/conservation errors to guide further accuracy improvements",
+    "Audit/preserve completed warm refinement6649439 and release actual fast PDE diagnostic02",
+    "Use actual flow/force/conservation errors to guide further accuracy improvements",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 6.089722222222222,
+  "completed_allocated_gpu_hours": 7.057222222222222,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -469,13 +469,18 @@
     "actual_PDE_scientific_review_pending": false,
     "actual_PDE_accuracy_targets_passed": false,
     "warm_refinement_job": 6649439,
-    "warm_refinement_state": "RUNNING",
+    "warm_refinement_state": "COMPLETED",
     "actual_PDE_retention_review_passed": true,
     "warm_refinement_latest_observed": {
       "new_accepted_steps": 1102,
       "objective": 0.01025096586,
       "source": "owner report; running/provisional, not final model or flow accuracy",
       "observed_utc": "2026-10-29T23:24:44.966644+00:00"
-    }
+    },
+    "warm_refinement_seconds": 3483,
+    "warm_refinement_new_steps": 3592,
+    "warm_refinement_objective": 0.0028777550345297376,
+    "warm_refinement_model_sha256": "011374bfb8251b6f5b8e78f8e10d8be67d2cf3975072dcb40da65391ba85af07",
+    "warm_refinement_review_pending": true
   }
 }

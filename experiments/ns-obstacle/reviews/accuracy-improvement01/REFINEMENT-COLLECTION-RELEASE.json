@@ -1,0 +1,24 @@
+{
+  "schema": "ns-obstacle-warm-refinement-collection-release-v1",
+  "authorized": true,
+  "job_id": 6649439,
+  "archive_sha256": "53761e48ae47889e615f259f50ec1e6c20cd3b8cf54f89bc5b61da2118b83f0f",
+  "archive_bytes": 91296328,
+  "logical_files": 136,
+  "logical_expansion_bytes": 97937722,
+  "measurement_sha256": "08ab7363131b848cb7bb6764f58a8b395c5c67d7a8807f9f969122fbd5e58d72",
+  "collector_sha256": "2222c9d3fbcef718efd6b51628260eb9ff9aca678a3caf45916a010c731818aa",
+  "collector_source_commit": "1fdd45260",
+  "mode": "Archive-only complete original files and ledger verification; bounded metadata including scalar JSONL, no scientific array expansion",
+  "maximum_metadata_bytes": 16777216,
+  "minimum_free_before_collection_bytes": 11205223568,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Wait exact collector source mirror; fresh free guard, serialized bulk collection/Git.",
+    "All136 members and original ledger streamed; verify chunks before retiring transport.",
+    "Keep exact original metadata and failures; independent durable review before any remote cleanup.",
+    "Keep parent/newmodel remote dependencies for upcoming diagnostic."
+  ]
+}

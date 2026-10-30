@@ -1,0 +1,77 @@
+{
+  "observed_unix": 1793334058.5257118,
+  "nodes": {
+    "pax003": {
+      "returncode": 0,
+      "description": "NodeName=pax003 Arch=x86_64 CoresPerSocket=16  CPUAlloc=10 CPUEfctv=32 CPUTot=32 CPULoad=2.50 AvailableFeatures=cascadelake,gpu,rtgpu,a100,a100-40G,rt,preempt ActiveFeatures=cascadelake,gpu,rtgpu,a100,a100-40G,rt,preempt Gres=gpu:a100:2(S:0) NodeAddr=10.246.224.203 NodeHostName=pax003 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=190000 AllocMem=147456 FreeMem=83078 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3101 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:05:05 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-29T10:31:05 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=32,mem=190000M,billing=32,gres/gpu=2 AllocTRES=cpu=10,mem=144G,gres/gpu=2 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax007": {
+      "returncode": 0,
+      "description": "NodeName=pax007 Arch=x86_64 CoresPerSocket=32  CPUAlloc=60 CPUEfctv=64 CPUTot=64 CPULoad=94.51 AvailableFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt ActiveFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt Gres=gpu:a100:8(S:0-1) NodeAddr=10.246.224.207 NodeHostName=pax007 Version=26.05.4 OS=Linux 5.14.0-570.60.1+23.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Tue Sep 15 22:50:04 UTC 2026  RealMemory=1000000 AllocMem=589824 FreeMem=457374 Sockets=2 Boards=1 State=MIXED+PLANNED ThreadsPerCore=1 TmpDisk=0 Weight=3203 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-10-20T16:17:12 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-27T08:07:37 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=64,mem=1000000M,billing=64,gres/gpu=8 AllocTRES=cpu=60,mem=576G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax049": {
+      "returncode": 0,
+      "description": "NodeName=pax049 Arch=x86_64 CoresPerSocket=32  CPUAlloc=48 CPUEfctv=64 CPUTot=64 CPULoad=15.49 AvailableFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt ActiveFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt Gres=gpu:a100:8(S:0-1) NodeAddr=10.246.224.249 NodeHostName=pax049 Version=26.05.4 OS=Linux 5.14.0-570.60.1+23.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Tue Sep 15 22:50:04 UTC 2026  RealMemory=1031522 AllocMem=753664 FreeMem=621204 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3203 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-10-19T16:07:28 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-24T20:32:26 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=64,mem=1031522M,billing=64,gres/gpu=8 AllocTRES=cpu=48,mem=736G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax050": {
+      "returncode": 0,
+      "description": "NodeName=pax050 Arch=x86_64 CoresPerSocket=32  CPUAlloc=50 CPUEfctv=64 CPUTot=64 CPULoad=22.79 AvailableFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt ActiveFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt Gres=gpu:a100:8(S:0-1) NodeAddr=10.246.224.250 NodeHostName=pax050 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=1031522 AllocMem=507904 FreeMem=459233 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3203 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-27T13:25:18 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-29T11:05:23 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=64,mem=1031522M,billing=64,gres/gpu=8 AllocTRES=cpu=50,mem=496G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax105": {
+      "returncode": 0,
+      "description": "NodeName=pax105 Arch=x86_64 CoresPerSocket=32  CPUAlloc=48 CPUEfctv=64 CPUTot=64 CPULoad=14.27 AvailableFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt ActiveFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt Gres=gpu:a100:8(S:0-1) NodeAddr=10.246.225.50 NodeHostName=pax105 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=1031522 AllocMem=819200 FreeMem=479234 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3203 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-26T18:07:16 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-23T04:52:54 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=64,mem=1031522M,billing=64,gres/gpu=8 AllocTRES=cpu=48,mem=800G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax106": {
+      "returncode": 0,
+      "description": "NodeName=pax106 Arch=x86_64 CoresPerSocket=32  CPUAlloc=52 CPUEfctv=64 CPUTot=64 CPULoad=7.03 AvailableFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt ActiveFeatures=icelake,gpu,rtgpu,a100,a100-80G,rt,preempt Gres=gpu:a100:8(S:0-1) NodeAddr=10.246.225.51 NodeHostName=pax106 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=1031522 AllocMem=806912 FreeMem=256705 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3203 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-27T14:20:30 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-28T07:18:45 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=64,mem=1031522M,billing=64,gres/gpu=8 AllocTRES=cpu=52,mem=788G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax051": {
+      "returncode": 0,
+      "description": "NodeName=pax051 Arch=x86_64 CoresPerSocket=16  CPUAlloc=25 CPUEfctv=32 CPUTot=32 CPULoad=20.08 AvailableFeatures=cascadelake,gpu,rtgpu,a100,a100-40G,rt,preempt ActiveFeatures=cascadelake,gpu,rtgpu,a100,a100-40G,rt,preempt Gres=gpu:a100:8(S:0) NodeAddr=10.246.224.251 NodeHostName=pax051 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=772549 AllocMem=247808 FreeMem=207917 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3103 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:07:02 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-23T21:37:15 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=32,mem=772549M,billing=32,gres/gpu=8 AllocTRES=cpu=25,mem=242G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax052": {
+      "returncode": 0,
+      "description": "NodeName=pax052 Arch=x86_64 CoresPerSocket=16  CPUAlloc=27 CPUEfctv=32 CPUTot=32 CPULoad=17.93 AvailableFeatures=cascadelake,gpu,rtgpu,a100,a100-40G,rt,preempt ActiveFeatures=cascadelake,gpu,rtgpu,a100,a100-40G,rt,preempt Gres=gpu:a100:8(S:0) NodeAddr=10.246.224.252 NodeHostName=pax052 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=772485 AllocMem=249856 FreeMem=496619 Sockets=2 Boards=1 State=MIXED+PLANNED ThreadsPerCore=1 TmpDisk=0 Weight=3103 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:07:00 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-28T20:00:46 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=32,mem=772485M,billing=32,gres/gpu=8 AllocTRES=cpu=27,mem=244G,gres/gpu=7 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax142": {
+      "returncode": 0,
+      "description": "NodeName=pax142 Arch=x86_64 CoresPerSocket=16  CPUAlloc=25 CPUEfctv=32 CPUTot=32 CPULoad=15.53 AvailableFeatures=gpu,rtgpu,a100,a100-40G,rt,preempt ActiveFeatures=gpu,rtgpu,a100,a100-40G,rt,preempt Gres=gpu:a100:8(S:0) NodeAddr=10.246.225.87 NodeHostName=pax142 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=772485 AllocMem=198656 FreeMem=114100 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3103 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:28:10 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-29T06:24:16 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=32,mem=772485M,billing=32,gres/gpu=8 AllocTRES=cpu=25,mem=194G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax143": {
+      "returncode": 0,
+      "description": "NodeName=pax143 Arch=x86_64 CoresPerSocket=16  CPUAlloc=32 CPUEfctv=32 CPUTot=32 CPULoad=19.17 AvailableFeatures=gpu,rtgpu,a100,a100-40G,rt,preempt ActiveFeatures=gpu,rtgpu,a100,a100-40G,rt,preempt Gres=gpu:a100:8(S:0) NodeAddr=10.246.225.88 NodeHostName=pax143 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=772549 AllocMem=212992 FreeMem=399775 Sockets=2 Boards=1 State=ALLOCATED ThreadsPerCore=1 TmpDisk=0 Weight=3103 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:28:09 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-25T20:05:38 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=32,mem=772549M,billing=32,gres/gpu=8 AllocTRES=cpu=32,mem=208G,gres/gpu=6 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax144": {
+      "returncode": 0,
+      "description": "NodeName=pax144 Arch=x86_64 CoresPerSocket=16  CPUAlloc=28 CPUEfctv=32 CPUTot=32 CPULoad=16.27 AvailableFeatures=gpu,rtgpu,a100,a100-40G,rt,preempt ActiveFeatures=gpu,rtgpu,a100,a100-40G,rt,preempt Gres=gpu:a100:8(S:0) NodeAddr=10.246.225.89 NodeHostName=pax144 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=772484 AllocMem=327680 FreeMem=288924 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3103 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-26T17:29:35 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-29T15:25:44 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=32,mem=772484M,billing=32,gres/gpu=8 AllocTRES=cpu=28,mem=320G,gres/gpu=5 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax063": {
+      "returncode": 0,
+      "description": "NodeName=pax063 Arch=x86_64 CoresPerSocket=56  CPUAlloc=16 CPUEfctv=112 CPUTot=112 CPULoad=4.83 AvailableFeatures=sapphirerapids,gpu,rtgpu,h100,h100-80G,rt,preempt ActiveFeatures=sapphirerapids,gpu,rtgpu,h100,h100-80G,rt,preempt Gres=gpu:h100:3(S:0-1) NodeAddr=10.246.225.8 NodeHostName=pax063 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=2063384 AllocMem=262144 FreeMem=1753648 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3302 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:09:29 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-28T04:42:18 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=112,mem=2063384M,billing=112,gres/gpu=3 AllocTRES=cpu=16,mem=256G,gres/gpu=3 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax008": {
+      "returncode": 0,
+      "description": "NodeName=pax008 Arch=x86_64 CoresPerSocket=48  CPUAlloc=96 CPUEfctv=96 CPUTot=96 CPULoad=6.31 AvailableFeatures=emeraldrapids,gpu,rtgpu,h200,h200-141G,rt,preempt ActiveFeatures=emeraldrapids,gpu,rtgpu,h200,h200-141G,rt,preempt Gres=gpu:h200:8(S:0-1) NodeAddr=10.246.224.208 NodeHostName=pax008 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=1536000 AllocMem=446464 FreeMem=503944 Sockets=2 Boards=1 State=ALLOCATED ThreadsPerCore=1 TmpDisk=0 Weight=3403 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:03:48 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-25T17:09:28 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=96,mem=1500G,billing=96,gres/gpu=8 AllocTRES=cpu=96,mem=436G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "pax010": {
+      "returncode": 0,
+      "description": "NodeName=pax010 Arch=x86_64 CoresPerSocket=48  CPUAlloc=52 CPUEfctv=96 CPUTot=96 CPULoad=25.84 AvailableFeatures=emeraldrapids,gpu,rtgpu,h200,h200-141G,rt,preempt ActiveFeatures=emeraldrapids,gpu,rtgpu,h200,h200-141G,rt,preempt Gres=gpu:h200:8(S:0-1) NodeAddr=10.246.224.210 NodeHostName=pax010 Version=26.05.4 OS=Linux 5.14.0-570.60.1+21.1.el9_6_ciq.x86_64 #1 SMP PREEMPT_DYNAMIC Wed Aug 5 14:59:03 UTC 2026  RealMemory=1536000 AllocMem=524288 FreeMem=170271 Sockets=2 Boards=1 State=MIXED ThreadsPerCore=1 TmpDisk=0 Weight=3403 Owner=N/A MCS_label=N/A Partitions=gpu,preempt  BootTime=2026-08-25T12:03:42 SlurmdStartTime=2026-10-21T14:09:27 LastBusyTime=2026-10-29T17:01:49 ResumeAfterTime=None SuspendTime=INFINITE CfgTRES=cpu=96,mem=1500G,billing=96,gres/gpu=8 AllocTRES=cpu=52,mem=512G,gres/gpu=8 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    }
+  },
+  "queue": "",
+  "selection": "scheduler chooses any matching a100|h100|h200 feature; no availability guarantee or speed claim"
+}

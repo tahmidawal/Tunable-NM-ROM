@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Monitor coordinate6657815, audit terminal saved model and full retention, then evaluate actual PDE accuracy",
+    "Audit completed coordinate6657815 and retain full raw outputs, then run actual PDE07",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 11.286111111111111,
+  "completed_allocated_gpu_hours": 12.253055555555555,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -23,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-30T06:18:19.969429+00:00",
+  "last_checkpoint_utc": "2026-10-30T07:15:16.368516+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -602,9 +602,13 @@
     "residual_PDE_retention_passed": true,
     "residual_PDE_failed_stage_retention_passed": true,
     "coordinate_job": 6657815,
-    "coordinate_state": "RUNNING",
+    "coordinate_state": "COMPLETED",
     "coordinate_release_sha256": "f9aa058583e9dbac860a2923d50826c231647e924d7fe737ec9691c9539329c0",
     "coordinate_gpu_f64_highest_confirmed": true,
-    "residual_PDE_plots_rendered": true
+    "residual_PDE_plots_rendered": true,
+    "coordinate_seconds": 3481,
+    "coordinate_model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+    "coordinate_scientific_review_pending": true,
+    "coordinate_retention_pending": true
   }
 }

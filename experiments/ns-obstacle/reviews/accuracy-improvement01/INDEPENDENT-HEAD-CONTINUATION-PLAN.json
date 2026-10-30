@@ -33,9 +33,18 @@
     "Perturbonehead: other heads outputs, objective components and gradients unchanged including trace andtraction",
     "Persist all scalar trial/accepted/rejected/interrupted events, per-head checkpoint parameters and curvature histories; interruption is not convergence",
     "Select by original summedTRAIN objective only; final serialized fullmodel uncached replay and original physical infinity-gradient stopping checked",
-    "Actual subsequent full-rule PDE comparison required, including pressure/drag regressions as well as velocity/divergence/lift"
+    "Actual subsequent full-rule PDE comparison required, including pressure/drag regressions as well as velocity/divergence/lift",
+    "Perturbation isolation also covers off-head parameters and optimizer histories bit-identically, and each base/trace/traction component gradient",
+    "Deadline retains an atomic full-four-head accepted snapshot; interrupted trial cannot mutate accepted parameters/history or imply convergence",
+    "Freeze per-head scalar scaling, curvature thresholds, reset and line-search rules prospectively; preserve initial and every accepted original global objective in ledger"
   ],
   "interpretation": "Current batch improved velocity but not every physical metric and stopped nonstationary. Independent heads remove shared optimization history/step decisions; benefit is a hypothesis, not established cause or promised accuracy. Feature enrichment remains a later separate option if optimization evidence warrants it.",
   "validation_opened": false,
-  "physical_admission": false
+  "physical_admission": false,
+  "mathematical_review": {
+    "status": "reference source review confirms separability; concrete implementation still requires independent review",
+    "normalization": "Each Fi keeps original normalized sqrt-sigma modal weight and original global TRAIN traction denominator; no per-head renormalization.",
+    "physical_stopping": "Original weighted physical gradient infinity norm at most1e-10 for each head; allfour required for global convergence, including small-weight modes.",
+    "line_search": "Original physical Armijo slope equals coordinate gradient dot coordinate direction; fixedD changes coordinates only."
+  }
 }

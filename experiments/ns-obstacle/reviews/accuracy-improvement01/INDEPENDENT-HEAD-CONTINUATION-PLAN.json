@@ -1,0 +1,41 @@
+{
+  "schema": "ns-obstacle-independent-head-continuation-plan-v1",
+  "status": "source_preparation_only_no_execution_release",
+  "prerequisites": [
+    "Complete actual09 raw retention and independent recovery audit",
+    "Review concrete training source, full-objective equivalence tests, retention and finite resource packet before any execution"
+  ],
+  "warm_model_sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60",
+  "warm_model_review_sha256": "117dcc4042171bee1aa92f82ecb45fbfb8a1a7072f8bdb0191177c7ee39b71dd",
+  "actual_flow_review_sha256": "92e178f0783b4ca5537c21e2c6c736fc608af26c8c315df7b0f3cff4e6f11b88",
+  "embedded_parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "purpose": "Accuracy-first sequential continuation from accepted645d, not an equal-start causal optimizer benchmark.",
+  "fixed_science": [
+    "Same original TRAIN teacher, normalizers, modal weights, volume/boundary rule and trace/traction objective",
+    "Same four21-64-64-2 child heads, frozen embeddedparent, identity output transform, fixedDhidden100/output1",
+    "All child hidden/output parameters remain optimizable; no rank/features/loss-weight change and no DEV-based scheduling"
+  ],
+  "algorithm": [
+    "Separate10-pair L-BFGS histories, scalar initial scaling, physical Armijo search and finite resets for each5698-parameter head",
+    "Deterministic round-robin scheduling; record skips only for actual original physical-gradient stopping",
+    "A head-level update is not a joint iteration; record per-head accepted/rejected/trial/full-rule evaluations and summed point-head work",
+    "Historical joint-optimizer counts remain separate from new per-head counts"
+  ],
+  "proposed_finite_batch": {
+    "allocation_seconds": 3600,
+    "maximum_accepted_steps_per_head": 10000,
+    "maximum_total_head_steps": 40000,
+    "automatic_retry": false,
+    "accuracy_stopping_cap": null
+  },
+  "required_checks": [
+    "Before firstupdate, sum of per-head full objectives and concatenated22792physicalgradients match original fulljoint objective/gradient within frozen reviewed f64 bounds",
+    "Perturbonehead: other heads outputs, objective components and gradients unchanged including trace andtraction",
+    "Persist all scalar trial/accepted/rejected/interrupted events, per-head checkpoint parameters and curvature histories; interruption is not convergence",
+    "Select by original summedTRAIN objective only; final serialized fullmodel uncached replay and original physical infinity-gradient stopping checked",
+    "Actual subsequent full-rule PDE comparison required, including pressure/drag regressions as well as velocity/divergence/lift"
+  ],
+  "interpretation": "Current batch improved velocity but not every physical metric and stopped nonstationary. Independent heads remove shared optimization history/step decisions; benefit is a hypothesis, not established cause or promised accuracy. Feature enrichment remains a later separate option if optimization evidence warrants it.",
+  "validation_opened": false,
+  "physical_admission": false
+}

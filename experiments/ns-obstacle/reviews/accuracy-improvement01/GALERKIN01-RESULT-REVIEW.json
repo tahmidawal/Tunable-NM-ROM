@@ -96,7 +96,7 @@
       "floor_consistent": true
     }
   ],
-  "retention_review_pending": true,
+  "retention_review_pending": false,
   "interpretation": "Same-bank mixed Galerkin converges and all development targets pass, but velocity/pressure/force accuracy changes are mixed versus original weak LS. Preserve both; no uniform superiority, continuum precision or speedup claim. Continue fixed-hidden output training test.",
   "vs_same_bank_LS_metric_percent_change": [
     {
@@ -128,5 +128,9 @@
   ],
   "reference_source_commit": "ee9d94a74",
   "reference_mirror_commit": "16a90fb9c",
-  "plot_dataset_sha256": "1b938ca027cb8cc20952278820517048ce45205c58284f8f7ff08a9eddba4951"
+  "plot_dataset_sha256": "1b938ca027cb8cc20952278820517048ce45205c58284f8f7ff08a9eddba4951",
+  "retention_review_passed": true,
+  "retention_source_commit": "89a4efee1",
+  "retention_mirror_commit": "b7e8b4a68",
+  "retention_review_sha256": "0ab971125b458229ed00e6ae7e320a13dcda91e3db3960b419fbff54cf5349ef"
 }

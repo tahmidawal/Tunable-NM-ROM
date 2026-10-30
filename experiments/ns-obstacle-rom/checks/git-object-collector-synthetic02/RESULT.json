@@ -1,0 +1,30 @@
+{
+  "returncode": 0,
+  "source_files": {
+    "checks/collect_git_object_archive_once.py": "809c1ad424dc2201800bff441d7b24d47d371bd271ccda2ef0e58b4c14568eda",
+    "retention/git_object_archive.py": "588a81ee04b7f9beaad866282a3e16b9d81cc913ff022249ef7fae079eac806d",
+    "retention/build_mirror_index.py": "3f7a2fa78a8f0af6d46310c4af3c93d4e4fba23d32177dc99da151778f0c3237"
+  },
+  "scope": "temporary synthetic repo plus local bare mirror; fake SSH; no campaign data/Git or network",
+  "budget": {
+    "archive_objects_bound": 2101248,
+    "temporary_chunk_bound": 8392704,
+    "metadata_bound": 5148672,
+    "helper_index_tree_bound": 7352320,
+    "chunk_bytes": 8388608,
+    "required_free_bytes": 11029118976
+  },
+  "passed": true,
+  "receipt": {
+    "source": "a640e00b458ab8f071b5bdd0b0cb8e4fb17871ed",
+    "mirror": "dd7696d84576be3b0a9cc8c7321a0cb803aed91b",
+    "archive_source": "c32edb5633fcc8aed5f76fbf4106bee96da94620",
+    "archive_mirror": "80c069f036610b2a601084988e1d6d2180950c0c",
+    "archive_sha256": "d9e241b05e1c4f70ccc471e5841160cdea2ba80108521089f9baf84883e20eee",
+    "all_originals": 3,
+    "remote_originals_preserved": true
+  },
+  "clean_final_index": true,
+  "both_original_histories_exact": true,
+  "no_working_chunks": true
+}

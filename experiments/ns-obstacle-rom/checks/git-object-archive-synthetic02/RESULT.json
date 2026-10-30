@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "scope": "synthetic archive/Git temporary repository only; no remote mirror qualification",
+  "archive_bytes": 9440713,
+  "archive_sha256": "2de909cddce4cb8d308b62cb0f6fb5b950921998bc7889be137df2810eb4d33e",
+  "chunks": [
+    {
+      "oid": "8603e97f4b5d388680fae9aa908f6d5f654b42e2",
+      "bytes": 8388608,
+      "sha256": "0d5c5fd567568c8f623a8b7198bed723afacd89d7e51636cfd0cd6134fe0dc84"
+    },
+    {
+      "oid": "4a6d041b03a712fb86fb3279f32ca5089cae47e0",
+      "bytes": 1052105,
+      "sha256": "85d94e98777c955e2a3f58882f7e383082ef6ef83466e17fcadcf272517603fa"
+    }
+  ],
+  "verified_files": 4,
+  "all_archive_bytes_recovered_from_both_synthetic_commits": true,
+  "no_working_archive_chunks": true,
+  "truncated_attempt_completed_chunk_records": [
+    {
+      "phase": "archive_ingest",
+      "complete_bytes": 8388608,
+      "chunks": [
+        {
+          "oid": "8603e97f4b5d388680fae9aa908f6d5f654b42e2",
+          "bytes": 8388608,
+          "sha256": "0d5c5fd567568c8f623a8b7198bed723afacd89d7e51636cfd0cd6134fe0dc84"
+        }
+      ]
+    }
+  ],
+  "truncation_failure": "truncated archive; completed chunk objects retained",
+  "events": [
+    {
+      "phase": "archive_ingest",
+      "complete_bytes": 8388608,
+      "chunks": [
+        {
+          "oid": "8603e97f4b5d388680fae9aa908f6d5f654b42e2",
+          "bytes": 8388608,
+          "sha256": "0d5c5fd567568c8f623a8b7198bed723afacd89d7e51636cfd0cd6134fe0dc84"
+        }
+      ]
+    },
+    {
+      "phase": "archive_ingest",
+      "complete_bytes": 9440713,
+      "chunks": [
+        {
+          "oid": "8603e97f4b5d388680fae9aa908f6d5f654b42e2",
+          "bytes": 8388608,
+          "sha256": "0d5c5fd567568c8f623a8b7198bed723afacd89d7e51636cfd0cd6134fe0dc84"
+        },
+        {
+          "oid": "4a6d041b03a712fb86fb3279f32ca5089cae47e0",
+          "bytes": 1052105,
+          "sha256": "85d94e98777c955e2a3f58882f7e383082ef6ef83466e17fcadcf272517603fa"
+        }
+      ]
+    },
+    {
+      "phase": "archive_ingest_complete",
+      "complete_bytes": 9440713,
+      "archive_sha256": "2de909cddce4cb8d308b62cb0f6fb5b950921998bc7889be137df2810eb4d33e",
+      "chunks": [
+        {
+          "oid": "8603e97f4b5d388680fae9aa908f6d5f654b42e2",
+          "bytes": 8388608,
+          "sha256": "0d5c5fd567568c8f623a8b7198bed723afacd89d7e51636cfd0cd6134fe0dc84"
+        },
+        {
+          "oid": "4a6d041b03a712fb86fb3279f32ca5089cae47e0",
+          "bytes": 1052105,
+          "sha256": "85d94e98777c955e2a3f58882f7e383082ef6ef83466e17fcadcf272517603fa"
+        }
+      ]
+    }
+  ],
+  "example_bound": {
+    "archive_objects_bound": 156758016,
+    "temporary_chunk_bound": 8392704,
+    "metadata_bound": 4272128,
+    "helper_index_tree_bound": 20611072,
+    "chunk_bytes": 8388608,
+    "required_free_bytes": 11195887616
+  },
+  "source_sha256": "588a81ee04b7f9beaad866282a3e16b9d81cc913ff022249ef7fae079eac806d"
+}

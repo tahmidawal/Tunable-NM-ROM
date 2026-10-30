@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/complete-collector-synthetic-j8gagxj5/repo/experiments/ns-obstacle-rom/checks/collect_git_object_archive_once.py", line 151, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/tmp/complete-collector-synthetic-j8gagxj5/repo/experiments/ns-obstacle-rom/checks/collect_git_object_archive_once.py", line 26, in main
+    if parent!=r['expected_parent_commit'] or textgit(repo,['status','--porcelain']):raise ValueError('frozen clean lane required')
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: frozen clean lane required

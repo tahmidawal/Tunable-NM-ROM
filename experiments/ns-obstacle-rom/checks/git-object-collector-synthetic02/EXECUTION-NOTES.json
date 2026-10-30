@@ -1,0 +1,10 @@
+{
+  "scope": "bounded CPU-only synthetic retention qualification; no campaign archive/index/branch/object or remote mutation",
+  "external_timeout_seconds": 45,
+  "kill_grace_seconds": 2,
+  "python": "/home/tahmid/Dev/.venv/bin/python",
+  "successful_run_exit_code": 0,
+  "prior_retained_failure": "synthetic01 failed clean-tree guard because child Python created bytecode in temporary repo; production source unchanged, harness child PYTHONDONTWRITEBYTECODE=1 corrected",
+  "fresh_namespace_guard": "One intermediate harness invocation rejected existing synthetic01 output before temporary repository creation; then corrected new synthetic02 namespace used",
+  "actual_network_or_cluster_access": false
+}

@@ -92,7 +92,7 @@
       "floor_consistent": true
     }
   ],
-  "retention_review_pending": true,
+  "retention_review_pending": false,
   "interpretation": "Output-polished-bank weak LS passes both development target sets but velocity/pressure worsen slightly versus coordinate07; lift improves, other metrics mixed. Preserve coordinate07 as better velocity baseline. Lower TRAIN loss does not ensure uniform flow improvement. Next joint child optimization is a separate test, not adoption of this candidate.",
   "vs_coordinate07_metric_percent_change": [
     {
@@ -124,5 +124,9 @@
   ],
   "reference_source_commit": "b0fb4fe37",
   "reference_mirror_commit": "4edc3e2ec",
-  "plot_dataset_sha256": "11177510f5295886c2f9a477e405c7c9b528406c29541efc34ec43ffaec4d8ad"
+  "plot_dataset_sha256": "11177510f5295886c2f9a477e405c7c9b528406c29541efc34ec43ffaec4d8ad",
+  "retention_review_passed": true,
+  "retention_source_commit": "d0a8b2502",
+  "retention_mirror_commit": "5ca357190",
+  "retention_review_sha256": "01bb10e0b5d5303b85b3042e1fee0c23b7eec72d10e2852fcc4ba3ba43d3d2da"
 }

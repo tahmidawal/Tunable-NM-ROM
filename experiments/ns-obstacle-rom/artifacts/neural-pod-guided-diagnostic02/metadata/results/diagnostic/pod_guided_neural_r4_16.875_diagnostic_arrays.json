@@ -1,0 +1,130 @@
+{
+  "record": {
+    "full": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "35c7f225cd245979565a17d420408bbb65e96bc4612bf9b6f90e6bc5515b8333"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "bd2341a609de5c143e5d35b13f26364c8a7ea6c39474771fcf05240d9b811387"
+      },
+      "velocity_gradient": {
+        "array": "a000002",
+        "shape": [
+          1036497,
+          2,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "a6c8ab8b08790cc208b2391badf8adad888f0ffedb1cb719e1baafb414492c01"
+      }
+    },
+    "boundary": {
+      "velocity": {
+        "array": "a000003",
+        "shape": [
+          4459,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "8f63a0657a379cfc614b6f58c7b65d8b23256c5ac39524b9b49cd27835fc7be5"
+      },
+      "pressure": {
+        "array": "a000004",
+        "shape": [
+          4459
+        ],
+        "dtype": "float64",
+        "content_sha256": "0a1b6b3e3de5c249918c94913d4b79dc6421e3a887471fad6f67a02cf3632f63"
+      }
+    },
+    "direct": {
+      "array": "a000005",
+      "shape": [
+        80
+      ],
+      "dtype": "float64",
+      "content_sha256": "0f7c7c6ce6935a3d3915ec0e2483141d1237e26ecf316612cc7a131e86c40eda"
+    },
+    "tensor": {
+      "array": "a000006",
+      "shape": [
+        80
+      ],
+      "dtype": "float64",
+      "content_sha256": "ce19ada467ade7b4ef283fd866e2e594f1136f6cb7ad5b7f3d074620b8cd0fcb"
+    },
+    "terms": {
+      "advection": {
+        "array": "a000007",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "954b659f102bac05c4b4e25116d6ae36208d364f99eec9c24efde5c627f20974"
+      },
+      "viscous": {
+        "array": "a000008",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "3b1266951f1abbb53444dab9d821f64bdc00903cf1af8c6eb716a0432a9e3b45"
+      },
+      "pressure": {
+        "array": "a000009",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "fc0baa2d8487ab6750d645155f0998fa41ce2e5a2457caa8c00ff622353b3d47"
+      },
+      "pressure_lifting": {
+        "array": "a000010",
+        "shape": [
+          64
+        ],
+        "dtype": "float64",
+        "content_sha256": "5d25c4c859c68872ed57ac077560c92b46e9c551bb4c5b00460c0652184b9a4d"
+      },
+      "continuity": {
+        "array": "a000011",
+        "shape": [
+          16
+        ],
+        "dtype": "float64",
+        "content_sha256": "f350d1b23fc2dd0ea5b9a14a76b560c02b6772ff6c79648b931fb66bfdcabe9d"
+      }
+    },
+    "force_coefficient": {
+      "array": "a000012",
+      "shape": [
+        2
+      ],
+      "dtype": "float64",
+      "content_sha256": "4b22523a46f26aa0e8479693a26803110f3cf26891c2f0da1950d990d6f3ab0a"
+    }
+  },
+  "array_file": "pod_guided_neural_r4_16.875_diagnostic_arrays.npz",
+  "array_sha256": "a357c5ff1c0702194b6e945dc764d681dab1e9ba2e2222fc7dbb025890baf4e6",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 13,
+    "array_references": 13,
+    "unique_expanded_bytes": 58154320,
+    "logical_expanded_reference_bytes": 58154320,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 59788648
+  }
+}

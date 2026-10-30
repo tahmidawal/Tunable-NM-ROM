@@ -1644,13 +1644,14 @@
       "allocated_gpu_hours": 0.06888888888888889,
       "exit_code": "0:0",
       "node": "pax106",
-      "scientific_review_pending": true
+      "scientific_review_pending": false,
+      "retention_review_passed": true
     },
     {
       "job_id": 6651600,
       "attempt": "neural-pod-guided-trace01",
       "budget_bucket": "ROM",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "RUNNING",
       "source_commit": "9891ee0b8dfe98c773bb6a7ed00f84bc57784199",
       "source_manifest_sha256": "5d5c18b35e4b0fcf383e2001f975ac2ca30de2d9ecc92ca3b857493c63fee0de",
       "release_sha256": "286746c3fe3f9b0be81ff33d0494bcc1561dbf3be5050f3182a72fd1a768ade9",
@@ -1662,10 +1663,29 @@
       "warm_restart": true,
       "validation_allowed": false,
       "objective_changed": true
+    },
+    {
+      "job_id": 6651919,
+      "attempt": "neural-pod-guided-energy01",
+      "budget_bucket": "ROM",
+      "state_last_observed": "RUNNING",
+      "source_commit": "b460ad107940dd80cd53da6236f79b10cd311c29",
+      "source_manifest_sha256": "3bb2a75c42f282f10454b1f9b3c9292ef5938978b9ef3e0a8ccb2106f38b4589",
+      "release_sha256": "ec695991d6f8fa951fd5b81a39e4d4762896b0174cf6acf3f036af460bb75185",
+      "allocation_seconds_reserved": 3600,
+      "gpus": 1,
+      "actual_full_preflight_passed": true,
+      "supervised_divergence_weight": 1.0,
+      "new_adam_steps": 0,
+      "warm_restart": true,
+      "validation_allowed": false,
+      "objective_changed": true,
+      "weighting": "separate_sigma_squared_times_value_and_gradient_norms"
     }
   ],
   "live_job_ids": [
-    6651600
+    6651600,
+    6651919
   ],
   "completed_gpu_hours": 7.126111111111111,
   "note": "POD4/POD8 development review passed. New neural actual diagnostic greatly improves velocity and drag but lift/divergence/mass fail; independent review pending. Longer unchanged-objective refinement in preparation. Validation closed.",

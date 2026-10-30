@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "schema": "ns-obstacle-synthetic-device-argument-equivalence-v1",
+  "source_sha256": "9facb4948139f0cc7dd53a80dc30d07a672f8de162780165ab7d50dcdc4b5cfe",
+  "fixture_source_sha256": "24f25d198c5b0e0fd9bce6074b7400a5bb8b80edc2f4a428365b9985020fdb08",
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "devices": [
+    "NVIDIA GB10"
+  ],
+  "point_count": 19,
+  "block_ranges": [
+    [
+      0,
+      7
+    ],
+    [
+      7,
+      14
+    ],
+    [
+      14,
+      19
+    ]
+  ],
+  "logical_teacher_bytes": 1368,
+  "byte_guard_scope": "logical teacher payload only, not compiler or device peak memory",
+  "theta_cases": [
+    {
+      "raw_file": "case-0.npz",
+      "raw_sha256": "15f87a7984e21e51f8b109b429c9e7b2cb4e3b6effad0d5dd78016c3821dbc98",
+      "theta_sha256": "224bd290a538cfe4736e5142f6d30a011180985fb0f725958b0aaa5bfa917f0c",
+      "objective": 42.54912882312112,
+      "objective_gap": 0.0,
+      "flattened_parameter_gradient_max_gap": 0.0
+    },
+    {
+      "raw_file": "case-1.npz",
+      "raw_sha256": "c13692296375f643e3a788c055b1eec534d8ab70e59d7d336e2e7fbfa696cef7",
+      "theta_sha256": "aebe97b6a5d5c90b71360da7c82c11bcb87a774e437c3aab349d179e1b576281",
+      "objective": 47.35596308827484,
+      "objective_gap": 0.0,
+      "flattened_parameter_gradient_max_gap": 0.0
+    },
+    {
+      "raw_file": "case-2.npz",
+      "raw_sha256": "79721ce19e67e5de2e23b62ffb31c9a1763cad27a884c92d5036a59ed537805b",
+      "theta_sha256": "81d337d9d7f83b1253667528e577991919e8bd4ff5b9a7d73b315bd34dbb4bbe",
+      "objective": 39.540510466350426,
+      "objective_gap": 0.0,
+      "flattened_parameter_gradient_max_gap": 0.0
+    }
+  ],
+  "actual_training_or_model_inputs": false,
+  "production_integrated": false,
+  "speedup_claim": false,
+  "fixture_scope": "three synthetic theta values, exact original reduction/block ordering and final short block; no universal equivalence claim"
+}

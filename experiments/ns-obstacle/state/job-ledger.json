@@ -1,6 +1,6 @@
 {
   "campaign": "ns-obstacle-20261027",
-  "status": "warm_refinement_complete_pending_audit_and_actual_PDE",
+  "status": "refined_actual_PDE_diagnostic02_submitted",
   "allocated_gpu_hour_ceiling": null,
   "allocations": [
     {
@@ -1625,9 +1625,25 @@
       "new_accepted_lbfgs_steps": 3592,
       "cumulative_lbfgs_steps": 3892,
       "model_sha256": "011374bfb8251b6f5b8e78f8e10d8be67d2cf3975072dcb40da65391ba85af07"
+    },
+    {
+      "job_id": 6651042,
+      "attempt": "neural-pod-guided-diagnostic02",
+      "budget_bucket": "ROM",
+      "state_last_observed": "PENDING",
+      "source_commit": "e9f59f22f4ee769c874f34091bf74e9358739dc6",
+      "source_manifest_sha256": "2288b01fc6aa521557f8333578694e5a24258dd2af804cbde6878f77db2b1ed3",
+      "release_sha256": "b9edce608a1a64fc2f6a769bae1f294aaa4caae00b535de15566ed4a3462a7f3",
+      "allocation_seconds_reserved": 900,
+      "gpus": 1,
+      "actual_full_preflight_passed": true,
+      "validation_allowed": false,
+      "physical_admission": false
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6651042
+  ],
   "completed_gpu_hours": 7.057222222222222,
   "note": "POD4/POD8 development review passed. New neural actual diagnostic greatly improves velocity and drag but lift/divergence/mass fail; independent review pending. Longer unchanged-objective refinement in preparation. Validation closed.",
   "total_allocated_gpu_hours_completed": 7.057222222222222,

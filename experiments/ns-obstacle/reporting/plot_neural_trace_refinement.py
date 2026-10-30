@@ -21,10 +21,13 @@ def main():
     names = ['state-00000-initial.json', 'ACCEPTED.jsonl', 'CONFIG.json',
              'FINAL.json', 'MODEL-RECEIPT.json', 'SELECTED-FULL-REPLAY.json']
     assert review['schema'] == 'ns-obstacle-supervised-trace-refinement-saved-audit-v1'
+    selected_paths = [Path(path) for path, value in review['provenance'].items()
+                      if value == review['selected_model_sha256']
+                      and Path(path).name == 'spatial-bank-raw.npz']
+    assert len(selected_paths) == 1
+    audited_directory = selected_paths[0].parent
     for name in names:
-        audited = [value for path, value in review['provenance'].items()
-                   if path.endswith('/results/fit/' + name)]
-        assert len(audited) == 1 and audited[0] == sha(args.metadata / name), name
+        assert review['provenance'][str(audited_directory / name)] == sha(args.metadata / name), name
     receipt = read('MODEL-RECEIPT.json')
     initial = read('state-00000-initial.json')
     accepted = [json.loads(line) for line in

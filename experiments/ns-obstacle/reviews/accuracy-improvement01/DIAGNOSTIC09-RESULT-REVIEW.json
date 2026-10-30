@@ -1,0 +1,156 @@
+{
+  "schema": "ns-obstacle-scanned-coordinate-diagnostic-coordinator-review-v1",
+  "job_id": 6661438,
+  "elapsed_seconds": 234,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": true,
+  "validation_opened": false,
+  "independent_result_sha256": "1cd87978badbfcfbfed6f05babb0ed3aad22a983d238a0bd08dcc418e3ad3ce9",
+  "model_sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0003617217566973555,
+        "pressure_scaled": 0.00028180498191881506,
+        "divergence": 0.0037651113194702383,
+        "velocity_gradient_scaled": 0.005947218328758265,
+        "mass": 5.5415955842342346e-05,
+        "boundary_trace": 3.0980658918150607e-10,
+        "drag_relative": 0.00013176513884281314,
+        "transverse_absolute": 0.0010102712374458235
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": true,
+      "force": [
+        6.119107162461682,
+        0.02119381221347067
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.3179071925901943e-15,
+      "finite_difference_errors": [
+        5.562850780693878e-12,
+        4.028282764718123e-11,
+        3.986278575427995e-10
+      ],
+      "stationarity_gradient": 8.790281211538939e-12,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0011494032058686082,
+      "projection_floor": 0.00022846861637638053,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.0003494293210558578,
+        "pressure_scaled": 0.00017873471036039608,
+        "divergence": 0.0044531572012583166,
+        "velocity_gradient_scaled": 0.006924560037010394,
+        "mass": 6.585126142155716e-05,
+        "boundary_trace": 3.8658711902903585e-10,
+        "drag_relative": 0.00022935766975446046,
+        "transverse_absolute": 0.00020117735494075504
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": true,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": true,
+      "force": [
+        5.179831814237361,
+        0.004229010558607596
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.448269030514633e-15,
+      "finite_difference_errors": [
+        3.0510918770864657e-12,
+        3.530787710154605e-11,
+        4.126740296484854e-10
+      ],
+      "stationarity_gradient": 8.537052533595087e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0013077127225902254,
+      "projection_floor": 0.0002716551089311977,
+      "floor_consistent": true
+    }
+  ],
+  "retention_review_pending": true,
+  "interpretation": "Scanned joint-child bank weak LS improves velocity/divergence/gradient/mass/lift versus coordinate07 and outputpolish08 while pressure/drag worsen. Both DEV cases pass all original targets. Preserve multiple metric baselines; no uniform dominance, optimality, final validation or speedup claim. Same-space projection is achieved reference-fit evidence, not guaranteed attainable PDE accuracy.",
+  "reference_source_commit": "cccfedd07",
+  "reference_mirror_commit": "f199b3651",
+  "plot_dataset_sha256": "c23b561ff624b5188c55b387608948657f9697914ef76a1b7a8abce34723fe1c",
+  "vs_coordinate07_metric_percent_change": [
+    {
+      "Re": 16.875,
+      "percent_change": {
+        "velocity_relative": -3.4987031080667363,
+        "pressure_scaled": 5.6585489155225766,
+        "divergence": -5.9605055344166935,
+        "velocity_gradient_scaled": -5.347824832795034,
+        "mass": -12.789779686970636,
+        "boundary_trace": 0.04948174652368298,
+        "drag_relative": 48.543243601959674,
+        "transverse_absolute": -21.84355924911008
+      }
+    },
+    {
+      "Re": 23.125,
+      "percent_change": {
+        "velocity_relative": -4.436250090512073,
+        "pressure_scaled": 7.304998048587108,
+        "divergence": -5.724080099007034,
+        "velocity_gradient_scaled": -5.379682842429368,
+        "mass": -13.146633875554981,
+        "boundary_trace": -0.03282775341507671,
+        "drag_relative": 66.3687525088648,
+        "transverse_absolute": -28.009003924418906
+      }
+    }
+  ],
+  "vs_output_polish08_metric_percent_change": [
+    {
+      "Re": 16.875,
+      "percent_change": {
+        "velocity_relative": -3.707901319185669,
+        "pressure_scaled": 4.914097261133654,
+        "divergence": -6.00157244979459,
+        "velocity_gradient_scaled": -5.400381719277759,
+        "mass": -12.377483406686796,
+        "boundary_trace": 0.045203687958750294,
+        "drag_relative": 47.07955812164908,
+        "transverse_absolute": -21.06211966834254
+      }
+    },
+    {
+      "Re": 23.125,
+      "percent_change": {
+        "velocity_relative": -4.976408886690919,
+        "pressure_scaled": 6.482969940258099,
+        "divergence": -5.695966547230102,
+        "velocity_gradient_scaled": -5.3289716993550895,
+        "mass": -15.789526381029773,
+        "boundary_trace": -0.026508048086681946,
+        "drag_relative": 66.50412166944048,
+        "transverse_absolute": -27.360005638746408
+      }
+    }
+  ]
+}

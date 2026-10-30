@@ -1760,7 +1760,7 @@
       "queue_after": "6653241|ctol_nsobsrom_traction|PENDING\n",
       "attempt": "neural-pod-guided-traction01",
       "budget_bucket": "ROM",
-      "state_last_observed": "PENDING",
+      "state_last_observed": "RUNNING",
       "allocation_seconds_reserved": 3600,
       "gpus": 1,
       "validation_allowed": false,
@@ -1768,7 +1768,10 @@
       "supervised_divergence_weight": 1.0,
       "traction_weight": 1.0,
       "new_adam_steps": 0,
-      "warm_restart": true
+      "warm_restart": true,
+      "node": "pax106",
+      "gpu_type": "A100 80GB",
+      "gpu_f64_highest_confirmed": true
     }
   ],
   "live_job_ids": [

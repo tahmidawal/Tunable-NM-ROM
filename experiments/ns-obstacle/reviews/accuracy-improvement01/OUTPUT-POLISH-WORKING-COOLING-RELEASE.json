@@ -1,0 +1,80 @@
+{
+  "authorized": true,
+  "owner": "ROM",
+  "proposal_source_commit": "e7cb99372",
+  "proposal_mirror_commit": "7d86a831f",
+  "proposal_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/output-polish-working-cold-renewed/POLISH-PROPOSAL.json",
+  "proposal_sha256": "402170bc4e850d674407a947eee8ba47503fc9d0f0698fe5d21e8e858a238f5f",
+  "exact_paths": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/archive-chunks/collection.tar.gz.part-000",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/archive-chunks/collection.tar.gz.part-000",
+      "sha256": "e57ce5b2fb132da05fc74275d19b0b56b0f6ae12c36385a415db31a1d8b3b993",
+      "bytes": 6594191,
+      "allocated_bytes": 6594560,
+      "inode": 28217736,
+      "device": 66306,
+      "link_count": 1,
+      "source_mirror_advertised_blobs": {
+        "53ef2504c2c67ca64f515b287770d3511bd5f85a": "cec26fadd33529321ee292fe8af72c6fe5e7f9be",
+        "0d080927e1e1614b7d9c4a66f5c71f3c184517ff": "cec26fadd33529321ee292fe8af72c6fe5e7f9be",
+        "6830058b150c46342b92b6d7e74a4154412ca26f": "cec26fadd33529321ee292fe8af72c6fe5e7f9be"
+      },
+      "archive_member": null
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/metadata/results/fit/POLISH.jsonl",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/metadata/results/fit/POLISH.jsonl",
+      "sha256": "f724e679e17da4bc670f7d5e96cd6b74283d8f71464ae694aeee352e856aea3a",
+      "bytes": 2322,
+      "allocated_bytes": 4096,
+      "inode": 28217708,
+      "device": 66306,
+      "link_count": 1,
+      "source_mirror_advertised_blobs": {
+        "53ef2504c2c67ca64f515b287770d3511bd5f85a": "15b323cf9f286b5541703d016d25780fa106e2b4",
+        "0d080927e1e1614b7d9c4a66f5c71f3c184517ff": "15b323cf9f286b5541703d016d25780fa106e2b4",
+        "6830058b150c46342b92b6d7e74a4154412ca26f": "15b323cf9f286b5541703d016d25780fa106e2b4"
+      },
+      "archive_member": "results/fit/POLISH.jsonl"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/metadata/results/fit/EVALUATIONS.jsonl",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/metadata/results/fit/EVALUATIONS.jsonl",
+      "sha256": "058e9e5cf394bd1b21fe1a146c74d8216fde5dd64eebec4725483ba5ee8bcabd",
+      "bytes": 3544,
+      "allocated_bytes": 4096,
+      "inode": 28217701,
+      "device": 66306,
+      "link_count": 1,
+      "source_mirror_advertised_blobs": {
+        "53ef2504c2c67ca64f515b287770d3511bd5f85a": "97598cf570334cf0ebb0faba108c2cdb61910fb1",
+        "0d080927e1e1614b7d9c4a66f5c71f3c184517ff": "97598cf570334cf0ebb0faba108c2cdb61910fb1",
+        "6830058b150c46342b92b6d7e74a4154412ca26f": "97598cf570334cf0ebb0faba108c2cdb61910fb1"
+      },
+      "archive_member": "results/fit/EVALUATIONS.jsonl"
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/metadata/results/fit/QR-BLOCKS.jsonl",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-output-polish01/metadata/results/fit/QR-BLOCKS.jsonl",
+      "sha256": "4bad3f2cc50656b2f1da00758436d18135ef203a7e5dfcac4dad75d661948b0e",
+      "bytes": 3921760,
+      "allocated_bytes": 3923968,
+      "inode": 28217709,
+      "device": 66306,
+      "link_count": 1,
+      "source_mirror_advertised_blobs": {
+        "53ef2504c2c67ca64f515b287770d3511bd5f85a": "4840e989b8827584bd3d59dc50b49073fffb025f",
+        "0d080927e1e1614b7d9c4a66f5c71f3c184517ff": "4840e989b8827584bd3d59dc50b49073fffb025f",
+        "6830058b150c46342b92b6d7e74a4154412ca26f": "4840e989b8827584bd3d59dc50b49073fffb025f"
+      },
+      "archive_member": "results/fit/QR-BLOCKS.jsonl"
+    }
+  ],
+  "allocated_bytes": 10526720,
+  "conditions": [
+    "Owner rechecks exact path/inode/device/single-link/size/hash and complete source+advertised-mirror recovery with no current reader before unlink.",
+    "Preserve all Git recovery histories, current models/parameters, JSON metadata, canonical inputs, latest09 plot dataset c23b561f, PNG/PDF figures and remote originals.",
+    "Only exact listed working duplicates may be removed by their owning lane; save cold recovery descriptor before unlink and observed lifecycle after. No prospective storage credit."
+  ]
+}

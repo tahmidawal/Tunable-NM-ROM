@@ -4,7 +4,7 @@ a=argparse.ArgumentParser()
 for k in ("source", "mirror", "retention-sha256"):a.add_argument("--"+k, required=True)
 a.add_argument('--attempt', choices=['neural-pod-guided-trace01', 'neural-pod-guided-energy01',
                                     'neural-pod-guided-diagnostic03', 'neural-pod-guided-diagnostic04',
-                                    'neural-pod-guided-traction01'], required=True)
+                                    'neural-pod-guided-traction01', 'neural-pod-guided-diagnostic05'], required=True)
 args=a.parse_args()
 B=pathlib.Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom')
 A=B/'experiments/ns-obstacle-rom/artifacts'/args.attempt

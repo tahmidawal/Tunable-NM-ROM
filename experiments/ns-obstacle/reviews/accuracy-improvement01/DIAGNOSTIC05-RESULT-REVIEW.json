@@ -1,0 +1,101 @@
+{
+  "schema": "ns-obstacle-traction-neural-diagnostic-coordinator-review-v1",
+  "job_id": 6654710,
+  "elapsed_seconds": 247,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": false,
+  "failed_targets": [
+    "divergence"
+  ],
+  "validation_opened": false,
+  "independent_result_sha256": "7284a15ffad15d746836071e90024c276315474deb2d5b38e267f27e0003e4ba",
+  "reference_source_commit": "07645f426",
+  "reference_mirror_commit": "867ba110e",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0005160198231569411,
+        "pressure_scaled": 0.00025307210397524326,
+        "divergence": 0.005077754469004078,
+        "velocity_gradient_scaled": 0.00810527312759467,
+        "mass": 6.070386032670935e-05,
+        "boundary_trace": 3.092023255312029e-10,
+        "drag_relative": 3.975621691845661e-05,
+        "transverse_absolute": 0.001291846437336621
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        6.1185442241841645,
+        0.02147538741336147
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.4737033332026724e-15,
+      "finite_difference_errors": [
+        1.1000105768804511e-12,
+        2.4115642789516786e-11,
+        2.1216101715730874e-10
+      ],
+      "stationarity_gradient": 4.690620150483347e-12,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.001235887072667867,
+      "projection_floor": 0.00042707205345256916,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.0005479338703392626,
+        "pressure_scaled": 0.00020782879966751573,
+        "divergence": 0.006013842684662014,
+        "velocity_gradient_scaled": 0.009573769642201746,
+        "mass": 4.253692346605681e-05,
+        "boundary_trace": 3.8696809401108335e-10,
+        "drag_relative": 9.857197127296172e-05,
+        "transverse_absolute": 0.0004431935014186728
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        5.179154521657767,
+        0.003986994412129678
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.4443032885090937e-15,
+      "finite_difference_errors": [
+        1.6614079019611447e-12,
+        2.488062350176252e-11,
+        2.2394648529049678e-10
+      ],
+      "stationarity_gradient": 6.368654365104374e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.001532405412193821,
+      "projection_floor": 0.0005003577992758793,
+      "floor_consistent": true
+    }
+  ],
+  "retention_review_pending": true,
+  "interpretation": "Velocity, pressure, gradients, drag and lift improve over both trace03 and energy04; all declared checks except divergence pass. Not uniform metric dominance: first mass and tiny boundary-trace values rise versus trace03 while remaining within limits. Same-space velocity projection is not a minimum-divergence certificate."
+}

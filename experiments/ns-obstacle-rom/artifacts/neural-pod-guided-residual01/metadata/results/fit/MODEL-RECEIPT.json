@@ -1,0 +1,26 @@
+{
+  "schema": "ns-obstacle-supervised-neural-model-v2",
+  "bank_file": "spatial-bank-raw.npz",
+  "bank_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+  "selected_checkpoint": {
+    "objective": 0.0009480918616877232,
+    "checkpoint": "state-05134-final.npz"
+  },
+  "selected_theta_sha256": "63bdd5f8bf850389b901e2b291cadddbd306b0f2f320e8e6a22238e49d4a74a5",
+  "config_sha256": "a07e701a3355a63baa3832c55fabc4316d995da406d0ea981da8bc67648550bc",
+  "runtime_sha256": "697561797aad062e220ba248331db1e3158a4e5574c017663b1221e19953f2e4",
+  "optimizer_status": "job_deadline",
+  "warm_restart": false,
+  "objective_variant": "independent_residual_heads_same_trace_and_traction",
+  "selection": "minimum accepted combined objective",
+  "selected_theta_scope": "child parameters only",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "optimizer_counts_scope": "lineage across different parent and child parameter spaces",
+  "selected_base_objective": 0.0007364165005581175,
+  "cumulative_adam_steps": 4000,
+  "cumulative_lbfgs_steps": 17472,
+  "selected_full_replay_sha256": "56427d3248ad0cf470f3c29f34f42b43badc07d6cb3ca8fb8bcbb2da79cc3d7f",
+  "total_full_evaluations_including_serialized_replay": 5664,
+  "total_training_replay_retention_seconds": 3405.0968534834683,
+  "physical_admission": false
+}

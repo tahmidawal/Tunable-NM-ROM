@@ -1,0 +1,28 @@
+{
+  "release_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/accuracy-improvement01/VELOCITY-ERROR-DECOMPOSITION-RELEASE.json",
+  "release_sha256": "51770052ec0ace455aa58938215148a23068bdcca12cc9f1375f9150482b0648",
+  "schema": "ns-obstacle-bounded-saved-array-audit-execution-v1",
+  "source_sha256": "1bba066f24683aec0b0ce2d096c25a21a8b276c03e3a7b01805b016ef592c364",
+  "binding_sha256": "67c590bdcb2873e21b3bfb63100bc274e74a4a7b169b24336c6e0b85134ef8d0",
+  "executed_input_sha256": "466ba6d20197c3ca883b6a648492f758d059cdd3d25e9091a33ae9c7126789f4",
+  "command": [
+    "ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=15",
+    "-o",
+    "ServerAliveInterval=15",
+    "-o",
+    "ServerAliveCountMax=3",
+    "tufts-login",
+    "OPENBLAS_NUM_THREADS=1 /cluster/tufts/paralab/tawal01/ae-research/venv/bin/python -B -"
+  ],
+  "timeout_seconds": 120,
+  "timed_out": false,
+  "exit_code": 0,
+  "stdout_sha256": "ee69d5a26987e402f765f4c15b5cda95cfbb0618eb6fd8f955de659b16e8f398",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "elapsed_seconds": 14.577610085252672,
+  "no_retry": true
+}

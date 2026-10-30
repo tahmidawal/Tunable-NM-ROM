@@ -3,11 +3,11 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Scanned645d03 model and all217 raw files independently accepted; exact composite fixture then actual PDE09 pending",
+    "ActualPDE09 source/resource review and single solve for independently accepted scanned645d model/clusterfixture",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 13.195833333333333,
+  "completed_allocated_gpu_hours": 13.201666666666666,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -623,6 +623,12 @@
     "scanned_coordinate_seconds": 2470,
     "scanned_coordinate_scientific_and_retention_passed": true,
     "scanned_coordinate_model_review_sha256": "117dcc4042171bee1aa92f82ecb45fbfb8a1a7072f8bdb0191177c7ee39b71dd",
-    "scanned_coordinate_optimizer_converged": false
+    "scanned_coordinate_optimizer_converged": false,
+    "scanned_cluster_fixture_job": 6661327,
+    "scanned_cluster_fixture_state": "COMPLETED",
+    "scanned_cluster_fixture_seconds": 21,
+    "scanned_cluster_fixture_audit_pending": false,
+    "scanned_cluster_fixture_review_passed": true,
+    "scanned_cluster_fixture_review_sha256": "5f3e4d3b4250e11b43c8faea94d2915722b54d931cb4e72c076c1bba20f3fa13"
   }
 }

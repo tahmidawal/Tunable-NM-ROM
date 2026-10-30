@@ -3,7 +3,7 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Render actual06 comparisons and execute reviewed fixed-coordinate next training after exact duplicate-space recovery",
+    "Monitor coordinate6657815, audit terminal saved model and full retention, then evaluate actual PDE accuracy",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
@@ -23,7 +23,7 @@
     "timeout_seconds": 600,
     "note": "Do not read partial output as a completed review or duplicate the consultation."
   },
-  "last_checkpoint_utc": "2026-10-30T04:26:14.985423+00:00",
+  "last_checkpoint_utc": "2026-10-30T06:18:19.969429+00:00",
   "reset_recovery_record": "RESET-RECOVERY-2026-10-28.md",
   "historical_unsubmitted_staging": [
     {
@@ -600,6 +600,11 @@
     ],
     "residual_PDE_retention_pending": false,
     "residual_PDE_retention_passed": true,
-    "residual_PDE_failed_stage_retention_passed": true
+    "residual_PDE_failed_stage_retention_passed": true,
+    "coordinate_job": 6657815,
+    "coordinate_state": "RUNNING",
+    "coordinate_release_sha256": "f9aa058583e9dbac860a2923d50826c231647e924d7fe737ec9691c9539329c0",
+    "coordinate_gpu_f64_highest_confirmed": true,
+    "residual_PDE_plots_rendered": true
   }
 }

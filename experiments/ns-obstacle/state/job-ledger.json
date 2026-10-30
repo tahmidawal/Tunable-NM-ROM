@@ -1887,13 +1887,47 @@
       "scientific_review_pending": false,
       "retention_review_pending": false,
       "retention_review_passed": true
+    },
+    {
+      "source_commit": "3a54d02d0ea32c238a1370eea68c05cde91bc34b",
+      "release_sha256": "f9aa058583e9dbac860a2923d50826c231647e924d7fe737ec9691c9539329c0",
+      "source_manifest_sha256": "6f5b368dc1d348dbcbea3f8dbf27bf585f82f08f130497d7719c5c0d47f81955",
+      "actual_full_preflight_passed": true,
+      "actual_parent_teacher_and_supervised_trace_protocol_verified": true,
+      "no_JAX_or_native_import": true,
+      "namespace_bytes": {
+        "ns-obstacle-rom-20261027": 26508365917,
+        "ns-obstacle-2d-20261027": 4014258810,
+        "ns-obstacle-3d-20261027": 133799
+      },
+      "maximum_global_bytes": 46897321342,
+      "queue_before": "",
+      "time_unix": 1793340899.3997152,
+      "job_id": 6657815,
+      "submitted_once": true,
+      "queue_after": "6657815|ctol_nsobsrom_coordinate|PENDING\n",
+      "attempt": "neural-pod-guided-coordinate01",
+      "budget_bucket": "ROM",
+      "state_last_observed": "RUNNING",
+      "allocation_seconds_reserved": 3600,
+      "gpus": 1,
+      "validation_allowed": false,
+      "physical_admission": false,
+      "parent_frozen": true,
+      "new_adam_steps": 0,
+      "warm_restart": true,
+      "node": "pax106",
+      "gpu_type": "A100 80GB PCIe",
+      "gpu_f64_highest_confirmed": true
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6657815
+  ],
   "completed_gpu_hours": 11.286111111111111,
-  "note": "Actual residual06 and failed preflight provenance scientifically/durably audited; divergence still fails. Fixed-coordinate continuation pending exact release.",
+  "note": "Actual residual06 independently audited and plotted; fixed-coordinate warm-child fit6657815 running with full preflight and GPU/f64/highest confirmed. Divergence remains failed; final validation closed.",
   "total_allocated_gpu_hours_completed": 11.286111111111111,
-  "last_accounting_utc": "2026-10-30T05:54:47.430055+00:00",
+  "last_accounting_utc": "2026-10-30T06:18:19.969429+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

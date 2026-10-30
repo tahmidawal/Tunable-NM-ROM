@@ -1,0 +1,321 @@
+{
+  "schema": "ns-obstacle-rom-infrastructure-v1",
+  "status": "FD1_source_candidate_no_scoped_reference_or_training_admission",
+  "central_campaign_version": "predata-A6",
+  "central_campaign_sha256": "27ab0064e4e05adfe14456e9d94ba62247711879a0896bbebc55266661a21e27",
+  "central_design_sha256": "305afd1f161a2c866f5d8a1ea6f31ac9266262976ac872b75ca911b59e8881f1",
+  "central_commit": "e2faad9b72e6630463cf2ea11694d3c75593fec7",
+  "physics": {
+    "density": 1.0,
+    "pressure": "kinematic",
+    "outlet": "nu_grad_u_minus_pI_times_fluid_normal_equals_zero",
+    "additional_pressure_gauge": false,
+    "force_normal": "solid_to_fluid",
+    "physical_stress": "minus_pI_plus_nu_grad_u_plus_transpose",
+    "reference_weak_form": "advective_gradient_mixed",
+    "geometry": "fixed_stationary"
+  },
+  "case2d": {
+    "label": "DFG2D1_and_fixed_inlet_viscosity_family",
+    "xmin": 0.0,
+    "xmax": 2.2,
+    "height": 0.41,
+    "obstacle_center": [
+      0.2,
+      0.2
+    ],
+    "radius": 0.05,
+    "inlet_max": 0.3,
+    "inlet_mean": 0.2,
+    "benchmark_nu": 0.001,
+    "training_Re": [
+      15.0,
+      16.25,
+      17.5,
+      18.75,
+      20.0,
+      21.25,
+      22.5,
+      23.75,
+      25.0
+    ],
+    "development_Re": [
+      16.875,
+      23.125
+    ],
+    "validation_Re": [
+      16.0,
+      18.0,
+      22.0,
+      24.0
+    ],
+    "viscosity_rule": "0.02/Re",
+    "pressure_probes": [
+      [
+        0.15,
+        0.2
+      ],
+      [
+        0.25,
+        0.2
+      ]
+    ],
+    "upstream_extension_xmin": -0.2,
+    "downstream_extension_xmax": 4.4,
+    "target": "steady"
+  },
+  "case3d": {
+    "label": "project_defined_confined_sphere",
+    "xmin": -5.0,
+    "xmax": 15.0,
+    "pipe_radius": 2.5,
+    "sphere_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "sphere_radius": 0.5,
+    "inlet_mean": 1.0,
+    "inlet_max": 2.0,
+    "pilot_Re": 10.0,
+    "pilot_nu": 0.1,
+    "conditional_training_Re": [
+      8.0,
+      10.0,
+      12.0
+    ],
+    "conditional_development_Re": [
+      9.0
+    ],
+    "conditional_validation_Re": [
+      11.0
+    ],
+    "upstream_extension_xmin": -10.0,
+    "downstream_extension_xmax": 30.0,
+    "pressure_probes": [
+      [
+        -0.5,
+        0.0,
+        0.0
+      ],
+      [
+        0.5,
+        0.0,
+        0.0
+      ]
+    ],
+    "transient": {
+      "status": "separate_gate_not_released",
+      "ramp_time": 1.0,
+      "horizon": 2.0,
+      "output_interval": 0.1,
+      "dt": [
+        0.05,
+        0.025,
+        0.0125
+      ],
+      "startup": "must_be_reviewed_second_order"
+    }
+  },
+  "rom": {
+    "velocity_prefixes": [
+      2,
+      4,
+      8
+    ],
+    "pressure_rank": "min(r,1+numerical_rank(weighted_mean_removed_training_pressure_snapshots))",
+    "supremizers_per_pressure": 1,
+    "fixed_momentum_tests": 64,
+    "fixed_continuity_tests": 16,
+    "quadrature_candidates": [
+      320,
+      640,
+      1280,
+      2560
+    ],
+    "numerical_rank_relative_cutoff": 1e-12,
+    "inf_sup_absolute_min": 0.001,
+    "inf_sup_reference_fraction": 0.5,
+    "jacobian_condition_max": 10000000000.0,
+    "approximate_boundary_trace_over_U_max": 1e-06,
+    "formulation": "weak_residual_least_squares",
+    "exact_quadratic_tensor_control": [
+      "bank",
+      "POD"
+    ],
+    "representation_development_velocity_gate": 0.002,
+    "representation_development_pressure_scaled_gate": 0.004,
+    "mandatory_interpolation_control": "training_POD_coefficients_PCHIP",
+    "mandatory_mixed_Galerkin_control": true,
+    "pressure_constant_is_solved": true
+  },
+  "cost": {
+    "primary_device": "CPU",
+    "same_allocation": true,
+    "same_core_count": true,
+    "timing_repetitions": 7,
+    "alternating_order": true,
+    "same_invocation_cost_accuracy": true,
+    "gpu_training_is_offline": true,
+    "output_contracts": [
+      "full_velocity_pressure_fields",
+      "fixed_probes",
+      "integrated_forces"
+    ]
+  },
+  "training": {
+    "architecture": "tanh",
+    "hidden_widths": [
+      64,
+      64
+    ],
+    "rank": 8,
+    "seed": 27102027,
+    "steps_cap": 3000,
+    "wall_seconds_cap": 1800,
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "loss": "volume_weighted_QR_projection_no_ridge",
+    "requires_gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "split": "training_only"
+  },
+  "required_controls": [
+    "bank_full_rule",
+    "bank_exact_tensor",
+    "POD_weak_LS_full_rule",
+    "POD_weak_LS_exact_tensor",
+    "POD_mixed_Galerkin_exact_tensor",
+    "POD_coefficient_PCHIP"
+  ],
+  "pressure_basis": {
+    "constant_first": true,
+    "centered_threshold_scale": "max(1,sigma_max(original_weighted_nondimensional_pressure_corrections))",
+    "relative_threshold": 1e-12,
+    "physical_mean_zero_constraint": false
+  },
+  "norms": {
+    "inf_sup_velocity": "dimensionless_H1_value_plus_gradient",
+    "inf_sup_pressure": "dimensionless_L2",
+    "jacobian_velocity_unknown": "dimensionless_L2",
+    "jacobian_pressure_unknown": "dimensionless_L2",
+    "momentum_rows": "fixed_full_rule_dimensionless_H1",
+    "continuity_rows": "fixed_full_rule_L2"
+  },
+  "test_enumeration": {
+    "momentum": [
+      "all_max_prefix_supremizers",
+      "scalar_velocity_order_H1_eigenmodes_with_explicit_component_copies"
+    ],
+    "continuity": [
+      "constant",
+      "all_max_prefix_pressure_modes",
+      "canonical_scalar_Laplacian_modes_ascending_eigenvalue"
+    ],
+    "eigenvalue_cluster_relative": 1e-10,
+    "orientation": "largest_residual_FE_DOF_row_norm_first_index_ties",
+    "required_export": "mesh_DOF_order_eigenproblem_hashes_retained_indices_transforms_Grams",
+    "scalar_velocity_eigen_candidates": 48,
+    "component_order": [
+      "(phi,0)",
+      "(0,phi)"
+    ],
+    "scalar_pressure_eigen_candidates": 32,
+    "scalar_spectral_count_verified": false
+  },
+  "quadrature": {
+    "sampled_operator": "convection_only",
+    "exact_static_operators": [
+      "viscous",
+      "pressure",
+      "divergence",
+      "test_Grams",
+      "unknown_Grams"
+    ],
+    "moment_rows": [
+      "1",
+      "coordinates",
+      "reconstructed_training_u_components",
+      "reconstructed_training_gradient_components",
+      "test_dot_u_advection_gradient_u"
+    ],
+    "fit_relative": 1e-08,
+    "restricted_KKT": 1e-08,
+    "supports": [
+      320,
+      640,
+      1280,
+      2560
+    ],
+    "boundary_forces": "separate_refined_boundary_rule"
+  },
+  "dependency_gaps": [
+    "reviewed_FE_adapter",
+    "actual_FE_test_and_supremizer_export",
+    "actual_FD1_scoped_reference_qualification",
+    "JAX_training_runtime_validation",
+    "physical_pilot_and_quadrature_qualification"
+  ],
+  "fe_adapter_verification": {
+    "stored_numeric_precision": "float64_before_conversion",
+    "precision_check": "NPY headers before payload loading",
+    "construction": "mass_metric_CGS2_pivoted_QR_small_R_SVD",
+    "sampled_rank_rules_unchanged": true,
+    "pressure_constant_protected_in_both_CGS2_passes": true,
+    "normalized_QR_backward_error_max": 1e-10,
+    "mass_and_actual_gram_spectral_error_max": 1e-10,
+    "normalized_singular_difference_max": 1e-10,
+    "normalized_per_case_prefix_residual_difference_max": 1e-10,
+    "failure_policy": "stop_without_rank_threshold_change_or_postfailure_mode_repair",
+    "infsup_pressure_gram": "actual_reconstructed_FE_evaluations",
+    "scalar_CF": "finite_real_scalar_or_singleton_only",
+    "gradient_fixture": "nonsymmetric_affine_auxiliary_degree_at_least_geometry_degree",
+    "normal_closure_relative_max": 1e-10,
+    "normal_orientation": "analytic_box_and_inward_radial_obstacle"
+  },
+  "adapter_A6": {
+    "status": "implementation_candidate_independent_source_and_native_reviews_required",
+    "construction": "pivoted_mass_metric_reorthogonalized_QR_small_R_SVD",
+    "preserve_sampled_rank_rules": true,
+    "numerical_consistency_tolerance": 1e-10,
+    "component_block_relative_tolerance": 1e-12,
+    "scalar_velocity_eigen_candidates": 48,
+    "component_copies": 2,
+    "scalar_pressure_eigen_candidates": 32,
+    "cluster_gap": "max(64*eps64,1e-10*max(abs(adjacent_sigma_over_sigma1)))",
+    "cluster_cut_policy": "reject_declared_cut_without_hidden_rank_reduction",
+    "pivot_score": "squared_residual_or_row_norm",
+    "pivot_tie_relative": 1.4210854715202004e-14,
+    "velocity_scale": "original_sampled_sigma1",
+    "pressure_scale": "max(1,original_uncentered_sampled_sigma1)",
+    "shared_Stokes_lift_allowed_with_validation": true,
+    "pressure_constant_protected_in_both_CGS2_passes": true
+  },
+  "export_units": {
+    "already_dimensionless": true,
+    "primary_coordinates": "x/D",
+    "physical_geometry_sidecars_explicit": true,
+    "physical_to_dimensionless_must_not_be_applied": true
+  },
+  "shared_lift": {
+    "admission_schema": "ns-obstacle-common-stokes-admission-v1",
+    "required_for_adapter": true,
+    "same_validated_lift_reusable_by_FOM": true,
+    "one_time_construction_cost": "offline_for_both_methods"
+  },
+  "adapter_input": {
+    "mesh_filename": "mesh.vol.bin",
+    "mesh_format": "netgen-binary-archive-v6.2.2608",
+    "mesh_reload": "saved_curved_binary_verified_fresh_process_no_recurve",
+    "normal_helper_sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b",
+    "normal_policy": "topology-inferred signs on raw curved ordinary-BND normals, independently certified; native volume-facet normals unchanged",
+    "evidence_directory_required": true
+  },
+  "reference_scope_amendment": {
+    "id": "FD1-2026-10-28",
+    "contract_sha256": "31ec75738dc47f8d960acf2f51dd355caf497a2681a3d499cc00faa138b28f76",
+    "qualification_gate": "G2_FIXED_FINITE_CHANNEL_V1",
+    "original_G2_status": "not_admitted_domain_sensitivity_failed",
+    "domain_sensitivity_status": "failed",
+    "domain_independence_admitted": false
+  }
+}

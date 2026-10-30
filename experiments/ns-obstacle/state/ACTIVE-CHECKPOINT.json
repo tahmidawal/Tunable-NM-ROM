@@ -1,15 +1,13 @@
 {
   "status": "2d_only_reference_qualification_and_ROM_integration",
-  "numerical_jobs": [
-    6655193
-  ],
+  "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Train and test independently reviewed residual-head candidate; actual05 scientific/raw audits and plots complete",
+    "Audit and retain residual-head model, qualify composite live evaluator and execute actual PDE diagnostic06",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
-  "completed_allocated_gpu_hours": 10.242222222222223,
+  "completed_allocated_gpu_hours": 11.209722222222222,
   "global_ceiling_gpu_hours": null,
   "no_legacy_sealed_data_opened": true,
   "no_merges": true,
@@ -566,7 +564,7 @@
     "traction_PDE_retention_pending": false,
     "traction_PDE_retention_passed": true,
     "residual_head_job": 6655193,
-    "residual_head_state": "RUNNING",
+    "residual_head_state": "COMPLETED",
     "residual_head_release_sha256": "aebab1184abfc0cf1678c59ca3bfac99f85cbd28677d1a284b0d97e78cd6a30d",
     "residual_head_actual_full_preflight_passed": true,
     "residual_head_initial_observation": {
@@ -581,6 +579,10 @@
       "device_payload_bytes": 423129056,
       "host_peak_rss_bytes_at_cache": 2065891328,
       "warnings_observed": false
-    }
+    },
+    "residual_head_seconds": 3483,
+    "residual_head_new_accepted_steps": 5134,
+    "residual_head_model_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+    "residual_head_audit_pending": true
   }
 }

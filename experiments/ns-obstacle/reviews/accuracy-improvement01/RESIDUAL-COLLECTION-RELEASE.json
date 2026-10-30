@@ -1,0 +1,25 @@
+{
+  "schema": "ns-obstacle-residual-fit-collection-release-v1",
+  "authorized": true,
+  "job_id": 6655193,
+  "archive_sha256": "b268a4afc902e5ba2e617ed9dc56c23d486455ba599389bc02b14c8930a6355f",
+  "archive_bytes": 31144920,
+  "logical_files": 176,
+  "logical_expansion_bytes": 63403346,
+  "measurement_sha256": "df4143494ff5604863169961b302165e496f09ed311173ac3dfe3227964701fc",
+  "collector_sha256": "a1ea64c6eea5e791c69baad372e3c0d1a111c1976f819f956121983e0abefc80",
+  "collector_source_commit": "50d60e9e7",
+  "collector_source_mirror": "675f33154",
+  "mode": "Archive-only complete original files and ledger; all scalar histories and bounded metadata preserved, no scientific array expansion",
+  "metadata_limit_bytes": 41943040,
+  "required_local_free_bytes": 11152029616,
+  "untouched_floor_bytes": 10737418240,
+  "other_reserved_bytes": 268435456,
+  "remote_cleanup_authorized": false,
+  "requirements": [
+    "Fresh exact terminal/job/measurement/release and local guard checks; serialize bulk collection and Git.",
+    "Retain every original member and complete scalar history; measured metadata allowance is40MiB, no truncation. Verify all chunks and ledger before transport retirement.",
+    "Preserve remote originals until independent full retention and dependency clearance.",
+    "Separate selected-model extraction and bounded composite fixture require a subsequent exact release; no physical admission."
+  ]
+}

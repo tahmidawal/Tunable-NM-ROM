@@ -1834,7 +1834,7 @@
       "queue_after": "6655193|ctol_nsobsrom_residual|PENDING\n",
       "attempt": "neural-pod-guided-residual01",
       "budget_bucket": "ROM",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "allocation_seconds_reserved": 3600,
       "gpus": 1,
       "validation_allowed": false,
@@ -1842,16 +1842,22 @@
       "parent_frozen": true,
       "new_adam_steps": 0,
       "warm_restart": false,
-      "node": "pax106"
+      "node": "pax106",
+      "state": "COMPLETED",
+      "elapsed_seconds": 3483,
+      "allocated_gpu_hours": 0.9675,
+      "exit_code": "0:0",
+      "scientific_review_pending": true,
+      "retention_review_pending": true,
+      "gpu_type": "A100 80GB",
+      "gpu_f64_highest_confirmed": true
     }
   ],
-  "live_job_ids": [
-    6655193
-  ],
-  "completed_gpu_hours": 10.242222222222223,
-  "note": "Actual traction05 scientifically and durably audited; only divergence fails. Frozen-parent residual-head training6655193 running; validation closed.",
-  "total_allocated_gpu_hours_completed": 10.242222222222223,
-  "last_accounting_utc": "2026-10-30T04:26:14.983742+00:00",
+  "live_job_ids": [],
+  "completed_gpu_hours": 11.209722222222222,
+  "note": "Residual6655193 completed; terminal model/retention audits pending, actual PDE06 not yet run.",
+  "total_allocated_gpu_hours_completed": 11.209722222222222,
+  "last_accounting_utc": "2026-10-30T05:25:05.711655+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

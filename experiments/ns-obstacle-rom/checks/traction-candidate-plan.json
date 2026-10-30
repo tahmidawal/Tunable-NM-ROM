@@ -1,0 +1,39 @@
+{
+  "schema": "ns-obstacle-traction-candidate-design-v1",
+  "status": "prospective_source_only_not_execution_release",
+  "parent_model_sha256": "aad67694e5a2c11b7a736e8e013723e811f6093c2b553c097a13f2e4bc48d2d8",
+  "parent_review_sha256": "b0f3282305f723784a8aea36ca07c9784831aa7c78bafb6b7261d1c9a423851d",
+  "parent_rationale": "reviewed trace variant has best observed development velocity among current retained candidates; this is development-guided candidate design, not validation selection",
+  "architecture_changed": false,
+  "online_neural_coefficients": 4,
+  "volume_objective": "unchanged trace parent sqrt(sigma) normalized value plus gradient errors and supervised trace-error lambda1",
+  "boundary_objective": "sum sigma_r^2 integral_cylinder |(Gpred_r+Gpred_r.T-Gteacher_r-Gteacher_r.T) n_body|^2 ds/D divided by global retained TRAIN teacher symmetric-traction energy",
+  "traction_weight": 1.0,
+  "weight_rationale": "one additional independently normalized supervised boundary channel; prospective unit coefficient, not an optimum or a physics guarantee",
+  "normal": "negative accepted outward-fluid normal",
+  "teacher": "first four original TRAIN FE POD columns; no Reynolds-specific force or development targets",
+  "parent_initial_replay": "old trace combined objective must match accepted parent selected objective; base/trace/traction/new combined separately retained",
+  "initial_parameter_gradients": "persist base, supervised trace and unweighted traction vectors, their Euclidean norms and combined norm",
+  "selection": "minimum accepted initial/updated NEW combined full-training objective; no cross-objective reduction claim",
+  "optimizer": {
+    "new_adam_steps": 0,
+    "warm_restart": true,
+    "curvature_reset": true,
+    "max_iterations": 10000,
+    "history_size": 10,
+    "line_search_steps": 20,
+    "checkpoint_every": 250,
+    "gradient_tolerance": 1e-10
+  },
+  "allocation_seconds_proposed": 3600,
+  "gpu_preference": [
+    "H200",
+    "H100",
+    "A100"
+  ],
+  "hardware_selection": "fresh GresUsed and queue feasibility before packet; no performance comparison inferred",
+  "retention": "complete trial/accepted/evaluation JSONL, periodic and selected full state, all pending/completed/incomplete events, selected uncached full volume AND cylinder replay",
+  "resource_status": "actual packet output-row bound and input/resource inventory pending; do not submit",
+  "physical_admission": false,
+  "validation_seen": false
+}

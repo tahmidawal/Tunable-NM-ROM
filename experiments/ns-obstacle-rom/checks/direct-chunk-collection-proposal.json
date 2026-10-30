@@ -1,0 +1,20 @@
+{
+  "schema": "prospective-direct-chunk-collection-v1",
+  "status": "source_design_only_not_authorized_for_collection",
+  "problem": "Current collector holds full transport archive plus chunks before retiring transport, then Git/mirror persist another compressed representation. Local headroom is below the existing measured collection guard.",
+  "proposed_transport": [
+    "Read exact remote archive as a bounded SSH byte stream into exclusive fresh48MiB chunk files.",
+    "Hash entire stream and each chunk, enforce exact released total byte ceiling, retain partial chunks and failure receipt without retry.",
+    "After whole archive SHA/size passes, expose concatenated chunk reader to streaming tar parser; verify every unique regular member, complete original ledger, safe path and exact metadata policy.",
+    "Keep all original JSONL in archive; expand only released measured metadata set.",
+    "Write final retention receipt only after all checks; retain remote originals until independent source/mirror/archive proof and separate cleanup release."
+  ],
+  "space_accounting": {
+    "transport_peak": "A + measured metadata + bounded one-chunk RAM buffer; no full transport file",
+    "durability_peak": "Working chunks A plus Git source/mirror object growth must remain reserved explicitly; direct streaming alone does not justify changing2A toA for the complete collection-and-backup transaction.",
+    "floor": "10GiB plus256MiB miscellaneous unchanged",
+    "next_requirement": "Derive conservative Git/mirror growth allowance from actual compression/object sharing or split transport and backup guards with no claim of durable completion until both pass."
+  },
+  "decision": "Prefer legitimate duplicate cooling or a fully justified end-to-end storage bound; do not silently lower current2A guard.",
+  "no_runtime_change": true
+}

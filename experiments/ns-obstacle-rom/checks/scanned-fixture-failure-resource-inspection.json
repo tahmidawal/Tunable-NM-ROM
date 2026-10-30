@@ -1,0 +1,96 @@
+{
+  "timestamp": 1793355209.595117,
+  "nvidia_smi": {
+    "command": [
+      "nvidia-smi"
+    ],
+    "exit": 0,
+    "stdout": "Fri Oct 30 06:13:29 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.142                Driver Version: 580.142        CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GB10                    On  |   0000000F:01:00.0 Off |                  N/A |\n| N/A   40C    P8              4W /  N/A  | Not Supported          |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A            6384      G   /usr/lib/xorg/Xorg                     3210MiB |\n|    0   N/A  N/A            6683      G   /usr/bin/gnome-shell                    944MiB |\n|    0   N/A  N/A            7395      G   ...exec/xdg-desktop-portal-gnome        314MiB |\n|    0   N/A  N/A          582894      G   ...rack-uuid=3190708988185955192        646MiB |\n|    0   N/A  N/A          594090      G   /usr/share/code/code                    166MiB |\n|    0   N/A  N/A         1563642      G   /usr/bin/gnome-control-center            35MiB |\n|    0   N/A  N/A         1794316      G   ...88185955192 --disable-logging        224MiB |\n|    0   N/A  N/A         1977234      G   /usr/bin/nautilus                        41MiB |\n+-----------------------------------------------------------------------------------------+\n",
+    "stderr": ""
+  },
+  "memory": {
+    "command": [
+      "free",
+      "-b"
+    ],
+    "exit": 0,
+    "stdout": "               total        used        free      shared  buff/cache   available\nMem:     130663825408 56088092672 10071883776  1599000576 67276894208 74575732736\nSwap:    17179865088 16776859648   403005440\n",
+    "stderr": ""
+  },
+  "scopes": [
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "show",
+        "run-u43734.scope",
+        "-p",
+        "MemoryMax",
+        "-p",
+        "MemoryCurrent",
+        "-p",
+        "TasksCurrent",
+        "-p",
+        "ControlGroup",
+        "-p",
+        "Description"
+      ],
+      "exit": 0,
+      "stdout": "ControlGroup=/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43734.scope\nMemoryCurrent=253952\nTasksCurrent=0\nMemoryMax=38654705664\nDescription=/usr/bin/timeout --signal=TERM --kill-after=3s 50s /home/tahmid/Dev/.venv/bin/python /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/checks/device-scan-synthetic/check.py\n",
+      "stderr": "",
+      "cgroup_procs": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "show",
+        "run-u43832.scope",
+        "-p",
+        "MemoryMax",
+        "-p",
+        "MemoryCurrent",
+        "-p",
+        "TasksCurrent",
+        "-p",
+        "ControlGroup",
+        "-p",
+        "Description"
+      ],
+      "exit": 0,
+      "stdout": "ControlGroup=/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43832.scope\nMemoryCurrent=85782528\nTasksCurrent=0\nMemoryMax=38654705664\nDescription=/usr/bin/timeout --signal=TERM --kill-after=3s 50s /home/tahmid/Dev/.venv/bin/python -m accuracy_v2.residual_composite_fixture --model /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/output-polish-composite-fixture-input/spatial-bank-raw.npz --model-sha256 7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d --points-fixture /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/fast-traction-bank-kernel/arrays.npz --points-sha256 d29ac3b9181ec6bbffee296328b135bb0ec687edbae4dd89589a73f252403e46 --output /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/output-polish-composite-fixture01\n",
+      "stderr": "",
+      "cgroup_procs": ""
+    },
+    {
+      "command": [
+        "systemctl",
+        "--user",
+        "show",
+        "run-u43858.scope",
+        "-p",
+        "MemoryMax",
+        "-p",
+        "MemoryCurrent",
+        "-p",
+        "TasksCurrent",
+        "-p",
+        "ControlGroup",
+        "-p",
+        "Description"
+      ],
+      "exit": 0,
+      "stdout": "ControlGroup=/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43858.scope\nMemoryCurrent=204800\nTasksCurrent=0\nMemoryMax=38654705664\nDescription=/usr/bin/timeout --signal=TERM --kill-after=3s 50s /home/tahmid/Dev/.venv/bin/python -m accuracy_v2.residual_composite_fixture --model /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/scanned-coordinate-composite-fixture-input/spatial-bank-raw.npz --model-sha256 645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60 --points-fixture /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/fast-traction-bank-kernel/arrays.npz --points-sha256 d29ac3b9181ec6bbffee296328b135bb0ec687edbae4dd89589a73f252403e46 --output /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/scanned-coordinate-composite-fixture01\n",
+      "stderr": "",
+      "cgroup_procs": ""
+    }
+  ],
+  "device_nodes": [
+    "/dev/nvidia-caps",
+    "/dev/nvidia-uvm-tools",
+    "/dev/nvidia-uvm",
+    "/dev/nvidia-modeset",
+    "/dev/nvidia0",
+    "/dev/nvidiactl"
+  ]
+}

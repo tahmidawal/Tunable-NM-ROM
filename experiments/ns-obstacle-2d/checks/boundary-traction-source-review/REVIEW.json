@@ -1,0 +1,27 @@
+{
+  "schema": "ns-obstacle-training-traction-helper-source-review-v1",
+  "source_hashes": {
+    "boundary_traction_objective.py": "4431f5f6a150f1f691bbab8aaa9b36af47d4d251c62e07af75ada89e2ca1816b",
+    "boundary_traction_smoke.py": "6b6b2f44334af43fccc11e03771be62d6be84ec955cd9e440f8abab5c83fc346"
+  },
+  "scope": "Read-only mathematical/source review of standalone helper; no execution, model evaluation, training, or validation access",
+  "helper_algebra_passed": true,
+  "integration_release_ready": false,
+  "findings": [
+    "Symmetric spatial traction (G+G^T)n_body is correct for dimensionless velocity gradient d(u/U)/d(x/D); supplied unit body normal must equal negative fluid-domain normal.",
+    "Weights ds/D and singular-value-squared weighted sum of mode traction errors divided by one frozen global teacher traction energy form a dimensionless additive objective.",
+    "Zero individual traction-energy modes remain supported; no unstable per-mode division.",
+    "Pressure and Reynolds factors are absent intentionally for spatial viscous mode regression; actual force coefficient contraction requires 2/Re and pressure/lift terms remain separate.",
+    "Normal sign cancels in the squared loss but not in signed integrated traction diagnostics; explicit body-normal binding is still necessary.",
+    "The synthetic coefficient construction supports covariance diag(sigma squared); actual TRAIN coefficient compatibility must bind the existing accepted certificate, not assume arbitrary online coefficients."
+  ],
+  "pending_integration_requirements": [
+    "Exact trace parent model/review and immutable original BASE/trace protocol; no DEV target data used in optimization.",
+    "Exact admitted TRAIN-only POD boundary gradients, mode order, obstacle subset, rule, units and normal orientation hashes.",
+    "Measured fixed teacher denominator and per-mode traction energy weights; no claimed balance from lambda alone or current volume weights.",
+    "Declared coefficient for added term and separate original BASE, trace, added traction, combined diagnostics before/after; accepted combined-state selection and replay.",
+    "Retain signed integrated traction error and modewise diagnostics; local traction loss does not establish full PDE force/divergence acceptance."
+  ],
+  "execution_performed": false,
+  "physical_admission": false
+}

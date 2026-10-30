@@ -1,0 +1,16 @@
+{
+  "source_sha256": "1bba066f24683aec0b0ce2d096c25a21a8b276c03e3a7b01805b016ef592c364",
+  "scope": "Source-only pending numerical review and separate root execution release",
+  "resource_limits": {
+    "timeout_seconds": 120,
+    "address_space_bytes": 4294967296,
+    "BLAS_threads": 1,
+    "remote_alarm_seconds": 115
+  },
+  "reads": "Accepted immutable diagnostic07/08 saved outputs/state; DEV2 truth; prepared geometry/lift_u/POD velocity/supremizer blocks once. No running fit reads.",
+  "output": "Small scalar/8x8 primitive and4x4 component matrices, identities and file hashes only; no bulk arrays",
+  "method": "One-pass primitive8x8 Gram plus exact linear transform after4x4 teacher-only projection; no enriched projection. Pointwise total closure checked blockwise before transform.",
+  "owner_clearance": "ROM confirms remote07/08 intact/unmutated and shared prepared available; future read dependency recorded.",
+  "execution_performed": false,
+  "independent_review": "PASS audit1bba066f and collector2c0652db: algebra/provenance, PSD-before-clipping, release/resources guards verified. Conservative roundoff check is not a proved sharp error bound. Separate root execution release required."
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "ns-obstacle-ROM-guided-working-archive-working-chunk-cold-proposal-v1",
+  "proof_passed": true,
+  "deletion_authorized": false,
+  "deletions_performed": false,
+  "source_commit": "98f3cbbc9009d21e17b6bc10ed3d4771e7e3b452",
+  "mirror_commit": "0e7f1f572c61178fc8940171cdacb5517ae0f1ac",
+  "current_source_head": "57d03e2223e9743e1154a4fe5e4f44462df24557",
+  "advertised_mirror_tip": "8bf65653b52aef1f8bfc34da2e4582268b7e83f7",
+  "mirror_ref": "refs/heads/codeonly/exp/2026-10-27-ns-obstacle-rom",
+  "archive_sha256": "673be5a43dba9d61089f6d4b0b7a6b99b4e1a3453efb0ef5b726d63ddb2f07b7",
+  "archive_bytes": 67882460,
+  "original_regular_files_verified": 155,
+  "extra_ledger_members": {
+    "COLLECTION-SHA256SUMS": {
+      "sha256": "722624c2e55e43cd1523ab184b32e418542f6d538c4c7933e907b86c171fc9e2",
+      "bytes": 14688
+    }
+  },
+  "archive_links": [],
+  "original_ledger_sha256": "722624c2e55e43cd1523ab184b32e418542f6d538c4c7933e907b86c171fc9e2",
+  "retention_sha256": "54530ec22e49f9077964020078d2449bcb9c79f7844d1649e6bb070bace7f270",
+  "historical_status_preserved": "checksum_verified_pending_independent_review_and_mirror",
+  "original_job_state_preserved": "COMPLETED",
+  "chunks": [
+    {
+      "path": "archive-chunks/collection.tar.gz.part-000",
+      "bytes": 50331648,
+      "sha256": "5e214f2c7ba1c3db6c653099ec3ca793f8aeee27b8634d01917ba65e46c0fcdb",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-energy01/archive-chunks/collection.tar.gz.part-000",
+      "git_blob": "b401424b6efe20d02400a207ca43f929b50a0e7c",
+      "git_blobs": {
+        "98f3cbbc9009d21e17b6bc10ed3d4771e7e3b452": "b401424b6efe20d02400a207ca43f929b50a0e7c",
+        "0e7f1f572c61178fc8940171cdacb5517ae0f1ac": "b401424b6efe20d02400a207ca43f929b50a0e7c"
+      }
+    },
+    {
+      "path": "archive-chunks/collection.tar.gz.part-001",
+      "bytes": 17550812,
+      "sha256": "55805881ace8cf3fb5946dd1422bfd2747bc33cb10d6eed96a562a66f87b46d6",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-energy01/archive-chunks/collection.tar.gz.part-001",
+      "git_blob": "37eeb96c47992f2b449126445405ff7af6bb2f4c",
+      "git_blobs": {
+        "98f3cbbc9009d21e17b6bc10ed3d4771e7e3b452": "37eeb96c47992f2b449126445405ff7af6bb2f4c",
+        "0e7f1f572c61178fc8940171cdacb5517ae0f1ac": "37eeb96c47992f2b449126445405ff7af6bb2f4c"
+      }
+    }
+  ],
+  "exact_paths": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-energy01/archive-chunks/collection.tar.gz.part-000",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-energy01/archive-chunks/collection.tar.gz.part-000",
+      "git_blob": "b401424b6efe20d02400a207ca43f929b50a0e7c",
+      "sha256": "5e214f2c7ba1c3db6c653099ec3ca793f8aeee27b8634d01917ba65e46c0fcdb",
+      "bytes": 50331648,
+      "allocated_bytes": 50335744,
+      "link_count": 1,
+      "inode": 28216133,
+      "device": 66306
+    },
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-energy01/archive-chunks/collection.tar.gz.part-001",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-energy01/archive-chunks/collection.tar.gz.part-001",
+      "git_blob": "37eeb96c47992f2b449126445405ff7af6bb2f4c",
+      "sha256": "55805881ace8cf3fb5946dd1422bfd2747bc33cb10d6eed96a562a66f87b46d6",
+      "bytes": 17550812,
+      "allocated_bytes": 17551360,
+      "link_count": 1,
+      "inode": 28216134,
+      "device": 66306
+    }
+  ],
+  "logical_bytes": 67882460,
+  "conservative_allocated_reclaim_bytes": 67887104,
+  "proposed_cold_descriptor_sha256": "70b3be9a268ff9091a4ebfe8785d41e33cfc16467f5765c95b8732f34692a323",
+  "independent_reviews": {
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/accuracy-improvement01/ENERGY-RETENTION-REVIEW.json": {
+      "sha256": "09de766b41e9232f3bc3282d3e0f68be03a020acb645ed9ad0713c8bd91f0f90",
+      "record": {
+        "passed": true,
+        "source_commit": "98f3cbbc9009d21e17b6bc10ed3d4771e7e3b452",
+        "mirror_commit": "0e7f1f572c61178fc8940171cdacb5517ae0f1ac",
+        "archive_sha256": "673be5a43dba9d61089f6d4b0b7a6b99b4e1a3453efb0ef5b726d63ddb2f07b7",
+        "verified_regular_files": 155,
+        "chunk_count": 2,
+        "retention_sha256": "54530ec22e49f9077964020078d2449bcb9c79f7844d1649e6bb070bace7f270",
+        "bulk_scientific_extraction": false,
+        "remote_deletion_performed": false
+      }
+    }
+  },
+  "dependency_clearance": "ROM owner confirms no active local consumer needs working chunks; all future fit inputs independent remote prepared trees. Fresh owner check required before unlink.",
+  "preserve": "All ROM metadata/source/arrays/Git objects/history and original pending RETENTION; only2 exact working chunk duplicates may be proposed for later owner/root-authorized unlink.",
+  "recovery": "Use unchanged git_archive_recovery.verify with this exact descriptor, stream historical mirrored blobs, verify full archive and original155-file ledger in reserved fresh workspace; no shallow tip-only history.",
+  "elapsed_seconds": 0.5848116492852569
+}

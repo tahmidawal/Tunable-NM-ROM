@@ -1,0 +1,22 @@
+{
+  "status": "fixed before execution; explicitly authorized new inexact-model test",
+  "question": "Can G32x32 K16 M64 starting proposals followed by unchanged fine64 reach comparable fine losses?",
+  "previous_screen": "cheap01 rejected G32/M64 at conservative1e-3 quadrature discrepancy. That result stays failed. Here coarse quadrature is deliberately approximate; only fine objective controls acceptance and stopping.",
+  "fine_target": "shared64 R512 L1024 M256 G128x128 BE dt.005 50steps, original productionIC, temporalwarm predictor and fine damping",
+  "coarse": "true h16, M64 G32x32; restriction=first16 of fine predictor, zero-padding upwards; no learnedP",
+  "arms": [
+    "direct64",
+    "one coarse update thenfine64",
+    "two coarse updates thenfine64"
+  ],
+  "acceptance": "Finite proposal with >=1e-8relative decrease in FULL fine objective; else exactoriginal predictor",
+  "timing": "7interleaved repetitions per6exposeddevcases, sameGPU; retain actualtimed returnednorms and fieldsagreement metrics. Burnbeforeeverytimedcall.",
+  "loss": "Squared weightedfine residual on each own acceptedhistory. This is not FOMerror or common-history objective comparison.",
+  "same_loss_threshold": "Per-case finalstep loss difference relativeproductiondirect<=1e-3 (0.1%); report maximaover50steps asdiagnostic, no thresholdtuning.",
+  "tight_comparator": "Original productionIC heldunchanged; fine evolution budget2000 gtol1e-7 tolf0, freshADcertification. Fieldagreement threshold1e-3 over6savedoutputs; evaluateallarms and direct.",
+  "cost_gate": "unchanged medianpairedratio<=.85,worstcasemedian<=1.10; retainallreps; no strongerphysicalaccuracyclaim",
+  "scope": "No retraining, newP, additionalcoarseconfigs, physicalmesh changes, sealedcohorts, 3D or repeatedcycles",
+  "reserved_gpu_seconds": 900,
+  "prior_charged_gpu_seconds": 2852,
+  "totalcap_gpu_seconds": 7200
+}

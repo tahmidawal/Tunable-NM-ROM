@@ -64,6 +64,13 @@
       "job_id": "6647637",
       "source_commit": "4678f23c9",
       "actual_gpu_seconds": 128
+    },
+    {
+      "attempt": "inexact01",
+      "reserved_seconds": 900,
+      "status": "prepared",
+      "remote": "/cluster/tufts/paralab/tawal01/bshared-inexact-20261029/inexact01",
+      "reason": "User explicitly authorized inexact1024-point coarse proposal test after discussing prior panelrejection"
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -75,8 +82,8 @@
   },
   "budget_accounting": {
     "charged_gpu_seconds": 2852,
-    "reserved_gpu_seconds": 0,
-    "unspent_gpu_seconds": 4348,
-    "stopped": "Cheap-coarse screen complete; conservative reduced-quadrature eligibility gates failed; full-quadrature control cost gates failed. No further allocations."
+    "reserved_gpu_seconds": 900,
+    "unspent_gpu_seconds": 3448,
+    "stopped": "Explicit inexact-model experiment authorized; no modeltraining/cycles"
   }
 }

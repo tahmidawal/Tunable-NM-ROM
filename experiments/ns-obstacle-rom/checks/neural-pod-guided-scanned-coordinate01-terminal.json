@@ -1,0 +1,1538 @@
+{
+  "job_id": 6660421,
+  "terminal_status": "6660421|COMPLETED|2470|0:0|pax105\n6660421.batch|COMPLETED|2470|0:0|pax105\n6660421.extern|COMPLETED|2471|0:0|pax105\n",
+  "queue_after": "",
+  "files": {
+    "results/fit/CONFIG.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/CONFIG.json",
+      "bytes": 14304,
+      "sha256": "9ff47ecbfe40008bd0523163adf21ff82ff8ad2e8fe23eec52e45c9a84f6d767"
+    },
+    "results/fit/FINAL.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/FINAL.json",
+      "bytes": 50295,
+      "sha256": "c0b1fda18d78a861f00997f6431f3b4b5d2a665d5f6f5ff526b2586a1e3958b6"
+    },
+    "results/fit/MODEL-RECEIPT.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/MODEL-RECEIPT.json",
+      "bytes": 1495,
+      "sha256": "91228715f80d2fc99b39a1393929e7bcff665ec9380a33fbac60007275e62966"
+    },
+    "results/fit/spatial-bank-raw.npz": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/spatial-bank-raw.npz",
+      "bytes": 477824,
+      "sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60"
+    },
+    "results/fit/RUNTIME.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/RUNTIME.json",
+      "bytes": 249,
+      "sha256": "697561797aad062e220ba248331db1e3158a4e5574c017663b1221e19953f2e4"
+    },
+    "results/fit/SELECTED-FULL-REPLAY.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/SELECTED-FULL-REPLAY.json",
+      "bytes": 4525,
+      "sha256": "63dac2aec8b3abf002b9c9d055a6d27a59742f92b7e6aed98d18f9244234b813"
+    },
+    "results/runtime.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/runtime.json",
+      "bytes": 301,
+      "sha256": "1b6c0b096fde319ee69d4cb35bbcf5da59cccbae7158f5c1ac749e66c7debbf5"
+    },
+    "results/fit/INITIAL-CACHE-EQUIVALENCE.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/INITIAL-CACHE-EQUIVALENCE.json",
+      "bytes": 7348,
+      "sha256": "d7816e31469c075f5569fdba557afbea7c2c44dc0f829a6ae48fcd639da96df3"
+    },
+    "results/fit/PARENT-BASE-REPLAY.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-scanned-coordinate01/results/fit/PARENT-BASE-REPLAY.json",
+      "bytes": 3274,
+      "sha256": "d3013ee5df7dff0e79126416cfa1276cf340c74f916e6e524ee9a9aa6b04f044"
+    }
+  },
+  "runtime": {
+    "python": "3.13.2",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "optax": "0.2.8",
+    "numpy": "2.5.0",
+    "scipy": "1.18.0",
+    "jax_backend": "gpu",
+    "jax_x64": true,
+    "matmul_precision": "highest",
+    "python_executable_sha256": "19aabe03e346a7ed57979d4a429c0eb22088e1e7e51397401640d52c166808f9"
+  },
+  "fit_runtime": {
+    "python": "3.13.2 (main, Jun 27 2025, 16:52:43) [GCC 12.4.0]",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "numpy": "2.5.0",
+    "backend": "gpu",
+    "device_kind": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "x64": true,
+    "matmul_precision": "highest"
+  },
+  "final": {
+    "status": "iteration_limit",
+    "accepted_steps": 10000,
+    "cumulative_adam_steps": 4000,
+    "cumulative_lbfgs_steps": 33160,
+    "full_evaluations": 10439,
+    "initiated_evaluations": 10439,
+    "optimizer_elapsed_seconds": 2367.5645474754274,
+    "checkpoints": [
+      {
+        "iteration": 0,
+        "label": "initial",
+        "objective": 0.0004806629769315888,
+        "gradient_inf": 2.087704315781956e-05,
+        "theta_sha256": "a28248ec3233fb7bf9290293adac3701cc63c00ba63a136bbed398716c1d65ed",
+        "gradient_sha256": "cc3483a9199d90d8c2d0e7954d8b9188fe7e64c80e83b76b83327ec73665e86c",
+        "pair_rho": [],
+        "array_file": "state-00000-initial.npz",
+        "array_sha256": "31b536e87b001b502d6523cc0048c6ae137f8855b2512f021a14e1b776b8005a",
+        "full_evaluations": 2,
+        "metrics": {
+          "base_objective": 0.00037809623925569937,
+          "combined_objective": 0.0004806629769315888,
+          "divergence_error_norm_squared_by_mode": [
+            0.00039026541570137615,
+            0.0007333166683725955,
+            0.003017919839511521,
+            0.007634083644089042
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.5773696786089185e-05,
+            6.940559606432331e-05,
+            0.00026532329468126125,
+            0.0006686313504273738
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010992385319739836,
+            0.0003973013430268826,
+            0.0016740062447126735,
+            0.010612860748187701
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.0003902598454966418,
+            0.0007332718074118939,
+            0.003017694407412516,
+            0.007633510961361217
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.5773043464395024e-05,
+            6.940135014731106e-05,
+            0.00026530347560374567,
+            0.0006685811920005707
+          ],
+          "supervised_divergence_objective_unweighted": 6.855290179548433e-05,
+          "supervised_divergence_objective_weighted": 6.855290179548433e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.980968708680528e-06,
+            6.188785382513144e-06,
+            2.4896276651612538e-05,
+            0.00017129252491182798
+          ],
+          "parent_trace_combined_objective": 0.00044664914105118356,
+          "traction_objective_unweighted": 3.401383588040525e-05,
+          "traction_objective_weighted": 3.401383588040525e-05,
+          "parent_trace_gradient_l2": 0.0007485524990532921,
+          "traction_gradient_l2_unweighted": 0.0007383874805869694,
+          "combined_gradient_l2": 0.00011657960523349702,
+          "parent_traction_gradient_dot_unweighted": -5.459780554850516e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.000326969419450488,
+            0.3352149286199393,
+            1.8247838900283249,
+            5.73965732906227
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.0026195142999420546,
+              0.036032238481621195,
+              -0.3398564726223816,
+              0.042669655803968864
+            ],
+            [
+              -0.0016300410125057983,
+              0.05787383442890992,
+              0.050164806180191354,
+              0.039186953795191326
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.24161493492757,
+            9.667370417467275,
+            15.520837933095546,
+            4.022240313450988
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.0552098900629559,
+          "seconds": 2.3627861477434635
+        },
+        "elapsed_seconds": 26.01625630725175
+      },
+      {
+        "iteration": 1000,
+        "label": "periodic",
+        "objective": 0.0004640316885257855,
+        "gradient_inf": 7.527134104063377e-05,
+        "theta_sha256": "9f066c380cd6a5c6266fe07aae1a6accfb8ae979fc6343d86d4c075dc650bce7",
+        "gradient_sha256": "81d6c59a317f68d9d556dd39b85b299d2fcf12c8db5dd25953519951aa9d59af",
+        "pair_rho": [
+          81317059.57290888,
+          53008040.72077635,
+          64399296.96308592,
+          32524813.388192832,
+          52819645.26052967,
+          32578245.1294024,
+          82466423.03214626,
+          70497460.76562053,
+          29259307.95015931,
+          37889338.75255188
+        ],
+        "array_file": "state-01000-periodic.npz",
+        "array_sha256": "ef1eb9fd6ee999938f5b84f81311cc801abe5d5df325ba41fe3bcc56f6a5eeb8",
+        "full_evaluations": 1044,
+        "metrics": {
+          "base_objective": 0.00036516506709243656,
+          "combined_objective": 0.0004640316885257855,
+          "divergence_error_norm_squared_by_mode": [
+            0.00038499694604647214,
+            0.0006452879337454539,
+            0.0028909655240970905,
+            0.007135371013418315
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.515576518670089e-05,
+            6.107401564198846e-05,
+            0.000254161985226066,
+            0.0006249515958862058
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010837680710113657,
+            0.00036869397153388005,
+            0.0016307511755960645,
+            0.01030098312773888
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.0003849913768000806,
+            0.0006452433486846464,
+            0.0028907399921968002,
+            0.007134795849522158
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.5155111977409486e-05,
+            6.106979583783775e-05,
+            0.000254142157374426,
+            0.0006249012201462306
+          ],
+          "supervised_divergence_objective_unweighted": 6.548818251470546e-05,
+          "supervised_divergence_objective_weighted": 6.548818251470546e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.919260314563206e-06,
+            4.981781713704189e-06,
+            2.2649881193097626e-05,
+            0.00016017198045654673
+          ],
+          "parent_trace_combined_objective": 0.0004306532496071417,
+          "traction_objective_unweighted": 3.337843891864382e-05,
+          "traction_objective_weighted": 3.337843891864382e-05,
+          "parent_trace_gradient_l2": 0.0009593675598637712,
+          "traction_gradient_l2_unweighted": 0.0007689807820702671,
+          "combined_gradient_l2": 0.0004595914336213251,
+          "parent_traction_gradient_dot_unweighted": -6.502466361271308e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.00032820002395514056,
+            0.32652996312763527,
+            1.8072823617060156,
+            5.716401735810313
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.0028499968641214706,
+              0.030584429280961424,
+              -0.3269165782309421,
+              0.026769000365474853
+            ],
+            [
+              -0.0018684389426294034,
+              0.055508897957960074,
+              0.05644215745360252,
+              0.051274191296949795
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.24424595396656,
+            9.696652385573575,
+            15.527793241296191,
+            4.053916648892835
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.05417853927592533,
+          "seconds": 0.21230325661599636
+        },
+        "elapsed_seconds": 258.7411845866591
+      },
+      {
+        "iteration": 2000,
+        "label": "periodic",
+        "objective": 0.00044185959701895615,
+        "gradient_inf": 0.00016511001649654395,
+        "theta_sha256": "7e098a8ab2077b4e21727a03355a6e330a2b6ce52fea9758578fde8927aee7e9",
+        "gradient_sha256": "694133b14e874761ff0a7e1f68bd1ed1bd83a4b8211ecaf746293764ef739d98",
+        "pair_rho": [
+          73908880.11906196,
+          59072573.5477722,
+          24315359.291618023,
+          33751285.646389104,
+          70795603.877072,
+          28741240.181629624,
+          28115708.45646806,
+          206123241.74573624,
+          22506754.76604987,
+          23715158.150972053
+        ],
+        "array_file": "state-02000-periodic.npz",
+        "array_sha256": "277f9103aeb93170405916924c92567b8c18bb1356a7d8549c1c5cc2fe41d4ec",
+        "full_evaluations": 2083,
+        "metrics": {
+          "base_objective": 0.0003470980867113666,
+          "combined_objective": 0.00044185959701895615,
+          "divergence_error_norm_squared_by_mode": [
+            0.00037934100176742556,
+            0.0005913892553784176,
+            0.0027388554088656368,
+            0.007142850166357082
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.449238721865105e-05,
+            5.5972713489065435e-05,
+            0.00024078907969054763,
+            0.0006256066576280783
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010680866696953936,
+            0.00033787897530988765,
+            0.0015623311955285902,
+            0.00969885125700887
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.0003793354287865575,
+            0.0005913440807278599,
+            0.0027386278039705455,
+            0.007142297394561073
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.449173357134799e-05,
+            5.5968437882517555e-05,
+            0.00024076906958959624,
+            0.0006255582431005894
+          ],
+          "supervised_divergence_objective_unweighted": 6.343776248158943e-05,
+          "supervised_divergence_objective_weighted": 6.343776248158943e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.8559077369122824e-06,
+            4.471247056032538e-06,
+            2.120797858733376e-05,
+            0.0001544806761943715
+          ],
+          "parent_trace_combined_objective": 0.00041053584919295625,
+          "traction_objective_unweighted": 3.132374782599989e-05,
+          "traction_objective_weighted": 3.132374782599989e-05,
+          "parent_trace_gradient_l2": 0.0010604277721728442,
+          "traction_gradient_l2_unweighted": 0.0007667942675259965,
+          "combined_gradient_l2": 0.0007575356057256984,
+          "parent_traction_gradient_dot_unweighted": -5.693101573819952e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.0003244206573052114,
+            0.3009160643400125,
+            1.7510233587280262,
+            5.640357148592162
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.0025052364059391253,
+              0.03128596490939138,
+              -0.314100512751282,
+              -0.016791517928361283
+            ],
+            [
+              -0.0016241123733643443,
+              0.053488059507008516,
+              0.06277397019295693,
+              0.09354753563390385
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.24642815783844,
+            9.73222383201631,
+            15.56394668738988,
+            4.111439490514231
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.05084344735224269,
+          "seconds": 0.21203430835157633
+        },
+        "elapsed_seconds": 495.84540823474526
+      },
+      {
+        "iteration": 3000,
+        "label": "periodic",
+        "objective": 0.0004191810242485882,
+        "gradient_inf": 0.00035672128594297026,
+        "theta_sha256": "e3fcb5118e483483d56aa6a6e68dba5438c0e90a7301ce1ea1dcc43c57e32c7e",
+        "gradient_sha256": "61dfddac43e28ba7d7a7b91b0f0efc7c449e76cfad805c8b9c6997a2a209805f",
+        "pair_rho": [
+          134845862.2130988,
+          20869621.002176717,
+          31002814.921905693,
+          39466598.70551165,
+          39501009.06084381,
+          92640807.97676213,
+          17400642.34722034,
+          22812372.04602297,
+          170686837.8546707,
+          12171047.986663751
+        ],
+        "array_file": "state-03000-periodic.npz",
+        "array_sha256": "3ab1d8c5ce8f393858f63f87566d1fe57c1f22498e2e36d15a280d2f62d5ac6a",
+        "full_evaluations": 3126,
+        "metrics": {
+          "base_objective": 0.00032845920193004557,
+          "combined_objective": 0.0004191810242485882,
+          "divergence_error_norm_squared_by_mode": [
+            0.00037371829075167424,
+            0.0005310067383438135,
+            0.0025830444148055272,
+            0.007156386055344289
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.3832907134595234e-05,
+            5.0257740998461365e-05,
+            0.00022709080787088208,
+            0.0006267921987034331
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010535762021303494,
+            0.00031204800520002465,
+            0.0014908266987539345,
+            0.00898988108419812
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.00037371272146942484,
+            0.0005309616747790288,
+            0.002582814837976544,
+            0.007155864528372687
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.383225392109813e-05,
+            5.0253475905753704e-05,
+            0.0002270706244054859,
+            0.0006267465207544388
+          ],
+          "supervised_divergence_objective_unweighted": 6.127132021888115e-05,
+          "supervised_divergence_objective_weighted": 6.127132021888115e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.8107730987035984e-06,
+            4.047596975186174e-06,
+            1.939337015720917e-05,
+            0.00014575730233881338
+          ],
+          "parent_trace_combined_objective": 0.00038973052214892704,
+          "traction_objective_unweighted": 2.945050209966112e-05,
+          "traction_objective_weighted": 2.945050209966112e-05,
+          "parent_trace_gradient_l2": 0.0015937246316027006,
+          "traction_gradient_l2_unweighted": 0.0007829115004735898,
+          "combined_gradient_l2": 0.0015230191937722994,
+          "parent_traction_gradient_dot_unweighted": -4.166605771760734e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.0003207642800389801,
+            0.27765924724269847,
+            1.6940928162885847,
+            5.568648205534695
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.0023284797678057253,
+              0.022587202068694617,
+              -0.30232981502170875,
+              -0.05277006296877578
+            ],
+            [
+              -0.001362109200487288,
+              0.047850986573345765,
+              0.06733200351788782,
+              0.12694859885212717
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.24994452651095,
+            9.767674964695649,
+            15.619339289025,
+            4.189928437881719
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.047802870247804885,
+          "seconds": 0.21213739924132824
+        },
+        "elapsed_seconds": 729.238056641072
+      },
+      {
+        "iteration": 4000,
+        "label": "periodic",
+        "objective": 0.00039761037306993953,
+        "gradient_inf": 0.000142432647100464,
+        "theta_sha256": "7a680660cc3fdf03e3ace22bd14a19933cb70e7454764d37b7c6c83192b535a8",
+        "gradient_sha256": "861db7126af07515a5ce9eb7980b83518cb1aedb1cc14db46aa66eb60e23a719",
+        "pair_rho": [
+          81064293.77335376,
+          56589424.97854289,
+          32421194.6943444,
+          108077026.60627037,
+          34288067.79589593,
+          73921846.28462239,
+          57998886.746114984,
+          16699398.55736266,
+          28105093.471691865,
+          161463484.79054153
+        ],
+        "array_file": "state-04000-periodic.npz",
+        "array_sha256": "97c354308285ee610b7df983b43f143007432d3be0568d435537c7d96945bfea",
+        "full_evaluations": 4156,
+        "metrics": {
+          "base_objective": 0.0003104151722676947,
+          "combined_objective": 0.00039761037306993953,
+          "divergence_error_norm_squared_by_mode": [
+            0.0003687551811000151,
+            0.0004818759610044944,
+            0.002452711053826904,
+            0.006998954292266059
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.325079079230329e-05,
+            4.5607702299755e-05,
+            0.0002156324264092564,
+            0.0006130035349613657
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.0001040175890170783,
+            0.0002880882895322457,
+            0.0014240732768718673,
+            0.008279291828058088
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.00036874962891912384,
+            0.000481831395334698,
+            0.0024524785493664045,
+            0.006998394462357137
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.3250139584601006e-05,
+            4.5603484330888766e-05,
+            0.00021561198555834993,
+            0.0006129545022489326
+          ],
+          "supervised_divergence_objective_unweighted": 5.926821396522268e-05,
+          "supervised_divergence_objective_weighted": 5.926821396522268e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.7561096470114404e-06,
+            3.540367676585871e-06,
+            1.7655547119277837e-05,
+            0.00013603179929126927
+          ],
+          "parent_trace_combined_objective": 0.0003696833862329172,
+          "traction_objective_unweighted": 2.7926986837022296e-05,
+          "traction_objective_weighted": 2.7926986837022296e-05,
+          "parent_trace_gradient_l2": 0.0010432786944413292,
+          "traction_gradient_l2_unweighted": 0.0007836569772814271,
+          "combined_gradient_l2": 0.0005589196039813483,
+          "parent_traction_gradient_dot_unweighted": -6.950787843011999e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.0003216717809802545,
+            0.2575263212477086,
+            1.6441950458268118,
+            5.477535170942687
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.002191269724926455,
+              0.02306392822625937,
+              -0.29067179337911886,
+              -0.08004503745206387
+            ],
+            [
+              -0.0013710738510220673,
+              0.04088176165039002,
+              0.07125097947941222,
+              0.1518984872271137
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.25138838413034,
+            9.803824820933885,
+            15.66712688120773,
+            4.236546545278419
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.04532996156278413,
+          "seconds": 0.21218694932758808
+        },
+        "elapsed_seconds": 959.0006075790152
+      },
+      {
+        "iteration": 5000,
+        "label": "periodic",
+        "objective": 0.00037759017308447185,
+        "gradient_inf": 0.0003152563925322575,
+        "theta_sha256": "22b0fb820448677496176387ba269a57bc9eddfaa4f6c96cd45e7fe18839ce14",
+        "gradient_sha256": "d8fbf4e5c32e45427b092e800ad13480be1a8a09434280fe2e663ef4c004c4fe",
+        "pair_rho": [
+          15232526.386848984,
+          43755844.57702111,
+          129720794.5568274,
+          115421130.0725523,
+          38319835.829679504,
+          21916279.62231919,
+          58195611.66340564,
+          72373391.39212687,
+          114445018.89449815,
+          14020672.778144388
+        ],
+        "array_file": "state-05000-periodic.npz",
+        "array_sha256": "8d3f75cca0ee6eb99fdcbb0f5e8cfd7131cb6fd86d22e19af5a393806a0e884c",
+        "full_evaluations": 5198,
+        "metrics": {
+          "base_objective": 0.0002929425963106885,
+          "combined_objective": 0.00037759017308447185,
+          "divergence_error_norm_squared_by_mode": [
+            0.000363886225437292,
+            0.0004606804700471578,
+            0.0023439508087381416,
+            0.0070242317587223225
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.267971764258575e-05,
+            4.360163077947351e-05,
+            0.00020607066596105227,
+            0.0006152174623061514
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010293834835199445,
+            0.0002666943216333689,
+            0.0013557321373222485,
+            0.007554944512054794
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.0003638806985180822,
+            0.00046063653283410615,
+            0.00234371470745231,
+            0.007023527629295588
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.2679069397791607e-05,
+            4.359747229161589e-05,
+            0.0002060499088918236,
+            0.0006151557911179096
+          ],
+          "supervised_divergence_objective_unweighted": 5.8046328833069335e-05,
+          "supervised_divergence_objective_weighted": 5.8046328833069335e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.7388770860260726e-06,
+            3.3351104102083463e-06,
+            1.6351080007247887e-05,
+            0.00013113153179268404
+          ],
+          "parent_trace_combined_objective": 0.00035098892514375777,
+          "traction_objective_unweighted": 2.6601247940714097e-05,
+          "traction_objective_weighted": 2.6601247940714097e-05,
+          "parent_trace_gradient_l2": 0.0014589327511836507,
+          "traction_gradient_l2_unweighted": 0.0008100359396860366,
+          "combined_gradient_l2": 0.0010573974054970323,
+          "parent_traction_gradient_dot_unweighted": -8.332768614537404e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.00032375080206738303,
+            0.23966467726631135,
+            1.5873781987781626,
+            5.317022120138187
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.002054771459517557,
+              0.026034723446326347,
+              -0.27940733711452936,
+              -0.10214973462482482
+            ],
+            [
+              -0.0011943784263262665,
+              0.039165627450986645,
+              0.07303442945840471,
+              0.1632331722200944
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.25064828634634,
+            9.83632619099053,
+            15.720533175871303,
+            4.259525090991015
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.04317807551927188,
+          "seconds": 0.21371920872479677
+        },
+        "elapsed_seconds": 1192.7747886572033
+      },
+      {
+        "iteration": 6000,
+        "label": "periodic",
+        "objective": 0.0003586117415335609,
+        "gradient_inf": 0.00011919260176907327,
+        "theta_sha256": "4312d24e8f3ef524e6fd8cce88edf29a7500a58fbca735e7867fe3823f7e9c1d",
+        "gradient_sha256": "4076950288dee1740cd1c6a3f5b734618d5e5a24366ed372c75315e7c5d6b7ad",
+        "pair_rho": [
+          256605725.30473062,
+          51196800.52902606,
+          83609196.88103145,
+          30843379.887231834,
+          70421287.79063353,
+          54506289.56626435,
+          56302973.13445979,
+          24235069.24254503,
+          70756880.6108549,
+          70901687.29001574
+        ],
+        "array_file": "state-06000-periodic.npz",
+        "array_sha256": "c40e07d5d5df5c56709550117c13a41e07c9ec1cda3095fc16b8f0e1bf781c84",
+        "full_evaluations": 6233,
+        "metrics": {
+          "base_objective": 0.00027693952685333936,
+          "combined_objective": 0.0003586117415335609,
+          "divergence_error_norm_squared_by_mode": [
+            0.0003588688613927779,
+            0.00043236167485647856,
+            0.0022285149614630745,
+            0.0068072590492867695
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.2091237876767194e-05,
+            4.0921365970554815e-05,
+            0.00019592201359383064,
+            0.0005962139037286779
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010190050807139161,
+            0.000249006052487237,
+            0.0012893617658587763,
+            0.0068874660034896505
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.0003588633362980271,
+            0.0004323188655562813,
+            0.0022282763698431617,
+            0.0068064951922496625
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.20905898459614e-05,
+            4.091731423530128e-05,
+            0.00019590103758451095,
+            0.0005961470012966283
+          ],
+          "supervised_divergence_objective_unweighted": 5.638752358758095e-05,
+          "supervised_divergence_objective_weighted": 5.638752358758095e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.7013104550663172e-06,
+            2.8863299178837283e-06,
+            1.5037772477056917e-05,
+            0.0001263673812904753
+          ],
+          "parent_trace_combined_objective": 0.0003333270504409205,
+          "traction_objective_unweighted": 2.5284691092640418e-05,
+          "traction_objective_weighted": 2.5284691092640418e-05,
+          "parent_trace_gradient_l2": 0.0010308747247920705,
+          "traction_gradient_l2_unweighted": 0.0008072663874546666,
+          "combined_gradient_l2": 0.0005767596483249591,
+          "parent_traction_gradient_dot_unweighted": -6.908650132966522e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.00032663046328170457,
+            0.2216929731018225,
+            1.5257827192300661,
+            5.145696269552754
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.001949676801541351,
+              0.020621801757260003,
+              -0.25683424322928616,
+              -0.11106496970704194
+            ],
+            [
+              -0.0011252497941022597,
+              0.038308716391477024,
+              0.07026825023915463,
+              0.1494408758208357
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.249085042600115,
+            9.893673578061197,
+            15.782872897173984,
+            4.259047487737811
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.041041093407070496,
+          "seconds": 0.21186390239745378
+        },
+        "elapsed_seconds": 1424.2329513421282
+      },
+      {
+        "iteration": 7000,
+        "label": "periodic",
+        "objective": 0.00034378391587802746,
+        "gradient_inf": 0.00014118301074099796,
+        "theta_sha256": "4ae6d020108ad84deaa3e756e9afb4c7937ec4c35912292c60b81167f2ed1183",
+        "gradient_sha256": "c114dbba33513fcddc00a169f881e2eef47c076af2fec8b323aca03e9711ff4f",
+        "pair_rho": [
+          88007487.2603849,
+          101070669.52629395,
+          15601577.772089986,
+          29426488.1682536,
+          196380881.67862508,
+          93479231.75442699,
+          32270249.801535662,
+          69260612.49215405,
+          111857311.56991167,
+          125794930.98487532
+        ],
+        "array_file": "state-07000-periodic.npz",
+        "array_sha256": "6d61f65b16ff97963df0895a49adef0915338d8b2ea9efb58b3b5b2850c48c37",
+        "full_evaluations": 7287,
+        "metrics": {
+          "base_objective": 0.0002648523471686237,
+          "combined_objective": 0.00034378391587802746,
+          "divergence_error_norm_squared_by_mode": [
+            0.00035532615285647324,
+            0.00040538317969496235,
+            0.002113722479536234,
+            0.006323536431372366
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.167571843841039e-05,
+            3.836795539315871e-05,
+            0.00018582992330345416,
+            0.0005538470497187927
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010113519225993452,
+            0.00023588864326386805,
+            0.0012392987736486213,
+            0.006385012325210333
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.00035532063305583665,
+            0.0004053404608243259,
+            0.002113482505667197,
+            0.006322758388345102
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.1675071028544025e-05,
+            3.8363912216714484e-05,
+            0.00018580882577238808,
+            0.0005537789048065461
+          ],
+          "supervised_divergence_objective_unweighted": 5.45833421480757e-05,
+          "supervised_divergence_objective_weighted": 5.45833421480757e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.6697049630606179e-06,
+            2.6186076303680597e-06,
+            1.3945784860888964e-05,
+            0.00011593426227359533
+          ],
+          "parent_trace_combined_objective": 0.0003194356893166993,
+          "traction_objective_unweighted": 2.434822656132816e-05,
+          "traction_objective_weighted": 2.434822656132816e-05,
+          "parent_trace_gradient_l2": 0.0009743041594093385,
+          "traction_gradient_l2_unweighted": 0.0008116325820038936,
+          "combined_gradient_l2": 0.0006632012203482317,
+          "parent_traction_gradient_dot_unweighted": -5.840900922706307e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.00032535892552599654,
+            0.20996140448422365,
+            1.4832538939686757,
+            5.0188936477917
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.0017310691734790217,
+              0.021730301406771065,
+              -0.2479347653500365,
+              -0.12013797200102778
+            ],
+            [
+              -0.0012029040856704,
+              0.04082135216734065,
+              0.06878597259463044,
+              0.14906545640714344
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.25044043939104,
+            9.924063240445012,
+            15.82628179828702,
+            4.2771157017442825
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.03952106185275257,
+          "seconds": 0.21189388446509838
+        },
+        "elapsed_seconds": 1660.393823215738
+      },
+      {
+        "iteration": 8000,
+        "label": "periodic",
+        "objective": 0.0003318300919284518,
+        "gradient_inf": 0.00012482487069936344,
+        "theta_sha256": "2300a6eed59f6bfcdcbcd9150b531f3c1c7efcbedd485d999e2b7c95a8b18715",
+        "gradient_sha256": "aedad678ffa8c3b18e516d617b70d45896d58e69755cc390af84f588979e86b2",
+        "pair_rho": [
+          42667265.88378664,
+          141443397.24447063,
+          48130472.778842896,
+          21525065.312943548,
+          97698055.82508302,
+          104605251.98455067,
+          186405191.0639053,
+          51626532.845339336,
+          12870710.896961566,
+          47749006.49551653
+        ],
+        "array_file": "state-08000-periodic.npz",
+        "array_sha256": "29da5e4c9b8445439cd3f561914fc8881b26f28b0d2b719cd44d62501cf1ba18",
+        "full_evaluations": 8332,
+        "metrics": {
+          "base_objective": 0.0002549552414473842,
+          "combined_objective": 0.0003318300919284518,
+          "divergence_error_norm_squared_by_mode": [
+            0.00035258974203312504,
+            0.00038393277423396754,
+            0.0020215231774516154,
+            0.005961978686540811
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.13547685559183e-05,
+            3.6337757197683746e-05,
+            0.00017772413391961035,
+            0.0005221800082695696
+          ],
+          "gradient_relative_squared_by_mode": [
+            0.00010042684752174214,
+            0.0002262519030145262,
+            0.0011960846310199006,
+            0.005967593626352181
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.00035258422463284295,
+            0.0003838900187889668,
+            0.002021284012079618,
+            0.005961219573026815
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.1354121427586096e-05,
+            3.633371055961694e-05,
+            0.00017770310746833073,
+            0.0005221135212990762
+          ],
+          "supervised_divergence_objective_unweighted": 5.317823093297797e-05,
+          "supervised_divergence_objective_weighted": 5.317823093297797e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.6542056972146943e-06,
+            2.4305387285179646e-06,
+            1.3137177219194162e-05,
+            0.00010968738048137044
+          ],
+          "parent_trace_combined_objective": 0.0003081334723803629,
+          "traction_objective_unweighted": 2.3696619548088916e-05,
+          "traction_objective_weighted": 2.3696619548088916e-05,
+          "parent_trace_gradient_l2": 0.0009718173229990102,
+          "traction_gradient_l2_unweighted": 0.0008077323279185913,
+          "combined_gradient_l2": 0.0005287175822044947,
+          "parent_traction_gradient_dot_unweighted": -6.586590705567912e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.0003229733283401202,
+            0.2023203848121741,
+            1.4450057976929571,
+            4.899438281224405
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.001612594405474118,
+              0.025783546022704842,
+              -0.23856754269889005,
+              -0.11974273455643018
+            ],
+            [
+              -0.0012772095637610522,
+              0.04102750861107174,
+              0.06755049994387642,
+              0.14157070830144539
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.25155586255046,
+            9.940083272084529,
+            15.864533797207892,
+            4.279327833942348
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.03846339956227523,
+          "seconds": 0.21220819279551506
+        },
+        "elapsed_seconds": 1897.1039824439213
+      },
+      {
+        "iteration": 9000,
+        "label": "periodic",
+        "objective": 0.00031992089574587825,
+        "gradient_inf": 7.794679816960651e-05,
+        "theta_sha256": "5bca64b0019792c5a0f6820c6af7a37ad711e775a9d998af09ee85e14906291c",
+        "gradient_sha256": "42226b1e2aea41f55e0b42bf39239942fa2b5094b6f0420ac7555bac6dc681fe",
+        "pair_rho": [
+          365603040.9300926,
+          16866782.4858926,
+          31273545.605892763,
+          405325331.47776914,
+          101654509.58438246,
+          64162104.64798899,
+          62900202.20324136,
+          96025173.8035625,
+          162460730.19857943,
+          206636463.3908696
+        ],
+        "array_file": "state-09000-periodic.npz",
+        "array_sha256": "cba3372e7f4025623f8d583502dd446be552c661b8e194daa7d74a947b3a8712",
+        "full_evaluations": 9388,
+        "metrics": {
+          "base_objective": 0.00024489984628046885,
+          "combined_objective": 0.00031992089574587825,
+          "divergence_error_norm_squared_by_mode": [
+            0.00034955448926088546,
+            0.00036754689845012827,
+            0.001933521023039449,
+            0.005823975239190019
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.099876791000933e-05,
+            3.478689721472816e-05,
+            0.00016998734076758822,
+            0.0005100929739026823
+          ],
+          "gradient_relative_squared_by_mode": [
+            9.970696123411507e-05,
+            0.00021814296766457344,
+            0.001147508595943443,
+            0.0055392180173699426
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.00034954896415474127,
+            0.00036750399680254896,
+            0.0019332828723141115,
+            0.005823207730806764
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.099811987786712e-05,
+            3.478283673915086e-05,
+            0.0001699664035199349,
+            0.0005100257516674172
+          ],
+          "supervised_divergence_objective_unweighted": 5.210358481067912e-05,
+          "supervised_divergence_objective_weighted": 5.210358481067912e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.6243836465600654e-06,
+            2.270130648432019e-06,
+            1.2482295746483989e-05,
+            0.00010126830516635245
+          ],
+          "parent_trace_combined_objective": 0.0002970034310911478,
+          "traction_objective_unweighted": 2.2917464654730424e-05,
+          "traction_objective_weighted": 2.2917464654730424e-05,
+          "parent_trace_gradient_l2": 0.00094245684137692,
+          "traction_gradient_l2_unweighted": 0.0008154173153126097,
+          "combined_gradient_l2": 0.00044232441491474315,
+          "parent_traction_gradient_dot_unweighted": -6.787397039700572e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.000319564560892708,
+            0.19336337856598584,
+            1.398843254640373,
+            4.744157016119832
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.001494015837646607,
+              0.02866783544790959,
+              -0.22596155081826008,
+              -0.13050638522002067
+            ],
+            [
+              -0.0013732138409875427,
+              0.03902347156419221,
+              0.06305305549234927,
+              0.12464289094054741
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.25301504671833,
+            9.96393068055141,
+            15.92651354425493,
+            4.316243429686587
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.037198706683895175,
+          "seconds": 0.21180313918739557
+        },
+        "elapsed_seconds": 2133.2186123644933
+      },
+      {
+        "iteration": 10000,
+        "label": "periodic",
+        "objective": 0.0003101860008152071,
+        "gradient_inf": 0.0001177248045428625,
+        "theta_sha256": "1065ea01f1d4a77174c6638043cbab4602f1f703057e0282de9da6f100a9e352",
+        "gradient_sha256": "e172834abc08f436bea7088a6f4df676e26ce80ad24b3e1a392c7262df4e0992",
+        "pair_rho": [
+          223315476.04027185,
+          136046623.3430648,
+          15248181.505802535,
+          31879083.497846525,
+          225436393.75004813,
+          136474000.5761503,
+          161413467.65477863,
+          44504998.27482327,
+          57708341.02120282,
+          169051653.33137974
+        ],
+        "array_file": "state-10000-periodic.npz",
+        "array_sha256": "c58854cadc923cf0b2816356028bc20a7ffb18a54873229f2a284a4e7cb19790",
+        "full_evaluations": 10439,
+        "metrics": {
+          "base_objective": 0.00023687081288538395,
+          "combined_objective": 0.0003101860008152071,
+          "divergence_error_norm_squared_by_mode": [
+            0.00034701272541208777,
+            0.00035351383539237237,
+            0.0018609073495547898,
+            0.005478010576715361
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.070064790491586e-05,
+            3.3458721887289865e-05,
+            0.00016360344056069016,
+            0.00047979165284633166
+          ],
+          "gradient_relative_squared_by_mode": [
+            9.910278088311e-05,
+            0.00021161337955515736,
+            0.0011058082455178292,
+            0.005206423464549445
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.0003470072075603174,
+            0.00035347070469266743,
+            0.001860670394308541,
+            0.005477223954487815
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.070000072362922e-05,
+            3.345463973281169e-05,
+            0.00016358260841471892,
+            0.00047972275652467746
+          ],
+          "supervised_divergence_objective_unweighted": 5.094182793403639e-05,
+          "supervised_divergence_objective_weighted": 5.094182793403639e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.6111032292840418e-06,
+            2.2055986577438218e-06,
+            1.1943607324555537e-05,
+            9.707444098212254e-05
+          ],
+          "parent_trace_combined_objective": 0.00028781264081942067,
+          "traction_objective_unweighted": 2.2373359995786447e-05,
+          "traction_objective_weighted": 2.2373359995786447e-05,
+          "parent_trace_gradient_l2": 0.0010190695615380477,
+          "traction_gradient_l2_unweighted": 0.0008106427286070746,
+          "combined_gradient_l2": 0.0004800590897613049,
+          "parent_traction_gradient_dot_unweighted": -7.325938375172097e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.00031640170745817105,
+            0.1873984779668984,
+            1.3584845746179481,
+            4.619406945886233
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.0012621098798544185,
+              0.02643745849628137,
+              -0.21300645500583718,
+              -0.13185989727157407
+            ],
+            [
+              -0.001333626321191186,
+              0.043446722825024334,
+              0.05717718835986218,
+              0.1231853425239962
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.254299311410506,
+            9.986005974267774,
+            15.985381068825156,
+            4.3327378501328
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.03631553789021188,
+          "seconds": 0.21251511946320534
+        },
+        "elapsed_seconds": 2367.428220603615
+      },
+      {
+        "iteration": 10000,
+        "label": "final",
+        "objective": 0.0003101860008152071,
+        "gradient_inf": 0.0001177248045428625,
+        "theta_sha256": "1065ea01f1d4a77174c6638043cbab4602f1f703057e0282de9da6f100a9e352",
+        "gradient_sha256": "e172834abc08f436bea7088a6f4df676e26ce80ad24b3e1a392c7262df4e0992",
+        "pair_rho": [
+          223315476.04027185,
+          136046623.3430648,
+          15248181.505802535,
+          31879083.497846525,
+          225436393.75004813,
+          136474000.5761503,
+          161413467.65477863,
+          44504998.27482327,
+          57708341.02120282,
+          169051653.33137974
+        ],
+        "array_file": "state-10000-final.npz",
+        "array_sha256": "c58854cadc923cf0b2816356028bc20a7ffb18a54873229f2a284a4e7cb19790",
+        "full_evaluations": 10439,
+        "metrics": {
+          "base_objective": 0.00023687081288538395,
+          "combined_objective": 0.0003101860008152071,
+          "divergence_error_norm_squared_by_mode": [
+            0.00034701272541208777,
+            0.00035351383539237237,
+            0.0018609073495547898,
+            0.005478010576715361
+          ],
+          "divergence_error_relative_squared_by_mode": [
+            4.070064790491586e-05,
+            3.3458721887289865e-05,
+            0.00016360344056069016,
+            0.00047979165284633166
+          ],
+          "gradient_relative_squared_by_mode": [
+            9.910278088311e-05,
+            0.00021161337955515736,
+            0.0011058082455178292,
+            0.005206423464549445
+          ],
+          "predicted_divergence_norm_squared_by_mode": [
+            0.0003470072075603174,
+            0.00035347070469266743,
+            0.001860670394308541,
+            0.005477223954487815
+          ],
+          "predicted_divergence_relative_squared_by_mode": [
+            4.070000072362922e-05,
+            3.345463973281169e-05,
+            0.00016358260841471892,
+            0.00047972275652467746
+          ],
+          "supervised_divergence_objective_unweighted": 5.094182793403639e-05,
+          "supervised_divergence_objective_weighted": 5.094182793403639e-05,
+          "teacher_divergence_norm_squared_by_mode": [
+            6.120905773888216e-09,
+            4.671443556055539e-08,
+            2.4741156524500733e-07,
+            6.137874596192836e-07
+          ],
+          "teacher_divergence_relative_squared_by_mode": [
+            7.179126657858072e-10,
+            4.421341263228173e-09,
+            2.1751423206680754e-08,
+            5.375858546145133e-08
+          ],
+          "value_relative_squared_by_mode": [
+            1.6111032292840418e-06,
+            2.2055986577438218e-06,
+            1.1943607324555537e-05,
+            9.707444098212254e-05
+          ],
+          "parent_trace_combined_objective": 0.00028781264081942067,
+          "traction_objective_unweighted": 2.2373359995786447e-05,
+          "traction_objective_weighted": 2.2373359995786447e-05,
+          "parent_trace_gradient_l2": 0.0010190695615380477,
+          "traction_gradient_l2_unweighted": 0.0008106427286070746,
+          "combined_gradient_l2": 0.0004800590897613049,
+          "parent_traction_gradient_dot_unweighted": -7.325938375172097e-07,
+          "traction_error_norm_squared_by_mode": [
+            0.00031640170745817105,
+            0.1873984779668984,
+            1.3584845746179481,
+            4.619406945886233
+          ],
+          "traction_integrated_traction_error_by_component_mode": [
+            [
+              0.0012621098798544185,
+              0.02643745849628137,
+              -0.21300645500583718,
+              -0.13185989727157407
+            ],
+            [
+              -0.001333626321191186,
+              0.043446722825024334,
+              0.05717718835986218,
+              0.1231853425239962
+            ]
+          ],
+          "traction_predicted_norm_squared_by_mode": [
+            41.254299311410506,
+            9.986005974267774,
+            15.985381068825156,
+            4.3327378501328
+          ],
+          "traction_teacher_norm_squared_by_mode": [
+            41.35019831057948,
+            12.068817166575087,
+            22.368825446190275,
+            8.369209556417307
+          ],
+          "traction_weighted_numerator": 0.03631553789021188,
+          "seconds": 0.21251511946320534
+        },
+        "elapsed_seconds": 2367.5609807781875
+      }
+    ],
+    "retention_errors": [],
+    "all_intermediate_vectors_retained": false,
+    "warm_restart": true,
+    "exact_optimizer_continuation_claim": false,
+    "validation_seen": false
+  },
+  "model_receipt": {
+    "schema": "ns-obstacle-supervised-neural-model-v2",
+    "bank_file": "spatial-bank-raw.npz",
+    "bank_sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60",
+    "selected_checkpoint": {
+      "objective": 0.0003101860008152071,
+      "checkpoint": "state-10000-final.npz"
+    },
+    "selected_theta_sha256": "1065ea01f1d4a77174c6638043cbab4602f1f703057e0282de9da6f100a9e352",
+    "config_sha256": "9ff47ecbfe40008bd0523163adf21ff82ff8ad2e8fe23eec52e45c9a84f6d767",
+    "runtime_sha256": "697561797aad062e220ba248331db1e3158a4e5574c017663b1221e19953f2e4",
+    "optimizer_status": "iteration_limit",
+    "warm_restart": true,
+    "objective_variant": "scanned_fixed_coordinate_residual_heads_same_trace_and_traction",
+    "selection": "minimum accepted combined objective",
+    "selected_theta_scope": "child parameters only",
+    "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+    "warm_child_model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+    "optimizer_counts_scope": "warm child restart with reset curvature; historical lineage retained",
+    "selected_base_objective": 0.00023687081288538395,
+    "cumulative_adam_steps": 4000,
+    "cumulative_lbfgs_steps": 33160,
+    "selected_full_replay_sha256": "63dac2aec8b3abf002b9c9d055a6d27a59742f92b7e6aed98d18f9244234b813",
+    "total_full_evaluations_including_serialized_replay": 10440,
+    "total_training_replay_retention_seconds": 2368.369311887771,
+    "physical_admission": false
+  },
+  "stderr_bytes": 0,
+  "jsonl_bytes": 82175282
+}

@@ -1852,13 +1852,42 @@
       "gpu_type": "A100 80GB",
       "gpu_f64_highest_confirmed": true,
       "retention_review_passed": true
+    },
+    {
+      "source_commit": "942975660c13419b1c729688b720468576051d88",
+      "release_sha256": "852f897643e80e20656d309ef85271c37df38eb73bd89177a78e054bfa0da953",
+      "source_manifest_sha256": "d088aa8fe490168120e05d672f1298737480f7e397ad7af99fd07aed2ff7f1b2",
+      "actual_full_preflight_passed": true,
+      "actual_accepted_model_and_development_verified": true,
+      "no_JAX_or_native_import": true,
+      "namespace_bytes": {
+        "ns-obstacle-rom-20261027": 26193175394,
+        "ns-obstacle-2d-20261027": 4014258810,
+        "ns-obstacle-3d-20261027": 133799
+      },
+      "maximum_global_bytes": 46582130819,
+      "queue_before": "",
+      "time_unix": 1793339038.1610837,
+      "job_id": 6657242,
+      "submitted_once": true,
+      "queue_after": "6657242|ctol_nsobsrom_teacherdiag|PENDING\n",
+      "attempt": "neural-pod-guided-diagnostic06",
+      "budget_bucket": "ROM",
+      "state_last_observed": "PENDING",
+      "allocation_seconds_reserved": 900,
+      "gpus": 1,
+      "validation_allowed": false,
+      "physical_admission": false,
+      "packaging_repair": "R2: original69file preflight stage preserved before fresh namespace"
     }
   ],
-  "live_job_ids": [],
+  "live_job_ids": [
+    6657242
+  ],
   "completed_gpu_hours": 11.209722222222222,
-  "note": "Residual6655193 completed; terminal model/retention audits pending, actual PDE06 not yet run.",
+  "note": "Actual residual-bank PDE06 job6657242 submitted after corrected full preflight; all prior results retained.",
   "total_allocated_gpu_hours_completed": 11.209722222222222,
-  "last_accounting_utc": "2026-10-30T05:25:05.711655+00:00",
+  "last_accounting_utc": "2026-10-30T05:45:12.680804+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

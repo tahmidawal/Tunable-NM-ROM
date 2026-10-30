@@ -3,7 +3,7 @@
   "numerical_jobs": [],
   "active_external_consults": [],
   "pending": [
-    "Complete actual coordinate PDE07 scientific/raw audits and plot comparisons, then controlled output-weight refinement",
+    "Evaluate same26e99-bank mixed Galerkin control, then fixed-hidden output polishing; do not stop at target pass",
     "Continue justified accuracy improvements, including separate mode-weight analysis; no fixed accuracy stopping cutoff",
     "Freeze selected recipe before final validation; complete FOM comparisons and reporting"
   ],
@@ -616,8 +616,9 @@
     "coordinate_PDE_diagnostic_state": "COMPLETED",
     "coordinate_PDE_diagnostic_seconds": 267,
     "coordinate_PDE_scientific_review_pending": false,
-    "coordinate_PDE_retention_pending": true,
+    "coordinate_PDE_retention_pending": false,
     "coordinate_PDE_scientific_review_passed": true,
-    "coordinate_PDE_failed_targets": []
+    "coordinate_PDE_failed_targets": [],
+    "coordinate_PDE_retention_passed": true
   }
 }

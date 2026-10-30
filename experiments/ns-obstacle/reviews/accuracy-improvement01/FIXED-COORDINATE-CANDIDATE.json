@@ -1,0 +1,68 @@
+{
+  "schema": "ns-obstacle-fixed-coordinate-training-candidate-v1",
+  "execution_released": false,
+  "actual_PDE06_result_pending": true,
+  "model_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+  "frozen_parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "diagnostic_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/residual-parameter-block-diagnostic/terminal/RESULT.json",
+  "diagnostic_sha256": "ec2384906f8bbc25fddad8059abb0c53b82e08b37262f8788296786bd87749d9",
+  "diagnostic_source_commit": "1bd89e2fa",
+  "diagnostic_mirror_commit": "c8984fe54",
+  "retained_gradient_statistics": [
+    {
+      "iteration": 0,
+      "hidden_gradient_rms": 0.0,
+      "output_gradient_rms": 0.00017101722785189407,
+      "output_to_hidden_rms_ratio": null
+    },
+    {
+      "iteration": 1000,
+      "hidden_gradient_rms": 4.611868362226035e-08,
+      "output_gradient_rms": 4.580091679000947e-06,
+      "output_to_hidden_rms_ratio": 99.31098026376125
+    },
+    {
+      "iteration": 2000,
+      "hidden_gradient_rms": 9.487712409291162e-08,
+      "output_gradient_rms": 0.00015399190751474865,
+      "output_to_hidden_rms_ratio": 1623.0667717536091
+    },
+    {
+      "iteration": 3000,
+      "hidden_gradient_rms": 6.783917671169207e-08,
+      "output_gradient_rms": 2.0572108695623393e-05,
+      "output_to_hidden_rms_ratio": 303.2482069033982
+    },
+    {
+      "iteration": 4000,
+      "hidden_gradient_rms": 8.167689552385283e-08,
+      "output_gradient_rms": 6.746647633661756e-05,
+      "output_to_hidden_rms_ratio": 826.0166587369218
+    },
+    {
+      "iteration": 5000,
+      "hidden_gradient_rms": 7.014792590249397e-08,
+      "output_gradient_rms": 7.856577441982716e-06,
+      "output_to_hidden_rms_ratio": 112.00013886231511
+    },
+    {
+      "iteration": 5134,
+      "hidden_gradient_rms": 7.008690063951664e-08,
+      "output_gradient_rms": 6.8915880458228645e-06,
+      "output_to_hidden_rms_ratio": 98.32918823545786
+    }
+  ],
+  "hidden_coordinate_scale": 100.0,
+  "output_coordinate_scale": 1.0,
+  "coordinate_definition": "theta=initial_child_theta+D*z; fixed diagonal throughout a new warm-child fit",
+  "rationale": "Rounded final TRAIN gradient RMS balancing hypothesis. No Hessian condition estimate or optimal-scale claim. No DEV or VAL targets used to choose scales.",
+  "physical_direction_caution": "Mapped initial/fallback direction is -D^2*g; hidden multiplier10000 before gamma/Armijo. The coordinate gradient is D*g, not the physical stopping gradient.",
+  "requirements": [
+    "Wait actual PDE06 and exact new source/resource release before execution.",
+    "Same represented composite family, frozen traction parent and unchanged objective; initialize from exact reviewed child model.",
+    "Reset curvature; retain physical Armijo, curvature safeguard and physical-gradient stopping.",
+    "Initial exact same-model objective and cached/uncached full gradient equivalence, final serialized uncached replay.",
+    "No claim of equal-cost causal advantage versus additional unscaled training."
+  ],
+  "GPU_scan_status": "separate prospective implementation, not qualified or included in this candidate"
+}

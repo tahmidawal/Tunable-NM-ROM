@@ -1,0 +1,12 @@
+{
+  "schema": "ns-obstacle-diagnostic06-staging-failure-v1",
+  "original_source_commit": "3b1362fd79eb56ca6a0813ad98625be365647ffd",
+  "original_mirror_commit": "3bb41a9b5",
+  "release_sha256": "0b30927219b5f551db63cd393a8933618421601cb32d7c6718f5bf2bb8361198",
+  "stage": "actual_remote_verify_before_sbatch",
+  "missing_file": "accuracy_v2/independent_residual_heads.py",
+  "GPU_submission_occurred": false,
+  "cause": "Runtime builder missed an indirect source-file read by fixture validation; all included files matched hashes but the closure was incomplete.",
+  "retraction": "Earlier complete-runtime-closure acceptance for original diagnostic06 packet is withdrawn. Trained model, raw retention and actual fixture reviews remain valid.",
+  "repair_status": "Owner preserving failed staging and preparing explicit fixture-bound dependency closure; separately reviewed repair release required."
+}

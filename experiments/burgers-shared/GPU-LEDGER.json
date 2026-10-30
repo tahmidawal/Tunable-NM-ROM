@@ -68,9 +68,12 @@
     {
       "attempt": "inexact01",
       "reserved_seconds": 900,
-      "status": "prepared",
+      "status": "completed_pending_audit",
       "remote": "/cluster/tufts/paralab/tawal01/bshared-inexact-20261029/inexact01",
-      "reason": "User explicitly authorized inexact1024-point coarse proposal test after discussing prior panelrejection"
+      "reason": "User explicitly authorized inexact1024-point coarse proposal test after discussing prior panelrejection",
+      "job_id": "6651620",
+      "source_commit": "5b6d2ec34",
+      "actual_gpu_seconds": 116
     }
   ],
   "authorization": "User approved both parallel comparisons and 2 GPU-hours total on 2026-10-28",
@@ -81,9 +84,9 @@
     "remaining_conditional": 0
   },
   "budget_accounting": {
-    "charged_gpu_seconds": 2852,
-    "reserved_gpu_seconds": 900,
-    "unspent_gpu_seconds": 3448,
-    "stopped": "Explicit inexact-model experiment authorized; no modeltraining/cycles"
+    "charged_gpu_seconds": 2968,
+    "reserved_gpu_seconds": 0,
+    "unspent_gpu_seconds": 4232,
+    "stopped": "Inexact1024 experiment complete; loss/field agreement gates pass but both cost gates fail. No further allocations."
   }
 }

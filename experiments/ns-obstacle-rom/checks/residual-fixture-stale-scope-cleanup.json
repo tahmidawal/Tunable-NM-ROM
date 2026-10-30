@@ -1,0 +1,50 @@
+{
+  "scope": "root-authorized exact empty prior ROM smoke scopes only",
+  "units": [
+    {
+      "unit": "run-u43629.scope",
+      "before": {
+        "ControlGroup": "/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43629.scope",
+        "TasksCurrent": "0",
+        "Description": "/home/tahmid/Dev/.venv/bin/python experiments/ns-obstacle-rom/accuracy_v2/smoke.py",
+        "ActiveState": "active"
+      },
+      "cgroup_procs": "",
+      "after": "TasksCurrent=[not set]\nLoadState=not-found\nActiveState=inactive\n"
+    },
+    {
+      "unit": "run-u43630.scope",
+      "before": {
+        "ControlGroup": "/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43630.scope",
+        "TasksCurrent": "0",
+        "Description": "/home/tahmid/Dev/.venv/bin/python experiments/ns-obstacle-rom/accuracy_v2/smoke.py",
+        "ActiveState": "active"
+      },
+      "cgroup_procs": "",
+      "after": "TasksCurrent=[not set]\nLoadState=not-found\nActiveState=inactive\n"
+    },
+    {
+      "unit": "run-u43631.scope",
+      "before": {
+        "ControlGroup": "/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43631.scope",
+        "TasksCurrent": "0",
+        "Description": "/home/tahmid/Dev/.venv/bin/python experiments/ns-obstacle-rom/accuracy_v2/smoke.py",
+        "ActiveState": "active"
+      },
+      "cgroup_procs": "",
+      "after": "TasksCurrent=[not set]\nLoadState=not-found\nActiveState=inactive\n"
+    },
+    {
+      "unit": "run-u43641.scope",
+      "before": {
+        "ControlGroup": "/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43641.scope",
+        "TasksCurrent": "0",
+        "Description": "/home/tahmid/Dev/.venv/bin/python -m accuracy_v2.device_blocks_smoke --output experiments/ns-obstacle-rom/checks/device-blocks-smoke01",
+        "ActiveState": "active"
+      },
+      "cgroup_procs": "",
+      "after": "TasksCurrent=[not set]\nLoadState=not-found\nActiveState=inactive\n"
+    }
+  ],
+  "live_processes_stopped": false
+}

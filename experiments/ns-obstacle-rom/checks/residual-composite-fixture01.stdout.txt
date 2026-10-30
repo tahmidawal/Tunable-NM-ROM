@@ -1,0 +1,59 @@
+{
+  "scope": "bounded339point actual composite live NumPy versus JAX formula; no fullrule/PDE/performance/universal bitwise claim",
+  "model_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "selected_child_theta_sha256": "63bdd5f8bf850389b901e2b291cadddbd306b0f2f320e8e6a22238e49d4a74a5",
+  "model_schema": "ns-obstacle-independent-residual-head-bank-v1",
+  "evaluator_class": "accuracy_v2.residual_head_bank.ResidualHeadBank",
+  "points_fixture_sha256": "d29ac3b9181ec6bbffee296328b135bb0ec687edbae4dd89589a73f252403e46",
+  "points_semantic_sha256": "81070f9c5deb9afde914ed9ccac6e4d092c66c42f3c43f2a791bd0057409a172",
+  "arrays_sha256": "8a46aa21b687eccb2a7fda13d62e12db51d1985478bd0b16755de07c51e334eb",
+  "source_sha256": "1892b91684c486607b95817fec7bedd791b5d325610a0825ced5f19a823a1a2a",
+  "source_files": {
+    "residual_head_bank.py": "e6c2289aa13d013cc373f899115c246014fcedebdf18b5759657f70936064bc0",
+    "independent_residual_heads.py": "4ba8540b892f224d5ab9f139410c67a53f4ed38929c06354bd4cade1f956cea0",
+    "spatial_bank.py": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277",
+    "fast_spatial_bank.py": "722383c2223a15a504ebe69cdc17cb99dc3b572b571255589cbb7e329982a087"
+  },
+  "runtime": {
+    "python": "3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0]",
+    "jax": "0.10.1",
+    "backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest",
+    "device_kind": [
+      "NVIDIA GB10"
+    ]
+  },
+  "prefixes": [
+    {
+      "prefix": 1,
+      "value_max_abs_gap": 2.6680047060523293e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    },
+    {
+      "prefix": 2,
+      "value_max_abs_gap": 2.6680047060523293e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    },
+    {
+      "prefix": 4,
+      "value_max_abs_gap": 2.6680047060523293e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    }
+  ],
+  "sampled_correction_amplitude": {
+    "scope": "same339fixturepoints only; not fullrule or solved-state accuracy",
+    "parent_value_rms": 0.068508484097318,
+    "child_value_rms": 0.0002692984912311492,
+    "parent_physical_gradient_rms": 3.9950518018091783,
+    "child_physical_gradient_rms": 0.01837900242689553,
+    "parent_child_sum_value_max_abs_gap": 0.0,
+    "parent_child_sum_gradient_max_abs_gap": 0.0
+  },
+  "finite_f64": true,
+  "passed": true
+}

@@ -1,0 +1,25 @@
+{
+  "status": "preflight_blocked_before_claim_or_GPU",
+  "exception": "AssertionError: len(active)<3",
+  "release_sha256": "47826a881b34a55a1d1d4c4f53d556b155196ddb1a57dabed4010d9900aadc3b",
+  "default36GiB_running_scopes": [
+    {
+      "unit": "run-u43629.scope",
+      "properties": "ControlGroup=/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43629.scope\nMemoryCurrent=183848960\nMemoryMax=38654705664\nActiveState=active\nSubState=running\n"
+    },
+    {
+      "unit": "run-u43630.scope",
+      "properties": "ControlGroup=/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43630.scope\nMemoryCurrent=315392\nMemoryMax=38654705664\nActiveState=active\nSubState=running\n"
+    },
+    {
+      "unit": "run-u43631.scope",
+      "properties": "ControlGroup=/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43631.scope\nMemoryCurrent=315392\nMemoryMax=38654705664\nActiveState=active\nSubState=running\n"
+    },
+    {
+      "unit": "run-u43641.scope",
+      "properties": "ControlGroup=/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43641.scope\nMemoryCurrent=393216\nMemoryMax=38654705664\nActiveState=active\nSubState=running\n"
+    }
+  ],
+  "automatic_retry": false,
+  "existing_processes_modified": false
+}

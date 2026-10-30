@@ -2019,7 +2019,7 @@
       "queue_after": "6659904|ctol_nsobsrom_outpolish|RUNNING\n",
       "attempt": "neural-pod-guided-output-polish01",
       "budget_bucket": "ROM",
-      "state_last_observed": "RUNNING",
+      "state_last_observed": "COMPLETED",
       "allocation_seconds_reserved": 3600,
       "gpus": 1,
       "validation_allowed": false,
@@ -2028,16 +2028,23 @@
       "hidden_parameters_frozen": true,
       "new_adam_steps": 0,
       "new_lbfgs_steps": 0,
-      "warm_restart": false
+      "warm_restart": false,
+      "state": "COMPLETED",
+      "elapsed_seconds": 197,
+      "allocated_gpu_hours": 0.05472222222222222,
+      "exit_code": "0:0",
+      "node": "pax008",
+      "gpu_type": "H200",
+      "gpu_f64_highest_confirmed": true,
+      "scientific_review_pending": true,
+      "retention_review_pending": true
     }
   ],
-  "live_job_ids": [
-    6659904
-  ],
-  "completed_gpu_hours": 12.388055555555555,
-  "note": "Outputpolish6659904 running; allGalerkin119raw retained/reviewed, exactworkingchunks cooled with recovery. Validation closed.",
-  "total_allocated_gpu_hours_completed": 12.388055555555555,
-  "last_accounting_utc": "2026-10-30T08:38:15.748537+00:00",
+  "live_job_ids": [],
+  "completed_gpu_hours": 12.442777777777778,
+  "note": "Outputpolish6659904 terminal197s; modestTRAIN loss improvement, savedmodel/raw audits pending, no physicalclaim.",
+  "total_allocated_gpu_hours_completed": 12.442777777777778,
+  "last_accounting_utc": "2026-10-30T08:44:29.070729+00:00",
   "scope_amendment": "reviews/accuracy-improvement01/SCOPE-AMENDMENT.json",
   "initial_pilot_allocated_gpu_hour_ceiling": 12,
   "resource_policy": "User-authorized accuracy-first continuation: reviewed finite jobs with cumulative accounting, unchanged concurrency and storage controls; no arbitrary accuracy stopping cutoff."

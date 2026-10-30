@@ -1,0 +1,87 @@
+{
+  "schema": "ns-obstacle-output-polish-packet-template-v1",
+  "status": "prospective_source_only_not_executable",
+  "actual_model": null,
+  "actual_model_review": null,
+  "actual_release": null,
+  "actual_runtime_inventory": null,
+  "actual_resource_measurement": null,
+  "source_sha256": "4c3c283ad140e040d320337c403c948a60b0eb07f1f345f66f32d3e9dbfabce6",
+  "helper_sha256": "5b9dbaacf99a387486d9babff1fd0e1a826def7bccb61e9ea6b3b55efc10fc89",
+  "protocol_template": {
+    "method": "fixed_hidden_output_delta_qr_svd",
+    "qr_block_points": 256,
+    "new_adam_steps": 0,
+    "new_lbfgs_steps": 0,
+    "supervised_divergence_weight": 1.0,
+    "traction_weight": 1.0,
+    "head_seed": 30102026,
+    "cutoff_policy": "float64_epsilon_times_max_rows_columns",
+    "relative_svd_cutoff": null
+  },
+  "prospective_cutoff_value": 1.6113974599107905e-09,
+  "cutoff_rationale": "Standard dimension-scaled f64 numerical-rank policy; retained-space minimum-norm output delta. Conservative choice, not measured backward-error bound or unique exact full-rank optimum. Must be frozen explicitly in actual release; no DEV tuning.",
+  "immutable_inputs": [
+    "genuine nine TRAIN prepared full1797file closure",
+    "same teacher norms/mode order/sqrt-sigma weights",
+    "same sigma-squared/global traction normalizer and TRAIN coefficient compatibility",
+    "reviewed future composite selected model and embedded cd052629 traction parent",
+    "fixed hidden weights; only four joint130-dimensional output deltas"
+  ],
+  "objective_changed": false,
+  "four_online_coefficients_preserved": true,
+  "normal_equations_used": false,
+  "ridge_added": false,
+  "factorization_backend": "future actual GPU/f64/highest JAX QR; small final rank-revealing NumPy SVD",
+  "rows_per_head": 7257089,
+  "max_QR_blocks_total": 16212,
+  "largest_augmented_block_shape": [
+    1923,
+    131
+  ],
+  "largest_augmented_block_payload_bytes": 2015304,
+  "factorization_flops_rough_order": 996311234632,
+  "measured_runtime_seconds": null,
+  "runtime_statement": "No throughput guarantee. Prospective3600s setup-inclusive allocation,90s internal final-replay reserve plus setup-relative outer margin, subject wrapper review; completed QR-block factor hashes/counts retained; full factors retained at finished heads and nonfinite failure; arbitrary in-flight factor unavailable, no incomplete candidate export.",
+  "prospective_allocation_seconds": 3600,
+  "logical_teacher_parent_device_cache_limit_bytes": 1073741824,
+  "estimated_host_peak_bytes": 17179869184,
+  "proposed_batch_host_allocation_bytes": 68719476736,
+  "output_projection": {
+    "QR_record_allowance_bytes": 1024,
+    "QR_records": 16212,
+    "small_factor_SVD_states_allowance_bytes": 4194304,
+    "initial_candidate_final_vectors_and_metadata_allowance_bytes": 16777216,
+    "misc_source_failure_and_serialization_allowance_bytes": 67108864,
+    "projected_raw_bytes": 104681472,
+    "conservative_archive_bytes": 106776863,
+    "combined_bytes": 211458335,
+    "prospective_raw_archive_reservation_bytes": 1073741824
+  },
+  "required_actual_gates": [
+    "full current objective replay",
+    "initial streamed/cache component and all22792gradient equivalence",
+    "sum4 affine initial objectives vs full initial objective",
+    "sum4 candidate affine objectives vs full uncached candidate objective",
+    "all520 affine output gradients vs original full gradient coordinates",
+    "fixed arithmetic cancellation allowances plus caps",
+    "complete original objective no-worse gate",
+    "select min actual initial/candidate",
+    "serialized complete uncached objective/allchildgradient/component replay",
+    "hidden22272 parameters and embedded parent exactidentity"
+  ],
+  "audit_limitations": [
+    "per-block factor hashes/counts, not full million-row matrices retained",
+    "small final factors/SVD/raw deltas retained before gates",
+    "candidate numerical rank/cutoff limitations remain explicit",
+    "allchildgradient replay is JAX formula, independent NumPy fixture required for PDE deployment"
+  ],
+  "future_dependencies": [
+    "current coordinate terminal saved audit and actual PDE07 result",
+    "independent source/resource/launcher review",
+    "actual GPU preflight and exact fresh namespace/queue/global/local storage guard",
+    "separate root execution release"
+  ],
+  "validation_seen": false,
+  "physical_admission": false
+}

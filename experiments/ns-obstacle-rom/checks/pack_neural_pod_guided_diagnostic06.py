@@ -8,7 +8,7 @@ assert not archive.exists() and not (base/'COLLECTION-SHA256SUMS').exists()
 status=subprocess.check_output(['sacct','-j','6657242','-n','-P','--format=JobID,State,ElapsedRaw,ExitCode'],text=True);assert any(x.split('|')[0]=='6657242' and x.split('|')[1]=='COMPLETED' and x.split('|')[3]=='0:0' for x in status.splitlines() if x.strip())
 assert '6657242' not in subprocess.check_output(['squeue','-u','tawal01','-h','-o','%A'],text=True).split()
 roots=[base.parent,Path('/cluster/tufts/paralab/tawal01/ns-obstacle-2d-20261027'),Path('/cluster/tufts/paralab/tawal01/ns-obstacle-3d-20261027')]
-usage={str(p):int(subprocess.check_output(['du','-sb',str(p)],text=True).split()[0]) for p in roots};assert sum(usage.values())+11*2**30+256*2**20<50*2**30
+usage={str(p):int(subprocess.check_output(['du','-sb',str(p)],text=True).split()[0]) for p in roots};assert sum(usage.values())+15*2**30+256*2**20<50*2**30
 files=sorted(p for p in base.rglob('*') if p.is_file());assert files and not any(p.is_symlink() for p in base.rglob('*'))
 def sha(p):
  with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()

@@ -1,0 +1,96 @@
+# Accuracy strategy review: fixed-channel neural-bank ROM
+
+**Recommendation:** treat the current limit as an unconverged, mode-1-dominated approximation error in the neural bank, not as an online-projection problem. Let the scaled run finish, then run the controls below before releasing any of the five candidates.
+
+I used only the supplied JSON and did the arithmetic by hand. I assume that:
+- "trace" means tr(G).
+- `projection_floor` is in the velocity metric.
+- Divergence and gradient use comparable normalizations.
+
+## What the evidence shows
+1. **Mode 1 appears to control ROM divergence.** Using TRAIN coefficients and ignoring cross terms, mode 1 is 98.8% of Σσ²‖tr φ‖². In the last refinement, its trace-error norm fell 0.30%, while PDE divergence fell 0.28–0.34%.
+
+   | Mode | Trace-error norm change |
+   |---|---:|
+   | 1 | −0.30% |
+   | 2 | −1.03% |
+   | 3 | −2.32% |
+   | 4 | −3.02% |
+
+   This is one comparison, but it makes the combined objective a poor progress measure.
+
+2. **Teacher divergence is not the limit.** Teacher trace norm² is 6e-9 to 6e-7, about 3e4 to 1e5 times below the predicted values. The ½‖tr G_T‖² bound is therefore far from active.
+
+3. **Divergence looks like ordinary gradient error.** Divergence/gradient is 0.627–0.628, near the 0.707 expected for isotropic error. Removing the trace alone would reduce gradient error by only about 10% if the deviatoric error stayed fixed.
+
+4. **Online projection has limited room in velocity.** The solved error is 1.20× and 1.09× the floor, so a perfect online solve could gain at most about 17% and 8%. Mass is already small, so the four pressure tests are not reaching the remaining pointwise divergence.
+
+5. **More modes are premature.** The fixed-coefficient gradient error (3.1%) is about 7× all of mode 3's gradient content (0.46%) and 93× mode 4's (0.034%). Online coefficients can offset some of this, so it is not a solved-field budget.
+
+6. **Passing force targets hides a weak QoI.** Transverse error is 5.7% and 12.8% of the transverse force. Drag's percentage changes are also fragile because the signed modal contributions can cancel.
+
+## Ranking
+
+| Rank | Change | Limitation tested | Assessment | Main trap | What changes its rank |
+|---:|---|---|---|---|---|
+| 1 | Per-head optimization (added candidate) | Optimization | Volume and trace terms appear to decouple by head, so joint L-BFGS adds needless competition | Assuming decoupling without checking | Promote if cross-head Hessian-vector products are about zero and head 1 falls well below the joint result |
+| 2 | Coordinate scaling (running) | Optimization | Reasonable, but unproven | Treating the 9.6% drop (about 4.9% in norm) as physical or as a scaling effect; the curvature reset also changed | Demote if mode-1 trace barely moves, or if a D=1 reset matches it at equal evaluations |
+| 3 | Richer features/capacity | Approximation | Plausible, but not yet tested | Calling it a capacity limit before convergence; FE gradient kinks may look like missing capacity | Promote only if exact output solves plateau and errors have resolved spatial structure |
+| 4 | Analytic curl | Approximation (structural) | Strongest route for divergence, unproven for velocity, pressure and forces | Lift and supremizers still contribute; a curl correction cannot remove parent divergence | Promote if a soft trace penalty can't reduce trace without damaging the gradient fit and the lift/supremizer ceiling is low |
+| 5 | Same-bank Galerkin | Online projection | Useful control, unlikely to fix divergence | Root failure or a different root is not an accuracy verdict; the 1e-9 root norm and LS stationarity aren't comparable | Promote if its metric-specific gain materially beats the LS gap, especially for forces |
+| 6 | Weak-mode boundary weighting | Mixed approximation/optimization | Narrow target only | Mode 4 is an attractive distraction | Promote if signed force decomposition isolates mode 2 or 3 and exact solves show attainable traction reduction |
+
+### Why boundary weighting ranks last
+- **Relative traction error:** it is 0.28%, 21.4%, 30.5% and 87.4% for modes 1–4.
+- **Mode 4:** its error looks severe, but its integrated contribution is negligible at about 2e-5.
+- **Mode 2:** it already carries about 83% of the traction objective, yet its error did not improve (0.5539 to 0.5540). More weight is not yet justified, because the term may be unreachable or under-optimized.
+- **Force contributions:** using max |a|·|∫e| with TRAIN coefficients and viscous traction only:
+
+  | Component | Mode 1 | Mode 2 | Mode 3 | Mode 4 |
+  |---|---:|---:|---:|---:|
+  | x | 0.0053 | 0.0061 | 0.0053 | 2e-5 |
+  | y | 0.0020 | 0.0126 | 4e-4 | 3e-5 |
+
+  Mode 2 is the first boundary target for transverse force. Drag has three comparable terms, so cancellation is likely.
+
+### Scaling trap
+Hidden gradients were about 100× smaller than output gradients at the end of the last fit. With D=100, the initial physical step is about 100× larger per hidden parameter, reversing that imbalance before gamma and the line search act. The ratio also ranged from 99 to 1623 during training, so D=100 is only a final-state heuristic.
+
+### Curl traps
+- **Warm start:** the trained vector bank can't be inherited directly.
+- **Cylinder constant:** take c_r's initial value from the TRAIN teacher's flow split rather than starting at zero.
+- **Pressure coupling:** with solenoidal neural modes, pressure coupling relies on the supremizers, so the existing inf-sup result no longer covers the design.
+- **Pilot scope:** make only mode 1 a curl mode. The other modes would still leave about 11% of the current neural divergence norm, which is roughly a 9× ceiling. That tests the benefit and Hessian cost without replacing the whole bank.
+
+## Practical progression
+Each step depends on the one before it, and no step needs a parameter sweep.
+
+1. **Finish the running job and make a prediction before any PDE solve.** Record the per-mode trace, gradient and traction changes, then predict the PDE divergence change from the mode-1 trace change. Check the same rule against the retained trace, energy and traction lineages. If it fails, drop the mode-1 priority and fall back on the full lift/neural/supremizer decomposition.
+
+2. **Run four PDE controls: teacher bank or neural bank, each with LS or Galerkin.** The teacher bank uses the FE POD modes with the same lift, supremizers and pressure modes. This is the main missing control, because it separates neural fit error from rank-4 truncation and online formulation. If the teacher bank is about as accurate as the neural bank in a metric, stop training for that metric.
+
+3. **Compute metric-specific floors on the saved solved states.** Report separate same-space fits for velocity, gradient, divergence and force. Also recompute divergence with the neural part removed, retaining cross terms, which gives the curl ceiling for the current lift and supremizers.
+
+4. **Solve the output layer exactly for each head.** With hidden layers frozen, the objective should be linear least squares in the output weights. That gives an exact TRAIN result with no optimizer path:
+   - **Large drop:** the previous optimizer was the limit.
+   - **Small drop:** hidden motion or features are the limit.
+   - **Trace-weight path:** one set of normal matrices gives a path over trace weight, showing whether a soft penalty can compete with curl.
+
+   Also report hidden-weight displacement. Very small movement means the fitted capacity hasn't really been used.
+
+5. **Run per-head L-BFGS, starting with head 1.** Use the same objective, run to a stated physical-gradient stop rather than a deadline, and include a final uncached replay. At about 0.6 s per evaluation, longer optimization is cheap compared with new architecture work.
+
+6. **Screen capacity using spatial error maps.** Test bounded feature additions with the exact output solve on head 1, holding out elements to check spatial generalization. Compare the remaining gradient misfit with FE inter-element jumps. If they are comparable, more capacity is just fitting the discretization.
+
+7. **Choose the structural step from those results.** Use the mode-1 curl pilot if soft penalties fail and step 3 shows a low ceiling. Change boundary weighting only for a term the force decomposition isolates.
+
+**Reuse of DEV cases:** choose candidates using TRAIN metrics and pre-registered predictions. The two DEV cases have been reused repeatedly, so they should confirm decisions rather than select among candidates.
+
+## What this evidence cannot establish
+- **Generality:** two DEV cases can't establish behavior across Reynolds number, because a2 and a3 change sign across the TRAIN range and the modal force terms change with them.
+- **Continuum accuracy:** errors against the FE reference don't resolve physical uncertainty, and the gradient comparison may partly reflect FE kinks.
+- **Causal budgets:** the floors are achieved fits, not lower bounds. The modal shares use TRAIN coefficients and aren't solved-field partitions, and `MODE-WEIGHT-ANALYSIS.json` carries no model hash tying it to the current child.
+- **Training-to-PDE transfer:** a lower objective doesn't imply better PDE results, as the last refinement showed: −2.02% in objective but only about −0.3% in gradient and divergence.
+- **Capacity limits:** nothing supports or rules them out yet, because the last fit ended at its deadline without converging.
+- **Curl and Galerkin benefit:** neither has PDE results. The inf-sup check shows stability, not accuracy.
+- **Speedup:** nothing here measures it, and added networks or Hessians will raise offline cost and may raise online cost.

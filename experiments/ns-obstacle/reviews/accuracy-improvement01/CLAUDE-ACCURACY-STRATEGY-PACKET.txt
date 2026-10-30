@@ -1,0 +1,794 @@
+Independent advisory review of accuracy-first fixed-channel steady 2D Navier-Stokes neural-bank ROM. You cannot inspect files or run tools; use provided evidence. User wants highest realistic accuracy without arbitrary accuracy cutoff, one justified change at a time; no manufactured advantage. Original finite DFG channel explicitly accepted after domain sensitivity failed; no boundary-independent claim. Final validation remains CLOSED. Current actual results on two exposed DEV cases only. No speedup established. Neural bank is a spatial map, online coefficients solved by weak least squares, with FE pressure and four FE supremizer velocity modes. Four neural spatial modes, independent residual heads on frozen trained parent. Actual nonlinear solves start at zero coefficients about fixed FE Stokes lift; no truth fitting initialization.
+
+Question: Critically rank the next accuracy improvements. Distinguish approximation versus optimization versus online projection limitations. What tests would change your ranking? In particular review fixed physical parameter-coordinate scaling, richer spatial features/capacity, weak-mode boundary weighting, same-bank mixed Galerkin control, and analytic curl/streamfunction design. Avoid a generic laundry list; identify concrete traps, decisive controls and what evidence cannot establish. No arbitrary accuracy cap, but no uncontrolled sweeps. We need a practical progression.
+
+Current warm-child training uses theta=theta0+D*z, hidden D100/outputD1 chosen as TRAIN gradient-RMS balancing heuristic, fixed throughout; store physical s/y and middle B0=gamma*D² where gamma=(s.y)/(y.D².y), retain physical gradient stopping and Armijo/curvature guards. It resets curvature, does no new Adam, same objective and architecture. It is RUNNING, no final result: early ~9.6% objective decrease, no physical accuracy inference. Previous correction fit reduced objective2.02%, still nonstationary at deadline. All previous failures retained. Current21 input spatial features remain unchanged. Full initial cached/uncached objective and all22792parameter gradients match exactly; serialized terminal uncached replay mandatory.
+
+Independent implementation review: same-bank Galerkin feasible with actual enriched8velocity trial/test functions +4FE pressure tests. Existing inf-sup applies but not enough to establish solution accuracy. MUST retain distinct12-row operator/direct quadrature/Jacobian/fingerprint; simply passing alternate solverop would leave old64/16-row diagnostic tests on WRONG operator. Galerkin root criterion norm1e-9; LS stationarity different. No PDE runs for this proposed control yet.
+
+The input JSON below is actual retained evidence, not assertions of continuum truth. Relative errors against discrete FE references can be below empirical continuum uncertainty; do not claim such errors resolve physical uncertainty. Same-space projections are achieved least-squares fits, not rigorous continuum lower bounds or causal partitions. Pure energy-weight training was already a mixed/negative result in a different lineage; current weights sqrt(sigma) protect weak modes more than energy sigma².
+
+
+FILE DIAGNOSTIC06-RESULT-REVIEW.json
+{
+  "schema": "ns-obstacle-residual-neural-diagnostic-coordinator-review-v1",
+  "job_id": 6657242,
+  "elapsed_seconds": 275,
+  "scientific_consistency_passed": true,
+  "physical_admission": false,
+  "accuracy_targets_passed": false,
+  "failed_targets": [
+    "divergence"
+  ],
+  "validation_opened": false,
+  "independent_result_sha256": "1cae17710f992c7ba14f10e28450e709202371c26f5e01a28eb3d307e00f3ed0",
+  "cases": [
+    {
+      "Re": 16.875,
+      "metrics": {
+        "velocity_relative": 0.0005090399799885288,
+        "pressure_scaled": 0.0002240201060584851,
+        "divergence": 0.005060530962281101,
+        "velocity_gradient_scaled": 0.008074407486972851,
+        "mass": 3.294264613702814e-05,
+        "boundary_trace": 3.0923571774387245e-10,
+        "drag_relative": 4.7027436697760075e-05,
+        "transverse_absolute": 0.0012191903566327392
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        6.118588711695293,
+        0.021402731332657587
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.4268415338150653e-15,
+      "finite_difference_errors": [
+        3.54747391756633e-12,
+        1.564669242478211e-11,
+        3.223021342692991e-10
+      ],
+      "stationarity_gradient": 6.358483172801344e-12,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0011621591333712256,
+      "projection_floor": 0.0004249131004662522,
+      "floor_consistent": true
+    },
+    {
+      "Re": 23.125,
+      "metrics": {
+        "velocity_relative": 0.0005416631202730066,
+        "pressure_scaled": 0.00018569001890692983,
+        "divergence": 0.005997255764447879,
+        "velocity_gradient_scaled": 0.009549229636368495,
+        "mass": 1.1928548398799153e-05,
+        "boundary_trace": 3.870271037016121e-10,
+        "drag_relative": 0.00013008540201745285,
+        "transverse_absolute": 0.0005022781461748059
+      },
+      "target_checks": {
+        "velocity": true,
+        "pressure": true,
+        "drag": true,
+        "transverse": true,
+        "divergence": false,
+        "mass": true,
+        "boundary_trace": true
+      },
+      "diagnostic_targets_passed": false,
+      "force": [
+        5.179317718498466,
+        0.003927909767373545
+      ],
+      "force_replay_maxgap": 0.0,
+      "direct_tensor_gap": 1.2952896611345534e-15,
+      "finite_difference_errors": [
+        1.5574460483456106e-12,
+        3.415296665166085e-11,
+        4.538869549507277e-10
+      ],
+      "stationarity_gradient": 7.536548402874964e-11,
+      "stationarity_denominator": 1.0,
+      "stationarity_passed": true,
+      "solver_status": "stationary",
+      "residual_norm": 0.0014941257270706194,
+      "projection_floor": 0.0004984518964915324,
+      "floor_consistent": true
+    }
+  ],
+  "retention_review_pending": false,
+  "interpretation": "Modest mixed changes against the same discrete reference: velocity/pressure/divergence/mass improve; drag and second lift worsen within limits. Only divergence fails. No continuum-level significance, uniform dominance or speedup claim.",
+  "vs_traction_metric_percent_change": [
+    {
+      "Re": 16.875,
+      "percent_change": {
+        "velocity_relative": -1.352630820597267,
+        "pressure_scaled": -11.479731452187314,
+        "divergence": -0.33919534369205584,
+        "velocity_gradient_scaled": -0.3808093834214654,
+        "mass": -45.732205563649195,
+        "boundary_trace": 0.010799470091993335,
+        "drag_relative": 18.28951631443545,
+        "transverse_absolute": -5.624204131698174
+      }
+    },
+    {
+      "Re": 23.125,
+      "percent_change": {
+        "velocity_relative": -1.144435561607715,
+        "pressure_scaled": -10.652412368258634,
+        "divergence": -0.27581233969486973,
+        "velocity_gradient_scaled": -0.2563254261422454,
+        "mass": -71.95719053749204,
+        "boundary_trace": 0.015249239263392944,
+        "drag_relative": 31.96997111605424,
+        "transverse_absolute": 13.33156839326428
+      }
+    }
+  ],
+  "reference_source_commit": "4e70dd782",
+  "reference_mirror_commit": "b2e33b120",
+  "plot_dataset_sha256": "1b5f35db30a323f216872afc86356f12d223c595621c8474c95306dae46216aa",
+  "retention_review_passed": true
+}
+
+
+FILE RESIDUAL-MODEL-REVIEW.json
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Saved composite model and complete raw retention; no actual PDE admission",
+  "job_id": 6655193,
+  "allocated_seconds": 3483,
+  "model_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+  "model_receipt_sha256": "d242151ca284646ed4808bf7c9672d88926998b4aaecf1bdfc833134b85d7a3a",
+  "selected_theta_sha256": "63bdd5f8bf850389b901e2b291cadddbd306b0f2f320e8e6a22238e49d4a74a5",
+  "selected": {
+    "objective": 0.0009480918616877232,
+    "checkpoint": "state-05134-final.npz"
+  },
+  "audit_result_sha256": "8663e611f7ba790fb9f7fab0d3da0d444f272b175d81be22c47ad488af6106a6",
+  "audit_source_commit": "1bd89e2fa",
+  "audit_mirror_commit": "c8984fe54",
+  "checkpoint_count": 7,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 17472,
+  "new_accepted_lbfgs_steps": 5134,
+  "optimizer_status": "job_deadline",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "990883600e6cc418376021462e4655244af9f106",
+  "durable_archive_mirror_commit": "9fd8cc0d3b765b841682ec4b0270d395d0401fea",
+  "independent_retention_passed": true,
+  "objective_variant": "independent_residual_heads_same_trace_and_traction",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "selected_theta_scope": "child parameters only",
+  "trainable_parameters": 22792,
+  "cache_replay": {
+    "initial_objective_gap": 0.0,
+    "initial_child_gradient_max_gap": 0.0,
+    "logical_payload_bytes": 423129056,
+    "parent_cache_hashes": {
+      "parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+      "parent_theta_sha256": "9996ba76504cb66e8f7fcce4f9fea91067da930225db14ba57ed60e544f06956",
+      "parent_volume_values_sha256": "e083f5c64cf82a85b52c5b39ae039adc836268f402fab5e3c71d7dfb1892faa9",
+      "parent_volume_physical_gradient_sha256": "00ac24afb21dae8fca4a9af354dfc7e9c6279727f6f7ddb3742dddfaf705bc09",
+      "parent_boundary_physical_gradient_sha256": "775b1c41ae211f7dedc13cb24041a5e5158fab8e7694ce00e0066cdd627e2137"
+    },
+    "scope": "Saved equivalence arrays and cache manifest checked; parent cache fields not independently evaluated.",
+    "final_uncached_objective_gap": 0.0,
+    "final_uncached_child_gradient_max_gap": 0.0
+  },
+  "completed_trial_evaluations": 5661,
+  "full_evaluations_including_replay": 5664,
+  "selection_semantics": "last accepted state, minimum among initial and accepted COMBINED objective states",
+  "completed_rejected_trials_better_than_final": [],
+  "terminal_curvature_reset_unresolved": false,
+  "limitations": [
+    "No neural evaluation, training, native solve or validation access.",
+    "Only deterministic child initialization and retained-array algebra replayed; no fresh JAX objective/autodiff.",
+    "Embedded parent bytes checked exactly; final replay is saved JAX child-gradient evidence, not independent NumPy live inference qualification.",
+    "Optimizer cumulative counts represent lineage across different parameter spaces, not exact continuation.",
+    "Intermediate vectors are absent: scalar hash/Armijo chains checked, not independent intermediate vector or two-loop replay.",
+    "Saved full teacher objective/gradient replay receipt checked, not independently recomputed.",
+    "Pending/incomplete evaluation events are retained and checked; interrupted partial sums are not full measured objectives.",
+    "A terminal unaccepted or interrupted first trial may reset curvature without a retained reset scalar; final empty history is allowed but its cause remains unresolved.",
+    "Periodic/final curvature arrays checked internally; correspondence to missing intermediate vectors cannot be independently reconstructed."
+  ],
+  "initial_components": {
+    "base": 0.0007512229730896394,
+    "added_trace": 0.0001656782627775998,
+    "parent_trace_combined": 0.0009169012358672393,
+    "added_traction": 5.0725374845794886e-05,
+    "traction_error_norm_squared": [
+      0.0003284239882807533,
+      0.5538706948781722,
+      2.0810108342232745,
+      6.390963791044367
+    ],
+    "traction_predicted_norm_squared": [
+      41.24321972735016,
+      9.635316677845527,
+      15.498799806218578,
+      4.06145880499363
+    ],
+    "traction_teacher_norm_squared": [
+      41.35019831057947,
+      12.068817166575087,
+      22.36882544619028,
+      8.369209556417307
+    ],
+    "integrated_traction_error": [
+      [
+        0.002367812626544379,
+        0.03169118088023102,
+        -0.38282805714510654,
+        0.020196385687552026
+      ],
+      [
+        -0.0012176231019650112,
+        0.06600242270444633,
+        0.03358486740240091,
+        -0.041004113886488266
+      ]
+    ],
+    "combined": 0.0009676266107130341,
+    "predicted_trace_norm_squared": [
+      0.0006278822180942152,
+      0.0024872227873009205,
+      0.008303038457966346,
+      0.02876680495647403
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.0006278878042311369,
+      0.0024872661473681313,
+      0.008303260406091537,
+      0.028767441881357717
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      2.67384426069512e-10,
+      1.6771841749620153e-09,
+      1.2731720027206461e-08,
+      -1.1568712035212037e-08
+    ]
+  },
+  "selected_components": {
+    "base": 0.0007364165005581183,
+    "added_trace": 0.00016094308816673314,
+    "parent_trace_combined": 0.0008973595887248514,
+    "added_traction": 5.0732272962872156e-05,
+    "traction_error_norm_squared": [
+      0.0003282840459936764,
+      0.5540049561353677,
+      2.081288550823844,
+      6.38854313391388
+    ],
+    "traction_predicted_norm_squared": [
+      41.24323016676595,
+      9.63507593530393,
+      15.49891950078407,
+      4.0520302089781755
+    ],
+    "traction_teacher_norm_squared": [
+      41.35019831057947,
+      12.068817166575087,
+      22.36882544619028,
+      8.369209556417307
+    ],
+    "integrated_traction_error": [
+      [
+        0.0022818297837737516,
+        0.031577990361536974,
+        -0.3828605179125834,
+        0.027512257535573015
+      ],
+      [
+        -0.0008748619462246815,
+        0.06573646438071534,
+        0.030977433978488754,
+        -0.04169790873838643
+      ]
+    ],
+    "combined": 0.0009480918616877236,
+    "predicted_trace_norm_squared": [
+      0.0006241025625063287,
+      0.0024364493193937456,
+      0.007922745302355887,
+      0.027054966798825318
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.0006241081495807872,
+      0.002436492680207843,
+      0.007922967145766981,
+      0.027055603948124327
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      2.669156577077107e-10,
+      1.6768107317152031e-09,
+      1.278407707559076e-08,
+      -1.1680919695042369e-08
+    ]
+  },
+  "evaluation_events": {
+    "initiated": 5665,
+    "completed": 5664,
+    "incomplete": [
+      {
+        "evaluation_id": 5664,
+        "phase": "line_search",
+        "theta_sha256": "23acabb20c56497296bd2d940945b2169bc5ef9fb437b2f3cc21d9c0b1887988",
+        "accepted_steps_before": 5134,
+        "completed_full_evaluations_before": 5663,
+        "elapsed_seconds": 3403.973831203766,
+        "cached_teacher_and_parent": true,
+        "status": "incomplete",
+        "completed_blocks": 67,
+        "completed_boundary_blocks": 0,
+        "exception_record_file": "evaluation-005664-failure.json",
+        "exception_record_sha256": "aefc6f7a0f93a855640b5d74d8c694a756d524b160d6e7f8cc68813e905b3d39",
+        "full_objective_available": false,
+        "seconds": 0.17978471796959639
+      }
+    ],
+    "pending_unclosed": 0
+  },
+  "coefficient_replay": {
+    "raw_coefficient_max_gap": 0.0,
+    "raw_gram_spectral_error": 2.3775523834289205e-15,
+    "raw_whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "raw_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "saved_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "raw_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "saved_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "raw_gram_max_gap": 0.0,
+    "raw_rhs_max_gap": 0.0,
+    "gram_spectral_error": 2.3775523834289205e-15,
+    "whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "covariance_max_error_over_sigma0_squared": 3.3880260999458173e-16,
+    "training_points": 1036497,
+    "semantic_teacher_values_sha256": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+    "scope": "Original retained-four TRAIN coefficients only; excludes omitted modes and online coefficients."
+  },
+  "boundary_replay": {
+    "points": 805,
+    "measure_dimensionless": 3.1415926535906222,
+    "teacher_mode_norms_squared": [
+      41.35019831057955,
+      12.068817166575096,
+      22.368825446190275,
+      8.369209556417308
+    ],
+    "global_teacher_energy": 1623.1597711318796,
+    "normalized_mode_energy_weights": [
+      0.9990765028771053,
+      0.0009150749290787452,
+      8.405176941563508e-06,
+      1.7016874502181372e-08
+    ],
+    "exact_original_subset": true
+  },
+  "component_gradient_replay": {
+    "array_hashes": {
+      "base": "f1a869257c4f5db0fba4e44425e9d8594562508262243bfbbedf0dd277a3d40a",
+      "trace": "b513c12c2a59b758d17549f09dc94efebebeddfb5e55127eef8a3e055eb5192f",
+      "traction_unweighted": "85773fc7a771572ccecc68f91cc28cad55916a1b1c080bd92c06dc3a7d55dc68"
+    },
+    "norms": {
+      "base_gradient_l2": 0.0029529360556499974,
+      "trace_gradient_l2": 0.0016958013561971708,
+      "traction_gradient_l2_unweighted": 0.0005175723782026793,
+      "traction_gradient_l2_weighted": 0.0005175723782026793,
+      "parent_combined_gradient_l2": 0.0040027092987112295,
+      "new_combined_gradient_l2": 0.0038997928093061885
+    },
+    "initial_sum_max_gap": 5.421010862427522e-20,
+    "scope": "Initial saved component vectors only; no fresh autodiff or intermediate component-vector reconstruction."
+  }
+}
+
+
+FILE MODE-WEIGHT-ANALYSIS.json
+{
+  "config_sha256": "120fb11cafdd3ce2700e2c263f1737a0d3200b22db0a5741076fccbcff8289a0",
+  "replay_sha256": "8f4811e80eab466d5936cc80a8b25e513cb8ea7e0db5c5c7a3974f3afd83d1f8",
+  "generator_sha256": "4a9d7fefc2e7bde49150bc9ceabb1220cf1c4128c385aeff3369210f2da68a6c",
+  "singular_values": [
+    6.262405845690011,
+    0.35081375209372717,
+    0.02469633315548602,
+    0.0018166794857509315
+  ],
+  "mode_weights": [
+    0.7595820705915158,
+    0.17978042596136115,
+    0.047700215145151006,
+    0.012937288301971998
+  ],
+  "modal_objective_share": [
+    0.2589069177086813,
+    0.24560348878879196,
+    0.22469139645636418,
+    0.2707981970461626
+  ],
+  "gradient_fraction_of_objective": 0.9503183367167108,
+  "retained_correction_value_energy_share": [
+    0.9968561498847242,
+    0.003128263251757554,
+    1.5502974193821968e-05,
+    8.388932461205464e-08
+  ],
+  "retained_correction_gradient_energy_share": [
+    0.9961054927867212,
+    0.0038737280217234753,
+    2.066693656922481e-05,
+    1.1225498604017012e-07
+  ],
+  "fixed_POD_coefficient_value_error_energy_share": [
+    0.9712048989226049,
+    0.028214305294554192,
+    0.0005639200174551922,
+    1.6875765385858574e-05
+  ],
+  "fixed_POD_coefficient_gradient_error_energy_share": [
+    0.9848073153428651,
+    0.014914253442476098,
+    0.0002719645887043549,
+    6.466625954367956e-06
+  ],
+  "fixed_POD_coefficient_retained_correction_relative_value_error": 0.004619713075033573,
+  "fixed_POD_coefficient_retained_correction_relative_gradient_error": 0.03116276215205801,
+  "relative_to_mode1_weight_amplification_against_sigma_squared": [
+    1.0,
+    75.42180115877349,
+    4037.9701231989216,
+    202392.46783548073
+  ],
+  "limitations": [
+    "Original POD coefficient row orthogonality cancels cross-mode terms only over the full training ensemble.",
+    "These fixed-coefficient retained-four-mode correction calculations exclude the lift and truncated modes.",
+    "They are not actual solved fields, best-fit projection errors, individual Reynolds cases, or development/validation errors.",
+    "Loss allocation may create optimization competition in a shared network, but this arithmetic does not prove causal harm.",
+    "No current candidate, objective, data, or model was changed."
+  ]
+}
+
+
+FILE FIXED-COORDINATE-CANDIDATE.json
+{
+  "schema": "ns-obstacle-fixed-coordinate-training-candidate-v1",
+  "execution_released": false,
+  "actual_PDE06_result_pending": true,
+  "model_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+  "frozen_parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "diagnostic_path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/residual-parameter-block-diagnostic/terminal/RESULT.json",
+  "diagnostic_sha256": "ec2384906f8bbc25fddad8059abb0c53b82e08b37262f8788296786bd87749d9",
+  "diagnostic_source_commit": "1bd89e2fa",
+  "diagnostic_mirror_commit": "c8984fe54",
+  "retained_gradient_statistics": [
+    {
+      "iteration": 0,
+      "hidden_gradient_rms": 0.0,
+      "output_gradient_rms": 0.00017101722785189407,
+      "output_to_hidden_rms_ratio": null
+    },
+    {
+      "iteration": 1000,
+      "hidden_gradient_rms": 4.611868362226035e-08,
+      "output_gradient_rms": 4.580091679000947e-06,
+      "output_to_hidden_rms_ratio": 99.31098026376125
+    },
+    {
+      "iteration": 2000,
+      "hidden_gradient_rms": 9.487712409291162e-08,
+      "output_gradient_rms": 0.00015399190751474865,
+      "output_to_hidden_rms_ratio": 1623.0667717536091
+    },
+    {
+      "iteration": 3000,
+      "hidden_gradient_rms": 6.783917671169207e-08,
+      "output_gradient_rms": 2.0572108695623393e-05,
+      "output_to_hidden_rms_ratio": 303.2482069033982
+    },
+    {
+      "iteration": 4000,
+      "hidden_gradient_rms": 8.167689552385283e-08,
+      "output_gradient_rms": 6.746647633661756e-05,
+      "output_to_hidden_rms_ratio": 826.0166587369218
+    },
+    {
+      "iteration": 5000,
+      "hidden_gradient_rms": 7.014792590249397e-08,
+      "output_gradient_rms": 7.856577441982716e-06,
+      "output_to_hidden_rms_ratio": 112.00013886231511
+    },
+    {
+      "iteration": 5134,
+      "hidden_gradient_rms": 7.008690063951664e-08,
+      "output_gradient_rms": 6.8915880458228645e-06,
+      "output_to_hidden_rms_ratio": 98.32918823545786
+    }
+  ],
+  "hidden_coordinate_scale": 100.0,
+  "output_coordinate_scale": 1.0,
+  "coordinate_definition": "theta=initial_child_theta+D*z; fixed diagonal throughout a new warm-child fit",
+  "rationale": "Rounded final TRAIN gradient RMS balancing hypothesis. No Hessian condition estimate or optimal-scale claim. No DEV or VAL targets used to choose scales.",
+  "physical_direction_caution": "Mapped initial/fallback direction is -D^2*g; hidden multiplier10000 before gamma/Armijo. The coordinate gradient is D*g, not the physical stopping gradient.",
+  "requirements": [
+    "Wait actual PDE06 and exact new source/resource release before execution.",
+    "Same represented composite family, frozen traction parent and unchanged objective; initialize from exact reviewed child model.",
+    "Reset curvature; retain physical Armijo, curvature safeguard and physical-gradient stopping.",
+    "Initial exact same-model objective and cached/uncached full gradient equivalence, final serialized uncached replay.",
+    "No claim of equal-cost causal advantage versus additional unscaled training."
+  ],
+  "GPU_scan_status": "separate prospective implementation, not qualified or included in this candidate"
+}
+
+
+CURRENT STRUCTURAL DESIGN
+# Possible incompressibility improvements
+
+This note separates completed derivative-supervision experiments from prospective structural designs. Actual trace and energy-model PDE solves still fail divergence checks; their saved-gradient decomposition identifies the neural contribution as dominant, with signed cross terms retained. Cylinder-traction refinement and its actual PDE diagnostic are now audited: field and force errors improve, while divergence remains failed (see `DIAGNOSTIC05-RESULT-REVIEW.json`). The frozen-parent independent correction-head candidate is now running under `RESIDUAL-REFINEMENT-RELEASE.json`; it has no result yet. The streamfunction design remains prospective.
+
+## First controlled candidate: divergence regularization
+
+Keep the existing vector-valued neural bank, rank, features, teacher, mode weights, and velocity/gradient fitting terms. Add one prospectively fixed term
+
+$$
+\lambda\sum_r \omega_r
+\frac{\|\operatorname{tr}(G_r-G_{\mathrm{teacher},r})\|_w^2}
+{\|G_{\mathrm{teacher},r}\|_w^2},
+$$
+
+where $G_r$ is the predicted mode gradient with respect to dimensionless coordinates. This version weights one component of the existing supervised gradient error and preserves the FE teacher target. Record predicted absolute divergence and teacher divergence separately. An absolute-divergence penalty was initially considered, but would impose a different target because the teacher modes need not be pointwise solenoidal. The released candidate fixes $\lambda=1$; this weight is not established as optimal. Select checkpoints only by the frozen training objective, preserve the previous objective separately, and evaluate actual flow/force/conservation errors afterward. This derivative-fitting term is not a pointwise PDE-residual solver or a new collocation rule. The online weak least-squares formulation remains unchanged.
+
+## Structural candidate: streamfunction bank
+
+Let $\xi=x/D$ and $\psi=\Psi/(UD)$. Define a neural velocity mode as
+
+$$
+\widehat u_r=(\partial_{\xi_y}\psi_r,-\partial_{\xi_x}\psi_r).
+$$
+
+For a network evaluated at physical coordinates, the returned dimensionless velocity is $D(\psi_y,-\psi_x)$ and its physical-coordinate gradient is
+
+$$
+D\begin{pmatrix}\psi_{xy}&\psi_{yy}\\-\psi_{xx}&-\psi_{xy}\end{pmatrix}.
+$$
+
+The existing ROM builder multiplies physical gradients by $D$, producing a dimensionless gradient with the required $D^2$ Hessian factor. Training this gradient requires spatial Hessians and their parameter derivatives; cost and memory have not been measured.
+
+Let $A$ be the product of bounded distance factors for the inlet and upper/lower walls; let $C$ be the bounded obstacle-distance factor. Use
+
+$$
+B=AC,\qquad h=\frac{A^2}{A^2+C^2},\qquad
+\psi_r=B^2f_r+c_rh.
+$$
+
+The cylinder is separated from the outer prescribed boundaries, so $A$ and $C$ do not vanish simultaneously on the closed fluid domain. On the outer prescribed boundary, $\psi_r=0$ and its gradient vanishes; on the cylinder, $\psi_r=c_r$ and its gradient vanishes. Thus the velocity satisfies homogeneous no-slip while retaining the independent obstacle streamfunction constant. Omitting $c_rh$ would restrict this topological freedom. The outlet remains unconstrained. Actual retained curved-FE boundary points still require trace verification.
+
+## Capacity candidate: additive spatial correction
+
+An alternative that preserves the current four online velocity coefficients is
+
+$$
+\widehat\phi_r^{\mathrm{new}}(x)
+=\widehat\phi_r^{\mathrm{parent}}(x)+B(x)f_{\theta,r}(x).
+$$
+
+Freeze the parent and initialize the new network's final weights and biases to zero, with nonzero random hidden weights. This preserves the parent values and gradients initially. Hidden-layer gradients are zero on the first update, but output-layer updates can unlock subsequent hidden learning. Zeroing every layer would obstruct this mechanism.
+
+The same boundary envelope preserves homogeneous velocity traces. Product-rule spatial derivatives are required. Higher Fourier frequencies or cylinder-local features could help unresolved spatial variation, but scalar loss histories do not establish that they are necessary. Frequencies and feature widths need explicit bounded choices: gradient fitting amplifies high frequencies and narrow features, and the existing integration rule must still resolve them. This is a separate capacity hypothesis, not yet implemented or released.
+
+The sum requires a new explicit serialized evaluator, with independently hashed frozen-parent and correction parameters; it must not be loaded silently as an ordinary single `SpatialBank`. Check initial parent equality and value/physical-gradient consistency, including boundary points. Assemble the same four combined columns in the actual weak ROM and retain the same force/conservation diagnostics. Extra network capacity does not remove teacher truncation, lift or supremizer limitations, and it increases evaluation cost. Source, memory and archive bounds must include both networks before an execution decision.
+
+## Important full-ROM limitation
+
+The deployed velocity also includes the FE lift and FE supremizers:
+
+$$
+\widehat u=\widehat u_{\mathrm{lift}}+
+\sum_r a_r\widehat\phi_r+\sum_j b_j\widehat s_j.
+$$
+
+An analytic curl makes the neural modes divergence-free, but leaves
+
+$$
+\nabla_\xi\cdot\widehat u=
+\nabla_\xi\cdot\widehat u_{\mathrm{lift}}+
+\sum_jb_j\nabla_\xi\cdot\widehat s_j.
+$$
+
+The current inf-sup gate uses pressure coupling to trial divergence. Removing supremizers while retaining the present mixed formulation would remove that coupling for an exactly solenoidal neural bank. Do not silently remove them or claim the complete ROM velocity is exactly divergence-free. First quantify lift/neural/supremizer contributions, including cross terms because squared norms are not additive.
+
+The FE POD teachers need not be pointwise divergence-free. For any exactly solenoidal prediction in two dimensions,
+
+$$
+\|G_{\mathrm{pred}}-G_{\mathrm{teacher}}\|_w^2
+\geq \tfrac12\|\operatorname{tr}(G_{\mathrm{teacher}})\|_w^2.
+$$
+
+This is a limitation of matching those teacher gradients, not evidence of an implementation bug. An exactly divergence-free full velocity would additionally require a compatible lift and a separately reviewed pressure/stability formulation.
+
+## Completed candidate: local cylinder traction supervision
+
+The accepted saved-force decomposition locates the trace-trained bank's lift discrepancy primarily in viscous traction. This motivates an additional supervised derivative target from the existing TRAIN FE-mode boundary arrays, without modifying the weak online PDE objective or using development truth in training. At the time of this design, the trace-trained parent retained the best measured velocity accuracy; energy reweighting improved force and divergence but worsened velocity and pressure. The later traction result supersedes that ranking; none yet passes all physical checks.
+
+For dimensionless mode gradient $G_r$, define $\tau_r=(G_r+G_r^T)n_{\mathrm{body}}$, with body normal opposite the stored fluid normal. A candidate normalized loss is
+
+$$
+L_\tau=\frac{\sum_r\sigma_r^2\int_{\Gamma_c}\|\tau_r-\tau_{T,r}\|^2\,d\hat s}{\sum_r\sigma_r^2\int_{\Gamma_c}\|\tau_{T,r}\|^2\,d\hat s}.
+$$
+
+Require a positive total denominator; individual zero-energy modes need no artificial floor. The boundary measure is scaled by cylinder diameter. The coefficient for physical viscous force is applied later by the existing force evaluator. Local traction supervision controls a stronger quantity than two integrated force moments, which can hide cancellation; it does not guarantee full pressure-plus-viscous force accuracy. Parent, weight, replay and resource settings require an exact reviewed execution packet. No fit is released by this design note.
+
+## Separate capacity option: independent residual heads
+
+Independent correction heads can remove a shared trainable hidden representation, but shared optimizer steps and tiny loss weights still create competition. Energy-model tail-mode regression alone does not establish a capacity bottleneck. Preserve the same online coefficients and boundary envelope; retain original teacher normalization. If frozen-parent values and gradients are cached at TRAIN volume and cylinder points, record exact order, units and hashes, then require a final uncached serialized full-rule objective and gradient replay. Parameter counts alone do not establish runtime or memory cost. This is a separate change from traction supervision.
+
+## Evaluation and terminology
+
+All candidates retain actual reduced solves, separate best-fit diagnostics, full-rule force/conservation checks, and closed final validation until the recipe is frozen. A **mode** is one learned spatial velocity pattern; the online solver chooses its coefficient. A **supremizer** is an additional FE velocity pattern used to stabilize pressure coupling. The **lift** imposes the prescribed nonhomogeneous boundary data. A **streamfunction** is a scalar whose rotated gradient gives a two-dimensional divergence-free velocity. **Inf-sup** denotes the pressure–velocity stability check. **Full rule** means the original complete numerical integration rule rather than fitted reduced quadrature. These candidate designs were independently assessed from the local implementation and mathematical identities; no new training or scientific data evaluation was used for this note.

@@ -5,17 +5,18 @@ for k in ("source", "mirror", "retention-sha256"):a.add_argument("--"+k, require
 a.add_argument('--attempt', choices=['neural-pod-guided-trace01', 'neural-pod-guided-energy01',
                                     'neural-pod-guided-diagnostic03', 'neural-pod-guided-diagnostic04',
                                     'neural-pod-guided-traction01', 'neural-pod-guided-diagnostic05',
-                                    'neural-pod-guided-residual01', 'neural-pod-guided-diagnostic06'], required=True)
+                                    'neural-pod-guided-residual01', 'neural-pod-guided-diagnostic06',
+                                    'neural-pod-guided-coordinate01', 'neural-pod-guided-diagnostic07'], required=True)
 args=a.parse_args()
 B=pathlib.Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom')
 A=B/'experiments/ns-obstacle-rom/artifacts'/args.attempt
 def digest(p):
  with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
-def git(*args):return subprocess.check_output(['git','-C',str(B),*args],text=True).strip()
+def git(*args):return subprocess.check_output(['git','-c','gc.auto=0','-C',str(B),*args],text=True).strip()
 r=json.loads((A/'RETENTION.json').read_text());assert digest(A/'RETENTION.json')==args.retention_sha256
 source=git('rev-parse',args.source);mirror=git('rev-parse',args.mirror)
 advertised=git('ls-remote','origin','refs/heads/codeonly/exp/2026-10-27-ns-obstacle-rom').split()[0]
-subprocess.run(['git','-C',str(B),'merge-base','--is-ancestor',mirror,advertised],check=True)
+subprocess.run(['git','-c','gc.auto=0','-C',str(B),'merge-base','--is-ancestor',mirror,advertised],check=True)
 for name in ['RETENTION.json','ORIGINAL-FILE-INVENTORY.json','COLLECTION-SHA256SUMS']:
  p=A/name;rel=str(p.relative_to(B));blob=git('hash-object',str(p));assert git('rev-parse',source+':'+rel)==blob==git('rev-parse',mirror+':'+rel)
 whole=hashlib.sha256();paths=[]

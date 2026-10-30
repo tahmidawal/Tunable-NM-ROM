@@ -1,0 +1,1044 @@
+{
+  "schema": "ns-obstacle-reference-exact-headroom-proposal-v1",
+  "proof_passed": true,
+  "deletion_authorized": false,
+  "deletions_performed": false,
+  "source_head": "0e2b7a05da349f48269014678d8a8ab7f0f07ff3",
+  "advertised_mirror_ref": "refs/heads/codeonly/exp/2026-10-27-ns-obstacle-2d",
+  "advertised_mirror_tip": "6eb5a9b3c8fcca4acc8c4b0b5e86b7b26ddad781",
+  "groups": [
+    {
+      "group": "g2-cache-primary01",
+      "source_commit": "b6c8babcf1514a42caf16ce0a95bacfd2933e518",
+      "mirror_commit": "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37",
+      "archive_sha256": "1cc1cdd437e4a4c1fb0f9cf348e7817bd30e11abf6bd0cbad7b81ff109df3cab",
+      "archive_bytes": 3357019564,
+      "retention_sha256": "4ad7525e00f79224aa28f988b67e9aeb43145691032f8d4c08e418b8b6b56fad",
+      "historical_retention_sha256": {
+        "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "91f0e9b0c43ddc0e43cab9e6429ddc610a51ce9b2fea6f50bd02763493d7e030",
+        "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "91f0e9b0c43ddc0e43cab9e6429ddc610a51ce9b2fea6f50bd02763493d7e030"
+      },
+      "original_status_preserved": "complete_all_regular_files_verified",
+      "original_ledger_sha256": "363a5acbc8b138f660f151df7e4320f4f76efeaba2d7c1e3be55b99353fbc3f5",
+      "ledger_retention": "individual_git_file_and_archive_member",
+      "original_regular_files_and_ledger_verified": 1306,
+      "original_archive_links": [
+        {
+          "member": "g2-cache-primary01/results/cache_primary_control/producer/geometry-cache/boundary/arrays.npz",
+          "target": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/arrays.npz",
+          "type": "1"
+        },
+        {
+          "member": "g2-cache-primary01/results/cache_primary_control/producer/geometry-cache/boundary/cache.json",
+          "target": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/boundary/cache.json",
+          "type": "1"
+        },
+        {
+          "member": "g2-cache-primary01/results/cache_primary_control/producer/geometry-cache/volume/arrays.npz",
+          "target": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/arrays.npz",
+          "type": "1"
+        },
+        {
+          "member": "g2-cache-primary01/results/cache_primary_control/producer/geometry-cache/volume/cache.json",
+          "target": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3/12/volume/cache.json",
+          "type": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "path": "collection.tar.gz.part-000",
+          "bytes": 50331648,
+          "sha256": "ca25993a3f454df4eb241cb006f695aa643ec303a9d17670b2a38c209cc670df",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-000",
+          "git_blob": "94982ee33b62fc5757aa0552d9435644af3fe282",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "94982ee33b62fc5757aa0552d9435644af3fe282",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "94982ee33b62fc5757aa0552d9435644af3fe282"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-001",
+          "bytes": 50331648,
+          "sha256": "4122c5f3775ac8d46eb01fbbc93d72a46b16313efb6ae8928488846b7e042cd7",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-001",
+          "git_blob": "44ae3d482d305b47a37bc98266720e0cc8d313dd",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "44ae3d482d305b47a37bc98266720e0cc8d313dd",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "44ae3d482d305b47a37bc98266720e0cc8d313dd"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-002",
+          "bytes": 50331648,
+          "sha256": "e837e321dd9fdabc43cb6b7ad04cfe22c64c24d79088af2235c635870b2054d8",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-002",
+          "git_blob": "ebdb1732d0b5cffb539eec9f5e89f9d937577b71",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "ebdb1732d0b5cffb539eec9f5e89f9d937577b71",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "ebdb1732d0b5cffb539eec9f5e89f9d937577b71"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-003",
+          "bytes": 50331648,
+          "sha256": "1f38a21ed7486089bac604857bb1236f0b009eb8f146acda9a560bff8b3d07b0",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-003",
+          "git_blob": "6b5f98f6d6affd3327c1700cbc71be8723581871",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "6b5f98f6d6affd3327c1700cbc71be8723581871",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "6b5f98f6d6affd3327c1700cbc71be8723581871"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-004",
+          "bytes": 50331648,
+          "sha256": "f07ce03eaec5389b5fd6cd1f095cdb7103450f9231405707b39b9391ab9516e4",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-004",
+          "git_blob": "69712640c9d45474f5a56c1892edd5f93091d613",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "69712640c9d45474f5a56c1892edd5f93091d613",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "69712640c9d45474f5a56c1892edd5f93091d613"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-005",
+          "bytes": 50331648,
+          "sha256": "f8b3846578c3b632a063510c997041a4ba4f926411a496b930e8b741d0a016ea",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-005",
+          "git_blob": "c598cbae3fadb5d136dda757a1d95559270d641a",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "c598cbae3fadb5d136dda757a1d95559270d641a",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "c598cbae3fadb5d136dda757a1d95559270d641a"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-006",
+          "bytes": 50331648,
+          "sha256": "d80602ac6a02379d54c589921966b80128238a5600a255f1564e581762e75c64",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-006",
+          "git_blob": "b4f877a358478fadf8fdee99051a03d9022c7ae6",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "b4f877a358478fadf8fdee99051a03d9022c7ae6",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "b4f877a358478fadf8fdee99051a03d9022c7ae6"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-007",
+          "bytes": 50331648,
+          "sha256": "e2e81429910fafa52571d82a300066b45bc74dd34cc4ef310e751a8d25d66af8",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-007",
+          "git_blob": "6923c78a0d121fa4f8e02f6f48841f4c28223e51",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "6923c78a0d121fa4f8e02f6f48841f4c28223e51",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "6923c78a0d121fa4f8e02f6f48841f4c28223e51"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-008",
+          "bytes": 50331648,
+          "sha256": "52f4f09a84a6e14700e55a47d6e9e31b1d200929fcb2e6a1bc7f5c31da3a5b56",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-008",
+          "git_blob": "9a0a559f81d9027f9bd979b687b5cf8d0b7d0c5b",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "9a0a559f81d9027f9bd979b687b5cf8d0b7d0c5b",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "9a0a559f81d9027f9bd979b687b5cf8d0b7d0c5b"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-009",
+          "bytes": 50331648,
+          "sha256": "1f50d3c5add86ff479f0c72df3316f98dae04837a884968571f2af409cbf9706",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-009",
+          "git_blob": "e4f8f94160c520f02ae212ef80020c8741588690",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "e4f8f94160c520f02ae212ef80020c8741588690",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "e4f8f94160c520f02ae212ef80020c8741588690"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-010",
+          "bytes": 50331648,
+          "sha256": "8d153a5f1d30bffc5c8ae4b16ff854d4bbfaf8c8b168f5bd46225138ed7b3df9",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-010",
+          "git_blob": "fe8f153d92064a5dfbe0e3abf5185329003e0571",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "fe8f153d92064a5dfbe0e3abf5185329003e0571",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "fe8f153d92064a5dfbe0e3abf5185329003e0571"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-011",
+          "bytes": 50331648,
+          "sha256": "09eaa4c24cb369e608b19eee473faa56e0071ba129b48c96d91aca06947a5165",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-011",
+          "git_blob": "e4e16e0dbd75e1932c0a116cb68515f40b576659",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "e4e16e0dbd75e1932c0a116cb68515f40b576659",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "e4e16e0dbd75e1932c0a116cb68515f40b576659"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-012",
+          "bytes": 50331648,
+          "sha256": "22f81aefb75dc301c50bec53444d6e92a6fa5e8ba6ba388cc4b3cbf9d16b496f",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-012",
+          "git_blob": "2eb16e2d512ded87d99142babba8b475d7da8550",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "2eb16e2d512ded87d99142babba8b475d7da8550",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "2eb16e2d512ded87d99142babba8b475d7da8550"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-013",
+          "bytes": 50331648,
+          "sha256": "950482e6bbe68afea838e2d4ba1ebec082fc2f776e1fad07c1a8f2241750e7f0",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-013",
+          "git_blob": "a623ae1b153cbf07fbfd88404d100af96a1aaa09",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "a623ae1b153cbf07fbfd88404d100af96a1aaa09",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "a623ae1b153cbf07fbfd88404d100af96a1aaa09"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-014",
+          "bytes": 50331648,
+          "sha256": "a2b69b54cb01dfd05480eed279e5b3a73e1c781de7fe250b5babfe0cf47b9258",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-014",
+          "git_blob": "561f0c17a26c94b2d1a9e03219233ec6c0c4be79",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "561f0c17a26c94b2d1a9e03219233ec6c0c4be79",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "561f0c17a26c94b2d1a9e03219233ec6c0c4be79"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-015",
+          "bytes": 50331648,
+          "sha256": "f0e8e3e7bb1544b017819e458f697f5532037522a8aef09828538ea18106fe29",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-015",
+          "git_blob": "b31f346f84673310a7c97c886503166d02bee6f5",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "b31f346f84673310a7c97c886503166d02bee6f5",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "b31f346f84673310a7c97c886503166d02bee6f5"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-016",
+          "bytes": 50331648,
+          "sha256": "38f906e8746bc38900599362f0bfbf832a0e0a17f1479eaf42fd8ba61921012b",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-016",
+          "git_blob": "87669798296a3310ed7ed7305d190ff8c966c1e9",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "87669798296a3310ed7ed7305d190ff8c966c1e9",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "87669798296a3310ed7ed7305d190ff8c966c1e9"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-017",
+          "bytes": 50331648,
+          "sha256": "5bd9d0be4f2fbbe4e71703861bfc7cca18c9694fc7aab0b7f9f143858637d90a",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-017",
+          "git_blob": "67bb089840359932d00eaf96376259b26080938e",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "67bb089840359932d00eaf96376259b26080938e",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "67bb089840359932d00eaf96376259b26080938e"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-018",
+          "bytes": 50331648,
+          "sha256": "b54699799426f7f15200532ad610b07c1eb70e72ad4195f07cbf626aa59c1efb",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-018",
+          "git_blob": "18026ebfc3d0e268975e018201f02839e1bebde6",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "18026ebfc3d0e268975e018201f02839e1bebde6",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "18026ebfc3d0e268975e018201f02839e1bebde6"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-019",
+          "bytes": 50331648,
+          "sha256": "ffd6ad33d52ee24b0dbf4ae24857a951a2ef52b165b6ad3f716997884fcdf525",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-019",
+          "git_blob": "9f34d50a2ac9079183bfcc8da2928130159684ea",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "9f34d50a2ac9079183bfcc8da2928130159684ea",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "9f34d50a2ac9079183bfcc8da2928130159684ea"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-020",
+          "bytes": 50331648,
+          "sha256": "278f3029648ebae331616ad1f9656cd867af4f866ebf79fb3356b65439f7aa03",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-020",
+          "git_blob": "517d3e3c9e82fac2d90cb36daffeb1d75325b1d8",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "517d3e3c9e82fac2d90cb36daffeb1d75325b1d8",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "517d3e3c9e82fac2d90cb36daffeb1d75325b1d8"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-021",
+          "bytes": 50331648,
+          "sha256": "337130a48f2c1bd1c0c7efa5c9c904d9f5a89d43f1b956d8bdb5ff50cf5efb52",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-021",
+          "git_blob": "dc808af3838cac22f8b2bf053549940f18eaecfc",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "dc808af3838cac22f8b2bf053549940f18eaecfc",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "dc808af3838cac22f8b2bf053549940f18eaecfc"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-022",
+          "bytes": 50331648,
+          "sha256": "5c83bdec0b1801d5529855004a25fb1cef1133bf61c16c6fa9acafe971b9c25a",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-022",
+          "git_blob": "871fe326f726768649a8166787d7f84c0a9f95e4",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "871fe326f726768649a8166787d7f84c0a9f95e4",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "871fe326f726768649a8166787d7f84c0a9f95e4"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-023",
+          "bytes": 50331648,
+          "sha256": "ab10a3537bc1844748fdd77010fdc1bc19f26c580525da57f9dd9b84a413dc0f",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-023",
+          "git_blob": "c093ddb13b8b53d089bc006ba8eb0ba7c071386d",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "c093ddb13b8b53d089bc006ba8eb0ba7c071386d",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "c093ddb13b8b53d089bc006ba8eb0ba7c071386d"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-024",
+          "bytes": 50331648,
+          "sha256": "d6dc59ea45580a00fc512be256f0ea4b997a0fcaaae947b4562c2ae0fc25fa1b",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-024",
+          "git_blob": "f8ccece27445d5b28315f11c4c5ffc1b04e75456",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "f8ccece27445d5b28315f11c4c5ffc1b04e75456",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "f8ccece27445d5b28315f11c4c5ffc1b04e75456"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-025",
+          "bytes": 50331648,
+          "sha256": "abcdd59f99faf9dfa69a377972c77752d21ac1f6bfea6dbd1e8b6811f5a65a7e",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-025",
+          "git_blob": "58204c660fad60c29ef0f88793595799195ed9c0",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "58204c660fad60c29ef0f88793595799195ed9c0",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "58204c660fad60c29ef0f88793595799195ed9c0"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-026",
+          "bytes": 50331648,
+          "sha256": "cb7adef8db532bc7deea057f999b14a2440a3873c0394623b4502c70ef4a31bc",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-026",
+          "git_blob": "5c27bdaf5e74b15e5a5035562e3127668c00f178",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "5c27bdaf5e74b15e5a5035562e3127668c00f178",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "5c27bdaf5e74b15e5a5035562e3127668c00f178"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-027",
+          "bytes": 50331648,
+          "sha256": "882f430b1cd134f280bfe77c514eea42fda43b71788a89751aa8f534bebb0451",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-027",
+          "git_blob": "c5c709a020e936628f38d873bd280b91d41c3b0a",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "c5c709a020e936628f38d873bd280b91d41c3b0a",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "c5c709a020e936628f38d873bd280b91d41c3b0a"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-028",
+          "bytes": 50331648,
+          "sha256": "ef8e76995e45a05125a2a22a9ead26bfd0dab5a77739fe255ce167667362fed4",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-028",
+          "git_blob": "e4808ef8845411ce0508af070f6b1f0235d99f72",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "e4808ef8845411ce0508af070f6b1f0235d99f72",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "e4808ef8845411ce0508af070f6b1f0235d99f72"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-029",
+          "bytes": 50331648,
+          "sha256": "fa765a10878edb875c7e357d27d9602d6ee9d2aab5814ee999a88ca015dfc3c3",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-029",
+          "git_blob": "9d34f6d57d3c5aab98a952e118c0a8fe68f50d2c",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "9d34f6d57d3c5aab98a952e118c0a8fe68f50d2c",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "9d34f6d57d3c5aab98a952e118c0a8fe68f50d2c"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-030",
+          "bytes": 50331648,
+          "sha256": "0a85bb2e88d9f4f9ad6fa4ce45712ef1bf2fdd9fbc4e9e6844817bdb06d343be",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-030",
+          "git_blob": "e748872a9b354b14fc2236516804aa3fd129f468",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "e748872a9b354b14fc2236516804aa3fd129f468",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "e748872a9b354b14fc2236516804aa3fd129f468"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-031",
+          "bytes": 50331648,
+          "sha256": "be33bf2cb88d66e7197860bb865a0795b34c1918d49436c634c7be634e02c459",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-031",
+          "git_blob": "931ea9cbbb787b4e5537c815c926f4ff048875fe",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "931ea9cbbb787b4e5537c815c926f4ff048875fe",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "931ea9cbbb787b4e5537c815c926f4ff048875fe"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-032",
+          "bytes": 50331648,
+          "sha256": "17d4213b165781440187cc3e69d11f4d3a38c5a70f0c0123fb52131edd95ae73",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-032",
+          "git_blob": "2f5627ab505747e2f1ab86bcacd6fedc723fea9a",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "2f5627ab505747e2f1ab86bcacd6fedc723fea9a",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "2f5627ab505747e2f1ab86bcacd6fedc723fea9a"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-033",
+          "bytes": 50331648,
+          "sha256": "902d1a9f6d60678597a4fa801b3b2a190f0d687fd89ce3b08bea6374ddd9d2e9",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-033",
+          "git_blob": "d0c7a6b64705a21031ec2c8784355f27cf7c53ca",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "d0c7a6b64705a21031ec2c8784355f27cf7c53ca",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "d0c7a6b64705a21031ec2c8784355f27cf7c53ca"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-034",
+          "bytes": 50331648,
+          "sha256": "fd2d55f69df934678a1739392bace8ee79570b49d6f1c116f49f189adbb21645",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-034",
+          "git_blob": "dff9e9fcc5fbf5bfcc06aabcd0614cfd8ecd6db4",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "dff9e9fcc5fbf5bfcc06aabcd0614cfd8ecd6db4",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "dff9e9fcc5fbf5bfcc06aabcd0614cfd8ecd6db4"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-035",
+          "bytes": 50331648,
+          "sha256": "d837c0b19d017ab0e919eb4ba3498d8619f12f99b34821e2c92c9927951feebb",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-035",
+          "git_blob": "a03c267e21041c454b1cbb8c861bbac05aa76819",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "a03c267e21041c454b1cbb8c861bbac05aa76819",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "a03c267e21041c454b1cbb8c861bbac05aa76819"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-036",
+          "bytes": 50331648,
+          "sha256": "330f6d2a458b8621b1ae7aee522bf6676718f2aea8bc0254c2e06025b780fe11",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-036",
+          "git_blob": "5a17af041b3c153926e7618fe6a8331274a6800f",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "5a17af041b3c153926e7618fe6a8331274a6800f",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "5a17af041b3c153926e7618fe6a8331274a6800f"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-037",
+          "bytes": 50331648,
+          "sha256": "736997ab471a05993e1bac6d15d94220458117ed63f2ddda56fde36abc341ec4",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-037",
+          "git_blob": "1b080e973526c9a4d7be005a4cef667b977feb18",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "1b080e973526c9a4d7be005a4cef667b977feb18",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "1b080e973526c9a4d7be005a4cef667b977feb18"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-038",
+          "bytes": 50331648,
+          "sha256": "b56d4e041d00f81f667232399e42839561ffe331471ff9866a0fbfe2fb778a54",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-038",
+          "git_blob": "4ae810f6ef8d719a73c8ee7f4f17da659afec5a4",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "4ae810f6ef8d719a73c8ee7f4f17da659afec5a4",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "4ae810f6ef8d719a73c8ee7f4f17da659afec5a4"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-039",
+          "bytes": 50331648,
+          "sha256": "a16e0cfed71939f570d4018c4473d1375007d6b3469192ec9563da589891cfad",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-039",
+          "git_blob": "84fb0c0109e5a274bf4133272b32c619538cbddc",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "84fb0c0109e5a274bf4133272b32c619538cbddc",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "84fb0c0109e5a274bf4133272b32c619538cbddc"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-040",
+          "bytes": 50331648,
+          "sha256": "099f0b0ff5e70ceef63aa09b908e96eaa436a4e46734d15797440236edf11387",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-040",
+          "git_blob": "f6e2ce216669ad52e0951d76c7ed1f0cda057212",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "f6e2ce216669ad52e0951d76c7ed1f0cda057212",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "f6e2ce216669ad52e0951d76c7ed1f0cda057212"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-041",
+          "bytes": 50331648,
+          "sha256": "034a99214d366565d5cc9eb17e33ecee285b45c98bd318496c0e7637ddb2ef86",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-041",
+          "git_blob": "589bba91b627e8cb5f6672197cc06e790ec648db",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "589bba91b627e8cb5f6672197cc06e790ec648db",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "589bba91b627e8cb5f6672197cc06e790ec648db"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-042",
+          "bytes": 50331648,
+          "sha256": "b631bef305d04432499a30457bb8ee55d77926a62fceb2db58498d6d18bab21d",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-042",
+          "git_blob": "5bdbc593f3009ed7ab3182a4947ac1f99dac4c6f",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "5bdbc593f3009ed7ab3182a4947ac1f99dac4c6f",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "5bdbc593f3009ed7ab3182a4947ac1f99dac4c6f"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-043",
+          "bytes": 50331648,
+          "sha256": "c073c6ab47154c66863bd3e2676aa65c80e612cb296384a2da0673b9d4c1a16a",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-043",
+          "git_blob": "cfe9c7351204573c2d680a19fd910e1cfea8bd0f",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "cfe9c7351204573c2d680a19fd910e1cfea8bd0f",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "cfe9c7351204573c2d680a19fd910e1cfea8bd0f"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-044",
+          "bytes": 50331648,
+          "sha256": "a252f81ffb1a128dd4217ebb8eb1a963522abd01777566a4c6c28aa86e44fc1c",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-044",
+          "git_blob": "5cf07ff896976c091ae6a11d02c5147e92e22c7e",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "5cf07ff896976c091ae6a11d02c5147e92e22c7e",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "5cf07ff896976c091ae6a11d02c5147e92e22c7e"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-045",
+          "bytes": 50331648,
+          "sha256": "96775a1b081cc1debb003fd3f806ba00939feb8a4151614d1a619ad8a9b460d4",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-045",
+          "git_blob": "be6c2251e7302f71cf14bf1881f4cf1daec7a451",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "be6c2251e7302f71cf14bf1881f4cf1daec7a451",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "be6c2251e7302f71cf14bf1881f4cf1daec7a451"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-046",
+          "bytes": 50331648,
+          "sha256": "172fed9d6aea759fdc86705a04cb8d970baaaa0014d5330ec9133866781f04ca",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-046",
+          "git_blob": "7c52811f0ba8d1510a809548b7129dbcb2ced250",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "7c52811f0ba8d1510a809548b7129dbcb2ced250",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "7c52811f0ba8d1510a809548b7129dbcb2ced250"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-047",
+          "bytes": 50331648,
+          "sha256": "10468456437e75fda34b743f2054186b10d66530a2473292513727f8f9a42a77",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-047",
+          "git_blob": "620534132452746e375e929d7504e5e1dedbfe4a",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "620534132452746e375e929d7504e5e1dedbfe4a",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "620534132452746e375e929d7504e5e1dedbfe4a"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-048",
+          "bytes": 50331648,
+          "sha256": "4f86df66ab8a62d44018d5e692dbc5e01d25d55bb3c1caeb932c8b76ade5b039",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-048",
+          "git_blob": "48d3e3c2cbdc767b869af56f282beac723696173",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "48d3e3c2cbdc767b869af56f282beac723696173",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "48d3e3c2cbdc767b869af56f282beac723696173"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-049",
+          "bytes": 50331648,
+          "sha256": "fb9a9ec98d3cf4d6f3f9194ccc1093bdc2e962317cb5e0cb08c0b46029087cff",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-049",
+          "git_blob": "78edb34404c19568e5ee4a6c8a7da5b55ffc21d2",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "78edb34404c19568e5ee4a6c8a7da5b55ffc21d2",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "78edb34404c19568e5ee4a6c8a7da5b55ffc21d2"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-050",
+          "bytes": 50331648,
+          "sha256": "ed0c4d42ac74bb0bf9950023c5ba6360716f7d16bdf351215c1ea82971dc9780",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-050",
+          "git_blob": "c9bb6f46c107bfe6aaec07a5c62294faaf2f4d36",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "c9bb6f46c107bfe6aaec07a5c62294faaf2f4d36",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "c9bb6f46c107bfe6aaec07a5c62294faaf2f4d36"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-051",
+          "bytes": 50331648,
+          "sha256": "2e5b3d298b1165163e789bc06dbbe2123701b2944349bc335202d1eadab7e439",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-051",
+          "git_blob": "e27488554b5213d972eb9592eb5b67fe55d89d9b",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "e27488554b5213d972eb9592eb5b67fe55d89d9b",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "e27488554b5213d972eb9592eb5b67fe55d89d9b"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-052",
+          "bytes": 50331648,
+          "sha256": "427c559b4b8aaef70fe37fe15e941fd2bff216e173aaa272c47933deb423dd85",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-052",
+          "git_blob": "c5838ed571f722366e3b8d7b04e8adf9b4ad3cdd",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "c5838ed571f722366e3b8d7b04e8adf9b4ad3cdd",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "c5838ed571f722366e3b8d7b04e8adf9b4ad3cdd"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-053",
+          "bytes": 50331648,
+          "sha256": "42a075668458a81976a99a9941ab5a45c410c968a296ec880d7766a2ee57f275",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-053",
+          "git_blob": "e5a1c5f0bcbf1e715d26fcc9515b7d090f10cfe8",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "e5a1c5f0bcbf1e715d26fcc9515b7d090f10cfe8",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "e5a1c5f0bcbf1e715d26fcc9515b7d090f10cfe8"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-054",
+          "bytes": 50331648,
+          "sha256": "2e4cffd2a2a2aeac9230bc9d6e0fc25f5dcb8ea8cc76d11296df0bc6b1e145b7",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-054",
+          "git_blob": "c39553f55194cc235a4ea777495c8818689ce72b",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "c39553f55194cc235a4ea777495c8818689ce72b",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "c39553f55194cc235a4ea777495c8818689ce72b"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-055",
+          "bytes": 50331648,
+          "sha256": "3c0f91f2a0324a35e3079a63406480b1bbfe51a93e9d96f2744d5408f9d5c3fa",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-055",
+          "git_blob": "6c934056d5a6977f554f8ac02c5616a085f1580d",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "6c934056d5a6977f554f8ac02c5616a085f1580d",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "6c934056d5a6977f554f8ac02c5616a085f1580d"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-056",
+          "bytes": 50331648,
+          "sha256": "e6e6510a5c52963e7a4424bf3b4017044e04429dd4b42adeb9a702b2e74f2646",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-056",
+          "git_blob": "b4ffbd609c27f9c317557c9dc75a3f422d58be05",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "b4ffbd609c27f9c317557c9dc75a3f422d58be05",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "b4ffbd609c27f9c317557c9dc75a3f422d58be05"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-057",
+          "bytes": 50331648,
+          "sha256": "3e60ea8b2c0b33cde5809f0d630614c8b1392fcd00978c77fef76f22cbd971a4",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-057",
+          "git_blob": "1d3432ddb6b5b12bcda877c98bc48482bf98c1a2",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "1d3432ddb6b5b12bcda877c98bc48482bf98c1a2",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "1d3432ddb6b5b12bcda877c98bc48482bf98c1a2"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-058",
+          "bytes": 50331648,
+          "sha256": "ebcd3c42440531409cb48c87aa653dcfb3e89e64dcd5af41fef5e3fcddca573f",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-058",
+          "git_blob": "292abc4465675705363b5f5b944285a2d16b0f29",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "292abc4465675705363b5f5b944285a2d16b0f29",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "292abc4465675705363b5f5b944285a2d16b0f29"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-059",
+          "bytes": 50331648,
+          "sha256": "6665dc863d48cc2d4f85b909f37fe54be11024a075f32a9e974ce0a011b7c937",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-059",
+          "git_blob": "14ceeb9e5587bc71f3380ba2a3b79da51bf71175",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "14ceeb9e5587bc71f3380ba2a3b79da51bf71175",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "14ceeb9e5587bc71f3380ba2a3b79da51bf71175"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-060",
+          "bytes": 50331648,
+          "sha256": "092449042bb50b94e569218758a0f6ab9ab27552ffd9fd4cb981cd7c021dece2",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-060",
+          "git_blob": "765c38b0a0edfbbb6d349778118e20c25b85fd5a",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "765c38b0a0edfbbb6d349778118e20c25b85fd5a",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "765c38b0a0edfbbb6d349778118e20c25b85fd5a"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-061",
+          "bytes": 50331648,
+          "sha256": "32406e8e2d0fcb3b997cb9a3c824b8630b8f5ad806e40236056c6f38bfdf19f8",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-061",
+          "git_blob": "130632e4f0b1d97cf056d7ac1868f7fe37cc333e",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "130632e4f0b1d97cf056d7ac1868f7fe37cc333e",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "130632e4f0b1d97cf056d7ac1868f7fe37cc333e"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-062",
+          "bytes": 50331648,
+          "sha256": "4030033da73b42ced6588e1936ec4443b93b9bd5ddd567d4212603e809dd953c",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-062",
+          "git_blob": "fe42b0d684c814bfd8a07acdfdd846b65a69c93e",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "fe42b0d684c814bfd8a07acdfdd846b65a69c93e",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "fe42b0d684c814bfd8a07acdfdd846b65a69c93e"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-063",
+          "bytes": 50331648,
+          "sha256": "209e77ac4a28bb1cb1fe2d279a746cc89accee2c182e2c6c3906c2f758378340",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-063",
+          "git_blob": "611829e0f6714b3bd1a2b9cd1ca1bdeb4ccd2849",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "611829e0f6714b3bd1a2b9cd1ca1bdeb4ccd2849",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "611829e0f6714b3bd1a2b9cd1ca1bdeb4ccd2849"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-064",
+          "bytes": 50331648,
+          "sha256": "3bb639739035e31e7d4e0aaae3c82248c28b4d5d36c1c1f30b34ab18ccf54985",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-064",
+          "git_blob": "42c8f3f157bc16329c681d9c3e27d4cf82e05672",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "42c8f3f157bc16329c681d9c3e27d4cf82e05672",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "42c8f3f157bc16329c681d9c3e27d4cf82e05672"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-065",
+          "bytes": 50331648,
+          "sha256": "0d4cda4ce3ecb38b8872fd46ae59614973b2af1848a9a00720b2671bf91b4b62",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-065",
+          "git_blob": "dc720ea0a86ce619541b73c2e64115578039c248",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "dc720ea0a86ce619541b73c2e64115578039c248",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "dc720ea0a86ce619541b73c2e64115578039c248"
+          }
+        },
+        {
+          "path": "collection.tar.gz.part-066",
+          "bytes": 35130796,
+          "sha256": "0f4bc79c311b674d93b123405902f2036008591404702ab8f59206ac3eabd4a7",
+          "repository_path": "experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/collection.tar.gz.part-066",
+          "git_blob": "a36656d6e47760e145f9b6f2ec6bcbbd1cb08e80",
+          "git_blobs": {
+            "b6c8babcf1514a42caf16ce0a95bacfd2933e518": "a36656d6e47760e145f9b6f2ec6bcbbd1cb08e80",
+            "ac49387dcab45f44fe8514aaf6f1eca9b12c9d37": "a36656d6e47760e145f9b6f2ec6bcbbd1cb08e80"
+          }
+        }
+      ],
+      "proposed_paths": [
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/12/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "90ddee4ce49704eb1a0944b584d49724a5e907cf897c9b793080802846880523",
+          "bytes": 64619,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/12/boundary/arrays.npz",
+          "allocated_bytes": 65536,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679924
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/12/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "0051c7d161a3fe7f49bab2a1e24d2a5d263f386a83622c585262d5b858c0c079",
+          "bytes": 16082421,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/12/volume/arrays.npz",
+          "allocated_bytes": 16084992,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679927
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/16/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "ff3d8c823fc7b540846c964a1cb2cd8d7636eff7e5de19228b365d40a74d0cc4",
+          "bytes": 82757,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/16/boundary/arrays.npz",
+          "allocated_bytes": 86016,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679931
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/16/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "a5e8f00af4154101b6087369cd7e583b00bca43ebcbebab605c32121a5f64846",
+          "bytes": 26309989,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/16/volume/arrays.npz",
+          "allocated_bytes": 26312704,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679934
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/common/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "813e9d0d17f5fe2de6e1f5e85e145c1fb48d9ee51e7f4665b8ca03f2937513ae",
+          "bytes": 28446818,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g3_h3/common/arrays.npz",
+          "allocated_bytes": 28450816,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679937
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/12/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "83205bbe9cd48ccdbb24da46a42bd05392791bcf4fd7b17589e793665bb09d3a",
+          "bytes": 64608,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/12/boundary/arrays.npz",
+          "allocated_bytes": 65536,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679943
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/12/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "fb41ddf9b4d7b50a2c64c0b46ea56eae8d2a6b505574ff089f277ae6b6aaaa30",
+          "bytes": 16082501,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/12/volume/arrays.npz",
+          "allocated_bytes": 16084992,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679946
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/16/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "2d025e27401f201d134f0078f5b5c8f72f6a01aa79d37747019c8fb9c36a21da",
+          "bytes": 82746,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/16/boundary/arrays.npz",
+          "allocated_bytes": 86016,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679950
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/16/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "8b4167b1b9d49e6fb01926bb6b7a963c245577b5a3f5a494fc7b9b991eb32826",
+          "bytes": 26310029,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/16/volume/arrays.npz",
+          "allocated_bytes": 26312704,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679953
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/common/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "8f6f7a7ed7f664145b1436e3e94c4edd6fdfa07ee8347c8d6e38e8830b422ce2",
+          "bytes": 28355607,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p3_g4_h3/common/arrays.npz",
+          "allocated_bytes": 28356608,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679956
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/12/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "182e65ac6e1b9e8528a02317b1f15eefdc28c25dfe18f9cbefa3f13e32fd05a8",
+          "bytes": 17995,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/12/boundary/arrays.npz",
+          "allocated_bytes": 20480,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679962
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/12/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "dff7c184c3797d0c38a3f77560c2dd9ee852e40671038cc61317e0ab4062baec",
+          "bytes": 1490080,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/12/volume/arrays.npz",
+          "allocated_bytes": 1490944,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679965
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/16/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "cdc78f425ba517154c5e382af604ac610e6bac0dc7d1b1a008fceae86f62bb9a",
+          "bytes": 22764,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/16/boundary/arrays.npz",
+          "allocated_bytes": 24576,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679969
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/16/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "1eea124c729cb3398e99ee2c7d10b2d47717b6ceafbd7f76b44a36aeb2e77ba4",
+          "bytes": 2414219,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/16/volume/arrays.npz",
+          "allocated_bytes": 2416640,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679972
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/common/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "136d021162d03d16a51d417d37689e370513d14f7612d432cb4c5ce060abc7b4",
+          "bytes": 54899594,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h1/common/arrays.npz",
+          "allocated_bytes": 54902784,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679975
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/12/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "fe6bce1c1322ff07f517c707e904136ee9b8b507fbe56f39b31fa76dd95c6205",
+          "bytes": 35399,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/12/boundary/arrays.npz",
+          "allocated_bytes": 36864,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679981
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/12/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "cb255c9a54dcdb7b8add62e96c34debf2738a3541a6f806423adf03b78265a0f",
+          "bytes": 4856986,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/12/volume/arrays.npz",
+          "allocated_bytes": 4857856,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679984
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/16/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "e701ea629a946ecceedb64041628a4caf3d7d32cab0dee15d4cf0cbfdbbe481c",
+          "bytes": 45089,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/16/boundary/arrays.npz",
+          "allocated_bytes": 49152,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679988
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/16/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "7f65eb2b24ebd49745ef95eb5e9415f647b8178a61574ceec73bf861bcf36c86",
+          "bytes": 7890410,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/16/volume/arrays.npz",
+          "allocated_bytes": 7892992,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679991
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/common/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "b74f002fe6298f71267f88ae3e8e8443a13f788078eb61dc76a9fd7e1219c582",
+          "bytes": 50069961,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h2/common/arrays.npz",
+          "allocated_bytes": 50073600,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27679994
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3_q16/16/boundary/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "2d025e27401f201d134f0078f5b5c8f72f6a01aa79d37747019c8fb9c36a21da",
+          "bytes": 82746,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3_q16/16/boundary/arrays.npz",
+          "allocated_bytes": 86016,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27680012
+        },
+        {
+          "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3_q16/16/volume/arrays.npz",
+          "kind": "archived_numerical_npz_cache",
+          "sha256": "8b4167b1b9d49e6fb01926bb6b7a963c245577b5a3f5a494fc7b9b991eb32826",
+          "bytes": 26310029,
+          "archive_member": "g2-cache-primary01/results/cache_primary_control/caches/p4_g4_h3_q16/16/volume/arrays.npz",
+          "allocated_bytes": 26312704,
+          "link_count": 1,
+          "device": 66306,
+          "inode": 27680015
+        }
+      ],
+      "cold_manifest_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c",
+      "recovery_descriptor_sha256": "26844985a6ce6ab167f9d763374d10ed8b087b6bd69b65dee708b3934d649e9c"
+    }
+  ],
+  "exact_path_count": 22,
+  "logical_bytes": 290017367,
+  "conservative_allocated_reclaim_bytes": 290070528,
+  "preserve": "all metadata/code/mesh/solution/config/reference admissions and original failure records; all Git objects/histories; every unlisted path",
+  "active_dependencies": "ROM owner and numerical reviewer confirm no current read dependency; root final exact-path authorization still required. Entire p4_g4_h3 cache subtree and all full_rule/native mesh/solution/config/admitted runtime/lift metadata excluded.",
+  "recovery": "Existing historical cold manifests plus exact archived original-Re20 comparison descriptors preserve complete original bytes and statuses. Stream ordered historical chunks, verify each/full SHA, then original collection ledger before recovery into reserved fresh workspace. No shallow-tip-only checkout or history pruning.",
+  "large_files_written": false,
+  "numerical_arrays_decoded": false,
+  "validation_accessed": false,
+  "elapsed_seconds": 11.849093303084373
+}

@@ -1,0 +1,34 @@
+{
+  "status": "independent_numerical_and_retention_pass",
+  "reviewer": "Codex inexact_review read-only saved-array/source audit",
+  "job_id": "6651620",
+  "checks": [
+    "154output hashes",
+    "126unique timed witnesses and same-invocation residual recovery",
+    "freshprod and tightcertificates",
+    "identical production/tight initial states",
+    "exact fine/IC/guard and zero-tail decisions",
+    "fixed1e-3 final-loss and tight-field agreement thresholds",
+    "all202sourcefiles/2chunks/archive members",
+    "all154evidence copies identical"
+  ],
+  "limitations": [
+    "Tight comparator is stationary fine ROM, not FOM truth/global optimum",
+    "Each trajectory loss uses own accepted history",
+    "Runtime field differences checked in source but no full rawfields independently audited; model/states retained",
+    "Previous coarse quadrature failure retained, no rule certification inferred"
+  ],
+  "retention": {
+    "files": 202,
+    "chunks": 2,
+    "archive_sha256": "974b93f31ceebd74d13fdec01c0ac60033aaf157a475d53e0a7127485f517f2d"
+  },
+  "durability": {
+    "source_commit": "032c3fc17",
+    "actual_remote_mirror": "7613d94df9dcfcb93a5f64118a794b20017fd0ba",
+    "archive_and_evidence_blob_ids_match": true,
+    "remote_output_hashes_rechecked": true,
+    "remote_duplicate_removed": true,
+    "cleanup_utc": "2026-10-30T00:40:55.670452+00:00"
+  }
+}

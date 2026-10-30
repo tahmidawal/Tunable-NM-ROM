@@ -1,0 +1,74 @@
+{
+  "schema": "ns-obstacle-ROM-guided-working-archive-working-chunk-cold-proposal-v1",
+  "proof_passed": true,
+  "deletion_authorized": false,
+  "deletions_performed": false,
+  "source_commit": "c9d2515da63e7293b1869977fcfea753811ad087",
+  "mirror_commit": "edbbc86728cc286c27d63a744ff5405fed38196f",
+  "current_source_head": "45201db15009636626aade3dcb60f05476c4749b",
+  "advertised_mirror_tip": "1d34d48abd7f3b79281526a717b9fb3fd2b2d1a0",
+  "mirror_ref": "refs/heads/codeonly/exp/2026-10-27-ns-obstacle-rom",
+  "archive_sha256": "38b63036d84f1ddac324fd63855f3c47712a618767190343d7c6790f88dcdbc2",
+  "archive_bytes": 35408501,
+  "original_regular_files_verified": 191,
+  "extra_ledger_members": {
+    "COLLECTION-SHA256SUMS": {
+      "sha256": "a9fa763ae13749b79468b0f73dbbaea9f1fe4d11eb9bb0ae2899cb20cc187bfd",
+      "bytes": 18481
+    }
+  },
+  "archive_links": [],
+  "original_ledger_sha256": "a9fa763ae13749b79468b0f73dbbaea9f1fe4d11eb9bb0ae2899cb20cc187bfd",
+  "retention_sha256": "556ffad8449e5f7e04b052adc6e11088d2a615aed300283741bae5eccd90b3ce",
+  "historical_status_preserved": "checksum_verified_pending_independent_review_and_mirror",
+  "original_job_state_preserved": "COMPLETED",
+  "chunks": [
+    {
+      "path": "archive-chunks/collection.tar.gz.part-000",
+      "bytes": 35408501,
+      "sha256": "38b63036d84f1ddac324fd63855f3c47712a618767190343d7c6790f88dcdbc2",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-coordinate01/archive-chunks/collection.tar.gz.part-000",
+      "git_blob": "1219308bef5fc0dc88122e9036fe3f5303bf9fdf",
+      "git_blobs": {
+        "c9d2515da63e7293b1869977fcfea753811ad087": "1219308bef5fc0dc88122e9036fe3f5303bf9fdf",
+        "edbbc86728cc286c27d63a744ff5405fed38196f": "1219308bef5fc0dc88122e9036fe3f5303bf9fdf"
+      }
+    }
+  ],
+  "exact_paths": [
+    {
+      "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-coordinate01/archive-chunks/collection.tar.gz.part-000",
+      "repository_path": "experiments/ns-obstacle-rom/artifacts/neural-pod-guided-coordinate01/archive-chunks/collection.tar.gz.part-000",
+      "git_blob": "1219308bef5fc0dc88122e9036fe3f5303bf9fdf",
+      "sha256": "38b63036d84f1ddac324fd63855f3c47712a618767190343d7c6790f88dcdbc2",
+      "bytes": 35408501,
+      "allocated_bytes": 35409920,
+      "link_count": 1,
+      "inode": 28217236,
+      "device": 66306
+    }
+  ],
+  "logical_bytes": 35408501,
+  "conservative_allocated_reclaim_bytes": 35409920,
+  "proposed_cold_descriptor_sha256": "65ff48047a9f5c35e7ce8400524ab5eb6a8770a869706a65c00130ee9158c972",
+  "independent_reviews": {
+    "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle/experiments/ns-obstacle/reviews/accuracy-improvement01/FIXED-COORDINATE-RETENTION-REVIEW.json": {
+      "sha256": "e948b895e1fe86c39f61bb5ed3995b9fe9854e8bc631df76b07331fa5697b540",
+      "record": {
+        "passed": true,
+        "source_commit": "c9d2515da63e7293b1869977fcfea753811ad087",
+        "mirror_commit": "edbbc86728cc286c27d63a744ff5405fed38196f",
+        "archive_sha256": "38b63036d84f1ddac324fd63855f3c47712a618767190343d7c6790f88dcdbc2",
+        "verified_regular_files": 191,
+        "chunk_count": 1,
+        "retention_sha256": "556ffad8449e5f7e04b052adc6e11088d2a615aed300283741bae5eccd90b3ce",
+        "bulk_scientific_extraction": false,
+        "remote_deletion_performed": false
+      }
+    }
+  },
+  "dependency_clearance": "ROM owner confirms no active local consumer needs working chunks; all future fit inputs independent remote prepared trees. Fresh owner check required before unlink.",
+  "preserve": "All ROM metadata/source/arrays/Git objects/history and original pending RETENTION; only1 exact working chunk duplicates may be proposed for later owner/root-authorized unlink.",
+  "recovery": "Use unchanged git_archive_recovery.verify with this exact descriptor, stream historical mirrored blobs, verify full archive and original191-file ledger in reserved fresh workspace; no shallow tip-only history.",
+  "elapsed_seconds": 0.4539201110601425
+}

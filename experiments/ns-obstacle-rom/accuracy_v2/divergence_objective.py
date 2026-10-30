@@ -49,4 +49,6 @@ def block_objective(values, gradients, targets, target_gradients, weights,
         'divergence_error_norm_squared_by_mode': error_squared,
         'predicted_divergence_norm_squared_by_mode': predicted_squared,
         'teacher_divergence_norm_squared_by_mode': teacher_squared,
+        'predicted_divergence_relative_squared_by_mode': predicted_squared / gradient_norms,
+        'teacher_divergence_relative_squared_by_mode': teacher_squared / gradient_norms,
     }

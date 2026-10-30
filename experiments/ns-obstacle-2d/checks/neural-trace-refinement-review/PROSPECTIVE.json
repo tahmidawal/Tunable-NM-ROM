@@ -1,0 +1,20 @@
+{
+  "schema": "ns-obstacle-supervised-trace-refinement-prospective-audit-v1",
+  "source_only": true,
+  "execution_authorized_by_this_record": false,
+  "job_id": 6651600,
+  "trainer_source_commit": "9891ee0b8",
+  "trainer_mirror_commit": "f114f2817",
+  "trainer_sha256": "bea06fdc3bd4ad9dd5a44d0fc2c83c0de5a9ab6e996b07f5690ccb75ecc6bb7e",
+  "objective_helper_sha256": "8738675dca724d3733108fc3cd09a16d72103816dcb0e61aa3792715f4d89692",
+  "lambda": 1.0,
+  "objective": "unchanged teacher-normalized value/gradient loss plus supervised trace-error term; teacher need not have zero trace",
+  "selection": "minimum initial/accepted COMBINED objective; base loss reported separately",
+  "required_before_execution": ["terminal owner receipt and exact original ledger", "actual release/config/final/model/replay hashes", "independent source review"],
+  "external_timeout_seconds": 120,
+  "address_space_limit_bytes": 4294967296,
+  "blas_threads": 1,
+  "no_running_output_arrays_accessed": true,
+  "validation_accessed": false,
+  "limits": ["No fresh teacher objective or neural gradient evaluation", "No reconstruction of missing intermediate parameter or curvature vectors", "Incomplete event partial sums are not measured objectives", "No equal-compute causal comparison to continued base training"]
+}

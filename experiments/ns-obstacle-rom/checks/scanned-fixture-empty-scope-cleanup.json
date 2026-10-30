@@ -1,0 +1,13 @@
+{
+  "unit": "run-u43813.scope",
+  "execution_sha256": "744e6e68329e83fa052a3d20c97cfe5f10a93daf7ac1b55a4858ec9ce21effa2",
+  "before": {
+    "ControlGroup": "/user.slice/user-1002.slice/user@1002.service/app.slice/run-u43813.scope",
+    "TasksCurrent": "0",
+    "MemoryMax": "38654705664",
+    "Description": "/usr/bin/timeout --signal=TERM --kill-after=3s 50s /home/tahmid/Dev/.venv/bin/python -m accuracy_v2.residual_composite_fixture --model /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/coordinate-composite-fixture-input/spatial-bank-raw.npz --model-sha256 26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80 --points-fixture /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/fast-traction-bank-kernel/arrays.npz --points-sha256 d29ac3b9181ec6bbffee296328b135bb0ec687edbae4dd89589a73f252403e46 --output /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/checks/coordinate-composite-fixture01"
+  },
+  "cgroup_procs_before": "",
+  "authorization": "root routine exact owned completed empty scope cleanup",
+  "after": "TasksCurrent=[not set]\nActiveState=inactive\n"
+}

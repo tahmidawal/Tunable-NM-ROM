@@ -39,6 +39,21 @@ $$
 
 The cylinder is separated from the outer prescribed boundaries, so $A$ and $C$ do not vanish simultaneously on the closed fluid domain. On the outer prescribed boundary, $\psi_r=0$ and its gradient vanishes; on the cylinder, $\psi_r=c_r$ and its gradient vanishes. Thus the velocity satisfies homogeneous no-slip while retaining the independent obstacle streamfunction constant. Omitting $c_rh$ would restrict this topological freedom. The outlet remains unconstrained. Actual retained curved-FE boundary points still require trace verification.
 
+## Capacity candidate: additive spatial correction
+
+An alternative that preserves the current four online velocity coefficients is
+
+$$
+\widehat\phi_r^{\mathrm{new}}(x)
+=\widehat\phi_r^{\mathrm{parent}}(x)+B(x)f_{\theta,r}(x).
+$$
+
+Freeze the parent and initialize the new network's final weights and biases to zero, with nonzero random hidden weights. This preserves the parent values and gradients initially. Hidden-layer gradients are zero on the first update, but output-layer updates can unlock subsequent hidden learning. Zeroing every layer would obstruct this mechanism.
+
+The same boundary envelope preserves homogeneous velocity traces. Product-rule spatial derivatives are required. Higher Fourier frequencies or cylinder-local features could help unresolved spatial variation, but scalar loss histories do not establish that they are necessary. Frequencies and feature widths need explicit bounded choices: gradient fitting amplifies high frequencies and narrow features, and the existing integration rule must still resolve them. This is a separate capacity hypothesis, not yet implemented or released.
+
+The sum requires a new explicit serialized evaluator, with independently hashed frozen-parent and correction parameters; it must not be loaded silently as an ordinary single `SpatialBank`. Check initial parent equality and value/physical-gradient consistency, including boundary points. Assemble the same four combined columns in the actual weak ROM and retain the same force/conservation diagnostics. Extra network capacity does not remove teacher truncation, lift or supremizer limitations, and it increases evaluation cost. Source, memory and archive bounds must include both networks before an execution decision.
+
 ## Important full-ROM limitation
 
 The deployed velocity also includes the FE lift and FE supremizers:

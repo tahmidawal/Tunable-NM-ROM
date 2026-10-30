@@ -1,0 +1,26 @@
+{
+  "schema": "ns-obstacle-traction-frozen-source-review-v1",
+  "source_commit": "57d03e222",
+  "source_hashes": {
+    "boundary_teacher.py": "c67f06f57958df41ce1bfe83e3614c5bbf045f016ef66c125b5765ec310cc8c8",
+    "traction_refine.py": "564bbf7fb47f27a70277b8520c8655b306664dbff32cd27664614b2bfc7819b6",
+    "boundary_traction_objective.py": "4431f5f6a150f1f691bbab8aaa9b36af47d4d251c62e07af75ada89e2ca1816b"
+  },
+  "design_sha256": "2cdff154c27ef85323c87729f904cab971dd263a7986e36f89b67b7059c9598c",
+  "source_review_passed": true,
+  "packet_review_pending": true,
+  "execution_authorized": false,
+  "findings": [
+    "Frozen source is identical to inspected draft helper/teacher/trainer.",
+    "Concrete design pins trace parent aad67694 and reviewed parent b0f32823; unchanged sqrt-sigma BASE plus trace1, with independent global TRAIN traction normalization and prospective unit coefficient.",
+    "Design preserves development-guided candidate-design disclosure while optimization labels remain TRAIN-only; no validation seen.",
+    "Actual preparation schema and source coordinate division support exact x/.1 requirement; no additional physical-to-dimensionless scaling on teacher gradients.",
+    "Initial full parameter-gradient vectors and per-evaluation signed cross dot prevent unsupported scalar-gradient additivity claims."
+  ],
+  "remaining": [
+    "Exact runtime packet/source/input/parent-review/teacher bindings and resource limits before release",
+    "Final candidate synthetic autodiff-chain evidence owned by ROM/numerical reviewer",
+    "Actual initial normalization weights/gradient balance and final retained objective replay to be audited after any released fit"
+  ],
+  "no_new_native_or_network_execution": true
+}

@@ -1,0 +1,384 @@
+{
+  "schema": "ns-obstacle-signed-force-components-v1",
+  "passed": true,
+  "physical_admission": false,
+  "cases": [
+    {
+      "Re": 16.875,
+      "truth": {
+        "Re": 16.875,
+        "pressure_coefficient": [
+          3.9128499850953866,
+          0.013132178799138382
+        ],
+        "viscous_coefficient": [
+          2.205450998587697,
+          0.007051362176885524
+        ],
+        "order12_total": [
+          6.118300983683084,
+          0.020183540976024816
+        ],
+        "order16_total": [
+          6.118300983683085,
+          0.020183540976024848
+        ],
+        "order12_minus_order16": [
+          -8.881784197001252e-16,
+          -3.122502256758253e-17
+        ],
+        "native_order": 12,
+        "obstacle_points": 805,
+        "normalization": 0.0020000000000000005,
+        "provenance": {
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/config.json": "5cdf48563a61b891f97fab5fd3902433ecd7bf95485e10c6200f1290e3e78edd",
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/result.json": "c296f4fe4d88a5744c70da53b26e84e0666df5e0194fbc6ad31b387b0ed8d661",
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/boundary_rule.json": "e4296bdc3942d04571171948c2aa015a778ff40cf94b4e03bb49597f4da9ce5b",
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re16p875-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json": "438caf6c6910a9a006bf5ef8ccde8f3ff16ffc9dbc76cfdf96f45963c85af91e"
+        },
+        "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f"
+      },
+      "states": {
+        "actual_PDE": {
+          "state": [
+            -1.9136786481109909,
+            0.12318752758791983,
+            0.0005725402185800272,
+            0.0001612498004632702,
+            -0.0025364778662291076,
+            0.0005723950673243751,
+            0.0019614656499916065,
+            -0.0042405629752198595,
+            0.5491299714706874,
+            1.5029492343521944,
+            0.11717568556866809,
+            0.0010051209197786766
+          ],
+          "pressure": [
+            3.912477546783397,
+            0.013245015670008513
+          ],
+          "viscous": [
+            2.2191637886215023,
+            0.01410743523947834
+          ],
+          "viscous_lift": [
+            1.6107597051501346,
+            0.014563463365062672
+          ],
+          "viscous_neural": [
+            0.6084774423109044,
+            -0.00044657975271980257
+          ],
+          "viscous_supremizer": [
+            -7.335883953656055e-05,
+            -9.448372864530054e-06
+          ],
+          "total": [
+            6.1316413354048995,
+            0.027352450909486854
+          ],
+          "signed_pressure_error_vs_truth_order12": [
+            -0.00037243831198940924,
+            0.00011283687087013106
+          ],
+          "signed_viscous_error_vs_truth_order12": [
+            0.013712790033805433,
+            0.007056073062592816
+          ],
+          "signed_total_error_vs_truth_order12": [
+            0.013340351721816024,
+            0.007168909933462947
+          ],
+          "signed_total_error_vs_truth_order16": [
+            0.013340351721814692,
+            0.007168909933462007
+          ],
+          "force_matrix_replay_gap": 3.469446951953614e-18
+        },
+        "L2_projection_not_PDE": {
+          "state": [
+            -1.9124287764306436,
+            0.12360852123974818,
+            0.0013847993864963522,
+            -0.0005386625645015868,
+            0.0032185180268948844,
+            0.0008752867773240085,
+            -6.25156606619397e-05,
+            0.0010489307365545645,
+            0.5494860259025725,
+            1.503600956278348,
+            0.11996764127816283,
+            0.002277164991553991
+          ],
+          "pressure": [
+            3.9125072932071383,
+            0.013231773249086191
+          ],
+          "viscous": [
+            2.218654309614216,
+            0.014109566819582132
+          ],
+          "viscous_lift": [
+            1.6107597051501346,
+            0.014563463365062672
+          ],
+          "viscous_neural": [
+            0.6078619722660973,
+            -0.00045542777713234903
+          ],
+          "viscous_supremizer": [
+            3.263219798432311e-05,
+            1.531231651809275e-06
+          ],
+          "total": [
+            6.131161602821354,
+            0.027341340068668323
+          ],
+          "signed_pressure_error_vs_truth_order12": [
+            -0.0003426918882483143,
+            9.959444994780964e-05
+          ],
+          "signed_viscous_error_vs_truth_order12": [
+            0.01320331102651906,
+            0.007058204642696608
+          ],
+          "signed_total_error_vs_truth_order12": [
+            0.012860619138270746,
+            0.007157799092644418
+          ],
+          "signed_total_error_vs_truth_order16": [
+            0.012860619138269413,
+            0.007157799092643476
+          ],
+          "force_matrix_replay_gap": 8.881784197001252e-16
+        }
+      },
+      "solved_minus_projection": {
+        "pressure": [
+          -2.974642374109493e-05,
+          1.3242420922321418e-05
+        ],
+        "viscous": [
+          0.0005094790072863731,
+          -2.131580103792094e-06
+        ],
+        "viscous_lift": [
+          0.0,
+          0.0
+        ],
+        "viscous_neural": [
+          0.0006154700448071093,
+          8.848024412546468e-06
+        ],
+        "viscous_supremizer": [
+          -0.00010599103752088367,
+          -1.0979604516339328e-05
+        ],
+        "total": [
+          0.00047973258354527815,
+          1.111084081853106e-05
+        ]
+      }
+    },
+    {
+      "Re": 23.125,
+      "truth": {
+        "Re": 23.125,
+        "pressure_coefficient": [
+          3.4240688922378615,
+          0.0026596184976115955
+        ],
+        "viscous_coefficient": [
+          1.754575160267129,
+          0.001770569415936923
+        ],
+        "order12_total": [
+          5.178644052504991,
+          0.004430187913548331
+        ],
+        "order16_total": [
+          5.178644052504991,
+          0.004430187913548351
+        ],
+        "order12_minus_order16": [
+          0.0,
+          -1.9949319973733282e-17
+        ],
+        "native_order": 12,
+        "obstacle_points": 805,
+        "normalization": 0.0020000000000000005,
+        "provenance": {
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/config.json": "01d847ceb6cb3073954c3bb53f0d849c83c41cc8e33c90dcd44d77e680130692",
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/result.json": "c2ecaebbaeb6dd23386ea9f74121fac77b07696881eb6a54cf4ea1dd05ad85dc",
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/boundary_rule.json": "237679aafc1364bd2450861308347f0e2a8ee3c0e417c4e7e02027327ae62684",
+          "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/artifacts/g2-population-re23p125-01/results/states/p4_g4_h3_baseline/EXPORT-MANIFEST.json": "2533c0d6713237beb7844969ced4eb179fc6c06bcd4f3f5713eb4ffce2fcd354"
+        },
+        "reference_admission_sha256": "5c9402af9ddb2af0ad8925ef224a43ae72cb36209df99865908617c63b5b506f"
+      },
+      "states": {
+        "actual_PDE": {
+          "state": [
+            -2.250540043710988,
+            -0.10285493454620157,
+            -0.002226860325516373,
+            0.00013996408794115877,
+            -0.0014370333290907665,
+            0.003385911731446548,
+            -0.0010982399056231067,
+            -0.004538992225378339,
+            0.5415911410328448,
+            1.5112510120021387,
+            -0.12046586480495004,
+            -0.0020984535267472935
+          ],
+          "pressure": [
+            3.424529274057181,
+            0.0026604315689902364
+          ],
+          "viscous": [
+            1.7701164463231485,
+            0.005696175776307662
+          ],
+          "viscous_lift": [
+            1.175419244298747,
+            0.010627392185316003
+          ],
+          "viscous_neural": [
+            0.5945451431720525,
+            -0.004926261758096254
+          ],
+          "viscous_supremizer": [
+            0.00015205885234889787,
+            -4.9546509120877975e-06
+          ],
+          "total": [
+            5.194645720380329,
+            0.008356607345297898
+          ],
+          "signed_pressure_error_vs_truth_order12": [
+            0.00046038181931962185,
+            8.130713786409609e-07
+          ],
+          "signed_viscous_error_vs_truth_order12": [
+            0.015541286056019565,
+            0.003925606360370738
+          ],
+          "signed_total_error_vs_truth_order12": [
+            0.016001667875339187,
+            0.00392641943174938
+          ],
+          "signed_total_error_vs_truth_order16": [
+            0.0160016678753383,
+            0.003926419431749547
+          ],
+          "force_matrix_replay_gap": 1.734723475976807e-18
+        },
+        "L2_projection_not_PDE": {
+          "state": [
+            -2.2501771833605435,
+            -0.10366343497481227,
+            -0.00022798574800522882,
+            0.0007149640672663134,
+            0.0037353994159867844,
+            0.001379436973106997,
+            -0.0002202223455269706,
+            0.000897913797449858,
+            0.5431933065858978,
+            1.511177640977073,
+            -0.11955335675077972,
+            -0.0007745214698004247
+          ],
+          "pressure": [
+            3.4242581151098657,
+            0.002610277255899688
+          ],
+          "viscous": [
+            1.7696961522323786,
+            0.005678279804136604
+          ],
+          "viscous_lift": [
+            1.175419244298747,
+            0.010627392185316003
+          ],
+          "viscous_neural": [
+            0.594232185561676,
+            -0.004950101436223888
+          ],
+          "viscous_supremizer": [
+            4.472237195564733e-05,
+            9.89055044488377e-07
+          ],
+          "total": [
+            5.193954267342244,
+            0.008288557060036292
+          ],
+          "signed_pressure_error_vs_truth_order12": [
+            0.00018922287200417998,
+            -4.934124171190749e-05
+          ],
+          "signed_viscous_error_vs_truth_order12": [
+            0.015120991965249742,
+            0.003907710388199681
+          ],
+          "signed_total_error_vs_truth_order12": [
+            0.015310214837253922,
+            0.0038583691464877732
+          ],
+          "signed_total_error_vs_truth_order16": [
+            0.015310214837253255,
+            0.003858369146487941
+          ],
+          "force_matrix_replay_gap": 0.0
+        }
+      },
+      "solved_minus_projection": {
+        "pressure": [
+          0.0002711589473154419,
+          5.015431309054845e-05
+        ],
+        "viscous": [
+          0.0004202940907698238,
+          1.789597217105761e-05
+        ],
+        "viscous_lift": [
+          0.0,
+          0.0
+        ],
+        "viscous_neural": [
+          0.0003129576103765297,
+          2.3839678127634233e-05
+        ],
+        "viscous_supremizer": [
+          0.00010733648039325055,
+          -5.943705956576174e-06
+        ],
+        "total": [
+          0.0006914530380850437,
+          6.805028526160606e-05
+        ]
+      }
+    }
+  ],
+  "provenance": {
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/DIAGNOSTIC.json": "276ea528b10e3e542a23b57f3e05599e70fe99bfa52e1f618c6f903ac85d9295",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/status_007.json": "b4682e61b36b3cf9ac3fbd0519868483573ef946b7f3319631741e7a4b88ab7e",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/status_007.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/pod_guided_neural_r4_model.json": "0dd6c64c4989bd8f6f3986ab2ff0d8723c1806e402703c938fddca16ee1b84ce",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/pod_guided_neural_r4_model.npz": "00775a1b3ed4feb92b550e138087d06e2b3610c3721775a40db1344e500dbe31",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01/results/preparation/prepared/manifest.json": "7867c6428814e4ecf790bb59f624abcea10fef18b60c2b238fa6c4dffac6d4f6",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/fine-preparation01/results/preparation/prepared/boundary.npz": "7965a23c84dcd515322efb779aec7c4da3462206a211781a3d1f7d9ae51e619f",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/pod_guided_neural_r4_16.875_raw_invocation.json": "a5368437e4dde3c9ac812fbba879746a696ee63bfbdaedd5109c2bb360a5c732",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/pod_guided_neural_r4_16.875_raw_invocation.npz": "29d947ac0fa6c3022beb4748a3e2e39cded5c119293b6d8de944da340592e968",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/pod_guided_neural_r4_23.125_raw_invocation.json": "c74a708e53484521565861c38fee6b4129b63627d189a3e7e2327214fb567818",
+    "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-diagnostic03/results/diagnostic/pod_guided_neural_r4_23.125_raw_invocation.npz": "f3f01a5be62fa598c034049d2f1ee83ba9c74279c4752dbc6c02df732f14bb94"
+  },
+  "elapsed_seconds": 0.4840248539694585,
+  "peak_rss_bytes": 97140736,
+  "limitations": [
+    "Truth pressure/viscous split is native order12, not canonical order16; only total order12-to16 gap retained.",
+    "ROM components use saved force matrices and prepared pressure lift; no fresh neural derivatives or traction assembly.",
+    "L2 projection is representation-only, not a PDE solve.",
+    "Signed component errors cancel; absolute component magnitudes are not additive error attribution."
+  ]
+}

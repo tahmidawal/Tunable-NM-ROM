@@ -1,0 +1,538 @@
+{
+  "schema": "ns-obstacle-trained-neural-model-review-v2",
+  "passed": true,
+  "scope": "Saved fixed-coordinate composite model and complete raw retention; no PDE admission",
+  "job_id": 6657815,
+  "allocated_seconds": 3481,
+  "model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+  "model_receipt_sha256": "0adcb62df6e6b5d304dfbf436865f5ce906f2a4722ba1d2ae3341d901b0b843a",
+  "selected_theta_sha256": "af85cd963c17d2f5d2da926fc9f5666244767ea1132c247d15ea0ad036e913a2",
+  "selected": {
+    "objective": 0.0004816350793788214,
+    "checkpoint": "state-05688-final.npz"
+  },
+  "audit_result_sha256": "e6da6402247dcae8c5fa610cdca59c57cb4fe6a3d358e1a6f78ba6ecf97603a8",
+  "audit_source_commit": "c5fbc4e9f",
+  "audit_mirror_commit": "4eb9a3b1b",
+  "checkpoint_count": 7,
+  "adam_steps_recorded": 4000,
+  "accepted_lbfgs_steps": 23160,
+  "new_accepted_lbfgs_steps": 5688,
+  "optimizer_status": "job_deadline",
+  "optimizer_converged": false,
+  "physical_admission": false,
+  "validation_accessed": false,
+  "original_bank_failure_preserved": true,
+  "durable_archive_source_commit": "c9d2515da63e7293b1869977fcfea753811ad087",
+  "durable_archive_mirror_commit": "edbbc86728cc286c27d63a744ff5405fed38196f",
+  "independent_retention_passed": true,
+  "objective_variant": "fixed_coordinate_residual_heads_same_trace_and_traction",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "warm_child_model_sha256": "1e6c1cca50313e9fec4d89565f1e09d36137c376bc60bc1be3f7b193905326f4",
+  "selected_theta_scope": "child parameters only",
+  "trainable_parameters": 22792,
+  "coordinate_replay": {
+    "diagonal_sha256": "a67a2aa07d8d7fa75767303e71c947a96564eb7f3215aa0a4d8c39d241991d7b",
+    "anchor_sha256": "63bdd5f8bf850389b901e2b291cadddbd306b0f2f320e8e6a22238e49d4a74a5",
+    "hidden_scale": 100.0,
+    "output_scale": 1.0,
+    "checkpoint_witnesses": [
+      {
+        "iteration": 0,
+        "label": "initial",
+        "physical_gradient_inf": 4.0390671737518824e-05,
+        "coordinate_gradient_inf": 5.158887230379699e-05,
+        "coordinate_displacement_l2": 0.0,
+        "curvature_coordinate_inner_product_gaps": []
+      },
+      {
+        "iteration": 1000,
+        "label": "periodic",
+        "physical_gradient_inf": 0.0038602188938630304,
+        "coordinate_gradient_inf": 0.0038602188938630304,
+        "coordinate_displacement_l2": 0.1769130990554129,
+        "curvature_coordinate_inner_product_gaps": [
+          1.3234889800848443e-23,
+          5.293955920339377e-23,
+          0.0,
+          1.3234889800848443e-23,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.6469779601696886e-23,
+          0.0
+        ]
+      },
+      {
+        "iteration": 2000,
+        "label": "periodic",
+        "physical_gradient_inf": 0.0008134311574080313,
+        "coordinate_gradient_inf": 0.0008134311574080313,
+        "coordinate_displacement_l2": 0.3264722921651182,
+        "curvature_coordinate_inner_product_gaps": [
+          5.293955920339377e-23,
+          0.0,
+          0.0,
+          0.0,
+          2.6469779601696886e-23,
+          0.0,
+          0.0,
+          1.3234889800848443e-23,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "iteration": 3000,
+        "label": "periodic",
+        "physical_gradient_inf": 0.00021074646262738558,
+        "coordinate_gradient_inf": 0.0004964196265532621,
+        "coordinate_displacement_l2": 0.45220319904594614,
+        "curvature_coordinate_inner_product_gaps": [
+          6.617444900424222e-24,
+          0.0,
+          0.0,
+          0.0,
+          6.617444900424222e-24,
+          6.617444900424222e-24,
+          0.0,
+          1.0587911840678754e-22,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "iteration": 4000,
+        "label": "periodic",
+        "physical_gradient_inf": 0.00023895016991611062,
+        "coordinate_gradient_inf": 0.0008591796319528543,
+        "coordinate_displacement_l2": 0.5656310814250791,
+        "curvature_coordinate_inner_product_gaps": [
+          0.0,
+          2.6469779601696886e-23,
+          1.3234889800848443e-23,
+          0.0,
+          6.617444900424222e-24,
+          1.3234889800848443e-23,
+          1.3234889800848443e-23,
+          0.0,
+          6.617444900424222e-24,
+          0.0
+        ]
+      },
+      {
+        "iteration": 5000,
+        "label": "periodic",
+        "physical_gradient_inf": 0.00015405848345313662,
+        "coordinate_gradient_inf": 0.0024332482252532356,
+        "coordinate_displacement_l2": 0.656282053499534,
+        "curvature_coordinate_inner_product_gaps": [
+          0.0,
+          4.963083675318166e-24,
+          0.0,
+          1.3234889800848443e-23,
+          1.6543612251060553e-24,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          3.308722450212111e-24
+        ]
+      },
+      {
+        "iteration": 5688,
+        "label": "final",
+        "physical_gradient_inf": 0.00015313086057022358,
+        "coordinate_gradient_inf": 0.00195272716245097,
+        "coordinate_displacement_l2": 0.7177212656790745,
+        "curvature_coordinate_inner_product_gaps": [
+          0.0,
+          0.0,
+          1.3234889800848443e-23,
+          0.0,
+          2.6469779601696886e-23,
+          0.0,
+          1.6543612251060553e-24,
+          0.0,
+          6.617444900424222e-24,
+          0.0
+        ]
+      }
+    ],
+    "completed_trial_witnesses": 6025,
+    "limits": "Only retained physical vectors and scalar coordinate witnesses; no intermediate direction/vector or fresh objective reconstruction."
+  },
+  "cache_replay": {
+    "initial_objective_gap": 0.0,
+    "initial_child_gradient_max_gap": 0.0,
+    "logical_payload_bytes": 423129056,
+    "parent_cache_hashes": {
+      "parent_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+      "parent_theta_sha256": "9996ba76504cb66e8f7fcce4f9fea91067da930225db14ba57ed60e544f06956",
+      "parent_volume_values_sha256": "e083f5c64cf82a85b52c5b39ae039adc836268f402fab5e3c71d7dfb1892faa9",
+      "parent_volume_physical_gradient_sha256": "00ac24afb21dae8fca4a9af354dfc7e9c6279727f6f7ddb3742dddfaf705bc09",
+      "parent_boundary_physical_gradient_sha256": "775b1c41ae211f7dedc13cb24041a5e5158fab8e7694ce00e0066cdd627e2137"
+    },
+    "scope": "Saved equivalence arrays and cache manifest checked; parent cache fields not independently evaluated.",
+    "final_uncached_objective_gap": 0.0,
+    "final_uncached_child_gradient_max_gap": 0.0
+  },
+  "completed_trial_evaluations": 6025,
+  "full_evaluations_including_replay": 6028,
+  "selection_semantics": "last accepted state, minimum among initial and accepted COMBINED objective states",
+  "completed_rejected_trials_better_than_final": [],
+  "terminal_curvature_reset_unresolved": false,
+  "limitations": [
+    "No neural evaluation, training, native solve or validation access.",
+    "Warm child identity and retained-array algebra replayed; no fresh JAX objective/autodiff.",
+    "Embedded parent bytes checked exactly; final replay is saved JAX child-gradient evidence, not independent NumPy live inference qualification.",
+    "Optimizer cumulative counts represent lineage across different parameter spaces, not exact continuation.",
+    "Intermediate vectors are absent: scalar hash/Armijo chains checked, not independent intermediate vector or two-loop replay.",
+    "Saved full teacher objective/gradient replay receipt checked, not independently recomputed.",
+    "Pending/incomplete evaluation events are retained and checked; interrupted partial sums are not full measured objectives.",
+    "A terminal unaccepted or interrupted first trial may reset curvature without a retained reset scalar; final empty history is allowed but its cause remains unresolved.",
+    "Periodic/final curvature arrays checked internally; correspondence to missing intermediate vectors cannot be independently reconstructed."
+  ],
+  "initial_components": {
+    "base": 0.0007364165005581184,
+    "added_trace": 0.00016094308816673312,
+    "parent_trace_combined": 0.0008973595887248516,
+    "added_traction": 5.0732272962872156e-05,
+    "traction_error_norm_squared": [
+      0.0003282840459936764,
+      0.5540049561353677,
+      2.0812885508238446,
+      6.38854313391388
+    ],
+    "traction_predicted_norm_squared": [
+      41.24323016676594,
+      9.63507593530393,
+      15.49891950078407,
+      4.0520302089781755
+    ],
+    "traction_teacher_norm_squared": [
+      41.35019831057948,
+      12.068817166575087,
+      22.368825446190275,
+      8.369209556417307
+    ],
+    "integrated_traction_error": [
+      [
+        0.0022818297837737516,
+        0.031577990361536974,
+        -0.3828605179125834,
+        0.027512257535573015
+      ],
+      [
+        -0.0008748619462246815,
+        0.06573646438071534,
+        0.030977433978488754,
+        -0.04169790873838643
+      ]
+    ],
+    "combined": 0.0009480918616877238,
+    "predicted_trace_norm_squared": [
+      0.0006241025625063287,
+      0.0024364493193937456,
+      0.007922745302355887,
+      0.027054966798825318
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.0006241081495807873,
+      0.002436492680207843,
+      0.007922967145766983,
+      0.027055603948124327
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      2.669156576535006e-10,
+      1.6768107317152031e-09,
+      1.2784077074723399e-08,
+      -1.1680919695042369e-08
+    ]
+  },
+  "selected_components": {
+    "base": 0.0003786828239520695,
+    "added_trace": 6.828370417269026e-05,
+    "parent_trace_combined": 0.0004469665281247597,
+    "added_traction": 3.466855125406171e-05,
+    "traction_error_norm_squared": [
+      0.0003268603153599582,
+      0.34384257630281573,
+      1.8331618260610887,
+      5.76074683604708
+    ],
+    "traction_predicted_norm_squared": [
+      41.24158746843813,
+      9.661994923294143,
+      15.51678920940404,
+      4.019696825931344
+    ],
+    "traction_teacher_norm_squared": [
+      41.35019831057948,
+      12.068817166575087,
+      22.368825446190275,
+      8.369209556417307
+    ],
+    "integrated_traction_error": [
+      [
+        0.002652061135244879,
+        0.03545383345847393,
+        -0.34078103270151777,
+        0.04147022581452688
+      ],
+      [
+        -0.0016456013297274693,
+        0.058518258472457896,
+        0.04981764987594243,
+        0.03612005089269424
+      ]
+    ],
+    "combined": 0.00048163507937882145,
+    "predicted_trace_norm_squared": [
+      0.00039029490225786663,
+      0.0007250768636337625,
+      0.003005308296614133,
+      0.007562082020921032
+    ],
+    "teacher_trace_norm_squared": [
+      6.120905773888217e-09,
+      4.6714435560555374e-08,
+      2.4741156524500733e-07,
+      6.137874596192836e-07
+    ],
+    "trace_error_norm_squared": [
+      0.00039030047241279774,
+      0.0007251216076153099,
+      0.0030055335964674045,
+      0.00756265693031667
+    ],
+    "inferred_predicted_teacher_trace_inner_product": [
+      2.7537542138613737e-10,
+      9.8522700664027e-10,
+      1.1055855986784324e-08,
+      1.9439031990423766e-08
+    ]
+  },
+  "evaluation_events": {
+    "initiated": 6029,
+    "completed": 6028,
+    "incomplete": [
+      {
+        "evaluation_id": 6028,
+        "phase": "line_search",
+        "theta_sha256": "092e580e092bfee9c0aa4bf931d28b149d804e753a14a7e5ddbc8fe915b10480",
+        "accepted_steps_before": 5688,
+        "completed_full_evaluations_before": 6027,
+        "elapsed_seconds": 3384.4175343383104,
+        "cached_teacher_and_parent": true,
+        "status": "incomplete",
+        "completed_blocks": 154,
+        "completed_boundary_blocks": 0,
+        "exception_record_file": "evaluation-006028-failure.json",
+        "exception_record_sha256": "19a8471f2a66c447626f4bc1a6882cca1a84703009c0728e2e3fb65260fc2fcc",
+        "full_objective_available": false,
+        "seconds": 0.33593578450381756
+      }
+    ],
+    "pending_unclosed": 0
+  },
+  "coefficient_replay": {
+    "raw_coefficient_max_gap": 0.0,
+    "raw_gram_spectral_error": 2.3775523834289205e-15,
+    "raw_whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "raw_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "saved_covariance": [
+      [
+        39.217726976132425,
+        -8.595746748943698e-15,
+        -6.537815223233382e-16,
+        -1.328706825756858e-14
+      ],
+      [
+        -8.595746748943698e-15,
+        0.12307028865807933,
+        1.4697702355888993e-16,
+        -3.1644705999794574e-16
+      ],
+      [
+        -6.537815223233382e-16,
+        1.4697702355888993e-16,
+        0.0006099088713267688,
+        -1.136638847901224e-17
+      ],
+      [
+        -1.328706825756858e-14,
+        -3.1644705999794574e-16,
+        -1.136638847901224e-17,
+        3.3003243539473713e-06
+      ]
+    ],
+    "raw_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "saved_coefficients": [
+      [
+        -1.784685600706615,
+        -1.8713283796682523,
+        -1.9514887511735652,
+        -2.0259240822841016,
+        -2.0952864390257653,
+        -2.1601373265794708,
+        -2.2209610227425696,
+        -2.27817620378588,
+        -2.3321458860436475
+      ],
+      [
+        0.19170849977831902,
+        0.14648336902405046,
+        0.1003734227637033,
+        0.05404141247192622,
+        0.007986697587760737,
+        -0.03741795961200609,
+        -0.08189792837053489,
+        -0.12525467054334832,
+        -0.16734864775890904
+      ],
+      [
+        -0.013796082703433332,
+        -0.0028047350044723865,
+        0.004556273858150476,
+        0.008504616828075446,
+        0.00932266349513343,
+        0.007322071878584319,
+        0.0028210208922158464,
+        -0.003869966877752396,
+        -0.01245643216618493
+      ],
+      [
+        0.0008058692750360134,
+        -0.0005234135188776321,
+        -0.0007707418432237324,
+        -0.0004177946815269834,
+        0.00014223960758227706,
+        0.0005968441366674244,
+        0.000703543837016251,
+        0.00027887946987761175,
+        -0.0008118739127389648
+      ]
+    ],
+    "raw_gram_max_gap": 0.0,
+    "raw_rhs_max_gap": 0.0,
+    "gram_spectral_error": 2.3775523834289205e-15,
+    "whitened_covariance_spectral_error": 1.437517288462995e-12,
+    "covariance_max_error_over_sigma0_squared": 3.3880260999458173e-16,
+    "training_points": 1036497,
+    "semantic_teacher_values_sha256": "b66611109292d331df140f366ad99c8332e914999118a6581cd4891f2a2b55b8",
+    "scope": "Original retained-four TRAIN coefficients only; excludes omitted modes and online coefficients."
+  },
+  "boundary_replay": {
+    "points": 805,
+    "measure_dimensionless": 3.1415926535906222,
+    "teacher_mode_norms_squared": [
+      41.35019831057955,
+      12.068817166575096,
+      22.368825446190275,
+      8.369209556417308
+    ],
+    "global_teacher_energy": 1623.1597711318796,
+    "normalized_mode_energy_weights": [
+      0.9990765028771053,
+      0.0009150749290787452,
+      8.405176941563508e-06,
+      1.7016874502181372e-08
+    ],
+    "exact_original_subset": true
+  },
+  "component_gradient_replay": {
+    "array_hashes": {
+      "base": "f3995832bd2c5a7b3841c689002c49088337ae8ba1777b84ebd20a06c1c18e8c",
+      "trace": "dff10e651be517b5aa36140708481b8b04108913e117886e464fb1708506891b",
+      "traction_unweighted": "710b675ffa719cda226dfa28126a4c6abfb7a30b477c3d2d73ba4c3238a865f5"
+    },
+    "norms": {
+      "base_gradient_l2": 0.0006607075290911052,
+      "trace_gradient_l2": 0.0005715820332550211,
+      "traction_gradient_l2_unweighted": 0.000523529547583167,
+      "traction_gradient_l2_weighted": 0.000523529547583167,
+      "parent_combined_gradient_l2": 0.0005460865197012113,
+      "new_combined_gradient_l2": 0.00015750008426622782
+    },
+    "initial_sum_max_gap": 6.776263578034403e-21,
+    "scope": "Initial saved component vectors only; no fresh autodiff or intermediate component-vector reconstruction."
+  }
+}

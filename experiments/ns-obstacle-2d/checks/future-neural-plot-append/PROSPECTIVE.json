@@ -1,0 +1,17 @@
+{
+  "schema": "ns-obstacle-future-neural-plot-append-plan-v1",
+  "source_only": true,
+  "execution_authorized_by_this_record": false,
+  "variants": ["trace", "energy"],
+  "keys": ["trace_neural_r4_solve_velocity", "trace_neural_r4_solve_pressure", "energy_neural_r4_solve_velocity", "energy_neural_r4_solve_pressure"],
+  "trace_base_sha256": "6f5b96ea4ba8c7f682b23c46dcc4f47948765e64b9b9069f9da521ee9819d07f",
+  "energy_base": "Future reviewed trace-appended archive, exact SHA required when actual artifact exists",
+  "cases_Re": [16.875, 23.125],
+  "point_indices": "Same existing18000 deterministic indices, exact byte hash enforced",
+  "units": {"velocity":"u/U", "pressure":"p/U^2"},
+  "requirements": ["Actual completed diagnostic", "Independent scientific audit exact hash and terminal bindings", "Separate local headroom/write window", "Full-rule metrics preserved separately from display subset"],
+  "no_success_claim": true,
+  "no_new_solve_reconstruction_or_fitting": true,
+  "validation_allowed": false,
+  "combined_dataset_limit_bytes": 16777216
+}

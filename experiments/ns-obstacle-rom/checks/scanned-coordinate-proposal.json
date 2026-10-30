@@ -1,0 +1,47 @@
+{
+  "schema": "ns-obstacle-prospective-scan-integration-v1",
+  "status": "source_only_unreleased",
+  "actual_parent": null,
+  "actual_release": null,
+  "current_running_fit_changed": false,
+  "source_files": {
+    "accuracy_v2/scanned_fixed_coordinate_refine.py": "3872c136633acb97bc9d6e2a4af01c45091ea8df0bbfdf1e3cf91e773433044b",
+    "accuracy_v2/device_scan_objective.py": "c8ea231421fde3706f60b1df6bc2508cf3407b6d6ae0078c2414c362a2d33e0a",
+    "accuracy_v2/scanned_coordinate_log_bound_smoke.py": "106eec8949b91f92dce208636a48e620714db05469f431b8635f09acba4d5631"
+  },
+  "reference_source": "accuracy_v2/fixed_coordinate_residual_refine.py",
+  "full_volume_points": 1036497,
+  "complete_scan_blocks": 253,
+  "block_points": 4096,
+  "separate_unpadded_tail_points": 209,
+  "separate_boundary_points": 805,
+  "padding_used": false,
+  "objective_changed": false,
+  "coordinates_changed": false,
+  "child_parameter_count": 22792,
+  "parent_frozen": true,
+  "scan_gradient": "value_and_grad per block inside sequential scan; no reverse through scan",
+  "metrics": "additive block statistics only; parameter-gradient norms and dot products after global volume and boundary accumulation",
+  "dynamic_arguments": [
+    "theta",
+    "stacked teacher and cached parent blocks",
+    "value norms",
+    "gradient norms",
+    "mode weights"
+  ],
+  "initial_gate": "Complete original streamed objective/components and child-gradient compared to scanned volume plus separate tail/boundary; raw arrays before assertions",
+  "final_gate": "Reload serialized composite and replay complete original uncached streamed JAX objective and child gradient",
+  "memory": "Keep original device block cache plus explicit stacked complete blocks; combined logical payload <=1GiB; actual GPU memory statistics and host RSS recorded. Not a peak-device-memory guarantee.",
+  "interruption": "Pending full evaluation before dispatch; completed_blocks null and volume_scan_progress_unknown true if scan outstanding; no partial objective admitted. Whole-body hard timeout remains required.",
+  "checkpoint_semantics": "Unchanged initial/every1000/final full state, every accepted/trial/evaluation scalar/hash record, child-only theta and physical stopping",
+  "future_prerequisites": [
+    "Root synthetic helper smoke/source review",
+    "Independent integration source review",
+    "Actual selected model and genuine review",
+    "Fresh packet/runtime/resource closure",
+    "Exact root executable release",
+    "Actual initial streamed/scan equivalence before any update"
+  ],
+  "speed_claim": false,
+  "independent_numpy_replay_claim": false
+}

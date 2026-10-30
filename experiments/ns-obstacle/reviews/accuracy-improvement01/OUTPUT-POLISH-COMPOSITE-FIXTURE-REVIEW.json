@@ -1,0 +1,53 @@
+{
+  "schema": "ns-obstacle-residual-composite-fixture-review-v1",
+  "passed": true,
+  "fixture_sha256": "1ee941dd70a02f1a19238cd4da4ae686b4bced22f67fe83d3102e6240a048d2d",
+  "execution_sha256": "8e0475c534ee31c005ecb7cfae56a6ceb7f4c924c3a45ab119366d2e2fe15124",
+  "source_commit": "f6eb483dd",
+  "mirror_commit": "7f2fb1e26",
+  "scope": "Independent saved-array/source/model/runtime review of one actual339point composite fixture; no full-rule/PDE or universal bitwise claim.",
+  "physical_admission": false,
+  "model_sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d",
+  "parent_model_sha256": "cd052629569aa1b8ea243a65a9ec22bd4a9ce9a0713999047d8ca1fb98a748d5",
+  "selected_child_theta_sha256": "a28248ec3233fb7bf9290293adac3701cc63c00ba63a136bbed398716c1d65ed",
+  "arrays_sha256": "b440af9858372ebb4a2541ec1267240e2a5b4275adb58079b142f2512b6f1521",
+  "prefixes": [
+    {
+      "prefix": 1,
+      "value_max_abs_gap": 2.661065812148422e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    },
+    {
+      "prefix": 2,
+      "value_max_abs_gap": 2.661065812148422e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    },
+    {
+      "prefix": 4,
+      "value_max_abs_gap": 2.661065812148422e-15,
+      "physical_gradient_max_abs_gap": 2.8421709430404007e-13,
+      "passed": true
+    }
+  ],
+  "runtime": {
+    "python": "3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0]",
+    "jax": "0.10.1",
+    "backend": "gpu",
+    "x64": true,
+    "matmul_precision": "highest",
+    "device_kind": [
+      "NVIDIA GB10"
+    ]
+  },
+  "sampled_correction_amplitude": {
+    "scope": "same339fixturepoints only; not fullrule or solved-state accuracy",
+    "parent_value_rms": 0.068508484097318,
+    "child_value_rms": 0.0010120038467461396,
+    "parent_physical_gradient_rms": 3.9950518018091783,
+    "child_physical_gradient_rms": 0.17203687890800692,
+    "parent_child_sum_value_max_abs_gap": 0.0,
+    "parent_child_sum_gradient_max_abs_gap": 0.0
+  }
+}

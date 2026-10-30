@@ -33,7 +33,7 @@ job=P.parents[1];assert pathlib.Path(BINDING['release_file']).name==BINDING['rel
 assert s['bank_evaluator_class']=='accuracy_v2.fast_spatial_bank.FastSpatialBank'
 runtime_path=pathlib.Path(BINDING['runtime_relative']);assert not runtime_path.is_absolute() and '..' not in runtime_path.parts;checked(job/runtime_path,BINDING['runtime_sha256']);runtime=json.loads((job/runtime_path).read_text());assert runtime['jax_backend']=='gpu' and runtime['jax_x64'] is True and runtime['matmul_precision']=='highest'
 release=json.loads((job/BINDING['release_file']).read_text());assert release['authorized'] and release['single_execution'] and release['validation_allowed'] is False
-assert release['numpy_derivative_contraction']=='optimized_einsum';checked(job/'accuracy_v2/fast_spatial_bank.py',release['fast_evaluator_sha256']);checked(job/'accuracy_v2/diagnostic02_launch.py',release['launcher_sha256'])
+assert release['numpy_derivative_contraction']=='optimized_einsum';checked(job/'accuracy_v2/fast_spatial_bank.py',release['fast_evaluator_sha256']);checked(job/'accuracy_v2/diagnostic03_launch.py',release['launcher_sha256'])
 checked(job/'PLAN.json',release['plan_sha256']);plan=json.loads((job/'PLAN.json').read_text());checked(job/'RUNTIME-INVENTORY.json',release['runtime_inventory_sha256']);inventory=json.loads((job/'RUNTIME-INVENTORY.json').read_text())
 for item in inventory['files']:
  rel=pathlib.Path(item['destination']);assert not rel.is_absolute() and '..' not in rel.parts;path=job/rel;assert path.stat().st_size==item['bytes'];checked(path,item['sha256'])

@@ -1,0 +1,161 @@
+{
+  "record": {
+    "operator": {
+      "convection": {
+        "array": "a000000",
+        "shape": [
+          8,
+          9,
+          9
+        ],
+        "dtype": "float64",
+        "content_sha256": "2f189b84c73b6af99ecb88f4835270f48f91fae7d6260335f2778ceeec589d34"
+      },
+      "viscous": {
+        "array": "a000001",
+        "shape": [
+          8,
+          9
+        ],
+        "dtype": "float64",
+        "content_sha256": "867721b51314ab9f28654b148eae274945356780360caacf03e1ed991d303058"
+      },
+      "pressure": {
+        "array": "a000002",
+        "shape": [
+          8,
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "6d158e4145ce096279b5b48e667b46a6b4a52ea11450e19d50431f76dd0b4770"
+      },
+      "pressure_lift": {
+        "array": "a000003",
+        "shape": [
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "074f99e26274e170554cb9ef556c94f278ccc30509f049484be959b32ad9136f"
+      },
+      "continuity": {
+        "array": "a000004",
+        "shape": [
+          4,
+          9
+        ],
+        "dtype": "float64",
+        "content_sha256": "be0db3d6e08d045d3e7651ae48de07c9aec1fcf7bcbaec47c37a29e82324b091"
+      },
+      "velocity_test_gram": {
+        "array": "a000005",
+        "shape": [
+          8,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "78241beae550a590c515be138c7f2edea5bdf9c97dc60c8f7a58552bef52db72"
+      },
+      "scalar_test_gram": {
+        "array": "a000006",
+        "shape": [
+          4,
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "e01e758a7a4a13435b197de2ed2874873f872933e80c8f10d37623cd8faa69b7"
+      },
+      "velocity_unknown_gram": {
+        "array": "a000007",
+        "shape": [
+          8,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "bf67271640f76ebbc4d67280ea031dacc864e77f110b400d9edcf2ba3d3dd19e"
+      },
+      "pressure_unknown_gram": {
+        "array": "a000006",
+        "shape": [
+          4,
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "e01e758a7a4a13435b197de2ed2874873f872933e80c8f10d37623cd8faa69b7"
+      },
+      "formulation": "mixed_Galerkin",
+      "lv": {
+        "array": "a000008",
+        "shape": [
+          8,
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "ff52fa7a371fe352906c4a817c78710c0c195e577eeb91ff81927f1eb8d229d2"
+      },
+      "lq": {
+        "array": "a000009",
+        "shape": [
+          4,
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "0b3ec48aca2ad02faf7707f6f237159065ce6736daa3009c95479aaeb9fcdd52"
+      },
+      "unknown_cholesky": {
+        "array": "a000010",
+        "shape": [
+          12,
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "1f68390f3a4b5efac2edf258a82c20555af71f52f209df734c5168649c6ebb02"
+      },
+      "unknown_map": {
+        "array": "a000011",
+        "shape": [
+          12,
+          12
+        ],
+        "dtype": "float64",
+        "content_sha256": "ed013d0b1b3cc5570cb32e1531849d2aa24669da671ace102605737b523d64da"
+      },
+      "nv": 8,
+      "np": 4
+    },
+    "operator_array_fingerprint": "7d191821c2d12c3db4f7ff1a13f539a7e626863e1ad503ff2e00c907e4ee63e7",
+    "trial_field_fingerprint": "92f88487a2f1176d80baf8e3ee61882b6de71353d68d0b14bdb1c6d753d85c75",
+    "weights_sha256": "e6a219eaf66804a00065a699357b3f067e0efde3f5085a59d39838fad814bebc",
+    "test_definition": "actual enriched velocity8 and pressure4 trial fields, same original order",
+    "momentum_rows": 8,
+    "continuity_rows": 4,
+    "formulation": "mixed_Galerkin",
+    "construction_point_block": 4096,
+    "construction_seconds": 5.591879535466433,
+    "source_sha256": "1c088d90e0715a027f6fea8f9ed3bf68aa41890fc32f1092b6c67bce441eccc6",
+    "inherited_trial_inf_sup": {
+      "beta": 0.1381539093854949,
+      "reference_beta": 0.1381539093855881,
+      "ratio": 0.9999999999993253,
+      "singular_values": [
+        0.6270941229554602,
+        0.4485779958573541,
+        0.28609055575929,
+        0.1381539093854949
+      ],
+      "norms": "dimensionless velocity H1, pressure L2",
+      "passed": true
+    }
+  },
+  "array_file": "actual_mixed_galerkin_operator.npz",
+  "array_sha256": "307d21de016eddd86bdfaabb3e167f0b1eb7de8ec171d9249bdb3c925f744f87",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 12,
+    "array_references": 13,
+    "unique_expanded_bytes": 10464,
+    "logical_expanded_reference_bytes": 10592,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 1065271
+  }
+}

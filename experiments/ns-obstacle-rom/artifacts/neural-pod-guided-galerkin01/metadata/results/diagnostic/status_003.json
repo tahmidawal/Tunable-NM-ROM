@@ -1,0 +1,44 @@
+{
+  "record": {
+    "schema": "ns-obstacle-composite-mixed-galerkin-diagnostic-v1",
+    "status": "started",
+    "model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+    "original_bank_gate_passed": false,
+    "new_model_gate_not_yet_admitted": true,
+    "physical_admission": false,
+    "eligible_accuracy": false,
+    "validation_seen": false,
+    "reference_fit_initialization_used": false,
+    "training_or_quadrature_fit_performed": false,
+    "matched_accuracy_or_speedup_claim": false,
+    "cases": [],
+    "formulation": "mixed_Galerkin",
+    "original_LS_solver_not_rerun": true,
+    "elapsed_seconds": 157.61434705834836,
+    "bank_evaluator_class": "accuracy_v2.residual_head_bank.ResidualHeadBank",
+    "model": {
+      "record_file": "original_weak_LS_model_context.json",
+      "record_sha256": "c4457efbfd62db052302df1f08c3c4a1b77daa7c48a926104ed7ef575cf7beab",
+      "array_file": "original_weak_LS_model_context.npz",
+      "array_sha256": "0e8a7de4e11d3cac4814d96f7193c998e3059f8b73fb9346ed0a4a8f39a16d59"
+    },
+    "galerkin_operator": {
+      "record_file": "actual_mixed_galerkin_operator.json",
+      "record_sha256": "529dad8423c6d15781a04b8195b8205a8403703b2b05425bac32f1a709e1c2f4",
+      "array_file": "actual_mixed_galerkin_operator.npz",
+      "array_sha256": "307d21de016eddd86bdfaabb3e167f0b1eb7de8ec171d9249bdb3c925f744f87"
+    }
+  },
+  "array_file": "status_003.npz",
+  "array_sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 0,
+    "array_references": 0,
+    "unique_expanded_bytes": 0,
+    "logical_expanded_reference_bytes": 0,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 1051068
+  }
+}

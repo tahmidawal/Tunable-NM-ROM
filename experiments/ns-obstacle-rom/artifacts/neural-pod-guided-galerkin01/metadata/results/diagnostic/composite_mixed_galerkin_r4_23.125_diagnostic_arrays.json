@@ -1,0 +1,146 @@
+{
+  "record": {
+    "full": {
+      "velocity": {
+        "array": "a000000",
+        "shape": [
+          1036497,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "ce6eeaa322268d05ebab11c1f072a23a7a1c013f43305d9ad4cd1f7e8d6fc6d6"
+      },
+      "pressure": {
+        "array": "a000001",
+        "shape": [
+          1036497
+        ],
+        "dtype": "float64",
+        "content_sha256": "56d98a98c8b97701f165520ae1d4bb86d604e7b6fdd6af5a8a5c6e91cb309aef"
+      },
+      "velocity_gradient": {
+        "array": "a000002",
+        "shape": [
+          1036497,
+          2,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "44d73b348bdb99910f21afcf4f1cd9d4a9ac8d361d55f47e6c6818d866d30467"
+      }
+    },
+    "boundary": {
+      "velocity": {
+        "array": "a000003",
+        "shape": [
+          4459,
+          2
+        ],
+        "dtype": "float64",
+        "content_sha256": "bc4a58431b266d8b43e1efd1c77234109397cce6004893677a57eff26f953478"
+      },
+      "pressure": {
+        "array": "a000004",
+        "shape": [
+          4459
+        ],
+        "dtype": "float64",
+        "content_sha256": "95f20bd76f213f7e983e4edb19814f11a5d09a11317cbcefa662fb649f0e2f85"
+      }
+    },
+    "direct": {
+      "array": "a000005",
+      "shape": [
+        12
+      ],
+      "dtype": "float64",
+      "content_sha256": "6d6ab6efe0f59a07aaaa8d89e714f485a6bcb8310b6fb5227c4fdd948296dd9d"
+    },
+    "tensor": {
+      "array": "a000006",
+      "shape": [
+        12
+      ],
+      "dtype": "float64",
+      "content_sha256": "7d6a3be6b1d1f576f19af35d71b95e1b4a57e9a644831753729ef2af3c6010f7"
+    },
+    "terms": {
+      "advection": {
+        "array": "a000007",
+        "shape": [
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "ab9faeb3aef4cc22741e1ec69ccee3368dadfc10d7edb02b716e5c8cc2a2764f"
+      },
+      "viscous": {
+        "array": "a000008",
+        "shape": [
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "0734abbc8b22d990fbe8e01f7aa95ea3b826aca5b2077bb5ddaa9fa1173d9f4c"
+      },
+      "pressure": {
+        "array": "a000009",
+        "shape": [
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "029768200b67bb33158c1a57be8042c316bbbf159b3068a49c378287b00a35cb"
+      },
+      "pressure_lifting": {
+        "array": "a000010",
+        "shape": [
+          8
+        ],
+        "dtype": "float64",
+        "content_sha256": "2a49dd2b3c1b6a65c23a23fa639854cbb3e58e279dc5f89571950d4cd57a0584"
+      },
+      "continuity": {
+        "array": "a000011",
+        "shape": [
+          4
+        ],
+        "dtype": "float64",
+        "content_sha256": "c4317e35e3ec54c9804045fd066711237bc019e9420b9d5f3151a599668ea4bd"
+      }
+    },
+    "force_coefficient": {
+      "array": "a000012",
+      "shape": [
+        2
+      ],
+      "dtype": "float64",
+      "content_sha256": "54e4990f7e81cc71b5164c6cd1baf57aa8845083e52cbc1c2d2e9c2cbee0413c"
+    },
+    "galerkin_whitened_residual": {
+      "array": "a000013",
+      "shape": [
+        12
+      ],
+      "dtype": "float64",
+      "content_sha256": "334f85d219ae464bda3e6eb1ef8af58f53cb01dabc31f9e1947d5a4245cbc15c"
+    },
+    "original_LS_residual_auxiliary_only": {
+      "array": "a000014",
+      "shape": [
+        80
+      ],
+      "dtype": "float64",
+      "content_sha256": "f079421723cca37c83ba736ae23f4b4ef0c9db44ef737796aa5c9919dd3290ca"
+    }
+  },
+  "array_file": "composite_mixed_galerkin_r4_23.125_diagnostic_arrays.npz",
+  "array_sha256": "f5d47b72a61b9244e7ab7b677cc9f4bbb6d305c161286ff134aa8ebb75468359",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 15,
+    "array_references": 15,
+    "unique_expanded_bytes": 58152080,
+    "logical_expanded_reference_bytes": 58152080,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 59787085
+  }
+}

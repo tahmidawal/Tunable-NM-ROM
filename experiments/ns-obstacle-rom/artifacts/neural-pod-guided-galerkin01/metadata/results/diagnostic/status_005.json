@@ -1,0 +1,230 @@
+{
+  "record": {
+    "schema": "ns-obstacle-composite-mixed-galerkin-diagnostic-v1",
+    "status": "started",
+    "model_sha256": "26e99e996214a7e54a824622540990e7f5ee6d944c4489e2af3e7caeab8a8b80",
+    "original_bank_gate_passed": false,
+    "new_model_gate_not_yet_admitted": true,
+    "physical_admission": false,
+    "eligible_accuracy": false,
+    "validation_seen": false,
+    "reference_fit_initialization_used": false,
+    "training_or_quadrature_fit_performed": false,
+    "matched_accuracy_or_speedup_claim": false,
+    "cases": [
+      {
+        "Re": 16.875,
+        "eligible_accuracy": false,
+        "physical_admission": false,
+        "diagnostic_only": true,
+        "formulation": "mixed_Galerkin",
+        "root_tolerance": 1e-09,
+        "raw_invocation": {
+          "record_file": "composite_mixed_galerkin_r4_16.875_raw_invocation.json",
+          "record_sha256": "1cd92f04db16964f68c4109326a5b74dfba99f60f2823a69fc7fe6dd5176e6e6",
+          "array_file": "composite_mixed_galerkin_r4_16.875_raw_invocation.npz",
+          "array_sha256": "cb582f482b48e3cccf5e02e9754f9ba580b4b9ac155af025a0a1a4be333919f5"
+        },
+        "diagnostic_arrays": {
+          "record_file": "composite_mixed_galerkin_r4_16.875_diagnostic_arrays.json",
+          "record_sha256": "5fed8bf6b06581a81731c3635a84c4a2cd99625bd2e2fafb2dd26b0e49bbe087",
+          "array_file": "composite_mixed_galerkin_r4_16.875_diagnostic_arrays.npz",
+          "array_sha256": "66c374e294100d061cef1578faab65c1954212e84bb1e7f8ed611e589a1f93e7"
+        },
+        "root_residual_norm": 1.7599104637532161e-15,
+        "scores": {
+          "velocity_numerator": 0.003704988088954358,
+          "velocity_denominator": 10.459943368488194,
+          "velocity_relative": 0.00035420727994723845,
+          "pressure_numerator": 0.002179034084045346,
+          "pressure_denominator": 9.455929453871821,
+          "pressure_scaled": 0.00023044102588488745,
+          "volume": 89.41460183660062,
+          "U": 1.0,
+          "pressure_shift_applied": false,
+          "Re": 16.875,
+          "model": "bank_r4",
+          "force_coefficient": [
+            6.117026617797183,
+            0.021521942856879025
+          ],
+          "drag_relative": 0.00020828754409111025,
+          "transverse_absolute": 0.0013384018808541773,
+          "divergence": 0.003996778738634064,
+          "inlet_flux": 4.099999999999973,
+          "outlet_flux": 4.099999999998422,
+          "mass": 3.7823402946254363e-13,
+          "boundary_trace": 3.09178123346382e-10,
+          "velocity_gradient_L2_error": 0.05819719311809162,
+          "velocity_gradient_reference_L2_norm": 11.888700496624104,
+          "velocity_gradient_relative_denominator": 11.888700496624104,
+          "velocity_gradient_relative": 0.004895168579157764,
+          "velocity_gradient_scaled": 0.006154571414898006,
+          "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+          "reference_force_definition": "physical_symmetric",
+          "target_checks": {
+            "velocity": true,
+            "pressure": true,
+            "drag": true,
+            "transverse": true,
+            "divergence": true,
+            "mass": true,
+            "boundary_trace": true
+          },
+          "accuracy_targets_passed": true,
+          "physical_admission": false
+        },
+        "solver_status": "root_converged",
+        "full_direct_tensor_relative_gap": 5.303806646874665e-16,
+        "full_direct_tensor_denominator": 2.662179192110731,
+        "jacobian_check": {
+          "samples": [
+            {
+              "step": 0.0001,
+              "relative_error": 4.130854506569328e-12,
+              "signal": 0.00012402337101731904,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            },
+            {
+              "step": 1e-05,
+              "relative_error": 7.098008056926181e-11,
+              "signal": 1.2402337101820661e-05,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            },
+            {
+              "step": 1e-06,
+              "relative_error": 3.1846355886726165e-10,
+              "signal": 1.2402337100847892e-06,
+              "roundoff_scale": 4.440892098500626e-15,
+              "resolved": true
+            }
+          ],
+          "passed": true,
+          "interpretation": "quadratic centered difference; roundoff plateau"
+        },
+        "diagnostic_numerical_targets_passed": true,
+        "representation_diagnostic": {
+          "velocity_numerator": 0.0026614321248127613,
+          "velocity_denominator": 10.459943368488194,
+          "velocity_relative": 0.00025444039523489563,
+          "pressure_numerator": 0.0008029579319475439,
+          "pressure_denominator": 9.455929453871821,
+          "pressure_scaled": 8.491581243965023e-05,
+          "volume": 89.41460183660062,
+          "U": 1.0,
+          "pressure_shift_applied": false,
+          "Re": 16.875,
+          "model": "bank_r4",
+          "force_coefficient": [
+            6.117744329615245,
+            0.021518501904211812
+          ],
+          "drag_relative": 9.09818051325014e-05,
+          "transverse_absolute": 0.0013349609281869644,
+          "divergence": 0.0039962463206724376,
+          "inlet_flux": 4.099999999999973,
+          "outlet_flux": 4.099941879620093,
+          "mass": 1.4175702409853691e-05,
+          "boundary_trace": 3.096942480621683e-10,
+          "velocity_gradient_L2_error": 0.05885863104317225,
+          "velocity_gradient_reference_L2_norm": 11.888700496624104,
+          "velocity_gradient_relative_denominator": 11.888700496624104,
+          "velocity_gradient_relative": 0.004950804426428747,
+          "velocity_gradient_scaled": 0.006224520955903708,
+          "velocity_gradient_definition": "weighted L2 d(u/U)/d(x/D); scaled by sqrt(dimensionless volume); relative floor 1e-12 sqrt(volume); diagnostic only",
+          "reference_force_definition": "physical_symmetric",
+          "target_checks": {
+            "velocity": true,
+            "pressure": true,
+            "drag": true,
+            "transverse": true,
+            "divergence": true,
+            "mass": true,
+            "boundary_trace": true
+          },
+          "accuracy_targets_passed": true,
+          "physical_admission": false,
+          "kind": "representation_only_not_PDE_solution",
+          "projection_velocity": {
+            "squared_errors": [
+              7.08322095498537e-06
+            ],
+            "squared_reference_norms": [
+              3.6716427220952395
+            ],
+            "numerical_rank": 8,
+            "singular_values": [
+              1.0018450417023363,
+              1.0005496001081584,
+              1.000146459614562,
+              0.9998344000443858,
+              0.2533694996559601,
+              0.21290727846519067,
+              0.1616710500459786,
+              0.07800904636143806
+            ]
+          },
+          "projection_pressure": {
+            "squared_errors": [
+              6.447414404774752e-07
+            ],
+            "squared_reference_norms": [
+              2.577148793559053
+            ],
+            "numerical_rank": 4,
+            "singular_values": [
+              0.9999999999999999,
+              0.9999999999999998,
+              0.9999999999999997,
+              0.9999999999999996
+            ]
+          },
+          "achieved_state": [
+            -1.9119840331599431,
+            0.12338960750885396,
+            0.0013362284491781962,
+            -0.0008101909831473201,
+            0.0007909072419526153,
+            -0.001260956317100143,
+            0.0003608547120410963,
+            0.0013695796802208474,
+            0.5494860259025725,
+            1.503600956278348,
+            0.11996764127816283,
+            0.002277164991553991
+          ]
+        }
+      }
+    ],
+    "formulation": "mixed_Galerkin",
+    "original_LS_solver_not_rerun": true,
+    "elapsed_seconds": 162.3425509436056,
+    "bank_evaluator_class": "accuracy_v2.residual_head_bank.ResidualHeadBank",
+    "model": {
+      "record_file": "original_weak_LS_model_context.json",
+      "record_sha256": "c4457efbfd62db052302df1f08c3c4a1b77daa7c48a926104ed7ef575cf7beab",
+      "array_file": "original_weak_LS_model_context.npz",
+      "array_sha256": "0e8a7de4e11d3cac4814d96f7193c998e3059f8b73fb9346ed0a4a8f39a16d59"
+    },
+    "galerkin_operator": {
+      "record_file": "actual_mixed_galerkin_operator.json",
+      "record_sha256": "529dad8423c6d15781a04b8195b8205a8403703b2b05425bac32f1a709e1c2f4",
+      "array_file": "actual_mixed_galerkin_operator.npz",
+      "array_sha256": "307d21de016eddd86bdfaabb3e167f0b1eb7de8ec171d9249bdb3c925f744f87"
+    }
+  },
+  "array_file": "status_005.npz",
+  "array_sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+  "physical_admission": false,
+  "array_retention": {
+    "policy": "lossless dtype/shape/bytes content deduplication with byte-equality check",
+    "unique_arrays": 0,
+    "array_references": 0,
+    "unique_expanded_bytes": 0,
+    "logical_expanded_reference_bytes": 0,
+    "disk_reserve_bytes": 10737418240,
+    "projected_output_bytes": 1061732
+  }
+}

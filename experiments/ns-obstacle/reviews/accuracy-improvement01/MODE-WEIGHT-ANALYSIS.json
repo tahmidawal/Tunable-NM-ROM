@@ -1,0 +1,63 @@
+{
+  "config_sha256": "120fb11cafdd3ce2700e2c263f1737a0d3200b22db0a5741076fccbcff8289a0",
+  "replay_sha256": "8f4811e80eab466d5936cc80a8b25e513cb8ea7e0db5c5c7a3974f3afd83d1f8",
+  "generator_sha256": "4a9d7fefc2e7bde49150bc9ceabb1220cf1c4128c385aeff3369210f2da68a6c",
+  "singular_values": [
+    6.262405845690011,
+    0.35081375209372717,
+    0.02469633315548602,
+    0.0018166794857509315
+  ],
+  "mode_weights": [
+    0.7595820705915158,
+    0.17978042596136115,
+    0.047700215145151006,
+    0.012937288301971998
+  ],
+  "modal_objective_share": [
+    0.2589069177086813,
+    0.24560348878879196,
+    0.22469139645636418,
+    0.2707981970461626
+  ],
+  "gradient_fraction_of_objective": 0.9503183367167108,
+  "retained_correction_value_energy_share": [
+    0.9968561498847242,
+    0.003128263251757554,
+    1.5502974193821968e-05,
+    8.388932461205464e-08
+  ],
+  "retained_correction_gradient_energy_share": [
+    0.9961054927867212,
+    0.0038737280217234753,
+    2.066693656922481e-05,
+    1.1225498604017012e-07
+  ],
+  "fixed_POD_coefficient_value_error_energy_share": [
+    0.9712048989226049,
+    0.028214305294554192,
+    0.0005639200174551922,
+    1.6875765385858574e-05
+  ],
+  "fixed_POD_coefficient_gradient_error_energy_share": [
+    0.9848073153428651,
+    0.014914253442476098,
+    0.0002719645887043549,
+    6.466625954367956e-06
+  ],
+  "fixed_POD_coefficient_retained_correction_relative_value_error": 0.004619713075033573,
+  "fixed_POD_coefficient_retained_correction_relative_gradient_error": 0.03116276215205801,
+  "relative_to_mode1_weight_amplification_against_sigma_squared": [
+    1.0,
+    75.42180115877349,
+    4037.9701231989216,
+    202392.46783548073
+  ],
+  "limitations": [
+    "Original POD coefficient row orthogonality cancels cross-mode terms only over the full training ensemble.",
+    "These fixed-coefficient retained-four-mode correction calculations exclude the lift and truncated modes.",
+    "They are not actual solved fields, best-fit projection errors, individual Reynolds cases, or development/validation errors.",
+    "Loss allocation may create optimization competition in a shared network, but this arithmetic does not prove causal harm.",
+    "No current candidate, objective, data, or model was changed."
+  ]
+}

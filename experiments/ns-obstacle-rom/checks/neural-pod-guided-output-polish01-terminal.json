@@ -1,0 +1,83 @@
+{
+  "job_id": 6659904,
+  "terminal_status": "6659904|COMPLETED|197|0:0\n6659904.batch|COMPLETED|197|0:0\n6659904.extern|COMPLETED|197|0:0\n",
+  "queue_after": "",
+  "files": {
+    "results/fit/CONFIG.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/CONFIG.json",
+      "bytes": 13742,
+      "sha256": "aa13fc7b8dd444a49e129b88efc18b0b944c07ad5ca6981a59676d31029249cb"
+    },
+    "results/fit/FINAL.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/FINAL.json",
+      "bytes": 8276,
+      "sha256": "03ec4d1c80ba35150f4200d891e6e37310d1a29e259dd23ec5295b82f6c62c88"
+    },
+    "results/fit/MODEL-RECEIPT.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/MODEL-RECEIPT.json",
+      "bytes": 1542,
+      "sha256": "543e65a270228b224c4cb26772fd9acb7d951fdade5199a9e76cf38c93411697"
+    },
+    "results/fit/spatial-bank-raw.npz": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/spatial-bank-raw.npz",
+      "bytes": 477579,
+      "sha256": "7093502b4d426735fd7989a5dec699f7b623dcca895a62f02896212fcb70dc3d"
+    },
+    "results/fit/RUNTIME.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/RUNTIME.json",
+      "bytes": 239,
+      "sha256": "f725facfbadd8ce689ca088de3d257f63de0ceff5abec02659a7a4243d97c264"
+    },
+    "results/fit/SELECTED-FULL-REPLAY.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/SELECTED-FULL-REPLAY.json",
+      "bytes": 4522,
+      "sha256": "ccd51de6d73947cf69b2e45f210e037a8eaf6314c88f12e65c3e47f27a9f8344"
+    },
+    "results/runtime.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/runtime.json",
+      "bytes": 301,
+      "sha256": "1b6c0b096fde319ee69d4cb35bbcf5da59cccbae7158f5c1ac749e66c7debbf5"
+    },
+    "results/fit/INITIAL-CACHE-EQUIVALENCE.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/INITIAL-CACHE-EQUIVALENCE.json",
+      "bytes": 7338,
+      "sha256": "83108fce0bbd524bb401d773b7a3d5c4aab825237891da0dbdf0045e045032ba"
+    },
+    "results/fit/AFFINE-ORIGINAL-OBJECTIVE-EQUIVALENCE.json": {
+      "path": "/cluster/tufts/paralab/tawal01/ns-obstacle-rom-20261027/neural-pod-guided-output-polish01/results/fit/AFFINE-ORIGINAL-OBJECTIVE-EQUIVALENCE.json",
+      "bytes": 1863,
+      "sha256": "572d2a230880e9333839aacdc44501cbaa929d34ffde141b2e24d91f41fe605f"
+    }
+  },
+  "runtime": {
+    "python": "3.13.2",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "optax": "0.2.8",
+    "numpy": "2.5.0",
+    "scipy": "1.18.0",
+    "jax_backend": "gpu",
+    "jax_x64": true,
+    "matmul_precision": "highest",
+    "python_executable_sha256": "19aabe03e346a7ed57979d4a429c0eb22088e1e7e51397401640d52c166808f9"
+  },
+  "fit_runtime": {
+    "python": "3.13.2 (main, Jun 27 2025, 16:52:43) [GCC 12.4.0]",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "numpy": "2.5.0",
+    "backend": "gpu",
+    "device_kind": [
+      "NVIDIA H200"
+    ],
+    "x64": true,
+    "matmul_precision": "highest"
+  },
+  "logs": {
+    "slurm-6659904.err": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail": ""
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "fork": {"branch": "exp/2026-10-27-ns-obstacle-2d", "commit": "091afa488ec8eab401a4bf4753af6be19d945d0f", "mirror": "36fce0d1d1598866cc6142e69607e13683026034"},
+  "byte_copies": {
+    "vendor/scalars.py": {"from": "experiments/ns-obstacle-2d/scalars.py", "sha256": "140112d7fc7ce0baac31b7120a4b21df3daf15d6e754c9172cf6f01e6715f6de"},
+    "vendor/oriented_normals.py": {"from": "experiments/ns-obstacle-2d/oriented_normals.py", "sha256": "3a13ea7ca6c9110997b1c44fd04006bdf9d5f089121beb91b2988a3ca6d7779b"},
+    "vendor/dependencies.py": {"from": "experiments/ns-obstacle-2d/dependencies.py", "sha256": "273de536a2bc9df980b36c6de55f3d0918133ad1d02f161dd9ad5d968eb51a72"},
+    "vendor/DEPENDENCIES.json": {"from": "experiments/ns-obstacle-2d/DEPENDENCIES.json", "sha256": "eddd5fc524c6582d7ffee25d498029ff2689f4af45f88309df2ea647eb578afb"},
+    "inputs/admitted_mesh.vol.bin": {"from": "experiments/ns-obstacle-2d/artifacts/g2-population-re20-02/retained/p4_g4_h3_baseline/mesh.vol.bin", "sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092", "admission": "FD1-REFERENCE-ADMISSION.json mesh_sha256 for every admitted reference"}
+  },
+  "new_code": ["transient.py", "cycles.py", "compare.py", "install_deps.py", "make_configs.py", "cluster/run.sh", "cluster/submit.sh"]
+}

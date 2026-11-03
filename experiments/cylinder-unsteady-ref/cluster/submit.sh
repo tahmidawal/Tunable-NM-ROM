@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Stage the committed lane sources into a FRESH cluster attempt directory and submit once.
+# Usage: cluster/submit.sh <attempt-name> <HH:MM:SS> <config.json> [...]
+# Requires a clean committed tree; checks squeue before and after; one job per directory.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+LANE=$(pwd)
+ATTEMPT=$1; WALL=$2; shift 2
+NS=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103
+DIR=$NS/$ATTEMPT
+git diff --quiet HEAD -- . || { echo "uncommitted changes in lane; commit first"; exit 2; }
+COMMIT=$(git rev-parse HEAD)
+FILES=(transient.py cycles.py compare.py install_deps.py vendor/scalars.py vendor/oriented_normals.py
+       vendor/dependencies.py vendor/DEPENDENCIES.json inputs/admitted_mesh.vol.bin cluster/run.sh "$@")
+ssh tufts-login "test ! -e $DIR && mkdir -p $DIR && squeue -u \$USER -h -o '%i %j %Z' | grep -c cyl-unsteady-20261103 || true"
+tar -cf - "${FILES[@]}" | ssh tufts-login "cd $DIR && tar -xf - && echo $COMMIT > SOURCE_COMMIT.txt && sha256sum ${FILES[*]} > SOURCE-SHA256SUMS"
+# Verify staged bytes against the local committed bytes.
+local_sums=$(sha256sum "${FILES[@]}")
+remote_sums=$(ssh tufts-login "cd $DIR && cat SOURCE-SHA256SUMS")
+[ "$local_sums" = "$remote_sums" ] || { echo "staged checksum mismatch"; exit 3; }
+CFGS=("$@")
+JOB=$(ssh tufts-login "cd $DIR && sbatch --parsable --job-name=ctol_cylu_$ATTEMPT --time=$WALL cluster/run.sh ${CFGS[*]}")
+ssh tufts-login "squeue -u \$USER -h -o '%i %j %Z' | grep cyl-unsteady-20261103 || true"
+echo "submitted job=$JOB dir=$DIR commit=$COMMIT"
+mkdir -p ledger
+printf '{"attempt":"%s","job":"%s","dir":"%s","commit":"%s","wall":"%s","configs":"%s","submitted_utc":"%s"}\n' \
+  "$ATTEMPT" "$JOB" "$DIR" "$COMMIT" "$WALL" "${CFGS[*]}" "$(date -u +%FT%TZ)" >> ledger/JOBS.jsonl

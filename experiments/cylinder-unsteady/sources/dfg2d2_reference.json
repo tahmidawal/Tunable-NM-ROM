@@ -1,0 +1,336 @@
+{
+  "source_page": "https://wwwold.mathematik.tu-dortmund.de/~featflow/en/benchmarks/cfdbenchmarking/flow/dfg_benchmark2_re100.html",
+  "source_page_sha256": "de8e16e39e9094dda650bfd75098839780996e6b8eff69084fb37f39bb34c525",
+  "zip": "https://wwwold.mathematik.tu-dortmund.de/~featflow/media/dfg_bench2new_2d/20141124_dfg_bench2_official.zip",
+  "zip_sha256": "08db59605b2f60efc512d2bbc79628ea5d1cc720c0986938a16920884a0215be",
+  "discretisation": "Q2/P1disc, Crank-Nicolson, levels 2-6, dt index 1,2,4",
+  "normalisation": "C = 2F/(U_mean^2 L), U_mean=1, L=0.1",
+  "levels": {
+    "lv2_dt1": {
+      "t0": 9.272585565527187,
+      "t1": 9.607106008401024,
+      "period": 0.33452044287383664,
+      "St": 0.2989353928295339,
+      "CD_max": 3.1468669991,
+      "CD_min": 3.0845672503,
+      "CL_max": 0.96962043444,
+      "CL_min": -1.0079378623,
+      "dp_at_t0_plus_half_period": 2.56172932200957,
+      "file_sha256": {
+        "bdforces_q2_lv2_dt1": "c2f8cd56dc96ee209778c8ae572a3054a1191242ccd11792dbe0828c7242b21b",
+        "pointvalues_q2_lv2_dt1": "a5ed0c1f16802ff1d4580c070b03f993c6792d841dcdceb41e370d4b4e6b9caf"
+      },
+      "dt": 0.009999999999999787,
+      "t_window": [
+        9.005,
+        9.995
+      ]
+    },
+    "lv2_dt2": {
+      "t0": 9.244118157608028,
+      "t1": 9.577619408789806,
+      "period": 0.33350125118177765,
+      "St": 0.2998489500283589,
+      "CD_max": 3.1471785381,
+      "CD_min": 3.0840537094,
+      "CL_max": 0.9770724331,
+      "CL_min": -1.0125081279,
+      "dp_at_t0_plus_half_period": 2.5620989775015004,
+      "file_sha256": {
+        "bdforces_q2_lv2_dt2": "ef59689cf7371b9c28929f4045b5b1bc52574e16154a051dce4e9471bb196744",
+        "pointvalues_q2_lv2_dt2": "5b8f6a09736dc7f09a7279d67a8f439c14cf5a7ef7a49c35e63f6583454d8901"
+      },
+      "dt": 0.0024999999999995026,
+      "t_window": [
+        9.00125,
+        9.99875
+      ]
+    },
+    "lv2_dt4": {
+      "t0": 9.242327671557694,
+      "t1": 9.575764497809335,
+      "period": 0.3334368262516403,
+      "St": 0.29990688528366494,
+      "CD_max": 3.1471882707,
+      "CD_min": 3.0839867668,
+      "CL_max": 0.97736984264,
+      "CL_min": -1.0127611028,
+      "dp_at_t0_plus_half_period": 2.562108915453937,
+      "file_sha256": {
+        "bdforces_q2_lv2_dt4": "c2a7831030e53a7b557ce347e508fa6ecd88a5239b1abc8b7d41466b79aa2909",
+        "pointvalues_q2_lv2_dt4": "7e564cea11cf16c7a6670d9ff391846c62f23645ed759a51982aded0d832088f"
+      },
+      "dt": 0.0006249999999994316,
+      "t_window": [
+        9.0003125,
+        9.9996875
+      ]
+    },
+    "lv3_dt1": {
+      "t0": 9.341971921909296,
+      "t1": 9.674242356738937,
+      "period": 0.33227043482964014,
+      "St": 0.3009596687447424,
+      "CD_max": 3.2091716902,
+      "CD_min": 3.1467772015,
+      "CL_max": 0.97798054734,
+      "CL_min": -1.0148644682,
+      "dp_at_t0_plus_half_period": 2.495407951374477,
+      "file_sha256": {
+        "bdforces_q2_lv3_dt1": "10455961022cba1e62963585505d93b99d563ce76dbbed3f2a10080b10598447",
+        "pointvalues_q2_lv3_dt1": "b706f4e2ba29a99323704ac8e4c852e42b644458205a1acafc6de5875108066a"
+      },
+      "dt": 0.009999999999999787,
+      "t_window": [
+        9.005,
+        9.995
+      ]
+    },
+    "lv3_dt2": {
+      "t0": 9.312009902164899,
+      "t1": 9.64321645457439,
+      "period": 0.3312065524094905,
+      "St": 0.3019263938847563,
+      "CD_max": 3.2094540556,
+      "CD_min": 3.1462317292,
+      "CL_max": 0.98265429852,
+      "CL_min": -1.0183013587,
+      "dp_at_t0_plus_half_period": 2.4956580900199388,
+      "file_sha256": {
+        "bdforces_q2_lv3_dt2": "de3ef0e2ed251ea191b2397aac1e7a768b992ee4404bf70baddea4668116c28a",
+        "pointvalues_q2_lv3_dt2": "9154d18f4788b16a3d3938a3762d354074bd159c0ed37c227986395e262f4d2f"
+      },
+      "dt": 0.0024999999999995026,
+      "t_window": [
+        9.00125,
+        9.99875
+      ]
+    },
+    "lv3_dt4": {
+      "t0": 9.31013000154481,
+      "t1": 9.641269438992806,
+      "period": 0.33113943744799634,
+      "St": 0.301987587980077,
+      "CD_max": 3.2094522063,
+      "CD_min": 3.1461903709,
+      "CL_max": 0.98308447582,
+      "CL_min": -1.0185538145,
+      "dp_at_t0_plus_half_period": 2.495673768113233,
+      "file_sha256": {
+        "bdforces_q2_lv3_dt4": "ea992b403746f6b8f8516254f5915e8a0a95fc797572c5a6934023260ef7cec6",
+        "pointvalues_q2_lv3_dt4": "6881d014e031e9e9fc959dd86f1a9094d7c6c0df67915efa8899fb063d01e6b4"
+      },
+      "dt": 0.0006249999999994316,
+      "t_window": [
+        9.0003125,
+        9.9996875
+      ]
+    },
+    "lv4_dt1": {
+      "t0": 9.017040966083147,
+      "t1": 9.349369982612128,
+      "period": 0.3323290165289805,
+      "St": 0.30090661671512386,
+      "CD_max": 3.2232368811,
+      "CD_min": 3.161261207,
+      "CL_max": 0.98048201741,
+      "CL_min": -1.0154154652,
+      "dp_at_t0_plus_half_period": 2.4852539288432145,
+      "file_sha256": {
+        "bdforces_q2_lv4_dt1": "17d4ee9ed341bc22451cd7f2e21d1aead4cc523f90b4e0e894d92bf757ef13fd",
+        "pointvalues_q2_lv4_dt1": "92de60005858b2fe81f3f901427e301ab5a1377ef55873054bc611e27a0dc045"
+      },
+      "dt": 0.009999999999999787,
+      "t_window": [
+        9.005,
+        9.995
+      ]
+    },
+    "lv4_dt2": {
+      "t0": 9.31937916080875,
+      "t1": 9.650644474538858,
+      "period": 0.3312653137301069,
+      "St": 0.3018728368327551,
+      "CD_max": 3.2232862168,
+      "CD_min": 3.1602692143,
+      "CL_max": 0.98446533105,
+      "CL_min": -1.0194501305,
+      "dp_at_t0_plus_half_period": 2.4853471528853692,
+      "file_sha256": {
+        "bdforces_q2_lv4_dt2": "e8d03ecc5782b301196b9b97804f0d0a963c7527519b7c363c1ef8eca62e3790",
+        "pointvalues_q2_lv4_dt2": "a6ef177109d0e46eadc96112ef15534f513f17d982f901b2fcc8717379ee8266"
+      },
+      "dt": 0.0024999999999995026,
+      "t_window": [
+        9.00125,
+        9.99875
+      ]
+    },
+    "lv4_dt4": {
+      "t0": 9.31749646135491,
+      "t1": 9.648694666843056,
+      "period": 0.33119820548814616,
+      "St": 0.30193400309223317,
+      "CD_max": 3.2232838642,
+      "CD_min": 3.1602296691,
+      "CL_max": 0.98485885794,
+      "CL_min": -1.0197101454,
+      "dp_at_t0_plus_half_period": 2.485362300492874,
+      "file_sha256": {
+        "bdforces_q2_lv4_dt4": "330d9d32fbbfe4b81b324776819a85f47227c2b57eea37fa3efdbaedce0241a6",
+        "pointvalues_q2_lv4_dt4": "b2374535b7f60ff2be14d5e10865f3283829048fb81c697b17094a9d18a94a93"
+      },
+      "dt": 0.0006249999999994316,
+      "t_window": [
+        9.0003125,
+        9.9996875
+      ]
+    },
+    "lv5_dt1": {
+      "t0": 9.026416036934785,
+      "t1": 9.358822447778374,
+      "period": 0.33240641084358913,
+      "St": 0.3008365565098987,
+      "CD_max": 3.2265975169,
+      "CD_min": 3.1644289841,
+      "CL_max": 0.9813277901,
+      "CL_min": -1.0170106757,
+      "dp_at_t0_plus_half_period": 2.483313163017881,
+      "file_sha256": {
+        "bdforces_q2_lv5_dt1": "7e1a1626d4351559d2fdac986a4f17d704fb38b581e01998ecdaf3417eb61b01",
+        "pointvalues_q2_lv5_dt1": "6d282b6ad237262ddc53a45b68b8ad091f2fe28b653b74be294dc5fbd28cffb0"
+      },
+      "dt": 0.009999999999999787,
+      "t_window": [
+        9.005,
+        9.995
+      ]
+    },
+    "lv5_dt2": {
+      "t0": 9.328830676455649,
+      "t1": 9.660175163374504,
+      "period": 0.3313444869188551,
+      "St": 0.301800705754581,
+      "CD_max": 3.2266125581,
+      "CD_min": 3.1635438846,
+      "CL_max": 0.98594249654,
+      "CL_min": -1.0207247077,
+      "dp_at_t0_plus_half_period": 2.4834584623279023,
+      "file_sha256": {
+        "bdforces_q2_lv5_dt2": "2aa6b7321f7b5b42db9d17b2d0932d52069dc8392c1fb3cb1fedeee6e7feea99",
+        "pointvalues_q2_lv5_dt2": "ded08f519155c7640488dfbd806e522fdc97ab5f0061795c382efe64aed24018"
+      },
+      "dt": 0.0024999999999995026,
+      "t_window": [
+        9.00125,
+        9.99875
+      ]
+    },
+    "lv5_dt4": {
+      "t0": 9.3269476617435,
+      "t1": 9.65822548830202,
+      "period": 0.3312778265585212,
+      "St": 0.30186143467206883,
+      "CD_max": 3.2266179539,
+      "CD_min": 3.1635107385,
+      "CL_max": 0.98619352619,
+      "CL_min": -1.020923447,
+      "dp_at_t0_plus_half_period": 2.4834703376903646,
+      "file_sha256": {
+        "bdforces_q2_lv5_dt4": "0425d9b1ab1bdb4a6231a67af334837e6ffc6bcac88e49ba6257d867cda7613b",
+        "pointvalues_q2_lv5_dt4": "87e2c849eebfeaa48aba37288517c0daca0661b85d8a77e786f3a3ec20cd6dcd"
+      },
+      "dt": 0.0006249999999994316,
+      "t_window": [
+        9.0003125,
+        9.9996875
+      ]
+    },
+    "lv6_dt1": {
+      "t0": 9.029048654856613,
+      "t1": 9.361493063573068,
+      "period": 0.3324444087164551,
+      "St": 0.30080217136480986,
+      "CD_max": 3.2271436828,
+      "CD_min": 3.1650993223,
+      "CL_max": 0.98295406087,
+      "CL_min": -1.01551231,
+      "dp_at_t0_plus_half_period": 2.4832582434543307,
+      "file_sha256": {
+        "bdforces_q2_lv6_dt1": "f8ec66ac9fdbde8c95487f83e6d8a54f99209091a1b4a12a2621fba4cb566fbd",
+        "pointvalues_q2_lv6_dt1": "6cfce87d8a955f1f2079e65a85e0ac935adaed071f26581bbca14709b14a1cb9"
+      },
+      "dt": 0.009999999999999787,
+      "t_window": [
+        9.005,
+        9.995
+      ]
+    },
+    "lv6_dt2": {
+      "t0": 9.331490180346812,
+      "t1": 9.662857268599883,
+      "period": 0.3313670882530708,
+      "St": 0.3017801210349178,
+      "CD_max": 3.2273892186,
+      "CD_min": 3.1642983528,
+      "CL_max": 0.98629201907,
+      "CL_min": -1.0210717565,
+      "dp_at_t0_plus_half_period": 2.48320441801586,
+      "file_sha256": {
+        "bdforces_q2_lv6_dt2": "7c5a43e5411a804df6dfdfd2b4ff4e3ad74e6666508894bdc9324f90631a9ced",
+        "pointvalues_q2_lv6_dt2": "7015a87524d1bf994310c543e58638c3496648a029a9710b3c9990bea6c457f7"
+      },
+      "dt": 0.0024999999999995026,
+      "t_window": [
+        9.00125,
+        9.99875
+      ]
+    },
+    "lv6_dt4": {
+      "t0": 9.329607205365598,
+      "t1": 9.660907453162483,
+      "period": 0.3313002477968858,
+      "St": 0.30184100574928696,
+      "CD_max": 3.2273923346,
+      "CD_min": 3.164264028,
+      "CL_max": 0.98656549629,
+      "CL_min": -1.0212876662,
+      "dp_at_t0_plus_half_period": 2.483219173801452,
+      "file_sha256": {
+        "bdforces_q2_lv6_dt4": "39208f273f8749f3c9510a5f19f4ccfe58f62871055b79b72bdc9ace7c30639d",
+        "pointvalues_q2_lv6_dt4": "b310a4cfc865f4472ed4f7d3c63ba0a5905642992b8f44f0b8ea4b356f92e3ba"
+      },
+      "dt": 0.0006249999999994316,
+      "t_window": [
+        9.0003125,
+        9.9996875
+      ]
+    }
+  },
+  "finest": {
+    "CD_max": 3.2273923346,
+    "CL_max": 0.98656549629,
+    "St": 0.30184100574928696,
+    "dp_at_t0_plus_half_period": 2.483219173801452,
+    "period": 0.3313002477968858
+  },
+  "schaefer_turek_1996_ranges": {
+    "CD_max": [
+      3.22,
+      3.24
+    ],
+    "CL_max": [
+      0.99,
+      1.01
+    ],
+    "St": [
+      0.295,
+      0.305
+    ],
+    "dp_at_t0_plus_half_period": [
+      2.46,
+      2.5
+    ],
+    "provenance": "manual transcription of the 1996 lower/upper bounds; verify against the paper before citing"
+  }
+}

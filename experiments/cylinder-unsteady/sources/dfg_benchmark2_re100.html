@@ -1,0 +1,635 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>DFG benchmark 2D-2 (RE100, periodic) - Featflow</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <link media="screen, projection" rel="stylesheet" href="../../../../media/css/screen.css" />  <link media="print" rel="stylesheet" href="../../../../media/css/print.css" />  <!--[if IE]><link media="screen, projection" rel="stylesheet" href="/featflow/media/css/ie.css" /><![endif]-->  
+  <link media="screen, projection" rel="stylesheet" href="../../../../media/css/featflow.css" />
+<script type="text/javascript" src="../../../../media/js/mailMaskierung.js"></script>
+<script type="text/javascript" src="../../../../media/js/show_pic.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="header" class="span-24 last">
+  <h1>Featflow</h1>
+  <img src="../../../../media/css/header.png" title="Featflow" alt="Featflow" /></div><!-- #header -->
+
+<div id="links" class="push-1 pull-1 span-22 last">
+<a href="http://www.featflow.de/album/" target="_blank" class="tooltip">Virtual Album of Fluid Motion<span>Optische Messsysteme - Strömungssimulationen - Ingeneurdienstleistungen</span></a>
+<a href="http://www.ianus-simulation.de/" target="_blank" class="tooltip">IANUS Simulation Industrial Corporations<span>Simulation and visualization project for the numerical study of stationary and nonstationary flows in two and three space dimensions which is designed for education and research.
+</span></a></div>
+
+<div id="wrapper" class="push-1 pull-1 span-22 last">
+
+<div id="menu" class="span-5 colborder">
+  <a href="../../../index.html">Home</a>
+  <a href="../../../contact.html">Contact</a><a href="../../../software.html">Software</a><div class="submenu"><a href="../../../software/feat.html">FEAT2D/FEAT3D</a><a href="http://www.feast.tu-dortmund.de/">FEAST</a><a href="../../../software/featflow.html">FEATFLOW</a><a href="../../../software/featflow2.html">FEATFLOW2</a><a href="../../../software/feat3.html">FEAT3</a><a href="../../../software/parpp3d.html">parPP3D</a><a href="../../../software/documentation.html">Documentation</a></div><a href="../../../team.html">Team</a><a href="../../../links.html">Links</a><div class="submenu"><a href="../../../links/websites.html">Websites</a><a href="../../../links/software_links.html">Software</a></div><a href="../../../benchmarks.html" class="selected">Benchmarks</a><div class="submenu"><a href="../../ff_benchmarks.html">FeatFlow Benchmark Suite</a><a href="../../cfdbenchmarking.html" class="selected">CFD Benchmarking Project</a><div class="submenu"><a href="../flow.html" class="selected">Flow around a Cylinder</a><div class="submenu"><a href="dfg_benchmark1_re20.html">DFG benchmark 2D-1 (RE20, laminar)</a><a href="dfg_benchmark2_re100.html" class="selected">DFG benchmark 2D-2 (RE100, periodic)</a><a href="dfg_benchmark3_re100.html">DFG benchmark 2D-3 (RE100, fixed time interval)</a><a href="dfg_flow3d.html">3D laminar case (Re=20 and Re=100)</a></div><a href="../bubble.html">Rising Bubble</a><a href="../fsi_benchmark.html">FSI Benchmark</a><a href="../mit_benchmark.html">MIT Benchmark</a></div></div><a href="../../../publications.html">Publications</a><a href="../../../services.html">Services</a><div class="submenu"><a href="../../../services/sitemap.html">Sitemap</a><a href="../../../impressum.html">Impressum</a><a href="../../../datenschutz.html">Datenschutzerkl&auml;rung</a></div><a href="../../../news.html">News</a><a href="../../../examples.html">Examples</a></div><!-- #menu -->
+
+<div id="content" class="prepend-top span-15 last clearfix">
+  <div id="breadcrumbs">
+     <a href="../../../index.html">Home</a> » <a href="../../../benchmarks.html">Benchmarks</a> » <a href="../../cfdbenchmarking.html">CFD Benchmarking Project</a> » <a href="../flow.html">Flow around a Cylinder</a> » <a href="dfg_benchmark2_re100.html">DFG benchmark 2D-2 (RE100, periodic)</a>  </div>
+
+  <hr />
+
+  <h1>DFG flow around cylinder benchmark 2D-2, time-periodic case (Re=100)</h1>
+
+<p>This benchmark simulates the time-periodic behaviour of a fluid in a pipe with a circular obstacle. It is set up in 2D with geometry data similar to the Re=20 case.</p>
+
+<h2>Geometry and flow configuration</h2>
+
+<p>The underlying geometry is a pipe without a circular cylinder $\Omega=[0,2.2] \times [0,0.41] \setminus B_r(0.2,0.2)$ with $r=0.05$. Taking a fluid density of $\rho=1.0$, the fluid is characterised by the nonstationary Navier-Stokes equations</p>
+
+<p>$$ u_t - \nu\Delta u + u\nabla u + \nabla p = 0,\qquad \text{\div }u = 0 $$</p>
+
+<p>with $u$ defining the velocity and $p$ the pressure. The kinematic viscosity is taken as</p>
+
+<p>$$ \nu = 0.001. $$</p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/geometry.png" title="Underlying geometry" alt="Underlying geometry" />
+</center></p>
+
+<h3>Boundary conditions</h3>
+
+<p>For the lower and upper walls $\Gamma_1=[0,2.2] \times {0}$ and $\Gamma_1=[0,2.2] \times {0.41}$ as well as the boundary $S=\partial B_r(0.2,0.2)$, no-slip boundary conditions are defined,</p>
+
+<p>$$ u_{|\Gamma_1} = u_{|\Gamma_3} = u_{|S} = 0. $$</p>
+
+<p>On the left edge $\Gamma_4={0} \times [0,0.41]$, a parabolic inflow profile is prescribed,</p>
+
+<p>$$ u(0,y) = \left( \frac{4 U y (0.41-y)}{0.41^2} , 0 \right), $$</p>
+
+<p>with a maximum velocity $U=1.5$. On the right edge $\Gamma_4={2.2}\times[0,0.41]$, do-nothing boundary conditions define the outflow,</p>
+
+<p>$$ \nu \partial_\eta u - p \eta = 0 $$</p>
+
+<p>with $\eta$ denoting the outer normal vector.</p>
+
+<h3>Reynolds number</h3>
+
+<p>For a maximum velocity of $U=1.5$, the parabolic profile results in a mean velocity</p>
+
+<p>$$ U_\text{mean} = \frac{2}{3}\cdot 1.5 = 1.0. $$</p>
+
+<p>The characteristic length of the flow configuration is</p>
+
+<p>$$ L = 2\cdot 0.05 = 0.1 $$</p>
+
+<p>the diameter of the object perpendicular to the flow direction. This results in a Reynolds number</p>
+
+<p>$$ \text{Re} = \frac{U_\text{mean} L}{\nu} = \frac{1.0 \cdot 0.1}{0.001} = 100. $$</p>
+
+<p>For this Reynolds number, the flow turns into a time-periodic behaviour with a vortex shedding behind the cylinder. This is visualised in the Figure below.</p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/velocity_re100.png" title="Velocity magnitude" alt="Velocity magnitude" />
+<br>
+Velocity magnitude
+</center></p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/velocityLIC_re100.png" title="Velocity magnitude" alt="Velocity magnitude" />
+<br>
+Velocity magnitude with SurfaceLIC representation visualising the streamlines
+</center></p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/pressure_re100.png" title="Pressure" alt="Pressure" />
+<br>
+Pressure
+</center></p>
+
+<h2>Important numerical quantities</h2>
+
+<p>For the numerical comparison of data, the forces around the circle are measured. These drag and lift forces are defined by</p>
+
+<p>$$ \begin{pmatrix} F_D  F_L \end{pmatrix} = \int_{S} \sigma \eta ds $$</p>
+
+<p>with $\eta$ denoting the outer normal vector of the circle. The stress tensor $\sigma$ in this formula is defined as</p>
+
+<p>$$ \sigma := \nu \nabla u  -  p I. $$</p>
+
+<p>A not so straightforward calculation which exploits $u_{|S}=0$ can be used to derive the following formulas for the drag and lift force, which can alternatively be used in 2D, see [2]:</p>
+
+<p>$$ F_D =   \int_S \left(\nu \frac{\partial u_{\tau}}{\partial_\eta} \eta_2 - p \eta_1 \right) ds,\quad
+F_L = - \int_S \left(\nu \frac{\partial u_{\tau}}{\partial_\eta} \eta_1 + p \eta_2 \right) ds $$</p>
+
+<p>From the forces, one obtains the dimensionless drag and lift coefficients,</p>
+
+<p>$$ C_D = \frac{2}{U_\text{mean}^2 L} F_D,\qquad C_L = \frac{2}{U_\text{mean}^2 L} F_L. $$</p>
+
+<h2>Setup of the test and data measurement</h2>
+
+<p>To measure numerical data, one needs a fully developed time-periodic solution. This can be achieved, e.g., using the following procedure:</p>
+
+<ul>
+<li>Start with a zero solution and simulate about 3.5 seconds simulation time with a coarse time step to calculate an initial solution.</li>
+<li>Simulate about 25 seconds simulation time with a finer time step; the flow should be fully developed at that time.</li>
+<li>Between 25 and 30 seconds of simulation time, take an arbitrary cycle of the nonstationary flow for comparison.</li>
+<li>A cycle starts at a time instant $t_0$ where the lift coefficient $C_L$ is smallest and ends at a time instant $t_1 = t_0 + 1/f$ when $C_L$ is smallest again. $f$ defines the frequency and $1/f$ the length of the cycle, which should be about 1/f=0.33 seconds simulation time.</li>
+</ul>
+
+<p>The following numerical quantities are measured:</p>
+
+<ul>
+<li>The drag and lift coefficients $C_D$ and $C_L$ over the time interval $[t_0,t_1]$.</li>
+<li>the pressure difference $p_\text{diff}:=p(a_1)-p(a_2)$ in the points $a_1=(0.15,0.2)$ and $a_2=(0.25,0.2)$ on the front and rear side of the cylinder over the time interval $[t_0,t_1]$,</li>
+<li>the Strouhal number
+$$\text{St} = \frac{L f}{U_\text{mean}},$$</li>
+<li>$\min(C_D)$, $\max(C_D)$, $\text{mean}(C_D)$, $\text{amp}(C_D)$ in the time interval $[t_0,t_1]$,</li>
+<li>$\min(C_L)$, $\max(C_L)$, $\text{mean}(C_L)$, $\text{amp}(C_L)$ in the time interval $[t_0,t_1]$,</li>
+</ul>
+
+<p>with the amplitude amp=max-min and the mean value mean=(max+min)/2.</p>
+
+<h2>Test configuration</h2>
+
+<p>The test configuration used to generate the reference tests reads as follows:</p>
+
+<ul>
+<li>Finite element discretisation with $Q_2/P_1^\text{disc}$ in space. No stabilisation.</li>
+<li>Crank-Nicolson time discretisation scheme.</li>
+<li>Time step: $k=1/100$, $1/200$ and $1/400$.</li>
+<li>Regular refinement of the mesh shown below. For different refinement refinement levels, the following table shows the number of elements and degrees of freedom in the underlying system:</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+  <th>Level</th>
+  <th>#Vertices</th>
+  <th>#Elements</th>
+  <th>#degrees of freedom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>1</td>
+  <td>156</td>
+  <td>130</td>
+  <td>702</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>572</td>
+  <td>520</td>
+  <td>2704</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>2184</td>
+  <td>2080</td>
+  <td>10608</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>8528</td>
+  <td>8320</td>
+  <td>42016</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>33696</td>
+  <td>33280</td>
+  <td>167232</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td>133952</td>
+  <td>133120</td>
+  <td>667264</td>
+</tr>
+</tbody>
+</table>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/bench1.png" title="Underlying mesh, coarse grid" alt="Underlying mesh, coarse grid" />
+</center></p>
+
+<h2>Exemplary Results</h2>
+
+<p>The first table shows information about min/max drag coefficient values:</p>
+
+<table>
+<thead>
+<tr>
+  <th>Lv.</th>
+  <th>k</th>
+  <th>$\min(C_D)$</th>
+  <th>$\max(C_D)$</th>
+  <th>mean$(C_D)$</th>
+  <th>amp$(C_D)$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>3</td>
+  <td>1/100</td>
+  <td>3.0997</td>
+  <td>3.1626</td>
+  <td>3.1311</td>
+  <td>6.292E-02</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>1/200</td>
+  <td>3.0993</td>
+  <td>3.1625</td>
+  <td>3.1309</td>
+  <td>6.312E-02</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>1/400</td>
+  <td>3.0992</td>
+  <td>3.1624</td>
+  <td>3.1308</td>
+  <td>6.315E-02</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/100</td>
+  <td>3.1338</td>
+  <td>3.1964</td>
+  <td>3.1651</td>
+  <td>6.252E-02</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/200</td>
+  <td>3.1333</td>
+  <td>3.1962</td>
+  <td>3.1647</td>
+  <td>6.283E-02</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/400</td>
+  <td>3.1333</td>
+  <td>3.1958</td>
+  <td>3.1645</td>
+  <td>6.249E-02</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/100</td>
+  <td>3.1497</td>
+  <td>3.2124</td>
+  <td>3.1811</td>
+  <td>6.269E-02</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/200</td>
+  <td>3.1494</td>
+  <td>3.2122</td>
+  <td>3.1808</td>
+  <td>6.287E-02</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/400</td>
+  <td>3.1493</td>
+  <td>3.2122</td>
+  <td>3.1807</td>
+  <td>6.292E-02</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td>1/200</td>
+  <td>3.1569</td>
+  <td>3.2200</td>
+  <td>3.1884</td>
+  <td>6.310E-02</td>
+</tr>
+</tbody>
+</table>
+
+<p>The second table shows information about min/max lift coefficient values:</p>
+
+<table>
+<thead>
+<tr>
+  <th>Lv.</th>
+  <th>k</th>
+  <th>$\min(C_L)$</th>
+  <th>$\max(C_L)$</th>
+  <th>mean$(C_L)$</th>
+  <th>amp$(C_L)$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>3</td>
+  <td>1/100</td>
+  <td>-1.0112</td>
+  <td>0.9805</td>
+  <td>-0.0154</td>
+  <td>1.992E+00</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>1/200</td>
+  <td>-1.0159</td>
+  <td>0.9810</td>
+  <td>-0.0174</td>
+  <td>1.997E+00</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>1/400</td>
+  <td>-1.0155</td>
+  <td>0.9805</td>
+  <td>-0.0175</td>
+  <td>1.996E+00</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/100</td>
+  <td>-1.0155</td>
+  <td>0.9838</td>
+  <td>-0.0158</td>
+  <td>1.999E+00</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/200</td>
+  <td>-1.0182</td>
+  <td>0.9838</td>
+  <td>-0.0172</td>
+  <td>2.002E+00</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/400</td>
+  <td>-1.0181</td>
+  <td>0.9835</td>
+  <td>-0.0173</td>
+  <td>2.002E+00</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/100</td>
+  <td>-1.0169</td>
+  <td>0.9859</td>
+  <td>-0.0155</td>
+  <td>2.003E+00</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/200</td>
+  <td>-1.0211</td>
+  <td>0.9818</td>
+  <td>-0.0196</td>
+  <td>2.003E+00</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/400</td>
+  <td>-1.0206</td>
+  <td>0.9860</td>
+  <td>-0.0173</td>
+  <td>2.007E+00</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td>1/200</td>
+  <td>-1.0206</td>
+  <td>0.9859</td>
+  <td>-0.0173</td>
+  <td>2.008E+00</td>
+</tr>
+</tbody>
+</table>
+
+<p>The third table shows the length of the cycle and the Strouhal number.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Lv.</th>
+  <th>k</th>
+  <th>1/f</th>
+  <th>St</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>3</td>
+  <td>1/100</td>
+  <td>3.3000E-01</td>
+  <td>0.30303</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>1/200</td>
+  <td>3.3000E-01</td>
+  <td>0.30303</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>1/400</td>
+  <td>3.3000E-01</td>
+  <td>0.30303</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/100</td>
+  <td>3.4000E-01</td>
+  <td>0.29411</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/200</td>
+  <td>3.3000E-01</td>
+  <td>0.30303</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>1/400</td>
+  <td>3.3250E-01</td>
+  <td>0.30075</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/100</td>
+  <td>3.3000E-01</td>
+  <td>0.30303</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/200</td>
+  <td>3.3000E-01</td>
+  <td>0.30303</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>1/400</td>
+  <td>3.3000E-01</td>
+  <td>0.30303</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td>1/200</td>
+  <td>3.3125E-01</td>
+  <td>0.30188</td>
+</tr>
+</tbody>
+</table>
+
+<p>In the following, a couple of pictures highlight the numerical solutions. Due to the fact, that the cycle always started at different $t_0$ depending on the underlying discretisations, the curves are shifted in time such that $t_0$ matched.</p>
+
+<p>The following pictures shows the drag coefficient over time, once over the complete time interval $[t_0,t_1]$, once near the maximum value:</p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/drag_Q2_all.png" title="Drag over the complete time interval" alt="Drag over the complete time interval" />
+</center></p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/drag_Q2_zoom.png" title="Drag near the maximum" alt="Drag near the maximum" />
+</center></p>
+
+<p>The following pictures shows the lift coefficient over time, once over the complete time interval $[t_0,t_1]$, once near the maximum value:</p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/lift_Q2_all.png" title="Lift over the complete time interval" alt="Lift over the complete time interval" />
+</center></p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/lift_Q2_zoom2.png" title="Lift near the maximum" alt="Lift near the maximum" />
+</center></p>
+
+<p>The following pictures shows the pressure difference $p_\text{diff}$ over the complete time interval $[t_0,t_1]$:</p>
+
+<p><center>
+<img src="../../../../media/dfg_bench2_2d/dp_Q2.png" title="Pressure difference" alt="Pressure difference" />
+</center></p>
+
+<h2>Reference results</h2>
+
+<p>From the following table, the underlying GNUPLOT data can be downloaded. The files provide the data for different discretisations, different refinement levels in space and different refinement levels in time.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Description</th>
+  <th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Drag/Lift, $\tilde Q_1/Q_0$</td>
+  <td><a href="../../../../media/dfg_bench2_2d/draglift_q1t_cn_lv3-6_dt1-4.zip">draglift_q1t_cn_lv3-6_dt1-4.zip</a></td>
+</tr>
+<tr>
+  <td>Drag/Lift, $Q_2/P_1^\text{disc}$</td>
+  <td><a href="../../../../media/dfg_bench2_2d/draglift_q2_cn_lv3-6_dt1-4.zip">draglift_q2_cn_lv3-6_dt1-4.zip</a></td>
+</tr>
+<tr>
+  <td>Pressure, $\tilde Q_1/Q_0$</td>
+  <td><a href="../../../../media/dfg_bench2_2d/pressure_q1t_cn_lv3-6_dt1-4.zip">pressure_q1t_cn_lv3-6_dt1-4.zip</a></td>
+</tr>
+<tr>
+  <td>Pressure, $Q_2/P_1^\text{disc}$</td>
+  <td><a href="../../../../media/dfg_bench2_2d/pressure_q2_cn_lv3-6_dt1-4.zip">pressure_q2_cn_lv3-6_dt1-4.zip</a></td>
+</tr>
+<tr>
+  <td>GNUplot command file for $Q_2$ plots</td>
+  <td><a href="../../../../media/dfg_bench2_2d/plot_bench2.plt">plot_bench2.plt</a></td>
+</tr>
+</tbody>
+</table>
+
+<h2>New reference results</h2>
+
+<p>The following results were computed using a higher-order line integration scheme for the drag/lift computation around the circle. The results are therefore of higher quality compared to the results above. A discussion with corresponding pictures will be added to this page soon, replacing the old results.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Description</th>
+  <th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Drag/Lift/Pressure/y-velocity and GNUPlot file, $Q_2/P_1^\text{disc}$</td>
+  <td><a href="../../../../media/dfg_bench2new_2d/20141124_dfg_bench2_official.zip">20141124_dfg_bench2_official.zip</a></td>
+</tr>
+</tbody>
+</table>
+
+<h2>References</h2>
+
+<table>
+<thead>
+<tr>
+  <th>Id</th>
+  <th>Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>[1]</td>
+  <td>Turek, Schaefer; Benchmark computations of laminar flow around cylinder; in Flow Simulation with High-Performance Computers II, Notes on Numerical Fluid Mechanics 52, 547-566, Vieweg 1996</td>
+</tr>
+<tr>
+  <td>[2]</td>
+  <td>John; Higher order Finite element methods and multigrid solvers in a benchmark problem for the 3D Navier-Stokes equations; Int. J. Numer. Meth. Fluids 2002; 40: 775-798 (DOI: 10.1002/ d.377)</td>
+</tr>
+</tbody>
+</table>
+
+<!-- Java script code to activate LaTex support on this page: -->
+
+<script type="text/javascript"
+src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+inlineMath:  [ ['$','$'], ['\(','\)'] ]
+}
+});
+</script>
+</div><!-- #content -->
+
+<div id="footer" class="quiet append-1 prepend-1 span-20 last append-bottom">
+<div class="span-10 colborder">
+<span class="label">Address:</span>
+<span class="address"><b>Lehrstuhl III, Angewandte Mathematik und Numerik</b>
+Technische Universität Dortmund
+Vogelpothsweg 87
+44227 Dortmund
+</span><br />
+<span class="label">Phone:</span>+49-231-755-3076<br />
+<span class="label">Fax:</span>+49-231-755-5933<br />
+<span class="label">Email:</span><a href="http://www.mathematik.tu-dortmund.de/email.php?u=featflow&d=featflow.de">FeatFlow.de</a>
+</div>
+<div class="span-9 last">
+<span class="label">Secretaries:</span>
+<span class="address">Alrun Lamprecht
+Susanne Drees</span><br />
+<span class="label">Phone:</span>
+<span class="address">+49-231-755-6840
++49-231-755-3076</span><br />
+<span class="label">Email:</span>
+<span class="address"><a href="http://www.mathematik.tu-dortmund.de/email.php?u=alrun.lamprecht&d=math.tu-dortmund.de">Alrun Lamprecht</a>
+<a href="http://www.mathematik.tu-dortmund.de/email.php?u=susanne.drees&d=math.tu-dortmund.de">Susanne Drees</a>
+</span>
+</div>
+</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+</div><!-- .container -->
+
+</body>
+
+</html>

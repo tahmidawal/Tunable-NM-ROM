@@ -23,11 +23,11 @@ for pkg in ns3d ns2d separable-decoder ns3d-grok ns3d-shift ns3d-shift-head ns3d
 done
 # every coordnet bank file a config names (repo-relative), staged at the same path
 for C in ${CONFIG//,/ }; do
-  BF=$(/home/tahmid/Dev/.venv/bin/python -c "import json,sys; print(json.load(open(sys.argv[1])).get('coordnet_bank_file',''))" "$HERE/experiments/ns3d-pod-match/$C")
-  if [[ -n "$BF" ]]; then
-    [[ -f "$HERE/$BF" ]] || { echo "bank file $BF missing"; exit 1; }
-    rsync -azR "$HERE/./$BF" "tufts-login:$DEST/"
-  fi
+  BF=$(/home/tahmid/Dev/.venv/bin/python -c "import json,sys; c=json.load(open(sys.argv[1])); print(' '.join(x for x in (c.get('coordnet_bank_file',''), c.get('init_from') or '') if x))" "$HERE/experiments/ns3d-pod-match/$C")
+  for F1 in $BF; do
+    [[ -f "$HERE/$F1" ]] || { echo "bank file $F1 missing"; exit 1; }
+    rsync -azR "$HERE/./$F1" "tufts-login:$DEST/"
+  done
 done
 if [[ -n "$FROZEN" ]]; then
   rsync -az "$HERE/experiments/ns3d-pod-match/$FROZEN/" "tufts-login:$DEST/frozen/"

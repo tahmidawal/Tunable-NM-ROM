@@ -113,9 +113,57 @@ def spectral_content(modes, nt, cuts):
 
 # ------------------------------------------------------------------- losses ---
 
+def project_cols(G, n, geom):
+    """P_n on every column (2/3 mask + spectral Leray), differentiable; geom passed in."""
+    r = G.shape[1]
+    cols = G.T.reshape(r, 3, n, n, n)
+    out = jax.vmap(lambda u: F.ifft(F.project(F.fft(u), geom)))(cols)
+    return out.reshape(r, -1).T
+
+
+def make_sample_fn_remat(n, chunk):
+    """Like coordnet.make_sample_fn but rematerialised per chunk (bounded backward memory)."""
+    total = n ** 3
+    assert total % chunk == 0
+
+    def sample(p, pts):
+        one = jax.checkpoint(lambda block: CN.velocity(p, block))
+        vals = jax.lax.map(one, pts.reshape(total // chunk, chunk, 3))
+        vals = vals.reshape(total, 3, -1)
+        return jnp.transpose(vals, (1, 0, 2)).reshape(3 * total, -1) * n ** -1.5
+    return sample
+
+
+def g3_statistic(G48, G64raw, nt, n64, geom48, geom64):
+    """The G3 statistic at mesh n64, as the pipeline computes it: B = P_64 G_64 T with T from
+    the QR of the P_48-projected training-grid bank (the SVD rotation V of the ordering does
+    not change ||B^T B - I||_F). Returns D = B^T B - I."""
+    Gp = project_cols(G48, nt, geom48)
+    _, Rq = jnp.linalg.qr(Gp)
+    Bp = project_cols(G64raw, n64, geom64)
+    Bt = jax.scipy.linalg.solve_triangular(Rq.T, Bp.T, lower=True)        # (R, dof) = (B R^-1)^T
+    return Bt @ Bt.T - jnp.eye(Bt.shape[0], dtype=Bt.dtype)
+
 def make_objective(kind, arch, nt, R, sample_fn, qchunk=2048):
     """Returns loss(layers, B, data) -> scalar and parts(layers, B, data) -> dict."""
-    if kind == "vp_band":
+    if kind == "vp_band_g3":
+        lam = float(arch["band_weight"])
+        mu = float(arch["g3_weight"])
+        n64 = int(arch["g3_mesh"])
+        amask = CN.band_mask(nt, int(arch["band_kcut"]))
+        s64 = make_sample_fn_remat(n64, int(arch.get("g3_chunk", 32768)))
+
+        def parts(layers, B, data):
+            p = dict(B=B, layers=layers)
+            G = sample_fn(p, data["pts"])
+            GH = G - CN.lowpass(G, nt, amask)
+            fit = CN.projection_loss(G, data["Y"])
+            band = jnp.sum(GH * GH) / jnp.sum(G * G)
+            Dm = g3_statistic(G, s64(p, data["pts64"]), nt, n64, data["geom48"], data["geom64"])
+            g3 = jnp.sum(Dm * Dm)
+            return dict(total=fit + lam * band + mu * g3, vp_fit=fit, band=band, g3_frob2=g3,
+                        g3_max=jnp.max(jnp.abs(Dm)))
+    elif kind == "vp_band":
         lam = float(arch["band_weight"])
         amask = CN.band_mask(nt, int(arch["band_kcut"]))
 
@@ -321,6 +369,9 @@ def main():
         del Fn, dFn, dU
     else:
         report["target_spectral_content"] = spectral_content(pod_same, nt, (10, 21))
+    if kind == "vp_band_g3":
+        n64 = int(arch["g3_mesh"])
+        data.update(pts64=jnp.asarray(CN.grid_points(n64)), geom48=F.geometry(nt), geom64=F.geometry(n64))
     report["target_spectral_content"]["above_15_note"] = "max_i|k_i|>15 is outside P_48 (2/3 rule at 48^3)"
     report["target_spectral_content"].update(
         {k_: v for k_, v in spectral_content(pod_same, nt, (15,)).items() if k_ != "nyquist"})
@@ -392,12 +443,23 @@ def main():
     loss_j = jax.jit(loss_fn)
     dump()
 
-    key = jax.random.PRNGKey(int(cfg["seed"]))
-    p = CN.init_params(key, R, int(arch["width"]), int(arch["depth"]), int(arch["kmax"]))
-    G0 = sample_t(p)
-    s = float(jnp.sqrt(R / jnp.sum(G0 * G0)))
-    w_, b_ = p["layers"][-1]
-    p["layers"][-1] = (w_ * s, b_)
+    if cfg.get("init_from"):
+        # warm start (DESIGN §A2): the saved bank of an earlier job of this lane
+        init_path = ROOT / cfg["init_from"]
+        got = D.sha256_file(init_path)
+        if got != cfg["init_sha256"]:
+            raise RuntimeError(f"init_from sha256 {got} != {cfg['init_sha256']}")
+        p = BI.load_params(init_path)
+        if CN.check_frequencies(p) != int(arch["kmax"]) or len(p["layers"]) != int(arch["depth"]) + 1:
+            raise RuntimeError("init_from architecture differs from the config")
+        report["init_from"] = dict(path=cfg["init_from"], sha256=got)
+    else:
+        key = jax.random.PRNGKey(int(cfg["seed"]))
+        p = CN.init_params(key, R, int(arch["width"]), int(arch["depth"]), int(arch["kmax"]))
+        G0 = sample_t(p)
+        s = float(jnp.sqrt(R / jnp.sum(G0 * G0)))
+        w_, b_ = p["layers"][-1]
+        p["layers"][-1] = (w_ * s, b_)
     Bf = p["B"]
     layers = p["layers"]
 
@@ -440,45 +502,52 @@ def main():
                 return q, st, vals[-1]
             return chunk
 
-        copt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(1e-6))
-        cchunk = make_adam_chunk(copt)
-        cq, cs, _ = cchunk(layers, copt.init(layers), Bf, data)          # compile
-        jax.block_until_ready(cq)
-        t_c = time.time()
-        cq, cs, _ = cchunk(cq, cs, Bf, data)
-        jax.block_until_ready(cq)
-        per_step = (time.time() - t_c) / every
-        steps = int(0.97 * float(ad["train_seconds"]) / per_step) // every * every
-        if steps < 4 * int(ad["warmup"]):
-            raise RuntimeError(f"budget too small: {steps} steps < 4 x warm-up")
-        del cq, cs, cchunk
-        log(f"[adam] calibration: {per_step * 1e3:.1f} ms/step -> {steps} steps")
-        sched = optax.warmup_cosine_decay_schedule(0.0, float(ad["lr"]), int(ad["warmup"]), steps,
-                                                   float(ad["lr"]) * float(ad["final_lr_ratio"]))
-        opt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(sched))
-        state = opt.init(layers)
-        chunk = make_adam_chunk(opt)
-        curve = []
-        t0 = time.time()
-        t_ck = t0
-        done = 0
-        while done < steps:
-            layers, state, v = chunk(layers, state, Bf, data)
-            done += every
-            curve.append((done, float(v), time.time() - t0))
-            log(f"  [adam] step {done}/{steps} loss {float(v):.6e} ({time.time() - t0:.0f}s)")
-            if not np.isfinite(float(v)):
-                raise RuntimeError("nonfinite Adam training")
-            if time.time() - t_ck > checkpoint_every:
-                BI.save_params(out / "bank_adam_partial.npz", dict(B=Bf, layers=layers))
-                t_ck = time.time()
-        BI.save_params(out / "bank_adam.npz", dict(B=Bf, layers=layers))
-        (out / "bank_adam_partial.npz").unlink(missing_ok=True)
-        rec = certify(layers, "adam")
-        rec.update(steps=steps, seconds_per_step=per_step, seconds=time.time() - t0, curve=curve)
-        stage_records.append(rec)
-        report["stages"] = stage_records
-        dump()
+        if float(ad["train_seconds"]) > 0:
+            copt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(1e-6))
+            cchunk = make_adam_chunk(copt)
+            cq, cs, _ = cchunk(layers, copt.init(layers), Bf, data)          # compile
+            jax.block_until_ready(cq)
+            t_c = time.time()
+            cq, cs, _ = cchunk(cq, cs, Bf, data)
+            jax.block_until_ready(cq)
+            per_step = (time.time() - t_c) / every
+            steps = int(0.97 * float(ad["train_seconds"]) / per_step) // every * every
+            if steps < 4 * int(ad["warmup"]):
+                raise RuntimeError(f"budget too small: {steps} steps < 4 x warm-up")
+            del cq, cs, cchunk
+            log(f"[adam] calibration: {per_step * 1e3:.1f} ms/step -> {steps} steps")
+            sched = optax.warmup_cosine_decay_schedule(0.0, float(ad["lr"]), int(ad["warmup"]), steps,
+                                                       float(ad["lr"]) * float(ad["final_lr_ratio"]))
+            opt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(sched))
+            state = opt.init(layers)
+            chunk = make_adam_chunk(opt)
+            curve = []
+            t0 = time.time()
+            t_ck = t0
+            done = 0
+            while done < steps:
+                layers, state, v = chunk(layers, state, Bf, data)
+                done += every
+                curve.append((done, float(v), time.time() - t0))
+                log(f"  [adam] step {done}/{steps} loss {float(v):.6e} ({time.time() - t0:.0f}s)")
+                if not np.isfinite(float(v)):
+                    raise RuntimeError("nonfinite Adam training")
+                if time.time() - t_ck > checkpoint_every:
+                    BI.save_params(out / "bank_adam_partial.npz", dict(B=Bf, layers=layers))
+                    t_ck = time.time()
+            BI.save_params(out / "bank_adam.npz", dict(B=Bf, layers=layers))
+            (out / "bank_adam_partial.npz").unlink(missing_ok=True)
+            rec = certify(layers, "adam")
+            rec.update(steps=steps, seconds_per_step=per_step, seconds=time.time() - t0, curve=curve)
+            stage_records.append(rec)
+            report["stages"] = stage_records
+            dump()
+
+        else:   # warm start without an Adam stage (DESIGN §A2): certify the starting bank
+            rec = certify(layers, "init")
+            stage_records.append(rec)
+            report["stages"] = stage_records
+            dump()
 
         # ------------------------------------------------------- 5. L-BFGS stage ----
         lb = cfg["lbfgs"]

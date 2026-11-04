@@ -46,3 +46,21 @@ arm_b.update(name="bank_b", objective="pod_regress", offgrid_points=8192, offgri
 for cfg in (arm_a, arm_b):
     (HERE / "configs" / f"{cfg['name']}.json").write_text(json.dumps(cfg, indent=1) + "\n")
     print("wrote", cfg["name"])
+
+# ---------------------------------------------------------------- DESIGN §A2 ----
+# warm start from bank_a's bank of record; objective = arm (a) + mu * ||B^T B - I||_F^2 at 64^3
+# (the G3 statistic itself, computed from the bank and grids only); L-BFGS only.
+import hashlib  # noqa: E402
+
+init = "experiments/ns3d-pod-match/runs/bank_a/output/bank_final.npz"
+init_sha = hashlib.sha256((HERE.parents[1] / init).read_bytes()).hexdigest()
+for tag, mu in (("mu1", 1.0), ("mu001", 1e-2)):
+    c = copy.deepcopy(arm_a)
+    c.update(name=f"bank_a2_{tag}", objective="vp_band_g3", init_from=init, init_sha256=init_sha)
+    c["architecture"].update(g3_weight=mu, g3_mesh=64, g3_chunk=32768)
+    c["adam"] = dict(c["adam"], train_seconds=0)
+    c["lbfgs"] = dict(c["lbfgs"], train_seconds=21600)
+    c["smoke"]["architecture"].update(g3_weight=mu, g3_mesh=16, g3_chunk=512)
+    c["smoke"]["init_from"] = None
+    (HERE / "configs" / f"{c['name']}.json").write_text(json.dumps(c, indent=1) + "\n")
+    print("wrote", c["name"], init_sha)

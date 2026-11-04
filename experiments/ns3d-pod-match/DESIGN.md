@@ -263,3 +263,49 @@ the gate formulas. No gate threshold changes. All changes below were made before
 13. **Text** (Claude #21). The target spectral content is recorded once, on the $48^3$ grid
     (not "at every mesh"). The VP ratio to the optimum is reported for the raw bank; the
     projected value is reported beside it.
+
+## A2 (2026-11-04, after `bank_a`/`bank_b`, before any further job) — a G3-aware continuation of arm (a)
+
+**User authorization of 2026-11-04 (via the coordinator).** The 15 GPU-hour cap is lifted.
+Continue until a bank passes the pre-registered gates or there is a well-evidenced diagnosis of
+why the architecture cannot. The gates are **unchanged**: G1 ≤1.5× POD-64 at every mesh, G2
+≤1.25, G3 ≤1e-3 at 64³/96³ as amended. Every attempt gets an amendment before its job, and every
+failure is kept (`LEDGER.md`). Test and closed seeds stay closed. At most 2 allocations at once.
+
+**Evidence so far** (jobs 6846165/6846174, development floors only; `runs/bank_*/output/summary.json`).
+- Arm (a): floor 1.35/1.44/1.44× POD-64 (G1 pass); max/min 1.105 (G2 pass); pre-Löwdin
+  6.7e-3/6.8e-3 at 64³/96³ (**G3 fail**). VP objective 1.47× its optimum; L-BFGS stopped at its
+  deadline while still decreasing.
+- Arm (b): G1 fail (1.75/1.87/1.87×), G2 pass, G3 fail (9.6e-3/9.7e-3).
+- The G3 control (§A1 item 11) reads the same-data POD the same way. It gives 9.1e-3 at 64³/96³
+  and 0.607 at 32³. Its modes carry up to 0.80 % of their energy at $\max_i|k_i|>15$, which
+  $P_{48}$, and hence the frame $T$, discards but $P_{64}$/$P_{96}$ keep. G3 therefore cannot be
+  met by fitting the data alone. A bank passes G3 only if its ordered directions carry almost no
+  energy outside the $P_{48}$ space at the finer meshes, and arm (a)'s band penalty (relative to
+  total energy) does not control that per direction: the raw bank's singular-value ratio is
+  8.4e-6, so weak directions amplified by $T$ keep their residue.
+
+**Change (objective, therefore independently reviewed before the jobs).** Warm start from
+`bank_a`'s bank of record (`runs/bank_a/output/bank_final.npz`, sha256 `ef37ea38…`), same
+architecture A and $R=64$, no Adam stage. L-BFGS (as in §3/§A1) on
+$$\mathcal L_{a2}=\mathcal L_a+\mu\,\lVert B_{64}^{\mathsf T}B_{64}-I\rVert_F^2,\qquad
+B_{64}=P_{64}\,G^{\rm raw}_{64}\,R_{48}^{-1},$$
+where $P_{48}G^{\rm raw}_{48}=Q_{48}R_{48}$ (QR). This is exactly the G3 matrix at 64³ up to the
+ordering rotation $V$, which leaves the Frobenius norm unchanged. It is computed from the bank
+and the grids only, with no development data, using the same $P_n$ (`ns3d_fom.project`); its
+value on the `bank_a` bank matched the pipeline (Frobenius² 3.9e-4; max entry 7.3e-3 in this
+frame, against the pipeline's 6.7e-3 in the ordered frame). The 64³ network samples are
+rematerialised per 32 768-point chunk to bound memory.
+
+- **Two jobs, concurrent, one GPU each:** `bank_a2_mu1` ($\mu=1$) and `bank_a2_mu001`
+  ($\mu=10^{-2}$).
+  - Both put the penalty well above the current VP excess (≈1.7e-7) until the statistic is
+    small; $\mu=1$ favours G3 more strongly, at a possible cost in G1.
+  - L-BFGS budget 21 600 s (6 h); wall limit 8 h. Everything else as in §3/§A1: floors, gates,
+    controls, recovery mode.
+- **Bank of record:** the end of each job's L-BFGS stage.
+  - If exactly one passes G1–G3, it goes to the ROM (§6).
+  - If both pass, the one with the lower $\max_n$ floor/POD-64 goes, ties to $\mu=10^{-2}$.
+  - If neither passes, the next attempt is decided from the evidence and amended before any job.
+- G3 is still evaluated by the unchanged pipeline (`mesh_bank`) at 64³ and 96³. Penalising 64³
+  does not guarantee 96³; the report will say so if they differ.

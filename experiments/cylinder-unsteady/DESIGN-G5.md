@@ -398,7 +398,7 @@ ready". Review 01 was an administrative hold (its sandbox could not start; no fi
 Every tolerance and every recorded failure is unchanged. Responses, numbered as the review:
 
 1. **R1b/R1c decisions fail closed** (`r1_gates.py`). A candidate $dt_0=1/c$, c ∈ (800, 1600,
-   3200), qualifies only if its pair with $c/2$... i.e. $(1/c, 1/2c)$ passes all four
+   3200), qualifies only if the comparison $(1/c$ vs $1/2c)$ passes all four
    tolerances, its frozen stencil gives empirical orders in [1.5, 2.5] for each metric whose
    two differences exceed the noise floor, and the startup check at that c (4 vs 16
    substeps) passes 0.2 × every tolerance. Stencils: c = 800 → (800, 1600, 3200);

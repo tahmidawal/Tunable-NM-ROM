@@ -377,3 +377,16 @@ jobs proceed under Grok review per the user's earlier authorization for non-gate
 preparation runs; R1b and every later gate still wait for the Codex review.
 P3 spin-up cycle statistics at dt = 1/800 (non-gating, coarse dt): C_D,max 3.22847,
 C_L,max 0.98871, St 0.301934, Δp 2.48361.
+
+## Amendment G5-A4 — settle cap 4 s → 6 s (user decision), 2026-11-04
+
+Settles Re 95 (job 6863601) and Re 105 (job 6863602), P4/P3 from the Re 100 settled state
+(SHA b77b6138…), both **failed the developed-flow rule at the 4 s cap** (retained; 2.0 GPU-h
+each, 2.25 s/step): the last lift-extremum changes were 1.4e-4 then 7.7e-5 (Re 95) and
+1.4e-4 then 7.7e-5 (Re 105), decaying roughly geometrically. Divergence ≤ 3.5e-4. Per the
+predeclared rule R1 stopped and the user was asked; the user chose to raise the settle cap
+to **6 s total** for every remaining settle (90, 95, 105, 110), with every tolerance
+unchanged. Re 95/105 continue from their capped states (`settle.npz`, SHAs 611741ba…,
+ebd8beea…) for at most 2 s; the restart (4-substep startup) means the rule must again
+see four complete cycles within the continuation. Settle time is discarded and enters no
+reported metric. If a continuation fails at 6 s, R1 stops again.

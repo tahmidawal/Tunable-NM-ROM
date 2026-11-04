@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Why We Moved</title>
+<style>
+  @page { size: Letter; margin: 0.75in 0.8in; }
+  :root { --ink:#1d2330; --muted:#5b6475; --line:#d9dee7; --accent:#2f5d9f; --bad:#a3382f; --good:#2d7a4b; --soft:#f4f6fa; }
+  body { font-family: "Georgia", "Times New Roman", serif; color: var(--ink); font-size: 11pt; line-height: 1.5; margin: 0; background:#fff; }
+  h1 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 24pt; margin: 0 0 4pt; letter-spacing: -0.3pt; }
+  h2 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14pt; margin: 22pt 0 6pt; color: var(--accent); break-after: avoid; }
+  h3 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 11pt; margin: 12pt 0 4pt; }
+  .sub { color: var(--muted); font-size: 11pt; margin-bottom: 16pt; }
+  p { margin: 0 0 8pt; }
+  .lede { font-size: 12pt; }
+  .box { background: var(--soft); border-left: 3pt solid var(--accent); padding: 8pt 12pt; margin: 10pt 0; break-inside: avoid; }
+  .move { border: 1px solid var(--line); border-radius: 4pt; padding: 10pt 14pt 6pt; margin: 12pt 0; break-inside: avoid; }
+  .move .when { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.8pt; color: var(--muted); }
+  .move h3 { margin: 2pt 0 6pt; font-size: 12.5pt; }
+  .row { display: grid; grid-template-columns: 92pt 1fr; gap: 2pt 10pt; margin-bottom: 4pt; }
+  .tag { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5pt; padding-top: 2.5pt; }
+  .why { color: var(--accent); } .bad { color: var(--bad); } .next { color: var(--good); }
+  .row div:last-child { margin: 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 6pt 0 10pt; break-inside: avoid; }
+  th, td { border-bottom: 1px solid var(--line); padding: 4pt 6pt; text-align: left; vertical-align: top; }
+  th { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.4pt; color: var(--muted); }
+  .eq { font-family: "Cambria Math", "STIX Two Math", serif; font-style: italic; white-space: nowrap; }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4pt; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; margin: 8pt 0 4pt; }
+  .chain span.n { border: 1px solid var(--accent); color: var(--accent); border-radius: 10pt; padding: 2pt 7pt; }
+  .chain span.a { color: var(--muted); }
+  ul { margin: 0 0 8pt; padding-left: 16pt; } li { margin-bottom: 3pt; }
+  .page-break { break-before: page; }
+  .foot { color: var(--muted); font-size: 8.5pt; margin-top: 18pt; border-top: 1px solid var(--line); padding-top: 6pt; }
+</style>
+</head>
+<body>
+
+<h1>Why we moved</h1>
+<div class="sub">Tunable NM-ROM — the decoder story from May to November 2026: what we tried, what broke, and why each step led to the next. &nbsp;·&nbsp; Tahmid Awal &nbsp;·&nbsp; November 3, 2026</div>
+
+<p class="lede">We want to solve families of PDEs (heat, Poisson, Burgers, Navier–Stokes) fast, by solving for a <b>handful of numbers</b> instead of one unknown per mesh point. A <b>decoder</b> turns those few numbers into the full field, and the reduced solver adjusts them until the field satisfies the equations.</p>
+
+<p>Every change below was an answer to one question: <b>which decoder gives a solve that is accurate <i>and</i> cheap?</b> Each time, the answer exposed a new problem, and that problem decided the next step.</p>
+
+<div class="chain">
+  <span class="n">Grid tensor (CP)</span><span class="a">→</span>
+  <span class="n">Attention</span><span class="a">→</span>
+  <span class="n">SIREN</span><span class="a">→</span>
+  <span class="n">POD fallback</span><span class="a">→</span>
+  <span class="n">FiLM + real solve</span><span class="a">→</span>
+  <span class="n">Bank + head</span><span class="a">→</span>
+  <span class="n">Ordered bank</span><span class="a">→</span>
+  <span class="n">Better solver, honest baselines</span><span class="a">→</span>
+  <span class="n">Obstacle flow</span>
+</div>
+
+<div class="box"><b>The one lesson that repeats:</b> a decoder that <i>reconstructs</i> a field well is not necessarily a decoder that <i>solves</i> well. Almost every dead end looked good as an autoencoder and failed inside the solver, or was accurate but too slow inside it.</div>
+
+<h2>1. The starting point</h2>
+
+<div class="move">
+  <div class="when">May 2026 · original heat and Poisson models</div>
+  <h3>Grid tensor decoder (CP and LinearCP)</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>A small network picks weights for products of 1D factor tables (one per axis). Evaluating the field at a few selected points is very cheap, which is exactly what hyper-reduction needs. LinearCP added a linear "skip" so Poisson could start the solve from zero.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>The factor tables are tied to one grid. Accuracy got <b>worse as the mesh got finer</b> — the "resolution wall" — and the skip connection did not fix it. Later we also found the public heat package had a bug that froze the rollout after step 1; with the fix, its published 39.6× speedup did not reproduce.</div></div>
+  <div class="row"><div class="tag next">Why we moved</div><div>The bottleneck was the <b>spatial representation</b>, not the network that picks weights. We needed spatial functions that are not tied to a grid.</div></div>
+</div>
+
+<div class="move">
+  <div class="when">May 2026</div>
+  <h3>Attention decoders (mirrored ViT, cross-attention)</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>More expressive output maps, matching the ViT encoder.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>Reconstruction was competitive, but Poisson solves failed and heat rollouts became unusable. Self-attention over all output points destroys the cheap "evaluate only a few points" structure. Cross-attention needs tokens from a known solution snapshot — which, at solve time, is exactly what we don't have.</div></div>
+  <div class="row"><div class="tag next">Why we moved</div><div>We needed a decoder that can be queried <b>at any single point, independently</b>: a coordinate network.</div></div>
+</div>
+
+<div class="move">
+  <div class="when">May 2026</div>
+  <h3>Modulated SIREN (coordinate network)</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>Coordinates go in, the field value comes out; the latent code modulates the layers. Not tied to any grid, and the spatial features can change with the state.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div><b>The key failure of the project.</b> Accurate autoencoders still gave bad cold-start solves. Probes found a spurious "attraction basin" near the starting point, not a rank problem. Fixes (anchoring the zero code to a typical field) worked, then broke again when the network was made bigger or more accurate. And the whole network had to be evaluated and differentiated in <i>every</i> solver iteration — expensive.</div></div>
+  <div class="row"><div class="tag next">Why we moved</div><div>One variant made the output <b>affine in the latent code</b>, <span class="eq">u(x;z) = Φ(x)Az + b(x)</span>. The solve became much easier. That was the first hint of the idea that eventually won: keep the spatial part fixed and simple online.</div></div>
+</div>
+
+<div class="move">
+  <div class="when">July 2026</div>
+  <h3>Frozen POD, and POD + a residual network</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>When nonlinear decoders gave unreliable rollouts, we fell back to a fixed linear basis from data (POD), optionally plus a small network to correct its error.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>Nothing broke — the surprise was that <b>POD is a very strong competitor</b>, once it is tuned and hyper-reduced fairly. The POD + network correction gave mixed gains.</div></div>
+  <div class="row"><div class="tag next">Why we moved</div><div>To beat POD we needed something POD cannot do: evaluate anywhere and transfer across meshes. Back to coordinate networks — this time with a real PDE solve.</div></div>
+</div>
+
+<h2>2. Coordinate networks inside a real solve</h2>
+
+<div class="move">
+  <div class="when">August 2026</div>
+  <h3>FiLM coordinate decoders, then latent stepping</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>FiLM lets the latent code scale and shift features throughout the network. It represented the families well and transferred across meshes. Latent stepping then made it a <i>true</i> ROM: the code is found from the PDE, not handed to the decoder.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>The early wins had been fed the <b>true family parameters</b> — a surrogate, not a ROM. Once we solved for the code, hidden problems appeared: pointwise residuals amplified tiny grid-scale errors (fixed by smooth weak tests), and better reconstruction again did not mean better solves. Grouped FiLM reached about 0.5 % (Poisson) and 1 % (Burgers) mean error, but the network still ran inside every iteration, and fast kernels did not make the whole solve fast.</div></div>
+  <div class="row"><div class="tag next">Why we moved</div><div>The cost lived in evaluating the coordinate network inside the inner loop. So: <b>take it out of the loop</b>.</div></div>
+</div>
+
+<h2>3. The architecture that stuck</h2>
+
+<div class="move">
+  <div class="when">Late August – September 2026</div>
+  <h3>Cached learned bank + small head</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>Split the decoder into a spatial <b>bank</b> of learned functions <span class="eq">g<sub>a</sub>(x)</span> and a small <b>head</b> <span class="eq">h<sub>a</sub>(z)</span>: <span class="eq">u(x;z) = Σ<sub>a</sub> g<sub>a</sub>(x) h<sub>a</sub>(z)</span>. Evaluate the bank once, cache it, and only the tiny head runs online.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>This worked and became the core architecture. It also let us measure <b>bank error, head error and solve error separately</b> — and the head was the weak link. Every head variant we tried failed its accuracy gate (same frozen bank, matched controls):</div></div>
+  <table>
+    <tr><th>Head</th><th>Mean error</th><th>Worst error</th><th>Outcome</th></tr>
+    <tr><td>MLP (control)</td><td>5.5 %</td><td>17.0 %</td><td>baseline</td></tr>
+    <tr><td>Quadratic</td><td>4.7 %</td><td>20.3 %</td><td>better mean, worse worst case</td></tr>
+    <tr><td>Shared encoder</td><td>5.4 %</td><td>16.2 %</td><td>inconsistent across repeats</td></tr>
+    <tr><td>Mixture of local heads</td><td>5.5 %</td><td>21.3 %</td><td>no validation gain</td></tr>
+    <tr><td>Protected anchor</td><td>6.1 %</td><td>17.7 %</td><td>geometry fine, accuracy failed</td></tr>
+  </table>
+  <div class="row"><div class="tag next">Why we moved</div><div>A nonlinear head inside a fixed bank <b>can never leave that bank's span</b>. Making the head fancier was polishing the wrong part. Better to use the bank directly.</div></div>
+</div>
+
+<div class="move">
+  <div class="when">September – October 2026 · current Burgers method</div>
+  <h3>Corrections, then the ordered bank</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>First, add linear correction directions on top of the head — accuracy could be raised after training, without retraining. In linear problems, solving with the full bank was both more accurate and cheaper than going through the head. So we ordered the bank once and solve directly for its first <i>r</i> coefficients: <span class="eq">u(x;c) = B<sub>r</sub>(x) c</span>.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>Nothing failed here — but it changed what the method <i>is</i>. It is linear in its online unknowns (neural only offline), which puts it head-to-head with tuned POD, which uses the same tricks.</div></div>
+  <div class="row"><div class="tag next">What it gave us</div><div>A <b>deployment-time knob</b>: pick <i>r</i> for the accuracy/cost you want, with no retraining. This is the main Burgers path today.</div></div>
+</div>
+
+<div class="move">
+  <div class="when">September – October 2026 · Navier–Stokes side branch</div>
+  <h3>Fixed frame → moving frame → divergence-free bank</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>Carry the bank idea to incompressible flow.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>In a fixed frame, the bank + head <b>did not beat POD</b>. A divergence-free bank (curl of a neural potential) came close to its own floor but stayed less accurate than POD.</div></div>
+  <div class="row"><div class="tag next">What worked</div><div><b>Moving frames.</b> Solving for a shift plus a shape, <span class="eq">u(x) = ũ(x − c; z)</span>, made translating flows compact — and here a nonlinear head genuinely helped. Our clearest win, but only for translating structures.</div></div>
+</div>
+
+<h2>4. October: better solvers, honest comparisons</h2>
+
+<div class="move">
+  <div class="when">October 2026 · JCP Burgers campaign and Burgers 3D refinement</div>
+  <h3>Wider/smoother banks, off-mesh quadrature, second-order time stepping</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>Push accuracy and cost as far as possible before writing the paper, against much stronger, tuned baselines (spectral solvers, coarse grids, hyper-reduced POD).</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>Wider and smoother banks gave <b>better fits, not better solves</b>. The big accuracy gains came from the <i>solver</i> — off-mesh quadrature and better time stepping — not from the decoder. And the honest baselines removed the speed story: in Burgers 3D, every bank setting had a faster spectral solver at matching accuracy (bank took 1.5× to 176× as long). Continuous POD could also be reused across meshes, which withdrew our multi-mesh cost advantage.</div></div>
+  <div class="row"><div class="tag next">Why we moved</div><div>What survives: <b>reduced cost that does not grow with the output mesh</b>, and evaluation at any point. What does not: a general speed or accuracy win over tuned spectral/POD on the box. So we stopped chasing speed on Burgers and looked for problems where neural banks could have a structural edge.</div></div>
+</div>
+
+<div class="move">
+  <div class="when">Late October 2026</div>
+  <h3>Coarse-to-fine (multilevel) starts, and reconstruction vs interpolation</h3>
+  <div class="row"><div class="tag why">Why we tried it</div><div>Could a cheap small-bank solve give a head start to the expensive fine solve? And does the bank reconstruct from samples better than classical interpolation?</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>Every coarse-to-fine variant was <b>slower</b> than just solving the fine problem directly (median, slower in every paired timing):</div></div>
+  <table>
+    <tr><th>Variant</th><th>Time vs direct fine solve</th></tr>
+    <tr><td>Ordered-bank prefix start (affine / pure prefix)</td><td>1.39× / 1.44×</td></tr>
+    <tr><td>Separate small decoder (transfer / with physics)</td><td>2.62× / 3.38×</td></tr>
+    <tr><td>One shared 16/32/64 decoder (per step / replay)</td><td>1.41× / 1.87×</td></tr>
+  </table>
+  <div class="row"><div class="tag bad"></div><div>Reconstruction also missed both gates: the bank's error was 1.39× (2D) and 1.22× (3D) that of the best classical method, winning 0 of 32 and 2 of 64 cases.</div></div>
+  <div class="row"><div class="tag next">Why we moved</div><div>The fine solve was already warm-started well, so there was no expensive fine work for a coarse level to remove. We stopped these lines unless someone has a concrete reason a new variant would cut fine-level work.</div></div>
+</div>
+
+<h2>5. Where we are now</h2>
+
+<div class="move">
+  <div class="when">Late October – November 2026</div>
+  <h3>Flow past obstacles (cylinder)</h3>
+  <div class="row"><div class="tag why">Why we're here</div><div>Complex geometry is where fast spectral solvers do not apply, and where a mesh-free neural bank might have a real edge over the alternatives.</div></div>
+  <div class="row"><div class="tag bad">What went wrong</div><div>The first trained bank failed badly (18–21 % velocity error, 36–44 % drag error). Several retraining rounds (trace-, energy- and traction-weighted fits, residual heads) each fixed some quantities and broke others — divergence and lift were the hardest.</div></div>
+  <div class="row"><div class="tag next">Status</div><div>The latest neural-bank steady solves <b>pass all seven original development targets</b> (velocity error ≈ 0.036 %). Final validation and speed comparisons are still open. On Nov 3 we started the <b>unsteady cylinder</b> (vortex shedding, Re ≈ 100), an exactly divergence-free bank, a varying-geometry family, and an NS 3D test of whether a trained bank can match POD-64.</div></div>
+</div>
+
+<div class="box"><b>Proposed next architecture — global + local tree bank.</b> Keep a coarse global bank and add small local banks only where the error is. It is untested; we will first check with simple local POD or polynomial bases whether localizing helps at all, before training any neural features.</div>
+
+<h2>What the whole story taught us</h2>
+<ul>
+  <li><b>Reconstruction ≠ solve.</b> Low autoencoder error says little about cold-start solves or stable time stepping.</li>
+  <li><b>Keep the expensive part out of the inner loop.</b> Caching the bank was the decisive design move.</li>
+  <li><b>Measure the bank, the head and the solve separately.</b> It shows which part actually needs work — usually not the one we were tuning.</li>
+  <li><b>Bigger or better-trained is not better-solved.</b> More features, width or training repeatedly improved fits without improving solutions.</li>
+  <li><b>The solver matters as much as the decoder.</b> Quadrature and time stepping gave the largest October gains.</li>
+  <li><b>Tuned classical baselines change the story.</b> POD, coarse grids and spectral solvers overturned several apparent wins; compare at matched accuracy and output.</li>
+  <li><b>Wins are real but scoped:</b> mesh-independent cost, point queries, moving frames for translating flows.</li>
+</ul>
+
+<div class="foot">Sources: decoder-history report and collaborator PDF (Oct 28–29), JCP Burgers campaign final report, Burgers 3D refinement report, same-sample reconstruction report, and the project lab log through Nov 3, 2026. Numbers are copied from those records; full tables, scope qualifiers and retractions are in <i>Decoder-History-Collaborators.pdf</i>.</div>
+
+</body>
+</html>

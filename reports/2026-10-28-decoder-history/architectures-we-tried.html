@@ -305,14 +305,6 @@
 </table>
 <p class="small">Head numbers are fitted validation errors on Burgers 3D with the same frozen bank (optimizer seed 200).</p>
 
-<h2>What we took from this</h2>
-<ul>
-  <li>Good reconstruction did not mean a good solve. ViT-CP on Burgers and the ViT decoder both reconstructed well and failed in the solver.</li>
-  <li>Anything that runs a neural network inside the solver loop was too slow (ViT, SIREN, FiLM). Caching the spatial functions is what fixed speed.</li>
-  <li>A nonlinear head cannot leave its bank's span, so most of the head work did not pay off.</li>
-  <li>Tuned classical baselines (spectral solvers, POD) decide whether a result is a real win, so we compare against them at matched accuracy.</li>
-</ul>
-
 <p class="small" style="margin-top:14pt">Sources: decoder-history report (Oct 28), ViT ablation status (May 14), SIREN speed summary (May 18), July results README and ledger, project lab log, Burgers campaign final report (Oct 20), Burgers 3D refinement report (Oct 27). Numbers are copied from those records.</p>
 
 </body>

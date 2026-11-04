@@ -309,3 +309,26 @@ rematerialised per 32 768-point chunk to bound memory.
   - If neither passes, the next attempt is decided from the evidence and amended before any job.
 - G3 is still evaluated by the unchanged pipeline (`mesh_bank`) at 64³ and 96³. Penalising 64³
   does not guarantee 96³; the report will say so if they differ.
+
+## A3 (2026-11-04, after `dev32` 6858232 failed in 33 s, before its rerun) — the inherited 32³ sanity abort
+
+`rom_mesh.py` (unchanged from the parent) aborts when the sampled bank's pre-Löwdin deviation
+exceeds `one_bank_orthonormality_gate`. The parent configs set that to 0.05. This was a parent
+sanity guard, not a gate of this lane: §4 deliberately leaves 32³ ungated.
+
+The selected bank reads 0.607 at 32³, and the same-data POD control reads 0.607 too
+(`runs/bank_a2_mu001`). This is inherent to the data, not a defect of the network: up to 53 % of
+a POD mode's energy lies at $\max_i|k_i|>10$, which the 32³ FOM space cannot hold. At 32³ the
+Löwdin clean-up changes the bank by 9.8 % overall and up to 76 % in its worst column. The
+oracle floor at 32³ is still 1.325× POD-64, passing G1.
+
+So `dev32` died before producing any number. Its logs are kept in `runs/failed_preflight_dev32/`,
+and it is charged in `LEDGER.md`.
+
+**Change.** `dev32b` reruns the 32³ development ROM with `configs/dev32b.json` = `configs/dev32.json`
+with only `one_bank_orthonormality_gate` raised to 1.0. Everything else is unchanged: same bank,
+head recipe, cohort, controls, timing and audit. The 0.607 is reported beside the result.
+
+No gate, objective or architecture changes, so no new review is required (authorization rule 6).
+The R1–R4 readings at 32³ are reported with this disclosure. 64³ and 96³ ran under the
+parent's 0.05 guard and passed it (7.0e-5, 3.1e-4).

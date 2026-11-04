@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ns3d-pod-match-20261103/dev32/experiments/ns3d-coordnet/rom_mesh.py", line 525, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ns3d-pod-match-20261103/dev32/experiments/ns3d-coordnet/rom_mesh.py", line 178, in main
+    Gc, binfo = BI.mesh_bank(pc, Tc, n, chunk=int(cfg.get("sample_chunk_eval", 32768)),
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                              abort=float(cfg["one_bank_orthonormality_gate"]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ns3d-pod-match-20261103/dev32/experiments/ns3d-coordnet/bankio.py", line 84, in mesh_bank
+    raise RuntimeError(f"sampled bank at {n}^3 too far from orthonormal: {dev}")
+RuntimeError: sampled bank at 32^3 too far from orthonormal: 0.6069599696017276

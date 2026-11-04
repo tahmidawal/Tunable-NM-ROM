@@ -1,0 +1,29 @@
+host=pax049 source_commit=9181988bc238acc9c83edc10bf7119c5c4154463 job=6858232 mode=rom config=experiments/ns3d-pod-match/configs/dev32.json
+NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB
+10.235.106.34:/projects/paralab  4.6T  1.4T  3.2T  30% /cluster/tufts/paralab
+jax_backend=gpu
+POD reference bank: parent recipe
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=8.632e-10 energy_tail=1.408e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+POD bank rebuild vs the paper's probe: 2.978e-13
+MESH=output/mesh RUN_EXIT=1 VERIFY_EXIT=-1
+ALL_EXIT=1

@@ -10,5 +10,6 @@ case "$1" in
   dev96) "$HERE/submit.sh" dev96 rom configs/dev96.json gpu:1 160G 00:45:00 ;;
   dev64) "$HERE/submit.sh" dev64 rom configs/dev64.json gpu:1 120G 00:20:00 ;;
   dev32) "$HERE/submit.sh" dev32 rom configs/dev32.json gpu:1 96G 00:15:00 ;;
+  dev32b) "$HERE/submit.sh" dev32b rom configs/dev32b.json gpu:1 96G 00:15:00 ;;   # DESIGN §A3
   *) echo "unknown job $1"; exit 1 ;;
 esac

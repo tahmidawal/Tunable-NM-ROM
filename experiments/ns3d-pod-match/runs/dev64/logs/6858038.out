@@ -1,0 +1,110 @@
+host=pax106 source_commit=9181988bc238acc9c83edc10bf7119c5c4154463 job=6858038 mode=rom config=experiments/ns3d-pod-match/configs/dev64.json
+NVIDIA A100 80GB PCIe, GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  1.4T  3.2T  30% /cluster/tufts/paralab
+jax_backend=gpu
+POD reference bank: parent recipe
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.341e-09 energy_tail=1.413e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+POD bank rebuild vs the paper's probe: 2.186e-13
+coordnet bank at 64^3: {'n': 64, 'leray_removed_worst': 1.2371531823774175e-09, 'leray_removed_median': 1.0433733024237446e-10, 'orthonormality_before_lowdin': 7.035172676128632e-05, 'orthonormality_before_lowdin_spectral': 0.0002257437802540878, 'lowdin_relative_change': 2.375664738770005e-05, 'lowdin_worst_column_change': 6.144738098155541e-05, 'orthonormality_after': 3.885780586188048e-15, 'prefix': None}
+generating evaluation trajectories
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+coordnet D_d autodiff vs spectral: 4.460e-06
+floors: pod_R64=0.001289, coordnet_R8=0.049771, coordnet_R16=0.019639, coordnet_R32=0.006490, coordnet_R48=0.002752, coordnet_R64=0.001827
+generating 512 head-training trajectories
+  head data 64/512
+  head data 128/512
+  head data 192/512
+  head data 256/512
+  head data 320/512
+  head data 384/512
+  head data 448/512
+  head data 512/512
+  head step 5000/100000 weighted fit 9.9585e-04 (7s)
+  head step 10000/100000 weighted fit 4.1762e-04 (11s)
+  head step 15000/100000 weighted fit 2.6125e-04 (15s)
+  head step 20000/100000 weighted fit 3.9264e-04 (19s)
+  head step 25000/100000 weighted fit 4.1366e-04 (22s)
+  head step 30000/100000 weighted fit 1.8882e-04 (26s)
+  head step 35000/100000 weighted fit 2.0925e-04 (30s)
+  head step 40000/100000 weighted fit 1.8194e-04 (34s)
+  head step 45000/100000 weighted fit 2.2341e-04 (37s)
+  head step 50000/100000 weighted fit 9.1152e-05 (41s)
+  head step 55000/100000 weighted fit 9.0223e-05 (45s)
+  head step 60000/100000 weighted fit 6.3301e-05 (49s)
+  head step 65000/100000 weighted fit 4.3471e-05 (53s)
+  head step 70000/100000 weighted fit 3.9340e-05 (57s)
+  head step 75000/100000 weighted fit 3.8577e-05 (61s)
+  head step 80000/100000 weighted fit 3.6180e-05 (65s)
+  head step 85000/100000 weighted fit 2.7688e-05 (69s)
+  head step 90000/100000 weighted fit 2.5269e-05 (72s)
+  head step 95000/100000 weighted fit 2.3380e-05 (76s)
+  head step 100000/100000 weighted fit 2.2176e-05 (80s)
+coordnet head: fit {'train': {'median': 0.000539585270776698, 'worst': 0.002317235544512369}, 'val': {'median': 0.0005353522444620772, 'worst': 0.0017925176313569895}}
+head floors: pod 0.001300 coordnet 0.001835
+coordnet_head_k8: evolved worst 0.001966
+pod_head_k8: evolved worst 0.001520
+pod_linear_R64: evolved worst 0.006159
+coordnet_span64: evolved worst 0.012837
+coordnet_span48: evolved worst 0.017707
+coordnet_span32: evolved worst 0.009506
+coordnet_span16: evolved worst 0.024849
+coordnet_span8: evolved worst 0.049519
+POD reproduction vs the paper's job: {'pod_head_k8': 9.612926774038577e-14, 'pod_linear_R64': 1.0091268098921802e-12}
+control frame-zero (coordnet head): 0.4009
+coordnet head parity vs LM: 6.831e-10
+CNAB2 steps=200: 0.000000
+CNAB2 steps=100: 0.000186
+CNAB2 steps=80: 0.000325
+CNAB2 steps=70: 0.000444
+CNAB2 steps=60: 0.000628
+CNAB2 steps=50: 0.000933
+CNAB2 steps=40: 0.003823
+CNAB2 steps=20: 6.861432
+CNAB2 steps=10: 2.720382
+timing gate True; timed outputs vs accuracy pass 0.000e+00
+speedups: coordnet_head_k8=2.97, pod_head_k8=2.97, pod_linear_R64=2.59, coordnet_span64=2.56, coordnet_span48=3.33, coordnet_span32=3.57, coordnet_span16=4.22, coordnet_span8=4.57
+done; failures: []
+control: perturbed copy of coordnet_head_k8 gap 5.791e-04 rejected=True (gap 5.791e-04 > 1e-12)
+coordnet_head_k8 {"dtype": "float64", "gap": 5.681219383824043e-17, "ok": true, "reason": "ok", "evolved_worst": 0.0019662777532939483}
+coordnet_span16 {"dtype": "float64", "gap": 4.40619762898109e-16, "ok": true, "reason": "ok", "evolved_worst": 0.02484901331222856}
+coordnet_span32 {"dtype": "float64", "gap": 2.8622937353617317e-16, "ok": true, "reason": "ok", "evolved_worst": 0.009505925053954114}
+coordnet_span48 {"dtype": "float64", "gap": 1.942890293094024e-16, "ok": true, "reason": "ok", "evolved_worst": 0.017707232952092502}
+coordnet_span64 {"dtype": "float64", "gap": 2.1684043449710089e-16, "ok": true, "reason": "ok", "evolved_worst": 0.012836680610793951}
+coordnet_span8 {"dtype": "float64", "gap": 1.8041124150158794e-15, "ok": true, "reason": "ok", "evolved_worst": 0.04951878830178763}
+pod_head_k8 {"dtype": "float64", "gap": 3.230922474006803e-17, "ok": true, "reason": "ok", "evolved_worst": 0.001520090442612694}
+pod_linear_R64 {"dtype": "float64", "gap": 1.474514954580286e-16, "ok": true, "reason": "ok", "evolved_worst": 0.006159103918137588}
+control_frame_zero {"dtype": "float64", "gap": 5.88418203051333e-15, "ok": true, "reason": "ok", "evolved_worst": 0.4008704667870336}
+cnab2_s10 {"dtype": "float32", "gap": 9.454438180706329e-09, "ok": true, "reason": "ok", "evolved_worst": 2.720382001712394}
+cnab2_s100 {"dtype": "float32", "gap": 2.5719683439232217e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00018582406556699686}
+cnab2_s20 {"dtype": "float32", "gap": 3.748442348886989e-09, "ok": true, "reason": "ok", "evolved_worst": 6.861432319646873}
+cnab2_s200 {"dtype": "float32", "gap": 2.5719683439232217e-08, "ok": true, "reason": "ok", "evolved_worst": 2.526783164412152e-08}
+cnab2_s40 {"dtype": "float32", "gap": 2.5719683439232217e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0038234672417105557}
+cnab2_s50 {"dtype": "float32", "gap": 2.5719683439232217e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0009325763920293404}
+cnab2_s60 {"dtype": "float32", "gap": 2.5719683439232217e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0006276117358123349}
+cnab2_s70 {"dtype": "float32", "gap": 2.5719683439232217e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00044423188750054827}
+cnab2_s80 {"dtype": "float32", "gap": 2.5719683439232217e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00032539763256050604}
+floor audit {'rank': 64, 'local': 0.0018272261460483025, 'claimed': 0.0018272261460483025, 'relative_gap': 0.0}
+verify ok
+MESH=output/mesh RUN_EXIT=0 VERIFY_EXIT=0
+ALL_EXIT=0

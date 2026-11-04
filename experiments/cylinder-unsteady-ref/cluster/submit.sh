@@ -10,7 +10,7 @@ NS=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103
 DIR=$NS/$ATTEMPT
 git diff --quiet HEAD -- . || { echo "uncommitted changes in lane; commit first"; exit 2; }
 COMMIT=$(git rev-parse HEAD)
-FILES=(transient.py cycles.py compare.py install_deps.py vendor/scalars.py vendor/oriented_normals.py
+FILES=(transient.py cycles.py compare.py r1_gates.py install_deps.py vendor/scalars.py vendor/oriented_normals.py
        vendor/dependencies.py vendor/DEPENDENCIES.json inputs/admitted_mesh.vol.bin cluster/run.sh "$@")
 echo "squeue before:"; ssh tufts-login "squeue -u \$USER -h -o '%i %j %Z'" | grep cyl-unsteady-20261103 || echo "(no campaign jobs)"
 ssh tufts-login "test ! -e $DIR && mkdir -p $DIR" || { echo "attempt directory exists or cannot be created: $DIR"; exit 4; }

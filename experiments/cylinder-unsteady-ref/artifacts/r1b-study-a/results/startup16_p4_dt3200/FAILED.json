@@ -1,0 +1,6 @@
+{
+  "error": "ArithmeticError('embedding is not exact: velocity 5.584e-13, pressure 4.973e-10')",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-study-a/transient.py\", line 568, in main\n    Stepper(cfg, out, ng).run()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-study-a/transient.py\", line 416, in run\n    x, t = self.load_state(init)\n           ~~~~~~~~~~~~~~~^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-study-a/transient.py\", line 392, in load_state\n    raise ArithmeticError(f'embedding is not exact: velocity {ev:.3e}, pressure {ep:.3e}')\nArithmeticError: embedding is not exact: velocity 5.584e-13, pressure 4.973e-10\n",
+  "peak_rss_bytes": 933605376,
+  "job_id": "6867838"
+}

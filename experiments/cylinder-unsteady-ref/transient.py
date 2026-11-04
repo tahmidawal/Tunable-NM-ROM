@@ -376,9 +376,28 @@ class Stepper:
         Vs = ng.VectorH1(self.mesh, order=k, dirichlet='inlet|wall.*|obstacle')
         Xs = Vs * ng.H1(self.mesh, order=k - 1)
         gs = ng.GridFunction(Xs); gs.vec.FV().NumPy()[:] = z['x']
-        bo = self.cfg['assembly_bonus_order']
-        self.g.components[0].Set(gs.components[0], bonus_intorder=bo); self.g.components[1].Set(gs.components[1], bonus_intorder=bo)
-        x = self.g.vec.FV().NumPy().copy()
+        # Exact coefficient injection (G5-A5 repair): NGSolve's H1 bases are hierarchical, so on
+        # the same mesh every order-k shape function of a node is the first order-k function of
+        # that node in the higher space. Copy node by node; the witness below verifies it.
+        def inject(src_space, dst_space, src, dst):
+            for kind in (ng.VERTEX, ng.EDGE, ng.FACE):
+                count = {ng.VERTEX: self.mesh.nv, ng.EDGE: self.mesh.nedge, ng.FACE: self.mesh.nface}[kind]
+                for nr in range(count):
+                    ds = list(src_space.GetDofNrs(ng.NodeId(kind, nr)))
+                    dd = list(dst_space.GetDofNrs(ng.NodeId(kind, nr)))
+                    if len(ds) > len(dd):
+                        raise ValueError('source node has more dofs than destination')
+                    dst[dd[:len(ds)]] = src[ds]
+        Ss, Sd = ng.H1(self.mesh, order=k), ng.H1(self.mesh, order=self.cfg['velocity_order'])
+        Ps, Pd = ng.H1(self.mesh, order=k - 1), ng.H1(self.mesh, order=self.cfg['velocity_order'] - 1)
+        ns, nd = Ss.ndof, Sd.ndof
+        if Vs.ndof != 2 * ns or self.V.ndof != 2 * nd:
+            raise ValueError('VectorH1 is not two blocked scalar H1 copies')
+        src = np.asarray(z['x'], dtype=np.float64); x = np.zeros(self.X.ndof)
+        for comp in range(2):
+            out = np.zeros(nd); inject(Ss, Sd, src[comp * ns:(comp + 1) * ns], out); x[comp * nd:(comp + 1) * nd] = out
+        out = np.zeros(Pd.ndof); inject(Ps, Pd, src[Vs.ndof:], out); x[self.V.ndof:] = out
+        self.g.vec.FV().NumPy()[:] = x
         # G5-A5 witness: embedded fields equal the source fields to roundoff (L2, high order).
         qo = 2 * self.cfg['velocity_order'] + 6
         du = self.g.components[0] - gs.components[0]; dp = self.g.components[1] - gs.components[1]

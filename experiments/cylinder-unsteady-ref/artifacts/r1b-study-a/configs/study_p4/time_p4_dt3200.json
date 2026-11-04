@@ -1,0 +1,70 @@
+{
+  "H": 0.41,
+  "xmin": 0.0,
+  "xmax": 2.2,
+  "center": [
+    0.2,
+    0.2
+  ],
+  "radius": 0.05,
+  "U_mean": 1.0,
+  "U_mean0": 0.2,
+  "ramp_time": 1.0,
+  "nu": 0.001,
+  "velocity_order": 4,
+  "pressure_order": 3,
+  "geometry_order": 4,
+  "mesh_path": "inputs/admitted_mesh.vol.bin",
+  "mesh_sha256": "528ffff38bb0f4d6d542f1abd4cba7c9ca2ba0427871caca806527c63ae6b092",
+  "assembly_bonus_order": 6,
+  "diagnostic_order": 12,
+  "threads": 16,
+  "inverse_backend": "umfpack",
+  "max_dofs": 500000,
+  "newton_max": 30,
+  "nonlinear_relative_tolerance": 1e-10,
+  "damping_sequence": [
+    1,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+  ],
+  "linear_relative_tolerance": 1e-10,
+  "gmres_maxsteps": 60,
+  "refactor_every": 40,
+  "scheme": "frozen_oseen",
+  "startup_substeps": 4,
+  "snapshot_chunk": 50,
+  "energy_blowup": 1000.0,
+  "periodicity": {
+    "n": 3,
+    "cl_tol": 0.0001,
+    "cd_rel_tol": 0.0001,
+    "period_rel_tol": 0.0001
+  },
+  "kick": null,
+  "initial": {
+    "kind": "state",
+    "path": "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-spinup01/results/spinup_re100/spinup.npz",
+    "sha256": "5fa0e84231f9785984852fa4fe2e35368908438b745d4a0a9a3cc1b15bc316e9"
+  },
+  "wall_limit_seconds": 14000,
+  "precision": "float64",
+  "steady_reference": {
+    "CD": 5.579548183731313,
+    "CL": 0.010615714195317974,
+    "source": "FD1 Re20 P4/P3 gradient_order16 coefficient"
+  },
+  "stages": [
+    {
+      "name": "study",
+      "dt": 0.0003125,
+      "duration": 0.35,
+      "save_every_steps": 8,
+      "diagnostics_every_saves": 4
+    }
+  ]
+}

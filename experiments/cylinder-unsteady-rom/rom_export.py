@@ -98,18 +98,19 @@ class FE:
         pts = np.asarray(pts)
         if xy.shape != pts.shape or np.max(np.abs(xy - pts)) > 1e-12:
             raise AssertionError('MapToAllElements order differs from the element loop')
-        bnd = {}
-        for label in ('inlet', 'outlet'):
-            bp, bw = [], []
-            for el in mesh.Elements(ng.BND):
-                if el.mat != label:
-                    continue
-                tr = mesh.GetTrafo(el)
-                for ip in ng.IntegrationRule(ng.SEGM, QORDER):
-                    mip = tr(ip); bp.append(tuple(mip.point)); bw.append(float(ip.weight * mip.measure))
-            bnd[label] = (np.asarray(bp), np.asarray(bw))
-        self.bnd = bnd
-        self.bmapped = {lab: [mesh(*p) for p in bnd[lab][0]] for lab in bnd}
+        # One boundary rule over all BND elements, vectorized like the volume rule.
+        irs = ng.IntegrationRule(ng.SEGM, QORDER)
+        bp, bw, bl = [], [], []
+        for el in mesh.Elements(ng.BND):
+            tr = mesh.GetTrafo(el)
+            for ip in irs:
+                mip = tr(ip); bp.append(tuple(mip.point)); bw.append(float(ip.weight * mip.measure)); bl.append(el.mat)
+        self.bmapped = mesh.MapToAllElements(irs, ng.BND)
+        bxy = np.asarray(ng.CF((ng.x, ng.y))(self.bmapped)); bp = np.asarray(bp)
+        if bxy.shape != bp.shape or np.max(np.abs(bxy - bp)) > 1e-12:
+            raise AssertionError('boundary MapToAllElements order differs from the element loop')
+        self.blabels = np.array(bl)
+        self.bnd = {lab: (bp[self.blabels == lab], np.asarray(bw)[self.blabels == lab]) for lab in ('inlet', 'outlet', 'obstacle')}
         return pts, np.asarray(w)
 
     def eval_v(self, coeffs):
@@ -125,16 +126,19 @@ class FE:
         return np.asarray(self.gp(self.mapped)).reshape(-1)
 
     def eval_bnd(self, coeffs, kind):
+        """Traces of volume fields (and velocity gradients) on the boundary rule, per label."""
         ng = self.ng
         g = self.gv if kind == 'v' else self.gp
         g.vec.FV().NumPy()[:] = coeffs
         out = {}
-        for lab, mps in self.bmapped.items():
-            if kind == 'v':
-                out[lab] = (np.array([g(m) for m in mps]).reshape(-1, 2),
-                            np.array([ng.Grad(g)(m) for m in mps]).reshape(-1, 2, 2))
-            else:
-                out[lab] = np.array([g(m) for m in mps]).reshape(-1)
+        if kind == 'v':
+            val = np.asarray(ng.BoundaryFromVolumeCF(g)(self.bmapped)).reshape(-1, 2)
+            grd = np.asarray(ng.BoundaryFromVolumeCF(ng.Grad(g))(self.bmapped)).reshape(-1, 2, 2)
+        else:
+            val = np.asarray(ng.BoundaryFromVolumeCF(g)(self.bmapped)).reshape(-1)
+        for lab in self.bnd:
+            m = self.blabels == lab
+            out[lab] = (val[m], grd[m]) if kind == 'v' else val[m]
         return out
 
 
@@ -216,9 +220,12 @@ def main():
     with ng.TaskManager():
         fe = FE(ng, man['mesh_path'], man['mesh_sha256'])
         pts, w = fe.rule()
+        obs = fe.bnd['obstacle'][0] - np.asarray(man['center'])[None]
         np.savez(out / 'quadrature.npz', points=pts, weights=w,
                  inlet_points=fe.bnd['inlet'][0], inlet_weights=fe.bnd['inlet'][1],
-                 outlet_points=fe.bnd['outlet'][0], outlet_weights=fe.bnd['outlet'][1])
+                 outlet_points=fe.bnd['outlet'][0], outlet_weights=fe.bnd['outlet'][1],
+                 obstacle_points=fe.bnd['obstacle'][0], obstacle_weights=fe.bnd['obstacle'][1],
+                 obstacle_normal_out_of_body=obs / np.linalg.norm(obs, axis=1)[:, None])
         train = [c for c in man['cases'] if c['split'] == 'train']
         sv, sp, nu_train = [], [], []
         for c in train:
@@ -260,12 +267,12 @@ def main():
             a, b = bank.evaluate(pts[i:i + 8192]); bv.append(a); bg.append(b)
         bv, bg = np.concatenate(bv), np.concatenate(bg)
         bbnd = {lab: bank.evaluate(fe.bnd[lab][0]) for lab in fe.bnd}
+        bsave = {}
+        for lab in fe.bnd:
+            bsave.update({f'{lab}_V': Bv[lab][0], f'{lab}_G': Bv[lab][1], f'{lab}_P': Bp[lab],
+                          f'frozen_bank_{lab}_V': bbnd[lab][0], f'frozen_bank_{lab}_G': bbnd[lab][1]})
         np.savez(out / 'basis.npz', names=np.array(names), V=V, G=G, P=P, probes=probes,
-                 inlet_V=Bv['inlet'][0], inlet_G=Bv['inlet'][1], outlet_V=Bv['outlet'][0], outlet_G=Bv['outlet'][1],
-                 inlet_P=Bp['inlet'], outlet_P=Bp['outlet'],
-                 frozen_bank_V=bv, frozen_bank_G=bg,
-                 frozen_bank_inlet_V=bbnd['inlet'][0], frozen_bank_inlet_G=bbnd['inlet'][1],
-                 frozen_bank_outlet_V=bbnd['outlet'][0], frozen_bank_outlet_G=bbnd['outlet'][1])
+                 frozen_bank_V=bv, frozen_bank_G=bg, **bsave)
         # Projections of non-training trajectories (dev always; held-out only with the flag).
         allb_v = np.concatenate([V, bv], axis=2)
         for c in man['cases']:

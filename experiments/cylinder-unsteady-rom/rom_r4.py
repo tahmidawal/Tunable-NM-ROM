@@ -44,7 +44,7 @@ def main():
     ap.add_argument('--export', required=True); ap.add_argument('--manifest', required=True)
     ap.add_argument('--case', required=True); ap.add_argument('--dt', type=float, required=True)
     ap.add_argument('--arms', required=True); ap.add_argument('--out', required=True)
-    ap.add_argument('--trained-bank')
+    ap.add_argument('--trained-bank'); ap.add_argument('--trained-proj')
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     man = json.loads(Path(a.manifest).read_text())
@@ -55,6 +55,14 @@ def main():
         z = np.load(a.trained_bank)
         ex.add_bank('trained', z['V'], z['G'], z['outlet_V'])
     proj = dict(np.load(Path(a.export) / f"proj_{a.case}.npz"))
+    if a.trained_bank:
+        import hashlib
+        tp = dict(np.load(a.trained_proj))
+        if str(tp['bank_eval_sha256']) != hashlib.sha256(Path(a.trained_bank).read_bytes()).hexdigest():
+            raise ValueError('trained-bank projections are not bound to this bank evaluation')
+        if not np.array_equal(tp['t'], proj['t']):
+            raise ValueError('trained-bank projections are on different saved times')
+        proj['uv_trained'] = tp['uv_trained']
     ts = proj['t']; t0 = ts[0]
     idx = np.rint((ts - t0) / a.dt).astype(int)
     if np.max(np.abs(t0 + idx * a.dt - ts)) > 1e-9:
@@ -76,6 +84,7 @@ def main():
             w0 = time.perf_counter()
             A, C, F, probes, its = arm.rollout(nu, a.dt, a0, n_steps)
             rec['rollout_seconds'] = time.perf_counter() - w0
+            rec['initial'] = arm.initial
             rec['newton_iterations'] = {'median': float(np.median(its[2:])), 'max': int(its.max())}
             err = arm.errors(proj, A, C, idx)
             t_rom = t0 + np.arange(n_steps + 1) * a.dt
@@ -97,21 +106,18 @@ def main():
             rec['e_p'] = {'rms': rms(err['e_p']), 'max': float(err['e_p'].max()), 'last_period_mean': float(err['e_p'][last].mean())}
             rec['divergence'] = {'median': float(np.median(err['divergence'])), 'max': float(err['divergence'].max())}
             rec['mass'] = {'max': float(err['mass'].max())}
-            # Phase-aligned (supplemental): lag on the save grid minimizing lift mismatch over the last two periods.
-            two = ts >= ts[-1] - 2 * period
+            # Phase-aligned (supplemental, G5-A5): one fixed support for every lag, the saves with
+            # t in [t_end - 2T + T/2, t_end - T/2]; lags |k| <= T/2 on the save grid.
+            ds = ts[1] - ts[0]
+            kmax = int(round(0.5 * period / ds))
+            I = np.where((ts >= ts[-1] - 1.5 * period) & (ts <= ts[-1] - 0.5 * period))[0]
+            if I.min() - kmax < 0 or I.max() + kmax >= len(ts):
+                raise ValueError('horizon too short for the fixed phase-search support')
             cl_rom_s = np.interp(ts, t_rom[ok], F[ok, 1]); cl_ref_s = np.interp(ts, tr, href[:, 2])
-            kmax = int(round(0.5 * period / (ts[1] - ts[0])))
-            best = None
-            for k in range(-kmax, kmax + 1):
-                i = np.where(two)[0]; j = i + k
-                m = (j >= 0) & (j < len(ts)); i, j = i[m], j[m]
-                val = rms(cl_rom_s[i] - cl_ref_s[j])
-                if best is None or val < best[1]:
-                    best = (k, val)
+            best = min(((k, rms(cl_rom_s[I] - cl_ref_s[I + k])) for k in range(-kmax, kmax + 1)), key=lambda z: z[1])
             k = best[0]
-            i = np.arange(len(ts)); j = i + k; m = (j >= 0) & (j < len(ts))
-            shifted = {kk: vv[j[m]] for kk, vv in proj.items() if kk in ('uv', 'uu', 'pp', 'pv')}
-            err_al = arm.errors(shifted, A, C, idx[i[m]])
+            shifted = {kk: vv[I + k] for kk, vv in proj.items() if kk.startswith('uv') or kk in ('uu', 'pp', 'pv')}
+            err_al = arm.errors(shifted, A, C, idx[I])
             rec['phase_aligned'] = {'lag_saves': int(k), 'lag_seconds': float(k * (ts[1] - ts[0])), 'lift_rms_at_lag': best[1],
                                     'e_u_rms': rms(err_al['e_u']), 'e_p_rms': rms(err_al['e_p'])}
             ce = rec.get('cycle_errors', {})

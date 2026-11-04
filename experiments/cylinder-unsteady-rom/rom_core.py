@@ -47,7 +47,7 @@ class Arm:
     """Reduced spaces and exact operators for one method/rank."""
 
     def __init__(self, ex: Export, kind, r, bank_key=None):
-        self.kind, self.r, self.ex = kind, r, ex
+        self.kind, self.r, self.ex, self.bank_key = kind, r, ex, bank_key
         w = ex.w
         L = ex.col('lift')
         sup = [ex.col(f'sup{i}') for i in range(r)]
@@ -155,8 +155,14 @@ class Arm:
         A = np.zeros((n_steps + 1, d)); C = np.zeros((n_steps + 1, dp)); F = np.full((n_steps + 1, 2), np.nan)
         its = np.zeros(n_steps + 1, int)
         A[0] = a0
-        c = np.linalg.lstsq(self.B.T, nu * (self.K @ a0 + self.KL) + self.conv(a0), rcond=None)[0]  # diagnostic only
-        C[0] = c
+        # Consistent initial pressure (G5-A5): [M -B^T; B 0][adot; c] = [-F(a0); 0].
+        F0 = nu * (self.K @ a0 + self.KL) + self.conv(a0)
+        S = np.zeros((d + dp, d + dp)); S[:d, :d] = self.M; S[:d, d:] = -self.B.T; S[d:, :d] = self.B
+        sol = np.linalg.solve(S, np.r_[-F0, np.zeros(dp)])
+        c = sol[d:]; C[0] = c
+        self.initial = {'continuity_defect': float(np.linalg.norm(self.B @ a0 + self.BL)),
+                        'continuity_scale': float(max(np.linalg.norm(self.BL), 1e-300)),
+                        'initial_acceleration_norm': float(np.linalg.norm(sol[:d]))}
         hs = dt / substeps; a = a0.copy()
         for _ in range(substeps):
             a_new, c, it, _ = self.step(nu, 1 / hs, self.M @ a / hs, a, c)
@@ -177,15 +183,18 @@ class Arm:
     # ---- projections and errors from streamed inner products ------------
     def ref_coeffs(self, proj):
         """<u_ref - lift, phi_j> for the orthonormal basis, per saved time."""
-        uv = proj['uv']
-        raw = np.stack([uv[:, self._colindex(c)] for c in self.raw_cols], axis=1)
+        raw = np.stack([self._column(proj, c) for c in self.raw_cols], axis=1)
         lift_raw = wdot(self.ex.w, self.lV[..., None], self.raw_V)[0]
         return (raw - lift_raw[None, :]) @ self.T, (raw[:, :self.r] - lift_raw[None, :self.r]) @ self.T0
 
-    def _colindex(self, c):
+    def _column(self, proj, c):
+        """FE columns from 'uv'; bank columns from the identity-tagged 'uv_<bank key>' only."""
         if isinstance(c, tuple):
-            return len(self.ex.names) + c[1]
-        return c
+            key = f'uv_{self.bank_key}'
+            if key not in proj:
+                raise KeyError(f'no projections for bank {self.bank_key!r}')
+            return proj[key][:, c[1]]
+        return proj['uv'][:, c]
 
     def floors(self, proj):
         uu = proj['uu']; ul = proj['uv'][:, self.ex.col('lift')]

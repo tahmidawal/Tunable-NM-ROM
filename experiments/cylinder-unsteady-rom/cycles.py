@@ -52,9 +52,26 @@ def cycles(t, cd, cl, dp=None):
                'CL_max': extremum(t, cl, w, 1), 'CL_min': extremum(t, cl, w, -1),
                'CD_max_sample': float(cd[w].max()), 'CL_max_sample': float(cl[w].max())}
         if dp is not None:
-            rec['dp_at_t0_plus_half_period'] = float(np.interp(t0 + 0.5 * period, t, np.asarray(dp, float)))
+            dp = np.asarray(dp, float)
+            # Featflow convention: t0 at the C_L minimum.
+            rec['dp_at_t0_plus_half_period'] = float(np.interp(t0 + 0.5 * period, t, dp))
+            # Schaefer-Turek 1996 convention: t0 at the C_L maximum (parabola-refined time).
+            j = i0 + int(np.argmax(cl[w]))
+            tmax = t[j]
+            if 0 < j < len(cl) - 1:
+                y0, y1, y2 = cl[j - 1], cl[j], cl[j + 1]; den = y0 - 2 * y1 + y2; h = t[j + 1] - t[j]
+                if den != 0:
+                    tmax = t[j] + float(np.clip(0.5 * h * (y0 - y2) / den, -h, h))
+            rec['dp_1996_t0_at_CLmax_plus_half_period'] = float(np.interp(tmax + 0.5 * period, t, dp))
         recs.append(rec)
     return recs
+
+
+def summarize(recs):
+    """R1d aggregate (G5-A5): mean over every complete cycle, with per-cycle spread."""
+    keys = [k for k in recs[0] if k not in ('t0', 't1')]
+    return {k: {'mean': float(np.mean([r[k] for r in recs])), 'min': float(np.min([r[k] for r in recs])),
+                'max': float(np.max([r[k] for r in recs]))} for k in keys} | {'cycles': len(recs)}
 
 
 def periodic(recs, n=3, cl_tol=1e-4, cd_rel_tol=1e-4, period_rel_tol=1e-4):

@@ -143,6 +143,22 @@ class FE:
         return out
 
 
+def project(fe, w, P, case, funcs):
+    """Stream one recorded trajectory: inner products of u_ref with each function set on Q."""
+    rows = {'t': [], 'uu': [], 'pp': [], 'pv': [], 'pref': []}
+    rows.update({f'uv{k}': [] for k in funcs})
+    for t, x in recorded(case['run_dir'], case['stage']):
+        u, _ = fe.eval_v(x[:fe.nv]); p = fe.eval_p(x[fe.nv:])
+        rows['t'].append(t)
+        for k, F in funcs.items():
+            rows[f'uv{k}'].append(np.einsum('q,qc,qcj->j', w, u, F))
+        rows['uu'].append(float(np.einsum('q,qc,qc->', w, u, u)))
+        rows['pp'].append(float(np.einsum('q,q,q->', w, p, p)))
+        rows['pv'].append(np.einsum('q,q,qk->k', w, p, P))
+        rows['pref'].append(float(w @ p))
+    return {k: np.asarray(v) for k, v in rows.items()}
+
+
 def pod(fe, snaps_v, lift):
     """L2 method of snapshots on velocity fluctuations; f64 with re-orthogonalization."""
     Y = snaps_v - lift[None, :]
@@ -275,21 +291,13 @@ def main():
         np.savez(out / 'basis.npz', names=np.array(names), V=V, G=G, P=P, probes=probes,
                  frozen_bank_V=bv, frozen_bank_G=bg, **bsave)
         # Projections of non-training trajectories (dev always; held-out only with the flag).
-        allb_v = np.concatenate([V, bv], axis=2)
+        # FE functions in 'uv'; each bank in its own identity-tagged 'uv_<key>' (G5-A5).
         for c in man['cases']:
             if c['split'] == 'train' or (c['split'] == 'heldout' and not args.allow_heldout):
                 continue
-            rows = {'t': [], 'uv': [], 'uu': [], 'pp': [], 'pv': [], 'pref': []}
-            for t, x in recorded(c['run_dir'], c['stage']):
-                u, gu = fe.eval_v(x[:fe.nv]); p = fe.eval_p(x[fe.nv:])
-                rows['t'].append(t)
-                rows['uv'].append(np.einsum('q,qc,qcj->j', w, u, allb_v))
-                rows['uu'].append(float(np.einsum('q,qc,qc->', w, u, u)))
-                rows['pp'].append(float(np.einsum('q,q,q->', w, p, p)))
-                rows['pv'].append(np.einsum('q,q,qk->k', w, p, P))
-                rows['pref'].append(float(w @ p))
-            np.savez(out / f"proj_{c['name']}.npz", **{k: np.asarray(v) for k, v in rows.items()},
-                     columns=np.array(names + [f'bank{i}' for i in range(bv.shape[2])]))
+            rows = project(fe, w, P, c, {'': V, '_frozen': bv})
+            np.savez(out / f"proj_{c['name']}.npz", **rows, columns=np.array(names),
+                     bank_frozen_sha256=np.array(args.bank_sha256))
     import resource
     log['finished'] = time.time(); log['elapsed_seconds'] = log['finished'] - log['started']
     log['peak_rss_bytes'] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024

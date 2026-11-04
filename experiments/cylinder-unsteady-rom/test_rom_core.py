@@ -69,8 +69,9 @@ def main():
             astar = rng.normal(size=arm.d) * 0.2
             uref = arm.lV + arm.Vb @ astar + 1e-3 * np.sin(5 * ex.V[..., ex.col('pod0')])
             pref = arm.Pb @ rng.normal(size=arm.dp)
-            allb = np.concatenate([ex.V, ex.bank['frozen'][0]], axis=2)
-            proj = {'uv': np.einsum('q,qc,qcj->j', ex.w, uref, allb)[None], 'uu': np.array([np.einsum('q,qc,qc->', ex.w, uref, uref)]),
+            proj = {'uv': np.einsum('q,qc,qcj->j', ex.w, uref, ex.V)[None],
+                    'uv_frozen': np.einsum('q,qc,qcj->j', ex.w, uref, ex.bank['frozen'][0])[None],
+                    'uu': np.array([np.einsum('q,qc,qc->', ex.w, uref, uref)]),
                     'pp': np.array([ex.w @ (pref * pref)]), 'pv': np.einsum('q,q,qk->k', ex.w, pref, ex.P)[None]}
             err = arm.errors(proj, astar[None], np.linalg.solve(arm.Gp, proj['pv'][0, :arm.dp])[None], [0])
             de = np.sqrt(np.einsum('q,qc,qc->', ex.w, uref - arm.lV - arm.Vb @ astar, uref - arm.lV - arm.Vb @ astar) / proj['uu'][0])
@@ -86,6 +87,13 @@ def main():
             # Newton consistency on one BDF step
             a1, c1, it, hist = arm.step(nu, 1e3, arm.M @ a * 1e3, a, np.zeros(arm.dp))
             assert hist[-1] < 1e-12 and it < 20
+            # consistent initial pressure: residual of the differentiated constraint system
+            A, Cc, F, pr, its = arm.rollout(nu, 1e-3, a, 3)
+            S = np.block([[arm.M, -arm.B.T], [arm.B, np.zeros((arm.dp, arm.dp))]])
+            F0 = nu * (arm.K @ a + arm.KL) + arm.conv(a)
+            adot0 = np.linalg.solve(S, np.r_[-F0, np.zeros(arm.dp)])[:arm.d]
+            assert np.allclose(arm.M @ adot0 + F0 - arm.B.T @ Cc[0], 0, atol=1e-10 * max(1, np.abs(F0).max()))
+            assert np.allclose(arm.B @ adot0, 0, atol=1e-10)
     print('all rom_core synthetic checks passed')
 
 

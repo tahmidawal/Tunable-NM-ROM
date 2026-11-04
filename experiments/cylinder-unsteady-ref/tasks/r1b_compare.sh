@@ -1,7 +1,7 @@
 # R1b comparisons (DESIGN-G5 4.4, G5-A5): run inside a ref-lane allocation (NGSolve on PYTHONPATH).
 set -uo pipefail
-A=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-study-a/results
-B=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-study-b/results
+A=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-study-a2/results
+B=/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1b-study-b2/results
 mkdir -p results/compare
 c() { "$PY" compare.py --a "$1" --b "$2" --out "results/compare/$3.json" || echo "comparison $3 invalid/failed"; }
 c $A/time_p4_dt800  $A/time_p4_dt1600 compare_800_1600

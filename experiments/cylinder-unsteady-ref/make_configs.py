@@ -99,9 +99,21 @@ def study(state, state_sha, dts=(800, 1600, 3200, 6400), startup16=(1600, 3200),
     return out
 
 
+def settle(Re, state, state_sha, k=4):
+    # G5-A3: discarded settle at dt 1/800 (K=10) until the developed-flow rule, cap 4 s.
+    return {f'settle_re{Re:g}_p{k}': cfg(nu=0.1 / Re, velocity_order=k, pressure_order=k - 1, scheme='frozen_oseen',
+                                       refactor_every=10, kick=None, wall_limit_seconds=10200,
+                                       initial={'kind': 'state', 'path': state, 'sha256': state_sha},
+                                       stages=[{'name': 'settle', 'dt': 1 / 800, 'duration': 4.0, 'until_periodic': True,
+                                                'require_periodic': True, 'save_every_steps': 80,
+                                                'diagnostics_every_saves': 1, 'save_state': True}])}
+
+
 def main():
     stage = sys.argv[1]
-    if stage == 'study':
+    if stage == 'settle':
+        sets = settle(float(sys.argv[2]), sys.argv[3], sys.argv[4])
+    elif stage == 'study':
         sets = study(sys.argv[2], sys.argv[3])
     elif stage == 'study_p4':
         sets = study(sys.argv[2], sys.argv[3], dts=(), startup16=(), p4=(int(sys.argv[4]),))

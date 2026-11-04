@@ -187,3 +187,26 @@ used because phase-sensitive lift differences grow linearly in time; it is fixed
   energy denominator (stricter than the steady split), smoke diagnostics every 10th save.
 - Diagnostic cadence correction to §4.3 before any run: production diagnostics every 4th
   save (Δt = 0.01), smoke every 10th; "every other save" in §4.3 is superseded.
+
+## Amendment G5-A1 — after R1a smoke01, 2026-11-03 (before any reference gate)
+
+Smoke01 (job 6845044, pax024, 7 min 27 s, evidence in ref lane `artifacts/r1a-smoke01/`):
+R1a Re 20 drag **passes** (P3/P2 reaction drag 5.579537 vs admitted 5.579548, relative
+2.0e-6; four independent runs). **S1 `sbdf2` failed**: unstable once the inflow reached
+U_mean = 1, at both dt = 1/1600 (blow-up near t = 0.19) and 1/800 (t = 0.105); retained.
+Per the §4.1 rule the fallback is S2, which crashed on an NGSolve GMRes argument assertion
+(`pre` and `freedofs` both given): an ordinary infrastructure error, repaired once
+(drop `freedofs`). Measured P3/P2 cost 0.53 s/step with a constant matrix (235,231 DOFs);
+P4/P3 1.38 s/step (437,140 DOFs).
+
+Because S2 reassembles its matrix every step, a third member of the same family is added
+before any gate: **S3 `frozen_oseen`** — BDF2 with implicit convection $(\nabla u)w_f$,
+$w_f=u^n$ frozen and the LU refreshed every K = 10 steps, plus the explicit
+second-order extrapolated remainder $2R(u^n)-R(u^{n-1})$ with
+$R(u)=(\nabla u)u-(\nabla u)w_f$. Same startup, same linear tolerance (checked at every
+refresh). Updated selection rule: among S2/S3, the cheaper scheme that is stable in smoke02
+at full speed and passes R1b. All R1 gates, tolerances, populations and budgets are
+unchanged. Smoke02 also measures the cost of assembly bonus order 2 versus 6; any change of
+bonus order would be a further dated amendment justified by measured effect, not adopted
+silently. S3 code was not separately reviewed before smoke02 (smoke-only, ≤25 min); it
+enters the Codex review before any production use.

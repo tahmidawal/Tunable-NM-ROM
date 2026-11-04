@@ -62,8 +62,8 @@ def cycles(t, cd, cl, dp=None):
                 y0, y1, y2 = cl[j - 1], cl[j], cl[j + 1]; den = y0 - 2 * y1 + y2; h = t[j + 1] - t[j]
                 if den != 0:
                     tmax = t[j] + float(np.clip(0.5 * h * (y0 - y2) / den, -h, h))
-            te = tmax + 0.5 * period   # no extrapolation: outside the history -> NaN (excluded)
-            rec['dp_1996_t0_at_CLmax_plus_half_period'] = float(np.interp(te, t, dp)) if te <= t[-1] else float('nan')
+            te = tmax + 0.5 * period   # no extrapolation: outside the history -> None (excluded, counted)
+            rec['dp_1996_t0_at_CLmax_plus_half_period'] = float(np.interp(te, t, dp)) if te <= t[-1] else None
         recs.append(rec)
     return recs
 
@@ -73,8 +73,9 @@ def summarize(recs):
     keys = [k for k in recs[0] if k not in ('t0', 't1')]
     out = {}
     for k in keys:
-        v = np.array([r[k] for r in recs], float); v = v[np.isfinite(v)]
-        out[k] = {'mean': float(v.mean()), 'min': float(v.min()), 'max': float(v.max()), 'count': int(v.size)}
+        v = np.array([r[k] for r in recs if r.get(k) is not None], float); v = v[np.isfinite(v)]
+        out[k] = ({'mean': float(v.mean()), 'min': float(v.min()), 'max': float(v.max()), 'count': int(v.size)}
+                  if v.size else {'mean': None, 'min': None, 'max': None, 'count': 0})
     return out | {'cycles': len(recs)}
 
 
@@ -82,7 +83,8 @@ def periodic(recs, n=3, cl_tol=1e-4, cd_rel_tol=1e-4, period_rel_tol=1e-4):
     """Predeclared developed-flow rule: the last n consecutive cycle pairs agree."""
     if len(recs) < n + 1:
         return False
-    if not all(np.isfinite(list(r.values())).all() for r in recs[-n - 1:]):
+    defining = ('CL_max', 'CL_min', 'CD_max', 'period')   # only these define periodicity
+    if not all(np.isfinite([r[k] for k in defining]).all() for r in recs[-n - 1:]):
         return False
     for a, b in zip(recs[-n - 1:-1], recs[-n:]):
         if abs(b['CL_max'] - a['CL_max']) > cl_tol or abs(b['CL_min'] - a['CL_min']) > cl_tol:

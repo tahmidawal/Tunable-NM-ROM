@@ -1,0 +1,160 @@
+{
+ "sources": {
+  "run09_status_007": {
+   "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom/artifacts/neural-pod-guided-diagnostic09/metadata/results/diagnostic/status_007.json",
+   "sha256": "2048e0fb4e06f16f7ac5ef384f41acdf95b93622b5182eea6483c1e0ecc4b2a8"
+  },
+  "pod_recovery_metadata": {
+   "path": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/checks/neural-scanned-coordinate-diagnostic-plot-data/METADATA.json",
+   "sha256": "bcebdce50ec0e7200fe113579cf99a0e20247d7619a21e91d7f7f7cce460ab0b"
+  }
+ },
+ "run09": {
+  "16.875": {
+   "velocity_relative": 0.00036172175669735556,
+   "pressure_scaled": 0.00028180498191881517,
+   "drag_relative": 0.00013176513884281314,
+   "transverse_absolute": 0.0010102712374458235,
+   "divergence": 0.003765111319470236,
+   "mass": 5.5415955842342346e-05,
+   "boundary_trace": 3.0980658918150607e-10,
+   "velocity_gradient_relative": 0.00473024591539508,
+   "accuracy_targets_passed": true,
+   "solver_status": "stationary",
+   "target_checks": {
+    "velocity": true,
+    "pressure": true,
+    "drag": true,
+    "transverse": true,
+    "divergence": true,
+    "mass": true,
+    "boundary_trace": true
+   }
+  },
+  "23.125": {
+   "velocity_relative": 0.00034942932105585796,
+   "pressure_scaled": 0.0001787347103603962,
+   "drag_relative": 0.00022935766975446046,
+   "transverse_absolute": 0.00020117735494075504,
+   "divergence": 0.004453157201258315,
+   "mass": 6.585126142155716e-05,
+   "boundary_trace": 3.8658711902903585e-10,
+   "velocity_gradient_relative": 0.005282290056673642,
+   "accuracy_targets_passed": true,
+   "solver_status": "stationary",
+   "target_checks": {
+    "velocity": true,
+    "pressure": true,
+    "drag": true,
+    "transverse": true,
+    "divergence": true,
+    "mass": true,
+    "boundary_trace": true
+   }
+  }
+ },
+ "run09_floor": {
+  "16.875": {
+   "velocity_relative": 0.00022846861637638053,
+   "pressure_scaled": 8.491581243965023e-05,
+   "drag_relative": 5.661672297255349e-05,
+   "transverse_absolute": 0.0010371898677635667,
+   "divergence": 0.003757226015491865,
+   "mass": 4.8783178981477055e-06,
+   "boundary_trace": 3.09876487170196e-10,
+   "velocity_gradient_relative": 0.004687504294876453,
+   "accuracy_targets_passed": true
+  },
+  "23.125": {
+   "velocity_relative": 0.0002716551089311977,
+   "pressure_scaled": 5.516507436939766e-05,
+   "drag_relative": 7.09737717368504e-05,
+   "transverse_absolute": 0.00017472928560653255,
+   "divergence": 0.0044464622715460304,
+   "mass": 7.731982620558123e-06,
+   "boundary_trace": 3.866355426285086e-10,
+   "velocity_gradient_relative": 0.005279897888907614,
+   "accuracy_targets_passed": true
+  }
+ },
+ "POD4": {
+  "exact_tensor_weak_LS": {
+   "16.875": {
+    "velocity_relative": 0.00010252754890692709,
+    "pressure_scaled": 0.0001752340802242408,
+    "drag_relative": 3.140997495387738e-05,
+    "transverse_absolute": 7.688737319586428e-05,
+    "divergence": 1.5211350880757467e-05,
+    "mass": 3.791971203162234e-08,
+    "boundary_trace": 4.6629367034256575e-15,
+    "velocity_gradient_relative": 0.0002857018224647623,
+    "accuracy_targets_passed": true,
+    "status": "stationary"
+   },
+   "23.125": {
+    "velocity_relative": 7.560652780011546e-05,
+    "pressure_scaled": 0.00011621378411185541,
+    "drag_relative": 1.740087405929901e-05,
+    "transverse_absolute": 3.306833993777392e-05,
+    "divergence": 2.1387393528506992e-05,
+    "mass": 3.799685015407019e-07,
+    "boundary_trace": 4.6629367034256575e-15,
+    "velocity_gradient_relative": 0.00021034801702768112,
+    "accuracy_targets_passed": true,
+    "status": "stationary"
+   }
+  },
+  "coefficient_PCHIP": {
+   "16.875": {
+    "velocity_relative": 6.086158109752973e-06,
+    "pressure_scaled": 8.500108682251074e-05,
+    "drag_relative": 5.690033309038737e-05,
+    "transverse_absolute": 0.00010353895073056049,
+    "divergence": 1.5073348181171043e-05,
+    "mass": 0.0,
+    "boundary_trace": 4.6629367034256575e-15,
+    "velocity_gradient_relative": 1.6997215996724582e-05,
+    "accuracy_targets_passed": true,
+    "status": "training_coefficient_interpolation"
+   },
+   "23.125": {
+    "velocity_relative": 3.6859009335796874e-06,
+    "pressure_scaled": 5.523194358550181e-05,
+    "drag_relative": 4.179563068698303e-05,
+    "transverse_absolute": 4.7759065208960276e-05,
+    "divergence": 2.134161448075204e-05,
+    "mass": 0.0,
+    "boundary_trace": 4.6629367034256575e-15,
+    "velocity_gradient_relative": 1.1528848028474957e-05,
+    "accuracy_targets_passed": true,
+    "status": "training_coefficient_interpolation"
+   }
+  },
+  "mixed_Galerkin": {
+   "16.875": {
+    "velocity_relative": 4.62238946212344e-06,
+    "pressure_scaled": 0.00016731917273464186,
+    "drag_relative": 2.995556220088416e-05,
+    "transverse_absolute": 7.303139962213864e-05,
+    "divergence": 1.5074283169106976e-05,
+    "mass": 1.2997732971221431e-15,
+    "boundary_trace": 4.6629367034256575e-15,
+    "velocity_gradient_relative": 1.389971014730146e-05,
+    "accuracy_targets_passed": true,
+    "status": "root_converged"
+   },
+   "23.125": {
+    "velocity_relative": 5.374948524742787e-06,
+    "pressure_scaled": 0.00010264331289392106,
+    "drag_relative": 3.665688429495071e-05,
+    "transverse_absolute": 3.229214375869826e-05,
+    "divergence": 2.1341700854772934e-05,
+    "mass": 1.4297506268343574e-14,
+    "boundary_trace": 4.6629367034256575e-15,
+    "velocity_gradient_relative": 1.5327235610619282e-05,
+    "accuracy_targets_passed": true,
+    "status": "root_converged"
+   }
+  }
+ }
+}

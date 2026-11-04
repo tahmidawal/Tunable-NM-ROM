@@ -2,7 +2,7 @@
 
 DESIGN-G5 §5.2/§5.4. Inputs: reference run directories (transient.py output) listed in a
 manifest with split labels, plus the frozen run-09 bank. Outputs (all float64, hashed):
-  quadrature.npz      Q points/weights (order-10 mapped volume rule), inlet/outlet rules
+  quadrature.npz      Q points/weights (mapped volume rule, manifest quadrature_order), inlet/outlet rules
   basis.npz           lift, POD velocity modes, supremizers, pressure basis, chi, bank(s)
                       evaluated on Q (values, physical gradients) and on the boundary rules
   pod.npz             singular values, FE coefficient modes (velocity/pressure), lift
@@ -24,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / 'vendor'))
 
 RANKS = [2, 4, 8, 12, 16, 20, 24]
-QORDER = 10
+QORDER_DEFAULT = 10  # manifest 'quadrature_order' overrides (G5-A3: 12 for P4/P3)
 
 
 def sha(p):
@@ -56,7 +56,8 @@ def recorded(run_dir, stage_name):
 
 
 class FE:
-    def __init__(self, ng, mesh_path, mesh_sha, k=3, bonus=6):
+    def __init__(self, ng, mesh_path, mesh_sha, k=3, bonus=6, qorder=QORDER_DEFAULT):
+        self.qorder = qorder
         if sha(mesh_path) != mesh_sha:
             raise ValueError('mesh hash')
         self.ng = ng
@@ -81,9 +82,9 @@ class FE:
         return vb.FV().NumPy().copy() if b is None else float(b @ vb.FV().NumPy())
 
     def rule(self):
-        """Order-10 mapped rule: element loop for weights, vectorized map for evaluation."""
+        """Mapped volume rule of the configured order: element loop for weights, vectorized map for evaluation."""
         ng, mesh = self.ng, self.mesh
-        ir = ng.IntegrationRule(ng.TRIG, QORDER)
+        ir = ng.IntegrationRule(ng.TRIG, self.qorder)
         pts, w = [], []
         for el in mesh.Elements(ng.VOL):
             tr = mesh.GetTrafo(el)
@@ -99,7 +100,7 @@ class FE:
         if xy.shape != pts.shape or np.max(np.abs(xy - pts)) > 1e-12:
             raise AssertionError('MapToAllElements order differs from the element loop')
         # One boundary rule over all BND elements, vectorized like the volume rule.
-        irs = ng.IntegrationRule(ng.SEGM, QORDER)
+        irs = ng.IntegrationRule(ng.SEGM, self.qorder)
         bp, bw, bl = [], [], []
         for el in mesh.Elements(ng.BND):
             tr = mesh.GetTrafo(el)
@@ -218,7 +219,7 @@ def main():
     out = Path(args.out); out.mkdir(parents=True, exist_ok=False)
     log = {'started': time.time(), 'manifest_sha256': sha(args.manifest)}
     with ng.TaskManager():
-        fe = FE(ng, man['mesh_path'], man['mesh_sha256'])
+        fe = FE(ng, man['mesh_path'], man['mesh_sha256'], k=man.get('velocity_order', 3), qorder=man.get('quadrature_order', QORDER_DEFAULT))
         pts, w = fe.rule()
         obs = fe.bnd['obstacle'][0] - np.asarray(man['center'])[None]
         np.savez(out / 'quadrature.npz', points=pts, weights=w,

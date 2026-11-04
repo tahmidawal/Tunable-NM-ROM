@@ -487,3 +487,8 @@ qualification of A5 rev.2 retained wherever accuracy conclusions appear); review
 **CODE: READY FOR R1b** after the cycles.py NaN fix. The R1b–R1f reference stages are
 released; R2–R5 code (quadrature check, R5 timing implementation) needs its own review
 before those stages execute.
+- 2026-11-04, R1b attempt 1 (jobs 6867838/6867839, 35 s each): the embedding witness **stopped
+  every run** — `GridFunction.Set` changed velocity by 5.6e-13 but pressure by 5.0e-10 relative
+  (> 1e-10; local-projection roundoff). The bound is unchanged. One ordinary repair: exact
+  node-by-node coefficient injection exploiting NGSolve's hierarchical H1 bases, still verified
+  by the same witness. Attempt 1 is retained.

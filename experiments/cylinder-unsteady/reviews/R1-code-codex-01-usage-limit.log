@@ -1,0 +1,32 @@
+Reading additional input from stdin...
+OpenAI Codex v0.166.0
+--------
+workdir: /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady-ref/experiments/cylinder-unsteady-ref
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1a27e-abdb-7c52-b26f-738d9b6a62c5
+--------
+user
+You are an independent code reviewer. READ-ONLY task: do not modify, create, or delete any file; do not run git write commands; do not submit cluster jobs; do not install anything. Report findings only.
+
+Context: a transient Navier-Stokes reference solver for the DFG 2D-2 cylinder benchmark (Re 100, vortex shedding) written for NGSolve 6.2.2608 (Netgen curved mesh, Taylor-Hood P3/P2 or P4/P3, gradient-form do-nothing outlet nu*grad(u)n - p n = 0, kinematic pressure, rho=1). NGSolve is NOT installed on this machine, so you cannot run it; review by reading. The design it must implement: /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-cylinder-unsteady/experiments/cylinder-unsteady/DESIGN-G5.md (section 4). The steady predecessor whose conventions must be preserved (weak form, normal/force signs, reaction force): /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-27-ns-obstacle-2d/experiments/ns-obstacle-2d/fom.py.
+
+Review in the current directory: transient.py, cycles.py, compare.py, make_configs.py, install_deps.py, cluster/run.sh, cluster/submit.sh, cluster/collect.sh, configs/smoke/*.json.
+
+Check concretely:
+1. BDF2 schemes: SBDF2 (implicit Stokes, explicit 2N(u^n)-N(u^{n-1})) and Oseen BDF2 (advecting 2u^n-u^{n-1}); startup (first-order substeps spanning one dt, then BDF2 with the stage-start state as u^{n-1}): history levels exactly dt apart? Dirichlet inlet lifting in solve() (x = bc + inv*(rhs - K bc)); does NGSolve sparse Inverse(freedofs) return zeros on non-free DOFs?
+2. Reaction force F_i = -chi_i.[M dudt + A x + N(x) - f]: sign vs fom.py; chi via GridFunction.Set(definedon=Boundaries('obstacle')); stage-start rows.
+3. NGSolve API risks at 6.2.2608: BilinearForm(nonassemble=True).Apply, Set with definedon, mesh(x,y) probes on boundary points, ngsolve.solvers.GMRes signature, BoundaryFromVolumeCF, Integrate(definedon=...), FV().NumPy() aliasing with the reused self.tmp vectors.
+4. Energy balance, divergence and mass diagnostics vs fom.py gradient-form balance.
+5. cycles.py periodicity rule and compare.py metrics vs DESIGN-G5 4.4.
+6. Anything producing plausible-but-wrong numbers, crashing late and losing data, or violating the design.
+7. Cluster scripts: staging/checksums, one job per directory, squeue before/after.
+
+Output: numbered findings with file:line, severity (blocker/major/minor), concrete failure scenario, suggested fix. End with a verdict: ready for a <=25-minute smoke allocation? Be concise (under 1200 words).
+warning: Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
+ERROR: You’ve hit your usage limit. Visit https://chatgpt.com/settings/usage to purchase more credits or try again at Nov 4th, 2026 4:37 PM.
+ERROR: You’ve hit your usage limit. Visit https://chatgpt.com/settings/usage to purchase more credits or try again at Nov 4th, 2026 4:37 PM.

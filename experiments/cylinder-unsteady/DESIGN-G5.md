@@ -390,3 +390,63 @@ unchanged. Re 95/105 continue from their capped states (`settle.npz`, SHAs 61174
 ebd8beea…) for at most 2 s; the restart (4-substep startup) means the rule must again
 see four complete cycles within the continuation. Settle time is discarded and enters no
 reported metric. If a continuation fails at 6 s, R1 stops again.
+
+## Amendment G5-A5 — Codex design/code review responses, 2026-11-04 (before any R1b–R5 data)
+
+Codex review 02 (`reviews/DESIGN-codex-02.md`): DESIGN "release with changes", CODE "not
+ready". Review 01 was an administrative hold (its sandbox could not start; no files read).
+Every tolerance and every recorded failure is unchanged. Responses, numbered as the review:
+
+1. **R1b/R1c decisions fail closed** (`r1_gates.py`). A candidate $dt_0=1/c$, c ∈ (800, 1600,
+   3200), qualifies only if its pair with $c/2$... i.e. $(1/c, 1/2c)$ passes all four
+   tolerances, its frozen stencil gives empirical orders in [1.5, 2.5] for each metric whose
+   two differences exceed the noise floor, and the startup check at that c (4 vs 16
+   substeps) passes 0.2 × every tolerance. Stencils: c = 800 → (800, 1600, 3200);
+   c = 1600 and 3200 → (1600, 3200, 6400); only the candidate's own stencil counts. Noise
+   floor 1e-8 for every metric (100 × the 1e-10 linear-solver tolerance). Missing, invalid
+   or nonfinite evidence fails. R1c passes iff the P3/P2-vs-P4/P3 comparison at the selected
+   $dt_0$ passes all four tolerances. Startup checks run at 800, 1600 and 3200.
+2. **Comparison validity** (`compare.py`): both runs completed, identical hash-bound initial
+   state, saves exactly covering [S\*, S\* + W] on the 1/400 grid (141 common saves), and
+   every eligible coarse force time present; otherwise the comparison is invalid.
+3. **Full-horizon reference uncertainty.** W stays 0.35 s. For each phase-sensitive metric
+   y ∈ {e_u, e_p, e_D, e_L} the reference uncertainty over the 1.7 s horizon is propagated
+   linearly in time (phase drift): $\delta_y=2\max(d_{y,\rm time},d_{y,\rm space})\cdot1.7/0.35$,
+   with $d_{\rm time}$ the $dt_0$-vs-$dt_0/2$ gap and $d_{\rm space}$ the R1c gap. Cycle
+   statistics use the same recipe without the time factor. A ROM-vs-reference comparison of
+   y is **resolved** only if $\delta_y$ ≤ 1/5 of the corresponding §5.5 target; otherwise it
+   is reported as unresolved. **R1d** compares the mean over every complete cycle of the
+   Re 100 recorded window (every cycle and the min/max also reported); Featflow values are
+   extracted by the same `cycles.py` (finest: C_D,max 3.2273927, C_L,max 0.9865830,
+   St 0.3018410, Δp 2.4832194 with t₀ at the C_L minimum).
+4. **Bank-identity projections**: reference inner products are stored per bank
+   (`uv_frozen`, `uv_trained`) and the trained-bank file is SHA-bound (`rom_project.py`).
+5. **Consistent initial pressure**: the rollout solves
+   $[M,-B^T;B,0][\dot a;c]=[-F(a_0);0]$ at the initial time and records the continuity defect.
+6. **R5 timing contract.** Workload: 0.1 s from the start of the held-out Re 105 recorded
+   window, $dt_0$, identical outputs for both methods (force/probe history every step and the
+   state at every 1/400 save; for the ROM additionally the velocity reconstructed on Q at
+   every save, timed separately). Cold (FE factorizations; ROM operator/tensor build) and
+   warm accounting reported separately. One CPU warm-up repetition immediately before each
+   timed block, 7 paired repetitions in alternating order, 16 threads, one allocation; all
+   repetition arrays, result checksums and work counts (steps, factorizations, Newton
+   iterations) are saved. **Scope:** speed versus the production reference configuration
+   only; no accuracy-matched FOM ladder is tested, so no "fastest FOM" claim is made.
+7. **Quadrature check**: before any method ranking, re-export at order 14 and compare with
+   order 12: reduced operators (M, K, B, C1, C2, force functionals) relative Frobenius change
+   ≤ 1e-6 for POD r16 and every bank arm; R2 floors relative change ≤ 1e-3; R4 primary metrics
+   relative change ≤ 1e-2. Failure marks the affected ranking unresolved.
+8. **Embedding witness**: the loader measures the L2 change of velocity and pressure under the
+   P3→P4/P3 transfer and stops above 1e-10 relative; both R1c arms start from the original P3
+   S\* (P3 natively, P4/P3 by the witnessed embedding).
+9. **Retention and budget.** Snapshot chunks are kept on the paralab share for the whole
+   campaign (no deletion) and copied to checksum-verified local retention directories
+   (outside Git; SHA manifests committed); R1f requires both copies to match. Hard budget
+   ceiling **25 allocated GPU-h** cumulative (user-approved ≈ 23 plus the A4 increment); before
+   each stage, if used + projected exceeds 25, the user is asked before any submission.
+10. Phase-aligned search uses one fixed support (saves in [t_end − 1.5T, t_end − 0.5T], lags
+   |k| ≤ T/2); the 1996 ranges are verified against Table 4 of the hosted compilation
+   (`sources/karlin_compilation/`, page 13), whose Δp convention puts t₀ at the C_L maximum;
+   `cycles.py` reports both conventions and each source is compared in its own.
+R3 uses SciPy L-BFGS-B (no bounds) for both L-BFGS phases; the steady lane used its own
+deterministic L-BFGS with Armijo search — same method class, different implementation.

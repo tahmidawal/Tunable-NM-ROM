@@ -1,4 +1,4 @@
-"""Extract DFG 2D-2 (Re=100) comparison values from the Featflow 2014 official logs.
+"""Extract DFG 2D-2 (Re=100) comparison values from the Featflow 2014 official logs with cycles.py.
 
 Run with the local venv by absolute path; reads only the extracted zip under
 featflow_2014_official/raw and writes dfg2d2_reference.json next to this file.
@@ -9,36 +9,18 @@ import hashlib
 import json
 from pathlib import Path
 
+import sys
+
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import cycles as cyc  # noqa: E402  byte copy of the reference lane's cycles.py (one frozen procedure)
 LOGS = HERE / 'featflow_2014_official/raw/logs/results_cc2d_bench2_referencenew'
 
 
 def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
-
-
-def cycle_stats(t, cd, cl, dp):
-    # Cycle = consecutive interior minima of C_L (page definition); refine each
-    # minimum by a parabola through the three neighbouring samples.
-    idx = [i for i in range(1, len(cl) - 1) if cl[i] < cl[i - 1] and cl[i] <= cl[i + 1]]
-    if len(idx) < 2:
-        raise ValueError('fewer than two lift minima')
-    def vertex(i):
-        y0, y1, y2 = cl[i - 1], cl[i], cl[i + 1]
-        h = t[i + 1] - t[i]
-        den = y0 - 2 * y1 + y2
-        return t[i] + (0.5 * h * (y0 - y2) / den if den != 0 else 0.0)
-    t0, t1 = vertex(idx[0]), vertex(idx[1])
-    w = (t >= t[idx[0]]) & (t <= t[idx[1]])
-    period = t1 - t0
-    # Pressure difference at t0 + 1/(2f), linear interpolation in time.
-    dp_half = float(np.interp(t0 + 0.5 * period, t, dp))
-    return {'t0': t0, 't1': t1, 'period': period, 'St': 0.1 * 1.0 / period,
-            'CD_max': float(cd[w].max()), 'CD_min': float(cd[w].min()),
-            'CL_max': float(cl[w].max()), 'CL_min': float(cl[w].min()),
-            'dp_at_t0_plus_half_period': dp_half}
 
 
 def main():
@@ -59,18 +41,21 @@ def main():
             if not np.allclose(b[:, 1], t):
                 raise ValueError('force/pressure time mismatch')
             dp = b[:, 6] - b[:, 11]
-            rec = cycle_stats(t, cd, cl, dp)
+            recs = cyc.cycles(t, cd, cl, dp)
+            rec = cyc.summarize(recs)
+            rec['per_cycle'] = recs
             rec.update({'file_sha256': {f.name: sha(f), g.name: sha(g)}, 'dt': float(np.median(np.diff(t))),
                         't_window': [float(t[0]), float(t[-1])]})
             out['levels'][f'lv{lv}_dt{dt}'] = rec
     best = out['levels']['lv6_dt4']
-    out['finest'] = {k: best[k] for k in ('CD_max', 'CL_max', 'St', 'dp_at_t0_plus_half_period', 'period')}
+    out['finest'] = {k: best[k]['mean'] for k in ('CD_max', 'CL_max', 'St', 'dp_at_t0_plus_half_period', 'dp_1996_t0_at_CLmax_plus_half_period', 'period')}
     # Schaefer & Turek (1996), NNFM 52, Table 4 (2D-2): published acceptance ranges.
-    # Transcribed from the paper; it is not reproduced on the hosted page above.
     out['schaefer_turek_1996_ranges'] = {
         'CD_max': [3.22, 3.24], 'CL_max': [0.99, 1.01], 'St': [0.295, 0.305],
         'dp_at_t0_plus_half_period': [2.46, 2.50],
-        'provenance': 'manual transcription of the 1996 lower/upper bounds; verify against the paper before citing'}
+        'dp_convention': 't0 at the C_L maximum (1996 definition), i.e. dp_1996_t0_at_CLmax_plus_half_period',
+        'provenance': 'Table 4 lower/upper bound rows, verified against the hosted compilation sources/karlin_compilation/dfg_benchmark_results.pdf (page 13)',
+        'compilation_sha256': sha(HERE / 'karlin_compilation/dfg_benchmark_results.pdf')}
     (HERE / 'dfg2d2_reference.json').write_text(json.dumps(out, indent=2) + '\n')
     print(json.dumps(out['finest'], indent=2))
 

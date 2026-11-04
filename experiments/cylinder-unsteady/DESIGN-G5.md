@@ -355,3 +355,25 @@ asked of the user and recorded, with the reason.
 Report `reports/<date>-cylinder-unsteady/` on main with tables/figures generated from
 saved JSON, the animation, provenance, the job ledger and a glossary; LAB-LOG appended
 throughout with retractions; every lane mirrored via `codeonly/`; no merges.
+
+## Amendment G5-A3 — production discretization P4/P3 (user decision), 2026-11-04
+
+Spin-up job 6845880 (pax020, 1 h 49 min 50 s = 1.83 GPU-h) reached the developed-flow rule
+at t = 9.5 (7600 steps at dt = 1/800, 0.861 s/step); S\* = `spinup.npz` SHA
+`5fa0e84231f9785984852fa4fe2e35368908438b745d4a0a9a3cc1b15bc316e9`. Its developed P3/P2
+divergence is ≈ 2.9e-3 > 1e-3: **R1e fails for P3/P2 (retained)**. Per G5-A2 R1 stopped and
+the user was asked; the user chose **P4/P3 production** (the FD1-admitted steady
+discretization) with the **reduced population** (train 90/100/110, development 95,
+held-out 105) and an extended budget of about 23 GPU-h (≈ 18 reference + ≈ 5 ROM).
+
+Changes, all before any R1b–R1e data: production spaces P4/P3 on the same mesh bytes;
+R1c still compares P4/P3 with P3/P2 at $dt_0$ (production is now the finer side, so the
+gate is conservative); all tolerances, windows, R1d/R1e rules unchanged. Every P4 run starts
+from S\* embedded exactly into P4/P3. Settle phases (discarded, no gate) run at 1/800 with
+K = 10 until the developed-flow rule, cap 4 s; continuation order 100 → 95 → 90 and
+100 → 105 → 110. Recorded windows (0.7 s settle + 1.7 s record at $dt_0$) wait for R1b.
+The ROM quadrature becomes order 12 (P4 convection integrand degree 11). Non-gate settle
+jobs proceed under Grok review per the user's earlier authorization for non-gate
+preparation runs; R1b and every later gate still wait for the Codex review.
+P3 spin-up cycle statistics at dt = 1/800 (non-gating, coarse dt): C_D,max 3.22847,
+C_L,max 0.98871, St 0.301934, Δp 2.48361.

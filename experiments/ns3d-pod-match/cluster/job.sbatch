@@ -3,6 +3,7 @@
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --cpus-per-task=8
+#SBATCH --signal=B:TERM@300
 set -euo pipefail
 MODE="$1"; CONFIG="$2"; FROZEN="${3:-}"
 TASK_ROOT="$PWD"
@@ -12,6 +13,9 @@ export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
 export XDG_CACHE_HOME="$TASK_ROOT/cache" MPLCONFIGDIR="$TASK_ROOT/cache/matplotlib"
 export TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$TASK_ROOT/output"
+# on a Slurm time-limit warning, still write the checksum manifest of whatever exists
+on_term() { echo "SIGTERM: time limit near; writing manifest"; find output -type f -print0 | sort -z | xargs -0 -r sha256sum > OUTPUTS.sha256; echo "RUN_EXIT=TERM"; exit 143; }
+trap on_term TERM
 echo "host=$(hostname) source_commit=$(cat COMMIT.txt) job=$SLURM_JOB_ID mode=$MODE config=$CONFIG"
 nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
@@ -40,8 +44,8 @@ one_mesh() {  # <config> <outdir> [frozen]
 
 RC=0
 if [[ "$MODE" == "bank" ]]; then
-  set +e; "$PY" $L/train_bank2.py --config "$CONFIG" --out output; RC=$?; set -e
-  echo "RUN_EXIT=$RC VERIFY_EXIT=0"
+  set +e; "$PY" $L/train_bank2.py --config "$CONFIG" --out output & wait $!; RC=$?; set -e
+  echo "RUN_EXIT=$RC VERIFY_EXIT=NA"
 elif [[ "$MODE" == "rom" ]]; then
   one_mesh "$CONFIG" output/mesh || RC=1
   echo "ALL_EXIT=$RC"

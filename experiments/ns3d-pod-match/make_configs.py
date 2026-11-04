@@ -23,7 +23,7 @@ common = dict(
     checkpoint_seconds=900,
     adam=dict(train_seconds=10800, lr=1e-3, final_lr_ratio=1e-3, warmup=1000),
     lbfgs=dict(train_seconds=6000, memory=20, max_linesearch_steps=30,
-               iterations_per_call=25, stall_rtol=1e-10, stall_calls=8),
+               iterations_per_call=25, stall_rtol=1e-10, stall_atol=1e-15, stall_calls=8),
     smoke=dict(bank_cases=6, data_meshes=[8, 16], dt_truth=0.005, horizon=0.05, train_grid=12,
                compress_K=16, rank=4, log_every=10, dev_cases=2, floor_meshes=[8, 16],
                prefixes=[2], parent_pod_cases=4, gram_block=8, derivative_meshes=[8],
@@ -31,7 +31,7 @@ common = dict(
                architecture=dict(name="s", width=16, depth=2, kmax=2),
                adam=dict(train_seconds=6, lr=1e-3, final_lr_ratio=1e-3, warmup=5),
                lbfgs=dict(train_seconds=6, memory=5, max_linesearch_steps=10,
-                          iterations_per_call=5, stall_rtol=1e-10, stall_calls=8)),
+                          iterations_per_call=5, stall_rtol=1e-10, stall_atol=1e-15, stall_calls=8)),
 )
 
 arm_a = copy.deepcopy(common)

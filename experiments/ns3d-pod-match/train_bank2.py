@@ -113,7 +113,7 @@ def spectral_content(modes, nt, cuts):
 
 # ------------------------------------------------------------------- losses ---
 
-def make_objective(kind, arch, nt, R, sample_fn):
+def make_objective(kind, arch, nt, R, sample_fn, qchunk=2048):
     """Returns loss(layers, B, data) -> scalar and parts(layers, B, data) -> dict."""
     if kind == "vp_band":
         lam = float(arch["band_weight"])
@@ -132,12 +132,24 @@ def make_objective(kind, arch, nt, R, sample_fn):
             w = data["w"]
             dg = G - data["U"]
             grid = jnp.sum(w * jnp.sum(dg * dg, axis=0))
-            vq = CN.velocity(p, data["Q"])                            # (P, 3, R)
-            dv = vq - data["Fq"]
-            val = jnp.sum(w * jnp.sum(dv * dv, axis=(0, 1))) / data["nF"]
-            gq = CN.velocity_gradient(p, data["Q"])                   # (3, P, 3, R)
-            dd = gq - data["dFq"]
-            grad = jnp.sum(w * jnp.sum(dd * dd, axis=(0, 1, 2))) / data["ndF"]
+            # off-grid terms in point chunks (bounded memory for the reverse-over-forward pass)
+            P = data["Q"].shape[0]
+            qc = min(qchunk, P)
+            assert P % qc == 0, "offgrid_points must be a multiple of the chunk"
+            nc = P // qc
+            Qc = data["Q"].reshape(nc, qc, 3)
+            Fc = data["Fq"].reshape(nc, qc, 3, -1)
+            dFc = jnp.moveaxis(data["dFq"].reshape(3, nc, qc, 3, -1), 1, 0)
+
+            def one(xs):
+                x, fq, dfq = xs
+                dv = CN.velocity(p, x) - fq                           # (chunk, 3, R)
+                dd = CN.velocity_gradient(p, x) - dfq                 # (3, chunk, 3, R)
+                return (jnp.sum(w * jnp.sum(dv * dv, axis=(0, 1))),
+                        jnp.sum(w * jnp.sum(dd * dd, axis=(0, 1, 2))))
+            sv, sg = jax.lax.map(one, (Qc, Fc, dFc))
+            val = jnp.sum(sv) / data["nF"]
+            grad = jnp.sum(sg) / data["ndF"]
             return dict(total=grid + val + grad, grid=grid, offgrid_value=val, offgrid_gradient=grad)
     else:
         raise ValueError(kind)
@@ -160,6 +172,9 @@ def main():
     ap.add_argument("--config", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--floors-only", type=Path, default=None,
+                    help="recovery: skip training, load bank_final.npz (and bank_adam.npz if "
+                         "present) from this directory, then order, measure floors and gates")
     args = ap.parse_args()
     cfg = json.loads(args.config.read_text())
     if args.smoke:
@@ -181,7 +196,11 @@ def main():
                       "experiments/ns3d-coordnet/coordnet.py",
                       "experiments/ns3d-coordnet/bankio.py",
                       "experiments/ns3d-pod-match/train_bank2.py",
-                      "experiments/ns3d-shift/shift_rom.py")})
+                      "experiments/ns3d-shift/shift_rom.py",
+                      "experiments/ns3d-grok/diag_floor.py",
+                      "experiments/ns3d/ns3d_fom.py")},
+                  config_sha256=D.sha256_file(args.config),
+                  floors_only=None if args.floors_only is None else str(args.floors_only))
     try:
         report["gpu"] = subprocess.check_output(
             ["nvidia-smi", "--query-gpu=name,uuid,memory.total", "--format=csv,noheader"],
@@ -302,12 +321,72 @@ def main():
         del Fn, dFn, dU
     else:
         report["target_spectral_content"] = spectral_content(pod_same, nt, (10, 21))
-    hard = [f for f in failures if f.startswith("HARD")]
-    if hard:
+    report["target_spectral_content"]["above_15_note"] = "max_i|k_i|>15 is outside P_48 (2/3 rule at 48^3)"
+    report["target_spectral_content"].update(
+        {k_: v for k_, v in spectral_content(pod_same, nt, (15,)).items() if k_ != "nyquist"})
+
+    def hard_stop():
         report["failures"] = failures
         report["status"] = "failed-gates"
+        report["gates"] = dict(verdict=None, note="hard validity failure: no verdict")
         dump()
         sys.exit(3)
+
+    if [f for f in failures if f.startswith("HARD")]:
+        hard_stop()
+
+    # ------------------------------- 3b. reference floors (BEFORE training) ----
+    # development cases, the parent's POD-64 (hard reproduction gate) and the same-data
+    # POD, at every mesh, before any training time is spent (DESIGN §A1)
+    dev_par = F.parameters(int(cfg["dev_seed"]), int(cfg["dev_cases"]))
+    target = float(cfg["target_relative"])
+    devs, floors = {}, {}
+    for n in sorted(int(m) for m in cfg["floor_meshes"]):
+        log(f"reference floors at {n}^3")
+        dev, _, _ = D.generate(dev_par, n, float(cfg["dt_truth"]), float(cfg["horizon"]))
+        D.require_finite(dev, "development")
+        devs[n] = dev
+        entry = {}
+        Up = np.stack([BI.resample(pod_same[:, j].reshape(3, nt, nt, nt), n)[0].ravel()
+                       for j in range(R)], axis=1)
+        Up = CN.leray_mask(Up, n)[0]
+        # POD control for G3: the same-data POD read at this mesh, before re-orthonormalising
+        entry["same_data_pod_orthonormality_before_qr"] = float(np.max(np.abs(Up.T @ Up - np.eye(R))))
+        Up, _ = np.linalg.qr(Up)
+        errors, _, _ = D.oracle_shift_errors(Up, dev)
+        entry[f"same_data_pod_R{R}"] = D.stats_from_cases(errors, target)
+        del Up
+        tp = F.parameters(int(cfg["train_seed"]), int(cfg["parent_pod_cases"]))
+        tr, _, _ = D.generate(tp, n, float(cfg["dt_truth"]), float(cfg["horizon"]))
+        cj = jax.jit(lambda f: SR.shift_field(f, -SR.grid_centroid(f) * n))
+        for a in range(len(tr)):
+            for b in range(tr.shape[1]):
+                tr[a, b] = np.asarray(cj(jnp.asarray(tr[a, b])))
+        basis, _, _ = D.pod_basis(tr.reshape(len(tr) * tr.shape[1], -1), 64, int(cfg["gram_block"]))
+        del tr
+        gc.collect()
+        Gpod, _ = D.orthonormalize_prefix(basis, 64)
+        errors, _, _ = D.oracle_shift_errors(Gpod, dev)
+        entry["parent_pod_R64"] = D.stats_from_cases(errors, target)
+        want = cfg.get("parent_pod_floor_reference", {}).get(str(n))
+        if want is None:
+            if not args.smoke:
+                failures.append(f"HARD: no parent POD-64 reference for {n}^3")
+        else:
+            gapp = abs(entry["parent_pod_R64"]["evolved_worst"] - want) / want
+            entry["parent_pod_R64_reproduction"] = dict(reference=want, relative_gap=gapp,
+                                                        passed=bool(gapp <= 1e-6))
+            if not gapp <= 1e-6:
+                failures.append(f"HARD: parent POD-64 floor at {n}^3 not reproduced: {gapp:.2e}")
+        del basis, Gpod
+        gc.collect()
+        log(f"  parent POD-64 {entry['parent_pod_R64']['evolved_worst']:.6f}, same-data POD "
+            f"{entry[f'same_data_pod_R{R}']['evolved_worst']:.6f}")
+        floors[str(n)] = entry
+        report["floors"] = floors
+        dump()
+    if [f for f in failures if f.startswith("HARD")]:
+        hard_stop()
     loss_fn, parts_fn = make_objective(kind, arch, nt, R, sample_fn)
     parts_j = jax.jit(parts_fn)
     loss_j = jax.jit(loss_fn)
@@ -342,133 +421,171 @@ def main():
         log(f"[{label}] {pr}; VP exact raw {exact_raw:.4e} (optimum {optimum:.4e}, ratio {exact_raw / optimum:.2f})")
         return rec
 
-    # --------------------------------------------------------- 4. Adam stage ----
     stage_records = []
-    every = int(cfg["log_every"])
-    ad = cfg["adam"]
-    checkpoint_every = float(cfg.get("checkpoint_seconds", 900))
+    if args.floors_only is None:
+        # --------------------------------------------------------- 4. Adam stage ----
+        every = int(cfg["log_every"])
+        ad = cfg["adam"]
+        checkpoint_every = float(cfg.get("checkpoint_seconds", 900))
 
-    def make_adam_chunk(opt):
+        def make_adam_chunk(opt):
+            @jax.jit
+            def chunk(layers, state, B, data):
+                def body(carry, _):
+                    q, st = carry
+                    v, g = jax.value_and_grad(loss_fn)(q, B, data)
+                    upd, st = opt.update(g, st, q)
+                    return (optax.apply_updates(q, upd), st), v
+                (q, st), vals = jax.lax.scan(body, (layers, state), None, length=every)
+                return q, st, vals[-1]
+            return chunk
+
+        copt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(1e-6))
+        cchunk = make_adam_chunk(copt)
+        cq, cs, _ = cchunk(layers, copt.init(layers), Bf, data)          # compile
+        jax.block_until_ready(cq)
+        t_c = time.time()
+        cq, cs, _ = cchunk(cq, cs, Bf, data)
+        jax.block_until_ready(cq)
+        per_step = (time.time() - t_c) / every
+        steps = int(0.97 * float(ad["train_seconds"]) / per_step) // every * every
+        if steps < 4 * int(ad["warmup"]):
+            raise RuntimeError(f"budget too small: {steps} steps < 4 x warm-up")
+        del cq, cs, cchunk
+        log(f"[adam] calibration: {per_step * 1e3:.1f} ms/step -> {steps} steps")
+        sched = optax.warmup_cosine_decay_schedule(0.0, float(ad["lr"]), int(ad["warmup"]), steps,
+                                                   float(ad["lr"]) * float(ad["final_lr_ratio"]))
+        opt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(sched))
+        state = opt.init(layers)
+        chunk = make_adam_chunk(opt)
+        curve = []
+        t0 = time.time()
+        t_ck = t0
+        done = 0
+        while done < steps:
+            layers, state, v = chunk(layers, state, Bf, data)
+            done += every
+            curve.append((done, float(v), time.time() - t0))
+            log(f"  [adam] step {done}/{steps} loss {float(v):.6e} ({time.time() - t0:.0f}s)")
+            if not np.isfinite(float(v)):
+                raise RuntimeError("nonfinite Adam training")
+            if time.time() - t_ck > checkpoint_every:
+                BI.save_params(out / "bank_adam_partial.npz", dict(B=Bf, layers=layers))
+                t_ck = time.time()
+        BI.save_params(out / "bank_adam.npz", dict(B=Bf, layers=layers))
+        (out / "bank_adam_partial.npz").unlink(missing_ok=True)
+        rec = certify(layers, "adam")
+        rec.update(steps=steps, seconds_per_step=per_step, seconds=time.time() - t0, curve=curve)
+        stage_records.append(rec)
+        report["stages"] = stage_records
+        dump()
+
+        # ------------------------------------------------------- 5. L-BFGS stage ----
+        lb = cfg["lbfgs"]
+        lopt = optax.lbfgs(memory_size=int(lb["memory"]),
+                           linesearch=optax.scale_by_zoom_linesearch(
+                               max_linesearch_steps=int(lb["max_linesearch_steps"]),
+                               initial_guess_strategy="one"))   # as optax.lbfgs's own default
+        per_call = int(lb["iterations_per_call"])
+
         @jax.jit
-        def chunk(layers, state, B, data):
+        def lchunk(layers, state, B, data):
+            f = lambda q: loss_fn(q, B, data)
+            vg = optax.value_and_grad_from_state(f)
+
             def body(carry, _):
-                q, st = carry
-                v, g = jax.value_and_grad(loss_fn)(q, B, data)
-                upd, st = opt.update(g, st, q)
-                return (optax.apply_updates(q, upd), st), v
-            (q, st), vals = jax.lax.scan(body, (layers, state), None, length=every)
-            return q, st, vals[-1]
-        return chunk
+                q, st, bq, bv = carry
+                v, g = vg(q, state=st)              # v = objective at the current iterate q
+                better = jnp.isfinite(v) & (v < bv)
+                bq = jax.tree_util.tree_map(lambda a, b_: jnp.where(better, a, b_), q, bq)
+                bv = jnp.where(better, v, bv)
+                upd, st = lopt.update(g, st, q, value=v, grad=g, value_fn=f)
+                q = optax.apply_updates(q, upd)
+                ls = optax.tree_utils.tree_get(st, "info")
+                return (q, st, bq, bv), (v, ls.num_linesearch_steps)
+            init = (layers, state, layers, jnp.asarray(jnp.inf, dtype=jnp.float64))
+            (q, st, bq, bv), (vals, nls) = jax.lax.scan(body, init, None, length=per_call)
+            return q, st, vals, nls, bq, bv
 
-    copt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(1e-6))
-    cchunk = make_adam_chunk(copt)
-    cq, cs, _ = cchunk(layers, copt.init(layers), Bf, data)          # compile
-    jax.block_until_ready(cq)
-    t_c = time.time()
-    cq, cs, _ = cchunk(cq, cs, Bf, data)
-    jax.block_until_ready(cq)
-    per_step = (time.time() - t_c) / every
-    steps = int(0.97 * float(ad["train_seconds"]) / per_step) // every * every
-    if steps < 4 * int(ad["warmup"]):
-        raise RuntimeError(f"budget too small: {steps} steps < 4 x warm-up")
-    del cq, cs, cchunk
-    log(f"[adam] calibration: {per_step * 1e3:.1f} ms/step -> {steps} steps")
-    sched = optax.warmup_cosine_decay_schedule(0.0, float(ad["lr"]), int(ad["warmup"]), steps,
-                                               float(ad["lr"]) * float(ad["final_lr_ratio"]))
-    opt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(sched))
-    state = opt.init(layers)
-    chunk = make_adam_chunk(opt)
-    curve = []
-    t0 = time.time()
-    t_ck = t0
-    done = 0
-    while done < steps:
-        layers, state, v = chunk(layers, state, Bf, data)
-        done += every
-        curve.append((done, float(v), time.time() - t0))
-        log(f"  [adam] step {done}/{steps} loss {float(v):.6e} ({time.time() - t0:.0f}s)")
-        if not np.isfinite(float(v)):
-            raise RuntimeError("nonfinite Adam training")
-        if time.time() - t_ck > checkpoint_every:
-            BI.save_params(out / "bank_adam_partial.npz", dict(B=Bf, layers=layers))
-            t_ck = time.time()
-    BI.save_params(out / "bank_adam.npz", dict(B=Bf, layers=layers))
-    (out / "bank_adam_partial.npz").unlink(missing_ok=True)
-    rec = certify(layers, "adam")
-    rec.update(steps=steps, seconds_per_step=per_step, seconds=time.time() - t0, curve=curve)
-    stage_records.append(rec)
-    report["stages"] = stage_records
-    dump()
+        lstate = lopt.init(layers)
+        t0 = time.time()
+        t_ck = t0
+        it = 0
+        evals = 0
+        lcurve = []
+        stop = "deadline"
+        prev = float(loss_j(layers, Bf, data))
+        start_value = prev
+        stall = 0
+        while time.time() - t0 < float(lb["train_seconds"]):
+            try:
+                q_new, s_new, vals, nls, q_best, v_best = lchunk(layers, lstate, Bf, data)
+                cur = float(loss_j(q_new, Bf, data))
+            except Exception as exc:   # keep the last accepted iterate; floors are still measured
+                stop = f"exception {type(exc).__name__}: {str(exc)[:300]} (last accepted iterate kept)"
+                failures.append(f"flag: L-BFGS stage ended by {stop}")
+                break
+            if not (np.isfinite(cur) and cur <= prev):
+                v_best = float(v_best)
+                if np.isfinite(cur) and cur - prev <= float(lb["stall_atol"]):
+                    stop = f"stalled (round-off: {prev:.6e} -> {cur:.6e}); previous iterate kept"
+                elif np.isfinite(v_best) and v_best < prev:
+                    layers = q_best      # the best iterate evaluated inside this call
+                    it += per_call
+                    evals += int(np.sum(np.asarray(nls)))
+                    lcurve.append((it, v_best, time.time() - t0, evals))
+                    stop = (f"objective rose over the call ({prev:.6e} -> {cur:.6e}); reverted to the "
+                            f"best iterate of the call ({v_best:.6e})")
+                else:
+                    stop = f"no decrease over the call ({prev:.6e} -> {cur:.6e}); previous iterate kept"
+                break
+            layers, lstate = q_new, s_new
+            it += per_call
+            evals += int(np.sum(np.asarray(nls)))
+            lcurve.append((it, cur, time.time() - t0, evals))
+            log(f"  [lbfgs] iter {it} loss {cur:.6e} line-search evals {evals} ({time.time() - t0:.0f}s)")
+            stall = stall + 1 if (prev - cur) <= max(float(lb["stall_rtol"]) * abs(prev), float(lb["stall_atol"])) else 0
+            prev = cur
+            if stall >= int(lb["stall_calls"]):
+                stop = "stalled"
+                break
+            if time.time() - t_ck > checkpoint_every:
+                BI.save_params(out / "bank_lbfgs_partial.npz", dict(B=Bf, layers=layers))
+                t_ck = time.time()
+        BI.save_params(out / "bank_final.npz", dict(B=Bf, layers=layers))
+        (out / "bank_lbfgs_partial.npz").unlink(missing_ok=True)
+        rec = certify(layers, "lbfgs")
+        rec.update(iterations=it, linesearch_evaluations=evals, stop=stop, start_value=start_value,
+                   seconds=time.time() - t0, curve=lcurve)
+        stage_records.append(rec)
+        report["stages"] = stage_records
+        report["final_bank"] = "bank_final.npz (end of the L-BFGS stage; pre-registered)"
+        if not np.max(np.abs(np.asarray(Bf) - CN.frequency_set(int(arch["kmax"])))) == 0.0:
+            raise RuntimeError("Fourier frequencies changed")
+        dump()
 
-    # ------------------------------------------------------- 5. L-BFGS stage ----
-    lb = cfg["lbfgs"]
-    lopt = optax.lbfgs(memory_size=int(lb["memory"]),
-                       linesearch=optax.scale_by_zoom_linesearch(
-                           max_linesearch_steps=int(lb["max_linesearch_steps"])))
-    per_call = int(lb["iterations_per_call"])
-
-    @jax.jit
-    def lchunk(layers, state, B, data):
-        f = lambda q: loss_fn(q, B, data)
-        vg = optax.value_and_grad_from_state(f)
-
-        def body(carry, _):
-            q, st = carry
-            v, g = vg(q, state=st)
-            upd, st = lopt.update(g, st, q, value=v, grad=g, value_fn=f)
-            q = optax.apply_updates(q, upd)
-            ls = optax.tree_utils.tree_get(st, "info")
-            return (q, st), (v, ls.num_linesearch_steps)
-        (q, st), (vals, nls) = jax.lax.scan(body, (layers, state), None, length=per_call)
-        return q, st, vals, nls
-
-    lstate = lopt.init(layers)
-    t0 = time.time()
-    t_ck = t0
-    it = 0
-    evals = 0
-    lcurve = []
-    stop = "deadline"
-    prev = float(loss_j(layers, Bf, data))
-    start_value = prev
-    stall = 0
-    while time.time() - t0 < float(lb["train_seconds"]):
-        q_new, s_new, vals, nls = lchunk(layers, lstate, Bf, data)
-        cur = float(loss_j(q_new, Bf, data))
-        if not np.isfinite(cur) or not np.all(np.isfinite(np.asarray(vals))):
-            stop = "nonfinite (reverted to the last finite iterate)"
-            break
-        if cur > prev:
-            stop = f"objective increased over a call ({prev:.6e} -> {cur:.6e}); reverted"
-            break
-        layers, lstate = q_new, s_new
-        it += per_call
-        evals += int(np.sum(np.asarray(nls)))
-        lcurve.append((it, cur, time.time() - t0, evals))
-        log(f"  [lbfgs] iter {it} loss {cur:.6e} line-search evals {evals} ({time.time() - t0:.0f}s)")
-        stall = stall + 1 if (prev - cur) <= float(lb["stall_rtol"]) * abs(prev) else 0
-        prev = cur
-        if stall >= int(lb["stall_calls"]):
-            stop = "stalled"
-            break
-        if time.time() - t_ck > checkpoint_every:
-            BI.save_params(out / "bank_lbfgs_partial.npz", dict(B=Bf, layers=layers))
-            t_ck = time.time()
-    BI.save_params(out / "bank_final.npz", dict(B=Bf, layers=layers))
-    (out / "bank_lbfgs_partial.npz").unlink(missing_ok=True)
-    rec = certify(layers, "lbfgs")
-    rec.update(iterations=it, linesearch_evaluations=evals, stop=stop, start_value=start_value,
-               seconds=time.time() - t0, curve=lcurve)
-    stage_records.append(rec)
-    report["stages"] = stage_records
-    report["final_bank"] = "bank_final.npz (end of the L-BFGS stage; pre-registered)"
-    if not np.max(np.abs(np.asarray(Bf) - CN.frequency_set(int(arch["kmax"])))) == 0.0:
-        raise RuntimeError("Fourier frequencies changed")
-    dump()
+    else:
+        # recovery mode (DESIGN §A1): the bank of record is the saved end of training
+        import shutil
+        src = args.floors_only
+        final_src = src / "bank_final.npz"
+        if not final_src.exists():
+            final_src = src / "bank_lbfgs_partial.npz" if (src / "bank_lbfgs_partial.npz").exists() \
+                else src / "bank_adam.npz"
+        report["recovered_from"] = dict(final=str(final_src), sha256=D.sha256_file(final_src))
+        if final_src.resolve() != (out / "bank_final.npz").resolve():
+            shutil.copyfile(final_src, out / "bank_final.npz")
+        if (src / "bank_adam.npz").exists() and (src / "bank_adam.npz").resolve() != (out / "bank_adam.npz").resolve():
+            shutil.copyfile(src / "bank_adam.npz", out / "bank_adam.npz")
+        rec = certify(BI.load_params(out / "bank_final.npz")["layers"], "recovered")
+        report["stages"] = [rec]
+        dump()
 
     # ------------------------------------------------------------ 6. order ----
     banks = {}
     for label, fname in (("final", "bank_final.npz"), ("adam", "bank_adam.npz")):
+        if not (out / fname).exists():
+            continue
         pb = BI.load_params(out / fname)
         Gt_p, removed_t = CN.leray_mask(np.asarray(sample_t(pb)), nt)
         T, svals, _ = CN.order_bank(Gt_p, X, norms)
@@ -478,99 +595,36 @@ def main():
         report.setdefault("ordering", {})[label] = dict(
             grid=nt, singular_values=[float(x) for x in svals],
             leray_removed_worst=float(np.max(removed_t)))
+    # POD control for G3: the same-data POD ordered the same way (its own T on P_48)
+    T_pod, _, _ = CN.order_bank(CN.leray_mask(pod_same, nt)[0], X, norms)
     del X
     gc.collect()
     dump()
 
     # ----------------------------------------------------------- 7. floors ----
-    dev_par = F.parameters(int(cfg["dev_seed"]), int(cfg["dev_cases"]))
-    target = float(cfg["target_relative"])
-    floors = {}
-    ref_bank = None
-    for n in sorted(int(m) for m in cfg["floor_meshes"]):
-        log(f"floors at {n}^3")
-        dev, _, _ = D.generate(dev_par, n, float(cfg["dt_truth"]), float(cfg["horizon"]))
-        entry = {}
-        for label in ("final", "adam"):
-            pb, T = banks[label]
-            # the bank job measures, it does not abort: the pre-Loewdin deviation is gate G3
-            if label == "adam":    # diagnostic only: R floor of the Adam-stage bank
-                try:
-                    Gn, info = BI.mesh_bank(pb, T, n, chunk=int(cfg.get("sample_chunk_eval", 32768)),
-                                            abort=float("inf"))
-                    info.pop("lowdin_factor")
-                    errors, _, _ = D.oracle_shift_errors(Gn, dev)
-                    entry["adam_stage"] = dict(bank=info, **{f"coordnet_R{R}": D.stats_from_cases(errors, target)})
-                except RuntimeError as exc:
-                    entry["adam_stage"] = dict(error=str(exc))
-                del Gn
-                continue
-            Gn, info = BI.mesh_bank(pb, T, n, chunk=int(cfg.get("sample_chunk_eval", 32768)),
-                                    abort=float("inf"))
-            info.pop("lowdin_factor")
-            entry["bank"] = info
-            for Rp in sorted({int(x) for x in cfg["prefixes"] if int(x) <= R} | {R}):
-                errors, _, travel = D.oracle_shift_errors(Gn[:, :Rp], dev)
-                entry[f"coordnet_R{Rp}"] = D.stats_from_cases(errors, target)
-                log(f"  coordnet R'={Rp}: evolved worst {entry[f'coordnet_R{Rp}']['evolved_worst']:.6f}")
-            entry["travel"] = travel
-            errors, _ = D.project_errors(Gn, dev)
-            entry["coordnet_no_centring"] = D.stats_from_cases(errors, target)
-            if not entry["coordnet_no_centring"]["evolved_worst"] > target:
-                failures.append(f"HARD: no-centring control did not fire at {n}^3")
-            Gfinal = Gn
-        Up = np.stack([BI.resample(pod_same[:, j].reshape(3, nt, nt, nt), n)[0].ravel()
-                       for j in range(R)], axis=1)
-        Up, _ = np.linalg.qr(CN.leray_mask(Up, n)[0])
-        errors, _, _ = D.oracle_shift_errors(Up, dev)
-        entry[f"same_data_pod_R{R}"] = D.stats_from_cases(errors, target)
-        del Up
-        tp = F.parameters(int(cfg["train_seed"]), int(cfg["parent_pod_cases"]))
-        tr, _, _ = D.generate(tp, n, float(cfg["dt_truth"]), float(cfg["horizon"]))
-        cj = jax.jit(lambda f: SR.shift_field(f, -SR.grid_centroid(f) * n))
-        for a in range(len(tr)):
-            for b in range(tr.shape[1]):
-                tr[a, b] = np.asarray(cj(jnp.asarray(tr[a, b])))
-        basis, _, _ = D.pod_basis(tr.reshape(len(tr) * tr.shape[1], -1), 64, int(cfg["gram_block"]))
-        del tr
-        gc.collect()
-        Gpod, _ = D.orthonormalize_prefix(basis, 64)
-        errors, _, _ = D.oracle_shift_errors(Gpod, dev)
-        entry["parent_pod_R64"] = D.stats_from_cases(errors, target)
-        want = cfg.get("parent_pod_floor_reference", {}).get(str(n))
-        if want is not None:
-            gapp = abs(entry["parent_pod_R64"]["evolved_worst"] - want) / want
-            entry["parent_pod_R64_reproduction"] = dict(reference=want, relative_gap=gapp,
-                                                        passed=bool(gapp <= 1e-6))
-            if not gapp <= 1e-6:
-                failures.append(f"HARD: parent POD-64 floor at {n}^3 not reproduced: {gapp:.2e}")
-        del basis, Gpod
-        log(f"  parent POD-64: evolved worst {entry['parent_pod_R64']['evolved_worst']:.6f}")
-        if n in [int(m) for m in cfg.get("derivative_meshes", [])]:
-            entry["derivatives"] = BI.derivative_check(banks["final"][0], banks["final"][1], n)
-            log(f"  derivative check: {entry['derivatives']}")
-        if ref_bank is None:
-            ref_bank = (n, Gfinal)
-        else:
-            n0, G0r = ref_bank
-            Gr_ = np.stack([BI.resample(Gfinal[:, j].reshape(3, n, n, n), n0)[0].ravel()
-                            for j in range(Gfinal.shape[1])], axis=1) * (n / n0) ** 1.5
-            col = np.linalg.norm(Gr_ - G0r, axis=0) / np.linalg.norm(G0r, axis=0)
-            entry["cross_mesh_vs_smallest"] = dict(against=int(n0), worst_column=float(col.max()),
-                                                   median_column=float(np.median(col)))
-            log(f"  cross-mesh consistency vs {n0}^3: worst column {col.max():.3e}")
-        floors[str(n)] = entry
-        del dev, Gfinal
-        gc.collect()
+    # gate inputs of the bank of record first (R floor, pre-Loewdin deviation) at every
+    # mesh, then the gates, then the descriptive extras, then the Adam-stage diagnostic
+    pb, T = banks["final"]
+    chunk_eval = int(cfg.get("sample_chunk_eval", 32768))
+    meshes_f = sorted(int(m) for m in cfg["floor_meshes"])
+    for n in meshes_f:
+        entry = floors[str(n)]
+        # the bank job measures, it does not abort: the pre-Loewdin deviation is gate G3
+        Gn, info = BI.mesh_bank(pb, T, n, chunk=chunk_eval, abort=float("inf"))
+        info.pop("lowdin_factor")
+        entry["bank"] = info
+        errors, _, travel = D.oracle_shift_errors(Gn, devs[n])
+        entry[f"coordnet_R{R}"] = D.stats_from_cases(errors, target)
+        entry["travel"] = travel
+        log(f"  {n}^3 coordnet R={R}: evolved worst {entry[f'coordnet_R{R}']['evolved_worst']:.6f} "
+            f"(POD-64 {entry['parent_pod_R64']['evolved_worst']:.6f}); pre-Lowdin "
+            f"{info['orthonormality_before_lowdin']:.3e}")
+        del Gn
         report["floors"] = floors
         dump()
-    pts = jnp.asarray(np.random.default_rng(5).uniform(size=(256, 3)))
-    pf = banks["final"][0]
-    report["autodiff_divergence_relative"] = float(
-        jnp.max(jnp.abs(CN.divergence(pf, pts))) / jnp.max(jnp.abs(CN.velocity(pf, pts))))
 
     # ------------------------------------------------------- 8. the gates ----
-    # (pre-registered in DESIGN.md section 5; computed here and recomputed by the report)
+    # (pre-registered in DESIGN.md section 4; computed here and recomputed by the report)
     gates = {}
     ratios = {m: floors[m][f"coordnet_R{R}"]["evolved_worst"] / floors[m]["parent_pod_R64"]["evolved_worst"]
               for m in floors}
@@ -584,15 +638,73 @@ def main():
                                             passed=bool(gated and all(v <= 1e-3 for v in gated.values())))
     gates["all_passed"] = bool(all(g["passed"] for g in gates.values() if isinstance(g, dict)))
     report["gates"] = gates
+    log(f"gates: {gates}")
+    dump()
+
+    # ------------------------------------------------ 9. descriptive extras ----
+    ref_bank = None
+    for n in meshes_f:
+        entry = floors[str(n)]
+        dev = devs[n]
+        Gn, _ = BI.mesh_bank(pb, T, n, chunk=chunk_eval, abort=float("inf"))
+        for Rp in sorted({int(x) for x in cfg["prefixes"] if int(x) < R}):
+            errors, _, _ = D.oracle_shift_errors(Gn[:, :Rp], dev)
+            entry[f"coordnet_R{Rp}"] = D.stats_from_cases(errors, target)
+        errors, _ = D.project_errors(Gn, dev)
+        entry["coordnet_no_centring"] = D.stats_from_cases(errors, target)
+        if not entry["coordnet_no_centring"]["evolved_worst"] > target:
+            failures.append(f"HARD: no-centring control did not fire at {n}^3")
+        # G3 control: the same statistic for the same-data POD (resampled, P_n, its own T)
+        Ur = np.stack([BI.resample(pod_same[:, j].reshape(3, nt, nt, nt), n)[0].ravel()
+                       for j in range(R)], axis=1) * (nt / n) ** 1.5
+        Bp = CN.leray_mask(Ur, n)[0] @ T_pod
+        entry["same_data_pod_G3_statistic"] = float(np.max(np.abs(Bp.T @ Bp - np.eye(R))))
+        del Ur, Bp
+        if ref_bank is None:
+            ref_bank = (n, Gn)
+        else:
+            n0, G0r = ref_bank
+            Gr_ = np.stack([BI.resample(Gn[:, j].reshape(3, n, n, n), n0)[0].ravel()
+                            for j in range(Gn.shape[1])], axis=1) * (n / n0) ** 1.5
+            col = np.linalg.norm(Gr_ - G0r, axis=0) / np.linalg.norm(G0r, axis=0)
+            entry["cross_mesh_vs_smallest"] = dict(against=int(n0), worst_column=float(col.max()),
+                                                   median_column=float(np.median(col)))
+            del Gr_
+        if n in [int(m) for m in cfg.get("derivative_meshes", [])]:
+            try:
+                entry["derivatives"] = BI.derivative_check(pb, T, n)
+            except Exception as exc:  # diagnostic only
+                entry["derivatives"] = dict(error=f"{type(exc).__name__}: {str(exc)[:300]}")
+        if "adam" in banks:     # diagnostic only: R floor of the Adam-stage bank
+            try:
+                pa, Ta = banks["adam"]
+                Ga, ia = BI.mesh_bank(pa, Ta, n, chunk=chunk_eval, abort=float("inf"))
+                ia.pop("lowdin_factor")
+                errors, _, _ = D.oracle_shift_errors(Ga, dev)
+                entry["adam_stage"] = dict(bank=ia, **{f"coordnet_R{R}": D.stats_from_cases(errors, target)})
+                del Ga
+            except Exception as exc:
+                entry["adam_stage"] = dict(error=f"{type(exc).__name__}: {str(exc)[:300]}")
+        if ref_bank[0] != n:
+            del Gn
+        gc.collect()
+        report["floors"] = floors
+        dump()
+    pts = jnp.asarray(np.random.default_rng(5).uniform(size=(256, 3)))
+    report["autodiff_divergence_relative"] = float(
+        jnp.max(jnp.abs(CN.divergence(pb, pts))) / jnp.max(jnp.abs(CN.velocity(pb, pts))))
     report["failures"] = failures
     hard = [f for f in failures if f.startswith("HARD")]
+    if hard:   # no verdict on a hard validity failure (DESIGN §A1)
+        report["gates"] = dict(verdict=None, note="hard validity failure: no verdict",
+                               computed_before_failure=gates)
+    else:
+        report["gates"]["verdict"] = "pass" if gates["all_passed"] else "fail"
     report["status"] = "failed-gates" if hard else "final"
     dump()
-    log(f"gates: {gates}")
-    log(f"done; failures: {failures}")
+    log(f"done; status {report['status']}; failures: {failures}")
     if hard:
         sys.exit(3)
-
 
 if __name__ == "__main__":
     main()

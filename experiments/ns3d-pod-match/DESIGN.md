@@ -199,3 +199,67 @@ exceed 15 h, that job is not submitted.
 - **CNAB2**: the pseudo-spectral full-order solver and speed comparator.
 - **development / test cohort**: cases used for checks here / cases kept closed.
 - **L-BFGS**: a quasi-Newton optimiser using curvature from recent gradients.
+
+## A1 (2026-11-03, before any GPU job) — changes after the two independent reviews
+
+Reviews: `reviews/grok-design-review.md` (Grok 4.7 xhigh via cursor-agent, read-only) and
+`reviews/claude-design-review.md` (a fresh Claude subagent), both on commit `2e8506d79`, both
+given only the design and the code. They replace the Codex audit, which is quota-blocked until
+2026-11-04 16:37 (coordinator instruction). **A Codex re-audit is owed.** Neither review found a
+mathematical error in the objectives, the POD targets, the interpolant, the VP-excess bound or
+the gate formulas. No gate threshold changes. All changes below were made before any job.
+
+1. **L-BFGS line search** (Grok #5). The zoom line search now uses
+   `initial_guess_strategy="one"`, as `optax.lbfgs`'s own default does. The code previously used
+   the SGD setting `"keep"`.
+2. **L-BFGS reverts** (Claude #7, #8). A call that ends higher than it started now reverts to
+   the best iterate evaluated inside that call, and then the stage ends, instead of discarding
+   the whole call. A rise of at most $10^{-15}$ absolute counts as a round-off stall, and the
+   previous iterate is kept. The stall test is now a decrease $\le\max(10^{-10}\cdot\text{value},10^{-15})$
+   over 8 consecutive calls. An exception inside the stage keeps the last accepted iterate and
+   is flagged.
+3. **Reference floors first** (Claude #10). The development cases, the parent POD-64 floors
+   with their hard reproduction gate, and the same-data POD floors are computed at all three
+   meshes **before training**. A failure exits with status 3 within minutes. A missing
+   reproduction reference is a hard failure (Claude #13).
+4. **Order of measurement** (Claude #12). After training, the gate inputs of the bank of record
+   are measured and written first ($R=64$ floor and pre-Löwdin deviation at every mesh), then
+   the gates. After that come the descriptive extras: prefixes, the no-centring control,
+   cross-mesh columns, derivative checks, and the Adam-stage diagnostic. A diagnostic failure
+   cannot kill the job.
+5. **Recovery mode** `--floors-only <dir>`. If a job dies after training, the saved
+   `bank_final.npz` is re-evaluated by the same code without retraining. If that file is
+   missing, the order of fallback is `bank_lbfgs_partial.npz`, then `bank_adam.npz`. The
+   result records the file used and its sha256. A recovery run is not a rerun of training.
+6. **No verdict on a hard failure** (Claude #13). If any hard validity gate fails, `gates.verdict`
+   is `null`; otherwise it is `pass` or `fail`. `make_rom_configs.py` requires `verdict=="pass"`.
+7. **Off-grid term in chunks** (Grok #11). The arm-(b) off-grid value and gradient term is
+   evaluated in chunks of 2048 points (`lax.map`). It equals the unchunked value to round-off
+   (checked locally). The Claude reviewer's XLA memory analysis gives about 33 GB of
+   temporaries for arm (b) and 28 GB for arm (a) at full scale.
+8. **Pinned launch** (Grok #10, Claude #11). `cluster/launch.sh` holds the exact submissions:
+   `gpu:1`, `--constraint=a100-80G` (default in `submit.sh`; an explicit override
+   `GPU_CONSTRAINT=h100-80G` only after a preflight failure), memory 160G, wall 6 h 40 min for
+   the bank jobs; ROM 0 h 45 / 0 h 20 / 0 h 15 at $96^3/64^3/32^3$ (the parent's measured elapsed
+   times were 17 / 6 / 3 min).
+9. **Provenance** (Claude #16). `submit.sh` refuses to stage an `experiments/` tree with
+   uncommitted changes. `summary.json` also hashes `diag_floor.py`, `ns3d_fom.py` and the config.
+10. **Timeout manifest** (Claude #17). `job.sbatch` traps the Slurm `TERM` warning
+    (`--signal=B:TERM@300`) and still writes `OUTPUTS.sha256`. Bank mode prints
+    `VERIFY_EXIT=NA`.
+11. **G3 interpretability** (Claude #15; reporting only, G3 unchanged). The target spectral
+    content now includes the cut $\max_i|k_i|>15$, which is outside $P_{48}$. At every mesh the
+    G3 statistic is also computed for the same-data POD itself (resampled, $P_n$, its own $T$),
+    as a control.
+12. **Stop rule and budget wording** (Claude #19).
+    - An arm whose job fails a hard gate counts as **not passing** and is not rerun. The
+      exceptions are failures before training starts (GPU preflight, node or infrastructure
+      faults), which may be resubmitted once, charged to the budget.
+    - For the 15 GPU-hour rule, running jobs count at their **wall limit** until `sacct`
+      reports final elapsed times.
+    - At most 2 allocations at once, **including the ROM jobs**. The ROM jobs are submitted in
+      the order $96^3$, $64^3$, $32^3$.
+    - Worst case: $2\times6.67+0.75+0.33+0.25=14.67$ h, within the cap.
+13. **Text** (Claude #21). The target spectral content is recorded once, on the $48^3$ grid
+    (not "at every mesh"). The VP ratio to the optimum is reported for the raw bank; the
+    projected value is reported beside it.

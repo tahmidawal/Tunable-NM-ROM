@@ -74,6 +74,7 @@
   "max_linesearch_steps": 30,
   "iterations_per_call": 25,
   "stall_rtol": 1e-10,
+  "stall_atol": 1e-15,
   "stall_calls": 8
  },
  "smoke": {
@@ -123,6 +124,7 @@
    "max_linesearch_steps": 10,
    "iterations_per_call": 5,
    "stall_rtol": 1e-10,
+   "stall_atol": 1e-15,
    "stall_calls": 8
   }
  },

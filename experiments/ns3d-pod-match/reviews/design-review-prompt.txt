@@ -1,0 +1,25 @@
+You are an independent reviewer of a pre-registered numerical experiment BEFORE any GPU job runs. Read-only review: do not modify any file.
+
+Repository worktree: /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-ns3d-pod-match
+Lane directory: experiments/ns3d-pod-match/
+Read in full:
+- experiments/ns3d-pod-match/DESIGN.md (the pre-registration)
+- experiments/ns3d-pod-match/train_bank2.py (the new bank-training driver)
+- experiments/ns3d-pod-match/make_configs.py and configs/bank_a.json, configs/bank_b.json
+- experiments/ns3d-pod-match/cluster/job.sbatch, submit.sh, pull.sh
+Imported dependencies (read the parts the driver uses):
+- experiments/ns3d-coordnet/coordnet.py, bankio.py, rom_mesh.py, verify_coordnet.py, train_bank.py (the parent driver it was derived from)
+- experiments/ns3d-grok/diag_floor.py, experiments/ns3d-shift/shift_rom.py (spectral_derivative, shift_field, grid_centroid), experiments/ns3d/ns3d_fom.py
+Environment: JAX 0.10.x, optax 0.2.8, float64 with JAX_DEFAULT_MATMUL_PRECISION=highest, A100 80GB, Slurm.
+
+Check, citing file:line for each finding and classifying each as WRONG / NEEDS-CHANGE / CORRECT:
+1. Mathematical correctness of both objectives: (a) variable-projection + band penalty; (b) POD-mode regression with energy weights, off-grid trigonometric-interpolant value and gradient targets (trig_interpolant: Fourier conventions, axis ordering, scaling by nt^{3/2} versus the sampled bank's nt^{-3/2}, gradient factor). Is the stated upper-bound relation between the regression term and the VP excess correct?
+2. The POD target construction (Yn columns, normalisation, QR with signs) and whether it equals the weighted POD of the training data.
+3. The staged optimiser: Adam calibration and schedule; the optax L-BFGS usage (value_and_grad_from_state, update with value/grad/value_fn, tree_get of linesearch info, scan of iterations, revert logic, stall rule, deadline). Any risk of large arrays captured as compile-time constants inside jit (the data dict must be passed as an argument)?
+4. That the Fourier frequencies B can never change; checkpointing; failure handling; any path where the job dies before writing floors.
+5. Floors and gates: whether G1/G2/G3 are computed as the DESIGN states, with the right reference (in-job parent POD-64), the hard validity gates, and whether anything the DESIGN promises is not implemented (or vice versa).
+6. Statistical/experimental-design soundness: are the gates fixed before results, are seeds handled correctly (development seed 202609202 only; 202609203, 202609211, 202609221 must never be read), is the stop rule unambiguous, is the budget plan (15 GPU-hour cap, <=2 concurrent allocations) consistent with the wall limits, is anything left to post-hoc choice?
+7. Cluster scripts: GPU preflight (log must contain jax_backend=gpu), isolated job directories, checksum manifest, staging of every needed file, pull/delete logic.
+8. Anything else likely to waste the GPU budget (memory at 48^3 full batch with width 512, OOM risk of the off-grid gradient term with 8192 points, wall-time overrun past the 6h40 limit before floors are written).
+
+Report: a numbered list of findings with severity, then a short overall verdict (ready / not ready, and the must-fix items). Do not propose changes to the pre-registered gate thresholds; you may flag them if they are ill-posed.

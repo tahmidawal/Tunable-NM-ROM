@@ -30,10 +30,10 @@ grep -q "jax_backend=gpu" "$LOG" || { echo "no jax_backend=gpu in log" >&2; exit
 OK=1
 MODE=$(sed -n 's/.* mode=\([a-z]*\) .*/\1/p' "$LOG" | head -1)
 grep -E "RUN_EXIT=|ALL_EXIT=|MESH=" "$LOG" || true
-if grep -qE "RUN_EXIT=[^0]|VERIFY_EXIT=[^0]|ALL_EXIT=[^0]" "$LOG"; then OK=0; fi
+if grep -qE "RUN_EXIT=[^0]|VERIFY_EXIT=[^0N]|ALL_EXIT=[^0]" "$LOG"; then OK=0; fi
 PY=/home/tahmid/Dev/.venv/bin/python
 case "$MODE" in
-  bank) grep -q "RUN_EXIT=0" "$LOG" || OK=0
+  bank) grep -q "RUN_EXIT=0 " "$LOG" || OK=0
         $PY -c "import json,sys; s=json.load(open(sys.argv[1])); sys.exit(0 if s.get('status')=='final' else 1)" "$DEST/output/summary.json" || OK=0 ;;
   rom)  grep -q "ALL_EXIT=0" "$LOG" || OK=0
         $PY -c "import json,sys; sys.exit(0 if json.load(open(sys.argv[1]))['passed'] else 1)" "$DEST/output/mesh/verify.json" || OK=0 ;;

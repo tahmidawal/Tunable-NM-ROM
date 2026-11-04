@@ -6,6 +6,11 @@ JOB="$1"; MODE="$2"; CONFIG="$3"; GRES="$4"; MEM="$5"; TIME="$6"; FROZEN="${7:-}
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 NS=/cluster/tufts/paralab/tawal01/ns3d-pod-match-20261103
 DEST="$NS/$JOB"
+# provenance: refuse to stage uncommitted lane/experiment code (COMMIT.txt must describe it)
+if [[ -n "$(git -C "$HERE" status --porcelain -- experiments/)" ]]; then
+  echo "refusing: uncommitted changes under experiments/"; git -C "$HERE" status --short -- experiments/; exit 1
+fi
+SBATCH_EXTRA="${SBATCH_EXTRA:---constraint=a100-80G}"
 if ssh tufts-login "test -e $DEST"; then echo "refusing: $DEST exists (dirs are never reused)"; exit 1; fi
 ssh tufts-login "mkdir -p $DEST/logs $DEST/output $DEST/experiments"
 for pkg in ns3d ns2d separable-decoder ns3d-grok ns3d-shift ns3d-shift-head ns3d-operators ns3d-coordnet ns3d-pod-match; do

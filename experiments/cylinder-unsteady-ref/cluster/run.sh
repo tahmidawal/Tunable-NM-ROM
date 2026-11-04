@@ -34,9 +34,13 @@ export PYTHONPATH="$DEPS_SITE${PYTHONPATH:+:$PYTHONPATH}"
 export LD_LIBRARY_PATH="$JOB_DIR/deps/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 stage dependency_import "$PY" -c "import ngsolve, netgen, jax, json; print(json.dumps({'ngsolve': ngsolve.__version__, 'jax_backend': jax.default_backend(), 'precision': jax.config.jax_default_matmul_precision}))"
 failed=0
+export PY
 for cfg in "$@"; do
-  name=$(basename "$cfg" .json)
-  stage "run_$name" "$PY" transient.py --config "$cfg" --out "results/$name" || failed=$((failed+1))
+  case "$cfg" in
+    *.sh) stage "task_$(basename "$cfg" .sh)" bash "$cfg" || failed=$((failed+1)) ;;
+    *.json) name=$(basename "$cfg" .json)
+            stage "run_$name" "$PY" transient.py --config "$cfg" --out "results/$name" || failed=$((failed+1)) ;;
+  esac
 done
 echo "all_configs_attempted failed=$failed"
 [ "$failed" -eq 0 ]

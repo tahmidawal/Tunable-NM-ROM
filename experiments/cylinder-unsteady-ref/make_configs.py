@@ -83,9 +83,30 @@ def spinup():
                                          'diagnostics_every_saves': 1, 'save_state': True}])}
 
 
+K_FOR_DT = {800: 10, 1600: 20, 3200: 40, 6400: 80}   # G5-A2: frozen lag K*dt = 1/80 s
+
+
+def study(state, state_sha, dts=(800, 1600, 3200, 6400), startup16=(1600, 3200), p4=()):
+    # DESIGN-G5 4.4 R1b/R1c: from S*, window W = 0.35 s, saves every 1/400 s.
+    init = {'kind': 'state', 'path': state, 'sha256': state_sha}
+    def one(n, **kw):
+        return cfg(scheme='frozen_oseen', refactor_every=K_FOR_DT[n], kick=None, initial=init, wall_limit_seconds=5400,
+                   stages=[{'name': 'study', 'dt': 1 / n, 'duration': 0.35, 'save_every_steps': int(round(n / 400)),
+                            'diagnostics_every_saves': 4}], **kw)
+    out = {f'time_dt{n}': one(n) for n in dts}
+    out.update({f'startup16_dt{n}': one(n, startup_substeps=16) for n in startup16})
+    out.update({f'space_p4_dt{n}': one(n, velocity_order=4, pressure_order=3) for n in p4})
+    return out
+
+
 def main():
     stage = sys.argv[1]
-    sets = {'smoke': smoke, 'smoke02': smoke02, 'spinup': spinup}[stage]()
+    if stage == 'study':
+        sets = study(sys.argv[2], sys.argv[3])
+    elif stage == 'study_p4':
+        sets = study(sys.argv[2], sys.argv[3], dts=(), startup16=(), p4=(int(sys.argv[4]),))
+    else:
+        sets = {'smoke': smoke, 'smoke02': smoke02, 'spinup': spinup}[stage]()
     d = HERE / 'configs' / stage
     d.mkdir(parents=True, exist_ok=True)
     for name, c in sets.items():

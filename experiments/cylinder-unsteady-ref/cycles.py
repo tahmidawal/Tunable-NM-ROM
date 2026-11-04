@@ -19,6 +19,20 @@ def lift_minima(t, cl):
     return out
 
 
+def extremum(t, y, w, sign):
+    """Parabola-refined extreme value of y on index window w (sign=+1 max, -1 min)."""
+    idx = np.arange(len(y))[w]
+    i = idx[np.argmax(sign * y[w])]
+    if i <= 0 or i >= len(y) - 1:
+        return float(y[i])
+    y0, y1, y2 = y[i - 1], y[i], y[i + 1]
+    den = y0 - 2 * y1 + y2
+    if den == 0:
+        return float(y1)
+    s = float(np.clip(0.5 * (y0 - y2) / den, -1.0, 1.0))
+    return float(y1 - 0.25 * (y0 - y2) * s)
+
+
 def cycles(t, cd, cl, dp=None):
     """Return one record per complete cycle (lift minimum to lift minimum)."""
     t, cd, cl = (np.asarray(a, float) for a in (t, cd, cl))
@@ -34,8 +48,9 @@ def cycles(t, cd, cl, dp=None):
         w = slice(i0, i1 + 1)
         period = t1 - t0
         rec = {'t0': float(t0), 't1': float(t1), 'period': float(period), 'St': float(0.1 / period),
-               'CD_max': float(cd[w].max()), 'CD_min': float(cd[w].min()),
-               'CL_max': float(cl[w].max()), 'CL_min': float(cl[w].min())}
+               'CD_max': extremum(t, cd, w, 1), 'CD_min': extremum(t, cd, w, -1),
+               'CL_max': extremum(t, cl, w, 1), 'CL_min': extremum(t, cl, w, -1),
+               'CD_max_sample': float(cd[w].max()), 'CL_max_sample': float(cl[w].max())}
         if dp is not None:
             rec['dp_at_t0_plus_half_period'] = float(np.interp(t0 + 0.5 * period, t, np.asarray(dp, float)))
         recs.append(rec)

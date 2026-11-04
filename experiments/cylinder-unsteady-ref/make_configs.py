@@ -74,9 +74,18 @@ def smoke02():
     }
 
 
+def spinup():
+    # DESIGN-G5 4.2 + G5-A2: Re 100 from the Re 20 Newton state, sin^2 ramp t_r=1, kick on
+    # [1,1.5], S3 at dt_spin=1/800 (K=10) until the developed-flow rule, cap t=15. End state = S*.
+    return {'spinup_re100': cfg(scheme='frozen_oseen', refactor_every=10, wall_limit_seconds=16900,
+                                stages=[{'name': 'spinup', 'dt': 1 / 800, 'duration': 15.0, 'until_periodic': True,
+                                         'require_periodic': True, 'save_every_steps': 80,
+                                         'diagnostics_every_saves': 1, 'save_state': True}])}
+
+
 def main():
     stage = sys.argv[1]
-    sets = {'smoke': smoke, 'smoke02': smoke02}[stage]()
+    sets = {'smoke': smoke, 'smoke02': smoke02, 'spinup': spinup}[stage]()
     d = HERE / 'configs' / stage
     d.mkdir(parents=True, exist_ok=True)
     for name, c in sets.items():

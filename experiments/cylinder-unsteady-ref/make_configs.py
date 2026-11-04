@@ -109,14 +109,44 @@ def settle(Re, state, state_sha, k=4):
                                                 'diagnostics_every_saves': 1, 'save_state': True}])}
 
 
+def study_p4(state, state_sha, dts=(800, 1600, 3200, 6400), startup16=(1600, 3200), p3=()):
+    # G5-A3: R1b on the production P4/P3 from S* (embedded); R1c P3/P2 runs at dt0 later.
+    init = {'kind': 'state', 'path': state, 'sha256': state_sha}
+    def one(n, k=4, **kw):
+        return cfg(scheme='frozen_oseen', refactor_every=K_FOR_DT[n], kick=None, initial=init, wall_limit_seconds=14000,
+                   velocity_order=k, pressure_order=k - 1,
+                   stages=[{'name': 'study', 'dt': 1 / n, 'duration': 0.35, 'save_every_steps': int(round(n / 400)),
+                            'diagnostics_every_saves': 4}], **kw)
+    out = {f'time_p4_dt{n}': one(n) for n in dts}
+    out.update({f'startup16_p4_dt{n}': one(n, startup_substeps=16) for n in startup16})
+    out.update({f'space_p3_dt{n}': one(n, k=3) for n in p3})
+    return out
+
+
+def record(Re, state, state_sha, dt0, k=4):
+    # DESIGN-G5 4.2: 0.7 s settle at dt0, then the 1.7 s recorded window saved every 1/400 s.
+    n = dt0
+    return {f'record_re{Re:g}_p{k}': cfg(nu=0.1 / Re, velocity_order=k, pressure_order=k - 1, scheme='frozen_oseen',
+                                       refactor_every=K_FOR_DT[n], kick=None, wall_limit_seconds=40000,
+                                       initial={'kind': 'state', 'path': state, 'sha256': state_sha},
+                                       stages=[{'name': 'settle_dt0', 'dt': 1 / n, 'duration': 0.7},
+                                               {'name': 'record', 'dt': 1 / n, 'duration': 1.7,
+                                                'save_every_steps': int(round(n / 400)), 'diagnostics_every_saves': 4,
+                                                'save_state': True}])}
+
+
 def main():
     stage = sys.argv[1]
-    if stage == 'settle':
+    if stage == 'study_p4':
+        sets = study_p4(sys.argv[2], sys.argv[3])
+    elif stage == 'space_p3':
+        sets = study_p4(sys.argv[2], sys.argv[3], dts=(), startup16=(), p3=(int(sys.argv[4]),))
+    elif stage == 'record':
+        sets = record(float(sys.argv[2]), sys.argv[3], sys.argv[4], int(sys.argv[5]))
+    elif stage == 'settle':
         sets = settle(float(sys.argv[2]), sys.argv[3], sys.argv[4])
     elif stage == 'study':
         sets = study(sys.argv[2], sys.argv[3])
-    elif stage == 'study_p4':
-        sets = study(sys.argv[2], sys.argv[3], dts=(), startup16=(), p4=(int(sys.argv[4]),))
     else:
         sets = {'smoke': smoke, 'smoke02': smoke02, 'spinup': spinup}[stage]()
     d = HERE / 'configs' / stage

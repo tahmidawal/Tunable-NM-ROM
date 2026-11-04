@@ -11,8 +11,10 @@ Candidate dt0 = 1/c, c in (800, 1600, 3200), in that order; c qualifies iff
         own stencil counts (a non-asymptotic coarse stencil does not disqualify finer c),
   (iii) startup_c (4 vs 16 substeps at c) passes 0.2 x every tolerance.
 R1b passes with the first qualifying c. R1c passes iff space_c (P3/P2 vs P4/P3 at the selected
-c) passes all four tolerances. Noise floors (1e-8 for every metric) are 100x the 1e-10 linear
-solver tolerance; differences below them are not used for an order.
+c) passes all four tolerances. Noise floors (G5-A5 rev.2) are demonstrated, not assumed: the
+roundoff control `roundoff_1600.json` compares the 1/1600 P4 run with an otherwise identical
+8-thread run (only floating-point reduction order differs); floor_y = 10 x that gap. A missing
+control fails. Every record must share one initial-state hash and the fixed window W.
 """
 import argparse
 import json
@@ -20,7 +22,6 @@ import math
 from pathlib import Path
 
 TOL = {'e_u_max': 2e-3, 'e_p_max': 4e-3, 'e_D': 3e-3, 'e_L': 2e-4}
-FLOOR = {k: 1e-8 for k in TOL}
 STENCIL = {800: (800, 1600, 3200), 1600: (1600, 3200, 6400), 3200: (1600, 3200, 6400)}
 
 
@@ -42,12 +43,21 @@ def passes(rec, scale=1.0):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--dir', required=True); ap.add_argument('--out', required=True)
     a = ap.parse_args(); d = Path(a.dir)
-    res = {'tolerances': TOL, 'noise_floors': FLOOR, 'stencils': {str(k): v for k, v in STENCIL.items()},
+    res = {'tolerances': TOL, 'stencils': {str(k): v for k, v in STENCIL.items()},
            'candidates': {}, 'evidence_errors': []}
+    rc, err = load(d / 'roundoff_1600.json')
+    if rc is None:
+        res['evidence_errors'].append(err); res['R1b_time_gate'] = 'fail_missing_roundoff_control'
+        Path(a.out).write_text(json.dumps(res, indent=2) + '\n'); print(res['R1b_time_gate']); return
+    FLOOR = {k: 10 * rc[k] for k in TOL}
+    res['noise_floors'] = FLOOR
+    ident = {(rc['initial_state_sha256'], rc['W'], round(rc['window'][0], 9))}
     pairs = {}
     for c in (800, 1600, 3200):
         rec, err = load(d / f'compare_{c}_{2 * c}.json')
         pairs[c] = rec
+        if rec is not None:
+            ident.add((rec['initial_state_sha256'], rec['W'], round(rec['window'][0], 9)))
         if err:
             res['evidence_errors'].append(err)
     dt0 = None
@@ -77,6 +87,8 @@ def main():
             if bad:
                 cand['reasons'].append(f'empirical order outside [1.5,2.5]: {bad}'); ok = False
         st, err = load(d / f'startup_{c}.json')
+        if st is not None:
+            ident.add((st['initial_state_sha256'], st['W'], round(st['window'][0], 9)))
         if st is None:
             cand['reasons'].append(err); ok = False
         else:
@@ -87,10 +99,15 @@ def main():
         res['candidates'][str(c)] = cand
         if ok and dt0 is None:
             dt0 = c
+    if len(ident) != 1:
+        res['evidence_errors'].append(f'records disagree on initial state/window: {sorted(ident)}')
+        dt0 = None
     res['dt0_denominator'] = dt0
     res['R1b_time_gate'] = 'pass' if dt0 else 'fail'
     if dt0:
         sp, err = load(d / f'space_{dt0}.json')
+        if sp is not None and (sp['initial_state_sha256'], sp['W'], round(sp['window'][0], 9)) not in ident:
+            sp, err = None, 'space record differs in initial state/window'
         if sp is None:
             res['R1c_space_gate'] = 'pending_or_missing'; res['R1c_reason'] = err
         else:

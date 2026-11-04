@@ -121,6 +121,8 @@ def study_p4(state, state_sha, dts=(800, 1600, 3200, 6400), startup16=(800, 1600
     out = {f'time_p4_dt{n}': one(n) for n in dts}
     out.update({f'startup16_p4_dt{n}': one(n, startup_substeps=16) for n in startup16})
     out.update({f'space_p3_dt{n}': one(n, k=3) for n in p3})
+    if dts:  # G5-A5 rev.2 roundoff control: identical to time_p4_dt1600 except 8 threads
+        out['roundoff_p4_dt1600_threads8'] = one(1600, threads=8)
     return out
 
 

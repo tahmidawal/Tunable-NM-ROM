@@ -1,6 +1,8 @@
 """Phase-sensitive comparison of two transient runs (R1b time / R1c space gates).
 
 Usage: compare.py --a <run dir> --b <finer run dir> --out <json>
+The window is fixed by DESIGN-G5 (G5-A5): it starts at the common initial-state time and
+lasts W = 0.35 s; both runs must be single 'study' stages of exactly that duration.
 Fields are compared at common save times with exact assembled FE mass matrices on
 the finer space; a lower-order state is embedded exactly (same curved mesh).
 Forces are compared at common step times. Metrics follow DESIGN-G5.md §4.4.
@@ -21,12 +23,20 @@ def load_run(d):
     st = json.loads((d / 'stages.json').read_text())
     if st.get('status') != 'completed' or any(s.get('status') != 'completed' for s in st['stages']):
         raise ValueError(f'run not completed: {d} ({st.get("status")})')
+    import hashlib
     ts, xs = [], []
     for rec in st['snapshots']:
+        if hashlib.sha256((d / rec['file']).read_bytes()).hexdigest() != rec['sha256']:
+            raise ValueError(f'snapshot hash mismatch {d / rec["file"]}')
         z = np.load(d / rec['file'])
         ts.append(z['t']); xs.append(z['x'])
     h = np.load(d / 'history.npz')
-    return cfg, np.concatenate(ts), np.concatenate(xs), h['rows']
+    if len(st['stages']) != 1 or st['stages'][0]['name'] != 'study' or abs(cfg['stages'][0]['duration'] - W) > 1e-12:
+        raise ValueError(f'not a single W={W} study stage: {d}')
+    return cfg, np.concatenate(ts), np.concatenate(xs), h['rows'], st['stages'][0]['t_start']
+
+
+W = 0.35
 
 
 def common(ta, tb, tol=1e-9):
@@ -44,12 +54,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--a', required=True); ap.add_argument('--b', required=True)
     ap.add_argument('--out', required=True)
-    ap.add_argument('--t0', type=float, required=True, help='window start (DESIGN-G5: S* time)')
-    ap.add_argument('--t1', type=float, required=True, help='window end (S* + W)')
     args = ap.parse_args()
     import ngsolve as ng
-    ca, ta, xa, ha = load_run(args.a)
-    cb, tb, xb, hb = load_run(args.b)
+    ca, ta, xa, ha, sa = load_run(args.a)
+    cb, tb, xb, hb, sb = load_run(args.b)
+    if abs(sa - sb) > 1e-9:
+        raise ValueError('runs start at different times')
+    args.t0, args.t1 = sa, sa + W
     if ca['mesh_sha256'] != cb['mesh_sha256'] or ca['nu'] != cb['nu']:
         raise ValueError('runs differ in mesh or viscosity')
     if ca['initial'] != cb['initial'] or ca['initial'].get('kind') != 'state':
@@ -103,9 +114,10 @@ def main():
     ok = win(ha[fa, 0]) & np.isfinite(ha[fa, 1:3]).all(1) & np.isfinite(hb[fb, 1:3]).all(1)
     fa, fb = fa[ok], fb[ok]  # stage-start/startup rows carry no reaction force
     dt_coarse = max(ca['stages'][0]['dt'], cb['stages'][0]['dt'])
-    expected_f = int(round((args.t1 - args.t0) / dt_coarse)) - 1   # all coarse steps but the two startup rows
-    if len(fa) < expected_f:
-        Path(args.out).write_text(json.dumps({'valid': False, 'invalid_reason': f'force times {len(fa)} < {expected_f}'}) + '\n')
+    n_c = int(round(W / dt_coarse))
+    grid = args.t0 + dt_coarse * np.arange(2, n_c + 1)   # every coarse step but the two startup rows
+    if len(fa) != len(grid) or np.max(np.abs(ha[fa, 0] - grid)) > 1e-9:
+        Path(args.out).write_text(json.dumps({'valid': False, 'invalid_reason': f'force times {len(fa)} differ from the {len(grid)}-point coarse grid'}) + '\n')
         raise SystemExit('invalid comparison: incomplete force coverage')
     cda, cdb, cla, clb = ha[fa, 1], hb[fb, 1], ha[fa, 2], hb[fb, 2]
     res = {'valid': True, 'a': str(args.a), 'b': str(args.b), 'common_save_times': len(ia), 'common_force_times': len(fa),
@@ -114,6 +126,8 @@ def main():
            'e_u_max': float(max(eu)), 'e_p_max': float(max(ep)),
            'e_D': float(np.max(np.abs(cda - cdb)) / np.max(np.abs(cdb))),
            'e_L': float(np.max(np.abs(cla - clb))),
+           'e_dp_abs': float(np.max(np.abs((ha[fa, 5] - ha[fa, 6]) - (hb[fb, 5] - hb[fb, 6])))),
+           'CD_maxabs_b': float(np.max(np.abs(cdb))), 'W': W,
            'e_u_series': [float(z) for z in eu], 'e_p_series': [float(z) for z in ep],
            'definitions': 'DESIGN-G5 4.4: max over common times; velocity relative L2, pressure L2/(U^2 sqrt|Omega|)'}
     Path(args.out).write_text(json.dumps(res, indent=2) + '\n')

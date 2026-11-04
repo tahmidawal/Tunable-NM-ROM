@@ -16,4 +16,6 @@ stay exactly as pre-registered. Every attempt is kept here.
 | dev64 | 6858038 | §6 development ROM 64³ | A100-80GB pax106 | 2026-11-04, 9181988bc | 0:20:00 | 0:07:20 | 0.122 | COMPLETED, audit pass; head 0.197 % (POD head 0.152 %) |
 | dev32 | 6858232 | §6 development ROM 32³ | A100-80GB pax049 | 2026-11-04, 9181988bc | 0:15:00 | 0:00:33 | 0.009 | FAILED: inherited 0.05 pre-Löwdin sanity abort (0.607 at 32³); no number produced; logs in runs/failed_preflight_dev32 |
 
-Running total: **22.884 GPU-h** final; next: dev32b (§A3, wall 0.25 h).
+| dev32b | 6859541 | §A3 rerun of the 32³ development ROM (inherited abort raised to 1.0) | A100-80GB pax050 | 2026-11-04, 2aee4b364 | 0:15:00 | 0:03:24 | 0.057 | COMPLETED, audit pass; head 0.181 % (POD head 0.151 %); flags: pre-Löwdin 0.607 (disclosed), D_d autodiff 1.6e-2 (diagnostic) |
+
+Running total: **22.941 GPU-h** final; nothing running; cluster namespace removed.

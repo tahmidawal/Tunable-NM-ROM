@@ -1,0 +1,6 @@
+{
+  "error": "ArithmeticError('stage settle not periodic by cap')",
+  "traceback": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-settle-re105/transient.py\", line 558, in main\n    Stepper(cfg, out, ng).run()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-settle-re105/transient.py\", line 438, in run\n    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-settle-re105/transient.py\", line 540, in _stages\n    raise ArithmeticError(f\"stage {st['name']} not periodic by cap\")\nArithmeticError: stage settle not periodic by cap\n",
+  "peak_rss_bytes": 9708912640,
+  "job_id": "6863602"
+}

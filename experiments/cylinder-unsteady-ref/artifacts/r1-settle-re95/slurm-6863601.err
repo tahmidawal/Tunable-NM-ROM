@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-settle-re95/transient.py", line 569, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-settle-re95/transient.py", line 558, in main
+    Stepper(cfg, out, ng).run()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-settle-re95/transient.py", line 438, in run
+    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1-settle-re95/transient.py", line 540, in _stages
+    raise ArithmeticError(f"stage {st['name']} not periodic by cap")
+ArithmeticError: stage settle not periodic by cap
+[2026-11-04T16:29:39.000] error: Timed out waiting for 3 connections to finish, abandoning them now.

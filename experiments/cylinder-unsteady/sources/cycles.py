@@ -62,7 +62,8 @@ def cycles(t, cd, cl, dp=None):
                 y0, y1, y2 = cl[j - 1], cl[j], cl[j + 1]; den = y0 - 2 * y1 + y2; h = t[j + 1] - t[j]
                 if den != 0:
                     tmax = t[j] + float(np.clip(0.5 * h * (y0 - y2) / den, -h, h))
-            rec['dp_1996_t0_at_CLmax_plus_half_period'] = float(np.interp(tmax + 0.5 * period, t, dp))
+            te = tmax + 0.5 * period   # no extrapolation: outside the history -> NaN (excluded)
+            rec['dp_1996_t0_at_CLmax_plus_half_period'] = float(np.interp(te, t, dp)) if te <= t[-1] else float('nan')
         recs.append(rec)
     return recs
 
@@ -70,8 +71,11 @@ def cycles(t, cd, cl, dp=None):
 def summarize(recs):
     """R1d aggregate (G5-A5): mean over every complete cycle, with per-cycle spread."""
     keys = [k for k in recs[0] if k not in ('t0', 't1')]
-    return {k: {'mean': float(np.mean([r[k] for r in recs])), 'min': float(np.min([r[k] for r in recs])),
-                'max': float(np.max([r[k] for r in recs]))} for k in keys} | {'cycles': len(recs)}
+    out = {}
+    for k in keys:
+        v = np.array([r[k] for r in recs], float); v = v[np.isfinite(v)]
+        out[k] = {'mean': float(v.mean()), 'min': float(v.min()), 'max': float(v.max()), 'count': int(v.size)}
+    return out | {'cycles': len(recs)}
 
 
 def periodic(recs, n=3, cl_tol=1e-4, cd_rel_tol=1e-4, period_rel_tol=1e-4):

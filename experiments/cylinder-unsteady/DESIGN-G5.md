@@ -450,3 +450,31 @@ Every tolerance and every recorded failure is unchanged. Responses, numbered as 
    `cycles.py` reports both conventions and each source is compared in its own.
 R3 uses SciPy L-BFGS-B (no bounds) for both L-BFGS phases; the steady lane used its own
 deterministic L-BFGS with Armijo search — same method class, different implementation.
+
+### G5-A5 revision 2 — Codex review 03 (`reviews/DESIGN-codex-03.md`), 2026-11-04, before R1b data
+
+- (1) The noise floor is **demonstrated**: a roundoff control reruns the 1/1600 P4 study with 8
+  instead of 16 threads (only floating-point reduction order differs); floor_y = 10 × that gap,
+  per metric. A missing control fails R1b. Every stencil, startup, roundoff and space record
+  must carry the same initial-state hash, the same start time and W = 0.35, or R1b fails.
+- (2) `compare.py` takes no window arguments: the window starts at the common initial-state
+  time, lasts exactly W = 0.35 s (single `study` stage of that duration), needs 141 common
+  saves on the 1/400 grid, the exact coarse force grid (all steps except the two startup rows)
+  and SHA-verified snapshot chunks.
+- (3) Statistic-specific reference uncertainty, from the R1b ($dt_0$ vs $dt_0/2$) and R1c gaps
+  $d$: $\delta_{C_{D,\max}}=2\max(d_{e_D})\cdot\max|C_D|$ (a sup-norm bound on a difference of
+  maxima of the sampled histories), $\delta_{C_{L,\max}}=2\max(d_{e_L})$,
+  $\delta_{\Delta p}=2\max(d_{e_{\Delta p}})$, and $\delta_{St}/St=2\max(d_{e_L})/(2\pi f A_L W)$
+  (phase shift implied by the lift gap over W, $A_L$ the lift amplitude). Field/force
+  uncertainty over 1.7 s uses the linear propagation factor 1.7/0.35. These are **heuristic
+  estimates, not bounds**; comparisons classified with them are labelled "resolved under the
+  linear-propagation estimate".
+- (7) The quadrature check compares operators in the **raw** basis (the FE POD/supremizer
+  coefficient modes are quadrature-independent, the bank functions are fixed), i.e. before
+  orthonormalization, so no rotation or sign ambiguity enters; it covers every ranked arm
+  (POD 8/16/24/r_b, frozen and retrained bank); relative Frobenius change uses the order-14
+  array norm as denominator with floor 1e-14.
+- (10) The 1996-convention Δp of a cycle whose evaluation time lies beyond the saved history is
+  NaN and excluded from that statistic (counts reported); no extrapolation.
+- **A4 is a post-failure extension.** Success of any settle under the 6 s cap qualifies the
+  amended 6 s protocol only; the original 4 s protocol failed for Re 95 and Re 105.

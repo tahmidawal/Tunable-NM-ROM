@@ -1,0 +1,33 @@
+{
+  "fork": {
+    "branch": "exp/2026-10-27-ns-obstacle-rom",
+    "commit": "57680db12521fd2119247c9f09a2ce95332d4562",
+    "mirror": "e2d4b08bff9a13977ddb6404920514221ea89dbf"
+  },
+  "byte_copies": {
+    "vendor/geometry.py": {
+      "from": "experiments/ns-obstacle-rom/geometry.py",
+      "sha256": "fb329e874f8c9a82750d28afb18f541f6b02769b20bb1da6a7db519f0fda0252"
+    },
+    "vendor/accuracy_v2/spatial_bank.py": {
+      "from": "experiments/ns-obstacle-rom/accuracy_v2/spatial_bank.py",
+      "sha256": "a03872548c90669949887bf2353b495a203f6679ad784e4c99bacf80a07f1277"
+    },
+    "vendor/accuracy_v2/fast_spatial_bank.py": {
+      "from": "experiments/ns-obstacle-rom/accuracy_v2/fast_spatial_bank.py",
+      "sha256": "722383c2223a15a504ebe69cdc17cb99dc3b572b571255589cbb7e329982a087"
+    },
+    "vendor/accuracy_v2/residual_head_bank.py": {
+      "from": "experiments/ns-obstacle-rom/accuracy_v2/residual_head_bank.py",
+      "sha256": "e6c2289aa13d013cc373f899115c246014fcedebdf18b5759657f70936064bc0"
+    },
+    "inputs/run09_bank.npz": {
+      "from": "experiments/ns-obstacle-rom/checks/scanned-coordinate-composite-fixture-input/spatial-bank-raw.npz",
+      "sha256": "645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60"
+    }
+  },
+  "run09_bank_note": "model of PDE09 job 6661438 (DIAGNOSTIC-RELEASE actual_model_sha256)",
+  "vendor_added": [
+    "vendor/accuracy_v2/__init__.py (empty)"
+  ]
+}

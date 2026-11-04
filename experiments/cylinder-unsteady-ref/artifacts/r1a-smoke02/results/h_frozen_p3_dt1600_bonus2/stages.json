@@ -1,0 +1,41 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "smoke",
+      "dt": 0.000625,
+      "t_start": 0.0,
+      "planned_steps": 80,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 80,
+      "t_end": 0.05000000000000003,
+      "periodic_reached": false,
+      "cycles": [],
+      "wall_seconds": 62.78509117010981,
+      "seconds_per_step": 0.7848136456217617
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "1191b2dcfac16f0415130703da15ca3cb8b2ca69a262129571545678774de0e8",
+      "count": 21
+    }
+  ],
+  "linear_checks_count": 6,
+  "linear_checks_max": 4.1267117937994876e-16,
+  "factorizations": 5,
+  "timers_seconds": {
+    "conv_apply": 0.5013060821220279,
+    "factor": 16.67122692707926,
+    "solve": 43.19009616225958,
+    "observe": 1.6435855785384774,
+    "diagnostics": 0.1830339077860117
+  },
+  "interpolation": null,
+  "layout_sha256": "03d4f93c204e47fc603afc98ba044253f30fc0abf53dd4d919a52037440f2025",
+  "ndof": 235231,
+  "elapsed_seconds": 83.99277817457914
+}

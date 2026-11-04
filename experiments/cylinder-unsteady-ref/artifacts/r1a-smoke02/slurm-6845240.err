@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1a-smoke02/transient.py", line 568, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1a-smoke02/transient.py", line 557, in main
+    Stepper(cfg, out, ng).run()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1a-smoke02/transient.py", line 437, in run
+    self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1a-smoke02/transient.py", line 503, in _stages
+    xn = self.solve(coef, rhs, tn, w=2 * x - x_prev)
+  File "/cluster/tufts/paralab/tawal01/cyl-unsteady-20261103/r1a-smoke02/transient.py", line 235, in solve
+    raise ArithmeticError(f'linear residual {rel:.3e} at t={t_new}')
+ArithmeticError: linear residual 1.638e-05 at t=0.001875

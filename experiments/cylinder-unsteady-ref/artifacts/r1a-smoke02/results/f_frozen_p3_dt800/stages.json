@@ -1,0 +1,80 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "smoke",
+      "dt": 0.00125,
+      "t_start": 0.0,
+      "planned_steps": 160,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 160,
+      "t_end": 0.20000000000000015,
+      "periodic_reached": false,
+      "cycles": [
+        {
+          "t0": 0.024504588801012025,
+          "t1": 0.0531024854907322,
+          "period": 0.028597896689720178,
+          "St": 3.496760656385827,
+          "CD_max": 10.761382562444792,
+          "CD_min": 2.1866717497651367,
+          "CL_max": 0.001650103098596477,
+          "CL_min": -0.01324308259040266,
+          "dp_at_t0_plus_half_period": 4.861526669449868
+        },
+        {
+          "t0": 0.0531024854907322,
+          "t1": 0.08295604060436916,
+          "period": 0.029853555113636958,
+          "St": 3.349684807030587,
+          "CD_max": 2.323145050805586,
+          "CD_min": 2.225071244456932,
+          "CL_max": 0.0014085154410444906,
+          "CL_min": -0.019712863463853442,
+          "dp_at_t0_plus_half_period": 1.389012618002555
+        },
+        {
+          "t0": 0.08295604060436916,
+          "t1": 0.16568786334821514,
+          "period": 0.08273182274384598,
+          "St": 1.2087247286889797,
+          "CD_max": 2.9536811279041006,
+          "CD_min": 2.2978215530305457,
+          "CL_max": -0.010576277084626676,
+          "CL_min": -0.019712863463853442,
+          "dp_at_t0_plus_half_period": 1.95915659101776
+        }
+      ],
+      "wall_seconds": 152.2769623855129,
+      "seconds_per_step": 0.9517310186929535
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "68be218f9bd26059e1c895176698ecca95ce3b21639586bc60daa71df7ab49a8",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0001.npz",
+      "sha256": "4fb428ce67b9ba267725b851683bcce67c46d455f6cef58078df751835c76080",
+      "count": 31
+    }
+  ],
+  "linear_checks_count": 18,
+  "linear_checks_max": 6.251276876206171e-16,
+  "factorizations": 17,
+  "timers_seconds": {
+    "conv_apply": 1.0643921103328466,
+    "factor": 57.34586367290467,
+    "solve": 87.51538010220975,
+    "observe": 3.3646229719743133,
+    "diagnostics": 0.5001396937295794
+  },
+  "interpolation": null,
+  "layout_sha256": "03d4f93c204e47fc603afc98ba044253f30fc0abf53dd4d919a52037440f2025",
+  "ndof": 235231,
+  "elapsed_seconds": 173.08497976511717
+}

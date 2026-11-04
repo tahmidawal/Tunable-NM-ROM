@@ -1,0 +1,80 @@
+{
+  "status": "completed",
+  "stages": [
+    {
+      "name": "smoke",
+      "dt": 0.000625,
+      "t_start": 0.0,
+      "planned_steps": 320,
+      "until_periodic": false,
+      "status": "completed",
+      "steps": 320,
+      "t_end": 0.19999999999999848,
+      "periodic_reached": false,
+      "cycles": [
+        {
+          "t0": 0.024503625574532787,
+          "t1": 0.05154452726525907,
+          "period": 0.027040901690726284,
+          "St": 3.6981015331413727,
+          "CD_max": 10.753169589688456,
+          "CD_min": 2.2941043767247917,
+          "CL_max": 0.001502147513421777,
+          "CL_min": -0.013227631668537085,
+          "dp_at_t0_plus_half_period": 5.042503498348534
+        },
+        {
+          "t0": 0.05154452726525907,
+          "t1": 0.08295026990581437,
+          "period": 0.031405742640555304,
+          "St": 3.1841310407628,
+          "CD_max": 2.3576326145348836,
+          "CD_min": 2.225555236410341,
+          "CL_max": 0.0014066170370552861,
+          "CL_min": -0.019741647709522976,
+          "dp_at_t0_plus_half_period": 1.3837252011480552
+        },
+        {
+          "t0": 0.08295026990581437,
+          "t1": 0.1653643950920697,
+          "period": 0.08241412518625534,
+          "St": 1.2133842320597437,
+          "CD_max": 2.949697405536298,
+          "CD_min": 2.302370398163414,
+          "CL_max": -0.010549050065735971,
+          "CL_min": -0.019741647709522976,
+          "dp_at_t0_plus_half_period": 1.9576734361360142
+        }
+      ],
+      "wall_seconds": 283.8251292556524,
+      "seconds_per_step": 0.8869535304693272
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "4279418d30a9d538d7ac2e4840f22643681115b7ca064216e4982a4a387ae921",
+      "count": 50
+    },
+    {
+      "file": "snapshots_0001.npz",
+      "sha256": "5fde7fa88ec9464e8ebb51a38ec13bf17ebfea5a70b5e70edab20f760df4a7f0",
+      "count": 31
+    }
+  ],
+  "linear_checks_count": 35,
+  "linear_checks_max": 4.351064538604952e-16,
+  "factorizations": 33,
+  "timers_seconds": {
+    "conv_apply": 1.8435886492952704,
+    "factor": 107.97768625989556,
+    "solve": 163.95287620089948,
+    "observe": 6.409496360458434,
+    "diagnostics": 0.39226538594812155
+  },
+  "interpolation": null,
+  "layout_sha256": "03d4f93c204e47fc603afc98ba044253f30fc0abf53dd4d919a52037440f2025",
+  "ndof": 235231,
+  "elapsed_seconds": 304.20123881846666
+}

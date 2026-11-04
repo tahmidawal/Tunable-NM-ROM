@@ -4,185 +4,316 @@
 <meta charset="utf-8">
 <title>Why We Moved</title>
 <style>
-  @page { size: Letter; margin: 0.75in 0.8in; }
-  :root { --ink:#1d2330; --muted:#5b6475; --line:#d9dee7; --accent:#2f5d9f; --bad:#a3382f; --good:#2d7a4b; --soft:#f4f6fa; }
-  body { font-family: "Georgia", "Times New Roman", serif; color: var(--ink); font-size: 11pt; line-height: 1.5; margin: 0; background:#fff; }
-  h1 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 24pt; margin: 0 0 4pt; letter-spacing: -0.3pt; }
-  h2 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 14pt; margin: 22pt 0 6pt; color: var(--accent); break-after: avoid; }
-  h3 { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 11pt; margin: 12pt 0 4pt; }
-  .sub { color: var(--muted); font-size: 11pt; margin-bottom: 16pt; }
-  p { margin: 0 0 8pt; }
-  .lede { font-size: 12pt; }
-  .box { background: var(--soft); border-left: 3pt solid var(--accent); padding: 8pt 12pt; margin: 10pt 0; break-inside: avoid; }
-  .move { border: 1px solid var(--line); border-radius: 4pt; padding: 10pt 14pt 6pt; margin: 12pt 0; break-inside: avoid; }
-  .move .when { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.8pt; color: var(--muted); }
-  .move h3 { margin: 2pt 0 6pt; font-size: 12.5pt; }
-  .row { display: grid; grid-template-columns: 92pt 1fr; gap: 2pt 10pt; margin-bottom: 4pt; }
-  .tag { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5pt; padding-top: 2.5pt; }
-  .why { color: var(--accent); } .bad { color: var(--bad); } .next { color: var(--good); }
-  .row div:last-child { margin: 0; }
-  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 6pt 0 10pt; break-inside: avoid; }
-  th, td { border-bottom: 1px solid var(--line); padding: 4pt 6pt; text-align: left; vertical-align: top; }
-  th { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.4pt; color: var(--muted); }
-  .eq { font-family: "Cambria Math", "STIX Two Math", serif; font-style: italic; white-space: nowrap; }
-  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4pt; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.5pt; margin: 8pt 0 4pt; }
-  .chain span.n { border: 1px solid var(--accent); color: var(--accent); border-radius: 10pt; padding: 2pt 7pt; }
-  .chain span.a { color: var(--muted); }
-  ul { margin: 0 0 8pt; padding-left: 16pt; } li { margin-bottom: 3pt; }
-  .page-break { break-before: page; }
-  .foot { color: var(--muted); font-size: 8.5pt; margin-top: 18pt; border-top: 1px solid var(--line); padding-top: 6pt; }
+  @page { size: Letter; margin: 0.7in 0.75in; }
+  :root { --ink:#1f2328; --muted:#59636e; --line:#d0d7de; --soft:#f6f8fa; --blue:#0969da; }
+  body { font-family: Georgia, "Times New Roman", serif; color: var(--ink); font-size: 10.5pt; line-height: 1.45; margin: 0; background: #fff; }
+  h1 { font-family: Helvetica, Arial, sans-serif; font-size: 20pt; margin: 0 0 2pt; }
+  h2 { font-family: Helvetica, Arial, sans-serif; font-size: 13pt; margin: 20pt 0 4pt; padding-top: 6pt; border-top: 1px solid var(--line); break-after: avoid; }
+  h3 { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; margin: 10pt 0 2pt; color: var(--muted); text-transform: uppercase; letter-spacing: .4pt; break-after: avoid; }
+  .meta { color: var(--muted); margin-bottom: 12pt; }
+  p { margin: 0 0 7pt; }
+  table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 4pt 0 8pt; break-inside: avoid; }
+  th, td { border: 1px solid var(--line); padding: 3pt 5pt; text-align: left; vertical-align: top; }
+  th { background: var(--soft); font-family: Helvetica, Arial, sans-serif; font-weight: 600; }
+  td.n { text-align: right; white-space: nowrap; }
+  .fig { margin: 6pt 0 8pt; text-align: center; break-inside: avoid; }
+  .fig svg { max-width: 100%; height: auto; }
+  .eq { text-align: center; font-style: italic; margin: 4pt 0 8pt; }
+  .code { font-size: 9pt; background: var(--soft); border: 1px solid var(--line); padding: 5pt 8pt; margin: 4pt 0 6pt; break-inside: avoid; }
+  .code a { color: var(--blue); text-decoration: none; }
+  .code span { color: var(--muted); }
+  ul { margin: 0 0 7pt; padding-left: 16pt; } li { margin-bottom: 2pt; }
+  .small { font-size: 9pt; color: var(--muted); }
+  .keep { break-inside: avoid; }
 </style>
 </head>
 <body>
 
 <h1>Why we moved</h1>
-<div class="sub">Tunable NM-ROM — the decoder story from May to November 2026: what we tried, what broke, and why each step led to the next. &nbsp;·&nbsp; Tahmid Awal &nbsp;·&nbsp; November 3, 2026</div>
+<div class="meta">Tunable NM-ROM decoders, May to November 2026. Tahmid Awal, November 3, 2026.</div>
 
-<p class="lede">We want to solve families of PDEs (heat, Poisson, Burgers, Navier–Stokes) fast, by solving for a <b>handful of numbers</b> instead of one unknown per mesh point. A <b>decoder</b> turns those few numbers into the full field, and the reduced solver adjusts them until the field satisfies the equations.</p>
+<p>We build reduced-order models that solve a PDE for a few numbers instead of one value per grid point. The decoder turns those few numbers into the full field, and a Gauss-Newton solver adjusts them until the field satisfies the PDE. We need two things from a decoder: the solve has to be accurate, and each solver iteration has to be cheap, or there is no point in using a reduced model.</p>
 
-<p>Every change below was an answer to one question: <b>which decoder gives a solve that is accurate <i>and</i> cheap?</b> Each time, the answer exposed a new problem, and that problem decided the next step.</p>
+<p>We went through five decoder designs. The short version:</p>
 
-<div class="chain">
-  <span class="n">Grid tensor (CP)</span><span class="a">→</span>
-  <span class="n">Attention</span><span class="a">→</span>
-  <span class="n">SIREN</span><span class="a">→</span>
-  <span class="n">POD fallback</span><span class="a">→</span>
-  <span class="n">FiLM + real solve</span><span class="a">→</span>
-  <span class="n">Bank + head</span><span class="a">→</span>
-  <span class="n">Ordered bank</span><span class="a">→</span>
-  <span class="n">Better solver, honest baselines</span><span class="a">→</span>
-  <span class="n">Obstacle flow</span>
+<table>
+  <tr><th>Period</th><th>Decoder</th><th>Why we left it</th></tr>
+  <tr><td>May–Jul</td><td>ViT encoder + CP / LinearCP</td><td>Worked on heat and Poisson, but the rollout diverged on Burgers 2D</td></tr>
+  <tr><td>May</td><td>ViT decoder</td><td>Slower than the full solver (0.00–0.02×), and the solves failed</td></tr>
+  <tr><td>May</td><td>SIREN coordinate decoder</td><td>Too slow: 3–8× at CP-level accuracy, against 183× for CP</td></tr>
+  <tr><td>Aug</td><td>FiLM coordinate decoder</td><td>Too slow: the network runs inside every solver iteration</td></tr>
+  <tr><td>Aug–now</td><td>Learned bank (ours)</td><td>Current method</td></tr>
+</table>
+
+<p class="small">Speedup means full-solver time divided by reduced-model time, so 2× is twice as fast and 0.5× is half as fast. Error is relative L2 error unless noted. Each section links to the code; the links open a copy of each file pinned at commit <code>dd6c6c0</code> in the project repository.</p>
+
+<!-- ================================================================ -->
+<h2>1. ViT encoder + CP / LinearCP decoder (May–July)</h2>
+
+<div class="fig">
+<svg width="560" height="96" viewBox="0 0 560 96" font-family="Helvetica, Arial, sans-serif" font-size="11">
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#59636e"/></marker></defs>
+  <rect x="2" y="30" width="78" height="36" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="41" y="52" text-anchor="middle">field u</text>
+  <line x1="80" y1="48" x2="104" y2="48" stroke="#59636e" marker-end="url(#a)"/>
+  <rect x="106" y="30" width="90" height="36" rx="4" fill="#ddf4ff" stroke="#0969da"/><text x="151" y="52" text-anchor="middle">ViT encoder</text>
+  <line x1="196" y1="48" x2="220" y2="48" stroke="#59636e" marker-end="url(#a)"/>
+  <rect x="222" y="30" width="60" height="36" rx="4" fill="#fff8c5" stroke="#9a6700"/><text x="252" y="52" text-anchor="middle">z</text>
+  <line x1="282" y1="48" x2="306" y2="48" stroke="#59636e" marker-end="url(#a)"/>
+  <rect x="308" y="30" width="80" height="36" rx="4" fill="#ddf4ff" stroke="#0969da"/><text x="348" y="47" text-anchor="middle">MLP</text><text x="348" y="60" text-anchor="middle" font-size="9">weights h(z)</text>
+  <line x1="388" y1="48" x2="412" y2="48" stroke="#59636e" marker-end="url(#a)"/>
+  <rect x="414" y="18" width="120" height="60" rx="4" fill="#ddf4ff" stroke="#0969da"/><text x="474" y="40" text-anchor="middle">CP contraction</text><text x="474" y="54" text-anchor="middle" font-size="9">fixed grid factors</text><text x="474" y="66" text-anchor="middle" font-size="9">X(i), Y(j)</text>
+  <text x="474" y="92" text-anchor="middle" font-size="9" fill="#59636e">u on the grid</text>
+</svg>
+</div>
+<div class="eq">u(i, j; z) = b + Σ<sub>a</sub> h<sub>a</sub>(z) X<sub>a</sub>(i) Y<sub>a</sub>(j)</div>
+
+<h3>Why we tried it</h3>
+<p>This was the original method. A ViT encodes a field to a latent z, a small MLP turns z into weights, and the weights multiply fixed tables of grid factors. The value at a single grid node is cheap to evaluate, so the solver only touches the few nodes picked by empirical quadrature (EQ). LinearCP adds a linear skip from z so that Poisson can start the solve from z = 0.</p>
+
+<h3>What happened</h3>
+<table>
+  <tr><th>Case</th><th>Error</th><th>Speedup</th><th>Note</th></tr>
+  <tr><td>Poisson 3D, N=64 (LinearCP)</td><td class="n">6.62e-3</td><td class="n">111×</td><td>published table</td></tr>
+  <tr><td>Heat 3D, N=64 (CP)</td><td class="n">1.76e-2</td><td class="n">269×</td><td>published table</td></tr>
+  <tr><td>Heat 2D, N=64, fixed package</td><td class="n">2.83e-2</td><td class="n">0.17×</td><td>after fixing a rollout bug in the clean package; published was 5.21e-3 at 39.6×</td></tr>
+  <tr><td>Burgers 2D, ViT-CP</td><td class="n">diverges</td><td class="n">–</td><td>rollout blows up</td></tr>
+  <tr><td>Burgers 2D, retrained on more data</td><td class="n">5.7e-3 recon</td><td class="n">–</td><td>reconstruction 3.6× better, rollout still diverges</td></tr>
+  <tr><td>Burgers 2D, frozen POD instead</td><td class="n">2.1e-2</td><td class="n">3.9×</td><td>what we used for Burgers</td></tr>
+</table>
+
+<h3>Why we moved on</h3>
+<p>We could not get it to work on Burgers. Better reconstruction did not help: the 2D Burgers rollout diverged even after retraining improved reconstruction 3.6×, so the Burgers results came from a frozen POD basis rather than the learned decoder. The grid factors are also tied to one mesh, and accuracy got worse as the mesh got finer. We needed a different decoder.</p>
+
+<div class="code">
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/cp/decoder.py">cp/decoder.py</a> <span>CP decoder (heat)</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/linearcp/decoder.py">linearcp/decoder.py</a> <span>LinearCP (Poisson)</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/old_podmlp/podmlp.py">old_podmlp/podmlp.py</a> <span>POD + MLP</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/pod_hr/hrcore.py">pod_hr/hrcore.py</a> <span>POD with hyper-reduction</span><br>
+  Results: <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/old_readme/README.md">July results README</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/old_ledger/MASTER-RESULTS.md">July results ledger</a>
 </div>
 
-<div class="box"><b>The one lesson that repeats:</b> a decoder that <i>reconstructs</i> a field well is not necessarily a decoder that <i>solves</i> well. Almost every dead end looked good as an autoencoder and failed inside the solver, or was accurate but too slow inside it.</div>
+<!-- ================================================================ -->
+<h2>2. ViT decoder (May)</h2>
 
-<h2>1. The starting point</h2>
-
-<div class="move">
-  <div class="when">May 2026 · original heat and Poisson models</div>
-  <h3>Grid tensor decoder (CP and LinearCP)</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>A small network picks weights for products of 1D factor tables (one per axis). Evaluating the field at a few selected points is very cheap, which is exactly what hyper-reduction needs. LinearCP added a linear "skip" so Poisson could start the solve from zero.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>The factor tables are tied to one grid. Accuracy got <b>worse as the mesh got finer</b> — the "resolution wall" — and the skip connection did not fix it. Later we also found the public heat package had a bug that froze the rollout after step 1; with the fix, its published 39.6× speedup did not reproduce.</div></div>
-  <div class="row"><div class="tag next">Why we moved</div><div>The bottleneck was the <b>spatial representation</b>, not the network that picks weights. We needed spatial functions that are not tied to a grid.</div></div>
+<div class="fig">
+<svg width="560" height="80" viewBox="0 0 560 80" font-family="Helvetica, Arial, sans-serif" font-size="11">
+  <defs><marker id="b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#59636e"/></marker></defs>
+  <rect x="2" y="22" width="60" height="36" rx="4" fill="#fff8c5" stroke="#9a6700"/><text x="32" y="44" text-anchor="middle">z</text>
+  <line x1="62" y1="40" x2="86" y2="40" stroke="#59636e" marker-end="url(#b)"/>
+  <rect x="88" y="10" width="250" height="60" rx="4" fill="#ffebe9" stroke="#cf222e"/><text x="213" y="34" text-anchor="middle">Transformer decoder (mirror of the encoder)</text><text x="213" y="50" text-anchor="middle" font-size="9">self-attention couples every output patch</text>
+  <line x1="338" y1="40" x2="362" y2="40" stroke="#59636e" marker-end="url(#b)"/>
+  <rect x="364" y="22" width="130" height="36" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="429" y="38" text-anchor="middle">u on the whole grid</text><text x="429" y="51" text-anchor="middle" font-size="9">every iteration</text>
+</svg>
 </div>
 
-<div class="move">
-  <div class="when">May 2026</div>
-  <h3>Attention decoders (mirrored ViT, cross-attention)</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>More expressive output maps, matching the ViT encoder.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>Reconstruction was competitive, but Poisson solves failed and heat rollouts became unusable. Self-attention over all output points destroys the cheap "evaluate only a few points" structure. Cross-attention needs tokens from a known solution snapshot — which, at solve time, is exactly what we don't have.</div></div>
-  <div class="row"><div class="tag next">Why we moved</div><div>We needed a decoder that can be queried <b>at any single point, independently</b>: a coordinate network.</div></div>
+<h3>Why we tried it</h3>
+<p>A ViT encoder was already working, so the obvious test was a matching ViT decoder in place of CP, as a more expressive output map.</p>
+
+<h3>What happened</h3>
+<table>
+  <tr><th>Case</th><th>Autoencoder error</th><th>ROM error</th><th>Speedup</th></tr>
+  <tr><td>Poisson 3D N=64, LinearCP baseline</td><td class="n">6.62e-3</td><td class="n">6.62e-3</td><td class="n">111×</td></tr>
+  <tr><td>Poisson 3D N=64, ViT decoder (best of 3 sizes)</td><td class="n">5.84e-3</td><td class="n">1.25</td><td class="n">0.00×</td></tr>
+  <tr><td>Heat 3D N=64, CP baseline</td><td class="n">1.76e-2</td><td class="n">1.76e-2</td><td class="n">269×</td></tr>
+  <tr><td>Heat 3D N=64, ViT decoder (3 sizes)</td><td class="n">3.1e-2 – 3.8e-2</td><td class="n">8.6 – 13.0</td><td class="n">0.01–0.02×</td></tr>
+</table>
+
+<h3>Why we moved on</h3>
+<p>It was too slow to be useful. Self-attention couples all outputs, so the solver has to run the whole decoder on all 262,144 grid nodes in every Gauss-Newton iteration, and the quadrature saves nothing. Every configuration was slower than the full solver. The solves also failed, even when the autoencoder was as good as LinearCP.</p>
+
+<div class="code">
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/vit/decoder.py">vit/decoder.py</a> <span>mirrored ViT decoder</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/xattn/cross_attn_inr.py">xattn/cross_attn_inr.py</a> <span>cross-attention variant</span><br>
+  Results: <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/vit_status/STATUS.md">ViT ablation status report</a>
 </div>
 
-<div class="move">
-  <div class="when">May 2026</div>
-  <h3>Modulated SIREN (coordinate network)</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>Coordinates go in, the field value comes out; the latent code modulates the layers. Not tied to any grid, and the spatial features can change with the state.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div><b>The key failure of the project.</b> Accurate autoencoders still gave bad cold-start solves. Probes found a spurious "attraction basin" near the starting point, not a rank problem. Fixes (anchoring the zero code to a typical field) worked, then broke again when the network was made bigger or more accurate. And the whole network had to be evaluated and differentiated in <i>every</i> solver iteration — expensive.</div></div>
-  <div class="row"><div class="tag next">Why we moved</div><div>One variant made the output <b>affine in the latent code</b>, <span class="eq">u(x;z) = Φ(x)Az + b(x)</span>. The solve became much easier. That was the first hint of the idea that eventually won: keep the spatial part fixed and simple online.</div></div>
+<!-- ================================================================ -->
+<h2>3. SIREN coordinate decoder (May)</h2>
+
+<div class="fig">
+<svg width="560" height="96" viewBox="0 0 560 96" font-family="Helvetica, Arial, sans-serif" font-size="11">
+  <defs><marker id="c" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#59636e"/></marker></defs>
+  <rect x="2" y="8" width="70" height="32" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="37" y="28" text-anchor="middle">point x</text>
+  <rect x="2" y="56" width="70" height="32" rx="4" fill="#fff8c5" stroke="#9a6700"/><text x="37" y="76" text-anchor="middle">z</text>
+  <line x1="72" y1="24" x2="128" y2="34" stroke="#59636e" marker-end="url(#c)"/>
+  <line x1="72" y1="72" x2="128" y2="62" stroke="#59636e" marker-end="url(#c)"/>
+  <rect x="130" y="18" width="250" height="60" rx="4" fill="#ffebe9" stroke="#cf222e"/><text x="255" y="42" text-anchor="middle">sine network, layers modulated by z</text><text x="255" y="58" text-anchor="middle" font-size="9">evaluated and differentiated at every quadrature point, every iteration</text>
+  <line x1="380" y1="48" x2="404" y2="48" stroke="#59636e" marker-end="url(#c)"/>
+  <rect x="406" y="30" width="70" height="36" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="441" y="52" text-anchor="middle">u(x)</text>
+</svg>
+</div>
+<div class="eq">u(x; z) = f<sub>θ</sub>(x, z)</div>
+
+<h3>Why we tried it</h3>
+<p>A coordinate network is not tied to a grid. It can be evaluated at any single point, so it fits the quadrature idea, and its spatial features can change with z, which CP's cannot.</p>
+
+<h3>What happened</h3>
+<p>Poisson 2D, N=128, against a CG full solver:</p>
+<table>
+  <tr><th>Decoder</th><th>Median error</th><th>Speedup</th><th>Time per solve</th></tr>
+  <tr><td>CP decoder (reference)</td><td class="n">3.23e-3</td><td class="n">183×</td><td class="n">–</td></tr>
+  <tr><td>SIREN, first working version (warm start)</td><td class="n">5.12e-2</td><td class="n">1.0×</td><td class="n">–</td></tr>
+  <tr><td>SIREN after training fixes (warm start)</td><td class="n">2.98e-3</td><td class="n">8.4×</td><td class="n">–</td></tr>
+  <tr><td>SIREN baseline solver (cold start)</td><td class="n">2.88e-3</td><td class="n">0.13×</td><td class="n">2152 ms</td></tr>
+  <tr><td>SIREN with faster Jacobians, tuned</td><td class="n">2.88e-3</td><td class="n">3.44×</td><td class="n">80 ms</td></tr>
+  <tr><td>Linear-affine SIREN, u = Φ(x)Az + b(x)</td><td class="n">9.81e-3</td><td class="n">139×</td><td class="n">1.97 ms</td></tr>
+</table>
+<p>Cold-start solves also stalled in a spurious basin near z = 0 until the training was changed.</p>
+
+<h3>Why we moved on</h3>
+<p>It was too slow for our use. At CP-level accuracy the best SIREN was 3–8× faster than the full solver, against 183× for CP, because the whole network has to be evaluated and differentiated at every quadrature point in every iteration. The only fast version was the one where the output is linear in z and the spatial network Φ(x) is fixed, at the cost of about 3× more error. That observation is what later became the learned bank.</p>
+
+<div class="code">
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/siren/modulated_siren.py">siren/modulated_siren.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/default_siren/default_field_siren.py">default_siren/default_field_siren.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/skip_siren/linear_skip_siren.py">skip_siren/linear_skip_siren.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/affine/affine_z.py">affine/affine_z.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/linear_affine/linear_affine_z.py">linear_affine/linear_affine_z.py</a><br>
+  Results: <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/may_speed/SUMMARY.md">SIREN speed/accuracy summary</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/may_journey/journey-to-good-manifold.md">SIREN training history</a>
 </div>
 
-<div class="move">
-  <div class="when">July 2026</div>
-  <h3>Frozen POD, and POD + a residual network</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>When nonlinear decoders gave unreliable rollouts, we fell back to a fixed linear basis from data (POD), optionally plus a small network to correct its error.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>Nothing broke — the surprise was that <b>POD is a very strong competitor</b>, once it is tuned and hyper-reduced fairly. The POD + network correction gave mixed gains.</div></div>
-  <div class="row"><div class="tag next">Why we moved</div><div>To beat POD we needed something POD cannot do: evaluate anywhere and transfer across meshes. Back to coordinate networks — this time with a real PDE solve.</div></div>
+<!-- ================================================================ -->
+<h2>4. FiLM coordinate decoder (August)</h2>
+
+<div class="fig">
+<svg width="560" height="96" viewBox="0 0 560 96" font-family="Helvetica, Arial, sans-serif" font-size="11">
+  <defs><marker id="d" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#59636e"/></marker></defs>
+  <rect x="2" y="8" width="80" height="32" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="42" y="28" text-anchor="middle">point x, t</text>
+  <rect x="2" y="56" width="80" height="32" rx="4" fill="#fff8c5" stroke="#9a6700"/><text x="42" y="76" text-anchor="middle">z</text>
+  <line x1="82" y1="24" x2="128" y2="34" stroke="#59636e" marker-end="url(#d)"/>
+  <rect x="96" y="62" width="70" height="22" rx="4" fill="#ddf4ff" stroke="#0969da"/><text x="131" y="77" text-anchor="middle" font-size="9">FiLM γ(z), β(z)</text>
+  <line x1="82" y1="72" x2="94" y2="72" stroke="#59636e"/>
+  <line x1="166" y1="70" x2="196" y2="62" stroke="#59636e" marker-end="url(#d)"/>
+  <rect x="130" y="18" width="250" height="40" rx="4" fill="#ffebe9" stroke="#cf222e"/><text x="255" y="35" text-anchor="middle">Fourier features + MLP trunk</text><text x="255" y="49" text-anchor="middle" font-size="9">each layer scaled and shifted by z</text>
+  <line x1="380" y1="38" x2="404" y2="38" stroke="#59636e" marker-end="url(#d)"/>
+  <rect x="406" y="20" width="70" height="36" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="441" y="42" text-anchor="middle">u(x, t)</text>
+</svg>
+</div>
+<div class="eq">u(x; z) = MLP(features(x)) with every layer scaled and shifted by functions of z</div>
+
+<h3>Why we tried it</h3>
+<p>FiLM represented the families much better than a plain coordinate MLP and transferred across meshes. With latent stepping (solving for z from the PDE at each time step) it became a real reduced model for Poisson, heat, Burgers and wave.</p>
+
+<h3>What happened</h3>
+<table>
+  <tr><th>Case</th><th>Result</th></tr>
+  <tr><td>Grouped FiLM, Poisson 2D (58,419 parameters)</td><td>about 0.5% mean solve error over 3 seeds</td></tr>
+  <tr><td>Grouped FiLM, Burgers 2D (140,449 parameters)</td><td>about 1.0% mean solve error over 3 seeds</td></tr>
+  <tr><td>Latent-size sweep, k = 4 to 64, Poisson and Burgers</td><td>error stops improving near 1e-2 by k = 16–24, while cost grows about 170× across the sweep</td></tr>
+  <tr><td>Burgers, FiLM k=16 vs learned bank k=16</td><td>about 507 Jacobians for FiLM vs about 315 for the bank</td></tr>
+  <tr><td>Poisson, grouped FiLM warm start</td><td>a plain spectral solver was tens of milliseconds faster</td></tr>
+</table>
+
+<h3>Why we moved on</h3>
+<p>Speed. Accuracy was fine, but the full network still runs and is differentiated inside every solver iteration, and cost rose steeply with latent size. The fix was to take the spatial network out of the solver loop.</p>
+
+<div class="code">
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/film/poisson2d_film.py">film/poisson2d_film.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/film_heat/heat2d_film.py">film_heat/heat2d_film.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/film_burgers/burgers2d_film.py">film_burgers/burgers2d_film.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/film_wave/wave2d_film.py">film_wave/wave2d_film.py</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/latent_burgers/blat_common.py">latent_burgers/blat_common.py</a> <span>latent stepping</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/film_arch/nda_arch.py">film_arch/nda_arch.py</a> <span>grouped FiLM</span><br>
+  Results: <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/nda_numbers/summary.json">grouped FiLM numbers (JSON)</a>
 </div>
 
-<h2>2. Coordinate networks inside a real solve</h2>
+<!-- ================================================================ -->
+<h2>5. Learned bank: our current decoder (August–now)</h2>
 
-<div class="move">
-  <div class="when">August 2026</div>
-  <h3>FiLM coordinate decoders, then latent stepping</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>FiLM lets the latent code scale and shift features throughout the network. It represented the families well and transferred across meshes. Latent stepping then made it a <i>true</i> ROM: the code is found from the PDE, not handed to the decoder.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>The early wins had been fed the <b>true family parameters</b> — a surrogate, not a ROM. Once we solved for the code, hidden problems appeared: pointwise residuals amplified tiny grid-scale errors (fixed by smooth weak tests), and better reconstruction again did not mean better solves. Grouped FiLM reached about 0.5 % (Poisson) and 1 % (Burgers) mean error, but the network still ran inside every iteration, and fast kernels did not make the whole solve fast.</div></div>
-  <div class="row"><div class="tag next">Why we moved</div><div>The cost lived in evaluating the coordinate network inside the inner loop. So: <b>take it out of the loop</b>.</div></div>
+<div class="fig">
+<svg width="560" height="150" viewBox="0 0 560 150" font-family="Helvetica, Arial, sans-serif" font-size="11">
+  <defs><marker id="e" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#59636e"/></marker></defs>
+  <text x="140" y="12" text-anchor="middle" font-size="10" fill="#59636e">OFFLINE (once)</text>
+  <text x="430" y="12" text-anchor="middle" font-size="10" fill="#59636e">ONLINE (every solve)</text>
+  <line x1="285" y1="4" x2="285" y2="146" stroke="#d0d7de" stroke-dasharray="4 3"/>
+  <rect x="2" y="24" width="70" height="32" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="37" y="44" text-anchor="middle">points x</text>
+  <line x1="72" y1="40" x2="96" y2="40" stroke="#59636e" marker-end="url(#e)"/>
+  <rect x="98" y="20" width="150" height="40" rx="4" fill="#ddf4ff" stroke="#0969da"/><text x="173" y="37" text-anchor="middle">coordinate network</text><text x="173" y="51" text-anchor="middle" font-size="9">bank g₁(x) … g_R(x)</text>
+  <line x1="173" y1="60" x2="173" y2="84" stroke="#59636e" marker-end="url(#e)"/>
+  <rect x="98" y="86" width="150" height="40" rx="4" fill="#dafbe1" stroke="#1a7f37"/><text x="173" y="103" text-anchor="middle">evaluate once, cache</text><text x="173" y="117" text-anchor="middle" font-size="9">at quadrature points; order the bank</text>
+  <line x1="248" y1="106" x2="316" y2="106" stroke="#59636e" marker-end="url(#e)"/>
+  <rect x="318" y="86" width="90" height="40" rx="4" fill="#fff8c5" stroke="#9a6700"/><text x="363" y="103" text-anchor="middle">coefficients c</text><text x="363" y="117" text-anchor="middle" font-size="9">first r of them</text>
+  <line x1="408" y1="106" x2="432" y2="106" stroke="#59636e" marker-end="url(#e)"/>
+  <rect x="434" y="86" width="120" height="40" rx="4" fill="#dafbe1" stroke="#1a7f37"/><text x="494" y="103" text-anchor="middle">u = B_r c</text><text x="494" y="117" text-anchor="middle" font-size="9">small matrix product</text>
+  <rect x="318" y="24" width="236" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f"/><text x="436" y="41" text-anchor="middle">Gauss-Newton on the PDE residual</text><text x="436" y="55" text-anchor="middle" font-size="9">off-mesh quadrature, adjusts c</text>
+  <line x1="436" y1="64" x2="436" y2="84" stroke="#59636e" marker-end="url(#e)"/>
+</svg>
+</div>
+<div class="eq">u(x; c) = Σ<sub>a≤r</sub> g<sub>a</sub>(x) c<sub>a</sub> = B<sub>r</sub>(x) c</div>
+
+<h3>Why we built it</h3>
+<p>This is the fast SIREN variant taken further. A coordinate network learns a set (bank) of spatial functions g<sub>a</sub>(x). We evaluate the bank once at the quadrature points and cache it. Online, the solver only works with the cached matrix and a few coefficients, so no neural network runs inside the solver loop. At first a small nonlinear head mapped a latent z to the coefficients. Later we dropped the head and solve for the first r bank coefficients directly, because a head can never produce a field outside the bank's span. The number r is a knob we can set at deployment time to trade accuracy for cost.</p>
+
+<h3>What happened</h3>
+<p>First version (August), Burgers 2D N=64, same GPU and job:</p>
+<table>
+  <tr><th>Model</th><th>Rollout time</th><th>Error (4 test trajectories)</th></tr>
+  <tr><td>Full solver (Newton)</td><td class="n">176.1 ms</td><td>reference</td></tr>
+  <tr><td>Learned bank, K=16, cached</td><td class="n">54.1 ms (3.3× faster)</td><td>1.38e-2, 2.10e-2, 2.58e-2, one outlier 1.47e-1</td></tr>
+</table>
+
+<p>Current version (October campaign), Burgers 2D at 1024², 38 test cases, second-order stepping:</p>
+<table>
+  <tr><th>Bank width r</th><th>Median error</th><th>Worst error</th></tr>
+  <tr><td>128</td><td class="n">0.45%</td><td class="n">5.2%</td></tr>
+  <tr><td>256</td><td class="n">0.209%</td><td class="n">2.52%</td></tr>
+  <tr><td>384</td><td class="n">0.198%</td><td class="n">1.78%</td></tr>
+  <tr><td>512</td><td class="n">0.199%</td><td class="n">2.17%</td></tr>
+</table>
+
+<table>
+  <tr><th>Question</th><th>Result</th></tr>
+  <tr><td>Does solve cost grow with the mesh?</td><td>No. 2D flat from 256² to 4096² (ratio 1.01–1.02); 3D flat from 64³ to 384³ (1.01–1.09)</td></tr>
+  <tr><td>Does accuracy depend on the mesh?</td><td>No, within the set margin, in all 8 settings tested</td></tr>
+  <tr><td>Burgers 3D, coarse to fine bank setting</td><td>median error 2.04% → 0.18%, cost 542 → 2063 ms</td></tr>
+  <tr><td>Faster than the best tuned full solver?</td><td>No. A coarse spectral solver reaches the same accuracy faster: our speedup 0.049–0.71× in 2D, 0.008–0.16× in 3D</td></tr>
+  <tr><td>Better than tuned POD with hyper-reduction?</td><td>No. Tuned POD did better on all 8 tested 2D settings at 256² and at 1024²</td></tr>
+</table>
+
+<h3>Where this leaves us</h3>
+<p>The bank is the first design that is both accurate and cheap per iteration, and its cost does not grow with the mesh. On Burgers in a box it does not beat a tuned spectral solver or tuned POD, so we cannot claim a speed advantage there. What we can claim is mesh-independent cost, evaluation at any point, and lower memory. That is why the current work moved to flow past obstacles, where spectral solvers do not apply. The first obstacle bank had 18–21% velocity error; after retraining, the latest steady solves pass all seven development targets with about 0.036% velocity error. Final validation and timing are still to do, and the unsteady cylinder case (Re ≈ 100) started on November 3.</p>
+
+<div class="code">
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/separable/sep_common.py">separable/sep_common.py</a> <span>first bank + head</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/current_head/hcore.py">current_head/hcore.py</a> <span>bank + head, current</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/correction/correction_core.py">correction/correction_core.py</a> <span>correction directions</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/ordered/qcore.py">ordered/qcore.py</a> <span>ordered bank + off-mesh quadrature</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/current_step/t2core.py">current_step/t2core.py</a> <span>second-order stepping</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/wide/w3d.py">wide/w3d.py</a> <span>wide bank, 3D</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/curlbank/coordnet.py">curlbank/coordnet.py</a> <span>divergence-free bank (NS)</span> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/tree/codeonly/exp/2026-10-27-ns-obstacle-rom/experiments/ns-obstacle-rom">ns-obstacle-rom/</a> <span>obstacle-flow ROM</span><br>
+  Results: <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-17-full-experiment-plan/final/report.md">Burgers campaign final report</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-26-burgers3d-refinement/2026-10-27-burgers3d-refinement.md">Burgers 3D refinement report</a> ·
+  <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-08-22-separable-eq-decoder-design.md">bank design note</a>
 </div>
 
-<h2>3. The architecture that stuck</h2>
+<!-- ================================================================ -->
+<h2>Other things we tried on top of the bank</h2>
+<p>These kept the bank and changed something else. None of them became the main method.</p>
+<table>
+  <tr><th>Variant</th><th>Result</th><th>Code</th></tr>
+  <tr><td>Bigger/deeper MLP heads</td><td>Lower training error, no better solves</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/headfit/sep_hfit.py">sep_hfit.py</a></td></tr>
+  <tr><td>Quadratic head</td><td>Mean 4.7% vs 5.5% for the MLP, worst 20.3% vs 17.0%</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/quadratic/b3d_arch_quadratic.py">b3d_arch_quadratic.py</a></td></tr>
+  <tr><td>Protected-anchor head</td><td>Mean 6.1%, worst 17.7%; failed</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/anchor/b3d_arch_anchor.py">b3d_arch_anchor.py</a></td></tr>
+  <tr><td>Shared encoder for the head</td><td>Mean 5.4%, worst 16.2%; not consistent across repeats</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/encoder/b3d_arch_encoder.py">b3d_arch_encoder.py</a></td></tr>
+  <tr><td>Mixture of local heads</td><td>Mean 5.5%, worst 21.3%; no gain</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/mixture/b3d_arch_mixture.py">b3d_arch_mixture.py</a></td></tr>
+  <tr><td>Wider and smoother banks</td><td>Better fits, not better solves</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/wide/w3d.py">w3d.py</a>, <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/smooth/smoothtrain.py">smoothtrain.py</a></td></tr>
+  <tr><td>Moving frame (NS, translating flows)</td><td>Worked for that family; a nonlinear head helped there</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/shift/shift_rom.py">shift_rom.py</a>, <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/shift_head/head_rom.py">head_rom.py</a></td></tr>
+  <tr><td>Coarse-to-fine starts (prefix, separate decoder, shared decoder)</td><td>Slower than solving directly: 1.39–3.38×</td><td><a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/prefix/prefixcore.py">prefixcore.py</a>, <a href="https://github.com/tahmidawal/Tunable-NM-ROM/blob/dd6c6c0931dbbb21f3da39a940d2df90781e1a49/reports/2026-10-28-decoder-history/sources/transfer/transfer.py">transfer.py</a></td></tr>
+</table>
+<p class="small">Head numbers are fitted validation errors on Burgers 3D with the same frozen bank (optimizer seed 200).</p>
 
-<div class="move">
-  <div class="when">Late August – September 2026</div>
-  <h3>Cached learned bank + small head</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>Split the decoder into a spatial <b>bank</b> of learned functions <span class="eq">g<sub>a</sub>(x)</span> and a small <b>head</b> <span class="eq">h<sub>a</sub>(z)</span>: <span class="eq">u(x;z) = Σ<sub>a</sub> g<sub>a</sub>(x) h<sub>a</sub>(z)</span>. Evaluate the bank once, cache it, and only the tiny head runs online.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>This worked and became the core architecture. It also let us measure <b>bank error, head error and solve error separately</b> — and the head was the weak link. Every head variant we tried failed its accuracy gate (same frozen bank, matched controls):</div></div>
-  <table>
-    <tr><th>Head</th><th>Mean error</th><th>Worst error</th><th>Outcome</th></tr>
-    <tr><td>MLP (control)</td><td>5.5 %</td><td>17.0 %</td><td>baseline</td></tr>
-    <tr><td>Quadratic</td><td>4.7 %</td><td>20.3 %</td><td>better mean, worse worst case</td></tr>
-    <tr><td>Shared encoder</td><td>5.4 %</td><td>16.2 %</td><td>inconsistent across repeats</td></tr>
-    <tr><td>Mixture of local heads</td><td>5.5 %</td><td>21.3 %</td><td>no validation gain</td></tr>
-    <tr><td>Protected anchor</td><td>6.1 %</td><td>17.7 %</td><td>geometry fine, accuracy failed</td></tr>
-  </table>
-  <div class="row"><div class="tag next">Why we moved</div><div>A nonlinear head inside a fixed bank <b>can never leave that bank's span</b>. Making the head fancier was polishing the wrong part. Better to use the bank directly.</div></div>
-</div>
-
-<div class="move">
-  <div class="when">September – October 2026 · current Burgers method</div>
-  <h3>Corrections, then the ordered bank</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>First, add linear correction directions on top of the head — accuracy could be raised after training, without retraining. In linear problems, solving with the full bank was both more accurate and cheaper than going through the head. So we ordered the bank once and solve directly for its first <i>r</i> coefficients: <span class="eq">u(x;c) = B<sub>r</sub>(x) c</span>.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>Nothing failed here — but it changed what the method <i>is</i>. It is linear in its online unknowns (neural only offline), which puts it head-to-head with tuned POD, which uses the same tricks.</div></div>
-  <div class="row"><div class="tag next">What it gave us</div><div>A <b>deployment-time knob</b>: pick <i>r</i> for the accuracy/cost you want, with no retraining. This is the main Burgers path today.</div></div>
-</div>
-
-<div class="move">
-  <div class="when">September – October 2026 · Navier–Stokes side branch</div>
-  <h3>Fixed frame → moving frame → divergence-free bank</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>Carry the bank idea to incompressible flow.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>In a fixed frame, the bank + head <b>did not beat POD</b>. A divergence-free bank (curl of a neural potential) came close to its own floor but stayed less accurate than POD.</div></div>
-  <div class="row"><div class="tag next">What worked</div><div><b>Moving frames.</b> Solving for a shift plus a shape, <span class="eq">u(x) = ũ(x − c; z)</span>, made translating flows compact — and here a nonlinear head genuinely helped. Our clearest win, but only for translating structures.</div></div>
-</div>
-
-<h2>4. October: better solvers, honest comparisons</h2>
-
-<div class="move">
-  <div class="when">October 2026 · JCP Burgers campaign and Burgers 3D refinement</div>
-  <h3>Wider/smoother banks, off-mesh quadrature, second-order time stepping</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>Push accuracy and cost as far as possible before writing the paper, against much stronger, tuned baselines (spectral solvers, coarse grids, hyper-reduced POD).</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>Wider and smoother banks gave <b>better fits, not better solves</b>. The big accuracy gains came from the <i>solver</i> — off-mesh quadrature and better time stepping — not from the decoder. And the honest baselines removed the speed story: in Burgers 3D, every bank setting had a faster spectral solver at matching accuracy (bank took 1.5× to 176× as long). Continuous POD could also be reused across meshes, which withdrew our multi-mesh cost advantage.</div></div>
-  <div class="row"><div class="tag next">Why we moved</div><div>What survives: <b>reduced cost that does not grow with the output mesh</b>, and evaluation at any point. What does not: a general speed or accuracy win over tuned spectral/POD on the box. So we stopped chasing speed on Burgers and looked for problems where neural banks could have a structural edge.</div></div>
-</div>
-
-<div class="move">
-  <div class="when">Late October 2026</div>
-  <h3>Coarse-to-fine (multilevel) starts, and reconstruction vs interpolation</h3>
-  <div class="row"><div class="tag why">Why we tried it</div><div>Could a cheap small-bank solve give a head start to the expensive fine solve? And does the bank reconstruct from samples better than classical interpolation?</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>Every coarse-to-fine variant was <b>slower</b> than just solving the fine problem directly (median, slower in every paired timing):</div></div>
-  <table>
-    <tr><th>Variant</th><th>Time vs direct fine solve</th></tr>
-    <tr><td>Ordered-bank prefix start (affine / pure prefix)</td><td>1.39× / 1.44×</td></tr>
-    <tr><td>Separate small decoder (transfer / with physics)</td><td>2.62× / 3.38×</td></tr>
-    <tr><td>One shared 16/32/64 decoder (per step / replay)</td><td>1.41× / 1.87×</td></tr>
-  </table>
-  <div class="row"><div class="tag bad"></div><div>Reconstruction also missed both gates: the bank's error was 1.39× (2D) and 1.22× (3D) that of the best classical method, winning 0 of 32 and 2 of 64 cases.</div></div>
-  <div class="row"><div class="tag next">Why we moved</div><div>The fine solve was already warm-started well, so there was no expensive fine work for a coarse level to remove. We stopped these lines unless someone has a concrete reason a new variant would cut fine-level work.</div></div>
-</div>
-
-<h2>5. Where we are now</h2>
-
-<div class="move">
-  <div class="when">Late October – November 2026</div>
-  <h3>Flow past obstacles (cylinder)</h3>
-  <div class="row"><div class="tag why">Why we're here</div><div>Complex geometry is where fast spectral solvers do not apply, and where a mesh-free neural bank might have a real edge over the alternatives.</div></div>
-  <div class="row"><div class="tag bad">What went wrong</div><div>The first trained bank failed badly (18–21 % velocity error, 36–44 % drag error). Several retraining rounds (trace-, energy- and traction-weighted fits, residual heads) each fixed some quantities and broke others — divergence and lift were the hardest.</div></div>
-  <div class="row"><div class="tag next">Status</div><div>The latest neural-bank steady solves <b>pass all seven original development targets</b> (velocity error ≈ 0.036 %). Final validation and speed comparisons are still open. On Nov 3 we started the <b>unsteady cylinder</b> (vortex shedding, Re ≈ 100), an exactly divergence-free bank, a varying-geometry family, and an NS 3D test of whether a trained bank can match POD-64.</div></div>
-</div>
-
-<div class="box"><b>Proposed next architecture — global + local tree bank.</b> Keep a coarse global bank and add small local banks only where the error is. It is untested; we will first check with simple local POD or polynomial bases whether localizing helps at all, before training any neural features.</div>
-
-<h2>What the whole story taught us</h2>
+<h2>What we took from this</h2>
 <ul>
-  <li><b>Reconstruction ≠ solve.</b> Low autoencoder error says little about cold-start solves or stable time stepping.</li>
-  <li><b>Keep the expensive part out of the inner loop.</b> Caching the bank was the decisive design move.</li>
-  <li><b>Measure the bank, the head and the solve separately.</b> It shows which part actually needs work — usually not the one we were tuning.</li>
-  <li><b>Bigger or better-trained is not better-solved.</b> More features, width or training repeatedly improved fits without improving solutions.</li>
-  <li><b>The solver matters as much as the decoder.</b> Quadrature and time stepping gave the largest October gains.</li>
-  <li><b>Tuned classical baselines change the story.</b> POD, coarse grids and spectral solvers overturned several apparent wins; compare at matched accuracy and output.</li>
-  <li><b>Wins are real but scoped:</b> mesh-independent cost, point queries, moving frames for translating flows.</li>
+  <li>Good reconstruction did not mean a good solve. ViT-CP on Burgers and the ViT decoder both reconstructed well and failed in the solver.</li>
+  <li>Anything that runs a neural network inside the solver loop was too slow (ViT, SIREN, FiLM). Caching the spatial functions is what fixed speed.</li>
+  <li>A nonlinear head cannot leave its bank's span, so most of the head work did not pay off.</li>
+  <li>Tuned classical baselines (spectral solvers, POD) decide whether a result is a real win, so we compare against them at matched accuracy.</li>
 </ul>
 
-<div class="foot">Sources: decoder-history report and collaborator PDF (Oct 28–29), JCP Burgers campaign final report, Burgers 3D refinement report, same-sample reconstruction report, and the project lab log through Nov 3, 2026. Numbers are copied from those records; full tables, scope qualifiers and retractions are in <i>Decoder-History-Collaborators.pdf</i>.</div>
+<p class="small" style="margin-top:14pt">Sources: decoder-history report (Oct 28), ViT ablation status (May 14), SIREN speed summary (May 18), July results README and ledger, project lab log, Burgers campaign final report (Oct 20), Burgers 3D refinement report (Oct 27). Numbers are copied from those records.</p>
 
 </body>
 </html>

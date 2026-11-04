@@ -210,3 +210,35 @@ unchanged. Smoke02 also measures the cost of assembly bonus order 2 versus 6; an
 bonus order would be a further dated amendment justified by measured effect, not adopted
 silently. S3 code was not separately reviewed before smoke02 (smoke-only, ≤25 min); it
 enters the Codex review before any production use.
+
+## Amendment G5-A2 — after R1a smoke02, 2026-11-03 (before any reference gate)
+
+Smoke02 (job 6845240, pax026, 10 min 37 s, ref lane `artifacts/r1a-smoke02/`):
+S3 `frozen_oseen` (K = 10) is stable through full inflow speed at dt = 1/1600 and 1/800
+(0.15 s at U_mean = 1, energy bounded, linear residuals ≤ 6.3e-16, energy-balance
+residual ≤ 2.5e-4); Re 20 drag again 2.0e-6 from the admitted value. S2 failed its linear
+tolerance at the third step (stale-LU GMRES, 1.6e-5 > 1e-10) and cost 7.3 s/step:
+**S2 rejected, retained**. Assembly bonus order 2 changes neither the Re 20 drag (2.0e-6)
+nor the cost (the direct solve dominates), so bonus order 6 stays; no change.
+
+Fixed now, before R1b data:
+1. **Scheme: S3**, with K chosen so the frozen lag K·dt ≤ 1/80 s (the tested 1/800 × 10):
+   K = 10 at 1/800, 20 at 1/1600, 40 at 1/3200, 80 at 1/6400. A K that proves unstable is a
+   failure of that run, recorded; one retry at half K is allowed, no further tuning.
+2. **S\*** is the developed state at the end of the primary spin-up (dt_spin = 1/800, the
+   largest tested-stable ladder dt). Every R1b/R1c run starts from S\* with its own startup,
+   so the dt-switch transient is part of the measured difference. The primary recorded
+   window starts after 0.7 s of settle at $dt_0$ from S\*.
+3. **Cost model** (measured, P3/P2, one 16-core node): mean seconds/step ≈ 0.53 (solve) +
+   3.3/K (refactor) + 0.03. **Population rule**, applied once after R1b fixes $dt_0$:
+   projected reference cost of the full population (spin-up actual + studies + 8
+   trajectories of [settle at 1/800 until the developed-flow rule, then 0.7 s settle and
+   1.7 s record at $dt_0$]) ≤ 8 GPU-h → full; otherwise reduced population if ≤ 8 GPU-h;
+   otherwise stop and ask the user for a budget extension (the user said extension is
+   acceptable "if needed"; it is still asked and recorded, not assumed).
+4. **Divergence (R1e) pre-decision.** Smoke divergence reached 2.6e-3 during the compressed
+   ramp (undeveloped, non-gating). R1e stays ≤ 1e-3. The spin-up records divergence at every
+   0.1 s; if the developed P3 value at S\* exceeds 1e-3, R1e cannot pass for P3/P2, and the
+   predeclared response is to **stop R1 and report** (the alternative, P4/P3 production at
+   1.38 s/step plus refactor, is a budget decision for the user). No grad-div or other
+   stabilization is added after seeing data.

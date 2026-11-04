@@ -1,0 +1,13 @@
+You are an independent reviewer of a design amendment to a pre-registered numerical experiment, BEFORE its GPU jobs run. Read-only: do not modify any file.
+
+Worktree: /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-11-03-ns3d-pod-match
+Read: experiments/ns3d-pod-match/DESIGN.md (whole file; the amendment under review is the section "A2" at the end), experiments/ns3d-pod-match/train_bank2.py (new: project_cols, make_sample_fn_remat, g3_statistic, objective kind "vp_band_g3", the init_from warm start, the Adam-skip path), experiments/ns3d-pod-match/make_configs.py and configs/bank_a2_mu1.json, configs/bank_a2_mu001.json, experiments/ns3d-pod-match/cluster/submit.sh (staging of init_from), and for reference experiments/ns3d-coordnet/bankio.py (mesh_bank: how gate G3, the pre-Lowdin deviation, is computed by the pipeline), experiments/ns3d-coordnet/coordnet.py (order_bank, leray_mask, sampling), experiments/ns3d/ns3d_fom.py (geometry, project, fft). The git log of the branch shows what changed (git diff 37f9d0072..HEAD -- experiments/ns3d-pod-match).
+Pulled results of the previous jobs are in experiments/ns3d-pod-match/runs/bank_a/output/summary.json and runs/bank_b/output/summary.json.
+
+Check and report, with file:line and severity (WRONG / NEEDS-CHANGE / CORRECT):
+1. Does g3_statistic compute the same matrix as the pipeline's G3 (pre-Lowdin max|B^T B - I| at mesh 64 with B = P_n G_raw_n T, T from order_bank on the P_48-projected training-grid bank), up to an orthogonal rotation? Is the Frobenius penalty a valid surrogate for the max-entry gate? Any scaling, axis or projection mismatch (P_48 vs P_64, n^{-3/2} sampling, Leray)?
+2. Is the objective differentiable and numerically sound in float64 (QR of a raw bank whose singular-value ratio is ~8e-6; triangular solve; gradient through jnp.linalg.qr)? Any risk of NaN or of silently wrong gradients? Memory/time at 48^3 + 64^3 sampling with width 512 on an A100 80GB (the 64^3 sampler is rematerialised per 32768-point chunk)?
+3. Is the amendment honest and free of post-hoc gate changes: gates unchanged; the new penalty uses no development data; selection rule fixed before results; does training directly on the gate statistic constitute a problem (it is a property of the bank and grids only)? Is anything in A2 inconsistent with the code?
+4. The warm start (sha256 check, architecture check), the Adam-skip path, staging of the init file to the cluster, and that floors/gates are computed exactly as before.
+5. Anything that would waste the allocation (8 h wall, 6 h L-BFGS).
+End with a verdict: ready / not ready and must-fix items.

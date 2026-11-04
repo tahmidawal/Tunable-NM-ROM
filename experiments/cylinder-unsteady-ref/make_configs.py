@@ -58,9 +58,25 @@ def smoke():
     }
 
 
+def smoke02():
+    # Amendment G5-A1 smoke: frozen-Oseen stability at full speed (e, f), fixed Oseen cost (g),
+    # assembly bonus order 2 cost and Re-20 drag effect (h). Same compressed smoke ramp.
+    fast = {'ramp_time': 0.05, 'kick': dict(BASE['kick'], t_start=0.06, duration=0.04)}
+    st = lambda dt, dur: [{'name': 'smoke', 'dt': dt, 'duration': dur, 'save_every_steps': int(round(1 / 400 / dt)),
+                           'diagnostics_every_saves': 10}]
+    fo = {'scheme': 'frozen_oseen', 'refactor_every': 10}
+    return {
+        'e_frozen_p3_dt1600': cfg(**fast, **fo, stages=st(1 / 1600, 0.2), wall_limit_seconds=420),
+        'f_frozen_p3_dt800': cfg(**fast, **fo, stages=st(1 / 800, 0.2), wall_limit_seconds=300),
+        'g_oseen_p3_dt1600': cfg(**fast, scheme='oseen_bdf2', stages=st(1 / 1600, 0.03), wall_limit_seconds=300),
+        'h_frozen_p3_dt1600_bonus2': cfg(**fast, scheme='frozen_oseen', refactor_every=25, assembly_bonus_order=2,
+                                         stages=st(1 / 1600, 0.05), wall_limit_seconds=240),
+    }
+
+
 def main():
     stage = sys.argv[1]
-    sets = {'smoke': smoke}[stage]()
+    sets = {'smoke': smoke, 'smoke02': smoke02}[stage]()
     d = HERE / 'configs' / stage
     d.mkdir(parents=True, exist_ok=True)
     for name, c in sets.items():

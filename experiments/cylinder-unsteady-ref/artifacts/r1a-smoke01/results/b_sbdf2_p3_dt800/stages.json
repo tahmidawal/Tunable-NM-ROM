@@ -1,0 +1,29 @@
+{
+  "status": "aborted: ArithmeticError('instability')",
+  "stages": [
+    {
+      "name": "smoke",
+      "dt": 0.00125,
+      "t_start": 0.0,
+      "planned_steps": 160,
+      "until_periodic": false,
+      "status": "nonfinite_or_energy_blowup",
+      "steps": 85
+    }
+  ],
+  "states": [],
+  "snapshots": [
+    {
+      "file": "snapshots_0000.npz",
+      "sha256": "5f56e02e3be04c90bedd30d7a1cf0b37614b06b3788983ed87d1fcf5ef35aa09",
+      "count": 43
+    }
+  ],
+  "linear_checks_count": 2,
+  "linear_checks_max": 3.562851998264599e-16,
+  "factorizations": 2,
+  "interpolation": null,
+  "layout_sha256": "03d4f93c204e47fc603afc98ba044253f30fc0abf53dd4d919a52037440f2025",
+  "ndof": 235231,
+  "elapsed_seconds": 75.33459114097059
+}

@@ -10,6 +10,10 @@ Schemes (both second order, one linear solve per step):
   oseen_bdf2 BDF2 with linearly implicit convection (grad u) w, w=2u^n-u^{n-1};
              matrix reassembled every step, LU refreshed every `refactor_every`
              steps and used as GMRES preconditioner in between.
+  frozen_oseen BDF2 with implicit convection (grad u) w_f, w_f = u^n frozen and the LU
+             refreshed every `refactor_every` steps, plus the explicit second-order
+             extrapolated correction 2R(u^n)-R(u^{n-1}), R(u)=(grad u)u-(grad u)w_f
+             (amendment G5-A1, after the smoke showed sbdf2 unstable at U=1).
 Startup from a single state: `startup_substeps` first-order IMEX/Oseen Euler
 substeps spanning one dt, then BDF2 (variable first interval is avoided).
 All arrays float64. NGSolve kernels run on CPU.
@@ -119,16 +123,41 @@ class Stepper:
         self.solver_key = None
         self.wgf = ng.GridFunction(self.V)
         self.lin_checks = []
+        self.timers = {k: 0.0 for k in ('conv_apply', 'factor', 'solve', 'observe', 'diagnostics')}
+        self.fo_key, self.fo_age = None, 0
 
     # ---- vector helpers -------------------------------------------------
     def apply(self, op, x):
         a, b = self.tmp[0], self.tmp[1]
         a.FV().NumPy()[:] = x
         if op == 'conv':
+            t0 = time.perf_counter()
             self.conv.Apply(a, b)
+            self.timers['conv_apply'] += time.perf_counter() - t0
+        elif op == 'Cf':
+            b.data = self.fo_C.mat * a
         else:
             b.data = {'M': self.M, 'A': self.A}[op] * a
         return b.FV().NumPy().copy()
+
+    def prepare_frozen(self, coef, w, force=False):
+        """(Re)assemble/factor coef*M + A + C(w_f) when due; returns True on refresh."""
+        c = self.cfg
+        if not force and self.fo_key == coef and self.fo_age < c['refactor_every']:
+            self.fo_age += 1
+            return False
+        t0 = time.perf_counter()
+        ng = self.ng
+        self.fo_form = self._factor(coef, w)
+        self.fo_C = ng.BilinearForm(self.X)
+        self.fo_C += (ng.Grad(self.u) * self.wgf) * self.v * self.dx
+        self.fo_C.Assemble()
+        self.fo_inv = self.fo_form.mat.Inverse(self.X.FreeDofs(), inverse=c['inverse_backend'])
+        self.fo_key, self.fo_age = coef, 1
+        self.factorizations += 1
+        self.check_next = True
+        self.timers['factor'] += time.perf_counter() - t0
+        return True
 
     def U_mean(self, t):
         c = self.cfg
@@ -156,12 +185,15 @@ class Stepper:
         form.Assemble()
         return form
 
-    def solve(self, coef, rhs, t_new, w=None):
+    def solve(self, coef, rhs, t_new, w=None, frozen=False):
         """Solve K x = rhs with x = bc(t_new) on Dirichlet DOFs."""
         c = self.cfg
         ng = self.ng
         oseen = w is not None
-        if not oseen:
+        t_solve0 = time.perf_counter()
+        if frozen:
+            self.form, self.inv = self.fo_form, self.fo_inv
+        elif not oseen:
             key = ('sbdf', coef)
             if self.solver_key != key:
                 self.form = self._factor(coef)
@@ -187,7 +219,7 @@ class Stepper:
         if oseen and self.oseen_age > 1:
             from ngsolve.solvers import GMRes
             d.FV().NumPy()[:] = 0
-            GMRes(A=self.form.mat, b=r, pre=self.inv, freedofs=self.X.FreeDofs(), x=d,
+            GMRes(A=self.form.mat, b=r, pre=self.inv, x=d,
                   tol=c['linear_relative_tolerance'] * 1e-2, maxsteps=c['gmres_maxsteps'], printrates=False)
         else:
             d.data = self.inv * r
@@ -202,10 +234,18 @@ class Stepper:
             if rel > c['linear_relative_tolerance']:
                 raise ArithmeticError(f'linear residual {rel:.3e} at t={t_new}')
             self.check_next = False
+        self.timers['solve'] += time.perf_counter() - t_solve0
         return x
 
     # ---- outputs --------------------------------------------------------
     def observe(self, x, dudt, Nx, t):
+        t0 = time.perf_counter()
+        try:
+            return self._observe(x, dudt, Nx, t)
+        finally:
+            self.timers['observe'] += time.perf_counter() - t0
+
+    def _observe(self, x, dudt, Nx, t):
         ng = self.ng
         self.g.vec.FV().NumPy()[:] = x
         res = self.apply('M', 0 * x if dudt is None else dudt) + self.apply('A', x) + Nx - self.forcing(t)
@@ -234,6 +274,13 @@ class Stepper:
         return rec
 
     def diagnostics(self, x, dudt, t):
+        t0 = time.perf_counter()
+        try:
+            return self._diagnostics(x, dudt, t)
+        finally:
+            self.timers['diagnostics'] += time.perf_counter() - t0
+
+    def _diagnostics(self, x, dudt, t):
         ng = self.ng
         self.g.vec.FV().NumPy()[:] = x
         uh, ph, n = self.uh, self.ph, self.normal
@@ -379,11 +426,13 @@ class Stepper:
             dump(self.out / 'stages.json', {'status': status, 'stages': stage_records, 'states': states,
                                             'snapshots': snap_files, 'linear_checks_count': len(self.lin_checks),
                                             'linear_checks_max': max([z['relative_linear_residual'] for z in self.lin_checks], default=None),
-                                            'factorizations': self.factorizations,
+                                            'factorizations': self.factorizations, 'timers_seconds': self.timers,
                                             'interpolation': getattr(self, 'interpolation', None),
                                             'layout_sha256': self.layout_sha256, 'ndof': self.X.ndof,
                                             'elapsed_seconds': time.perf_counter() - t_wall0})
-        sbdf = c['scheme'] == 'sbdf2'
+        if c['scheme'] not in ('sbdf2', 'oseen_bdf2', 'frozen_oseen'):
+            raise ValueError('unknown scheme')
+        sbdf = c['scheme']
         try:
             self._stages(c, x, t, sbdf, steady_start, rows, walls, diag_rows, stage_records, states, buf, flush, persist, t_wall0)
         except BaseException as exc:
@@ -425,10 +474,16 @@ class Stepper:
             # Startup: first-order substeps spanning exactly one dt.
             hs = dt / int(c['startup_substeps'])
             xs, Ns, ts = x0, N0, t
-            for _ in range(int(c['startup_substeps'])):
+            for j in range(int(c['startup_substeps'])):
                 tn = ts + hs
                 rhs = self.apply('M', xs) / hs + self.forcing(tn)
-                xn = self.solve(1.0 / hs, rhs - Ns, tn) if sbdf else self.solve(1.0 / hs, rhs, tn, w=xs)
+                if sbdf == 'sbdf2':
+                    xn = self.solve(1.0 / hs, rhs - Ns, tn)
+                elif sbdf == 'oseen_bdf2':
+                    xn = self.solve(1.0 / hs, rhs, tn, w=xs)
+                else:
+                    self.prepare_frozen(1.0 / hs, x0, force=(j == 0))
+                    xn = self.solve(1.0 / hs, rhs - (Ns - self.apply('Cf', xs)), tn, frozen=True)
                 dudt = (xn - xs) / hs
                 xs, ts, Ns = xn, tn, self.apply('conv', xn)
             x_prev, N_prev, x, Nx, t = x0, N0, xs, Ns, t + dt
@@ -442,10 +497,15 @@ class Stepper:
                     self.check_next = True
                 tn = t + dt
                 rhs = self.apply('M', 4 * x - x_prev) / (2 * dt) + self.forcing(tn)
-                if sbdf:
+                if sbdf == 'sbdf2':
                     xn = self.solve(coef, rhs - 2 * Nx + N_prev, tn)
-                else:
+                elif sbdf == 'oseen_bdf2':
                     xn = self.solve(coef, rhs, tn, w=2 * x - x_prev)
+                else:
+                    self.prepare_frozen(coef, x)
+                    Rn = Nx - self.apply('Cf', x)
+                    Rp = N_prev - self.apply('Cf', x_prev)
+                    xn = self.solve(coef, rhs - 2 * Rn + Rp, tn, frozen=True)
                 dudt = (3 * xn - 4 * x + x_prev) / (2 * dt)
                 x_prev, N_prev = x, Nx
                 x, t, Nx = xn, tn, self.apply('conv', xn)

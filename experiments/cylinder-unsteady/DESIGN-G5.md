@@ -242,3 +242,116 @@ Fixed now, before R1b data:
    predeclared response is to **stop R1 and report** (the alternative, P4/P3 production at
    1.38 s/step plus refactor, is a budget decision for the user). No grad-div or other
    stabilization is added after seeing data.
+
+## 5. Reduced models (R2–R5) — prospective, written 2026-11-03 before any reference data
+
+### 5.1 Inherited bank (what transfers, what does not)
+
+The frozen bank is the run-09 composite of the steady campaign: file `run09_bank.npz`
+(SHA `645d030088ed7bc217b1afb59e3e13787b8f38c8ea5877599cc86d3b8b0a2a60`, the model of
+PDE09 job 6661438), schema `ns-obstacle-independent-residual-head-bank-v1`: a frozen
+parent MLP (21 Fourier/radial input features → 3 × 128 tanh → 2r, times the bounded
+envelope $b(x)$ vanishing on inlet, walls and cylinder) trained to the first four steady
+training POD velocity modes (values and $D$-scaled gradients, weights
+$\sqrt{\sigma_i/\sigma_1}$; Adam 4000 cosine 1e-3→1e-4 + L-BFGS), plus four residual heads
+(21-64-64-2) trained over the frozen parent with supervised divergence (weight 1.0) and
+cylinder traction (weight 1.0) terms. Evaluator sources are vendored byte-identically.
+**Transfers unchanged:** geometry, envelope, feature map, evaluator, the training
+objective terms and optimizer recipe, the FE pressure/supremizer construction.
+**Does not transfer:** the steady lift (Re 15–25 Stokes lift at U_mean = 0.2), the steady
+weak least-squares Gauss–Newton solve (no time derivative), the steady POD teacher. New:
+time-dependent mixed Galerkin rollout, transient POD teacher, phase-aware metrics.
+
+### 5.2 Common spaces and quadrature (identical for every method)
+
+- Quadrature Q: NGSolve order-10 mapped volume rule on every admitted-mesh element
+  (points, positive weights saved with hashes); all reduced operators, projections and
+  field errors use Q, so bank and POD are integrated identically.
+- Lift $\bar u$: the mean of all training velocity snapshots (it carries the U_mean = 1
+  inlet trace; fluctuation modes have homogeneous essential traces).
+- Pressure basis (A4 rule): the constant, then L2-POD of mean-removed training pressures;
+  $p_r=r$ functions in total. Supremizers: one per pressure function, $s_j\in V_{h,0}$ with
+  $(\nabla s_j,\nabla v)=(\psi_j,\nabla\cdot v)$ for all $v$ (FE, H1 Riesz).
+- POD velocity: L2 (FE mass matrix) method of snapshots on $u-\bar u$ for all training
+  snapshots, f64, re-orthogonalized; ranks $r\in\{2,4,8,12,16,20,24\}$.
+- Velocity space for a velocity basis $\Phi_r$: $\bar u+\mathrm{span}(\Phi_r\cup S)$,
+  L2_Q-orthonormalized. Unknowns $d=r+2p_r=3r$ (the steady formula).
+
+### 5.3 Time discretization of every ROM
+
+Mixed Galerkin (momentum tested by the reduced velocity space, continuity by the reduced
+pressure space), gradient-form viscous term, do-nothing outlet (no boundary term), exact
+pre-contracted quadratic convection tensor including lift terms, viscous operator affine in
+$\nu$. **BDF2 with fully implicit convection**, reduced Newton to relative residual
+1e-12 (max 20 iterations, failure recorded), **dt_rom = dt_0** and the same 4-substep
+startup as the reference. Initial condition: L2_Q projection of the reference velocity at
+the first recorded time. Horizon: the full 1.7 s recorded window. Forces by the same
+variational reaction formula as the reference (obstacle test function χ evaluated on Q,
+inertia from the BDF2 derivative); probe pressures from basis values at the probe points.
+No closure, stabilization, filtering or calibration is added after seeing results.
+
+### 5.4 Stages and predeclared rules
+
+- **R2 projection floors** (development trajectory Re 97.5, all 681 snapshots): relative
+  L2_Q velocity error of the best approximation in $\bar u+\mathrm{span}(\Phi)$ and
+  characteristic pressure error of the pressure basis. Bases: frozen run-09 bank (its 4
+  functions), POD at every rank. **Floor rule:** a velocity basis is
+  representation-adequate if the median floor ≤ 5e-3 and the maximum ≤ 1e-2.
+- **R3 retraining** only if the frozen bank fails the floor. Rank $r_b$ = smallest POD
+  rank in {8, 12, 16, 20, 24} meeting the floor (24 if none does, recorded). Parent: the
+  same architecture with $2r_b$ outputs, seed 3112026, teacher = transient training POD
+  modes 1..$r_b$ (values + $D$-scaled gradients on Q), weights $\sqrt{\sigma_i/\sigma_1}$,
+  Adam 4000 steps (batch 4096, cosine 1e-3→1e-4, full check every 200) then L-BFGS 300
+  (history 10, 20 line-search steps); selection by minimum full training objective only.
+  Child: frozen parent + $r_b$ residual heads (21-64-64-2, seed 30102026) with base +
+  1.0 × supervised divergence + 1.0 × cylinder traction, **L-BFGS 1000 iterations or
+  2700 s, whichever first** (run 09 used 10,000; reduced for budget, fixed now). No
+  hyperparameter, architecture or seed search; every failure retained.
+- **R4 development rollouts**, arms: POD-G at r ∈ {8, 16, 24} and at $r_b$; bank-G
+  (retrained, $r_b$); frozen-bank-G (r = 4) for completeness regardless of R2. Optional
+  hyper-reduced POD at $r_b$: positive NNLS (Lawson–Hanson) point weights on Q fitted on
+  training reduced-convection snapshots to relative 1e-4, m ≤ 4·d points; run only if the
+  fit finishes within 15 min, otherwise recorded infeasible. Products: time-series plots,
+  an animation (reference / ROM / pointwise error over the shedding cycles), drag and lift
+  histories overlaid.
+- **R5 held-out**: Re 102.5 and 107.5 opened once; **every R4 arm runs**, no selection.
+  Paired timings in one allocation, CPU, 16 threads fixed, GPU burn-in irrelevant
+  (CPU-only kernels) but a CPU warm-up repetition is discarded: FE reference stepper at
+  production settings over a 200-step window (7 repetitions, alternating order with the
+  ROM), ROM full-horizon rollout (7 repetitions) with and without full-field
+  reconstruction. Reported: seconds per simulated second, ratio, offline costs (data,
+  POD, supremizers, operator/tensor build, training, compilation); break-even only if the
+  per-query saving is positive.
+
+### 5.5 Metrics (all from saved arrays by scripts)
+
+Primary, phase-sensitive: $e_u(t)=\|u_{\rm rom}-u_{\rm ref}\|_Q/\|u_{\rm ref}\|_Q$ and
+$e_p(t)=\|p_{\rm rom}-p_{\rm ref}\|_Q/(U^2\sqrt{|\Omega|})$ at every saved time;
+summaries: time-RMS over the horizon, maximum, last-period mean. Supplemental: C_D/C_L
+histories and their max-abs differences; cycle statistics (C_D,max relative, C_L,max
+absolute, St relative, Δp relative) via `cycles.py`; phase-aligned error (reference shifted
+by the lag in [−T/2, T/2] on the save grid that minimizes RMS lift mismatch over the last
+two periods; reported, never substituted for the primary); divergence
+$D\|\nabla\cdot u\|/(U\sqrt{|\Omega|})$, inlet/outlet mass mismatch, reduced energy balance
+(dE/dt + dissipation + boundary flux/traction terms). Development feasibility targets
+(reported pass/fail, not a speed condition): time-RMS $e_u\le10^{-2}$, max $e_u\le3\times10^{-2}$,
+time-RMS $e_p\le2\times10^{-2}$, St ≤1e-2 relative, C_D,max ≤2e-2 relative, C_L,max ≤2e-2
+absolute. With one development and two held-out Reynolds numbers, every case is reported
+individually (median and worst over arms and cases are listed, with every failure).
+
+## 6. Budget, concurrency, stop rules
+
+Total 12 allocated GPU-hours (all failures counted; FE kernels run on CPU but the GPU
+allocation counts): reference 8 (smokes ≈0.3 used, spin-up ≤5, studies ≈1, population per
+the G5-A2 rule), ROM 4 (R2 ≤0.5, R3 ≤1.5, R4 ≤0.75, R5 ≤0.75, contingency). At most two
+allocations at once, one GPU and ≤16 cores each. Stop rules: R1 any failing gate stops all
+dependent stages; R2 a failed floor triggers R3, never relaxes; R3 a failed or deadline-
+stopped fit is retained and the retrained bank is still evaluated as trained; R4 a
+divergent rollout is a recorded failure; R5 runs once. An extension beyond 12 GPU-h is
+asked of the user and recorded, with the reason.
+
+## 7. Deliverables
+
+Report `reports/<date>-cylinder-unsteady/` on main with tables/figures generated from
+saved JSON, the animation, provenance, the job ledger and a glossary; LAB-LOG appended
+throughout with retractions; every lane mirrored via `codeonly/`; no merges.
